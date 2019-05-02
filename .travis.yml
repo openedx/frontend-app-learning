@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+  - lts/*
+cache:
+  directories:
+    - "~/.npm"
+before_install:
+  - npm install -g npm@latest
+  - npm install -g greenkeeper-lockfile@1.14.0
+install:
+  - npm ci
+before_script: greenkeeper-lockfile-update
+after_script: greenkeeper-lockfile-upload
+script:
+  - make validate-no-uncommitted-package-lock-changes
+  - npm run lint
+  - npm run test
+  - npm run build
+after_success:
+  - npm run coveralls
+  - codecov

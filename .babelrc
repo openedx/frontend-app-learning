@@ -1,0 +1,26 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "targets": {
+          "browsers": ["last 2 versions", "ie 11"]
+        }
+      }
+    ],
+    "babel-preset-react"
+  ],
+  "plugins": [
+    "transform-object-rest-spread",
+    "transform-class-properties"
+  ],
+  "env": {
+    "i18n": {
+      "plugins": [
+        ["react-intl", {
+          "messagesDir": "./temp"
+        }]
+      ]
+    }
+  }
+}

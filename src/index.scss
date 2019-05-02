@@ -1,0 +1,37 @@
+@import "~@edx/edx-bootstrap/scss/edx/theme.scss";
+
+$fa-font-path: "~font-awesome/fonts";
+@import "~font-awesome/scss/font-awesome";
+
+@import "~@edx/paragon/src/index.scss";
+@import "~@edx/frontend-component-site-header/src/index";
+@import "~@edx/frontend-component-footer/src/lib/scss/site-footer";
+
+@import "./learning-sequence/style";
+
+.word-break-all {
+  word-break: break-all !important;
+}
+
+// TODO: Update edx-bootstrap theme to incorporate these edits.
+.btn, a.btn {
+  text-decoration: none;
+  &:hover {
+    text-decoration: none;
+  }
+}
+.btn-link {
+  text-decoration: underline;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  & > main {
+    flex-grow: 1;
+  }
+}

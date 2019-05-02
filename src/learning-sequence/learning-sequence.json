@@ -1,0 +1,59 @@
+{
+    "course_org": "edX",
+    "course_number": "DemoX",
+    "course_name": "edX Demonstration Course",
+    "sequential_block_path": "/xblock/block-v1:edX+DemoX+Demo_Course+type@sequential+block@graded_simulations",
+    "masquerade_options": [
+        {
+            "id": "staff",
+            "role": "staff",
+            "title": "Staff"
+        },
+        {
+            "id": "student",
+            "role": "student",
+            "title": "Learner"
+        },
+        {
+            "id": "specific_student",
+            "role": "student",
+            "title": "Specific learner"
+        }
+    ],
+    "course_tabs": [
+        {
+            "title": "Course",
+            "path": "/courses/course-v1:edX+DemoX+Demo_Course/course/"
+        },
+        {
+            "title": "Discussion",
+            "path": "/courses/course-v1:edX+DemoX+Demo_Course/discussion/forum/"
+        },
+        {
+            "title": "Wiki",
+            "path": "/courses/course-v1:edX+DemoX+Demo_Course/course_wiki"
+        },
+        {
+            "title": "Progress",
+            "path": "/courses/course-v1:edX+DemoX+Demo_Course/progress"
+        },
+        {
+            "title": "Instructor",
+            "path": "/courses/course-v1:edX+DemoX+Demo_Course/instructor"
+        }
+    ],
+    "breadcrumbs": [
+        {
+            "title": "Course",
+            "path": "/courses/course-v1:edX+DemoX+Demo_Course/course/"
+        },
+        {
+            "title": "Example Week 2: Get Interactive",
+            "path": "/courses/course-v1:edX+DemoX+Demo_Course/course/#block-v1:edX+DemoX+Demo_Course+type@chapter+block@graded_interactions"
+        },
+        {
+            "title": "Homework - Labs and Demos",
+            "path": "/courses/course-v1:edX+DemoX+Demo_Course/course/#block-v1:edX+DemoX+Demo_Course+type@sequential+block@graded_simulations"
+        }
+    ]
+}
