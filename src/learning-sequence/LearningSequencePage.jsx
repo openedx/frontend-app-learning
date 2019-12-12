@@ -67,12 +67,12 @@ function LearningSequencePage(props) {
     loading,
     loaded,
   } = useApi(
-    async () => getAuthenticatedHttpClient().get(`${getConfig().LMS_BASE_URL}/api/courses/v1/blocks/?course_id=course-v1%3AedX%2BDemoX%2BDemo_Course&username=staff&depth=all&block_types_filter=sequential&requested_fields=children`, {}),
+    async () => getAuthenticatedHttpClient().get(`${getConfig().LMS_BASE_URL}/api/courses/v1/blocks/?course_id=${props.match.params.courseId}&username=staff&depth=all&block_types_filter=sequential&requested_fields=children`, {}),
     {
       keepDataIfFailed: false,
       refreshParams: [
-        props.match.params.courseRunId,
-        props.match.params.sequenceBlockId,
+        props.match.params.courseId,
+        props.match.params.blockIndex,
       ],
     },
   );
@@ -89,14 +89,11 @@ function LearningSequencePage(props) {
     <main>
       <div className="container-fluid">
         <h1>Learning Sequence Page</h1>
-        <p>Hello world!</p>
-        Params: {props.match.params.courseRunId}/{props.match.params.sequenceBlockId}
-        State:
         {loaded && data.blocks ? (
           <iframe
             title="yus"
             ref={iframeRef}
-            src={Object.values(data.blocks)[0].studentViewUrl}
+            src={Object.values(data.blocks)[parseInt(props.match.params.blockIndex, 10)].studentViewUrl}
             onLoad={handleResizeIframe}
             height={500}
           />
@@ -109,8 +106,8 @@ function LearningSequencePage(props) {
 LearningSequencePage.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
-      courseRunId: PropTypes.string.isRequired,
-      sequenceBlockId: PropTypes.string.isRequired,
+      courseId: PropTypes.string.isRequired,
+      blockIndex: PropTypes.number.isRequired,
     }).isRequired,
   }).isRequired,
   intl: intlShape.isRequired,

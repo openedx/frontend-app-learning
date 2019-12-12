@@ -4,7 +4,7 @@ import { APP_INIT_ERROR, APP_READY, subscribe, initialize } from '@edx/frontend-
 import { AppProvider, ErrorPage } from '@edx/frontend-platform/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Link } from 'react-router-dom';
 
 import Header, { messages as headerMessages } from '@edx/frontend-component-header';
 import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
@@ -20,7 +20,12 @@ subscribe(APP_READY, () => {
     <AppProvider>
       <Header />
       <Switch>
-        <Route path="/course/:courseRunId/:sequenceBlockId" component={LearningSequencePage} />
+        <Route
+          exact
+          path="/"
+          render={() => <Link to="/course/course-v1%3AedX%2BDemoX%2BDemo_Course/0">Visit Demo Course</Link>}
+        />
+        <Route path="/course/:courseId/:blockIndex" component={LearningSequencePage} />
       </Switch>
       <Footer />
     </AppProvider>,
