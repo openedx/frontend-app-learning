@@ -1,4 +1,4 @@
-transifex_resource = frontend-template-application
+transifex_resource = frontend-app-learn
 transifex_langs = "ar,fr,es_419,zh_CN"
 
 transifex_utils = ./node_modules/.bin/transifex-utils.js
