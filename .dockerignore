@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+README.rst
+LICENSE
+.babelrc
+.eslintignore
+.eslintrc.json
+.gitignore
+.npmignore
+commitlint.config.js

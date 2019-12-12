@@ -1,0 +1,64 @@
+{
+  "name": "@edx/frontend-app-learn",
+  "version": "1.0.0-semantically-released",
+  "description": "Frontend learning application.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edx/frontend-app-learn.git"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "ie 11"
+  ],
+  "scripts": {
+    "build": "fedx-scripts webpack",
+    "i18n_extract": "BABEL_ENV=i18n fedx-scripts babel src --quiet > /dev/null",
+    "is-es5": "es-check es5 ./dist/*.js",
+    "lint": "fedx-scripts eslint",
+    "snapshot": "fedx-scripts jest --updateSnapshot",
+    "start": "fedx-scripts webpack-dev-server --progress",
+    "test": "fedx-scripts jest --coverage --passWithNoTests"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
+  },
+  "author": "edX",
+  "license": "AGPL-3.0",
+  "homepage": "https://github.com/edx/frontend-app-learn#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/edx/frontend-app-learn/issues"
+  },
+  "dependencies": {
+    "@edx/frontend-component-footer": "^10.0.6",
+    "@edx/frontend-component-header": "^2.0.3",
+    "@edx/frontend-platform": "^1.1.11",
+    "@edx/paragon": "^7.2.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.26",
+    "@fortawesome/free-brands-svg-icons": "^5.12.0",
+    "@fortawesome/free-regular-svg-icons": "^5.12.0",
+    "@fortawesome/free-solid-svg-icons": "^5.12.0",
+    "@fortawesome/react-fontawesome": "^0.1.8",
+    "babel-polyfill": "^6.26.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-redux": "^7.1.3",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
+    "redux": "^4.0.4"
+  },
+  "devDependencies": {
+    "@edx/frontend-build": "^2.0.5",
+    "codecov": "^3.6.1",
+    "es-check": "^5.1.0",
+    "glob": "^7.1.6",
+    "husky": "^3.1.0",
+    "jest": "^24.9.0",
+    "reactifex": "^1.1.1"
+  }
+}
