@@ -1,10 +1,10 @@
 {
-  "name": "@edx/frontend-app-learn",
+  "name": "@edx/frontend-app-learning",
   "version": "1.0.0-semantically-released",
   "description": "Frontend learning application.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/edx/frontend-app-learn.git"
+    "url": "git+https://github.com/edx/frontend-app-learning.git"
   },
   "browserslist": [
     "last 2 versions",
@@ -26,12 +26,12 @@
   },
   "author": "edX",
   "license": "AGPL-3.0",
-  "homepage": "https://github.com/edx/frontend-app-learn#readme",
+  "homepage": "https://github.com/edx/frontend-app-learning#readme",
   "publishConfig": {
     "access": "public"
   },
   "bugs": {
-    "url": "https://github.com/edx/frontend-app-learn/issues"
+    "url": "https://github.com/edx/frontend-app-learning/issues"
   },
   "dependencies": {
     "@edx/frontend-component-footer": "^10.0.6",
