@@ -3,7 +3,7 @@
 frontend-app-learning
 =========================
 
-Please tag **@edx/arch-team** on any PRs or issues.  Thanks.
+Please tag **@edx/teaching-and-learning** on any PRs or issues.  Thanks.
 
 Introduction
 ------------
