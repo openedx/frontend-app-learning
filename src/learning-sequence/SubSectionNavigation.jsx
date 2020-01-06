@@ -70,7 +70,7 @@ SubSectionNavigation.propTypes = {
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   units: PropTypes.objectOf(PropTypes.shape({
     pageTitle: PropTypes.string.isRequired,
-    type: PropTypes.oneOf('video', 'other', 'vertical', 'problem').isRequired,
+    type: PropTypes.oneOf(['video', 'other', 'vertical', 'problem']).isRequired,
   })).isRequired,
   activeUnitId: PropTypes.string.isRequired,
   unitClickHandler: PropTypes.func.isRequired,

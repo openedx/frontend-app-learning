@@ -3,7 +3,7 @@
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 
-export async function loadCourseSequence(courseId, subSectionId, username) {
+export async function loadCourseSequence(courseId, subSectionId, urlUnitId, username) {
   const blocksData = await getCourseBlocks(courseId, username);
   const courseBlockId = blocksData.root;
   const blocks = createBlocksMap(blocksData.blocks);
@@ -12,6 +12,7 @@ export async function loadCourseSequence(courseId, subSectionId, username) {
   const { subSectionMetadata, units, unitId } = await loadSubSectionMetadata(
     courseId,
     defaultedSubSectionId,
+    { unitId: urlUnitId },
   );
 
   return {
@@ -37,13 +38,19 @@ async function getCourseBlocks(courseId, username) {
   return data;
 }
 
-export async function loadSubSectionMetadata(courseId, subSectionId) {
+export async function loadSubSectionMetadata(courseId, subSectionId, {
+  first,
+  last,
+  unitId: urlUnitId,
+}) {
   let subSectionMetadata = await getSubSectionMetadata(courseId, subSectionId);
   subSectionMetadata = camelCaseObject(subSectionMetadata);
   subSectionMetadata.unitIds = subSectionMetadata.items.map(item => item.id);
-  const unitId = subSectionMetadata.position ?
-    subSectionMetadata.items[subSectionMetadata.position - 1].id :
-    subSectionMetadata.items[0].id;
+  let position = subSectionMetadata.position - 1; // metadata's position is 1's indexed
+  position = first ? 0 : position;
+  position = last ? subSectionMetadata.unitIds.length - 1 : position;
+  position = urlUnitId ? subSectionMetadata.unitIds.indexOf(urlUnitId) : position;
+  const unitId = subSectionMetadata.items[position].id;
   const units = createUnitsMap(subSectionMetadata.items);
 
   return {

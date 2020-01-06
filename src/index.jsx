@@ -25,7 +25,8 @@ subscribe(APP_READY, () => {
           path="/"
           render={() => <Link to="/course/course-v1%3AedX%2BDemoX%2BDemo_Course/0">Visit Demo Course</Link>}
         />
-        <Route path="/course/:courseId/:blockIndex" component={LearningSequencePage} />
+        <Route path="/course/:courseId/:subSectionId/:unitId" component={LearningSequencePage} />
+        <Route path="/course/:courseId" component={LearningSequencePage} />
       </Switch>
       <Footer />
     </AppProvider>,

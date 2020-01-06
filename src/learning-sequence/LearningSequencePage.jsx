@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { getConfig, history } from '@edx/frontend-platform';
 import { AppContext } from '@edx/frontend-platform/react';
-import { Breadcrumb } from '@edx/paragon';
 
 import PageLoading from './PageLoading';
 import messages from './messages';
 import SubSectionNavigation from './SubSectionNavigation';
 import { loadCourseSequence, findBlockAncestry, loadSubSectionMetadata } from './api';
+import Breadcrumbs from './Breadcrumbs';
 
 class LearningSequencePage extends Component {
   constructor(props, context) {
@@ -30,7 +30,7 @@ class LearningSequencePage extends Component {
   }
 
   componentDidMount() {
-    loadCourseSequence(this.props.match.params.courseId, null, this.context.authenticatedUser.username)
+    loadCourseSequence(this.props.match.params.courseId, this.props.match.params.subSectionId, this.props.match.params.unitId, this.context.authenticatedUser.username)
       .then(({
         blocks, courseBlockId, subSectionIds, subSectionMetadata, units, unitId,
       }) => {
@@ -47,6 +47,16 @@ class LearningSequencePage extends Component {
       });
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.props.match.params.courseId !== prevProps.match.params.courseId ||
+      this.state.subSectionId !== prevState.subSectionId ||
+      this.state.unitId !== prevState.unitId
+    ) {
+      history.push(`/course/${this.props.match.params.courseId}/${this.state.subSectionId}/${this.state.unitId}`);
+    }
+  }
+
   handlePreviousClick = () => {
     const index = this.state.subSectionMetadata.unitIds.indexOf(this.state.unitId);
     if (index > 0) {
@@ -58,7 +68,7 @@ class LearningSequencePage extends Component {
       if (subSectionIndex > 0) {
         const previousSubSectionId = this.state.subSectionIds[subSectionIndex - 1];
 
-        loadSubSectionMetadata(this.props.match.params.courseId, previousSubSectionId).then(({ subSectionMetadata, units, unitId }) => {
+        loadSubSectionMetadata(this.props.match.params.courseId, previousSubSectionId, { last: true }).then(({ subSectionMetadata, units, unitId }) => {
           this.setState({
             subSectionId: subSectionMetadata.itemId,
             subSectionMetadata,
@@ -86,14 +96,15 @@ class LearningSequencePage extends Component {
       if (subSectionIndex < this.state.subSectionIds.length - 1) {
         const nextSubSectionId = this.state.subSectionIds[subSectionIndex + 1];
 
-        loadSubSectionMetadata(this.props.match.params.courseId, nextSubSectionId).then(({ subSectionMetadata, units, unitId }) => {
-          this.setState({
-            subSectionId: subSectionMetadata.itemId,
-            subSectionMetadata,
-            units,
-            unitId,
+        loadSubSectionMetadata(this.props.match.params.courseId, nextSubSectionId, { first: true })
+          .then(({ subSectionMetadata, units, unitId }) => {
+            this.setState({
+              subSectionId: subSectionMetadata.itemId,
+              subSectionMetadata,
+              units,
+              unitId,
+            });
           });
-        });
       } else {
         console.log('we are at the end!');
       }
@@ -125,14 +136,13 @@ class LearningSequencePage extends Component {
       <main >
         <div className="container-fluid">
           <h1>{course.displayName}</h1>
-          <Breadcrumb
+          <Breadcrumbs
             links={[
               { label: course.displayName, url: global.location.href },
               { label: chapter.displayName, url: global.location.href },
               { label: subSection.displayName, url: global.location.href },
             ]}
             activeLabel={currentUnit.pageTitle}
-            spacer={<span>&gt;</span>}
           />
           <SubSectionNavigation
             units={this.state.units}
@@ -161,7 +171,8 @@ LearningSequencePage.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       courseId: PropTypes.string.isRequired,
-      blockIndex: PropTypes.string.isRequired,
+      subSectionId: PropTypes.string,
+      unitId: PropTypes.string,
     }).isRequired,
   }).isRequired,
   intl: intlShape.isRequired,
