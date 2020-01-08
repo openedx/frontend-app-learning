@@ -1,7 +1,5 @@
-/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
@@ -15,18 +13,18 @@ const Breadcrumbs = ({
     <nav aria-label="breadcrumb">
       <ol className="list-inline">
         {links.map(({ url, label }, i) => (
-          <>
-            <li key={url} className="list-inline-item">
+          <React.Fragment key={`${label}-${url}`}>
+            <li className="list-inline-item">
               <a href={url} {...(clickHandler && { onClick: clickHandler })}>{label}</a>
             </li>
             {(activeLabel || ((i + 1) < linkCount)) &&
               <li className="list-inline-item" role="presentation" aria-label="spacer">
-                {spacer || <FontAwesomeIcon key={`spacer-${i}`} icon={faChevronRight} />}
+                {spacer || <FontAwesomeIcon icon={faChevronRight} />}
               </li>
             }
-          </>
+          </React.Fragment>
         ))}
-        {activeLabel && <li className="list-inline-item" key="active">{activeLabel}</li>}
+        {activeLabel && <li className="list-inline-item">{activeLabel}</li>}
       </ol>
     </nav>
   );
