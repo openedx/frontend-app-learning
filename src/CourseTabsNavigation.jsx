@@ -32,6 +32,7 @@ function CourseTabsNavigation({ courseTabs, activeTabSlug, intl }) {
     >
       {courseTabs.map(({ slug, ...courseTab }) => (
         <NavTab
+          key={slug}
           {...courseTab}
           isActive={slug === activeTabSlug}
         />
