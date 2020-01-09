@@ -1,169 +1,48 @@
-/* eslint-disable no-plusplus */
-import React, { Component } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { getConfig, history } from '@edx/frontend-platform';
-import { AppContext } from '@edx/frontend-platform/react';
 
 import PageLoading from './PageLoading';
 import messages from './messages';
-import SubSectionNavigation from './SubSectionNavigation';
-import { loadCourseSequence, findBlockAncestry, loadSubSectionMetadata } from './api';
-import Breadcrumbs from './Breadcrumbs';
 
-class LearningSequencePage extends Component {
-  constructor(props, context) {
-    super(props, context);
+import CourseBreadcrumbs from './CourseBreadcrumbs';
+import SubSection from './SubSection';
 
-    this.state = {
-      loading: true,
-      blocks: {},
-      units: {},
-      subSectionMetadata: null,
-      subSectionId: null,
-      subSectionIds: [],
-      unitId: null,
-      courseBlockId: null,
-    };
+import { useCourseStructure } from './hooks';
+import CourseStructureContext from './CourseStructureContext';
 
-    this.iframeRef = React.createRef();
-  }
+function LearningSequencePage({ match, intl }) {
+  const {
+    courseId,
+    subSectionId,
+    unitId,
+  } = match.params;
 
-  componentDidMount() {
-    loadCourseSequence(this.props.match.params.courseId, this.props.match.params.subSectionId, this.props.match.params.unitId, this.context.authenticatedUser.username)
-      .then(({
-        blocks, courseBlockId, subSectionIds, subSectionMetadata, units, unitId,
-      }) => {
-        this.setState({
-          loading: false,
-          blocks,
-          units,
-          subSectionMetadata,
-          subSectionId: subSectionMetadata.itemId,
-          subSectionIds,
-          unitId,
-          courseBlockId, // TODO: Currently unused, but may be necessary.
-        });
-      });
-  }
+  const { blocks, loaded, courseBlockId } = useCourseStructure(courseId);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      this.props.match.params.courseId !== prevProps.match.params.courseId ||
-      this.state.subSectionId !== prevState.subSectionId ||
-      this.state.unitId !== prevState.unitId
-    ) {
-      history.push(`/course/${this.props.match.params.courseId}/${this.state.subSectionId}/${this.state.unitId}`);
-    }
-  }
-
-  handlePreviousClick = () => {
-    const index = this.state.subSectionMetadata.unitIds.indexOf(this.state.unitId);
-    if (index > 0) {
-      this.setState({
-        unitId: this.state.subSectionMetadata.unitIds[index - 1],
-      });
-    } else {
-      const subSectionIndex = this.state.subSectionIds.indexOf(this.state.subSectionId);
-      if (subSectionIndex > 0) {
-        const previousSubSectionId = this.state.subSectionIds[subSectionIndex - 1];
-
-        loadSubSectionMetadata(this.props.match.params.courseId, previousSubSectionId, { last: true }).then(({ subSectionMetadata, units, unitId }) => {
-          this.setState({
-            subSectionId: subSectionMetadata.itemId,
-            subSectionMetadata,
-            units,
+  return (
+    <main>
+      <div className="container-fluid">
+        <CourseStructureContext.Provider value={{
+            courseId,
+            courseBlockId,
+            subSectionId,
             unitId,
-          });
-        });
-      } else {
-        console.log('we are at the beginning!');
-        // TODO: We need to calculate whether we're on the first/last subSection in render so we can
-        // disable the Next/Previous buttons.  That'll involve extracting a bit of logic from this
-        // function and handleNextClick below and reusing it - memoized, probably - in render().
-      }
-    }
-  }
+            blocks,
+            loaded,
+          }}
+        >
+          {!loaded && <PageLoading
+            srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+          />}
 
-  handleNextClick = () => {
-    const index = this.state.subSectionMetadata.unitIds.indexOf(this.state.unitId);
-    if (index < this.state.subSectionMetadata.unitIds.length - 1) {
-      this.setState({
-        unitId: this.state.subSectionMetadata.unitIds[index + 1],
-      });
-    } else {
-      const subSectionIndex = this.state.subSectionIds.indexOf(this.state.subSectionId);
-      if (subSectionIndex < this.state.subSectionIds.length - 1) {
-        const nextSubSectionId = this.state.subSectionIds[subSectionIndex + 1];
-
-        loadSubSectionMetadata(this.props.match.params.courseId, nextSubSectionId, { first: true })
-          .then(({ subSectionMetadata, units, unitId }) => {
-            this.setState({
-              subSectionId: subSectionMetadata.itemId,
-              subSectionMetadata,
-              units,
-              unitId,
-            });
-          });
-      } else {
-        console.log('we are at the end!');
-      }
-    }
-  }
-
-  handleUnitChange = (unitId) => {
-    this.setState({
-      unitId,
-    });
-  }
-
-  render() {
-    if (this.state.loading) {
-      return (
-        <PageLoading srMessage={this.props.intl.formatMessage(messages['learn.loading.learning.sequence'])} />
-      );
-    }
-
-    const [course, chapter, subSection] = findBlockAncestry(
-      this.state.blocks,
-      this.state.blocks[this.state.subSectionId],
-    );
-
-    const currentUnit = this.state.units[this.state.unitId];
-    const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${this.state.unitId}`;
-
-    return (
-      <main >
-        <div className="container-fluid">
-          <h1>{course.displayName}</h1>
-          <Breadcrumbs
-            links={[
-              { label: course.displayName, url: global.location.href },
-              { label: chapter.displayName, url: global.location.href },
-              { label: subSection.displayName, url: global.location.href },
-            ]}
-            activeLabel={currentUnit.pageTitle}
-          />
-          <SubSectionNavigation
-            units={this.state.units}
-            unitIds={this.state.subSectionMetadata.unitIds}
-            activeUnitId={this.state.unitId}
-            unitClickHandler={this.handleUnitChange}
-            nextClickHandler={this.handleNextClick}
-            previousClickHandler={this.handlePreviousClick}
-          />
-        </div>
-        <iframe
-          title="yus"
-          ref={this.iframeRef}
-          src={iframeUrl}
-        />
-      </main>
-    );
-  }
+          {loaded && <CourseBreadcrumbs />}
+          {/* <SubSection /> */}
+        </CourseStructureContext.Provider>
+      </div>
+    </main>
+  );
 }
-
-LearningSequencePage.contextType = AppContext;
 
 export default injectIntl(LearningSequencePage);
 

@@ -25,11 +25,11 @@ export async function loadCourseSequence(courseId, subSectionId, urlUnitId, user
   };
 }
 
-async function getCourseBlocks(courseId, username) {
+export async function getCourseBlocks(courseId, username) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/`);
   url.searchParams.append('course_id', decodeURIComponent(courseId));
   url.searchParams.append('username', username);
-  url.searchParams.append('depth', 2);
+  url.searchParams.append('depth', 3);
   url.searchParams.append('requested_fields', 'children');
 
   const { data } = await getAuthenticatedHttpClient()
@@ -67,7 +67,7 @@ async function getSubSectionMetadata(courseId, subSectionId) {
   return data;
 }
 
-function createBlocksMap(blocksData) {
+export function createBlocksMap(blocksData) {
   const blocks = {};
   const blocksList = Object.values(blocksData);
 
@@ -112,7 +112,7 @@ function findFirstLeafChild(blocks, entryPointId) {
   return block;
 }
 
-function createSubSectionIdList(blocks, entryPointId, subSections = []) {
+export function createSubSectionIdList(blocks, entryPointId, subSections = []) {
   const block = blocks[entryPointId];
   if (block.type === 'sequential') {
     subSections.push(block.id);
@@ -126,10 +126,11 @@ function createSubSectionIdList(blocks, entryPointId, subSections = []) {
   return subSections;
 }
 
-export function findBlockAncestry(blocks, block, descendents = []) {
+export function findBlockAncestry(blocks, blockId, descendents = []) {
+  const block = blocks[blockId];
   descendents.unshift(block);
   if (block.parentId === undefined) {
     return descendents;
   }
-  return findBlockAncestry(blocks, blocks[block.parentId], descendents);
+  return findBlockAncestry(blocks, block.parentId, descendents);
 }
