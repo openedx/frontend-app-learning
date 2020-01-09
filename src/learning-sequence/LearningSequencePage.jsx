@@ -6,7 +6,7 @@ import PageLoading from './PageLoading';
 import messages from './messages';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-import SubSection from './SubSection';
+// import SubSection from './SubSection';
 
 import { useCourseStructure } from './hooks';
 import CourseStructureContext from './CourseStructureContext';
