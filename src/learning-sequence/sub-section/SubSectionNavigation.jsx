@@ -33,18 +33,17 @@ function UnitIcon({ type }) {
 
 export default function SubSectionNavigation() {
   const { courseId } = useContext(CourseStructureContext);
-  const subSection = useCurrentSubSection();
   const previousUnit = usePreviousUnit();
   const nextUnit = useNextUnit();
 
   const handlePreviousClick = useCallback(() => {
     if (previousUnit) {
-      history.push(`/course/${courseId}/${subSection.id}/${previousUnit.id}`);
+      history.push(`/course/${courseId}/${previousUnit.parentId}/${previousUnit.id}`);
     }
   });
   const handleNextClick = useCallback(() => {
     if (nextUnit) {
-      history.push(`/course/${courseId}/${subSection.id}/${nextUnit.id}`);
+      history.push(`/course/${courseId}/${nextUnit.parentId}/${nextUnit.id}`);
     }
   });
 
