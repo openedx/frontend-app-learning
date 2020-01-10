@@ -48,6 +48,10 @@ export default function SubSectionNavigation() {
     }
   });
 
+  const handleUnitClick = useCallback((unit) => {
+    history.push(`/course/${courseId}/${unit.parentId}/${unit.id}`);
+  });
+
   return (
     <nav className="flex-grow-0 d-flex w-100 mb-3">
       <Button
@@ -57,7 +61,7 @@ export default function SubSectionNavigation() {
       >
         Previous
       </Button>
-      <UnitNavigation />
+      <UnitNavigation clickHandler={handleUnitClick} />
       <Button
         key="next"
         className="btn-outline-primary"
@@ -69,25 +73,34 @@ export default function SubSectionNavigation() {
   );
 }
 
-function UnitNavigation() {
+function UnitNavigation({ clickHandler }) {
   const units = useCurrentSubSectionUnits();
   const currentUnit = useCurrentUnit();
 
   return (
     <div className="btn-group ml-2 mr-2 flex-grow-1 d-flex" role="group">
       {units.map(unit => (
-        <UnitButton key={unit.id} unit={unit} disabled={unit.id === currentUnit.id} />
+        <UnitButton key={unit.id} unit={unit} disabled={unit.id === currentUnit.id} clickHandler={clickHandler} />
       ))}
     </div>
   );
 }
 
-function UnitButton({ unit: { id, type }, disabled }) {
+UnitNavigation.propTypes = {
+  clickHandler: PropTypes.func.isRequired,
+};
+
+function UnitButton({ unit, disabled, clickHandler }) {
+  const { id, type } = unit;
+  const handleClick = useCallback(() => {
+    clickHandler(unit);
+  }, [unit]);
+
   return (
     <Button
       key={id}
       className="btn-outline-secondary unit-button flex-grow-1"
-      onClick={() => console.log(id)}
+      onClick={handleClick}
       disabled={disabled}
     >
       <UnitIcon type={type} />
@@ -101,4 +114,5 @@ UnitButton.propTypes = {
     type: PropTypes.oneOf(['video', 'other', 'vertical', 'problem']).isRequired,
   }).isRequired,
   disabled: PropTypes.bool.isRequired,
+  clickHandler: PropTypes.func.isRequired,
 };
