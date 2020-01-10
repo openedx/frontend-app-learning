@@ -3,8 +3,11 @@ import React, { useContext } from 'react';
 import SubSectionNavigation from './SubSectionNavigation';
 import CourseStructureContext from '../CourseStructureContext';
 import Unit from './Unit';
-import { useSubSectionMetadata, useExamRedirect } from './data/hooks';
-
+import {
+  useSubSectionMetadata,
+  useExamRedirect,
+  usePersistentUnitPosition
+} from './data/hooks';
 
 export default function SubSection() {
   const {
@@ -14,7 +17,7 @@ export default function SubSection() {
     blocks,
   } = useContext(CourseStructureContext);
   const { metadata } = useSubSectionMetadata(courseId, subSectionId);
-
+  usePersistentUnitPosition(courseId, subSectionId, unitId, metadata);
   useExamRedirect(metadata, blocks);
 
   const ready = blocks !== null && metadata !== null;
