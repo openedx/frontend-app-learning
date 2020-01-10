@@ -7,10 +7,9 @@ export async function getCourseBlocks(courseId, username) {
   url.searchParams.append('course_id', decodeURIComponent(courseId));
   url.searchParams.append('username', username);
   url.searchParams.append('depth', 3);
-  url.searchParams.append('requested_fields', 'children');
+  url.searchParams.append('requested_fields', 'children,show_gated_sections');
 
-  const { data } = await getAuthenticatedHttpClient()
-    .get(url.href, {});
+  const { data } = await getAuthenticatedHttpClient().get(url.href, {});
 
   return data;
 }
