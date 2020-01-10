@@ -10,6 +10,7 @@ import Header, { messages as headerMessages } from '@edx/frontend-component-head
 import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
 
 import appMessages from './i18n';
+import CourseTabsNavigation from './components/CourseTabsNavigation';
 import LearningSequencePage from './learning-sequence/LearningSequencePage';
 
 import './index.scss';
@@ -19,6 +20,9 @@ subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider>
       <Header />
+      <div className="container pt-2">
+        <CourseTabsNavigation activeTabSlug="course" />
+      </div>
       <Switch>
         {/* Staging: course-v1:UBCx+Water201x_2+2T2015 */}
         <Route

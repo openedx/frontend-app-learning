@@ -43,3 +43,18 @@
     flex: 0;
   }
 }
+
+.nav-underline-tabs {
+  .nav-link {
+    border-bottom: 4px solid transparent;
+    color: theme-color('gray', 700);
+
+    &:hover,
+    &:focus,
+    &.active {
+      font-weight: $font-weight-normal;
+      color: theme-color('primary', 500);
+      border-color: theme-color('primary', 500);
+    }
+  }
+}
