@@ -19,25 +19,24 @@ function LearningSequencePage({ match, intl }) {
   const { blocks, loaded, courseBlockId } = useCourseStructure(courseId);
 
   return (
-    <main>
-      <div className="container-fluid">
-        <CourseStructureContext.Provider value={{
-            courseId,
-            courseBlockId,
-            subSectionId,
-            unitId,
-            blocks,
-            loaded,
-          }}
-        >
-          {!loaded && <PageLoading
-            srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
-          />}
+    <main className="container-fluid d-flex flex-column flex-grow-1">
+      <CourseStructureContext.Provider value={{
+          courseId,
+          courseBlockId,
+          subSectionId,
+          unitId,
+          blocks,
+          loaded,
+        }}
+      >
+        {!loaded && <PageLoading
+          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+        />}
 
-          {loaded && <CourseBreadcrumbs />}
-          <SubSection />
-        </CourseStructureContext.Provider>
-      </div>
+        {loaded && <CourseBreadcrumbs />}
+        <SubSection />
+      </CourseStructureContext.Provider>
+
     </main>
   );
 }

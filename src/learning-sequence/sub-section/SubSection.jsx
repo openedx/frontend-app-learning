@@ -20,7 +20,7 @@ export default function SubSection() {
   const ready = blocks !== null && metadata !== null;
 
   return ready && (
-    <section>
+    <section className="d-flex flex-column flex-grow-1">
       <SubSectionNavigation />
       <Unit id={unitId} unit={blocks[unitId]} />
     </section>

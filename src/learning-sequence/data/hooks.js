@@ -97,9 +97,10 @@ export function useNextUnit() {
 }
 
 export function useCurrentSubSectionUnits() {
-  const { blocks } = useContext(CourseStructureContext);
+  const { loaded, blocks } = useContext(CourseStructureContext);
   const subSection = useCurrentSubSection();
-  return subSection.children.map(id => blocks[id]);
+
+  return loaded ? subSection.children.map(id => blocks[id]) : [];
 }
 
 export function useSubSectionIdList() {

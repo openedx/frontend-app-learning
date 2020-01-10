@@ -1,10 +1,11 @@
 import React, { useCallback, useContext } from 'react';
+import PropTypes from 'prop-types';
 import { history } from '@edx/frontend-platform';
 import { Button } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilm, faBook, faPencilAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
 
-import { useCurrentSubSection, usePreviousUnit, useNextUnit, useCurrentSubSectionUnits } from '../data/hooks';
+import { useCurrentSubSection, usePreviousUnit, useNextUnit, useCurrentSubSectionUnits, useCurrentUnit } from '../data/hooks';
 import CourseStructureContext from '../CourseStructureContext';
 
 function UnitIcon({ type }) {
@@ -48,7 +49,7 @@ export default function SubSectionNavigation() {
   });
 
   return (
-    <nav>
+    <nav className="flex-grow-0 d-flex w-100 mb-3">
       <Button
         key="previous"
         className="btn-outline-primary"
@@ -56,7 +57,7 @@ export default function SubSectionNavigation() {
       >
         Previous
       </Button>
-      {/* {this.renderUnits()} */}
+      <UnitNavigation />
       <Button
         key="next"
         className="btn-outline-primary"
@@ -70,34 +71,34 @@ export default function SubSectionNavigation() {
 
 function UnitNavigation() {
   const units = useCurrentSubSectionUnits();
+  const currentUnit = useCurrentUnit();
+
+  return (
+    <div className="btn-group ml-2 mr-2 flex-grow-1 d-flex" role="group">
+      {units.map(unit => (
+        <UnitButton key={unit.id} unit={unit} disabled={unit.id === currentUnit.id} />
+      ))}
+    </div>
+  );
 }
 
-function renderUnits() {
-  return this.props.unitIds.map((id) => {
-    const { type } = this.props.units[id];
-    const disabled = this.props.activeUnitId === id;
-    return (
-      <Button
-        key={id}
-        className="btn-outline-secondary unit-button"
-        onClick={() => this.props.unitClickHandler(id)}
-        disabled={disabled}
-      >
-        {this.renderUnitIcon(type)}
-      </Button>
-    );
-  });
+function UnitButton({ unit: { id, type }, disabled }) {
+  return (
+    <Button
+      key={id}
+      className="btn-outline-secondary unit-button flex-grow-1"
+      onClick={() => console.log(id)}
+      disabled={disabled}
+    >
+      <UnitIcon type={type} />
+    </Button>
+  );
 }
 
-
-SubSectionNavigation.propTypes = {
-  // unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // units: PropTypes.objectOf(PropTypes.shape({
-  //   pageTitle: PropTypes.string.isRequired,
-  //   type: PropTypes.oneOf(['video', 'other', 'vertical', 'problem']).isRequired,
-  // })).isRequired,
-  // activeUnitId: PropTypes.string.isRequired,
-  // unitClickHandler: PropTypes.func.isRequired,
-  // nextClickHandler: PropTypes.func.isRequired,
-  // previousClickHandler: PropTypes.func.isRequired,
+UnitButton.propTypes = {
+  unit: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    type: PropTypes.oneOf(['video', 'other', 'vertical', 'problem']).isRequired,
+  }).isRequired,
+  disabled: PropTypes.bool.isRequired,
 };

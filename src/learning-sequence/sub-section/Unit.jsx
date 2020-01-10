@@ -8,6 +8,7 @@ export default function Unit({ id, unit }) {
   const { displayName } = unit;
   return (
     <iframe
+      className="flex-grow-1"
       title={displayName}
       ref={iframeRef}
       src={iframeUrl}
