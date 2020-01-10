@@ -60,7 +60,7 @@ export async function loadSubSectionMetadata(courseId, subSectionId, {
   };
 }
 
-async function getSubSectionMetadata(courseId, subSectionId) {
+export async function getSubSectionMetadata(courseId, subSectionId) {
   const { data } = await getAuthenticatedHttpClient()
     .get(`${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${subSectionId}/handler/xmodule_handler/metadata`, {});
 
@@ -124,6 +124,20 @@ export function createSubSectionIdList(blocks, entryPointId, subSections = []) {
     }
   }
   return subSections;
+}
+
+export function createUnitIdList(blocks, entryPointId, units = []) {
+  const block = blocks[entryPointId];
+  if (block.type === 'vertical') {
+    units.push(block.id);
+  }
+  if (Array.isArray(block.children)) {
+    for (let i = 0; i < block.children.length; i++) {
+      const childId = block.children[i];
+      createUnitIdList(blocks, childId, units);
+    }
+  }
+  return units;
 }
 
 export function findBlockAncestry(blocks, blockId, descendents = []) {

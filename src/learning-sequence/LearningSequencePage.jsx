@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -6,7 +6,7 @@ import PageLoading from './PageLoading';
 import messages from './messages';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-// import SubSection from './SubSection';
+import SubSection from './SubSection';
 
 import { useCourseStructure } from './hooks';
 import CourseStructureContext from './CourseStructureContext';
@@ -37,7 +37,7 @@ function LearningSequencePage({ match, intl }) {
           />}
 
           {loaded && <CourseBreadcrumbs />}
-          {/* <SubSection /> */}
+          <SubSection />
         </CourseStructureContext.Provider>
       </div>
     </main>
