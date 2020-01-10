@@ -42,7 +42,7 @@ export function usePersistentUnitPosition(courseId, subSectionId, unitId, subSec
       return;
     }
 
-    const { items, save_position: savePosition } = subSectionMetadata;
+    const { items, savePosition } = subSectionMetadata;
 
     // A sub-section can individually specify whether positions should be saved
     if (!savePosition) {
