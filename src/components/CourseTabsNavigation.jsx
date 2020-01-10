@@ -4,19 +4,19 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import messages from './messages';
 import NavTab from './NavTab';
 
-function CourseTabsNavigation({ courseTabs, activeTabSlug, intl }) {
+function CourseTabsNavigation({ activeTabSlug, courseTabs, intl }) {
   const courseNavTabs = courseTabs.map(({ slug, ...courseTab }) => (
     <NavTab
-      key={slug}
       isActive={slug === activeTabSlug}
+      key={slug}
       {...courseTab}
     />
   ));
 
   return (
     <nav
-      className="nav nav-underline-tabs"
       aria-label={intl.formatMessage(messages['learn.navigation.course.tabs.label'])}
+      className="nav nav-underline-tabs"
     >
       {courseNavTabs}
     </nav>
@@ -24,17 +24,18 @@ function CourseTabsNavigation({ courseTabs, activeTabSlug, intl }) {
 }
 
 CourseTabsNavigation.propTypes = {
+  activeTabSlug: PropTypes.string,
   courseTabs: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
-    slug: PropTypes.string.isRequired,
     priority: PropTypes.number.isRequired,
+    slug: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
   })),
-  activeTabSlug: PropTypes.string,
   intl: intlShape.isRequired,
 };
 
 CourseTabsNavigation.defaultProps = {
+  activeTabSlug: undefined,
   courseTabs: [
     {
       title: 'Course',
@@ -68,7 +69,6 @@ CourseTabsNavigation.defaultProps = {
       url: 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/instructor',
     },
   ],
-  activeTabSlug: undefined,
 };
 
 export default injectIntl(CourseTabsNavigation);
