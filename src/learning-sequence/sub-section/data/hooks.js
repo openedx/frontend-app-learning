@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { camelCaseObject } from '@edx/frontend-platform';
 
 import { getSubSectionMetadata, saveSubSectionPosition } from './api';
 
@@ -9,7 +10,7 @@ export function useSubSectionMetadata(courseId, subSectionId) {
   useEffect(() => {
     setLoaded(false);
     getSubSectionMetadata(courseId, subSectionId).then((data) => {
-      setMetadata(data);
+      setMetadata(camelCaseObject(data));
       setLoaded(true);
     });
   }, [courseId, subSectionId]);
