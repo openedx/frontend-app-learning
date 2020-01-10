@@ -4,12 +4,10 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import PageLoading from './PageLoading';
 import messages from './messages';
-
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-import SubSection from './SubSection';
-
-import { useCourseStructure } from './hooks';
 import CourseStructureContext from './CourseStructureContext';
+import { useCourseStructure } from './data/hooks';
+import SubSection from './sub-section/SubSection';
 
 function LearningSequencePage({ match, intl }) {
   const {

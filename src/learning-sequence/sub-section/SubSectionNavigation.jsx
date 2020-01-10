@@ -1,12 +1,11 @@
-import React, { Component, useCallback, useContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { useCallback, useContext } from 'react';
 import { history } from '@edx/frontend-platform';
 import { Button } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilm, faBook, faPencilAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
 
-import { useCurrentSubSection, useCurrentUnit, usePreviousUnit, useNextUnit, useCurrentCourse, useCurrentSubSectionUnits } from './hooks';
-import CourseStructureContext from './CourseStructureContext';
+import { useCurrentSubSection, usePreviousUnit, useNextUnit, useCurrentSubSectionUnits } from '../data/hooks';
+import CourseStructureContext from '../CourseStructureContext';
 
 function UnitIcon({ type }) {
   let icon = null;

@@ -6,7 +6,7 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { getConfig } from '@edx/frontend-platform';
 
 import CourseStructureContext from './CourseStructureContext';
-import { useBlockAncestry } from './hooks';
+import { useBlockAncestry } from './data/hooks';
 
 const CourseBreadcrumbs = () => {
   const { courseId, unitId } = useContext(CourseStructureContext);

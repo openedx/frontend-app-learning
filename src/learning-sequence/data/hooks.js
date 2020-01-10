@@ -1,8 +1,9 @@
 import { useContext, useMemo, useState, useEffect } from 'react';
 import { AppContext } from '@edx/frontend-platform/react';
 
-import CourseStructureContext from './CourseStructureContext';
-import { findBlockAncestry, getCourseBlocks, createBlocksMap, createSubSectionIdList, createUnitIdList } from './api';
+import CourseStructureContext from '../CourseStructureContext';
+import { getCourseBlocks } from './api';
+import { findBlockAncestry, createBlocksMap, createSubSectionIdList, createUnitIdList } from './utils';
 
 export function useBlockAncestry(blockId) {
   const { blocks, loaded } = useContext(CourseStructureContext);
