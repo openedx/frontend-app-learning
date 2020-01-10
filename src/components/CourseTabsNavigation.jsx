@@ -1,42 +1,24 @@
 import React from 'react';
-import classNames from 'classnames';
+import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import messages from './messages';
-import PropTypes from 'prop-types';
-
-
-function NavTab({ url, title, isActive }) {
-  const className = classNames('nav-item nav-link', {
-    active: isActive,
-  });
-
-  return <a className={className} href={url}>{title}</a>;
-}
-
-NavTab.propTypes = {
-  url: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  isActive: PropTypes.bool,
-};
-
-NavTab.defaultProps = {
-  isActive: false,
-};
-
+import NavTab from './NavTab';
 
 function CourseTabsNavigation({ courseTabs, activeTabSlug, intl }) {
+  const courseNavTabs = courseTabs.map(({ slug, ...courseTab }) => (
+    <NavTab
+      key={slug}
+      isActive={slug === activeTabSlug}
+      {...courseTab}
+    />
+  ));
+
   return (
     <nav
       className="nav nav-underline-tabs"
       aria-label={intl.formatMessage(messages['learn.navigation.course.tabs.label'])}
     >
-      {courseTabs.map(({ slug, ...courseTab }) => (
-        <NavTab
-          key={slug}
-          {...courseTab}
-          isActive={slug === activeTabSlug}
-        />
-      ))}
+      {courseNavTabs}
     </nav>
   );
 }

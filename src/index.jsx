@@ -10,7 +10,7 @@ import Header, { messages as headerMessages } from '@edx/frontend-component-head
 import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
 
 import appMessages from './i18n';
-import CourseTabsNavigation from './CourseTabsNavigation';
+import CourseTabsNavigation from './components/CourseTabsNavigation';
 import LearningSequencePage from './learning-sequence/LearningSequencePage';
 
 import './index.scss';
