@@ -41,7 +41,7 @@ UnitIcon.propTypes = {
 };
 
 export default function SubSectionNavigation() {
-  const { courseId } = useContext(CourseStructureContext);
+  const { courseId, unitId } = useContext(CourseStructureContext);
   const previousUnit = usePreviousUnit();
   const nextUnit = useNextUnit();
 
@@ -59,6 +59,10 @@ export default function SubSectionNavigation() {
   const handleUnitClick = useCallback((unit) => {
     history.push(`/course/${courseId}/${unit.parentId}/${unit.id}`);
   });
+
+  if (!unitId) {
+    return null;
+  }
 
   return (
     <nav className="flex-grow-0 d-flex w-100 mb-3">
@@ -82,8 +86,8 @@ export default function SubSectionNavigation() {
 }
 
 function UnitNavigation({ clickHandler }) {
-  const units = useCurrentSubSectionUnits();
   const currentUnit = useCurrentUnit();
+  const units = useCurrentSubSectionUnits();
   const metadata = useContext(SubSectionMetadataContext);
 
   const isGated = metadata.gatedContent.gated;

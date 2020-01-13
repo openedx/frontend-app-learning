@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -6,8 +6,9 @@ import PageLoading from './PageLoading';
 import messages from './messages';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseStructureContext from './CourseStructureContext';
-import { useLoadCourseStructure } from './data/hooks';
+import { useLoadCourseStructure, useMissingSubSectionRedirect } from './data/hooks';
 import SubSection from './sub-section/SubSection';
+import { history } from '@edx/frontend-platform';
 
 function LearningSequencePage({ match, intl }) {
   const {
@@ -17,6 +18,8 @@ function LearningSequencePage({ match, intl }) {
   } = match.params;
 
   const { blocks, loaded, courseBlockId } = useLoadCourseStructure(courseId);
+
+  useMissingSubSectionRedirect(loaded, blocks, courseId, courseBlockId, subSectionId);
 
   return (
     <main className="container-fluid d-flex flex-column flex-grow-1">
@@ -33,8 +36,8 @@ function LearningSequencePage({ match, intl }) {
           srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
         />}
 
-        {loaded && <CourseBreadcrumbs />}
-        <SubSection />
+        {loaded && unitId && <CourseBreadcrumbs />}
+        {subSectionId && <SubSection />}
       </CourseStructureContext.Provider>
 
     </main>

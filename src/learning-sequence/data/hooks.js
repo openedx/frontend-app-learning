@@ -1,4 +1,5 @@
 import { useContext, useMemo, useState, useEffect } from 'react';
+import { history } from '@edx/frontend-platform';
 import { AppContext } from '@edx/frontend-platform/react';
 
 import CourseStructureContext from '../CourseStructureContext';
@@ -16,6 +17,26 @@ export function useBlockAncestry(blockId) {
       blockId,
     );
   }, [blocks, blockId, loaded]);
+}
+
+export function useMissingSubSectionRedirect(
+  loaded,
+  blocks,
+  courseId,
+  courseBlockId,
+  subSectionId,
+) {
+  useEffect(() => {
+    if (loaded && !subSectionId) {
+      const course = blocks[courseBlockId];
+      const nextSectionId = course.children[0];
+      const nextSection = blocks[nextSectionId];
+      const nextSubSectionId = nextSection.children[0];
+      const nextSubSection = blocks[nextSubSectionId];
+      const nextUnitId = nextSubSection.children[0];
+      history.push(`/course/${courseId}/${nextSubSectionId}/${nextUnitId}`);
+    }
+  }, [loaded, subSectionId]);
 }
 
 export function useLoadCourseStructure(courseId) {
@@ -48,7 +69,7 @@ export function useCurrentCourse() {
 export function useCurrentSubSection() {
   const { loaded, blocks, subSectionId } = useContext(CourseStructureContext);
 
-  return loaded ? blocks[subSectionId] : null;
+  return loaded && subSectionId ? blocks[subSectionId] : null;
 }
 
 export function useCurrentSection() {
@@ -60,7 +81,7 @@ export function useCurrentSection() {
 export function useCurrentUnit() {
   const { loaded, blocks, unitId } = useContext(CourseStructureContext);
 
-  return loaded ? blocks[unitId] : null;
+  return loaded && unitId ? blocks[unitId] : null;
 }
 
 

@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { camelCaseObject } from '@edx/frontend-platform';
+import { useState, useEffect, useContext } from 'react';
+import { camelCaseObject, history } from '@edx/frontend-platform';
 
 import { getSubSectionMetadata, saveSubSectionPosition } from './api';
+import CourseStructureContext from '../../CourseStructureContext';
 
 export function useLoadSubSectionMetadata(courseId, subSectionId) {
   const [metadata, setMetadata] = useState(null);
@@ -9,6 +10,7 @@ export function useLoadSubSectionMetadata(courseId, subSectionId) {
 
   useEffect(() => {
     setLoaded(false);
+    setMetadata(null);
     getSubSectionMetadata(courseId, subSectionId).then((data) => {
       setMetadata(camelCaseObject(data));
       setLoaded(true);
@@ -58,4 +60,16 @@ export function usePersistentUnitPosition(courseId, subSectionId, unitId, subSec
     // don't make requests to update the position if they still match?
     saveSubSectionPosition(courseId, subSectionId, newPosition);
   }, [courseId, subSectionId, unitId, subSectionMetadata]);
+}
+
+export function useMissingUnitRedirect(metadata, loaded) {
+  const { courseId, subSectionId, unitId } = useContext(CourseStructureContext);
+  useEffect(() => {
+    if (loaded && metadata.itemId === subSectionId && !unitId) {
+      // Position comes from the server as a 1-indexed array index.  Convert it to 0-indexed.
+      const position = metadata.position - 1;
+      const nextUnitId = metadata.items[position].id;
+      history.push(`/course/${courseId}/${subSectionId}/${nextUnitId}`);
+    }
+  }, [loaded, metadata, unitId]);
 }

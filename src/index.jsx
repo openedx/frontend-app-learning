@@ -29,10 +29,10 @@ subscribe(APP_READY, () => {
         <Route
           exact
           path="/"
-
           render={() => <Link to="/course/course-v1%3AedX%2BDemoX%2BDemo_Course/block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction/block-v1:edX+DemoX+Demo_Course+type@vertical+block@vertical_0270f6de40fc">Visit Demo Course</Link>}
         />
         <Route path="/course/:courseId/:subSectionId/:unitId" component={LearningSequencePage} />
+        <Route path="/course/:courseId/:subSectionId" component={LearningSequencePage} />
         <Route path="/course/:courseId" component={LearningSequencePage} />
       </Switch>
       <Footer />
