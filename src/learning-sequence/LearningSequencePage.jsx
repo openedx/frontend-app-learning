@@ -6,7 +6,7 @@ import PageLoading from './PageLoading';
 import messages from './messages';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseStructureContext from './CourseStructureContext';
-import { useCourseStructure } from './data/hooks';
+import { useLoadCourseStructure } from './data/hooks';
 import SubSection from './sub-section/SubSection';
 
 function LearningSequencePage({ match, intl }) {
@@ -16,7 +16,7 @@ function LearningSequencePage({ match, intl }) {
     unitId,
   } = match.params;
 
-  const { blocks, loaded, courseBlockId } = useCourseStructure(courseId);
+  const { blocks, loaded, courseBlockId } = useLoadCourseStructure(courseId);
 
   return (
     <main className="container-fluid d-flex flex-column flex-grow-1">

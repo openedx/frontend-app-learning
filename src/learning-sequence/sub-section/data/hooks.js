@@ -3,7 +3,7 @@ import { camelCaseObject } from '@edx/frontend-platform';
 
 import { getSubSectionMetadata, saveSubSectionPosition } from './api';
 
-export function useSubSectionMetadata(courseId, subSectionId) {
+export function useLoadSubSectionMetadata(courseId, subSectionId) {
   const [metadata, setMetadata] = useState(null);
   const [loaded, setLoaded] = useState(false);
 

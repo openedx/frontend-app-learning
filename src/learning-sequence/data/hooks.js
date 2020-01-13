@@ -18,7 +18,7 @@ export function useBlockAncestry(blockId) {
   }, [blocks, blockId, loaded]);
 }
 
-export function useCourseStructure(courseId) {
+export function useLoadCourseStructure(courseId) {
   const { authenticatedUser } = useContext(AppContext);
 
   const [blocks, setBlocks] = useState(null);

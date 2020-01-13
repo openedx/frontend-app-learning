@@ -4,10 +4,11 @@ import SubSectionNavigation from './SubSectionNavigation';
 import CourseStructureContext from '../CourseStructureContext';
 import Unit from './Unit';
 import {
-  useSubSectionMetadata,
+  useLoadSubSectionMetadata,
   useExamRedirect,
-  usePersistentUnitPosition
+  usePersistentUnitPosition,
 } from './data/hooks';
+import SubSectionMetadataContext from './SubSectionMetadataContext';
 
 export default function SubSection() {
   const {
@@ -16,16 +17,26 @@ export default function SubSection() {
     unitId,
     blocks,
   } = useContext(CourseStructureContext);
-  const { metadata } = useSubSectionMetadata(courseId, subSectionId);
+  const { metadata } = useLoadSubSectionMetadata(courseId, subSectionId);
   usePersistentUnitPosition(courseId, subSectionId, unitId, metadata);
+
   useExamRedirect(metadata, blocks);
 
   const ready = blocks !== null && metadata !== null;
 
-  return ready && (
-    <section className="d-flex flex-column flex-grow-1">
-      <SubSectionNavigation />
-      <Unit id={unitId} unit={blocks[unitId]} />
-    </section>
+  if (!ready) {
+    return null;
+  }
+
+  const isGated = metadata.gatedContent.gated;
+
+  return (
+    <SubSectionMetadataContext.Provider value={metadata}>
+      <section className="d-flex flex-column flex-grow-1">
+        <SubSectionNavigation />
+        {isGated && <div>This is gated content.</div>}
+        {!isGated && <Unit id={unitId} unit={blocks[unitId]} />}
+      </section>
+    </SubSectionMetadataContext.Provider>
   );
 }

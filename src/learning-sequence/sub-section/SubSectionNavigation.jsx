@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { history } from '@edx/frontend-platform';
 import { Button } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilm, faBook, faPencilAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
+import { faFilm, faBook, faPencilAlt, faTasks, faLock } from '@fortawesome/free-solid-svg-icons';
 
-import { useCurrentSubSection, usePreviousUnit, useNextUnit, useCurrentSubSectionUnits, useCurrentUnit } from '../data/hooks';
+import { usePreviousUnit, useNextUnit, useCurrentSubSectionUnits, useCurrentUnit } from '../data/hooks';
 import CourseStructureContext from '../CourseStructureContext';
+import SubSectionMetadataContext from './SubSectionMetadataContext';
 
 function UnitIcon({ type }) {
   let icon = null;
@@ -23,6 +24,9 @@ function UnitIcon({ type }) {
     case 'problem':
       icon = faPencilAlt;
       break;
+    case 'lock':
+      icon = faLock;
+      break;
     default:
       icon = faBook;
   }
@@ -31,6 +35,10 @@ function UnitIcon({ type }) {
     <FontAwesomeIcon icon={icon} />
   );
 }
+
+UnitIcon.propTypes = {
+  type: PropTypes.oneOf(['video', 'other', 'vertical', 'problem', 'lock']).isRequired,
+};
 
 export default function SubSectionNavigation() {
   const { courseId } = useContext(CourseStructureContext);
@@ -76,12 +84,16 @@ export default function SubSectionNavigation() {
 function UnitNavigation({ clickHandler }) {
   const units = useCurrentSubSectionUnits();
   const currentUnit = useCurrentUnit();
+  const metadata = useContext(SubSectionMetadataContext);
+
+  const isGated = metadata.gatedContent.gated;
 
   return (
     <div className="btn-group ml-2 mr-2 flex-grow-1 d-flex" role="group">
-      {units.map(unit => (
+      {!isGated && units.map(unit => (
         <UnitButton key={unit.id} unit={unit} disabled={unit.id === currentUnit.id} clickHandler={clickHandler} />
       ))}
+      {isGated && <UnitButton key={currentUnit.id} unit={currentUnit} disabled locked />}
     </div>
   );
 }
@@ -90,10 +102,14 @@ UnitNavigation.propTypes = {
   clickHandler: PropTypes.func.isRequired,
 };
 
-function UnitButton({ unit, disabled, clickHandler }) {
+function UnitButton({
+  unit, disabled, locked, clickHandler,
+}) {
   const { id, type } = unit;
   const handleClick = useCallback(() => {
-    clickHandler(unit);
+    if (clickHandler !== null) {
+      clickHandler(unit);
+    }
   }, [unit]);
 
   return (
@@ -103,7 +119,7 @@ function UnitButton({ unit, disabled, clickHandler }) {
       onClick={handleClick}
       disabled={disabled}
     >
-      <UnitIcon type={type} />
+      <UnitIcon type={locked ? 'lock' : type} />
     </Button>
   );
 }
@@ -113,6 +129,12 @@ UnitButton.propTypes = {
     id: PropTypes.string.isRequired,
     type: PropTypes.oneOf(['video', 'other', 'vertical', 'problem']).isRequired,
   }).isRequired,
-  disabled: PropTypes.bool.isRequired,
-  clickHandler: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired, // Whether or not the button will function.
+  locked: PropTypes.bool, // Whether the unit is semantically "locked" and unnavigable.
+  clickHandler: PropTypes.func,
+};
+
+UnitButton.defaultProps = {
+  clickHandler: null,
+  locked: false,
 };
