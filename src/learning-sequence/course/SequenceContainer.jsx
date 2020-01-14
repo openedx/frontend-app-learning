@@ -40,7 +40,7 @@ prevUrl: null
 */
 
 function SequenceContainer({
-  courseUsageKey, courseId, sequenceId, unitId, intl, onNext, onPrevious,
+  courseUsageKey, courseId, sequenceId, unitId, models, intl, onNext, onPrevious,
 }) {
   const { metadata, loaded, units } = useLoadSequenceMetadata(courseUsageKey, sequenceId);
   console.log(units);
@@ -52,8 +52,16 @@ function SequenceContainer({
     }
   }, [loaded, metadata, unitId]);
 
+  useEffect(() => {
+    if (metadata && models) {
+      if (metadata.isTimeLimited) {
+        global.location.href = models[sequenceId].lmsWebUrl;
+      }
+    }
+  }, [metadata, models]);
+
   console.log(metadata);
-  if (!loaded || !unitId) {
+  if (!loaded || !unitId || (metadata && metadata.isTimeLimited)) {
     return (
       <PageLoading
         srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}

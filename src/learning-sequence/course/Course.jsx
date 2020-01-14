@@ -53,6 +53,7 @@ export default function Course({
         courseId={courseId}
         sequenceId={sequenceId}
         unitId={unitId}
+        models={models}
         onNext={nextSequenceHandler}
         onPrevious={previousSequenceHandler}
       />
