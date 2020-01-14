@@ -11,8 +11,10 @@ export default function Course({
 }) {
   const breadcrumbs = useMemo(() => {
     const sectionId = models[sequenceId].parentId;
-    // TODO: Add unit ID back in here if it exists
-    return [courseId, sectionId, sequenceId].map((nodeId) => {
+    if (!unitId) {
+      return [];
+    }
+    return [courseId, sectionId, sequenceId, unitId].map((nodeId) => {
       const node = models[nodeId];
       return {
         id: node.id,
