@@ -13,3 +13,10 @@ export async function getCourseBlocks(courseId, username) {
 
   return data;
 }
+
+export async function getCourse(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/courses/v2/courses/${courseId}`;
+  const { data } = await getAuthenticatedHttpClient().get(url);
+
+  return data;
+}

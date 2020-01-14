@@ -4,7 +4,7 @@ import { AppContext } from '@edx/frontend-platform/react';
 
 import CourseStructureContext from '../CourseStructureContext';
 import { getCourseBlocks } from './api';
-import { findBlockAncestry, createBlocksMap, createSubSectionIdList, createUnitIdList } from './utils';
+import { findBlockAncestry, createBlocksMap, createSequenceIdList, createUnitIdList } from './utils';
 
 export function useBlockAncestry(blockId) {
   const { blocks, loaded } = useContext(CourseStructureContext);
@@ -19,63 +19,66 @@ export function useBlockAncestry(blockId) {
   }, [blocks, blockId, loaded]);
 }
 
-export function useMissingSubSectionRedirect(
+export function useMissingSequenceRedirect(
   loaded,
   blocks,
+  courseUsageKey,
   courseId,
-  courseBlockId,
-  subSectionId,
+  sequenceId,
 ) {
   useEffect(() => {
-    if (loaded && !subSectionId) {
-      const course = blocks[courseBlockId];
+    if (loaded && !sequenceId) {
+      const course = blocks[courseId];
       const nextSectionId = course.children[0];
       const nextSection = blocks[nextSectionId];
-      const nextSubSectionId = nextSection.children[0];
-      const nextSubSection = blocks[nextSubSectionId];
-      const nextUnitId = nextSubSection.children[0];
-      history.push(`/course/${courseId}/${nextSubSectionId}/${nextUnitId}`);
+      const nextSequenceId = nextSection.children[0];
+      const nextSequence = blocks[nextSequenceId];
+      const nextUnitId = nextSequence.children[0];
+      history.push(`/course/${courseUsageKey}/${nextSequenceId}/${nextUnitId}`);
     }
-  }, [loaded, subSectionId]);
+  }, [loaded, sequenceId]);
 }
 
-export function useLoadCourseStructure(courseId) {
+export function useLoadCourseStructure(courseUsageKey) {
   const { authenticatedUser } = useContext(AppContext);
 
   const [blocks, setBlocks] = useState(null);
   const [loaded, setLoaded] = useState(false);
-  const [courseBlockId, setCourseBlockId] = useState();
+  const [courseId, setCourseId] = useState();
 
   useEffect(() => {
     setLoaded(false);
-    getCourseBlocks(courseId, authenticatedUser.username).then((blocksData) => {
+    getCourseBlocks(courseUsageKey, authenticatedUser.username).then((blocksData) => {
       setBlocks(createBlocksMap(blocksData.blocks));
-      setCourseBlockId(blocksData.root);
+      setCourseId(blocksData.root);
       setLoaded(true);
     });
-  }, [courseId]);
+    // getCourse(courseUsageKey).then((courseData) => {
+
+    // });
+  }, [courseUsageKey]);
 
   return {
-    blocks, loaded, courseBlockId,
+    blocks, loaded, courseId,
   };
 }
 
 export function useCurrentCourse() {
-  const { loaded, courseBlockId, blocks } = useContext(CourseStructureContext);
+  const { loaded, courseId, blocks } = useContext(CourseStructureContext);
 
-  return loaded ? blocks[courseBlockId] : null;
+  return loaded ? blocks[courseId] : null;
 }
 
-export function useCurrentSubSection() {
-  const { loaded, blocks, subSectionId } = useContext(CourseStructureContext);
+export function useCurrentSequence() {
+  const { loaded, blocks, sequenceId } = useContext(CourseStructureContext);
 
-  return loaded && subSectionId ? blocks[subSectionId] : null;
+  return loaded && sequenceId ? blocks[sequenceId] : null;
 }
 
 export function useCurrentSection() {
   const { loaded, blocks } = useContext(CourseStructureContext);
-  const subSection = useCurrentSubSection();
-  return loaded ? blocks[subSection.parentId] : null;
+  const sequence = useCurrentSequence();
+  return loaded ? blocks[sequence.parentId] : null;
 }
 
 export function useCurrentUnit() {
@@ -86,11 +89,11 @@ export function useCurrentUnit() {
 
 
 export function useUnitIds() {
-  const { loaded, blocks, courseBlockId } = useContext(CourseStructureContext);
+  const { loaded, blocks, courseId } = useContext(CourseStructureContext);
 
   return useMemo(
-    () => (loaded ? createUnitIdList(blocks, courseBlockId) : []),
-    [loaded, blocks, courseBlockId],
+    () => (loaded ? createUnitIdList(blocks, courseId) : []),
+    [loaded, blocks, courseId],
   );
 }
 
@@ -117,20 +120,20 @@ export function useNextUnit() {
   return loaded ? blocks[unitIds[currentUnitIndex + 1]] : null;
 }
 
-export function useCurrentSubSectionUnits() {
+export function useCurrentSequenceUnits() {
   const { loaded, blocks } = useContext(CourseStructureContext);
-  const subSection = useCurrentSubSection();
+  const sequence = useCurrentSequence();
 
-  return loaded ? subSection.children.map(id => blocks[id]) : [];
+  return loaded ? sequence.children.map(id => blocks[id]) : [];
 }
 
-export function useSubSectionIdList() {
-  const { loaded, blocks, courseBlockId } = useContext(CourseStructureContext);
+export function useSequenceIdList() {
+  const { loaded, blocks, courseId } = useContext(CourseStructureContext);
 
-  const subSectionIdList = useMemo(
-    () => (loaded ? createSubSectionIdList(blocks, courseBlockId) : []),
-    [blocks, courseBlockId],
+  const sequenceIdList = useMemo(
+    () => (loaded ? createSequenceIdList(blocks, courseId) : []),
+    [blocks, courseId],
   );
 
-  return subSectionIdList;
+  return sequenceIdList;
 }

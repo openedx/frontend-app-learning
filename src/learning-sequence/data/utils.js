@@ -29,18 +29,18 @@ export function createBlocksMap(blocksData) {
   return blocks;
 }
 
-export function createSubSectionIdList(blocks, entryPointId, subSections = []) {
+export function createSequenceIdList(blocks, entryPointId, sequences = []) {
   const block = blocks[entryPointId];
   if (block.type === 'sequential') {
-    subSections.push(block.id);
+    sequences.push(block.id);
   }
   if (Array.isArray(block.children)) {
     for (let i = 0; i < block.children.length; i++) {
       const childId = block.children[i];
-      createSubSectionIdList(blocks, childId, subSections);
+      createSequenceIdList(blocks, childId, sequences);
     }
   }
-  return subSections;
+  return sequences;
 }
 
 export function createUnitIdList(blocks, entryPointId, units = []) {

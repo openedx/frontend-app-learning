@@ -5,9 +5,9 @@ import { Button } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilm, faBook, faPencilAlt, faTasks, faLock } from '@fortawesome/free-solid-svg-icons';
 
-import { usePreviousUnit, useNextUnit, useCurrentSubSectionUnits, useCurrentUnit } from '../data/hooks';
+import { usePreviousUnit, useNextUnit, useCurrentSequenceUnits, useCurrentUnit } from '../data/hooks';
 import CourseStructureContext from '../CourseStructureContext';
-import SubSectionMetadataContext from './SubSectionMetadataContext';
+import SequenceMetadataContext from './SequenceMetadataContext';
 
 function UnitIcon({ type }) {
   let icon = null;
@@ -40,24 +40,24 @@ UnitIcon.propTypes = {
   type: PropTypes.oneOf(['video', 'other', 'vertical', 'problem', 'lock']).isRequired,
 };
 
-export default function SubSectionNavigation() {
-  const { courseId, unitId } = useContext(CourseStructureContext);
+export default function SequenceNavigation() {
+  const { courseUsageKey, unitId } = useContext(CourseStructureContext);
   const previousUnit = usePreviousUnit();
   const nextUnit = useNextUnit();
 
   const handlePreviousClick = useCallback(() => {
     if (previousUnit) {
-      history.push(`/course/${courseId}/${previousUnit.parentId}/${previousUnit.id}`);
+      history.push(`/course/${courseUsageKey}/${previousUnit.parentId}/${previousUnit.id}`);
     }
   });
   const handleNextClick = useCallback(() => {
     if (nextUnit) {
-      history.push(`/course/${courseId}/${nextUnit.parentId}/${nextUnit.id}`);
+      history.push(`/course/${courseUsageKey}/${nextUnit.parentId}/${nextUnit.id}`);
     }
   });
 
   const handleUnitClick = useCallback((unit) => {
-    history.push(`/course/${courseId}/${unit.parentId}/${unit.id}`);
+    history.push(`/course/${courseUsageKey}/${unit.parentId}/${unit.id}`);
   });
 
   if (!unitId) {
@@ -87,8 +87,8 @@ export default function SubSectionNavigation() {
 
 function UnitNavigation({ clickHandler }) {
   const currentUnit = useCurrentUnit();
-  const units = useCurrentSubSectionUnits();
-  const metadata = useContext(SubSectionMetadataContext);
+  const units = useCurrentSequenceUnits();
+  const metadata = useContext(SequenceMetadataContext);
 
   const isGated = metadata.gatedContent.gated;
 

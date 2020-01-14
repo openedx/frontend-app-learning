@@ -2,45 +2,40 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-import PageLoading from './PageLoading';
-import messages from './messages';
-import CourseBreadcrumbs from './CourseBreadcrumbs';
-import CourseStructureContext from './CourseStructureContext';
-import { useLoadCourseStructure, useMissingSubSectionRedirect } from './data/hooks';
-import SubSection from './sub-section/SubSection';
-import { history } from '@edx/frontend-platform';
+import CourseContainer from './CourseContainer';
 
 function LearningSequencePage({ match, intl }) {
   const {
-    courseId,
-    subSectionId,
+    courseUsageKey,
+    sequenceId,
     unitId,
   } = match.params;
 
-  const { blocks, loaded, courseBlockId } = useLoadCourseStructure(courseId);
+  // const { blocks, loaded, courseId } = useLoadCourseStructure(courseId);
 
-  useMissingSubSectionRedirect(loaded, blocks, courseId, courseBlockId, subSectionId);
+  // useMissingSequenceRedirect(loaded, blocks, courseId, courseId, sequenceId);
 
   return (
-    <main className="container-fluid d-flex flex-column flex-grow-1">
-      <CourseStructureContext.Provider value={{
-          courseId,
-          courseBlockId,
-          subSectionId,
-          unitId,
-          blocks,
-          loaded,
-        }}
-      >
-        {!loaded && <PageLoading
-          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
-        />}
+    <CourseContainer courseUsageKey={courseUsageKey} sequenceId={sequenceId} unitId={unitId} />
+    // <main className="container-fluid d-flex flex-column flex-grow-1">
+    //   <CourseStructureContext.Provider value={{
+    //       courseId,
+    //       courseId,
+    //       sequenceId,
+    //       unitId,
+    //       blocks,
+    //       loaded,
+    //     }}
+    //   >
+    //     {!loaded && <PageLoading
+    //       srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+    //     />}
 
-        {loaded && unitId && <CourseBreadcrumbs />}
-        {subSectionId && <SubSection />}
-      </CourseStructureContext.Provider>
+  //     {loaded && unitId && <CourseBreadcrumbs />}
+  //     {sequenceId && <Sequence />}
+  //   </CourseStructureContext.Provider>
 
-    </main>
+  // </main>
   );
 }
 
@@ -49,8 +44,8 @@ export default injectIntl(LearningSequencePage);
 LearningSequencePage.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
-      courseId: PropTypes.string.isRequired,
-      subSectionId: PropTypes.string,
+      courseUsageKey: PropTypes.string.isRequired,
+      sequenceId: PropTypes.string,
       unitId: PropTypes.string,
     }).isRequired,
   }).isRequired,

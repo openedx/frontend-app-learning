@@ -1,31 +1,31 @@
 import React, { useContext, Suspense } from 'react';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-import SubSectionNavigation from './SubSectionNavigation';
+import SequenceNavigation from './SequenceNavigation';
 import CourseStructureContext from '../CourseStructureContext';
 import Unit from './Unit';
 import {
-  useLoadSubSectionMetadata,
+  useLoadSequenceMetadata,
   useExamRedirect,
   usePersistentUnitPosition,
   useMissingUnitRedirect,
 } from './data/hooks';
-import SubSectionMetadataContext from './SubSectionMetadataContext';
+import SequenceMetadataContext from './SequenceMetadataContext';
 import PageLoading from '../PageLoading';
 import messages from './messages';
 import { useCurrentUnit } from '../data/hooks';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
 
-function SubSection({ intl }) {
+function Sequence({ intl }) {
   const {
-    courseId,
-    subSectionId,
+    courseUsageKey,
+    sequenceId,
     unitId,
     blocks,
   } = useContext(CourseStructureContext);
-  const { metadata, loaded } = useLoadSubSectionMetadata(courseId, subSectionId);
-  usePersistentUnitPosition(courseId, subSectionId, unitId, metadata);
+  const { metadata, loaded } = useLoadSequenceMetadata(courseUsageKey, sequenceId);
+  usePersistentUnitPosition(courseUsageKey, sequenceId, unitId, metadata);
 
   useExamRedirect(metadata, blocks);
 
@@ -41,9 +41,9 @@ function SubSection({ intl }) {
   const isGated = metadata.gatedContent.gated;
 
   return (
-    <SubSectionMetadataContext.Provider value={metadata}>
+    <SequenceMetadataContext.Provider value={metadata}>
       <section className="d-flex flex-column flex-grow-1">
-        <SubSectionNavigation />
+        <SequenceNavigation />
         {isGated && (
           <Suspense fallback={<PageLoading
             srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
@@ -54,12 +54,12 @@ function SubSection({ intl }) {
         )}
         {!isGated && <Unit id={unitId} unit={unit} />}
       </section>
-    </SubSectionMetadataContext.Provider>
+    </SequenceMetadataContext.Provider>
   );
 }
 
-SubSection.propTypes = {
+Sequence.propTypes = {
   intl: intlShape.isRequired,
 };
 
-export default injectIntl(SubSection);
+export default injectIntl(Sequence);

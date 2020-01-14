@@ -1,36 +1,28 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { getConfig } from '@edx/frontend-platform';
 
-import CourseStructureContext from './CourseStructureContext';
-import { useBlockAncestry } from './data/hooks';
-
-const CourseBreadcrumbs = () => {
-  const { courseId, unitId } = useContext(CourseStructureContext);
-
-  const ancestry = useBlockAncestry(unitId);
-
-  const links = ancestry.map(ancestor => ({
-    id: ancestor.id,
-    label: ancestor.displayName,
-    url: `${getConfig().LMS_BASE_URL}/courses/${courseId}/course/#${ancestor.id}`,
-  }));
-
+export default function CourseBreadcrumbs({ links }) {
   return (
     <nav aria-label="breadcrumb">
       <ol className="list-inline">
         {links.map(({ id, url, label }, i) => (
           <CourseBreadcrumb key={id} url={url} label={label} last={i === links.length - 1} />
-        ))}
+          ))}
       </ol>
     </nav>
   );
-};
+}
 
-export default CourseBreadcrumbs;
+CourseBreadcrumbs.propTypes = {
+  links: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+  })).isRequired,
+};
 
 function CourseBreadcrumb({ url, label, last }) {
   return (
