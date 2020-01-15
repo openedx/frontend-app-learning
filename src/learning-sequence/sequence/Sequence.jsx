@@ -118,29 +118,29 @@ function Sequence({
 }
 
 Sequence.propTypes = {
-  id: PropTypes.string.isRequired,
+  activeUnitId: PropTypes.string.isRequired,
+  bannerText: PropTypes.string,
   courseUsageKey: PropTypes.string.isRequired,
+  displayName: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  intl: intlShape.isRequired,
+  isGated: PropTypes.bool.isRequired,
+  isTimeLimited: PropTypes.bool.isRequired,
+  onNavigateUnit: PropTypes.func,
+  onNext: PropTypes.func.isRequired,
+  onPrevious: PropTypes.func.isRequired,
+  savePosition: PropTypes.bool.isRequired,
+  showCompletion: PropTypes.bool.isRequired,
+  prerequisite: PropTypes.shape({
+    name: PropTypes.string,
+    id: PropTypes.string,
+  }).isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   units: PropTypes.objectOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     complete: PropTypes.bool,
     pageTitle: PropTypes.string.isRequired,
   })).isRequired,
-  displayName: PropTypes.string.isRequired,
-  activeUnitId: PropTypes.string.isRequired,
-  showCompletion: PropTypes.bool.isRequired,
-  isTimeLimited: PropTypes.bool.isRequired,
-  bannerText: PropTypes.string,
-  onNext: PropTypes.func.isRequired,
-  onPrevious: PropTypes.func.isRequired,
-  onNavigateUnit: PropTypes.func,
-  isGated: PropTypes.bool.isRequired,
-  prerequisite: PropTypes.shape({
-    name: PropTypes.string,
-    id: PropTypes.string,
-  }).isRequired,
-  savePosition: PropTypes.bool.isRequired,
-  intl: intlShape.isRequired,
 };
 
 Sequence.defaultProps = {

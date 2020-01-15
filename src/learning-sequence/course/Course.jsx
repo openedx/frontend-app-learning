@@ -5,6 +5,7 @@ import { history } from '@edx/frontend-platform';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SequenceContainer from './SequenceContainer';
 import { createSequenceIdList } from '../utils';
+import AlertList from '../../user-messages/AlertList';
 
 export default function Course({
   courseUsageKey, courseId, sequenceId, unitId, models,
@@ -33,6 +34,7 @@ export default function Course({
 
   return (
     <main className="container-fluid d-flex flex-column flex-grow-1">
+      <AlertList topic="course" className="mt-3" />
       <CourseBreadcrumbs
         courseUsageKey={courseUsageKey}
         courseId={courseId}

@@ -13,6 +13,7 @@ import Footer, { messages as footerMessages } from '@edx/frontend-component-foot
 import appMessages from './i18n';
 import CourseTabsNavigation from './components/CourseTabsNavigation';
 import LearningSequencePage from './learning-sequence/LearningSequencePage';
+import UserMessagesProvider from './user-messages/UserMessagesProvider';
 
 import './index.scss';
 import './assets/favicon.ico';
@@ -31,15 +32,17 @@ function courseLinks() {
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider>
-      <Header />
-      <div className="container pt-2">
-        <CourseTabsNavigation activeTabSlug="course" />
-      </div>
-      <Switch>
-        <Route exact path="/" render={courseLinks} />
-        <Route path="/course" component={LearningSequencePage} />
-      </Switch>
-      <Footer />
+      <UserMessagesProvider>
+        <Header />
+        <div className="container pt-2">
+          <CourseTabsNavigation activeTabSlug="course" />
+        </div>
+        <Switch>
+          <Route exact path="/" render={courseLinks} />
+          <Route path="/course" component={LearningSequencePage} />
+        </Switch>
+        <Footer />
+      </UserMessagesProvider>
     </AppProvider>,
     document.getElementById('root'),
   );
