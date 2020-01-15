@@ -51,7 +51,8 @@ function SequenceContainer({
 
   useEffect(() => {
     if (loaded && !unitId) {
-      const position = metadata.position - 1;
+      // The position may be null, in which case we'll just assume 0.
+      const position = metadata.position !== null ? metadata.position - 1 : 0;
       const nextUnitId = metadata.items[position].id;
       history.push(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
     }
