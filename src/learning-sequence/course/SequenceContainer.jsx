@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { history, camelCaseObject, getConfig } from '@edx/frontend-platform';
@@ -8,6 +8,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import messages from '../messages';
 import PageLoading from '../PageLoading';
 import Sequence from '../sequence/Sequence';
+import UserMessagesContext from '../../user-messages/UserMessagesContext';
 
 export async function getSequenceMetadata(courseUsageKey, sequenceId) {
   const { data } = await getAuthenticatedHttpClient()
@@ -57,6 +58,26 @@ function SequenceContainer({
       history.push(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
     }
   }, [loaded, metadata, unitId]);
+
+
+  const { add, remove } = useContext(UserMessagesContext);
+  useEffect(() => {
+    let id = null;
+    if (metadata && metadata.bannerText) {
+      id = add({
+        code: null,
+        dismissible: false,
+        text: metadata.bannerText,
+        type: 'info',
+        topic: 'sequence',
+      });
+    }
+    return () => {
+      if (id) {
+        remove(id);
+      }
+    };
+  }, [metadata]);
 
   // Exam redirect
   useEffect(() => {

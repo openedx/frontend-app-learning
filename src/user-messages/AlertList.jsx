@@ -7,9 +7,14 @@ import Alert from './Alert';
 export default function AlertList({ topic, className }) {
   const { remove, messages } = useContext(UserMessagesContext);
 
+  const topicMessages = messages.filter(message => !topic || message.topic === topic);
+  if (topicMessages.length === 0) {
+    return null;
+  }
+
   return (
     <div className={className}>
-      {messages.filter(message => !topic || message.topic === topic).map(message => (
+      {topicMessages.map(message => (
         <Alert
           key={message.id}
           type={message.type}

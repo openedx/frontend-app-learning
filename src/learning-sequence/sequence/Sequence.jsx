@@ -8,6 +8,7 @@ import SequenceNavigation from './SequenceNavigation';
 import PageLoading from '../PageLoading';
 import { getBlockCompletion, saveSequencePosition } from './api';
 import messages from './messages';
+import AlertList from '../../user-messages/AlertList';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
 
@@ -90,6 +91,7 @@ function Sequence({
 
   return (
     <div className="d-flex flex-column flex-grow-1">
+      <AlertList topic="sequence" className="mt-3" />
       <SequenceNavigation
         onNext={handleNext}
         onNavigate={handleNavigate}
