@@ -58,9 +58,11 @@ function CourseContainer(props) {
   const { models, courseId } = useLoadCourse(courseUsageKey);
 
   useEffect(() => {
-    if (!sequenceId) {
-      // TODO: This will not work right now.
-      const { activeSequenceId } = models[courseId];
+    if (courseId && !sequenceId) {
+      // TODO: This is temporary until we get an actual activeSequenceId into the course model data.
+      const course = models[courseId];
+      const chapter = models[course.children[0]];
+      const activeSequenceId = chapter.children[0];
       history.push(`/course/${courseUsageKey}/${activeSequenceId}`);
     }
   }, [courseUsageKey, courseId, sequenceId]);

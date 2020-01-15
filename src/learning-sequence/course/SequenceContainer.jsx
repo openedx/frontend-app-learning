@@ -119,8 +119,11 @@ SequenceContainer.propTypes = {
   })).isRequired,
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
-  unitId: PropTypes.string.isRequired,
+  unitId: PropTypes.string,
   intl: intlShape.isRequired,
 };
 
+SequenceContainer.defaultProps = {
+  unitId: null,
+};
 export default injectIntl(SequenceContainer);

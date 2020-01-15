@@ -17,6 +17,17 @@ import LearningSequencePage from './learning-sequence/LearningSequencePage';
 import './index.scss';
 import './assets/favicon.ico';
 
+function courseLinks() {
+  return (
+    <main className="m-3">
+      <ul>
+        <li><Link to="/course/course-v1:edX+DemoX+Demo_Course">Visit Demo Course</Link></li>
+        <li><Link to="/course/course-v1:UBCx+Water201x_2+2T2015">Visit Staging Course</Link></li>
+      </ul>
+    </main>
+  );
+}
+
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider>
@@ -25,12 +36,7 @@ subscribe(APP_READY, () => {
         <CourseTabsNavigation activeTabSlug="course" />
       </div>
       <Switch>
-        {/* Staging: course-v1:UBCx+Water201x_2+2T2015 */}
-        <Route
-          exact
-          path="/"
-          render={() => <Link to="/course/course-v1%3AedX%2BDemoX%2BDemo_Course/block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction/block-v1:edX+DemoX+Demo_Course+type@vertical+block@vertical_0270f6de40fc">Visit Demo Course</Link>}
-        />
+        <Route exact path="/" render={courseLinks} />
         <Route path="/course" component={LearningSequencePage} />
       </Switch>
       <Footer />
