@@ -18,8 +18,6 @@ function Sequence({
   units: initialUnits,
   displayName,
   showCompletion,
-  isTimeLimited,
-  bannerText,
   onNext,
   onPrevious,
   onNavigateUnit,
@@ -79,7 +77,9 @@ function Sequence({
       updateUnitCompletion(activeUnitId);
     }
     setActiveUnitId(newUnitId);
-    onNavigateUnit(newUnitId, units[newUnitId]);
+    if (onNavigateUnit !== null) {
+      onNavigateUnit(newUnitId, units[newUnitId]);
+    }
   };
 
   useEffect(() => {
@@ -133,7 +133,7 @@ Sequence.propTypes = {
   bannerText: PropTypes.string,
   onNext: PropTypes.func.isRequired,
   onPrevious: PropTypes.func.isRequired,
-  onNavigateUnit: PropTypes.func.isRequired,
+  onNavigateUnit: PropTypes.func,
   isGated: PropTypes.bool.isRequired,
   prerequisite: PropTypes.shape({
     name: PropTypes.string,
@@ -145,29 +145,7 @@ Sequence.propTypes = {
 
 Sequence.defaultProps = {
   bannerText: null,
+  onNavigateUnit: null,
 };
 
 export default injectIntl(Sequence);
-
-// Sequence.propTypes = {
-//   id: PropTypes.string.isRequired,
-//   courseUsageKey: Pro
-//   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-//   units: PropTypes.objectOf(PropTypes.shape({
-
-//   })),
-//   displayName: PropTypes.string.isRequired,
-//   activeUnitId: PropTypes.string.isRequired,
-//   showCompletion: PropTypes.bool.isRequired,
-//   isTimeLimited: PropTypes.bool.isRequired,
-//   isGated: PropTypes.bool.isRequired,
-//   savePosition: PropTypes.bool.isRequired,
-//   bannerText: PropTypes.string,
-//   onNext: PropTypes.func.isRequired,
-//   onPrevious: PropTypes.func.isRequired,
-//   onNavigateUnit: PropTypes.func.isRequired,
-//   prerequisite: PropTypes.shape({
-//     name: PropTypes.string,
-//     id: PropTypes.string,
-//   }),
-// };

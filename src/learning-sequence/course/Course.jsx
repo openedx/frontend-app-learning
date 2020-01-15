@@ -4,7 +4,7 @@ import { getConfig, history } from '@edx/frontend-platform';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SequenceContainer from './SequenceContainer';
-import { createSequenceIdList } from '../data/utils';
+import { createSequenceIdList } from '../utils';
 
 export default function Course({
   courseUsageKey, courseId, sequenceId, unitId, models,

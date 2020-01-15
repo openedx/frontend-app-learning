@@ -1,49 +1,54 @@
-import React, { useEffect } from 'react';
+/* eslint-disable no-plusplus */
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { history } from '@edx/frontend-platform';
+import { history, camelCaseObject, getConfig } from '@edx/frontend-platform';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
-import { useLoadSequenceMetadata } from './hooks';
 import messages from '../messages';
 import PageLoading from '../PageLoading';
 import Sequence from '../sequence/Sequence';
 
-/*
-elementId: "edx_introduction"
-bannerText: null
-displayName: "Demo Course Overview"
-items: Array(1)
-0:
-path: "Introduction > Demo Course Overview > Introduction: Video and Sequences"
-href: ""
-type: "video"
-content: ""
-graded: false
-pageTitle: "Introduction: Video and Sequences"
-bookmarked: false
-id: "block-v1:edX+DemoX+Demo_Course+type@vertical+block@vertical_0270f6de40fc"
-complete: null
-__proto__: Object
-length: 1
-__proto__: Array(0)
-savePosition: true
-isTimeLimited: false
-gatedContent: {gatedSectionName: "Demo Course Overview", prereqUrl: null, prereqSectionName: null, gated: false, prereqId: null}
-excludeUnits: true
-tag: "sequential"
-position: 1
-showCompletion: true
-itemId: "block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction"
-ajaxUrl: "/courses/course-v1:edX+DemoX+Demo_Course/xblock/block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction/handler/xmodule_handler"
-nextUrl: null
-prevUrl: null
-*/
+export async function getSequenceMetadata(courseUsageKey, sequenceId) {
+  const { data } = await getAuthenticatedHttpClient()
+    .get(`${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/xblock/${sequenceId}/handler/xmodule_handler/metadata`, {});
+
+  return data;
+}
+
+function useLoadSequence(courseUsageKey, sequenceId) {
+  const [metadata, setMetadata] = useState(null);
+  const [units, setUnits] = useState(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(false);
+    setMetadata(null);
+    getSequenceMetadata(courseUsageKey, sequenceId).then((data) => {
+      const unitsMap = {};
+      for (let i = 0; i < data.items.length; i++) {
+        const item = data.items[i];
+        unitsMap[item.id] = camelCaseObject(item);
+      }
+
+      setMetadata(camelCaseObject(data));
+      setUnits(unitsMap);
+      setLoaded(true);
+    });
+  }, [courseUsageKey, sequenceId]);
+
+  return {
+    metadata,
+    units,
+    loaded,
+  };
+}
 
 function SequenceContainer({
   courseUsageKey, courseId, sequenceId, unitId, models, intl, onNext, onPrevious,
 }) {
-  const { metadata, loaded, units } = useLoadSequenceMetadata(courseUsageKey, sequenceId);
-  console.log(units);
+  const { metadata, loaded, units } = useLoadSequence(courseUsageKey, sequenceId);
+
   useEffect(() => {
     if (loaded && !unitId) {
       const position = metadata.position - 1;
@@ -52,6 +57,7 @@ function SequenceContainer({
     }
   }, [loaded, metadata, unitId]);
 
+  // Exam redirect
   useEffect(() => {
     if (metadata && models) {
       if (metadata.isTimeLimited) {
@@ -60,7 +66,6 @@ function SequenceContainer({
     }
   }, [metadata, models]);
 
-  console.log(metadata);
   if (!loaded || !unitId || (metadata && metadata.isTimeLimited)) {
     return (
       <PageLoading
@@ -99,13 +104,19 @@ function SequenceContainer({
       bannerText={bannerText}
       onNext={onNext}
       onPrevious={onPrevious}
-      onNavigateUnit={() => console.log('hah2')}
       prerequisite={prerequisite}
     />
   );
 }
 
 SequenceContainer.propTypes = {
+  onNext: PropTypes.func.isRequired,
+  onPrevious: PropTypes.func.isRequired,
+  courseUsageKey: PropTypes.string.isRequired,
+  models: PropTypes.objectOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    lmsWebUrl: PropTypes.string.isRequired,
+  })).isRequired,
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string.isRequired,
