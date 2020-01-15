@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { getConfig } from '@edx/frontend-platform';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import CourseBreadcrumb from './CourseBreadcrumb';
 
-export default function CourseBreadcrumbs({ links }) {
+export default function CourseBreadcrumbs({
+  courseUsageKey, courseId, sequenceId, unitId, models,
+}) {
+  const links = useMemo(() => {
+    const sectionId = models[sequenceId].parentId;
+    if (!unitId) {
+      return [];
+    }
+    return [courseId, sectionId, sequenceId, unitId].map((nodeId) => {
+      const node = models[nodeId];
+      return {
+        id: node.id,
+        label: node.displayName,
+        url: `${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/#${node.id}`,
+      };
+    });
+  }, [courseUsageKey, courseId, sequenceId, unitId, models]);
+
   return (
     <nav aria-label="breadcrumb">
       <ol className="list-inline">
@@ -17,30 +34,18 @@ export default function CourseBreadcrumbs({ links }) {
 }
 
 CourseBreadcrumbs.propTypes = {
-  links: PropTypes.arrayOf(PropTypes.shape({
+  courseUsageKey: PropTypes.string.isRequired,
+  courseId: PropTypes.string.isRequired,
+  sequenceId: PropTypes.string.isRequired,
+  unitId: PropTypes.string,
+  models: PropTypes.objectOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
+    displayName: PropTypes.string.isRequired,
+    children: PropTypes.arrayOf(PropTypes.string),
+    parentId: PropTypes.string,
   })).isRequired,
 };
 
-function CourseBreadcrumb({ url, label, last }) {
-  return (
-    <React.Fragment key={`${label}-${url}`}>
-      <li className="list-inline-item">
-        {last ? label : (<a href={url}>{label}</a>)}
-      </li>
-      {!last &&
-        <li className="list-inline-item" role="presentation" aria-label="spacer">
-          <FontAwesomeIcon icon={faChevronRight} />
-        </li>
-      }
-    </React.Fragment>
-  );
-}
-
-CourseBreadcrumb.propTypes = {
-  url: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  last: PropTypes.bool.isRequired,
+CourseBreadcrumbs.defaultProps = {
+  unitId: null,
 };

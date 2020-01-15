@@ -1,6 +1,6 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { getConfig, history } from '@edx/frontend-platform';
+import { history } from '@edx/frontend-platform';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SequenceContainer from './SequenceContainer';
@@ -9,21 +9,6 @@ import { createSequenceIdList } from '../utils';
 export default function Course({
   courseUsageKey, courseId, sequenceId, unitId, models,
 }) {
-  const breadcrumbs = useMemo(() => {
-    const sectionId = models[sequenceId].parentId;
-    if (!unitId) {
-      return [];
-    }
-    return [courseId, sectionId, sequenceId, unitId].map((nodeId) => {
-      const node = models[nodeId];
-      return {
-        id: node.id,
-        label: node.displayName,
-        url: `${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/#${node.id}`,
-      };
-    });
-  }, [courseUsageKey, courseId, sequenceId, unitId, models]);
-
   const nextSequenceHandler = useCallback(() => {
     const sequenceIds = createSequenceIdList(models, courseId);
     const currentIndex = sequenceIds.indexOf(sequenceId);
@@ -48,7 +33,13 @@ export default function Course({
 
   return (
     <main className="container-fluid d-flex flex-column flex-grow-1">
-      <CourseBreadcrumbs links={breadcrumbs} />
+      <CourseBreadcrumbs
+        courseUsageKey={courseUsageKey}
+        courseId={courseId}
+        sequenceId={sequenceId}
+        unitId={unitId}
+        models={models}
+      />
       <SequenceContainer
         key={sequenceId}
         courseUsageKey={courseUsageKey}
@@ -71,10 +62,11 @@ Course.propTypes = {
   models: PropTypes.objectOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
+    children: PropTypes.arrayOf(PropTypes.string),
+    parentId: PropTypes.string,
   })).isRequired,
 };
 
 Course.defaultProps = {
-  sequenceId: null,
   unitId: null,
 };

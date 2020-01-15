@@ -1,30 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { Switch, Route } from 'react-router';
 
 import CourseContainer from './CourseContainer';
 
-export default function LearningSequencePage({ match }) {
-  const {
-    courseUsageKey,
-    sequenceId,
-    unitId,
-  } = match.params;
-
+export default function LearningSequencePage() {
+  // In spirit, we determine which sort of course we're rendering here based on the URL parameters.
+  // Currently we only have one type, so this file doesn't have much to do.
   return (
-    <CourseContainer
-      courseUsageKey={courseUsageKey}
-      sequenceId={sequenceId}
-      unitId={unitId}
+    <Route
+      path={[
+        '/course/:courseUsageKey/:sequenceId/:unitId',
+        '/course/:courseUsageKey/:sequenceId',
+        '/course/:courseUsageKey',
+       ]}
+      component={CourseContainer}
     />
   );
 }
-
-LearningSequencePage.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      courseUsageKey: PropTypes.string.isRequired,
-      sequenceId: PropTypes.string,
-      unitId: PropTypes.string,
-    }).isRequired,
-  }).isRequired,
-};

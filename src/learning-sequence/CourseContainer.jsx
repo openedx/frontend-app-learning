@@ -48,9 +48,13 @@ function useLoadCourse(courseUsageKey) {
 }
 
 
-function CourseContainer({
-  courseUsageKey, sequenceId, unitId, intl,
-}) {
+function CourseContainer(props) {
+  const { intl, match } = props;
+  const {
+    courseUsageKey,
+    sequenceId,
+    unitId,
+  } = match.params;
   const { models, courseId } = useLoadCourse(courseUsageKey);
 
   useEffect(() => {
@@ -81,15 +85,14 @@ function CourseContainer({
 }
 
 CourseContainer.propTypes = {
-  courseUsageKey: PropTypes.string.isRequired,
-  sequenceId: PropTypes.string,
-  unitId: PropTypes.string,
   intl: intlShape.isRequired,
-};
-
-CourseContainer.defaultProps = {
-  sequenceId: null,
-  unitId: null,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      courseUsageKey: PropTypes.string.isRequired,
+      sequenceId: PropTypes.string,
+      unitId: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default injectIntl(CourseContainer);
