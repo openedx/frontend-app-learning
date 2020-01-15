@@ -6,6 +6,8 @@ import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SequenceContainer from './SequenceContainer';
 import { createSequenceIdList } from '../utils';
 import AlertList from '../../user-messages/AlertList';
+import CourseHeader from './CourseHeader';
+import CourseTabsNavigation from './CourseTabsNavigation';
 
 export default function Course({
   courseUsageKey, courseId, sequenceId, unitId, models,
@@ -33,26 +35,32 @@ export default function Course({
   });
 
   return (
-    <main className="container-fluid d-flex flex-column flex-grow-1">
-      <AlertList topic="course" className="mt-3" />
-      <CourseBreadcrumbs
-        courseUsageKey={courseUsageKey}
-        courseId={courseId}
-        sequenceId={sequenceId}
-        unitId={unitId}
-        models={models}
-      />
-      <SequenceContainer
-        key={sequenceId}
-        courseUsageKey={courseUsageKey}
-        courseId={courseId}
-        sequenceId={sequenceId}
-        unitId={unitId}
-        models={models}
-        onNext={nextSequenceHandler}
-        onPrevious={previousSequenceHandler}
-      />
-    </main>
+    <>
+      <CourseHeader courseId={courseId} models={models} />
+      <main className="d-flex flex-column flex-grow-1">
+        <div className="container-fluid">
+          <CourseTabsNavigation className="mb-3" activeTabSlug="course" />
+          <AlertList topic="course" className="mb-3" />
+          <CourseBreadcrumbs
+            courseUsageKey={courseUsageKey}
+            courseId={courseId}
+            sequenceId={sequenceId}
+            unitId={unitId}
+            models={models}
+          />
+        </div>
+        <SequenceContainer
+          key={sequenceId}
+          courseUsageKey={courseUsageKey}
+          courseId={courseId}
+          sequenceId={sequenceId}
+          unitId={unitId}
+          models={models}
+          onNext={nextSequenceHandler}
+          onPrevious={previousSequenceHandler}
+        />
+      </main>
+    </>
   );
 }
 

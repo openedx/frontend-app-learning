@@ -91,15 +91,17 @@ function Sequence({
 
   return (
     <div className="d-flex flex-column flex-grow-1">
-      <AlertList topic="sequence" className="mt-3" />
-      <SequenceNavigation
-        onNext={handleNext}
-        onNavigate={handleNavigate}
-        onPrevious={handlePrevious}
-        units={unitsArr}
-        isLocked={isGated}
-        showCompletion={showCompletion}
-      />
+      <div className="container-fluid">
+        <AlertList topic="sequence" className="mt-3" />
+        <SequenceNavigation
+          onNext={handleNext}
+          onNavigate={handleNavigate}
+          onPrevious={handlePrevious}
+          units={unitsArr}
+          isLocked={isGated}
+          showCompletion={showCompletion}
+        />
+      </div>
       {isGated ? (
         <Suspense fallback={<PageLoading
           srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}

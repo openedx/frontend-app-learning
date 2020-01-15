@@ -7,16 +7,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Route, Switch, Link } from 'react-router-dom';
 
-import Header, { messages as headerMessages } from '@edx/frontend-component-header';
+import { messages as headerMessages } from '@edx/frontend-component-header';
 import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
 
 import appMessages from './i18n';
-import CourseTabsNavigation from './components/CourseTabsNavigation';
-import LearningSequencePage from './learning-sequence/LearningSequencePage';
 import UserMessagesProvider from './user-messages/UserMessagesProvider';
 
 import './index.scss';
 import './assets/favicon.ico';
+import CourseContainer from './courseware/CourseContainer';
 
 function courseLinks() {
   return (
@@ -33,13 +32,16 @@ subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider>
       <UserMessagesProvider>
-        <Header />
-        <div className="container pt-2">
-          <CourseTabsNavigation activeTabSlug="course" />
-        </div>
         <Switch>
           <Route exact path="/" render={courseLinks} />
-          <Route path="/course" component={LearningSequencePage} />
+          <Route
+            path={[
+              '/course/:courseUsageKey/:sequenceId/:unitId',
+              '/course/:courseUsageKey/:sequenceId',
+              '/course/:courseUsageKey',
+            ]}
+            component={CourseContainer}
+          />
         </Switch>
         <Footer />
       </UserMessagesProvider>

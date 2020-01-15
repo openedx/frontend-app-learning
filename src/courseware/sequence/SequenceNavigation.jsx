@@ -20,7 +20,7 @@ export default function SequenceNavigation({
   ));
 
   return (
-    <nav className="flex-grow-0 d-flex w-100 mb-3 btn-group">
+    <nav className="flex-grow-0 d-flex w-100 btn-group">
       <Button className="btn-outline-primary" onClick={onPrevious}>
         Previous
       </Button>

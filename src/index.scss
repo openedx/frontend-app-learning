@@ -1,6 +1,6 @@
 @import '~@edx/paragon/scss/edx/theme.scss';
 
-@import './learning-sequence/index';
+@import './courseware/index';
 
 @import "~@edx/frontend-component-header/dist/index";
 @import "~@edx/frontend-component-footer/dist/footer";
@@ -12,6 +12,19 @@
 
   header {
     flex: 0;
+
+    .logo {
+      display: block;
+      box-sizing: content-box;
+      position: relative;
+      top: .10em;
+      height: 1.75rem;
+      margin-right: 1rem;
+      img {
+        display: block;
+        height: 100%;
+      }
+    }
   }
 
   footer {

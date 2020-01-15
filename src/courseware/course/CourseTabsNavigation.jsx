@@ -1,10 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import classNames from 'classnames';
+
 import messages from './messages';
 import NavTab from './NavTab';
 
-function CourseTabsNavigation({ activeTabSlug, courseTabs, intl }) {
+function CourseTabsNavigation({
+  activeTabSlug, courseTabs, intl, className,
+}) {
   const courseNavTabs = courseTabs.map(({ slug, ...courseTab }) => (
     <NavTab
       isActive={slug === activeTabSlug}
@@ -16,7 +20,7 @@ function CourseTabsNavigation({ activeTabSlug, courseTabs, intl }) {
   return (
     <nav
       aria-label={intl.formatMessage(messages['learn.navigation.course.tabs.label'])}
-      className="nav nav-underline-tabs"
+      className={classNames('nav nav-underline-tabs', className)}
     >
       {courseNavTabs}
     </nav>
@@ -25,6 +29,7 @@ function CourseTabsNavigation({ activeTabSlug, courseTabs, intl }) {
 
 CourseTabsNavigation.propTypes = {
   activeTabSlug: PropTypes.string,
+  className: PropTypes.string,
   courseTabs: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
     priority: PropTypes.number.isRequired,
@@ -36,6 +41,7 @@ CourseTabsNavigation.propTypes = {
 
 CourseTabsNavigation.defaultProps = {
   activeTabSlug: undefined,
+  className: null,
   courseTabs: [
     {
       title: 'Course',
