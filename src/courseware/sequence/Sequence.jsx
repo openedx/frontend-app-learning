@@ -94,6 +94,7 @@ function Sequence({
       <div className="container-fluid">
         <AlertList topic="sequence" className="mt-3" />
         <SequenceNavigation
+          className="mb-3"
           onNext={handleNext}
           onNavigate={handleNavigate}
           onPrevious={handlePrevious}
@@ -101,20 +102,21 @@ function Sequence({
           isLocked={isGated}
           showCompletion={showCompletion}
         />
+        {isGated && (
+          <Suspense fallback={<PageLoading
+            srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
+          />}
+          >
+            <ContentLock
+              courseUsageKey={courseUsageKey}
+              sectionName={displayName}
+              prereqSectionName={prerequisite.name}
+              prereqId={prerequisite.id}
+            />
+          </Suspense>
+        )}
       </div>
-      {isGated ? (
-        <Suspense fallback={<PageLoading
-          srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
-        />}
-        >
-          <ContentLock
-            courseUsageKey={courseUsageKey}
-            sectionName={displayName}
-            prereqSectionName={prerequisite.name}
-            prereqId={prerequisite.id}
-          />
-        </Suspense>
-      ) : (
+      {!isGated && (
         <Unit key={activeUnitId} {...activeUnit} />
       )}
     </div>

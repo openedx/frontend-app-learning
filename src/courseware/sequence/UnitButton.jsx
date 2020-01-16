@@ -31,9 +31,14 @@ export default function UnitButton({
 }
 
 UnitButton.propTypes = {
-  isActive: PropTypes.bool.isRequired,
-  isComplete: PropTypes.bool.isRequired,
+  isActive: PropTypes.bool,
+  isComplete: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
   pageTitle: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
+};
+
+UnitButton.defaultProps = {
+  isActive: false,
+  isComplete: false,
 };
