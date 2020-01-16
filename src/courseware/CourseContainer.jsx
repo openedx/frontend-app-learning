@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { history, getConfig } from '@edx/frontend-platform';
+import { history, getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { AppContext } from '@edx/frontend-platform/react';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
@@ -10,9 +10,9 @@ import PageLoading from './PageLoading';
 import Course from './course/Course';
 import { createBlocksMap } from './utils';
 
-export async function getCourseBlocks(courseId, username) {
+export async function getCourseBlocks(courseUsageKey, username) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/`);
-  url.searchParams.append('course_id', decodeURIComponent(courseId));
+  url.searchParams.append('course_id', courseUsageKey);
   url.searchParams.append('username', username);
   url.searchParams.append('depth', 3);
   url.searchParams.append('requested_fields', 'children,show_gated_sections');
@@ -22,8 +22,8 @@ export async function getCourseBlocks(courseId, username) {
   return data;
 }
 
-export async function getCourse(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/courses/v2/courses/${courseId}`;
+export async function getCourse(courseUsageKey) {
+  const url = `${getConfig().LMS_BASE_URL}/api/courses/v2/courses/${courseUsageKey}`;
   const { data } = await getAuthenticatedHttpClient().get(url);
 
   return data;
@@ -34,16 +34,21 @@ function useLoadCourse(courseUsageKey) {
 
   const [models, setModels] = useState(null);
   const [courseId, setCourseId] = useState();
+  const [metadata, setMetadata] = useState(null);
 
   useEffect(() => {
     getCourseBlocks(courseUsageKey, authenticatedUser.username).then((blocksData) => {
       setModels(createBlocksMap(blocksData.blocks));
       setCourseId(blocksData.root);
     });
+    getCourse(courseUsageKey).then((data) => {
+      console.log(data);
+      setMetadata(camelCaseObject(data));
+    });
   }, [courseUsageKey]);
 
   return {
-    models, courseId,
+    models, courseId, metadata,
   };
 }
 
