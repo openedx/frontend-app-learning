@@ -19,7 +19,7 @@ export default function UnitButton({
         'btn-outline-primary': !isActive,
         'btn-outline-secondary': isActive,
       })}
-      disabled={isActive}
+
       onClick={onClick}
       title={pageTitle}
     >
