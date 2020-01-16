@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { getConfig } from '@edx/frontend-platform';
 
 
 export default function NavTab(props) {
@@ -14,7 +15,9 @@ export default function NavTab(props) {
     attrs.className,
   );
 
-  return <a {...attrs} className={className} href={url}>{title}</a>;
+  // TODO: We probably don't want to blindly add LMS_BASE_URL here.  I think it's more likely
+  // that the course metadata API should provide us fully qualified URLs.
+  return <a {...attrs} className={className} href={`${getConfig().LMS_BASE_URL}${url}`}>{title}</a>;
 }
 
 NavTab.propTypes = {

@@ -52,7 +52,6 @@ function useLoadCourse(courseUsageKey) {
   };
 }
 
-
 function CourseContainer(props) {
   const { intl, match } = props;
   const {
@@ -60,7 +59,7 @@ function CourseContainer(props) {
     sequenceId,
     unitId,
   } = match.params;
-  const { models, courseId } = useLoadCourse(courseUsageKey);
+  const { models, courseId, metadata } = useLoadCourse(courseUsageKey);
 
   useEffect(() => {
     if (courseId && !sequenceId) {
@@ -80,13 +79,14 @@ function CourseContainer(props) {
     );
   }
 
-  return (
+  return metadata && (
     <Course
       courseUsageKey={courseUsageKey}
       courseId={courseId}
       sequenceId={sequenceId}
       unitId={unitId}
       models={models}
+      tabs={metadata.tabs}
     />
   );
 }

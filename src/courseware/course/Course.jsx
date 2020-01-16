@@ -10,7 +10,7 @@ import CourseHeader from './CourseHeader';
 import CourseTabsNavigation from './CourseTabsNavigation';
 
 export default function Course({
-  courseUsageKey, courseId, sequenceId, unitId, models,
+  courseUsageKey, courseId, sequenceId, unitId, models, tabs,
 }) {
   const nextSequenceHandler = useCallback(() => {
     const sequenceIds = createSequenceIdList(models, courseId);
@@ -39,7 +39,7 @@ export default function Course({
       <CourseHeader courseId={courseId} models={models} />
       <main className="d-flex flex-column flex-grow-1">
         <div className="container-fluid">
-          <CourseTabsNavigation className="mb-3" activeTabSlug="course" />
+          <CourseTabsNavigation tabs={tabs} className="mb-3" activeTabSlug="courseware" />
           <AlertList topic="course" className="mb-3" />
           <CourseBreadcrumbs
             courseUsageKey={courseUsageKey}
@@ -74,6 +74,13 @@ Course.propTypes = {
     displayName: PropTypes.string.isRequired,
     children: PropTypes.arrayOf(PropTypes.string),
     parentId: PropTypes.string,
+  })).isRequired,
+  tabs: PropTypes.arrayOf(PropTypes.shape({
+    slug: PropTypes.string.isRequired,
+    priority: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
   })).isRequired,
 };
 

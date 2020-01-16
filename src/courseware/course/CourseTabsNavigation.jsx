@@ -7,9 +7,9 @@ import messages from './messages';
 import NavTab from './NavTab';
 
 function CourseTabsNavigation({
-  activeTabSlug, courseTabs, intl, className,
+  activeTabSlug, tabs, intl, className,
 }) {
-  const courseNavTabs = courseTabs.map(({ slug, ...courseTab }) => (
+  const courseNavTabs = tabs.map(({ slug, ...courseTab }) => (
     <NavTab
       isActive={slug === activeTabSlug}
       key={slug}
@@ -30,51 +30,18 @@ function CourseTabsNavigation({
 CourseTabsNavigation.propTypes = {
   activeTabSlug: PropTypes.string,
   className: PropTypes.string,
-  courseTabs: PropTypes.arrayOf(PropTypes.shape({
+  tabs: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
     priority: PropTypes.number.isRequired,
     slug: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
-  })),
+  })).isRequired,
   intl: intlShape.isRequired,
 };
 
 CourseTabsNavigation.defaultProps = {
   activeTabSlug: undefined,
   className: null,
-  courseTabs: [
-    {
-      title: 'Course',
-      slug: 'course',
-      priority: 1,
-      url: 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course/',
-    },
-
-    {
-      title: 'Discussion',
-      slug: 'discussion',
-      priority: 2,
-      url: 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/discussion/forum/',
-    },
-    {
-      title: 'Wiki',
-      slug: 'wiki',
-      priority: 3,
-      url: 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course_wiki',
-    },
-    {
-      title: 'Progress',
-      slug: 'progress',
-      priority: 4,
-      url: 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/progress',
-    },
-    {
-      title: 'Instructor',
-      slug: 'instructor',
-      priority: 5,
-      url: 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/instructor',
-    },
-  ],
 };
 
 export default injectIntl(CourseTabsNavigation);
