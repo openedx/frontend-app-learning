@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button } from '@edx/paragon';
 import UnitButton from './UnitButton';
 
@@ -33,3 +34,15 @@ export default function SequenceNavigation({
     </nav>
   );
 }
+
+SequenceNavigation.propTypes = {
+  onNext: PropTypes.func.isRequired,
+  onPrevious: PropTypes.func.isRequired,
+  onNavigate: PropTypes.func.isRequired,
+  units: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    complete: PropTypes.bool.isRequired,
+  })).isRequired,
+  isLocked: PropTypes.bool.isRequired,
+  showCompletion: PropTypes.bool.isRequired,
+};

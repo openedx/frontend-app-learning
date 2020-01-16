@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Button } from '@edx/paragon';
 
@@ -28,3 +29,11 @@ export default function UnitButton({
     </Button>
   );
 }
+
+UnitButton.propTypes = {
+  isActive: PropTypes.bool.isRequired,
+  isComplete: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
+  pageTitle: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+};
