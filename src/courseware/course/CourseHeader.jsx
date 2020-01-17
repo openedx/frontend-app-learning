@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Dropdown } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { AppContext } from '@edx/frontend-platform/react';
+
 import logo from './logo.svg';
 
 function LinkedLogo({
@@ -28,6 +29,7 @@ export default function CourseHeader({
   courseOrg, courseNumber, courseName,
 }) {
   const { authenticatedUser } = useContext(AppContext);
+
   return (
     <header className="container-fluid py-2 d-flex align-items-center border-bottom border-primary">
       <LinkedLogo
@@ -46,7 +48,6 @@ export default function CourseHeader({
           {authenticatedUser.username}
         </Dropdown.Button>
         <Dropdown.Menu>
-          <Dropdown.Item href="#">Resume your last course</Dropdown.Item>
           <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/dashboard`}>Dashboard</Dropdown.Item>
           <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/u/${authenticatedUser.username}`}>Profile</Dropdown.Item>
           <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/account/settings`}>Account</Dropdown.Item>
