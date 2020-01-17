@@ -81,6 +81,9 @@ function CourseContainer(props) {
 
   return metadata && (
     <Course
+      courseOrg={metadata.org}
+      courseNumber={metadata.number}
+      courseName={metadata.name}
       courseUsageKey={courseUsageKey}
       courseId={courseId}
       sequenceId={sequenceId}

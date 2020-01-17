@@ -10,7 +10,7 @@ import CourseHeader from './CourseHeader';
 import CourseTabsNavigation from './CourseTabsNavigation';
 
 export default function Course({
-  courseUsageKey, courseId, sequenceId, unitId, models, tabs,
+  courseOrg, courseNumber, courseName, courseUsageKey, courseId, sequenceId, unitId, models, tabs,
 }) {
   const nextSequenceHandler = useCallback(() => {
     const sequenceIds = createSequenceIdList(models, courseId);
@@ -36,7 +36,11 @@ export default function Course({
 
   return (
     <>
-      <CourseHeader courseId={courseId} models={models} />
+      <CourseHeader
+        courseOrg={courseOrg}
+        courseNumber={courseNumber}
+        courseName={courseName}
+      />
       <main className="d-flex flex-column flex-grow-1">
         <div className="container-fluid">
           <CourseTabsNavigation tabs={tabs} className="mb-3" activeTabSlug="courseware" />
@@ -65,6 +69,9 @@ export default function Course({
 }
 
 Course.propTypes = {
+  courseOrg: PropTypes.string.isRequired,
+  courseNumber: PropTypes.string.isRequired,
+  courseName: PropTypes.string.isRequired,
   courseUsageKey: PropTypes.string.isRequired,
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,

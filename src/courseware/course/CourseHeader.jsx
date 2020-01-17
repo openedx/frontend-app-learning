@@ -24,9 +24,10 @@ LinkedLogo.propTypes = {
   alt: PropTypes.string.isRequired,
 };
 
-export default function CourseHeader({ courseId, models }) {
+export default function CourseHeader({
+  courseOrg, courseNumber, courseName,
+}) {
   const { authenticatedUser } = useContext(AppContext);
-  const course = models[courseId];
   return (
     <header className="container-fluid py-2 d-flex align-items-center border-bottom border-primary">
       <LinkedLogo
@@ -36,8 +37,8 @@ export default function CourseHeader({ courseId, models }) {
         alt={getConfig().SITE_NAME}
       />
       <div className="flex-grow-1" style={{ lineHeight: 1 }}>
-        <span className="d-block small m-0">edX DemoX</span>
-        <span className="d-block m-0 font-weight-bold">{course.displayName}</span>
+        <span className="d-block small m-0">{courseOrg} {courseNumber}</span>
+        <span className="d-block m-0 font-weight-bold">{courseName}</span>
       </div>
 
       <Dropdown>
@@ -56,3 +57,9 @@ export default function CourseHeader({ courseId, models }) {
     </header>
   );
 }
+
+CourseHeader.propTypes = {
+  courseOrg: PropTypes.string.isRequired,
+  courseNumber: PropTypes.string.isRequired,
+  courseName: PropTypes.string.isRequired,
+};
