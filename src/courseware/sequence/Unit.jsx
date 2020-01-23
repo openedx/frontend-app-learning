@@ -12,6 +12,7 @@ export default function Unit({ id, pageTitle }) {
       title={pageTitle}
       ref={iframeRef}
       src={iframeUrl}
+      allowFullScreen
     />
   );
 }
