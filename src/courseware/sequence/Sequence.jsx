@@ -90,7 +90,7 @@ function Sequence({
   }, [activeUnitId]);
 
   return (
-    <div className="d-flex flex-column flex-grow-1">
+    <div className="flex-grow-1">
       <div className="container-fluid">
         <AlertList topic="sequence" className="mt-3" />
         <SequenceNavigation
