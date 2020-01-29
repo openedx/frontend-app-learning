@@ -6,14 +6,12 @@ export default function Unit({ id, pageTitle }) {
   const iframeRef = useRef(null);
   const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}`;
 
-  const [iframeWidth, setIframeWidth] = useState(0);
   const [iframeHeight, setIframeHeight] = useState(0);
   useEffect(() => {
     global.onmessage = (event) => {
       const { type, payload } = event.data;
 
       if (type === 'plugin.resize') {
-        setIframeWidth(payload.width);
         setIframeHeight(payload.height);
       }
     };
@@ -25,7 +23,7 @@ export default function Unit({ id, pageTitle }) {
       ref={iframeRef}
       src={iframeUrl}
       allowFullScreen
-      width={iframeWidth}
+      className="d-block container-fluid px-0"
       height={iframeHeight}
       scrolling="no"
       referrerPolicy="origin"
