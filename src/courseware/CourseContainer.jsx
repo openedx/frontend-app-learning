@@ -23,7 +23,7 @@ export async function getCourseBlocks(courseUsageKey, username) {
 }
 
 export async function getCourse(courseUsageKey) {
-  const url = `${getConfig().LMS_BASE_URL}/api/courses/v2/courses/${courseUsageKey}`;
+  const url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseUsageKey}`;
   const { data } = await getAuthenticatedHttpClient().get(url);
 
   return data;
