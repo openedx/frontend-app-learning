@@ -12,7 +12,7 @@ import UserMessagesContext from '../../user-messages/UserMessagesContext';
 
 export async function getSequenceMetadata(courseUsageKey, sequenceId) {
   const { data } = await getAuthenticatedHttpClient()
-    .get(`${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/xblock/${sequenceId}/handler/xmodule_handler/metadata`, {});
+    .get(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceId}`, {});
 
   return data;
 }
