@@ -1,16 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { faExclamationTriangle, faInfoCircle, faCheckCircle, faMinusCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import {
+  faExclamationTriangle, faInfoCircle, faCheckCircle, faMinusCircle, faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button } from '@edx/paragon';
 
 function getAlertClass(type) {
   if (type === 'error') {
     return 'alert-warning';
-  } else if (type === 'danger') {
+  }
+  if (type === 'danger') {
     return 'alert-danger';
-  } else if (type === 'success') {
+  }
+  if (type === 'success') {
     return 'alert-success';
   }
   return 'alert-info';
@@ -19,9 +23,11 @@ function getAlertClass(type) {
 function getAlertIcon(type) {
   if (type === 'error') {
     return faExclamationTriangle;
-  } else if (type === 'danger') {
+  }
+  if (type === 'danger') {
     return faMinusCircle;
-  } else if (type === 'success') {
+  }
+  if (type === 'success') {
     return faCheckCircle;
   }
   return faInfoCircle;

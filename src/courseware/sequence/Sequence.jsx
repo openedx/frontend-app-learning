@@ -103,9 +103,12 @@ function Sequence({
           showCompletion={showCompletion}
         />
         {isGated && (
-          <Suspense fallback={<PageLoading
-            srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
-          />}
+          <Suspense
+            fallback={(
+              <PageLoading
+                srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
+              />
+            )}
           >
             <ContentLock
               courseUsageKey={courseUsageKey}

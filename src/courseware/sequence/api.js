@@ -3,8 +3,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 /* eslint-disable import/prefer-default-export */
 
-const getSequenceXModuleHandlerUrl = (courseUsageKey, sequenceId) =>
-  `${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/xblock/${sequenceId}/handler/xmodule_handler`;
+const getSequenceXModuleHandlerUrl = (courseUsageKey, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/xblock/${sequenceId}/handler/xmodule_handler`;
 
 
 export async function saveSequencePosition(courseUsageKey, sequenceId, position) {

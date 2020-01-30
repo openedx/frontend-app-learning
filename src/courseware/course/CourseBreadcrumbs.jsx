@@ -27,7 +27,7 @@ export default function CourseBreadcrumbs({
       <ol className="list-inline">
         {links.map(({ id, url, label }, i) => (
           <CourseBreadcrumb key={id} url={url} label={label} last={i === links.length - 1} />
-          ))}
+        ))}
       </ol>
     </nav>
   );

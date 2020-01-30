@@ -9,11 +9,11 @@ export default function CourseBreadcrumb({ url, label, last }) {
       <li className="list-inline-item">
         {last ? label : (<a href={url}>{label}</a>)}
       </li>
-      {!last &&
+      {!last && (
         <li className="list-inline-item" role="presentation" aria-label="spacer">
           <FontAwesomeIcon icon={faChevronRight} />
         </li>
-      }
+      )}
     </React.Fragment>
   );
 }
