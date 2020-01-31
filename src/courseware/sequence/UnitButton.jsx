@@ -5,12 +5,14 @@ import { Button } from '@edx/paragon';
 
 import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
+import BookmarkFilledIcon from './bookmark/BookmarkFilledIcon';
 
 export default function UnitButton({
   clickHandler,
   pageTitle,
   type,
   isActive,
+  isBookmarked,
   isComplete,
   index,
 }) {
@@ -31,6 +33,12 @@ export default function UnitButton({
     >
       <UnitIcon type={type} />
       {isComplete ? <CompleteIcon className="text-success ml-2" /> : null}
+      {isBookmarked ? (
+        <BookmarkFilledIcon
+          className="text-primary small position-absolute"
+          style={{ top: '-3px', right: '5px' }}
+        />
+      ) : null}
     </Button>
   );
 }
@@ -38,6 +46,7 @@ export default function UnitButton({
 UnitButton.propTypes = {
   index: PropTypes.number.isRequired,
   isActive: PropTypes.bool,
+  isBookmarked: PropTypes.bool,
   isComplete: PropTypes.bool,
   clickHandler: PropTypes.func.isRequired,
   pageTitle: PropTypes.string.isRequired,
@@ -46,5 +55,6 @@ UnitButton.propTypes = {
 
 UnitButton.defaultProps = {
   isActive: false,
+  isBookmarked: false,
   isComplete: false,
 };

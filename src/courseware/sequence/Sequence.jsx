@@ -39,6 +39,13 @@ function Sequence({
     isActive: unitId === activeUnitId,
   }));
 
+  const handleUnitBookmarkChanged = (unitId, isBookmarked) => {
+    setUnits({
+      ...units,
+      [unitId]: { ...units[unitId], bookmarked: isBookmarked },
+    });
+  };
+
   // TODO: Use callback
   const updateUnitCompletion = (unitId) => {
     // If the unit is already complete, don't check.
@@ -120,7 +127,12 @@ function Sequence({
         )}
       </div>
       {!isGated && (
-        <Unit key={activeUnitId} {...activeUnit} />
+        <Unit
+          key={activeUnitId}
+          {...activeUnit}
+          isBookmarked={activeUnit.bookmarked}
+          onBookmarkChanged={handleUnitBookmarkChanged}
+        />
       )}
     </div>
   );

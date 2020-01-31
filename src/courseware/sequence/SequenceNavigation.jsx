@@ -18,6 +18,7 @@ export default function SequenceNavigation({
     <UnitButton
       key={unit.id}
       {...unit}
+      isBookmarked={unit.bookmarked}
       isComplete={showCompletion && unit.complete}
       index={index}
       clickHandler={onNavigate}
