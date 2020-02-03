@@ -6,7 +6,7 @@ import useBookmark from './bookmark/useBookmark';
 
 export default function Unit({ id, pageTitle, isBookmarked, onBookmarkChanged }) {
   const iframeRef = useRef(null);
-  const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}`;
+  const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?embed_context=microfrontend`;
 
   const [iframeHeight, setIframeHeight] = useState(0);
   useEffect(() => {
@@ -24,6 +24,7 @@ export default function Unit({ id, pageTitle, isBookmarked, onBookmarkChanged })
   return (
     <div>
       <div className="container-fluid mb-2">
+        <h2 className="mb-0">{pageTitle}</h2>
         <BookmarkButton
           onClick={toggleBookmark}
           isBookmarked={isBookmarked}
