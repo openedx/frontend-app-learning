@@ -1,5 +1,7 @@
 /* eslint-disable no-plusplus */
-import React, { useEffect, useState, useContext } from 'react';
+import React, {
+  useEffect, useState, useContext, useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { history, camelCaseObject, getConfig } from '@edx/frontend-platform';
@@ -59,6 +61,9 @@ function SequenceContainer({
     }
   }, [loaded, metadata, unitId]);
 
+  const handleUnitNavigation = useCallback((nextUnitId) => {
+    history.push(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
+  }, [courseUsageKey, sequenceId]);
 
   const { add, remove } = useContext(UserMessagesContext);
   useEffect(() => {
@@ -115,7 +120,7 @@ function SequenceContainer({
       id={sequenceId}
       courseUsageKey={courseUsageKey}
       courseId={courseId}
-      unitIds={metadata.items.map(item => item.id)}
+      unitIds={metadata.items.map((item) => item.id)}
       units={units}
       displayName={displayName}
       activeUnitId={unitId}
@@ -126,6 +131,7 @@ function SequenceContainer({
       bannerText={bannerText}
       onNext={onNext}
       onPrevious={onPrevious}
+      onNavigateUnit={handleUnitNavigation}
       prerequisite={prerequisite}
     />
   );
