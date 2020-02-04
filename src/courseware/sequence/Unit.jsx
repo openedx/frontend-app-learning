@@ -6,7 +6,7 @@ import useBookmark from './bookmark/useBookmark';
 
 export default function Unit({ id, pageTitle, isBookmarked, onBookmarkChanged }) {
   const iframeRef = useRef(null);
-  const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?is_microfrontend_embed=1`;
+  const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
 
   const [iframeHeight, setIframeHeight] = useState(0);
   useEffect(() => {
