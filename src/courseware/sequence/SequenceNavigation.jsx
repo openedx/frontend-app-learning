@@ -19,7 +19,8 @@ export default function SequenceNavigation({
       key={unit.id}
       {...unit}
       isComplete={showCompletion && unit.complete}
-      onClick={onNavigate.bind(null, index)}
+      index={index}
+      clickHandler={onNavigate}
     />
   ));
 

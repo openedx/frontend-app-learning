@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Button } from '@edx/paragon';
@@ -7,12 +7,17 @@ import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
 
 export default function UnitButton({
-  onClick,
+  clickHandler,
   pageTitle,
   type,
   isActive,
   isComplete,
+  index,
 }) {
+  const onClick = useCallback(() => {
+    clickHandler(index);
+  });
+
   return (
     <Button
       className={classNames({
@@ -31,9 +36,10 @@ export default function UnitButton({
 }
 
 UnitButton.propTypes = {
+  index: PropTypes.number.isRequired,
   isActive: PropTypes.bool,
   isComplete: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
+  clickHandler: PropTypes.func.isRequired,
   pageTitle: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
 };

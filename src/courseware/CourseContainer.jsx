@@ -42,7 +42,6 @@ function useLoadCourse(courseUsageKey) {
       setCourseId(blocksData.root);
     });
     getCourse(courseUsageKey).then((data) => {
-      console.log(data);
       setMetadata(camelCaseObject(data));
     });
   }, [courseUsageKey]);
