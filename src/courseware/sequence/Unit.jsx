@@ -1,10 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
+import { connect } from 'react-redux';
 import BookmarkButton from './bookmark/BookmarkButton';
-import useBookmark from './bookmark/useBookmark';
+import { addBookmark, removeBookmark } from '../../data/course-blocks/thunks';
 
-export default function Unit({ id, pageTitle, isBookmarked, onBookmarkChanged }) {
+function Unit({
+  id, displayName, bookmarked, ...props
+}) {
   const iframeRef = useRef(null);
   const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
 
@@ -19,20 +22,26 @@ export default function Unit({ id, pageTitle, isBookmarked, onBookmarkChanged })
     };
   }, []);
 
-  const [toggleBookmark, requestIsInFlight] = useBookmark(id, isBookmarked, onBookmarkChanged);
+  const toggleBookmark = () => {
+    if (bookmarked) {
+      props.removeBookmark(id);
+    } else {
+      props.addBookmark(id);
+    }
+  };
 
   return (
     <div>
       <div className="container-fluid mb-2">
-        <h2 className="mb-0">{pageTitle}</h2>
+        <h2 className="mb-0">{displayName}</h2>
         <BookmarkButton
           onClick={toggleBookmark}
-          isBookmarked={isBookmarked}
-          isWorking={requestIsInFlight}
+          isBookmarked={bookmarked}
+          isProcessing={props.bookmarkedUpdateState === 'loading'}
         />
       </div>
       <iframe
-        title={pageTitle}
+        title={displayName}
         ref={iframeRef}
         src={iframeUrl}
         allowFullScreen
@@ -47,11 +56,23 @@ export default function Unit({ id, pageTitle, isBookmarked, onBookmarkChanged })
 
 Unit.propTypes = {
   id: PropTypes.string.isRequired,
-  isBookmarked: PropTypes.bool,
-  onBookmarkChanged: PropTypes.func.isRequired,
-  pageTitle: PropTypes.string.isRequired,
+  displayName: PropTypes.string.isRequired,
+  bookmarked: PropTypes.bool,
+  bookmarkedUpdateState: PropTypes.string,
+  addBookmark: PropTypes.func.isRequired,
+  removeBookmark: PropTypes.func.isRequired,
 };
 
 Unit.defaultProps = {
-  isBookmarked: false,
+  bookmarked: false,
+  bookmarkedUpdateState: undefined,
 };
+
+const mapStateToProps = (state, props) => ({
+  ...state.courseBlocks.blocks[props.id],
+});
+
+export default connect(mapStateToProps, {
+  addBookmark,
+  removeBookmark,
+})(Unit);

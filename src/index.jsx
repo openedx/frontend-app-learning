@@ -19,6 +19,8 @@ import './index.scss';
 import './assets/favicon.ico';
 import CourseContainer from './courseware/CourseContainer';
 
+import store from './store';
+
 function courseLinks() {
   return (
     <main className="m-3">
@@ -32,7 +34,7 @@ function courseLinks() {
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
-    <AppProvider>
+    <AppProvider store={store}>
       <UserMessagesProvider>
         <Switch>
           <Route exact path="/" render={courseLinks} />

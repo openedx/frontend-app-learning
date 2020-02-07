@@ -1,9 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { StatefulButton } from '@edx/paragon';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import BookmarkOutlineIcon from './BookmarkOutlineIcon';
 import BookmarkFilledIcon from './BookmarkFilledIcon';
-import SpinnerIcon from './SpinnerIcon';
 
 const addBookmarkLabel = (
   <FormattedMessage
@@ -21,28 +21,34 @@ const hasBookmarkLabel = (
   />
 );
 
-export default function BookmarkButton({ onClick, isBookmarked, isWorking }) {
+export default function BookmarkButton({ onClick, isBookmarked, isProcessing }) {
   const bookmarkState = isBookmarked ? 'bookmarked' : 'default';
-  const state = isWorking ? `${bookmarkState}Working` : bookmarkState;
+  const state = isProcessing ? `${bookmarkState}Processing` : bookmarkState;
 
   return (
     <StatefulButton
       className="btn-link px-1 ml-n1"
       onClick={onClick}
       state={state}
-      disabledStates={['defaultWorking', 'bookmarkedWorking']}
+      disabledStates={['defaultProcessing', 'bookmarkedProcessing']}
       labels={{
         default: addBookmarkLabel,
-        defaultWorking: addBookmarkLabel,
+        defaultProcessing: addBookmarkLabel,
         bookmarked: hasBookmarkLabel,
-        bookmarkedWorking: hasBookmarkLabel,
+        bookmarkedProcessing: hasBookmarkLabel,
       }}
       icons={{
         default: <BookmarkOutlineIcon className="text-primary" />,
-        defaultWorking: <SpinnerIcon spin className="text-primary" />,
+        defaultProcessing: <BookmarkOutlineIcon className="text-primary" />,
         bookmarked: <BookmarkFilledIcon className="text-primary" />,
-        bookmarkedWorking: <SpinnerIcon spin className="text-primary" />,
+        bookmarkedProcessing: <BookmarkFilledIcon className="text-primary" />,
       }}
     />
   );
 }
+
+BookmarkButton.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  isBookmarked: PropTypes.bool.isRequired,
+  isProcessing: PropTypes.bool.isRequired,
+};

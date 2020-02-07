@@ -9,19 +9,19 @@ export default function SequenceNavigation({
   onNext,
   onPrevious,
   onNavigate,
-  units,
+  unitIds,
   isLocked,
   showCompletion,
+  activeUnitId,
   className,
 }) {
-  const unitButtons = units.map((unit, index) => (
+  const unitButtons = unitIds.map(unitId => (
     <UnitButton
-      key={unit.id}
-      {...unit}
-      isBookmarked={unit.bookmarked}
-      isComplete={showCompletion && unit.complete}
-      index={index}
-      clickHandler={onNavigate}
+      key={unitId}
+      unitId={unitId}
+      isActive={activeUnitId === unitId}
+      showCompletion={showCompletion}
+      onClick={onNavigate}
     />
   ));
 
@@ -45,12 +45,10 @@ SequenceNavigation.propTypes = {
   onNext: PropTypes.func.isRequired,
   onPrevious: PropTypes.func.isRequired,
   onNavigate: PropTypes.func.isRequired,
-  units: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    complete: PropTypes.bool,
-  })).isRequired,
   isLocked: PropTypes.bool.isRequired,
   showCompletion: PropTypes.bool.isRequired,
+  unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activeUnitId: PropTypes.string.isRequired,
 };
 
 SequenceNavigation.defaultProps = {

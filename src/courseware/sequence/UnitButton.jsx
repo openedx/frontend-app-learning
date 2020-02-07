@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { Button } from '@edx/paragon';
 
@@ -7,17 +8,18 @@ import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
 import BookmarkFilledIcon from './bookmark/BookmarkFilledIcon';
 
-export default function UnitButton({
-  clickHandler,
-  pageTitle,
-  type,
+function UnitButton({
+  onClick,
+  displayName,
+  contentType,
   isActive,
-  isBookmarked,
-  isComplete,
-  index,
+  bookmarked,
+  complete,
+  showCompletion,
+  unitId,
 }) {
-  const onClick = useCallback(() => {
-    clickHandler(index);
+  const handleClick = useCallback(() => {
+    onClick(unitId);
   });
 
   return (
@@ -28,12 +30,12 @@ export default function UnitButton({
         'btn-outline-secondary': isActive,
       })}
 
-      onClick={onClick}
-      title={pageTitle}
+      onClick={handleClick}
+      title={displayName}
     >
-      <UnitIcon type={type} />
-      {isComplete ? <CompleteIcon className="text-success ml-2" /> : null}
-      {isBookmarked ? (
+      <UnitIcon type={contentType} />
+      {showCompletion && complete ? <CompleteIcon className="text-success ml-2" /> : null}
+      {bookmarked ? (
         <BookmarkFilledIcon
           className="text-primary small position-absolute"
           style={{ top: '-3px', right: '5px' }}
@@ -44,17 +46,25 @@ export default function UnitButton({
 }
 
 UnitButton.propTypes = {
-  index: PropTypes.number.isRequired,
+  unitId: PropTypes.string.isRequired,
   isActive: PropTypes.bool,
-  isBookmarked: PropTypes.bool,
-  isComplete: PropTypes.bool,
-  clickHandler: PropTypes.func.isRequired,
-  pageTitle: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
+  bookmarked: PropTypes.bool,
+  complete: PropTypes.bool,
+  showCompletion: PropTypes.bool,
+  onClick: PropTypes.func.isRequired,
+  displayName: PropTypes.string.isRequired,
+  contentType: PropTypes.string.isRequired,
 };
 
 UnitButton.defaultProps = {
   isActive: false,
-  isBookmarked: false,
-  isComplete: false,
+  bookmarked: false,
+  complete: false,
+  showCompletion: true,
 };
+
+const mapStateToProps = (state, props) => ({
+  ...state.courseBlocks.blocks[props.unitId],
+});
+
+export default connect(mapStateToProps)(UnitButton);

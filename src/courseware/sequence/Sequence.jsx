@@ -6,7 +6,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import Unit from './Unit';
 import SequenceNavigation from './SequenceNavigation';
 import PageLoading from '../PageLoading';
-import { getBlockCompletion, saveSequencePosition } from './api';
+import { saveSequencePosition } from './redux';
 import messages from './messages';
 import AlertList from '../../user-messages/AlertList';
 
@@ -16,7 +16,6 @@ function Sequence({
   courseUsageKey,
   id,
   unitIds,
-  units: initialUnits,
   displayName,
   showCompletion,
   onNext,
@@ -26,46 +25,17 @@ function Sequence({
   prerequisite,
   savePosition,
   activeUnitId: initialActiveUnitId,
+  activeUnit,
   intl,
 }) {
-  const [units, setUnits] = useState(initialUnits);
   const [activeUnitId, setActiveUnitId] = useState(initialActiveUnitId);
 
   const activeUnitIndex = unitIds.indexOf(activeUnitId);
-  const activeUnit = units[activeUnitId];
-  const unitsArr = unitIds.map(unitId => ({
-    ...units[unitId],
-    id: unitId,
-    isActive: unitId === activeUnitId,
-  }));
-
-  const handleUnitBookmarkChanged = (unitId, isBookmarked) => {
-    setUnits({
-      ...units,
-      [unitId]: { ...units[unitId], bookmarked: isBookmarked },
-    });
-  };
-
-  // TODO: Use callback
-  const updateUnitCompletion = (unitId) => {
-    // If the unit is already complete, don't check.
-    if (units[unitId].complete) {
-      return;
-    }
-
-    getBlockCompletion(courseUsageKey, id, unitId).then((isComplete) => {
-      if (isComplete) {
-        setUnits({
-          ...units,
-          [unitId]: { ...units[unitId], complete: isComplete },
-        });
-      }
-    });
-  };
 
   const handleNext = () => {
     if (activeUnitIndex < unitIds.length - 1) {
-      handleNavigate(activeUnitIndex + 1);
+      const newUnitId = unitIds[activeUnitIndex + 1];
+      handleNavigate(newUnitId);
     } else {
       onNext();
     }
@@ -73,20 +43,17 @@ function Sequence({
 
   const handlePrevious = () => {
     if (activeUnitIndex > 0) {
-      handleNavigate(activeUnitIndex - 1);
+      const newUnitId = unitIds[activeUnitIndex - 1];
+      handleNavigate(newUnitId);
     } else {
       onPrevious();
     }
   };
 
-  const handleNavigate = (unitIndex) => {
-    const newUnitId = unitIds[unitIndex];
-    if (showCompletion) {
-      updateUnitCompletion(activeUnitId);
-    }
+  const handleNavigate = (newUnitId) => {
     setActiveUnitId(newUnitId);
     if (onNavigateUnit !== null) {
-      onNavigateUnit(newUnitId, units[newUnitId]);
+      onNavigateUnit(newUnitId);
     }
   };
 
@@ -105,7 +72,8 @@ function Sequence({
           onNext={handleNext}
           onNavigate={handleNavigate}
           onPrevious={handlePrevious}
-          units={unitsArr}
+          unitIds={unitIds}
+          activeUnitId={activeUnitId}
           isLocked={isGated}
           showCompletion={showCompletion}
         />
@@ -130,8 +98,7 @@ function Sequence({
         <Unit
           key={activeUnitId}
           {...activeUnit}
-          isBookmarked={activeUnit.bookmarked}
-          onBookmarkChanged={handleUnitBookmarkChanged}
+          unitId={activeUnitId}
         />
       )}
     </div>
@@ -157,16 +124,27 @@ Sequence.propTypes = {
     id: PropTypes.string,
   }).isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  units: PropTypes.objectOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
+  activeUnit: PropTypes.shape({
+    blockId: PropTypes.string,
+    bookmarked: PropTypes.bool,
     complete: PropTypes.bool,
-    pageTitle: PropTypes.string.isRequired,
-  })).isRequired,
+    content: PropTypes.string,
+    contentType: PropTypes.string,
+    displayName: PropTypes.string,
+    graded: PropTypes.bool,
+    href: PropTypes.string,
+    id: PropTypes.string,
+    lmsWebUrl: PropTypes.string,
+    pageTitle: PropTypes.string,
+    parentId: PropTypes.string,
+    studentViewUrl: PropTypes.string,
+  }),
 };
 
 Sequence.defaultProps = {
   bannerText: null,
   onNavigateUnit: null,
+  activeUnit: null,
 };
 
 export default injectIntl(Sequence);

@@ -1,64 +1,35 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { history, getConfig, camelCaseObject } from '@edx/frontend-platform';
-import { AppContext } from '@edx/frontend-platform/react';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { history } from '@edx/frontend-platform';
+import { fetchCourseMetadata } from '../data/course-meta/thunks';
+import { fetchCourseBlocks } from '../data/course-blocks/thunks';
 
 import messages from './messages';
 import PageLoading from './PageLoading';
 import Course from './course/Course';
-import { createBlocksMap } from './utils';
-
-export async function getCourseBlocks(courseUsageKey, username) {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/`);
-  url.searchParams.append('course_id', courseUsageKey);
-  url.searchParams.append('username', username);
-  url.searchParams.append('depth', 3);
-  url.searchParams.append('requested_fields', 'children,show_gated_sections');
-
-  const { data } = await getAuthenticatedHttpClient().get(url.href, {});
-
-  return data;
-}
-
-export async function getCourse(courseUsageKey) {
-  const url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseUsageKey}`;
-  const { data } = await getAuthenticatedHttpClient().get(url);
-
-  return data;
-}
-
-function useLoadCourse(courseUsageKey) {
-  const { authenticatedUser } = useContext(AppContext);
-
-  const [models, setModels] = useState(null);
-  const [courseId, setCourseId] = useState();
-  const [metadata, setMetadata] = useState(null);
-
-  useEffect(() => {
-    getCourseBlocks(courseUsageKey, authenticatedUser.username).then((blocksData) => {
-      setModels(createBlocksMap(blocksData.blocks));
-      setCourseId(blocksData.root);
-    });
-    getCourse(courseUsageKey).then((data) => {
-      setMetadata(camelCaseObject(data));
-    });
-  }, [courseUsageKey]);
-
-  return {
-    models, courseId, metadata,
-  };
-}
 
 function CourseContainer(props) {
-  const { intl, match } = props;
+  const {
+    intl,
+    match,
+    courseId,
+    blocks: models,
+    metadata,
+  } = props;
   const {
     courseUsageKey,
     sequenceId,
     unitId,
   } = match.params;
-  const { models, courseId, metadata } = useLoadCourse(courseUsageKey);
+
+  const metadataLoaded = metadata.fetchState === 'loaded';
+
+  useEffect(() => {
+    props.fetchCourseMetadata(courseUsageKey);
+    props.fetchCourseBlocks(courseUsageKey);
+  }, [courseUsageKey]);
 
   useEffect(() => {
     if (courseId && !sequenceId) {
@@ -78,17 +49,17 @@ function CourseContainer(props) {
     );
   }
 
-  return metadata && (
+  return metadataLoaded && (
     <Course
-      courseOrg={metadata.org}
-      courseNumber={metadata.number}
-      courseName={metadata.name}
+      courseOrg={props.metadata.org}
+      courseNumber={props.metadata.number}
+      courseName={props.metadata.name}
       courseUsageKey={courseUsageKey}
       courseId={courseId}
       sequenceId={sequenceId}
       unitId={unitId}
       models={models}
-      tabs={metadata.tabs}
+      tabs={props.metadata.tabs}
     />
   );
 }
@@ -104,4 +75,13 @@ CourseContainer.propTypes = {
   }).isRequired,
 };
 
-export default injectIntl(CourseContainer);
+const mapStateToProps = state => ({
+  courseId: state.courseBlocks.root,
+  metadata: state.courseMeta,
+  blocks: state.courseBlocks.blocks,
+});
+
+export default connect(mapStateToProps, {
+  fetchCourseMetadata,
+  fetchCourseBlocks,
+})(injectIntl(CourseContainer));
