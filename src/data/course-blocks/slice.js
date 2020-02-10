@@ -9,6 +9,10 @@ const blocksSlice = createSlice({
     blocks: {},
   },
   reducers: {
+    /**
+     * fetchCourseBlocks
+     * This routine is responsible for fetching all blocks in a course.
+     */
     fetchCourseBlocksRequest: (draftState) => {
       draftState.fetchState = 'loading';
     },
@@ -21,8 +25,15 @@ const blocksSlice = createSlice({
       draftState.fetchState = 'failed';
     },
 
-    // Handles sequence metadata updates
-    // Handles completion checks
+    /**
+     * fetchBlockMetadata
+     * This routine is responsible for fetching metadata for any kind of
+     * block (sequential, vertical or any other block) and merging that
+     * data with what is in the store. Currently used for:
+     *
+     *  - fetchSequenceMetadata
+     *  - checkBlockCompletion (Vertical blocks)
+     */
     fetchBlockMetadataRequest: (draftState, action) => {
       const { blockId } = action.payload;
       if (!draftState.blocks[blockId]) {
@@ -61,8 +72,23 @@ const blocksSlice = createSlice({
       draftState.blocks[blockId].fetchState = 'failure';
     },
 
-    // Handles bookmarking
-    // TODO HANDLES UPDATES TO POSITION in an optimistic way
+    /**
+     * updateBlock
+     * This routine is responsible for CRUD operations on block properties.
+     * Updates to blocks are handled in an optimistic way – applying the update
+     * to the store at request time and then reverting it if the update fails.
+     *
+     * TODO: It may be helpful to add a flag to be optimistic or not.
+     *
+     * The update state of a property is added to the block in the store with
+     * a dynamic property name: ${propertyToUpdate}UpdateState.
+     * (e.g. bookmarkedUpdateState)
+     *
+     * Used in:
+     *  - saveSequencePosition
+     *  - addBookmark
+     *  - removeBookmark
+     */
     updateBlockRequest: (draftState, action) => {
       const { blockId, propertyToUpdate, updateValue } = action.payload;
       const updateStateKey = `${propertyToUpdate}UpdateState`;

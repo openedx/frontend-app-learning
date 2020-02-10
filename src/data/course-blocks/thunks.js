@@ -49,13 +49,19 @@ export const checkBlockCompletion = (courseUsageKey, sequenceId, unitId) => {
     if (courseBlocks.blocks[unitId].complete) {
       return; // do nothing. Things don't get uncompleted after they are completed.
     }
-    const isComplete = await getBlockCompletion(courseUsageKey, sequenceId, unitId);
-    dispatch(fetchBlockMetadataSuccess({
-      blockId: unitId,
-      metadata: {
-        complete: isComplete,
-      },
-    }));
+    const commonPayload = { blockId: unitId, fetchType: 'completion' };
+    dispatch(fetchBlockMetadataRequest(commonPayload));
+    try {
+      const isComplete = await getBlockCompletion(courseUsageKey, sequenceId, unitId);
+      dispatch(fetchBlockMetadataSuccess({
+        ...commonPayload,
+        metadata: {
+          complete: isComplete,
+        },
+      }));
+    } catch (error) {
+      dispatch(fetchBlockMetadataFailure(commonPayload, error));
+    }
   };
 };
 
