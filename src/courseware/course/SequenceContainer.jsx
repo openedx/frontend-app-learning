@@ -20,7 +20,6 @@ function SequenceContainer(props) {
     intl,
     onNext,
     onPrevious,
-    activeUnit,
     fetchState,
     displayName,
     showCompletion,
@@ -29,7 +28,7 @@ function SequenceContainer(props) {
     bannerText,
     gatedContent,
     position,
-    items,
+    unitIds,
     lmsWebUrl,
   } = props;
   const loaded = fetchState === 'loaded';
@@ -42,7 +41,7 @@ function SequenceContainer(props) {
     if (loaded && !unitId) {
       // The position may be null, in which case we'll just assume 0.
       const unitIndex = position !== null ? position - 1 : 0;
-      const nextUnitId = items[unitIndex].id;
+      const nextUnitId = unitIds[unitIndex];
       history.push(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
     }
   }, [loaded, unitId]);
@@ -96,8 +95,7 @@ function SequenceContainer(props) {
       id={sequenceId}
       courseUsageKey={courseUsageKey}
       courseId={courseId}
-      unitIds={items.map(item => item.id)}
-      activeUnit={activeUnit}
+      unitIds={unitIds}
       displayName={displayName}
       activeUnitId={unitId}
       showCompletion={showCompletion}
@@ -121,25 +119,7 @@ SequenceContainer.propTypes = {
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   intl: intlShape.isRequired,
-  items: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string,
-    lmsWebUrl: PropTypes.string,
-  })),
-  activeUnit: PropTypes.shape({
-    blockId: PropTypes.string,
-    bookmarked: PropTypes.bool,
-    complete: PropTypes.bool,
-    content: PropTypes.string,
-    contentType: PropTypes.string,
-    displayName: PropTypes.string,
-    graded: PropTypes.bool,
-    href: PropTypes.string,
-    id: PropTypes.string,
-    lmsWebUrl: PropTypes.string,
-    pageTitle: PropTypes.string,
-    parentId: PropTypes.string,
-    studentViewUrl: PropTypes.string,
-  }),
+  unitIds: PropTypes.arrayOf(PropTypes.string),
   gatedContent: PropTypes.shape({
     gated: PropTypes.bool,
     gatedSectionName: PropTypes.string,
@@ -159,7 +139,6 @@ SequenceContainer.propTypes = {
 
 SequenceContainer.defaultProps = {
   unitId: undefined,
-  activeUnit: undefined,
   gatedContent: undefined,
   showCompletion: false,
   lmsWebUrl: undefined,
@@ -169,13 +148,13 @@ SequenceContainer.defaultProps = {
   isTimeLimited: undefined,
   bannerText: undefined,
   savePosition: undefined,
-  items: [],
+  unitIds: [],
 };
 
 export default connect(
   (state, props) => ({
     ...state.courseBlocks.blocks[props.sequenceId],
-    activeUnit: state.courseBlocks.blocks[props.unitId],
+    unitIds: state.courseBlocks.blocks[props.sequenceId].children,
   }),
   {
     fetchSequenceMetadata,

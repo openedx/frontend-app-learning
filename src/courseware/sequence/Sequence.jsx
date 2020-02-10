@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -24,17 +24,13 @@ function Sequence({
   isGated,
   prerequisite,
   savePosition,
-  activeUnitId: initialActiveUnitId,
-  activeUnit,
+  activeUnitId,
   intl,
 }) {
-  const [activeUnitId, setActiveUnitId] = useState(initialActiveUnitId);
-
-  const activeUnitIndex = unitIds.indexOf(activeUnitId);
-
   const handleNext = () => {
-    if (activeUnitIndex < unitIds.length - 1) {
-      const newUnitId = unitIds[activeUnitIndex + 1];
+    const nextIndex = unitIds.indexOf(activeUnitId) + 1;
+    if (nextIndex < unitIds.length) {
+      const newUnitId = unitIds[nextIndex];
       handleNavigate(newUnitId);
     } else {
       onNext();
@@ -42,23 +38,22 @@ function Sequence({
   };
 
   const handlePrevious = () => {
-    if (activeUnitIndex > 0) {
-      const newUnitId = unitIds[activeUnitIndex - 1];
+    const previousIndex = unitIds.indexOf(activeUnitId) - 1;
+    if (previousIndex >= 0) {
+      const newUnitId = unitIds[previousIndex];
       handleNavigate(newUnitId);
     } else {
       onPrevious();
     }
   };
 
-  const handleNavigate = (newUnitId) => {
-    setActiveUnitId(newUnitId);
-    if (onNavigateUnit !== null) {
-      onNavigateUnit(newUnitId);
-    }
+  const handleNavigate = (unitId) => {
+    onNavigateUnit(unitId);
   };
 
   useEffect(() => {
     if (savePosition) {
+      const activeUnitIndex = unitIds.indexOf(activeUnitId);
       saveSequencePosition(courseUsageKey, id, activeUnitIndex);
     }
   }, [activeUnitId]);
@@ -97,8 +92,7 @@ function Sequence({
       {!isGated && (
         <Unit
           key={activeUnitId}
-          {...activeUnit}
-          unitId={activeUnitId}
+          id={activeUnitId}
         />
       )}
     </div>
@@ -107,13 +101,11 @@ function Sequence({
 
 Sequence.propTypes = {
   activeUnitId: PropTypes.string.isRequired,
-  bannerText: PropTypes.string,
   courseUsageKey: PropTypes.string.isRequired,
   displayName: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   isGated: PropTypes.bool.isRequired,
-  isTimeLimited: PropTypes.bool.isRequired,
   onNavigateUnit: PropTypes.func,
   onNext: PropTypes.func.isRequired,
   onPrevious: PropTypes.func.isRequired,
@@ -124,27 +116,10 @@ Sequence.propTypes = {
     id: PropTypes.string,
   }).isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  activeUnit: PropTypes.shape({
-    blockId: PropTypes.string,
-    bookmarked: PropTypes.bool,
-    complete: PropTypes.bool,
-    content: PropTypes.string,
-    contentType: PropTypes.string,
-    displayName: PropTypes.string,
-    graded: PropTypes.bool,
-    href: PropTypes.string,
-    id: PropTypes.string,
-    lmsWebUrl: PropTypes.string,
-    pageTitle: PropTypes.string,
-    parentId: PropTypes.string,
-    studentViewUrl: PropTypes.string,
-  }),
 };
 
 Sequence.defaultProps = {
-  bannerText: null,
   onNavigateUnit: null,
-  activeUnit: null,
 };
 
 export default injectIntl(Sequence);

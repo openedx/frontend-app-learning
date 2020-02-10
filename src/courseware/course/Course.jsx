@@ -92,5 +92,5 @@ Course.propTypes = {
 };
 
 Course.defaultProps = {
-  unitId: null,
+  unitId: undefined,
 };

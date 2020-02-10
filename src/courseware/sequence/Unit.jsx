@@ -6,7 +6,11 @@ import BookmarkButton from './bookmark/BookmarkButton';
 import { addBookmark, removeBookmark } from '../../data/course-blocks/thunks';
 
 function Unit({
-  id, displayName, bookmarked, ...props
+  bookmarked,
+  bookmarkedUpdateState,
+  displayName,
+  id,
+  ...props
 }) {
   const iframeRef = useRef(null);
   const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
@@ -37,7 +41,7 @@ function Unit({
         <BookmarkButton
           onClick={toggleBookmark}
           isBookmarked={bookmarked}
-          isProcessing={props.bookmarkedUpdateState === 'loading'}
+          isProcessing={bookmarkedUpdateState === 'loading'}
         />
       </div>
       <iframe
@@ -55,11 +59,11 @@ function Unit({
 }
 
 Unit.propTypes = {
-  id: PropTypes.string.isRequired,
-  displayName: PropTypes.string.isRequired,
+  addBookmark: PropTypes.func.isRequired,
   bookmarked: PropTypes.bool,
   bookmarkedUpdateState: PropTypes.string,
-  addBookmark: PropTypes.func.isRequired,
+  displayName: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
   removeBookmark: PropTypes.func.isRequired,
 };
 
@@ -68,9 +72,7 @@ Unit.defaultProps = {
   bookmarkedUpdateState: undefined,
 };
 
-const mapStateToProps = (state, props) => ({
-  ...state.courseBlocks.blocks[props.id],
-});
+const mapStateToProps = (state, props) => state.courseBlocks.blocks[props.id];
 
 export default connect(mapStateToProps, {
   addBookmark,

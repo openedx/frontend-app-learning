@@ -66,7 +66,7 @@ function CourseContainer(props) {
 
 CourseContainer.propTypes = {
   intl: intlShape.isRequired,
-  courseId: PropTypes.string.isRequired,
+  courseId: PropTypes.string,
   blocks: PropTypes.objectOf(PropTypes.shape({
     id: PropTypes.string,
   })),
@@ -97,6 +97,7 @@ CourseContainer.propTypes = {
 CourseContainer.defaultProps = {
   blocks: {},
   metadata: undefined,
+  courseId: undefined,
 };
 
 const mapStateToProps = state => ({
