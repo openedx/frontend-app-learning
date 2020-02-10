@@ -49,8 +49,7 @@ export async function getSequenceMetadata(sequenceId) {
   return camelCasedData;
 }
 
-const getSequenceXModuleHandlerUrl = (courseUsageKey, sequenceId) =>
-  `${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/xblock/${sequenceId}/handler/xmodule_handler`;
+const getSequenceXModuleHandlerUrl = (courseUsageKey, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/xblock/${sequenceId}/handler/xmodule_handler`;
 
 export async function saveSequencePosition(courseUsageKey, sequenceId, position) {
   // Post data sent to this endpoint must be url encoded

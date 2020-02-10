@@ -66,6 +66,25 @@ function CourseContainer(props) {
 
 CourseContainer.propTypes = {
   intl: intlShape.isRequired,
+  courseId: PropTypes.string.isRequired,
+  blocks: PropTypes.objectOf(PropTypes.shape({
+    id: PropTypes.string,
+  })),
+  metadata: PropTypes.shape({
+    fetchState: PropTypes.string,
+    org: PropTypes.string,
+    number: PropTypes.string,
+    name: PropTypes.string,
+    tabs: PropTypes.arrayOf(PropTypes.shape({
+      priority: PropTypes.number,
+      slug: PropTypes.string,
+      title: PropTypes.string,
+      type: PropTypes.string,
+      url: PropTypes.string,
+    })),
+  }),
+  fetchCourseMetadata: PropTypes.func.isRequired,
+  fetchCourseBlocks: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       courseUsageKey: PropTypes.string.isRequired,
@@ -73,6 +92,11 @@ CourseContainer.propTypes = {
       unitId: PropTypes.string,
     }).isRequired,
   }).isRequired,
+};
+
+CourseContainer.defaultProps = {
+  blocks: {},
+  metadata: undefined,
 };
 
 const mapStateToProps = state => ({
