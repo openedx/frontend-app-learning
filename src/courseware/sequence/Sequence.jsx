@@ -6,7 +6,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import Unit from './Unit';
 import SequenceNavigation from './SequenceNavigation';
 import PageLoading from '../PageLoading';
-import { saveSequencePosition } from './redux';
+import { saveSequencePosition } from './api';
 import messages from './messages';
 import AlertList from '../../user-messages/AlertList';
 
