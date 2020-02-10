@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus */
-import React, { useEffect, useContext, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -8,8 +8,7 @@ import { history } from '@edx/frontend-platform';
 import messages from '../messages';
 import PageLoading from '../PageLoading';
 import Sequence from '../sequence/Sequence';
-import UserMessagesContext from '../../user-messages/UserMessagesContext';
-import { fetchSequenceMetadata, checkBlockCompletion } from '../../data/course-blocks/thunks';
+import { fetchSequenceMetadata, checkBlockCompletion, saveSequencePosition } from '../../data/course-blocks/thunks';
 
 function SequenceContainer(props) {
   const {
@@ -28,19 +27,28 @@ function SequenceContainer(props) {
     bannerText,
     gatedContent,
     position,
-    unitIds,
+    items,
     lmsWebUrl,
   } = props;
   const loaded = fetchState === 'loaded';
+
+  const unitIds = useMemo(() => items.map(({ id }) => id), [items]);
 
   useEffect(() => {
     props.fetchSequenceMetadata(sequenceId);
   }, [sequenceId]);
 
   useEffect(() => {
+    if (savePosition) {
+      const activeUnitIndex = unitIds.indexOf(unitId);
+      props.saveSequencePosition(courseUsageKey, sequenceId, activeUnitIndex);
+    }
+  }, [unitId]);
+
+  useEffect(() => {
     if (loaded && !unitId) {
       // The position may be null, in which case we'll just assume 0.
-      const unitIndex = position !== null ? position - 1 : 0;
+      const unitIndex = position || 0;
       const nextUnitId = unitIds[unitIndex];
       history.push(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
     }
@@ -50,25 +58,6 @@ function SequenceContainer(props) {
     props.checkBlockCompletion(courseUsageKey, sequenceId, unitId);
     history.push(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
   }, [courseUsageKey, sequenceId]);
-
-  const { add, remove } = useContext(UserMessagesContext);
-  useEffect(() => {
-    let id = null;
-    if (bannerText) {
-      id = add({
-        code: null,
-        dismissible: false,
-        text: bannerText,
-        type: 'info',
-        topic: 'sequence',
-      });
-    }
-    return () => {
-      if (id) {
-        remove(id);
-      }
-    };
-  }, [bannerText]);
 
   // Exam redirect
   useEffect(() => {
@@ -119,7 +108,9 @@ SequenceContainer.propTypes = {
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   intl: intlShape.isRequired,
-  unitIds: PropTypes.arrayOf(PropTypes.string),
+  items: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+  })),
   gatedContent: PropTypes.shape({
     gated: PropTypes.bool,
     gatedSectionName: PropTypes.string,
@@ -127,6 +118,7 @@ SequenceContainer.propTypes = {
   }),
   checkBlockCompletion: PropTypes.func.isRequired,
   fetchSequenceMetadata: PropTypes.func.isRequired,
+  saveSequencePosition: PropTypes.func.isRequired,
   savePosition: PropTypes.bool,
   lmsWebUrl: PropTypes.string,
   position: PropTypes.number,
@@ -148,16 +140,16 @@ SequenceContainer.defaultProps = {
   isTimeLimited: undefined,
   bannerText: undefined,
   savePosition: undefined,
-  unitIds: [],
+  items: [],
 };
 
 export default connect(
   (state, props) => ({
     ...state.courseBlocks.blocks[props.sequenceId],
-    unitIds: state.courseBlocks.blocks[props.sequenceId].children,
   }),
   {
     fetchSequenceMetadata,
     checkBlockCompletion,
+    saveSequencePosition,
   },
 )(injectIntl(SequenceContainer));

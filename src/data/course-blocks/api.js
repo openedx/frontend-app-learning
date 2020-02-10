@@ -46,16 +46,20 @@ export async function getSequenceMetadata(sequenceId) {
     return processedItem;
   });
 
+  // Position comes back from the server 1-indexed. Adjust here.
+  camelCasedData.position = camelCasedData.position ? camelCasedData.position - 1 : 0;
+
   return camelCasedData;
 }
 
 const getSequenceXModuleHandlerUrl = (courseUsageKey, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/xblock/${sequenceId}/handler/xmodule_handler`;
 
-export async function saveSequencePosition(courseUsageKey, sequenceId, position) {
+export async function updateSequencePosition(courseUsageKey, sequenceId, position) {
   // Post data sent to this endpoint must be url encoded
   // TODO: Remove the need for this to be the case.
   // TODO: Ensure this usage of URLSearchParams is working in Internet Explorer
   const urlEncoded = new URLSearchParams();
+  // Position is 1-indexed on the server and 0-indexed in this app. Adjust here.
   urlEncoded.append('position', position + 1);
   const requestConfig = {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

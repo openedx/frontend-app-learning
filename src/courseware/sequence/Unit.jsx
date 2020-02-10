@@ -72,7 +72,7 @@ Unit.defaultProps = {
   bookmarkedUpdateState: undefined,
 };
 
-const mapStateToProps = (state, props) => state.courseBlocks.blocks[props.id];
+const mapStateToProps = (state, props) => state.courseBlocks.blocks[props.id] || {};
 
 export default connect(mapStateToProps, {
   addBookmark,

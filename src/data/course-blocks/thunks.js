@@ -13,6 +13,7 @@ import {
   getCourseBlocks,
   getSequenceMetadata,
   getBlockCompletion,
+  updateSequencePosition,
   createBookmark,
   deleteBookmark,
 } from './api';
@@ -57,6 +58,27 @@ export const checkBlockCompletion = (courseUsageKey, sequenceId, unitId) => {
     }));
   };
 };
+
+// eslint-disable-next-line arrow-body-style
+export const saveSequencePosition = (courseUsageKey, sequenceId, position) => {
+  return async (dispatch, getState) => {
+    const { courseBlocks } = getState();
+    const actionPayload = {
+      blockId: sequenceId,
+      propertyToUpdate: 'position',
+      updateValue: position,
+      initialValue: courseBlocks.blocks[sequenceId].position,
+    };
+    dispatch(updateBlockRequest(actionPayload));
+    try {
+      await updateSequencePosition(courseUsageKey, sequenceId, position);
+      dispatch(updateBlockSuccess(actionPayload));
+    } catch (error) {
+      dispatch(updateBlockFailure(actionPayload));
+    }
+  };
+};
+
 
 export const addBookmark = unitId => async (dispatch) => {
   const actionPayload = {

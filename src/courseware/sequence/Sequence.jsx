@@ -1,20 +1,19 @@
 /* eslint-disable no-use-before-define */
-import React, { useEffect, Suspense } from 'react';
+import React, { useEffect, useContext, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import Unit from './Unit';
 import SequenceNavigation from './SequenceNavigation';
 import PageLoading from '../PageLoading';
-import { saveSequencePosition } from './api';
 import messages from './messages';
 import AlertList from '../../user-messages/AlertList';
+import UserMessagesContext from '../../user-messages/UserMessagesContext';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
 
 function Sequence({
   courseUsageKey,
-  id,
   unitIds,
   displayName,
   showCompletion,
@@ -23,8 +22,8 @@ function Sequence({
   onNavigateUnit,
   isGated,
   prerequisite,
-  savePosition,
   activeUnitId,
+  bannerText,
   intl,
 }) {
   const handleNext = () => {
@@ -51,12 +50,25 @@ function Sequence({
     onNavigateUnit(unitId);
   };
 
+  const { add, remove } = useContext(UserMessagesContext);
   useEffect(() => {
-    if (savePosition) {
-      const activeUnitIndex = unitIds.indexOf(activeUnitId);
-      saveSequencePosition(courseUsageKey, id, activeUnitIndex);
+    let id = null;
+    if (bannerText) {
+      id = add({
+        code: null,
+        dismissible: false,
+        text: bannerText,
+        type: 'info',
+        topic: 'sequence',
+      });
     }
-  }, [activeUnitId]);
+    return () => {
+      if (id) {
+        remove(id);
+      }
+    };
+  }, [bannerText]);
+
 
   return (
     <div className="flex-grow-1">
@@ -103,23 +115,23 @@ Sequence.propTypes = {
   activeUnitId: PropTypes.string.isRequired,
   courseUsageKey: PropTypes.string.isRequired,
   displayName: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   isGated: PropTypes.bool.isRequired,
   onNavigateUnit: PropTypes.func,
   onNext: PropTypes.func.isRequired,
   onPrevious: PropTypes.func.isRequired,
-  savePosition: PropTypes.bool.isRequired,
   showCompletion: PropTypes.bool.isRequired,
   prerequisite: PropTypes.shape({
     name: PropTypes.string,
     id: PropTypes.string,
   }).isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  bannerText: PropTypes.string,
 };
 
 Sequence.defaultProps = {
   onNavigateUnit: null,
+  bannerText: undefined,
 };
 
 export default injectIntl(Sequence);
