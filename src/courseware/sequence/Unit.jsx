@@ -53,6 +53,7 @@ function Unit({
         height={iframeHeight}
         scrolling="no"
         referrerPolicy="origin"
+        style={{ border: 0, width: '100%' }}
       />
     </div>
   );
