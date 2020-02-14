@@ -8,12 +8,14 @@ import {
   getCourseMetadata,
 } from './api';
 
-export const fetchCourseMetadata = courseUsageKey => async (dispatch) => {
-  dispatch(fetchCourseMetadataRequest({ courseUsageKey }));
-  try {
-    const courseMetadata = await getCourseMetadata(courseUsageKey);
-    dispatch(fetchCourseMetadataSuccess(courseMetadata));
-  } catch (error) {
-    dispatch(fetchCourseMetadataFailure(error));
-  }
-};
+export function fetchCourseMetadata(courseUsageKey) {
+  return async (dispatch) => {
+    dispatch(fetchCourseMetadataRequest({ courseUsageKey }));
+    try {
+      const courseMetadata = await getCourseMetadata(courseUsageKey);
+      dispatch(fetchCourseMetadataSuccess(courseMetadata));
+    } catch (error) {
+      dispatch(fetchCourseMetadataFailure(error));
+    }
+  };
+}

@@ -18,32 +18,35 @@ import {
   deleteBookmark,
 } from './api';
 
-export const fetchCourseBlocks = courseUsageKey => async (dispatch) => {
-  dispatch(fetchCourseBlocksRequest(courseUsageKey));
-  try {
-    const courseBlocks = await getCourseBlocks(courseUsageKey);
-    dispatch(fetchCourseBlocksSuccess(courseBlocks));
-  } catch (error) {
-    dispatch(fetchCourseBlocksFailure(error));
-  }
-};
+export function fetchCourseBlocks(courseUsageKey) {
+  return async (dispatch) => {
+    dispatch(fetchCourseBlocksRequest(courseUsageKey));
+    try {
+      const courseBlocks = await getCourseBlocks(courseUsageKey);
+      dispatch(fetchCourseBlocksSuccess(courseBlocks));
+    } catch (error) {
+      dispatch(fetchCourseBlocksFailure(error));
+    }
+  };
+}
 
-export const fetchSequenceMetadata = sequenceBlockId => async (dispatch) => {
-  dispatch(fetchBlockMetadataRequest({ blockId: sequenceBlockId }));
-  try {
-    const sequenceMetadata = await getSequenceMetadata(sequenceBlockId);
-    dispatch(fetchBlockMetadataSuccess({
-      blockId: sequenceBlockId,
-      metadata: sequenceMetadata,
-      relatedBlocksMetadata: sequenceMetadata.items,
-    }));
-  } catch (error) {
-    dispatch(fetchBlockMetadataFailure({ blockId: sequenceBlockId }, error));
-  }
-};
+export function fetchSequenceMetadata(sequenceBlockId) {
+  return async (dispatch) => {
+    dispatch(fetchBlockMetadataRequest({ blockId: sequenceBlockId }));
+    try {
+      const sequenceMetadata = await getSequenceMetadata(sequenceBlockId);
+      dispatch(fetchBlockMetadataSuccess({
+        blockId: sequenceBlockId,
+        metadata: sequenceMetadata,
+        relatedBlocksMetadata: sequenceMetadata.items,
+      }));
+    } catch (error) {
+      dispatch(fetchBlockMetadataFailure({ blockId: sequenceBlockId }, error));
+    }
+  };
+}
 
-// eslint-disable-next-line arrow-body-style
-export const checkBlockCompletion = (courseUsageKey, sequenceId, unitId) => {
+export function checkBlockCompletion(courseUsageKey, sequenceId, unitId) {
   return async (dispatch, getState) => {
     const { courseBlocks } = getState();
     if (courseBlocks.blocks[unitId].complete) {
@@ -63,10 +66,9 @@ export const checkBlockCompletion = (courseUsageKey, sequenceId, unitId) => {
       dispatch(fetchBlockMetadataFailure(commonPayload, error));
     }
   };
-};
+}
 
-// eslint-disable-next-line arrow-body-style
-export const saveSequencePosition = (courseUsageKey, sequenceId, position) => {
+export function saveSequencePosition(courseUsageKey, sequenceId, position) {
   return async (dispatch, getState) => {
     const { courseBlocks } = getState();
     const actionPayload = {
@@ -83,37 +85,40 @@ export const saveSequencePosition = (courseUsageKey, sequenceId, position) => {
       dispatch(updateBlockFailure(actionPayload));
     }
   };
-};
+}
 
-
-export const addBookmark = unitId => async (dispatch) => {
-  const actionPayload = {
-    blockId: unitId,
-    propertyToUpdate: 'bookmarked',
-    updateValue: true,
-    initialValue: false,
+export function addBookmark(unitId) {
+  return async (dispatch) => {
+    const actionPayload = {
+      blockId: unitId,
+      propertyToUpdate: 'bookmarked',
+      updateValue: true,
+      initialValue: false,
+    };
+    dispatch(updateBlockRequest(actionPayload));
+    try {
+      await createBookmark(unitId);
+      dispatch(updateBlockSuccess(actionPayload));
+    } catch (error) {
+      dispatch(updateBlockFailure(actionPayload));
+    }
   };
-  dispatch(updateBlockRequest(actionPayload));
-  try {
-    await createBookmark(unitId);
-    dispatch(updateBlockSuccess(actionPayload));
-  } catch (error) {
-    dispatch(updateBlockFailure(actionPayload));
-  }
-};
+}
 
-export const removeBookmark = unitId => async (dispatch) => {
-  const actionPayload = {
-    blockId: unitId,
-    propertyToUpdate: 'bookmarked',
-    updateValue: false,
-    initialValue: true,
+export function removeBookmark(unitId) {
+  return async (dispatch) => {
+    const actionPayload = {
+      blockId: unitId,
+      propertyToUpdate: 'bookmarked',
+      updateValue: false,
+      initialValue: true,
+    };
+    dispatch(updateBlockRequest(actionPayload));
+    try {
+      await deleteBookmark(unitId);
+      dispatch(updateBlockSuccess(actionPayload));
+    } catch (error) {
+      dispatch(updateBlockFailure(actionPayload));
+    }
   };
-  dispatch(updateBlockRequest(actionPayload));
-  try {
-    await deleteBookmark(unitId);
-    dispatch(updateBlockSuccess(actionPayload));
-  } catch (error) {
-    dispatch(updateBlockFailure(actionPayload));
-  }
-};
+}
