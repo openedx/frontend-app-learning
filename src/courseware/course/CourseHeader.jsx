@@ -31,30 +31,32 @@ export default function CourseHeader({
   const { authenticatedUser } = useContext(AppContext);
 
   return (
-    <header className="container-fluid py-2 d-flex align-items-center border-bottom border-primary">
-      <LinkedLogo
-        className="logo"
-        href={`${getConfig().LMS_BASE_URL}/dashboard`}
-        src={logo}
-        alt={getConfig().SITE_NAME}
-      />
-      <div className="flex-grow-1" style={{ lineHeight: 1 }}>
-        <span className="d-block small m-0">{courseOrg} {courseNumber}</span>
-        <span className="d-block m-0 font-weight-bold">{courseName}</span>
-      </div>
+    <header className="border-bottom border-primary">
+      <div className="container-fluid py-2 d-flex align-items-center ">
+        <LinkedLogo
+          className="logo"
+          href={`${getConfig().LMS_BASE_URL}/dashboard`}
+          src={logo}
+          alt={getConfig().SITE_NAME}
+        />
+        <div className="flex-grow-1" style={{ lineHeight: 1 }}>
+          <span className="d-block small m-0">{courseOrg} {courseNumber}</span>
+          <span className="d-block m-0 font-weight-bold">{courseName}</span>
+        </div>
 
-      <Dropdown>
-        <Dropdown.Button>
-          {authenticatedUser.username}
-        </Dropdown.Button>
-        <Dropdown.Menu>
-          <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/dashboard`}>Dashboard</Dropdown.Item>
-          <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/u/${authenticatedUser.username}`}>Profile</Dropdown.Item>
-          <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/account/settings`}>Account</Dropdown.Item>
-          <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>Order History</Dropdown.Item>
-          <Dropdown.Item href={getConfig().LOGOUT_URL}>Sign Out</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+        <Dropdown>
+          <Dropdown.Button>
+            {authenticatedUser.username}
+          </Dropdown.Button>
+          <Dropdown.Menu className="dropdown-menu-right">
+            <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/dashboard`}>Dashboard</Dropdown.Item>
+            <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/u/${authenticatedUser.username}`}>Profile</Dropdown.Item>
+            <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/account/settings`}>Account</Dropdown.Item>
+            <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>Order History</Dropdown.Item>
+            <Dropdown.Item href={getConfig().LOGOUT_URL}>Sign Out</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
     </header>
   );
 }

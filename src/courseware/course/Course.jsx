@@ -8,6 +8,7 @@ import { createSequenceIdList } from '../utils';
 import AlertList from '../../user-messages/AlertList';
 import CourseHeader from './CourseHeader';
 import CourseTabsNavigation from './CourseTabsNavigation';
+import InstructorToolbar from '../InstructorToolbar';
 
 export default function Course({
   courseOrg, courseNumber, courseName, courseUsageKey, courseId, sequenceId, unitId, models, tabs,
@@ -40,6 +41,12 @@ export default function Course({
         courseOrg={courseOrg}
         courseNumber={courseNumber}
         courseName={courseName}
+      />
+      <InstructorToolbar
+        courseUsageKey={courseUsageKey}
+        courseId={courseId}
+        sequenceId={sequenceId}
+        unitId={unitId}
       />
       <main className="d-flex flex-column flex-grow-1">
         <div className="container-fluid">
