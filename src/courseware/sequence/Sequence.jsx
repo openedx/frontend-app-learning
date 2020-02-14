@@ -1,22 +1,20 @@
 /* eslint-disable no-use-before-define */
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useEffect, useContext, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import Unit from './Unit';
 import SequenceNavigation from './SequenceNavigation';
 import PageLoading from '../PageLoading';
-import { getBlockCompletion, saveSequencePosition } from './api';
 import messages from './messages';
 import AlertList from '../../user-messages/AlertList';
+import UserMessagesContext from '../../user-messages/UserMessagesContext';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
 
 function Sequence({
   courseUsageKey,
-  id,
   unitIds,
-  units: initialUnits,
   displayName,
   showCompletion,
   onNext,
@@ -24,70 +22,53 @@ function Sequence({
   onNavigateUnit,
   isGated,
   prerequisite,
-  savePosition,
-  activeUnitId: initialActiveUnitId,
+  activeUnitId,
+  bannerText,
   intl,
 }) {
-  const [units, setUnits] = useState(initialUnits);
-  const [activeUnitId, setActiveUnitId] = useState(initialActiveUnitId);
-
-  const activeUnitIndex = unitIds.indexOf(activeUnitId);
-  const activeUnit = units[activeUnitId];
-  const unitsArr = unitIds.map(unitId => ({
-    ...units[unitId],
-    id: unitId,
-    isActive: unitId === activeUnitId,
-  }));
-
-  // TODO: Use callback
-  const updateUnitCompletion = (unitId) => {
-    // If the unit is already complete, don't check.
-    if (units[unitId].complete) {
-      return;
-    }
-
-    getBlockCompletion(courseUsageKey, id, unitId).then((isComplete) => {
-      if (isComplete) {
-        setUnits({
-          ...units,
-          [unitId]: { ...units[unitId], complete: isComplete },
-        });
-      }
-    });
-  };
-
   const handleNext = () => {
-    if (activeUnitIndex < unitIds.length - 1) {
-      handleNavigate(activeUnitIndex + 1);
+    const nextIndex = unitIds.indexOf(activeUnitId) + 1;
+    if (nextIndex < unitIds.length) {
+      const newUnitId = unitIds[nextIndex];
+      handleNavigate(newUnitId);
     } else {
       onNext();
     }
   };
 
   const handlePrevious = () => {
-    if (activeUnitIndex > 0) {
-      handleNavigate(activeUnitIndex - 1);
+    const previousIndex = unitIds.indexOf(activeUnitId) - 1;
+    if (previousIndex >= 0) {
+      const newUnitId = unitIds[previousIndex];
+      handleNavigate(newUnitId);
     } else {
       onPrevious();
     }
   };
 
-  const handleNavigate = (unitIndex) => {
-    const newUnitId = unitIds[unitIndex];
-    if (showCompletion) {
-      updateUnitCompletion(activeUnitId);
-    }
-    setActiveUnitId(newUnitId);
-    if (onNavigateUnit !== null) {
-      onNavigateUnit(newUnitId, units[newUnitId]);
-    }
+  const handleNavigate = (unitId) => {
+    onNavigateUnit(unitId);
   };
 
+  const { add, remove } = useContext(UserMessagesContext);
   useEffect(() => {
-    if (savePosition) {
-      saveSequencePosition(courseUsageKey, id, activeUnitIndex);
+    let id = null;
+    if (bannerText) {
+      id = add({
+        code: null,
+        dismissible: false,
+        text: bannerText,
+        type: 'info',
+        topic: 'sequence',
+      });
     }
-  }, [activeUnitId]);
+    return () => {
+      if (id) {
+        remove(id);
+      }
+    };
+  }, [bannerText]);
+
 
   return (
     <div className="flex-grow-1">
@@ -98,7 +79,8 @@ function Sequence({
           onNext={handleNext}
           onNavigate={handleNavigate}
           onPrevious={handlePrevious}
-          units={unitsArr}
+          unitIds={unitIds}
+          activeUnitId={activeUnitId}
           isLocked={isGated}
           showCompletion={showCompletion}
         />
@@ -120,7 +102,10 @@ function Sequence({
         )}
       </div>
       {!isGated && (
-        <Unit key={activeUnitId} {...activeUnit} />
+        <Unit
+          key={activeUnitId}
+          id={activeUnitId}
+        />
       )}
     </div>
   );
@@ -128,33 +113,25 @@ function Sequence({
 
 Sequence.propTypes = {
   activeUnitId: PropTypes.string.isRequired,
-  bannerText: PropTypes.string,
   courseUsageKey: PropTypes.string.isRequired,
   displayName: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   isGated: PropTypes.bool.isRequired,
-  isTimeLimited: PropTypes.bool.isRequired,
   onNavigateUnit: PropTypes.func,
   onNext: PropTypes.func.isRequired,
   onPrevious: PropTypes.func.isRequired,
-  savePosition: PropTypes.bool.isRequired,
   showCompletion: PropTypes.bool.isRequired,
   prerequisite: PropTypes.shape({
     name: PropTypes.string,
     id: PropTypes.string,
   }).isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  units: PropTypes.objectOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    complete: PropTypes.bool,
-    pageTitle: PropTypes.string.isRequired,
-  })).isRequired,
+  bannerText: PropTypes.string,
 };
 
 Sequence.defaultProps = {
-  bannerText: null,
   onNavigateUnit: null,
+  bannerText: undefined,
 };
 
 export default injectIntl(Sequence);
