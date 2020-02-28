@@ -66,6 +66,7 @@ function CourseContainer(props) {
       unitId={unitId}
       models={models}
       tabs={props.metadata.tabs}
+      verifiedMode={props.metadata.verifiedMode}
     />
   );
 }
@@ -88,6 +89,13 @@ CourseContainer.propTypes = {
       title: PropTypes.string,
       type: PropTypes.string,
       url: PropTypes.string,
+    })),
+    verifiedMode: PropTypes.objectOf(PropTypes.shape({
+      price: PropTypes.string,
+      currency: PropTypes.string,
+      currencySymbol: PropTypes.string,
+      sku: PropTypes.string,
+      upgradeUrl: PropTypes.string,
     })),
   }),
   fetchCourseMetadata: PropTypes.func.isRequired,
