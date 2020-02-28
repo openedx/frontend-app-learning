@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { history } from '@edx/frontend-platform';
+import { history, getConfig } from '@edx/frontend-platform';
 import { fetchCourseMetadata } from '../data/course-meta/thunks';
 import { fetchCourseBlocks } from '../data/course-blocks/thunks';
 
@@ -41,6 +41,12 @@ function CourseContainer(props) {
     }
   }, [courseUsageKey, courseId, sequenceId]);
 
+  useEffect(() => {
+    if (metadataLoaded && !metadata.userHasAccess) {
+      global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/`);
+    }
+  }, [metadataLoaded]);
+
   if (!courseId || !sequenceId) {
     return (
       <PageLoading
@@ -75,6 +81,7 @@ CourseContainer.propTypes = {
     org: PropTypes.string,
     number: PropTypes.string,
     name: PropTypes.string,
+    userHasAccess: PropTypes.bool,
     tabs: PropTypes.arrayOf(PropTypes.shape({
       priority: PropTypes.number,
       slug: PropTypes.string,

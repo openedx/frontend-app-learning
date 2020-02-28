@@ -1,5 +1,4 @@
 /* eslint-disable import/prefer-default-export */
-import { getConfig } from '@edx/frontend-platform';
 import {
   fetchCourseMetadataRequest,
   fetchCourseMetadataSuccess,
@@ -14,12 +13,7 @@ export function fetchCourseMetadata(courseUsageKey) {
     dispatch(fetchCourseMetadataRequest({ courseUsageKey }));
     try {
       const courseMetadata = await getCourseMetadata(courseUsageKey);
-
-      if (!courseMetadata.userHasAccess) {
-        global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/`);
-      } else {
-        dispatch(fetchCourseMetadataSuccess(courseMetadata));
-      }
+      dispatch(fetchCourseMetadataSuccess(courseMetadata));
     } catch (error) {
       dispatch(fetchCourseMetadataFailure(error));
     }
