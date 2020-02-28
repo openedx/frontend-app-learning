@@ -16,6 +16,7 @@ const courseMetaSlice = createSlice({
       number: payload.number,
       org: payload.org,
       tabs: payload.tabs,
+      userHasAccess: payload.userHasAccess,
     }),
     fetchCourseMetadataFailure: (draftState) => {
       draftState.fetchState = 'failed';
