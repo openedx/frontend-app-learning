@@ -7,7 +7,7 @@ import SequenceContainer from './SequenceContainer';
 import { createSequenceIdList } from '../utils';
 import AlertList from '../../user-messages/AlertList';
 import CourseHeader from './CourseHeader';
-import CourseSock from './CourseSock';
+import CourseSock from './course-sock';
 import CourseTabsNavigation from './CourseTabsNavigation';
 import InstructorToolbar from '../InstructorToolbar';
 
@@ -98,13 +98,13 @@ Course.propTypes = {
     type: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
   })).isRequired,
-  verifiedMode: PropTypes.objectOf(PropTypes.shape({
-    price: PropTypes.string,
-    currency: PropTypes.string,
+  verifiedMode: PropTypes.shape({
+    price: PropTypes.number.isRequired,
+    currency: PropTypes.string.isRequired,
     currencySymbol: PropTypes.string,
-    sku: PropTypes.string,
-    upgradeUrl: PropTypes.string,
-  })),
+    sku: PropTypes.string.isRequired,
+    upgradeUrl: PropTypes.string.isRequired,
+  }),
 };
 
 Course.defaultProps = {
