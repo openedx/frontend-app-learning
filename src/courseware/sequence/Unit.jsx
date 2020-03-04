@@ -35,8 +35,8 @@ function Unit({
   };
 
   return (
-    <div>
-      <div className="container-fluid mb-2">
+    <>
+      <div className="unit-content-container">
         <h2 className="mb-0">{displayName}</h2>
         <BookmarkButton
           onClick={toggleBookmark}
@@ -45,17 +45,16 @@ function Unit({
         />
       </div>
       <iframe
+        id="unit-iframe"
         title={displayName}
         ref={iframeRef}
         src={iframeUrl}
         allowFullScreen
-        className="d-block container-fluid px-0"
         height={iframeHeight}
         scrolling="no"
         referrerPolicy="origin"
-        style={{ border: 0, width: '100%' }}
       />
-    </div>
+    </>
   );
 }
 

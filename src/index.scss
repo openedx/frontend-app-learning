@@ -1,3 +1,4 @@
+$primary: #3374D7;
 @import '~@edx/paragon/scss/edx/theme.scss';
 
 @import "~@edx/frontend-component-header/dist/index";
@@ -6,8 +7,10 @@
 #root {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-
+  min-height: 100vh;
+  main {
+    flex-grow: 1;
+  }
   header {
     flex: 0;
 
@@ -30,10 +33,15 @@
   }
 }
 
+.course-tabs-navigation {
+  margin-top: 4px;
+  border-bottom: solid 1px #EAEAEA;
+}
 .nav-underline-tabs {
+  margin: 0;
   .nav-link {
     border-bottom: 4px solid transparent;
-    color: theme-color('gray', 700);
+    color: theme-color('gray', 400);
 
     &:hover,
     &:focus,
@@ -43,4 +51,102 @@
       border-color: theme-color('primary', 500);
     }
   }
+}
+
+.course-content-container {
+  border: solid 1px #EAEAEA;
+  border-radius: 4px;
+  margin-bottom: 4rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+
+.sequence-navigation {
+  display: flex;
+  margin: -1px -1px 0;
+  .btn {
+    flex-grow: 1;
+    display: block;
+    border-radius: 0;
+    border: solid 1px #EAEAEA;
+    margin-left: -1px;
+    position: relative;
+    font-weight: 400;
+    flex-basis: 80%;
+    padding: .5rem;
+    color: theme-color('gray', 400);
+
+    &:hover,
+    &:focus,
+    &.active {
+      color: theme-color('gray', 700);
+    }
+
+    &:focus {
+      z-index: 1;
+    }
+    &.active {
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: $primary;
+      }
+    }
+    &.complete {
+      background-color: #EEF7E5;
+    }
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+  .previous-btn, .next-btn {
+    flex-basis: 10em;
+    min-width: 9em;
+  }
+  .previous-btn {
+    border-top-left-radius: 4px;
+  }
+  .next-btn {
+    border-top-right-radius: 4px;
+  }
+}
+
+.below-unit-navigation {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  .previous-button,
+  .next-button {
+    border-radius: 4px;
+    &:focus:before {
+      border-radius: 6px;
+    }
+  }
+}
+
+.unit-content-container {
+  padding-left: 20px;
+  padding-right: 20px;
+  max-width: 880px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  @media (min-width: 830px) {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+#unit-iframe {
+  max-width: 880px;
+  width: 100%;
+  margin: 0 auto;
+  border: none;
+  display: block;
 }

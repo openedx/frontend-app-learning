@@ -18,12 +18,16 @@ function CourseTabsNavigation({
   ));
 
   return (
-    <nav
-      aria-label={intl.formatMessage(messages['learn.navigation.course.tabs.label'])}
-      className={classNames('nav nav-underline-tabs', className)}
-    >
-      {courseNavTabs}
-    </nav>
+    <div className="course-tabs-navigation">
+      <div className="container-fluid">
+        <nav
+          aria-label={intl.formatMessage(messages['learn.navigation.course.tabs.label'])}
+          className={classNames('nav nav-underline-tabs', className)}
+        >
+          {courseNavTabs}
+        </nav>
+      </div>
+    </div>
   );
 }
 

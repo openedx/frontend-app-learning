@@ -47,28 +47,29 @@ function CourseContainer(props) {
     }
   }, [metadataLoaded]);
 
-  if (!courseId || !sequenceId) {
-    return (
-      <PageLoading
-        srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
-      />
-    );
-  }
+  const isLoaded = courseId && sequenceId && metadataLoaded;
 
-  return metadataLoaded && (
-    <Course
-      courseOrg={props.metadata.org}
-      courseNumber={props.metadata.number}
-      courseName={props.metadata.name}
-      courseUsageKey={courseUsageKey}
-      courseId={courseId}
-      sequenceId={sequenceId}
-      unitId={unitId}
-      models={models}
-      tabs={props.metadata.tabs}
-      isEnrolled={props.metadata.isEnrolled}
-      verifiedMode={props.metadata.verifiedMode}
-    />
+  return (
+    <main className="flex-grow-1 d-flex flex-column">
+      { isLoaded ? (
+        <Course
+          courseOrg={props.metadata.org}
+          courseNumber={props.metadata.number}
+          courseName={props.metadata.name}
+          courseUsageKey={courseUsageKey}
+          courseId={courseId}
+          sequenceId={sequenceId}
+          unitId={unitId}
+          models={models}
+          tabs={props.metadata.tabs}
+          verifiedMode={props.metadata.verifiedMode}
+        />
+      ) : (
+        <PageLoading
+          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+        />
+      )}
+    </main>
   );
 }
 

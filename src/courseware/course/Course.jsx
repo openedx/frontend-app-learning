@@ -67,25 +67,23 @@ export default function Course({
         sequenceId={sequenceId}
         unitId={unitId}
       />
-      <main className="d-flex flex-column flex-grow-1">
-        <div className="container-fluid">
-          <CourseTabsNavigation tabs={tabs} className="mb-3" activeTabSlug="courseware" />
-          <AlertList
-            topic="course"
-            className="mb-3"
-            customAlerts={{
-              clientEnrollmentAlert: EnrollmentAlert,
-              clientLogistrationAlert: LogistrationAlert,
-            }}
-          />
-          <CourseBreadcrumbs
-            courseUsageKey={courseUsageKey}
-            courseId={courseId}
-            sequenceId={sequenceId}
-            unitId={unitId}
-            models={models}
-          />
-        </div>
+      <CourseTabsNavigation tabs={tabs} activeTabSlug="courseware" />
+      <div className="container-fluid d-flex flex-column flex-grow-1">
+        <AlertList
+          topic="course"
+          className="mb-3"
+          customAlerts={{
+            clientEnrollmentAlert: EnrollmentAlert,
+            clientLogistrationAlert: LogistrationAlert,
+          }}
+        />
+        <CourseBreadcrumbs
+          courseUsageKey={courseUsageKey}
+          courseId={courseId}
+          sequenceId={sequenceId}
+          unitId={unitId}
+          models={models}
+        />
         <SequenceContainer
           key={sequenceId}
           courseUsageKey={courseUsageKey}
@@ -96,8 +94,8 @@ export default function Course({
           onNext={nextSequenceHandler}
           onPrevious={previousSequenceHandler}
         />
-        {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
-      </main>
+      </div>
+      {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
     </>
   );
 }

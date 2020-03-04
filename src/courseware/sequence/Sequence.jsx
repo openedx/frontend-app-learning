@@ -2,6 +2,8 @@
 import React, { useEffect, useContext, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@edx/paragon';
 
 import Unit from './Unit';
@@ -73,8 +75,8 @@ function Sequence({
 
   return (
     <>
-      <div className="container-fluid">
-        <AlertList topic="sequence" className="mt-3" />
+      <AlertList topic="sequence" />
+      <div className="course-content-container">
         <SequenceNavigation
           className="mb-3"
           onNext={handleNext}
@@ -85,40 +87,36 @@ function Sequence({
           isLocked={isGated}
           showCompletion={showCompletion}
         />
-        {isGated && (
-          <Suspense
-            fallback={(
-              <PageLoading
-                srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
+        <div className="flex-grow-1">
+          {isGated && (
+            <Suspense
+              fallback={(
+                <PageLoading
+                  srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
+                />
+              )}
+            >
+              <ContentLock
+                courseUsageKey={courseUsageKey}
+                sectionName={displayName}
+                prereqSectionName={prerequisite.name}
+                prereqId={prerequisite.id}
               />
-            )}
-          >
-            <ContentLock
-              courseUsageKey={courseUsageKey}
-              sectionName={displayName}
-              prereqSectionName={prerequisite.name}
-              prereqId={prerequisite.id}
+            </Suspense>
+          )}
+          {!isGated && (
+            <Unit
+              key={activeUnitId}
+              id={activeUnitId}
             />
-          </Suspense>
-        )}
-      </div>
-      <div className="flex-grow-1">
-        {!isGated && (
-          <Unit
-            key={activeUnitId}
-            id={activeUnitId}
-          />
-        )}
-      </div>
-      <div className="container-fluid">
-        <div
-          className="d-flex justify-content-center mx-auto my-4"
-          style={{ maxWidth: '1024px' }}
-        >
+          )}
+        </div>
+        <div className="unit-content-container below-unit-navigation">
           <Button
             className="btn-outline-secondary previous-button w-25 mr-2"
             onClick={handlePrevious}
           >
+            <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
             <FormattedMessage
               id="learn.sequence.navigation.after.unit.previous"
               description="The button to go to the previous unit"
@@ -134,6 +132,7 @@ function Sequence({
               description="The button to go to the next unit"
               defaultMessage="Next"
             />
+            <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
           </Button>
         </div>
       </div>

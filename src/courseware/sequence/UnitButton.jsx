@@ -26,10 +26,8 @@ function UnitButton({
     <Button
       className={classNames({
         active: isActive,
-        'btn-outline-primary': !isActive,
-        'btn-outline-secondary': isActive,
+        complete: showCompletion && complete,
       })}
-
       onClick={handleClick}
       title={displayName}
     >

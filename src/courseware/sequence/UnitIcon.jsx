@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faFilm, faBook, faPencilAlt, faTasks, faLock,
+  faFilm, faBook, faEdit, faTasks, faLock,
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function UnitIcon({ type }) {
@@ -18,7 +18,7 @@ export default function UnitIcon({ type }) {
       icon = faTasks;
       break;
     case 'problem':
-      icon = faPencilAlt;
+      icon = faEdit;
       break;
     case 'lock':
       icon = faLock;
