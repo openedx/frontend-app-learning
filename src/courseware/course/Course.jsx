@@ -22,7 +22,7 @@ export default function Course({
   courseName,
   courseOrg,
   courseUsageKey,
-  enrollmentIsActive,
+  isEnrolled,
   models,
   sequenceId,
   tabs,
@@ -52,7 +52,7 @@ export default function Course({
   });
 
   useLogistrationAlert();
-  useEnrollmentAlert(enrollmentIsActive);
+  useEnrollmentAlert(isEnrolled);
 
   return (
     <>
@@ -110,7 +110,7 @@ Course.propTypes = {
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
-  enrollmentIsActive: PropTypes.bool,
+  isEnrolled: PropTypes.bool,
   models: PropTypes.objectOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
@@ -135,6 +135,6 @@ Course.propTypes = {
 
 Course.defaultProps = {
   unitId: undefined,
-  enrollmentIsActive: false,
+  isEnrolled: false,
   verifiedMode: null,
 };

@@ -66,7 +66,7 @@ function CourseContainer(props) {
       unitId={unitId}
       models={models}
       tabs={props.metadata.tabs}
-      enrollmentIsActive={props.metadata.enrollmentIsActive}
+      isEnrolled={props.metadata.isEnrolled}
       verifiedMode={props.metadata.verifiedMode}
     />
   );
@@ -91,7 +91,7 @@ CourseContainer.propTypes = {
       type: PropTypes.string,
       url: PropTypes.string,
     })),
-    enrollmentIsActive: PropTypes.bool,
+    isEnrolled: PropTypes.bool,
     verifiedMode: PropTypes.shape({
       price: PropTypes.number.isRequired,
       currency: PropTypes.string.isRequired,

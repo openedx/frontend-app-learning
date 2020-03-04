@@ -26,11 +26,11 @@ export function useLogistrationAlert() {
   }, [authenticatedUser]);
 }
 
-export function useEnrollmentAlert(enrollmentIsActive) {
+export function useEnrollmentAlert(isEnrolled) {
   const { add, remove } = useContext(UserMessagesContext);
   const [alertId, setAlertId] = useState(null);
   useEffect(() => {
-    if (!enrollmentIsActive) {
+    if (!isEnrolled) {
       setAlertId(add({
         code: 'clientEnrollmentAlert',
         dismissible: false,
@@ -46,5 +46,5 @@ export function useEnrollmentAlert(enrollmentIsActive) {
         remove(alertId);
       }
     };
-  }, [enrollmentIsActive]);
+  }, [isEnrolled]);
 }
