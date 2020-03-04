@@ -1,7 +1,8 @@
 /* eslint-disable no-use-before-define */
 import React, { useEffect, useContext, Suspense } from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
+import { Button } from '@edx/paragon';
 
 import Unit from './Unit';
 import SequenceNavigation from './SequenceNavigation';
@@ -71,7 +72,7 @@ function Sequence({
 
 
   return (
-    <div className="flex-grow-1">
+    <>
       <div className="container-fluid">
         <AlertList topic="sequence" className="mt-3" />
         <SequenceNavigation
@@ -101,13 +102,42 @@ function Sequence({
           </Suspense>
         )}
       </div>
-      {!isGated && (
-        <Unit
-          key={activeUnitId}
-          id={activeUnitId}
-        />
-      )}
-    </div>
+      <div className="flex-grow-1">
+        {!isGated && (
+          <Unit
+            key={activeUnitId}
+            id={activeUnitId}
+          />
+        )}
+      </div>
+      <div className="container-fluid">
+        <div
+          className="d-flex justify-content-center mx-auto my-4"
+          style={{ maxWidth: '1024px' }}
+        >
+          <Button
+            className="btn-outline-secondary previous-button w-25 mr-2"
+            onClick={handlePrevious}
+          >
+            <FormattedMessage
+              id="learn.sequence.navigation.after.unit.previous"
+              description="The button to go to the previous unit"
+              defaultMessage="Previous"
+            />
+          </Button>
+          <Button
+            className="btn-outline-primary next-button w-75"
+            onClick={handleNext}
+          >
+            <FormattedMessage
+              id="learn.sequence.navigation.after.unit.next"
+              description="The button to go to the next unit"
+              defaultMessage="Next"
+            />
+          </Button>
+        </div>
+      </div>
+    </>
   );
 }
 
