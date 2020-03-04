@@ -17,6 +17,7 @@ const courseMetaSlice = createSlice({
       org: payload.org,
       tabs: payload.tabs,
       userHasAccess: payload.userHasAccess,
+      enrollmentIsActive: payload.enrollment.isActive,
       verifiedMode: payload.verifiedMode,
     }),
     fetchCourseMetadataFailure: (draftState) => {
