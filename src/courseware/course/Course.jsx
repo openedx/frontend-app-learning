@@ -7,11 +7,12 @@ import SequenceContainer from './SequenceContainer';
 import { createSequenceIdList } from '../utils';
 import AlertList from '../../user-messages/AlertList';
 import CourseHeader from './CourseHeader';
+import CourseSock from './course-sock';
 import CourseTabsNavigation from './CourseTabsNavigation';
 import InstructorToolbar from '../InstructorToolbar';
 
 export default function Course({
-  courseOrg, courseNumber, courseName, courseUsageKey, courseId, sequenceId, unitId, models, tabs,
+  courseOrg, courseNumber, courseName, courseUsageKey, courseId, sequenceId, unitId, models, tabs, verifiedMode,
 }) {
   const nextSequenceHandler = useCallback(() => {
     const sequenceIds = createSequenceIdList(models, courseId);
@@ -70,6 +71,7 @@ export default function Course({
           onNext={nextSequenceHandler}
           onPrevious={previousSequenceHandler}
         />
+        {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
       </main>
     </>
   );
@@ -96,8 +98,16 @@ Course.propTypes = {
     type: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
   })).isRequired,
+  verifiedMode: PropTypes.shape({
+    price: PropTypes.number.isRequired,
+    currency: PropTypes.string.isRequired,
+    currencySymbol: PropTypes.string,
+    sku: PropTypes.string.isRequired,
+    upgradeUrl: PropTypes.string.isRequired,
+  }),
 };
 
 Course.defaultProps = {
   unitId: undefined,
+  verifiedMode: null,
 };

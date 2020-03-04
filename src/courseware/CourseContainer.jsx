@@ -66,6 +66,7 @@ function CourseContainer(props) {
       unitId={unitId}
       models={models}
       tabs={props.metadata.tabs}
+      verifiedMode={props.metadata.verifiedMode}
     />
   );
 }
@@ -89,6 +90,13 @@ CourseContainer.propTypes = {
       type: PropTypes.string,
       url: PropTypes.string,
     })),
+    verifiedMode: PropTypes.shape({
+      price: PropTypes.number.isRequired,
+      currency: PropTypes.string.isRequired,
+      currencySymbol: PropTypes.string.isRequired,
+      sku: PropTypes.string.isRequired,
+      upgradeUrl: PropTypes.string.isRequired,
+    }),
   }),
   fetchCourseMetadata: PropTypes.func.isRequired,
   fetchCourseBlocks: PropTypes.func.isRequired,
