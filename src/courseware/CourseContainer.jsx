@@ -24,8 +24,6 @@ function CourseContainer(props) {
     unitId,
   } = match.params;
 
-  const metadataLoaded = metadata.fetchState === 'loaded';
-
   useEffect(() => {
     props.fetchCourseMetadata(courseUsageKey);
     props.fetchCourseBlocks(courseUsageKey);
@@ -41,17 +39,19 @@ function CourseContainer(props) {
     }
   }, [courseUsageKey, courseId, sequenceId]);
 
+  const metadataLoaded = metadata.fetchState === 'loaded';
   useEffect(() => {
     if (metadataLoaded && !metadata.userHasAccess) {
       global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/`);
     }
   }, [metadataLoaded]);
 
-  const isLoaded = courseId && sequenceId && metadataLoaded;
+  // Whether or not the container is ready to render the Course.
+  const ready = metadataLoaded && courseId && sequenceId;
 
   return (
     <main className="flex-grow-1 d-flex flex-column">
-      { isLoaded ? (
+     {ready ? (
         <Course
           courseOrg={props.metadata.org}
           courseNumber={props.metadata.number}
