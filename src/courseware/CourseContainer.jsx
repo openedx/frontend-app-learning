@@ -51,7 +51,7 @@ function CourseContainer(props) {
 
   return (
     <main className="flex-grow-1 d-flex flex-column">
-     {ready ? (
+      {ready ? (
         <Course
           courseOrg={props.metadata.org}
           courseNumber={props.metadata.number}
