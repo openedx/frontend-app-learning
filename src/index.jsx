@@ -22,6 +22,7 @@ import CourseContainer from './courseware/CourseContainer';
 import store from './store';
 
 function courseLinks() {
+  // TODO: We should remove these links before we go live for learners.
   return (
     <main className="m-3">
       <ul>
