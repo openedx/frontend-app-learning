@@ -37,7 +37,7 @@ function Unit({
   return (
     <>
       <div className="unit-content-container">
-        <h2 className="mb-0">{displayName}</h2>
+        <h2 className="mb-0 h4">{displayName}</h2>
         <BookmarkButton
           onClick={toggleBookmark}
           isBookmarked={bookmarked}

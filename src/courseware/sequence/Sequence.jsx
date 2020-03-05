@@ -10,7 +10,6 @@ import Unit from './Unit';
 import SequenceNavigation from './SequenceNavigation';
 import PageLoading from '../PageLoading';
 import messages from './messages';
-import AlertList from '../../user-messages/AlertList';
 import UserMessagesContext from '../../user-messages/UserMessagesContext';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
@@ -75,66 +74,63 @@ function Sequence({
 
   return (
     <>
-      <AlertList topic="sequence" />
-      <div className="course-content-container">
-        <SequenceNavigation
-          className="mb-3"
-          onNext={handleNext}
-          onNavigate={handleNavigate}
-          onPrevious={handlePrevious}
-          unitIds={unitIds}
-          activeUnitId={activeUnitId}
-          isLocked={isGated}
-          showCompletion={showCompletion}
-        />
-        <div className="flex-grow-1">
-          {isGated && (
-            <Suspense
-              fallback={(
-                <PageLoading
-                  srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
-                />
-              )}
-            >
-              <ContentLock
-                courseUsageKey={courseUsageKey}
-                sectionName={displayName}
-                prereqSectionName={prerequisite.name}
-                prereqId={prerequisite.id}
+      <SequenceNavigation
+        className="mb-4"
+        onNext={handleNext}
+        onNavigate={handleNavigate}
+        onPrevious={handlePrevious}
+        unitIds={unitIds}
+        activeUnitId={activeUnitId}
+        isLocked={isGated}
+        showCompletion={showCompletion}
+      />
+      <div className="flex-grow-1">
+        {isGated && (
+          <Suspense
+            fallback={(
+              <PageLoading
+                srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
               />
-            </Suspense>
-          )}
-          {!isGated && (
-            <Unit
-              key={activeUnitId}
-              id={activeUnitId}
-            />
-          )}
-        </div>
-        <div className="unit-content-container below-unit-navigation">
-          <Button
-            className="btn-outline-secondary previous-button w-25 mr-2"
-            onClick={handlePrevious}
+            )}
           >
-            <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
-            <FormattedMessage
-              id="learn.sequence.navigation.after.unit.previous"
-              description="The button to go to the previous unit"
-              defaultMessage="Previous"
+            <ContentLock
+              courseUsageKey={courseUsageKey}
+              sectionName={displayName}
+              prereqSectionName={prerequisite.name}
+              prereqId={prerequisite.id}
             />
-          </Button>
-          <Button
-            className="btn-outline-primary next-button w-75"
-            onClick={handleNext}
-          >
-            <FormattedMessage
-              id="learn.sequence.navigation.after.unit.next"
-              description="The button to go to the next unit"
-              defaultMessage="Next"
-            />
-            <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
-          </Button>
-        </div>
+          </Suspense>
+        )}
+        {!isGated && (
+          <Unit
+            key={activeUnitId}
+            id={activeUnitId}
+          />
+        )}
+      </div>
+      <div className="unit-content-container below-unit-navigation">
+        <Button
+          className="btn-outline-secondary previous-button w-25 mr-2"
+          onClick={handlePrevious}
+        >
+          <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
+          <FormattedMessage
+            id="learn.sequence.navigation.after.unit.previous"
+            description="The button to go to the previous unit"
+            defaultMessage="Previous"
+          />
+        </Button>
+        <Button
+          className="btn-outline-primary next-button w-75"
+          onClick={handleNext}
+        >
+          <FormattedMessage
+            id="learn.sequence.navigation.after.unit.next"
+            description="The button to go to the next unit"
+            defaultMessage="Next"
+          />
+          <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
+        </Button>
       </div>
     </>
   );

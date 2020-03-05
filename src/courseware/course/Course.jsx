@@ -68,10 +68,10 @@ export default function Course({
         unitId={unitId}
       />
       <CourseTabsNavigation tabs={tabs} activeTabSlug="courseware" />
-      <div className="container-fluid d-flex flex-column flex-grow-1">
+      <div className="container-fluid flex-grow-1 d-flex flex-column">
         <AlertList
+          className="my-3"
           topic="course"
-          className="mb-3"
           customAlerts={{
             clientEnrollmentAlert: EnrollmentAlert,
             clientLogistrationAlert: LogistrationAlert,

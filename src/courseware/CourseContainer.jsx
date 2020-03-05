@@ -58,6 +58,7 @@ function CourseContainer(props) {
           courseName={props.metadata.name}
           courseUsageKey={courseUsageKey}
           courseId={courseId}
+          isEnrolled={props.metadata.isEnrolled}
           sequenceId={sequenceId}
           unitId={unitId}
           models={models}
