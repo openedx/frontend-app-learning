@@ -9,7 +9,7 @@ import messages from '../messages';
 import PageLoading from '../../PageLoading';
 import Sequence from '../sequence/Sequence';
 import AlertList from '../../user-messages/AlertList';
-import { fetchSequenceMetadata, checkBlockCompletion, saveSequencePosition } from '../../data/course-blocks/thunks';
+import { fetchSequenceMetadata, checkBlockCompletion, saveSequencePosition } from '../../data/course-blocks';
 
 function SequenceContainer(props) {
   const {

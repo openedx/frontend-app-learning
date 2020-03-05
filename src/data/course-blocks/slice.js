@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import PropTypes from 'prop-types';
 
 const blocksSlice = createSlice({
   name: 'blocks',
@@ -132,3 +133,10 @@ export const {
 } = blocksSlice.actions;
 
 export const { reducer } = blocksSlice;
+
+export const courseBlocksShape = PropTypes.objectOf(PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  displayName: PropTypes.string.isRequired,
+  children: PropTypes.arrayOf(PropTypes.string),
+  parentId: PropTypes.string,
+}));

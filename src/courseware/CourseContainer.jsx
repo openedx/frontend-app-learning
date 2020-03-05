@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { history, getConfig } from '@edx/frontend-platform';
-import { fetchCourseMetadata } from '../data/course-meta/thunks';
-import { fetchCourseBlocks } from '../data/course-blocks/thunks';
+import { fetchCourseMetadata, courseMetadataShape } from '../data/course-meta';
+import { fetchCourseBlocks } from '../data/course-blocks';
 
 import messages from './messages';
 import PageLoading from '../PageLoading';
@@ -80,28 +80,7 @@ CourseContainer.propTypes = {
   blocks: PropTypes.objectOf(PropTypes.shape({
     id: PropTypes.string,
   })),
-  metadata: PropTypes.shape({
-    fetchState: PropTypes.string,
-    org: PropTypes.string,
-    number: PropTypes.string,
-    name: PropTypes.string,
-    userHasAccess: PropTypes.bool,
-    tabs: PropTypes.arrayOf(PropTypes.shape({
-      priority: PropTypes.number,
-      slug: PropTypes.string,
-      title: PropTypes.string,
-      type: PropTypes.string,
-      url: PropTypes.string,
-    })),
-    isEnrolled: PropTypes.bool,
-    verifiedMode: PropTypes.shape({
-      price: PropTypes.number.isRequired,
-      currency: PropTypes.string.isRequired,
-      currencySymbol: PropTypes.string.isRequired,
-      sku: PropTypes.string.isRequired,
-      upgradeUrl: PropTypes.string.isRequired,
-    }),
-  }),
+  metadata: courseMetadataShape,
   fetchCourseMetadata: PropTypes.func.isRequired,
   fetchCourseBlocks: PropTypes.func.isRequired,
   match: PropTypes.shape({

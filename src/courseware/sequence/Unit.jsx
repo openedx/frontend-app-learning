@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { connect } from 'react-redux';
 import BookmarkButton from './bookmark/BookmarkButton';
-import { addBookmark, removeBookmark } from '../../data/course-blocks/thunks';
+import { addBookmark, removeBookmark } from '../../data/course-blocks';
 
 function Unit({
   bookmarked,
