@@ -10,9 +10,24 @@ import CourseHeader from './CourseHeader';
 import CourseSock from './course-sock';
 import CourseTabsNavigation from './CourseTabsNavigation';
 import InstructorToolbar from '../InstructorToolbar';
+import { useLogistrationAlert, useEnrollmentAlert } from '../../hooks';
+
+const EnrollmentAlert = React.lazy(() => import('../../enrollment-alert'));
+const LogistrationAlert = React.lazy(() => import('../../logistration-alert'));
+
 
 export default function Course({
-  courseOrg, courseNumber, courseName, courseUsageKey, courseId, sequenceId, unitId, models, tabs, verifiedMode,
+  courseId,
+  courseNumber,
+  courseName,
+  courseOrg,
+  courseUsageKey,
+  isEnrolled,
+  models,
+  sequenceId,
+  tabs,
+  unitId,
+  verifiedMode,
 }) {
   const nextSequenceHandler = useCallback(() => {
     const sequenceIds = createSequenceIdList(models, courseId);
@@ -36,6 +51,9 @@ export default function Course({
     }
   });
 
+  useLogistrationAlert();
+  useEnrollmentAlert(isEnrolled);
+
   return (
     <>
       <CourseHeader
@@ -52,7 +70,14 @@ export default function Course({
       <main className="d-flex flex-column flex-grow-1">
         <div className="container-fluid">
           <CourseTabsNavigation tabs={tabs} className="mb-3" activeTabSlug="courseware" />
-          <AlertList topic="course" className="mb-3" />
+          <AlertList
+            topic="course"
+            className="mb-3"
+            customAlerts={{
+              clientEnrollmentAlert: EnrollmentAlert,
+              clientLogistrationAlert: LogistrationAlert,
+            }}
+          />
           <CourseBreadcrumbs
             courseUsageKey={courseUsageKey}
             courseId={courseId}
@@ -85,6 +110,7 @@ Course.propTypes = {
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
+  isEnrolled: PropTypes.bool,
   models: PropTypes.objectOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
@@ -109,5 +135,6 @@ Course.propTypes = {
 
 Course.defaultProps = {
   unitId: undefined,
+  isEnrolled: false,
   verifiedMode: null,
 };
