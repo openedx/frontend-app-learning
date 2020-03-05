@@ -6,7 +6,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { history } from '@edx/frontend-platform';
 
 import messages from '../messages';
-import PageLoading from '../PageLoading';
+import PageLoading from '../../PageLoading';
 import Sequence from '../sequence/Sequence';
 import AlertList from '../../user-messages/AlertList';
 import { fetchSequenceMetadata, checkBlockCompletion, saveSequencePosition } from '../../data/course-blocks/thunks';

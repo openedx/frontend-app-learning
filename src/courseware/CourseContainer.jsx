@@ -7,7 +7,7 @@ import { fetchCourseMetadata } from '../data/course-meta/thunks';
 import { fetchCourseBlocks } from '../data/course-blocks/thunks';
 
 import messages from './messages';
-import PageLoading from './PageLoading';
+import PageLoading from '../PageLoading';
 import Course from './course/Course';
 
 function CourseContainer(props) {

@@ -8,7 +8,7 @@ import { Button } from '@edx/paragon';
 
 import Unit from './Unit';
 import SequenceNavigation from './SequenceNavigation';
-import PageLoading from '../PageLoading';
+import PageLoading from '../../PageLoading';
 import messages from './messages';
 import UserMessagesContext from '../../user-messages/UserMessagesContext';
 
