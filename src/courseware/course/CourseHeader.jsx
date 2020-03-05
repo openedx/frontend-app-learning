@@ -31,7 +31,7 @@ export default function CourseHeader({
   const { authenticatedUser } = useContext(AppContext);
 
   return (
-    <header className="border-bottom border-primary">
+    <header>
       <div className="container-fluid py-2 d-flex align-items-center ">
         <LinkedLogo
           className="logo"

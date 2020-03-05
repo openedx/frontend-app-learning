@@ -26,15 +26,13 @@ function UnitButton({
     <Button
       className={classNames({
         active: isActive,
-        'btn-outline-primary': !isActive,
-        'btn-outline-secondary': isActive,
+        complete: showCompletion && complete,
       })}
-
       onClick={handleClick}
       title={displayName}
     >
       <UnitIcon type={contentType} />
-      {showCompletion && complete ? <CompleteIcon className="text-success ml-2" /> : null}
+      {showCompletion && complete ? <CompleteIcon size="sm" className="text-success ml-2" /> : null}
       {bookmarked ? (
         <BookmarkFilledIcon
           className="text-primary small position-absolute"

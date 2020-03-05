@@ -2,13 +2,14 @@
 import React, { useEffect, useContext, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@edx/paragon';
 
 import Unit from './Unit';
 import SequenceNavigation from './SequenceNavigation';
 import PageLoading from '../PageLoading';
 import messages from './messages';
-import AlertList from '../../user-messages/AlertList';
 import UserMessagesContext from '../../user-messages/UserMessagesContext';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
@@ -73,18 +74,17 @@ function Sequence({
 
   return (
     <>
-      <div className="container-fluid">
-        <AlertList topic="sequence" className="mt-3" />
-        <SequenceNavigation
-          className="mb-3"
-          onNext={handleNext}
-          onNavigate={handleNavigate}
-          onPrevious={handlePrevious}
-          unitIds={unitIds}
-          activeUnitId={activeUnitId}
-          isLocked={isGated}
-          showCompletion={showCompletion}
-        />
+      <SequenceNavigation
+        className="mb-4"
+        onNext={handleNext}
+        onNavigate={handleNavigate}
+        onPrevious={handlePrevious}
+        unitIds={unitIds}
+        activeUnitId={activeUnitId}
+        isLocked={isGated}
+        showCompletion={showCompletion}
+      />
+      <div className="flex-grow-1">
         {isGated && (
           <Suspense
             fallback={(
@@ -101,8 +101,6 @@ function Sequence({
             />
           </Suspense>
         )}
-      </div>
-      <div className="flex-grow-1">
         {!isGated && (
           <Unit
             key={activeUnitId}
@@ -110,32 +108,29 @@ function Sequence({
           />
         )}
       </div>
-      <div className="container-fluid">
-        <div
-          className="d-flex justify-content-center mx-auto my-4"
-          style={{ maxWidth: '1024px' }}
+      <div className="unit-content-container below-unit-navigation">
+        <Button
+          className="btn-outline-secondary previous-button w-25 mr-2"
+          onClick={handlePrevious}
         >
-          <Button
-            className="btn-outline-secondary previous-button w-25 mr-2"
-            onClick={handlePrevious}
-          >
-            <FormattedMessage
-              id="learn.sequence.navigation.after.unit.previous"
-              description="The button to go to the previous unit"
-              defaultMessage="Previous"
-            />
-          </Button>
-          <Button
-            className="btn-outline-primary next-button w-75"
-            onClick={handleNext}
-          >
-            <FormattedMessage
-              id="learn.sequence.navigation.after.unit.next"
-              description="The button to go to the next unit"
-              defaultMessage="Next"
-            />
-          </Button>
-        </div>
+          <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
+          <FormattedMessage
+            id="learn.sequence.navigation.after.unit.previous"
+            description="The button to go to the previous unit"
+            defaultMessage="Previous"
+          />
+        </Button>
+        <Button
+          className="btn-outline-primary next-button w-75"
+          onClick={handleNext}
+        >
+          <FormattedMessage
+            id="learn.sequence.navigation.after.unit.next"
+            description="The button to go to the next unit"
+            defaultMessage="Next"
+          />
+          <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
+        </Button>
       </div>
     </>
   );

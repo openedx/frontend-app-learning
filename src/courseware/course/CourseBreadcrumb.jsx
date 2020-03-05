@@ -1,19 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-export default function CourseBreadcrumb({ url, label, last }) {
+export default function CourseBreadcrumb({ url, label }) {
   return (
     <React.Fragment key={`${label}-${url}`}>
-      <li className="list-inline-item">
-        {last ? label : (<a href={url}>{label}</a>)}
+      <li className="list-inline-item text-gray-300" role="presentation" aria-label="spacer">
+        /
       </li>
-      {!last && (
-        <li className="list-inline-item" role="presentation" aria-label="spacer">
-          <FontAwesomeIcon icon={faChevronRight} />
-        </li>
-      )}
+      <li className="list-inline-item">
+        <a href={url}>{label}</a>
+      </li>
     </React.Fragment>
   );
 }
@@ -21,5 +17,4 @@ export default function CourseBreadcrumb({ url, label, last }) {
 CourseBreadcrumb.propTypes = {
   url: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  last: PropTypes.bool.isRequired,
 };
