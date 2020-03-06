@@ -3,6 +3,7 @@ import React, {
   useEffect, useContext, Suspense, useState,
 } from 'react';
 import PropTypes from 'prop-types';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
@@ -54,6 +55,23 @@ function Sequence({
     onNavigateUnit(unitId);
   };
 
+  const logEvent = (eventName, widgetPlacement, targetUnitId) => {
+    // Note: tabs are tracked with a 1-indexed position
+    // as opposed to a 0-index used throughout this MFE
+    const currentIndex = unitIds.indexOf(activeUnitId);
+    const payload = {
+      current_tab: currentIndex + 1,
+      id: activeUnitId,
+      tab_count: unitIds.length,
+      widget_placement: widgetPlacement,
+    };
+    if (targetUnitId) {
+      const targetIndex = unitIds.indexOf(targetUnitId);
+      payload.target_tab = targetIndex + 1;
+    }
+    sendTrackEvent(eventName, payload);
+  };
+
   const { add, remove } = useContext(UserMessagesContext);
   useEffect(() => {
     let id = null;
@@ -85,9 +103,18 @@ function Sequence({
     <>
       <SequenceNavigation
         className="mb-4"
-        onNext={handleNext}
-        onNavigate={handleNavigate}
-        onPrevious={handlePrevious}
+        onNext={() => {
+          logEvent('edx.ui.lms.sequence.next_selected', 'top');
+          handleNext();
+        }}
+        onNavigate={(unitId) => {
+          logEvent('edx.ui.lms.sequence.tab_selected', 'top', unitId);
+          handleNavigate(unitId);
+        }}
+        onPrevious={() => {
+          logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+          handlePrevious();
+        }}
         unitIds={unitIds}
         activeUnitId={activeUnitId}
         isLocked={isGated}
@@ -122,7 +149,10 @@ function Sequence({
         <div className="unit-content-container below-unit-navigation">
           <Button
             className="btn-outline-secondary previous-button w-25 mr-2"
-            onClick={handlePrevious}
+            onClick={() => {
+              logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
+              handlePrevious();
+            }}
           >
             <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
             <FormattedMessage
@@ -133,7 +163,10 @@ function Sequence({
           </Button>
           <Button
             className="btn-outline-primary next-button w-75"
-            onClick={handleNext}
+            onClick={() => {
+              logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+              handleNext();
+            }}
           >
             <FormattedMessage
               id="learn.sequence.navigation.after.unit.next"
