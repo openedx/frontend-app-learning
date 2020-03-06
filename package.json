@@ -52,6 +52,7 @@
     "react-redux": "^7.1.3",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
+    "react-transition-group": "^4.3.0",
     "redux": "^4.0.5",
     "regenerator-runtime": "^0.13.3"
   },
