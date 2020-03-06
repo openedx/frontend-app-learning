@@ -13,7 +13,7 @@ function InstructorToolbar(props) {
       <div className="container-fluid py-3 d-flex justify-content-end align-items-center">
         <div>
           <p className="mb-0 mr-5">
-          You are currently previewing the edX learning sequence experience. This preview is to allow for early content testing, especially for custom content blocks, with the goal of ensuring it renders as expected in the next experience. You can learn more through the following <a className="text-white" style={{ textDecoration: 'underline' }} href="https://partners.edx.org/announcements/author-preview-learning-sequence-experience-update" target="blank" rel="noopener">Partner Portal post</a>.  Please report any issues or provide <a className="text-white" style={{ textDecoration: 'underline' }} target="blank" rel="noopener" href="https://forms.gle/R6jMYJNTCj1vgC1D6">feedback using the linked form</a>.
+          You are currently previewing the new learning sequence experience. This preview is to allow for early content testing, especially for custom content blocks, with the goal of ensuring it renders as expected in the next experience. You can learn more through the following <a className="text-white" style={{ textDecoration: 'underline' }} href="https://partners.edx.org/announcements/author-preview-learning-sequence-experience-update" target="blank" rel="noopener">Partner Portal post</a>.  Please report any issues or provide <a className="text-white" style={{ textDecoration: 'underline' }} target="blank" rel="noopener" href="https://forms.gle/R6jMYJNTCj1vgC1D6">feedback using the linked form</a>.
           </p>
         </div>
         <div className="flex-shrink-0">
