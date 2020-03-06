@@ -10,6 +10,7 @@ import PageLoading from '../../PageLoading';
 import Sequence from '../sequence/Sequence';
 import AlertList from '../../user-messages/AlertList';
 import { fetchSequenceMetadata, checkBlockCompletion, saveSequencePosition } from '../../data/course-blocks';
+import { createSequenceIdList } from '../utils';
 
 function SequenceContainer(props) {
   const {
@@ -30,10 +31,12 @@ function SequenceContainer(props) {
     position,
     items,
     lmsWebUrl,
+    models,
   } = props;
   const loaded = fetchState === 'loaded';
 
   const unitIds = useMemo(() => items.map(({ id }) => id), [items]);
+  const sequenceIds = useMemo(() => createSequenceIdList(models, courseId), [models, courseId]);
 
   useEffect(() => {
     props.fetchSequenceMetadata(sequenceId);
@@ -68,7 +71,9 @@ function SequenceContainer(props) {
   }, [isTimeLimited]);
 
   const isLoading = !loaded || !unitId || isTimeLimited;
-
+  const isFirstUnit = sequenceIds.indexOf(sequenceId) === 0 && unitIds.indexOf(unitId) === 0;
+  const isLastUnit = sequenceIds.indexOf(sequenceId) === sequenceIds.length - 1
+    && unitIds.indexOf(unitId) === unitIds.length - 1;
   return (
     <>
       <AlertList topic="sequence" />
@@ -79,24 +84,22 @@ function SequenceContainer(props) {
           />
         ) : (
           <Sequence
-            id={sequenceId}
-            courseUsageKey={courseUsageKey}
-            courseId={courseId}
-            unitIds={unitIds}
-            displayName={displayName}
             activeUnitId={unitId}
-            showCompletion={showCompletion}
-            isTimeLimited={isTimeLimited}
-            isGated={gatedContent.gated}
-            savePosition={savePosition}
             bannerText={bannerText}
+            courseUsageKey={courseUsageKey}
+            displayName={displayName}
+            isFirstUnit={isFirstUnit}
+            isGated={gatedContent.gated}
+            isLastUnit={isLastUnit}
+            onNavigateUnit={handleUnitNavigation}
             onNext={onNext}
             onPrevious={onPrevious}
-            onNavigateUnit={handleUnitNavigation}
             prerequisite={{
               id: gatedContent.prereqId,
               name: gatedContent.gatedSectionName,
             }}
+            showCompletion={showCompletion}
+            unitIds={unitIds}
           />
         )}
       </div>
@@ -121,6 +124,12 @@ SequenceContainer.propTypes = {
     gatedSectionName: PropTypes.string,
     prereqId: PropTypes.string,
   }),
+  models: PropTypes.objectOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    displayName: PropTypes.string.isRequired,
+    children: PropTypes.arrayOf(PropTypes.string),
+    parentId: PropTypes.string,
+  })).isRequired,
   checkBlockCompletion: PropTypes.func.isRequired,
   fetchSequenceMetadata: PropTypes.func.isRequired,
   saveSequencePosition: PropTypes.func.isRequired,

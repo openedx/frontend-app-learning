@@ -18,18 +18,20 @@ import UserMessagesContext from '../../user-messages/UserMessagesContext';
 const ContentLock = React.lazy(() => import('./content-lock'));
 
 function Sequence({
-  courseUsageKey,
-  unitIds,
-  displayName,
-  showCompletion,
-  onNext,
-  onPrevious,
-  onNavigateUnit,
-  isGated,
-  prerequisite,
   activeUnitId,
   bannerText,
+  courseUsageKey,
+  displayName,
   intl,
+  isFirstUnit,
+  isGated,
+  isLastUnit,
+  onNavigateUnit,
+  onNext,
+  onPrevious,
+  prerequisite,
+  showCompletion,
+  unitIds,
 }) {
   const handleNext = () => {
     const nextIndex = unitIds.indexOf(activeUnitId) + 1;
@@ -102,7 +104,11 @@ function Sequence({
   return (
     <>
       <SequenceNavigation
+        activeUnitId={activeUnitId}
         className="mb-4"
+        isFirstUnit={isFirstUnit}
+        isLastUnit={isLastUnit}
+        isLocked={isGated}
         onNext={() => {
           logEvent('edx.ui.lms.sequence.next_selected', 'top');
           handleNext();
@@ -115,10 +121,8 @@ function Sequence({
           logEvent('edx.ui.lms.sequence.previous_selected', 'top');
           handlePrevious();
         }}
-        unitIds={unitIds}
-        activeUnitId={activeUnitId}
-        isLocked={isGated}
         showCompletion={showCompletion}
+        unitIds={unitIds}
       />
       <div className="flex-grow-1">
         {isGated && (
@@ -149,6 +153,7 @@ function Sequence({
         <div className="unit-content-container below-unit-navigation">
           <Button
             className="btn-outline-secondary previous-button w-25 mr-2"
+            disabled={isFirstUnit}
             onClick={() => {
               logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
               handlePrevious();
@@ -161,20 +166,29 @@ function Sequence({
               defaultMessage="Previous"
             />
           </Button>
-          <Button
-            className="btn-outline-primary next-button w-75"
-            onClick={() => {
-              logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-              handleNext();
-            }}
-          >
-            <FormattedMessage
-              id="learn.sequence.navigation.after.unit.next"
-              description="The button to go to the next unit"
-              defaultMessage="Next"
-            />
-            <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
-          </Button>
+          {isLastUnit ? (
+            <div className="m-2">
+              <span role="img" aria-hidden="true">&#129303;</span> {/* This is a hugging face emoji */}
+              {' '}
+              {intl.formatMessage(messages['learn.end.of.course'])}
+            </div>
+          ) : (
+            <Button
+              className="btn-outline-primary next-button w-75"
+              onClick={() => {
+                logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+                handleNext();
+              }}
+              disabled={isLastUnit}
+            >
+              <FormattedMessage
+                id="learn.sequence.navigation.after.unit.next"
+                description="The button to go to the next unit"
+                defaultMessage="Next"
+              />
+              <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
+            </Button>
+          )}
         </div>
       ) : null}
     </>
@@ -183,10 +197,13 @@ function Sequence({
 
 Sequence.propTypes = {
   activeUnitId: PropTypes.string.isRequired,
+  bannerText: PropTypes.string,
   courseUsageKey: PropTypes.string.isRequired,
   displayName: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
+  isFirstUnit: PropTypes.bool.isRequired,
   isGated: PropTypes.bool.isRequired,
+  isLastUnit: PropTypes.bool.isRequired,
   onNavigateUnit: PropTypes.func,
   onNext: PropTypes.func.isRequired,
   onPrevious: PropTypes.func.isRequired,
@@ -196,7 +213,6 @@ Sequence.propTypes = {
     id: PropTypes.string,
   }).isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  bannerText: PropTypes.string,
 };
 
 Sequence.defaultProps = {
