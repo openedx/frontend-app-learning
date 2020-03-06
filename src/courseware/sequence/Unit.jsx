@@ -9,6 +9,7 @@ function Unit({
   bookmarked,
   bookmarkedUpdateState,
   displayName,
+  onLoaded,
   id,
   ...props
 }) {
@@ -16,12 +17,19 @@ function Unit({
   const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
 
   const [iframeHeight, setIframeHeight] = useState(0);
+  const [hasLoaded, setHasLoaded] = useState(false);
   useEffect(() => {
     global.onmessage = (event) => {
       const { type, payload } = event.data;
 
       if (type === 'plugin.resize') {
         setIframeHeight(payload.height);
+        if (!hasLoaded && iframeHeight === 0 && payload.height > 0) {
+          setHasLoaded(true);
+          if (onLoaded) {
+            onLoaded();
+          }
+        }
       }
     };
   }, []);
@@ -65,11 +73,13 @@ Unit.propTypes = {
   displayName: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   removeBookmark: PropTypes.func.isRequired,
+  onLoaded: PropTypes.func,
 };
 
 Unit.defaultProps = {
   bookmarked: false,
   bookmarkedUpdateState: undefined,
+  onLoaded: undefined,
 };
 
 const mapStateToProps = (state, props) => state.courseBlocks.blocks[props.id] || {};

@@ -1,5 +1,7 @@
 /* eslint-disable no-use-before-define */
-import React, { useEffect, useContext, Suspense } from 'react';
+import React, {
+  useEffect, useContext, Suspense, useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -71,6 +73,13 @@ function Sequence({
     };
   }, [bannerText]);
 
+  const [unitHasLoaded, setUnitHasLoaded] = useState(false);
+  const handleUnitLoaded = () => {
+    setUnitHasLoaded(true);
+  };
+  useEffect(() => {
+    setUnitHasLoaded(false);
+  }, [activeUnitId]);
 
   return (
     <>
@@ -105,33 +114,36 @@ function Sequence({
           <Unit
             key={activeUnitId}
             id={activeUnitId}
+            onLoaded={handleUnitLoaded}
           />
         )}
       </div>
-      <div className="unit-content-container below-unit-navigation">
-        <Button
-          className="btn-outline-secondary previous-button w-25 mr-2"
-          onClick={handlePrevious}
-        >
-          <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
-          <FormattedMessage
-            id="learn.sequence.navigation.after.unit.previous"
-            description="The button to go to the previous unit"
-            defaultMessage="Previous"
-          />
-        </Button>
-        <Button
-          className="btn-outline-primary next-button w-75"
-          onClick={handleNext}
-        >
-          <FormattedMessage
-            id="learn.sequence.navigation.after.unit.next"
-            description="The button to go to the next unit"
-            defaultMessage="Next"
-          />
-          <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
-        </Button>
-      </div>
+      {unitHasLoaded ? (
+        <div className="unit-content-container below-unit-navigation">
+          <Button
+            className="btn-outline-secondary previous-button w-25 mr-2"
+            onClick={handlePrevious}
+          >
+            <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
+            <FormattedMessage
+              id="learn.sequence.navigation.after.unit.previous"
+              description="The button to go to the previous unit"
+              defaultMessage="Previous"
+            />
+          </Button>
+          <Button
+            className="btn-outline-primary next-button w-75"
+            onClick={handleNext}
+          >
+            <FormattedMessage
+              id="learn.sequence.navigation.after.unit.next"
+              description="The button to go to the next unit"
+              defaultMessage="Next"
+            />
+            <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
+          </Button>
+        </div>
+      ) : null}
     </>
   );
 }

@@ -100,6 +100,7 @@ $primary: #1176B2;
     }
     &.complete {
       background-color: #EEF7E5;
+      color: $success;
     }
     &:first-child {
       margin-left: 0;
@@ -108,6 +109,7 @@ $primary: #1176B2;
   .previous-btn, .next-btn {
     flex-basis: 10em;
     min-width: 9em;
+    color: theme-color('gray', 700);
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -117,20 +119,6 @@ $primary: #1176B2;
   }
   .next-btn {
     border-top-right-radius: 4px;
-  }
-}
-
-.below-unit-navigation {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  .previous-button,
-  .next-button {
-    border-radius: 4px;
-    &:focus:before {
-      border-radius: 6px;
-    }
   }
 }
 
@@ -146,6 +134,23 @@ $primary: #1176B2;
     padding-right: 40px;
   }
 }
+
+.below-unit-navigation {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding-left: 6rem;
+  padding-right: 6rem;
+  .previous-button,
+  .next-button {
+    border-radius: 4px;
+    &:focus:before {
+      border-radius: 6px;
+    }
+  }
+}
+
 #unit-iframe {
   max-width: 1024px;
   width: 100%;
