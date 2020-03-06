@@ -18,6 +18,7 @@ import UserMessagesProvider from './user-messages/UserMessagesProvider';
 import './index.scss';
 import './assets/favicon.ico';
 import CourseContainer from './courseware/CourseContainer';
+import OutlineContainer from './outline/OutlineContainer';
 
 import store from './store';
 
@@ -39,6 +40,7 @@ subscribe(APP_READY, () => {
       <UserMessagesProvider>
         <Switch>
           <Route exact path="/" render={courseLinks} />
+          <Route path="/outline/:courseUsageKey" component={OutlineContainer} />
           <Route
             path={[
               '/course/:courseUsageKey/:sequenceId/:unitId',
