@@ -9,14 +9,16 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import UnitButton from './UnitButton';
 
 export default function SequenceNavigation({
-  onNext,
-  onPrevious,
-  onNavigate,
-  unitIds,
-  isLocked,
-  showCompletion,
   activeUnitId,
   className,
+  isFirstUnit,
+  isLastUnit,
+  isLocked,
+  onNavigate,
+  onNext,
+  onPrevious,
+  showCompletion,
+  unitIds,
 }) {
   const unitButtons = unitIds.map(unitId => (
     <UnitButton
@@ -30,7 +32,7 @@ export default function SequenceNavigation({
 
   return (
     <nav className={classNames('sequence-navigation', className)}>
-      <Button className="previous-btn" onClick={onPrevious}>
+      <Button className="previous-btn" onClick={onPrevious} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
         <FormattedMessage
           defaultMessage="Previous"
@@ -41,7 +43,7 @@ export default function SequenceNavigation({
 
       {isLocked ? <UnitButton type="lock" isActive /> : unitButtons}
 
-      <Button className="next-btn" onClick={onNext}>
+      <Button className="next-btn" onClick={onNext} disabled={isLastUnit}>
         <FormattedMessage
           defaultMessage="Next"
           id="learn.sequence.navigation.next.button"
@@ -54,14 +56,16 @@ export default function SequenceNavigation({
 }
 
 SequenceNavigation.propTypes = {
+  activeUnitId: PropTypes.string.isRequired,
   className: PropTypes.string,
+  isFirstUnit: PropTypes.bool.isRequired,
+  isLastUnit: PropTypes.bool.isRequired,
+  isLocked: PropTypes.bool.isRequired,
+  onNavigate: PropTypes.func.isRequired,
   onNext: PropTypes.func.isRequired,
   onPrevious: PropTypes.func.isRequired,
-  onNavigate: PropTypes.func.isRequired,
-  isLocked: PropTypes.bool.isRequired,
   showCompletion: PropTypes.bool.isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  activeUnitId: PropTypes.string.isRequired,
 };
 
 SequenceNavigation.defaultProps = {
