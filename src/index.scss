@@ -4,6 +4,18 @@ $primary: #1176B2;
 @import "~@edx/frontend-component-header/dist/index";
 @import "~@edx/frontend-component-footer/dist/footer";
 
+// TODO: Fix .btn-outline-light style in paragon
+.btn-outline-light {
+  &:hover, &:focus {
+    color: $primary;
+    border-color: $white;
+    background-color: $white;
+  }
+  &:not(:disabled):not(.disabled):active {
+    border-color: $white;
+  }
+}
+
 #root {
   display: flex;
   flex-direction: column;
