@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+import { logError } from '@edx/frontend-platform/logging';
 import {
   fetchCourseMetadataRequest,
   fetchCourseMetadataSuccess,
@@ -15,7 +16,8 @@ export function fetchCourseMetadata(courseUsageKey) {
       const courseMetadata = await getCourseMetadata(courseUsageKey);
       dispatch(fetchCourseMetadataSuccess(courseMetadata));
     } catch (error) {
-      dispatch(fetchCourseMetadataFailure(error));
+      logError(error);
+      dispatch(fetchCourseMetadataFailure({ courseUsageKey }));
     }
   };
 }
