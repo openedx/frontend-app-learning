@@ -1,3 +1,4 @@
+import { logError } from '@edx/frontend-platform/logging';
 import {
   fetchCourseBlocksRequest,
   fetchCourseBlocksSuccess,
@@ -25,7 +26,8 @@ export function fetchCourseBlocks(courseUsageKey) {
       const courseBlocks = await getCourseBlocks(courseUsageKey);
       dispatch(fetchCourseBlocksSuccess(courseBlocks));
     } catch (error) {
-      dispatch(fetchCourseBlocksFailure(error));
+      logError(error);
+      dispatch(fetchCourseBlocksFailure(courseUsageKey));
     }
   };
 }
@@ -41,7 +43,8 @@ export function fetchSequenceMetadata(sequenceBlockId) {
         relatedBlocksMetadata: sequenceMetadata.items,
       }));
     } catch (error) {
-      dispatch(fetchBlockMetadataFailure({ blockId: sequenceBlockId }, error));
+      logError(error);
+      dispatch(fetchBlockMetadataFailure({ blockId: sequenceBlockId }));
     }
   };
 }
@@ -63,7 +66,8 @@ export function checkBlockCompletion(courseUsageKey, sequenceId, unitId) {
         },
       }));
     } catch (error) {
-      dispatch(fetchBlockMetadataFailure(commonPayload, error));
+      logError(error);
+      dispatch(fetchBlockMetadataFailure(commonPayload));
     }
   };
 }
@@ -82,6 +86,7 @@ export function saveSequencePosition(courseUsageKey, sequenceId, position) {
       await updateSequencePosition(courseUsageKey, sequenceId, position);
       dispatch(updateBlockSuccess(actionPayload));
     } catch (error) {
+      logError(error);
       dispatch(updateBlockFailure(actionPayload));
     }
   };
@@ -100,6 +105,7 @@ export function addBookmark(unitId) {
       await createBookmark(unitId);
       dispatch(updateBlockSuccess(actionPayload));
     } catch (error) {
+      logError(error);
       dispatch(updateBlockFailure(actionPayload));
     }
   };
@@ -118,6 +124,7 @@ export function removeBookmark(unitId) {
       await deleteBookmark(unitId);
       dispatch(updateBlockSuccess(actionPayload));
     } catch (error) {
+      logError(error);
       dispatch(updateBlockFailure(actionPayload));
     }
   };

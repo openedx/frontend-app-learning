@@ -51,25 +51,39 @@ function CourseContainer(props) {
 
   return (
     <main className="flex-grow-1 d-flex flex-column">
-      {ready ? (
-        <Course
-          courseOrg={props.metadata.org}
-          courseNumber={props.metadata.number}
-          courseName={props.metadata.name}
-          courseUsageKey={courseUsageKey}
-          courseId={courseId}
-          isEnrolled={props.metadata.isEnrolled}
-          sequenceId={sequenceId}
-          unitId={unitId}
-          models={models}
-          tabs={props.metadata.tabs}
-          verifiedMode={props.metadata.verifiedMode}
-        />
-      ) : (
-        <PageLoading
-          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
-        />
-      )}
+      {(() => {
+        if (ready) {
+          return (
+            <Course
+              courseOrg={props.metadata.org}
+              courseNumber={props.metadata.number}
+              courseName={props.metadata.name}
+              courseUsageKey={courseUsageKey}
+              courseId={courseId}
+              isEnrolled={props.metadata.isEnrolled}
+              sequenceId={sequenceId}
+              unitId={unitId}
+              models={models}
+              tabs={props.metadata.tabs}
+              verifiedMode={props.metadata.verifiedMode}
+            />
+          );
+        }
+
+        if (metadata.fetchState === 'failed' || models.fetchState === 'failed') {
+          return (
+            <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
+              {intl.formatMessage(messages['learn.course.load.failure'])}
+            </p>
+          );
+        }
+
+        return (
+          <PageLoading
+            srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+          />
+        );
+      })()}
     </main>
   );
 }
