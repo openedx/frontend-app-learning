@@ -36,6 +36,7 @@ const courseMetaSlice = createSlice({
       enrollmentMode: payload.enrollment.mode,
       isEnrolled: payload.enrollment.isActive,
       userHasAccess: payload.userHasAccess,
+      isStaff: payload.userHasStaffAccess,
       verifiedMode: payload.verifiedMode,
 
       // Misc
@@ -70,6 +71,7 @@ export const courseMetadataShape = PropTypes.shape({
   enrollmentMode: PropTypes.string,
   isEnrolled: PropTypes.bool,
   userHasAccess: PropTypes.bool,
+  isStaff: PropTypes.bool,
   verifiedMode: PropTypes.shape({
     price: PropTypes.number.isRequired,
     currency: PropTypes.string.isRequired,

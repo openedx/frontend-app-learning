@@ -23,6 +23,7 @@ export default function Course({
   courseOrg,
   courseUsageKey,
   isEnrolled,
+  isStaff,
   models,
   sequenceId,
   tabs,
@@ -61,12 +62,14 @@ export default function Course({
         courseNumber={courseNumber}
         courseName={courseName}
       />
-      <InstructorToolbar
-        courseUsageKey={courseUsageKey}
-        courseId={courseId}
-        sequenceId={sequenceId}
-        unitId={unitId}
-      />
+      {isStaff && (
+        <InstructorToolbar
+          courseUsageKey={courseUsageKey}
+          courseId={courseId}
+          sequenceId={sequenceId}
+          unitId={unitId}
+        />
+      )}
       <CourseTabsNavigation tabs={tabs} activeTabSlug="courseware" />
       <div className="container-fluid flex-grow-1 d-flex flex-column">
         <AlertList
@@ -109,6 +112,7 @@ Course.propTypes = {
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   isEnrolled: PropTypes.bool,
+  isStaff: PropTypes.bool,
   models: PropTypes.objectOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
@@ -134,5 +138,6 @@ Course.propTypes = {
 Course.defaultProps = {
   unitId: undefined,
   isEnrolled: false,
+  isStaff: false,
   verifiedMode: null,
 };
