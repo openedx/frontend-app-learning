@@ -29,7 +29,7 @@ export default function Tabs({ children, className, ...attrs }) {
     // Get array of child nodes from NodeList form
     const childNodesArray = Array.prototype.slice.call(navElementRef.current.children);
     // Use reduce to sum the widths of child nodes and determine the new cutoff index
-    const { cutOffIndex: newCutOffIndex } = childNodesArray.reduce((acc, childNode) => {
+    const { lastFittingChildIndex } = childNodesArray.reduce((acc, childNode) => {
       const isOverflowElement = childNode === overflowEl.current;
       if (isOverflowElement) {
         return acc;
@@ -38,7 +38,7 @@ export default function Tabs({ children, className, ...attrs }) {
       acc.sumWidth += childNode.getBoundingClientRect().width;
 
       if (acc.sumWidth <= tabsRect.width) {
-        acc.cutOffIndex += 1;
+        acc.lastFittingChildIndex += 1;
       }
 
       return acc;
@@ -48,10 +48,10 @@ export default function Tabs({ children, className, ...attrs }) {
       // but allowing this case dramatically simplifies the calculations we need
       // to do above.
       sumWidth: overflowEl.current.getBoundingClientRect().width,
-      cutOffIndex: 0,
+      lastFittingChildIndex: 0,
     });
 
-    setCutOffIndex(newCutOffIndex);
+    setCutOffIndex(lastFittingChildIndex);
   }, [windowSize]);
 
   const tabChildren = useMemo(() => {
