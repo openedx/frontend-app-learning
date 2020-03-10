@@ -1,31 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { getConfig } from '@edx/frontend-platform';
 import classNames from 'classnames';
 
 import messages from './messages';
-import NavTab from './NavTab';
+import Tabs from '../../tabs/Tabs';
 
 function CourseTabsNavigation({
-  activeTabSlug, tabs, intl, className,
+  activeTabSlug, tabs, intl,
 }) {
-  const courseNavTabs = tabs.map(({ slug, ...courseTab }) => (
-    <NavTab
-      isActive={slug === activeTabSlug}
-      key={slug}
-      {...courseTab}
-    />
-  ));
-
   return (
     <div className="course-tabs-navigation">
       <div className="container-fluid">
-        <nav
+        <Tabs
+          className="nav-underline-tabs"
           aria-label={intl.formatMessage(messages['learn.navigation.course.tabs.label'])}
-          className={classNames('nav nav-underline-tabs', className)}
         >
-          {courseNavTabs}
-        </nav>
+          {tabs.map(({ url, title, slug }) => (
+            <a
+              key={slug}
+              className={classNames('nav-link', { active: slug === activeTabSlug })}
+              href={`${getConfig().LMS_BASE_URL}${url}`}
+            >
+              {title}
+            </a>
+          ))}
+        </Tabs>
       </div>
     </div>
   );
@@ -33,7 +34,6 @@ function CourseTabsNavigation({
 
 CourseTabsNavigation.propTypes = {
   activeTabSlug: PropTypes.string,
-  className: PropTypes.string,
   tabs: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
     priority: PropTypes.number.isRequired,
@@ -45,7 +45,6 @@ CourseTabsNavigation.propTypes = {
 
 CourseTabsNavigation.defaultProps = {
   activeTabSlug: undefined,
-  className: null,
 };
 
 export default injectIntl(CourseTabsNavigation);

@@ -46,21 +46,26 @@ $primary: #1176B2;
 }
 
 .course-tabs-navigation {
-  margin-top: 4px;
   border-bottom: solid 1px #EAEAEA;
 }
 .nav-underline-tabs {
-  margin: 0;
+  margin: 0 0 -1px;
   .nav-link {
     border-bottom: 4px solid transparent;
+    border-top: 4px solid transparent;
     color: theme-color('gray', 400);
+
+    // temporary until we can remove .btn class from dropdowns
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
 
     &:hover,
     &:focus,
     &.active {
       font-weight: $font-weight-normal;
       color: theme-color('primary', 500);
-      border-color: theme-color('primary', 500);
+      border-bottom-color: theme-color('primary', 500);
     }
   }
 }
