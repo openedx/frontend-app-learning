@@ -31,12 +31,16 @@ export default function Tabs({ children, className, ...attrs }) {
     // Use reduce to sum the widths of child nodes and determine the new cutoff index
     const { cutOffIndex: newCutOffIndex } = childNodesArray.reduce((acc, childNode) => {
       const isOverflowElement = childNode === overflowEl.current;
-      if (acc.sumWidth > tabsRect.width || isOverflowElement) {
+      if (isOverflowElement) {
         return acc;
       }
 
       acc.sumWidth += childNode.getBoundingClientRect().width;
-      acc.cutOffIndex += 1;
+
+      if (acc.sumWidth <= tabsRect.width) {
+        acc.cutOffIndex += 1;
+      }
+
       return acc;
     }, {
       // Include the overflow element's width to begin with. Doing this means
