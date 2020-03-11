@@ -5,7 +5,31 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 
-import CourseBreadcrumb from './CourseBreadcrumb';
+function CourseBreadcrumb({
+  url, children, withSeparator, ...attrs
+}) {
+  return (
+    <>
+      {withSeparator && (
+        <li className="mx-2 text-gray-300" role="presentation" aria-hidden>/</li>
+      )}
+      <li {...attrs}>
+        <a href={url}>{children}</a>
+      </li>
+    </>
+  );
+}
+
+CourseBreadcrumb.propTypes = {
+  url: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  withSeparator: PropTypes.bool,
+};
+
+CourseBreadcrumb.defaultProps = {
+  withSeparator: false,
+};
+
 
 export default function CourseBreadcrumbs({
   courseUsageKey, courseId, sequenceId, models,
@@ -24,19 +48,31 @@ export default function CourseBreadcrumbs({
 
   return (
     <nav aria-label="breadcrumb" className="my-4">
-      <ol className="list-inline m-0">
-        <li className="list-inline-item">
-          <a href={`${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/`}>
-            <FontAwesomeIcon icon={faHome} className="mr-2" />
-            <FormattedMessage
-              id="learn.breadcrumb.navigation.course.home"
-              description="The course home link in breadcrumbs nav"
-              defaultMessage="Course"
-            />
-          </a>
-        </li>
-        {links.map(({ id, url, label }, i) => (
-          <CourseBreadcrumb key={id} url={url} label={label} last={i === links.length - 1} />
+      <ol className="list-unstyled d-flex m-0">
+        <CourseBreadcrumb
+          url={`${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/`}
+          className="flex-shrink-0"
+        >
+          <FontAwesomeIcon icon={faHome} className="mr-2" />
+          <FormattedMessage
+            id="learn.breadcrumb.navigation.course.home"
+            description="The course home link in breadcrumbs nav"
+            defaultMessage="Course"
+          />
+        </CourseBreadcrumb>
+        {links.map(({ id, url, label }) => (
+          <CourseBreadcrumb
+            key={id}
+            url={url}
+            withSeparator
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {label}
+          </CourseBreadcrumb>
         ))}
       </ol>
     </nav>
