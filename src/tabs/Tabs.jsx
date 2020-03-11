@@ -7,6 +7,12 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 import useWindowSize from './useWindowSize';
 
+const invisibleStyle = {
+  position: 'absolute',
+  left: 0,
+  pointerEvents: 'none',
+  visibility: 'hidden',
+};
 export default function Tabs({ children, className, ...attrs }) {
   const [cutOffIndex, setCutOffIndex] = useState(React.Children.count(children));
   const windowSize = useWindowSize();
@@ -59,7 +65,7 @@ export default function Tabs({ children, className, ...attrs }) {
 
     // All tabs will be rendered. Those that would overflow are set to invisible.
     const wrappedChildren = childrenArray.map((child, index) => (
-      <li className={classNames('nav-item', { invisible: cutOffIndex <= index })}>
+      <li className="nav-item" style={cutOffIndex <= index ? invisibleStyle : null}>
         {React.cloneElement(child)}
       </li>
     ));
@@ -68,12 +74,12 @@ export default function Tabs({ children, className, ...attrs }) {
     const overflowChildren = childrenArray.slice(cutOffIndex)
       .map((overflowChild) => React.cloneElement(overflowChild, { className: 'dropdown-item' }));
 
-    // Insert the overflow menu at the cut off index
+    // Insert the overflow menu at the cut off index (even if it will be hidden
+    // it so it can be part of measurements)
     wrappedChildren.splice(cutOffIndex, 0, (
       <li
-        className={classNames('nav-items', {
-          invisible: cutOffIndex >= React.Children.count(children),
-        })}
+        className="nav-item"
+        style={cutOffIndex >= React.Children.count(children) ? invisibleStyle : null}
         ref={overflowEl}
       >
         <Dropdown>
