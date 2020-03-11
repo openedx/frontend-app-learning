@@ -8,7 +8,6 @@ import { history } from '@edx/frontend-platform';
 import messages from '../messages';
 import PageLoading from '../../PageLoading';
 import Sequence from '../sequence/Sequence';
-import AlertList from '../../user-messages/AlertList';
 import { fetchSequenceMetadata, checkBlockCompletion, saveSequencePosition } from '../../data/course-blocks';
 import { createSequenceIdList } from '../utils';
 
@@ -75,35 +74,32 @@ function SequenceContainer(props) {
   const isLastUnit = sequenceIds.indexOf(sequenceId) === sequenceIds.length - 1
     && unitIds.indexOf(unitId) === unitIds.length - 1;
   return (
-    <>
-      <AlertList topic="sequence" />
-      <div className="course-content-container">
-        {isLoading ? (
-          <PageLoading
-            srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
-          />
-        ) : (
-          <Sequence
-            activeUnitId={unitId}
-            bannerText={bannerText}
-            courseUsageKey={courseUsageKey}
-            displayName={displayName}
-            isFirstUnit={isFirstUnit}
-            isGated={gatedContent.gated}
-            isLastUnit={isLastUnit}
-            onNavigateUnit={handleUnitNavigation}
-            onNext={onNext}
-            onPrevious={onPrevious}
-            prerequisite={{
-              id: gatedContent.prereqId,
-              name: gatedContent.gatedSectionName,
-            }}
-            showCompletion={showCompletion}
-            unitIds={unitIds}
-          />
-        )}
-      </div>
-    </>
+    <div className="sequence-container">
+      {isLoading ? (
+        <PageLoading
+          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+        />
+      ) : (
+        <Sequence
+          activeUnitId={unitId}
+          bannerText={bannerText}
+          courseUsageKey={courseUsageKey}
+          displayName={displayName}
+          isFirstUnit={isFirstUnit}
+          isGated={gatedContent.gated}
+          isLastUnit={isLastUnit}
+          onNavigateUnit={handleUnitNavigation}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          prerequisite={{
+            id: gatedContent.prereqId,
+            name: gatedContent.gatedSectionName,
+          }}
+          showCompletion={showCompletion}
+          unitIds={unitIds}
+        />
+      )}
+    </div>
 
   );
 }

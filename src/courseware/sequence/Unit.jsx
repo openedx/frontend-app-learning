@@ -43,26 +43,26 @@ function Unit({
   };
 
   return (
-    <>
-      <div className="unit-content-container">
-        <h2 className="mb-0 h4">{displayName}</h2>
-        <BookmarkButton
-          onClick={toggleBookmark}
-          isBookmarked={bookmarked}
-          isProcessing={bookmarkedUpdateState === 'loading'}
+    <div className="unit">
+      <h2 className="mb-0 h4">{displayName}</h2>
+      <BookmarkButton
+        onClick={toggleBookmark}
+        isBookmarked={bookmarked}
+        isProcessing={bookmarkedUpdateState === 'loading'}
+      />
+      <div className="unit-iframe-wrapper">
+        <iframe
+          id="unit-iframe"
+          title={displayName}
+          ref={iframeRef}
+          src={iframeUrl}
+          allowFullScreen
+          height={iframeHeight}
+          scrolling="no"
+          referrerPolicy="origin"
         />
       </div>
-      <iframe
-        id="unit-iframe"
-        title={displayName}
-        ref={iframeRef}
-        src={iframeUrl}
-        allowFullScreen
-        height={iframeHeight}
-        scrolling="no"
-        referrerPolicy="origin"
-      />
-    </>
+    </div>
   );
 }
 

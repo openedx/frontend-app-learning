@@ -65,7 +65,7 @@ export default function Tabs({ children, className, ...attrs }) {
 
     // All tabs will be rendered. Those that would overflow are set to invisible.
     const wrappedChildren = childrenArray.map((child, index) => (
-      <li className="nav-item" style={cutOffIndex <= index ? invisibleStyle : null}>
+      <li className="nav-item flex-shrink-0" style={cutOffIndex <= index ? invisibleStyle : null}>
         {React.cloneElement(child)}
       </li>
     ));
@@ -78,7 +78,7 @@ export default function Tabs({ children, className, ...attrs }) {
     // it so it can be part of measurements)
     wrappedChildren.splice(cutOffIndex, 0, (
       <li
-        className="nav-item"
+        className="nav-item flex-shrink-0"
         style={cutOffIndex >= React.Children.count(children) ? invisibleStyle : null}
         ref={overflowEl}
       >

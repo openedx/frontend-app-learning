@@ -4,16 +4,14 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { Button } from '@edx/paragon';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import Unit from './Unit';
 import SequenceNavigation from './SequenceNavigation';
 import PageLoading from '../../PageLoading';
 import messages from './messages';
 import UserMessagesContext from '../../user-messages/UserMessagesContext';
+import UnitNavigation from './UnitNavigation';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
 
@@ -102,7 +100,7 @@ function Sequence({
   }, [activeUnitId]);
 
   return (
-    <>
+    <div className="sequence">
       <SequenceNavigation
         activeUnitId={activeUnitId}
         className="mb-4"
@@ -124,7 +122,7 @@ function Sequence({
         showCompletion={showCompletion}
         unitIds={unitIds}
       />
-      <div className="flex-grow-1">
+      <div className="unit-container flex-grow-1">
         {isGated && (
           <Suspense
             fallback={(
@@ -148,50 +146,22 @@ function Sequence({
             onLoaded={handleUnitLoaded}
           />
         )}
-      </div>
-      {unitHasLoaded ? (
-        <div className="unit-content-container below-unit-navigation">
-          <Button
-            className="btn-outline-secondary previous-button w-25 mr-2"
-            disabled={isFirstUnit}
-            onClick={() => {
+        {unitHasLoaded && (
+          <UnitNavigation
+            isFirstUnit={isFirstUnit}
+            onClickPrevious={() => {
               logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
               handlePrevious();
             }}
-          >
-            <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
-            <FormattedMessage
-              id="learn.sequence.navigation.after.unit.previous"
-              description="The button to go to the previous unit"
-              defaultMessage="Previous"
-            />
-          </Button>
-          {isLastUnit ? (
-            <div className="m-2">
-              <span role="img" aria-hidden="true">&#129303;</span> {/* This is a hugging face emoji */}
-              {' '}
-              {intl.formatMessage(messages['learn.end.of.course'])}
-            </div>
-          ) : (
-            <Button
-              className="btn-outline-primary next-button w-75"
-              onClick={() => {
-                logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-                handleNext();
-              }}
-              disabled={isLastUnit}
-            >
-              <FormattedMessage
-                id="learn.sequence.navigation.after.unit.next"
-                description="The button to go to the next unit"
-                defaultMessage="Next"
-              />
-              <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
-            </Button>
-          )}
-        </div>
-      ) : null}
-    </>
+            onClickNext={() => {
+              logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+              handleNext();
+            }}
+            isLastUnit={isLastUnit}
+          />
+        )}
+      </div>
+    </div>
   );
 }
 
