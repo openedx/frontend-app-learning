@@ -71,7 +71,7 @@ export default function Course({
         />
       )}
       <CourseTabsNavigation tabs={tabs} activeTabSlug="courseware" />
-      <div className="container-fluid flex-grow-1 d-flex flex-column">
+      <div className="container-fluid">
         <AlertList
           className="my-3"
           topic="course"
@@ -87,6 +87,9 @@ export default function Course({
           unitId={unitId}
           models={models}
         />
+        <AlertList topic="sequence" />
+      </div>
+      <div className="flex-grow-1 d-flex flex-column">
         <SequenceContainer
           key={sequenceId}
           courseUsageKey={courseUsageKey}
@@ -97,8 +100,8 @@ export default function Course({
           onNext={nextSequenceHandler}
           onPrevious={previousSequenceHandler}
         />
+        {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
       </div>
-      {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
     </>
   );
 }
