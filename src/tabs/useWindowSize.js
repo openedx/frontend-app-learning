@@ -18,7 +18,7 @@ export default function useWindowSize() {
     const handleResize = () => {
       setWindowSize(getSize());
     };
-    window.addEventListener('resize', handleResize);
+    global.addEventListener('resize', handleResize);
     return () => global.removeEventListener('resize', handleResize);
   }, []);
 
