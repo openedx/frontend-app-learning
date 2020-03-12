@@ -105,12 +105,13 @@ $primary: #1176B2;
     display: block;
     border-radius: 0;
     border: solid 1px #EAEAEA;
-    margin-left: -1px;
+    border-left-width: 0;
     position: relative;
     font-weight: 400;
-    flex-basis: 80%;
     padding: .625rem .375rem;
     color: theme-color('gray', 400);
+    white-space: nowrap;
+
 
     &:hover,
     &:focus,
@@ -135,22 +136,59 @@ $primary: #1176B2;
       background-color: #EEF7E5;
       color: $success;
     }
+
     &:first-child {
-      margin-left: 0;
+      border-left-width: 0;
+    }
+    &:last-child {
+      border-right-width: 0;
+    }
+  }
+
+  .sequence-navigation-tabs-container {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 100%;
+    display: flex;
+    // flex-wrap: nowrap;
+    // min-width 0 prevents the flex item from overflowing the parent container
+    // https://dev.to/martyhimmel/quick-tip-to-stop-flexbox-from-overflowing-peb
+    min-width: 0;
+  }
+  .sequence-navigation-tabs {
+    flex-grow: 1;
+    display: flex;
+    border:solid 1 red;
+    @media (min-width: map-get($grid-breakpoints, 'sm')) {
+    }
+
+    .btn {
+      flex-basis: 100%;
+      min-width: 4rem;
     }
   }
 
   .previous-btn, .next-btn {
-    flex-basis: 10em;
-    min-width: 9em;
+    min-width: 4rem;
     color: theme-color('gray', 700);
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      span {
+        @include sr-only();
+      }
+    }
+    @media (min-width: map-get($grid-breakpoints, 'sm')) {
+      min-width: 10rem;
+    }
   }
 
   .previous-btn {
     border-left-width: 0;
+    margin-left: 0;
     @media (min-width: map-get($grid-breakpoints, 'sm')) {
       border-left-width: 1px;
       border-top-left-radius: 4px;
@@ -158,6 +196,7 @@ $primary: #1176B2;
   }
 
   .next-btn {
+    border-left-width: 1px;
     border-right-width: 0;
     @media (min-width: map-get($grid-breakpoints, 'sm')) {
       border-top-right-radius: 4px;

@@ -17,6 +17,7 @@ function UnitButton({
   complete,
   showCompletion,
   unitId,
+  className,
 }) {
   const handleClick = useCallback(() => {
     onClick(unitId);
@@ -27,7 +28,7 @@ function UnitButton({
       className={classNames({
         active: isActive,
         complete: showCompletion && complete,
-      })}
+      }, className)}
       onClick={handleClick}
       title={displayName}
     >
@@ -52,9 +53,11 @@ UnitButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   displayName: PropTypes.string.isRequired,
   contentType: PropTypes.string.isRequired,
+  className: PropTypes.string,
 };
 
 UnitButton.defaultProps = {
+  className: undefined,
   isActive: false,
   bookmarked: false,
   complete: false,

@@ -70,7 +70,7 @@ export default function Course({
           unitId={unitId}
         />
       )}
-      <CourseTabsNavigation tabs={tabs} activeTabSlug="courseware" />
+
       <div className="container-fluid">
         <AlertList
           className="my-3"
