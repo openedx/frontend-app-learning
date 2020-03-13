@@ -5,18 +5,11 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 import useIndexOfLastVisibleChild from './useIndexOfLastVisibleChild';
 
-
-const invisibleStyle = {
-  position: 'absolute',
-  left: 0,
-  pointerEvents: 'none',
-  visibility: 'hidden',
-};
-
 export default function Tabs({ children, className, ...attrs }) {
   const [
     indexOfLastVisibleChild,
     containerElementRef,
+    invisibleStyle,
     overflowElementRef,
   ] = useIndexOfLastVisibleChild();
 

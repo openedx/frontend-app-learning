@@ -5,19 +5,13 @@ import UnitButton from './UnitButton';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import useIndexOfLastVisibleChild from '../../tabs/useIndexOfLastVisibleChild';
 
-const invisibleStyle = {
-  position: 'absolute',
-  left: 0,
-  pointerEvents: 'none',
-  visibility: 'hidden',
-};
-
 export default function SequenceNavigationTabs({
   unitIds, activeUnitId, showCompletion, onNavigate,
 }) {
   const [
     indexOfLastVisibleChild,
     containerRef,
+    invisibleStyle,
   ] = useIndexOfLastVisibleChild();
   const shouldDisplayDropdown = indexOfLastVisibleChild === -1;
 

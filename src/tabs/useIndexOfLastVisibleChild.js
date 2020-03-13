@@ -1,6 +1,13 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import useWindowSize from './useWindowSize';
 
+const invisibleStyle = {
+  position: 'absolute',
+  left: 0,
+  pointerEvents: 'none',
+  visibility: 'hidden',
+};
+
 export default function useIndexOfLastVisibleChild() {
   const containerElementRef = useRef(null);
   const overflowElementRef = useRef(null);
@@ -45,5 +52,5 @@ export default function useIndexOfLastVisibleChild() {
     setIndexOfLastVisibleChild(nextIndexOfLastVisibleChild);
   }, [windowSize, containerElementRef.current]);
 
-  return [indexOfLastVisibleChild, containerElementRef, overflowElementRef];
+  return [indexOfLastVisibleChild, containerElementRef, invisibleStyle, overflowElementRef];
 }
