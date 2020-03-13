@@ -171,6 +171,10 @@ $primary: #1176B2;
       display: inline-flex;
       align-items: center;
       justify-content: flex-start;
+      border-right: 0;
+      & + .btn {
+        border-top: 0;
+      }
       .unit-title {
         flex-grow: 1;
         text-align: left;
