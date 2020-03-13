@@ -7,6 +7,7 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 
 import UnitButton from './UnitButton';
+import SequenceNavigationTabs from './SequenceNavigationTabs';
 
 export default function SequenceNavigation({
   activeUnitId,
@@ -20,16 +21,6 @@ export default function SequenceNavigation({
   showCompletion,
   unitIds,
 }) {
-  const unitButtons = unitIds.map(unitId => (
-    <UnitButton
-      key={unitId}
-      unitId={unitId}
-      isActive={activeUnitId === unitId}
-      showCompletion={showCompletion}
-      onClick={onNavigate}
-    />
-  ));
-
   return (
     <nav className={classNames('sequence-navigation', className)}>
       <Button className="previous-btn" onClick={onPrevious} disabled={isFirstUnit}>
@@ -41,7 +32,15 @@ export default function SequenceNavigation({
         />
       </Button>
 
-      {isLocked ? <UnitButton type="lock" isActive /> : unitButtons}
+
+      {isLocked ? <UnitButton type="lock" isActive /> : (
+        <SequenceNavigationTabs
+          unitIds={unitIds}
+          activeUnitId={activeUnitId}
+          showCompletion={showCompletion}
+          onNavigate={onNavigate}
+        />
+      )}
 
       <Button className="next-btn" onClick={onNext} disabled={isLastUnit}>
         <FormattedMessage

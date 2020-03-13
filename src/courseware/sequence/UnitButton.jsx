@@ -17,6 +17,8 @@ function UnitButton({
   complete,
   showCompletion,
   unitId,
+  className,
+  showTitle,
 }) {
   const handleClick = useCallback(() => {
     onClick(unitId);
@@ -27,11 +29,12 @@ function UnitButton({
       className={classNames({
         active: isActive,
         complete: showCompletion && complete,
-      })}
+      }, className)}
       onClick={handleClick}
       title={displayName}
     >
       <UnitIcon type={contentType} />
+      {showTitle && <span className="unit-title">{displayName}</span>}
       {showCompletion && complete ? <CompleteIcon size="sm" className="text-success ml-2" /> : null}
       {bookmarked ? (
         <BookmarkFilledIcon
@@ -52,12 +55,16 @@ UnitButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   displayName: PropTypes.string.isRequired,
   contentType: PropTypes.string.isRequired,
+  className: PropTypes.string,
+  showTitle: PropTypes.bool,
 };
 
 UnitButton.defaultProps = {
+  className: undefined,
   isActive: false,
   bookmarked: false,
   complete: false,
+  showTitle: false,
   showCompletion: true,
 };
 
