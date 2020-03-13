@@ -167,6 +167,38 @@ $primary: #1176B2;
       min-width: 4rem;
     }
   }
+  .sequence-navigation-dropdown {
+    .dropdown-menu .btn {
+      flex-basis: 100%;
+      min-width: 4rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      .unit-title {
+        flex-grow: 1;
+        text-align: left;
+        overflow: hidden;
+        min-width: 0;
+        margin: 0 1rem;
+        text-overflow: ellipsis;
+      }
+      &.active {
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: 0px;
+          left: -1px;
+          top: 0;
+          right: auto;
+          width: 2px;
+          height: auto;
+          background: $primary;
+        }
+      }
+    }
+  }
 
   .previous-btn, .next-btn {
     min-width: 4rem;

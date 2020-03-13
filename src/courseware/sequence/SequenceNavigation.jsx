@@ -1,77 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Dropdown } from '@edx/paragon';
+import { Button } from '@edx/paragon';
 import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 
 import UnitButton from './UnitButton';
-import useIndexOfLastVisibleChild from '../../tabs/useIndexOfLastVisibleChild';
-
-const invisibleStyle = {
-  position: 'absolute',
-  left: 0,
-  pointerEvents: 'none',
-  visibility: 'hidden',
-};
-
-function SequenceNavigationTabs({
-  unitIds, activeUnitId, showCompletion, onNavigate,
-}) {
-  const [
-    indexOfLastVisibleChild,
-    containerRef,
-  ] = useIndexOfLastVisibleChild();
-  const shouldDisplayDropdown = indexOfLastVisibleChild === -1;
-
-  return (
-    <div style={{ flexBasis: '100%', minWidth: 0 }}>
-      <div className="sequence-navigation-tabs-container" ref={containerRef}>
-        <div
-          className="sequence-navigation-tabs"
-          style={shouldDisplayDropdown ? invisibleStyle : null}
-        >
-          {unitIds.map(unitId => (
-            <UnitButton
-              key={unitId}
-              unitId={unitId}
-              isActive={activeUnitId === unitId}
-              showCompletion={showCompletion}
-              onClick={onNavigate}
-            />
-          ))}
-
-        </div>
-      </div>
-      {shouldDisplayDropdown && (
-        <Dropdown>
-          <Dropdown.Button className="dropdown-button font-weight-normal w-100 border-right-0">
-            <FormattedMessage
-              id="learn.course.tabs.navigation.overflow.menu"
-              description="The title of the overflow menu for course tabs"
-              defaultMessage="More..."
-            />
-          </Dropdown.Button>
-          <Dropdown.Menu className="w-100">
-
-            {unitIds.map(unitId => (
-              <UnitButton
-                className="w-100"
-                key={unitId}
-                unitId={unitId}
-                isActive={activeUnitId === unitId}
-                showCompletion={showCompletion}
-                onClick={onNavigate}
-              />
-            ))}
-
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
-    </div>
-  );
-}
+import SequenceNavigationTabs from './SequenceNavigationTabs';
 
 export default function SequenceNavigation({
   activeUnitId,
