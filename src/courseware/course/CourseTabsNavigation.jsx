@@ -20,7 +20,7 @@ function CourseTabsNavigation({
           {tabs.map(({ url, title, slug }) => (
             <a
               key={slug}
-              className={classNames('nav-link', { active: slug === activeTabSlug })}
+              className={classNames('nav-item flex-shrink-0 nav-link', { active: slug === activeTabSlug })}
               href={`${getConfig().LMS_BASE_URL}${url}`}
             >
               {title}

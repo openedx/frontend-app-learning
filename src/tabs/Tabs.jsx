@@ -25,23 +25,22 @@ export default function Tabs({ children, className, ...attrs }) {
     const indexOfOverflowStart = indexOfLastVisibleChild + 1;
 
     // All tabs will be rendered. Those that would overflow are set to invisible.
-    const wrappedChildren = childrenArray.map((child, index) => (
-      <li className="nav-item flex-shrink-0" style={index > indexOfLastVisibleChild ? invisibleStyle : null}>
-        {React.cloneElement(child)}
-      </li>
-    ));
+    const wrappedChildren = childrenArray.map((child, index) => React.cloneElement(child, {
+      style: index > indexOfLastVisibleChild ? invisibleStyle : null,
+    }));
 
     // Build the list of items to put in the overflow menu
     const overflowChildren = childrenArray.slice(indexOfOverflowStart)
-      .map((overflowChild) => React.cloneElement(overflowChild, { className: 'dropdown-item' }));
+      .map(overflowChild => React.cloneElement(overflowChild, { className: 'dropdown-item' }));
 
     // Insert the overflow menu at the cut off index (even if it will be hidden
     // it so it can be part of measurements)
     wrappedChildren.splice(indexOfOverflowStart, 0, (
-      <li
+      <div
         className="nav-item flex-shrink-0"
         style={indexOfOverflowStart >= React.Children.count(children) ? invisibleStyle : null}
         ref={overflowElementRef}
+        key="overflow"
       >
         <Dropdown>
           <Dropdown.Button className="nav-link font-weight-normal">
@@ -53,19 +52,19 @@ export default function Tabs({ children, className, ...attrs }) {
           </Dropdown.Button>
           <Dropdown.Menu className="dropdown-menu-right">{overflowChildren}</Dropdown.Menu>
         </Dropdown>
-      </li>
+      </div>
     ));
     return wrappedChildren;
   }, [children, indexOfLastVisibleChild]);
 
   return (
-    <ul
+    <nav
       {...attrs}
       className={classNames('nav flex-nowrap', className)}
       ref={containerElementRef}
     >
       {tabChildren}
-    </ul>
+    </nav>
   );
 }
 
