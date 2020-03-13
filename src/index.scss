@@ -16,6 +16,14 @@ $primary: #1176B2;
   }
 }
 
+// TODO: Fix .container-fluid for mobile in paragon
+.container-fluid {
+  @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
+    padding-left: $grid-gutter-width/2;
+    padding-right: $grid-gutter-width/2;
+  }
+}
+
 #root {
   display: flex;
   flex-direction: column;
@@ -45,6 +53,23 @@ $primary: #1176B2;
   }
 }
 
+.course-header {
+  min-width: 0;
+  .course-title-lockup {
+    min-width: 0;
+    span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  .user-dropdown {
+    .btn {
+      height: 3rem;
+      padding: 0 .5rem;
+    }
+  }
+}
 .course-tabs-navigation {
   border-bottom: solid 1px #EAEAEA;
 }

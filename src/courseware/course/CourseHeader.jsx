@@ -4,6 +4,9 @@ import { Dropdown } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { AppContext } from '@edx/frontend-platform/react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+
 import logo from './logo.svg';
 
 function LinkedLogo({
@@ -31,7 +34,7 @@ export default function CourseHeader({
   const { authenticatedUser } = useContext(AppContext);
 
   return (
-    <header>
+    <header className="course-header">
       <div className="container-fluid py-2 d-flex align-items-center ">
         <LinkedLogo
           className="logo"
@@ -39,14 +42,17 @@ export default function CourseHeader({
           src={logo}
           alt={getConfig().SITE_NAME}
         />
-        <div className="flex-grow-1" style={{ lineHeight: 1 }}>
+        <div className="flex-grow-1 course-title-lockup" style={{ lineHeight: 1 }}>
           <span className="d-block small m-0">{courseOrg} {courseNumber}</span>
-          <span className="d-block m-0 font-weight-bold">{courseName}</span>
+          <span className="d-block m-0 font-weight-bold course-name">{courseName}</span>
         </div>
 
-        <Dropdown>
+        <Dropdown className="user-dropdown">
           <Dropdown.Button>
-            {authenticatedUser.username}
+            <FontAwesomeIcon icon={faUserCircle} className="d-md-none" size="lg" />
+            <span className="d-none d-mb-block">
+              {authenticatedUser.username}
+            </span>
           </Dropdown.Button>
           <Dropdown.Menu className="dropdown-menu-right">
             <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/dashboard`}>Dashboard</Dropdown.Item>
