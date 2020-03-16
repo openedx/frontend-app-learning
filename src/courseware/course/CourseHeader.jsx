@@ -50,7 +50,7 @@ export default function CourseHeader({
         <Dropdown className="user-dropdown">
           <Dropdown.Button>
             <FontAwesomeIcon icon={faUserCircle} className="d-md-none" size="lg" />
-            <span className="d-none d-mb-block">
+            <span className="d-none d-md-inline">
               {authenticatedUser.username}
             </span>
           </Dropdown.Button>
