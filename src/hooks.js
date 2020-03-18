@@ -26,25 +26,27 @@ export function useLogistrationAlert() {
   }, [authenticatedUser]);
 }
 
-export function useEnrollmentAlert(isEnrolled) {
+export function useEnrollmentAlert(course) {
   const { add, remove } = useContext(UserMessagesContext);
   const [alertId, setAlertId] = useState(null);
   useEffect(() => {
-    if (!isEnrolled) {
-      setAlertId(add({
-        code: 'clientEnrollmentAlert',
-        dismissible: false,
-        type: 'error',
-        topic: 'course',
-      }));
-    } else if (alertId !== null) {
-      remove(alertId);
-      setAlertId(null);
+    if (course) {
+      if (!course.isEnrolled) {
+        setAlertId(add({
+          code: 'clientEnrollmentAlert',
+          dismissible: false,
+          type: 'error',
+          topic: 'course',
+        }));
+      } else if (alertId !== null) {
+        remove(alertId);
+        setAlertId(null);
+      }
     }
     return () => {
       if (alertId !== null) {
         remove(alertId);
       }
     };
-  }, [isEnrolled]);
+  }, [course]);
 }

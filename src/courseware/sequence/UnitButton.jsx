@@ -10,7 +10,7 @@ import BookmarkFilledIcon from './bookmark/BookmarkFilledIcon';
 
 function UnitButton({
   onClick,
-  displayName,
+  title,
   contentType,
   isActive,
   bookmarked,
@@ -31,10 +31,10 @@ function UnitButton({
         complete: showCompletion && complete,
       }, className)}
       onClick={handleClick}
-      title={displayName}
+      title={title}
     >
       <UnitIcon type={contentType} />
-      {showTitle && <span className="unit-title">{displayName}</span>}
+      {showTitle && <span className="unit-title">{title}</span>}
       {showCompletion && complete ? <CompleteIcon size="sm" className="text-success ml-2" /> : null}
       {bookmarked ? (
         <BookmarkFilledIcon
@@ -47,16 +47,16 @@ function UnitButton({
 }
 
 UnitButton.propTypes = {
-  unitId: PropTypes.string.isRequired,
-  isActive: PropTypes.bool,
   bookmarked: PropTypes.bool,
-  complete: PropTypes.bool,
-  showCompletion: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
-  displayName: PropTypes.string.isRequired,
-  contentType: PropTypes.string.isRequired,
   className: PropTypes.string,
+  complete: PropTypes.bool,
+  contentType: PropTypes.string.isRequired,
+  isActive: PropTypes.bool,
+  onClick: PropTypes.func.isRequired,
+  showCompletion: PropTypes.bool,
   showTitle: PropTypes.bool,
+  title: PropTypes.string.isRequired,
+  unitId: PropTypes.string.isRequired,
 };
 
 UnitButton.defaultProps = {
@@ -69,7 +69,7 @@ UnitButton.defaultProps = {
 };
 
 const mapStateToProps = (state, props) => ({
-  ...state.courseBlocks.blocks[props.unitId],
+  ...state.models.units[props.unitId],
 });
 
 export default connect(mapStateToProps)(UnitButton);

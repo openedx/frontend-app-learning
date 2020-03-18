@@ -4,6 +4,9 @@ import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
+import {
+  courseShape, sectionShape, sequenceShape, statusShape,
+} from './shapes';
 
 function CourseBreadcrumb({
   url, children, withSeparator, ...attrs
@@ -30,27 +33,28 @@ CourseBreadcrumb.defaultProps = {
   withSeparator: false,
 };
 
-
 export default function CourseBreadcrumbs({
-  courseUsageKey, courseId, sequenceId, models,
+  course,
+  section,
+  sequence,
+  status,
 }) {
   const links = useMemo(() => {
-    const sectionId = models[sequenceId].parentId;
-    return [sectionId, sequenceId].map((nodeId) => {
-      const node = models[nodeId];
-      return {
+    if (status.course === 'loaded' && status.sequence === 'loaded') {
+      return [section, sequence].map((node) => ({
         id: node.id,
-        label: node.displayName,
-        url: `${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/#${node.id}`,
-      };
-    });
-  }, [courseUsageKey, courseId, sequenceId, models]);
+        label: node.title,
+        url: `${getConfig().LMS_BASE_URL}/courses/${course.id}/course/#${node.id}`,
+      }));
+    }
+    return [];
+  }, [status]);
 
   return (
     <nav aria-label="breadcrumb" className="my-4">
       <ol className="list-unstyled d-flex m-0">
         <CourseBreadcrumb
-          url={`${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/`}
+          url={`${getConfig().LMS_BASE_URL}/courses/${course.id}/course/`}
           className="flex-shrink-0"
         >
           <FontAwesomeIcon icon={faHome} className="mr-2" />
@@ -80,13 +84,13 @@ export default function CourseBreadcrumbs({
 }
 
 CourseBreadcrumbs.propTypes = {
-  courseUsageKey: PropTypes.string.isRequired,
-  courseId: PropTypes.string.isRequired,
-  sequenceId: PropTypes.string.isRequired,
-  models: PropTypes.objectOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    displayName: PropTypes.string.isRequired,
-    children: PropTypes.arrayOf(PropTypes.string),
-    parentId: PropTypes.string,
-  })).isRequired,
+  status: statusShape.isRequired,
+  course: courseShape.isRequired,
+  section: sectionShape,
+  sequence: sequenceShape,
+};
+
+CourseBreadcrumbs.defaultProps = {
+  section: undefined,
+  sequence: undefined,
 };

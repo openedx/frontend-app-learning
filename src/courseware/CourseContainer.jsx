@@ -1,103 +1,248 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useSelector, useDispatch } from 'react-redux';
 import { history, getConfig } from '@edx/frontend-platform';
-import { fetchCourseMetadata, courseMetadataShape } from '../data/course-meta';
-import { fetchCourseBlocks } from '../data/course-blocks';
 
-import messages from './messages';
-import PageLoading from '../PageLoading';
+import {
+  fetchCourse,
+  fetchSequence,
+  checkBlockCompletion,
+  saveSequencePosition,
+} from '../data/courseware';
+import { useModel } from '../data/model-store';
+
 import Course from './course/Course';
 
-function CourseContainer(props) {
+function firstSequenceIdSelector(state) {
+  if (state.courseware.courseStatus !== 'loaded') {
+    return null;
+  }
+  const sectionId = state.models.courses[state.courseware.courseUsageKey].sectionIds[0];
+  return state.models.sections[sectionId].sequenceIds[0];
+}
+
+function sequenceIdsSelector(state) {
+  if (state.courseware.courseStatus !== 'loaded') {
+    return [];
+  }
+  const { sectionIds } = state.models.courses[state.courseware.courseUsageKey];
+  let sequenceIds = [];
+  sectionIds.forEach(sectionId => {
+    sequenceIds = [...sequenceIds, ...state.models.sections[sectionId].sequenceIds];
+  });
+  return sequenceIds;
+}
+
+function useUnitNavigationHandler(courseUsageKey, sequenceId, unitId) {
+  const dispatch = useDispatch();
+  return useCallback((nextUnitId) => {
+    dispatch(checkBlockCompletion(courseUsageKey, sequenceId, unitId));
+    history.push(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
+  }, [courseUsageKey, sequenceId]);
+}
+
+function usePreviousSequence(sequenceId) {
+  const sequenceIds = useSelector(sequenceIdsSelector);
+  const sequences = useSelector(state => state.models.sequences);
+  if (!sequenceId || sequenceIds.length === 0) {
+    return null;
+  }
+  const sequenceIndex = sequenceIds.indexOf(sequenceId);
+  const previousSequenceId = sequenceIndex > 0 ? sequenceIds[sequenceIndex - 1] : null;
+  return previousSequenceId !== null ? sequences[previousSequenceId] : null;
+}
+
+function useNextSequence(sequenceId) {
+  const sequenceIds = useSelector(sequenceIdsSelector);
+  const sequences = useSelector(state => state.models.sequences);
+  if (!sequenceId || sequenceIds.length === 0) {
+    return null;
+  }
+  const sequenceIndex = sequenceIds.indexOf(sequenceId);
+  const nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
+  return nextSequenceId !== null ? sequences[nextSequenceId] : null;
+}
+
+function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
+  const sequenceIds = useSelector(sequenceIdsSelector);
+  const sequence = useModel('sequences', currentSequenceId);
+  const courseStatus = useSelector(state => state.courseware.courseStatus);
+
+  // If we don't know the sequence and unit yet, then assume no.
+  if (courseStatus !== 'loaded' || !currentSequenceId || !currentUnitId) {
+    return { isFirstUnit: false, isLastUnit: false };
+  }
+  const isFirstSequence = sequenceIds.indexOf(currentSequenceId) === 0;
+  const isFirstUnitInSequence = sequence.unitIds.indexOf(currentUnitId) === 0;
+  const isFirstUnit = isFirstSequence && isFirstUnitInSequence;
+  const isLastSequence = sequenceIds.indexOf(currentSequenceId) === sequenceIds.length - 1;
+  const isLastUnitInSequence = sequence.unitIds.indexOf(currentUnitId) === sequence.unitIds.length - 1;
+  const isLastUnit = isLastSequence && isLastUnitInSequence;
+
+  return { isFirstUnit, isLastUnit };
+}
+
+function useNextSequenceHandler(courseUsageKey, sequenceId) {
+  const nextSequence = useNextSequence(sequenceId);
+  const courseStatus = useSelector(state => state.courseware.courseStatus);
+  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  return useCallback(() => {
+    if (nextSequence !== null) {
+      const nextUnitId = nextSequence.unitIds[0];
+      history.push(`/course/${courseUsageKey}/${nextSequence.id}/${nextUnitId}`);
+    }
+  }, [courseStatus, sequenceStatus, sequenceId]);
+}
+
+function usePreviousSequenceHandler(courseUsageKey, sequenceId) {
+  const previousSequence = usePreviousSequence(sequenceId);
+  const courseStatus = useSelector(state => state.courseware.courseStatus);
+  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  return useCallback(() => {
+    if (previousSequence !== null) {
+      const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
+      history.push(`/course/${courseUsageKey}/${previousSequence.id}/${previousUnitId}`);
+    }
+  }, [courseStatus, sequenceStatus, sequenceId]);
+}
+
+function useExamRedirect(sequenceId) {
+  const sequence = useModel('sequences', sequenceId);
+  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  useEffect(() => {
+    if (sequenceStatus === 'loaded' && sequence.isTimeLimited) {
+      global.location.assign(sequence.lmsWebUrl);
+    }
+  }, [sequenceStatus, sequence]);
+}
+
+function useContentRedirect(courseStatus, sequenceStatus, courseUsageKey, sequence, sequenceId, unitId) {
+  const firstSequenceId = useSelector(firstSequenceIdSelector);
+  useEffect(() => {
+    if (courseStatus === 'loaded' && !sequenceId) {
+      history.push(`/course/${courseUsageKey}/${firstSequenceId}`);
+    }
+  }, [courseStatus, sequenceId]);
+  useEffect(() => {
+    if (sequenceStatus === 'loaded' && sequenceId && !unitId) {
+      // The position may be null, in which case we'll just assume 0.
+      const unitIndex = sequence.position || 0;
+      const nextUnitId = sequence.unitIds[unitIndex];
+      history.push(`/course/${courseUsageKey}/${sequence.id}/${nextUnitId}`);
+    }
+  }, [sequenceStatus]);
+}
+
+function useSavedSequencePosition(courseUsageKey, sequenceId, unitId) {
+  const dispatch = useDispatch();
+  const sequence = useModel('sequences', sequenceId);
+  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  useEffect(() => {
+    if (sequenceStatus === 'loaded' && sequence.savePosition) {
+      const activeUnitIndex = sequence.unitIds.indexOf(unitId);
+      dispatch(saveSequencePosition(courseUsageKey, sequenceId, activeUnitIndex));
+    }
+  }, [unitId]);
+}
+
+/**
+ * Redirects the user away from the app if they don't have access to view this course.
+ *
+ * @param {*} courseStatus
+ * @param {*} course
+ */
+function useAccessDeniedRedirect(courseStatus, course) {
+  useEffect(() => {
+    if (courseStatus === 'loaded' && !course.userHasAccess) {
+      global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${course.id}/course/`);
+    }
+  }, [courseStatus, course]);
+}
+
+export default function CourseContainer(props) {
   const {
-    intl,
     match,
-    courseId,
-    blocks: models,
-    metadata,
   } = props;
   const {
-    courseUsageKey,
-    sequenceId,
     unitId,
   } = match.params;
 
-  useEffect(() => {
-    props.fetchCourseMetadata(courseUsageKey);
-    props.fetchCourseBlocks(courseUsageKey);
-  }, [courseUsageKey]);
+  const dispatch = useDispatch();
+
+  // The courseUsageKey and sequenceId in the store are the entities we currently have loaded.
+  // We get these two IDs from the store because until fetchCourse and fetchSequence below have
+  // finished their work, the IDs in the URL are not representative of what we should actually show.
+  // This is important particularly when switching sequences.  Until a new sequence is fully loaded,
+  // there's information that we don't have yet - if we use the URL's sequence ID to tell the app
+  // which sequence is loaded, we'll instantly try to pull it out of the store and use it, before
+  // the sequenceStatus flag has even switched back to "loading", which will put our app into an
+  // invalid state.
+  const {
+    courseUsageKey,
+    courseStatus,
+    sequenceId,
+    sequenceStatus,
+  } = useSelector(state => state.courseware);
 
   useEffect(() => {
-    if (courseId && !sequenceId) {
-      // TODO: This is temporary until we get an actual activeSequenceId into the course model data.
-      const course = models[courseId];
-      const chapter = models[course.children[0]];
-      const activeSequenceId = chapter.children[0];
-      history.push(`/course/${courseUsageKey}/${activeSequenceId}`);
+    dispatch(fetchCourse(match.params.courseUsageKey));
+  }, [match.params.courseUsageKey]);
+
+  useEffect(() => {
+    if (match.params.sequenceId) {
+      dispatch(fetchSequence(match.params.sequenceId));
     }
-  }, [courseUsageKey, courseId, sequenceId]);
+  }, [match.params.sequenceId]);
 
-  const metadataLoaded = metadata.fetchState === 'loaded';
-  useEffect(() => {
-    if (metadataLoaded && !metadata.userHasAccess) {
-      global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/course/`);
-    }
-  }, [metadataLoaded]);
+  const course = useModel('courses', courseUsageKey);
+  const sequence = useModel('sequences', sequenceId);
+  const section = useModel('sections', sequence ? sequence.sectionId : null);
+  const unit = useModel('units', unitId);
 
-  // Whether or not the container is ready to render the Course.
-  const ready = metadataLoaded && courseId && sequenceId;
+  const nextSequenceHandler = useNextSequenceHandler(courseUsageKey, sequenceId);
+  const previousSequenceHandler = usePreviousSequenceHandler(courseUsageKey, sequenceId);
+  const unitNavigationHandler = useUnitNavigationHandler(courseUsageKey, sequenceId, unitId);
+
+  useAccessDeniedRedirect(courseStatus, course);
+  useContentRedirect(
+    courseStatus,
+    sequenceStatus,
+    courseUsageKey,
+    sequence,
+    match.params.sequenceId,
+    unitId,
+  );
+  useExamRedirect(sequenceId);
+
+  useSavedSequencePosition(courseUsageKey, sequenceId, unitId);
+  const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
+
+  const status = {
+    course: courseStatus,
+    section: courseStatus,
+    sequence: sequenceStatus,
+    unit: sequenceStatus,
+  };
 
   return (
     <main className="flex-grow-1 d-flex flex-column">
-      {(() => {
-        if (ready) {
-          return (
-            <Course
-              courseOrg={props.metadata.org}
-              courseNumber={props.metadata.number}
-              courseName={props.metadata.name}
-              courseUsageKey={courseUsageKey}
-              courseId={courseId}
-              isEnrolled={props.metadata.isEnrolled}
-              isStaff={props.metadata.isStaff}
-              sequenceId={sequenceId}
-              unitId={unitId}
-              models={models}
-              tabs={props.metadata.tabs}
-              verifiedMode={props.metadata.verifiedMode}
-            />
-          );
-        }
-
-        if (metadata.fetchState === 'failed' || models.fetchState === 'failed') {
-          return (
-            <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
-              {intl.formatMessage(messages['learn.course.load.failure'])}
-            </p>
-          );
-        }
-
-        return (
-          <PageLoading
-            srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
-          />
-        );
-      })()}
+      <Course
+        status={status}
+        course={course}
+        section={section}
+        sequence={sequence}
+        unit={unit}
+        isFirstUnit={isFirstUnit}
+        isLastUnit={isLastUnit}
+        nextSequenceHandler={nextSequenceHandler}
+        previousSequenceHandler={previousSequenceHandler}
+        unitNavigationHandler={unitNavigationHandler}
+      />
     </main>
   );
 }
 
 CourseContainer.propTypes = {
-  intl: intlShape.isRequired,
-  courseId: PropTypes.string,
-  blocks: PropTypes.objectOf(PropTypes.shape({
-    id: PropTypes.string,
-  })),
-  metadata: courseMetadataShape,
-  fetchCourseMetadata: PropTypes.func.isRequired,
-  fetchCourseBlocks: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       courseUsageKey: PropTypes.string.isRequired,
@@ -106,20 +251,3 @@ CourseContainer.propTypes = {
     }).isRequired,
   }).isRequired,
 };
-
-CourseContainer.defaultProps = {
-  blocks: {},
-  metadata: undefined,
-  courseId: undefined,
-};
-
-const mapStateToProps = state => ({
-  courseId: state.courseBlocks.root,
-  metadata: state.courseMeta,
-  blocks: state.courseBlocks.blocks,
-});
-
-export default connect(mapStateToProps, {
-  fetchCourseMetadata,
-  fetchCourseBlocks,
-})(injectIntl(CourseContainer));

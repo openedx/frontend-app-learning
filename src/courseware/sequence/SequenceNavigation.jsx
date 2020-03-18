@@ -16,14 +16,14 @@ export default function SequenceNavigation({
   isLastUnit,
   isLocked,
   onNavigate,
-  onNext,
-  onPrevious,
+  nextSequenceHandler,
+  previousSequenceHandler,
   showCompletion,
   unitIds,
 }) {
   return (
     <nav className={classNames('sequence-navigation', className)}>
-      <Button className="previous-btn" onClick={onPrevious} disabled={isFirstUnit}>
+      <Button className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
         <FormattedMessage
           defaultMessage="Previous"
@@ -33,7 +33,7 @@ export default function SequenceNavigation({
       </Button>
 
 
-      {isLocked ? <UnitButton type="lock" isActive /> : (
+      {isLocked ? <UnitButton unitId={activeUnitId} title="" contentType="lock" isActive onClick={() => {}} /> : (
         <SequenceNavigationTabs
           unitIds={unitIds}
           activeUnitId={activeUnitId}
@@ -42,7 +42,7 @@ export default function SequenceNavigation({
         />
       )}
 
-      <Button className="next-btn" onClick={onNext} disabled={isLastUnit}>
+      <Button className="next-btn" onClick={nextSequenceHandler} disabled={isLastUnit}>
         <FormattedMessage
           defaultMessage="Next"
           id="learn.sequence.navigation.next.button"
@@ -61,8 +61,8 @@ SequenceNavigation.propTypes = {
   isLastUnit: PropTypes.bool.isRequired,
   isLocked: PropTypes.bool.isRequired,
   onNavigate: PropTypes.func.isRequired,
-  onNext: PropTypes.func.isRequired,
-  onPrevious: PropTypes.func.isRequired,
+  nextSequenceHandler: PropTypes.func.isRequired,
+  previousSequenceHandler: PropTypes.func.isRequired,
   showCompletion: PropTypes.bool.isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

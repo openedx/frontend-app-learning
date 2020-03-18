@@ -1,23 +1,25 @@
 import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import BookmarkButton from './bookmark/BookmarkButton';
-import { addBookmark, removeBookmark } from '../../data/course-blocks';
+import { addBookmark, removeBookmark } from '../../data/courseware';
+import { useModel } from '../../data/model-store';
 
-function Unit({
-  bookmarked,
-  bookmarkedUpdateState,
-  displayName,
+export default function Unit({
   onLoaded,
   id,
-  ...props
 }) {
   const iframeRef = useRef(null);
   const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
 
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
+
+  const unit = useModel('units', id);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     global.onmessage = (event) => {
       const { type, payload } = event.data;
@@ -35,25 +37,25 @@ function Unit({
   }, []);
 
   const toggleBookmark = () => {
-    if (bookmarked) {
-      props.removeBookmark(id);
+    if (unit.bookmarked) {
+      dispatch(removeBookmark(id));
     } else {
-      props.addBookmark(id);
+      dispatch(addBookmark(id));
     }
   };
 
   return (
     <div className="unit">
-      <h2 className="mb-0 h4">{displayName}</h2>
+      <h2 className="mb-0 h4">{unit.title}</h2>
       <BookmarkButton
         onClick={toggleBookmark}
-        isBookmarked={bookmarked}
-        isProcessing={bookmarkedUpdateState === 'loading'}
+        isBookmarked={unit.bookmarked}
+        isProcessing={unit.bookmarkedUpdateState === 'loading'}
       />
       <div className="unit-iframe-wrapper">
         <iframe
           id="unit-iframe"
-          title={displayName}
+          title={unit.title}
           ref={iframeRef}
           src={iframeUrl}
           allowFullScreen
@@ -67,24 +69,10 @@ function Unit({
 }
 
 Unit.propTypes = {
-  addBookmark: PropTypes.func.isRequired,
-  bookmarked: PropTypes.bool,
-  bookmarkedUpdateState: PropTypes.string,
-  displayName: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  removeBookmark: PropTypes.func.isRequired,
   onLoaded: PropTypes.func,
 };
 
 Unit.defaultProps = {
-  bookmarked: false,
-  bookmarkedUpdateState: undefined,
   onLoaded: undefined,
 };
-
-const mapStateToProps = (state, props) => state.courseBlocks.blocks[props.id] || {};
-
-export default connect(mapStateToProps, {
-  addBookmark,
-  removeBookmark,
-})(Unit);

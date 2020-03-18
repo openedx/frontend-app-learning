@@ -1,52 +1,45 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { fetchCourseMetadata, courseMetadataShape } from '../data/course-meta';
-import { fetchCourseBlocks, courseBlocksShape } from '../data/course-blocks';
 
-import messages from '../courseware/messages';
+import messages from './messages';
 import PageLoading from '../PageLoading';
 import Outline from './Outline';
+import { fetchCourse } from '../data/courseware';
+import { useModel } from '../data/model-store';
 
 function OutlineContainer(props) {
   const {
     intl,
     match,
-    courseId,
-    blocks: models,
-    metadata,
   } = props;
-  const { courseUsageKey } = match.params;
 
+  const dispatch = useDispatch();
   useEffect(() => {
-    props.fetchCourseMetadata(courseUsageKey);
-    props.fetchCourseBlocks(courseUsageKey);
-  }, [courseUsageKey]);
+    // The courseUsageKey from the URL is the course we WANT to load.
+    dispatch(fetchCourse(match.params.courseUsageKey));
+  }, [match.params.courseUsageKey]);
 
-  const ready = metadata.fetchState === 'loaded' && courseId;
+  // The courseUsageKey from the store is the course we HAVE loaded.  If the URL changes,
+  // we don't want the application to adjust to it until it has actually loaded the new data.
+  const {
+    courseUsageKey,
+    courseStatus,
+  } = useSelector(state => state.courseware);
+
+  const course = useModel('courses', courseUsageKey);
 
   return (
     <>
-      {ready ? (
+      {courseStatus === 'loaded' ? (
         <Outline
-          courseOrg={metadata.org}
-          courseNumber={metadata.number}
-          courseName={metadata.name}
+          course={course}
           courseUsageKey={courseUsageKey}
-          courseId={courseId}
-          start={metadata.start}
-          end={metadata.end}
-          enrollmentStart={metadata.enrollmentStart}
-          enrollmentEnd={metadata.enrollmentEnd}
-          enrollmentMode={metadata.enrollmentMode}
-          isEnrolled={metadata.isEnrolled}
-          models={models}
-          tabs={metadata.tabs}
         />
       ) : (
         <PageLoading
-          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+          srMessage={intl.formatMessage(messages['learn.loading.outline'])}
         />
       )}
     </>
@@ -55,11 +48,6 @@ function OutlineContainer(props) {
 
 OutlineContainer.propTypes = {
   intl: intlShape.isRequired,
-  courseId: PropTypes.string,
-  blocks: courseBlocksShape,
-  metadata: courseMetadataShape,
-  fetchCourseMetadata: PropTypes.func.isRequired,
-  fetchCourseBlocks: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       courseUsageKey: PropTypes.string.isRequired,
@@ -67,19 +55,4 @@ OutlineContainer.propTypes = {
   }).isRequired,
 };
 
-OutlineContainer.defaultProps = {
-  blocks: {},
-  metadata: undefined,
-  courseId: undefined,
-};
-
-const mapStateToProps = state => ({
-  courseId: state.courseBlocks.root,
-  metadata: state.courseMeta,
-  blocks: state.courseBlocks.blocks,
-});
-
-export default connect(mapStateToProps, {
-  fetchCourseMetadata,
-  fetchCourseBlocks,
-})(injectIntl(OutlineContainer));
+export default injectIntl(OutlineContainer);

@@ -1,146 +1,126 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { history } from '@edx/frontend-platform';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+
+import AlertList from '../../user-messages/AlertList';
+import { useLogistrationAlert, useEnrollmentAlert } from '../../hooks';
+import PageLoading from '../../PageLoading';
+
+import InstructorToolbar from '../InstructorToolbar';
+import Sequence from '../sequence/Sequence';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-import SequenceContainer from './SequenceContainer';
-import { createSequenceIdList } from '../utils';
-import AlertList from '../../user-messages/AlertList';
 import CourseHeader from './CourseHeader';
 import CourseSock from './course-sock';
 import CourseTabsNavigation from './CourseTabsNavigation';
-import InstructorToolbar from '../InstructorToolbar';
-import { useLogistrationAlert, useEnrollmentAlert } from '../../hooks';
+import messages from './messages';
+import {
+  courseShape, sectionShape, sequenceShape, unitShape, statusShape,
+} from './shapes';
 
 const EnrollmentAlert = React.lazy(() => import('../../enrollment-alert'));
 const LogistrationAlert = React.lazy(() => import('../../logistration-alert'));
 
-
-export default function Course({
-  courseId,
-  courseNumber,
-  courseName,
-  courseOrg,
-  courseUsageKey,
-  isEnrolled,
-  isStaff,
-  models,
-  sequenceId,
-  tabs,
-  unitId,
-  verifiedMode,
+function Course({
+  course,
+  section,
+  sequence,
+  unit,
+  status,
+  isFirstUnit,
+  isLastUnit,
+  nextSequenceHandler,
+  previousSequenceHandler,
+  unitNavigationHandler,
+  intl,
 }) {
-  const nextSequenceHandler = useCallback(() => {
-    const sequenceIds = createSequenceIdList(models, courseId);
-    const currentIndex = sequenceIds.indexOf(sequenceId);
-    if (currentIndex < sequenceIds.length - 1) {
-      const nextSequenceId = sequenceIds[currentIndex + 1];
-      const nextSequence = models[nextSequenceId];
-      const nextUnitId = nextSequence.children[0];
-      history.push(`/course/${courseUsageKey}/${nextSequenceId}/${nextUnitId}`);
-    }
-  });
-
-  const previousSequenceHandler = useCallback(() => {
-    const sequenceIds = createSequenceIdList(models, courseId);
-    const currentIndex = sequenceIds.indexOf(sequenceId);
-    if (currentIndex > 0) {
-      const previousSequenceId = sequenceIds[currentIndex - 1];
-      const previousSequence = models[previousSequenceId];
-      const previousUnitId = previousSequence.children[previousSequence.children.length - 1];
-      history.push(`/course/${courseUsageKey}/${previousSequenceId}/${previousUnitId}`);
-    }
-  });
-
   useLogistrationAlert();
-  useEnrollmentAlert(isEnrolled);
+  useEnrollmentAlert(course);
 
-  return (
-    <>
-      <CourseHeader
-        courseOrg={courseOrg}
-        courseNumber={courseNumber}
-        courseName={courseName}
+  if (status.course === 'loading') {
+    return (
+      <PageLoading
+        srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
       />
-      {isStaff && (
+    );
+  }
+
+  if (status.course === 'loaded') {
+    return (
+      <>
+        <CourseHeader
+          courseOrg={course.org}
+          courseNumber={course.number}
+          courseName={course.title}
+        />
+        {course.isStaff && (
         <InstructorToolbar
-          courseUsageKey={courseUsageKey}
-          courseId={courseId}
-          sequenceId={sequenceId}
-          unitId={unitId}
+          unitId={unit.id}
         />
-      )}
-      <CourseTabsNavigation tabs={tabs} activeTabSlug="courseware" />
-      <div className="container-fluid">
-        <AlertList
-          className="my-3"
-          topic="course"
-          customAlerts={{
-            clientEnrollmentAlert: EnrollmentAlert,
-            clientLogistrationAlert: LogistrationAlert,
-          }}
-        />
-        <CourseBreadcrumbs
-          courseUsageKey={courseUsageKey}
-          courseId={courseId}
-          sequenceId={sequenceId}
-          unitId={unitId}
-          models={models}
-        />
-        <AlertList topic="sequence" />
-      </div>
-      <div className="flex-grow-1 d-flex flex-column">
-        <SequenceContainer
-          key={sequenceId}
-          courseUsageKey={courseUsageKey}
-          courseId={courseId}
-          sequenceId={sequenceId}
-          unitId={unitId}
-          models={models}
-          onNext={nextSequenceHandler}
-          onPrevious={previousSequenceHandler}
-        />
-        {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
-      </div>
-    </>
+        )}
+        <CourseTabsNavigation tabs={course.tabs} activeTabSlug="courseware" />
+        <div className="container-fluid">
+          <AlertList
+            className="my-3"
+            topic="course"
+            customAlerts={{
+              clientEnrollmentAlert: EnrollmentAlert,
+              clientLogistrationAlert: LogistrationAlert,
+            }}
+          />
+          <CourseBreadcrumbs
+            status={status}
+            course={course}
+            section={section}
+            sequence={sequence}
+          />
+          <AlertList topic="sequence" />
+        </div>
+        <div className="flex-grow-1 d-flex flex-column">
+          <Sequence
+            unit={unit}
+            sequence={sequence}
+            status={status}
+            courseUsageKey={course.id}
+            isFirstUnit={isFirstUnit}
+            isLastUnit={isLastUnit}
+            unitNavigationHandler={unitNavigationHandler}
+            nextSequenceHandler={nextSequenceHandler}
+            previousSequenceHandler={previousSequenceHandler}
+          />
+          {course.verifiedMode && <CourseSock verifiedMode={course.verifiedMode} />}
+        </div>
+      </>
+    );
+  }
+
+  // course status 'failed' and any other unexpected course status.
+  return (
+    <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
+      {intl.formatMessage(messages['learn.course.load.failure'])}
+    </p>
   );
 }
 
 Course.propTypes = {
-  courseOrg: PropTypes.string.isRequired,
-  courseNumber: PropTypes.string.isRequired,
-  courseName: PropTypes.string.isRequired,
-  courseUsageKey: PropTypes.string.isRequired,
-  courseId: PropTypes.string.isRequired,
-  sequenceId: PropTypes.string.isRequired,
-  unitId: PropTypes.string,
-  isEnrolled: PropTypes.bool,
-  isStaff: PropTypes.bool,
-  models: PropTypes.objectOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    displayName: PropTypes.string.isRequired,
-    children: PropTypes.arrayOf(PropTypes.string),
-    parentId: PropTypes.string,
-  })).isRequired,
-  tabs: PropTypes.arrayOf(PropTypes.shape({
-    slug: PropTypes.string.isRequired,
-    priority: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
-  })).isRequired,
-  verifiedMode: PropTypes.shape({
-    price: PropTypes.number.isRequired,
-    currency: PropTypes.string.isRequired,
-    currencySymbol: PropTypes.string,
-    sku: PropTypes.string.isRequired,
-    upgradeUrl: PropTypes.string.isRequired,
-  }),
+  status: statusShape.isRequired,
+  course: courseShape,
+  section: sectionShape,
+  sequence: sequenceShape,
+  unit: unitShape,
+  isFirstUnit: PropTypes.bool.isRequired,
+  isLastUnit: PropTypes.bool.isRequired,
+  nextSequenceHandler: PropTypes.func.isRequired,
+  previousSequenceHandler: PropTypes.func.isRequired,
+  unitNavigationHandler: PropTypes.func.isRequired,
+  intl: intlShape.isRequired,
 };
 
 Course.defaultProps = {
-  unitId: undefined,
-  isEnrolled: false,
-  isStaff: false,
-  verifiedMode: null,
+  course: undefined,
+  section: undefined,
+  sequence: undefined,
+  unit: undefined,
 };
+
+export default injectIntl(Course);

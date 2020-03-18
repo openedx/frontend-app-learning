@@ -51,7 +51,7 @@ const mapStateToProps = (state, props) => {
     return {};
   }
 
-  const activeUnit = state.courseBlocks.blocks[props.unitId];
+  const activeUnit = state.models.units[props.unitId];
   return {
     activeUnitLmsWebUrl: activeUnit.lmsWebUrl,
   };

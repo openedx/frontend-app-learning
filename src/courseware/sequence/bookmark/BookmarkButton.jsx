@@ -49,6 +49,10 @@ export default function BookmarkButton({ onClick, isBookmarked, isProcessing }) 
 
 BookmarkButton.propTypes = {
   onClick: PropTypes.func.isRequired,
-  isBookmarked: PropTypes.bool.isRequired,
+  isBookmarked: PropTypes.bool,
   isProcessing: PropTypes.bool.isRequired,
+};
+
+BookmarkButton.defaultProps = {
+  isBookmarked: false,
 };
