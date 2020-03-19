@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { reducer as coursewareReducer } from './data/courseware';
-import { reducer as modelsReducer } from './data/model-store';
+import { reducer as coursewareReducer } from './data';
+import { reducer as modelsReducer } from './model-store';
 
 const store = configureStore({
   reducer: {

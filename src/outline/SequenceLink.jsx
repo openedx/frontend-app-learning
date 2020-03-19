@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { useModel } from '../data/model-store';
+import { useModel } from '../model-store';
 
 export default function SequenceLink({ id, courseUsageKey }) {
   const sequence = useModel('sequences', id);

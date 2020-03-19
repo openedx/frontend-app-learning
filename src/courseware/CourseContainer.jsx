@@ -6,10 +6,12 @@ import { history, getConfig } from '@edx/frontend-platform';
 import {
   fetchCourse,
   fetchSequence,
+} from '../data';
+import {
   checkBlockCompletion,
   saveSequencePosition,
-} from '../data/courseware';
-import { useModel } from '../data/model-store';
+} from './data/thunks';
+import { useModel } from '../model-store';
 
 import Course from './course/Course';
 

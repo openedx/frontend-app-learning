@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import BookmarkButton from '../bookmark/BookmarkButton';
-import { useModel } from '../../data/model-store';
+import { useModel } from '../../model-store';
 
 export default function Unit({
   onLoaded,

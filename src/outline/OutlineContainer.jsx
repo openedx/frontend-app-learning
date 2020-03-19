@@ -6,8 +6,8 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import messages from './messages';
 import PageLoading from '../PageLoading';
 import Outline from './Outline';
-import { fetchCourse } from '../data/courseware';
-import { useModel } from '../data/model-store';
+import { fetchCourse } from '../data';
+import { useModel } from '../model-store';
 
 function OutlineContainer(props) {
   const {
