@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { StatefulButton } from '@edx/paragon';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { useDispatch } from 'react-redux';
 import BookmarkOutlineIcon from './BookmarkOutlineIcon';
 import BookmarkFilledIcon from './BookmarkFilledIcon';
+import { removeBookmark, addBookmark } from './data/thunks';
 
 const addBookmarkLabel = (
   <FormattedMessage
@@ -21,14 +23,25 @@ const hasBookmarkLabel = (
   />
 );
 
-export default function BookmarkButton({ onClick, isBookmarked, isProcessing }) {
+export default function BookmarkButton({
+  isBookmarked, isProcessing, unitId,
+}) {
   const bookmarkState = isBookmarked ? 'bookmarked' : 'default';
   const state = isProcessing ? `${bookmarkState}Processing` : bookmarkState;
+
+  const dispatch = useDispatch();
+  const toggleBookmark = useCallback(() => {
+    if (isBookmarked) {
+      dispatch(removeBookmark(unitId));
+    } else {
+      dispatch(addBookmark(unitId));
+    }
+  }, [isBookmarked, unitId]);
 
   return (
     <StatefulButton
       className="btn-link px-1 ml-n1 btn-sm"
-      onClick={onClick}
+      onClick={toggleBookmark}
       state={state}
       disabledStates={['defaultProcessing', 'bookmarkedProcessing']}
       labels={{
@@ -48,7 +61,7 @@ export default function BookmarkButton({ onClick, isBookmarked, isProcessing }) 
 }
 
 BookmarkButton.propTypes = {
-  onClick: PropTypes.func.isRequired,
+  unitId: PropTypes.string.isRequired,
   isBookmarked: PropTypes.bool,
   isProcessing: PropTypes.bool.isRequired,
 };

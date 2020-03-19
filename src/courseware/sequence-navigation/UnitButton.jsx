@@ -6,7 +6,7 @@ import { Button } from '@edx/paragon';
 
 import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
-import BookmarkFilledIcon from './bookmark/BookmarkFilledIcon';
+import BookmarkFilledIcon from '../bookmark/BookmarkFilledIcon';
 
 function UnitButton({
   onClick,

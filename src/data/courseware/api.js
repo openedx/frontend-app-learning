@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { logError } from '@edx/frontend-platform/logging';
 
 function normalizeMetadata(metadata) {
   return {
@@ -36,30 +37,38 @@ function normalizeBlocks(courseUsageKey, blocks) {
     units: {},
   };
   Object.values(blocks).forEach(block => {
-    if (block.type === 'course') {
-      models.courses[block.id] = {
-        id: courseUsageKey,
-        title: block.display_name,
-        sectionIds: block.children,
-      };
-    } else if (block.type === 'chapter') {
-      models.sections[block.id] = {
-        id: block.id,
-        title: block.display_name,
-        sequenceIds: block.children,
-      };
-    } else if (block.type === 'sequential') {
-      models.sequences[block.id] = {
-        id: block.id,
-        title: block.display_name,
-        lmsWebUrl: block.lms_web_url,
-        unitIds: block.children,
-      };
-    } else if (block.type === 'vertical') {
-      models.units[block.id] = {
-        id: block.id,
-        title: block.display_name,
-      };
+    switch (block.type) {
+      case 'course':
+        models.courses[block.id] = {
+          id: courseUsageKey,
+          title: block.display_name,
+          sectionIds: block.children,
+        };
+        break;
+      case 'chapter':
+        models.sections[block.id] = {
+          id: block.id,
+          title: block.display_name,
+          sequenceIds: block.children,
+        };
+        break;
+
+      case 'sequential':
+        models.sequences[block.id] = {
+          id: block.id,
+          title: block.display_name,
+          lmsWebUrl: block.lms_web_url,
+          unitIds: block.children,
+        };
+        break;
+      case 'vertical':
+        models.units[block.id] = {
+          id: block.id,
+          title: block.display_name,
+        };
+        break;
+      default:
+        logError(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, and vertical.`);
     }
   });
 
@@ -180,15 +189,4 @@ export async function updateSequencePosition(courseUsageKey, sequenceId, positio
   );
 
   return data;
-}
-
-const bookmarksBaseUrl = `${getConfig().LMS_BASE_URL}/api/bookmarks/v1/bookmarks/`;
-
-export async function createBookmark(usageId) {
-  return getAuthenticatedHttpClient().post(bookmarksBaseUrl, { usage_id: usageId });
-}
-
-export async function deleteBookmark(usageId) {
-  const { username } = getAuthenticatedUser();
-  return getAuthenticatedHttpClient().delete(`${bookmarksBaseUrl}${username},${usageId}/`);
 }

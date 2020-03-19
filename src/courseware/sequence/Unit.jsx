@@ -1,9 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
-import { useDispatch } from 'react-redux';
-import BookmarkButton from './bookmark/BookmarkButton';
-import { addBookmark, removeBookmark } from '../../data/courseware';
+import BookmarkButton from '../bookmark/BookmarkButton';
 import { useModel } from '../../data/model-store';
 
 export default function Unit({
@@ -17,8 +15,6 @@ export default function Unit({
   const [hasLoaded, setHasLoaded] = useState(false);
 
   const unit = useModel('units', id);
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     global.onmessage = (event) => {
@@ -36,19 +32,11 @@ export default function Unit({
     };
   }, []);
 
-  const toggleBookmark = () => {
-    if (unit.bookmarked) {
-      dispatch(removeBookmark(id));
-    } else {
-      dispatch(addBookmark(id));
-    }
-  };
-
   return (
     <div className="unit">
       <h2 className="mb-0 h4">{unit.title}</h2>
       <BookmarkButton
-        onClick={toggleBookmark}
+        unitId={unit.id}
         isBookmarked={unit.bookmarked}
         isProcessing={unit.bookmarkedUpdateState === 'loading'}
       />

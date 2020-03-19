@@ -7,11 +7,10 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import Unit from './Unit';
-import SequenceNavigation from './SequenceNavigation';
+import { SequenceNavigation, UnitNavigation } from '../sequence-navigation';
 import PageLoading from '../../PageLoading';
 import messages from './messages';
 import UserMessagesContext from '../../user-messages/UserMessagesContext';
-import UnitNavigation from './UnitNavigation';
 import { unitShape, sequenceShape, statusShape } from '../course/shapes';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
