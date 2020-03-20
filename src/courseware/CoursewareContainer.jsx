@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { history, getConfig } from '@edx/frontend-platform';
 
+import { useRouteMatch } from 'react-router';
 import {
   fetchCourse,
   fetchSequence,
@@ -82,13 +83,17 @@ function useExamRedirect(sequenceId) {
   }, [sequenceStatus, sequence]);
 }
 
-function useContentRedirect(courseStatus, sequenceStatus, courseUsageKey, sequence, sequenceId, unitId) {
+function useContentRedirect(courseStatus, sequenceStatus) {
+  const match = useRouteMatch();
+  const { courseUsageKey, sequenceId, unitId } = match.params;
+  const sequence = useModel('sequences', sequenceId);
   const firstSequenceId = useSelector(firstSequenceIdSelector);
   useEffect(() => {
     if (courseStatus === 'loaded' && !sequenceId) {
       history.replace(`/course/${courseUsageKey}/${firstSequenceId}`);
     }
   }, [courseStatus, sequenceId]);
+
   useEffect(() => {
     if (sequenceStatus === 'loaded' && sequenceId && !unitId) {
       // The position may be null, in which case we'll just assume 0.
@@ -117,7 +122,8 @@ function useSavedSequencePosition(courseUsageKey, sequenceId, unitId) {
  * @param {*} courseStatus
  * @param {*} course
  */
-function useAccessDeniedRedirect(courseStatus, course) {
+function useAccessDeniedRedirect(courseStatus, courseId) {
+  const course = useModel('courses', courseId);
   useEffect(() => {
     if (courseStatus === 'loaded' && !course.userHasAccess) {
       global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${course.id}/course/`);
@@ -125,15 +131,24 @@ function useAccessDeniedRedirect(courseStatus, course) {
   }, [courseStatus, course]);
 }
 
-export default function CoursewareContainer(props) {
+export default function CoursewareContainer() {
+  const { params } = useRouteMatch();
   const {
-    match,
-  } = props;
-  const {
-    unitId,
-  } = match.params;
-
+    courseUsageKey: routeCourseUsageKey,
+    sequenceId: routeSequenceId,
+    unitId: routeUnitId,
+  } = params;
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCourse(routeCourseUsageKey));
+  }, [routeCourseUsageKey]);
+
+  useEffect(() => {
+    if (routeSequenceId) {
+      dispatch(fetchSequence(routeSequenceId));
+    }
+  }, [routeSequenceId]);
 
   // The courseUsageKey and sequenceId in the store are the entities we currently have loaded.
   // We get these two IDs from the store because until fetchCourse and fetchSequence below have
@@ -145,59 +160,26 @@ export default function CoursewareContainer(props) {
   // invalid state.
   const {
     courseUsageKey,
-    courseStatus,
     sequenceId,
+    courseStatus,
     sequenceStatus,
   } = useSelector(state => state.courseware);
 
-  useEffect(() => {
-    dispatch(fetchCourse(match.params.courseUsageKey));
-  }, [match.params.courseUsageKey]);
-
-  useEffect(() => {
-    if (match.params.sequenceId) {
-      dispatch(fetchSequence(match.params.sequenceId));
-    }
-  }, [match.params.sequenceId]);
-
-  const course = useModel('courses', courseUsageKey);
-  const sequence = useModel('sequences', sequenceId);
-  const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const unit = useModel('units', unitId);
-
   const nextSequenceHandler = useNextSequenceHandler(courseUsageKey, sequenceId);
   const previousSequenceHandler = usePreviousSequenceHandler(courseUsageKey, sequenceId);
-  const unitNavigationHandler = useUnitNavigationHandler(courseUsageKey, sequenceId, unitId);
+  const unitNavigationHandler = useUnitNavigationHandler(courseUsageKey, sequenceId, routeUnitId);
 
-  useAccessDeniedRedirect(courseStatus, course);
-  useContentRedirect(
-    courseStatus,
-    sequenceStatus,
-    courseUsageKey,
-    sequence,
-    match.params.sequenceId,
-    unitId,
-  );
+  useAccessDeniedRedirect(courseStatus, courseUsageKey);
+  useContentRedirect(courseStatus, sequenceStatus);
   useExamRedirect(sequenceId);
-
-  useSavedSequencePosition(courseUsageKey, sequenceId, unitId);
-
-
-  const status = {
-    course: courseStatus,
-    section: courseStatus,
-    sequence: sequenceStatus,
-    unit: sequenceStatus,
-  };
+  useSavedSequencePosition(courseUsageKey, sequenceId, routeUnitId);
 
   return (
     <main className="flex-grow-1 d-flex flex-column">
       <Course
-        status={status}
-        course={course}
-        section={section}
-        sequence={sequence}
-        unit={unit}
+        courseId={courseUsageKey}
+        sequenceId={sequenceId}
+        unitId={routeUnitId}
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
         unitNavigationHandler={unitNavigationHandler}

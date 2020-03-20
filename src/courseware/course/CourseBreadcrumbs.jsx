@@ -4,8 +4,9 @@ import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from 'react-redux';
 import {
-  courseShape, sectionShape, sequenceShape, statusShape,
+  courseShape, sectionShape, sequenceShape,
 } from './shapes';
 
 function CourseBreadcrumb({
@@ -37,10 +38,12 @@ export default function CourseBreadcrumbs({
   course,
   section,
   sequence,
-  status,
 }) {
+  const courseStatus = useSelector(state => state.courseware.courseStatus);
+  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+
   const links = useMemo(() => {
-    if (status.course === 'loaded' && status.sequence === 'loaded') {
+    if (courseStatus === 'loaded' && sequenceStatus === 'loaded') {
       return [section, sequence].map((node) => ({
         id: node.id,
         label: node.title,
@@ -48,7 +51,7 @@ export default function CourseBreadcrumbs({
       }));
     }
     return [];
-  }, [status]);
+  }, [courseStatus, sequenceStatus]);
 
   return (
     <nav aria-label="breadcrumb" className="my-4">
@@ -84,7 +87,6 @@ export default function CourseBreadcrumbs({
 }
 
 CourseBreadcrumbs.propTypes = {
-  status: statusShape.isRequired,
   course: courseShape.isRequired,
   section: sectionShape,
   sequence: sequenceShape,

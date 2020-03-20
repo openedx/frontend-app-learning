@@ -6,7 +6,8 @@ import AlertList from '../user-messages/AlertList';
 import CourseHeader from '../courseware/course/CourseHeader';
 import { courseShape } from '../courseware/course/shapes';
 import CourseTabsNavigation from '../courseware/course/CourseTabsNavigation';
-import { useLogistrationAlert, useEnrollmentAlert } from '../hooks';
+import { useLogistrationAlert } from '../logistration-alert';
+import { useEnrollmentAlert } from '../enrollment-alert';
 
 import CourseDates from './CourseDates';
 import Section from './Section';
@@ -19,7 +20,7 @@ export default function CourseHome({
   courseUsageKey,
 }) {
   useLogistrationAlert();
-  useEnrollmentAlert(course.isEnrolled);
+  useEnrollmentAlert(courseUsageKey);
 
   return (
     <>

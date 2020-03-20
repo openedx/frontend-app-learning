@@ -2,8 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
+import { useSelector } from 'react-redux';
 import AlertList from '../../user-messages/AlertList';
-import { useLogistrationAlert, useEnrollmentAlert } from '../../hooks';
+import { useLogistrationAlert } from '../../logistration-alert';
+import { useEnrollmentAlert } from '../../enrollment-alert';
 import PageLoading from '../../PageLoading';
 
 import InstructorToolbar from './InstructorToolbar';
@@ -14,28 +16,31 @@ import CourseHeader from './CourseHeader';
 import CourseSock from './course-sock';
 import CourseTabsNavigation from './CourseTabsNavigation';
 import messages from './messages';
-import {
-  courseShape, sectionShape, sequenceShape, unitShape, statusShape,
-} from './shapes';
+import { useModel } from '../../model-store';
 
 const EnrollmentAlert = React.lazy(() => import('../../enrollment-alert'));
 const LogistrationAlert = React.lazy(() => import('../../logistration-alert'));
 
 function Course({
-  course,
-  section,
-  sequence,
-  unit,
-  status,
+  courseId,
+  sequenceId,
+  unitId,
   nextSequenceHandler,
   previousSequenceHandler,
   unitNavigationHandler,
   intl,
 }) {
-  useLogistrationAlert();
-  useEnrollmentAlert(course);
+  const course = useModel('courses', courseId);
+  const sequence = useModel('sequences', sequenceId);
+  const section = useModel('sections', sequence ? sequence.sectionId : null);
+  const unit = useModel('units', unitId);
 
-  if (status.course === 'loading') {
+  useLogistrationAlert();
+  useEnrollmentAlert(courseId);
+
+  const courseStatus = useSelector(state => state.courseware.courseStatus);
+
+  if (courseStatus === 'loading') {
     return (
       <PageLoading
         srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
@@ -43,20 +48,23 @@ function Course({
     );
   }
 
-  if (status.course === 'loaded') {
+  if (courseStatus === 'loaded') {
+    const {
+      org, number, title, isStaff, tabs, verifiedMode,
+    } = course;
     return (
       <>
         <CourseHeader
-          courseOrg={course.org}
-          courseNumber={course.number}
-          courseTitle={course.title}
+          courseOrg={org}
+          courseNumber={number}
+          courseTitle={title}
         />
-        {course.isStaff && (
+        {isStaff && (
         <InstructorToolbar
           unitId={unit.id}
         />
         )}
-        <CourseTabsNavigation tabs={course.tabs} activeTabSlug="courseware" />
+        <CourseTabsNavigation tabs={tabs} activeTabSlug="courseware" />
         <div className="container-fluid">
           <AlertList
             className="my-3"
@@ -67,7 +75,6 @@ function Course({
             }}
           />
           <CourseBreadcrumbs
-            status={status}
             course={course}
             section={section}
             sequence={sequence}
@@ -78,19 +85,18 @@ function Course({
           <Sequence
             unit={unit}
             sequence={sequence}
-            status={status}
-            courseUsageKey={course.id}
+            courseUsageKey={courseId}
             unitNavigationHandler={unitNavigationHandler}
             nextSequenceHandler={nextSequenceHandler}
             previousSequenceHandler={previousSequenceHandler}
           />
-          {course.verifiedMode && <CourseSock verifiedMode={course.verifiedMode} />}
+          {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
         </div>
       </>
     );
   }
 
-  // course status 'failed' and any other unexpected course status.
+  // courseStatus 'failed' and any other unexpected course status.
   return (
     <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
       {intl.formatMessage(messages['learn.course.load.failure'])}
@@ -99,11 +105,9 @@ function Course({
 }
 
 Course.propTypes = {
-  status: statusShape.isRequired,
-  course: courseShape,
-  section: sectionShape,
-  sequence: sequenceShape,
-  unit: unitShape,
+  courseId: PropTypes.string,
+  sequenceId: PropTypes.string,
+  unitId: PropTypes.string,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   unitNavigationHandler: PropTypes.func.isRequired,
@@ -111,10 +115,9 @@ Course.propTypes = {
 };
 
 Course.defaultProps = {
-  course: undefined,
-  section: undefined,
-  sequence: undefined,
-  unit: undefined,
+  courseId: null,
+  sequenceId: null,
+  unitId: null,
 };
 
 export default injectIntl(Course);

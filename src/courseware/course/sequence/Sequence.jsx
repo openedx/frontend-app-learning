@@ -6,25 +6,26 @@ import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
+import { useSelector } from 'react-redux';
 import Unit from './Unit';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import PageLoading from '../../../PageLoading';
 import messages from './messages';
 import UserMessagesContext from '../../../user-messages/UserMessagesContext';
-import { unitShape, sequenceShape, statusShape } from '../shapes';
+import { unitShape, sequenceShape } from '../shapes';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
 
 function Sequence({
   unit,
   sequence,
-  status,
   courseUsageKey,
   unitNavigationHandler,
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
 }) {
+  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unit.id) + 1;
     if (nextIndex < sequence.unitIds.length) {
@@ -69,7 +70,7 @@ function Sequence({
   const { add, remove } = useContext(UserMessagesContext);
   useEffect(() => {
     let id = null;
-    if (status.sequence === 'loaded') {
+    if (sequenceStatus === 'loaded') {
       if (sequence.bannerText) {
         id = add({
           code: null,
@@ -85,7 +86,7 @@ function Sequence({
         remove(id);
       }
     };
-  }, [status.sequence, sequence]);
+  }, [sequenceStatus, sequence]);
 
   const [unitHasLoaded, setUnitHasLoaded] = useState(false);
   const handleUnitLoaded = () => {
@@ -97,7 +98,7 @@ function Sequence({
     }
   }, [unit]);
 
-  if (status.sequence === 'loading') {
+  if (sequenceStatus === 'loading') {
     return (
       <PageLoading
         srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
@@ -107,7 +108,7 @@ function Sequence({
 
   const gated = sequence.gatedContent !== undefined && sequence.gatedContent.gated;
 
-  if (status.sequence === 'loaded' && unit) {
+  if (sequenceStatus === 'loaded' && unit) {
     return (
       <div className="sequence">
         <SequenceNavigation
@@ -181,7 +182,6 @@ function Sequence({
 Sequence.propTypes = {
   unit: unitShape,
   sequence: sequenceShape,
-  status: statusShape.isRequired,
   courseUsageKey: PropTypes.string.isRequired,
   unitNavigationHandler: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
