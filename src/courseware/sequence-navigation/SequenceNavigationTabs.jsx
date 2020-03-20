@@ -6,7 +6,7 @@ import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import useIndexOfLastVisibleChild from '../../tabs/useIndexOfLastVisibleChild';
 
 export default function SequenceNavigationTabs({
-  unitIds, activeUnitId, showCompletion, onNavigate,
+  unitIds, unitId, showCompletion, onNavigate,
 }) {
   const [
     indexOfLastVisibleChild,
@@ -22,11 +22,11 @@ export default function SequenceNavigationTabs({
           className="sequence-navigation-tabs d-flex flex-grow-1"
           style={shouldDisplayDropdown ? invisibleStyle : null}
         >
-          {unitIds.map(unitId => (
+          {unitIds.map(buttonUnitId => (
             <UnitButton
-              key={unitId}
-              unitId={unitId}
-              isActive={activeUnitId === unitId}
+              key={buttonUnitId}
+              unitId={buttonUnitId}
+              isActive={unitId === buttonUnitId}
               showCompletion={showCompletion}
               onClick={onNavigate}
             />
@@ -35,7 +35,7 @@ export default function SequenceNavigationTabs({
       </div>
       {shouldDisplayDropdown && (
         <SequenceNavigationDropdown
-          activeUnitId={activeUnitId}
+          unitId={unitId}
           onNavigate={onNavigate}
           showCompletion={showCompletion}
           unitIds={unitIds}
@@ -46,7 +46,7 @@ export default function SequenceNavigationTabs({
 }
 
 SequenceNavigationTabs.propTypes = {
-  activeUnitId: PropTypes.string.isRequired,
+  unitId: PropTypes.string.isRequired,
   onNavigate: PropTypes.func.isRequired,
   showCompletion: PropTypes.bool.isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,

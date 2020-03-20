@@ -20,8 +20,6 @@ function Sequence({
   sequence,
   status,
   courseUsageKey,
-  isFirstUnit,
-  isLastUnit,
   unitNavigationHandler,
   nextSequenceHandler,
   previousSequenceHandler,
@@ -113,11 +111,9 @@ function Sequence({
     return (
       <div className="sequence">
         <SequenceNavigation
-          activeUnitId={unit.id}
+          sequenceId={sequence.id}
+          unitId={unit.id}
           className="mb-4"
-          isFirstUnit={isFirstUnit}
-          isLastUnit={isLastUnit}
-          isLocked={gated}
           nextSequenceHandler={() => {
             logEvent('edx.ui.lms.sequence.next_selected', 'top');
             handleNext();
@@ -130,8 +126,6 @@ function Sequence({
             logEvent('edx.ui.lms.sequence.previous_selected', 'top');
             handlePrevious();
           }}
-          showCompletion={sequence.showCompletion}
-          unitIds={sequence.unitIds}
         />
         <div className="unit-container flex-grow-1">
           {gated && (
@@ -159,7 +153,8 @@ function Sequence({
           )}
           {unitHasLoaded && (
             <UnitNavigation
-              isFirstUnit={isFirstUnit}
+              sequenceId={sequence.id}
+              unitId={unit.id}
               onClickPrevious={() => {
                 logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
                 handlePrevious();
@@ -168,7 +163,6 @@ function Sequence({
                 logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
                 handleNext();
               }}
-              isLastUnit={isLastUnit}
             />
           )}
         </div>
@@ -189,8 +183,6 @@ Sequence.propTypes = {
   sequence: sequenceShape,
   status: statusShape.isRequired,
   courseUsageKey: PropTypes.string.isRequired,
-  isFirstUnit: PropTypes.bool.isRequired,
-  isLastUnit: PropTypes.bool.isRequired,
   unitNavigationHandler: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,

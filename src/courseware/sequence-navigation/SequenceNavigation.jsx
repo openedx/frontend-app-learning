@@ -8,19 +8,21 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
+import { useSequenceNavigationMetadata } from './hooks';
+import { useModel } from '../../model-store';
 
 export default function SequenceNavigation({
-  activeUnitId,
+  unitId,
+  sequenceId,
   className,
-  isFirstUnit,
-  isLastUnit,
-  isLocked,
   onNavigate,
   nextSequenceHandler,
   previousSequenceHandler,
-  showCompletion,
-  unitIds,
 }) {
+  const sequence = useModel('sequences', sequenceId);
+  const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
+  const isLocked = sequence.gatedContent !== undefined && sequence.gatedContent.gated;
+
   return (
     <nav className={classNames('sequence-navigation', className)}>
       <Button className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
@@ -32,12 +34,11 @@ export default function SequenceNavigation({
         />
       </Button>
 
-
-      {isLocked ? <UnitButton unitId={activeUnitId} title="" contentType="lock" isActive onClick={() => {}} /> : (
+      {isLocked ? <UnitButton unitId={unitId} title="" contentType="lock" isActive onClick={() => {}} /> : (
         <SequenceNavigationTabs
-          unitIds={unitIds}
-          activeUnitId={activeUnitId}
-          showCompletion={showCompletion}
+          unitIds={sequence.unitIds}
+          unitId={unitId}
+          showCompletion={sequence.showCompletion}
           onNavigate={onNavigate}
         />
       )}
@@ -55,16 +56,12 @@ export default function SequenceNavigation({
 }
 
 SequenceNavigation.propTypes = {
-  activeUnitId: PropTypes.string.isRequired,
+  unitId: PropTypes.string.isRequired,
+  sequenceId: PropTypes.string.isRequired,
   className: PropTypes.string,
-  isFirstUnit: PropTypes.bool.isRequired,
-  isLastUnit: PropTypes.bool.isRequired,
-  isLocked: PropTypes.bool.isRequired,
   onNavigate: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
-  showCompletion: PropTypes.bool.isRequired,
-  unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 SequenceNavigation.defaultProps = {

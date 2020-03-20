@@ -4,14 +4,17 @@ import { Button } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { useSequenceNavigationMetadata } from './hooks';
 
 export default function UnitNavigation(props) {
   const {
-    isFirstUnit,
-    isLastUnit,
+    sequenceId,
+    unitId,
     onClickPrevious,
     onClickNext,
   } = props;
+
+  const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
 
   return (
     <div className="unit-navigation d-flex">
@@ -56,13 +59,8 @@ export default function UnitNavigation(props) {
 }
 
 UnitNavigation.propTypes = {
-  isFirstUnit: PropTypes.bool,
-  isLastUnit: PropTypes.bool,
+  sequenceId: PropTypes.string.isRequired,
+  unitId: PropTypes.string.isRequired,
   onClickPrevious: PropTypes.func.isRequired,
   onClickNext: PropTypes.func.isRequired,
-};
-
-UnitNavigation.defaultProps = {
-  isFirstUnit: false,
-  isLastUnit: false,
 };

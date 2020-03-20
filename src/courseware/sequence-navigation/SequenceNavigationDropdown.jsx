@@ -6,7 +6,7 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import UnitButton from './UnitButton';
 
 export default function SequenceNavigationDropdown({
-  activeUnitId,
+  unitId,
   onNavigate,
   showCompletion,
   unitIds,
@@ -19,21 +19,21 @@ export default function SequenceNavigationDropdown({
           description="The title of the mobile menu for sequence navigation of units"
           id="learn.course.sequence.navigation.mobile.menu"
           values={{
-            current: unitIds.indexOf(activeUnitId) + 1,
+            current: unitIds.indexOf(unitId) + 1,
             total: unitIds.length,
           }}
         />
       </Dropdown.Button>
       <Dropdown.Menu className="w-100">
-        {unitIds.map(unitId => (
+        {unitIds.map(buttonUnitId => (
           <UnitButton
             className="w-100"
-            isActive={activeUnitId === unitId}
-            key={unitId}
+            isActive={unitId === buttonUnitId}
+            key={buttonUnitId}
             onClick={onNavigate}
             showCompletion={showCompletion}
             showTitle
-            unitId={unitId}
+            unitId={buttonUnitId}
           />
         ))}
       </Dropdown.Menu>
@@ -42,7 +42,7 @@ export default function SequenceNavigationDropdown({
 }
 
 SequenceNavigationDropdown.propTypes = {
-  activeUnitId: PropTypes.string.isRequired,
+  unitId: PropTypes.string.isRequired,
   onNavigate: PropTypes.func.isRequired,
   showCompletion: PropTypes.bool.isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,

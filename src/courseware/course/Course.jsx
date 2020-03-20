@@ -27,8 +27,6 @@ function Course({
   sequence,
   unit,
   status,
-  isFirstUnit,
-  isLastUnit,
   nextSequenceHandler,
   previousSequenceHandler,
   unitNavigationHandler,
@@ -82,8 +80,6 @@ function Course({
             sequence={sequence}
             status={status}
             courseUsageKey={course.id}
-            isFirstUnit={isFirstUnit}
-            isLastUnit={isLastUnit}
             unitNavigationHandler={unitNavigationHandler}
             nextSequenceHandler={nextSequenceHandler}
             previousSequenceHandler={previousSequenceHandler}
@@ -108,8 +104,6 @@ Course.propTypes = {
   section: sectionShape,
   sequence: sequenceShape,
   unit: unitShape,
-  isFirstUnit: PropTypes.bool.isRequired,
-  isLastUnit: PropTypes.bool.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   unitNavigationHandler: PropTypes.func.isRequired,

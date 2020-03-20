@@ -15,24 +15,14 @@ import { useModel } from '../model-store';
 
 import Course from './course/Course';
 
+import { sequenceIdsSelector } from './data/selectors';
+
 function firstSequenceIdSelector(state) {
   if (state.courseware.courseStatus !== 'loaded') {
     return null;
   }
   const sectionId = state.models.courses[state.courseware.courseUsageKey].sectionIds[0];
   return state.models.sections[sectionId].sequenceIds[0];
-}
-
-function sequenceIdsSelector(state) {
-  if (state.courseware.courseStatus !== 'loaded') {
-    return [];
-  }
-  const { sectionIds } = state.models.courses[state.courseware.courseUsageKey];
-  let sequenceIds = [];
-  sectionIds.forEach(sectionId => {
-    sequenceIds = [...sequenceIds, ...state.models.sections[sectionId].sequenceIds];
-  });
-  return sequenceIds;
 }
 
 function useUnitNavigationHandler(courseUsageKey, sequenceId, unitId) {
@@ -65,24 +55,6 @@ function useNextSequence(sequenceId) {
   return nextSequenceId !== null ? sequences[nextSequenceId] : null;
 }
 
-function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
-  const sequenceIds = useSelector(sequenceIdsSelector);
-  const sequence = useModel('sequences', currentSequenceId);
-  const courseStatus = useSelector(state => state.courseware.courseStatus);
-
-  // If we don't know the sequence and unit yet, then assume no.
-  if (courseStatus !== 'loaded' || !currentSequenceId || !currentUnitId) {
-    return { isFirstUnit: false, isLastUnit: false };
-  }
-  const isFirstSequence = sequenceIds.indexOf(currentSequenceId) === 0;
-  const isFirstUnitInSequence = sequence.unitIds.indexOf(currentUnitId) === 0;
-  const isFirstUnit = isFirstSequence && isFirstUnitInSequence;
-  const isLastSequence = sequenceIds.indexOf(currentSequenceId) === sequenceIds.length - 1;
-  const isLastUnitInSequence = sequence.unitIds.indexOf(currentUnitId) === sequence.unitIds.length - 1;
-  const isLastUnit = isLastSequence && isLastUnitInSequence;
-
-  return { isFirstUnit, isLastUnit };
-}
 
 function useNextSequenceHandler(courseUsageKey, sequenceId) {
   const nextSequence = useNextSequence(sequenceId);
@@ -217,7 +189,7 @@ export default function CourseContainer(props) {
   useExamRedirect(sequenceId);
 
   useSavedSequencePosition(courseUsageKey, sequenceId, unitId);
-  const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
+
 
   const status = {
     course: courseStatus,
@@ -234,8 +206,6 @@ export default function CourseContainer(props) {
         section={section}
         sequence={sequence}
         unit={unit}
-        isFirstUnit={isFirstUnit}
-        isLastUnit={isLastUnit}
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
         unitNavigationHandler={unitNavigationHandler}
