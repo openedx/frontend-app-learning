@@ -144,7 +144,7 @@ function Sequence({
             >
               <ContentLock
                 courseUsageKey={courseUsageKey}
-                sectionName={sequence.title}
+                sequenceTitle={sequence.title}
                 prereqSectionName={sequence.gatedContent.gatedSectionName}
                 prereqId={sequence.gatedContent.prereqId}
               />

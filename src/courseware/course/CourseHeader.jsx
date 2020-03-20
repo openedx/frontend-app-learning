@@ -29,7 +29,7 @@ LinkedLogo.propTypes = {
 };
 
 export default function CourseHeader({
-  courseOrg, courseNumber, courseName,
+  courseOrg, courseNumber, courseTitle,
 }) {
   const { authenticatedUser } = useContext(AppContext);
 
@@ -44,7 +44,7 @@ export default function CourseHeader({
         />
         <div className="flex-grow-1 course-title-lockup" style={{ lineHeight: 1 }}>
           <span className="d-block small m-0">{courseOrg} {courseNumber}</span>
-          <span className="d-block m-0 font-weight-bold course-name">{courseName}</span>
+          <span className="d-block m-0 font-weight-bold course-title">{courseTitle}</span>
         </div>
 
         <Dropdown className="user-dropdown">
@@ -70,5 +70,5 @@ export default function CourseHeader({
 CourseHeader.propTypes = {
   courseOrg: PropTypes.string.isRequired,
   courseNumber: PropTypes.string.isRequired,
-  courseName: PropTypes.string.isRequired,
+  courseTitle: PropTypes.string.isRequired,
 };

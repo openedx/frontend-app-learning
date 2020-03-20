@@ -51,7 +51,7 @@ function Course({
         <CourseHeader
           courseOrg={course.org}
           courseNumber={course.number}
-          courseName={course.title}
+          courseTitle={course.title}
         />
         {course.isStaff && (
         <InstructorToolbar

@@ -9,7 +9,7 @@ import { Button } from '@edx/paragon';
 import messages from './messages';
 
 function ContentLock({
-  intl, courseUsageKey, prereqSectionName, prereqId, sectionName,
+  intl, courseUsageKey, prereqSectionName, prereqId, sequenceTitle,
 }) {
   const handleClick = useCallback(() => {
     history.push(`/course/${courseUsageKey}/${prereqId}`);
@@ -20,7 +20,7 @@ function ContentLock({
       <h3>
         <FontAwesomeIcon icon={faLock} />
         {' '}
-        {sectionName}
+        {sequenceTitle}
       </h3>
       <h4>{intl.formatMessage(messages['learn.contentLock.content.locked'])}</h4>
       <p>
@@ -39,6 +39,6 @@ ContentLock.propTypes = {
   courseUsageKey: PropTypes.string.isRequired,
   prereqSectionName: PropTypes.string.isRequired,
   prereqId: PropTypes.string.isRequired,
-  sectionName: PropTypes.string.isRequired,
+  sequenceTitle: PropTypes.string.isRequired,
 };
 export default injectIntl(ContentLock);

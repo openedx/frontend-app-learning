@@ -26,7 +26,7 @@ export default function Outline({
       <CourseHeader
         courseOrg={course.org}
         courseNumber={course.number}
-        courseName={course.title}
+        courseTitle={course.title}
       />
       <main className="d-flex flex-column flex-grow-1">
         <div className="container-fluid">
