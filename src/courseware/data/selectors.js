@@ -10,3 +10,11 @@ export function sequenceIdsSelector(state) {
   });
   return sequenceIds;
 }
+
+export function firstSequenceIdSelector(state) {
+  if (state.courseware.courseStatus !== 'loaded') {
+    return null;
+  }
+  const sectionId = state.models.courses[state.courseware.courseUsageKey].sectionIds[0];
+  return state.models.sections[sectionId].sequenceIds[0];
+}

@@ -9,7 +9,7 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
-import { useModel } from '../../model-store';
+import { useModel } from '../../../../model-store';
 
 export default function SequenceNavigation({
   unitId,

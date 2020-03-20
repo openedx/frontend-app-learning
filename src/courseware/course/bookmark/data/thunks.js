@@ -4,7 +4,7 @@ import {
   createBookmark,
   deleteBookmark,
 } from './api';
-import { updateModel } from '../../../model-store';
+import { updateModel } from '../../../../model-store';
 
 export function addBookmark(unitId) {
   return async (dispatch) => {

@@ -5,11 +5,11 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 import PageLoading from '../PageLoading';
-import Outline from './Outline';
+import CourseHome from './CourseHome';
 import { fetchCourse } from '../data';
 import { useModel } from '../model-store';
 
-function OutlineContainer(props) {
+function CourseHomeContainer(props) {
   const {
     intl,
     match,
@@ -33,7 +33,7 @@ function OutlineContainer(props) {
   return (
     <>
       {courseStatus === 'loaded' ? (
-        <Outline
+        <CourseHome
           course={course}
           courseUsageKey={courseUsageKey}
         />
@@ -46,7 +46,7 @@ function OutlineContainer(props) {
   );
 }
 
-OutlineContainer.propTypes = {
+CourseHomeContainer.propTypes = {
   intl: intlShape.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
@@ -55,4 +55,4 @@ OutlineContainer.propTypes = {
   }).isRequired,
 };
 
-export default injectIntl(OutlineContainer);
+export default injectIntl(CourseHomeContainer);

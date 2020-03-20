@@ -6,8 +6,8 @@ import AlertList from '../../user-messages/AlertList';
 import { useLogistrationAlert, useEnrollmentAlert } from '../../hooks';
 import PageLoading from '../../PageLoading';
 
-import InstructorToolbar from '../InstructorToolbar';
-import Sequence from '../sequence/Sequence';
+import InstructorToolbar from './InstructorToolbar';
+import Sequence from './sequence';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseHeader from './CourseHeader';

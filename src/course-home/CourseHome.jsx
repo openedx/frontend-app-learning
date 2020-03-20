@@ -14,7 +14,7 @@ import Section from './Section';
 const EnrollmentAlert = React.lazy(() => import('../enrollment-alert'));
 const LogistrationAlert = React.lazy(() => import('../logistration-alert'));
 
-export default function Outline({
+export default function CourseHome({
   course,
   courseUsageKey,
 }) {
@@ -74,7 +74,7 @@ export default function Outline({
   );
 }
 
-Outline.propTypes = {
+CourseHome.propTypes = {
   course: courseShape.isRequired,
   courseUsageKey: PropTypes.string.isRequired,
 };

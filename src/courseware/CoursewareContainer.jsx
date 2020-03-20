@@ -13,17 +13,9 @@ import {
 } from './data/thunks';
 import { useModel } from '../model-store';
 
-import Course from './course/Course';
+import Course from './course';
 
-import { sequenceIdsSelector } from './data/selectors';
-
-function firstSequenceIdSelector(state) {
-  if (state.courseware.courseStatus !== 'loaded') {
-    return null;
-  }
-  const sectionId = state.models.courses[state.courseware.courseUsageKey].sectionIds[0];
-  return state.models.sections[sectionId].sequenceIds[0];
-}
+import { sequenceIdsSelector, firstSequenceIdSelector } from './data/selectors';
 
 function useUnitNavigationHandler(courseUsageKey, sequenceId, unitId) {
   const dispatch = useDispatch();
@@ -133,7 +125,7 @@ function useAccessDeniedRedirect(courseStatus, course) {
   }, [courseStatus, course]);
 }
 
-export default function CourseContainer(props) {
+export default function CoursewareContainer(props) {
   const {
     match,
   } = props;
@@ -214,7 +206,7 @@ export default function CourseContainer(props) {
   );
 }
 
-CourseContainer.propTypes = {
+CoursewareContainer.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       courseUsageKey: PropTypes.string.isRequired,
