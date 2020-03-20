@@ -29,8 +29,9 @@ export function useLogistrationAlert() {
 export function useEnrollmentAlert(course) {
   const { add, remove } = useContext(UserMessagesContext);
   const [alertId, setAlertId] = useState(null);
+  const isEnrolled = course && course.isEnrolled;
   useEffect(() => {
-    if (course) {
+    if (course && course.isEnrolled !== undefined) {
       if (!course.isEnrolled) {
         setAlertId(add({
           code: 'clientEnrollmentAlert',
@@ -48,5 +49,5 @@ export function useEnrollmentAlert(course) {
         remove(alertId);
       }
     };
-  }, [course]);
+  }, [course, isEnrolled]);
 }
