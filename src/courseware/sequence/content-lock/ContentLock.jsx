@@ -12,7 +12,7 @@ function ContentLock({
   intl, courseUsageKey, prereqSectionName, prereqId, sequenceTitle,
 }) {
   const handleClick = useCallback(() => {
-    history.push(`/course/${courseUsageKey}/${prereqId}`);
+    history.replace(`/course/${courseUsageKey}/${prereqId}`);
   });
 
   return (

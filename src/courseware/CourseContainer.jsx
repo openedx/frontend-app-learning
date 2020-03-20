@@ -39,7 +39,7 @@ function useUnitNavigationHandler(courseUsageKey, sequenceId, unitId) {
   const dispatch = useDispatch();
   return useCallback((nextUnitId) => {
     dispatch(checkBlockCompletion(courseUsageKey, sequenceId, unitId));
-    history.push(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
+    history.replace(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
   }, [courseUsageKey, sequenceId]);
 }
 
@@ -91,7 +91,7 @@ function useNextSequenceHandler(courseUsageKey, sequenceId) {
   return useCallback(() => {
     if (nextSequence !== null) {
       const nextUnitId = nextSequence.unitIds[0];
-      history.push(`/course/${courseUsageKey}/${nextSequence.id}/${nextUnitId}`);
+      history.replace(`/course/${courseUsageKey}/${nextSequence.id}/${nextUnitId}`);
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
@@ -103,7 +103,7 @@ function usePreviousSequenceHandler(courseUsageKey, sequenceId) {
   return useCallback(() => {
     if (previousSequence !== null) {
       const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
-      history.push(`/course/${courseUsageKey}/${previousSequence.id}/${previousUnitId}`);
+      history.replace(`/course/${courseUsageKey}/${previousSequence.id}/${previousUnitId}`);
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
@@ -122,7 +122,7 @@ function useContentRedirect(courseStatus, sequenceStatus, courseUsageKey, sequen
   const firstSequenceId = useSelector(firstSequenceIdSelector);
   useEffect(() => {
     if (courseStatus === 'loaded' && !sequenceId) {
-      history.push(`/course/${courseUsageKey}/${firstSequenceId}`);
+      history.replace(`/course/${courseUsageKey}/${firstSequenceId}`);
     }
   }, [courseStatus, sequenceId]);
   useEffect(() => {
@@ -130,7 +130,7 @@ function useContentRedirect(courseStatus, sequenceStatus, courseUsageKey, sequen
       // The position may be null, in which case we'll just assume 0.
       const unitIndex = sequence.position || 0;
       const nextUnitId = sequence.unitIds[unitIndex];
-      history.push(`/course/${courseUsageKey}/${sequence.id}/${nextUnitId}`);
+      history.replace(`/course/${courseUsageKey}/${sequence.id}/${nextUnitId}`);
     }
   }, [sequenceStatus]);
 }
