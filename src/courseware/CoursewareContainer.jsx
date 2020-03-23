@@ -97,11 +97,13 @@ function useContentRedirect(courseStatus, sequenceStatus) {
   useEffect(() => {
     if (sequenceStatus === 'loaded' && sequenceId && !unitId) {
       // The position may be null, in which case we'll just assume 0.
-      const unitIndex = sequence.position || 0;
-      const nextUnitId = sequence.unitIds[unitIndex];
-      history.replace(`/course/${courseUsageKey}/${sequence.id}/${nextUnitId}`);
+      if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
+        const unitIndex = sequence.position || 0;
+        const nextUnitId = sequence.unitIds[unitIndex];
+        history.replace(`/course/${courseUsageKey}/${sequence.id}/${nextUnitId}`);
+      }
     }
-  }, [sequenceStatus]);
+  }, [sequenceStatus, sequenceId, unitId]);
 }
 
 function useSavedSequencePosition(courseUsageKey, sequenceId, unitId) {
