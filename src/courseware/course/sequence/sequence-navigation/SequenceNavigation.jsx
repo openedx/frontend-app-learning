@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 
+import { useSelector } from 'react-redux';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
@@ -22,8 +23,30 @@ export default function SequenceNavigation({
   const sequence = useModel('sequences', sequenceId);
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
   const isLocked = sequence.gatedContent !== undefined && sequence.gatedContent.gated;
+  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
 
-  return (
+  const renderUnitButtons = () => {
+    if (isLocked) {
+      return (
+        <UnitButton unitId={unitId} title="" contentType="lock" isActive onClick={() => {}} />
+      );
+    }
+    if (sequence.unitIds.length === 0 || unitId === null) {
+      return (
+        <div style={{ flexBasis: '100%', minWidth: 0, borderBottom: 'solid 1px #EAEAEA' }} />
+      );
+    }
+    return (
+      <SequenceNavigationTabs
+        unitIds={sequence.unitIds}
+        unitId={unitId}
+        showCompletion={sequence.showCompletion}
+        onNavigate={onNavigate}
+      />
+    );
+  };
+
+  return sequenceStatus === 'loaded' && (
     <nav className={classNames('sequence-navigation', className)}>
       <Button className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
@@ -33,16 +56,7 @@ export default function SequenceNavigation({
           description="The Previous button in the sequence nav"
         />
       </Button>
-
-      {isLocked ? <UnitButton unitId={unitId} title="" contentType="lock" isActive onClick={() => {}} /> : (
-        <SequenceNavigationTabs
-          unitIds={sequence.unitIds}
-          unitId={unitId}
-          showCompletion={sequence.showCompletion}
-          onNavigate={onNavigate}
-        />
-      )}
-
+      {renderUnitButtons()}
       <Button className="next-btn" onClick={nextSequenceHandler} disabled={isLastUnit}>
         <FormattedMessage
           defaultMessage="Next"
@@ -56,8 +70,8 @@ export default function SequenceNavigation({
 }
 
 SequenceNavigation.propTypes = {
-  unitId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
+  unitId: PropTypes.string,
   className: PropTypes.string,
   onNavigate: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
@@ -66,4 +80,5 @@ SequenceNavigation.propTypes = {
 
 SequenceNavigation.defaultProps = {
   className: null,
+  unitId: null,
 };

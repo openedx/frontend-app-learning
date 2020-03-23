@@ -55,7 +55,7 @@ function Sequence({
   const logEvent = (eventName, widgetPlacement, targetUnitId) => {
     // Note: tabs are tracked with a 1-indexed position
     // as opposed to a 0-index used throughout this MFE
-    const currentIndex = sequence.unitIds.indexOf(unitId);
+    const currentIndex = sequence.unitIds.length > 0 ? sequence.unitIds.indexOf(unitId) : 0;
     const payload = {
       current_tab: currentIndex + 1,
       id: unitId,
@@ -110,7 +110,7 @@ function Sequence({
 
   const gated = sequence.gatedContent !== undefined && sequence.gatedContent.gated;
 
-  if (sequenceStatus === 'loaded' && unit) {
+  if (sequenceStatus === 'loaded') {
     return (
       <div className="sequence">
         <SequenceNavigation
@@ -147,7 +147,7 @@ function Sequence({
               />
             </Suspense>
           )}
-          {!gated && (
+          {!gated && unitId !== null && (
             <Unit
               key={unitId}
               id={unitId}
