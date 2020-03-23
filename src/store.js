@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { reducer as courseReducer } from './data/course-meta';
-import { reducer as courseBlocksReducer } from './data/course-blocks';
+import { reducer as coursewareReducer } from './data';
+import { reducer as modelsReducer } from './model-store';
 
 const store = configureStore({
   reducer: {
-    courseMeta: courseReducer,
-    courseBlocks: courseBlocksReducer,
+    models: modelsReducer,
+    courseware: coursewareReducer,
   },
 });
 
