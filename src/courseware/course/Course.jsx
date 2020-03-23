@@ -32,7 +32,6 @@ function Course({
   const course = useModel('courses', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const unit = useModel('units', unitId);
 
   useLogistrationAlert();
   useEnrollmentAlert(courseId);
@@ -60,7 +59,7 @@ function Course({
         />
         {isStaff && (
         <InstructorToolbar
-          unitId={unit.id}
+          unitId={unitId}
         />
         )}
         <CourseTabsNavigation tabs={tabs} activeTabSlug="courseware" />

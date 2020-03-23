@@ -53,7 +53,7 @@ const mapStateToProps = (state, props) => {
 
   const activeUnit = state.models.units[props.unitId];
   return {
-    activeUnitLmsWebUrl: activeUnit.lmsWebUrl,
+    activeUnitLmsWebUrl: activeUnit ? activeUnit.lmsWebUrl : undefined,
   };
 };
 
