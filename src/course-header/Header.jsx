@@ -7,7 +7,7 @@ import { AppContext } from '@edx/frontend-platform/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
-import logo from './logo.svg';
+import logo from './assets/logo.svg';
 
 function LinkedLogo({
   href,
@@ -28,7 +28,7 @@ LinkedLogo.propTypes = {
   alt: PropTypes.string.isRequired,
 };
 
-export default function CourseHeader({
+export default function Header({
   courseOrg, courseNumber, courseTitle,
 }) {
   const { authenticatedUser } = useContext(AppContext);
@@ -67,7 +67,7 @@ export default function CourseHeader({
   );
 }
 
-CourseHeader.propTypes = {
+Header.propTypes = {
   courseOrg: PropTypes.string.isRequired,
   courseNumber: PropTypes.string.isRequired,
   courseTitle: PropTypes.string.isRequired,

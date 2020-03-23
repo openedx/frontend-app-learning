@@ -5,9 +5,7 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
-import {
-  courseShape, sectionShape, sequenceShape,
-} from './shapes';
+import { useModel } from '../../model-store';
 
 function CourseBreadcrumb({
   url, children, withSeparator, ...attrs
@@ -35,10 +33,13 @@ CourseBreadcrumb.defaultProps = {
 };
 
 export default function CourseBreadcrumbs({
-  course,
-  section,
-  sequence,
+  courseId,
+  sectionId,
+  sequenceId,
 }) {
+  const course = useModel('courses', courseId);
+  const sequence = useModel('sequences', sequenceId);
+  const section = useModel('sections', sectionId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
 
@@ -87,12 +88,12 @@ export default function CourseBreadcrumbs({
 }
 
 CourseBreadcrumbs.propTypes = {
-  course: courseShape.isRequired,
-  section: sectionShape,
-  sequence: sequenceShape,
+  courseId: PropTypes.string.isRequired,
+  sectionId: PropTypes.string,
+  sequenceId: PropTypes.string,
 };
 
 CourseBreadcrumbs.defaultProps = {
-  section: undefined,
-  sequence: undefined,
+  sectionId: null,
+  sequenceId: null,
 };

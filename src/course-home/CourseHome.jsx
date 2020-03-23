@@ -3,35 +3,47 @@ import PropTypes from 'prop-types';
 import { Button } from '@edx/paragon';
 
 import AlertList from '../user-messages/AlertList';
-import CourseHeader from '../courseware/course/CourseHeader';
-import { courseShape } from '../courseware/course/shapes';
-import CourseTabsNavigation from '../courseware/course/CourseTabsNavigation';
+import { Header, CourseTabsNavigation } from '../course-header';
 import { useLogistrationAlert } from '../logistration-alert';
 import { useEnrollmentAlert } from '../enrollment-alert';
 
 import CourseDates from './CourseDates';
 import Section from './Section';
+import { useModel } from '../model-store';
 
 const EnrollmentAlert = React.lazy(() => import('../enrollment-alert'));
 const LogistrationAlert = React.lazy(() => import('../logistration-alert'));
 
 export default function CourseHome({
-  course,
   courseUsageKey,
 }) {
   useLogistrationAlert();
   useEnrollmentAlert(courseUsageKey);
 
+  const {
+    org,
+    number,
+    title,
+    start,
+    end,
+    enrollmentStart,
+    enrollmentEnd,
+    enrollmentMode,
+    isEnrolled,
+    tabs,
+    sectionIds,
+  } = useModel('courses', courseUsageKey);
+
   return (
     <>
-      <CourseHeader
-        courseOrg={course.org}
-        courseNumber={course.number}
-        courseTitle={course.title}
+      <Header
+        courseOrg={org}
+        courseNumber={number}
+        courseTitle={title}
       />
       <main className="d-flex flex-column flex-grow-1">
         <div className="container-fluid">
-          <CourseTabsNavigation tabs={course.tabs} className="mb-3" activeTabSlug="courseware" />
+          <CourseTabsNavigation tabs={tabs} className="mb-3" activeTabSlug="courseware" />
           <AlertList
             topic="outline"
             className="mb-3"
@@ -44,12 +56,12 @@ export default function CourseHome({
         <div className="flex-grow-1">
           <div className="container-fluid">
             <div className="d-flex justify-content-between mb-3">
-              <h2>{course.title}</h2>
+              <h2>{title}</h2>
               <Button className="btn-primary" type="button">Resume Course</Button>
             </div>
             <div className="row">
               <div className="col col-8">
-                {course.sectionIds.map((sectionId) => (
+                {sectionIds.map((sectionId) => (
                   <Section
                     key={sectionId}
                     id={sectionId}
@@ -59,12 +71,12 @@ export default function CourseHome({
               </div>
               <div className="col col-4">
                 <CourseDates
-                  start={course.start}
-                  end={course.end}
-                  enrollmentStart={course.enrollmentStart}
-                  enrollmentEnd={course.enrollmentEnd}
-                  enrollmentMode={course.enrollmentMode}
-                  isEnrolled={course.isEnrolled}
+                  start={start}
+                  end={end}
+                  enrollmentStart={enrollmentStart}
+                  enrollmentEnd={enrollmentEnd}
+                  enrollmentMode={enrollmentMode}
+                  isEnrolled={isEnrolled}
                 />
               </div>
             </div>
@@ -76,6 +88,5 @@ export default function CourseHome({
 }
 
 CourseHome.propTypes = {
-  course: courseShape.isRequired,
   courseUsageKey: PropTypes.string.isRequired,
 };

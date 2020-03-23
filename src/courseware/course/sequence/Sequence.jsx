@@ -12,22 +12,24 @@ import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import PageLoading from '../../../PageLoading';
 import messages from './messages';
 import UserMessagesContext from '../../../user-messages/UserMessagesContext';
-import { unitShape, sequenceShape } from '../shapes';
+import { useModel } from '../../../model-store';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
 
 function Sequence({
-  unit,
-  sequence,
+  unitId,
+  sequenceId,
   courseUsageKey,
   unitNavigationHandler,
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
 }) {
+  const sequence = useModel('sequences', sequenceId);
+  const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const handleNext = () => {
-    const nextIndex = sequence.unitIds.indexOf(unit.id) + 1;
+    const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
     if (nextIndex < sequence.unitIds.length) {
       const newUnitId = sequence.unitIds[nextIndex];
       handleNavigate(newUnitId);
@@ -37,7 +39,7 @@ function Sequence({
   };
 
   const handlePrevious = () => {
-    const previousIndex = sequence.unitIds.indexOf(unit.id) - 1;
+    const previousIndex = sequence.unitIds.indexOf(unitId) - 1;
     if (previousIndex >= 0) {
       const newUnitId = sequence.unitIds[previousIndex];
       handleNavigate(newUnitId);
@@ -46,17 +48,17 @@ function Sequence({
     }
   };
 
-  const handleNavigate = (unitId) => {
-    unitNavigationHandler(unitId);
+  const handleNavigate = (destinationUnitId) => {
+    unitNavigationHandler(destinationUnitId);
   };
 
   const logEvent = (eventName, widgetPlacement, targetUnitId) => {
     // Note: tabs are tracked with a 1-indexed position
     // as opposed to a 0-index used throughout this MFE
-    const currentIndex = sequence.unitIds.indexOf(unit.id);
+    const currentIndex = sequence.unitIds.indexOf(unitId);
     const payload = {
       current_tab: currentIndex + 1,
-      id: unit.id,
+      id: unitId,
       tab_count: sequence.unitIds.length,
       widget_placement: widgetPlacement,
     };
@@ -112,16 +114,16 @@ function Sequence({
     return (
       <div className="sequence">
         <SequenceNavigation
-          sequenceId={sequence.id}
-          unitId={unit.id}
+          sequenceId={sequenceId}
+          unitId={unitId}
           className="mb-4"
           nextSequenceHandler={() => {
             logEvent('edx.ui.lms.sequence.next_selected', 'top');
             handleNext();
           }}
-          onNavigate={(unitId) => {
-            logEvent('edx.ui.lms.sequence.tab_selected', 'top', unitId);
-            handleNavigate(unitId);
+          onNavigate={(destinationUnitId) => {
+            logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+            handleNavigate(destinationUnitId);
           }}
           previousSequenceHandler={() => {
             logEvent('edx.ui.lms.sequence.previous_selected', 'top');
@@ -147,15 +149,15 @@ function Sequence({
           )}
           {!gated && (
             <Unit
-              key={unit.id}
-              id={unit.id}
+              key={unitId}
+              id={unitId}
               onLoaded={handleUnitLoaded}
             />
           )}
           {unitHasLoaded && (
             <UnitNavigation
-              sequenceId={sequence.id}
-              unitId={unit.id}
+              sequenceId={sequenceId}
+              unitId={unitId}
               onClickPrevious={() => {
                 logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
                 handlePrevious();
@@ -180,8 +182,8 @@ function Sequence({
 }
 
 Sequence.propTypes = {
-  unit: unitShape,
-  sequence: sequenceShape,
+  unitId: PropTypes.string,
+  sequenceId: PropTypes.string,
   courseUsageKey: PropTypes.string.isRequired,
   unitNavigationHandler: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
@@ -190,8 +192,8 @@ Sequence.propTypes = {
 };
 
 Sequence.defaultProps = {
-  sequence: undefined,
-  unit: undefined,
+  sequenceId: null,
+  unitId: null,
 };
 
 export default injectIntl(Sequence);

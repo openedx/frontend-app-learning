@@ -5,7 +5,7 @@ import { getConfig } from '@edx/frontend-platform';
 import classNames from 'classnames';
 
 import messages from './messages';
-import Tabs from '../../tabs/Tabs';
+import Tabs from '../tabs/Tabs';
 
 function CourseTabsNavigation({
   activeTabSlug, tabs, intl,

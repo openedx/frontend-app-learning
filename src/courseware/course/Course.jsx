@@ -12,9 +12,8 @@ import InstructorToolbar from './InstructorToolbar';
 import Sequence from './sequence';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-import CourseHeader from './CourseHeader';
+import { Header, CourseTabsNavigation } from '../../course-header';
 import CourseSock from './course-sock';
-import CourseTabsNavigation from './CourseTabsNavigation';
 import messages from './messages';
 import { useModel } from '../../model-store';
 
@@ -54,7 +53,7 @@ function Course({
     } = course;
     return (
       <>
-        <CourseHeader
+        <Header
           courseOrg={org}
           courseNumber={number}
           courseTitle={title}
@@ -75,16 +74,16 @@ function Course({
             }}
           />
           <CourseBreadcrumbs
-            course={course}
-            section={section}
-            sequence={sequence}
+            courseId={courseId}
+            sectionId={section ? section.id : null}
+            sequenceId={sequenceId}
           />
           <AlertList topic="sequence" />
         </div>
         <div className="flex-grow-1 d-flex flex-column">
           <Sequence
-            unit={unit}
-            sequence={sequence}
+            unitId={unitId}
+            sequenceId={sequenceId}
             courseUsageKey={courseId}
             unitNavigationHandler={unitNavigationHandler}
             nextSequenceHandler={nextSequenceHandler}

@@ -7,7 +7,6 @@ import messages from './messages';
 import PageLoading from '../PageLoading';
 import CourseHome from './CourseHome';
 import { fetchCourse } from '../data';
-import { useModel } from '../model-store';
 
 function CourseHomeContainer(props) {
   const {
@@ -28,13 +27,10 @@ function CourseHomeContainer(props) {
     courseStatus,
   } = useSelector(state => state.courseware);
 
-  const course = useModel('courses', courseUsageKey);
-
   return (
     <>
       {courseStatus === 'loaded' ? (
         <CourseHome
-          course={course}
           courseUsageKey={courseUsageKey}
         />
       ) : (
