@@ -9,10 +9,10 @@ import { Button } from '@edx/paragon';
 import messages from './messages';
 
 function ContentLock({
-  intl, courseUsageKey, prereqSectionName, prereqId, sequenceTitle,
+  intl, courseId, prereqSectionName, prereqId, sequenceTitle,
 }) {
   const handleClick = useCallback(() => {
-    history.replace(`/course/${courseUsageKey}/${prereqId}`);
+    history.replace(`/course/${courseId}/${prereqId}`);
   });
 
   return (
@@ -36,7 +36,7 @@ function ContentLock({
 }
 ContentLock.propTypes = {
   intl: intlShape.isRequired,
-  courseUsageKey: PropTypes.string.isRequired,
+  courseId: PropTypes.string.isRequired,
   prereqSectionName: PropTypes.string.isRequired,
   prereqId: PropTypes.string.isRequired,
   sequenceTitle: PropTypes.string.isRequired,

@@ -15,10 +15,10 @@ const EnrollmentAlert = React.lazy(() => import('../enrollment-alert'));
 const LogistrationAlert = React.lazy(() => import('../logistration-alert'));
 
 export default function CourseHome({
-  courseUsageKey,
+  courseId,
 }) {
   useLogistrationAlert();
-  useEnrollmentAlert(courseUsageKey);
+  useEnrollmentAlert(courseId);
 
   const {
     org,
@@ -32,7 +32,7 @@ export default function CourseHome({
     isEnrolled,
     tabs,
     sectionIds,
-  } = useModel('courses', courseUsageKey);
+  } = useModel('courses', courseId);
 
   return (
     <>
@@ -65,7 +65,7 @@ export default function CourseHome({
                   <Section
                     key={sectionId}
                     id={sectionId}
-                    courseUsageKey={courseUsageKey}
+                    courseId={courseId}
                   />
                 ))}
               </div>
@@ -88,5 +88,5 @@ export default function CourseHome({
 }
 
 CourseHome.propTypes = {
-  courseUsageKey: PropTypes.string.isRequired,
+  courseId: PropTypes.string.isRequired,
 };

@@ -83,7 +83,7 @@ function Course({
           <Sequence
             unitId={unitId}
             sequenceId={sequenceId}
-            courseUsageKey={courseId}
+            courseId={courseId}
             unitNavigationHandler={unitNavigationHandler}
             nextSequenceHandler={nextSequenceHandler}
             previousSequenceHandler={previousSequenceHandler}

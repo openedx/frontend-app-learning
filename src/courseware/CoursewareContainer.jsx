@@ -18,12 +18,12 @@ import Course from './course';
 
 import { sequenceIdsSelector, firstSequenceIdSelector } from './data/selectors';
 
-function useUnitNavigationHandler(courseUsageKey, sequenceId, unitId) {
+function useUnitNavigationHandler(courseId, sequenceId, unitId) {
   const dispatch = useDispatch();
   return useCallback((nextUnitId) => {
-    dispatch(checkBlockCompletion(courseUsageKey, sequenceId, unitId));
-    history.replace(`/course/${courseUsageKey}/${sequenceId}/${nextUnitId}`);
-  }, [courseUsageKey, sequenceId]);
+    dispatch(checkBlockCompletion(courseId, sequenceId, unitId));
+    history.replace(`/course/${courseId}/${sequenceId}/${nextUnitId}`);
+  }, [courseId, sequenceId]);
 }
 
 function usePreviousSequence(sequenceId) {
@@ -49,26 +49,26 @@ function useNextSequence(sequenceId) {
 }
 
 
-function useNextSequenceHandler(courseUsageKey, sequenceId) {
+function useNextSequenceHandler(courseId, sequenceId) {
   const nextSequence = useNextSequence(sequenceId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   return useCallback(() => {
     if (nextSequence !== null) {
       const nextUnitId = nextSequence.unitIds[0];
-      history.replace(`/course/${courseUsageKey}/${nextSequence.id}/${nextUnitId}`);
+      history.replace(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
 
-function usePreviousSequenceHandler(courseUsageKey, sequenceId) {
+function usePreviousSequenceHandler(courseId, sequenceId) {
   const previousSequence = usePreviousSequence(sequenceId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   return useCallback(() => {
     if (previousSequence !== null) {
       const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
-      history.replace(`/course/${courseUsageKey}/${previousSequence.id}/${previousUnitId}`);
+      history.replace(`/course/${courseId}/${previousSequence.id}/${previousUnitId}`);
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
@@ -85,12 +85,12 @@ function useExamRedirect(sequenceId) {
 
 function useContentRedirect(courseStatus, sequenceStatus) {
   const match = useRouteMatch();
-  const { courseUsageKey, sequenceId, unitId } = match.params;
+  const { courseId, sequenceId, unitId } = match.params;
   const sequence = useModel('sequences', sequenceId);
   const firstSequenceId = useSelector(firstSequenceIdSelector);
   useEffect(() => {
     if (courseStatus === 'loaded' && !sequenceId) {
-      history.replace(`/course/${courseUsageKey}/${firstSequenceId}`);
+      history.replace(`/course/${courseId}/${firstSequenceId}`);
     }
   }, [courseStatus, sequenceId]);
 
@@ -100,20 +100,20 @@ function useContentRedirect(courseStatus, sequenceStatus) {
       if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
         const unitIndex = sequence.position || 0;
         const nextUnitId = sequence.unitIds[unitIndex];
-        history.replace(`/course/${courseUsageKey}/${sequence.id}/${nextUnitId}`);
+        history.replace(`/course/${courseId}/${sequence.id}/${nextUnitId}`);
       }
     }
   }, [sequenceStatus, sequenceId, unitId]);
 }
 
-function useSavedSequencePosition(courseUsageKey, sequenceId, unitId) {
+function useSavedSequencePosition(courseId, sequenceId, unitId) {
   const dispatch = useDispatch();
   const sequence = useModel('sequences', sequenceId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   useEffect(() => {
     if (sequenceStatus === 'loaded' && sequence.savePosition) {
       const activeUnitIndex = sequence.unitIds.indexOf(unitId);
-      dispatch(saveSequencePosition(courseUsageKey, sequenceId, activeUnitIndex));
+      dispatch(saveSequencePosition(courseId, sequenceId, activeUnitIndex));
     }
   }, [unitId]);
 }
@@ -136,7 +136,7 @@ function useAccessDeniedRedirect(courseStatus, courseId) {
 export default function CoursewareContainer() {
   const { params } = useRouteMatch();
   const {
-    courseUsageKey: routeCourseUsageKey,
+    courseId: routeCourseUsageKey,
     sequenceId: routeSequenceId,
     unitId: routeUnitId,
   } = params;
@@ -152,7 +152,7 @@ export default function CoursewareContainer() {
     }
   }, [routeSequenceId]);
 
-  // The courseUsageKey and sequenceId in the store are the entities we currently have loaded.
+  // The courseId and sequenceId in the store are the entities we currently have loaded.
   // We get these two IDs from the store because until fetchCourse and fetchSequence below have
   // finished their work, the IDs in the URL are not representative of what we should actually show.
   // This is important particularly when switching sequences.  Until a new sequence is fully loaded,
@@ -161,25 +161,25 @@ export default function CoursewareContainer() {
   // the sequenceStatus flag has even switched back to "loading", which will put our app into an
   // invalid state.
   const {
-    courseUsageKey,
+    courseId,
     sequenceId,
     courseStatus,
     sequenceStatus,
   } = useSelector(state => state.courseware);
 
-  const nextSequenceHandler = useNextSequenceHandler(courseUsageKey, sequenceId);
-  const previousSequenceHandler = usePreviousSequenceHandler(courseUsageKey, sequenceId);
-  const unitNavigationHandler = useUnitNavigationHandler(courseUsageKey, sequenceId, routeUnitId);
+  const nextSequenceHandler = useNextSequenceHandler(courseId, sequenceId);
+  const previousSequenceHandler = usePreviousSequenceHandler(courseId, sequenceId);
+  const unitNavigationHandler = useUnitNavigationHandler(courseId, sequenceId, routeUnitId);
 
-  useAccessDeniedRedirect(courseStatus, courseUsageKey);
+  useAccessDeniedRedirect(courseStatus, courseId);
   useContentRedirect(courseStatus, sequenceStatus);
   useExamRedirect(sequenceId);
-  useSavedSequencePosition(courseUsageKey, sequenceId, routeUnitId);
+  useSavedSequencePosition(courseId, sequenceId, routeUnitId);
 
   return (
     <main className="flex-grow-1 d-flex flex-column">
       <Course
-        courseId={courseUsageKey}
+        courseId={courseId}
         sequenceId={sequenceId}
         unitId={routeUnitId}
         nextSequenceHandler={nextSequenceHandler}
@@ -193,7 +193,7 @@ export default function CoursewareContainer() {
 CoursewareContainer.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
-      courseUsageKey: PropTypes.string.isRequired,
+      courseId: PropTypes.string.isRequired,
       sequenceId: PropTypes.string,
       unitId: PropTypes.string,
     }).isRequired,

@@ -1,9 +1,9 @@
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
-const getSequenceXModuleHandlerUrl = (courseUsageKey, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseUsageKey}/xblock/${sequenceId}/handler/xmodule_handler`;
+const getSequenceXModuleHandlerUrl = (courseId, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/xmodule_handler`;
 
-export async function getBlockCompletion(courseUsageKey, sequenceId, usageKey) {
+export async function getBlockCompletion(courseId, sequenceId, usageKey) {
   // Post data sent to this endpoint must be url encoded
   // TODO: Remove the need for this to be the case.
   // TODO: Ensure this usage of URLSearchParams is working in Internet Explorer
@@ -14,7 +14,7 @@ export async function getBlockCompletion(courseUsageKey, sequenceId, usageKey) {
   };
 
   const { data } = await getAuthenticatedHttpClient().post(
-    `${getSequenceXModuleHandlerUrl(courseUsageKey, sequenceId)}/get_completion`,
+    `${getSequenceXModuleHandlerUrl(courseId, sequenceId)}/get_completion`,
     urlEncoded.toString(),
     requestConfig,
   );
@@ -26,7 +26,7 @@ export async function getBlockCompletion(courseUsageKey, sequenceId, usageKey) {
   return false;
 }
 
-export async function updateSequencePosition(courseUsageKey, sequenceId, position) {
+export async function updateSequencePosition(courseId, sequenceId, position) {
   // Post data sent to this endpoint must be url encoded
   // TODO: Remove the need for this to be the case.
   // TODO: Ensure this usage of URLSearchParams is working in Internet Explorer
@@ -38,7 +38,7 @@ export async function updateSequencePosition(courseUsageKey, sequenceId, positio
   };
 
   const { data } = await getAuthenticatedHttpClient().post(
-    `${getSequenceXModuleHandlerUrl(courseUsageKey, sequenceId)}/goto_position`,
+    `${getSequenceXModuleHandlerUrl(courseId, sequenceId)}/goto_position`,
     urlEncoded.toString(),
     requestConfig,
   );

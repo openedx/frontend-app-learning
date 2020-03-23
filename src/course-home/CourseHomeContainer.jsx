@@ -16,14 +16,14 @@ function CourseHomeContainer(props) {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    // The courseUsageKey from the URL is the course we WANT to load.
-    dispatch(fetchCourse(match.params.courseUsageKey));
-  }, [match.params.courseUsageKey]);
+    // The courseId from the URL is the course we WANT to load.
+    dispatch(fetchCourse(match.params.courseId));
+  }, [match.params.courseId]);
 
-  // The courseUsageKey from the store is the course we HAVE loaded.  If the URL changes,
+  // The courseId from the store is the course we HAVE loaded.  If the URL changes,
   // we don't want the application to adjust to it until it has actually loaded the new data.
   const {
-    courseUsageKey,
+    courseId,
     courseStatus,
   } = useSelector(state => state.courseware);
 
@@ -31,7 +31,7 @@ function CourseHomeContainer(props) {
     <>
       {courseStatus === 'loaded' ? (
         <CourseHome
-          courseUsageKey={courseUsageKey}
+          courseId={courseId}
         />
       ) : (
         <PageLoading
@@ -46,7 +46,7 @@ CourseHomeContainer.propTypes = {
   intl: intlShape.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      courseUsageKey: PropTypes.string.isRequired,
+      courseId: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
 };

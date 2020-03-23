@@ -19,7 +19,7 @@ const ContentLock = React.lazy(() => import('./content-lock'));
 function Sequence({
   unitId,
   sequenceId,
-  courseUsageKey,
+  courseId,
   unitNavigationHandler,
   nextSequenceHandler,
   previousSequenceHandler,
@@ -140,7 +140,7 @@ function Sequence({
               )}
             >
               <ContentLock
-                courseUsageKey={courseUsageKey}
+                courseId={courseId}
                 sequenceTitle={sequence.title}
                 prereqSectionName={sequence.gatedContent.gatedSectionName}
                 prereqId={sequence.gatedContent.prereqId}
@@ -184,7 +184,7 @@ function Sequence({
 Sequence.propTypes = {
   unitId: PropTypes.string,
   sequenceId: PropTypes.string,
-  courseUsageKey: PropTypes.string.isRequired,
+  courseId: PropTypes.string.isRequired,
   unitNavigationHandler: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,

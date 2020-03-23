@@ -22,13 +22,13 @@ function normalizeMetadata(metadata) {
   };
 }
 
-export async function getCourseMetadata(courseUsageKey) {
-  const url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseUsageKey}`;
+export async function getCourseMetadata(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
   const { data } = await getAuthenticatedHttpClient().get(url);
   return normalizeMetadata(data);
 }
 
-function normalizeBlocks(courseUsageKey, blocks) {
+function normalizeBlocks(courseId, blocks) {
   const models = {
     courses: {},
     sections: {},
@@ -39,7 +39,7 @@ function normalizeBlocks(courseUsageKey, blocks) {
     switch (block.type) {
       case 'course':
         models.courses[block.id] = {
-          id: courseUsageKey,
+          id: courseId,
           title: block.display_name,
           sectionIds: block.children || [],
         };
@@ -101,16 +101,16 @@ function normalizeBlocks(courseUsageKey, blocks) {
   return models;
 }
 
-export async function getCourseBlocks(courseUsageKey) {
+export async function getCourseBlocks(courseId) {
   const { username } = getAuthenticatedUser();
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/`);
-  url.searchParams.append('course_id', courseUsageKey);
+  url.searchParams.append('course_id', courseId);
   url.searchParams.append('username', username);
   url.searchParams.append('depth', 3);
   url.searchParams.append('requested_fields', 'children,show_gated_sections');
 
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
-  return normalizeBlocks(courseUsageKey, data.blocks);
+  return normalizeBlocks(courseId, data.blocks);
 }
 
 function normalizeSequenceMetadata(sequence) {

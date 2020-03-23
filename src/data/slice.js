@@ -9,21 +9,21 @@ const slice = createSlice({
   name: 'courseware',
   initialState: {
     courseStatus: 'loading',
-    courseUsageKey: null,
+    courseId: null,
     sequenceStatus: 'loading',
     sequenceId: null,
   },
   reducers: {
     fetchCourseRequest: (state, { payload }) => {
-      state.courseUsageKey = payload.courseUsageKey;
+      state.courseId = payload.courseId;
       state.courseStatus = LOADING;
     },
     fetchCourseSuccess: (state, { payload }) => {
-      state.courseUsageKey = payload.courseUsageKey;
+      state.courseId = payload.courseId;
       state.courseStatus = LOADED;
     },
     fetchCourseFailure: (state, { payload }) => {
-      state.courseUsageKey = payload.courseUsageKey;
+      state.courseId = payload.courseId;
       state.courseStatus = FAILED;
     },
     fetchSequenceRequest: (state, { payload }) => {

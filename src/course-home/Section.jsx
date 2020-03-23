@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SequenceLink from './SequenceLink';
 import { useModel } from '../model-store';
 
-export default function Section({ id, courseUsageKey }) {
+export default function Section({ id, courseId }) {
   const section = useModel('sections', id);
   const { title, sequenceIds } = section;
   return (
@@ -30,7 +30,7 @@ export default function Section({ id, courseUsageKey }) {
           <SequenceLink
             key={sequenceId}
             id={sequenceId}
-            courseUsageKey={courseUsageKey}
+            courseId={courseId}
           />
         ))}
       </Collapsible.Body>
@@ -40,5 +40,5 @@ export default function Section({ id, courseUsageKey }) {
 
 Section.propTypes = {
   id: PropTypes.string.isRequired,
-  courseUsageKey: PropTypes.string.isRequired,
+  courseId: PropTypes.string.isRequired,
 };

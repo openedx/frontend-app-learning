@@ -16,12 +16,12 @@ import {
   fetchSequenceFailure,
 } from './slice';
 
-export function fetchCourse(courseUsageKey) {
+export function fetchCourse(courseId) {
   return async (dispatch) => {
-    dispatch(fetchCourseRequest({ courseUsageKey }));
+    dispatch(fetchCourseRequest({ courseId }));
     Promise.all([
-      getCourseBlocks(courseUsageKey),
-      getCourseMetadata(courseUsageKey),
+      getCourseBlocks(courseId),
+      getCourseMetadata(courseId),
     ]).then(([
       {
         courses, sections, sequences, units,
@@ -49,10 +49,10 @@ export function fetchCourse(courseUsageKey) {
         modelType: 'units',
         modelsMap: units,
       }));
-      dispatch(fetchCourseSuccess({ courseUsageKey }));
+      dispatch(fetchCourseSuccess({ courseId }));
     }).catch((error) => {
       logError(error);
-      dispatch(fetchCourseFailure({ courseUsageKey }));
+      dispatch(fetchCourseFailure({ courseId }));
     });
   };
 }

@@ -7,7 +7,7 @@ import {
   updateModel,
 } from '../../model-store';
 
-export function checkBlockCompletion(courseUsageKey, sequenceId, unitId) {
+export function checkBlockCompletion(courseId, sequenceId, unitId) {
   return async (dispatch, getState) => {
     const { models } = getState();
     if (models.units[unitId].complete) {
@@ -15,7 +15,7 @@ export function checkBlockCompletion(courseUsageKey, sequenceId, unitId) {
     }
 
     try {
-      const isComplete = await getBlockCompletion(courseUsageKey, sequenceId, unitId);
+      const isComplete = await getBlockCompletion(courseId, sequenceId, unitId);
       dispatch(updateModel({
         modelType: 'units',
         model: {
@@ -29,7 +29,7 @@ export function checkBlockCompletion(courseUsageKey, sequenceId, unitId) {
   };
 }
 
-export function saveSequencePosition(courseUsageKey, sequenceId, position) {
+export function saveSequencePosition(courseId, sequenceId, position) {
   return async (dispatch, getState) => {
     const { models } = getState();
     const initialPosition = models.sequences[sequenceId].position;
@@ -42,7 +42,7 @@ export function saveSequencePosition(courseUsageKey, sequenceId, position) {
       },
     }));
     try {
-      await updateSequencePosition(courseUsageKey, sequenceId, position);
+      await updateSequencePosition(courseId, sequenceId, position);
       // Update again under the assumption that the above call succeeded, since it doesn't return a
       // meaningful response.
       dispatch(updateModel({

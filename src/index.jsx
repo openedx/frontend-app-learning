@@ -27,12 +27,12 @@ subscribe(APP_READY, () => {
     <AppProvider store={store}>
       <UserMessagesProvider>
         <Switch>
-          <Route path="/course/:courseUsageKey/home" component={CourseHomeContainer} />
+          <Route path="/course/:courseId/home" component={CourseHomeContainer} />
           <Route
             path={[
-              '/course/:courseUsageKey/:sequenceId/:unitId',
-              '/course/:courseUsageKey/:sequenceId',
-              '/course/:courseUsageKey',
+              '/course/:courseId/:sequenceId/:unitId',
+              '/course/:courseId/:sequenceId',
+              '/course/:courseId',
             ]}
             component={CoursewareContainer}
           />
