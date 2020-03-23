@@ -41,14 +41,14 @@ function normalizeBlocks(courseUsageKey, blocks) {
         models.courses[block.id] = {
           id: courseUsageKey,
           title: block.display_name,
-          sectionIds: block.children,
+          sectionIds: block.children || [],
         };
         break;
       case 'chapter':
         models.sections[block.id] = {
           id: block.id,
           title: block.display_name,
-          sequenceIds: block.children,
+          sequenceIds: block.children || [],
         };
         break;
 
@@ -57,7 +57,7 @@ function normalizeBlocks(courseUsageKey, blocks) {
           id: block.id,
           title: block.display_name,
           lmsWebUrl: block.lms_web_url,
-          unitIds: block.children,
+          unitIds: block.children || [],
         };
         break;
       case 'vertical':

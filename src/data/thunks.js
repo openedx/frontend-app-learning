@@ -5,7 +5,7 @@ import {
   getSequenceMetadata,
 } from './api';
 import {
-  addModelsMap, updateModel, updateModels,
+  addModelsMap, updateModel, updateModels, updateModelsMap,
 } from '../model-store';
 import {
   fetchCourseRequest,
@@ -40,11 +40,12 @@ export function fetchCourse(courseUsageKey) {
         modelType: 'sections',
         modelsMap: sections,
       }));
-      dispatch(addModelsMap({
+      // We update for sequences and units because the sequence metadata may have come back first.
+      dispatch(updateModelsMap({
         modelType: 'sequences',
         modelsMap: sequences,
       }));
-      dispatch(addModelsMap({
+      dispatch(updateModelsMap({
         modelType: 'units',
         modelsMap: units,
       }));
