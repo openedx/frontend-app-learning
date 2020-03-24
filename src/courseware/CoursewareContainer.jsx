@@ -22,7 +22,7 @@ function useUnitNavigationHandler(courseId, sequenceId, unitId) {
   const dispatch = useDispatch();
   return useCallback((nextUnitId) => {
     dispatch(checkBlockCompletion(courseId, sequenceId, unitId));
-    history.replace(`/course/${courseId}/${sequenceId}/${nextUnitId}`);
+    history.push(`/course/${courseId}/${sequenceId}/${nextUnitId}`);
   }, [courseId, sequenceId]);
 }
 
@@ -56,7 +56,7 @@ function useNextSequenceHandler(courseId, sequenceId) {
   return useCallback(() => {
     if (nextSequence !== null) {
       const nextUnitId = nextSequence.unitIds[0];
-      history.replace(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
+      history.push(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
@@ -68,7 +68,7 @@ function usePreviousSequenceHandler(courseId, sequenceId) {
   return useCallback(() => {
     if (previousSequence !== null) {
       const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
-      history.replace(`/course/${courseId}/${previousSequence.id}/${previousUnitId}`);
+      history.push(`/course/${courseId}/${previousSequence.id}/${previousUnitId}`);
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
@@ -90,6 +90,7 @@ function useContentRedirect(courseStatus, sequenceStatus) {
   const firstSequenceId = useSelector(firstSequenceIdSelector);
   useEffect(() => {
     if (courseStatus === 'loaded' && !sequenceId) {
+      // This is a replace because we don't want this change saved in the browser's history.
       history.replace(`/course/${courseId}/${firstSequenceId}`);
     }
   }, [courseStatus, sequenceId]);
@@ -100,6 +101,7 @@ function useContentRedirect(courseStatus, sequenceStatus) {
       if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
         const unitIndex = sequence.position || 0;
         const nextUnitId = sequence.unitIds[unitIndex];
+        // This is a replace because we don't want this change saved in the browser's history.
         history.replace(`/course/${courseId}/${sequence.id}/${nextUnitId}`);
       }
     }
