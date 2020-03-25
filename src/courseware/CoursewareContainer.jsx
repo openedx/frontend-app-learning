@@ -129,7 +129,7 @@ function useSavedSequencePosition(courseId, sequenceId, unitId) {
 function useAccessDeniedRedirect(courseStatus, courseId) {
   const course = useModel('courses', courseId);
   useEffect(() => {
-    if (courseStatus === 'loaded' && !course.userHasAccess) {
+    if (courseStatus === 'loaded' && !course.userHasAccess && !course.isStaff) {
       global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${course.id}/course/`);
     }
   }, [courseStatus, course]);
