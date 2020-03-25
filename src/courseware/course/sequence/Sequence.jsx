@@ -112,62 +112,64 @@ function Sequence({
 
   if (sequenceStatus === 'loaded') {
     return (
-      <div className="sequence">
-        <SequenceNavigation
-          sequenceId={sequenceId}
-          unitId={unitId}
-          className="mb-4"
-          nextSequenceHandler={() => {
-            logEvent('edx.ui.lms.sequence.next_selected', 'top');
-            handleNext();
-          }}
-          onNavigate={(destinationUnitId) => {
-            logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-            handleNavigate(destinationUnitId);
-          }}
-          previousSequenceHandler={() => {
-            logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-            handlePrevious();
-          }}
-        />
-        <div className="unit-container flex-grow-1">
-          {gated && (
-            <Suspense
-              fallback={(
-                <PageLoading
-                  srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
+      <div className="sequence-container">
+        <div className="sequence">
+          <SequenceNavigation
+            sequenceId={sequenceId}
+            unitId={unitId}
+            className="mb-4"
+            nextSequenceHandler={() => {
+              logEvent('edx.ui.lms.sequence.next_selected', 'top');
+              handleNext();
+            }}
+            onNavigate={(destinationUnitId) => {
+              logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+              handleNavigate(destinationUnitId);
+            }}
+            previousSequenceHandler={() => {
+              logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+              handlePrevious();
+            }}
+          />
+          <div className="unit-container flex-grow-1">
+            {gated && (
+              <Suspense
+                fallback={(
+                  <PageLoading
+                    srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
+                  />
+                )}
+              >
+                <ContentLock
+                  courseId={courseId}
+                  sequenceTitle={sequence.title}
+                  prereqSectionName={sequence.gatedContent.gatedSectionName}
+                  prereqId={sequence.gatedContent.prereqId}
                 />
-              )}
-            >
-              <ContentLock
-                courseId={courseId}
-                sequenceTitle={sequence.title}
-                prereqSectionName={sequence.gatedContent.gatedSectionName}
-                prereqId={sequence.gatedContent.prereqId}
+              </Suspense>
+            )}
+            {!gated && unitId !== null && (
+              <Unit
+                key={unitId}
+                id={unitId}
+                onLoaded={handleUnitLoaded}
               />
-            </Suspense>
-          )}
-          {!gated && unitId !== null && (
-            <Unit
-              key={unitId}
-              id={unitId}
-              onLoaded={handleUnitLoaded}
-            />
-          )}
-          {unitHasLoaded && (
-            <UnitNavigation
-              sequenceId={sequenceId}
-              unitId={unitId}
-              onClickPrevious={() => {
-                logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-                handlePrevious();
-              }}
-              onClickNext={() => {
-                logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-                handleNext();
-              }}
-            />
-          )}
+            )}
+            {unitHasLoaded && (
+              <UnitNavigation
+                sequenceId={sequenceId}
+                unitId={unitId}
+                onClickPrevious={() => {
+                  logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
+                  handlePrevious();
+                }}
+                onClickNext={() => {
+                  logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+                  handleNext();
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
     );
