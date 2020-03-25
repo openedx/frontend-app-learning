@@ -49,7 +49,7 @@ function Course({
 
   if (courseStatus === 'loaded') {
     const {
-      org, number, title, isStaff, tabs, verifiedMode,
+      org, number, title, isStaff, tabs, verifiedMode, showCalculator,
     } = course;
     return (
       <>
@@ -90,7 +90,7 @@ function Course({
             previousSequenceHandler={previousSequenceHandler}
           />
           {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
-          <Calculator />
+          {showCalculator && <Calculator />}
         </div>
       </>
     );

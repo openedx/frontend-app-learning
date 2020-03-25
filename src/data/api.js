@@ -19,6 +19,7 @@ function normalizeMetadata(metadata) {
     isStaff: metadata.user_has_staff_access,
     verifiedMode: camelCaseObject(metadata.verified_mode),
     tabs: camelCaseObject(metadata.tabs),
+    showCalculator: metadata.show_calculator,
   };
 }
 
