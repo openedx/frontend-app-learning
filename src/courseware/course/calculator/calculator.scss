@@ -1,0 +1,21 @@
+.calculator {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  .calculator-trigger {
+    display: inline-block;
+    border-bottom: none;
+    border-top-left-radius: .3rem;
+    border-top-right-radius: .3rem;
+  }
+  label {
+    margin: 0;
+    &[for=calculator-input] {
+      flex-basis: 66%;
+    }
+    &[for=calculator-output] {
+      flex-basis: 34%;
+    }
+  }
+}
