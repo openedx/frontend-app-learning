@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Collapsible } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import {
+  FormattedMessage, injectIntl, intlShape, defineMessages,
+} from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalculator, faQuestionCircle, faTimesCircle, faEquals,
@@ -10,7 +12,36 @@ import {
 
 import './calculator.scss';
 
-export default class Calculator extends Component {
+
+const messages = defineMessages({
+  'calculator.button.label': {
+    id: 'calculator.button.label',
+    defaultMessage: 'Calculator',
+    description: 'Button label to expand or close the calculator',
+  },
+  'calculator.input.field.label': {
+    id: 'calculator.input.field.label',
+    defaultMessage: 'Calculator Input',
+    description: 'label for calculator input',
+  },
+  'calculator.submit.button.label': {
+    id: 'calculator.submit.button.label',
+    defaultMessage: 'Calculate',
+    description: 'Submit button label to execute the calculator',
+  },
+  'calculator.result.field.label': {
+    id: 'calculator.result.field.label',
+    defaultMessage: 'Calculator Result',
+    description: 'label for calculator result',
+  },
+  'calculator.result.field.placeholder': {
+    id: 'calculator.result.field.placeholder',
+    defaultMessage: 'Result',
+    description: 'placeholder for calculator result',
+  },
+});
+
+class Calculator extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -47,43 +78,35 @@ export default class Calculator extends Component {
             <Collapsible.Visible whenClosed>
               <FontAwesomeIcon icon={faCalculator} aria-hidden="true" className="mr-2" />
             </Collapsible.Visible>
-                Calculator
+            {this.props.intl.formatMessage(messages['calculator.button.label'])}
           </Collapsible.Trigger>
         </div>
         <Collapsible.Body className="bg-light pt-4">
           <form onSubmit={this.handleSubmit} className="container-fluid form-inline flex-nowrap">
-            <label htmlFor="calculator-input">
-              <span className="sr-only">Calculator Input</span>
-              <input
-                type="text"
-                id="calculator-input"
-                title="Calculator Input"
-                placeholder="Calculator input"
-                className="form-control w-100"
-                onChange={(event) => this.changeEquation(event.target.value)}
-              />
-            </label>
+            <input
+              type="text"
+              placeholder={this.props.intl.formatMessage(messages['calculator.input.field.label'])}
+              aria-label={this.props.intl.formatMessage(messages['calculator.input.field.label'])}
+              className="form-control w-100"
+              onChange={(event) => this.changeEquation(event.target.value)}
+            />
             <button
-              type="submit"
-              title="Calculate"
               className="btn btn-primary mx-3"
-              aria-label="Calculate"
+              aria-label={this.props.intl.formatMessage(messages['calculator.submit.button.label'])}
+              type="submit"
             >
               <FontAwesomeIcon icon={faEquals} aria-hidden="true" />
             </button>
-            <label htmlFor="calculator-output">
-              <span className="sr-only">Calculator Result</span>
-              <input
-                type="text"
-                id="calculator-output"
-                tabIndex="-1"
-                readOnly
-                placeholder="Result"
-                className="form-control font-weight-bold w-100"
-                value={this.state.result}
-                onChange={(event) => this.setState(() => ({ result: event.target.value }))}
-              />
-            </label>
+            <input
+              type="text"
+              tabIndex="-1"
+              readOnly
+              aria-live="polite"
+              placeholder={this.props.intl.formatMessage(messages['calculator.result.field.placeholder'])}
+              aria-label={this.props.intl.formatMessage(messages['calculator.result.field.label'])}
+              className="form-control w-50"
+              value={this.state.result}
+            />
           </form>
 
           <Collapsible.Advanced>
@@ -95,7 +118,10 @@ export default class Calculator extends Component {
                 <Collapsible.Visible whenClosed>
                   <FontAwesomeIcon icon={faQuestionCircle} aria-hidden="true" className="mr-2" />
                 </Collapsible.Visible>
-                    Calculator Instructions
+                <FormattedMessage
+                  id="calculator.instructions.button.label"
+                  defaultMessage="Calculator Instructions"
+                />
               </Collapsible.Trigger>
             </div>
             <Collapsible.Body className="container-fluid pt-3" style={{ maxHeight: '50vh', overflow: 'auto' }}>
@@ -122,7 +148,14 @@ export default class Calculator extends Component {
                   ),
                 }}
               />
-              <p><strong>Useful tips:</strong></p>
+              <p>
+                <strong>
+                  <FormattedMessage
+                    id="calculator.instructions.useful.tips"
+                    defaultMessage="Useful tips:"
+                  />
+                </strong>
+              </p>
               <ul>
                 <li className="hint-item" id="hint-paren">
                   <FormattedMessage
@@ -266,3 +299,10 @@ export default class Calculator extends Component {
     );
   }
 }
+
+Calculator.propTypes = {
+  intl: intlShape.isRequired,
+};
+
+
+export default injectIntl(Calculator);
