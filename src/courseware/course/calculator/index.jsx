@@ -42,7 +42,7 @@ class Calculator extends Component {
     return (
       <Collapsible.Advanced className="calculator">
         <div className="container-fluid text-right">
-          <Collapsible.Trigger tag="a" className="calculator-trigger btn btn-light border-gray">
+          <Collapsible.Trigger tag="a" className="calculator-trigger btn">
             <Collapsible.Visible whenOpen>
               <FontAwesomeIcon icon={faTimesCircle} aria-hidden="true" className="mr-2" />
             </Collapsible.Visible>
@@ -52,7 +52,7 @@ class Calculator extends Component {
             {this.props.intl.formatMessage(messages['calculator.button.label'])}
           </Collapsible.Trigger>
         </div>
-        <Collapsible.Body className="bg-light pt-4">
+        <Collapsible.Body className="calculator-content pt-4">
           <form onSubmit={this.handleSubmit} className="container-fluid form-inline flex-nowrap">
             <input
               type="text"
