@@ -3,43 +3,14 @@ import { Collapsible } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
-  FormattedMessage, injectIntl, intlShape, defineMessages,
+  FormattedMessage, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalculator, faQuestionCircle, faTimesCircle, faEquals,
 } from '@fortawesome/free-solid-svg-icons';
-
+import messages from './messages';
 import './calculator.scss';
-
-
-const messages = defineMessages({
-  'calculator.button.label': {
-    id: 'calculator.button.label',
-    defaultMessage: 'Calculator',
-    description: 'Button label to expand or close the calculator',
-  },
-  'calculator.input.field.label': {
-    id: 'calculator.input.field.label',
-    defaultMessage: 'Calculator Input',
-    description: 'label for calculator input',
-  },
-  'calculator.submit.button.label': {
-    id: 'calculator.submit.button.label',
-    defaultMessage: 'Calculate',
-    description: 'Submit button label to execute the calculator',
-  },
-  'calculator.result.field.label': {
-    id: 'calculator.result.field.label',
-    defaultMessage: 'Calculator Result',
-    description: 'label for calculator result',
-  },
-  'calculator.result.field.placeholder': {
-    id: 'calculator.result.field.placeholder',
-    defaultMessage: 'Result',
-    description: 'placeholder for calculator result',
-  },
-});
 
 class Calculator extends Component {
   constructor(props) {
@@ -191,19 +162,54 @@ class Calculator extends Component {
               <table className="table small">
                 <thead>
                   <tr>
-                    <th scope="col">To Use</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Examples</th>
+                    <th scope="col">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.heading"
+                        defaultMessage="To Use"
+                      />
+                    </th>
+                    <th scope="col">
+                      <FormattedMessage
+                        id="calculator.instruction.table.type.heading"
+                        defaultMessage="Type"
+                      />
+                    </th>
+                    <th scope="col">
+                      <FormattedMessage
+                        id="calculator.instruction.table.examples.heading"
+                        defaultMessage="Examples"
+                      />
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <th scope="row">Numbers</th>
+                    <th scope="row">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.numbers"
+                        defaultMessage="Numbers"
+                      />
+                    </th>
                     <td>
                       <ul className="list-unstyled m-0">
-                        <li>Integers</li>
-                        <li>Fractions</li>
-                        <li>Decimals</li>
+                        <li>
+                          <FormattedMessage
+                            id="calculator.instruction.table.to.use.numbers.type1"
+                            defaultMessage="Integers"
+                          />
+                        </li>
+                        <li>
+                          <FormattedMessage
+                            id="calculator.instruction.table.to.use.numbers.type2"
+                            defaultMessage="Fractions"
+                          />
+                        </li>
+                        <li>
+                          <FormattedMessage
+                            id="calculator.instruction.table.to.use.numbers.type3"
+                            defaultMessage="Decimals"
+                          />
+                        </li>
                       </ul>
                     </td>
                     <td dir="auto">
@@ -215,12 +221,35 @@ class Calculator extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <th scope="row">Operators</th>
+                    <th scope="row">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.operators"
+                        defaultMessage="Operators"
+                      />
+                    </th>
                     <td dir="auto">
                       <ul className="list-unstyled m-0">
-                        <li>+ - * / (add, subtract, multiply, divide)</li>
-                        <li>^ (raise to a power)</li>
-                        <li>|| (parallel resistors)</li>
+                        <li>
+                          {' + - * / '}
+                          <FormattedMessage
+                            id="calculator.instruction.table.to.use.operators.type1"
+                            defaultMessage="(add, subtract, multiply, divide)"
+                          />
+                        </li>
+                        <li>
+                          {'^ '}
+                          <FormattedMessage
+                            id="calculator.instruction.table.to.use.operators.type2"
+                            defaultMessage="(raise to a power)"
+                          />
+                        </li>
+                        <li>
+                          {'|| '}
+                          <FormattedMessage
+                            id="calculator.instruction.table.to.use.operators.type3"
+                            defaultMessage="(parallel resistors)"
+                          />
+                        </li>
                       </ul>
                     </td>
                     <td dir="auto">
@@ -233,7 +262,12 @@ class Calculator extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <th scope="row">Constants</th>
+                    <th scope="row">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.constants"
+                        defaultMessage="Constants"
+                      />
+                    </th>
                     <td dir="auto">c, e, g, i, j, k, pi, q, T</td>
                     <td dir="auto">
                       <ul className="list-unstyled m-0">
@@ -243,8 +277,21 @@ class Calculator extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <th scope="row">Affixes</th>
-                    <td dir="auto">Percent sign (%) and metric affixes (d, c, m, u, n, p, k, M, G, T)</td>
+                    <th scope="row">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.affixes"
+                        defaultMessage="Affixes"
+                      />
+                    </th>
+                    <td dir="auto">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.affixes.type"
+                        defaultMessage="Percent sign (%) and metric affixes ({affixes})"
+                        values={{
+                          affixes: 'd, c, m, u, n, p, k, M, G, T',
+                        }}
+                      />
+                    </td>
                     <td dir="auto">
                       <ul className="list-unstyled m-0">
                         <li>20%</li>
@@ -254,8 +301,13 @@ class Calculator extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <th scope="row">Basic functions</th>
-                    <td dir="auto">abs, exp, fact or factorial, ln, log2, log10, sqrt</td>
+                    <th scope="row">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.basic.functions"
+                        defaultMessage="Basic functions"
+                      />
+                    </th>
+                    <td dir="auto">abs, exp, fact, factorial, ln, log2, log10, sqrt</td>
                     <td dir="auto">
                       <ul className="list-unstyled m-0">
                         <li>abs(x+y)</li>
@@ -264,13 +316,17 @@ class Calculator extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <th scope="row">Trigonometric functions</th>
+                    <th scope="row">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.trig.functions"
+                        defaultMessage="Trigonometric functions"
+                      />
+                    </th>
                     <td dir="auto">
                       <ul className="list-unstyled m-0">
                         <li>sin, cos, tan, sec, csc, cot</li>
-                        <li>arcsin, sinh, arcsinh, etc.</li>
+                        <li>arcsin, sinh, arcsinh</li>
                       </ul>
-
                     </td>
                     <td dir="auto">
                       <ul className="list-unstyled m-0">
@@ -281,13 +337,42 @@ class Calculator extends Component {
                     <td dir="auto" />
                   </tr>
                   <tr>
-                    <th scope="row">Scientific notation</th>
-                    <td dir="auto">10^ and the exponent</td>
+                    <th scope="row">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.scientific.notation"
+                        defaultMessage="Scientific notation"
+                      />
+                    </th>
+                    <td dir="auto">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.scientific.notation.type"
+                        defaultMessage="{exponentSyntax} and the exponent"
+                        values={{
+                          exponentSyntax: '10^',
+                        }}
+                      />
+                    </td>
                     <td dir="auto">10^-9</td>
                   </tr>
                   <tr>
-                    <th scope="row">e notation</th>
-                    <td dir="auto">1e and the exponent</td>
+                    <th scope="row">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.scientific.notation.type"
+                        defaultMessage="{notationSyntax} notation"
+                        values={{
+                          notationSyntax: 'e',
+                        }}
+                      />
+                    </th>
+                    <td dir="auto">
+                      <FormattedMessage
+                        id="calculator.instruction.table.to.use.scientific.notation.type"
+                        defaultMessage="{notationSyntax} and the exponent"
+                        values={{
+                          notationSyntax: '1e',
+                        }}
+                      />
+                    </td>
                     <td dir="auto">1e-9</td>
                   </tr>
                 </tbody>
