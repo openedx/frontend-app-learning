@@ -14,6 +14,7 @@ import Sequence from './sequence';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import { Header, CourseTabsNavigation } from '../../course-header';
 import CourseSock from './course-sock';
+import Calculator from './calculator';
 import messages from './messages';
 import { useModel } from '../../model-store';
 
@@ -48,7 +49,7 @@ function Course({
 
   if (courseStatus === 'loaded') {
     const {
-      org, number, title, isStaff, tabs, verifiedMode,
+      org, number, title, isStaff, tabs, verifiedMode, showCalculator,
     } = course;
     return (
       <>
@@ -89,6 +90,7 @@ function Course({
             previousSequenceHandler={previousSequenceHandler}
           />
           {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
+          {showCalculator && <Calculator />}
         </div>
       </>
     );
