@@ -19,6 +19,7 @@ import './index.scss';
 import './assets/favicon.ico';
 import CoursewareContainer from './courseware';
 import CourseHomeContainer from './course-home';
+import CoursewareRedirect from './CoursewareRedirect';
 
 import store from './store';
 
@@ -27,6 +28,7 @@ subscribe(APP_READY, () => {
     <AppProvider store={store}>
       <UserMessagesProvider>
         <Switch>
+          <Route path="/redirect" component={CoursewareRedirect} />
           <Route path="/course/:courseId/home" component={CourseHomeContainer} />
           <Route
             path={[

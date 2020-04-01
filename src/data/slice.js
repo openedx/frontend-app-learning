@@ -4,6 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const LOADING = 'loading';
 export const LOADED = 'loaded';
 export const FAILED = 'failed';
+export const DENIED = 'denied';
 
 const slice = createSlice({
   name: 'courseware',
@@ -26,6 +27,10 @@ const slice = createSlice({
       state.courseId = payload.courseId;
       state.courseStatus = FAILED;
     },
+    fetchCourseDenied: (state, { payload }) => {
+      state.courseId = payload.courseId;
+      state.courseStatus = DENIED;
+    },
     fetchSequenceRequest: (state, { payload }) => {
       state.sequenceId = payload.sequenceId;
       state.sequenceStatus = LOADING;
@@ -45,6 +50,7 @@ export const {
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,
+  fetchCourseDenied,
   fetchSequenceRequest,
   fetchSequenceSuccess,
   fetchSequenceFailure,

@@ -11,6 +11,7 @@ import {
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,
+  fetchCourseDenied,
   fetchSequenceRequest,
   fetchSequenceSuccess,
   fetchSequenceFailure,
@@ -57,10 +58,27 @@ export function fetchCourse(courseId) {
       if (courseMetadataResult.status === 'fulfilled'
         && courseBlocksResult.status === 'fulfilled') {
         dispatch(fetchCourseSuccess({ courseId }));
-      } else {
-        logError(courseMetadataResult.reason);
-        dispatch(fetchCourseFailure({ courseId }));
+        return;
       }
+
+      // Log errors for each request. Course block failures may occur even if
+      // the course metadata request is successful
+      if (courseBlocksResult.status === 'rejected') {
+        logError(courseBlocksResult.reason);
+      }
+      if (courseMetadataResult.status === 'rejected') {
+        logError(courseMetadataResult.reason);
+      }
+
+      // Course metadata indicated this user does not have access
+      if (courseMetadataResult.status === 'fulfilled'
+        && !courseMetadataResult.value.userHasAccess) {
+        dispatch(fetchCourseDenied({ courseId }));
+        return;
+      }
+
+      // Definitely an error happening
+      dispatch(fetchCourseFailure({ courseId }));
     });
   };
 }
