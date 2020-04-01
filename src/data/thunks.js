@@ -53,13 +53,12 @@ export function fetchCourse(courseId) {
           modelsMap: units,
         }));
       }
-
-      // Allow blocks api call to fail. course metadata contains the information
-      // about what level of access the user has.
-      if (courseMetadataResult.status === 'fulfilled') {
+      console.log(courseBlocksResult, courseMetadataResult);
+      if (courseMetadataResult.status === 'fulfilled'
+        && courseBlocksResult.status === 'fulfilled') {
         dispatch(fetchCourseSuccess({ courseId }));
       } else {
-        logError(courseMetadataResult.value);
+        logError(courseMetadataResult.reason);
         dispatch(fetchCourseFailure({ courseId }));
       }
     });

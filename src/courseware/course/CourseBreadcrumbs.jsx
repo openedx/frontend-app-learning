@@ -45,7 +45,7 @@ export default function CourseBreadcrumbs({
 
   const links = useMemo(() => {
     if (courseStatus === 'loaded' && sequenceStatus === 'loaded') {
-      return [section, sequence].map((node) => ({
+      return [section, sequence].filter(node => !!node).map((node) => ({
         id: node.id,
         label: node.title,
         url: `${getConfig().LMS_BASE_URL}/courses/${course.id}/course/#${node.id}`,
