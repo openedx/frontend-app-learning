@@ -53,7 +53,7 @@ export function fetchCourse(courseId) {
           modelsMap: units,
         }));
       }
-      console.log(courseBlocksResult, courseMetadataResult);
+
       if (courseMetadataResult.status === 'fulfilled'
         && courseBlocksResult.status === 'fulfilled') {
         dispatch(fetchCourseSuccess({ courseId }));
