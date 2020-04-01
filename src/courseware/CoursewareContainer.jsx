@@ -89,7 +89,7 @@ function useContentRedirect(courseStatus, sequenceStatus) {
   const sequence = useModel('sequences', sequenceId);
   const firstSequenceId = useSelector(firstSequenceIdSelector);
   useEffect(() => {
-    if (courseStatus === 'loaded' && !sequenceId) {
+    if (courseStatus === 'loaded' && !sequenceId && firstSequenceId) {
       // This is a replace because we don't want this change saved in the browser's history.
       history.replace(`/course/${courseId}/${firstSequenceId}`);
     }

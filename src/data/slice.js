@@ -10,7 +10,7 @@ const slice = createSlice({
   initialState: {
     courseStatus: 'loading',
     courseId: null,
-    sequenceStatus: 'loading',
+    sequenceStatus: null,
     sequenceId: null,
   },
   reducers: {
