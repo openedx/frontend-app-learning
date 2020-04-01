@@ -108,7 +108,7 @@ function Sequence({
     );
   }
 
-  const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
+  const gated = sequence.gatedContent !== undefined && sequence.gatedContent.gated;
 
   if (sequenceStatus === 'loaded') {
     return (
@@ -175,17 +175,12 @@ function Sequence({
     );
   }
 
-  // sequence status 'failed'
-  if (sequenceStatus === 'failed') {
-    return (
-      <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
-        {intl.formatMessage(messages['learn.course.load.failure'])}
-      </p>
-    );
-  }
-
-  // any other unexpected sequence status, like sequence has not begun to load
-  return null;
+  // sequence status 'failed' and any other unexpected sequence status.
+  return (
+    <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
+      {intl.formatMessage(messages['learn.course.load.failure'])}
+    </p>
+  );
 }
 
 Sequence.propTypes = {
