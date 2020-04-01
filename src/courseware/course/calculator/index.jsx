@@ -345,7 +345,7 @@ class Calculator extends Component {
                     </th>
                     <td dir="auto">
                       <FormattedMessage
-                        id="calculator.instruction.table.to.use.scientific.notation.type"
+                        id="calculator.instruction.table.to.use.scientific.notation.type1"
                         defaultMessage="{exponentSyntax} and the exponent"
                         values={{
                           exponentSyntax: '10^',
@@ -357,7 +357,7 @@ class Calculator extends Component {
                   <tr>
                     <th scope="row">
                       <FormattedMessage
-                        id="calculator.instruction.table.to.use.scientific.notation.type"
+                        id="calculator.instruction.table.to.use.scientific.notation.type2"
                         defaultMessage="{notationSyntax} notation"
                         values={{
                           notationSyntax: 'e',
@@ -366,7 +366,7 @@ class Calculator extends Component {
                     </th>
                     <td dir="auto">
                       <FormattedMessage
-                        id="calculator.instruction.table.to.use.scientific.notation.type"
+                        id="calculator.instruction.table.to.use.scientific.notation.type3"
                         defaultMessage="{notationSyntax} and the exponent"
                         values={{
                           notationSyntax: '1e',
