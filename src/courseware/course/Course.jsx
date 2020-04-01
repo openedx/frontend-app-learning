@@ -18,7 +18,12 @@ import Calculator from './calculator';
 import messages from './messages';
 import { useModel } from '../../model-store';
 
-const EnrollmentAlert = React.lazy(() => import('../../enrollment-alert'));
+// Note that we import from the component files themselves in the enrollment-alert package.
+// This is because Reacy.lazy() requires that we import() from a file with a Component as it's
+// default export.
+// See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
+const EnrollmentAlert = React.lazy(() => import('../../enrollment-alert/EnrollmentAlert'));
+const StaffEnrollmentAlert = React.lazy(() => import('../../enrollment-alert/StaffEnrollmentAlert'));
 const LogistrationAlert = React.lazy(() => import('../../logistration-alert'));
 
 function Course({
@@ -70,6 +75,7 @@ function Course({
             topic="course"
             customAlerts={{
               clientEnrollmentAlert: EnrollmentAlert,
+              clientStaffEnrollmentAlert: StaffEnrollmentAlert,
               clientLogistrationAlert: LogistrationAlert,
             }}
           />

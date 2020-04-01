@@ -11,12 +11,17 @@ export function useEnrollmentAlert(courseId) {
   useEffect(() => {
     if (course && course.isEnrolled !== undefined) {
       if (!course.isEnrolled) {
-        setAlertId(add({
-          code: 'clientEnrollmentAlert',
-          dismissible: false,
-          type: 'error',
-          topic: 'course',
-        }));
+        if (course.isStaff) {
+          setAlertId(add({
+            code: 'clientStaffEnrollmentAlert',
+            topic: 'course',
+          }));
+        } else {
+          setAlertId(add({
+            code: 'clientEnrollmentAlert',
+            topic: 'course',
+          }));
+        }
       } else if (alertId !== null) {
         remove(alertId);
         setAlertId(null);
