@@ -33,7 +33,7 @@ export default function UserMessagesProvider({ children }) {
   };
 
   const remove = id => {
-    setMessages(currentMessages => currentMessages.current.filter(message => message.id !== id));
+    setMessages(currentMessages => currentMessages.filter(message => message.id !== id));
   };
 
   const clear = (topic = null) => {
