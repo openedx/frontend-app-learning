@@ -56,7 +56,8 @@ export function fetchCourse(courseId) {
       }
 
       if (courseMetadataResult.status === 'fulfilled'
-        && courseBlocksResult.status === 'fulfilled') {
+        && courseBlocksResult.status === 'fulfilled'
+        && courseMetadataResult.value.userHasAccess) {
         dispatch(fetchCourseSuccess({ courseId }));
         return;
       }
