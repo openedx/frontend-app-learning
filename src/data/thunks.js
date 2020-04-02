@@ -55,25 +55,26 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      if (courseMetadataResult.status === 'fulfilled'
-        && courseBlocksResult.status === 'fulfilled'
-        && courseMetadataResult.value.userHasAccess) {
-        dispatch(fetchCourseSuccess({ courseId }));
-        return;
-      }
+      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
+      const fetchedBlocks = courseBlocksResult.status === 'fulfilled';
 
-      // Log errors for each request. Course block failures may occur even if
-      // the course metadata request is successful
-      if (courseBlocksResult.status === 'rejected') {
+      // Log errors for each request if needed. Course block failures may occur
+      // even if the course metadata request is successful
+      if (!fetchedBlocks) {
         logError(courseBlocksResult.reason);
       }
-      if (courseMetadataResult.status === 'rejected') {
+      if (!fetchedMetadata) {
         logError(courseMetadataResult.reason);
       }
 
-      // Course metadata indicated this user does not have access
-      if (courseMetadataResult.status === 'fulfilled'
-        && !courseMetadataResult.value.userHasAccess) {
+      if (fetchedMetadata) {
+        if (courseMetadataResult.value.userHasAccess && fetchedBlocks) {
+          // User has access
+          dispatch(fetchCourseSuccess({ courseId }));
+          return;
+        }
+        // User either doesn't have access or only has partial access
+        // (can't access course blocks)
         dispatch(fetchCourseDenied({ courseId }));
         return;
       }
