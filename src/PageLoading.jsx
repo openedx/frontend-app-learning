@@ -33,5 +33,5 @@ export default class PageLoading extends Component {
 }
 
 PageLoading.propTypes = {
-  srMessage: PropTypes.string.isRequired,
+  srMessage: PropTypes.node.isRequired,
 };

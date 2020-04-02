@@ -5,12 +5,13 @@ import {
   getSequenceMetadata,
 } from './api';
 import {
-  addModelsMap, updateModel, updateModels, updateModelsMap,
+  addModelsMap, updateModel, updateModels, updateModelsMap, addModel,
 } from '../model-store';
 import {
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,
+  fetchCourseDenied,
   fetchSequenceRequest,
   fetchSequenceSuccess,
   fetchSequenceFailure,
@@ -19,39 +20,66 @@ import {
 export function fetchCourse(courseId) {
   return async (dispatch) => {
     dispatch(fetchCourseRequest({ courseId }));
-    Promise.all([
-      getCourseBlocks(courseId),
+    Promise.allSettled([
       getCourseMetadata(courseId),
-    ]).then(([
-      {
-        courses, sections, sequences, units,
-      },
-      course,
-    ]) => {
-      dispatch(addModelsMap({
-        modelType: 'courses',
-        modelsMap: courses,
-      }));
-      dispatch(updateModel({
-        modelType: 'courses',
-        model: course,
-      }));
-      dispatch(addModelsMap({
-        modelType: 'sections',
-        modelsMap: sections,
-      }));
-      // We update for sequences and units because the sequence metadata may have come back first.
-      dispatch(updateModelsMap({
-        modelType: 'sequences',
-        modelsMap: sequences,
-      }));
-      dispatch(updateModelsMap({
-        modelType: 'units',
-        modelsMap: units,
-      }));
-      dispatch(fetchCourseSuccess({ courseId }));
-    }).catch((error) => {
-      logError(error);
+      getCourseBlocks(courseId),
+    ]).then(([courseMetadataResult, courseBlocksResult]) => {
+      if (courseMetadataResult.status === 'fulfilled') {
+        dispatch(addModel({
+          modelType: 'courses',
+          model: courseMetadataResult.value,
+        }));
+      }
+
+      if (courseBlocksResult.status === 'fulfilled') {
+        const {
+          courses, sections, sequences, units,
+        } = courseBlocksResult.value;
+
+        dispatch(updateModelsMap({
+          modelType: 'courses',
+          modelsMap: courses,
+        }));
+        dispatch(addModelsMap({
+          modelType: 'sections',
+          modelsMap: sections,
+        }));
+        // We update for sequences and units because the sequence metadata may have come back first.
+        dispatch(updateModelsMap({
+          modelType: 'sequences',
+          modelsMap: sequences,
+        }));
+        dispatch(updateModelsMap({
+          modelType: 'units',
+          modelsMap: units,
+        }));
+      }
+
+      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
+      const fetchedBlocks = courseBlocksResult.status === 'fulfilled';
+
+      // Log errors for each request if needed. Course block failures may occur
+      // even if the course metadata request is successful
+      if (!fetchedBlocks) {
+        logError(courseBlocksResult.reason);
+      }
+      if (!fetchedMetadata) {
+        logError(courseMetadataResult.reason);
+      }
+
+      if (fetchedMetadata) {
+        if (courseMetadataResult.value.userHasAccess && fetchedBlocks) {
+          // User has access
+          dispatch(fetchCourseSuccess({ courseId }));
+          return;
+        }
+        // User either doesn't have access or only has partial access
+        // (can't access course blocks)
+        dispatch(fetchCourseDenied({ courseId }));
+        return;
+      }
+
+      // Definitely an error happening
       dispatch(fetchCourseFailure({ courseId }));
     });
   };

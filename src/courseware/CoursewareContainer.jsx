@@ -1,9 +1,9 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { history, getConfig } from '@edx/frontend-platform';
+import { history } from '@edx/frontend-platform';
 
-import { useRouteMatch } from 'react-router';
+import { useRouteMatch, Redirect } from 'react-router';
 import {
   fetchCourse,
   fetchSequence,
@@ -120,21 +120,6 @@ function useSavedSequencePosition(courseId, sequenceId, unitId) {
   }, [unitId]);
 }
 
-/**
- * Redirects the user away from the app if they don't have access to view this course.
- *
- * @param {*} courseStatus
- * @param {*} course
- */
-function useAccessDeniedRedirect(courseStatus, courseId) {
-  const course = useModel('courses', courseId);
-  useEffect(() => {
-    if (courseStatus === 'loaded' && !course.userHasAccess && !course.isStaff) {
-      global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${course.id}/course/`);
-    }
-  }, [courseStatus, course]);
-}
-
 export default function CoursewareContainer() {
   const { params } = useRouteMatch();
   const {
@@ -173,10 +158,13 @@ export default function CoursewareContainer() {
   const previousSequenceHandler = usePreviousSequenceHandler(courseId, sequenceId);
   const unitNavigationHandler = useUnitNavigationHandler(courseId, sequenceId, routeUnitId);
 
-  useAccessDeniedRedirect(courseStatus, courseId);
   useContentRedirect(courseStatus, sequenceStatus);
   useExamRedirect(sequenceId);
   useSavedSequencePosition(courseId, sequenceId, routeUnitId);
+
+  if (courseStatus === 'denied') {
+    return <Redirect to={`/redirect/course-home/${courseId}`} />;
+  }
 
   return (
     <main className="flex-grow-1 d-flex flex-column">
