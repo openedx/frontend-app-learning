@@ -158,7 +158,6 @@ export default function CoursewareContainer() {
   const previousSequenceHandler = usePreviousSequenceHandler(courseId, sequenceId);
   const unitNavigationHandler = useUnitNavigationHandler(courseId, sequenceId, routeUnitId);
 
-  // useAccessDeniedRedirect(courseStatus, courseId);
   useContentRedirect(courseStatus, sequenceStatus);
   useExamRedirect(sequenceId);
   useSavedSequencePosition(courseId, sequenceId, routeUnitId);
