@@ -8,14 +8,14 @@ export function useLogistrationAlert() {
   const { add, remove } = useContext(UserMessagesContext);
   const [alertId, setAlertId] = useState(null);
   useEffect(() => {
-    if (authenticatedUser === null) {
+    if (authenticatedUser === null && alertId === null) {
       setAlertId(add({
         code: 'clientLogistrationAlert',
         dismissible: false,
         type: 'error',
         topic: 'course',
       }));
-    } else if (alertId !== null) {
+    } else if (authenticatedUser !== null && alertId !== null) {
       remove(alertId);
       setAlertId(null);
     }
