@@ -20,6 +20,7 @@ function normalizeMetadata(metadata) {
     verifiedMode: camelCaseObject(metadata.verified_mode),
     tabs: camelCaseObject(metadata.tabs),
     showCalculator: metadata.show_calculator,
+    notes: camelCaseObject(metadata.notes),
   };
 }
 
