@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import Calculator from './calculator';
 import NotesVisibility from './notes';
+import './tools.scss';
+
 
 export default class ContentTools extends Component {
   constructor(props) {
@@ -11,13 +14,13 @@ export default class ContentTools extends Component {
 
   render() {
     return (
-      <div className="container fixed-bottom py-4">
-        <div className="d-flex justify-content-end">
-          {this.course.notes.enabled && (
-            <NotesVisibility course={this.course} />
-          )}
+      <div className="content-tools">
+        <div className="d-flex justify-content-end m-0">
           {this.course.showCalculator && (
             <Calculator />
+          )}
+          {this.course.notes.enabled && (
+            <NotesVisibility course={this.course} />
           )}
         </div>
       </div>
@@ -27,8 +30,9 @@ export default class ContentTools extends Component {
 
 ContentTools.propTypes = {
   course: PropTypes.shape({
-    notes: {
-      enabled: PropTypes.boolean,
-    },
+    notes: PropTypes.shape({
+      enabled: PropTypes.bool,
+    }),
+    showCalculator: PropTypes.bool,
   }).isRequired,
 };

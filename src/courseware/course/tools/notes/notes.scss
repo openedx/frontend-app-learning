@@ -1,10 +1,4 @@
-.calculator {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  .calculator-trigger {
+ .notes-toggle {
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -16,12 +10,8 @@
     border-top-right-radius: .3rem;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+    width: 200px;
     &:before {
       border-radius: .5rem;
     }
-  }
-  .calculator-content {
-    background-color: #f1f1f1;
-    box-shadow: 0 -1px 0 0 #ddd;
-  }
 }
