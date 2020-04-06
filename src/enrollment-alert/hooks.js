@@ -10,7 +10,7 @@ export function useEnrollmentAlert(courseId) {
   const isEnrolled = course && course.isEnrolled;
   useEffect(() => {
     if (course && course.isEnrolled !== undefined) {
-      if (!course.isEnrolled) {
+      if (!course.isEnrolled && alertId === null) {
         if (course.isStaff) {
           setAlertId(add({
             code: 'clientStaffEnrollmentAlert',
@@ -22,7 +22,7 @@ export function useEnrollmentAlert(courseId) {
             topic: 'course',
           }));
         }
-      } else if (alertId !== null) {
+      } else if (course.isEnrolled && alertId !== null) {
         remove(alertId);
         setAlertId(null);
       }
