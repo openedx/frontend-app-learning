@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": "fedx-scripts webpack",
+    "dev-build": "fedx-scripts webpack-dev",
     "i18n_extract": "BABEL_ENV=i18n fedx-scripts babel src --quiet > /dev/null",
     "is-es5": "es-check es5 ./dist/*.js",
     "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
@@ -56,7 +57,7 @@
     "regenerator-runtime": "^0.13.3"
   },
   "devDependencies": {
-    "@edx/frontend-build": "^3.0.0",
+    "@edx/frontend-build": "github:edx/frontend-build#kdmccormick/devstack-frontends",
     "codecov": "^3.6.1",
     "es-check": "^5.1.0",
     "glob": "^7.1.6",
