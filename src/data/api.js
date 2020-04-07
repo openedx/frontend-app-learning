@@ -5,6 +5,7 @@ import { logError } from '@edx/frontend-platform/logging';
 
 function normalizeMetadata(metadata) {
   return {
+    contentTypeGatingEnabled: metadata.content_type_gating_enabled,
     // TODO: TNL-7185: return course expired _date_, instead of _message_
     courseExpiredMessage: metadata.course_expired_message,
     id: metadata.id,
@@ -66,6 +67,7 @@ function normalizeBlocks(courseId, blocks) {
         break;
       case 'vertical':
         models.units[block.id] = {
+          graded: block.graded,
           id: block.id,
           title: block.display_name,
           lmsWebUrl: block.lms_web_url,
@@ -112,7 +114,7 @@ export async function getCourseBlocks(courseId) {
   url.searchParams.append('course_id', courseId);
   url.searchParams.append('username', username);
   url.searchParams.append('depth', 3);
-  url.searchParams.append('requested_fields', 'children,show_gated_sections');
+  url.searchParams.append('requested_fields', 'children,show_gated_sections,graded');
 
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
   return normalizeBlocks(courseId, data.blocks);
