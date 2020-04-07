@@ -4,6 +4,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';
 import AlertList from '../../user-messages/AlertList';
+import { useAccessExpirationAlert } from '../../access-expiration-alert';
 import { useLogistrationAlert } from '../../logistration-alert';
 import { useEnrollmentAlert } from '../../enrollment-alert';
 import PageLoading from '../../PageLoading';
@@ -22,6 +23,7 @@ import { useModel } from '../../model-store';
 // This is because Reacy.lazy() requires that we import() from a file with a Component as it's
 // default export.
 // See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
+const AccessExpirationAlert = React.lazy(() => import('../../access-expiration-alert/AccessExpirationAlert'));
 const EnrollmentAlert = React.lazy(() => import('../../enrollment-alert/EnrollmentAlert'));
 const StaffEnrollmentAlert = React.lazy(() => import('../../enrollment-alert/StaffEnrollmentAlert'));
 const LogistrationAlert = React.lazy(() => import('../../logistration-alert'));
@@ -41,6 +43,7 @@ function Course({
 
   useLogistrationAlert();
   useEnrollmentAlert(courseId);
+  useAccessExpirationAlert(courseId);
 
   const courseStatus = useSelector(state => state.courseware.courseStatus);
 
@@ -77,6 +80,7 @@ function Course({
               clientEnrollmentAlert: EnrollmentAlert,
               clientStaffEnrollmentAlert: StaffEnrollmentAlert,
               clientLogistrationAlert: LogistrationAlert,
+              clientAccessExpirationAlert: AccessExpirationAlert,
             }}
           />
           <CourseBreadcrumbs

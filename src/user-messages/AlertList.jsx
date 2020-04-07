@@ -26,6 +26,7 @@ export default function AlertList({ topic, className, customAlerts }) {
               type={message.type}
               dismissible={message.dismissible}
               onDismiss={() => remove(message.id)}
+              rawHtml={message.rawHtml}
             >
               {message.text}
             </AlertComponent>
