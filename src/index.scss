@@ -272,6 +272,28 @@ $primary: #1176B2;
     padding-left: 40px;
     padding-right: 40px;
   }
+  .content-paywall {
+    border: 1px solid theme-color('gray', 400);
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding: 15px 20px;
+    .fa-lock {
+      color: black;
+      margin-right: 10px;
+      font-size: 25px;
+      margin-left: 5px;
+    }
+    h4 {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    img {
+      border: 0;
+      height: 80px;
+    }
+  }
 }
 
 .unit-iframe-wrapper {
@@ -306,4 +328,13 @@ $primary: #1176B2;
   .previous-button {
     flex-basis: 25%;
   }
+}
+
+.course-expiration-message {
+  border: 1px solid #BBDFF2;
+  border-radius: 4px;
+  background-color: #D8EDF8;
+  margin: 0 auto 20px;
+  max-width: 944px;
+  padding: 20px;
 }

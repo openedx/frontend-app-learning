@@ -17,6 +17,9 @@ import { useModel } from '../../../model-store';
 const ContentLock = React.lazy(() => import('./content-lock'));
 
 function Sequence({
+  contentTypeGatingEnabled,
+  courseExpiredMessage,
+  enrollmentMode,
   unitId,
   sequenceId,
   courseId,
@@ -24,6 +27,7 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
+  verifiedMode,
 }) {
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
@@ -131,6 +135,10 @@ function Sequence({
               handlePrevious();
             }}
           />
+          { courseExpiredMessage && (
+            <div class="course-expiration-message" dangerouslySetInnerHTML={{__html: courseExpiredMessage}}>
+            </div>
+	  )}
           <div className="unit-container flex-grow-1">
             {gated && (
               <Suspense
@@ -150,9 +158,12 @@ function Sequence({
             )}
             {!gated && unitId !== null && (
               <Unit
+                contentTypeGatingEnabled={contentTypeGatingEnabled}
+                enrollmentMode={enrollmentMode}
                 key={unitId}
                 id={unitId}
                 onLoaded={handleUnitLoaded}
+                verifiedMode={verifiedMode}
               />
             )}
             {unitHasLoaded && (
@@ -184,6 +195,9 @@ function Sequence({
 }
 
 Sequence.propTypes = {
+  contentTypeGatingEnabled: PropTypes.bool.isRequired,
+  courseExpiredMessage: PropTypes.string.isRequired,
+  enrollmentMode: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   sequenceId: PropTypes.string,
   courseId: PropTypes.string.isRequired,
@@ -191,6 +205,13 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
+  verifiedMode: PropTypes.shape({
+    price: PropTypes.number.isRequired,
+    currency: PropTypes.string.isRequired,
+    currencySymbol: PropTypes.string,
+    sku: PropTypes.string.isRequired,
+    upgradeUrl: PropTypes.string.isRequired,
+  }),
 };
 
 Sequence.defaultProps = {
