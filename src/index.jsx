@@ -32,9 +32,9 @@ subscribe(APP_READY, () => {
           <Route path="/course/:courseId/home" component={CourseHomeContainer} />
           <Route
             path={[
-              '/course/:courseId/:sequenceId/:unitId',
-              '/course/:courseId/:sequenceId',
-              '/course/:courseId',
+              'course/:courseId/:sequenceId/:unitId',
+              'course/:courseId/:sequenceId',
+              'course/:courseId',
             ]}
             component={CoursewareContainer}
           />
