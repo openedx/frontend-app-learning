@@ -4,4 +4,20 @@
   right: 0;
   bottom: 0;
   z-index: 100;
+  .trigger {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+    background-color: #f1f1f1;
+    border: solid 1px #ddd;
+    border-bottom: none;
+    border-top-left-radius: .3rem;
+    border-top-right-radius: .3rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    &:before {
+      border-radius: .5rem;
+    }
+  }
 }

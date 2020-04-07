@@ -8,9 +8,8 @@ import {
 } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
-import toggleNotes from '../data/thunks';
+import toggleNotes from '../data/api';
 import messages from './messages';
-import './notes.scss';
 
 
 class NotesVisibility extends Component {
@@ -36,7 +35,7 @@ class NotesVisibility extends Component {
   render() {
     const message = this.state.visible ? 'notes.button.hide' : 'notes.button.show';
     return (
-      <div className="notes-toggle">
+      <div className="trigger" style={{ width: '200px' }}>
         <div
           role="switch"
           className={`btn ${this.state.visible ? 'text-secondary' : 'text-success'}`}

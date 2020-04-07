@@ -1,21 +1,5 @@
 .calculator {
   width: 100%;
-  .calculator-trigger {
-    cursor: pointer;
-    display: inline-block;
-    position: relative;
-    z-index: 2;
-    background-color: #f1f1f1;
-    border: solid 1px #ddd;
-    border-bottom: none;
-    border-top-left-radius: .3rem;
-    border-top-right-radius: .3rem;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    &:before {
-      border-radius: .5rem;
-    }
-  }
   .calculator-content {
     background-color: #f1f1f1;
     box-shadow: 0 -1px 0 0 #ddd;

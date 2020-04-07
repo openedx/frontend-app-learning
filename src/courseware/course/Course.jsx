@@ -14,7 +14,7 @@ import Sequence from './sequence';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import { Header, CourseTabsNavigation } from '../../course-header';
 import CourseSock from './course-sock';
-import ContentTools from './tools';
+import ContentTools from './tools/ContentTools';
 import messages from './messages';
 import { useModel } from '../../model-store';
 
