@@ -102,4 +102,5 @@ Unit.propTypes = {
 
 Unit.defaultProps = {
   onLoaded: undefined,
+  verifiedMode: undefined,
 };

@@ -216,6 +216,7 @@ Sequence.propTypes = {
 Sequence.defaultProps = {
   sequenceId: null,
   unitId: null,
+  verifiedMode: undefined,
 };
 
 export default injectIntl(Sequence);
