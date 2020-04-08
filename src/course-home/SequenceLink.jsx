@@ -7,7 +7,7 @@ export default function SequenceLink({ id, courseId }) {
   const sequence = useModel('sequences', id);
   return (
     <div className="ml-4">
-      <Link to={`/course/${courseId}/${id}`}>{sequence.title}</Link>
+      <Link to={`/learning/course/${courseId}/${id}`}>{sequence.title}</Link>
     </div>
   );
 }

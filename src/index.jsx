@@ -28,8 +28,8 @@ subscribe(APP_READY, () => {
     <AppProvider store={store}>
       <UserMessagesProvider>
         <Switch>
-          <Route path="/redirect" component={CoursewareRedirect} />
-          <Route path="/course/:courseId/home" component={CourseHomeContainer} />
+          <Route path="/learning/redirect" component={CoursewareRedirect} />
+          <Route path="/learning/course/:courseId/home" component={CourseHomeContainer} />
           <Route
             path={[
               '/learning/course/:courseId/:sequenceId/:unitId',

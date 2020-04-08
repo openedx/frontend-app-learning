@@ -22,7 +22,7 @@ function useUnitNavigationHandler(courseId, sequenceId, unitId) {
   const dispatch = useDispatch();
   return useCallback((nextUnitId) => {
     dispatch(checkBlockCompletion(courseId, sequenceId, unitId));
-    history.push(`/course/${courseId}/${sequenceId}/${nextUnitId}`);
+    history.push(`/learning/course/${courseId}/${sequenceId}/${nextUnitId}`);
   }, [courseId, sequenceId]);
 }
 
@@ -56,7 +56,7 @@ function useNextSequenceHandler(courseId, sequenceId) {
   return useCallback(() => {
     if (nextSequence !== null) {
       const nextUnitId = nextSequence.unitIds[0];
-      history.push(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
+      history.push(`/learning/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
@@ -68,7 +68,7 @@ function usePreviousSequenceHandler(courseId, sequenceId) {
   return useCallback(() => {
     if (previousSequence !== null) {
       const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
-      history.push(`/course/${courseId}/${previousSequence.id}/${previousUnitId}`);
+      history.push(`/learning/course/${courseId}/${previousSequence.id}/${previousUnitId}`);
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
@@ -91,7 +91,7 @@ function useContentRedirect(courseStatus, sequenceStatus) {
   useEffect(() => {
     if (courseStatus === 'loaded' && !sequenceId) {
       // This is a replace because we don't want this change saved in the browser's history.
-      history.replace(`/course/${courseId}/${firstSequenceId}`);
+      history.replace(`/learning/course/${courseId}/${firstSequenceId}`);
     }
   }, [courseStatus, sequenceId]);
 
@@ -102,7 +102,7 @@ function useContentRedirect(courseStatus, sequenceStatus) {
         const unitIndex = sequence.position || 0;
         const nextUnitId = sequence.unitIds[unitIndex];
         // This is a replace because we don't want this change saved in the browser's history.
-        history.replace(`/course/${courseId}/${sequence.id}/${nextUnitId}`);
+        history.replace(`/learning/course/${courseId}/${sequence.id}/${nextUnitId}`);
       }
     }
   }, [sequenceStatus, sequenceId, unitId]);
@@ -163,7 +163,7 @@ export default function CoursewareContainer() {
   useSavedSequencePosition(courseId, sequenceId, routeUnitId);
 
   if (courseStatus === 'denied') {
-    return <Redirect to={`/redirect/course-home/${courseId}`} />;
+    return <Redirect to={`/learning/redirect/course-home/${courseId}`} />;
   }
 
   return (
