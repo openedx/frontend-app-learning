@@ -136,7 +136,7 @@ function Sequence({
             }}
           />
           { courseExpiredMessage && (
-            <div className="course-expiration-message" dangerouslySetInnerHTML={ {__html: courseExpiredMessage} } />
+            <div className="course-expiration-message" dangerouslySetInnerHTML={{ __html: courseExpiredMessage }} />
           )}
           <div className="unit-container flex-grow-1">
             {gated && (
