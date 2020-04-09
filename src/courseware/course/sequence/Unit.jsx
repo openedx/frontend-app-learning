@@ -18,7 +18,7 @@ export default function Unit({
   verifiedMode,
 }) {
   const iframeRef = useRef(null);
-  const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0&in_mfe=1`;
+  const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
 
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
