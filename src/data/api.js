@@ -65,6 +65,7 @@ function normalizeBlocks(courseId, blocks) {
         models.units[block.id] = {
           id: block.id,
           title: block.display_name,
+          lmsWebUrl: block.lms_web_url,
         };
         break;
       default:
