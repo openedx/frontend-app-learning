@@ -1,10 +1,10 @@
-.calculator {
+.content-tools {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 100;
-  .calculator-trigger {
+  .trigger {
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -19,9 +19,5 @@
     &:before {
       border-radius: .5rem;
     }
-  }
-  .calculator-content {
-    background-color: #f1f1f1;
-    box-shadow: 0 -1px 0 0 #ddd;
   }
 }
