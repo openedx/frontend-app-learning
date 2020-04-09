@@ -24,6 +24,12 @@ export default () => {
             global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${match.params.courseId}/course/`);
           }}
         />
+        <Route
+          path={`${path}/dashboard`}
+          render={({ location }) => {
+            global.location.assign(`${getConfig().LMS_BASE_URL}/dashboard${location.search}`);
+          }}
+        />
       </Switch>
     </div>
   );

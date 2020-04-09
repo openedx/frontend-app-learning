@@ -15,8 +15,7 @@ function normalizeMetadata(metadata) {
     start: metadata.start,
     enrollmentMode: metadata.enrollment.mode,
     isEnrolled: metadata.enrollment.is_active,
-    canLoadCourseware: typeof metadata.can_load_courseware === 'boolean'
-      ? metadata.can_load_courseware : metadata.can_load_courseware.has_access,
+    canLoadCourseware: camelCaseObject(metadata.can_load_courseware),
     isStaff: metadata.is_staff,
     verifiedMode: camelCaseObject(metadata.verified_mode),
     tabs: camelCaseObject(metadata.tabs),
