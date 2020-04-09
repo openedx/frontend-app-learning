@@ -64,9 +64,9 @@ function Course({
           courseTitle={title}
         />
         {isStaff && (
-        <InstructorToolbar
-          unitId={unitId}
-        />
+          <InstructorToolbar
+            unitId={unitId}
+          />
         )}
         <CourseTabsNavigation tabs={tabs} activeTabSlug="courseware" />
         <div className="container-fluid">
