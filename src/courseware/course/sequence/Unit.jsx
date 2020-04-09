@@ -11,11 +11,9 @@ import { useModel } from '../../../model-store';
 import VerifiedCert from '../course-sock/assets/verified-cert.png';
 
 export default function Unit({
-  contentTypeGatingEnabled,
-  enrollmentMode,
+  courseId,
   onLoaded,
   id,
-  verifiedMode,
 }) {
   const iframeRef = useRef(null);
   const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
@@ -24,6 +22,12 @@ export default function Unit({
   const [hasLoaded, setHasLoaded] = useState(false);
 
   const unit = useModel('units', id);
+  const course = useModel('courses', courseId);
+  const {
+    contentTypeGatingEnabled,
+    enrollmentMode,
+    verifiedMode,
+  } = course;
 
   useEffect(() => {
     global.onmessage = (event) => {
@@ -87,20 +91,11 @@ export default function Unit({
 }
 
 Unit.propTypes = {
-  contentTypeGatingEnabled: PropTypes.bool.isRequired,
-  enrollmentMode: PropTypes.string.isRequired,
+  courseId: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   onLoaded: PropTypes.func,
-  verifiedMode: PropTypes.shape({
-    price: PropTypes.number.isRequired,
-    currency: PropTypes.string.isRequired,
-    currencySymbol: PropTypes.string,
-    sku: PropTypes.string.isRequired,
-    upgradeUrl: PropTypes.string.isRequired,
-  }),
 };
 
 Unit.defaultProps = {
   onLoaded: undefined,
-  verifiedMode: undefined,
 };

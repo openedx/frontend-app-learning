@@ -17,9 +17,6 @@ import { useModel } from '../../../model-store';
 const ContentLock = React.lazy(() => import('./content-lock'));
 
 function Sequence({
-  contentTypeGatingEnabled,
-  courseExpiredMessage,
-  enrollmentMode,
   unitId,
   sequenceId,
   courseId,
@@ -27,8 +24,8 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
-  verifiedMode,
 }) {
+  const course = useModel('courses', courseId);
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
@@ -113,6 +110,9 @@ function Sequence({
   }
 
   const gated = sequence.gatedContent !== undefined && sequence.gatedContent.gated;
+  const {
+    courseExpiredMessage,
+  } = course;
 
   if (sequenceStatus === 'loaded') {
     return (
@@ -157,12 +157,10 @@ function Sequence({
             )}
             {!gated && unitId !== null && (
               <Unit
-                contentTypeGatingEnabled={contentTypeGatingEnabled}
-                enrollmentMode={enrollmentMode}
+                courseId={courseId}
                 key={unitId}
                 id={unitId}
                 onLoaded={handleUnitLoaded}
-                verifiedMode={verifiedMode}
               />
             )}
             {unitHasLoaded && (
@@ -194,9 +192,6 @@ function Sequence({
 }
 
 Sequence.propTypes = {
-  contentTypeGatingEnabled: PropTypes.bool.isRequired,
-  courseExpiredMessage: PropTypes.string.isRequired,
-  enrollmentMode: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   sequenceId: PropTypes.string,
   courseId: PropTypes.string.isRequired,
@@ -204,19 +199,11 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
-  verifiedMode: PropTypes.shape({
-    price: PropTypes.number.isRequired,
-    currency: PropTypes.string.isRequired,
-    currencySymbol: PropTypes.string,
-    sku: PropTypes.string.isRequired,
-    upgradeUrl: PropTypes.string.isRequired,
-  }),
 };
 
 Sequence.defaultProps = {
   sequenceId: null,
   unitId: null,
-  verifiedMode: undefined,
 };
 
 export default injectIntl(Sequence);

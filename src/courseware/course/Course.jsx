@@ -54,9 +54,6 @@ function Course({
 
   if (courseStatus === 'loaded') {
     const {
-      contentTypeGatingEnabled,
-      courseExpiredMessage,
-      enrollmentMode,
       org, number, title, isStaff, tabs, verifiedMode, showCalculator,
     } = course;
     return (
@@ -91,16 +88,12 @@ function Course({
         </div>
         <div className="flex-grow-1 d-flex flex-column">
           <Sequence
-            contentTypeGatingEnabled={contentTypeGatingEnabled}
-            courseExpiredMessage={courseExpiredMessage}
-            enrollmentMode={enrollmentMode}
             unitId={unitId}
             sequenceId={sequenceId}
             courseId={courseId}
             unitNavigationHandler={unitNavigationHandler}
             nextSequenceHandler={nextSequenceHandler}
             previousSequenceHandler={previousSequenceHandler}
-            verifiedMode={verifiedMode}
           />
           {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
           {showCalculator && <Calculator />}
