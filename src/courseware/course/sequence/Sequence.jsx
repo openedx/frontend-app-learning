@@ -25,7 +25,6 @@ function Sequence({
   previousSequenceHandler,
   intl,
 }) {
-  const course = useModel('courses', courseId);
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
@@ -110,9 +109,6 @@ function Sequence({
   }
 
   const gated = sequence.gatedContent !== undefined && sequence.gatedContent.gated;
-  const {
-    courseExpiredMessage,
-  } = course;
 
   if (sequenceStatus === 'loaded') {
     return (
@@ -135,9 +131,6 @@ function Sequence({
               handlePrevious();
             }}
           />
-          { courseExpiredMessage && (
-            <div className="course-expiration-message" dangerouslySetInnerHTML={{ __html: courseExpiredMessage }} />
-          )}
           <div className="unit-container flex-grow-1">
             {gated && (
               <Suspense
