@@ -1,18 +1,14 @@
 import React from 'react';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import Alert from '../user-messages/Alert';
 
-function AccessExpirationAlert({ intl }) {
-  return (
+function AccessExpirationAlert(props) {
+  const rawHtml = props.rawHtml;
+  return rawHtml && (
     <Alert type="info">
-      <div dangerouslySetInnerHTML={{ __html: courseExpiredMessage }} />
+      <div dangerouslySetInnerHTML={{ __html: rawHtml }} />
     </Alert>
   );
 }
 
-AccessExpirationAlert.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(AccessExpirationAlert);
+export default AccessExpirationAlert;
