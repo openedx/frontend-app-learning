@@ -289,9 +289,12 @@ $primary: #1176B2;
       font-weight: 600;
       margin-bottom: 10px;
     }
+    p {
+      margin-bottom: 0;
+    }
     img {
       border: 0;
-      height: 80px;
+      height: 60px;
     }
   }
 }
