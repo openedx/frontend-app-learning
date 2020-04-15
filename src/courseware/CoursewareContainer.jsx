@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { history } from '@edx/frontend-platform';
-
+import { getLocale } from '@edx/frontend-platform/i18n';
 import { useRouteMatch, Redirect } from 'react-router';
 import {
   fetchCourse,
@@ -162,8 +162,24 @@ export default function CoursewareContainer() {
   useExamRedirect(sequenceId);
   useSavedSequencePosition(courseId, sequenceId, routeUnitId);
 
+  const course = useModel('courses', courseId);
+
   if (courseStatus === 'denied') {
-    return <Redirect to={`/redirect/course-home/${courseId}`} />;
+    switch (course.canLoadCourseware.errorCode) {
+      case 'audit_expired':
+        return <Redirect to={`/redirect/dashboard?access_response_error=${course.canLoadCourseware.additionalContextUserMessage}`} />;
+      case 'course_not_started':
+        // eslint-disable-next-line no-case-declarations
+        const startDate = (new Intl.DateTimeFormat(getLocale())).format(new Date(course.start));
+        return <Redirect to={`/redirect/dashboard?notlive=${startDate}`} />;
+      case 'survey_required': // TODO: Redirect to the course survey
+      case 'unfulfilled_milestones':
+        return <Redirect to="/redirect/dashboard" />;
+      case 'authentication_required':
+      case 'enrollment_required':
+      default:
+        return <Redirect to={`/redirect/course-home/${courseId}`} />;
+    }
   }
 
   return (
