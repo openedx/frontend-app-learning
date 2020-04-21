@@ -11,6 +11,7 @@ function normalizeMetadata(metadata) {
     id: metadata.id,
     title: metadata.name,
     number: metadata.number,
+    offerHtml: metadata.offer_html,
     org: metadata.org,
     enrollmentStart: metadata.enrollment_start,
     enrollmentEnd: metadata.enrollment_end,

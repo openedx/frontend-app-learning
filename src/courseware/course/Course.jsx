@@ -7,6 +7,7 @@ import AlertList from '../../user-messages/AlertList';
 import { useAccessExpirationAlert } from '../../access-expiration-alert';
 import { useLogistrationAlert } from '../../logistration-alert';
 import { useEnrollmentAlert } from '../../enrollment-alert';
+import { useOfferAlert } from '../../offer-alert';
 import PageLoading from '../../PageLoading';
 
 import InstructorToolbar from './InstructorToolbar';
@@ -27,6 +28,7 @@ const AccessExpirationAlert = React.lazy(() => import('../../access-expiration-a
 const EnrollmentAlert = React.lazy(() => import('../../enrollment-alert/EnrollmentAlert'));
 const StaffEnrollmentAlert = React.lazy(() => import('../../enrollment-alert/StaffEnrollmentAlert'));
 const LogistrationAlert = React.lazy(() => import('../../logistration-alert'));
+const OfferAlert = React.lazy(() => import('../../offer-alert/OfferAlert'));
 
 function Course({
   courseId,
@@ -41,6 +43,7 @@ function Course({
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
 
+  useOfferAlert(courseId);
   useLogistrationAlert();
   useEnrollmentAlert(courseId);
   useAccessExpirationAlert(courseId);
@@ -81,6 +84,7 @@ function Course({
               clientStaffEnrollmentAlert: StaffEnrollmentAlert,
               clientLogistrationAlert: LogistrationAlert,
               clientAccessExpirationAlert: AccessExpirationAlert,
+              clientOfferAlert: OfferAlert,
             }}
           />
           <CourseBreadcrumbs
