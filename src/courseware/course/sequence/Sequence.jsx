@@ -150,6 +150,7 @@ function Sequence({
             )}
             {!gated && unitId !== null && (
               <Unit
+                courseId={courseId}
                 key={unitId}
                 id={unitId}
                 onLoaded={handleUnitLoaded}
