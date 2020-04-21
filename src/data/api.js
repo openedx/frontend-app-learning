@@ -5,6 +5,8 @@ import { logError } from '@edx/frontend-platform/logging';
 
 function normalizeMetadata(metadata) {
   return {
+    // TODO: TNL-7185: return course expired _date_, instead of _message_
+    courseExpiredMessage: metadata.course_expired_message,
     id: metadata.id,
     title: metadata.name,
     number: metadata.number,
