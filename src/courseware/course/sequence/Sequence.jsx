@@ -11,7 +11,7 @@ import Unit from './Unit';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import PageLoading from '../../../PageLoading';
 import messages from './messages';
-import { UserMessagesContext } from '../../../user-messages';
+import { UserMessagesContext, ALERT_TYPES } from '../../../user-messages';
 import { useModel } from '../../../model-store';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
@@ -78,7 +78,7 @@ function Sequence({
           code: null,
           dismissible: false,
           text: sequence.bannerText,
-          type: 'info',
+          type: ALERT_TYPES.INFO,
           topic: 'sequence',
         });
       }

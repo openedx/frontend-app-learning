@@ -2,7 +2,7 @@
 import {
   useContext, useState, useEffect, useCallback,
 } from 'react';
-import { UserMessagesContext } from '../user-messages';
+import { UserMessagesContext, ALERT_TYPES } from '../user-messages';
 import { useModel } from '../model-store';
 import { postCourseEnrollment } from './data/api';
 
@@ -42,7 +42,7 @@ export function useEnrollClickHandler(courseId, successText) {
         dismissible: true,
         flash: true,
         text: successText,
-        type: 'success',
+        type: ALERT_TYPES.SUCCESS,
         topic: 'course',
       });
       setLoading(false);
