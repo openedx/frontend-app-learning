@@ -86,6 +86,10 @@ function Course({
               clientAccessExpirationAlert: AccessExpirationAlert,
               clientOfferAlert: OfferAlert,
             }}
+            // courseId is provided because EnrollmentAlert and StaffEnrollmentAlert require it.
+            customProps={{
+              courseId,
+            }}
           />
           <CourseBreadcrumbs
             courseId={courseId}

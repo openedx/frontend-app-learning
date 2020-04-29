@@ -1,7 +1,10 @@
 /* eslint-disable import/prefer-default-export */
-import { useContext, useState, useEffect } from 'react';
+import {
+  useContext, useState, useEffect, useCallback,
+} from 'react';
 import { UserMessagesContext } from '../user-messages';
 import { useModel } from '../model-store';
+import { postCourseEnrollment } from './data/api';
 
 export function useEnrollmentAlert(courseId) {
   const course = useModel('courses', courseId);
@@ -11,17 +14,11 @@ export function useEnrollmentAlert(courseId) {
   useEffect(() => {
     if (course && course.isEnrolled !== undefined) {
       if (!course.isEnrolled && alertId === null) {
-        if (course.isStaff) {
-          setAlertId(add({
-            code: 'clientStaffEnrollmentAlert',
-            topic: 'course',
-          }));
-        } else {
-          setAlertId(add({
-            code: 'clientEnrollmentAlert',
-            topic: 'course',
-          }));
-        }
+        const code = course.isStaff ? 'clientStaffEnrollmentAlert' : 'clientEnrollmentAlert';
+        setAlertId(add({
+          code,
+          topic: 'course',
+        }));
       } else if (course.isEnrolled && alertId !== null) {
         remove(alertId);
         setAlertId(null);
@@ -33,4 +30,25 @@ export function useEnrollmentAlert(courseId) {
       }
     };
   }, [course, isEnrolled]);
+}
+
+export function useEnrollClickHandler(courseId, successText) {
+  const [loading, setLoading] = useState(false);
+  const { addFlash } = useContext(UserMessagesContext);
+  const enrollClickHandler = useCallback(() => {
+    setLoading(true);
+    postCourseEnrollment(courseId).then(() => {
+      addFlash({
+        dismissible: true,
+        flash: true,
+        text: successText,
+        type: 'success',
+        topic: 'course',
+      });
+      setLoading(false);
+      global.location.reload();
+    });
+  }, [courseId]);
+
+  return { enrollClickHandler, loading };
 }
