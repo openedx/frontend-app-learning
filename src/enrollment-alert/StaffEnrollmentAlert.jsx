@@ -1,8 +1,8 @@
 import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { Alert } from '../user-messages';
 
-import Alert from '../user-messages/Alert';
 import messages from './messages';
 
 function StaffEnrollmentAlert({ intl }) {

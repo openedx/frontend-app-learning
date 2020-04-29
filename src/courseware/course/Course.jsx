@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';
-import AlertList from '../../user-messages/AlertList';
+import { AlertList } from '../../user-messages';
 import { useAccessExpirationAlert } from '../../access-expiration-alert';
 import { useLogistrationAlert } from '../../logistration-alert';
 import { useEnrollmentAlert } from '../../enrollment-alert';

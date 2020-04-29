@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { useContext, useState, useEffect } from 'react';
-import UserMessagesContext from '../user-messages/UserMessagesContext';
+import { UserMessagesContext } from '../user-messages';
 import { useModel } from '../model-store';
 
 export function useOfferAlert(courseId) {

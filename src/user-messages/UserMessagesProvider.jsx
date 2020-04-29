@@ -3,6 +3,13 @@ import PropTypes from 'prop-types';
 
 import UserMessagesContext from './UserMessagesContext';
 
+export const ALERT_TYPES = {
+  ERROR: 'error',
+  DANGER: 'danger',
+  SUCCESS: 'success',
+  INFO: 'info',
+};
+
 export default function UserMessagesProvider({ children }) {
   // Note: The callbacks (add, remove, clear) below interact with useState in very subtle ways.
   // When we call setMessages, we always do so with the function-based form of the handler, making

@@ -13,7 +13,7 @@ import { messages as headerMessages } from '@edx/frontend-component-header';
 import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
 
 import appMessages from './i18n';
-import UserMessagesProvider from './user-messages/UserMessagesProvider';
+import { UserMessagesProvider } from './user-messages';
 
 import './index.scss';
 import './assets/favicon.ico';

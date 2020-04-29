@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { useContext, useState, useEffect } from 'react';
 import { AppContext } from '@edx/frontend-platform/react';
-import UserMessagesContext from '../user-messages/UserMessagesContext';
+import { UserMessagesContext } from '../user-messages';
 
 export function useLogistrationAlert() {
   const { authenticatedUser } = useContext(AppContext);

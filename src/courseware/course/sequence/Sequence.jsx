@@ -11,7 +11,7 @@ import Unit from './Unit';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import PageLoading from '../../../PageLoading';
 import messages from './messages';
-import UserMessagesContext from '../../../user-messages/UserMessagesContext';
+import { UserMessagesContext } from '../../../user-messages';
 import { useModel } from '../../../model-store';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
