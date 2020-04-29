@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 import UserMessagesContext from './UserMessagesContext';
 import Alert from './Alert';
 
-export default function AlertList({ topic, className, customAlerts }) {
+export default function AlertList({
+  topic, className, customAlerts, customProps,
+}) {
   const { remove, messages } = useContext(UserMessagesContext);
   const getAlertComponent = useCallback(
     (code) => (customAlerts[code] !== undefined ? customAlerts[code] : Alert),
@@ -27,6 +29,7 @@ export default function AlertList({ topic, className, customAlerts }) {
               dismissible={message.dismissible}
               onDismiss={() => remove(message.id)}
               rawHtml={message.rawHtml}
+              {...customProps}
             >
               {message.text}
             </AlertComponent>
@@ -47,10 +50,13 @@ AlertList.propTypes = {
       PropTypes.node,
     ]),
   ),
+  // eslint-disable-next-line react/forbid-prop-types
+  customProps: PropTypes.object,
 };
 
 AlertList.defaultProps = {
   topic: null,
   className: null,
   customAlerts: {},
+  customProps: {},
 };
