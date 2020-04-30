@@ -37,11 +37,15 @@ function Unit({
     global.onmessage = (event) => {
       const { type, payload } = event.data;
 
+      console.log('MFE App', 'onmessage', id, iframeUrl, event.source, type, payload, event);
       if (type === 'plugin.resize') {
         setIframeHeight(payload.height);
+        console.log('MFE App', 'plugin.resize', hasLoaded, iframeHeight, payload.height);
         if (!hasLoaded && iframeHeight === 0 && payload.height > 0) {
+          console.log('MFE App', 'hasLoaded', true);
           setHasLoaded(true);
           if (onLoaded) {
+            console.log('MFE App', 'fire onLoaded handler');
             onLoaded();
           }
         }
