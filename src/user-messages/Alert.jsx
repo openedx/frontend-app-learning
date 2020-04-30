@@ -7,27 +7,29 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button } from '@edx/paragon';
 
+import { ALERT_TYPES } from './UserMessagesProvider';
+
 function getAlertClass(type) {
-  if (type === 'error') {
+  if (type === ALERT_TYPES.ERROR) {
     return 'alert-warning';
   }
-  if (type === 'danger') {
+  if (type === ALERT_TYPES.DANGER) {
     return 'alert-danger';
   }
-  if (type === 'success') {
+  if (type === ALERT_TYPES.SUCCESS) {
     return 'alert-success';
   }
   return 'alert-info';
 }
 
 function getAlertIcon(type) {
-  if (type === 'error') {
+  if (type === ALERT_TYPES.ERROR) {
     return faExclamationTriangle;
   }
-  if (type === 'danger') {
+  if (type === ALERT_TYPES.DANGER) {
     return faMinusCircle;
   }
-  if (type === 'success') {
+  if (type === ALERT_TYPES.SUCCESS) {
     return faCheckCircle;
   }
   return faInfoCircle;
@@ -53,7 +55,7 @@ function Alert({
 
 
 Alert.propTypes = {
-  type: PropTypes.oneOf(['error', 'danger', 'info', 'success']).isRequired,
+  type: PropTypes.oneOf([ALERT_TYPES.ERROR, ALERT_TYPES.DANGER, ALERT_TYPES.INFO, ALERT_TYPES.SUCCESS]).isRequired,
   dismissible: PropTypes.bool,
   children: PropTypes.node,
   onDismiss: PropTypes.func,

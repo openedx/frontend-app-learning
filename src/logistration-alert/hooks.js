@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { useContext, useState, useEffect } from 'react';
 import { AppContext } from '@edx/frontend-platform/react';
-import UserMessagesContext from '../user-messages/UserMessagesContext';
+import { UserMessagesContext, ALERT_TYPES } from '../user-messages';
 
 export function useLogistrationAlert() {
   const { authenticatedUser } = useContext(AppContext);
@@ -12,7 +12,7 @@ export function useLogistrationAlert() {
       setAlertId(add({
         code: 'clientLogistrationAlert',
         dismissible: false,
-        type: 'error',
+        type: ALERT_TYPES.ERROR,
         topic: 'course',
       }));
     } else if (authenticatedUser !== null && alertId !== null) {

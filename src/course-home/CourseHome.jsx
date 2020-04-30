@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '@edx/paragon';
 
-import AlertList from '../user-messages/AlertList';
+import { AlertList } from '../user-messages';
 import { Header, CourseTabsNavigation } from '../course-header';
 import { useLogistrationAlert } from '../logistration-alert';
 import { useEnrollmentAlert } from '../enrollment-alert';

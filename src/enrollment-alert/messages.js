@@ -16,6 +16,11 @@ const messages = defineMessages({
     defaultMessage: 'Enroll Now',
     description: 'A link prompting the user to click on it to enroll in the currently viewed course.',
   },
+  'learning.enrollment.success': {
+    id: 'learning.enrollment.success',
+    defaultMessage: "You've successfully enrolled in this course!",
+    description: 'A message telling the user that their course enrollment was successful.',
+  },
 });
 
 export default messages;

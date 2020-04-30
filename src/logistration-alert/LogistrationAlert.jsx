@@ -3,7 +3,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { getLoginRedirectUrl } from '@edx/frontend-platform/auth';
 
-import Alert from '../user-messages/Alert';
+import { Alert } from '../user-messages';
 import messages from './messages';
 
 function LogistrationAlert({ intl }) {
