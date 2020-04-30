@@ -1,6 +1,7 @@
 import React, {
   Suspense,
   useEffect,
+  useRef,
   useState,
   useLayoutEffect,
 } from 'react';
@@ -67,26 +68,33 @@ function Unit({
   // Do not remove this hook.  See function description.
   useLoadBearingHook(id);
 
+  // We use this ref so that we can hold a reference to the currently active event listener.
+  const messageEventListenerRef = useRef(null);
   useEffect(() => {
-    if (!global.onmessage) {
-      global.onmessage = (event) => {
-        const { type, payload } = event.data;
-
-        if (type === 'plugin.resize') {
-          setIframeHeight(payload.height);
-          if (!hasLoaded && iframeHeight === 0 && payload.height > 0) {
-            setHasLoaded(true);
-            if (onLoaded) {
-              onLoaded();
-            }
+    function receiveMessage(event) {
+      const { type, payload } = event.data;
+      if (type === 'plugin.resize') {
+        setIframeHeight(payload.height);
+        if (!hasLoaded && iframeHeight === 0 && payload.height > 0) {
+          setHasLoaded(true);
+          if (onLoaded) {
+            onLoaded();
           }
         }
-      };
+      }
     }
-    return () => {
-      global.onmessage = null;
-    };
-  }, [id]);
+    // If we currently have an event listener, remove it.
+    if (messageEventListenerRef.current !== null) {
+      global.removeEventListener('message', messageEventListenerRef.current);
+      messageEventListenerRef.current = null;
+    }
+    // Now add our new receiveMessage handler as the event listener.
+    global.addEventListener('message', receiveMessage);
+    // And then save it to our ref for next time.
+    messageEventListenerRef.current = receiveMessage;
+    // When the component finally unmounts, use the ref to remove the correct handler.
+    return () => global.removeEventListener('message', messageEventListenerRef.current);
+  }, [id, setIframeHeight, hasLoaded, iframeHeight, setHasLoaded, onLoaded]);
 
   return (
     <div className="unit">
