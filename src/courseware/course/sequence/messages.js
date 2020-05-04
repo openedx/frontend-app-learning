@@ -16,6 +16,11 @@ const messages = defineMessages({
     defaultMessage: 'There was an error loading this course.',
     description: 'Message when a course fails to load',
   },
+  'learn.sequence.no.content': {
+    id: 'learn.sequence.no.content',
+    defaultMessage: 'There is no content here.',
+    description: 'Message shown when there is no content to show a user inside a learning sequence.',
+  },
 });
 
 export default messages;

@@ -1,20 +1,19 @@
 /* eslint-disable no-use-before-define */
 import React, {
-  useEffect, useContext, Suspense, useState,
+  useEffect, useContext, useState,
 } from 'react';
 import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-
 import { useSelector } from 'react-redux';
-import Unit from './Unit';
-import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
+
 import PageLoading from '../../../PageLoading';
-import messages from './messages';
 import { UserMessagesContext, ALERT_TYPES } from '../../../user-messages';
 import { useModel } from '../../../model-store';
 
-const ContentLock = React.lazy(() => import('./content-lock'));
+import messages from './messages';
+import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
+import SequenceContent from './SequenceContent';
 
 function Sequence({
   unitId,
@@ -132,30 +131,13 @@ function Sequence({
             }}
           />
           <div className="unit-container flex-grow-1">
-            {gated && (
-              <Suspense
-                fallback={(
-                  <PageLoading
-                    srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
-                  />
-                )}
-              >
-                <ContentLock
-                  courseId={courseId}
-                  sequenceTitle={sequence.title}
-                  prereqSectionName={sequence.gatedContent.gatedSectionName}
-                  prereqId={sequence.gatedContent.prereqId}
-                />
-              </Suspense>
-            )}
-            {!gated && unitId !== null && (
-              <Unit
-                courseId={courseId}
-                key={unitId}
-                id={unitId}
-                onLoaded={handleUnitLoaded}
-              />
-            )}
+            <SequenceContent
+              courseId={courseId}
+              gated={gated}
+              sequenceId={sequenceId}
+              unitId={unitId}
+              unitLoadedHandler={handleUnitLoaded}
+            />
             {unitHasLoaded && (
               <UnitNavigation
                 sequenceId={sequenceId}
