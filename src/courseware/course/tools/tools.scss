@@ -16,6 +16,10 @@
     border-top-right-radius: .3rem;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding-left: .75rem;
+    white-space: nowrap;
     &:before {
       border-radius: .5rem;
     }

@@ -32,128 +32,152 @@ export default class CourseSock extends Component {
           </button>
         </div>
         {this.state.showUpsell && (
-        <div className="d-flex justify-content-around">
-          <div className="mt-3">
-            <h2 className="font-weight-lighter">
+          <>
+            <h2 className="mt-3 mb-4">
               <FormattedMessage
                 id="coursesock.upsell.verifiedcert"
                 defaultMessage="edX Verified Certificate"
               />
             </h2>
-            <h3>
-              <FormattedMessage
-                id="coursesock.upsell.why"
-                defaultMessage="Why upgrade?"
-              />
-            </h3>
-            <ul>
-              <li><FormattedMessage
-                id="coursesock.upsell.reason1"
-                defaultMessage="Official proof of completion"
-              />
-              </li>
-              <li><FormattedMessage
-                id="coursesock.upsell.reason2"
-                defaultMessage="Easily shareable certificate"
-              />
-              </li>
-              <li><FormattedMessage
-                id="coursesock.upsell.reason3"
-                defaultMessage="Proven motivator to complete the course"
-              />
-              </li>
-              <li><FormattedMessage
-                id="coursesock.upsell.reason4"
-                defaultMessage="Certificate purchases help edX continue to offer free courses"
-              />
-              </li>
-            </ul>
-            <h3><FormattedMessage
-              id="coursesock.upsell.howtitle"
-              defaultMessage="How it works"
-            />
-            </h3>
-            <ul>
-              <li><FormattedMessage
-                id="coursesock.upsell.how1"
-                defaultMessage="Pay the Verified Certificate upgrade fee"
-              />
-              </li>
-              <li><FormattedMessage
-                id="coursesock.upsell.how2"
-                defaultMessage="Verify your identity with a webcam and government-issued ID"
-              />
-              </li>
-              <li><FormattedMessage
-                id="coursesock.upsell.how3"
-                defaultMessage="Study hard and pass the course"
-              />
-              </li>
-              <li><FormattedMessage
-                id="coursesock.upsell.how4"
-                defaultMessage="Share your certificate with friends, employers, and others"
-              />
-              </li>
-            </ul>
-            <h3><FormattedMessage
-              id="coursesock.upsell.storytitle"
-              defaultMessage="edX Learner Stories"
-            />
-            </h3>
-            <div className="d-flex align-items-center my-4">
-              <img style={{ maxWidth: '4rem' }} alt="Christina Fong" src={LearnerQuote1} />
-              <div className="w-50 px-4">
-                <FormattedMessage
-                  id="coursesock.upsell.story1"
-                  defaultMessage="My certificate has helped me showcase my knowledge on my
-                   resume - I feel like this certificate could really help me land
-                   my dream job!"
-                />
-                <br />
-                <strong>&mdash; <FormattedMessage
-                  id="coursesock.upsell.learner"
-                  description="Name of learner"
-                  defaultMessage="{ name }, edX Learner"
-                  values={{ name: 'Christina Fong' }}
-                />
-                </strong>
+            <div className="row flex-row-reverse">
+              <div className="col-md-4 col-lg-6 d-flex flex-column">
+                <div>
+                  <img alt="Example Certificate" src={VerifiedCert} className="d-block img-thumbnail mb-3 ml-md-auto" />
+                </div>
+                <div className="position-relative flex-grow-1 d-flex flex-column justify-content-end align-items-md-end">
+                  <div style={{ position: 'sticky', bottom: '4rem' }}>
+                    <a
+                      href={this.verifiedMode.upgradeUrl}
+                      className="btn btn-success btn-lg btn-upgrade focusable mb-3"
+                      data-creative="original_sock"
+                      data-position="sock"
+                    >
+                      <FormattedMessage
+                        id="coursesock.upsell.upgrade"
+                        defaultMessage="Upgrade ({symbol}{price} {currency})"
+                        values={{
+                          symbol: this.verifiedMode.currencySymbol,
+                          price: this.verifiedMode.price,
+                          currency: this.verifiedMode.currency,
+                        }}
+                      />
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-8 col-lg-6">
+                <h3 className="h5">
+                  <FormattedMessage
+                    id="coursesock.upsell.why"
+                    defaultMessage="Why upgrade?"
+                  />
+                </h3>
+                <ul>
+                  <li>
+                    <FormattedMessage
+                      id="coursesock.upsell.reason1"
+                      defaultMessage="Official proof of completion"
+                    />
+                  </li>
+                  <li>
+                    <FormattedMessage
+                      id="coursesock.upsell.reason2"
+                      defaultMessage="Easily shareable certificate"
+                    />
+                  </li>
+                  <li>
+                    <FormattedMessage
+                      id="coursesock.upsell.reason3"
+                      defaultMessage="Proven motivator to complete the course"
+                    />
+                  </li>
+                  <li>
+                    <FormattedMessage
+                      id="coursesock.upsell.reason4"
+                      defaultMessage="Certificate purchases help edX continue to offer free courses"
+                    />
+                  </li>
+                </ul>
+                <h3 className="h5">
+                  <FormattedMessage
+                    id="coursesock.upsell.howtitle"
+                    defaultMessage="How it works"
+                  />
+                </h3>
+                <ul>
+                  <li>
+                    <FormattedMessage
+                      id="coursesock.upsell.how1"
+                      defaultMessage="Pay the Verified Certificate upgrade fee"
+                    />
+                  </li>
+                  <li>
+                    <FormattedMessage
+                      id="coursesock.upsell.how2"
+                      defaultMessage="Verify your identity with a webcam and government-issued ID"
+                    />
+                  </li>
+                  <li>
+                    <FormattedMessage
+                      id="coursesock.upsell.how3"
+                      defaultMessage="Study hard and pass the course"
+                    />
+                  </li>
+                  <li>
+                    <FormattedMessage
+                      id="coursesock.upsell.how4"
+                      defaultMessage="Share your certificate with friends, employers, and others"
+                    />
+                  </li>
+                </ul>
+
+                <h3 className="h5">
+                  <FormattedMessage
+                    id="coursesock.upsell.storytitle"
+                    defaultMessage="edX Learner Stories"
+                  />
+                </h3>
+                <div className="media my-3">
+                  <img className="mr-3" style={{ maxWidth: '4rem' }} alt="Christina Fong" src={LearnerQuote1} />
+                  <div className="media-body">
+                    <FormattedMessage
+                      id="coursesock.upsell.story1"
+                      defaultMessage="My certificate has helped me showcase my knowledge on my
+                      resume - I feel like this certificate could really help me land
+                      my dream job!"
+                    />
+                    <p className="font-weight-bold">
+                      &mdash; <FormattedMessage
+                        id="coursesock.upsell.learner"
+                        description="Name of learner"
+                        defaultMessage="{ name }, edX Learner"
+                        values={{ name: 'Christina Fong' }}
+                      />
+                    </p>
+                  </div>
+                </div>
+                <div className="media my-3">
+                  <img className="mr-3" style={{ maxWidth: '4rem' }} alt="Chery Troell" src={LearnerQuote2} />
+                  <div className="media-body">
+                    <FormattedMessage
+                      id="coursesock.upsell.story2"
+                      defaultMessage="I wanted to include a verified certificate on my resume and my profile to
+                    illustrate that I am working towards this goal I have and that I have
+                    achieved something while I was unemployed."
+                    />
+                    <p className="font-weight-bold">
+                      &mdash; <FormattedMessage
+                        id="coursesock.upsell.learner"
+                        description="Name of learner"
+                        defaultMessage="{ name }, edX Learner"
+                        values={{ name: 'Cheryl Troell' }}
+                      />
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="d-flex align-items-center my-2">
-              <img style={{ maxWidth: '4rem' }} alt="Chery Troell" src={LearnerQuote2} />
-              <div className="w-50 px-4">
-                <FormattedMessage
-                  id="coursesock.upsell.story2"
-                  defaultMessage="I wanted to include a verified certificate on my resume and my profile to
-                 illustrate that I am working towards this goal I have and that I have
-                 achieved something while I was unemployed."
-                />
-                <br />
-                <strong>&mdash; <FormattedMessage
-                  id="coursesock.upsell.learner"
-                  description="Name of learner"
-                  defaultMessage="{ name }, edX Learner"
-                  values={{ name: 'Cheryl Troell' }}
-                />
-                </strong>
-              </div>
-            </div>
-          </div>
-          <div className="d-flex flex-column justify-content-between">
-            <img alt="Example Certificate" src={VerifiedCert} />
-            <a href={this.verifiedMode.upgradeUrl} className="btn btn-success btn-lg btn-upgrade focusable" data-creative="original_sock" data-position="sock">
-              <FormattedMessage
-                id="coursesock.upsell.upgrade"
-                defaultMessage="Upgrade ({symbol}{price} {currency})"
-                values={{
-                  symbol: this.verifiedMode.currencySymbol,
-                  price: this.verifiedMode.price,
-                  currency: this.verifiedMode.currency,
-                }}
-              />
-            </a>
-          </div>
-        </div>
+          </>
         )}
       </div>
     );

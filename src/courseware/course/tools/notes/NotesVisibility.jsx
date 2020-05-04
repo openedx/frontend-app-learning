@@ -35,19 +35,18 @@ class NotesVisibility extends Component {
   render() {
     const message = this.state.visible ? 'notes.button.hide' : 'notes.button.show';
     return (
-      <div className="trigger" style={{ width: '200px' }}>
-        <div
-          role="switch"
-          className={`btn ${this.state.visible ? 'text-secondary' : 'text-success'}`}
-          onClick={this.handleClick}
-          onKeyDown={this.handleClick}
-          tabIndex="-1"
-          aria-checked={this.state.visible ? 'true' : 'false'}
-        >
-          <FontAwesomeIcon icon={faPencilAlt} aria-hidden="true" className="mr-2" />
-          {this.props.intl.formatMessage(messages[message])}
-        </div>
-      </div>
+      <button
+        className={`trigger btn ${this.state.visible ? 'text-secondary' : 'text-success'}  mx-2 `}
+        role="switch"
+        type="button"
+        onClick={this.handleClick}
+        onKeyDown={this.handleClick}
+        tabIndex="-1"
+        aria-checked={this.state.visible ? 'true' : 'false'}
+      >
+        <FontAwesomeIcon icon={faPencilAlt} aria-hidden="true" className="mr-2" />
+        {this.props.intl.formatMessage(messages[message])}
+      </button>
     );
   }
 }
