@@ -18,9 +18,10 @@ import { UserMessagesProvider } from './user-messages';
 
 import './index.scss';
 import './assets/favicon.ico';
+import CourseHome from './course-home';
 import CoursewareContainer from './courseware';
-import CourseHomeContainer from './course-home';
 import CoursewareRedirect from './CoursewareRedirect';
+import { TabContainer } from './tab-page';
 
 import store from './store';
 
@@ -30,7 +31,11 @@ subscribe(APP_READY, () => {
       <UserMessagesProvider>
         <Switch>
           <Route path="/redirect" component={CoursewareRedirect} />
-          <Route path="/course/:courseId/home" component={CourseHomeContainer} />
+          <Route path="/course/:courseId/home">
+            <TabContainer tab="courseware">
+              <CourseHome />
+            </TabContainer>
+          </Route>
           <Route
             path={[
               '/course/:courseId/:sequenceId/:unitId',

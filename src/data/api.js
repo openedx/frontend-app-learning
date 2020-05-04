@@ -3,6 +3,20 @@ import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { logError } from '@edx/frontend-platform/logging';
 
+function overrideTabUrls(id, tabs) {
+  // "LMS tab slug" to "MFE URL slug" for overridden tabs
+  const tabOverrides = {};
+  return tabs.map((tab) => {
+    let url;
+    if (tabOverrides[tab.slug]) {
+      url = `/course/${id}/${tabOverrides[tab.slug]}`;
+    } else {
+      url = `${getConfig().LMS_BASE_URL}${tab.url}`;
+    }
+    return { ...tab, url };
+  });
+}
+
 function normalizeMetadata(metadata) {
   return {
     canShowUpgradeSock: metadata.can_show_upgrade_sock,
@@ -23,7 +37,7 @@ function normalizeMetadata(metadata) {
     canLoadCourseware: camelCaseObject(metadata.can_load_courseware),
     isStaff: metadata.is_staff,
     verifiedMode: camelCaseObject(metadata.verified_mode),
-    tabs: camelCaseObject(metadata.tabs),
+    tabs: overrideTabUrls(metadata.id, camelCaseObject(metadata.tabs)),
     showCalculator: metadata.show_calculator,
     notes: camelCaseObject(metadata.notes),
   };

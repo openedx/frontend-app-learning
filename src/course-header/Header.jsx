@@ -68,7 +68,13 @@ export default function Header({
 }
 
 Header.propTypes = {
-  courseOrg: PropTypes.string.isRequired,
-  courseNumber: PropTypes.string.isRequired,
-  courseTitle: PropTypes.string.isRequired,
+  courseOrg: PropTypes.string,
+  courseNumber: PropTypes.string,
+  courseTitle: PropTypes.string,
+};
+
+Header.defaultProps = {
+  courseOrg: null,
+  courseNumber: null,
+  courseTitle: null,
 };

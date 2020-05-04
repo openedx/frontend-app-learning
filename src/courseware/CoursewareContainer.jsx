@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { history } from '@edx/frontend-platform';
 import { getLocale } from '@edx/frontend-platform/i18n';
 import { useRouteMatch, Redirect } from 'react-router';
+
 import {
   fetchCourse,
   fetchSequence,
@@ -14,9 +15,9 @@ import {
   saveSequencePosition,
 } from './data/thunks';
 import { useModel } from '../model-store';
+import { TabPage } from '../tab-page';
 
 import Course from './course';
-
 import { sequenceIdsSelector, firstSequenceIdSelector } from './data/selectors';
 
 function useUnitNavigationHandler(courseId, sequenceId, unitId) {
@@ -200,7 +201,10 @@ export default function CoursewareContainer() {
   }
 
   return (
-    <main className="flex-grow-1 d-flex flex-column">
+    <TabPage
+      activeTabSlug="courseware"
+      courseId={courseId}
+    >
       <Course
         courseId={courseId}
         sequenceId={sequenceId}
@@ -209,7 +213,7 @@ export default function CoursewareContainer() {
         previousSequenceHandler={previousSequenceHandler}
         unitNavigationHandler={unitNavigationHandler}
       />
-    </main>
+    </TabPage>
   );
 }
 
