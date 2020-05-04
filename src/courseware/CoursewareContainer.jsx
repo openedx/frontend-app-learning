@@ -23,7 +23,7 @@ function useUnitNavigationHandler(courseId, sequenceId, unitId) {
   return useCallback((nextUnitId) => {
     dispatch(checkBlockCompletion(courseId, sequenceId, unitId));
     history.push(`/course/${courseId}/${sequenceId}/${nextUnitId}`);
-  }, [courseId, sequenceId]);
+  }, [courseId, sequenceId, unitId]);
 }
 
 function usePreviousSequence(sequenceId) {
