@@ -3,6 +3,9 @@ import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { logError } from '@edx/frontend-platform/logging';
 
+// FIXME: remove this WIP hack once we're done developing the tab
+import datesTabData from './dates';
+
 function overrideTabUrls(id, tabs) {
   // "LMS tab slug" to "MFE URL slug" for overridden tabs
   const tabOverrides = {};
@@ -47,6 +50,16 @@ export async function getCourseMetadata(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
   const { data } = await getAuthenticatedHttpClient().get(url);
   return normalizeMetadata(data);
+}
+
+export async function getTabData(courseId, tab, version) {
+  if (tab === 'dates') {
+    return camelCaseObject(datesTabData());
+  }
+
+  const url = `${getConfig().LMS_BASE_URL}/course/${courseId}/api/course_home/${version}/${tab}`;
+  const { data } = await getAuthenticatedHttpClient().get(url);
+  return camelCaseObject(data);
 }
 
 function normalizeBlocks(courseId, blocks) {

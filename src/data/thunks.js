@@ -3,6 +3,7 @@ import {
   getCourseMetadata,
   getCourseBlocks,
   getSequenceMetadata,
+  getTabData,
 } from './api';
 import {
   addModelsMap, updateModel, updateModels, updateModelsMap, addModel,
@@ -15,6 +16,9 @@ import {
   fetchSequenceRequest,
   fetchSequenceSuccess,
   fetchSequenceFailure,
+  fetchTabRequest,
+  fetchTabSuccess,
+  fetchTabFailure,
 } from './slice';
 
 export function fetchCourse(courseId) {
@@ -28,6 +32,17 @@ export function fetchCourse(courseId) {
         dispatch(addModel({
           modelType: 'courses',
           model: courseMetadataResult.value,
+        }));
+        dispatch(addModel({
+          modelType: 'pageInfo',
+          model: {
+            id: courseMetadataResult.value.id,
+            isStaff: courseMetadataResult.value.isStaff,
+            number: courseMetadataResult.value.number,
+            org: courseMetadataResult.value.org,
+            tabs: courseMetadataResult.value.tabs,
+            title: courseMetadataResult.value.title,
+          },
         }));
       }
 
@@ -83,6 +98,40 @@ export function fetchCourse(courseId) {
       dispatch(fetchCourseFailure({ courseId }));
     });
   };
+}
+
+export function fetchTab(courseId, tab, version) {
+  return async (dispatch) => {
+    dispatch(fetchTabRequest({ courseId }));
+    getTabData(courseId, tab, version).then((result) => {
+      dispatch(addModel({
+        modelType: 'pageInfo',
+        model: {
+          id: result.id,
+          isStaff: result.isStaff,
+          number: result.number,
+          org: result.org,
+          tabs: result.tabs,
+          title: result.title,
+        },
+      }));
+
+      dispatch(addModel({
+        modelType: tab,
+        model: result,
+      }));
+
+      // TODO: do we need access restrictions for tabs, like we have for courseware?
+      dispatch(fetchTabSuccess({ courseId }));
+    }, (reason) => {
+      logError(reason);
+      dispatch(fetchTabFailure({ courseId }));
+    });
+  };
+}
+
+export function fetchDatesTab(courseId) {
+  return fetchTab(courseId, 'dates', 'v1');
 }
 
 export function fetchSequence(sequenceId) {
