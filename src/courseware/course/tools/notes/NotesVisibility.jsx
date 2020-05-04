@@ -36,8 +36,7 @@ class NotesVisibility extends Component {
     const message = this.state.visible ? 'notes.button.hide' : 'notes.button.show';
     return (
       <button
-        className={`trigger btn ${this.state.visible ? 'text-secondary' : 'text-success'}  ml-2 `}
-        style={{ whiteSpace: 'nowrap' }}
+        className={`trigger btn ${this.state.visible ? 'text-secondary' : 'text-success'}  mx-2 `}
         role="switch"
         type="button"
         onClick={this.handleClick}
