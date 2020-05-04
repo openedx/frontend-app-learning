@@ -10,7 +10,7 @@ export default function ContentTools({
 }) {
   return (
     <div className="content-tools">
-      <div className="d-flex justify-content-end m-0">
+      <div className="d-flex justify-content-end align-items-end m-0">
         {course.showCalculator && (
           <Calculator />
         )}
