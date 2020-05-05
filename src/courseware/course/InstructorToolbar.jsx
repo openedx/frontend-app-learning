@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Collapsible } from '@edx/paragon';
 
 function InstructorToolbar(props) {
-  // TODO: Only render this toolbar if the user is course staff
   if (!props.activeUnitLmsWebUrl) {
     return null;
   }

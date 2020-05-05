@@ -55,8 +55,13 @@ function useNextSequenceHandler(courseId, sequenceId) {
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   return useCallback(() => {
     if (nextSequence !== null) {
-      const nextUnitId = nextSequence.unitIds[0];
-      history.push(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
+      if (nextSequence.unitIds.length > 0) {
+        const nextUnitId = nextSequence.unitIds[0];
+        history.push(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
+      } else {
+        // Some sequences have no units.  This will show a blank page with prev/next buttons.
+        history.push(`/course/${courseId}/${nextSequence.id}`);
+      }
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
@@ -67,8 +72,13 @@ function usePreviousSequenceHandler(courseId, sequenceId) {
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   return useCallback(() => {
     if (previousSequence !== null) {
-      const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
-      history.push(`/course/${courseId}/${previousSequence.id}/${previousUnitId}`);
+      if (previousSequence.unitIds.length > 0) {
+        const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
+        history.push(`/course/${courseId}/${previousSequence.id}/${previousUnitId}`);
+      } else {
+        // Some sequences have no units.  This will show a blank page with prev/next buttons.
+        history.push(`/course/${courseId}/${previousSequence.id}`);
+      }
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
 }
