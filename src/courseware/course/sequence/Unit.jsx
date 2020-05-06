@@ -117,6 +117,11 @@ function Unit({
           />
         </Suspense>
       )}
+      {!hasLoaded && (
+        <PageLoading
+          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+        />
+      )}
       <div className="unit-iframe-wrapper">
         <iframe
           id="unit-iframe"
