@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import PageLoading from '../../../PageLoading';
@@ -13,6 +13,11 @@ function SequenceContent({
   gated, intl, courseId, sequenceId, unitId, unitLoadedHandler,
 }) {
   const sequence = useModel('sequences', sequenceId);
+
+  // Go back to the top of the page whenever the unit or sequence changes.
+  useEffect(() => {
+    global.scrollTo(0, 0);
+  }, [sequenceId, unitId]);
 
   if (gated) {
     return (
