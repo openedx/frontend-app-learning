@@ -227,6 +227,18 @@ export async function getResumeBlock(courseId) {
   return camelCaseObject(data);
 }
 
+export async function getMasqueradeOptions(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`);
+  const { data } = await getAuthenticatedHttpClient().get(url.href, {});
+  return camelCaseObject(data);
+}
+
+export async function postMasqueradeOptions(courseId, data) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`);
+  const { response } = await getAuthenticatedHttpClient().post(url.href, data);
+  return camelCaseObject(response);
+}
+
 export async function updateCourseDeadlines(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
   await getAuthenticatedHttpClient().post(url.href, { course_key: courseId });

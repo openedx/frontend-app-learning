@@ -62,7 +62,6 @@ function Unit({
   const course = useModel('courses', courseId);
   const {
     contentTypeGatingEnabled,
-    enrollmentMode,
   } = course;
 
   // Do not remove this hook.  See function description.
