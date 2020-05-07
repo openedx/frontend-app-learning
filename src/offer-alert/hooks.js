@@ -24,5 +24,5 @@ export function useOfferAlert(courseId) {
         remove(alertId);
       }
     };
-  }, [course, rawHtml]);
+  }, [alertId, courseId, rawHtml]);
 }
