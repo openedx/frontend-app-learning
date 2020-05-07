@@ -7,15 +7,15 @@ export function useAccessExpirationAlert(courseId) {
   const course = useModel('courses', courseId);
   const { add, remove } = useContext(UserMessagesContext);
   const [alertId, setAlertId] = useState(null);
-  const expiredMessage = (course && course.courseExpiredMessage) || null;
+  const rawHtml = (course && course.courseExpiredMessage) || null;
   useEffect(() => {
-    if (expiredMessage && alertId === null) {
+    if (rawHtml && alertId === null) {
       setAlertId(add({
         code: 'clientAccessExpirationAlert',
         topic: 'course',
-        rawHtml: expiredMessage,
+        rawHtml,
       }));
-    } else if (alertId !== null) {
+    } else if (!rawHtml && alertId !== null) {
       remove(alertId);
       setAlertId(null);
     }
@@ -24,5 +24,5 @@ export function useAccessExpirationAlert(courseId) {
         remove(alertId);
       }
     };
-  }, [course, expiredMessage]);
+  }, [alertId, courseId, rawHtml]);
 }
