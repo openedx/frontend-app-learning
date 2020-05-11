@@ -121,6 +121,7 @@ export async function getCourseBlocks(courseId) {
   return normalizeBlocks(courseId, data.blocks);
 }
 
+
 function normalizeSequenceMetadata(sequence) {
   return {
     sequence: {
@@ -151,4 +152,10 @@ export async function getSequenceMetadata(sequenceId) {
     .get(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceId}`, {});
 
   return normalizeSequenceMetadata(data);
+}
+
+export async function getResumeBlock(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`);
+  const { data } = await getAuthenticatedHttpClient().get(url.href, {});
+  return camelCaseObject(data);
 }
