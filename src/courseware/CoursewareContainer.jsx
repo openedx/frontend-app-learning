@@ -7,6 +7,7 @@ import { useRouteMatch, Redirect } from 'react-router';
 import {
   fetchCourse,
   fetchSequence,
+  getResumeBlock,
 } from '../data';
 import {
   checkBlockCompletion,
@@ -100,8 +101,14 @@ function useContentRedirect(courseStatus, sequenceStatus) {
   const firstSequenceId = useSelector(firstSequenceIdSelector);
   useEffect(() => {
     if (courseStatus === 'loaded' && !sequenceId) {
-      // This is a replace because we don't want this change saved in the browser's history.
-      history.replace(`/course/${courseId}/${firstSequenceId}`);
+      getResumeBlock(courseId).then((data) => {
+        // This is a replace because we don't want this change saved in the browser's history.
+        if (data.sectionId && data.unitId) {
+          history.replace(`/course/${courseId}/${data.sectionId}/${data.unitId}`);
+        } else {
+          history.replace(`/course/${courseId}/${firstSequenceId}`);
+        }
+      });
     }
   }, [courseStatus, sequenceId]);
 
