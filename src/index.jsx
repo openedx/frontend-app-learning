@@ -3,6 +3,7 @@ import 'regenerator-runtime/runtime';
 
 import {
   APP_INIT_ERROR, APP_READY, subscribe, initialize,
+  mergeConfig,
 } from '@edx/frontend-platform';
 import { AppProvider, ErrorPage } from '@edx/frontend-platform/react';
 import React from 'react';
@@ -51,6 +52,14 @@ subscribe(APP_INIT_ERROR, (error) => {
 });
 
 initialize({
+  handlers: {
+    config: () => {
+      mergeConfig({
+        INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
+        STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,
+      }, 'LearnerAppConfig');
+    },
+  },
   // TODO: Remove this once the course blocks api supports unauthenticated
   // access and we are prepared to support public courses in this app.
   requireAuthenticatedUser: true,
