@@ -60,6 +60,7 @@ function Course({
 
   if (courseStatus === 'loaded') {
     const {
+      canShowUpgradeSock,
       org, number, title, isStaff, tabs, verifiedMode,
     } = course;
     return (
@@ -107,7 +108,7 @@ function Course({
             nextSequenceHandler={nextSequenceHandler}
             previousSequenceHandler={previousSequenceHandler}
           />
-          {verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
+          {canShowUpgradeSock && verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
           <ContentTools course={course} />
         </div>
       </>

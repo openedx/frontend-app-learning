@@ -5,6 +5,7 @@ import { logError } from '@edx/frontend-platform/logging';
 
 function normalizeMetadata(metadata) {
   return {
+    canShowUpgradeSock: metadata.can_show_upgrade_sock,
     contentTypeGatingEnabled: metadata.content_type_gating_enabled,
     // TODO: TNL-7185: return course expired _date_, instead of _message_
     courseExpiredMessage: metadata.course_expired_message,
