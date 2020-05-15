@@ -72,6 +72,7 @@ function Course({
         />
         {isStaff && (
           <InstructorToolbar
+            courseId={courseId}
             unitId={unitId}
           />
         )}

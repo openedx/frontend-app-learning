@@ -39,11 +39,13 @@ function InstructorToolbar(props) {
 
 InstructorToolbar.propTypes = {
   activeUnitLmsWebUrl: PropTypes.string,
+  courseId: PropTypes.string,
   unitId: PropTypes.string,
 };
 
 InstructorToolbar.defaultProps = {
   activeUnitLmsWebUrl: undefined,
+  courseId: undefined,
   unitId: undefined,
 };
 
