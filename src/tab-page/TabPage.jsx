@@ -22,7 +22,7 @@ function TabPage({
       <>
         <Header />
         <PageLoading
-          srMessage={intl.formatMessage(messages['learn.loading'])}
+          srMessage={intl.formatMessage(messages.loading)}
         />
       </>
     );
@@ -39,7 +39,7 @@ function TabPage({
     <>
       <Header />
       <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
-        {intl.formatMessage(messages['learn.loading.failure'])}
+        {intl.formatMessage(messages.failure)}
       </p>
     </>
   );
