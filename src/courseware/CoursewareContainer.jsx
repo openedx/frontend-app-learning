@@ -204,6 +204,7 @@ export default function CoursewareContainer() {
     <TabPage
       activeTabSlug="courseware"
       courseId={courseId}
+      unitId={routeUnitId}
     >
       <Course
         courseId={courseId}
