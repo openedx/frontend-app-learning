@@ -1,17 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { getConfig } from '@edx/frontend-platform';
 import classNames from 'classnames';
 
 import messages from './messages';
 import Tabs from '../tabs/Tabs';
 
 function CourseTabsNavigation({
-  activeTabSlug, tabs, intl,
+  activeTabSlug, className, tabs, intl,
 }) {
   return (
-    <div className="course-tabs-navigation">
+    <div className={classNames('course-tabs-navigation', className)}>
       <div className="container-fluid">
         <Tabs
           className="nav-underline-tabs"
@@ -21,7 +20,7 @@ function CourseTabsNavigation({
             <a
               key={slug}
               className={classNames('nav-item flex-shrink-0 nav-link', { active: slug === activeTabSlug })}
-              href={`${getConfig().LMS_BASE_URL}${url}`}
+              href={url}
             >
               {title}
             </a>
@@ -34,6 +33,7 @@ function CourseTabsNavigation({
 
 CourseTabsNavigation.propTypes = {
   activeTabSlug: PropTypes.string,
+  className: PropTypes.string,
   tabs: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
     priority: PropTypes.number.isRequired,
@@ -45,6 +45,7 @@ CourseTabsNavigation.propTypes = {
 
 CourseTabsNavigation.defaultProps = {
   activeTabSlug: undefined,
+  className: null,
 };
 
 export default injectIntl(CourseTabsNavigation);
