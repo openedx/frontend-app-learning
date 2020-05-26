@@ -43,6 +43,18 @@ const slice = createSlice({
       state.sequenceId = payload.sequenceId;
       state.sequenceStatus = FAILED;
     },
+    fetchTabRequest: (state, { payload }) => {
+      state.courseId = payload.courseId;
+      state.courseStatus = LOADING;
+    },
+    fetchTabSuccess: (state, { payload }) => {
+      state.courseId = payload.courseId;
+      state.courseStatus = LOADED;
+    },
+    fetchTabFailure: (state, { payload }) => {
+      state.courseId = payload.courseId;
+      state.courseStatus = FAILED;
+    },
   },
 });
 
@@ -54,6 +66,9 @@ export const {
   fetchSequenceRequest,
   fetchSequenceSuccess,
   fetchSequenceFailure,
+  fetchTabRequest,
+  fetchTabSuccess,
+  fetchTabFailure,
 } = slice.actions;
 
 export const {

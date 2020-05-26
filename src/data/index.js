@@ -1,5 +1,6 @@
 export {
   fetchCourse,
+  fetchDatesTab,
   fetchSequence,
 } from './thunks';
 

@@ -21,9 +21,11 @@ import './assets/favicon.ico';
 import CourseHome from './course-home';
 import CoursewareContainer from './courseware';
 import CoursewareRedirect from './CoursewareRedirect';
+import DatesTab from './dates-tab';
 import { TabContainer } from './tab-page';
 
 import store from './store';
+import { fetchCourse, fetchDatesTab } from './data';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
@@ -32,8 +34,13 @@ subscribe(APP_READY, () => {
         <Switch>
           <Route path="/redirect" component={CoursewareRedirect} />
           <Route path="/course/:courseId/home">
-            <TabContainer tab="courseware">
+            <TabContainer tab="courseware" fetch={fetchCourse}>
               <CourseHome />
+            </TabContainer>
+          </Route>
+          <Route path="/course/:courseId/dates">
+            <TabContainer tab="dates" fetch={fetchDatesTab}>
+              <DatesTab />
             </TabContainer>
           </Route>
           <Route
