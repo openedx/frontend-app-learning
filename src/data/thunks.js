@@ -34,7 +34,7 @@ export function fetchCourse(courseId) {
           model: courseMetadataResult.value,
         }));
         dispatch(addModel({
-          modelType: 'pageInfo',
+          modelType: 'courseInfo',
           model: {
             id: courseMetadataResult.value.id,
             isStaff: courseMetadataResult.value.isStaff,
@@ -103,29 +103,46 @@ export function fetchCourse(courseId) {
 export function fetchTab(courseId, tab, version) {
   return async (dispatch) => {
     dispatch(fetchTabRequest({ courseId }));
-    getTabData(courseId, tab, version).then((result) => {
-      dispatch(addModel({
-        modelType: 'pageInfo',
-        model: {
-          id: result.id,
-          isStaff: result.isStaff,
-          number: result.number,
-          org: result.org,
-          tabs: result.tabs,
-          title: result.title,
-        },
-      }));
+    Promise.allSettled([
+      getCourseMetadata(courseId),
+      getTabData(courseId, tab, version),
+    ]).then(([courseMetadataResult, tabDataResult]) => {
+      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
+      const fetchedTabData = tabDataResult.status === 'fulfilled';
 
-      dispatch(addModel({
-        modelType: tab,
-        model: result,
-      }));
+      if (fetchedMetadata) {
+        dispatch(addModel({
+          modelType: 'courseInfo',
+          model: {
+            id: courseMetadataResult.value.id,
+            isStaff: courseMetadataResult.value.isStaff,
+            number: courseMetadataResult.value.number,
+            org: courseMetadataResult.value.org,
+            tabs: courseMetadataResult.value.tabs,
+            title: courseMetadataResult.value.title,
+          },
+        }));
+      } else {
+        logError(courseMetadataResult.reason);
+      }
 
-      // TODO: do we need access restrictions for tabs, like we have for courseware?
-      dispatch(fetchTabSuccess({ courseId }));
-    }, (reason) => {
-      logError(reason);
-      dispatch(fetchTabFailure({ courseId }));
+      if (fetchedTabData) {
+        dispatch(addModel({
+          modelType: tab,
+          model: {
+            id: courseId,
+            ...tabDataResult.value,
+          },
+        }));
+      } else {
+        logError(tabDataResult.reason);
+      }
+
+      if (fetchedMetadata && fetchedTabData) {
+        dispatch(fetchTabSuccess({ courseId }));
+      } else {
+        dispatch(fetchTabFailure({ courseId }));
+      }
     });
   };
 }
