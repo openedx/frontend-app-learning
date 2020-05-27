@@ -5,11 +5,12 @@ import { Button } from '@edx/paragon';
 import { AlertList } from '../user-messages';
 
 import CourseDates from './CourseDates';
+import CourseTools from './CourseTools';
 import Section from './Section';
 import { useModel } from '../model-store';
 
 // Note that we import from the component files themselves in the enrollment-alert package.
-// This is because Reacy.lazy() requires that we import() from a file with a Component as it's
+// This is because React.lazy() requires that we import() from a file with a Component as its
 // default export.
 // See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
 const { EnrollmentAlert, StaffEnrollmentAlert } = React.lazy(() => import('../enrollment-alert'));
@@ -57,6 +58,9 @@ export default function CourseHome() {
           ))}
         </div>
         <div className="col col-4">
+          <CourseTools
+            courseId={courseId}
+          />
           <CourseDates
             start={start}
             end={end}

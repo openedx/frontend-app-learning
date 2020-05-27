@@ -4,6 +4,7 @@ import {
   getCourseBlocks,
   getSequenceMetadata,
   getTabData,
+  getOutlineTabData,
 } from './api';
 import {
   addModelsMap, updateModel, updateModels, updateModelsMap, addModel,
@@ -27,7 +28,8 @@ export function fetchCourse(courseId) {
     Promise.allSettled([
       getCourseMetadata(courseId),
       getCourseBlocks(courseId),
-    ]).then(([courseMetadataResult, courseBlocksResult]) => {
+      getOutlineTabData(courseId),
+    ]).then(([courseMetadataResult, courseBlocksResult, outlineTabResult]) => {
       if (courseMetadataResult.status === 'fulfilled') {
         dispatch(addModel({
           modelType: 'courses',
@@ -70,8 +72,16 @@ export function fetchCourse(courseId) {
         }));
       }
 
+      if (outlineTabResult.status === 'fulfilled') {
+        dispatch(addModel({
+          modelType: 'outline',
+          model: outlineTabResult.value,
+        }));
+      }
+
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
       const fetchedBlocks = courseBlocksResult.status === 'fulfilled';
+      const fetchedOutline = outlineTabResult.status === 'fulfilled';
 
       // Log errors for each request if needed. Course block failures may occur
       // even if the course metadata request is successful
@@ -81,15 +91,18 @@ export function fetchCourse(courseId) {
       if (!fetchedMetadata) {
         logError(courseMetadataResult.reason);
       }
+      if (!fetchedOutline) {
+        logError(outlineTabResult.reason);
+      }
 
       if (fetchedMetadata) {
-        if (courseMetadataResult.value.canLoadCourseware.hasAccess && fetchedBlocks) {
+        if (courseMetadataResult.value.canLoadCourseware.hasAccess && fetchedBlocks && fetchedOutline) {
           // User has access
           dispatch(fetchCourseSuccess({ courseId }));
           return;
         }
         // User either doesn't have access or only has partial access
-        // (can't access course blocks)
+        // (can't access course blocks or course outline)
         dispatch(fetchCourseDenied({ courseId }));
         return;
       }
