@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { useContext, useState, useEffect } from 'react';
-import { UserMessagesContext } from '../user-messages';
-import { useModel } from '../model-store';
+import { UserMessagesContext } from '../../user-messages';
+import { useModel } from '../../model-store';
 
 export function useAccessExpirationAlert(courseId) {
   const course = useModel('courses', courseId);

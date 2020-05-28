@@ -3,7 +3,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 
 import { Header } from '../course-header';
-import { useLogistrationAlert } from '../logistration-alert';
+import { useLogistrationAlert } from '../alerts/logistration-alert';
 import PageLoading from '../PageLoading';
 
 import messages from './messages';

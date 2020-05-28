@@ -12,8 +12,8 @@ import { useModel } from '../model-store';
 // This is because Reacy.lazy() requires that we import() from a file with a Component as it's
 // default export.
 // See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
-const { EnrollmentAlert, StaffEnrollmentAlert } = React.lazy(() => import('../enrollment-alert'));
-const LogistrationAlert = React.lazy(() => import('../logistration-alert'));
+const { EnrollmentAlert, StaffEnrollmentAlert } = React.lazy(() => import('../alerts/enrollment-alert'));
+const LogistrationAlert = React.lazy(() => import('../alerts/logistration-alert'));
 
 export default function CourseHome() {
   const {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Header, CourseTabsNavigation } from '../course-header';
 import { useModel } from '../model-store';
-import { useEnrollmentAlert } from '../enrollment-alert';
+import { useEnrollmentAlert } from '../alerts/enrollment-alert';
 import InstructorToolbar from '../courseware/course/InstructorToolbar';
 
 function LoadedTabPage({
