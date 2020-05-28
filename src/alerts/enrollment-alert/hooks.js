@@ -1,35 +1,21 @@
 /* eslint-disable import/prefer-default-export */
 import {
-  useContext, useState, useEffect, useCallback,
+  useContext, useState, useCallback,
 } from 'react';
-import { UserMessagesContext, ALERT_TYPES } from '../../user-messages';
+import { UserMessagesContext, ALERT_TYPES, useAlert } from '../../user-messages';
 import { useModel } from '../../model-store';
 import { postCourseEnrollment } from './data/api';
 
+
 export function useEnrollmentAlert(courseId) {
   const course = useModel('courses', courseId);
-  const { add, remove } = useContext(UserMessagesContext);
-  const [alertId, setAlertId] = useState(null);
-  const isEnrolled = course && course.isEnrolled;
-  useEffect(() => {
-    if (course && course.isEnrolled !== undefined) {
-      if (!course.isEnrolled && alertId === null) {
-        const code = course.isStaff ? 'clientStaffEnrollmentAlert' : 'clientEnrollmentAlert';
-        setAlertId(add({
-          code,
-          topic: 'course',
-        }));
-      } else if (course.isEnrolled && alertId !== null) {
-        remove(alertId);
-        setAlertId(null);
-      }
-    }
-    return () => {
-      if (alertId !== null) {
-        remove(alertId);
-      }
-    };
-  }, [course, isEnrolled]);
+  const code = course.isStaff ? 'clientStaffEnrollmentAlert' : 'clientEnrollmentAlert';
+  const isVisible = course && course.isEnrolled !== undefined && !course.isEnrolled;
+
+  useAlert(isVisible, {
+    code,
+    topic: 'course',
+  });
 }
 
 export function useEnrollClickHandler(courseId, successText) {

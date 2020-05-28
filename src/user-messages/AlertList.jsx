@@ -28,7 +28,7 @@ export default function AlertList({
               type={message.type}
               dismissible={message.dismissible}
               onDismiss={() => remove(message.id)}
-              rawHtml={message.rawHtml}
+              payload={message.payload}
               {...customProps}
             >
               {message.text}
