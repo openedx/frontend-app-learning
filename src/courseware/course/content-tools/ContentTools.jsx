@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Calculator from './calculator/Calculator';
-import NotesVisibility from './notes/NotesVisibility';
-import './tools.scss';
+import Calculator from './calculator';
+import NotesVisibility from './notes-visibility';
+import './contentTools.scss';
 
 export default function ContentTools({
   course,

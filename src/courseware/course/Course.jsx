@@ -8,8 +8,8 @@ import { useOfferAlert } from '../../offer-alert';
 import Sequence from './sequence';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-import CourseSock from './course-sock/CourseSock';
-import ContentTools from './tools/ContentTools';
+import CourseSock from './course-sock';
+import ContentTools from './content-tools';
 import { useModel } from '../../model-store';
 
 // Note that we import from the component files themselves in the enrollment-alert package.
