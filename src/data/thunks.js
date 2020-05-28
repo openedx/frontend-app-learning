@@ -33,17 +33,6 @@ export function fetchCourse(courseId) {
           modelType: 'courses',
           model: courseMetadataResult.value,
         }));
-        dispatch(addModel({
-          modelType: 'courseInfo',
-          model: {
-            id: courseMetadataResult.value.id,
-            isStaff: courseMetadataResult.value.isStaff,
-            number: courseMetadataResult.value.number,
-            org: courseMetadataResult.value.org,
-            tabs: courseMetadataResult.value.tabs,
-            title: courseMetadataResult.value.title,
-          },
-        }));
       }
 
       if (courseBlocksResult.status === 'fulfilled') {
@@ -112,15 +101,8 @@ export function fetchTab(courseId, tab, version) {
 
       if (fetchedMetadata) {
         dispatch(addModel({
-          modelType: 'courseInfo',
-          model: {
-            id: courseMetadataResult.value.id,
-            isStaff: courseMetadataResult.value.isStaff,
-            number: courseMetadataResult.value.number,
-            org: courseMetadataResult.value.org,
-            tabs: courseMetadataResult.value.tabs,
-            title: courseMetadataResult.value.title,
-          },
+          modelType: 'courses',
+          model: courseMetadataResult.value,
         }));
       } else {
         logError(courseMetadataResult.reason);
