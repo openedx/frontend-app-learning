@@ -8,7 +8,7 @@ import { useOfferAlert } from '../../offer-alert';
 import Sequence from './sequence';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-import CourseSock from './course-sock';
+import CourseSock from './course-sock/CourseSock';
 import ContentTools from './tools/ContentTools';
 import { useModel } from '../../model-store';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Calculator from './calculator';
+import Calculator from './calculator/Calculator';
 import NotesVisibility from './notes/NotesVisibility';
 import './tools.scss';
 
