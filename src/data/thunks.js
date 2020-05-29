@@ -40,6 +40,7 @@ export function fetchCourse(courseId) {
           courses, sections, sequences, units,
         } = courseBlocksResult.value;
 
+        // This updates the course with a sectionIds array from the blocks data.
         dispatch(updateModelsMap({
           modelType: 'courses',
           modelsMap: courses,
@@ -100,6 +101,11 @@ export function fetchTab(courseId, tab, version) {
       const fetchedTabData = tabDataResult.status === 'fulfilled';
 
       if (fetchedMetadata) {
+        /*
+         * NOTE: The "courses" models created by this thunk do not include an array of sectionIds.
+         * If that data is required for some use case, then fetchTab will need to call
+         * getCourseBlocks as well.  See fetchCourse above.
+         */
         dispatch(addModel({
           modelType: 'courses',
           model: courseMetadataResult.value,
