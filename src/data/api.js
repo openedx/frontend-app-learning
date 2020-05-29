@@ -3,14 +3,11 @@ import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { logError } from '@edx/frontend-platform/logging';
 
-function overrideTabUrls(id, tabs) {
-  // "LMS tab slug" to "MFE URL slug" for overridden tabs
-  const tabOverrides = {};
+function normalizeTabUrls(id, tabs) {
+  // If api doesn't return the mfe base url, change tab url to point back to LMS
   return tabs.map((tab) => {
-    let url;
-    if (tabOverrides[tab.slug]) {
-      url = `/course/${id}/${tabOverrides[tab.slug]}`;
-    } else {
+    let { url } = tab;
+    if (url[0] === '/') {
       url = `${getConfig().LMS_BASE_URL}${tab.url}`;
     }
     return { ...tab, url };
@@ -37,7 +34,7 @@ function normalizeMetadata(metadata) {
     canLoadCourseware: camelCaseObject(metadata.can_load_courseware),
     isStaff: metadata.is_staff,
     verifiedMode: camelCaseObject(metadata.verified_mode),
-    tabs: overrideTabUrls(metadata.id, camelCaseObject(metadata.tabs)),
+    tabs: normalizeTabUrls(metadata.id, camelCaseObject(metadata.tabs)),
     showCalculator: metadata.show_calculator,
     notes: camelCaseObject(metadata.notes),
   };
@@ -51,8 +48,19 @@ export async function getCourseMetadata(courseId) {
 
 export async function getTabData(courseId, tab, version) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/${version}/${tab}/${courseId}`;
-  const { data } = await getAuthenticatedHttpClient().get(url);
-  return camelCaseObject(data);
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(url);
+    return camelCaseObject(data);
+  } catch (error) {
+    const { httpErrorStatus } = error && error.customAttributes;
+    if (httpErrorStatus === 404) {
+      return window.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`);
+    }
+    // async functions expect return values. to satisfy that requirement
+    // we return true here which in turn continues with the normal flow of displaying
+    // the "unexpected error try again" screen to the user.
+    return true;
+  }
 }
 
 function normalizeBlocks(courseId, blocks) {
