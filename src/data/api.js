@@ -172,6 +172,7 @@ function normalizeSequenceMetadata(sequence) {
       complete: unit.complete,
       title: unit.page_title,
       contentType: unit.type,
+      icon: unit.icon,
     })),
   };
 }

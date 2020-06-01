@@ -11,7 +11,7 @@ import BookmarkFilledIcon from '../../bookmark/BookmarkFilledIcon';
 function UnitButton({
   onClick,
   title,
-  contentType,
+  icon,
   isActive,
   bookmarked,
   complete,
@@ -33,7 +33,7 @@ function UnitButton({
       onClick={handleClick}
       title={title}
     >
-      <UnitIcon type={contentType} />
+      <UnitIcon type={icon} />
       {showTitle && <span className="unit-title">{title}</span>}
       {showCompletion && complete ? <CompleteIcon size="sm" className="text-success ml-2" /> : null}
       {bookmarked ? (
@@ -50,7 +50,7 @@ UnitButton.propTypes = {
   bookmarked: PropTypes.bool,
   className: PropTypes.string,
   complete: PropTypes.bool,
-  contentType: PropTypes.string.isRequired,
+  icon: PropTypes.string.isRequired,
   isActive: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
   showCompletion: PropTypes.bool,
