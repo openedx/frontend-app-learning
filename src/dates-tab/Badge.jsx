@@ -6,7 +6,7 @@ import './Badge.scss';
 
 export default function Badge({ children, className }) {
   return (
-    <span className={classNames('dates-badge badge align-bottom font-italic ml-2 px-2', className)}>
+    <span className={classNames('dates-badge badge align-text-bottom font-italic ml-2 px-2', className)}>
       {children}
     </span>
   );

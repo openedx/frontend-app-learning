@@ -20,13 +20,13 @@ export default function Timeline() {
   const now = new Date();
   let foundNextDue = false;
   let foundToday = false;
-  courseDateBlocks.forEach(dateInfo => {
+  courseDateBlocks.forEach(courseDateBlock => {
+    const dateInfo = { ...courseDateBlock };
     const parsedDate = new Date(dateInfo.date);
 
-    let hasDueNextAssignment = false;
     if (!foundNextDue && parsedDate >= now && isLearnerAssignment(dateInfo) && !dateInfo.complete) {
       foundNextDue = true;
-      hasDueNextAssignment = true;
+      dateInfo.dueNext = true;
     }
 
     if (!foundToday) {
@@ -37,7 +37,6 @@ export default function Timeline() {
         foundToday = true;
         groupedDates.push({
           date: now,
-          hasDueNextAssignment: false,
           items: [],
         });
       }
@@ -47,14 +46,10 @@ export default function Timeline() {
       // Add new grouped date
       groupedDates.push({
         date: parsedDate,
-        hasDueNextAssignment,
         items: [dateInfo],
         first: groupedDates.length === 0,
       });
     } else {
-      if (hasDueNextAssignment) {
-        groupedDates[groupedDates.length - 1].hasNextAssigment = true;
-      }
       groupedDates[groupedDates.length - 1].items.push(dateInfo);
     }
   });
