@@ -63,6 +63,17 @@ export async function getTabData(courseId, tab, version) {
   }
 }
 
+function normalizeOutlineTabData(courseId, courseToolData) {
+  const courseTools = camelCaseObject(courseToolData);
+  return { id: courseId, courseTools };
+}
+
+export async function getOutlineTabData(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
+  const { data } = await getAuthenticatedHttpClient().get(url, {});
+  return normalizeOutlineTabData(courseId, data.course_tools);
+}
+
 function normalizeBlocks(courseId, blocks) {
   const models = {
     courses: {},
