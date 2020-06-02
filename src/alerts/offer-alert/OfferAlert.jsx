@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Alert } from '../user-messages';
+import { Alert } from '../../user-messages';
 
-function OfferAlert(props) {
+function OfferAlert({ payload }) {
   const {
     rawHtml,
-  } = props;
+  } = payload;
   return rawHtml && (
     <Alert type="info">
       <div dangerouslySetInnerHTML={{ __html: rawHtml }} />
@@ -15,7 +15,9 @@ function OfferAlert(props) {
 }
 
 OfferAlert.propTypes = {
-  rawHtml: PropTypes.string.isRequired,
+  payload: PropTypes.shape({
+    rawHtml: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default OfferAlert;

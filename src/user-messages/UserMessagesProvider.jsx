@@ -82,11 +82,11 @@ export default function UserMessagesProvider({ children }) {
 
   function add(message) {
     const {
-      code, dismissible, text, type, topic, ...others
+      code, dismissible, text, type, topic, payload, ...others
     } = message;
     const id = refId.current;
     setMessages(currentMessages => [...currentMessages, {
-      code, dismissible, text, type, topic, ...others, id,
+      code, dismissible, text, type, topic, payload, ...others, id,
     }]);
     refId.current += 1;
     setNextId(refId.current);

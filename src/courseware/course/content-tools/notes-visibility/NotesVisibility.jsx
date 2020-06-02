@@ -8,9 +8,12 @@ import {
 } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
-import toggleNotes from '../data/api';
 import messages from './messages';
 
+function toggleNotes() {
+  const iframe = document.getElementById('unit-iframe');
+  iframe.contentWindow.postMessage('tools.toggleNotes', getConfig().LMS_BASE_URL);
+}
 
 class NotesVisibility extends Component {
   constructor(props) {

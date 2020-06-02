@@ -35,17 +35,6 @@ export function fetchCourse(courseId) {
           modelType: 'courses',
           model: courseMetadataResult.value,
         }));
-        dispatch(addModel({
-          modelType: 'courseInfo',
-          model: {
-            id: courseMetadataResult.value.id,
-            isStaff: courseMetadataResult.value.isStaff,
-            number: courseMetadataResult.value.number,
-            org: courseMetadataResult.value.org,
-            tabs: courseMetadataResult.value.tabs,
-            title: courseMetadataResult.value.title,
-          },
-        }));
       }
 
       if (courseBlocksResult.status === 'fulfilled') {
@@ -53,6 +42,7 @@ export function fetchCourse(courseId) {
           courses, sections, sequences, units,
         } = courseBlocksResult.value;
 
+        // This updates the course with a sectionIds array from the blocks data.
         dispatch(updateModelsMap({
           modelType: 'courses',
           modelsMap: courses,
@@ -124,16 +114,14 @@ export function fetchTab(courseId, tab, version) {
       const fetchedTabData = tabDataResult.status === 'fulfilled';
 
       if (fetchedMetadata) {
+        /*
+         * NOTE: The "courses" models created by this thunk do not include an array of sectionIds.
+         * If that data is required for some use case, then fetchTab will need to call
+         * getCourseBlocks as well.  See fetchCourse above.
+         */
         dispatch(addModel({
-          modelType: 'courseInfo',
-          model: {
-            id: courseMetadataResult.value.id,
-            isStaff: courseMetadataResult.value.isStaff,
-            number: courseMetadataResult.value.number,
-            org: courseMetadataResult.value.org,
-            tabs: courseMetadataResult.value.tabs,
-            title: courseMetadataResult.value.title,
-          },
+          modelType: 'courses',
+          model: courseMetadataResult.value,
         }));
       } else {
         logError(courseMetadataResult.reason);

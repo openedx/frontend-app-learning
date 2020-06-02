@@ -2,25 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { AlertList } from '../../user-messages';
-import { useAccessExpirationAlert } from '../../access-expiration-alert';
-import { useOfferAlert } from '../../offer-alert';
+import { useAccessExpirationAlert } from '../../alerts/access-expiration-alert';
+import { useOfferAlert } from '../../alerts/offer-alert';
 
 import Sequence from './sequence';
 
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseSock from './course-sock';
-import ContentTools from './tools/ContentTools';
+import ContentTools from './content-tools';
 import { useModel } from '../../model-store';
 
 // Note that we import from the component files themselves in the enrollment-alert package.
 // This is because Reacy.lazy() requires that we import() from a file with a Component as it's
 // default export.
 // See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
-const AccessExpirationAlert = React.lazy(() => import('../../access-expiration-alert/AccessExpirationAlert'));
-const EnrollmentAlert = React.lazy(() => import('../../enrollment-alert/EnrollmentAlert'));
-const StaffEnrollmentAlert = React.lazy(() => import('../../enrollment-alert/StaffEnrollmentAlert'));
-const LogistrationAlert = React.lazy(() => import('../../logistration-alert'));
-const OfferAlert = React.lazy(() => import('../../offer-alert/OfferAlert'));
+const AccessExpirationAlert = React.lazy(() => import('../../alerts/access-expiration-alert/AccessExpirationAlert'));
+const EnrollmentAlert = React.lazy(() => import('../../alerts/enrollment-alert/EnrollmentAlert'));
+const StaffEnrollmentAlert = React.lazy(() => import('../../alerts/enrollment-alert/StaffEnrollmentAlert'));
+const LogistrationAlert = React.lazy(() => import('../../alerts/logistration-alert'));
+const OfferAlert = React.lazy(() => import('../../alerts/offer-alert/OfferAlert'));
 
 function Course({
   courseId,
