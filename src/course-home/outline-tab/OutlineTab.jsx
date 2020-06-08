@@ -2,21 +2,21 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '@edx/paragon';
 
-import { AlertList } from '../user-messages';
+import { AlertList } from '../../user-messages';
 
-import CourseDates from './CourseDates';
-import CourseTools from './CourseTools';
-import Section from './Section';
-import { useModel } from '../model-store';
+import CourseDates from '../CourseDates';
+import CourseTools from '../CourseTools';
+import Section from '../Section';
+import { useModel } from '../../model-store';
 
 // Note that we import from the component files themselves in the enrollment-alert package.
 // This is because React.lazy() requires that we import() from a file with a Component as its
 // default export.
 // See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
-const { EnrollmentAlert, StaffEnrollmentAlert } = React.lazy(() => import('../alerts/enrollment-alert'));
-const LogistrationAlert = React.lazy(() => import('../alerts/logistration-alert'));
+const { EnrollmentAlert, StaffEnrollmentAlert } = React.lazy(() => import('../../alerts/enrollment-alert'));
+const LogistrationAlert = React.lazy(() => import('../../alerts/logistration-alert'));
 
-export default function CourseHome() {
+export default function OutlineTab() {
   const {
     courseId,
   } = useSelector(state => state.courseware);
@@ -29,8 +29,17 @@ export default function CourseHome() {
     enrollmentEnd,
     enrollmentMode,
     isEnrolled,
-    sectionIds,
   } = useModel('courses', courseId);
+
+  const {
+    courseBlocks: {
+      courses,
+      sections,
+    },
+  } = useModel('outline', courseId);
+
+  const rootCourseId = Object.keys(courses)[0];
+  const { sectionIds } = courses[rootCourseId];
 
   return (
     <>
@@ -52,8 +61,9 @@ export default function CourseHome() {
           {sectionIds.map((sectionId) => (
             <Section
               key={sectionId}
-              id={sectionId}
               courseId={courseId}
+              title={sections[sectionId].title}
+              sequenceIds={sections[sectionId].sequenceIds}
             />
           ))}
         </div>
