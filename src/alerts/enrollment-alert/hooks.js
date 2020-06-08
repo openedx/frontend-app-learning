@@ -8,7 +8,7 @@ import { postCourseEnrollment } from './data/api';
 
 
 export function useEnrollmentAlert(courseId) {
-  const course = useModel('courses', courseId);
+  const course = useModel('courseHomeMetadata', courseId);
   const code = course.isStaff ? 'clientStaffEnrollmentAlert' : 'clientEnrollmentAlert';
   const isVisible = course && course.isEnrolled !== undefined && !course.isEnrolled;
 

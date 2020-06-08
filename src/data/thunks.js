@@ -5,6 +5,8 @@ import {
   getSequenceMetadata,
   getDatesTabData,
   getOutlineTabData,
+  getCourseHomeCourseMetadata,
+  updateCourseDeadlines,
 } from './api';
 import {
   addModelsMap, updateModel, updateModels, updateModelsMap, addModel,
@@ -95,24 +97,27 @@ export function fetchTab(courseId, tab, version, getTabData) {
   return async (dispatch) => {
     dispatch(fetchTabRequest({ courseId }));
     Promise.allSettled([
-      getCourseMetadata(courseId),
+      getCourseHomeCourseMetadata(courseId),
       getTabData(courseId, version),
-    ]).then(([courseMetadataResult, tabDataResult]) => {
-      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
+    ]).then(([courseHomeCourseMetadataResult, tabDataResult]) => {
+      const fetchedCourseHomeMetaData = courseHomeCourseMetadataResult.status === 'fulfilled';
       const fetchedTabData = tabDataResult.status === 'fulfilled';
 
-      if (fetchedMetadata) {
+      if (fetchedCourseHomeMetaData) {
         /*
          * NOTE: The "courses" models created by this thunk do not include an array of sectionIds.
          * If that data is required for some use case, then fetchTab will need to call
          * getCourseBlocks as well.  See fetchCourse above.
          */
         dispatch(addModel({
-          modelType: 'courses',
-          model: courseMetadataResult.value,
+          modelType: 'courseHomeMetadata',
+          model: {
+            id: courseId,
+            ...courseHomeCourseMetadataResult.value,
+          },
         }));
       } else {
-        logError(courseMetadataResult.reason);
+        logError(courseHomeCourseMetadataResult.reason);
       }
 
       if (fetchedTabData) {
@@ -127,7 +132,7 @@ export function fetchTab(courseId, tab, version, getTabData) {
         logError(tabDataResult.reason);
       }
 
-      if (fetchedMetadata && fetchedTabData) {
+      if (fetchedCourseHomeMetaData && fetchedTabData) {
         dispatch(fetchTabSuccess({ courseId }));
       } else {
         dispatch(fetchTabFailure({ courseId }));
@@ -162,5 +167,15 @@ export function fetchSequence(sequenceId) {
       logError(error);
       dispatch(fetchSequenceFailure({ sequenceId }));
     }
+  };
+}
+
+export function resetDeadlines(courseId, tab, getTabData) {
+  return async (dispatch) => {
+    updateCourseDeadlines(courseId).then(() => {
+      if (tab === 'dates') {
+        dispatch(getTabData(courseId));
+      }
+    });
   };
 }
