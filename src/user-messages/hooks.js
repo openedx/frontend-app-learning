@@ -22,5 +22,5 @@ export function useAlert(isVisible, {
         remove(alertId);
       }
     };
-  }, [alertId, isVisible, code, text, topic, type, dismissible, payload]);
+  }, [isVisible, code, text, topic, type, dismissible, payload]);
 }
