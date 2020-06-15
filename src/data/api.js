@@ -185,8 +185,10 @@ export async function getOutlineTabData(courseId, version) {
   } = tabData;
   const courseBlocks = normalizeBlocks(courseId, data.course_blocks.blocks);
   const courseTools = camelCaseObject(data.course_tools);
-
-  return { courseTools, courseBlocks };
+  const datesWidget = camelCaseObject(data.dates_widget);
+  return {
+    courseTools, courseBlocks, datesWidget,
+  };
 }
 
 function normalizeSequenceMetadata(sequence) {
