@@ -1,1 +1,1 @@
-export { default } from './CourseHome';
+export { default } from './outline-tab/OutlineTab';

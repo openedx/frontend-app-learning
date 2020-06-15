@@ -46,8 +46,8 @@ export async function getCourseMetadata(courseId) {
   return normalizeMetadata(data);
 }
 
-export async function getTabData(courseId, tab, version) {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/${version}/${tab}/${courseId}`;
+export async function getDatesTabData(courseId, version) {
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/${version}/dates/${courseId}`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return camelCaseObject(data);
@@ -61,17 +61,6 @@ export async function getTabData(courseId, tab, version) {
     // the "unexpected error try again" screen to the user.
     return true;
   }
-}
-
-function normalizeOutlineTabData(courseId, courseToolData) {
-  const courseTools = camelCaseObject(courseToolData);
-  return { id: courseId, courseTools };
-}
-
-export async function getOutlineTabData(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
-  const { data } = await getAuthenticatedHttpClient().get(url, {});
-  return normalizeOutlineTabData(courseId, data.course_tools);
 }
 
 function normalizeBlocks(courseId, blocks) {
@@ -161,6 +150,26 @@ export async function getCourseBlocks(courseId) {
   return normalizeBlocks(courseId, data.blocks);
 }
 
+export async function getOutlineTabData(courseId, version) {
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/${version}/outline/${courseId}`;
+  let { tabData } = {};
+  try {
+    tabData = await getAuthenticatedHttpClient().get(url);
+  } catch (error) {
+    const { httpErrorStatus } = error && error.customAttributes;
+    if (httpErrorStatus === 404) {
+      return window.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/home`);
+    }
+  }
+
+  const {
+    data,
+  } = tabData;
+  const courseBlocks = normalizeBlocks(courseId, data.course_blocks.blocks);
+  const courseTools = camelCaseObject(data.course_tools);
+
+  return { courseTools, courseBlocks };
+}
 
 function normalizeSequenceMetadata(sequence) {
   return {

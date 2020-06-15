@@ -6,9 +6,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SequenceLink from './SequenceLink';
 import { useModel } from '../model-store';
 
-export default function Section({ id, courseId }) {
-  const section = useModel('sections', id);
-  const { title, sequenceIds } = section;
+export default function Section({ courseId, title, sequenceIds }) {
+  const {
+    courseBlocks: {
+      sequences,
+    },
+  } = useModel('outline', courseId);
+
   return (
     <Collapsible.Advanced className="collapsible-card mb-2">
       <Collapsible.Trigger className="collapsible-trigger d-flex align-items-start">
@@ -31,6 +35,7 @@ export default function Section({ id, courseId }) {
             key={sequenceId}
             id={sequenceId}
             courseId={courseId}
+            title={sequences[sequenceId].title}
           />
         ))}
       </Collapsible.Body>
@@ -39,6 +44,7 @@ export default function Section({ id, courseId }) {
 }
 
 Section.propTypes = {
-  id: PropTypes.string.isRequired,
   courseId: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  sequenceIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

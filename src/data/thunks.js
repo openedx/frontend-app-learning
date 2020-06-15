@@ -3,7 +3,7 @@ import {
   getCourseMetadata,
   getCourseBlocks,
   getSequenceMetadata,
-  getTabData,
+  getDatesTabData,
   getOutlineTabData,
 } from './api';
 import {
@@ -28,8 +28,7 @@ export function fetchCourse(courseId) {
     Promise.allSettled([
       getCourseMetadata(courseId),
       getCourseBlocks(courseId),
-      getOutlineTabData(courseId),
-    ]).then(([courseMetadataResult, courseBlocksResult, outlineTabResult]) => {
+    ]).then(([courseMetadataResult, courseBlocksResult]) => {
       if (courseMetadataResult.status === 'fulfilled') {
         dispatch(addModel({
           modelType: 'courses',
@@ -62,16 +61,8 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      if (outlineTabResult.status === 'fulfilled') {
-        dispatch(addModel({
-          modelType: 'outline',
-          model: outlineTabResult.value,
-        }));
-      }
-
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
       const fetchedBlocks = courseBlocksResult.status === 'fulfilled';
-      const fetchedOutline = outlineTabResult.status === 'fulfilled';
 
       // Log errors for each request if needed. Course block failures may occur
       // even if the course metadata request is successful
@@ -81,18 +72,15 @@ export function fetchCourse(courseId) {
       if (!fetchedMetadata) {
         logError(courseMetadataResult.reason);
       }
-      if (!fetchedOutline) {
-        logError(outlineTabResult.reason);
-      }
 
       if (fetchedMetadata) {
-        if (courseMetadataResult.value.canLoadCourseware.hasAccess && fetchedBlocks && fetchedOutline) {
+        if (courseMetadataResult.value.canLoadCourseware.hasAccess && fetchedBlocks) {
           // User has access
           dispatch(fetchCourseSuccess({ courseId }));
           return;
         }
         // User either doesn't have access or only has partial access
-        // (can't access course blocks or course outline)
+        // (can't access course blocks)
         dispatch(fetchCourseDenied({ courseId }));
         return;
       }
@@ -103,12 +91,12 @@ export function fetchCourse(courseId) {
   };
 }
 
-export function fetchTab(courseId, tab, version) {
+export function fetchTab(courseId, tab, version, getTabData) {
   return async (dispatch) => {
     dispatch(fetchTabRequest({ courseId }));
     Promise.allSettled([
       getCourseMetadata(courseId),
-      getTabData(courseId, tab, version),
+      getTabData(courseId, version),
     ]).then(([courseMetadataResult, tabDataResult]) => {
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
       const fetchedTabData = tabDataResult.status === 'fulfilled';
@@ -149,7 +137,11 @@ export function fetchTab(courseId, tab, version) {
 }
 
 export function fetchDatesTab(courseId) {
-  return fetchTab(courseId, 'dates', 'v1');
+  return fetchTab(courseId, 'dates', 'v1', getDatesTabData);
+}
+
+export function fetchOutlineTab(courseId) {
+  return fetchTab(courseId, 'outline', 'v1', getOutlineTabData);
 }
 
 export function fetchSequence(sequenceId) {

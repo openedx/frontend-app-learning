@@ -1,10 +1,10 @@
 // Sample data helpful when developing, to see a variety of configurations.
 // This set of data is not realistic (mix of having access and not), but it
 // is intended to demonstrate many UI results.
-// To use, have getTabData in api.js return the result of this call instead:
+// To use, have getDatesTabData in api.js return the result of this call instead:
 /*
 import fakeDatesData from '../dates-tab/fakeData';
-export async function getTabData(courseId, tab, version) {
+export async function getDatesTabData(courseId, version) {
   if (tab === 'dates') { return camelCaseObject(fakeDatesData()); }
   ...
 }
