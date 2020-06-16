@@ -89,7 +89,7 @@ function useExamRedirect(sequenceId) {
   const sequence = useModel('sequences', sequenceId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   useEffect(() => {
-    if (sequenceStatus === 'loaded' && sequence.isTimeLimited) {
+    if (sequenceStatus === 'loaded' && sequence.isTimeLimited && sequence.lmsWebUrl !== undefined) {
       global.location.assign(sequence.lmsWebUrl);
     }
   }, [sequenceStatus, sequence]);
