@@ -29,7 +29,7 @@ export default function OutlineTab() {
     enrollmentEnd,
     enrollmentMode,
     isEnrolled,
-  } = useModel('courses', courseId);
+  } = useModel('courseHomeMetadata', courseId);
 
   const {
     courseBlocks: {
