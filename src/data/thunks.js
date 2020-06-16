@@ -115,6 +115,8 @@ export function fetchTab(courseId, tab, version, getTabData) {
           modelType: 'courses',
           model: courseMetadataResult.value,
         }));
+      } else {
+        logError(courseMetadataResult.reason);
       }
 
       if (fetchedCourseHomeCourseMetadata) {
