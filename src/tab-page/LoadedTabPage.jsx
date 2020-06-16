@@ -20,7 +20,7 @@ function LoadedTabPage({
     org,
     tabs,
     title,
-  } = useModel('courseHomeMetadata', courseId);
+  } = useModel('courses', courseId);
 
   return (
     <>

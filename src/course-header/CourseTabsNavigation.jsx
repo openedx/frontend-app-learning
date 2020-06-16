@@ -36,6 +36,7 @@ CourseTabsNavigation.propTypes = {
   className: PropTypes.string,
   tabs: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
+    priority: PropTypes.number.isRequired,
     slug: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
   })).isRequired,
