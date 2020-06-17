@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useModel } from '../model-store';
+import { useModel } from '../../model-store';
 
 import DatesBanner from './DatesBanner';
 import { fetchDatesTab, resetDeadlines } from '../data/thunks';
@@ -14,7 +14,7 @@ function DatesBannerContainer(props) {
 
   const {
     courseId,
-  } = useSelector(state => state.courseware);
+  } = useSelector(state => state.courseHome);
 
   const {
     datesBannerInfo,
@@ -29,7 +29,7 @@ function DatesBannerContainer(props) {
 
   const {
     isSelfPaced,
-  } = useModel('courseHomeMetadata', courseId);
+  } = useModel('courses', courseId);
 
   const dispatch = useDispatch();
   const upgradeToCompleteGraded = model === 'dates' && contentTypeGatingEnabled && !missedDeadlines;

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { FormattedDate, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-import { useModel } from '../model-store';
+import { useModel } from '../../model-store';
 
 import { getBadgeListAndColor } from './badgelist';
 import { isLearnerAssignment } from './utils';
@@ -14,7 +14,7 @@ function Day({
 }) {
   const {
     courseId,
-  } = useSelector(state => state.courseware);
+  } = useSelector(state => state.courseHome);
 
   const {
     userTimezone,

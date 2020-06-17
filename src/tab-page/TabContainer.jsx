@@ -23,12 +23,14 @@ export default function TabContainer(props) {
   // we don't want the application to adjust to it until it has actually loaded the new data.
   const {
     courseId,
-  } = useSelector(state => state.courseware);
+    courseStatus,
+  } = useSelector(state => state.courseHome);
 
   return (
     <TabPage
       activeTabSlug={tab}
       courseId={courseId}
+      courseStatus={courseStatus}
     >
       {children}
     </TabPage>

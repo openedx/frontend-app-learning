@@ -214,6 +214,7 @@ export default function CoursewareContainer() {
       activeTabSlug="courseware"
       courseId={courseId}
       unitId={routeUnitId}
+      courseStatus={courseStatus}
     >
       <Course
         courseId={courseId}

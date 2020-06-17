@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useModel } from '../../model-store';
-import DateSummary from './DateSummary';
+import { useModel } from '../../../model-store';
+import DateSummary from '../DateSummary';
 
 export default function CourseDates({ courseId }) {
   const {
