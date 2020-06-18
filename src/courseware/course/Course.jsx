@@ -37,8 +37,8 @@ function Course({
   const section = useModel('sections', sequence ? sequence.sectionId : null);
 
   const pageTitleBreadCrumbs = [
-    section,
     sequence,
+    section,
     course,
   ].filter(element => element != null).map(element => element.title);
 
