@@ -7,7 +7,6 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 
-import CourseLicense from '../CourseLicense';
 import PageLoading from '../../../PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../user-messages';
 import { useModel } from '../../../model-store';
@@ -154,9 +153,6 @@ function Sequence({
               />
             )}
           </div>
-        </div>
-        <div className="sequence-footer">
-          <CourseLicense />
         </div>
       </div>
     );
