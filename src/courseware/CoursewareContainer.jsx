@@ -19,6 +19,7 @@ import { TabPage } from '../tab-page';
 
 import Course from './course';
 import { sequenceIdsSelector, firstSequenceIdSelector } from './data/selectors';
+import { handleNextSectionCelebration } from './course/celebration';
 
 function useUnitNavigationHandler(courseId, sequenceId, unitId) {
   const dispatch = useDispatch();
@@ -52,6 +53,8 @@ function useNextSequence(sequenceId) {
 
 
 function useNextSequenceHandler(courseId, sequenceId) {
+  const course = useModel('courses', courseId);
+  const sequence = useModel('sequences', sequenceId);
   const nextSequence = useNextSequence(sequenceId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
@@ -63,6 +66,11 @@ function useNextSequenceHandler(courseId, sequenceId) {
       } else {
         // Some sequences have no units.  This will show a blank page with prev/next buttons.
         history.push(`/course/${courseId}/${nextSequence.id}`);
+      }
+
+      const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
+      if (celebrateFirstSection && sequence.sectionId !== nextSequence.sectionId) {
+        handleNextSectionCelebration(sequenceId, nextSequence.id);
       }
     }
   }, [courseStatus, sequenceStatus, sequenceId]);

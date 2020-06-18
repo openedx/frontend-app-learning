@@ -37,6 +37,8 @@ function normalizeMetadata(metadata) {
     tabs: normalizeTabUrls(metadata.id, camelCaseObject(metadata.tabs)),
     showCalculator: metadata.show_calculator,
     notes: camelCaseObject(metadata.notes),
+    marketingUrl: metadata.marketing_url,
+    celebrations: camelCaseObject(metadata.celebrations),
   };
 }
 
@@ -225,6 +227,14 @@ export async function getResumeBlock(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`);
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
   return camelCaseObject(data);
+}
+
+// Does not block on answer
+export function setFirstSectionCelebrationComplete(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/courseware/celebration/${courseId}`);
+  getAuthenticatedHttpClient().post(url.href, {
+    first_section: false,
+  });
 }
 
 export async function updateCourseDeadlines(courseId) {

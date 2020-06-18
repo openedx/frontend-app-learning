@@ -48,10 +48,12 @@
     "core-js": "^3.6.2",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
+    "react-break": "^1.3.2",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
+    "react-share": "^4.1.0",
     "redux": "^4.0.5",
     "regenerator-runtime": "^0.13.3"
   },
