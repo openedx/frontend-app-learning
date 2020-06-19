@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 
 import { getConfig } from '@edx/frontend-platform';
 
+import MasqueradeWidget from './masquerade-widget';
+
 function getInsightsUrl(courseId) {
   const urlBase = getConfig().INSIGHTS_BASE_URL;
   let urlFull;
@@ -44,7 +46,7 @@ function InstructorToolbar(props) {
     <div className="bg-primary text-light">
       <div className="container-fluid py-3 d-md-flex justify-content-end align-items-center">
         <div className="flex-grow-1">
-          &nbsp;
+          <MasqueradeWidget courseId={courseId} />
         </div>
         {urlLms && (
           <div className="flex-shrink-0">
