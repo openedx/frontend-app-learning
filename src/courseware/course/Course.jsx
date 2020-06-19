@@ -45,7 +45,7 @@ function Course({
   } = course;
 
   const celebrateFirstSection = celebrations && celebrations.firstSection;
-  const celebrationOpen = shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSection);
+  const celebrationOpen = shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection);
 
   return (
     <>
