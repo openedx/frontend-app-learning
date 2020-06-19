@@ -7,10 +7,11 @@ import { clearLocalStorage, getLocalStorage, setLocalStorage } from '../../../da
 const CELEBRATION_LOCAL_STORAGE_KEY = 'CelebrationModal.showOnSectionLoad';
 
 // Records clicks through the end of a section, so that we can know whether we should celebrate when we finish loading
-function handleNextSectionCelebration(sequenceId, nextSequenceId) {
+function handleNextSectionCelebration(sequenceId, nextSequenceId, nextUnitId) {
   setLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY, {
     prevSequenceId: sequenceId,
     nextSequenceId,
+    nextUnitId,
   });
 }
 
@@ -28,7 +29,7 @@ function recordFirstSectionCelebration(courseId) {
 
 // Looks at local storage to see whether we just came from the end of a section.
 // Note! This does have side effects (will clear some local storage and may start an api call).
-function shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSection) {
+function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection) {
   const celebrationIds = getLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY);
   if (!celebrationIds) {
     return false;
@@ -37,10 +38,12 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSectio
   const {
     prevSequenceId,
     nextSequenceId,
+    nextUnitId,
   } = celebrationIds;
-  const shouldCelebrate = sequenceId === nextSequenceId && celebrateFirstSection;
+  const onTargetUnit = sequenceId === nextSequenceId && (!nextUnitId || unitId === nextUnitId);
+  const shouldCelebrate = onTargetUnit && celebrateFirstSection;
 
-  if (sequenceId !== prevSequenceId && sequenceId !== nextSequenceId) {
+  if (sequenceId !== prevSequenceId && !onTargetUnit) {
     // Don't clear until we move off of current/prev sequence
     clearLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY);
   }

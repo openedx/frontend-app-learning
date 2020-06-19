@@ -60,8 +60,9 @@ function useNextSequenceHandler(courseId, sequenceId) {
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   return useCallback(() => {
     if (nextSequence !== null) {
+      let nextUnitId = null;
       if (nextSequence.unitIds.length > 0) {
-        const nextUnitId = nextSequence.unitIds[0];
+        [nextUnitId] = nextSequence.unitIds;
         history.push(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
       } else {
         // Some sequences have no units.  This will show a blank page with prev/next buttons.
@@ -70,7 +71,7 @@ function useNextSequenceHandler(courseId, sequenceId) {
 
       const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
       if (celebrateFirstSection && sequence.sectionId !== nextSequence.sectionId) {
-        handleNextSectionCelebration(sequenceId, nextSequence.id);
+        handleNextSectionCelebration(sequenceId, nextSequence.id, nextUnitId);
       }
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
