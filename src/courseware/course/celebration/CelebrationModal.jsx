@@ -10,8 +10,6 @@ import messages from './messages';
 import SocialIcons from './SocialIcons';
 import { recordFirstSectionCelebration } from './utils';
 
-import './CelebrationModal.scss';
-
 function CelebrationModal({
   courseId, intl, open, ...rest
 }) {
