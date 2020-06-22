@@ -62,7 +62,6 @@ function Unit({
   const course = useModel('courses', courseId);
   const {
     contentTypeGatingEnabled,
-    enrollmentMode,
   } = course;
 
   // Do not remove this hook.  See function description.
@@ -104,7 +103,7 @@ function Unit({
         isBookmarked={unit.bookmarked}
         isProcessing={unit.bookmarkedUpdateState === 'loading'}
       />
-      { contentTypeGatingEnabled && unit.graded && enrollmentMode === 'audit' && (
+      { contentTypeGatingEnabled && unit.graded && (
         <Suspense
           fallback={(
             <PageLoading

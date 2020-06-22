@@ -19,6 +19,7 @@ import { TabPage } from '../tab-page';
 
 import Course from './course';
 import { sequenceIdsSelector, firstSequenceIdSelector } from './data/selectors';
+import { handleNextSectionCelebration } from './course/celebration';
 
 function useUnitNavigationHandler(courseId, sequenceId, unitId) {
   const dispatch = useDispatch();
@@ -52,17 +53,25 @@ function useNextSequence(sequenceId) {
 
 
 function useNextSequenceHandler(courseId, sequenceId) {
+  const course = useModel('courses', courseId);
+  const sequence = useModel('sequences', sequenceId);
   const nextSequence = useNextSequence(sequenceId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   return useCallback(() => {
     if (nextSequence !== null) {
+      let nextUnitId = null;
       if (nextSequence.unitIds.length > 0) {
-        const nextUnitId = nextSequence.unitIds[0];
+        [nextUnitId] = nextSequence.unitIds;
         history.push(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
       } else {
         // Some sequences have no units.  This will show a blank page with prev/next buttons.
         history.push(`/course/${courseId}/${nextSequence.id}`);
+      }
+
+      const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
+      if (celebrateFirstSection && sequence.sectionId !== nextSequence.sectionId) {
+        handleNextSectionCelebration(sequenceId, nextSequence.id, nextUnitId);
       }
     }
   }, [courseStatus, sequenceStatus, sequenceId]);
@@ -89,7 +98,7 @@ function useExamRedirect(sequenceId) {
   const sequence = useModel('sequences', sequenceId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   useEffect(() => {
-    if (sequenceStatus === 'loaded' && sequence.isTimeLimited) {
+    if (sequenceStatus === 'loaded' && sequence.isTimeLimited && sequence.lmsWebUrl !== undefined) {
       global.location.assign(sequence.lmsWebUrl);
     }
   }, [sequenceStatus, sequence]);

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import UserMessagesContext from './UserMessagesContext';
+import { getLocalStorage, popLocalStorage, setLocalStorage } from '../data/localStorage';
 
 export const ALERT_TYPES = {
   ERROR: 'error',
@@ -10,50 +11,19 @@ export const ALERT_TYPES = {
   INFO: 'info',
 };
 
-// NOTE: This storage key is not namespaced.  That means that it's shared for the current fully
-// qualified domain.  Namespacing could be added by adding an optional prop to UserMessagesProvider
-// to set a namespace, but we'll cross that bridge when we need it.
 const FLASH_MESSAGES_LOCAL_STORAGE_KEY = 'UserMessagesProvider.flashMessages';
 
-function getFlashMessages() {
-  let flashMessages = [];
-  try {
-    if (global.localStorage) {
-      const rawItem = global.localStorage.getItem(FLASH_MESSAGES_LOCAL_STORAGE_KEY);
-      if (rawItem) {
-        // Only try to parse and set flashMessages from the raw item if it exists.
-        const parsed = JSON.parse(rawItem);
-        if (Array.isArray(parsed)) {
-          flashMessages = parsed;
-        }
-      }
-    }
-  } catch (e) {
-    // If this fails for some reason, just return the empty array.
-  }
-  return flashMessages;
-}
-
 function addFlashMessage(message) {
-  try {
-    if (global.localStorage) {
-      const flashMessages = getFlashMessages();
-      flashMessages.push(message);
-      global.localStorage.setItem(FLASH_MESSAGES_LOCAL_STORAGE_KEY, JSON.stringify(flashMessages));
-    }
-  } catch (e) {
-    // If this fails, just bail.
+  let flashMessages = getLocalStorage(FLASH_MESSAGES_LOCAL_STORAGE_KEY);
+  if (!flashMessages || !Array.isArray(flashMessages)) {
+    flashMessages = [];
   }
+  flashMessages.push(message);
+  setLocalStorage(FLASH_MESSAGES_LOCAL_STORAGE_KEY, flashMessages);
 }
 
-function clearFlashMessages() {
-  try {
-    if (global.localStorage) {
-      global.localStorage.removeItem(FLASH_MESSAGES_LOCAL_STORAGE_KEY);
-    }
-  } catch (e) {
-    // If this fails, just bail.
-  }
+function popFlashMessages() {
+  return popLocalStorage(FLASH_MESSAGES_LOCAL_STORAGE_KEY) || [];
 }
 
 export default function UserMessagesProvider({ children }) {
@@ -103,12 +73,11 @@ export default function UserMessagesProvider({ children }) {
   }
 
   useEffect(() => {
-    const flashMessages = getFlashMessages();
-    flashMessages.forEach(flashMessage => add(flashMessage));
     // We only allow flash messages to persist through one refresh, then we clear them out.
     // If we want persistent messages, then add a 'persist' key to the messages and handle that
     // as a separate local storage item.
-    clearFlashMessages();
+    const flashMessages = popFlashMessages();
+    flashMessages.forEach(flashMessage => add(flashMessage));
   }, []);
 
   const value = {

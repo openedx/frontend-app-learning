@@ -1,0 +1,35 @@
+@import '~@edx/paragon/scss/edx/theme.scss';
+
+.modal {
+  text-align: center;
+
+  .modal-header {
+    border-bottom: 0; // override default hr line
+    justify-content: center;
+
+    button {
+      // This lets us center the modal title at full width, without taking button width into account
+      position: absolute;
+      right: 1rem;
+    }
+
+    button::after {
+      content: "⨉";
+    }
+  }
+
+  .modal-body {
+    font-size: 1.2rem;
+  }
+
+  .modal-footer {
+    border-top: 0; // override default hr line
+    justify-content: center;
+
+    button {
+      @extend .btn-primary;
+      font-size: 1.2rem;
+      width: 50%;
+    }
+  }
+}

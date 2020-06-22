@@ -9,6 +9,7 @@ import { useOfferAlert } from '../../alerts/offer-alert';
 
 import Sequence from './sequence';
 
+import { CelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseSock from './course-sock';
 import ContentTools from './content-tools';
@@ -47,8 +48,12 @@ function Course({
 
   const {
     canShowUpgradeSock,
+    celebrations,
     verifiedMode,
   } = course;
+
+  const celebrateFirstSection = celebrations && celebrations.firstSection;
+  const celebrationOpen = shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection);
 
   return (
     <>
@@ -84,6 +89,12 @@ function Course({
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
       />
+      {celebrationOpen && (
+        <CelebrationModal
+          courseId={courseId}
+          open
+        />
+      )}
       {canShowUpgradeSock && verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
       <ContentTools course={course} />
     </>

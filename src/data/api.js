@@ -37,6 +37,20 @@ function normalizeMetadata(metadata) {
     tabs: normalizeTabUrls(metadata.id, camelCaseObject(metadata.tabs)),
     showCalculator: metadata.show_calculator,
     notes: camelCaseObject(metadata.notes),
+    marketingUrl: metadata.marketing_url,
+    celebrations: camelCaseObject(metadata.celebrations),
+  };
+}
+
+function normalizeCourseHomeCourseMetadata(metadata) {
+  const data = camelCaseObject(metadata);
+  return {
+    ...data,
+    tabs: data.tabs.map(tab => ({
+      slug: tab.tabId,
+      title: tab.title,
+      url: tab.url,
+    })),
   };
 }
 
@@ -44,6 +58,12 @@ export async function getCourseMetadata(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
   const { data } = await getAuthenticatedHttpClient().get(url);
   return normalizeMetadata(data);
+}
+
+export async function getCourseHomeCourseMetadata(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  const { data } = await getAuthenticatedHttpClient().get(url);
+  return normalizeCourseHomeCourseMetadata(data);
 }
 
 export async function getDatesTabData(courseId, version) {
@@ -207,4 +227,29 @@ export async function getResumeBlock(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`);
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
   return camelCaseObject(data);
+}
+
+export async function getMasqueradeOptions(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`);
+  const { data } = await getAuthenticatedHttpClient().get(url.href, {});
+  return camelCaseObject(data);
+}
+
+export async function postMasqueradeOptions(courseId, data) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`);
+  const { response } = await getAuthenticatedHttpClient().post(url.href, data);
+  return camelCaseObject(response);
+}
+
+// Does not block on answer
+export function setFirstSectionCelebrationComplete(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/courseware/celebration/${courseId}`);
+  getAuthenticatedHttpClient().post(url.href, {
+    first_section: false,
+  });
+}
+
+export async function updateCourseDeadlines(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
+  await getAuthenticatedHttpClient().post(url.href, { course_key: courseId });
 }

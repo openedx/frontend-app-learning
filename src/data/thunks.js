@@ -5,6 +5,8 @@ import {
   getSequenceMetadata,
   getDatesTabData,
   getOutlineTabData,
+  getCourseHomeCourseMetadata,
+  updateCourseDeadlines,
 } from './api';
 import {
   addModelsMap, updateModel, updateModels, updateModelsMap, addModel,
@@ -96,9 +98,11 @@ export function fetchTab(courseId, tab, version, getTabData) {
     dispatch(fetchTabRequest({ courseId }));
     Promise.allSettled([
       getCourseMetadata(courseId),
+      getCourseHomeCourseMetadata(courseId),
       getTabData(courseId, version),
-    ]).then(([courseMetadataResult, tabDataResult]) => {
+    ]).then(([courseMetadataResult, courseHomeCourseMetadataResult, tabDataResult]) => {
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
+      const fetchedCourseHomeCourseMetadata = courseHomeCourseMetadataResult.status === 'fulfilled';
       const fetchedTabData = tabDataResult.status === 'fulfilled';
 
       if (fetchedMetadata) {
@@ -115,6 +119,18 @@ export function fetchTab(courseId, tab, version, getTabData) {
         logError(courseMetadataResult.reason);
       }
 
+      if (fetchedCourseHomeCourseMetadata) {
+        dispatch(addModel({
+          modelType: 'courseHomeMetadata',
+          model: {
+            id: courseId,
+            ...courseHomeCourseMetadataResult.value,
+          },
+        }));
+      } else {
+        logError(courseHomeCourseMetadataResult.reason);
+      }
+
       if (fetchedTabData) {
         dispatch(addModel({
           modelType: tab,
@@ -127,7 +143,7 @@ export function fetchTab(courseId, tab, version, getTabData) {
         logError(tabDataResult.reason);
       }
 
-      if (fetchedMetadata && fetchedTabData) {
+      if (fetchedMetadata && fetchedCourseHomeCourseMetadata && fetchedTabData) {
         dispatch(fetchTabSuccess({ courseId }));
       } else {
         dispatch(fetchTabFailure({ courseId }));
@@ -162,5 +178,13 @@ export function fetchSequence(sequenceId) {
       logError(error);
       dispatch(fetchSequenceFailure({ sequenceId }));
     }
+  };
+}
+
+export function resetDeadlines(courseId, getTabData) {
+  return async (dispatch) => {
+    updateCourseDeadlines(courseId).then(() => {
+      dispatch(getTabData(courseId));
+    });
   };
 }
