@@ -60,11 +60,13 @@
   },
   "devDependencies": {
     "@edx/frontend-build": "^3.0.0",
+    "axios-mock-adapter": "^1.18.1",
     "codecov": "^3.6.1",
     "es-check": "^5.1.0",
     "glob": "^7.1.6",
     "husky": "^3.1.0",
     "jest": "^24.9.0",
-    "reactifex": "^1.1.1"
+    "reactifex": "^1.1.1",
+    "rosie": "^2.0.1"
   }
 }
