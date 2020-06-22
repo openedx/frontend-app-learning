@@ -66,7 +66,7 @@ function getBadgeListAndColor(date, intl, item, items) {
     },
     {
       message: messages.verifiedOnly,
-      shownForDay: items.every(x => !hasAccess(x)),
+      shownForDay: items.length && items.every(x => !hasAccess(x)),
       shownForItem: x => !hasAccess(x),
       icon: faLock,
       bg: 'bg-dark-500',
