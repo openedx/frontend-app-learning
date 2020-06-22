@@ -9,8 +9,6 @@ import { useModel } from '../model-store';
 import { getBadgeListAndColor } from './badgelist';
 import { isLearnerAssignment } from './utils';
 
-import './Day.scss';
-
 function Day({
   date, first, intl, items, last,
 }) {

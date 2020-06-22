@@ -10,7 +10,6 @@ import {
   faCalculator, faQuestionCircle, faTimesCircle, faEquals,
 } from '@fortawesome/free-solid-svg-icons';
 import messages from './messages';
-import './calculator.scss';
 
 class Calculator extends Component {
   constructor(props) {

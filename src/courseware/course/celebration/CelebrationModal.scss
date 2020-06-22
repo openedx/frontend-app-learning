@@ -1,5 +1,4 @@
-@import '~@edx/paragon/scss/edx/theme.scss';
-
+// Should be scoped better, but Modal doesn't seem to pass down classnames or ids
 .modal {
   text-align: center;
 
