@@ -4,9 +4,9 @@ import { Button } from '@edx/paragon';
 
 import { AlertList } from '../../user-messages';
 
-import CourseDates from '../CourseDates';
-import CourseTools from '../CourseTools';
-import Section from '../Section';
+import CourseDates from './CourseDates';
+import CourseTools from './CourseTools';
+import Section from './Section';
 import { useModel } from '../../model-store';
 
 // Note that we import from the component files themselves in the enrollment-alert package.
@@ -78,6 +78,7 @@ export default function OutlineTab() {
             enrollmentEnd={enrollmentEnd}
             enrollmentMode={enrollmentMode}
             isEnrolled={isEnrolled}
+            courseId={courseId}
           />
         </div>
       </div>

@@ -4,7 +4,7 @@ import { Collapsible } from '@edx/paragon';
 import { faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SequenceLink from './SequenceLink';
-import { useModel } from '../model-store';
+import { useModel } from '../../model-store';
 
 export default function Section({ courseId, title, sequenceIds }) {
   const {
