@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Helmet } from 'react-helmet';
+import { getConfig } from '@edx/frontend-platform';
 
 import { AlertList } from '../../user-messages';
 import { useAccessExpirationAlert } from '../../alerts/access-expiration-alert';
@@ -35,6 +37,12 @@ function Course({
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
 
+  const pageTitleBreadCrumbs = [
+    sequence,
+    section,
+    course,
+  ].filter(element => element != null).map(element => element.title);
+
   useOfferAlert(courseId);
   useAccessExpirationAlert(courseId);
 
@@ -49,6 +57,9 @@ function Course({
 
   return (
     <>
+      <Helmet>
+        <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
+      </Helmet>
       <AlertList
         className="my-3"
         topic="course"
