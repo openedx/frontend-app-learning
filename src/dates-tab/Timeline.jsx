@@ -53,6 +53,9 @@ export default function Timeline() {
       groupedDates[groupedDates.length - 1].items.push(dateInfo);
     }
   });
+  if (!foundToday) {
+    groupedDates.push({ date: now, items: [] });
+  }
   if (groupedDates.length) {
     groupedDates[groupedDates.length - 1].last = true;
   }
