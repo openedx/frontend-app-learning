@@ -1,6 +1,6 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
 
-import './Block.factory';
+import './block.factory';
 
 Factory.define('courseBlocks')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')

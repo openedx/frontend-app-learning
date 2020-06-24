@@ -254,3 +254,169 @@ Object {
   },
 }
 `;
+
+exports[`Test thunks Test fetchDatesTab Should fail to fetch if error occurs 1`] = `
+Object {
+  "courseware": Object {
+    "courseId": "courseId",
+    "courseStatus": "failed",
+    "sequenceId": null,
+    "sequenceStatus": "loading",
+  },
+  "models": Object {},
+}
+`;
+
+exports[`Test thunks Test fetchDatesTab Should fetch, normalize, and save metadata 1`] = `
+Object {
+  "courseware": Object {
+    "courseId": "course-v1:edX+DemoX+Demo_Course_3",
+    "courseStatus": "loaded",
+    "sequenceId": null,
+    "sequenceStatus": "loading",
+  },
+  "models": Object {
+    "courseHomeMetadata": Object {
+      "course-v1:edX+DemoX+Demo_Course_3": Object {
+        "courseId": "course-v1:edX+DemoX+Demo_Course_3",
+        "id": "course-v1:edX+DemoX+Demo_Course_3",
+        "isSelfPaced": false,
+        "isStaff": false,
+        "number": "DemoX",
+        "org": "edX",
+        "tabs": Array [
+          Object {
+            "slug": "courseware",
+            "title": "Course",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/course/",
+          },
+          Object {
+            "slug": "discussion",
+            "title": "Discussion",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/discussion/forum/",
+          },
+          Object {
+            "slug": "wiki",
+            "title": "Wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/course_wiki",
+          },
+          Object {
+            "slug": "progress",
+            "title": "Progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/progress",
+          },
+          Object {
+            "slug": "instructor",
+            "title": "Instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/instructor",
+          },
+        ],
+        "title": "Demonstration Course",
+      },
+    },
+    "courses": Object {
+      "course-v1:edX+DemoX+Demo_Course_3": Object {
+        "canLoadCourseware": Object {
+          "additionalContextUserMessage": null,
+          "developerMessage": null,
+          "errorCode": null,
+          "hasAccess": true,
+          "userFragment": null,
+          "userMessage": null,
+        },
+        "canShowUpgradeSock": false,
+        "celebrations": undefined,
+        "contentTypeGatingEnabled": false,
+        "courseExpiredMessage": null,
+        "end": null,
+        "enrollmentEnd": null,
+        "enrollmentMode": null,
+        "enrollmentStart": null,
+        "id": "course-v1:edX+DemoX+Demo_Course_3",
+        "isEnrolled": null,
+        "isStaff": false,
+        "marketingUrl": null,
+        "notes": Object {
+          "enabled": false,
+          "visible": true,
+        },
+        "number": "DemoX",
+        "offerHtml": null,
+        "org": "edX",
+        "showCalculator": false,
+        "start": "2013-02-05T05:00:00Z",
+        "tabs": Array [
+          Object {
+            "priority": 0,
+            "slug": "courseware",
+            "title": "Course",
+            "type": "courseware",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/course/",
+          },
+          Object {
+            "priority": 1,
+            "slug": "discussion",
+            "title": "Discussion",
+            "type": "discussion",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/discussion/forum/",
+          },
+          Object {
+            "priority": 2,
+            "slug": "wiki",
+            "title": "Wiki",
+            "type": "wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/course_wiki",
+          },
+          Object {
+            "priority": 3,
+            "slug": "progress",
+            "title": "Progress",
+            "type": "progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/progress",
+          },
+          Object {
+            "priority": 4,
+            "slug": "instructor",
+            "title": "Instructor",
+            "type": "instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/instructor",
+          },
+        ],
+        "title": "Demonstration Course",
+        "verifiedMode": Object {
+          "currency": "USD",
+          "currencySymbol": "$",
+          "price": 149,
+          "sku": "8CF08E5",
+          "upgradeUrl": "http://localhost:18130/basket/add/?sku=8CF08E5",
+        },
+      },
+    },
+    "dates": Object {
+      "course-v1:edX+DemoX+Demo_Course_3": Object {
+        "courseDateBlocks": Array [
+          Object {
+            "date": "2013-02-05T05:00:00Z",
+            "dateType": "course-start-date",
+            "description": "",
+            "learnerHasAccess": true,
+            "link": "",
+            "title": "Course Starts",
+          },
+        ],
+        "datesBannerInfo": Object {
+          "contentTypeGatingEnabled": false,
+          "missedDeadlines": false,
+          "missedGatedContent": false,
+        },
+        "id": "course-v1:edX+DemoX+Demo_Course_3",
+        "learnerIsFullAccess": true,
+        "missedDeadlines": false,
+        "missedGatedContent": false,
+        "userTimezone": null,
+        "verifiedUpgradeLink": "http://localhost:18130/basket/add/?sku=8CF08E5",
+      },
+    },
+  },
+}
+`;
