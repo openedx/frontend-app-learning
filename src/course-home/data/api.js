@@ -36,6 +36,21 @@ export async function getDatesTabData(courseId) {
   }
 }
 
+export async function getProgressTabData(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(url);
+    return camelCaseObject(data);
+  } catch (error) {
+    const { httpErrorStatus } = error && error.customAttributes;
+    if (httpErrorStatus === 404) {
+      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
+      return {};
+    }
+    throw error;
+  }
+}
+
 export async function getOutlineTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
   let { tabData } = {};
