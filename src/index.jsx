@@ -18,14 +18,14 @@ import { UserMessagesProvider } from './user-messages';
 
 import './index.scss';
 import './assets/favicon.ico';
-import OutlineTab from './course-home';
+import OutlineTab from './course-home/outline-tab';
 import CoursewareContainer from './courseware';
 import CoursewareRedirect from './CoursewareRedirect';
-import DatesTab from './dates-tab';
+import DatesTab from './course-home/dates-tab';
 import { TabContainer } from './tab-page';
 
 import store from './store';
-import { fetchDatesTab, fetchOutlineTab } from './data';
+import { fetchDatesTab, fetchOutlineTab } from './course-home/data';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
@@ -33,7 +33,7 @@ subscribe(APP_READY, () => {
       <UserMessagesProvider>
         <Switch>
           <Route path="/redirect" component={CoursewareRedirect} />
-          <Route path="/course/:courseId/outline">
+          <Route path="/course/:courseId/home">
             <TabContainer tab="outline" fetch={fetchOutlineTab}>
               <OutlineTab />
             </TabContainer>

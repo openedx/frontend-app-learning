@@ -3,10 +3,6 @@ import {
   getCourseMetadata,
   getCourseBlocks,
   getSequenceMetadata,
-  getDatesTabData,
-  getOutlineTabData,
-  getCourseHomeCourseMetadata,
-  updateCourseDeadlines,
 } from './api';
 import {
   addModelsMap, updateModel, updateModels, updateModelsMap, addModel,
@@ -19,9 +15,6 @@ import {
   fetchSequenceRequest,
   fetchSequenceSuccess,
   fetchSequenceFailure,
-  fetchTabRequest,
-  fetchTabSuccess,
-  fetchTabFailure,
 } from './slice';
 
 export function fetchCourse(courseId) {
@@ -93,73 +86,6 @@ export function fetchCourse(courseId) {
   };
 }
 
-export function fetchTab(courseId, tab, version, getTabData) {
-  return async (dispatch) => {
-    dispatch(fetchTabRequest({ courseId }));
-    Promise.allSettled([
-      getCourseMetadata(courseId),
-      getCourseHomeCourseMetadata(courseId),
-      getTabData(courseId, version),
-    ]).then(([courseMetadataResult, courseHomeCourseMetadataResult, tabDataResult]) => {
-      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
-      const fetchedCourseHomeCourseMetadata = courseHomeCourseMetadataResult.status === 'fulfilled';
-      const fetchedTabData = tabDataResult.status === 'fulfilled';
-
-      if (fetchedMetadata) {
-        /*
-         * NOTE: The "courses" models created by this thunk do not include an array of sectionIds.
-         * If that data is required for some use case, then fetchTab will need to call
-         * getCourseBlocks as well.  See fetchCourse above.
-         */
-        dispatch(addModel({
-          modelType: 'courses',
-          model: courseMetadataResult.value,
-        }));
-      } else {
-        logError(courseMetadataResult.reason);
-      }
-
-      if (fetchedCourseHomeCourseMetadata) {
-        dispatch(addModel({
-          modelType: 'courseHomeMetadata',
-          model: {
-            id: courseId,
-            ...courseHomeCourseMetadataResult.value,
-          },
-        }));
-      } else {
-        logError(courseHomeCourseMetadataResult.reason);
-      }
-
-      if (fetchedTabData) {
-        dispatch(addModel({
-          modelType: tab,
-          model: {
-            id: courseId,
-            ...tabDataResult.value,
-          },
-        }));
-      } else {
-        logError(tabDataResult.reason);
-      }
-
-      if (fetchedMetadata && fetchedCourseHomeCourseMetadata && fetchedTabData) {
-        dispatch(fetchTabSuccess({ courseId }));
-      } else {
-        dispatch(fetchTabFailure({ courseId }));
-      }
-    });
-  };
-}
-
-export function fetchDatesTab(courseId) {
-  return fetchTab(courseId, 'dates', 'v1', getDatesTabData);
-}
-
-export function fetchOutlineTab(courseId) {
-  return fetchTab(courseId, 'outline', 'v1', getOutlineTabData);
-}
-
 export function fetchSequence(sequenceId) {
   return async (dispatch) => {
     dispatch(fetchSequenceRequest({ sequenceId }));
@@ -178,13 +104,5 @@ export function fetchSequence(sequenceId) {
       logError(error);
       dispatch(fetchSequenceFailure({ sequenceId }));
     }
-  };
-}
-
-export function resetDeadlines(courseId, getTabData) {
-  return async (dispatch) => {
-    updateCourseDeadlines(courseId).then(() => {
-      dispatch(getTabData(courseId));
-    });
   };
 }

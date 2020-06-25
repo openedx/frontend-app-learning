@@ -3,7 +3,7 @@ import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { FormattedDate } from '@edx/frontend-platform/i18n';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { isLearnerAssignment } from '../../dates-tab/utils';
+import { isLearnerAssignment } from '../dates-tab/utils';
 import './DateSummary.scss';
 
 export default function DateSummary({

@@ -4,8 +4,8 @@ import { Button } from '@edx/paragon';
 
 import { AlertList } from '../../user-messages';
 
-import CourseDates from './CourseDates';
-import CourseTools from './CourseTools';
+import CourseDates from './widgets/CourseDates';
+import CourseTools from './widgets/CourseTools';
 import Section from './Section';
 import { useModel } from '../../model-store';
 
@@ -19,7 +19,7 @@ const LogistrationAlert = React.lazy(() => import('../../alerts/logistration-ale
 export default function OutlineTab() {
   const {
     courseId,
-  } = useSelector(state => state.courseware);
+  } = useSelector(state => state.courseHome);
 
   const {
     title,
