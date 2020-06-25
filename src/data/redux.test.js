@@ -10,11 +10,7 @@ import {
 import { getConfig } from '@edx/frontend-platform';
 import { logError } from '@edx/frontend-platform/logging';
 
-import {
-  fetchCourse,
-  fetchDatesTab,
-  fetchOutlineTab,
-} from './thunks';
+import * as thunks from './thunks';
 
 import { reducer as coursewareReducer } from './slice';
 import { reducer as modelsReducer } from '../model-store';
@@ -60,7 +56,7 @@ describe('Test thunks', () => {
       axiosMock.onGet(`${courseBaseUrl}/courseId`).networkError();
       axiosMock.onGet(courseBlocksUrlRegExp).networkError();
 
-      await executeThunk(fetchCourse('courseId'), store.dispatch);
+      await executeThunk(thunks.fetchCourse('courseId'), store.dispatch);
 
       const state = store.getState();
       expect(state.courseware.courseStatus).toEqual('failed');
@@ -80,7 +76,7 @@ describe('Test thunks', () => {
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
 
-      await executeThunk(fetchCourse(courseMetadata.id), store.dispatch);
+      await executeThunk(thunks.fetchCourse(courseMetadata.id), store.dispatch);
 
       const state = store.getState();
       expect(state.courseware.courseStatus).toEqual('denied');
@@ -96,7 +92,7 @@ describe('Test thunks', () => {
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
 
-      await executeThunk(fetchCourse(courseMetadata.id), store.dispatch);
+      await executeThunk(thunks.fetchCourse(courseMetadata.id), store.dispatch);
 
       const state = store.getState();
       expect(state.courseware.courseStatus).toEqual('loaded');
@@ -112,7 +108,7 @@ describe('Test thunks', () => {
       axiosMock.onGet(`${courseMetadataBaseUrl}/courseId`).networkError();
       axiosMock.onGet(`${datesBaseUrl}/courseId`).networkError();
 
-      await executeThunk(fetchDatesTab('courseId'), store.dispatch);
+      await executeThunk(thunks.fetchDatesTab('courseId'), store.dispatch);
 
       const state = store.getState();
       expect(state.courseware.courseStatus).toEqual('failed');
@@ -137,7 +133,7 @@ describe('Test thunks', () => {
       axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
 
-      await executeThunk(fetchDatesTab(courseMetadata.id), store.dispatch);
+      await executeThunk(thunks.fetchDatesTab(courseMetadata.id), store.dispatch);
 
       const state = store.getState();
       expect(state.courseware.courseStatus).toEqual('loaded');
@@ -153,7 +149,7 @@ describe('Test thunks', () => {
       axiosMock.onGet(`${courseMetadataBaseUrl}/courseId`).networkError();
       axiosMock.onGet(`${outlineBaseUrl}/courseId`).networkError();
 
-      await executeThunk(fetchOutlineTab('courseId'), store.dispatch);
+      await executeThunk(thunks.fetchOutlineTab('courseId'), store.dispatch);
 
       const state = store.getState();
       expect(state.courseware.courseStatus).toEqual('failed');
@@ -178,7 +174,7 @@ describe('Test thunks', () => {
       axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
 
-      await executeThunk(fetchOutlineTab(courseMetadata.id), store.dispatch);
+      await executeThunk(thunks.fetchOutlineTab(courseMetadata.id), store.dispatch);
 
       const state = store.getState();
       expect(state.courseware.courseStatus).toEqual('loaded');
@@ -187,12 +183,19 @@ describe('Test thunks', () => {
   });
 
   describe('Test fetchSequence', () => {
+    const sequenceBaseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence`;
+
     it('Should result in fetch failure if error occurs', async () => {
-      console.log('TBD');
+      axiosMock.onGet(`${sequenceBaseUrl}/sequenceId`).networkError();
+
+      await executeThunk(thunks.fetchSequence('sequenceId'), store.dispatch);
+
+      const state = store.getState();
+      expect(state.courseware.sequenceStatus).toEqual('failed');
+      expect(state).toMatchSnapshot();
     });
 
     it('Should fetch and normalize metadata, and then update existing models', async () => {
-      console.log('TBD');
     });
   });
 
