@@ -420,3 +420,196 @@ Object {
   },
 }
 `;
+
+exports[`Test thunks Test fetchOutlineTab Should fetch, normalize, and save metadata 1`] = `
+Object {
+  "courseware": Object {
+    "courseId": "course-v1:edX+DemoX+Demo_Course_4",
+    "courseStatus": "loaded",
+    "sequenceId": null,
+    "sequenceStatus": "loading",
+  },
+  "models": Object {
+    "courseHomeMetadata": Object {
+      "course-v1:edX+DemoX+Demo_Course_4": Object {
+        "courseId": "course-v1:edX+DemoX+Demo_Course_4",
+        "id": "course-v1:edX+DemoX+Demo_Course_4",
+        "isSelfPaced": false,
+        "isStaff": false,
+        "number": "DemoX",
+        "org": "edX",
+        "tabs": Array [
+          Object {
+            "slug": "courseware",
+            "title": "Course",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/course/",
+          },
+          Object {
+            "slug": "discussion",
+            "title": "Discussion",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/discussion/forum/",
+          },
+          Object {
+            "slug": "wiki",
+            "title": "Wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/course_wiki",
+          },
+          Object {
+            "slug": "progress",
+            "title": "Progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/progress",
+          },
+          Object {
+            "slug": "instructor",
+            "title": "Instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/instructor",
+          },
+        ],
+        "title": "Demonstration Course",
+      },
+    },
+    "courses": Object {
+      "course-v1:edX+DemoX+Demo_Course_4": Object {
+        "canLoadCourseware": Object {
+          "additionalContextUserMessage": null,
+          "developerMessage": null,
+          "errorCode": null,
+          "hasAccess": true,
+          "userFragment": null,
+          "userMessage": null,
+        },
+        "canShowUpgradeSock": false,
+        "celebrations": undefined,
+        "contentTypeGatingEnabled": false,
+        "courseExpiredMessage": null,
+        "end": null,
+        "enrollmentEnd": null,
+        "enrollmentMode": null,
+        "enrollmentStart": null,
+        "id": "course-v1:edX+DemoX+Demo_Course_4",
+        "isEnrolled": null,
+        "isStaff": false,
+        "marketingUrl": null,
+        "notes": Object {
+          "enabled": false,
+          "visible": true,
+        },
+        "number": "DemoX",
+        "offerHtml": null,
+        "org": "edX",
+        "showCalculator": false,
+        "start": "2013-02-05T05:00:00Z",
+        "tabs": Array [
+          Object {
+            "priority": 0,
+            "slug": "courseware",
+            "title": "Course",
+            "type": "courseware",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/course/",
+          },
+          Object {
+            "priority": 1,
+            "slug": "discussion",
+            "title": "Discussion",
+            "type": "discussion",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/discussion/forum/",
+          },
+          Object {
+            "priority": 2,
+            "slug": "wiki",
+            "title": "Wiki",
+            "type": "wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/course_wiki",
+          },
+          Object {
+            "priority": 3,
+            "slug": "progress",
+            "title": "Progress",
+            "type": "progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/progress",
+          },
+          Object {
+            "priority": 4,
+            "slug": "instructor",
+            "title": "Instructor",
+            "type": "instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_4/instructor",
+          },
+        ],
+        "title": "Demonstration Course",
+        "verifiedMode": Object {
+          "currency": "USD",
+          "currencySymbol": "$",
+          "price": 149,
+          "sku": "8CF08E5",
+          "upgradeUrl": "http://localhost:18130/basket/add/?sku=8CF08E5",
+        },
+      },
+    },
+    "outline": Object {
+      "course-v1:edX+DemoX+Demo_Course_4": Object {
+        "courseBlocks": Object {
+          "courses": Object {
+            "block-v1:edX+DemoX+Demo_Course+type@course+block@cdabcdabcdabcdabcdabcdabcdabcd12": Object {
+              "id": "course-v1:edX+DemoX+Demo_Course_4",
+              "sectionIds": Array [
+                "block-v1:edX+DemoX+Demo_Course+type@chapter+block@cdabcdabcdabcdabcdabcdabcdabcd11",
+              ],
+              "title": "cdabcdabcdabcdabcdabcdabcdabcd12",
+            },
+          },
+          "sections": Object {
+            "block-v1:edX+DemoX+Demo_Course+type@chapter+block@cdabcdabcdabcdabcdabcdabcdabcd11": Object {
+              "courseId": "course-v1:edX+DemoX+Demo_Course_4",
+              "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@cdabcdabcdabcdabcdabcdabcdabcd11",
+              "sequenceIds": Array [
+                "block-v1:edX+DemoX+Demo_Course+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd10",
+              ],
+              "title": "cdabcdabcdabcdabcdabcdabcdabcd11",
+            },
+          },
+          "sequences": Object {
+            "block-v1:edX+DemoX+Demo_Course+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd10": Object {
+              "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd10",
+              "lmsWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd10",
+              "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@cdabcdabcdabcdabcdabcdabcdabcd11",
+              "title": "cdabcdabcdabcdabcdabcdabcdabcd10",
+              "unitIds": Array [
+                "block-v1:edX+DemoX+Demo_Course+type@vertical+block@bcdabcdabcdabcdabcdabcdabcdabcd9",
+              ],
+            },
+          },
+          "units": Object {
+            "block-v1:edX+DemoX+Demo_Course+type@vertical+block@bcdabcdabcdabcdabcdabcdabcdabcd9": Object {
+              "graded": false,
+              "id": "block-v1:edX+DemoX+Demo_Course+type@vertical+block@bcdabcdabcdabcdabcdabcdabcdabcd9",
+              "lmsWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@vertical+block@bcdabcdabcdabcdabcdabcdabcdabcd9",
+              "sequenceId": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd10",
+              "title": "bcdabcdabcdabcdabcdabcdabcdabcd9",
+            },
+          },
+        },
+        "courseTools": Object {
+          "analyticsId": "edx.bookmarks",
+          "title": "Bookmarks",
+          "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/bookmarks/",
+        },
+        "datesWidget": undefined,
+        "id": "course-v1:edX+DemoX+Demo_Course_4",
+      },
+    },
+  },
+}
+`;
+
+exports[`Test thunks Test fetchOutlineTab Should result in fetch failure if error occurs 1`] = `
+Object {
+  "courseware": Object {
+    "courseId": "courseId",
+    "courseStatus": "failed",
+    "sequenceId": null,
+    "sequenceStatus": "loading",
+  },
+  "models": Object {},
+}
+`;
