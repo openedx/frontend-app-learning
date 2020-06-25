@@ -235,7 +235,21 @@ describe('Test thunks', () => {
 
   describe('Test resetDeadlines', () => {
     it('Should reset course deadlines', async () => {
-      console.log('TBD');
+      const courseId = 'courseId';
+
+      const resetUrl = `${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`;
+      axiosMock.onPost(resetUrl).reply(200);
+
+      const getTabDataMock = jest.fn(() => ({
+        type: 'MOCK_ACTION',
+      }));
+
+      await executeThunk(thunks.resetDeadlines(courseId, getTabDataMock), store.dispatch);
+
+      expect(axiosMock.history.post[0].url).toEqual(resetUrl);
+      expect(axiosMock.history.post[0].data).toEqual(`{"course_key":"${courseId}"}`);
+
+      expect(getTabDataMock).toHaveBeenCalledWith(courseId);
     });
   });
 });
