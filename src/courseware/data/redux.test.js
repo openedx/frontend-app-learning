@@ -3,10 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
-import {
-  getAuthenticatedHttpClient,
-  getAuthenticatedUser,
-} from '@edx/frontend-platform/auth';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
 import { logError } from '@edx/frontend-platform/logging';
 
@@ -23,7 +20,6 @@ jest.mock('@edx/frontend-platform/auth');
 
 const axiosMock = new MockAdapter(axios);
 getAuthenticatedHttpClient.mockReturnValue(axios);
-getAuthenticatedUser.mockReturnValue({ username: 'edx' });
 
 const executeThunk = async (thunk, dispatch, getState) => {
   await thunk(dispatch, getState);
