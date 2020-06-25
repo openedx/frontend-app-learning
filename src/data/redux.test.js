@@ -31,7 +31,7 @@ const executeThunk = async (thunk, dispatch) => {
   await new Promise(setImmediate);
 };
 
-describe('Test thunks', () => {
+describe('Data layer integration tests', () => {
   let store;
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test thunks Test fetchCourse Should fail to fetch if error occurs 1`] = `
+exports[`Data layer integration tests Test fetchCourse Should fail to fetch if error occurs 1`] = `
 Object {
   "courseware": Object {
     "courseId": "courseId",
@@ -12,7 +12,7 @@ Object {
 }
 `;
 
-exports[`Test thunks Test fetchCourse Should fetch, normalize, and save metadata 1`] = `
+exports[`Data layer integration tests Test fetchCourse Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseware": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_2",
@@ -136,7 +136,7 @@ Object {
 }
 `;
 
-exports[`Test thunks Test fetchCourse Should fetch, normalize, and save metadata, but with denied status 1`] = `
+exports[`Data layer integration tests Test fetchCourse Should fetch, normalize, and save metadata, but with denied status 1`] = `
 Object {
   "courseware": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
@@ -255,7 +255,7 @@ Object {
 }
 `;
 
-exports[`Test thunks Test fetchDatesTab Should fail to fetch if error occurs 1`] = `
+exports[`Data layer integration tests Test fetchDatesTab Should fail to fetch if error occurs 1`] = `
 Object {
   "courseware": Object {
     "courseId": "courseId",
@@ -267,7 +267,7 @@ Object {
 }
 `;
 
-exports[`Test thunks Test fetchDatesTab Should fetch, normalize, and save metadata 1`] = `
+exports[`Data layer integration tests Test fetchDatesTab Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseware": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_3",
@@ -421,7 +421,7 @@ Object {
 }
 `;
 
-exports[`Test thunks Test fetchOutlineTab Should fetch, normalize, and save metadata 1`] = `
+exports[`Data layer integration tests Test fetchOutlineTab Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseware": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_4",
@@ -602,7 +602,7 @@ Object {
 }
 `;
 
-exports[`Test thunks Test fetchOutlineTab Should result in fetch failure if error occurs 1`] = `
+exports[`Data layer integration tests Test fetchOutlineTab Should result in fetch failure if error occurs 1`] = `
 Object {
   "courseware": Object {
     "courseId": "courseId",
@@ -614,7 +614,7 @@ Object {
 }
 `;
 
-exports[`Test thunks Test fetchSequence Should fetch and normalize metadata, and then update existing models 1`] = `
+exports[`Data layer integration tests Test fetchSequence Should fetch and normalize metadata, and then update existing models 1`] = `
 Object {
   "courseware": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_5",
@@ -753,7 +753,7 @@ Object {
 }
 `;
 
-exports[`Test thunks Test fetchSequence Should result in fetch failure if error occurs 1`] = `
+exports[`Data layer integration tests Test fetchSequence Should result in fetch failure if error occurs 1`] = `
 Object {
   "courseware": Object {
     "courseId": null,
