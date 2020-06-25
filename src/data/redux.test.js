@@ -47,11 +47,10 @@ describe('Test thunks', () => {
   });
 
   const courseBaseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course`;
+  const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
   const courseMetadataBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata`;
 
   describe('Test fetchCourse', () => {
-    const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
-
     it('Should fail to fetch if error occurs', async () => {
       axiosMock.onGet(`${courseBaseUrl}/courseId`).networkError();
       axiosMock.onGet(courseBlocksUrlRegExp).networkError();
@@ -196,6 +195,41 @@ describe('Test thunks', () => {
     });
 
     it('Should fetch and normalize metadata, and then update existing models', async () => {
+      const courseMetadata = Factory.build('courseMetadata');
+      const unitBlock = Factory.build(
+        'block',
+        { type: 'vertical' },
+        { courseId: courseMetadata.id },
+      );
+      const sequenceBlock = Factory.build(
+        'block',
+        { type: 'sequential', children: [unitBlock.id] },
+        { courseId: courseMetadata.id },
+      );
+      const courseBlocks = Factory.build(
+        'courseBlocks',
+        { courseId: courseMetadata.id },
+        { unit: unitBlock, sequence: sequenceBlock },
+      );
+      const sequenceMetadata = Factory.build(
+        'sequenceMetadata',
+        { courseId: courseMetadata.id },
+        { unitBlock, sequenceBlock },
+      );
+
+      const courseUrl = `${courseBaseUrl}/${courseMetadata.id}`;
+      const sequenceUrl = `${sequenceBaseUrl}/${sequenceBlock.id}`;
+
+      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
+      axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
+      axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
+
+      await executeThunk(thunks.fetchCourse(courseMetadata.id), store.dispatch);
+      await executeThunk(thunks.fetchSequence(sequenceBlock.id), store.dispatch);
+
+      const state = store.getState();
+      expect(state.courseware.sequenceStatus).toEqual('loaded');
+      expect(state).toMatchSnapshot();
     });
   });
 

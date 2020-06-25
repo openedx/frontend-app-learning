@@ -2,7 +2,7 @@ import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dep
 
 import './block.factory';
 
-Factory.define('sequence')
+Factory.define('sequenceMetadata')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
   .option('unitBlock', ['courseId'], courseId => Factory.build(
     'block',

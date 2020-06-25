@@ -614,6 +614,145 @@ Object {
 }
 `;
 
+exports[`Test thunks Test fetchSequence Should fetch and normalize metadata, and then update existing models 1`] = `
+Object {
+  "courseware": Object {
+    "courseId": "course-v1:edX+DemoX+Demo_Course_5",
+    "courseStatus": "loaded",
+    "sequenceId": "block-v1:edX+DemoX+Demo_Course_5+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd14",
+    "sequenceStatus": "loaded",
+  },
+  "models": Object {
+    "courses": Object {
+      "course-v1:edX+DemoX+Demo_Course_5": Object {
+        "canLoadCourseware": Object {
+          "additionalContextUserMessage": null,
+          "developerMessage": null,
+          "errorCode": null,
+          "hasAccess": true,
+          "userFragment": null,
+          "userMessage": null,
+        },
+        "canShowUpgradeSock": false,
+        "celebrations": undefined,
+        "contentTypeGatingEnabled": false,
+        "courseExpiredMessage": null,
+        "end": null,
+        "enrollmentEnd": null,
+        "enrollmentMode": null,
+        "enrollmentStart": null,
+        "id": "course-v1:edX+DemoX+Demo_Course_5",
+        "isEnrolled": null,
+        "isStaff": false,
+        "marketingUrl": null,
+        "notes": Object {
+          "enabled": false,
+          "visible": true,
+        },
+        "number": "DemoX",
+        "offerHtml": null,
+        "org": "edX",
+        "sectionIds": Array [
+          "block-v1:edX+DemoX+Demo_Course+type@chapter+block@cdabcdabcdabcdabcdabcdabcdabcd15",
+        ],
+        "showCalculator": false,
+        "start": "2013-02-05T05:00:00Z",
+        "tabs": Array [
+          Object {
+            "priority": 0,
+            "slug": "courseware",
+            "title": "Course",
+            "type": "courseware",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_5/course/",
+          },
+          Object {
+            "priority": 1,
+            "slug": "discussion",
+            "title": "Discussion",
+            "type": "discussion",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_5/discussion/forum/",
+          },
+          Object {
+            "priority": 2,
+            "slug": "wiki",
+            "title": "Wiki",
+            "type": "wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_5/course_wiki",
+          },
+          Object {
+            "priority": 3,
+            "slug": "progress",
+            "title": "Progress",
+            "type": "progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_5/progress",
+          },
+          Object {
+            "priority": 4,
+            "slug": "instructor",
+            "title": "Instructor",
+            "type": "instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_5/instructor",
+          },
+        ],
+        "title": "cdabcdabcdabcdabcdabcdabcdabcd16",
+        "verifiedMode": Object {
+          "currency": "USD",
+          "currencySymbol": "$",
+          "price": 149,
+          "sku": "8CF08E5",
+          "upgradeUrl": "http://localhost:18130/basket/add/?sku=8CF08E5",
+        },
+      },
+    },
+    "sections": Object {
+      "block-v1:edX+DemoX+Demo_Course+type@chapter+block@cdabcdabcdabcdabcdabcdabcdabcd15": Object {
+        "courseId": "course-v1:edX+DemoX+Demo_Course_5",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@cdabcdabcdabcdabcdabcdabcdabcd15",
+        "sequenceIds": Array [
+          "block-v1:edX+DemoX+Demo_Course_5+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd14",
+        ],
+        "title": "cdabcdabcdabcdabcdabcdabcdabcd15",
+      },
+    },
+    "sequences": Object {
+      "block-v1:edX+DemoX+Demo_Course_5+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd14": Object {
+        "activeUnitIndex": 0,
+        "bannerText": null,
+        "gatedContent": Object {
+          "gated": false,
+          "gatedSectionName": "cdabcdabcdabcdabcdabcdabcdabcd14",
+          "prereqId": null,
+          "prereqSectionName": null,
+          "prereqUrl": null,
+        },
+        "id": "block-v1:edX+DemoX+Demo_Course_5+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd14",
+        "isTimeLimited": false,
+        "lmsWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_5/jump_to/block-v1:edX+DemoX+Demo_Course_5+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd14",
+        "saveUnitPosition": true,
+        "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@cdabcdabcdabcdabcdabcdabcdabcd15",
+        "showCompletion": true,
+        "title": "cdabcdabcdabcdabcdabcdabcdabcd14",
+        "unitIds": Array [
+          "block-v1:edX+DemoX+Demo_Course_5+type@vertical+block@cdabcdabcdabcdabcdabcdabcdabcd13",
+        ],
+      },
+    },
+    "units": Object {
+      "block-v1:edX+DemoX+Demo_Course_5+type@vertical+block@cdabcdabcdabcdabcdabcdabcdabcd13": Object {
+        "bookmarked": false,
+        "complete": null,
+        "contentType": "other",
+        "graded": false,
+        "id": "block-v1:edX+DemoX+Demo_Course_5+type@vertical+block@cdabcdabcdabcdabcdabcdabcdabcd13",
+        "lmsWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_5/jump_to/block-v1:edX+DemoX+Demo_Course_5+type@vertical+block@cdabcdabcdabcdabcdabcdabcdabcd13",
+        "sequenceId": "block-v1:edX+DemoX+Demo_Course_5+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd14",
+        "title": "cdabcdabcdabcdabcdabcdabcdabcd13",
+      },
+    },
+  },
+}
+`;
+
 exports[`Test thunks Test fetchSequence Should result in fetch failure if error occurs 1`] = `
 Object {
   "courseware": Object {
