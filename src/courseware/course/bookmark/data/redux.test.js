@@ -9,10 +9,12 @@ import {
 import { getConfig } from '@edx/frontend-platform';
 import { logError } from '@edx/frontend-platform/logging';
 
+import * as thunks from './thunks';
+
+import executeThunk from '../../../../utils';
+
 import { reducer as coursewareReducer } from '../../../../data/slice';
 import { reducer as modelsReducer } from '../../../../model-store';
-
-import * as thunks from './thunks';
 
 jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
 jest.mock('@edx/frontend-platform/auth');
@@ -21,10 +23,6 @@ const axiosMock = new MockAdapter(axios);
 getAuthenticatedHttpClient.mockReturnValue(axios);
 getAuthenticatedUser.mockReturnValue({ username: 'edx' });
 
-const executeThunk = async (thunk, dispatch, getState) => {
-  await thunk(dispatch, getState);
-  await new Promise(setImmediate);
-};
 
 describe('Data layer integration tests', () => {
   let store;

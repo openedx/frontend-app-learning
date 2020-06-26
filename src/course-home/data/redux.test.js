@@ -9,6 +9,8 @@ import { logError } from '@edx/frontend-platform/logging';
 
 import * as thunks from './thunks';
 
+import executeThunk from '../../utils';
+
 import { reducer as courseHomeReducer } from './slice';
 import { reducer as coursewareReducer } from '../../data/slice';
 import { reducer as modelsReducer } from '../../model-store';
@@ -21,12 +23,6 @@ jest.mock('@edx/frontend-platform/auth');
 const axiosMock = new MockAdapter(axios);
 getAuthenticatedHttpClient.mockReturnValue(axios);
 
-// Helper, that is used to forcibly finalize all promises
-// in thunk before running matcher against state.
-const executeThunk = async (thunk, dispatch) => {
-  await thunk(dispatch);
-  await new Promise(setImmediate);
-};
 
 describe('Data layer integration tests', () => {
   let store;
