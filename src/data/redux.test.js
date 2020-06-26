@@ -48,7 +48,6 @@ describe('Data layer integration tests', () => {
 
   const courseBaseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course`;
   const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
-  const courseMetadataBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata`;
 
   describe('Test fetchCourse', () => {
     it('Should fail to fetch if error occurs', async () => {
@@ -92,88 +91,6 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
 
       await executeThunk(thunks.fetchCourse(courseMetadata.id), store.dispatch);
-
-      const state = store.getState();
-      expect(state.courseware.courseStatus).toEqual('loaded');
-      expect(state).toMatchSnapshot();
-    });
-  });
-
-  describe('Test fetchDatesTab', () => {
-    const datesBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dates`;
-
-    it('Should fail to fetch if error occurs', async () => {
-      axiosMock.onGet(`${courseBaseUrl}/courseId`).networkError();
-      axiosMock.onGet(`${courseMetadataBaseUrl}/courseId`).networkError();
-      axiosMock.onGet(`${datesBaseUrl}/courseId`).networkError();
-
-      await executeThunk(thunks.fetchDatesTab('courseId'), store.dispatch);
-
-      const state = store.getState();
-      expect(state.courseware.courseStatus).toEqual('failed');
-      expect(state).toMatchSnapshot();
-    });
-
-    it('Should fetch, normalize, and save metadata', async () => {
-      const courseMetadata = Factory.build('courseMetadata');
-      const courseHomeMetadata = Factory.build(
-        'courseHomeMetadata', {
-          course_id: courseMetadata.id,
-        },
-        { courseTabs: courseMetadata.tabs },
-      );
-      const datesTabData = Factory.build('datesTabData');
-
-      const courseUrl = `${courseBaseUrl}/${courseMetadata.id}`;
-      const courseMetadataUrl = `${courseMetadataBaseUrl}/${courseMetadata.id}`;
-      const datesUrl = `${datesBaseUrl}/${courseMetadata.id}`;
-
-      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(datesUrl).reply(200, datesTabData);
-
-      await executeThunk(thunks.fetchDatesTab(courseMetadata.id), store.dispatch);
-
-      const state = store.getState();
-      expect(state.courseware.courseStatus).toEqual('loaded');
-      expect(state).toMatchSnapshot();
-    });
-  });
-
-  describe('Test fetchOutlineTab', () => {
-    const outlineBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline`;
-
-    it('Should result in fetch failure if error occurs', async () => {
-      axiosMock.onGet(`${courseBaseUrl}/courseId`).networkError();
-      axiosMock.onGet(`${courseMetadataBaseUrl}/courseId`).networkError();
-      axiosMock.onGet(`${outlineBaseUrl}/courseId`).networkError();
-
-      await executeThunk(thunks.fetchOutlineTab('courseId'), store.dispatch);
-
-      const state = store.getState();
-      expect(state.courseware.courseStatus).toEqual('failed');
-      expect(state).toMatchSnapshot();
-    });
-
-    it('Should fetch, normalize, and save metadata', async () => {
-      const courseMetadata = Factory.build('courseMetadata');
-      const courseHomeMetadata = Factory.build(
-        'courseHomeMetadata', {
-          course_id: courseMetadata.id,
-        },
-        { courseTabs: courseMetadata.tabs },
-      );
-      const outlineTabData = Factory.build('outlineTabData', { courseId: courseMetadata.id });
-
-      const courseUrl = `${courseBaseUrl}/${courseMetadata.id}`;
-      const courseMetadataUrl = `${courseMetadataBaseUrl}/${courseMetadata.id}`;
-      const outlineUrl = `${outlineBaseUrl}/${courseMetadata.id}`;
-
-      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
-
-      await executeThunk(thunks.fetchOutlineTab(courseMetadata.id), store.dispatch);
 
       const state = store.getState();
       expect(state.courseware.courseStatus).toEqual('loaded');
@@ -230,26 +147,6 @@ describe('Data layer integration tests', () => {
       const state = store.getState();
       expect(state.courseware.sequenceStatus).toEqual('loaded');
       expect(state).toMatchSnapshot();
-    });
-  });
-
-  describe('Test resetDeadlines', () => {
-    it('Should reset course deadlines', async () => {
-      const courseId = 'courseId';
-
-      const resetUrl = `${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`;
-      axiosMock.onPost(resetUrl).reply(200);
-
-      const getTabDataMock = jest.fn(() => ({
-        type: 'MOCK_ACTION',
-      }));
-
-      await executeThunk(thunks.resetDeadlines(courseId, getTabDataMock), store.dispatch);
-
-      expect(axiosMock.history.post[0].url).toEqual(resetUrl);
-      expect(axiosMock.history.post[0].data).toEqual(`{"course_key":"${courseId}"}`);
-
-      expect(getTabDataMock).toHaveBeenCalledWith(courseId);
     });
   });
 });
