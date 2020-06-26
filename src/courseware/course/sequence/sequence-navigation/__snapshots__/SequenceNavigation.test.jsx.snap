@@ -1,0 +1,244 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Sequence Navigation is empty while loading 1`] = `<DocumentFragment />`;
+
+exports[`Sequence Navigation renders correctly 1`] = `
+<DocumentFragment>
+  <nav
+    class="sequence-navigation"
+  >
+    <button
+      class="btn previous-btn"
+      type="button"
+    >
+      <img
+        alt="fa-chevron-left"
+        class="fa-chevron-left"
+        data-testid="icon"
+      />
+      <span>
+        Previous
+      </span>
+    </button>
+    <div
+      style="flex-basis: 100%; min-width: 0;"
+    >
+      <div
+        class="sequence-navigation-tabs-container"
+      >
+        <div
+          class="sequence-navigation-tabs d-flex flex-grow-1"
+        >
+          <button
+            class="btn"
+            title="1"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+          <button
+            class="btn"
+            title="2"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+          <button
+            class="btn active"
+            title="3"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+          <button
+            class="btn"
+            title="4"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+          <button
+            class="btn"
+            title="5"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+          <button
+            class="btn"
+            title="6"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+          <button
+            class="btn"
+            title="7"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+          <button
+            class="btn"
+            title="8"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+          <button
+            class="btn"
+            title="9"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+          <button
+            class="btn"
+            title="10"
+            type="button"
+          >
+            <img
+              alt="fa-book"
+              class="fa-book"
+              data-testid="icon"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+    <button
+      class="btn next-btn"
+      type="button"
+    >
+      <span>
+        Next
+      </span>
+      <img
+        alt="fa-chevron-right"
+        class="fa-chevron-right"
+        data-testid="icon"
+      />
+    </button>
+  </nav>
+</DocumentFragment>
+`;
+
+exports[`Sequence Navigation renders empty div without unitId 1`] = `
+<DocumentFragment>
+  <nav
+    class="sequence-navigation"
+  >
+    <button
+      class="btn previous-btn"
+      type="button"
+    >
+      <img
+        alt="fa-chevron-left"
+        class="fa-chevron-left"
+        data-testid="icon"
+      />
+      <span>
+        Previous
+      </span>
+    </button>
+    <div
+      style="flex-basis: 100%; min-width: 0; border-bottom: 1px solid #EAEAEA;"
+    />
+    <button
+      class="btn next-btn"
+      type="button"
+    >
+      <span>
+        Next
+      </span>
+      <img
+        alt="fa-chevron-right"
+        class="fa-chevron-right"
+        data-testid="icon"
+      />
+    </button>
+  </nav>
+</DocumentFragment>
+`;
+
+exports[`Sequence Navigation renders locked button for gated content 1`] = `
+<DocumentFragment>
+  <nav
+    class="sequence-navigation"
+  >
+    <button
+      class="btn previous-btn"
+      type="button"
+    >
+      <img
+        alt="fa-chevron-left"
+        class="fa-chevron-left"
+        data-testid="icon"
+      />
+      <span>
+        Previous
+      </span>
+    </button>
+    <button
+      class="btn active"
+      title="3"
+      type="button"
+    >
+      <img
+        alt="fa-book"
+        class="fa-book"
+        data-testid="icon"
+      />
+    </button>
+    <button
+      class="btn next-btn"
+      type="button"
+    >
+      <span>
+        Next
+      </span>
+      <img
+        alt="fa-chevron-right"
+        class="fa-chevron-right"
+        data-testid="icon"
+      />
+    </button>
+  </nav>
+</DocumentFragment>
+`;

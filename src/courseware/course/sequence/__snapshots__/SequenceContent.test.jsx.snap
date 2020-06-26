@@ -1,0 +1,271 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Sequence Content displays loading message 1`] = `
+<DocumentFragment>
+  <div
+    class="unit"
+  >
+    <h2
+      class="mb-0 h4"
+    >
+      1
+    </h2>
+    <button
+      aria-disabled="false"
+      aria-live="assertive"
+      class="btn pgn__stateful-btn pgn__stateful-btn-state-default btn-link px-1 ml-n1 btn-sm"
+      type="button"
+    >
+      <span
+        class="d-flex align-items-center justify-content-center"
+      >
+        <span
+          class="pgn__stateful-btn-icon"
+        >
+          <img
+            alt="fa-bookmark"
+            class="fa-bookmark"
+            data-testid="icon"
+          />
+        </span>
+        <span>
+          Bookmark this page
+        </span>
+      </span>
+    </button>
+    <div>
+      <div
+        class="d-flex justify-content-center align-items-center flex-column"
+        style="height: 50vh;"
+      >
+        <div
+          class="spinner-border text-primary"
+          role="status"
+        >
+          <span
+            class="sr-only"
+          >
+            Loading learning sequence...
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="unit-iframe-wrapper"
+    >
+      <iframe
+        allowfullscreen=""
+        height="0"
+        id="unit-iframe"
+        referrerpolicy="origin"
+        scrolling="no"
+        src="http://localhost:18000/xblock/1?show_title=0&show_bookmark_button=0"
+        title="1"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Sequence Content displays message for no content 1`] = `
+<DocumentFragment>
+  <div>
+    There is no content here.
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Sequence Content displays messages for the locked content 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="d-flex justify-content-center align-items-center flex-column"
+      style="height: 50vh;"
+    >
+      <div
+        class="spinner-border text-primary"
+        role="status"
+      >
+        <span
+          class="sr-only"
+        >
+          Loading locked content messaging...
+        </span>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Sequence Content displays messages for the locked content 2`] = `
+<DocumentFragment>
+  <h3>
+    <img
+      alt="fa-lock"
+      class="fa-lock"
+      data-testid="icon"
+    />
+     test-sequence
+  </h3>
+  <h4>
+    Content Locked
+  </h4>
+  <p>
+    You must complete the prerequisite: 'test-gated-section' to access this content.
+  </p>
+  <p>
+    <button
+      class="btn btn-primary"
+      type="button"
+    >
+      Go To Prerequisite Section
+    </button>
+  </p>
+</DocumentFragment>
+`;
+
+exports[`Unit Navigation displays loading message 1`] = `
+<DocumentFragment>
+  <div
+    class="unit"
+  >
+    <h2
+      class="mb-0 h4"
+    >
+      1
+    </h2>
+    <button
+      aria-disabled="false"
+      aria-live="assertive"
+      class="btn pgn__stateful-btn pgn__stateful-btn-state-default btn-link px-1 ml-n1 btn-sm"
+      type="button"
+    >
+      <span
+        class="d-flex align-items-center justify-content-center"
+      >
+        <span
+          class="pgn__stateful-btn-icon"
+        >
+          <img
+            alt="fa-bookmark"
+            class="fa-bookmark"
+            data-testid="icon"
+          />
+        </span>
+        <span>
+          Bookmark this page
+        </span>
+      </span>
+    </button>
+    <div>
+      <div
+        class="d-flex justify-content-center align-items-center flex-column"
+        style="height: 50vh;"
+      >
+        <div
+          class="spinner-border text-primary"
+          role="status"
+        >
+          <span
+            class="sr-only"
+          >
+            Loading learning sequence...
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="unit-iframe-wrapper"
+    >
+      <iframe
+        allowfullscreen=""
+        height="0"
+        id="unit-iframe"
+        referrerpolicy="origin"
+        scrolling="no"
+        src="http://localhost:18000/xblock/1?show_title=0&show_bookmark_button=0"
+        title="1"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Unit Navigation displays message for no content 1`] = `
+<DocumentFragment>
+  <div>
+    There is no content here.
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Unit Navigation displays message for the locked content 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="d-flex justify-content-center align-items-center flex-column"
+      style="height: 50vh;"
+    >
+      <div
+        class="spinner-border text-primary"
+        role="status"
+      >
+        <span
+          class="sr-only"
+        >
+          Loading locked content messaging...
+        </span>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Unit Navigation displays messages for the locked content 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="d-flex justify-content-center align-items-center flex-column"
+      style="height: 50vh;"
+    >
+      <div
+        class="spinner-border text-primary"
+        role="status"
+      >
+        <span
+          class="sr-only"
+        >
+          Loading locked content messaging...
+        </span>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Unit Navigation displays messages for the locked content 2`] = `
+<DocumentFragment>
+  <h3>
+    <img
+      alt="fa-lock"
+      class="fa-lock"
+      data-testid="icon"
+    />
+     test-sequence
+  </h3>
+  <h4>
+    Content Locked
+  </h4>
+  <p>
+    You must complete the prerequisite: 'test-gated-section' to access this content.
+  </p>
+  <p>
+    <button
+      class="btn btn-primary"
+      type="button"
+    >
+      Go To Prerequisite Section
+    </button>
+  </p>
+</DocumentFragment>
+`;
