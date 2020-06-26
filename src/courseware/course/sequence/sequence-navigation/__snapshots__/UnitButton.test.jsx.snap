@@ -1,0 +1,143 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unit Button does not show bookmark 1`] = `
+<DocumentFragment>
+  <button
+    class="btn"
+    title="other-unit"
+    type="button"
+  >
+    <img
+      alt="fa-book"
+      class="fa-book"
+      data-testid="icon"
+    />
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Unit Button does not show completion for non-completed unit 1`] = `
+<DocumentFragment>
+  <button
+    class="btn"
+    title="other-unit"
+    type="button"
+  >
+    <img
+      alt="fa-book"
+      class="fa-book"
+      data-testid="icon"
+    />
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Unit Button hides completion 1`] = `
+<DocumentFragment>
+  <button
+    class="btn"
+    title="problem-unit"
+    type="button"
+  >
+    <img
+      alt="fa-edit"
+      class="fa-edit"
+      data-testid="icon"
+    />
+    <img
+      alt="fa-bookmark"
+      class="fa-bookmark"
+      data-testid="icon"
+    />
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Unit Button hides title by default 1`] = `
+<DocumentFragment>
+  <button
+    class="btn"
+    title="other-unit"
+    type="button"
+  >
+    <img
+      alt="fa-book"
+      class="fa-book"
+      data-testid="icon"
+    />
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Unit Button shows bookmark 1`] = `
+<DocumentFragment>
+  <button
+    class="btn complete"
+    title="problem-unit"
+    type="button"
+  >
+    <img
+      alt="fa-edit"
+      class="fa-edit"
+      data-testid="icon"
+    />
+    <img
+      alt="fa-check"
+      class="fa-check"
+      data-testid="icon"
+    />
+    <img
+      alt="fa-bookmark"
+      class="fa-bookmark"
+      data-testid="icon"
+    />
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Unit Button shows completion for completed unit 1`] = `
+<DocumentFragment>
+  <button
+    class="btn complete"
+    title="problem-unit"
+    type="button"
+  >
+    <img
+      alt="fa-edit"
+      class="fa-edit"
+      data-testid="icon"
+    />
+    <img
+      alt="fa-check"
+      class="fa-check"
+      data-testid="icon"
+    />
+    <img
+      alt="fa-bookmark"
+      class="fa-bookmark"
+      data-testid="icon"
+    />
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Unit Button shows title 1`] = `
+<DocumentFragment>
+  <button
+    class="btn"
+    title="other-unit"
+    type="button"
+  >
+    <img
+      alt="fa-book"
+      class="fa-book"
+      data-testid="icon"
+    />
+    <span
+      class="unit-title"
+    >
+      other-unit
+    </span>
+  </button>
+</DocumentFragment>
+`;

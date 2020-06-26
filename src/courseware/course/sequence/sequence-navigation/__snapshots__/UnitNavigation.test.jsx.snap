@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unit Navigation renders correctly without units 1`] = `
+<DocumentFragment>
+  <div
+    class="unit-navigation d-flex"
+  >
+    <button
+      class="btn btn-outline-secondary previous-button mr-2"
+      type="button"
+    >
+      <img
+        alt="fa-chevron-left"
+        class="fa-chevron-left"
+        data-testid="icon"
+      />
+      <span>
+        Previous
+      </span>
+    </button>
+    <button
+      class="btn btn-outline-primary next-button"
+      type="button"
+    >
+      <span>
+        Next
+      </span>
+      <img
+        alt="fa-chevron-right"
+        class="fa-chevron-right"
+        data-testid="icon"
+      />
+    </button>
+  </div>
+</DocumentFragment>
+`;

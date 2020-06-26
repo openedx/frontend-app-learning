@@ -1,5 +1,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+import '@testing-library/jest-dom';
 import { getConfig, mergeConfig } from '@edx/frontend-platform';
 import { configure as configureI18n } from '@edx/frontend-platform/i18n';
 import { configure as configureLogging } from '@edx/frontend-platform/logging';

@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unit Icon renders correct icon for lock unit 1`] = `
+<DocumentFragment>
+  <img
+    alt="fa-lock"
+    class="fa-lock"
+    data-testid="icon"
+  />
+</DocumentFragment>
+`;
+
+exports[`Unit Icon renders correct icon for other unit 1`] = `
+<DocumentFragment>
+  <img
+    alt="fa-book"
+    class="fa-book"
+    data-testid="icon"
+  />
+</DocumentFragment>
+`;
+
+exports[`Unit Icon renders correct icon for problem unit 1`] = `
+<DocumentFragment>
+  <img
+    alt="fa-edit"
+    class="fa-edit"
+    data-testid="icon"
+  />
+</DocumentFragment>
+`;
+
+exports[`Unit Icon renders correct icon for undefined unit 1`] = `
+<DocumentFragment>
+  <img
+    alt="fa-book"
+    class="fa-book"
+    data-testid="icon"
+  />
+</DocumentFragment>
+`;
+
+exports[`Unit Icon renders correct icon for vertical unit 1`] = `
+<DocumentFragment>
+  <img
+    alt="fa-tasks"
+    class="fa-tasks"
+    data-testid="icon"
+  />
+</DocumentFragment>
+`;
+
+exports[`Unit Icon renders correct icon for video unit 1`] = `
+<DocumentFragment>
+  <img
+    alt="fa-film"
+    class="fa-film"
+    data-testid="icon"
+  />
+</DocumentFragment>
+`;
