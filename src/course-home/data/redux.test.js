@@ -43,6 +43,10 @@ describe('Data layer integration tests', () => {
     });
   });
 
+  it('Should initialize store', () => {
+    expect(store.getState()).toMatchSnapshot();
+  });
+
   describe('Test fetchDatesTab', () => {
     const datesBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dates`;
 
