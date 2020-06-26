@@ -16,22 +16,6 @@ Object {
 }
 `;
 
-exports[`Data layer integration tests Test fetchDatesTab Should fail to fetch if error occurs 1`] = `
-Object {
-  "courseHome": Object {
-    "courseId": "courseId",
-    "courseStatus": "failed",
-  },
-  "courseware": Object {
-    "courseId": null,
-    "courseStatus": "loading",
-    "sequenceId": null,
-    "sequenceStatus": "loading",
-  },
-  "models": Object {},
-}
-`;
-
 exports[`Data layer integration tests Test fetchDatesTab Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseHome": Object {
@@ -216,21 +200,5 @@ Object {
       },
     },
   },
-}
-`;
-
-exports[`Data layer integration tests Test fetchOutlineTab Should result in fetch failure if error occurs 1`] = `
-Object {
-  "courseHome": Object {
-    "courseId": "courseId",
-    "courseStatus": "failed",
-  },
-  "courseware": Object {
-    "courseId": null,
-    "courseStatus": "loading",
-    "sequenceId": null,
-    "sequenceStatus": "loading",
-  },
-  "models": Object {},
 }
 `;

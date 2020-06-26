@@ -46,17 +46,21 @@ describe('Data layer integration tests', () => {
   const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
 
   describe('Test fetchCourse', () => {
-    it('Should fail to fetch if error occurs', async () => {
-      axiosMock.onGet(`${courseBaseUrl}/courseId`).networkError();
+    it('Should fail to fetch course and blocks if request error happens', async () => {
+      const courseId = 'courseId';
+
+      axiosMock.onGet(`${courseBaseUrl}/${courseId}`).networkError();
       axiosMock.onGet(courseBlocksUrlRegExp).networkError();
 
-      await executeThunk(thunks.fetchCourse('courseId'), store.dispatch);
+      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
       const state = store.getState();
 
       expect(logError).toHaveBeenCalled();
-      expect(state.courseware.courseStatus).toEqual('failed');
-      expect(state).toMatchSnapshot();
+      expect(state.courseware).toEqual(expect.objectContaining({
+        courseId,
+        courseStatus: 'failed',
+      }));
     });
 
     it('Should fetch, normalize, and save metadata, but with denied status', async () => {
@@ -75,7 +79,24 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchCourse(courseMetadata.id), store.dispatch);
 
       const state = store.getState();
-      expect(state.courseware.courseStatus).toEqual('denied');
+
+      // check that all actions reduced, but access denied
+      expect(state).toEqual(expect.objectContaining({
+        models: expect.objectContaining({
+          courses: expect.any(Object),
+          sections: expect.any(Object),
+          sequences: expect.any(Object),
+          units: expect.any(Object),
+        }),
+        courseware: expect.objectContaining({
+          courseId: courseMetadata.id,
+          courseStatus: 'denied',
+        }),
+      }));
+
+      // check that at least one key camel cased, thus course data normalized
+      expect(state.models.courses[courseMetadata.id].canLoadCourseware).not.toBeUndefined();
+
       expect(state).toMatchSnapshot();
     });
 
@@ -91,7 +112,24 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchCourse(courseMetadata.id), store.dispatch);
 
       const state = store.getState();
-      expect(state.courseware.courseStatus).toEqual('loaded');
+
+      // check that all actions reduced
+      expect(state).toEqual(expect.objectContaining({
+        models: expect.objectContaining({
+          courses: expect.any(Object),
+          sections: expect.any(Object),
+          sequences: expect.any(Object),
+          units: expect.any(Object),
+        }),
+        courseware: expect.objectContaining({
+          courseId: courseMetadata.id,
+          courseStatus: 'loaded',
+        }),
+      }));
+
+      // check that at least one key camel cased, thus course data normalized
+      expect(state.models.courses[courseMetadata.id].canLoadCourseware).not.toBeUndefined();
+
       expect(state).toMatchSnapshot();
     });
   });
@@ -107,7 +145,6 @@ describe('Data layer integration tests', () => {
       const state = store.getState();
       expect(logError).toHaveBeenCalled();
       expect(state.courseware.sequenceStatus).toEqual('failed');
-      expect(state).toMatchSnapshot();
     });
 
     it('Should fetch and normalize metadata, and then update existing models', async () => {
@@ -143,10 +180,40 @@ describe('Data layer integration tests', () => {
       // setting course with blocks before sequence to check that blocks receive
       // additional information after fetchSequence call.
       await executeThunk(thunks.fetchCourse(courseMetadata.id), store.dispatch);
-      await executeThunk(thunks.fetchSequence(sequenceBlock.id), store.dispatch);
 
+      // ensure that initial state has no additional sequence info
+      expect(store.getState().models.sequences).toEqual({
+        [sequenceBlock.id]: expect.not.objectContaining({
+          gatedContent: expect.any(Object),
+          activeUnitIndex: expect.any(Number),
+        }),
+      });
+      expect(store.getState().models.units).toEqual({
+        [unitBlock.id]: expect.not.objectContaining({
+          complete: null,
+          bookmarked: expect.any(Boolean),
+        }),
+      });
+
+      await executeThunk(thunks.fetchSequence(sequenceBlock.id), store.dispatch);
       const state = store.getState();
+
       expect(state.courseware.sequenceStatus).toEqual('loaded');
+
+      // ensure that additional information appeared in store
+      expect(state.models.sequences).toEqual({
+        [sequenceBlock.id]: expect.objectContaining({
+          gatedContent: expect.any(Object),
+          activeUnitIndex: expect.any(Number),
+        }),
+      });
+      expect(state.models.units).toEqual({
+        [unitBlock.id]: expect.objectContaining({
+          complete: null,
+          bookmarked: expect.any(Boolean),
+        }),
+      });
+
       expect(state).toMatchSnapshot();
     });
   });

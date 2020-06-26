@@ -60,7 +60,6 @@ describe('Data layer integration tests', () => {
       const state = store.getState();
       expect(logError).toHaveBeenCalled();
       expect(state.courseHome.courseStatus).toEqual('failed');
-      expect(state).toMatchSnapshot();
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
@@ -102,7 +101,6 @@ describe('Data layer integration tests', () => {
       const state = store.getState();
       expect(logError).toHaveBeenCalled();
       expect(state.courseHome.courseStatus).toEqual('failed');
-      expect(state).toMatchSnapshot();
     });
 
     it('Should fetch, normalize, and save metadata', async () => {

@@ -1,17 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Data layer integration tests Test fetchCourse Should fail to fetch if error occurs 1`] = `
-Object {
-  "courseware": Object {
-    "courseId": "courseId",
-    "courseStatus": "failed",
-    "sequenceId": null,
-    "sequenceStatus": "loading",
-  },
-  "models": Object {},
-}
-`;
-
 exports[`Data layer integration tests Test fetchCourse Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseware": Object {
@@ -391,17 +379,5 @@ Object {
       },
     },
   },
-}
-`;
-
-exports[`Data layer integration tests Test fetchSequence Should result in fetch failure if error occurs 1`] = `
-Object {
-  "courseware": Object {
-    "courseId": null,
-    "courseStatus": "loading",
-    "sequenceId": "sequenceId",
-    "sequenceStatus": "failed",
-  },
-  "models": Object {},
 }
 `;
