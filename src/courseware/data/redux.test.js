@@ -27,6 +27,7 @@ getAuthenticatedHttpClient.mockReturnValue(axios);
 describe('Data layer integration tests', () => {
   let store;
 
+  const courseId = 'courseId';
   const sequenceMetadata = Factory.build('sequenceMetadata');
   const sequenceId = sequenceMetadata.item_id;
   const sequenceUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
@@ -49,13 +50,13 @@ describe('Data layer integration tests', () => {
   });
 
   describe('Test checkBlockCompletion', () => {
-    const getCompletionURL = `${getConfig().LMS_BASE_URL}/courses/courseId/xblock/${sequenceId}/handler/xmodule_handler/get_completion`;
+    const getCompletionURL = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/xmodule_handler/get_completion`;
 
     it('Should fail to check completion and log error', async () => {
       axiosMock.onPost(getCompletionURL).networkError();
 
       await executeThunk(
-        thunks.checkBlockCompletion('courseId', sequenceId, unitId),
+        thunks.checkBlockCompletion(courseId, sequenceId, unitId),
         store.dispatch,
         store.getState,
       );
@@ -65,10 +66,10 @@ describe('Data layer integration tests', () => {
     });
 
     it('Should update complete field of unit model', async () => {
-      axiosMock.onPost(getCompletionURL).reply(200, { complete: true });
+      axiosMock.onPost(getCompletionURL).reply(201, { complete: true });
 
       await executeThunk(
-        thunks.checkBlockCompletion('courseId', sequenceId, unitId),
+        thunks.checkBlockCompletion(courseId, sequenceId, unitId),
         store.dispatch,
         store.getState,
       );
@@ -86,7 +87,7 @@ describe('Data layer integration tests', () => {
       const newPosition = 123;
 
       await executeThunk(
-        thunks.saveSequencePosition('courseId', sequenceId, newPosition),
+        thunks.saveSequencePosition(courseId, sequenceId, newPosition),
         store.dispatch,
         store.getState,
       );
@@ -97,12 +98,12 @@ describe('Data layer integration tests', () => {
     });
 
     it('Should update sequence model position', async () => {
-      axiosMock.onPost(gotoPositionURL).reply(200, {});
+      axiosMock.onPost(gotoPositionURL).reply(201, {});
 
       const newPosition = 123;
 
       await executeThunk(
-        thunks.saveSequencePosition('courseId', sequenceId, newPosition),
+        thunks.saveSequencePosition(courseId, sequenceId, newPosition),
         store.dispatch,
         store.getState,
       );

@@ -27,6 +27,7 @@ getAuthenticatedHttpClient.mockReturnValue(axios);
 describe('Data layer integration tests', () => {
   let store;
 
+  const courseId = 'courseId';
   const courseBaseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course`;
   const courseMetadataBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata`;
 
@@ -51,15 +52,14 @@ describe('Data layer integration tests', () => {
     const datesBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dates`;
 
     it('Should fail to fetch if error occurs', async () => {
-      axiosMock.onGet(`${courseBaseUrl}/courseId`).networkError();
-      axiosMock.onGet(`${courseMetadataBaseUrl}/courseId`).networkError();
-      axiosMock.onGet(`${datesBaseUrl}/courseId`).networkError();
+      axiosMock.onGet(`${courseBaseUrl}/${courseId}`).networkError();
+      axiosMock.onGet(`${courseMetadataBaseUrl}/${courseId}`).networkError();
+      axiosMock.onGet(`${datesBaseUrl}/${courseId}`).networkError();
 
-      await executeThunk(thunks.fetchDatesTab('courseId'), store.dispatch);
+      await executeThunk(thunks.fetchDatesTab(courseId), store.dispatch);
 
-      const state = store.getState();
       expect(logError).toHaveBeenCalled();
-      expect(state.courseHome.courseStatus).toEqual('failed');
+      expect(store.getState().courseHome.courseStatus).toEqual('failed');
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
@@ -92,15 +92,14 @@ describe('Data layer integration tests', () => {
     const outlineBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline`;
 
     it('Should result in fetch failure if error occurs', async () => {
-      axiosMock.onGet(`${courseBaseUrl}/courseId`).networkError();
-      axiosMock.onGet(`${courseMetadataBaseUrl}/courseId`).networkError();
-      axiosMock.onGet(`${outlineBaseUrl}/courseId`).networkError();
+      axiosMock.onGet(`${courseBaseUrl}/${courseId}`).networkError();
+      axiosMock.onGet(`${courseMetadataBaseUrl}/${courseId}`).networkError();
+      axiosMock.onGet(`${outlineBaseUrl}/${courseId}`).networkError();
 
       await executeThunk(thunks.fetchOutlineTab('courseId'), store.dispatch);
 
-      const state = store.getState();
       expect(logError).toHaveBeenCalled();
-      expect(state.courseHome.courseStatus).toEqual('failed');
+      expect(store.getState().courseHome.courseStatus).toEqual('failed');
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
@@ -131,10 +130,8 @@ describe('Data layer integration tests', () => {
 
   describe('Test resetDeadlines', () => {
     it('Should reset course deadlines', async () => {
-      const courseId = 'courseId';
-
       const resetUrl = `${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`;
-      axiosMock.onPost(resetUrl).reply(200);
+      axiosMock.onPost(resetUrl).reply(201);
 
       const getTabDataMock = jest.fn(() => ({
         type: 'MOCK_ACTION',

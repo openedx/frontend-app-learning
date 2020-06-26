@@ -30,6 +30,9 @@ getAuthenticatedUser.mockReturnValue({ username: 'edx' });
 describe('Data layer integration tests', () => {
   let store;
 
+  const courseBaseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course`;
+  const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
+
   beforeEach(() => {
     axiosMock.reset();
     logError.mockReset();
@@ -42,9 +45,6 @@ describe('Data layer integration tests', () => {
     });
   });
 
-  const courseBaseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course`;
-  const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
-
   describe('Test fetchCourse', () => {
     it('Should fail to fetch course and blocks if request error happens', async () => {
       const courseId = 'courseId';
@@ -54,10 +54,8 @@ describe('Data layer integration tests', () => {
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
-      const state = store.getState();
-
       expect(logError).toHaveBeenCalled();
-      expect(state.courseware).toEqual(expect.objectContaining({
+      expect(store.getState().courseware).toEqual(expect.objectContaining({
         courseId,
         courseStatus: 'failed',
       }));
@@ -142,12 +140,12 @@ describe('Data layer integration tests', () => {
 
       await executeThunk(thunks.fetchSequence('sequenceId'), store.dispatch);
 
-      const state = store.getState();
       expect(logError).toHaveBeenCalled();
-      expect(state.courseware.sequenceStatus).toEqual('failed');
+      expect(store.getState().courseware.sequenceStatus).toEqual('failed');
     });
 
-    it('Should fetch and normalize metadata, and then update existing models', async () => {
+    it('Should fetch and normalize metadata, and then update existing models with sequence metadata', async () => {
+      // creating sequence metadata, that has correct links to blocks
       const courseMetadata = Factory.build('courseMetadata');
       const unitBlock = Factory.build(
         'block',
@@ -182,13 +180,14 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchCourse(courseMetadata.id), store.dispatch);
 
       // ensure that initial state has no additional sequence info
-      expect(store.getState().models.sequences).toEqual({
+      const initialState = store.getState();
+      expect(initialState.models.sequences).toEqual({
         [sequenceBlock.id]: expect.not.objectContaining({
           gatedContent: expect.any(Object),
           activeUnitIndex: expect.any(Number),
         }),
       });
-      expect(store.getState().models.units).toEqual({
+      expect(initialState.models.units).toEqual({
         [unitBlock.id]: expect.not.objectContaining({
           complete: null,
           bookmarked: expect.any(Boolean),
@@ -196,6 +195,7 @@ describe('Data layer integration tests', () => {
       });
 
       await executeThunk(thunks.fetchSequence(sequenceBlock.id), store.dispatch);
+
       const state = store.getState();
 
       expect(state.courseware.sequenceStatus).toEqual('loaded');

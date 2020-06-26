@@ -26,6 +26,8 @@ getAuthenticatedUser.mockReturnValue({ username: 'edx' });
 describe('Data layer integration tests', () => {
   let store;
 
+  const unitId = 'unitId';
+
   beforeEach(() => {
     axiosMock.reset();
     logError.mockReset();
@@ -37,12 +39,10 @@ describe('Data layer integration tests', () => {
     });
   });
 
-  const unitId = 'unitId';
-
   describe('Test addBookmark', () => {
     const createBookmarkURL = `${getConfig().LMS_BASE_URL}/api/bookmarks/v1/bookmarks/`;
 
-    it('should fail to create bookmark in case of error', async () => {
+    it('Should fail to create bookmark in case of error', async () => {
       axiosMock.onPost(createBookmarkURL).networkError();
 
       await executeThunk(thunks.addBookmark(unitId), store.dispatch);
@@ -55,8 +55,8 @@ describe('Data layer integration tests', () => {
       }));
     });
 
-    it('should create bookmark and update model state', async () => {
-      axiosMock.onPost(createBookmarkURL).reply(200);
+    it('Should create bookmark and update model state', async () => {
+      axiosMock.onPost(createBookmarkURL).reply(201);
 
       await executeThunk(thunks.addBookmark(unitId), store.dispatch);
 
@@ -70,7 +70,7 @@ describe('Data layer integration tests', () => {
   describe('Test removeBookmark', () => {
     const deleteBookmarkURL = `${getConfig().LMS_BASE_URL}/api/bookmarks/v1/bookmarks/edx,${unitId}/`;
 
-    it('should fail to remove bookmark in case of error', async () => {
+    it('Should fail to remove bookmark in case of error', async () => {
       axiosMock.onDelete(deleteBookmarkURL).networkError();
 
       await executeThunk(thunks.removeBookmark(unitId), store.dispatch);
@@ -83,7 +83,7 @@ describe('Data layer integration tests', () => {
       }));
     });
 
-    it('should delete bookmark and update model state', async () => {
+    it('Should delete bookmark and update model state', async () => {
       axiosMock.onDelete(deleteBookmarkURL).reply(201);
 
       await executeThunk(thunks.removeBookmark(unitId), store.dispatch);

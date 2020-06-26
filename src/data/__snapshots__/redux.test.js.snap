@@ -243,7 +243,7 @@ Object {
 }
 `;
 
-exports[`Data layer integration tests Test fetchSequence Should fetch and normalize metadata, and then update existing models 1`] = `
+exports[`Data layer integration tests Test fetchSequence Should fetch and normalize metadata, and then update existing models with sequence metadata 1`] = `
 Object {
   "courseware": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_3",
