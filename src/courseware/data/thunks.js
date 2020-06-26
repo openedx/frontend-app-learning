@@ -134,13 +134,13 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
 export function saveSequencePosition(courseId, sequenceId, position) {
   return async (dispatch, getState) => {
     const { models } = getState();
-    const initialPosition = models.sequences[sequenceId].activeUnitIndex;
+    const initialPosition = models.sequences[sequenceId].position;
     // Optimistically update the position.
     dispatch(updateModel({
       modelType: 'sequences',
       model: {
         id: sequenceId,
-        activeUnitIndex: position,
+        position,
       },
     }));
     try {
@@ -151,7 +151,7 @@ export function saveSequencePosition(courseId, sequenceId, position) {
         modelType: 'sequences',
         model: {
           id: sequenceId,
-          activeUnitIndex: position,
+          position,
         },
       }));
     } catch (error) {
@@ -160,7 +160,7 @@ export function saveSequencePosition(courseId, sequenceId, position) {
         modelType: 'sequences',
         model: {
           id: sequenceId,
-          activeUnitIndex: initialPosition,
+          position: initialPosition,
         },
       }));
     }
