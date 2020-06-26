@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Sequence Navigation Dropdown renders correctly without units 1`] = `
+<DocumentFragment>
+  <div
+    class="dropdown sequence-navigation-dropdown"
+  >
+    <button
+      aria-expanded="false"
+      aria-haspopup="true"
+      class="dropdown-toggle btn dropdown-button font-weight-normal w-100 border-right-0"
+      id="pgn__dropdown-trigger-0"
+    >
+      <span>
+        0 of 0
+      </span>
+    </button>
+    <div
+      aria-hidden="true"
+      aria-labelledby="pgn__dropdown-trigger-0"
+      class="dropdown-menu w-100"
+      role="menu"
+    />
+  </div>
+</DocumentFragment>
+`;
