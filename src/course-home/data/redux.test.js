@@ -58,6 +58,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchDatesTab('courseId'), store.dispatch);
 
       const state = store.getState();
+      expect(logError).toHaveBeenCalled();
       expect(state.courseHome.courseStatus).toEqual('failed');
       expect(state).toMatchSnapshot();
     });
@@ -99,6 +100,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchOutlineTab('courseId'), store.dispatch);
 
       const state = store.getState();
+      expect(logError).toHaveBeenCalled();
       expect(state.courseHome.courseStatus).toEqual('failed');
       expect(state).toMatchSnapshot();
     });

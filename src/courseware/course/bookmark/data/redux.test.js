@@ -13,7 +13,6 @@ import * as thunks from './thunks';
 
 import executeThunk from '../../../../utils';
 
-import { reducer as coursewareReducer } from '../../../../data/slice';
 import { reducer as modelsReducer } from '../../../../model-store';
 
 jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
@@ -34,7 +33,6 @@ describe('Data layer integration tests', () => {
     store = configureStore({
       reducer: {
         models: modelsReducer,
-        courseware: coursewareReducer,
       },
     });
   });

@@ -53,6 +53,8 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchCourse('courseId'), store.dispatch);
 
       const state = store.getState();
+
+      expect(logError).toHaveBeenCalled();
       expect(state.courseware.courseStatus).toEqual('failed');
       expect(state).toMatchSnapshot();
     });
@@ -103,6 +105,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchSequence('sequenceId'), store.dispatch);
 
       const state = store.getState();
+      expect(logError).toHaveBeenCalled();
       expect(state.courseware.sequenceStatus).toEqual('failed');
       expect(state).toMatchSnapshot();
     });
@@ -137,6 +140,8 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
       axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
 
+      // setting course with blocks before sequence to check that blocks receive
+      // additional information after fetchSequence call.
       await executeThunk(thunks.fetchCourse(courseMetadata.id), store.dispatch);
       await executeThunk(thunks.fetchSequence(sequenceBlock.id), store.dispatch);
 
