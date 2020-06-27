@@ -58,7 +58,7 @@ const messages = defineMessages({
   },
   'datesBanner.resetDatesBanner.button': {
     id: 'datesBanner.resetDatesBanner.button',
-    defaultMessage: 'Reset my deadlines',
+    defaultMessage: 'Shift due dates',
     description: 'Button in Reset Dates Banner',
   },
 });

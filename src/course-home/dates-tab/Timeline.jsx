@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { useModel } from '../model-store';
+import { useModel } from '../../model-store';
 
 import Day from './Day';
 import { daycmp, isLearnerAssignment } from './utils';
@@ -9,7 +9,7 @@ import { daycmp, isLearnerAssignment } from './utils';
 export default function Timeline() {
   const {
     courseId,
-  } = useSelector(state => state.courseware);
+  } = useSelector(state => state.courseHome);
 
   const {
     courseDateBlocks,
@@ -53,6 +53,9 @@ export default function Timeline() {
       groupedDates[groupedDates.length - 1].items.push(dateInfo);
     }
   });
+  if (!foundToday) {
+    groupedDates.push({ date: now, items: [] });
+  }
   if (groupedDates.length) {
     groupedDates[groupedDates.length - 1].last = true;
   }

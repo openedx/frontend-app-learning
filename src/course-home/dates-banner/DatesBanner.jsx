@@ -21,7 +21,7 @@ function DatesBanner(props) {
           {intl.formatMessage(messages[`datesBanner.${name}.body`])}
         </div>
         {bannerClickHandler && (
-          <button type="button" className="btn rounded align-self-center border border-primary bg-white mr-3" onClick={bannerClickHandler}>
+          <button type="button" className="btn rounded align-self-center border border-primary bg-white mr-3 font-weight-bold" onClick={bannerClickHandler}>
             {intl.formatMessage(messages[`datesBanner.${name}.button`])}
           </button>
         )}

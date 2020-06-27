@@ -42,48 +42,13 @@ function normalizeMetadata(metadata) {
   };
 }
 
-function normalizeCourseHomeCourseMetadata(metadata) {
-  const data = camelCaseObject(metadata);
-  return {
-    ...data,
-    tabs: data.tabs.map(tab => ({
-      slug: tab.tabId,
-      title: tab.title,
-      url: tab.url,
-    })),
-  };
-}
-
 export async function getCourseMetadata(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
   const { data } = await getAuthenticatedHttpClient().get(url);
   return normalizeMetadata(data);
 }
 
-export async function getCourseHomeCourseMetadata(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
-  const { data } = await getAuthenticatedHttpClient().get(url);
-  return normalizeCourseHomeCourseMetadata(data);
-}
-
-export async function getDatesTabData(courseId, version) {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/${version}/dates/${courseId}`;
-  try {
-    const { data } = await getAuthenticatedHttpClient().get(url);
-    return camelCaseObject(data);
-  } catch (error) {
-    const { httpErrorStatus } = error && error.customAttributes;
-    if (httpErrorStatus === 404) {
-      return window.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`);
-    }
-    // async functions expect return values. to satisfy that requirement
-    // we return true here which in turn continues with the normal flow of displaying
-    // the "unexpected error try again" screen to the user.
-    return true;
-  }
-}
-
-function normalizeBlocks(courseId, blocks) {
+export function normalizeBlocks(courseId, blocks) {
   const models = {
     courses: {},
     sections: {},
@@ -170,27 +135,6 @@ export async function getCourseBlocks(courseId) {
   return normalizeBlocks(courseId, data.blocks);
 }
 
-export async function getOutlineTabData(courseId, version) {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/${version}/outline/${courseId}`;
-  let { tabData } = {};
-  try {
-    tabData = await getAuthenticatedHttpClient().get(url);
-  } catch (error) {
-    const { httpErrorStatus } = error && error.customAttributes;
-    if (httpErrorStatus === 404) {
-      return window.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`);
-    }
-  }
-
-  const {
-    data,
-  } = tabData;
-  const courseBlocks = normalizeBlocks(courseId, data.course_blocks.blocks);
-  const courseTools = camelCaseObject(data.course_tools);
-
-  return { courseTools, courseBlocks };
-}
-
 function normalizeSequenceMetadata(sequence) {
   return {
     sequence: {
@@ -247,9 +191,4 @@ export function setFirstSectionCelebrationComplete(courseId) {
   getAuthenticatedHttpClient().post(url.href, {
     first_section: false,
   });
-}
-
-export async function updateCourseDeadlines(courseId) {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
-  await getAuthenticatedHttpClient().post(url.href, { course_key: courseId });
 }

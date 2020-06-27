@@ -306,3 +306,10 @@ $primary: #1176B2;
     flex-basis: 25%;
   }
 }
+
+// Import component-specific sass files
+@import 'courseware/course/celebration/CelebrationModal.scss';
+@import 'courseware/course/content-tools/calculator/calculator.scss';
+@import 'courseware/course/content-tools/contentTools.scss';
+@import 'course-home/dates-tab/Badge.scss';
+@import 'course-home/dates-tab/Day.scss';

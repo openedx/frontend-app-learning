@@ -8,10 +8,10 @@ import DatesBannerContainer from '../dates-banner/DatesBannerContainer';
 function DatesTab({ intl }) {
   return (
     <>
-      <DatesBannerContainer model="dates" />
       <h2 className="mb-4">
         {intl.formatMessage(messages.title)}
       </h2>
+      <DatesBannerContainer model="dates" />
       <Timeline />
     </>
   );
