@@ -13,7 +13,8 @@ import { useModel } from '../../model-store';
 // This is because React.lazy() requires that we import() from a file with a Component as its
 // default export.
 // See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
-const { EnrollmentAlert, StaffEnrollmentAlert } = React.lazy(() => import('../../alerts/enrollment-alert'));
+const EnrollmentAlert = React.lazy(() => import('../../alerts/enrollment-alert/EnrollmentAlert'));
+const StaffEnrollmentAlert = React.lazy(() => import('../../alerts/enrollment-alert/StaffEnrollmentAlert'));
 const LogistrationAlert = React.lazy(() => import('../../alerts/logistration-alert'));
 
 export default function OutlineTab() {
@@ -50,6 +51,10 @@ export default function OutlineTab() {
           clientEnrollmentAlert: EnrollmentAlert,
           clientStaffEnrollmentAlert: StaffEnrollmentAlert,
           clientLogistrationAlert: LogistrationAlert,
+        }}
+        // courseId is provided because EnrollmentAlert and StaffEnrollmentAlert require it.
+        customProps={{
+          courseId,
         }}
       />
       <div className="d-flex justify-content-between mb-3">
