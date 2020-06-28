@@ -15,8 +15,8 @@ export function useEnrollmentAlert(courseId, topic) {
   if (topic !== null) {
     useAlert(isVisible, {
       code,
-      topic: topic,
-      type: ALERT_TYPES.INFO
+      topic,
+      type: ALERT_TYPES.INFO,
     });
   }
 }

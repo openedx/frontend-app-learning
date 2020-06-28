@@ -154,6 +154,10 @@ export default function CoursewareContainer(props) {
     sequenceId: routeSequenceId,
     unitId: routeUnitId,
   } = params;
+  const {
+    alertTopic,
+  } = props;
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -215,7 +219,7 @@ export default function CoursewareContainer(props) {
       courseId={courseId}
       unitId={routeUnitId}
       courseStatus={courseStatus}
-      alertTopic={props.alertTopic}
+      alertTopic={alertTopic}
     >
       <Course
         courseId={courseId}
@@ -237,4 +241,9 @@ CoursewareContainer.propTypes = {
       unitId: PropTypes.string,
     }).isRequired,
   }).isRequired,
+  alertTopic: PropTypes.string,
+};
+
+CoursewareContainer.defaultProps = {
+  alertTopic: null,
 };

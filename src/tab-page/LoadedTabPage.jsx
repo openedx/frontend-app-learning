@@ -51,11 +51,13 @@ LoadedTabPage.propTypes = {
   children: PropTypes.node,
   courseId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
+  alertTopic: PropTypes.string,
 };
 
 LoadedTabPage.defaultProps = {
   children: null,
   unitId: null,
+  alertTopic: null,
 };
 
 export default LoadedTabPage;
