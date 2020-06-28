@@ -11,8 +11,9 @@ function LoadedTabPage({
   children,
   courseId,
   unitId,
+  alertTopic,
 }) {
-  useEnrollmentAlert(courseId);
+  useEnrollmentAlert(courseId, alertTopic);
 
   const {
     isStaff,

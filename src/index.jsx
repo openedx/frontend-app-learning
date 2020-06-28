@@ -34,7 +34,7 @@ subscribe(APP_READY, () => {
         <Switch>
           <Route path="/redirect" component={CoursewareRedirect} />
           <Route path="/course/:courseId/home">
-            <TabContainer tab="outline" fetch={fetchOutlineTab}>
+            <TabContainer tab="outline" alertTopic="outline" fetch={fetchOutlineTab}>
               <OutlineTab />
             </TabContainer>
           </Route>
@@ -49,7 +49,7 @@ subscribe(APP_READY, () => {
               '/course/:courseId/:sequenceId',
               '/course/:courseId',
             ]}
-            component={CoursewareContainer}
+            render={(props) => <CoursewareContainer {...props} alertTopic="course" />}
           />
         </Switch>
         <Footer />

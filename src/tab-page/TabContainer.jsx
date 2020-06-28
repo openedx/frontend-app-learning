@@ -10,6 +10,7 @@ export default function TabContainer(props) {
     children,
     fetch,
     tab,
+    alertTopic
   } = props;
 
   const { courseId: courseIdFromUrl } = useParams();
@@ -31,6 +32,7 @@ export default function TabContainer(props) {
       activeTabSlug={tab}
       courseId={courseId}
       courseStatus={courseStatus}
+      alertTopic={alertTopic}
     >
       {children}
     </TabPage>
@@ -41,4 +43,5 @@ TabContainer.propTypes = {
   children: PropTypes.node.isRequired,
   fetch: PropTypes.func.isRequired,
   tab: PropTypes.string.isRequired,
+  alertTopic: PropTypes.string,
 };

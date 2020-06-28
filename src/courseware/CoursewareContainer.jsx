@@ -147,7 +147,7 @@ function useSavedSequencePosition(courseId, sequenceId, unitId) {
   }, [unitId]);
 }
 
-export default function CoursewareContainer() {
+export default function CoursewareContainer(props) {
   const { params } = useRouteMatch();
   const {
     courseId: routeCourseUsageKey,
@@ -215,6 +215,7 @@ export default function CoursewareContainer() {
       courseId={courseId}
       unitId={routeUnitId}
       courseStatus={courseStatus}
+      alertTopic={props.alertTopic}
     >
       <Course
         courseId={courseId}

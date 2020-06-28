@@ -7,15 +7,18 @@ import { useModel } from '../../model-store';
 import { postCourseEnrollment } from './data/api';
 
 
-export function useEnrollmentAlert(courseId) {
+export function useEnrollmentAlert(courseId, topic) {
   const course = useModel('courses', courseId);
   const code = course.isStaff ? 'clientStaffEnrollmentAlert' : 'clientEnrollmentAlert';
   const isVisible = course && course.isEnrolled !== undefined && !course.isEnrolled;
 
-  useAlert(isVisible, {
-    code,
-    topic: 'course',
-  });
+  if (topic !== null) {
+    useAlert(isVisible, {
+      code,
+      topic: topic,
+      type: ALERT_TYPES.INFO
+    });
+  }
 }
 
 export function useEnrollClickHandler(courseId, successText) {
