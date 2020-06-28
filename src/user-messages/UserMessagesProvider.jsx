@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
-
 import UserMessagesContext from './UserMessagesContext';
 import { getLocalStorage, popLocalStorage, setLocalStorage } from '../data/localStorage';
 
@@ -56,17 +54,6 @@ export default function UserMessagesProvider({ children }) {
     const {
       code, dismissible, text, type, topic, payload, ...others
     } = message;
-
-    let isUnique = true;
-    messages.forEach(msg => {
-      if (_.isEqual(_.omit(msg, 'id'), message)) {
-        isUnique = false;
-      }
-    });
-    if (isUnique === false) {
-      return null;
-    }
-
     const id = refId.current;
     setMessages(currentMessages => [...currentMessages, {
       code, dismissible, text, type, topic, payload, ...others, id,
