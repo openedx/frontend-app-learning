@@ -72,9 +72,11 @@ describe('Unit', () => {
 
     window.postMessage(testMessageWithUnhandledType, '*');
     // HACK: We don't have a function we could reliably await here, so this test relies on the timeout of `waitFor`.
+    // FIXME: After the last updates `toThrowErrorMatchingSnapshot` (due to a bug) started returning DOM
+    //  after the error, so we had to fall back to `toThrowError` assertion for better readability.
     await expect(waitFor(
       () => expect(screen.getByTitle(mockData.id)).toHaveAttribute('height', String(testMessageWithUnhandledType.payload.height)),
       { timeout: 100 },
-    )).rejects.toThrowErrorMatchingSnapshot();
+    )).rejects.toThrowError(/Expected the element to have attribute/);
   });
 });
