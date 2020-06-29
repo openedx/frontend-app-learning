@@ -78,19 +78,7 @@ describe('Data layer integration tests', () => {
 
       const state = store.getState();
 
-      // check that all actions reduced, but access denied
-      expect(state).toEqual(expect.objectContaining({
-        models: expect.objectContaining({
-          courses: expect.any(Object),
-          sections: expect.any(Object),
-          sequences: expect.any(Object),
-          units: expect.any(Object),
-        }),
-        courseware: expect.objectContaining({
-          courseId: courseMetadata.id,
-          courseStatus: 'denied',
-        }),
-      }));
+      expect(state.courseware.courseStatus).toEqual('denied');
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.courses[courseMetadata.id].canLoadCourseware).not.toBeUndefined();
@@ -111,19 +99,7 @@ describe('Data layer integration tests', () => {
 
       const state = store.getState();
 
-      // check that all actions reduced
-      expect(state).toEqual(expect.objectContaining({
-        models: expect.objectContaining({
-          courses: expect.any(Object),
-          sections: expect.any(Object),
-          sequences: expect.any(Object),
-          units: expect.any(Object),
-        }),
-        courseware: expect.objectContaining({
-          courseId: courseMetadata.id,
-          courseStatus: 'loaded',
-        }),
-      }));
+      expect(state.courseware.courseStatus).toEqual('loaded');
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.courses[courseMetadata.id].canLoadCourseware).not.toBeUndefined();
