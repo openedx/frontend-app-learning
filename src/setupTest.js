@@ -50,7 +50,8 @@ import PropTypes from 'prop-types';
 import { render as rtlRender, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { IntlProvider } from '@edx/frontend-platform/node_modules/react-intl';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { IntlProvider } from 'react-intl';
 import { reducer as modelsReducer } from './model-store';
 import { reducer as coursewareReducer } from './data';
 import { UserMessagesProvider } from './user-messages';

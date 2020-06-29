@@ -42,15 +42,6 @@ exports[`Unit handles receiving MessageEvent 1`] = `
           title=\\"3\\""
 `;
 
-exports[`Unit ignores MessageEvent with unhandled type 1`] = `
-"[2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m\\"height\\"[39m[32m[39m[2m, [22m[32m[32m\\"300\\"[39m[32m[39m[2m) // element.getAttribute(\\"height\\") === \\"300\\"[22m
-
-Expected the element to have attribute:
-[32m  height=\\"300\\"[39m
-Received:
-[31m  height=\\"0\\"[39m"
-`;
-
 exports[`Unit renders correctly 1`] = `
 <DocumentFragment>
   <div
