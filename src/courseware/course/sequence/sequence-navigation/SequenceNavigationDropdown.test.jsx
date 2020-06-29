@@ -1,25 +1,11 @@
 import React from 'react';
 import { fireEvent } from '@testing-library/dom';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
-import { render, screen } from '../../../../test/test-utils';
+import {
+  initialState, render, screen, testUnits,
+} from '../../../../setupTest';
 
 describe('Sequence Navigation Dropdown', () => {
-  const testUnits = ['1', '2', '3'];
-
-  const initialState = {
-    models: {
-      units: testUnits.reduce(
-        (acc, unitId) => Object.assign(acc, {
-          [unitId]: {
-            contentType: 'other',
-            title: unitId,
-          },
-        }),
-        {},
-      ),
-    },
-  };
-
   const mockData = {
     unitId: '1',
     onNavigate: () => {},
@@ -73,7 +59,7 @@ describe('Sequence Navigation Dropdown', () => {
       onNavigate={onNavigate}
     />, { initialState });
 
-    screen.getAllByText(/^\d$/).forEach(element => fireEvent.click(element));
+    screen.getAllByText(/^\d+$/).forEach(element => fireEvent.click(element));
     expect(onNavigate).toHaveBeenCalledTimes(testUnits.length);
   });
 });
