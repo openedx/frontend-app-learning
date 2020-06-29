@@ -53,8 +53,8 @@ exports[`Unit Icon renders correct icon for vertical unit 1`] = `
 exports[`Unit Icon renders correct icon for video unit 1`] = `
 <DocumentFragment>
   <img
-    alt="fa-film"
-    class="fa-film"
+    alt="fa-video"
+    class="fa-video"
     data-testid="icon"
   />
 </DocumentFragment>

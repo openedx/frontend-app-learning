@@ -4,7 +4,7 @@ import UnitIcon from './UnitIcon';
 
 describe('Unit Icon', () => {
   const types = {
-    video: 'fa-film',
+    video: 'fa-video',
     other: 'fa-book',
     vertical: 'fa-tasks',
     problem: 'fa-edit',
@@ -20,7 +20,7 @@ describe('Unit Icon', () => {
       }
 
       const { asFragment } = render(<UnitIcon type={key} />);
-      expect(screen.getByAltText(value)).toBeInTheDocument();
+      expect(screen.getByTestId('icon')).toHaveClass(value);
       expect(asFragment()).toMatchSnapshot();
     });
   });
