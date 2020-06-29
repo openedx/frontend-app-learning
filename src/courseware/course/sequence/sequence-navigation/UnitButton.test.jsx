@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent } from '@testing-library/dom';
-import { render, screen } from '../../../../test/test-utils';
+import { render, screen } from '../../../../setupTest';
 import UnitButton from './UnitButton';
 
 describe('Unit Button', () => {

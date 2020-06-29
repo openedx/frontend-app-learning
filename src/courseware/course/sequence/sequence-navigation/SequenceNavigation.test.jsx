@@ -2,7 +2,9 @@ import React from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { cloneDeep } from 'lodash';
 import { fireEvent } from '@testing-library/dom';
-import { render, screen } from '../../../../test/test-utils';
+import {
+  initialState, render, screen, testUnits,
+} from '../../../../setupTest';
 import SequenceNavigation from './SequenceNavigation';
 import useIndexOfLastVisibleChild from '../../../../tabs/useIndexOfLastVisibleChild';
 
@@ -11,46 +13,6 @@ jest.mock('../../../../tabs/useIndexOfLastVisibleChild');
 useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
 
 describe('Sequence Navigation', () => {
-  const testUnits = [...Array(10).keys()].map(i => String(i + 1));
-  const initialState = {
-    courseware: {
-      sequenceStatus: 'loaded',
-      courseStatus: 'loaded',
-      courseId: '1',
-    },
-    models: {
-      courses: {
-        1: {
-          sectionIds: ['1'],
-        },
-      },
-      sections: {
-        1: {
-          sequenceIds: ['1', '2'],
-        },
-      },
-      sequences: {
-        1: {
-          unitIds: testUnits,
-          showCompletion: true,
-        },
-        2: {
-          unitIds: testUnits,
-          showCompletion: true,
-        },
-      },
-      units: testUnits.reduce(
-        (acc, unitId) => Object.assign(acc, {
-          [unitId]: {
-            contentType: 'other',
-            title: unitId,
-          },
-        }),
-        {},
-      ),
-    },
-  };
-
   const mockData = {
     previousSequenceHandler: () => {},
     onNavigate: () => {},
