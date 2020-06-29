@@ -1,5 +1,7 @@
 import React from 'react';
-import { render, screen } from '../../../../setupTest';
+import {
+  initialState, render, screen, testUnits,
+} from '../../../../setupTest';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import useIndexOfLastVisibleChild from '../../../../tabs/useIndexOfLastVisibleChild';
 
@@ -7,22 +9,6 @@ import useIndexOfLastVisibleChild from '../../../../tabs/useIndexOfLastVisibleCh
 jest.mock('../../../../tabs/useIndexOfLastVisibleChild');
 
 describe('Sequence Navigation Tabs', () => {
-  const testUnits = [...Array(10).keys()].map(i => String(i + 1));
-
-  const initialState = {
-    models: {
-      units: testUnits.reduce(
-        (acc, unitId) => Object.assign(acc, {
-          [unitId]: {
-            contentType: 'other',
-            title: unitId,
-          },
-        }),
-        {},
-      ),
-    },
-  };
-
   const mockData = {
     unitId: '1',
     onNavigate: () => {

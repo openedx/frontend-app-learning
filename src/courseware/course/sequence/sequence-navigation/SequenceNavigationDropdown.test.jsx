@@ -61,5 +61,8 @@ describe('Sequence Navigation Dropdown', () => {
 
     screen.getAllByText(/^\d+$/).forEach(element => fireEvent.click(element));
     expect(onNavigate).toHaveBeenCalledTimes(testUnits.length);
+    testUnits.forEach(unit => {
+      expect(onNavigate).toHaveBeenNthCalledWith(Number(unit), unit);
+    });
   });
 });
