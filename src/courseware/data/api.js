@@ -143,6 +143,7 @@ function normalizeSequenceMetadata(sequence) {
       title: sequence.display_name,
       gatedContent: camelCaseObject(sequence.gated_content),
       isTimeLimited: sequence.is_time_limited,
+      position: sequence.position || 1,
       // Position comes back from the server 1-indexed. Adjust here.
       activeUnitIndex: sequence.position ? sequence.position - 1 : 0,
       saveUnitPosition: sequence.save_position,

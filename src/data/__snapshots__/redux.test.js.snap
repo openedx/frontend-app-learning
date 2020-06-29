@@ -357,6 +357,7 @@ Object {
         "id": "block-v1:edX+DemoX+Demo_Course_3+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd10",
         "isTimeLimited": false,
         "lmsWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_3/jump_to/block-v1:edX+DemoX+Demo_Course_3+type@sequential+block@cdabcdabcdabcdabcdabcdabcdabcd10",
+        "position": 1,
         "saveUnitPosition": true,
         "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@cdabcdabcdabcdabcdabcdabcdabcd11",
         "showCompletion": true,

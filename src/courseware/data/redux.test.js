@@ -84,6 +84,7 @@ describe('Data layer integration tests', () => {
     it('Should change and revert sequence model position in case of error', async () => {
       axiosMock.onPost(gotoPositionURL).networkError();
 
+      const oldPosition = store.getState().models.sequences[sequenceId].position;
       const newPosition = 123;
 
       await executeThunk(
@@ -94,7 +95,7 @@ describe('Data layer integration tests', () => {
 
       expect(logError).toHaveBeenCalled();
       expect(axiosMock.history.post[0].url).toEqual(gotoPositionURL);
-      expect(store.getState().models.sequences[sequenceId].position).toBeUndefined();
+      expect(store.getState().models.sequences[sequenceId].position).toEqual(oldPosition);
     });
 
     it('Should update sequence model position', async () => {
