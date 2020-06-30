@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { useMemo } from 'react';
-import { useAlert } from '../../user-messages';
 import { useModel } from '../../generic/model-store';
+import { useAlert } from '../../generic/user-messages';
 
 export function useAccessExpirationAlert(courseId) {
   const course = useModel('courses', courseId);

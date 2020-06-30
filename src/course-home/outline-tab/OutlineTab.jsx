@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '@edx/paragon';
 
-import { AlertList } from '../../user-messages';
+import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
 import CourseTools from './widgets/CourseTools';

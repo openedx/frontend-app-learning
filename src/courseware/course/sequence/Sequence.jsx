@@ -8,7 +8,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 
 import PageLoading from '../../../PageLoading';
-import { UserMessagesContext, ALERT_TYPES } from '../../../user-messages';
+import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
 import { useModel } from '../../../generic/model-store';
 
 import messages from './messages';

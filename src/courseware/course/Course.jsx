@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { getConfig } from '@edx/frontend-platform';
 
-import { AlertList } from '../../user-messages';
+import { AlertList } from '../../generic/user-messages';
 import { useAccessExpirationAlert } from '../../alerts/access-expiration-alert';
 import { useOfferAlert } from '../../alerts/offer-alert';
 

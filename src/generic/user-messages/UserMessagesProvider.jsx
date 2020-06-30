@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import UserMessagesContext from './UserMessagesContext';
-import { getLocalStorage, popLocalStorage, setLocalStorage } from '../data/localStorage';
+import { getLocalStorage, popLocalStorage, setLocalStorage } from '../../data/localStorage';
 
 export const ALERT_TYPES = {
   ERROR: 'error',
