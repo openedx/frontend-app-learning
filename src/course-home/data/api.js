@@ -1,6 +1,7 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { normalizeBlocks } from '../../data';
+// TODO: Pull this normalization function up so we're not reaching into courseware
+import { normalizeBlocks } from '../../courseware/data/api';
 
 function normalizeCourseHomeCourseMetadata(metadata) {
   const data = camelCaseObject(metadata);
