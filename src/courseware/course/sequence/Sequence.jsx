@@ -7,7 +7,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 
-import PageLoading from '../../../PageLoading';
+import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
 import { useModel } from '../../../generic/model-store';
 

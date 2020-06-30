@@ -10,8 +10,8 @@ import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import messages from './messages';
 import BookmarkButton from '../bookmark/BookmarkButton';
-import PageLoading from '../../../PageLoading';
 import { useModel } from '../../../generic/model-store';
+import PageLoading from '../../../generic/PageLoading';
 
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
 
