@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
+
 import useWindowSize from './useWindowSize';
 
 const invisibleStyle = {
@@ -68,7 +69,6 @@ export default function useIndexOfLastVisibleChild() {
         sumWidth: overflowElementRef.current ? overflowElementRef.current.getBoundingClientRect().width : 0,
         nextIndexOfLastVisibleChild: -1,
       });
-
 
     setIndexOfLastVisibleChild(nextIndexOfLastVisibleChild);
   }, [windowSize, containerElementRef.current]);

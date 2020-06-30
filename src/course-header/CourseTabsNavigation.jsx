@@ -4,7 +4,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 
 import messages from './messages';
-import Tabs from '../tabs/Tabs';
+import Tabs from '../generic/tabs/Tabs';
 
 function CourseTabsNavigation({
   activeTabSlug, className, tabs, intl,
