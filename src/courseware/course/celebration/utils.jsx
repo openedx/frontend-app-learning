@@ -1,7 +1,7 @@
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
-import { setFirstSectionCelebrationComplete } from '../../../data/api';
+import { postFirstSectionCelebrationComplete } from './data/api';
 import { clearLocalStorage, getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 
 const CELEBRATION_LOCAL_STORAGE_KEY = 'CelebrationModal.showOnSectionLoad';
@@ -17,7 +17,7 @@ function handleNextSectionCelebration(sequenceId, nextSequenceId, nextUnitId) {
 
 function recordFirstSectionCelebration(courseId) {
   // Tell the LMS
-  setFirstSectionCelebrationComplete(courseId);
+  postFirstSectionCelebrationComplete(courseId);
 
   // Tell our analytics
   const { administrator } = getAuthenticatedUser();

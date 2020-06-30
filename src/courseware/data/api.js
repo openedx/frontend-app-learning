@@ -26,7 +26,7 @@ export async function getBlockCompletion(courseId, sequenceId, usageKey) {
   return false;
 }
 
-export async function updateSequencePosition(courseId, sequenceId, position) {
+export async function postSequencePosition(courseId, sequenceId, position) {
   // Post data sent to this endpoint must be url encoded
   // TODO: Remove the need for this to be the case.
   // TODO: Ensure this usage of URLSearchParams is working in Internet Explorer

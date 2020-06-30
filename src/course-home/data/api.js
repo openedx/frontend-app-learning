@@ -59,7 +59,7 @@ export async function getOutlineTabData(courseId) {
   return { courseTools, courseBlocks, datesWidget };
 }
 
-export async function updateCourseDeadlines(courseId) {
+export async function postCourseDeadlines(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
   await getAuthenticatedHttpClient().post(url.href, { course_key: courseId });
 }

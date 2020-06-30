@@ -3,7 +3,7 @@ import {
   getCourseHomeCourseMetadata,
   getDatesTabData,
   getOutlineTabData,
-  updateCourseDeadlines,
+  postCourseDeadlines,
 } from './api';
 
 import {
@@ -69,7 +69,7 @@ export function fetchOutlineTab(courseId) {
 
 export function resetDeadlines(courseId, getTabData) {
   return async (dispatch) => {
-    updateCourseDeadlines(courseId).then(() => {
+    postCourseDeadlines(courseId).then(() => {
       dispatch(getTabData(courseId));
     });
   };

@@ -1,7 +1,7 @@
 import { logError } from '@edx/frontend-platform/logging';
 import {
   getBlockCompletion,
-  updateSequencePosition,
+  postSequencePosition,
 } from './api';
 import {
   updateModel,
@@ -42,7 +42,7 @@ export function saveSequencePosition(courseId, sequenceId, position) {
       },
     }));
     try {
-      await updateSequencePosition(courseId, sequenceId, position);
+      await postSequencePosition(courseId, sequenceId, position);
       // Update again under the assumption that the above call succeeded, since it doesn't return a
       // meaningful response.
       dispatch(updateModel({
