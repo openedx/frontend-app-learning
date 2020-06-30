@@ -1,13 +1,9 @@
-import axios from 'axios'; // eslint-disable-line import/no-extraneous-dependencies
 import { configureStore } from '@reduxjs/toolkit';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
-import {
-  getAuthenticatedHttpClient,
-  getAuthenticatedUser,
-} from '@edx/frontend-platform/auth';
-import { getConfig } from '@edx/frontend-platform';
+import { configure, getAuthenticatedHttpClient, MockAuthService } from '@edx/frontend-platform/auth';
+import { getConfig, mergeConfig } from '@edx/frontend-platform';
 import { logError } from '@edx/frontend-platform/logging';
 
 import * as thunks from './thunks';
@@ -20,11 +16,24 @@ import { reducer as modelsReducer } from '../model-store';
 import './__factories__';
 
 jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
-jest.mock('@edx/frontend-platform/auth');
 
-const axiosMock = new MockAdapter(axios);
-getAuthenticatedHttpClient.mockReturnValue(axios);
-getAuthenticatedUser.mockReturnValue({ username: 'edx' });
+mergeConfig({
+  authenticatedUser: {
+    userId: 'abc123',
+    username: 'Mock User',
+    roles: [],
+    administrator: false,
+  },
+});
+configure(MockAuthService, {
+  config: getConfig(),
+  loggingService: {
+    logInfo: jest.fn(),
+    logError: jest.fn(),
+  },
+});
+
+const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
 
 describe('Data layer integration tests', () => {

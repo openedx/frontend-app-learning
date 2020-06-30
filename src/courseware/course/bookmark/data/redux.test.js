@@ -1,12 +1,8 @@
-import axios from 'axios'; // eslint-disable-line import/no-extraneous-dependencies
 import { configureStore } from '@reduxjs/toolkit';
 import MockAdapter from 'axios-mock-adapter';
 
-import {
-  getAuthenticatedHttpClient,
-  getAuthenticatedUser,
-} from '@edx/frontend-platform/auth';
-import { getConfig } from '@edx/frontend-platform';
+import { configure, getAuthenticatedHttpClient, MockAuthService } from '@edx/frontend-platform/auth';
+import { getConfig, mergeConfig } from '@edx/frontend-platform';
 import { logError } from '@edx/frontend-platform/logging';
 
 import * as thunks from './thunks';
@@ -16,11 +12,25 @@ import executeThunk from '../../../../utils';
 import { reducer as modelsReducer } from '../../../../model-store';
 
 jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
-jest.mock('@edx/frontend-platform/auth');
 
-const axiosMock = new MockAdapter(axios);
-getAuthenticatedHttpClient.mockReturnValue(axios);
-getAuthenticatedUser.mockReturnValue({ username: 'edx' });
+const authenticatedUser = {
+  userId: 'abc123',
+  username: 'Mock User',
+  roles: [],
+  administrator: false,
+};
+mergeConfig({
+  authenticatedUser,
+});
+configure(MockAuthService, {
+  config: getConfig(),
+  loggingService: {
+    logInfo: jest.fn(),
+    logError: jest.fn(),
+  },
+});
+
+const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
 
 describe('Data layer integration tests', () => {
@@ -68,7 +78,7 @@ describe('Data layer integration tests', () => {
   });
 
   describe('Test removeBookmark', () => {
-    const deleteBookmarkURL = `${getConfig().LMS_BASE_URL}/api/bookmarks/v1/bookmarks/edx,${unitId}/`;
+    const deleteBookmarkURL = `${getConfig().LMS_BASE_URL}/api/bookmarks/v1/bookmarks/${authenticatedUser.username},${unitId}/`;
 
     it('Should fail to remove bookmark in case of error', async () => {
       axiosMock.onDelete(deleteBookmarkURL).networkError();
