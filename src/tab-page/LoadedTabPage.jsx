@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Header, CourseTabsNavigation } from '../course-header';
-import { useModel } from '../model-store';
+import { useModel } from '../generic/model-store';
 import { useEnrollmentAlert } from '../alerts/enrollment-alert';
 import InstructorToolbar from '../courseware/course/InstructorToolbar';
 

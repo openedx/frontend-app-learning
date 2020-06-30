@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
 import { useSelector } from 'react-redux';
-import { useModel } from '../../../../model-store';
+import { useModel } from '../../../../generic/model-store';
 import { sequenceIdsSelector } from '../../../data/selectors';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {

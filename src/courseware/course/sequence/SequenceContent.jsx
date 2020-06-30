@@ -2,7 +2,7 @@ import React, { Suspense, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import PageLoading from '../../../PageLoading';
-import { useModel } from '../../../model-store';
+import { useModel } from '../../../generic/model-store';
 
 import messages from './messages';
 import Unit from './Unit';

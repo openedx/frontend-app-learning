@@ -5,8 +5,7 @@ import {
   faBookmark, faCertificate, faInfo, faCalendar, faStar,
 } from '@fortawesome/free-solid-svg-icons';
 import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
-import { useModel } from '../../../model-store';
-
+import { useModel } from '../../../generic/model-store';
 
 export default function CourseTools(
   { courseId },

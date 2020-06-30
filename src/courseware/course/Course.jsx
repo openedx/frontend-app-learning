@@ -13,7 +13,7 @@ import { CelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseSock from './course-sock';
 import ContentTools from './content-tools';
-import { useModel } from '../../model-store';
+import { useModel } from '../../generic/model-store';
 
 // Note that we import from the component files themselves in the enrollment-alert package.
 // This is because Reacy.lazy() requires that we import() from a file with a Component as it's

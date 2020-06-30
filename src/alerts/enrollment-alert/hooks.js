@@ -3,7 +3,7 @@ import {
   useContext, useState, useCallback,
 } from 'react';
 import { UserMessagesContext, ALERT_TYPES, useAlert } from '../../user-messages';
-import { useModel } from '../../model-store';
+import { useModel } from '../../generic/model-store';
 import { postCourseEnrollment } from './data/api';
 
 

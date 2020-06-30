@@ -1,10 +1,9 @@
-
 import { logError } from '@edx/frontend-platform/logging';
 import {
   createBookmark,
   deleteBookmark,
 } from './api';
-import { updateModel } from '../../../../model-store';
+import { updateModel } from '../../../../generic/model-store';
 
 export function addBookmark(unitId) {
   return async (dispatch) => {

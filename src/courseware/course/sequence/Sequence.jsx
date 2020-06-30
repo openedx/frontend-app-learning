@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 
 import PageLoading from '../../../PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../user-messages';
-import { useModel } from '../../../model-store';
+import { useModel } from '../../../generic/model-store';
 
 import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';

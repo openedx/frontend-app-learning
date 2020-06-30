@@ -7,7 +7,7 @@ import { AlertList } from '../../user-messages';
 import CourseDates from './widgets/CourseDates';
 import CourseTools from './widgets/CourseTools';
 import Section from './Section';
-import { useModel } from '../../model-store';
+import { useModel } from '../../generic/model-store';
 
 // Note that we import from the component files themselves in the enrollment-alert package.
 // This is because React.lazy() requires that we import() from a file with a Component as its

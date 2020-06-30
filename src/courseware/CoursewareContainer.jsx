@@ -5,6 +5,7 @@ import { history } from '@edx/frontend-platform';
 import { getLocale } from '@edx/frontend-platform/i18n';
 import { useRouteMatch, Redirect } from 'react-router';
 
+import { useModel } from '../generic/model-store';
 import {
   fetchCourse,
   fetchSequence,
@@ -14,7 +15,6 @@ import {
   checkBlockCompletion,
   saveSequencePosition,
 } from './data/thunks';
-import { useModel } from '../model-store';
 import { TabPage } from '../tab-page';
 
 import Course from './course';

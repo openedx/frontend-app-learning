@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { useModel } from '../../model-store';
+import { useModel } from '../../generic/model-store';
 
 import Day from './Day';
 import { daycmp, isLearnerAssignment } from './utils';

@@ -8,7 +8,7 @@ import {
 
 import {
   addModel,
-} from '../../model-store';
+} from '../../generic/model-store';
 
 import {
   fetchTabFailure,

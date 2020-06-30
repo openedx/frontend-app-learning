@@ -5,7 +5,7 @@ import {
 } from './api';
 import {
   updateModel,
-} from '../../model-store';
+} from '../../generic/model-store';
 
 export function checkBlockCompletion(courseId, sequenceId, unitId) {
   return async (dispatch, getState) => {

@@ -5,7 +5,7 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
-import { useModel } from '../../model-store';
+import { useModel } from '../../generic/model-store';
 
 function CourseBreadcrumb({
   url, children, withSeparator, ...attrs
