@@ -17,6 +17,7 @@ function DatesBannerContainer(props) {
   } = useSelector(state => state.courseHome);
 
   const {
+    courseDateBlocks,
     datesBannerInfo,
   } = useModel(model, courseId);
 
@@ -32,13 +33,14 @@ function DatesBannerContainer(props) {
   } = useModel('courses', courseId);
 
   const dispatch = useDispatch();
+  const hasDeadlines = courseDateBlocks.some(x => x.dateType === 'assignment-due-date');
   const upgradeToCompleteGraded = model === 'dates' && contentTypeGatingEnabled && !missedDeadlines;
   const upgradeToReset = !upgradeToCompleteGraded && missedDeadlines && missedGatedContent;
   const resetDates = !upgradeToCompleteGraded && missedDeadlines && !missedGatedContent;
   const datesBanners = [
     {
       name: 'datesTabInfoBanner',
-      shouldDisplay: model === 'dates' && !missedDeadlines && isSelfPaced,
+      shouldDisplay: model === 'dates' && hasDeadlines && !missedDeadlines && isSelfPaced,
     },
     {
       name: 'upgradeToCompleteGradedBanner',
