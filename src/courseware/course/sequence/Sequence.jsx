@@ -100,7 +100,7 @@ function Sequence({
   }, [unit]);
 
   if (sequenceStatus === 'loading') {
-    if (!sequence) {
+    if (!sequenceId) {
       return (<div> {intl.formatMessage(messages['learn.sequence.no.content'])} </div>);
     }
     return (
