@@ -4,7 +4,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { Dropdown } from '@edx/paragon';
 
-import { postMasqueradeOptions } from '../../../data/api';
+import { postMasqueradeOptions } from './data/api';
 
 class MasqueradeWidgetOption extends Component {
   handleClick() {

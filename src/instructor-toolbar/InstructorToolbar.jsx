@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-
+import { useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 
 import MasqueradeWidget from './masquerade-widget';
@@ -34,13 +33,20 @@ function getStudioUrl(courseId, unitId) {
   return urlFull;
 }
 
-function InstructorToolbar(props) {
+export default function InstructorToolbar(props) {
   const {
     courseId,
     unitId,
   } = props;
   const urlInsights = getInsightsUrl(courseId);
-  const urlLms = props.activeUnitLmsWebUrl;
+  const urlLms = useSelector((state) => {
+    if (!unitId) {
+      return {};
+    }
+
+    const activeUnit = state.models.units[props.unitId];
+    return activeUnit ? activeUnit.lmsWebUrl : undefined;
+  });
   const urlStudio = getStudioUrl(courseId, unitId);
   return (
     <div className="bg-primary text-light">
@@ -71,26 +77,11 @@ function InstructorToolbar(props) {
 }
 
 InstructorToolbar.propTypes = {
-  activeUnitLmsWebUrl: PropTypes.string,
   courseId: PropTypes.string,
   unitId: PropTypes.string,
 };
 
 InstructorToolbar.defaultProps = {
-  activeUnitLmsWebUrl: undefined,
   courseId: undefined,
   unitId: undefined,
 };
-
-const mapStateToProps = (state, props) => {
-  if (!props.unitId) {
-    return {};
-  }
-
-  const activeUnit = state.models.units[props.unitId];
-  return {
-    activeUnitLmsWebUrl: activeUnit ? activeUnit.lmsWebUrl : undefined,
-  };
-};
-
-export default connect(mapStateToProps)(InstructorToolbar);
