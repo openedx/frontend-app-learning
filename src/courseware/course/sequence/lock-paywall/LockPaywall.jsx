@@ -6,7 +6,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 import VerifiedCert from './assets/edx-verified-mini-cert.png';
-import { useModel } from '../../../../model-store';
+import { useModel } from '../../../../generic/model-store';
 
 function LockPaywall({
   intl,

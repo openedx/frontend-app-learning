@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import { useModel } from '../../model-store';
-import { useAlert } from '../../user-messages';
+import { useModel } from '../../generic/model-store';
+import { useAlert } from '../../generic/user-messages';
 
 export function useOfferAlert(courseId) {
   const course = useModel('courses', courseId);

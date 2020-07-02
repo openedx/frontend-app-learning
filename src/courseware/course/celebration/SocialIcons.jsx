@@ -13,7 +13,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
-import { useModel } from '../../../model-store';
+import { useModel } from '../../../generic/model-store';
 
 function SocialIcons({ courseId, intl }) {
   const {

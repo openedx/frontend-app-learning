@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
-import { useModel } from '../../../../model-store';
+import { useModel } from '../../../../generic/model-store';
 
 export default function SequenceNavigation({
   unitId,

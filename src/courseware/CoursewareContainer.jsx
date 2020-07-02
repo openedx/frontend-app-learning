@@ -5,20 +5,19 @@ import { history } from '@edx/frontend-platform';
 import { getLocale } from '@edx/frontend-platform/i18n';
 import { useRouteMatch, Redirect } from 'react-router';
 
+import { useModel } from '../generic/model-store';
+import { TabPage } from '../tab-page';
+
 import {
   fetchCourse,
   fetchSequence,
-  getResumeBlock,
-} from '../data';
-import {
   checkBlockCompletion,
   saveSequencePosition,
-} from './data/thunks';
-import { useModel } from '../model-store';
-import { TabPage } from '../tab-page';
-
+  getResumeBlock,
+  sequenceIdsSelector,
+  firstSequenceIdSelector,
+} from './data';
 import Course from './course';
-import { sequenceIdsSelector, firstSequenceIdSelector } from './data/selectors';
 import { handleNextSectionCelebration } from './course/celebration';
 
 function useUnitNavigationHandler(courseId, sequenceId, unitId) {
@@ -51,7 +50,6 @@ function useNextSequence(sequenceId) {
   return nextSequenceId !== null ? sequences[nextSequenceId] : null;
 }
 
-
 function useNextSequenceHandler(courseId, sequenceId) {
   const course = useModel('courses', courseId);
   const sequence = useModel('sequences', sequenceId);
@@ -69,6 +67,9 @@ function useNextSequenceHandler(courseId, sequenceId) {
         history.push(`/course/${courseId}/${nextSequence.id}`);
       }
 
+      // TODO: Consider publishing an event on sequence navigation which the celebration modal can
+      // subscribe to.  That'd prevent us from having celebration-specific code here in this
+      // handler.
       const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
       if (celebrateFirstSection && sequence.sectionId !== nextSequence.sectionId) {
         handleNextSectionCelebration(sequenceId, nextSequence.id, nextUnitId);

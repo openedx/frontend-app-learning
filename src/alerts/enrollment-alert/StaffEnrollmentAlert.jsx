@@ -5,7 +5,7 @@ import { Button } from '@edx/paragon';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { Alert } from '../../user-messages';
+import { Alert } from '../../generic/user-messages';
 
 import messages from './messages';
 import { useEnrollClickHandler } from './hooks';

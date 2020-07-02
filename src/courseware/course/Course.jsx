@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { getConfig } from '@edx/frontend-platform';
 
-import { AlertList } from '../../user-messages';
+import { AlertList } from '../../generic/user-messages';
 import { useAccessExpirationAlert } from '../../alerts/access-expiration-alert';
 import { useOfferAlert } from '../../alerts/offer-alert';
 
@@ -13,7 +13,7 @@ import { CelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseSock from './course-sock';
 import ContentTools from './content-tools';
-import { useModel } from '../../model-store';
+import { useModel } from '../../generic/model-store';
 
 // Note that we import from the component files themselves in the enrollment-alert package.
 // This is because Reacy.lazy() requires that we import() from a file with a Component as it's

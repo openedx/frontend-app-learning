@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useModel } from '../../model-store';
+import { useModel } from '../../generic/model-store';
 
 import DatesBanner from './DatesBanner';
 import { fetchDatesTab, resetDeadlines } from '../data/thunks';

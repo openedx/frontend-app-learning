@@ -4,7 +4,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { Header } from '../course-header';
 import { useLogistrationAlert } from '../alerts/logistration-alert';
-import PageLoading from '../PageLoading';
+import PageLoading from '../generic/PageLoading';
 
 import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';

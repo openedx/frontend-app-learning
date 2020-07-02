@@ -2,11 +2,10 @@ import React, {
   Component,
 } from 'react';
 import PropTypes from 'prop-types';
-
 import { Dropdown } from '@edx/paragon';
 
-import { getMasqueradeOptions } from '../../../data/api';
 import MasqueradeWidgetOption from './MasqueradeWidgetOption';
+import { getMasqueradeOptions } from './data/api';
 
 class MasqueradeWidget extends Component {
   constructor(props) {

@@ -3,12 +3,12 @@ import {
   getCourseHomeCourseMetadata,
   getDatesTabData,
   getOutlineTabData,
-  updateCourseDeadlines,
+  postCourseDeadlines,
 } from './api';
 
 import {
   addModel,
-} from '../../model-store';
+} from '../../generic/model-store';
 
 import {
   fetchTabFailure,
@@ -69,7 +69,7 @@ export function fetchOutlineTab(courseId) {
 
 export function resetDeadlines(courseId, getTabData) {
   return async (dispatch) => {
-    updateCourseDeadlines(courseId).then(() => {
+    postCourseDeadlines(courseId).then(() => {
       dispatch(getTabData(courseId));
     });
   };

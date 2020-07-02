@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import UnitButton from './UnitButton';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
-import useIndexOfLastVisibleChild from '../../../../tabs/useIndexOfLastVisibleChild';
+import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
 export default function SequenceNavigationTabs({
   unitIds, unitId, showCompletion, onNavigate,

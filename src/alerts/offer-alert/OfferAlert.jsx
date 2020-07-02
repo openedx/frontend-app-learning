@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Alert } from '../../user-messages';
+import { Alert } from '../../generic/user-messages';
 
 function OfferAlert({ payload }) {
   const {
