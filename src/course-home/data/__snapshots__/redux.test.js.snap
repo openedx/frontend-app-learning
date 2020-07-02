@@ -99,7 +99,7 @@ Object {
 exports[`Data layer integration tests Test fetchOutlineTab Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseHome": Object {
-    "courseId": "course-v1:edX+DemoX+Demo_Course_2",
+    "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
   },
   "courseware": Object {
@@ -110,9 +110,9 @@ Object {
   },
   "models": Object {
     "courses": Object {
-      "course-v1:edX+DemoX+Demo_Course_2": Object {
-        "courseId": "course-v1:edX+DemoX+Demo_Course_2",
-        "id": "course-v1:edX+DemoX+Demo_Course_2",
+      "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+        "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isSelfPaced": false,
         "isStaff": false,
         "number": "DemoX",
@@ -121,38 +121,38 @@ Object {
           Object {
             "slug": "courseware",
             "title": "Course",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_2/course/",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course/",
           },
           Object {
             "slug": "discussion",
             "title": "Discussion",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_2/discussion/forum/",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/discussion/forum/",
           },
           Object {
             "slug": "wiki",
             "title": "Wiki",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_2/course_wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course_wiki",
           },
           Object {
             "slug": "progress",
             "title": "Progress",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_2/progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/progress",
           },
           Object {
             "slug": "instructor",
             "title": "Instructor",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_2/instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/instructor",
           },
         ],
         "title": "Demonstration Course",
       },
     },
     "outline": Object {
-      "course-v1:edX+DemoX+Demo_Course_2": Object {
+      "course-v1:edX+DemoX+Demo_Course_1": Object {
         "courseBlocks": Object {
           "courses": Object {
             "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd4": Object {
-              "id": "course-v1:edX+DemoX+Demo_Course_2",
+              "id": "course-v1:edX+DemoX+Demo_Course_1",
               "sectionIds": Array [
                 "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd3",
               ],
@@ -161,7 +161,7 @@ Object {
           },
           "sections": Object {
             "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
-              "courseId": "course-v1:edX+DemoX+Demo_Course_2",
+              "courseId": "course-v1:edX+DemoX+Demo_Course_1",
               "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd3",
               "sequenceIds": Array [
                 "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
@@ -196,7 +196,7 @@ Object {
           "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/bookmarks/",
         },
         "datesWidget": undefined,
-        "id": "course-v1:edX+DemoX+Demo_Course_2",
+        "id": "course-v1:edX+DemoX+Demo_Course_1",
       },
     },
   },

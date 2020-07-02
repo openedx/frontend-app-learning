@@ -9,7 +9,7 @@ import * as thunks from './thunks';
 
 import executeThunk from '../../../../utils';
 
-import { reducer as modelsReducer } from '../../../../model-store';
+import { reducer as modelsReducer } from '../../../../generic/model-store';
 
 jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
 
@@ -34,9 +34,9 @@ const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
 
 describe('Data layer integration tests', () => {
-  let store;
-
   const unitId = 'unitId';
+
+  let store;
 
   beforeEach(() => {
     axiosMock.reset();
