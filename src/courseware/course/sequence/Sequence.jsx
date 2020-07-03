@@ -110,7 +110,7 @@ function Sequence({
     );
   }
 
-  const gated = sequence.gatedContent !== undefined && sequence.gatedContent.gated;
+  const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
 
   if (sequenceStatus === 'loaded') {
     return (
