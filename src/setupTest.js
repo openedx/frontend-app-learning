@@ -52,9 +52,10 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { IntlProvider } from 'react-intl';
-import { reducer as modelsReducer } from './model-store';
-import { reducer as coursewareReducer } from './data';
-import { UserMessagesProvider } from './user-messages';
+import { reducer as courseHomeReducer } from './course-home/data';
+import { reducer as coursewareReducer } from './courseware/data/slice';
+import { reducer as modelsReducer } from './generic/model-store';
+import { UserMessagesProvider } from './generic/user-messages';
 
 /**
  * HACK: Mock the MutationObserver as it's breaking async testing.
@@ -153,6 +154,7 @@ function render(
       reducer: {
         models: modelsReducer,
         courseware: coursewareReducer,
+        courseHome: courseHomeReducer,
       },
       preloadedState: initialState,
     }),
