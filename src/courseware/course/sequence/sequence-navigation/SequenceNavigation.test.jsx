@@ -6,10 +6,10 @@ import {
   initialState, render, screen, testUnits,
 } from '../../../../setupTest';
 import SequenceNavigation from './SequenceNavigation';
-import useIndexOfLastVisibleChild from '../../../../tabs/useIndexOfLastVisibleChild';
+import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
 // Mock the hook to avoid relying on its implementation and mocking `getBoundingClientRect`.
-jest.mock('../../../../tabs/useIndexOfLastVisibleChild');
+jest.mock('../../../../generic/tabs/useIndexOfLastVisibleChild');
 useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
 
 describe('Sequence Navigation', () => {
