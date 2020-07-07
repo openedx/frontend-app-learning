@@ -119,8 +119,6 @@ describe('Data layer integration tests', () => {
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.courses[forbiddenCourseMetadata.id].canLoadCourseware).not.toBeUndefined();
-
-      expect(state).toMatchSnapshot();
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
