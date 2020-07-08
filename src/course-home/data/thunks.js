@@ -3,6 +3,7 @@ import {
   getCourseHomeCourseMetadata,
   getDatesTabData,
   getOutlineTabData,
+  getProgressTabData,
   postCourseDeadlines,
 } from './api';
 
@@ -61,6 +62,10 @@ export function fetchTab(courseId, tab, getTabData) {
 
 export function fetchDatesTab(courseId) {
   return fetchTab(courseId, 'dates', getDatesTabData);
+}
+
+export function fetchProgressTab(courseId) {
+  return fetchTab(courseId, 'progress', getProgressTabData);
 }
 
 export function fetchOutlineTab(courseId) {

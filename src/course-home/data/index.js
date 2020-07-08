@@ -1,6 +1,7 @@
 export {
   fetchDatesTab,
   fetchOutlineTab,
+  fetchProgressTab,
   resetDeadlines,
 } from './thunks';
 

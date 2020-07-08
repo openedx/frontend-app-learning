@@ -22,10 +22,11 @@ import OutlineTab from './course-home/outline-tab';
 import CoursewareContainer from './courseware';
 import CoursewareRedirect from './CoursewareRedirect';
 import DatesTab from './course-home/dates-tab';
+import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
 
 import store from './store';
-import { fetchDatesTab, fetchOutlineTab } from './course-home/data';
+import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
@@ -41,6 +42,11 @@ subscribe(APP_READY, () => {
           <Route path="/course/:courseId/dates">
             <TabContainer tab="dates" fetch={fetchDatesTab}>
               <DatesTab />
+            </TabContainer>
+          </Route>
+          <Route path="/course/:courseId/progress">
+            <TabContainer tab="progress" fetch={fetchProgressTab}>
+              <ProgressTab />
             </TabContainer>
           </Route>
           <Route
