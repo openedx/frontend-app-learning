@@ -34,6 +34,7 @@ export function normalizeBlocks(courseId, blocks) {
           unitIds: block.children || [],
         };
         break;
+      case 'html':
       case 'vertical':
         models.units[block.id] = {
           graded: block.graded,
@@ -43,7 +44,7 @@ export function normalizeBlocks(courseId, blocks) {
         };
         break;
       default:
-        logError(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, and vertical.`);
+        logError(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, vertical, and html.`);
     }
   });
 
@@ -61,7 +62,11 @@ export function normalizeBlocks(courseId, blocks) {
   Object.values(models.sections).forEach(section => {
     if (Array.isArray(section.sequenceIds)) {
       section.sequenceIds.forEach(sequenceId => {
-        models.sequences[sequenceId].sectionId = section.id;
+        if (sequenceId in models.sequences) {
+          models.sequences[sequenceId].sectionId = section.id;
+        } else {
+          logError(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
+        }
       });
     }
   });
@@ -69,7 +74,11 @@ export function normalizeBlocks(courseId, blocks) {
   Object.values(models.sequences).forEach(sequence => {
     if (Array.isArray(sequence.unitIds)) {
       sequence.unitIds.forEach(unitId => {
-        models.units[unitId].sequenceId = sequence.id;
+        if (unitId in models.units) {
+          models.units[unitId].sequenceId = sequence.id;
+        } else {
+          logError(`Sequence ${sequence.id} has child block ${unitId}, but that block is not in the list of units.`);
+        }
       });
     }
   });
