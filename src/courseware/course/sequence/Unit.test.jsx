@@ -1,9 +1,7 @@
 import React from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { cloneDeep } from 'lodash';
-import { waitFor } from '@testing-library/dom';
 import {
-  initialState, loadUnit, messageEvent, render, screen,
+  initialState, loadUnit, messageEvent, render, screen, waitFor,
 } from '../../../setupTest';
 import Unit from './Unit';
 

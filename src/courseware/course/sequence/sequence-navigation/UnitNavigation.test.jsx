@@ -1,7 +1,6 @@
 import React from 'react';
-import { fireEvent } from '@testing-library/dom';
 import {
-  initialState, render, screen, testUnits,
+  initialState, render, screen, testUnits, fireEvent,
 } from '../../../../setupTest';
 import UnitNavigation from './UnitNavigation';
 
