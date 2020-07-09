@@ -20,3 +20,26 @@ React app for edX learning.
    :target: @edx/frontend-app-learning
 .. |license| image:: https://img.shields.io/npm/l/@edx/frontend-app-learning.svg
    :target: @edx/frontend-app-learning
+
+Development
+-----------
+
+Start Devstack
+^^^^^^^^^^^^^^
+
+To use this application `devstack <https://github.com/edx/devstack>`__ must be running and you must be logged into it.
+
+-  Start devstack
+-  Log in (http://localhost:18000/login)
+
+Start the development server
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this project, install requirements and start the development server by running:
+
+.. code:: bash
+
+   npm install
+   npm start # The server will run on port 1995
+
+Once the dev server is up, visit http://localhost:2000/course/course-v1:edX+DemoX+Demo_Course to view the demo course.  You can replace ``course-v1:edX+DemoX+Demo_Course`` with a different course key.
