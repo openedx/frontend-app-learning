@@ -7,11 +7,9 @@ import { configure as configureLogging } from '@edx/frontend-platform/logging';
 import { configure as configureAuth, MockAuthService } from '@edx/frontend-platform/auth';
 import React from 'react';
 import PropTypes from 'prop-types';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { render as rtlRender, screen } from '@testing-library/react';
+import { render as rtlRender } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { IntlProvider } from 'react-intl';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
@@ -185,11 +183,10 @@ function render(
   return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
 }
 
-// re-export everything
-// eslint-disable-next-line import/no-extraneous-dependencies
+// Re-export everything.
 export * from '@testing-library/react';
 
-// override `render` method; export `screen` too to suppress errors
+// Override `render` method; export `screen` too to suppress errors.
 export {
-  render, screen, testUnits, baseInitialState as initialState, messageEvent, loadUnit,
+  render, testUnits, baseInitialState as initialState, messageEvent, loadUnit,
 };

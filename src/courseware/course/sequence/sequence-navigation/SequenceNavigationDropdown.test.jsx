@@ -1,8 +1,7 @@
 import React from 'react';
-import { fireEvent } from '@testing-library/dom';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import {
-  initialState, render, screen, testUnits,
+  initialState, render, screen, testUnits, fireEvent,
 } from '../../../../setupTest';
 
 describe('Sequence Navigation Dropdown', () => {

@@ -1,9 +1,7 @@
 import React from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { cloneDeep } from 'lodash';
-import { fireEvent, getByText } from '@testing-library/dom';
 import {
-  initialState, render, screen, testUnits,
+  initialState, render, screen, testUnits, fireEvent, getByText,
 } from '../../../../setupTest';
 import SequenceNavigation from './SequenceNavigation';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
