@@ -14,31 +14,20 @@ describe('Sequence Navigation Dropdown', () => {
   };
 
   it('renders correctly without units', () => {
-    const { asFragment } = render(<SequenceNavigationDropdown
-      {...mockData}
-      unitIds={[]}
-    />);
-
-    expect(asFragment()).toMatchSnapshot();
+    render(<SequenceNavigationDropdown {...mockData} unitIds={[]} />);
+    expect(screen.getByRole('button')).toHaveTextContent('0 of 0');
   });
 
   testUnits.forEach(unitId => {
     it(`displays proper text for unit ${unitId} on mobile`, () => {
-      render(<SequenceNavigationDropdown
-        {...mockData}
-        unitId={unitId}
-      />, { initialState });
-
+      render(<SequenceNavigationDropdown {...mockData} unitId={unitId} />, { initialState });
       expect(screen.getByRole('button')).toHaveTextContent(`${unitId} of ${testUnits.length}`);
     });
   });
 
   testUnits.forEach(unitId => {
     it(`marks unit ${unitId} as active`, () => {
-      render(<SequenceNavigationDropdown
-        {...mockData}
-        unitId={unitId}
-      />, { initialState });
+      render(<SequenceNavigationDropdown {...mockData} unitId={unitId} />, { initialState });
 
       // Only the current unit should be marked as active.
       screen.getAllByText(/^\d$/).forEach(element => {
@@ -53,11 +42,7 @@ describe('Sequence Navigation Dropdown', () => {
 
   it('handles the clicks', () => {
     const onNavigate = jest.fn();
-
-    render(<SequenceNavigationDropdown
-      {...mockData}
-      onNavigate={onNavigate}
-    />, { initialState });
+    render(<SequenceNavigationDropdown {...mockData} onNavigate={onNavigate} />, { initialState });
 
     screen.getAllByText(/^\d+$/).forEach(element => fireEvent.click(element));
     expect(onNavigate).toHaveBeenCalledTimes(testUnits.length);

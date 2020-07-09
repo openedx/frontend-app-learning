@@ -4,8 +4,7 @@ import { fireEvent, waitFor } from '@testing-library/dom';
 import { cloneDeep } from 'lodash';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
-  initialState,
-  messageEvent, render, screen, testUnits,
+  initialState, loadUnit, render, screen, testUnits,
 } from '../../../setupTest';
 import Sequence from './Sequence';
 
@@ -23,51 +22,42 @@ describe('Sequence', () => {
   };
 
   it('renders correctly without data', () => {
-    const { asFragment } = render(
-      <Sequence {...mockData} {...{ unitId: undefined, sequenceId: undefined }} />, { initialState: {} },
-    );
+    render(<Sequence {...mockData} {...{ unitId: undefined, sequenceId: undefined }} />, { initialState: {} });
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
-    expect(asFragment()).toMatchSnapshot();
   });
 
   it('renders correctly for gated content', async () => {
-    const { asFragment } = render(<Sequence {...mockData} {...{ sequenceId: '3' }} />);
+    render(<Sequence {...mockData} {...{ sequenceId: '3' }} />);
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
     // Only `Previous`, `Next` and `Bookmark` buttons.
     expect(screen.getAllByRole('button').length).toEqual(3);
 
-    const beforeLoadingUnit = asFragment();
-    expect(beforeLoadingUnit).toMatchSnapshot();
-
-    window.postMessage(messageEvent, '*');
-    await waitFor(() => expect(screen.getByText(/You must complete the prerequisite/)).toBeInTheDocument());
-    expect(beforeLoadingUnit).toMatchDiffSnapshot(asFragment());
+    expect(await screen.findByText('Content Locked')).toBeInTheDocument();
+    expect(screen.getByAltText('fa-lock')).toBeInTheDocument();
+    expect(screen.getByText(/You must complete the prerequisite/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
+    expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
   });
 
   it('displays error message on sequence load failure', () => {
     const testState = cloneDeep(initialState);
     testState.courseware.sequenceStatus = 'failed';
-    const { asFragment } = render(<Sequence {...mockData} />, { initialState: testState });
+    render(<Sequence {...mockData} />, { initialState: testState });
 
     expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
-    expect(asFragment()).toMatchSnapshot();
   });
 
   it('handles loading unit', async () => {
-    const { asFragment } = render(<Sequence {...mockData} />);
+    render(<Sequence {...mockData} />);
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     // Renders navigation buttons plus one button for each unit.
     expect(screen.getAllByRole('button').length).toEqual(3 + testUnits.length);
 
-    const beforeLoadingUnit = asFragment();
-    expect(beforeLoadingUnit).toMatchSnapshot();
-
-    window.postMessage(messageEvent, '*');
+    loadUnit();
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
     // At this point there will be 2 `Previous` and 2 `Next` buttons.
     expect(screen.getAllByRole('button', { name: /previous|next/i }).length).toEqual(4);
-    expect(beforeLoadingUnit).toMatchDiffSnapshot(asFragment());
   });
 
   describe('sequence and unit navigation buttons', () => {
@@ -89,7 +79,7 @@ describe('Sequence', () => {
         widget_placement: 'top',
       });
 
-      window.postMessage(messageEvent, '*');
+      loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
       const unitPreviousButton = screen.getAllByRole('button', { name: /previous/i })
         .filter(button => button !== sequencePreviousButton)[0];
@@ -121,7 +111,7 @@ describe('Sequence', () => {
         widget_placement: 'top',
       });
 
-      window.postMessage(messageEvent, '*');
+      loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
       const unitNextButton = screen.getAllByRole('button', { name: /next/i })
         .filter(button => button !== sequenceNextButton)[0];
@@ -162,7 +152,7 @@ describe('Sequence', () => {
       const previousSequenceHandler = jest.fn();
       const unitId = '1';
       render(<Sequence {...mockData} {...{ unitNavigationHandler, previousSequenceHandler, unitId }} />);
-      window.postMessage(messageEvent, '*');
+      loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
       screen.getAllByRole('button', { name: /previous/i }).forEach(button => fireEvent.click(button));
@@ -184,7 +174,7 @@ describe('Sequence', () => {
           unitNavigationHandler, nextSequenceHandler, unitId, sequenceId,
         }}
       />);
-      window.postMessage(messageEvent, '*');
+      loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
       screen.getAllByRole('button', { name: /next/i }).forEach(button => fireEvent.click(button));
@@ -211,7 +201,7 @@ describe('Sequence', () => {
         {...mockData}
         {...{ unitNavigationHandler, previousSequenceHandler, nextSequenceHandler }}
       />, { initialState: testState });
-      window.postMessage(messageEvent, '*');
+      loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
       screen.getAllByRole('button', { name: /previous/i }).forEach(button => fireEvent.click(button));

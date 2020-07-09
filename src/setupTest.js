@@ -146,6 +146,11 @@ const messageEvent = {
   },
 };
 
+// Send MessageEvent indicating that a unit has been loaded.
+function loadUnit(message = messageEvent) {
+  window.postMessage(message, '*');
+}
+
 function render(
   ui,
   {
@@ -187,5 +192,5 @@ export * from '@testing-library/react';
 
 // override `render` method; export `screen` too to suppress errors
 export {
-  render, screen, testUnits, baseInitialState as initialState, messageEvent,
+  render, screen, testUnits, baseInitialState as initialState, messageEvent, loadUnit,
 };

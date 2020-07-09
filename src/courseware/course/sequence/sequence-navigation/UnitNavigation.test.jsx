@@ -14,7 +14,7 @@ describe('Unit Navigation', () => {
   };
 
   it('renders correctly without units', () => {
-    const { asFragment } = render(<UnitNavigation
+    render(<UnitNavigation
       {...mockData}
       sequenceId=""
       unitId=""
@@ -22,7 +22,8 @@ describe('Unit Navigation', () => {
       onClickNext={() => {}}
     />);
 
-    expect(asFragment()).toMatchSnapshot();
+    // Only "Previous" and "Next" buttons should be rendered.
+    expect(screen.getAllByRole('button')).toHaveLength(2);
   });
 
   it('handles the clicks', () => {

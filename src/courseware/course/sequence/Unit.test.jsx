@@ -3,7 +3,7 @@ import React from 'react';
 import { cloneDeep } from 'lodash';
 import { waitFor } from '@testing-library/dom';
 import {
-  initialState, messageEvent, render, screen,
+  initialState, loadUnit, messageEvent, render, screen,
 } from '../../../setupTest';
 import Unit from './Unit';
 
@@ -15,40 +15,40 @@ describe('Unit', () => {
   };
 
   it('renders correctly', () => {
-    const { asFragment } = render(<Unit {...mockData} />, { initialState });
+    render(<Unit {...mockData} />, { initialState });
 
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     expect(screen.getByTitle(mockData.id)).toHaveAttribute('height', String(0));
-    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByTitle(mockData.id)).toHaveAttribute(
+      'src', `http://localhost:18000/xblock/${mockData.id}?show_title=0&show_bookmark_button=0`,
+    );
   });
 
   it('renders proper message for gated content', () => {
     // Clone initialState.
     const testState = cloneDeep(initialState);
     testState.models.units[mockData.id].graded = true;
-    const { asFragment } = render(<Unit {...mockData} />, { initialState: testState });
+    render(<Unit {...mockData} />, { initialState: testState });
 
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
-    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
   });
 
   it('handles receiving MessageEvent', async () => {
-    const { asFragment } = render(<Unit {...mockData} />, { initialState });
-    const beforePostingMessage = asFragment();
+    render(<Unit {...mockData} />, { initialState });
+    loadUnit();
 
-    window.postMessage(messageEvent, '*');
     // Loading message is gone now.
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
     // Iframe's height is set via message.
     expect(screen.getByTitle(mockData.id)).toHaveAttribute('height', String(messageEvent.payload.height));
-    expect(beforePostingMessage).toMatchDiffSnapshot(asFragment());
   });
 
-  it('handles onLoaded after receiving MessageEvent', async () => {
+  it('calls onLoaded after receiving MessageEvent', async () => {
     const onLoaded = jest.fn();
     render(<Unit {...mockData} {...{ onLoaded }} />, { initialState });
+    loadUnit();
 
-    window.postMessage(messageEvent, '*');
     await waitFor(() => expect(onLoaded).toHaveBeenCalledTimes(1));
   });
 
@@ -57,8 +57,8 @@ describe('Unit', () => {
     // Clone message and set different height.
     const testMessageWithOtherHeight = { ...messageEvent, payload: { height: 200 } };
     render(<Unit {...mockData} {...{ onLoaded }} />, { initialState });
+    loadUnit();
 
-    window.postMessage(messageEvent, '*');
     await waitFor(() => expect(screen.getByTitle(mockData.id)).toHaveAttribute('height', String(messageEvent.payload.height)));
     window.postMessage(testMessageWithOtherHeight, '*');
     await waitFor(() => expect(screen.getByTitle(mockData.id)).toHaveAttribute('height', String(testMessageWithOtherHeight.payload.height)));
@@ -69,8 +69,8 @@ describe('Unit', () => {
     // Clone message and set different type.
     const testMessageWithUnhandledType = { ...messageEvent, type: 'wrong type' };
     render(<Unit {...mockData} />, { initialState });
-
     window.postMessage(testMessageWithUnhandledType, '*');
+
     // HACK: We don't have a function we could reliably await here, so this test relies on the timeout of `waitFor`.
     // FIXME: After the last updates `toThrowErrorMatchingSnapshot` (due to a bug) started returning DOM
     //  after the error, so we had to fall back to `toThrowError` assertion for better readability.
