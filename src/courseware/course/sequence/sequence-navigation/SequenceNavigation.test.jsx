@@ -1,7 +1,7 @@
 import React from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { cloneDeep } from 'lodash';
-import { fireEvent } from '@testing-library/dom';
+import { fireEvent, getByText } from '@testing-library/dom';
 import {
   initialState, render, screen, testUnits,
 } from '../../../../setupTest';
@@ -26,40 +26,46 @@ describe('Sequence Navigation', () => {
     const testState = cloneDeep(initialState);
     testState.courseware.sequenceStatus = 'loading';
 
-    const { asFragment } = render(
+    const { container } = render(
       <SequenceNavigation {...mockData} />,
       { initialState: testState },
     );
-    expect(asFragment()).toMatchSnapshot();
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('renders empty div without unitId', () => {
-    const { asFragment } = render(<SequenceNavigation {...mockData} unitId={undefined} />, { initialState });
-    expect(asFragment()).toMatchSnapshot();
+    const { container } = render(<SequenceNavigation {...mockData} unitId={undefined} />, { initialState });
+    expect(getByText(container, (content, element) => (
+      element.tagName.toLowerCase() === 'div' && element.getAttribute('style')))).toBeEmptyDOMElement();
   });
 
   it('renders locked button for gated content', () => {
-    // TODO: Not sure if this is working as expected, because the `contentType="lock"` will be overridden by the value
-    //  from Redux. To make this provide a `fa-icon` lock we could introduce something like `overriddenContentType`.
     const testState = cloneDeep(initialState);
     testState.models.sequences['1'].gatedContent = { gated: true };
+    const onNavigate = jest.fn();
+    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />, { initialState: testState });
 
-    const { asFragment } = render(
-      <SequenceNavigation {...mockData} />,
-      { initialState: testState },
-    );
-    expect(asFragment()).toMatchSnapshot();
+    const unitButton = screen.getByTitle(mockData.unitId);
+    fireEvent.click(unitButton);
+    // The unit button should not work for gated content.
+    expect(onNavigate).not.toHaveBeenCalled();
+    // TODO: Not sure if this is working as expected, because the `contentType="lock"` will be overridden by the value
+    //  from Redux. To make this provide a `fa-icon` lock we could introduce something like `overriddenContentType`.
+    expect(unitButton.firstChild).toHaveClass('fa-book');
   });
 
-  it('renders correctly', () => {
-    const { asFragment } = render(<SequenceNavigation {...mockData} />, { initialState });
-    expect(asFragment()).toMatchSnapshot();
+  it('renders correctly and handles unit button clicks', () => {
+    const onNavigate = jest.fn();
+    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />, { initialState });
+
+    const unitButtons = screen.getAllByRole('button', { name: /\d+/ });
+    expect(unitButtons).toHaveLength(testUnits.length);
+    unitButtons.forEach(button => fireEvent.click(button));
+    expect(onNavigate).toHaveBeenCalledTimes(unitButtons.length);
   });
 
   it('has both navigation buttons enabled for a non-corner unit of the sequence', () => {
-    render(<SequenceNavigation
-      {...mockData}
-    />, { initialState });
+    render(<SequenceNavigation {...mockData} />, { initialState });
 
     screen.getAllByRole('button', { name: /previous|next/i }).forEach(button => {
       expect(button).toBeEnabled();
@@ -67,10 +73,7 @@ describe('Sequence Navigation', () => {
   });
 
   it('has the "Previous" button disabled for the first unit of the sequence', () => {
-    render(<SequenceNavigation
-      {...mockData}
-      unitId="1"
-    />, { initialState });
+    render(<SequenceNavigation {...mockData} unitId="1" />, { initialState });
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
     expect(screen.getByRole('button', { name: /next/i })).toBeEnabled();
