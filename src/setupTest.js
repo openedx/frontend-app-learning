@@ -5,6 +5,18 @@ import { getConfig, mergeConfig } from '@edx/frontend-platform';
 import { configure as configureI18n } from '@edx/frontend-platform/i18n';
 import { configure as configureLogging } from '@edx/frontend-platform/logging';
 import { configure as configureAuth, MockAuthService } from '@edx/frontend-platform/auth';
+import React from 'react';
+import PropTypes from 'prop-types';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { render as rtlRender, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { IntlProvider } from 'react-intl';
+import { reducer as courseHomeReducer } from './course-home/data';
+import { reducer as coursewareReducer } from './courseware/data/slice';
+import { reducer as modelsReducer } from './generic/model-store';
+import { UserMessagesProvider } from './generic/user-messages';
 
 import appMessages from './i18n';
 
@@ -43,19 +55,6 @@ export default function initializeMockApp() {
 
   return { loggingService, authService };
 }
-
-import React from 'react';
-import PropTypes from 'prop-types';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { render as rtlRender, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { IntlProvider } from 'react-intl';
-import { reducer as courseHomeReducer } from './course-home/data';
-import { reducer as coursewareReducer } from './courseware/data/slice';
-import { reducer as modelsReducer } from './generic/model-store';
-import { UserMessagesProvider } from './generic/user-messages';
 
 /**
  * HACK: Mock the MutationObserver as it's breaking async testing.
