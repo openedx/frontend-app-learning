@@ -1,10 +1,8 @@
 import React from 'react';
-import { fireEvent, waitFor } from '@testing-library/dom';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { cloneDeep } from 'lodash';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
-  initialState, loadUnit, render, screen, testUnits,
+  initialState, loadUnit, render, screen, testUnits, fireEvent, waitFor,
 } from '../../../setupTest';
 import Sequence from './Sequence';
 
