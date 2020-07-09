@@ -95,10 +95,6 @@ function Unit({
     return () => global.removeEventListener('message', messageEventListenerRef.current);
   }, [id, setIframeHeight, hasLoaded, iframeHeight, setHasLoaded, onLoaded]);
 
-  if (!unit) {
-    return (<div> {intl.formatMessage(messages['learn.sequence.no.content'])} </div>);
-  }
-
   return (
     <div className="unit">
       <h2 className="mb-0 h4">{unit.title}</h2>
