@@ -19,9 +19,8 @@ describe('Unit Icon', () => {
         jest.spyOn(console, 'error').mockImplementation(() => {});
       }
 
-      const { asFragment } = render(<UnitIcon type={key} />);
+      render(<UnitIcon type={key} />);
       expect(screen.getByTestId('icon')).toHaveClass(value);
-      expect(asFragment()).toMatchSnapshot();
     });
   });
 });

@@ -13,25 +13,24 @@ describe('Sequence Content', () => {
   };
 
   it('displays loading message', () => {
-    const { asFragment } = render(<SequenceContent {...mockData} />, { initialState });
+    render(<SequenceContent {...mockData} />, { initialState });
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
-    expect(asFragment()).toMatchSnapshot();
   });
 
   it('displays messages for the locked content', async () => {
-    const { asFragment } = render(<SequenceContent {...mockData} gated />, { initialState });
+    render(<SequenceContent {...mockData} gated />, { initialState });
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
-    expect(asFragment()).toMatchSnapshot();
 
-    expect(await screen.findByText(/content locked/i)).toBeInTheDocument();
+    expect(await screen.findByText('Content Locked')).toBeInTheDocument();
     expect(screen.getByText('test-sequence')).toBeInTheDocument();
     expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
-    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByAltText('fa-lock')).toBeInTheDocument();
+    expect(screen.getByText(/You must complete the prerequisite/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
   });
 
   it('displays message for no content', () => {
-    const { asFragment } = render(<SequenceContent {...mockData} unitId={null} />, { initialState });
+    render(<SequenceContent {...mockData} unitId={null} />, { initialState });
     expect(screen.getByText('There is no content here.')).toBeInTheDocument();
-    expect(asFragment()).toMatchSnapshot();
   });
 });
