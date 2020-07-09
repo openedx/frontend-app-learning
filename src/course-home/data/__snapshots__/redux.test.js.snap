@@ -1,0 +1,204 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Data layer integration tests Should initialize store 1`] = `
+Object {
+  "courseHome": Object {
+    "courseId": null,
+    "courseStatus": "loading",
+  },
+  "courseware": Object {
+    "courseId": null,
+    "courseStatus": "loading",
+    "sequenceId": null,
+    "sequenceStatus": "loading",
+  },
+  "models": Object {},
+}
+`;
+
+exports[`Data layer integration tests Test fetchDatesTab Should fetch, normalize, and save metadata 1`] = `
+Object {
+  "courseHome": Object {
+    "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+    "courseStatus": "loaded",
+  },
+  "courseware": Object {
+    "courseId": null,
+    "courseStatus": "loading",
+    "sequenceId": null,
+    "sequenceStatus": "loading",
+  },
+  "models": Object {
+    "courses": Object {
+      "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "isSelfPaced": false,
+        "isStaff": false,
+        "number": "DemoX",
+        "org": "edX",
+        "tabs": Array [
+          Object {
+            "slug": "courseware",
+            "title": "Course",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course/",
+          },
+          Object {
+            "slug": "discussion",
+            "title": "Discussion",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/discussion/forum/",
+          },
+          Object {
+            "slug": "wiki",
+            "title": "Wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course_wiki",
+          },
+          Object {
+            "slug": "progress",
+            "title": "Progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/progress",
+          },
+          Object {
+            "slug": "instructor",
+            "title": "Instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/instructor",
+          },
+        ],
+        "title": "Demonstration Course",
+      },
+    },
+    "dates": Object {
+      "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "courseDateBlocks": Array [
+          Object {
+            "date": "2013-02-05T05:00:00Z",
+            "dateType": "course-start-date",
+            "description": "",
+            "learnerHasAccess": true,
+            "link": "",
+            "title": "Course Starts",
+          },
+        ],
+        "datesBannerInfo": Object {
+          "contentTypeGatingEnabled": false,
+          "missedDeadlines": false,
+          "missedGatedContent": false,
+        },
+        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "learnerIsFullAccess": true,
+        "missedDeadlines": false,
+        "missedGatedContent": false,
+        "userTimezone": null,
+        "verifiedUpgradeLink": "http://localhost:18130/basket/add/?sku=8CF08E5",
+      },
+    },
+  },
+}
+`;
+
+exports[`Data layer integration tests Test fetchOutlineTab Should fetch, normalize, and save metadata 1`] = `
+Object {
+  "courseHome": Object {
+    "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+    "courseStatus": "loaded",
+  },
+  "courseware": Object {
+    "courseId": null,
+    "courseStatus": "loading",
+    "sequenceId": null,
+    "sequenceStatus": "loading",
+  },
+  "models": Object {
+    "courses": Object {
+      "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "isSelfPaced": false,
+        "isStaff": false,
+        "number": "DemoX",
+        "org": "edX",
+        "tabs": Array [
+          Object {
+            "slug": "courseware",
+            "title": "Course",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course/",
+          },
+          Object {
+            "slug": "discussion",
+            "title": "Discussion",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/discussion/forum/",
+          },
+          Object {
+            "slug": "wiki",
+            "title": "Wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course_wiki",
+          },
+          Object {
+            "slug": "progress",
+            "title": "Progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/progress",
+          },
+          Object {
+            "slug": "instructor",
+            "title": "Instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/instructor",
+          },
+        ],
+        "title": "Demonstration Course",
+      },
+    },
+    "outline": Object {
+      "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "courseBlocks": Object {
+          "courses": Object {
+            "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd4": Object {
+              "id": "course-v1:edX+DemoX+Demo_Course_1",
+              "sectionIds": Array [
+                "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd3",
+              ],
+              "title": "bcdabcdabcdabcdabcdabcdabcdabcd4",
+            },
+          },
+          "sections": Object {
+            "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
+              "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+              "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd3",
+              "sequenceIds": Array [
+                "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
+              ],
+              "title": "bcdabcdabcdabcdabcdabcdabcdabcd3",
+            },
+          },
+          "sequences": Object {
+            "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd2": Object {
+              "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
+              "lmsWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
+              "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd3",
+              "title": "bcdabcdabcdabcdabcdabcdabcdabcd2",
+              "unitIds": Array [
+                "block-v1:edX+DemoX+Demo_Course+type@vertical+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
+              ],
+            },
+          },
+          "units": Object {
+            "block-v1:edX+DemoX+Demo_Course+type@vertical+block@bcdabcdabcdabcdabcdabcdabcdabcd1": Object {
+              "graded": false,
+              "id": "block-v1:edX+DemoX+Demo_Course+type@vertical+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
+              "lmsWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@vertical+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
+              "sequenceId": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
+              "title": "bcdabcdabcdabcdabcdabcdabcdabcd1",
+            },
+          },
+        },
+        "courseTools": Object {
+          "analyticsId": "edx.bookmarks",
+          "title": "Bookmarks",
+          "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/bookmarks/",
+        },
+        "datesWidget": undefined,
+        "id": "course-v1:edX+DemoX+Demo_Course_1",
+      },
+    },
+  },
+}
+`;
