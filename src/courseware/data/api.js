@@ -34,7 +34,6 @@ export function normalizeBlocks(courseId, blocks) {
           unitIds: block.children || [],
         };
         break;
-      case 'html':
       case 'vertical':
         models.units[block.id] = {
           graded: block.graded,
@@ -44,7 +43,7 @@ export function normalizeBlocks(courseId, blocks) {
         };
         break;
       default:
-        logError(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, vertical, and html.`);
+        logError(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, and vertical.`);
     }
   });
 
