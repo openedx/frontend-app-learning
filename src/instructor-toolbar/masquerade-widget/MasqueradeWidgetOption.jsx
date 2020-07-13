@@ -4,18 +4,28 @@ import React, {
 import PropTypes from 'prop-types';
 import { Dropdown } from '@edx/paragon';
 
-import { postMasqueradeOptions } from './data/api';
-
 class MasqueradeWidgetOption extends Component {
-  handleClick() {
+  onClick(event) {
+    // TODO: Remove this hack when we upgrade Paragon
+    // Note: The current version of Paragon does _not_ close dropdown components
+    // automatically (or easily programmatically) when you click on an item.
+    // We can simulate this behavior by programmatically clicking the
+    // toggle button on behalf of the user.
+    // The newest version of Paragon already contains this behavior,
+    // so we can remove this when we upgrade to that point.
+    event.target.parentNode.parentNode.click();
     const {
-      courseId,
       groupId,
       role,
       userName,
       userPartitionId,
+      userNameInputToggle,
     } = this.props;
     const payload = {};
+    if (userName || userName === '') {
+      userNameInputToggle(true);
+      return false;
+    }
     if (role) {
       payload.role = role;
     }
@@ -23,21 +33,24 @@ class MasqueradeWidgetOption extends Component {
       payload.group_id = parseInt(groupId, 10);
       payload.user_partition_id = parseInt(userPartitionId, 10);
     }
-    if (userName) {
-      payload.user_name = userName;
-    }
-    postMasqueradeOptions(courseId, payload).then(() => {
+    this.props.onSubmit(payload).then(() => {
       global.location.reload();
     });
+    return true;
   }
 
   isSelected() {
-    const selected = this.props.selected || {};
-    const isEqual = (
-      selected.userPartitionId === (this.props.userPartitionId || null)
-      && selected.groupId === (this.props.groupId || null)
-      && selected.role === this.props.role
-    );
+    /* eslint-disable arrow-body-style */
+    const isEqual = [
+      'groupId',
+      'role',
+      'userName',
+      'userPartitionId',
+    ].reduce((accumulator, currentValue) => {
+      return accumulator && (
+        this.props[currentValue] === this.props.selected[currentValue]
+      );
+    }, true);
     return isEqual;
   }
 
@@ -57,7 +70,7 @@ class MasqueradeWidgetOption extends Component {
       <Dropdown.Item
         className={className}
         href="#"
-        onClick={(event) => this.handleClick(event)}
+        onClick={(event) => this.onClick(event)}
       >
         {groupName}
       </Dropdown.Item>
@@ -65,9 +78,9 @@ class MasqueradeWidgetOption extends Component {
   }
 }
 MasqueradeWidgetOption.propTypes = {
-  courseId: PropTypes.string.isRequired,
   groupId: PropTypes.number,
   groupName: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func.isRequired,
   role: PropTypes.string,
   selected: PropTypes.shape({
     courseKey: PropTypes.string.isRequired,
@@ -77,6 +90,7 @@ MasqueradeWidgetOption.propTypes = {
     userPartitionId: PropTypes.number,
   }),
   userName: PropTypes.string,
+  userNameInputToggle: PropTypes.func.isRequired,
   userPartitionId: PropTypes.number,
 };
 MasqueradeWidgetOption.defaultProps = {
