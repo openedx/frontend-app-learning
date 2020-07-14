@@ -19,6 +19,7 @@ function DatesBannerContainer(props) {
   const {
     courseDateBlocks,
     datesBannerInfo,
+    hasEnded,
   } = useModel(model, courseId);
 
   const {
@@ -61,7 +62,7 @@ function DatesBannerContainer(props) {
 
   return (
     <>
-      {datesBanners.map((banner) => banner.shouldDisplay && (
+      {!hasEnded && datesBanners.map((banner) => banner.shouldDisplay && (
         <DatesBanner
           name={banner.name}
           bannerClickHandler={banner.clickHandler}
