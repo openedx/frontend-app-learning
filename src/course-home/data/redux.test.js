@@ -16,6 +16,7 @@ import { reducer as modelsReducer } from '../../generic/model-store';
 
 import './__factories__';
 import '../../courseware/data/__factories__/courseMetadata.factory';
+import initializeStore from '../../store';
 
 jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
 
@@ -60,13 +61,7 @@ describe('Data layer integration tests', () => {
     axiosMock.reset();
     logError.mockReset();
 
-    store = configureStore({
-      reducer: {
-        models: modelsReducer,
-        courseware: coursewareReducer,
-        courseHome: courseHomeReducer,
-      },
-    });
+    store = initializeStore();
   });
 
   it('Should initialize store', () => {

@@ -10,6 +10,7 @@ import * as thunks from './thunks';
 import executeThunk from '../../../../utils';
 
 import { reducer as modelsReducer } from '../../../../generic/model-store';
+import initializeStore from '../../../../store';
 
 jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
 
@@ -42,11 +43,7 @@ describe('Data layer integration tests', () => {
     axiosMock.reset();
     logError.mockReset();
 
-    store = configureStore({
-      reducer: {
-        models: modelsReducer,
-      },
-    });
+    store = initializeStore();
   });
 
   describe('Test addBookmark', () => {

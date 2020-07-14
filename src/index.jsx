@@ -25,12 +25,12 @@ import DatesTab from './course-home/dates-tab';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
 
-import store from './store';
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
+import initializeStore from './store';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
-    <AppProvider store={store}>
+    <AppProvider store={initializeStore()}>
       <UserMessagesProvider>
         <Switch>
           <Route path="/redirect" component={CoursewareRedirect} />
