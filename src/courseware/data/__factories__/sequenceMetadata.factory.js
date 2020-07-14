@@ -4,16 +4,19 @@ import './block.factory';
 
 Factory.define('sequenceMetadata')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
-  .option('unitBlock', ['courseId'], courseId => Factory.build(
-    'block',
-    { type: 'vertical' },
-    { courseId },
-  ))
+  // An array of units
+  .option('unitBlocks', ['courseId'], courseId => ([
+    Factory.build(
+      'block',
+      { type: 'vertical' },
+      { courseId },
+    ),
+  ]))
   .option(
-    'sequenceBlock', ['courseId', 'unitBlock'], (courseId, unitBlock) => (
+    'sequenceBlock', ['courseId', 'unitBlocks'], (courseId, unitBlocks) => (
       Factory.build(
         'block',
-        { type: 'sequential', children: [unitBlock.id] },
+        { type: 'sequential', children: unitBlocks.map(unitBlock => unitBlock.id) },
         { courseId },
       )
     ),
@@ -29,8 +32,8 @@ Factory.define('sequenceMetadata')
     prereq_section_name: null,
     gated_section_name: sequenceBlock.display_name,
   }))
-  .attr('items', ['unitBlock', 'sequenceBlock'], (unitBlock, sequenceBlock) => ([
-    {
+  .attr('items', ['unitBlocks', 'sequenceBlock'], (unitBlocks, sequenceBlock) => unitBlocks.map(
+    unitBlock => ({
       href: '',
       graded: unitBlock.graded,
       id: unitBlock.id,
@@ -40,8 +43,8 @@ Factory.define('sequenceMetadata')
       complete: null,
       content: '',
       page_title: unitBlock.display_name,
-    },
-  ]))
+    }),
+  ))
   .attrs({
     exclude_units: true,
     position: null,
