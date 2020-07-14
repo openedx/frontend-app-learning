@@ -1,41 +1,20 @@
-import { configureStore } from '@reduxjs/toolkit';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
-import { configure, getAuthenticatedHttpClient, MockAuthService } from '@edx/frontend-platform/auth';
-import { getConfig, mergeConfig } from '@edx/frontend-platform';
-import { logError } from '@edx/frontend-platform/logging';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { getConfig } from '@edx/frontend-platform';
 
 import * as thunks from './thunks';
 
 import executeThunk from '../../utils';
 
-import { reducer as coursewareReducer } from './slice';
-import { reducer as modelsReducer } from '../../generic/model-store';
-
 import './__factories__';
+import initializeMockApp from '../../setupTest';
 import initializeStore from '../../store';
 
-jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
-
-mergeConfig({
-  authenticatedUser: {
-    userId: 'abc123',
-    username: 'Mock User',
-    roles: [],
-    administrator: false,
-  },
-});
-configure(MockAuthService, {
-  config: getConfig(),
-  loggingService: {
-    logInfo: jest.fn(),
-    logError: jest.fn(),
-  },
-});
+const { loggingService } = initializeMockApp();
 
 const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-
 
 describe('Data layer integration tests', () => {
   const courseBaseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course`;
@@ -75,7 +54,7 @@ describe('Data layer integration tests', () => {
 
   beforeEach(() => {
     axiosMock.reset();
-    logError.mockReset();
+    loggingService.logError.mockReset();
 
     store = initializeStore();
   });
@@ -87,7 +66,7 @@ describe('Data layer integration tests', () => {
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
-      expect(logError).toHaveBeenCalled();
+      expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().courseware).toEqual(expect.objectContaining({
         courseId,
         courseStatus: 'failed',
@@ -140,7 +119,7 @@ describe('Data layer integration tests', () => {
 
       await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
 
-      expect(logError).toHaveBeenCalled();
+      expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().courseware.sequenceStatus).toEqual('failed');
     });
 
@@ -212,7 +191,7 @@ describe('Data layer integration tests', () => {
           store.getState,
         );
 
-        expect(logError).toHaveBeenCalled();
+        expect(loggingService.logError).toHaveBeenCalled();
         expect(axiosMock.history.post[0].url).toEqual(getCompletionURL);
       });
 
@@ -244,7 +223,7 @@ describe('Data layer integration tests', () => {
           store.getState,
         );
 
-        expect(logError).toHaveBeenCalled();
+        expect(loggingService.logError).toHaveBeenCalled();
         expect(axiosMock.history.post[0].url).toEqual(gotoPositionURL);
         expect(store.getState().models.sequences[sequenceId].position).toEqual(oldPosition);
       });
