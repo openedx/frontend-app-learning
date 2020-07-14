@@ -38,7 +38,8 @@ function SequenceContent({
     );
   }
 
-  if (unitId === null) {
+  const unit = useModel('units', unitId);
+  if (!unitId || !unit) {
     return (
       <div>
         {intl.formatMessage(messages['learn.sequence.no.content'])}

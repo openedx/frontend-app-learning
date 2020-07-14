@@ -116,7 +116,7 @@ function useContentRedirect(courseStatus, sequenceStatus) {
         // This is a replace because we don't want this change saved in the browser's history.
         if (data.sectionId && data.unitId) {
           history.replace(`/course/${courseId}/${data.sectionId}/${data.unitId}`);
-        } else {
+        } else if (firstSequenceId) {
           history.replace(`/course/${courseId}/${firstSequenceId}`);
         }
       });
