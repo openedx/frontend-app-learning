@@ -105,11 +105,12 @@ describe('Data layer integration tests', () => {
       const state = store.getState();
 
       expect(state.courseware.courseStatus).toEqual('loaded');
+      expect(state.courseware.courseId).toEqual(courseId);
+      expect(state.courseware.sequenceStatus).toEqual('loading');
+      expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.courses[courseId].canLoadCourseware).not.toBeUndefined();
-
-      expect(state).toMatchSnapshot();
     });
   });
 
@@ -133,25 +134,32 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
       // ensure that initial state has no additional sequence info
-      const initialState = store.getState();
-      expect(initialState.models.sequences).toEqual({
+      let state = store.getState();
+      expect(state.models.sequences).toEqual({
         [sequenceBlock.id]: expect.not.objectContaining({
           gatedContent: expect.any(Object),
           activeUnitIndex: expect.any(Number),
         }),
       });
-      expect(initialState.models.units).toEqual({
+      expect(state.models.units).toEqual({
         [unitBlock.id]: expect.not.objectContaining({
           complete: null,
           bookmarked: expect.any(Boolean),
         }),
       });
 
+      // Update our state variable again.
+      state = store.getState();
+
+      expect(state.courseware.courseStatus).toEqual('loaded');
+      expect(state.courseware.courseId).toEqual(courseId);
+      expect(state.courseware.sequenceStatus).toEqual('loading');
+      expect(state.courseware.sequenceId).toEqual(null);
+
       await executeThunk(thunks.fetchSequence(sequenceBlock.id), store.dispatch);
 
-      const state = store.getState();
-
-      expect(state.courseware.sequenceStatus).toEqual('loaded');
+      // Update our state variable again.
+      state = store.getState();
 
       // ensure that additional information appeared in store
       expect(state.models.sequences).toEqual({
@@ -167,7 +175,10 @@ describe('Data layer integration tests', () => {
         }),
       });
 
-      expect(state).toMatchSnapshot();
+      expect(state.courseware.courseStatus).toEqual('loaded');
+      expect(state.courseware.courseId).toEqual(courseId);
+      expect(state.courseware.sequenceStatus).toEqual('loaded');
+      expect(state.courseware.sequenceId).toEqual(sequenceId);
     });
   });
 
