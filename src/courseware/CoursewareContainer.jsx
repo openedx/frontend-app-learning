@@ -168,7 +168,7 @@ export default function CoursewareContainer() {
   }, [routeSequenceId]);
 
   // The courseId and sequenceId in the store are the entities we currently have loaded.
-  // We get these two IDs from the store because until fetchCourse and fetchSequence below have
+  // We get these two IDs from the store because until fetchCourse and fetchSequence above have
   // finished their work, the IDs in the URL are not representative of what we should actually show.
   // This is important particularly when switching sequences.  Until a new sequence is fully loaded,
   // there's information that we don't have yet - if we use the URL's sequence ID to tell the app

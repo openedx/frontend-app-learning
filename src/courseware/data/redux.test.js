@@ -66,7 +66,9 @@ describe('Data layer integration tests', () => {
           has_access: false,
         },
       });
-      const forbiddenCourseBlocks = Factory.build('courseBlocks', { courseId: forbiddenCourseMetadata.id });
+      const forbiddenCourseBlocks = Factory.build('courseBlocks', {
+        courseId: forbiddenCourseMetadata.id,
+      });
 
       const forbiddenCourseUrl = `${courseBaseUrl}/${forbiddenCourseMetadata.id}`;
 
