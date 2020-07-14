@@ -8,6 +8,7 @@ import * as thunks from './thunks';
 
 import executeThunk from '../../utils';
 
+import buildSimpleCourseBlocks from './__factories__/courseBlocks.factory';
 import './__factories__';
 import initializeMockApp from '../../setupTest';
 import initializeStore from '../../store';
@@ -24,21 +25,7 @@ describe('Data layer integration tests', () => {
   // building minimum set of api responses to test all thunks
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
-  const unitBlock = Factory.build(
-    'block',
-    { type: 'vertical' },
-    { courseId },
-  );
-  const sequenceBlock = Factory.build(
-    'block',
-    { type: 'sequential', children: [unitBlock.id] },
-    { courseId },
-  );
-  const courseBlocks = Factory.build(
-    'courseBlocks',
-    { courseId },
-    { unit: unitBlock, sequence: sequenceBlock },
-  );
+  const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId);
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
     { courseId },
@@ -46,9 +33,9 @@ describe('Data layer integration tests', () => {
   );
 
   const courseUrl = `${courseBaseUrl}/${courseId}`;
-  const sequenceId = sequenceMetadata.item_id;
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
-  const unitId = sequenceMetadata.items[0].id;
+  const sequenceId = sequenceBlock.id;
+  const unitId = unitBlock.id;
 
   let store;
 
