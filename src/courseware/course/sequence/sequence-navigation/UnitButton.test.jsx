@@ -36,28 +36,38 @@ describe('Unit Button', () => {
   });
 
   it('does not show completion for non-completed unit', () => {
-    render(<UnitButton {...mockData} />, { initialState });
-    expect(screen.queryByAltText('fa-check')).toBeNull();
+    const { container } = render(<UnitButton {...mockData} />, { initialState });
+    container.querySelectorAll('svg').forEach(icon => {
+      expect(icon).not.toHaveClass('fa-check');
+    });
   });
 
   it('shows completion for completed unit', () => {
-    render(<UnitButton {...mockData} unitId="problem" />, { initialState });
-    expect(screen.getByAltText('fa-check')).toBeInTheDocument();
+    const { container } = render(<UnitButton {...mockData} unitId="problem" />, { initialState });
+    const buttonIcons = container.querySelectorAll('svg');
+    expect(buttonIcons).toHaveLength(3);
+    expect(buttonIcons[1]).toHaveClass('fa-check');
   });
 
   it('hides completion', () => {
-    render(<UnitButton {...mockData} unitId="problem" showCompletion={false} />, { initialState });
-    expect(screen.queryByAltText('fa-check')).toBeNull();
+    const { container } = render(<UnitButton {...mockData} unitId="problem" showCompletion={false} />, { initialState });
+    container.querySelectorAll('svg').forEach(icon => {
+      expect(icon).not.toHaveClass('fa-check');
+    });
   });
 
   it('does not show bookmark', () => {
-    render(<UnitButton {...mockData} />, { initialState });
-    expect(screen.queryByAltText('fa-bookmark')).toBeNull();
+    const { container } = render(<UnitButton {...mockData} />, { initialState });
+    container.querySelectorAll('svg').forEach(icon => {
+      expect(icon).not.toHaveClass('fa-bookmark');
+    });
   });
 
   it('shows bookmark', () => {
-    render(<UnitButton {...mockData} unitId="problem" />, { initialState });
-    expect(screen.getByAltText('fa-bookmark')).toBeInTheDocument();
+    const { container } = render(<UnitButton {...mockData} unitId="problem" />, { initialState });
+    const buttonIcons = container.querySelectorAll('svg');
+    expect(buttonIcons).toHaveLength(3);
+    expect(buttonIcons[2]).toHaveClass('fa-bookmark');
   });
 
   it('handles the click', () => {

@@ -54,22 +54,6 @@ export default function initializeMockApp() {
   return { loggingService, authService };
 }
 
-/**
- * HACK: Mock the MutationObserver as it's breaking async testing.
- *  According to StackOverflow it should be fixed in `jest-environment-jsdom` v16,
- *  but upgrading `jest` to v26 didn't fix this problem.
- *  ref: https://stackoverflow.com/questions/61036156/react-typescript-testing-typeerror-mutationobserver-is-not-a-constructor
- */
-global.MutationObserver = class {
-  // eslint-disable-next-line no-unused-vars,no-useless-constructor,no-empty-function
-  constructor(callback) {}
-
-  disconnect() {}
-
-  // eslint-disable-next-line no-unused-vars
-  observe(element, initObject) {}
-};
-
 window.scrollTo = jest.fn();
 
 // Generated units for convenience.
