@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '../../../../setupTest';
+import { render } from '../../../../setupTest';
 import UnitIcon from './UnitIcon';
 
 describe('Unit Icon', () => {
@@ -19,8 +19,8 @@ describe('Unit Icon', () => {
         jest.spyOn(console, 'error').mockImplementation(() => {});
       }
 
-      render(<UnitIcon type={key} />);
-      expect(screen.getByTestId('icon')).toHaveClass(value);
+      const { container } = render(<UnitIcon type={key} />);
+      expect(container.querySelector('svg')).toHaveClass(value);
     });
   });
 });
