@@ -28,5 +28,5 @@ export function FontAwesomeIcon(props) {
   }
 
   // eslint-disable-next-line react/jsx-filename-extension
-  return <img data-testid="icon" className={iconName} alt={iconName} />;
+  return <svg data-testid="icon" className={iconName} />;
 }

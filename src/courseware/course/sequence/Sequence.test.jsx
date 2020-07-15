@@ -21,18 +21,19 @@ describe('Sequence', () => {
 
   it('renders correctly without data', () => {
     render(<Sequence {...mockData} {...{ unitId: undefined, sequenceId: undefined }} />, { initialState: {} });
-    expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
+    expect(screen.getByText('There is no content here.')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
   it('renders correctly for gated content', async () => {
-    render(<Sequence {...mockData} {...{ sequenceId: '3' }} />);
+    const { container } = render(<Sequence {...mockData} {...{ sequenceId: '3' }} />);
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
     // Only `Previous`, `Next` and `Bookmark` buttons.
     expect(screen.getAllByRole('button').length).toEqual(3);
 
     expect(await screen.findByText('Content Locked')).toBeInTheDocument();
-    expect(screen.getByAltText('fa-lock')).toBeInTheDocument();
+    const unitContainer = container.querySelector('.unit-container');
+    expect(unitContainer.querySelector('svg')).toHaveClass('fa-lock');
     expect(screen.getByText(/You must complete the prerequisite/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
     expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();

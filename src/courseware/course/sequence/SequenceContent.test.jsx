@@ -18,13 +18,13 @@ describe('Sequence Content', () => {
   });
 
   it('displays messages for the locked content', async () => {
-    render(<SequenceContent {...mockData} gated />, { initialState });
+    const { container } = render(<SequenceContent {...mockData} gated />, { initialState });
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
 
     expect(await screen.findByText('Content Locked')).toBeInTheDocument();
     expect(screen.getByText('test-sequence')).toBeInTheDocument();
     expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
-    expect(screen.getByAltText('fa-lock')).toBeInTheDocument();
+    expect(container.querySelector('svg')).toHaveClass('fa-lock');
     expect(screen.getByText(/You must complete the prerequisite/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
   });
