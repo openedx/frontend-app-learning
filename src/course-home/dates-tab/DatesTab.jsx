@@ -8,9 +8,9 @@ import DatesBannerContainer from '../dates-banner/DatesBannerContainer';
 function DatesTab({ intl }) {
   return (
     <>
-      <h2 className="mb-4">
+      <div role="heading" aria-level="1" className="h4 my-3">
         {intl.formatMessage(messages.title)}
-      </h2>
+      </div>
       <DatesBannerContainer model="dates" />
       <Timeline />
     </>

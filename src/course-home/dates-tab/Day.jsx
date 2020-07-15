@@ -24,20 +24,20 @@ function Day({
   const { color, badges } = getBadgeListAndColor(date, intl, null, items);
 
   return (
-    <div className="dates-day pb-4">
+    <li className="dates-day pb-4">
       {/* Top Line */}
-      {!first && <div className="dates-line-top border border-left border-gray-900 bg-gray-900" />}
+      {!first && <div className="dates-line-top border-1 border-left border-gray-900 bg-gray-900" />}
 
       {/* Dot */}
       <div className={classNames(color, 'dates-dot border border-gray-900')} />
 
       {/* Bottom Line */}
-      {!last && <div className="dates-line-bottom border border-left border-gray-900 bg-gray-900" />}
+      {!last && <div className="dates-line-bottom border-1 border-left border-gray-900 bg-gray-900" />}
 
       {/* Content */}
-      <div className="d-inline-block ml-3 pl-3">
-        <div>
-          <h5 className="d-inline text-dark-500">
+      <div className="d-inline-block ml-3 pl-2">
+        <div className="mb-1">
+          <p className="d-inline text-dark-500 font-weight-bold">
             <FormattedDate
               value={date}
               day="numeric"
@@ -46,7 +46,7 @@ function Day({
               year="numeric"
               {...timezoneFormatArgs}
             />
-          </h5>
+          </p>
           {badges}
         </div>
         {items.map((item) => {
@@ -57,13 +57,13 @@ function Day({
           const textColor = available ? 'text-dark-500' : 'text-dark-200';
           return (
             <div key={item.title + item.date} className={textColor}>
-              <div><span className="font-weight-bold">{title}</span>{itemBadges}</div>
-              <div>{item.description}</div>
+              <div><span className="font-weight-bold small mt-1">{title}</span>{itemBadges}</div>
+              {item.description && <div className="small mb-2">{item.description}</div>}
             </div>
           );
         })}
       </div>
-    </div>
+    </li>
   );
 }
 
