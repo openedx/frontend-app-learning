@@ -1,42 +1,21 @@
-import { configureStore } from '@reduxjs/toolkit';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
-import { configure, getAuthenticatedHttpClient, MockAuthService } from '@edx/frontend-platform/auth';
-import { getConfig, mergeConfig } from '@edx/frontend-platform';
-import { logError } from '@edx/frontend-platform/logging';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { getConfig } from '@edx/frontend-platform';
 
 import * as thunks from './thunks';
 
 import executeThunk from '../../utils';
 
-import { reducer as courseHomeReducer } from './slice';
-import { reducer as coursewareReducer } from '../../courseware/data/slice';
-import { reducer as modelsReducer } from '../../generic/model-store';
-
 import './__factories__';
 import '../../courseware/data/__factories__/courseMetadata.factory';
+import initializeMockApp from '../../setupTest';
+import initializeStore from '../../store';
 
-jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
-
-mergeConfig({
-  authenticatedUser: {
-    userId: 'abc123',
-    username: 'Mock User',
-    roles: [],
-    administrator: false,
-  },
-});
-configure(MockAuthService, {
-  config: getConfig(),
-  loggingService: {
-    logInfo: jest.fn(),
-    logError: jest.fn(),
-  },
-});
+const { loggingService } = initializeMockApp();
 
 const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-
 
 describe('Data layer integration tests', () => {
   const courseMetadata = Factory.build('courseMetadata');
@@ -58,15 +37,9 @@ describe('Data layer integration tests', () => {
 
   beforeEach(() => {
     axiosMock.reset();
-    logError.mockReset();
+    loggingService.logError.mockReset();
 
-    store = configureStore({
-      reducer: {
-        models: modelsReducer,
-        courseware: coursewareReducer,
-        courseHome: courseHomeReducer,
-      },
-    });
+    store = initializeStore();
   });
 
   it('Should initialize store', () => {
@@ -83,7 +56,7 @@ describe('Data layer integration tests', () => {
 
       await executeThunk(thunks.fetchDatesTab(courseId), store.dispatch);
 
-      expect(logError).toHaveBeenCalled();
+      expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().courseHome.courseStatus).toEqual('failed');
     });
 
@@ -114,7 +87,7 @@ describe('Data layer integration tests', () => {
 
       await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
 
-      expect(logError).toHaveBeenCalled();
+      expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().courseHome.courseStatus).toEqual('failed');
     });
 

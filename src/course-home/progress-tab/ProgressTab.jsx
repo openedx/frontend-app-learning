@@ -14,7 +14,6 @@ export default function ProgressTab() {
     enrollmentMode,
   } = useModel('progress', courseId);
 
-
   return (
     <section>
       <h2 className="mb-4">

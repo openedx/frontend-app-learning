@@ -1,40 +1,21 @@
-import { configureStore } from '@reduxjs/toolkit';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
-import { configure, getAuthenticatedHttpClient, MockAuthService } from '@edx/frontend-platform/auth';
-import { getConfig, mergeConfig } from '@edx/frontend-platform';
-import { logError } from '@edx/frontend-platform/logging';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { getConfig } from '@edx/frontend-platform';
 
 import * as thunks from './thunks';
 
 import executeThunk from '../../utils';
 
-import { reducer as coursewareReducer } from './slice';
-import { reducer as modelsReducer } from '../../generic/model-store';
-
+import buildSimpleCourseBlocks from './__factories__/courseBlocks.factory';
 import './__factories__';
+import initializeMockApp from '../../setupTest';
+import initializeStore from '../../store';
 
-jest.mock('@edx/frontend-platform/logging', () => ({ logError: jest.fn() }));
-
-mergeConfig({
-  authenticatedUser: {
-    userId: 'abc123',
-    username: 'Mock User',
-    roles: [],
-    administrator: false,
-  },
-});
-configure(MockAuthService, {
-  config: getConfig(),
-  loggingService: {
-    logInfo: jest.fn(),
-    logError: jest.fn(),
-  },
-});
+const { loggingService } = initializeMockApp();
 
 const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-
 
 describe('Data layer integration tests', () => {
   const courseBaseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course`;
@@ -44,44 +25,25 @@ describe('Data layer integration tests', () => {
   // building minimum set of api responses to test all thunks
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
-  const unitBlock = Factory.build(
-    'block',
-    { type: 'vertical' },
-    { courseId },
-  );
-  const sequenceBlock = Factory.build(
-    'block',
-    { type: 'sequential', children: [unitBlock.id] },
-    { courseId },
-  );
-  const courseBlocks = Factory.build(
-    'courseBlocks',
-    { courseId },
-    { unit: unitBlock, sequence: sequenceBlock },
-  );
+  const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId);
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
     { courseId },
-    { unitBlock, sequenceBlock },
+    { unitBlocks: [unitBlock], sequenceBlock },
   );
 
   const courseUrl = `${courseBaseUrl}/${courseId}`;
-  const sequenceId = sequenceMetadata.item_id;
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
-  const unitId = sequenceMetadata.items[0].id;
+  const sequenceId = sequenceBlock.id;
+  const unitId = unitBlock.id;
 
   let store;
 
   beforeEach(() => {
     axiosMock.reset();
-    logError.mockReset();
+    loggingService.logError.mockReset();
 
-    store = configureStore({
-      reducer: {
-        models: modelsReducer,
-        courseware: coursewareReducer,
-      },
-    });
+    store = initializeStore();
   });
 
   describe('Test fetchCourse', () => {
@@ -91,7 +53,7 @@ describe('Data layer integration tests', () => {
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
-      expect(logError).toHaveBeenCalled();
+      expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().courseware).toEqual(expect.objectContaining({
         courseId,
         courseStatus: 'failed',
@@ -104,7 +66,9 @@ describe('Data layer integration tests', () => {
           has_access: false,
         },
       });
-      const forbiddenCourseBlocks = Factory.build('courseBlocks', { courseId: forbiddenCourseMetadata.id });
+      const forbiddenCourseBlocks = Factory.build('courseBlocks', {
+        courseId: forbiddenCourseMetadata.id,
+      });
 
       const forbiddenCourseUrl = `${courseBaseUrl}/${forbiddenCourseMetadata.id}`;
 
@@ -130,11 +94,12 @@ describe('Data layer integration tests', () => {
       const state = store.getState();
 
       expect(state.courseware.courseStatus).toEqual('loaded');
+      expect(state.courseware.courseId).toEqual(courseId);
+      expect(state.courseware.sequenceStatus).toEqual('loading');
+      expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.courses[courseId].canLoadCourseware).not.toBeUndefined();
-
-      expect(state).toMatchSnapshot();
     });
   });
 
@@ -144,7 +109,7 @@ describe('Data layer integration tests', () => {
 
       await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
 
-      expect(logError).toHaveBeenCalled();
+      expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().courseware.sequenceStatus).toEqual('failed');
     });
 
@@ -158,25 +123,32 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
       // ensure that initial state has no additional sequence info
-      const initialState = store.getState();
-      expect(initialState.models.sequences).toEqual({
+      let state = store.getState();
+      expect(state.models.sequences).toEqual({
         [sequenceBlock.id]: expect.not.objectContaining({
           gatedContent: expect.any(Object),
           activeUnitIndex: expect.any(Number),
         }),
       });
-      expect(initialState.models.units).toEqual({
+      expect(state.models.units).toEqual({
         [unitBlock.id]: expect.not.objectContaining({
           complete: null,
           bookmarked: expect.any(Boolean),
         }),
       });
 
+      // Update our state variable again.
+      state = store.getState();
+
+      expect(state.courseware.courseStatus).toEqual('loaded');
+      expect(state.courseware.courseId).toEqual(courseId);
+      expect(state.courseware.sequenceStatus).toEqual('loading');
+      expect(state.courseware.sequenceId).toEqual(null);
+
       await executeThunk(thunks.fetchSequence(sequenceBlock.id), store.dispatch);
 
-      const state = store.getState();
-
-      expect(state.courseware.sequenceStatus).toEqual('loaded');
+      // Update our state variable again.
+      state = store.getState();
 
       // ensure that additional information appeared in store
       expect(state.models.sequences).toEqual({
@@ -192,7 +164,10 @@ describe('Data layer integration tests', () => {
         }),
       });
 
-      expect(state).toMatchSnapshot();
+      expect(state.courseware.courseStatus).toEqual('loaded');
+      expect(state.courseware.courseId).toEqual(courseId);
+      expect(state.courseware.sequenceStatus).toEqual('loaded');
+      expect(state.courseware.sequenceId).toEqual(sequenceId);
     });
   });
 
@@ -216,7 +191,7 @@ describe('Data layer integration tests', () => {
           store.getState,
         );
 
-        expect(logError).toHaveBeenCalled();
+        expect(loggingService.logError).toHaveBeenCalled();
         expect(axiosMock.history.post[0].url).toEqual(getCompletionURL);
       });
 
@@ -248,7 +223,7 @@ describe('Data layer integration tests', () => {
           store.getState,
         );
 
-        expect(logError).toHaveBeenCalled();
+        expect(loggingService.logError).toHaveBeenCalled();
         expect(axiosMock.history.post[0].url).toEqual(gotoPositionURL);
         expect(store.getState().models.sequences[sequenceId].position).toEqual(oldPosition);
       });
