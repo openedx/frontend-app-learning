@@ -127,6 +127,7 @@ function normalizeMetadata(metadata) {
     isEnrolled: metadata.enrollment.is_active,
     canLoadCourseware: camelCaseObject(metadata.can_load_courseware),
     isStaff: metadata.is_staff,
+    license: metadata.license,
     verifiedMode: camelCaseObject(metadata.verified_mode),
     tabs: normalizeTabUrls(metadata.id, camelCaseObject(metadata.tabs)),
     showCalculator: metadata.show_calculator,

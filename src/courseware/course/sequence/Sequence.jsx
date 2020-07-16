@@ -11,6 +11,7 @@ import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
 import { useModel } from '../../../generic/model-store';
 
+import CourseLicense from '../course-license';
 import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
@@ -24,6 +25,7 @@ function Sequence({
   previousSequenceHandler,
   intl,
 }) {
+  const course = useModel('courses', courseId);
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
@@ -156,6 +158,9 @@ function Sequence({
               />
             )}
           </div>
+        </div>
+        <div className="sequence-footer px-4 py-1">
+          <CourseLicense license={course.license || undefined} />
         </div>
       </div>
     );
