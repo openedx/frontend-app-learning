@@ -12,4 +12,5 @@ Factory.define('outlineTabData')
   }))
   .attr('course_blocks', ['courseId'], courseId => ({
     blocks: Factory.build('courseBlocks', { courseId }).blocks,
-  }));
+  }))
+  .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>');
