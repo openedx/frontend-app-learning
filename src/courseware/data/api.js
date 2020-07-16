@@ -151,7 +151,6 @@ function normalizeSequenceMetadata(sequence) {
       title: sequence.display_name,
       gatedContent: camelCaseObject(sequence.gated_content),
       isTimeLimited: sequence.is_time_limited,
-      position: sequence.position || 1,
       // Position comes back from the server 1-indexed. Adjust here.
       activeUnitIndex: sequence.position ? sequence.position - 1 : 0,
       saveUnitPosition: sequence.save_position,
@@ -200,13 +199,13 @@ export async function getBlockCompletion(courseId, sequenceId, usageKey) {
   return false;
 }
 
-export async function postSequencePosition(courseId, sequenceId, position) {
+export async function postSequencePosition(courseId, sequenceId, activeUnitIndex) {
   // Post data sent to this endpoint must be url encoded
   // TODO: Remove the need for this to be the case.
   // TODO: Ensure this usage of URLSearchParams is working in Internet Explorer
   const urlEncoded = new URLSearchParams();
   // Position is 1-indexed on the server and 0-indexed in this app. Adjust here.
-  urlEncoded.append('position', position + 1);
+  urlEncoded.append('position', activeUnitIndex + 1);
   const requestConfig = {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   };

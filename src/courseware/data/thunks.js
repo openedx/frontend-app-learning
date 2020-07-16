@@ -131,27 +131,27 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
   };
 }
 
-export function saveSequencePosition(courseId, sequenceId, position) {
+export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
   return async (dispatch, getState) => {
     const { models } = getState();
-    const initialPosition = models.sequences[sequenceId].position;
+    const initialActiveUnitIndex = models.sequences[sequenceId].activeUnitIndex;
     // Optimistically update the position.
     dispatch(updateModel({
       modelType: 'sequences',
       model: {
         id: sequenceId,
-        position,
+        activeUnitIndex,
       },
     }));
     try {
-      await postSequencePosition(courseId, sequenceId, position);
+      await postSequencePosition(courseId, sequenceId, activeUnitIndex);
       // Update again under the assumption that the above call succeeded, since it doesn't return a
       // meaningful response.
       dispatch(updateModel({
         modelType: 'sequences',
         model: {
           id: sequenceId,
-          position,
+          activeUnitIndex,
         },
       }));
     } catch (error) {
@@ -160,7 +160,7 @@ export function saveSequencePosition(courseId, sequenceId, position) {
         modelType: 'sequences',
         model: {
           id: sequenceId,
-          position: initialPosition,
+          activeUnitIndex: initialActiveUnitIndex,
         },
       }));
     }
