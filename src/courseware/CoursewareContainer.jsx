@@ -125,10 +125,8 @@ function useContentRedirect(courseStatus, sequenceStatus) {
 
   useEffect(() => {
     if (sequenceStatus === 'loaded' && sequenceId && !unitId) {
-      // The position may be null, in which case we'll just assume 0.
       if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
-        const unitIndex = sequence.position || 0;
-        const nextUnitId = sequence.unitIds[unitIndex];
+        const nextUnitId = sequence.unitIds[sequence.activeUnitIndex];
         // This is a replace because we don't want this change saved in the browser's history.
         history.replace(`/course/${courseId}/${sequence.id}/${nextUnitId}`);
       }
