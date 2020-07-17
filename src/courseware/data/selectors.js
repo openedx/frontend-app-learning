@@ -10,16 +10,3 @@ export function sequenceIdsSelector(state) {
 
   return sequenceIds;
 }
-
-export function firstSequenceIdSelector(state) {
-  if (state.courseware.courseStatus !== 'loaded') {
-    return null;
-  }
-  const { sectionIds = [] } = state.models.courses[state.courseware.courseId];
-
-  if (sectionIds.length === 0) {
-    return null;
-  }
-
-  return state.models.sections[sectionIds[0]].sequenceIds[0];
-}

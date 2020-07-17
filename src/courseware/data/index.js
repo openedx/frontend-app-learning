@@ -9,6 +9,5 @@ export {
 } from './api';
 export {
   sequenceIdsSelector,
-  firstSequenceIdSelector,
 } from './selectors';
 export { reducer } from './slice';
