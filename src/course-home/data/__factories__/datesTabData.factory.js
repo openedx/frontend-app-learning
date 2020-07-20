@@ -15,6 +15,7 @@ Factory.define('datesTabData')
         learner_has_access: true,
         link: '',
         title: 'Course Starts',
+        extraInfo: '',
       },
     ],
     missed_deadlines: false,
