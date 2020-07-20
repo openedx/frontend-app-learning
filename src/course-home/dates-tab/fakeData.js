@@ -20,7 +20,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "",
-      "title": "Course Starts"
+      "title": "Course Starts",
+      "extra_info": null
     },
     {
       "complete": true,
@@ -28,14 +29,16 @@ export default function fakeDatesData() {
       "date_type": "assignment-due-date",
       "description": "",
       "learner_has_access": true,
-      "title": "Multi Badges Completed"
+      "title": "Multi Badges Completed",
+      "extra_info": null
     },
     {
       "date": "2020-05-05T02:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
       "learner_has_access": true,
-      "title": "Multi Badges Past Due"
+      "title": "Multi Badges Past Due",
+      "extra_info": null
     },
     {
       "date": "2020-05-27T02:59:40.942669Z",
@@ -43,7 +46,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "https://example.com/",
-      "title": "Both Past Due 1"
+      "title": "Both Past Due 1",
+      "extra_info": null
     },
     {
       "date": "2020-05-27T02:59:40.942669Z",
@@ -51,7 +55,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "https://example.com/",
-      "title": "Both Past Due 2"
+      "title": "Both Past Due 2",
+      "extra_info": null
     },
     {
       "complete": true,
@@ -60,7 +65,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "https://example.com/",
-      "title": "One Completed/Due 1"
+      "title": "One Completed/Due 1",
+      "extra_info": null
     },
     {
       "date": "2020-05-28T08:59:40.942669Z",
@@ -68,7 +74,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "https://example.com/",
-      "title": "One Completed/Due 2"
+      "title": "One Completed/Due 2",
+      "extra_info": null
     },
     {
       "complete": true,
@@ -77,7 +84,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "https://example.com/",
-      "title": "Both Completed 1"
+      "title": "Both Completed 1",
+      "extra_info": null
     },
     {
       "complete": true,
@@ -86,7 +94,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "https://example.com/",
-      "title": "Both Completed 2"
+      "title": "Both Completed 2",
+      "extra_info": null
     },
     {
       "date": "2020-06-16T17:59:40.942669Z",
@@ -94,7 +103,8 @@ export default function fakeDatesData() {
       "description": "Don't miss the opportunity to highlight your new knowledge and skills by earning a verified certificate.",
       "learner_has_access": true,
       "link": "https://example.com/",
-      "title": "Upgrade to Verified Certificate"
+      "title": "Upgrade to Verified Certificate",
+      "extra_info": null
     },
     {
       "date": "2030-08-17T05:59:40.942669Z",
@@ -102,7 +112,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": false,
       "link": "https://example.com/",
-      "title": "One Verified 1"
+      "title": "One Verified 1",
+      "extra_info": null
     },
     {
       "date": "2030-08-17T05:59:40.942669Z",
@@ -110,7 +121,17 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "https://example.com/",
-      "title": "One Verified 2"
+      "title": "One Verified 2",
+      "extra_info": null
+    },
+    {
+      "date": "2030-08-17T05:59:40.942669Z",
+      "date_type": "assignment-due-date",
+      "description": "",
+      "learner_has_access": true,
+      "link": "https://example.com/",
+      "title": "ORA Verified 2",
+      "extra_info": "ORA Dates are set by the instructor, and can't be changed"
     },
     {
       "date": "2030-08-18T05:59:40.942669Z",
@@ -118,7 +139,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": false,
       "link": "https://example.com/",
-      "title": "Both Verified 1"
+      "title": "Both Verified 1",
+      "extra_info": null
     },
     {
       "date": "2030-08-18T05:59:40.942669Z",
@@ -126,7 +148,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": false,
       "link": "https://example.com/",
-      "title": "Both Verified 2"
+      "title": "Both Verified 2",
+      "extra_info": null
     },
     {
       "date": "2030-08-19T05:59:40.942669Z",
@@ -141,21 +164,24 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "https://example.com/",
-      "title": "One Unreleased 2"
+      "title": "One Unreleased 2",
+      "extra_info": null
     },
     {
       "date": "2030-08-20T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
       "learner_has_access": true,
-      "title": "Both Unreleased 1"
+      "title": "Both Unreleased 1",
+      "extra_info": null
     },
     {
       "date": "2030-08-20T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
       "learner_has_access": true,
-      "title": "Both Unreleased 2"
+      "title": "Both Unreleased 2",
+      "extra_info": null
     },
     {
       "date": "2030-08-23T00:00:00Z",
@@ -163,7 +189,8 @@ export default function fakeDatesData() {
       "description": "",
       "learner_has_access": true,
       "link": "",
-      "title": "Course Ends"
+      "title": "Course Ends",
+      "extra_info": null
     },
     {
       "date": "2030-09-01T00:00:00Z",
@@ -171,7 +198,8 @@ export default function fakeDatesData() {
       "description": "You must successfully complete verification before this date to qualify for a Verified Certificate.",
       "learner_has_access": false,
       "link": "https://example.com/",
-      "title": "Verification Deadline"
+      "title": "Verification Deadline",
+      "extra_info": null
     }
   ],
   "display_reset_dates_text": false,

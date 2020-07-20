@@ -74,6 +74,7 @@ Object {
             "date": "2013-02-05T05:00:00Z",
             "dateType": "course-start-date",
             "description": "",
+            "extraInfo": "",
             "learnerHasAccess": true,
             "link": "",
             "title": "Course Starts",
