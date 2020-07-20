@@ -59,6 +59,7 @@ function Day({
             <div key={item.title + item.date} className={textColor}>
               <div><span className="font-weight-bold small mt-1">{title}</span>{itemBadges}</div>
               {item.description && <div className="small mb-2">{item.description}</div>}
+              {item.extraInfo && <div className="small mb-2">{item.extraInfo}</div>}
             </div>
           );
         })}
