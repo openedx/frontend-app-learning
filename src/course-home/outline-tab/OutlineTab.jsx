@@ -1,11 +1,14 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '@edx/paragon';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
+// import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
+import messages from './messages';
 import Section from './Section';
 import { useModel } from '../../generic/model-store';
 
@@ -16,7 +19,7 @@ import { useModel } from '../../generic/model-store';
 const { EnrollmentAlert, StaffEnrollmentAlert } = React.lazy(() => import('../../alerts/enrollment-alert'));
 const LogistrationAlert = React.lazy(() => import('../../alerts/logistration-alert'));
 
-export default function OutlineTab() {
+function OutlineTab({ intl }) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -54,7 +57,7 @@ export default function OutlineTab() {
       />
       <div className="d-flex justify-content-between mb-3">
         <h2>{title}</h2>
-        <Button className="btn-primary" type="button">Resume Course</Button>
+        <Button className="btn-primary" type="button">{intl.formatMessage(messages.resume)}</Button>
       </div>
       <div className="row">
         <div className="col col-8">
@@ -80,8 +83,19 @@ export default function OutlineTab() {
             isEnrolled={isEnrolled}
             courseId={courseId}
           />
+          {/* Disabled until we decide whether iframes are the best solution for handouts
+          <CourseHandouts
+            courseId={courseId}
+          />
+          */}
         </div>
       </div>
     </>
   );
 }
+
+OutlineTab.propTypes = {
+  intl: intlShape.isRequired,
+};
+
+export default injectIntl(OutlineTab);

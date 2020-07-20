@@ -71,8 +71,14 @@ export async function getOutlineTabData(courseId) {
   const courseBlocks = normalizeBlocks(courseId, data.course_blocks.blocks);
   const courseTools = camelCaseObject(data.course_tools);
   const datesWidget = camelCaseObject(data.dates_widget);
+  const handoutsHtml = data.handouts_html;
 
-  return { courseTools, courseBlocks, datesWidget };
+  return {
+    courseTools,
+    courseBlocks,
+    datesWidget,
+    handoutsHtml,
+  };
 }
 
 export async function postCourseDeadlines(courseId) {

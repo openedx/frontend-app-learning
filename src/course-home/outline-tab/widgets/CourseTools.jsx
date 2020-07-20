@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBookmark, faCertificate, faInfo, faCalendar, faStar,
 } from '@fortawesome/free-solid-svg-icons';
 import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
+
+import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 
-export default function CourseTools(
-  { courseId },
-) {
+function CourseTools({ courseId, intl }) {
   const {
     courseTools,
   } = useModel('outline', courseId);
@@ -35,7 +37,7 @@ export default function CourseTools(
 
   return (
     <section className="mb-3">
-      <h4>Course Tools</h4>
+      <h4>{intl.formatMessage(messages.tools)}</h4>
       {courseTools.map((courseTool) => (
         <div key={courseTool.analyticsId}>
           <a data-analytics-id={courseTool.analyticsId} href={courseTool.url}>
@@ -50,8 +52,11 @@ export default function CourseTools(
 
 CourseTools.propTypes = {
   courseId: PropTypes.string,
+  intl: intlShape.isRequired,
 };
 
 CourseTools.defaultProps = {
   courseId: null,
 };
+
+export default injectIntl(CourseTools);
