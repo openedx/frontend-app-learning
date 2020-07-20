@@ -14,7 +14,7 @@ function CourseDates({ courseId, intl }) {
 
   return (
     <section className="mb-3">
-      <h4>{intl.formatMessage(messages.tools)}</h4>
+      <h4>{intl.formatMessage(messages.dates)}</h4>
       {datesWidget.courseDateBlocks.map((courseDateBlock) => (
         <DateSummary
           key={courseDateBlock.title + courseDateBlock.date}
