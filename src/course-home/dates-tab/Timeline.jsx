@@ -61,10 +61,10 @@ export default function Timeline() {
   }
 
   return (
-    <>
+    <ul className="list-unstyled m-0">
       {groupedDates.map((groupedDate) => (
         <Day key={groupedDate.date} {...groupedDate} />
       ))}
-    </>
+    </ul>
   );
 }
