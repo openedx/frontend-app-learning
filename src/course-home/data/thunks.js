@@ -5,6 +5,7 @@ import {
   getOutlineTabData,
   getProgressTabData,
   postCourseDeadlines,
+  postDismissWelcomeMessage,
 } from './api';
 
 import {
@@ -78,4 +79,8 @@ export function resetDeadlines(courseId, getTabData) {
       dispatch(getTabData(courseId));
     });
   };
+}
+
+export function dismissWelcomeMessage(courseId) {
+  return async () => postDismissWelcomeMessage(courseId);
 }

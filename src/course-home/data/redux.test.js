@@ -125,4 +125,16 @@ describe('Data layer integration tests', () => {
       expect(getTabDataMock).toHaveBeenCalledWith(courseId);
     });
   });
+
+  describe('Test dismissWelcomeMessage', () => {
+    it('Should dismiss welcome message', async () => {
+      const dismissUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dismiss_welcome_message`;
+      axiosMock.onPost(dismissUrl).reply(201);
+
+      await executeThunk(thunks.dismissWelcomeMessage(courseId), store.dispatch);
+
+      expect(axiosMock.history.post[0].url).toEqual(dismissUrl);
+      expect(axiosMock.history.post[0].data).toEqual(`{"course_id":"${courseId}"}`);
+    });
+  });
 });

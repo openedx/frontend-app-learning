@@ -9,6 +9,7 @@ export const ALERT_TYPES = {
   DANGER: 'danger',
   SUCCESS: 'success',
   INFO: 'info',
+  WELCOME: 'welcome',
 };
 
 const FLASH_MESSAGES_LOCAL_STORAGE_KEY = 'UserMessagesProvider.flashMessages';

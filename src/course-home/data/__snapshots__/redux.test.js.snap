@@ -198,6 +198,7 @@ Object {
         "datesWidget": undefined,
         "handoutsHtml": "<ul><li>Handout 1</li></ul>",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "welcomeMessageHtml": undefined,
       },
     },
   },
