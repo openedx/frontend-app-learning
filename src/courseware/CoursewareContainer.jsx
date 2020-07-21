@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { history } from '@edx/frontend-platform';
 import { getLocale } from '@edx/frontend-platform/i18n';
 import { Redirect } from 'react-router';
-import memoize from 'lodash.memoize';
 import { createSelector } from '@reduxjs/toolkit';
+import { defaultMemoize as memoize } from 'reselect';
 
 import {
   checkBlockCompletion,
