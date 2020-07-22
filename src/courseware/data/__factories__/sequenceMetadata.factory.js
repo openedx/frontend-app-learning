@@ -3,7 +3,12 @@ import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dep
 import './block.factory';
 
 Factory.define('sequenceMetadata')
-  .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
+  .option('courseId', (courseId) => {
+    if (courseId) {
+      return courseId;
+    }
+    throw new Error('courseId must be specified for sequenceMetadata factory.');
+  })
   // An array of units
   .option('unitBlocks', ['courseId'], courseId => ([
     Factory.build(

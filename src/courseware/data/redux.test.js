@@ -28,8 +28,8 @@ describe('Data layer integration tests', () => {
   const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId);
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
-    { courseId },
-    { unitBlocks: [unitBlock], sequenceBlock },
+    {},
+    { courseId, unitBlocks: [unitBlock], sequenceBlock },
   );
 
   const courseUrl = `${courseBaseUrl}/${courseId}`;

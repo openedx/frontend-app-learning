@@ -82,8 +82,8 @@ describe('CoursewareContainer', () => {
     const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
     const sequenceMetadata = Factory.build(
       'sequenceMetadata',
-      { courseId },
-      { unitBlock, sequenceBlock },
+      {},
+      { courseId, unitBlocks: [unitBlock], sequenceBlock },
     );
 
     const courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
@@ -149,8 +149,8 @@ describe('CoursewareContainer', () => {
       const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
       const sequenceMetadata = Factory.build(
         'sequenceMetadata',
-        { courseId },
-        { unitBlock, sequenceBlock },
+        {},
+        { courseId, unitBlocks: [unitBlock], sequenceBlock },
       );
 
       const forbiddenCourseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
