@@ -9,7 +9,6 @@ import * as thunks from './thunks';
 import executeThunk from '../../utils';
 
 import buildSimpleCourseBlocks from './__factories__/courseBlocks.factory';
-import './__factories__';
 import initializeMockApp from '../../setupTest';
 import initializeStore from '../../store';
 
@@ -29,7 +28,7 @@ describe('Data layer integration tests', () => {
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
     {},
-    { courseId, unitBlocks, sequenceBlock },
+    { courseId, unitBlocks: [unitBlock], sequenceBlock },
   );
 
   const courseUrl = `${courseBaseUrl}/${courseId}`;
@@ -124,13 +123,13 @@ describe('Data layer integration tests', () => {
       // ensure that initial state has no additional sequence info
       let state = store.getState();
       expect(state.models.sequences).toEqual({
-        [sequenceBlock.id]: expect.not.objectContaining({
+        [sequenceId]: expect.not.objectContaining({
           gatedContent: expect.any(Object),
           activeUnitIndex: expect.any(Number),
         }),
       });
       expect(state.models.units).toEqual({
-        [unitBlock.id]: expect.not.objectContaining({
+        [unitId]: expect.not.objectContaining({
           complete: null,
           bookmarked: expect.any(Boolean),
         }),
@@ -144,20 +143,20 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
 
-      await executeThunk(thunks.fetchSequence(sequenceBlock.id), store.dispatch);
+      await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
 
       // Update our state variable again.
       state = store.getState();
 
       // ensure that additional information appeared in store
       expect(state.models.sequences).toEqual({
-        [sequenceBlock.id]: expect.objectContaining({
+        [sequenceId]: expect.objectContaining({
           gatedContent: expect.any(Object),
           activeUnitIndex: expect.any(Number),
         }),
       });
       expect(state.models.units).toEqual({
-        [unitBlock.id]: expect.objectContaining({
+        [unitId]: expect.objectContaining({
           complete: null,
           bookmarked: expect.any(Boolean),
         }),

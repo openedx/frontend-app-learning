@@ -11,6 +11,7 @@ import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
+import { LOADED } from '../../../data/slice';
 
 export default function SequenceNavigation({
   unitId,
@@ -22,8 +23,10 @@ export default function SequenceNavigation({
 }) {
   const sequence = useModel('sequences', sequenceId);
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
-  const isLocked = sequence.gatedContent !== undefined && sequence.gatedContent.gated;
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const isLocked = sequenceStatus === LOADED ? (
+    sequence.gatedContent !== undefined && sequence.gatedContent.gated
+  ) : undefined;
 
   const renderUnitButtons = () => {
     if (isLocked) {
@@ -46,7 +49,7 @@ export default function SequenceNavigation({
     );
   };
 
-  return sequenceStatus === 'loaded' && (
+  return sequenceStatus === LOADED && (
     <nav className={classNames('sequence-navigation', className)}>
       <Button className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />

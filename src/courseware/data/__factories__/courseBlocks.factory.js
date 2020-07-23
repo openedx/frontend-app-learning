@@ -49,13 +49,13 @@ export default function buildSimpleCourseBlocks(courseId, title, numUnits = 1) {
     { type: 'chapter', children: [sequenceBlock.id] },
     { courseId },
   );
-  const courseBlock = Factory.build(
+  const courseBlock = options.courseBlocks || Factory.build(
     'block',
     { type: 'course', display_name: title, children: [sectionBlock.id] },
     { courseId },
   );
   return {
-    courseBlocks: Factory.build(
+    courseBlocks: options.courseBlocks || Factory.build(
       'courseBlocks',
       { courseId },
       {
