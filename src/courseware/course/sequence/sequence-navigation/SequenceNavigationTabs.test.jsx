@@ -1,7 +1,6 @@
 import React from 'react';
-import {
-  initialState, render, screen, testUnits,
-} from '../../../../setupTest';
+import { Factory } from 'rosie';
+import { initializeTestStore, render, screen } from '../../../../setupTest';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
@@ -9,27 +8,48 @@ import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastV
 jest.mock('../../../../generic/tabs/useIndexOfLastVisibleChild');
 
 describe('Sequence Navigation Tabs', () => {
-  const mockData = {
-    unitId: '2',
-    onNavigate: () => {
-    },
-    showCompletion: false,
-    unitIds: testUnits,
-  };
+  let mockData;
+
+  const courseMetadata = Factory.build('courseMetadata');
+  const unitBlocks = [Factory.build(
+    'block',
+    { type: 'problem' },
+    { courseId: courseMetadata.id },
+  ), Factory.build(
+    'block',
+    { type: 'video', complete: true },
+    { courseId: courseMetadata.id },
+  ), Factory.build(
+    'block',
+    { type: 'other', complete: true, bookmarked: true },
+    { courseId: courseMetadata.id },
+  )];
+  const activeBlockNumber = 2;
+
+  beforeAll(async () => {
+    await initializeTestStore({ courseMetadata, unitBlocks });
+    mockData = {
+      // Blocks are numbered from 1 in the UI, so we're decreasing this by 1 to have correct block's ID in the array.
+      unitId: unitBlocks[activeBlockNumber - 1].id,
+      onNavigate: () => {},
+      showCompletion: false,
+      unitIds: unitBlocks.map(unit => unit.id),
+    };
+  });
 
   it('renders unit buttons', () => {
     useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
-    render(<SequenceNavigationTabs {...mockData} />, { initialState });
+    render(<SequenceNavigationTabs {...mockData} />);
 
-    expect(screen.getAllByRole('button').length).toEqual(testUnits.length);
+    expect(screen.getAllByRole('button')).toHaveLength(unitBlocks.length);
   });
 
   it('renders unit buttons and dropdown button', () => {
     useIndexOfLastVisibleChild.mockReturnValue([-1, null, null]);
-    render(<SequenceNavigationTabs {...mockData} />, { initialState });
+    render(<SequenceNavigationTabs {...mockData} />);
 
-    expect(screen.getByRole('button', { name: `${mockData.unitId} of ${testUnits.length}` }))
+    expect(screen.getAllByRole('button')).toHaveLength(unitBlocks.length + 1);
+    expect(screen.getByRole('button', { name: `${activeBlockNumber} of ${unitBlocks.length}` }))
       .toHaveClass('dropdown-button');
-    expect(screen.getAllByRole('button').length).toEqual(testUnits.length + 1);
   });
 });

@@ -14,7 +14,6 @@ import tabMessages from '../tab-page/messages';
 import initializeMockApp from '../setupTest';
 
 import CoursewareContainer from './CoursewareContainer';
-import './data/__factories__';
 import buildSimpleCourseBlocks from './data/__factories__/courseBlocks.factory';
 import initializeStore from '../store';
 
@@ -79,28 +78,29 @@ describe('CoursewareContainer', () => {
   it('should successfully render sequence navigation and unit', async () => {
     const courseMetadata = Factory.build('courseMetadata');
     const courseId = courseMetadata.id;
-    const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
+    const { courseBlocks, unitBlocks, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
     const sequenceMetadata = Factory.build(
       'sequenceMetadata',
       {},
-      { courseId, unitBlocks: [unitBlock], sequenceBlock },
+      { courseId, unitBlocks, sequenceBlock: sequenceBlock[0] },
     );
 
     const courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
     const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
-    const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceBlock.id}`;
-    const unitId = unitBlock.id;
+    const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceBlock[0].id}`;
+    const unitId = unitBlocks[0].id;
 
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
     axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {
-      sectionId: sequenceBlock.id,
-      unitId: unitBlock.id,
+      sectionId: sequenceBlock[0].id,
+      unitId: unitBlocks[0].id,
     });
     axiosMock.onGet(sequenceMetadataUrl).reply(200, sequenceMetadata);
 
     // Print out any URLs that we didn't handle above - useful for debugging the test.
     axiosMock.onAny().reply((config) => {
+      // eslint-disable-next-line no-console
       console.log(config.url);
       return [200, {}];
     });
@@ -126,7 +126,7 @@ describe('CoursewareContainer', () => {
 
     expect(sequenceNavButtons[0]).toHaveTextContent('Previous');
     // Prove this button is rendering an SVG book icon, meaning it's a unit.
-    expect(sequenceNavButtons[1].querySelector('svg')).toHaveClass('fa-book');
+    expect(sequenceNavButtons[1].querySelector('svg')).toHaveClass('fa-tasks');
     expect(sequenceNavButtons[2]).toHaveTextContent('Next');
 
     expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
@@ -146,11 +146,11 @@ describe('CoursewareContainer', () => {
         },
       });
       const courseId = courseMetadata.id;
-      const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
+      const { courseBlocks, unitBlocks, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
       const sequenceMetadata = Factory.build(
         'sequenceMetadata',
         {},
-        { courseId, unitBlocks: [unitBlock], sequenceBlock },
+        { courseId, unitBlocks, sequenceBlock: sequenceBlock[0] },
       );
 
       const forbiddenCourseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;

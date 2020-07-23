@@ -9,7 +9,6 @@ import * as thunks from './thunks';
 import executeThunk from '../../utils';
 
 import buildSimpleCourseBlocks from './__factories__/courseBlocks.factory';
-import './__factories__';
 import initializeMockApp from '../../setupTest';
 import initializeStore from '../../store';
 
@@ -25,17 +24,17 @@ describe('Data layer integration tests', () => {
   // building minimum set of api responses to test all thunks
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
-  const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId);
+  const { courseBlocks, unitBlocks, sequenceBlock } = buildSimpleCourseBlocks(courseId);
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
     {},
-    { courseId, unitBlocks: [unitBlock], sequenceBlock },
+    { courseId, unitBlocks, sequenceBlock: sequenceBlock[0] },
   );
 
   const courseUrl = `${courseBaseUrl}/${courseId}`;
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
-  const sequenceId = sequenceBlock.id;
-  const unitId = unitBlock.id;
+  const sequenceId = sequenceBlock[0].id;
+  const unitId = unitBlocks[0].id;
 
   let store;
 
@@ -125,13 +124,13 @@ describe('Data layer integration tests', () => {
       // ensure that initial state has no additional sequence info
       let state = store.getState();
       expect(state.models.sequences).toEqual({
-        [sequenceBlock.id]: expect.not.objectContaining({
+        [sequenceId]: expect.not.objectContaining({
           gatedContent: expect.any(Object),
           activeUnitIndex: expect.any(Number),
         }),
       });
       expect(state.models.units).toEqual({
-        [unitBlock.id]: expect.not.objectContaining({
+        [unitId]: expect.not.objectContaining({
           complete: null,
           bookmarked: expect.any(Boolean),
         }),
@@ -145,20 +144,20 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
 
-      await executeThunk(thunks.fetchSequence(sequenceBlock.id), store.dispatch);
+      await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
 
       // Update our state variable again.
       state = store.getState();
 
       // ensure that additional information appeared in store
       expect(state.models.sequences).toEqual({
-        [sequenceBlock.id]: expect.objectContaining({
+        [sequenceId]: expect.objectContaining({
           gatedContent: expect.any(Object),
           activeUnitIndex: expect.any(Number),
         }),
       });
       expect(state.models.units).toEqual({
-        [unitBlock.id]: expect.objectContaining({
+        [unitId]: expect.objectContaining({
           complete: null,
           bookmarked: expect.any(Boolean),
         }),

@@ -8,8 +8,6 @@ import * as thunks from './thunks';
 
 import executeThunk from '../../utils';
 
-import './__factories__';
-import '../../courseware/data/__factories__/courseMetadata.factory';
 import initializeMockApp from '../../setupTest';
 import initializeStore from '../../store';
 
