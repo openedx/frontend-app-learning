@@ -76,10 +76,9 @@ export default function buildSimpleCourseAndSequenceMetadata(options = {}) {
   const { unitBlocks, sequenceBlock } = simpleCourseBlocks;
   const sequenceMetadata = options.sequenceMetadata || sequenceBlock.map(block => Factory.build(
     'sequenceMetadata',
-    { courseId },
+    {},
     {
-      unitBlocks,
-      sequenceBlock: block,
+      courseId, unitBlocks, sequenceBlock: block,
     },
   ));
   return {
