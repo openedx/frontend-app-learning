@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -15,6 +17,15 @@ function CourseTools({ courseId, intl }) {
   const {
     courseTools,
   } = useModel('outline', courseId);
+
+  const logClick = (analyticsId) => {
+    const { administrator } = getAuthenticatedUser();
+    sendTrackEvent('edx.course.tool.accessed', {
+      course_id: courseId,
+      is_staff: administrator,
+      tool_name: analyticsId,
+    });
+  };
 
   const renderIcon = (iconClasses) => {
     switch (iconClasses) {
@@ -40,7 +51,7 @@ function CourseTools({ courseId, intl }) {
       <h4>{intl.formatMessage(messages.tools)}</h4>
       {courseTools.map((courseTool) => (
         <div key={courseTool.analyticsId}>
-          <a data-analytics-id={courseTool.analyticsId} href={courseTool.url}>
+          <a href={courseTool.url} onClick={() => logClick(courseTool.analyticsId)}>
             <FontAwesomeIcon icon={renderIcon(courseTool.analyticsId)} className="mr-2" style={{ width: '20px' }} />
             {courseTool.title}
           </a>
