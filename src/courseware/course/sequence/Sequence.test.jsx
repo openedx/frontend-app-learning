@@ -53,10 +53,14 @@ describe('Sequence', () => {
     };
     const sequenceMetadata = [Factory.build(
       'sequenceMetadata',
-      { courseId: courseMetadata.id, gated_content: gatedContent },
-      { unitBlocks, sequenceBlock: sequenceBlock[0] },
+      { gated_content: gatedContent },
+      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlock[0] },
     )];
-    const testStore = await initializeTestStore({ unitBlocks, sequenceBlock, sequenceMetadata }, false);
+    const testStore = await initializeTestStore(
+      {
+        courseMetadata, unitBlocks, sequenceBlock, sequenceMetadata,
+      }, false,
+    );
     const { container } = render(
       <Sequence {...mockData} {...{ sequenceId: sequenceBlock[0].id }} />,
       { store: testStore },
@@ -261,8 +265,8 @@ describe('Sequence', () => {
       )];
       const testSequenceMetadata = testSequenceBlock.map(block => Factory.build(
         'sequenceMetadata',
-        { courseId: courseMetadata.id },
-        { unitBlocks: block.children.length ? unitBlocks : [], sequenceBlock: block },
+        {},
+        { courseId: courseMetadata.id, unitBlocks: block.children.length ? unitBlocks : [], sequenceBlock: block },
       ));
       const innerTestStore = await initializeTestStore({
         courseMetadata, unitBlocks, sequenceBlock: testSequenceBlock, sequenceMetadata: testSequenceMetadata,

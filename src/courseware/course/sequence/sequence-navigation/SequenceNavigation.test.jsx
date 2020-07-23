@@ -52,8 +52,8 @@ describe('Sequence Navigation', () => {
     )];
     const sequenceMetadata = [Factory.build(
       'sequenceMetadata',
-      { courseId: courseMetadata.id, gated_content: { gated: true } },
-      { unitBlocks, sequenceBlock: sequenceBlock[0] },
+      { gated_content: { gated: true } },
+      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlock[0] },
     )];
     const testStore = await initializeTestStore({ unitBlocks, sequenceBlock, sequenceMetadata }, false);
     const testData = {
