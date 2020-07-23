@@ -1,7 +1,7 @@
 import React from 'react';
-import { cloneDeep } from 'lodash';
+import { Factory } from 'rosie';
 import {
-  initialState, render, screen, testUnits, fireEvent, getByText,
+  render, screen, fireEvent, getByText, initializeTestStore,
 } from '../../../../setupTest';
 import SequenceNavigation from './SequenceNavigation';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
@@ -11,59 +11,79 @@ jest.mock('../../../../generic/tabs/useIndexOfLastVisibleChild');
 useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
 
 describe('Sequence Navigation', () => {
-  const mockData = {
-    previousSequenceHandler: () => {},
-    onNavigate: () => {},
-    nextSequenceHandler: () => {},
-    sequenceId: '1',
-    unitId: '3',
-  };
+  let mockData;
+  const courseMetadata = Factory.build('courseMetadata');
+  const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
+    'block',
+    { type: 'problem' },
+    { courseId: courseMetadata.id },
+  ));
 
-  it('is empty while loading', () => {
-    // Clone initialState.
-    const testState = cloneDeep(initialState);
-    testState.courseware.sequenceStatus = 'loading';
+  beforeAll(async () => {
+    const store = await initializeTestStore({ courseMetadata, unitBlocks });
+    const { courseware } = store.getState();
+    mockData = {
+      unitId: unitBlocks[1].id,
+      sequenceId: courseware.sequenceId,
+      previousSequenceHandler: () => {},
+      onNavigate: () => {},
+      nextSequenceHandler: () => {},
+    };
+  });
 
-    const { container } = render(
-      <SequenceNavigation {...mockData} />,
-      { initialState: testState },
-    );
+  it('is empty while loading', async () => {
+    const testStore = await initializeTestStore({ excludeFetchSequence: true }, false);
+    const { container } = render(<SequenceNavigation {...mockData} />, { store: testStore });
+
     expect(container).toBeEmptyDOMElement();
   });
 
   it('renders empty div without unitId', () => {
-    const { container } = render(<SequenceNavigation {...mockData} unitId={undefined} />, { initialState });
+    const { container } = render(<SequenceNavigation {...mockData} unitId={undefined} />);
     expect(getByText(container, (content, element) => (
       element.tagName.toLowerCase() === 'div' && element.getAttribute('style')))).toBeEmptyDOMElement();
   });
 
-  it('renders locked button for gated content', () => {
-    const testState = cloneDeep(initialState);
-    testState.models.sequences['1'].gatedContent = { gated: true };
-    const onNavigate = jest.fn();
-    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />, { initialState: testState });
+  it('renders locked button for gated content', async () => {
+    const sequenceBlock = [Factory.build(
+      'block',
+      { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+      { courseId: courseMetadata.id },
+    )];
+    const sequenceMetadata = [Factory.build(
+      'sequenceMetadata',
+      { courseId: courseMetadata.id, gated_content: { gated: true } },
+      { unitBlocks, sequenceBlock: sequenceBlock[0] },
+    )];
+    const testStore = await initializeTestStore({ unitBlocks, sequenceBlock, sequenceMetadata }, false);
+    const testData = {
+      ...mockData,
+      sequenceId: sequenceBlock[0].id,
+      onNavigate: jest.fn(),
+    };
+    render(<SequenceNavigation {...testData} />, { store: testStore });
 
-    const unitButton = screen.getByTitle(mockData.unitId);
+    const unitButton = screen.getByTitle(unitBlocks[1].display_name);
     fireEvent.click(unitButton);
     // The unit button should not work for gated content.
-    expect(onNavigate).not.toHaveBeenCalled();
+    expect(testData.onNavigate).not.toHaveBeenCalled();
     // TODO: Not sure if this is working as expected, because the `contentType="lock"` will be overridden by the value
     //  from Redux. To make this provide a `fa-icon` lock we could introduce something like `overriddenContentType`.
-    expect(unitButton.firstChild).toHaveClass('fa-book');
+    expect(unitButton.firstChild).toHaveClass('fa-edit');
   });
 
   it('renders correctly and handles unit button clicks', () => {
     const onNavigate = jest.fn();
-    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />, { initialState });
+    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />);
 
     const unitButtons = screen.getAllByRole('button', { name: /\d+/ });
-    expect(unitButtons).toHaveLength(testUnits.length);
+    expect(unitButtons).toHaveLength(unitButtons.length);
     unitButtons.forEach(button => fireEvent.click(button));
     expect(onNavigate).toHaveBeenCalledTimes(unitButtons.length);
   });
 
   it('has both navigation buttons enabled for a non-corner unit of the sequence', () => {
-    render(<SequenceNavigation {...mockData} />, { initialState });
+    render(<SequenceNavigation {...mockData} />);
 
     screen.getAllByRole('button', { name: /previous|next/i }).forEach(button => {
       expect(button).toBeEnabled();
@@ -71,7 +91,7 @@ describe('Sequence Navigation', () => {
   });
 
   it('has the "Previous" button disabled for the first unit of the sequence', () => {
-    render(<SequenceNavigation {...mockData} unitId="1" />, { initialState });
+    render(<SequenceNavigation {...mockData} unitId={unitBlocks[0].id} />);
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
     expect(screen.getByRole('button', { name: /next/i })).toBeEnabled();
@@ -80,9 +100,8 @@ describe('Sequence Navigation', () => {
   it('has the "Next" button disabled for the last unit of the sequence', () => {
     render(<SequenceNavigation
       {...mockData}
-      sequenceId="2"
-      unitId={testUnits.length.toString()}
-    />, { initialState });
+      unitId={unitBlocks[unitBlocks.length - 1].id}
+    />);
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
@@ -91,10 +110,7 @@ describe('Sequence Navigation', () => {
   it('handles "Previous" and "Next" click', () => {
     const previousSequenceHandler = jest.fn();
     const nextSequenceHandler = jest.fn();
-    render(<SequenceNavigation
-      {...mockData}
-      {...{ previousSequenceHandler, nextSequenceHandler }}
-    />, { initialState });
+    render(<SequenceNavigation {...mockData} {...{ previousSequenceHandler, nextSequenceHandler }} />);
 
     fireEvent.click(screen.getByRole('button', { name: /previous/i }));
     expect(previousSequenceHandler).toHaveBeenCalledTimes(1);
