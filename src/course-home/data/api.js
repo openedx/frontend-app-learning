@@ -59,7 +59,7 @@ export async function getOutlineTabData(courseId) {
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
-      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/home`);
+      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/course/`);
       return {};
     }
     throw error;
