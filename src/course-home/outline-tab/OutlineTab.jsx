@@ -11,6 +11,7 @@ import CourseTools from './widgets/CourseTools';
 import messages from './messages';
 import Section from './Section';
 import { useModel } from '../../generic/model-store';
+import WelcomeMessage from './widgets/WelcomeMessage';
 
 // Note that we import from the component files themselves in the enrollment-alert package.
 // This is because React.lazy() requires that we import() from a file with a Component as its
@@ -61,6 +62,7 @@ function OutlineTab({ intl }) {
       </div>
       <div className="row">
         <div className="col col-8">
+          <WelcomeMessage courseId={courseId} />
           {sectionIds.map((sectionId) => (
             <Section
               key={sectionId}

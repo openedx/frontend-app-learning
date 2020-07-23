@@ -72,16 +72,23 @@ export async function getOutlineTabData(courseId) {
   const courseTools = camelCaseObject(data.course_tools);
   const datesWidget = camelCaseObject(data.dates_widget);
   const handoutsHtml = data.handouts_html;
+  const welcomeMessageHtml = data.welcome_message_html;
 
   return {
     courseTools,
     courseBlocks,
     datesWidget,
     handoutsHtml,
+    welcomeMessageHtml,
   };
 }
 
 export async function postCourseDeadlines(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
   await getAuthenticatedHttpClient().post(url.href, { course_key: courseId });
+}
+
+export async function postDismissWelcomeMessage(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dismiss_welcome_message`);
+  await getAuthenticatedHttpClient().post(url.href, { course_id: courseId });
 }

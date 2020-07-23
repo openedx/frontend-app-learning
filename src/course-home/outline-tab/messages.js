@@ -21,6 +21,18 @@ const messages = defineMessages({
     id: 'learning.outline.tools',
     defaultMessage: 'Course Tools',
   },
+  welcomeMessage: {
+    id: 'learning.outline.welcomeMessage',
+    defaultMessage: 'Welcome Message',
+  },
+  welcomeMessageShowMoreButton: {
+    id: 'learning.outline.welcomeMessageShowMoreButton',
+    defaultMessage: 'Show More',
+  },
+  welcomeMessageShowLessButton: {
+    id: 'learning.outline.welcomeMessageShowLessButton',
+    defaultMessage: 'Show Less',
+  },
 });
 
 export default messages;

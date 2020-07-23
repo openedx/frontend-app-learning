@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button } from '@edx/paragon';
 
 import { ALERT_TYPES } from './UserMessagesProvider';
+import './Alert.scss';
 
 function getAlertClass(type) {
   if (type === ALERT_TYPES.ERROR) {
@@ -18,6 +19,9 @@ function getAlertClass(type) {
   }
   if (type === ALERT_TYPES.SUCCESS) {
     return 'alert-success';
+  }
+  if (type === ALERT_TYPES.WELCOME) {
+    return 'alert-welcome alert-light';
   }
   return 'alert-info';
 }
@@ -41,9 +45,11 @@ function Alert({
   return (
     <div className={classNames('alert', { 'alert-dismissible': dismissible }, getAlertClass(type))}>
       <div className="d-flex align-items-start">
-        <div className="mr-2">
-          <FontAwesomeIcon icon={getAlertIcon(type)} />
-        </div>
+        {type !== ALERT_TYPES.WELCOME && (
+          <div className="mr-2">
+            <FontAwesomeIcon icon={getAlertIcon(type)} />
+          </div>
+        )}
         <div role="alert" className="flex-grow-1">
           {children}
         </div>
@@ -54,7 +60,13 @@ function Alert({
 }
 
 Alert.propTypes = {
-  type: PropTypes.oneOf([ALERT_TYPES.ERROR, ALERT_TYPES.DANGER, ALERT_TYPES.INFO, ALERT_TYPES.SUCCESS]).isRequired,
+  type: PropTypes.oneOf([
+    ALERT_TYPES.ERROR,
+    ALERT_TYPES.DANGER,
+    ALERT_TYPES.INFO,
+    ALERT_TYPES.SUCCESS,
+    ALERT_TYPES.WELCOME,
+  ]).isRequired,
   dismissible: PropTypes.bool,
   children: PropTypes.node,
   onDismiss: PropTypes.func,
