@@ -3,6 +3,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import { postFirstSectionCelebrationComplete } from './data/api';
 import { clearLocalStorage, getLocalStorage, setLocalStorage } from '../../../data/localStorage';
+import { updateModel } from '../../../generic/model-store';
 
 const CELEBRATION_LOCAL_STORAGE_KEY = 'CelebrationModal.showOnSectionLoad';
 
@@ -29,7 +30,7 @@ function recordFirstSectionCelebration(courseId) {
 
 // Looks at local storage to see whether we just came from the end of a section.
 // Note! This does have side effects (will clear some local storage and may start an api call).
-function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection) {
+function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection, dispatch) {
   const celebrationIds = getLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY);
   if (!celebrationIds) {
     return false;
@@ -46,6 +47,17 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFir
   if (sequenceId !== prevSequenceId && !onTargetUnit) {
     // Don't clear until we move off of current/prev sequence
     clearLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY);
+
+    // Update our local copy of course data from LMS
+    dispatch(updateModel({
+      modelType: 'courses',
+      model: {
+        id: courseId,
+        celebrations: {
+          firstSection: false,
+        },
+      },
+    }));
   }
 
   return shouldCelebrate;
