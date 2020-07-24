@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
+import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 
 import { AlertList } from '../../generic/user-messages';
@@ -52,8 +53,9 @@ function Course({
     verifiedMode,
   } = course;
 
+  const dispatch = useDispatch();
   const celebrateFirstSection = celebrations && celebrations.firstSection;
-  const celebrationOpen = shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection);
+  const celebrationOpen = shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection, dispatch);
 
   return (
     <>

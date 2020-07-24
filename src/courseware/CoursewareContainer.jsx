@@ -17,6 +17,7 @@ import {
 import { TabPage } from '../tab-page';
 
 import Course from './course';
+import { handleNextSectionCelebration } from './course/celebration';
 
 const checkExamRedirect = memoize((sequenceStatus, sequence) => {
   if (sequenceStatus === 'loaded') {
@@ -125,14 +126,27 @@ class CoursewareContainer extends Component {
   }
 
   handleNextSequenceClick = () => {
-    const { nextSequence, courseId } = this.props;
+    const {
+      course,
+      courseId,
+      nextSequence,
+      sequence,
+      sequenceId,
+    } = this.props;
+
     if (nextSequence !== null) {
+      let nextUnitId = null;
       if (nextSequence.unitIds.length > 0) {
-        const nextUnitId = nextSequence.unitIds[0];
+        [nextUnitId] = nextSequence.unitIds;
         history.push(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
       } else {
         // Some sequences have no units.  This will show a blank page with prev/next buttons.
         history.push(`/course/${courseId}/${nextSequence.id}`);
+      }
+
+      const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
+      if (celebrateFirstSection && sequence.sectionId !== nextSequence.sectionId) {
+        handleNextSectionCelebration(sequenceId, nextSequence.id, nextUnitId);
       }
     }
   }
