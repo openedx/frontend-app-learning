@@ -197,6 +197,10 @@ Object {
           "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/bookmarks/",
         },
         "datesWidget": undefined,
+        "enrollAlert": Object {
+          "canEnroll": true,
+          "extraText": "Contact the administrator.",
+        },
         "handoutsHtml": "<ul><li>Handout 1</li></ul>",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "welcomeMessageHtml": undefined,

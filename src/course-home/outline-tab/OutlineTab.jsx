@@ -10,14 +10,11 @@ import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
 import messages from './messages';
 import Section from './Section';
+import useEnrollmentAlert from '../../alerts/enrollment-alert';
+import { useLogistrationAlert } from '../../alerts/logistration-alert';
 import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 
-// Note that we import from the component files themselves in the enrollment-alert package.
-// This is because React.lazy() requires that we import() from a file with a Component as its
-// default export.
-// See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
-const { EnrollmentAlert, StaffEnrollmentAlert } = React.lazy(() => import('../../alerts/enrollment-alert'));
 const LogistrationAlert = React.lazy(() => import('../../alerts/logistration-alert'));
 
 function OutlineTab({ intl }) {
@@ -42,6 +39,9 @@ function OutlineTab({ intl }) {
     },
   } = useModel('outline', courseId);
 
+  const clientEnrollmentAlert = useEnrollmentAlert(courseId);
+  useLogistrationAlert();
+
   const rootCourseId = Object.keys(courses)[0];
   const { sectionIds } = courses[rootCourseId];
 
@@ -51,8 +51,7 @@ function OutlineTab({ intl }) {
         topic="outline"
         className="mb-3"
         customAlerts={{
-          clientEnrollmentAlert: EnrollmentAlert,
-          clientStaffEnrollmentAlert: StaffEnrollmentAlert,
+          clientEnrollmentAlert,
           clientLogistrationAlert: LogistrationAlert,
         }}
       />

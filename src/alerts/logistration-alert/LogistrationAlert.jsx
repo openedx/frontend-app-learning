@@ -9,7 +9,7 @@ import messages from './messages';
 function LogistrationAlert({ intl }) {
   const signIn = (
     <a href={`${getLoginRedirectUrl(global.location.href)}`}>
-      {intl.formatMessage(messages['learning.logistration.login'])}
+      {intl.formatMessage(messages.login)}
     </a>
   );
 
@@ -17,7 +17,7 @@ function LogistrationAlert({ intl }) {
   // This is complicated by the fact that we don't have a REGISTER_URL env variable available.
   const register = (
     <a href={`${getConfig().LMS_BASE_URL}/register?next=${encodeURIComponent(global.location.href)}`}>
-      {intl.formatMessage(messages['learning.logistration.register'])}
+      {intl.formatMessage(messages.register)}
     </a>
   );
 

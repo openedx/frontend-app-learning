@@ -9,7 +9,7 @@ export function useLogistrationAlert() {
 
   useAlert(isVisible, {
     code: 'clientLogistrationAlert',
-    topic: 'course',
+    topic: 'outline',
     dismissible: false,
     type: ALERT_TYPES.ERROR,
   });
