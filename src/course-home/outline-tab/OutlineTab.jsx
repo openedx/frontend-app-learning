@@ -6,7 +6,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
-// import CourseHandouts from './widgets/CourseHandouts';
+import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
 import messages from './messages';
 import Section from './Section';
@@ -85,11 +85,9 @@ function OutlineTab({ intl }) {
             isEnrolled={isEnrolled}
             courseId={courseId}
           />
-          {/* Disabled until we decide whether iframes are the best solution for handouts
           <CourseHandouts
             courseId={courseId}
           />
-          */}
         </div>
       </div>
     </>
