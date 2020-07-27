@@ -6,6 +6,7 @@ import {
   getProgressTabData,
   postCourseDeadlines,
   postDismissWelcomeMessage,
+  postRequestCert,
 } from './api';
 
 import {
@@ -83,4 +84,8 @@ export function resetDeadlines(courseId, getTabData) {
 
 export function dismissWelcomeMessage(courseId) {
   return async () => postDismissWelcomeMessage(courseId);
+}
+
+export function requestCert(courseId) {
+  return async () => postRequestCert(courseId);
 }
