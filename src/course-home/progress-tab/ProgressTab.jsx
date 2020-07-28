@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useModel } from '../../generic/model-store';
+import Chapter from './Chapter';
 
 export default function ProgressTab() {
   const {
@@ -12,15 +13,18 @@ export default function ProgressTab() {
 
   const {
     enrollmentMode,
+    coursewareSummary,
   } = useModel('progress', courseId);
 
   return (
     <section>
-      <h2 className="mb-4">
-        the user is {username} and they are enrolled as an {enrollmentMode} learner
-        {administrator
-        && <div>the user is admin</div>}
-      </h2>
+      {enrollmentMode} {administrator} {username}
+      {coursewareSummary.map((chapter) => (
+        <Chapter
+          key={chapter.displayName}
+          chapter={chapter}
+        />
+      ))}
     </section>
   );
 }
