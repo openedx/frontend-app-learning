@@ -64,7 +64,7 @@
     "@testing-library/dom": "^7.16.2",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^10.3.0",
-    "axios-mock-adapter": "^1.18.1",
+    "axios-mock-adapter": "^1.18.2",
     "codecov": "^3.6.1",
     "es-check": "^5.1.0",
     "glob": "^7.1.6",
