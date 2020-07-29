@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <% if (htmlWebpackPlugin.options.optimizelyId) { %>
-      <script src="https://www.edx.org/optimizelyjs/<%= htmlWebpackPlugin.options.optimizelyId %>.js"></script>
+    <% if (htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID) { %>
+      <script src="https://www.edx.org/optimizelyjs/<%= htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID %>.js"></script>
     <% } %>
   </head>
   <body>
