@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Button } from '@edx/paragon';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { AlertList } from '../../generic/user-messages';
@@ -41,6 +40,10 @@ function OutlineTab({ intl }) {
       sections,
     },
     courseExpiredHtml,
+    resumeCourse: {
+      hasVisitedCourse,
+      url: resumeCourseUrl,
+    },
     offerHtml,
   } = useModel('outline', courseId);
 
@@ -69,8 +72,12 @@ function OutlineTab({ intl }) {
         }}
       />
       <div className="d-flex justify-content-between mb-3">
-        <h2>{title}</h2>
-        <Button className="btn-primary" type="button">{intl.formatMessage(messages.resume)}</Button>
+        <div role="heading" aria-level="1" className="h4">{title}</div>
+        {resumeCourseUrl && (
+          <a className="btn btn-primary" href={resumeCourseUrl}>
+            {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
+          </a>
+        )}
       </div>
       <div className="row">
         <div className="col col-8">

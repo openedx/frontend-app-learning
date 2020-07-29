@@ -46,12 +46,12 @@ function DatesBannerContainer(props) {
     {
       name: 'upgradeToCompleteGradedBanner',
       shouldDisplay: upgradeToCompleteGraded,
-      clickHandler: () => window.location.replace(verifiedUpgradeLink),
+      clickHandler: () => global.location.replace(verifiedUpgradeLink),
     },
     {
       name: 'upgradeToResetBanner',
       shouldDisplay: upgradeToReset,
-      clickHandler: () => window.location.replace(verifiedUpgradeLink),
+      clickHandler: () => global.location.replace(verifiedUpgradeLink),
     },
     {
       name: 'resetDatesBanner',
