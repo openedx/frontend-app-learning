@@ -36,14 +36,13 @@ jest.mock(
 
 initializeMockApp();
 
-const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-
 describe('CoursewareContainer', () => {
   let store;
   let component;
+  let axiosMock;
 
   beforeEach(() => {
-    axiosMock.reset();
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
     store = initializeStore();
 
@@ -76,62 +75,210 @@ describe('CoursewareContainer', () => {
     );
   });
 
-  it('should successfully render sequence navigation and unit', async () => {
-    const courseMetadata = Factory.build('courseMetadata');
-    const courseId = courseMetadata.id;
-    const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
-    const sequenceMetadata = Factory.build(
-      'sequenceMetadata',
-      {},
-      { courseId, unitBlocks: [unitBlock], sequenceBlock },
-    );
+  describe('when receiving successful course data', () => {
+    let courseId;
+    let courseMetadata;
+    let courseBlocks;
+    let sequenceMetadata;
 
-    const courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
-    const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
-    const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceBlock.id}`;
-    const unitId = unitBlock.id;
+    let sequenceBlock;
+    let unitBlocks;
 
-    axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
-    axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
-    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {
-      sectionId: sequenceBlock.id,
-      unitId: unitBlock.id,
+    function assertLoadedHeader(container) {
+      const courseHeader = container.querySelector('.course-header');
+      // Ensure the course number and org appear - this proves we loaded course metadata properly.
+      expect(courseHeader).toHaveTextContent(courseMetadata.number);
+      expect(courseHeader).toHaveTextContent(courseMetadata.org);
+      // Ensure the course title is showing up in the header.  This means we loaded course blocks properly.
+      expect(courseHeader.querySelector('.course-title')).toHaveTextContent(courseMetadata.name);
+    }
+
+    function assertSequenceNavigation(container) {
+      // Ensure we had appropriate sequence navigation buttons.  We should only have one unit.
+      const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
+      expect(sequenceNavButtons).toHaveLength(5);
+
+      expect(sequenceNavButtons[0]).toHaveTextContent('Previous');
+      // Prove this button is rendering an SVG book icon, meaning it's a unit.
+      expect(sequenceNavButtons[1].querySelector('svg')).toHaveClass('fa-book');
+      expect(sequenceNavButtons[4]).toHaveTextContent('Next');
+    }
+
+    function setupMockRequests() {
+      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`).reply(200, courseMetadata);
+      axiosMock.onGet(new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`)).reply(200, courseBlocks);
+      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceBlock.id}`).reply(200, sequenceMetadata);
+    }
+
+    beforeEach(async () => {
+      // On page load, SequenceContext attempts to scroll to the top of the page.
+      global.scrollTo = jest.fn();
+
+      courseMetadata = Factory.build('courseMetadata');
+      courseId = courseMetadata.id;
+
+      const result = buildSimpleCourseBlocks(courseId, courseMetadata.name, 3); // 3 is for 3 units
+      courseBlocks = result.courseBlocks;
+      unitBlocks = result.unitBlocks;
+      sequenceBlock = result.sequenceBlock;
+
+      sequenceMetadata = Factory.build(
+        'sequenceMetadata',
+        {},
+        { courseId, unitBlocks, sequenceBlock },
+      );
+
+      setupMockRequests();
     });
-    axiosMock.onGet(sequenceMetadataUrl).reply(200, sequenceMetadata);
 
-    // Print out any URLs that we didn't handle above - useful for debugging the test.
-    axiosMock.onAny().reply((config) => {
-      console.log(config.url);
-      return [200, {}];
+    describe('when the URL only contains a course ID', () => {
+      it('should use the resume block repsonse to pick a unit if it contains one', async () => {
+        axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {
+          sectionId: sequenceBlock.id,
+          unitId: unitBlocks[1].id,
+        });
+
+        history.push(`/course/${courseId}`);
+        const { container } = render(component);
+
+        // This is an important line that ensures the spinner has been removed - and thus our main
+        // content has been loaded - prior to proceeding with our expectations.
+        await waitForElementToBeRemoved(screen.getByRole('status'));
+
+        assertLoadedHeader(container);
+        assertSequenceNavigation(container);
+
+        expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[1].id);
+      });
+
+      it('should use the first sequence ID and activeUnitIndex if the resume block response is empty', async () => {
+        // OVERRIDE SEQUENCE METADATA:
+        // set the position to the third unit so we can prove activeUnitIndex is working
+        sequenceMetadata = Factory.build(
+          'sequenceMetadata',
+          { position: 3 }, // position index is 1-based and is converted to 0-based for activeUnitIndex
+          { courseId, unitBlocks, sequenceBlock },
+        );
+
+        // Re-call the mock setup now that sequenceMetadata is different.
+        setupMockRequests();
+        // Note how there is no sectionId/unitId returned in this mock response!
+        axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {});
+
+        history.push(`/course/${courseId}`);
+        const { container } = render(component);
+
+        // This is an important line that ensures the spinner has been removed - and thus our main
+        // content has been loaded - prior to proceeding with our expectations.
+        await waitForElementToBeRemoved(screen.getByRole('status'));
+
+        assertLoadedHeader(container);
+        assertSequenceNavigation(container);
+
+        expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
+      });
     });
-    // On page load, SequenceContext attempts to scroll to the top of the page.
-    global.scrollTo = jest.fn();
-    history.push(`/course/${courseId}`);
-    const { container } = render(component);
 
-    // This is an important line that ensures the spinner has been removed - and thus our main
-    // content has been loaded - prior to proceeding with our expectations.
-    await waitForElementToBeRemoved(screen.getByRole('status'));
+    describe('when the URL contains a course ID and sequence ID', () => {
+      it('should pick the first unit if position was not defined (activeUnitIndex becomes 0)', async () => {
+        history.push(`/course/${courseId}/${sequenceBlock.id}`);
+        const { container } = render(component);
 
-    const courseHeader = container.querySelector('.course-header');
-    // Ensure the course number and org appear - this proves we loaded course metadata properly.
-    expect(courseHeader).toHaveTextContent(courseMetadata.number);
-    expect(courseHeader).toHaveTextContent(courseMetadata.org);
-    // Ensure the course title is showing up in the header.  This means we loaded course blocks properly.
-    expect(courseHeader.querySelector('.course-title')).toHaveTextContent(courseMetadata.name);
+        // This is an important line that ensures the spinner has been removed - and thus our main
+        // content has been loaded - prior to proceeding with our expectations.
+        await waitForElementToBeRemoved(screen.getByRole('status'));
 
-    // Ensure we had appropriate sequence navigation buttons.  We should only have one unit.
-    const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
-    expect(sequenceNavButtons).toHaveLength(3);
+        assertLoadedHeader(container);
+        assertSequenceNavigation(container);
 
-    expect(sequenceNavButtons[0]).toHaveTextContent('Previous');
-    // Prove this button is rendering an SVG book icon, meaning it's a unit.
-    expect(sequenceNavButtons[1].querySelector('svg')).toHaveClass('fa-book');
-    expect(sequenceNavButtons[2]).toHaveTextContent('Next');
+        expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[0].id);
+      });
 
-    expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
-    expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
-    expect(container.querySelector('.fake-unit')).toHaveTextContent(unitId);
+      it('should use activeUnitIndex to pick a unit from the sequence', async () => {
+        // OVERRIDE SEQUENCE METADATA:
+        sequenceMetadata = Factory.build(
+          'sequenceMetadata',
+          { position: 3 }, // position index is 1-based and is converted to 0-based for activeUnitIndex
+          { courseId, unitBlocks, sequenceBlock },
+        );
+
+        // Re-call the mock setup now that sequenceMetadata is different.
+        setupMockRequests();
+
+        history.push(`/course/${courseId}/${sequenceBlock.id}`);
+        const { container } = render(component);
+
+        // This is an important line that ensures the spinner has been removed - and thus our main
+        // content has been loaded - prior to proceeding with our expectations.
+        await waitForElementToBeRemoved(screen.getByRole('status'));
+
+        assertLoadedHeader(container);
+        assertSequenceNavigation(container);
+
+        expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
+      });
+    });
+
+    describe('when the URL contains a course, sequence, and unit ID', () => {
+      it('should load the specified unit', async () => {
+        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
+        const { container } = render(component);
+
+        // This is an important line that ensures the spinner has been removed - and thus our main
+        // content has been loaded - prior to proceeding with our expectations.
+        await waitForElementToBeRemoved(screen.getByRole('status'));
+
+        assertLoadedHeader(container);
+        assertSequenceNavigation(container);
+
+        expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
+      });
+    });
+
+    describe('when the current sequence is an exam', () => {
+      const { location } = window;
+
+      beforeEach(() => {
+        delete window.location;
+        window.location = {
+          assign: jest.fn(),
+        };
+      });
+
+      afterEach(() => {
+        window.location = location;
+      });
+
+      it('should redirect to the sequence lmsWebUrl', async () => {
+        // OVERRIDE SEQUENCE METADATA:
+        sequenceMetadata = Factory.build(
+          'sequenceMetadata',
+          { is_time_limited: true }, // position index is 1-based and is converted to 0-based for activeUnitIndex
+          { courseId, unitBlocks, sequenceBlock },
+        );
+
+        // Re-call the mock setup now that sequenceMetadata is different.
+        setupMockRequests();
+        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
+        render(component);
+
+        // This is an important line that ensures the spinner has been removed - and thus our main
+        // content has been loaded - prior to proceeding with our expectations.
+        await waitForElementToBeRemoved(screen.getByRole('status'));
+
+        expect(global.location.assign).toHaveBeenCalledWith(sequenceBlock.lms_web_url);
+      });
+    });
   });
 
   describe('when receiving a can_load_courseware error_code', () => {
@@ -146,11 +293,11 @@ describe('CoursewareContainer', () => {
         },
       });
       const courseId = courseMetadata.id;
-      const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
+      const { courseBlocks, unitBlocks, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
       const sequenceMetadata = Factory.build(
         'sequenceMetadata',
         {},
-        { courseId, unitBlocks: [unitBlock], sequenceBlock },
+        { courseId, unitBlocks, sequenceBlock },
       );
 
       const forbiddenCourseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;

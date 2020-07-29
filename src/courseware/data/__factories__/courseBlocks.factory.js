@@ -4,50 +4,44 @@ import './block.factory';
 
 Factory.define('courseBlocks')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
-  .option('unit', ['courseId'], courseId => Factory.build(
-    'block',
-    { type: 'vertical' },
-    { courseId },
-  ))
-  .option('sequence', ['courseId', 'unit'], (courseId, child) => Factory.build(
-    'block',
-    { type: 'sequential', children: [child.id] },
-    { courseId },
-  ))
-  .option('section', ['courseId', 'sequence'], (courseId, child) => Factory.build(
-    'block',
-    { type: 'chapter', children: [child.id] },
-    { courseId },
-  ))
-  .option('course', ['courseId', 'section'], (courseId, child) => Factory.build(
-    'block',
-    { type: 'course', children: [child.id] },
-    { courseId },
-  ))
+  .option('units')
+  .option('sequence')
+  .option('section')
+  .option('course')
   .attr(
     'blocks',
-    ['course', 'section', 'sequence', 'unit'],
-    (course, section, sequence, unit) => ({
-      [course.id]: course,
-      [section.id]: section,
-      [sequence.id]: sequence,
-      [unit.id]: unit,
-    }),
+    ['course', 'section', 'sequence', 'units'],
+    (course, section, sequence, units) => {
+      const unitsObj = {};
+      units.forEach(unit => {
+        unitsObj[unit.id] = unit;
+      });
+      return {
+        [course.id]: course,
+        [section.id]: section,
+        [sequence.id]: sequence,
+        ...unitsObj,
+      };
+    },
   )
   .attr('root', ['course'], course => course.id);
 
 /**
  * Builds a course with a single chapter, sequence, and unit.
  */
-export default function buildSimpleCourseBlocks(courseId, title) {
-  const unitBlock = Factory.build(
-    'block',
-    { type: 'vertical' },
-    { courseId },
-  );
+export default function buildSimpleCourseBlocks(courseId, title, numUnits = 1) {
+  const unitBlocks = [];
+  for (let i = 0; i < numUnits; i++) {
+    const unitBlock = Factory.build(
+      'block',
+      { type: 'vertical' },
+      { courseId },
+    );
+    unitBlocks.push(unitBlock);
+  }
   const sequenceBlock = Factory.build(
     'block',
-    { type: 'sequential', children: [unitBlock.id] },
+    { type: 'sequential', children: unitBlocks.map(unitBlock => unitBlock.id) },
     { courseId },
   );
   const sectionBlock = Factory.build(
@@ -65,13 +59,13 @@ export default function buildSimpleCourseBlocks(courseId, title) {
       'courseBlocks',
       { courseId },
       {
-        unit: unitBlock,
+        units: unitBlocks,
         sequence: sequenceBlock,
         section: sectionBlock,
         course: courseBlock,
       },
     ),
-    unitBlock,
+    unitBlocks,
     sequenceBlock,
     sectionBlock,
     courseBlock,
