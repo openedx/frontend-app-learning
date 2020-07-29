@@ -25,16 +25,17 @@ describe('Data layer integration tests', () => {
   // building minimum set of api responses to test all thunks
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
-  const { courseBlocks, unitBlock, sequenceBlock } = buildSimpleCourseBlocks(courseId);
+  const { courseBlocks, unitBlocks, sequenceBlock } = buildSimpleCourseBlocks(courseId);
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
     {},
-    { courseId, unitBlocks: [unitBlock], sequenceBlock },
+    { courseId, unitBlocks, sequenceBlock },
   );
 
   const courseUrl = `${courseBaseUrl}/${courseId}`;
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
   const sequenceId = sequenceBlock.id;
+  const unitBlock = unitBlocks[0];
   const unitId = unitBlock.id;
 
   let store;
@@ -66,9 +67,7 @@ describe('Data layer integration tests', () => {
           has_access: false,
         },
       });
-      const forbiddenCourseBlocks = Factory.build('courseBlocks', {
-        courseId: forbiddenCourseMetadata.id,
-      });
+      const { courseBlocks: forbiddenCourseBlocks } = buildSimpleCourseBlocks(forbiddenCourseMetadata.id, null);
 
       const forbiddenCourseUrl = `${courseBaseUrl}/${forbiddenCourseMetadata.id}`;
 

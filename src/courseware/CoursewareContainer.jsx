@@ -52,8 +52,14 @@ const checkContentRedirect = memoize((courseId, sequenceStatus, sequenceId, sequ
 });
 
 class CoursewareContainer extends Component {
-  checkSaveSequencePosition = memoize((courseId, sequenceStatus, sequenceId, sequence, unitId) => {
-    if (sequenceStatus === 'loaded' && sequence.savePosition) {
+  checkSaveSequencePosition = memoize((unitId) => {
+    const {
+      courseId,
+      sequenceId,
+      sequenceStatus,
+      sequence,
+    } = this.props;
+    if (sequenceStatus === 'loaded' && sequence.saveUnitPosition && unitId) {
       const activeUnitIndex = sequence.unitIds.indexOf(unitId);
       this.props.saveSequencePosition(courseId, sequenceId, activeUnitIndex);
     }
@@ -87,7 +93,6 @@ class CoursewareContainer extends Component {
     const {
       courseId,
       sequenceId,
-      unitId,
       courseStatus,
       sequenceStatus,
       sequence,
@@ -96,6 +101,7 @@ class CoursewareContainer extends Component {
         params: {
           courseId: routeCourseId,
           sequenceId: routeSequenceId,
+          unitId: routeUnitId,
         },
       },
     } = this.props;
@@ -108,13 +114,13 @@ class CoursewareContainer extends Component {
     checkExamRedirect(sequenceStatus, sequence);
 
     // Determine if we need to redirect because our URL is incomplete.
-    checkContentRedirect(courseId, sequenceStatus, sequenceId, sequence, unitId);
+    checkContentRedirect(courseId, sequenceStatus, sequenceId, sequence, routeUnitId);
 
     // Determine if we can resume where we left off.
     checkResumeRedirect(courseStatus, courseId, sequenceId, firstSequenceId);
 
-    // Check if we should save our sequence position.
-    this.checkSaveSequencePosition(courseId, sequenceStatus, sequenceId, sequence, unitId);
+    // Check if we should save our sequence position.  Only do this when the route unit ID changes.
+    this.checkSaveSequencePosition(routeUnitId);
   }
 
   handleUnitNavigationClick = (nextUnitId) => {

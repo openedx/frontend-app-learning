@@ -1,6 +1,6 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
 
-import '../../../courseware/data/__factories__/courseBlocks.factory';
+import buildSimpleCourseBlocks from '../../../courseware/data/__factories__/courseBlocks.factory';
 
 Factory.define('outlineTabData')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
@@ -10,7 +10,10 @@ Factory.define('outlineTabData')
     title: 'Bookmarks',
     url: `${host}/courses/${courseId}/bookmarks/`,
   }))
-  .attr('course_blocks', ['courseId'], courseId => ({
-    blocks: Factory.build('courseBlocks', { courseId }).blocks,
-  }))
+  .attr('course_blocks', ['courseId'], courseId => {
+    const { courseBlocks } = buildSimpleCourseBlocks(courseId, null);
+    return {
+      blocks: courseBlocks.blocks,
+    };
+  })
   .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>');
