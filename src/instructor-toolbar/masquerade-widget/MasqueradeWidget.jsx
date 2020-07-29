@@ -24,9 +24,11 @@ class MasqueradeWidget extends Component {
           options,
         });
       } else {
+        // eslint-disable-next-line no-console
         console.warn('Unable to get masquerade options', data);
       }
     }).catch((response) => {
+      // eslint-disable-next-line no-console
       console.error('Unable to get masquerade options', response);
     });
   }
