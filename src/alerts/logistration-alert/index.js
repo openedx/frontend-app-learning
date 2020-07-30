@@ -1,2 +1,1 @@
-export { default } from './LogistrationAlert';
-export { useLogistrationAlert } from './hooks';
+export { useLogistrationAlert as default } from './hooks';

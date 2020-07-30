@@ -26,7 +26,7 @@ export function useEnrollmentAlert(courseId) {
     topic: 'outline',
   });
 
-  return EnrollmentAlert;
+  return { clientEnrollmentAlert: EnrollmentAlert };
 }
 
 export function useEnrollClickHandler(courseId, successText) {

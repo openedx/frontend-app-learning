@@ -10,12 +10,11 @@ import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
 import messages from './messages';
 import Section from './Section';
+import useCourseEndAlert from '../../alerts/course-end-alert';
 import useEnrollmentAlert from '../../alerts/enrollment-alert';
-import { useLogistrationAlert } from '../../alerts/logistration-alert';
+import useLogistrationAlert from '../../alerts/logistration-alert';
 import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
-
-const LogistrationAlert = React.lazy(() => import('../../alerts/logistration-alert'));
 
 function OutlineTab({ intl }) {
   const {
@@ -39,8 +38,9 @@ function OutlineTab({ intl }) {
     },
   } = useModel('outline', courseId);
 
-  const clientEnrollmentAlert = useEnrollmentAlert(courseId);
-  useLogistrationAlert();
+  const courseEndAlert = useCourseEndAlert(courseId);
+  const enrollmentAlert = useEnrollmentAlert(courseId);
+  const logistrationAlert = useLogistrationAlert();
 
   const rootCourseId = Object.keys(courses)[0];
   const { sectionIds } = courses[rootCourseId];
@@ -51,8 +51,8 @@ function OutlineTab({ intl }) {
         topic="outline"
         className="mb-3"
         customAlerts={{
-          clientEnrollmentAlert,
-          clientLogistrationAlert: LogistrationAlert,
+          ...enrollmentAlert,
+          ...logistrationAlert,
         }}
       />
       <div className="d-flex justify-content-between mb-3">
@@ -62,6 +62,13 @@ function OutlineTab({ intl }) {
       <div className="row">
         <div className="col col-8">
           <WelcomeMessage courseId={courseId} />
+          <AlertList
+            topic="outline-course-alerts"
+            className="mb-3"
+            customAlerts={{
+              ...courseEndAlert,
+            }}
+          />
           {sectionIds.map((sectionId) => (
             <Section
               key={sectionId}
