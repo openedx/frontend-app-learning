@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { Header, CourseTabsNavigation } from '../course-header';
 import { useModel } from '../generic/model-store';
-import { useEnrollmentAlert } from '../alerts/enrollment-alert';
 import InstructorToolbar from '../instructor-toolbar';
 
 function LoadedTabPage({
@@ -12,8 +11,6 @@ function LoadedTabPage({
   courseId,
   unitId,
 }) {
-  useEnrollmentAlert(courseId);
-
   const {
     isStaff,
     number,

@@ -16,4 +16,8 @@ Factory.define('outlineTabData')
       blocks: courseBlocks.blocks,
     };
   })
+  .attr('enroll_alert', {
+    can_enroll: true,
+    extra_text: 'Contact the administrator.',
+  })
   .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>');

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { Header } from '../course-header';
-import { useLogistrationAlert } from '../alerts/logistration-alert';
 import PageLoading from '../generic/PageLoading';
 
 import messages from './messages';
@@ -14,8 +13,6 @@ function TabPage({
   courseStatus,
   ...passthroughProps
 }) {
-  useLogistrationAlert();
-
   if (courseStatus === 'loading') {
     return (
       <>

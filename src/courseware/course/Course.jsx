@@ -21,9 +21,6 @@ import { useModel } from '../../generic/model-store';
 // default export.
 // See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
 const AccessExpirationAlert = React.lazy(() => import('../../alerts/access-expiration-alert/AccessExpirationAlert'));
-const EnrollmentAlert = React.lazy(() => import('../../alerts/enrollment-alert/EnrollmentAlert'));
-const StaffEnrollmentAlert = React.lazy(() => import('../../alerts/enrollment-alert/StaffEnrollmentAlert'));
-const LogistrationAlert = React.lazy(() => import('../../alerts/logistration-alert'));
 const OfferAlert = React.lazy(() => import('../../alerts/offer-alert/OfferAlert'));
 
 function Course({
@@ -66,15 +63,8 @@ function Course({
         className="my-3"
         topic="course"
         customAlerts={{
-          clientEnrollmentAlert: EnrollmentAlert,
-          clientStaffEnrollmentAlert: StaffEnrollmentAlert,
-          clientLogistrationAlert: LogistrationAlert,
           clientAccessExpirationAlert: AccessExpirationAlert,
           clientOfferAlert: OfferAlert,
-        }}
-        // courseId is provided because EnrollmentAlert and StaffEnrollmentAlert require it.
-        customProps={{
-          courseId,
         }}
       />
       <CourseBreadcrumbs

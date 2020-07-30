@@ -1,3 +1,1 @@
-export { default as EnrollmentAlert } from './EnrollmentAlert';
-export { default as StaffEnrollmentAlert } from './StaffEnrollmentAlert';
-export { useEnrollmentAlert } from './hooks';
+export { useEnrollmentAlert as default } from './hooks';
