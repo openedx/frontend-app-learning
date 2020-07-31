@@ -9,6 +9,7 @@ Factory.define('datesTabData')
     },
     course_date_blocks: [
       {
+        assigment_type: 'Homework',
         date: '2013-02-05T05:00:00Z',
         date_type: 'course-start-date',
         description: '',

@@ -71,6 +71,7 @@ Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "courseDateBlocks": Array [
           Object {
+            "assigmentType": "Homework",
             "date": "2013-02-05T05:00:00Z",
             "dateType": "course-start-date",
             "description": "",
