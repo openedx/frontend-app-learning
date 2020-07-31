@@ -98,8 +98,8 @@ describe('CoursewareContainer', () => {
       expect(sequenceNavButtons).toHaveLength(5);
 
       expect(sequenceNavButtons[0]).toHaveTextContent('Previous');
-      // Prove this button is rendering an SVG book icon, meaning it's a unit.
-      expect(sequenceNavButtons[1].querySelector('svg')).toHaveClass('fa-book');
+      // Prove this button is rendering an SVG tasks icon, meaning it's a unit/vertical.
+      expect(sequenceNavButtons[1].querySelector('svg')).toHaveClass('fa-tasks');
       expect(sequenceNavButtons[4]).toHaveTextContent('Next');
     }
 
@@ -116,10 +116,29 @@ describe('CoursewareContainer', () => {
       courseMetadata = Factory.build('courseMetadata');
       courseId = courseMetadata.id;
 
-      const result = buildSimpleCourseBlocks(courseId, courseMetadata.name, 3); // 3 is for 3 units
+      const customUnitBlocks = [
+        Factory.build(
+          'block',
+          { type: 'vertical' },
+          { courseId },
+        ),
+        Factory.build(
+          'block',
+          { type: 'vertical' },
+          { courseId },
+        ),
+        Factory.build(
+          'block',
+          { type: 'vertical' },
+          { courseId },
+        ),
+      ];
+
+      const result = buildSimpleCourseBlocks(courseId, courseMetadata.name, { unitBlocks: customUnitBlocks });
       courseBlocks = result.courseBlocks;
       unitBlocks = result.unitBlocks;
-      sequenceBlock = result.sequenceBlock;
+      // eslint-disable-next-line prefer-destructuring
+      sequenceBlock = result.sequenceBlock[0];
 
       sequenceMetadata = Factory.build(
         'sequenceMetadata',

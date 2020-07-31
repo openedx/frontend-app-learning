@@ -28,14 +28,13 @@ describe('Data layer integration tests', () => {
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
     {},
-    { courseId, unitBlocks: [unitBlock], sequenceBlock },
+    { courseId, unitBlocks, sequenceBlock: sequenceBlock[0] },
   );
 
   const courseUrl = `${courseBaseUrl}/${courseId}`;
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
-  const sequenceId = sequenceBlock.id;
-  const unitBlock = unitBlocks[0];
-  const unitId = unitBlock.id;
+  const sequenceId = sequenceBlock[0].id;
+  const unitId = unitBlocks[0].id;
 
   let store;
 
@@ -66,7 +65,9 @@ describe('Data layer integration tests', () => {
           has_access: false,
         },
       });
-      const { courseBlocks: forbiddenCourseBlocks } = buildSimpleCourseBlocks(forbiddenCourseMetadata.id, null);
+      const forbiddenCourseBlocks = Factory.build('courseBlocks', {
+        courseId: forbiddenCourseMetadata.id,
+      });
 
       const forbiddenCourseUrl = `${courseBaseUrl}/${forbiddenCourseMetadata.id}`;
 

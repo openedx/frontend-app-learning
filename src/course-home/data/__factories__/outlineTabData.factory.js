@@ -11,7 +11,7 @@ Factory.define('outlineTabData')
     url: `${host}/courses/${courseId}/bookmarks/`,
   }))
   .attr('course_blocks', ['courseId'], courseId => {
-    const { courseBlocks } = buildSimpleCourseBlocks(courseId, null);
+    const { courseBlocks } = buildSimpleCourseBlocks(courseId);
     return {
       blocks: courseBlocks.blocks,
     };
