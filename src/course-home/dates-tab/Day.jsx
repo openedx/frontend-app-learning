@@ -57,7 +57,12 @@ function Day({
           const textColor = available ? 'text-dark-500' : 'text-dark-200';
           return (
             <div key={item.title + item.date} className={textColor}>
-              <div><span className="font-weight-bold small mt-1">{title}</span>{itemBadges}</div>
+              <div>
+                <span className="font-weight-bold small mt-1">
+                  {item.assignmentType && `${item.assignmentType}: `}{title}
+                </span>
+                {itemBadges}
+              </div>
               {item.description && <div className="small mb-2">{item.description}</div>}
               {item.extraInfo && <div className="small mb-2">{item.extraInfo}</div>}
             </div>

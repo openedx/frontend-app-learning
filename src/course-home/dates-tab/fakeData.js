@@ -24,6 +24,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "complete": true,
       "date": "2020-05-04T02:59:40.942669Z",
       "date_type": "assignment-due-date",
@@ -33,6 +34,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2020-05-05T02:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -41,6 +43,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2020-05-27T02:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -50,6 +53,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2020-05-27T02:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -59,6 +63,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "complete": true,
       "date": "2020-05-28T08:59:40.942669Z",
       "date_type": "assignment-due-date",
@@ -69,6 +74,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2020-05-28T08:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -78,6 +84,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "complete": true,
       "date": "2020-05-29T08:59:40.942669Z",
       "date_type": "assignment-due-date",
@@ -88,6 +95,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "complete": true,
       "date": "2020-05-29T08:59:40.942669Z",
       "date_type": "assignment-due-date",
@@ -107,6 +115,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2030-08-17T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -116,6 +125,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2030-08-17T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -125,6 +135,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2030-08-17T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -134,6 +145,7 @@ export default function fakeDatesData() {
       "extra_info": "ORA Dates are set by the instructor, and can't be changed"
     },
     {
+      "assignment_type": "Homework",
       "date": "2030-08-18T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -143,6 +155,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2030-08-18T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -152,6 +165,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2030-08-19T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -159,6 +173,7 @@ export default function fakeDatesData() {
       "title": "One Unreleased 1"
     },
     {
+      "assignment_type": "Homework",
       "date": "2030-08-19T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -168,6 +183,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2030-08-20T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
@@ -176,6 +192,7 @@ export default function fakeDatesData() {
       "extra_info": null
     },
     {
+      "assignment_type": "Homework",
       "date": "2030-08-20T05:59:40.942669Z",
       "date_type": "assignment-due-date",
       "description": "",
