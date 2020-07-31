@@ -1,7 +1,7 @@
 const { createConfig } = require('@edx/frontend-build');
 
 module.exports = createConfig('jest', {
-  setupFiles: [
+  setupFilesAfterEnv: [
     '<rootDir>/src/setupTest.js',
   ],
   coveragePathIgnorePatterns: [
