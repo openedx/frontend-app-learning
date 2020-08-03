@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router';
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
-import PageLoading from './generic/PageLoading';
+import PageLoading from '../generic/PageLoading';
 
 export default () => {
   const { path } = useRouteMatch();
