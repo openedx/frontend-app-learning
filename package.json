@@ -36,7 +36,7 @@
   "dependencies": {
     "@edx/frontend-component-footer": "10.0.11",
     "@edx/frontend-component-header": "2.0.5",
-    "@edx/frontend-platform": "1.5.1",
+    "@edx/frontend-platform": "1.5.2",
     "@edx/paragon": "7.2.1",
     "@fortawesome/fontawesome-svg-core": "1.2.29",
     "@fortawesome/free-brands-svg-icons": "5.13.1",
