@@ -10,8 +10,9 @@ import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
 import messages from './messages';
 import Section from './Section';
-import useCertificateAvailableAlert from '../../alerts/certificate-available-alert';
-import useCourseEndAlert from '../../alerts/course-end-alert';
+import useCertificateAvailableAlert from './alerts/certificate-available-alert';
+import useCourseEndAlert from './alerts/course-end-alert';
+import useCourseStartAlert from './alerts/course-start-alert';
 import useEnrollmentAlert from '../../alerts/enrollment-alert';
 import useLogistrationAlert from '../../alerts/logistration-alert';
 import { useModel } from '../../generic/model-store';
@@ -41,6 +42,7 @@ function OutlineTab({ intl }) {
 
   const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
   const courseEndAlert = useCourseEndAlert(courseId);
+  const courseStartAlert = useCourseStartAlert(courseId);
   const enrollmentAlert = useEnrollmentAlert(courseId);
   const logistrationAlert = useLogistrationAlert();
 
@@ -70,6 +72,7 @@ function OutlineTab({ intl }) {
             customAlerts={{
               ...certificateAvailableAlert,
               ...courseEndAlert,
+              ...courseStartAlert,
             }}
           />
           {sectionIds.map((sectionId) => (

@@ -4,7 +4,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage, FormattedRelative } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@edx/paragon';
 
-import { Alert, ALERT_TYPES } from '../../generic/user-messages';
+import { Alert, ALERT_TYPES } from '../../../../generic/user-messages';
 
 function CertificateAvailableAlert({ payload }) {
   const {
