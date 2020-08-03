@@ -1,8 +1,8 @@
 import React from 'react';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
-import { useAlert } from '../../generic/user-messages';
-import { useModel } from '../../generic/model-store';
+import { useAlert } from '../../../../generic/user-messages';
+import { useModel } from '../../../../generic/model-store';
 
 const CertificateAvailableAlert = React.lazy(() => import('./CertificateAvailableAlert'));
 

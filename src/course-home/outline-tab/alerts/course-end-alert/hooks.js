@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import React from 'react';
-import { useAlert } from '../../generic/user-messages';
-import { useModel } from '../../generic/model-store';
+import { useAlert } from '../../../../generic/user-messages';
+import { useModel } from '../../../../generic/model-store';
 
 const CourseEndAlert = React.lazy(() => import('./CourseEndAlert'));
 

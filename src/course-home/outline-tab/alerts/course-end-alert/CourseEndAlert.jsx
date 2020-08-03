@@ -7,7 +7,7 @@ import {
   FormattedTime,
 } from '@edx/frontend-platform/i18n';
 
-import { Alert, ALERT_TYPES } from '../../generic/user-messages';
+import { Alert, ALERT_TYPES } from '../../../../generic/user-messages';
 
 const DAY_MS = 24 * 60 * 60 * 1000; // in ms
 
