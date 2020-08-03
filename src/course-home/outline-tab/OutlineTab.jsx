@@ -10,6 +10,7 @@ import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
 import messages from './messages';
 import Section from './Section';
+import useCertificateAvailableAlert from '../../alerts/certificate-available-alert';
 import useCourseEndAlert from '../../alerts/course-end-alert';
 import useEnrollmentAlert from '../../alerts/enrollment-alert';
 import useLogistrationAlert from '../../alerts/logistration-alert';
@@ -38,6 +39,7 @@ function OutlineTab({ intl }) {
     },
   } = useModel('outline', courseId);
 
+  const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
   const courseEndAlert = useCourseEndAlert(courseId);
   const enrollmentAlert = useEnrollmentAlert(courseId);
   const logistrationAlert = useLogistrationAlert();
@@ -66,6 +68,7 @@ function OutlineTab({ intl }) {
             topic="outline-course-alerts"
             className="mb-3"
             customAlerts={{
+              ...certificateAvailableAlert,
               ...courseEndAlert,
             }}
           />
