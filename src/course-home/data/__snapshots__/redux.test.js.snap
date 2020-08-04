@@ -192,6 +192,7 @@ Object {
             },
           },
         },
+        "courseExpiredHtml": "<div>Course expired</div>",
         "courseTools": Object {
           "analyticsId": "edx.bookmarks",
           "title": "Bookmarks",
