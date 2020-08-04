@@ -15,6 +15,7 @@ import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from './alerts/course-start-alert';
 import useEnrollmentAlert from '../../alerts/enrollment-alert';
 import useLogistrationAlert from '../../alerts/logistration-alert';
+import useOfferAlert from '../../alerts/offer-alert';
 import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 
@@ -38,13 +39,18 @@ function OutlineTab({ intl }) {
       courses,
       sections,
     },
+    offerHtml,
   } = useModel('outline', courseId);
 
-  const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
-  const courseEndAlert = useCourseEndAlert(courseId);
-  const courseStartAlert = useCourseStartAlert(courseId);
-  const enrollmentAlert = useEnrollmentAlert(courseId);
+  // Above the tab alerts (appearing in the order listed here)
   const logistrationAlert = useLogistrationAlert();
+  const enrollmentAlert = useEnrollmentAlert(courseId);
+
+  // Below the course title alerts (appearing in the order listed here)
+  const offerAlert = useOfferAlert(offerHtml, 'outline-course-alerts');
+  const courseStartAlert = useCourseStartAlert(courseId);
+  const courseEndAlert = useCourseEndAlert(courseId);
+  const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
 
   const rootCourseId = Object.keys(courses)[0];
   const { sectionIds } = courses[rootCourseId];
@@ -73,6 +79,7 @@ function OutlineTab({ intl }) {
               ...certificateAvailableAlert,
               ...courseEndAlert,
               ...courseStartAlert,
+              ...offerAlert,
             }}
           />
           {sectionIds.map((sectionId) => (

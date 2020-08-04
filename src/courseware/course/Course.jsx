@@ -6,7 +6,7 @@ import { getConfig } from '@edx/frontend-platform';
 
 import { AlertList } from '../../generic/user-messages';
 import { useAccessExpirationAlert } from '../../alerts/access-expiration-alert';
-import { useOfferAlert } from '../../alerts/offer-alert';
+import useOfferAlert from '../../alerts/offer-alert';
 
 import Sequence from './sequence';
 
@@ -21,7 +21,6 @@ import { useModel } from '../../generic/model-store';
 // default export.
 // See React.lazy docs here: https://reactjs.org/docs/code-splitting.html#reactlazy
 const AccessExpirationAlert = React.lazy(() => import('../../alerts/access-expiration-alert/AccessExpirationAlert'));
-const OfferAlert = React.lazy(() => import('../../alerts/offer-alert/OfferAlert'));
 
 function Course({
   courseId,
@@ -41,14 +40,16 @@ function Course({
     course,
   ].filter(element => element != null).map(element => element.title);
 
-  useOfferAlert(courseId);
-  useAccessExpirationAlert(courseId);
-
   const {
     canShowUpgradeSock,
     celebrations,
+    offerHtml,
     verifiedMode,
   } = course;
+
+  // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
+  const offerAlert = useOfferAlert(offerHtml, 'course');
+  useAccessExpirationAlert(courseId);
 
   const dispatch = useDispatch();
   const celebrateFirstSection = celebrations && celebrations.firstSection;
@@ -64,7 +65,7 @@ function Course({
         topic="course"
         customAlerts={{
           clientAccessExpirationAlert: AccessExpirationAlert,
-          clientOfferAlert: OfferAlert,
+          ...offerAlert,
         }}
       />
       <CourseBreadcrumbs

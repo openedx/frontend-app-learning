@@ -20,4 +20,5 @@ Factory.define('outlineTabData')
     can_enroll: true,
     extra_text: 'Contact the administrator.',
   })
-  .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>');
+  .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>')
+  .attr('offer_html', [], () => '<div>Great offer here</div>');

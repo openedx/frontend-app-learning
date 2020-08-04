@@ -73,6 +73,7 @@ export async function getOutlineTabData(courseId) {
   const datesWidget = camelCaseObject(data.dates_widget);
   const enrollAlert = camelCaseObject(data.enroll_alert);
   const handoutsHtml = data.handouts_html;
+  const offerHtml = data.offer_html;
   const welcomeMessageHtml = data.welcome_message_html;
 
   return {
@@ -81,6 +82,7 @@ export async function getOutlineTabData(courseId) {
     datesWidget,
     enrollAlert,
     handoutsHtml,
+    offerHtml,
     welcomeMessageHtml,
   };
 }
