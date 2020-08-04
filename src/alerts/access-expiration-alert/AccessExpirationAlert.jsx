@@ -1,14 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Alert } from '../../generic/user-messages';
+import { Alert, ALERT_TYPES } from '../../generic/user-messages';
 
 function AccessExpirationAlert({ payload }) {
   const {
     rawHtml,
   } = payload;
   return rawHtml && (
-    <Alert type="info">
+    <Alert type={ALERT_TYPES.INFO}>
+      {/* eslint-disable-next-line react/no-danger */}
       <div dangerouslySetInnerHTML={{ __html: rawHtml }} />
     </Alert>
   );

@@ -10,6 +10,7 @@ import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
 import messages from './messages';
 import Section from './Section';
+import useAccessExpirationAlert from '../../alerts/access-expiration-alert';
 import useCertificateAvailableAlert from './alerts/certificate-available-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from './alerts/course-start-alert';
@@ -39,6 +40,7 @@ function OutlineTab({ intl }) {
       courses,
       sections,
     },
+    courseExpiredHtml,
     offerHtml,
   } = useModel('outline', courseId);
 
@@ -48,6 +50,7 @@ function OutlineTab({ intl }) {
 
   // Below the course title alerts (appearing in the order listed here)
   const offerAlert = useOfferAlert(offerHtml, 'outline-course-alerts');
+  const accessExpirationAlert = useAccessExpirationAlert(courseExpiredHtml, 'outline-course-alerts');
   const courseStartAlert = useCourseStartAlert(courseId);
   const courseEndAlert = useCourseEndAlert(courseId);
   const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
@@ -76,6 +79,7 @@ function OutlineTab({ intl }) {
             topic="outline-course-alerts"
             className="mb-3"
             customAlerts={{
+              ...accessExpirationAlert,
               ...certificateAvailableAlert,
               ...courseEndAlert,
               ...courseStartAlert,

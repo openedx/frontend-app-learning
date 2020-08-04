@@ -1,2 +1,1 @@
-export { default as AccessExpirationAlert } from './AccessExpirationAlert';
-export { useAccessExpirationAlert } from './hooks';
+export { default } from './hooks';
