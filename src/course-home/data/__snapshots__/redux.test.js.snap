@@ -5,6 +5,7 @@ Object {
   "courseHome": Object {
     "courseId": null,
     "courseStatus": "loading",
+    "displayResetDatesToast": false,
   },
   "courseware": Object {
     "courseId": null,
@@ -21,6 +22,7 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
+    "displayResetDatesToast": false,
   },
   "courseware": Object {
     "courseId": null,
@@ -103,6 +105,7 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
+    "displayResetDatesToast": false,
   },
   "courseware": Object {
     "courseId": null,

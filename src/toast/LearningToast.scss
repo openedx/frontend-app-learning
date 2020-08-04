@@ -1,0 +1,19 @@
+.toast-header {
+  div {
+    margin-top: 10px;
+  }
+
+  button {
+    align-self: flex-start;
+    color: #FFFFFF;
+    &:hover {
+      color: #FFFFFF;
+    }
+  }
+}
+
+.toast-body {
+  a {
+    text-decoration: underline;
+  }
+}
