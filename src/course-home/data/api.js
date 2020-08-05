@@ -94,3 +94,8 @@ export async function postDismissWelcomeMessage(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dismiss_welcome_message`);
   await getAuthenticatedHttpClient().post(url.href, { course_id: courseId });
 }
+
+export async function postRequestCert(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/generate_user_cert`);
+  await getAuthenticatedHttpClient().post(url.href);
+}

@@ -33,6 +33,31 @@ const messages = defineMessages({
     id: 'learning.progress.badge.scoreEarned',
     defaultMessage: '{earned} of {total} possible points',
   },
+  viewCert: {
+    id: 'learning.progress.badge.viewCert',
+    defaultMessage: 'View Certificate',
+  },
+  downloadCert: {
+    id: 'learning.progress.badge.downloadCert',
+    defaultMessage: 'Download Your Certificate',
+  },
+  requestCert: {
+    id: 'learning.progress.badge.requestCert',
+    defaultMessage: 'Request Certificate',
+  },
+  opensNewWindow: {
+    id: 'learning.progress.badge.opensNewWindow',
+    defaultMessage: 'Opens in a new browser window',
+  },
+  certAlt: {
+    id: 'learning.progress.badge.certAlt',
+    defaultMessage: 'Example Certificate',
+    description: 'Alternate text displayed when the example certificate image cannot be displayed.',
+  },
+  studioLink: {
+    id: 'learning.progress.badge.studioLink',
+    defaultMessage: 'View grading in studio',
+  },
 });
 
 export default messages;
