@@ -24,7 +24,7 @@ export default function TabContainer(props) {
   const {
     courseId,
     courseStatus,
-  } = useSelector(state => state.courseHome);
+  } = useSelector(state => state.activeCourse);
 
   return (
     <TabPage

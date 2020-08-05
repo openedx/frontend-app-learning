@@ -53,7 +53,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseware).toEqual(expect.objectContaining({
+      expect(store.getState().activeCourse).toEqual(expect.objectContaining({
         courseId,
         courseStatus: 'failed',
       }));
@@ -78,7 +78,7 @@ describe('Data layer integration tests', () => {
 
       const state = store.getState();
 
-      expect(state.courseware.courseStatus).toEqual('denied');
+      expect(state.activeCourse.courseStatus).toEqual('denied');
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.courses[forbiddenCourseMetadata.id].canLoadCourseware).not.toBeUndefined();
@@ -92,8 +92,8 @@ describe('Data layer integration tests', () => {
 
       const state = store.getState();
 
-      expect(state.courseware.courseStatus).toEqual('loaded');
-      expect(state.courseware.courseId).toEqual(courseId);
+      expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.activeCourse.courseId).toEqual(courseId);
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
 
@@ -139,8 +139,8 @@ describe('Data layer integration tests', () => {
       // Update our state variable again.
       state = store.getState();
 
-      expect(state.courseware.courseStatus).toEqual('loaded');
-      expect(state.courseware.courseId).toEqual(courseId);
+      expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.activeCourse.courseId).toEqual(courseId);
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
 
@@ -163,8 +163,8 @@ describe('Data layer integration tests', () => {
         }),
       });
 
-      expect(state.courseware.courseStatus).toEqual('loaded');
-      expect(state.courseware.courseId).toEqual(courseId);
+      expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.activeCourse.courseId).toEqual(courseId);
       expect(state.courseware.sequenceStatus).toEqual('loaded');
       expect(state.courseware.sequenceId).toEqual(sequenceId);
     });

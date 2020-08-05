@@ -8,10 +8,10 @@ describe('Sequence Content', () => {
 
   beforeAll(async () => {
     store = await initializeTestStore();
-    const { models, courseware } = store.getState();
+    const { models, courseware, activeCourse } = store.getState();
     mockData = {
       gated: false,
-      courseId: courseware.courseId,
+      courseId: activeCourse.courseId,
       sequenceId: courseware.sequenceId,
       unitId: models.sequences[courseware.sequenceId].unitIds[0],
       unitLoadedHandler: () => {},

@@ -10,6 +10,7 @@ import executeThunk from '../../utils';
 
 import initializeMockApp from '../../setupTest';
 import initializeStore from '../../store';
+import { LOADING, FAILED } from '../../course/data/slice';
 
 const { loggingService } = initializeMockApp();
 
@@ -41,7 +42,8 @@ describe('Data layer integration tests', () => {
   });
 
   it('Should initialize store', () => {
-    expect(store.getState()).toMatchSnapshot();
+    expect(store.getState().activeCourse.courseId).toBeNull();
+    expect(store.getState().activeCourse.courseStatus).toEqual(LOADING);
   });
 
   describe('Test fetchDatesTab', () => {
@@ -55,7 +57,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchDatesTab(courseId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseHome.courseStatus).toEqual('failed');
+      expect(store.getState().activeCourse.courseStatus).toEqual(FAILED);
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
@@ -70,8 +72,30 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchDatesTab(courseId), store.dispatch);
 
       const state = store.getState();
-      expect(state.courseHome.courseStatus).toEqual('loaded');
-      expect(state).toMatchSnapshot();
+      expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.activeCourse.courseId).toEqual(courseId);
+
+      // Validate course
+      const course = state.models.courses[courseId];
+      const expectedFieldCount = Object.keys(course).length;
+      // If this breaks, you should consider adding assertions below for the new data.  If it's not
+      // an "interesting" addition, bump the number.
+      expect(expectedFieldCount).toBe(8);
+      expect(course.title).toEqual(courseHomeMetadata.title);
+
+      // Representative sample of data that proves data normalization and ingestion happened.
+      expect(course.id).toEqual(courseId);
+      expect(course.isStaff).toBe(courseHomeMetadata.is_staff);
+      expect(course.number).toEqual(courseHomeMetadata.number);
+      expect(Array.isArray(course.tabs)).toBe(true);
+      expect(course.tabs.length).toBe(5); // Weak assertion, but proves the array made it through.
+
+      // This proves the tab type came through as a modelType.  We don't need to assert much else
+      // here because the shape of this data is not passed through any sort of normalization scheme,
+      // it just gets camelCased.
+      const dates = state.models.dates[courseId];
+      expect(dates.id).toEqual(courseId);
+      expect(dates.verifiedUpgradeLink).toBe(datesTabData.verified_upgrade_link);
     });
   });
 
@@ -86,7 +110,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseHome.courseStatus).toEqual('failed');
+      expect(store.getState().activeCourse.courseStatus).toEqual('failed');
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
@@ -101,8 +125,29 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
 
       const state = store.getState();
-      expect(state.courseHome.courseStatus).toEqual('loaded');
-      expect(state).toMatchSnapshot();
+      expect(state.activeCourse.courseStatus).toEqual('loaded');
+
+      // Validate course
+      const course = state.models.courses[courseId];
+      const expectedFieldCount = Object.keys(course).length;
+      // If this breaks, you should consider adding assertions below for the new data.  If it's not
+      // an "interesting" addition, bump the number.
+      expect(expectedFieldCount).toBe(8);
+      expect(course.title).toEqual(courseHomeMetadata.title);
+
+      // Representative sample of data that proves data normalization and ingestion happened.
+      expect(course.id).toEqual(courseId);
+      expect(course.isStaff).toBe(courseHomeMetadata.is_staff);
+      expect(course.number).toEqual(courseHomeMetadata.number);
+      expect(Array.isArray(course.tabs)).toBe(true);
+      expect(course.tabs.length).toBe(5); // Weak assertion, but proves the array made it through.
+
+      // This proves the tab type came through as a modelType.  We don't need to assert much else
+      // here because the shape of this data is not passed through any sort of normalization scheme,
+      // it just gets camelCased.
+      const outline = state.models.outline[courseId];
+      expect(outline.id).toEqual(courseId);
+      expect(outline.handoutsHtml).toBe(outlineTabData.handouts_html);
     });
   });
 

@@ -8,23 +8,9 @@ export const FAILED = 'failed';
 const slice = createSlice({
   name: 'course-home',
   initialState: {
-    courseStatus: 'loading',
-    courseId: null,
     displayResetDatesToast: false,
   },
   reducers: {
-    fetchTabRequest: (state, { payload }) => {
-      state.courseId = payload.courseId;
-      state.courseStatus = LOADING;
-    },
-    fetchTabSuccess: (state, { payload }) => {
-      state.courseId = payload.courseId;
-      state.courseStatus = LOADED;
-    },
-    fetchTabFailure: (state, { payload }) => {
-      state.courseId = payload.courseId;
-      state.courseStatus = FAILED;
-    },
     toggleResetDatesToast: (state, { payload }) => {
       state.displayResetDatesToast = payload.displayResetDatesToast;
     },
@@ -32,9 +18,6 @@ const slice = createSlice({
 });
 
 export const {
-  fetchTabRequest,
-  fetchTabSuccess,
-  fetchTabFailure,
   toggleResetDatesToast,
 } = slice.actions;
 

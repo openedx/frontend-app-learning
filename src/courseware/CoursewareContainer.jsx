@@ -18,6 +18,7 @@ import { TabPage } from '../tab-page';
 
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
+import { activeCourseSelector } from '../course/data/selectors';
 
 const checkExamRedirect = memoize((sequenceStatus, sequence) => {
   if (sequenceStatus === 'loaded') {
@@ -280,12 +281,6 @@ CoursewareContainer.defaultProps = {
   sequence: null,
 };
 
-const currentCourseSelector = createSelector(
-  (state) => state.models.courses || {},
-  (state) => state.courseware.courseId,
-  (coursesById, courseId) => (coursesById[courseId] ? coursesById[courseId] : null),
-);
-
 const currentSequenceSelector = createSelector(
   (state) => state.models.sequences || {},
   (state) => state.courseware.sequenceId,
@@ -293,8 +288,8 @@ const currentSequenceSelector = createSelector(
 );
 
 const sequenceIdsSelector = createSelector(
-  (state) => state.courseware.courseStatus,
-  currentCourseSelector,
+  (state) => state.activeCourse.courseStatus,
+  activeCourseSelector,
   (state) => state.models.sections,
   (courseStatus, course, sectionsById) => {
     if (courseStatus !== 'loaded') {
@@ -334,8 +329,8 @@ const nextSequenceSelector = createSelector(
 );
 
 const firstSequenceIdSelector = createSelector(
-  (state) => state.courseware.courseStatus,
-  currentCourseSelector,
+  (state) => state.activeCourse.courseStatus,
+  activeCourseSelector,
   (state) => state.models.sections || {},
   (courseStatus, course, sectionsById) => {
     if (courseStatus !== 'loaded') {
@@ -353,8 +348,11 @@ const firstSequenceIdSelector = createSelector(
 
 const mapStateToProps = (state) => {
   const {
-    courseId, sequenceId, unitId, courseStatus, sequenceStatus,
+    sequenceId, sequenceStatus, unitId,
   } = state.courseware;
+  const {
+    courseId, courseStatus,
+  } = state.activeCourse;
 
   return {
     courseId,
@@ -362,7 +360,7 @@ const mapStateToProps = (state) => {
     unitId,
     courseStatus,
     sequenceStatus,
-    course: currentCourseSelector(state),
+    course: activeCourseSelector(state),
     sequence: currentSequenceSelector(state),
     previousSequence: previousSequenceSelector(state),
     nextSequence: nextSequenceSelector(state),

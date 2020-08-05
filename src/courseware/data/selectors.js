@@ -1,9 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 export function sequenceIdsSelector(state) {
-  if (state.courseware.courseStatus !== 'loaded') {
+  if (state.activeCourse.courseStatus !== 'loaded') {
     return [];
   }
-  const { sectionIds = [] } = state.models.courses[state.courseware.courseId];
+  const { sectionIds = [] } = state.models.courses[state.activeCourse.courseId];
 
   const sequenceIds = sectionIds
     .flatMap(sectionId => state.models.sections[sectionId].sequenceIds);

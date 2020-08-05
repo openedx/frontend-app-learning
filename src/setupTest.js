@@ -14,7 +14,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { IntlProvider } from 'react-intl';
 import MockAdapter from 'axios-mock-adapter';
 import AppProvider from '@edx/frontend-platform/react/AppProvider';
-import { reducer as courseHomeReducer } from './course-home/data';
+import { reducer as activeCourseReducer } from './course';
 import { reducer as coursewareReducer } from './courseware/data/slice';
 import { reducer as modelsReducer } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
@@ -81,8 +81,8 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   const store = configureStore({
     reducer: {
       models: modelsReducer,
+      activeCourse: activeCourseReducer,
       courseware: coursewareReducer,
-      courseHome: courseHomeReducer,
     },
   });
   if (overrideStore) {

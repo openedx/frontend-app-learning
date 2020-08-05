@@ -9,7 +9,7 @@ import { daycmp, isLearnerAssignment } from './utils';
 export default function Timeline() {
   const {
     courseId,
-  } = useSelector(state => state.courseHome);
+  } = useSelector(state => state.activeCourse);
 
   const {
     courseDateBlocks,

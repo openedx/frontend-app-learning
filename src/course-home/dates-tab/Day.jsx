@@ -14,7 +14,7 @@ function Day({
 }) {
   const {
     courseId,
-  } = useSelector(state => state.courseHome);
+  } = useSelector(state => state.activeCourse);
 
   const {
     userTimezone,

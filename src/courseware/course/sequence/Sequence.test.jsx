@@ -20,11 +20,11 @@ describe('Sequence', () => {
 
   beforeAll(async () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    const { courseware } = store.getState();
+    const { courseware, activeCourse } = store.getState();
     mockData = {
       unitId: unitBlocks[0].id,
       sequenceId: courseware.sequenceId,
-      courseId: courseware.courseId,
+      courseId: activeCourse.courseId,
       unitNavigationHandler: () => {},
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},

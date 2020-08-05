@@ -14,15 +14,14 @@ import {
 } from '../../generic/model-store';
 
 import {
-  fetchTabFailure,
-  fetchTabRequest,
-  fetchTabSuccess,
-  toggleResetDatesToast,
-} from './slice';
+  fetchCourseRequest,
+  fetchCourseSuccess,
+} from '../../course/data/slice';
 
 export function fetchTab(courseId, tab, getTabData) {
   return async (dispatch) => {
-    dispatch(fetchTabRequest({ courseId }));
+    dispatch(fetchCourseRequest({ courseId }));
+
     Promise.allSettled([
       getCourseHomeCourseMetadata(courseId),
       getTabData(courseId),
@@ -55,9 +54,9 @@ export function fetchTab(courseId, tab, getTabData) {
       }
 
       if (fetchedCourseHomeCourseMetadata && fetchedTabData) {
-        dispatch(fetchTabSuccess({ courseId }));
+        dispatch(fetchCourseSuccess({ courseId }));
       } else {
-        dispatch(fetchTabFailure({ courseId }));
+        dispatch(fetchCourseFailure({ courseId }));
       }
     });
   };

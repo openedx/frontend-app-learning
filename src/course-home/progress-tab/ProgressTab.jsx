@@ -10,7 +10,7 @@ import messages from './messages';
 function ProgressTab({ intl }) {
   const {
     courseId,
-  } = useSelector(state => state.courseHome);
+  } = useSelector(state => state.activeCourse);
 
   const { administrator } = getAuthenticatedUser();
 

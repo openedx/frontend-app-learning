@@ -40,7 +40,7 @@ export default function CourseBreadcrumbs({
   const course = useModel('courses', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sectionId);
-  const courseStatus = useSelector(state => state.courseware.courseStatus);
+  const courseStatus = useSelector(state => state.activeCourse.courseStatus);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
 
   const links = useMemo(() => {

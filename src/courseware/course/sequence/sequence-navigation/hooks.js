@@ -7,7 +7,7 @@ import { sequenceIdsSelector } from '../../../data/selectors';
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
   const sequenceIds = useSelector(sequenceIdsSelector);
   const sequence = useModel('sequences', currentSequenceId);
-  const courseStatus = useSelector(state => state.courseware.courseStatus);
+  const courseStatus = useSelector(state => state.activeCourse.courseStatus);
 
   // If we don't know the sequence and unit yet, then assume no.
   if (courseStatus !== 'loaded' || !currentSequenceId || !currentUnitId) {

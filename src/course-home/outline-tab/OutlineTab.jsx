@@ -23,7 +23,7 @@ import WelcomeMessage from './widgets/WelcomeMessage';
 function OutlineTab({ intl }) {
   const {
     courseId,
-  } = useSelector(state => state.courseHome);
+  } = useSelector(state => state.activeCourse);
 
   const {
     title,

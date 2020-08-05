@@ -14,6 +14,8 @@ import {
   fetchCourseSuccess,
   fetchCourseFailure,
   fetchCourseDenied,
+} from '../../course/data/slice';
+import {
   fetchSequenceRequest,
   fetchSequenceSuccess,
   fetchSequenceFailure,

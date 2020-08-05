@@ -14,7 +14,7 @@ function DatesBannerContainer(props) {
 
   const {
     courseId,
-  } = useSelector(state => state.courseHome);
+  } = useSelector(state => state.activeCourse);
 
   const {
     courseDateBlocks,

@@ -9,7 +9,7 @@ export default function DueDateTime({
 }) {
   const {
     courseId,
-  } = useSelector(state => state.courseHome);
+  } = useSelector(state => state.activeCourse);
   const {
     userTimezone,
   } = useModel('progress', courseId);
