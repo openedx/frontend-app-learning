@@ -9,6 +9,7 @@ Factory.define('courseHomeMetadata')
   .option('host', 'http://localhost:18000')
   .attrs({
     is_staff: false,
+    original_user_is_staff: false,
     number: 'DemoX',
     org: 'edX',
     title: 'Demonstration Course',
