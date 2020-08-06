@@ -5,6 +5,7 @@ import React, {
   useState,
   useLayoutEffect,
 } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -12,6 +13,8 @@ import messages from './messages';
 import BookmarkButton from '../bookmark/BookmarkButton';
 import { useModel } from '../../../generic/model-store';
 import PageLoading from '../../../generic/PageLoading';
+import { resetDeadlines } from '../../../course-home/data/thunks';
+import { fetchCourse } from '../../data/thunks';
 
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
 
@@ -63,6 +66,8 @@ function Unit({
   const {
     contentTypeGatingEnabled,
   } = course;
+
+  const dispatch = useDispatch();
 
   // Do not remove this hook.  See function description.
   useLoadBearingHook(id);
@@ -130,6 +135,13 @@ function Unit({
           height={iframeHeight}
           scrolling="no"
           referrerPolicy="origin"
+          onLoad={() => {
+            window.onmessage = function (e) {
+              if (e.data === 'reset_dates') {
+                dispatch(resetDeadlines(courseId, fetchCourse));
+              }
+            };
+          }}
         />
       </div>
     </div>

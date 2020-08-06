@@ -17,6 +17,7 @@ import {
   fetchTabFailure,
   fetchTabRequest,
   fetchTabSuccess,
+  toggleResetDatesToast,
 } from './slice';
 
 export function fetchTab(courseId, tab, getTabData) {
@@ -78,6 +79,7 @@ export function resetDeadlines(courseId, getTabData) {
   return async (dispatch) => {
     postCourseDeadlines(courseId).then(() => {
       dispatch(getTabData(courseId));
+      dispatch(toggleResetDatesToast({ displayResetDatesToast: true }));
     });
   };
 }
