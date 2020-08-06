@@ -12,7 +12,7 @@ function LoadedTabPage({
   unitId,
 }) {
   const {
-    isStaff,
+    originalUserIsStaff,
     number,
     org,
     tabs,
@@ -26,7 +26,7 @@ function LoadedTabPage({
         courseNumber={number}
         courseTitle={title}
       />
-      {isStaff && (
+      {originalUserIsStaff && (
         <InstructorToolbar
           courseId={courseId}
           unitId={unitId}

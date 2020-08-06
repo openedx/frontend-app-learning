@@ -37,6 +37,7 @@ Object {
         "isStaff": false,
         "number": "DemoX",
         "org": "edX",
+        "originalUserIsStaff": false,
         "tabs": Array [
           Object {
             "slug": "courseware",
@@ -119,6 +120,7 @@ Object {
         "isStaff": false,
         "number": "DemoX",
         "org": "edX",
+        "originalUserIsStaff": false,
         "tabs": Array [
           Object {
             "slug": "courseware",

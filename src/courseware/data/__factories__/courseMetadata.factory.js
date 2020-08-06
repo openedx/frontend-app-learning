@@ -34,6 +34,7 @@ Factory.define('courseMetadata')
     },
     show_calculator: false,
     is_staff: false,
+    original_user_is_staff: false,
     license: 'all-rights-reserved',
     can_load_courseware: {
       has_access: true,
