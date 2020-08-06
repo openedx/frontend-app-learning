@@ -5,6 +5,7 @@ import buildSimpleCourseBlocks from '../../../courseware/data/__factories__/cour
 Factory.define('outlineTabData')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
   .option('host', 'http://localhost:18000')
+  .attr('course_expired_html', [], () => '<div>Course expired</div>')
   .attr('course_tools', ['host', 'courseId'], (host, courseId) => ({
     analytics_id: 'edx.bookmarks',
     title: 'Bookmarks',
@@ -20,4 +21,5 @@ Factory.define('outlineTabData')
     can_enroll: true,
     extra_text: 'Contact the administrator.',
   })
-  .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>');
+  .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>')
+  .attr('offer_html', [], () => '<div>Great offer here</div>');
