@@ -51,23 +51,21 @@ export default function InstructorToolbar(props) {
   return (
     <div className="bg-primary text-light">
       <div className="container-fluid py-3 d-md-flex justify-content-end align-items-center">
-        <div className="flex-grow-1">
+        <div className="align-items-center flex-grow-1 d-md-flex mx-1 my-1">
           <MasqueradeWidget courseId={courseId} />
         </div>
         {urlLms && (
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 mx-1 my-1">
             <a className="btn d-block btn-outline-light" href={urlLms}>View in the existing experience</a>
           </div>
         )}
-        &nbsp;
         {urlStudio && (
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 mx-1 my-1">
             <a className="btn d-block btn-outline-light" href={urlStudio}>View in Studio</a>
           </div>
         )}
-        &nbsp;
         {urlInsights && (
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 mx-1 my-1">
             <a className="btn d-block btn-outline-light" href={urlInsights}>View in Insights</a>
           </div>
         )}
