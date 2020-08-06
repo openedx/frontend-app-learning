@@ -10,7 +10,7 @@ import executeThunk from '../../utils';
 
 import initializeMockApp from '../../setupTest';
 import initializeStore from '../../store';
-import { LOADING, FAILED } from '../../course/data/slice';
+import { LOADING, FAILED } from '../../course';
 
 const { loggingService } = initializeMockApp();
 

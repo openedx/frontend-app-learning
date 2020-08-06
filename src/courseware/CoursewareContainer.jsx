@@ -18,7 +18,7 @@ import { TabPage } from '../tab-page';
 
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
-import { activeCourseSelector } from '../course/data/selectors';
+import { activeCourseSelector } from '../course';
 
 const checkExamRedirect = memoize((sequenceStatus, sequence) => {
   if (sequenceStatus === 'loaded') {

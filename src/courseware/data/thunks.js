@@ -14,12 +14,14 @@ import {
   fetchCourseSuccess,
   fetchCourseFailure,
   fetchCourseDenied,
-} from '../../course/data/slice';
+} from '../../course';
 import {
   fetchSequenceRequest,
   fetchSequenceSuccess,
   fetchSequenceFailure,
 } from './slice';
+
+const FULFILLED = 'fulfilled';
 
 export function fetchCourse(courseId) {
   return async (dispatch) => {
@@ -28,14 +30,17 @@ export function fetchCourse(courseId) {
       getCourseMetadata(courseId),
       getCourseBlocks(courseId),
     ]).then(([courseMetadataResult, courseBlocksResult]) => {
-      if (courseMetadataResult.status === 'fulfilled') {
+      const fetchedMetadata = courseMetadataResult.status === FULFILLED;
+      const fetchedBlocks = courseBlocksResult.status === FULFILLED;
+
+      if (fetchedMetadata) {
         dispatch(addModel({
           modelType: 'courses',
           model: courseMetadataResult.value,
         }));
       }
 
-      if (courseBlocksResult.status === 'fulfilled') {
+      if (fetchedBlocks) {
         const {
           courses, sections, sequences, units,
         } = courseBlocksResult.value;
@@ -60,9 +65,6 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
-      const fetchedBlocks = courseBlocksResult.status === 'fulfilled';
-
       // Log errors for each request if needed. Course block failures may occur
       // even if the course metadata request is successful
       if (!fetchedBlocks) {
@@ -74,7 +76,7 @@ export function fetchCourse(courseId) {
 
       if (fetchedMetadata) {
         if (courseMetadataResult.value.canLoadCourseware.hasAccess && fetchedBlocks) {
-          // User has access
+          // User has access - we dispatch this at the end now that all the data is loaded.
           dispatch(fetchCourseSuccess({ courseId }));
           return;
         }
