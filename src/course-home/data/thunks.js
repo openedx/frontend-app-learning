@@ -16,7 +16,12 @@ import {
 import {
   fetchCourseRequest,
   fetchCourseSuccess,
+  fetchCourseFailure,
 } from '../../course/data/slice';
+
+import {
+  toggleResetDatesToast,
+} from './slice';
 
 export function fetchTab(courseId, tab, getTabData) {
   return async (dispatch) => {

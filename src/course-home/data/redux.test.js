@@ -74,13 +74,14 @@ describe('Data layer integration tests', () => {
       const state = store.getState();
       expect(state.activeCourse.courseStatus).toEqual('loaded');
       expect(state.activeCourse.courseId).toEqual(courseId);
+      expect(state.courseHome.displayResetDatesToast).toBe(false);
 
       // Validate course
       const course = state.models.courses[courseId];
       const expectedFieldCount = Object.keys(course).length;
       // If this breaks, you should consider adding assertions below for the new data.  If it's not
-      // an "interesting" addition, bump the number.
-      expect(expectedFieldCount).toBe(8);
+      // an "interesting" addition, just bump the number anyway.
+      expect(expectedFieldCount).toBe(9);
       expect(course.title).toEqual(courseHomeMetadata.title);
 
       // Representative sample of data that proves data normalization and ingestion happened.
@@ -126,13 +127,14 @@ describe('Data layer integration tests', () => {
 
       const state = store.getState();
       expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.courseHome.displayResetDatesToast).toBe(false);
 
       // Validate course
       const course = state.models.courses[courseId];
       const expectedFieldCount = Object.keys(course).length;
       // If this breaks, you should consider adding assertions below for the new data.  If it's not
-      // an "interesting" addition, bump the number.
-      expect(expectedFieldCount).toBe(8);
+      // an "interesting" addition, just bump the number anyway.
+      expect(expectedFieldCount).toBe(9);
       expect(course.title).toEqual(courseHomeMetadata.title);
 
       // Representative sample of data that proves data normalization and ingestion happened.
