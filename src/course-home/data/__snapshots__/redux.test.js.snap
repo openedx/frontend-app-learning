@@ -20,6 +20,7 @@ Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "isEnrolled": false,
         "isSelfPaced": false,
         "isStaff": false,
         "number": "DemoX",
@@ -300,6 +301,7 @@ Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "isEnrolled": false,
         "isSelfPaced": false,
         "isStaff": false,
         "number": "DemoX",
@@ -377,12 +379,17 @@ Object {
           "goalOptions": Array [],
           "selectedGoal": Object {},
         },
-        "courseTools": Object {
-          "analyticsId": "edx.bookmarks",
-          "title": "Bookmarks",
-          "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/bookmarks/",
-        },
-        "datesWidget": undefined,
+        "courseTools": Array [
+                  Object {
+                    "analyticsId": "edx.bookmarks",
+                    "title": "Bookmarks",
+                    "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/bookmarks/",
+                  },
+                ],
+                "datesWidget": Object {
+                  "courseDateBlocks": Array [],
+                  "userTimezone": "UTC",
+                },
         "enrollAlert": Object {
           "canEnroll": true,
           "extraText": "Contact the administrator.",
