@@ -14,6 +14,7 @@ Factory.define('courseHomeMetadata')
     org: 'edX',
     title: 'Demonstration Course',
     is_self_paced: false,
+    is_enrolled: false,
   })
   .attr('tabs', ['courseTabs', 'host'], (courseTabs, host) => courseTabs.map(
     tab => ({

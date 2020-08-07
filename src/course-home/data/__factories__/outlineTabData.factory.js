@@ -6,11 +6,11 @@ Factory.define('outlineTabData')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
   .option('host', 'http://localhost:18000')
   .attr('course_expired_html', [], () => '<div>Course expired</div>')
-  .attr('course_tools', ['host', 'courseId'], (host, courseId) => ({
+  .attr('course_tools', ['host', 'courseId'], (host, courseId) => ([{
     analytics_id: 'edx.bookmarks',
     title: 'Bookmarks',
     url: `${host}/courses/${courseId}/bookmarks/`,
-  }))
+  }]))
   .attr('course_blocks', ['courseId'], courseId => {
     const { courseBlocks } = buildSimpleCourseBlocks(courseId);
     return {
@@ -24,6 +24,10 @@ Factory.define('outlineTabData')
   .attr('enroll_alert', {
     can_enroll: true,
     extra_text: 'Contact the administrator.',
+  })
+  .attr('dates_widget', {
+    courseDateBlocks: [],
+    userTimezone: 'UTC',
   })
   .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>')
   .attr('offer_html', [], () => '<div>Great offer here</div>')

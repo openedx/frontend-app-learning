@@ -49,6 +49,8 @@ Factory.define('courseMetadata')
       enabled: false,
     },
     marketing_url: null,
+    celebrations: null,
+    enroll_alert: null,
   }).attr(
     'tabs', ['tabs', 'id'], (passedTabs, id) => {
       if (passedTabs) {

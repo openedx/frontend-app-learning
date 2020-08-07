@@ -34,6 +34,13 @@ window.getComputedStyle = jest.fn(() => ({
   getPropertyValue: jest.fn(),
 }));
 
+export const authenticatedUser = {
+  userId: 'abc123',
+  username: 'Mock User',
+  roles: [],
+  administrator: false,
+};
+
 export default function initializeMockApp() {
   mergeConfig({
     INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
