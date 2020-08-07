@@ -5,6 +5,10 @@ import {
 } from './api';
 import { updateModel } from '../../../../generic/model-store';
 
+export const BOOKMARK_LOADING = 'loading';
+export const BOOKMARK_LOADED = 'loaded';
+export const BOOKMARK_FAILED = 'failed';
+
 export function addBookmark(unitId) {
   return async (dispatch) => {
     // Optimistically update the bookmarked flag.
@@ -13,7 +17,7 @@ export function addBookmark(unitId) {
       model: {
         id: unitId,
         bookmarked: true,
-        bookmarkedUpdateState: 'loading',
+        bookmarkedUpdateState: BOOKMARK_LOADING,
       },
     }));
 
@@ -24,7 +28,7 @@ export function addBookmark(unitId) {
         model: {
           id: unitId,
           bookmarked: true,
-          bookmarkedUpdateState: 'loaded',
+          bookmarkedUpdateState: BOOKMARK_LOADED,
         },
       }));
     } catch (error) {
@@ -34,7 +38,7 @@ export function addBookmark(unitId) {
         model: {
           id: unitId,
           bookmarked: false,
-          bookmarkedUpdateState: 'failed',
+          bookmarkedUpdateState: BOOKMARK_FAILED,
         },
       }));
     }
@@ -49,7 +53,7 @@ export function removeBookmark(unitId) {
       model: {
         id: unitId,
         bookmarked: false,
-        bookmarkedUpdateState: 'loading',
+        bookmarkedUpdateState: BOOKMARK_LOADING,
       },
     }));
     try {
@@ -59,7 +63,7 @@ export function removeBookmark(unitId) {
         model: {
           id: unitId,
           bookmarked: false,
-          bookmarkedUpdateState: 'loaded',
+          bookmarkedUpdateState: BOOKMARK_LOADED,
         },
       }));
     } catch (error) {
@@ -69,7 +73,7 @@ export function removeBookmark(unitId) {
         model: {
           id: unitId,
           bookmarked: true,
-          bookmarkedUpdateState: 'failed',
+          bookmarkedUpdateState: BOOKMARK_FAILED,
         },
       }));
     }

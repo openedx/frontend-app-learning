@@ -17,7 +17,7 @@ import {
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,
-} from '../../course';
+} from '../../active-course';
 
 import {
   toggleResetDatesToast,

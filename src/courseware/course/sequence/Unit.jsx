@@ -15,6 +15,7 @@ import { useModel } from '../../../generic/model-store';
 import PageLoading from '../../../generic/PageLoading';
 import { resetDeadlines } from '../../../course-home/data/thunks';
 import { fetchCourse } from '../../data/thunks';
+import { BOOKMARK_LOADING } from '../bookmark';
 
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
 
@@ -106,7 +107,7 @@ function Unit({
       <BookmarkButton
         unitId={unit.id}
         isBookmarked={unit.bookmarked}
-        isProcessing={unit.bookmarkedUpdateState === 'loading'}
+        isProcessing={unit.bookmarkedUpdateState === BOOKMARK_LOADING}
       />
       { contentTypeGatingEnabled && unit.graded && (
         <Suspense

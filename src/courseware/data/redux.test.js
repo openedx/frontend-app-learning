@@ -11,6 +11,8 @@ import executeThunk from '../../utils';
 import buildSimpleCourseBlocks from './__factories__/courseBlocks.factory';
 import initializeMockApp from '../../setupTest';
 import initializeStore from '../../store';
+import { SEQUENCE_LOADING, SEQUENCE_LOADED, SEQUENCE_FAILED } from './slice';
+import { COURSE_LOADED, COURSE_FAILED, COURSE_DENIED } from '../../active-course';
 
 const { loggingService } = initializeMockApp();
 
@@ -55,7 +57,7 @@ describe('Data layer integration tests', () => {
       expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().activeCourse).toEqual(expect.objectContaining({
         courseId,
-        courseStatus: 'failed',
+        courseStatus: COURSE_FAILED,
       }));
     });
 
@@ -78,7 +80,7 @@ describe('Data layer integration tests', () => {
 
       const state = store.getState();
 
-      expect(state.activeCourse.courseStatus).toEqual('denied');
+      expect(state.activeCourse.courseStatus).toEqual(COURSE_DENIED);
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.courses[forbiddenCourseMetadata.id].canLoadCourseware).not.toBeUndefined();
@@ -92,9 +94,9 @@ describe('Data layer integration tests', () => {
 
       const state = store.getState();
 
-      expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.activeCourse.courseStatus).toEqual(COURSE_LOADED);
       expect(state.activeCourse.courseId).toEqual(courseId);
-      expect(state.courseware.sequenceStatus).toEqual('loading');
+      expect(state.courseware.sequenceStatus).toEqual(SEQUENCE_LOADING);
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
@@ -109,7 +111,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseware.sequenceStatus).toEqual('failed');
+      expect(store.getState().courseware.sequenceStatus).toEqual(SEQUENCE_FAILED);
     });
 
     it('Should fetch and normalize metadata, and then update existing models with sequence metadata', async () => {
@@ -139,9 +141,9 @@ describe('Data layer integration tests', () => {
       // Update our state variable again.
       state = store.getState();
 
-      expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.activeCourse.courseStatus).toEqual(COURSE_LOADED);
       expect(state.activeCourse.courseId).toEqual(courseId);
-      expect(state.courseware.sequenceStatus).toEqual('loading');
+      expect(state.courseware.sequenceStatus).toEqual(SEQUENCE_LOADING);
       expect(state.courseware.sequenceId).toEqual(null);
 
       await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
@@ -163,9 +165,9 @@ describe('Data layer integration tests', () => {
         }),
       });
 
-      expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.activeCourse.courseStatus).toEqual(COURSE_LOADED);
       expect(state.activeCourse.courseId).toEqual(courseId);
-      expect(state.courseware.sequenceStatus).toEqual('loaded');
+      expect(state.courseware.sequenceStatus).toEqual(SEQUENCE_LOADED);
       expect(state.courseware.sequenceId).toEqual(sequenceId);
     });
   });

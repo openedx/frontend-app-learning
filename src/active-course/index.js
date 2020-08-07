@@ -1,10 +1,10 @@
 export { activeCourseSelector } from './data/selectors';
 export {
   reducer,
-  LOADING,
-  LOADED,
-  FAILED,
-  DENIED,
+  COURSE_LOADING,
+  COURSE_LOADED,
+  COURSE_FAILED,
+  COURSE_DENIED,
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,

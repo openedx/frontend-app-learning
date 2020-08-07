@@ -1,10 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
-export const LOADING = 'loading';
-export const LOADED = 'loaded';
-export const FAILED = 'failed';
-
 const slice = createSlice({
   name: 'course-home',
   initialState: {

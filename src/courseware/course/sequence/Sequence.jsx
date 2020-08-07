@@ -15,6 +15,7 @@ import CourseLicense from '../course-license';
 import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+import { SEQUENCE_LOADED, SEQUENCE_LOADING } from '../../data';
 
 function Sequence({
   unitId,
@@ -73,7 +74,7 @@ function Sequence({
   const { add, remove } = useContext(UserMessagesContext);
   useEffect(() => {
     let id = null;
-    if (sequenceStatus === 'loaded') {
+    if (sequenceStatus === SEQUENCE_LOADED) {
       if (sequence.bannerText) {
         id = add({
           code: null,
@@ -101,7 +102,7 @@ function Sequence({
     }
   }, [unit]);
 
-  if (sequenceStatus === 'loading') {
+  if (sequenceStatus === SEQUENCE_LOADING) {
     if (!sequenceId) {
       return (<div> {intl.formatMessage(messages['learn.sequence.no.content'])} </div>);
     }
@@ -114,7 +115,7 @@ function Sequence({
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
 
-  if (sequenceStatus === 'loaded') {
+  if (sequenceStatus === SEQUENCE_LOADED) {
     return (
       <div className="sequence-container">
         <div className="sequence">

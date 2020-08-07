@@ -1,7 +1,9 @@
 /* eslint-disable import/prefer-default-export */
-
 import { useSelector } from 'react-redux';
+
 import { useModel } from '../../../../generic/model-store';
+import { COURSE_LOADED } from '../../../../active-course';
+
 import { sequenceIdsSelector } from '../../../data/selectors';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
@@ -10,7 +12,7 @@ export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) 
   const courseStatus = useSelector(state => state.activeCourse.courseStatus);
 
   // If we don't know the sequence and unit yet, then assume no.
-  if (courseStatus !== 'loaded' || !currentSequenceId || !currentUnitId) {
+  if (courseStatus !== COURSE_LOADED || !currentSequenceId || !currentUnitId) {
     return { isFirstUnit: false, isLastUnit: false };
   }
   const isFirstSequence = sequenceIds.indexOf(currentSequenceId) === 0;

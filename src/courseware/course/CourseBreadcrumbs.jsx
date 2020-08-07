@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { useModel } from '../../generic/model-store';
+import { COURSE_LOADED } from '../../active-course';
+import { SEQUENCE_LOADED } from '../data';
 
 function CourseBreadcrumb({
   url, children, withSeparator, ...attrs
@@ -44,7 +46,7 @@ export default function CourseBreadcrumbs({
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
 
   const links = useMemo(() => {
-    if (courseStatus === 'loaded' && sequenceStatus === 'loaded') {
+    if (courseStatus === COURSE_LOADED && sequenceStatus === SEQUENCE_LOADED) {
       return [section, sequence].filter(node => !!node).map((node) => ({
         id: node.id,
         label: node.title,

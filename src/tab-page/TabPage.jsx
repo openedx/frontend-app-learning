@@ -10,6 +10,7 @@ import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
 import LearningToast from '../toast/LearningToast';
 import { toggleResetDatesToast } from '../course-home/data/slice';
+import { COURSE_LOADED, COURSE_LOADING } from '../active-course';
 
 function TabPage({
   intl,
@@ -22,7 +23,7 @@ function TabPage({
   } = useSelector(state => state.courseHome);
   const dispatch = useDispatch();
 
-  if (courseStatus === 'loading') {
+  if (courseStatus === COURSE_LOADING) {
     return (
       <>
         <Header />
@@ -33,7 +34,7 @@ function TabPage({
     );
   }
 
-  if (courseStatus === 'loaded') {
+  if (courseStatus === COURSE_LOADED) {
     return (
       <>
         <LearningToast

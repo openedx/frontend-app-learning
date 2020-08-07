@@ -1,33 +1,33 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
-export const LOADING = 'loading';
-export const LOADED = 'loaded';
-export const FAILED = 'failed';
-export const DENIED = 'denied';
+export const COURSE_LOADING = 'loading';
+export const COURSE_LOADED = 'loaded';
+export const COURSE_FAILED = 'failed';
+export const COURSE_DENIED = 'denied';
 
 const slice = createSlice({
   name: 'activeCourse',
   initialState: {
-    courseStatus: LOADING,
+    courseStatus: COURSE_LOADING,
     courseId: null,
   },
   reducers: {
     fetchCourseRequest: (state, { payload }) => {
       state.courseId = payload.courseId;
-      state.courseStatus = LOADING;
+      state.courseStatus = COURSE_LOADING;
     },
     fetchCourseSuccess: (state, { payload }) => {
       state.courseId = payload.courseId;
-      state.courseStatus = LOADED;
+      state.courseStatus = COURSE_LOADED;
     },
     fetchCourseFailure: (state, { payload }) => {
       state.courseId = payload.courseId;
-      state.courseStatus = FAILED;
+      state.courseStatus = COURSE_FAILED;
     },
     fetchCourseDenied: (state, { payload }) => {
       state.courseId = payload.courseId;
-      state.courseStatus = DENIED;
+      state.courseStatus = COURSE_DENIED;
     },
   },
 });

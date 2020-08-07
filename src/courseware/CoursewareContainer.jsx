@@ -13,15 +13,20 @@ import {
   fetchSequence,
   getResumeBlock,
   saveSequencePosition,
+  SEQUENCE_LOADED,
+  SEQUENCE_LOADING,
+  SEQUENCE_FAILED,
 } from './data';
 import { TabPage } from '../tab-page';
 
+import {
+  activeCourseSelector, COURSE_LOADED, COURSE_LOADING, COURSE_FAILED, COURSE_DENIED,
+} from '../active-course';
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
-import { activeCourseSelector } from '../course';
 
 const checkExamRedirect = memoize((sequenceStatus, sequence) => {
-  if (sequenceStatus === 'loaded') {
+  if (sequenceStatus === SEQUENCE_LOADED) {
     if (sequence.isTimeLimited && sequence.lmsWebUrl !== undefined) {
       global.location.assign(sequence.lmsWebUrl);
     }
@@ -29,7 +34,7 @@ const checkExamRedirect = memoize((sequenceStatus, sequence) => {
 });
 
 const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSequenceId) => {
-  if (courseStatus === 'loaded' && !sequenceId) {
+  if (courseStatus === COURSE_LOADED && !sequenceId) {
     // Note that getResumeBlock is just an API call, not a redux thunk.
     getResumeBlock(courseId).then((data) => {
       // This is a replace because we don't want this change saved in the browser's history.
@@ -43,7 +48,7 @@ const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSe
 });
 
 const checkContentRedirect = memoize((courseId, sequenceStatus, sequenceId, sequence, unitId) => {
-  if (sequenceStatus === 'loaded' && sequenceId && !unitId) {
+  if (sequenceStatus === SEQUENCE_LOADED && sequenceId && !unitId) {
     if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
       const nextUnitId = sequence.unitIds[sequence.activeUnitIndex];
       // This is a replace because we don't want this change saved in the browser's history.
@@ -60,7 +65,7 @@ class CoursewareContainer extends Component {
       sequenceStatus,
       sequence,
     } = this.props;
-    if (sequenceStatus === 'loaded' && sequence.saveUnitPosition && unitId) {
+    if (sequenceStatus === SEQUENCE_LOADED && sequence.saveUnitPosition && unitId) {
       const activeUnitIndex = sequence.unitIds.indexOf(unitId);
       this.props.saveSequencePosition(courseId, sequenceId, activeUnitIndex);
     }
@@ -208,7 +213,7 @@ class CoursewareContainer extends Component {
       },
     } = this.props;
 
-    if (courseStatus === 'denied') {
+    if (courseStatus === COURSE_DENIED) {
       return this.renderDenied();
     }
 
@@ -258,8 +263,8 @@ CoursewareContainer.propTypes = {
   sequenceId: PropTypes.string,
   firstSequenceId: PropTypes.string,
   unitId: PropTypes.string,
-  courseStatus: PropTypes.oneOf(['loaded', 'loading', 'failed', 'denied']).isRequired,
-  sequenceStatus: PropTypes.oneOf(['loaded', 'loading', 'failed']).isRequired,
+  courseStatus: PropTypes.oneOf([COURSE_LOADED, COURSE_LOADING, COURSE_FAILED, COURSE_DENIED]).isRequired,
+  sequenceStatus: PropTypes.oneOf([SEQUENCE_LOADED, SEQUENCE_LOADING, SEQUENCE_FAILED]).isRequired,
   nextSequence: sequenceShape,
   previousSequence: sequenceShape,
   course: courseShape,
@@ -292,7 +297,7 @@ const sequenceIdsSelector = createSelector(
   activeCourseSelector,
   (state) => state.models.sections,
   (courseStatus, course, sectionsById) => {
-    if (courseStatus !== 'loaded') {
+    if (courseStatus !== COURSE_LOADED) {
       return [];
     }
     const { sectionIds = [] } = course;
@@ -333,7 +338,7 @@ const firstSequenceIdSelector = createSelector(
   activeCourseSelector,
   (state) => state.models.sections || {},
   (courseStatus, course, sectionsById) => {
-    if (courseStatus !== 'loaded') {
+    if (courseStatus !== COURSE_LOADED) {
       return null;
     }
     const { sectionIds = [] } = course;

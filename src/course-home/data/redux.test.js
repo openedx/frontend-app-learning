@@ -1,16 +1,14 @@
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
-
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
 
-import * as thunks from './thunks';
-
-import executeThunk from '../../utils';
-
+import { COURSE_LOADED, COURSE_LOADING, COURSE_FAILED } from '../../active-course';
 import initializeMockApp from '../../setupTest';
 import initializeStore from '../../store';
-import { LOADING, FAILED } from '../../course';
+import executeThunk from '../../utils';
+
+import * as thunks from './thunks';
 
 const { loggingService } = initializeMockApp();
 
@@ -43,7 +41,7 @@ describe('Data layer integration tests', () => {
 
   it('Should initialize store', () => {
     expect(store.getState().activeCourse.courseId).toBeNull();
-    expect(store.getState().activeCourse.courseStatus).toEqual(LOADING);
+    expect(store.getState().activeCourse.courseStatus).toEqual(COURSE_LOADING);
   });
 
   describe('Test fetchDatesTab', () => {
@@ -57,7 +55,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchDatesTab(courseId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().activeCourse.courseStatus).toEqual(FAILED);
+      expect(store.getState().activeCourse.courseStatus).toEqual(COURSE_FAILED);
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
@@ -72,7 +70,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchDatesTab(courseId), store.dispatch);
 
       const state = store.getState();
-      expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.activeCourse.courseStatus).toEqual(COURSE_LOADED);
       expect(state.activeCourse.courseId).toEqual(courseId);
       expect(state.courseHome.displayResetDatesToast).toBe(false);
 
@@ -111,7 +109,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().activeCourse.courseStatus).toEqual('failed');
+      expect(store.getState().activeCourse.courseStatus).toEqual(COURSE_FAILED);
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
@@ -126,7 +124,7 @@ describe('Data layer integration tests', () => {
       await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
 
       const state = store.getState();
-      expect(state.activeCourse.courseStatus).toEqual('loaded');
+      expect(state.activeCourse.courseStatus).toEqual(COURSE_LOADED);
       expect(state.courseHome.displayResetDatesToast).toBe(false);
 
       // Validate course

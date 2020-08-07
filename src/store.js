@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import { reducer as activeCourseReducer } from './course';
+import { reducer as activeCourseReducer } from './active-course';
 import { reducer as courseHomeReducer } from './course-home';
 import { reducer as coursewareReducer } from './courseware';
 import { reducer as modelsReducer } from './generic/model-store';

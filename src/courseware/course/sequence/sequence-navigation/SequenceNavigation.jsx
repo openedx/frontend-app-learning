@@ -5,13 +5,14 @@ import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
-
 import { useSelector } from 'react-redux';
+
+import { useModel } from '../../../../generic/model-store';
+
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
-import { useModel } from '../../../../generic/model-store';
-import { LOADED } from '../../../data/slice';
+import { SEQUENCE_LOADED } from '../../../data';
 
 export default function SequenceNavigation({
   unitId,
@@ -24,7 +25,7 @@ export default function SequenceNavigation({
   const sequence = useModel('sequences', sequenceId);
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
-  const isLocked = sequenceStatus === LOADED ? (
+  const isLocked = sequenceStatus === SEQUENCE_LOADED ? (
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
 
@@ -49,7 +50,7 @@ export default function SequenceNavigation({
     );
   };
 
-  return sequenceStatus === LOADED && (
+  return sequenceStatus === SEQUENCE_LOADED && (
     <nav className={classNames('sequence-navigation', className)}>
       <Button className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />

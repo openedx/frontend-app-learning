@@ -10,4 +10,9 @@ export {
 export {
   sequenceIdsSelector,
 } from './selectors';
-export { reducer } from './slice';
+export {
+  reducer,
+  SEQUENCE_LOADING,
+  SEQUENCE_LOADED,
+  SEQUENCE_FAILED,
+} from './slice';

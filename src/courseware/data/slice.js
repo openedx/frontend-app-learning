@@ -1,29 +1,28 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
-export const LOADING = 'loading';
-export const LOADED = 'loaded';
-export const FAILED = 'failed';
-export const DENIED = 'denied';
+export const SEQUENCE_LOADING = 'loading';
+export const SEQUENCE_LOADED = 'loaded';
+export const SEQUENCE_FAILED = 'failed';
 
 const slice = createSlice({
   name: 'courseware',
   initialState: {
-    sequenceStatus: 'loading',
+    sequenceStatus: SEQUENCE_LOADING,
     sequenceId: null,
   },
   reducers: {
     fetchSequenceRequest: (state, { payload }) => {
       state.sequenceId = payload.sequenceId;
-      state.sequenceStatus = LOADING;
+      state.sequenceStatus = SEQUENCE_LOADING;
     },
     fetchSequenceSuccess: (state, { payload }) => {
       state.sequenceId = payload.sequenceId;
-      state.sequenceStatus = LOADED;
+      state.sequenceStatus = SEQUENCE_LOADED;
     },
     fetchSequenceFailure: (state, { payload }) => {
       state.sequenceId = payload.sequenceId;
-      state.sequenceStatus = FAILED;
+      state.sequenceStatus = SEQUENCE_FAILED;
     },
   },
 });

@@ -14,7 +14,7 @@ import {
   fetchCourseSuccess,
   fetchCourseFailure,
   fetchCourseDenied,
-} from '../../course';
+} from '../../active-course';
 import {
   fetchSequenceRequest,
   fetchSequenceSuccess,
