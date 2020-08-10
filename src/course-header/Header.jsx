@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from '@edx/paragon';
+import { useEnterpriseConfig } from '@edx/frontend-enterprise';
 import { getConfig } from '@edx/frontend-platform';
 import { AppContext } from '@edx/frontend-platform/react';
 
@@ -33,6 +34,12 @@ export default function Header({
 }) {
   const { authenticatedUser } = useContext(AppContext);
 
+  const { enterpriseLearnerPortalLink } = useEnterpriseConfig(
+    authenticatedUser,
+    getConfig().ENTERPRISE_LEARNER_PORTAL_HOSTNAME,
+    getConfig().LMS_BASE_URL,
+  );
+
   return (
     <header className="course-header">
       <div className="container-fluid py-2 d-flex align-items-center ">
@@ -58,7 +65,12 @@ export default function Header({
             <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/dashboard`}>Dashboard</Dropdown.Item>
             <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/u/${authenticatedUser.username}`}>Profile</Dropdown.Item>
             <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/account/settings`}>Account</Dropdown.Item>
-            <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>Order History</Dropdown.Item>
+            { !enterpriseLearnerPortalLink
+              // Users should only see Order History if they do not have an available
+              // learner portal, because an available learner portal currently means
+              // that they access content via Subscriptions, in which context an "order"
+              // is not relevant.
+              && <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>Order History</Dropdown.Item>}
             <Dropdown.Item href={getConfig().LOGOUT_URL}>Sign Out</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>

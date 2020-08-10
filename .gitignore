@@ -12,7 +12,10 @@ temp/babel-plugin-react-intl
 ### pyenv ###
 .python-version
 
-### Emacs ###
+### Editors ###
 *~
 /temp
 /.vscode
+
+# Local package dependencies
+module.config.js
