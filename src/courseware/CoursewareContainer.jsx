@@ -171,7 +171,13 @@ class CoursewareContainer extends Component {
   }
 
   renderDenied() {
-    const { courseId, course } = this.props;
+    const {
+      courseId, course, match: {
+        params: {
+          unitId: routeUnitId,
+        },
+      },
+    } = this.props;
     let url = `/redirect/course-home/${courseId}`;
     switch (course.canLoadCourseware.errorCode) {
       case 'audit_expired':
@@ -185,6 +191,9 @@ class CoursewareContainer extends Component {
       case 'survey_required': // TODO: Redirect to the course survey
       case 'unfulfilled_milestones':
         url = '/redirect/dashboard';
+        break;
+      case 'microfrontend_disabled':
+        url = `/redirect/unit/${routeUnitId}`;
         break;
       case 'authentication_required':
       case 'enrollment_required':
