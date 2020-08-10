@@ -30,6 +30,10 @@ class MockLoggingService {
   logError = jest.fn();
 }
 
+window.getComputedStyle = jest.fn(() => ({
+  getPropertyValue: jest.fn(),
+}));
+
 export default function initializeMockApp() {
   mergeConfig({
     INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,

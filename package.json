@@ -36,6 +36,7 @@
   "dependencies": {
     "@edx/frontend-component-footer": "10.0.11",
     "@edx/frontend-component-header": "2.0.5",
+    "@edx/frontend-enterprise": "^4.2.2",
     "@edx/frontend-platform": "1.5.2",
     "@edx/paragon": "9.1.1",
     "@fortawesome/fontawesome-svg-core": "1.2.30",
@@ -60,7 +61,7 @@
     "reselect": "4.0.0"
   },
   "devDependencies": {
-    "@edx/frontend-build": "5.0.6",
+    "@edx/frontend-build": "^5.2.0",
     "@testing-library/dom": "7.16.3",
     "@testing-library/jest-dom": "5.10.1",
     "@testing-library/react": "10.3.0",
