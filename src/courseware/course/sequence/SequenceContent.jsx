@@ -50,6 +50,7 @@ function SequenceContent({
   return (
     <Unit
       courseId={courseId}
+      format={sequence.format}
       key={unitId}
       id={unitId}
       onLoaded={unitLoadedHandler}

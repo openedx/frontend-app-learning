@@ -60,6 +60,7 @@ Factory.define('sequenceMetadata')
     is_time_limited: false,
     show_completion: true,
     banner_text: null,
+    format: 'Homework',
   });
 
 /**

@@ -52,11 +52,12 @@ function useLoadBearingHook(id) {
 
 function Unit({
   courseId,
+  format,
   onLoaded,
   id,
   intl,
 }) {
-  const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
+  const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0&format=${format}`;
 
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -150,6 +151,7 @@ function Unit({
 
 Unit.propTypes = {
   courseId: PropTypes.string.isRequired,
+  format: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   onLoaded: PropTypes.func,
