@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { FormattedDate, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { Tooltip, OverlayTrigger } from '@edx/paragon';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useModel } from '../../generic/model-store';
 
@@ -62,9 +65,18 @@ function Day({
                   {item.assignmentType && `${item.assignmentType}: `}{title}
                 </span>
                 {itemBadges}
+                {item.extraInfo && (
+                  <OverlayTrigger
+                    placement="bottom"
+                    overlay={
+                      <Tooltip>{item.extraInfo}</Tooltip>
+                    }
+                  >
+                    <FontAwesomeIcon icon={faInfoCircle} className="fa-xs ml-1 text-gray-700" />
+                  </OverlayTrigger>
+                )}
               </div>
               {item.description && <div className="small mb-2">{item.description}</div>}
-              {item.extraInfo && <div className="small mb-2">{item.extraInfo}</div>}
             </div>
           );
         })}
