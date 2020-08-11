@@ -14,7 +14,7 @@ function CourseDates({ courseId, intl }) {
 
   return (
     <section className="mb-3">
-      <h4>{intl.formatMessage(messages.dates)}</h4>
+      <h2 className="h6">{intl.formatMessage(messages.dates)}</h2>
       {datesWidget.courseDateBlocks.map((courseDateBlock) => (
         <DateSummary
           key={courseDateBlock.title + courseDateBlock.date}
@@ -22,7 +22,7 @@ function CourseDates({ courseId, intl }) {
           userTimezone={datesWidget.userTimezone}
         />
       ))}
-      <a className="font-weight-bold" href={datesWidget.datesTabLink}>
+      <a className="font-weight-bold ml-4 pl-2" href={datesWidget.datesTabLink}>
         {intl.formatMessage(messages.allDates)}
       </a>
     </section>

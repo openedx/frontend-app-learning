@@ -211,7 +211,11 @@ Object {
         "handoutsHtml": "<ul><li>Handout 1</li></ul>",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "offerHtml": "<div>Great offer here</div>",
-        "welcomeMessageHtml": undefined,
+        "resumeCourse": Object {
+          "hasVisitedCourse": false,
+          "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+Test+Block@12345abcde",
+        },
+        "welcomeMessageHtml": "<p>Welcome to this course!</p>",
       },
     },
   },

@@ -17,6 +17,10 @@ const messages = defineMessages({
     id: 'learning.outline.resume',
     defaultMessage: 'Resume Course',
   },
+  start: {
+    id: 'learning.outline.start',
+    defaultMessage: 'Start Course',
+  },
   tools: {
     id: 'learning.outline.tools',
     defaultMessage: 'Course Tools',

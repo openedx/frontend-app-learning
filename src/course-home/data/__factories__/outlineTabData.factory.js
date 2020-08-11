@@ -22,4 +22,9 @@ Factory.define('outlineTabData')
     extra_text: 'Contact the administrator.',
   })
   .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>')
-  .attr('offer_html', [], () => '<div>Great offer here</div>');
+  .attr('offer_html', [], () => '<div>Great offer here</div>')
+  .attr('resume_course', ['host', 'courseId'], (host, courseId) => ({
+    has_visited_course: false,
+    url: `${host}/courses/${courseId}/jump_to/block-v1:edX+Test+Block@12345abcde`,
+  }))
+  .attr('welcome_message_html', [], () => '<p>Welcome to this course!</p>');
