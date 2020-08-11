@@ -150,6 +150,7 @@ function normalizeSequenceMetadata(sequence) {
       id: sequence.item_id,
       unitIds: sequence.items.map(unit => unit.id),
       bannerText: sequence.banner_text,
+      format: sequence.format,
       title: sequence.display_name,
       gatedContent: camelCaseObject(sequence.gated_content),
       isTimeLimited: sequence.is_time_limited,
