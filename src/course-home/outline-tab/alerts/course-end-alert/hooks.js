@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAlert } from '../../../../generic/user-messages';
 import { useModel } from '../../../../generic/model-store';
 
@@ -23,15 +23,16 @@ export function useCourseEndAlert(courseId) {
   const endDate = endBlock ? new Date(endBlock.date) : null;
   const delta = endBlock ? endDate - new Date() : 0;
   const isVisible = isEnrolled && endBlock && delta > 0 && delta < WARNING_PERIOD_MS;
+  const payload = {
+    delta,
+    description: endBlock && endBlock.description,
+    endDate: endBlock && endBlock.date,
+    userTimezone,
+  };
 
   useAlert(isVisible, {
     code: 'clientCourseEndAlert',
-    payload: {
-      delta,
-      description: endBlock && endBlock.description,
-      endDate: endBlock && endBlock.date,
-      userTimezone,
-    },
+    payload: useMemo(() => payload, Object.values(payload).sort()),
     topic: 'outline-course-alerts',
   });
 

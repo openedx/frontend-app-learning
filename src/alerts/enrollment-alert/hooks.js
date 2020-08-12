@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import React, {
-  useContext, useState, useCallback,
+  useContext, useState, useCallback, useMemo,
 } from 'react';
 
 import { UserMessagesContext, ALERT_TYPES, useAlert } from '../../generic/user-messages';
@@ -14,15 +14,16 @@ export function useEnrollmentAlert(courseId) {
   const course = useModel('courses', courseId);
   const outline = useModel('outline', courseId);
   const isVisible = course && course.isEnrolled !== undefined && !course.isEnrolled;
+  const payload = {
+    canEnroll: outline.enrollAlert.canEnroll,
+    courseId,
+    extraText: outline.enrollAlert.extraText,
+    isStaff: course.isStaff,
+  };
 
   useAlert(isVisible, {
     code: 'clientEnrollmentAlert',
-    payload: {
-      canEnroll: outline.enrollAlert.canEnroll,
-      courseId,
-      extraText: outline.enrollAlert.extraText,
-      isStaff: course.isStaff,
-    },
+    payload: useMemo(() => payload, Object.values(payload).sort()),
     topic: 'outline',
   });
 

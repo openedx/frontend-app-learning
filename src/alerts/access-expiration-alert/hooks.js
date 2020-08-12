@@ -7,11 +7,9 @@ function useAccessExpirationAlert(courseExpiredMessage, topic) {
   const rawHtml = courseExpiredMessage || null;
   const isVisible = !!rawHtml; // If it exists, show it.
 
-  const payload = useMemo(() => ({ rawHtml }), [rawHtml]);
-
   useAlert(isVisible, {
     code: 'clientAccessExpirationAlert',
-    payload,
+    payload: useMemo(() => ({ rawHtml }), [rawHtml]),
     topic,
   });
 

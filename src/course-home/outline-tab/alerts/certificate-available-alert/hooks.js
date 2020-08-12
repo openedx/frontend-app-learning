@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import { useAlert } from '../../../../generic/user-messages';
@@ -23,14 +23,15 @@ function useCertificateAvailableAlert(courseId) {
   const endDate = endBlock ? new Date(endBlock.date) : null;
   const hasEnded = endBlock ? endDate < new Date() : false;
   const isVisible = isEnrolled && certBlock && hasEnded; // only show if we're between end and cert dates
+  const payload = {
+    certDate: certBlock && certBlock.date,
+    username,
+    userTimezone,
+  };
 
   useAlert(isVisible, {
     code: 'clientCertificateAvailableAlert',
-    payload: {
-      certDate: certBlock && certBlock.date,
-      username,
-      userTimezone,
-    },
+    payload: useMemo(() => payload, Object.values(payload).sort()),
     topic: 'outline-course-alerts',
   });
 
