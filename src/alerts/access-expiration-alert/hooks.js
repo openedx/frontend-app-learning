@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useAlert } from '../../generic/user-messages';
 
 const AccessExpirationAlert = React.lazy(() => import('./AccessExpirationAlert'));
@@ -7,12 +7,10 @@ function useAccessExpirationAlert(courseExpiredMessage, topic) {
   const rawHtml = courseExpiredMessage || null;
   const isVisible = !!rawHtml; // If it exists, show it.
 
-  const payload = useMemo(() => ({ rawHtml }), [rawHtml]);
-
   useAlert(isVisible, {
     code: 'clientAccessExpirationAlert',
-    payload,
     topic,
+    payload: { rawHtml },
   });
 
   return { clientAccessExpirationAlert: AccessExpirationAlert };
