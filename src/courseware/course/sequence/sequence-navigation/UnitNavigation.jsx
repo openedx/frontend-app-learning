@@ -60,7 +60,11 @@ export default function UnitNavigation(props) {
 
 UnitNavigation.propTypes = {
   sequenceId: PropTypes.string.isRequired,
-  unitId: PropTypes.string.isRequired,
+  unitId: PropTypes.string,
   onClickPrevious: PropTypes.func.isRequired,
   onClickNext: PropTypes.func.isRequired,
+};
+
+UnitNavigation.defaultProps = {
+  unitId: null,
 };
