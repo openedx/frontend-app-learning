@@ -193,7 +193,7 @@ class CoursewareContainer extends Component {
         url = '/redirect/dashboard';
         break;
       case 'microfrontend_disabled':
-        url = `/redirect/unit/${routeUnitId}`;
+        url = `/redirect/courseware/${courseId}/unit/${routeUnitId}`;
         break;
       case 'authentication_required':
       case 'enrollment_required':

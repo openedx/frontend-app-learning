@@ -2,11 +2,14 @@ import React from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router';
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
-import PageLoading from './generic/PageLoading';
-import { useModel } from './generic/model-store';
+
+import PageLoading from '../generic/PageLoading';
+
+import CoursewareRedirect from './CoursewareRedirect';
 
 export default () => {
   const { path } = useRouteMatch();
+
   return (
     <div className="flex-grow-1">
       <PageLoading srMessage={(
@@ -20,16 +23,8 @@ export default () => {
 
       <Switch>
         <Route
-          path={`${path}/unit/:unitId`}
-          render={({ match }) => {
-            const { unitId } = match.params;
-            const unit = useModel('units', unitId);
-
-            const lmsWebUrl = unit !== undefined ? unit.lmsWebUrl : null;
-            if (lmsWebUrl) {
-              global.location.assign(lmsWebUrl);
-            }
-          }}
+          path={`${path}/courseware/:courseId/unit/:unitId`}
+          component={CoursewareRedirect}
         />
         <Route
           path={`${path}/course-home/:courseId`}
