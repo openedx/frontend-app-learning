@@ -5,7 +5,8 @@ import { Toast } from '@edx/paragon';
 import './LearningToast.scss';
 
 export default function LearningToast({
-  body,
+  bodyLink,
+  bodyText,
   header,
   onClose,
   show,
@@ -14,36 +15,37 @@ export default function LearningToast({
     <Toast
       onClose={onClose}
       show={show}
-      delay={3000}
+      delay={5000}
       autohide
+      className="bg-gray-700 learning-toast"
       style={{
         boxShadow: 'none',
         position: 'fixed',
-        bottom: '1rem',
-        left: '1rem',
         zIndex: 2,
       }}
     >
-      <Toast.Header className="bg-gray-700 border-bottom-0 text-light">
-        {/* eslint-disable-next-line react/no-danger */}
-        <div dangerouslySetInnerHTML={{ __html: header }} />
+      <Toast.Header className="bg-gray-700 border-bottom-0 p-0 text-light justify-content-between align-items-center">
+        <p className="small m-0 mr-4">{header}</p>
       </Toast.Header>
-      <Toast.Body className="bg-gray-700 text-light">
-        {/* eslint-disable-next-line react/no-danger */}
-        <div dangerouslySetInnerHTML={{ __html: body }} />
-      </Toast.Body>
+      {bodyLink && bodyText && (
+        <Toast.Body className="bg-gray-700 text-light p-0 pt-3">
+          <a className="btn btn-sm btn-outline-light" href={bodyLink}>{bodyText}</a>
+        </Toast.Body>
+      )}
     </Toast>
   );
 }
 
 LearningToast.propTypes = {
-  body: PropTypes.string,
+  bodyLink: PropTypes.string,
+  bodyText: PropTypes.string,
   header: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   show: PropTypes.bool.isRequired,
 };
 
 LearningToast.defaultProps = {
-  body: null,
+  bodyLink: null,
+  bodyText: null,
   header: null,
 };

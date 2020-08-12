@@ -7,6 +7,7 @@ import {
   getOutlineTabData,
   getProgressTabData,
   postCourseDeadlines,
+  postCourseGoals,
   postDismissWelcomeMessage,
   postRequestCert,
 } from './api';
@@ -19,7 +20,7 @@ import {
   fetchTabFailure,
   fetchTabRequest,
   fetchTabSuccess,
-  setResetDatesToast,
+  setCallToActionToast,
 } from './slice';
 
 const eventTypes = {
@@ -81,26 +82,31 @@ export function fetchOutlineTab(courseId) {
   return fetchTab(courseId, 'outline', getOutlineTabData);
 }
 
-export function resetDeadlines(courseId, getTabData) {
-  return async (dispatch) => {
-    postCourseDeadlines(courseId).then(response => {
-      const { data } = response;
-      const {
-        body,
-        header,
-      } = data;
-      dispatch(getTabData(courseId));
-      dispatch(setResetDatesToast({ body, header }));
-    });
-  };
-}
-
 export function dismissWelcomeMessage(courseId) {
   return async () => postDismissWelcomeMessage(courseId);
 }
 
 export function requestCert(courseId) {
   return async () => postRequestCert(courseId);
+}
+
+export function resetDeadlines(courseId, getTabData) {
+  return async (dispatch) => {
+    postCourseDeadlines(courseId).then(response => {
+      const { data } = response;
+      const {
+        header,
+        link,
+        link_text: linkText,
+      } = data;
+      dispatch(getTabData(courseId));
+      dispatch(setCallToActionToast({ header, link, linkText }));
+    });
+  };
+}
+
+export async function saveCourseGoal(courseId, goalKey) {
+  return postCourseGoals(courseId, goalKey);
 }
 
 export function processEvent(eventData, getTabData) {
@@ -110,11 +116,12 @@ export function processEvent(eventData, getTabData) {
       executePostFromPostEvent(event.postData).then(response => {
         const { data } = response;
         const {
-          body,
           header,
+          link,
+          link_text: linkText,
         } = data;
         dispatch(getTabData(event.postData.bodyParams.courseId));
-        dispatch(setResetDatesToast({ body, header }));
+        dispatch(setCallToActionToast({ header, link, linkText }));
       });
     }
   };

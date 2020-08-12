@@ -5,8 +5,9 @@ Object {
   "courseHome": Object {
     "courseId": null,
     "courseStatus": "loading",
-    "resetDatesToastBody": null,
-    "resetDatesToastHeader": null,
+    "toastBodyLink": null,
+    "toastBodyText": null,
+    "toastHeader": null,
   },
   "courseware": Object {
     "courseId": null,
@@ -23,8 +24,9 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
-    "resetDatesToastBody": null,
-    "resetDatesToastHeader": null,
+    "toastBodyLink": null,
+    "toastBodyText": null,
+    "toastHeader": null,
   },
   "courseware": Object {
     "courseId": null,
@@ -108,8 +110,9 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
-    "resetDatesToastBody": null,
-    "resetDatesToastHeader": null,
+    "toastBodyLink": null,
+    "toastBodyText": null,
+    "toastHeader": null,
   },
   "courseware": Object {
     "courseId": null,
@@ -201,6 +204,10 @@ Object {
           },
         },
         "courseExpiredHtml": "<div>Course expired</div>",
+        "courseGoals": Object {
+          "goalOptions": Array [],
+          "selectedGoal": Object {},
+        },
         "courseTools": Object {
           "analyticsId": "edx.bookmarks",
           "title": "Bookmarks",
