@@ -10,8 +10,8 @@ export function useAlert(isVisible, {
 
   // Please note:
   // The deps list [isVisible, code, ... etc.] in this `useEffect` call prevents the
-  // effect from running if none of deps have changed. However, "changed" is defined in
-  // terms of object equality; thus, if you provide a payload that is *seemingly* equal
+  // effect from running if none of deps have changed. However, "changed" for objects is
+  // defined in terms of identity; thus, if you provide a payload that is *seemingly* equal
   // to the previous one but *actually* a different object, then this effect will run.
   // If you are particularly unlucky, this will cause an infinite re-render loop.
   // This manifested itself in TNL-7400.
