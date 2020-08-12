@@ -125,9 +125,15 @@ class CoursewareContainer extends Component {
 
   handleUnitNavigationClick = (nextUnitId) => {
     const {
-      courseId, sequenceId, unitId,
+      courseId, sequenceId,
+      match: {
+        params: {
+          unitId: routeUnitId,
+        },
+      },
     } = this.props;
-    this.props.checkBlockCompletion(courseId, sequenceId, unitId);
+
+    this.props.checkBlockCompletion(courseId, sequenceId, routeUnitId);
     history.push(`/course/${courseId}/${sequenceId}/${nextUnitId}`);
   }
 
@@ -256,7 +262,6 @@ CoursewareContainer.propTypes = {
   courseId: PropTypes.string,
   sequenceId: PropTypes.string,
   firstSequenceId: PropTypes.string,
-  unitId: PropTypes.string,
   courseStatus: PropTypes.oneOf(['loaded', 'loading', 'failed', 'denied']).isRequired,
   sequenceStatus: PropTypes.oneOf(['loaded', 'loading', 'failed']).isRequired,
   nextSequence: sequenceShape,
@@ -273,7 +278,6 @@ CoursewareContainer.defaultProps = {
   courseId: null,
   sequenceId: null,
   firstSequenceId: null,
-  unitId: null,
   nextSequence: null,
   previousSequence: null,
   course: null,
@@ -353,13 +357,12 @@ const firstSequenceIdSelector = createSelector(
 
 const mapStateToProps = (state) => {
   const {
-    courseId, sequenceId, unitId, courseStatus, sequenceStatus,
+    courseId, sequenceId, courseStatus, sequenceStatus,
   } = state.courseware;
 
   return {
     courseId,
     sequenceId,
-    unitId,
     courseStatus,
     sequenceStatus,
     course: currentCourseSelector(state),

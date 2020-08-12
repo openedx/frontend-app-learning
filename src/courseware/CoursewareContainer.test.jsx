@@ -1,7 +1,7 @@
 import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
-import { waitForElementToBeRemoved } from '@testing-library/dom';
+import { waitForElementToBeRemoved, fireEvent } from '@testing-library/dom';
 import '@testing-library/jest-dom/extend-expect';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
@@ -32,6 +32,8 @@ jest.mock(
   './course/sequence/Unit',
   () => MockUnit,
 );
+
+jest.mock('@edx/frontend-platform/analytics');
 
 initializeMockApp();
 
@@ -260,6 +262,26 @@ describe('CoursewareContainer', () => {
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
         expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
+      });
+
+      it('should navigate between units and check block completion', async () => {
+        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
+        const { container } = render(component);
+
+        axiosMock.onPost(`${courseId}/xblock/${sequenceBlock.id}/handler/xmodule_handler/get_completion`).reply(200, {
+          complete: true,
+        });
+
+        // This is an important line that ensures the spinner has been removed - and thus our main
+        // content has been loaded - prior to proceeding with our expectations.
+        await waitForElementToBeRemoved(screen.getByRole('status'));
+
+        const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
+        const sequenceNextButton = sequenceNavButtons[4];
+        expect(sequenceNextButton).toHaveTextContent('Next');
+        fireEvent.click(sequenceNavButtons[4]);
+
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${sequenceBlock.id}/${unitBlocks[1].id}`);
       });
     });
 
