@@ -57,7 +57,10 @@ function Unit({
   id,
   intl,
 }) {
-  const iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0&format=${format}`;
+  let iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
+  if (format) {
+    iframeUrl += `&format=${format}`;
+  }
 
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -151,13 +154,14 @@ function Unit({
 
 Unit.propTypes = {
   courseId: PropTypes.string.isRequired,
-  format: PropTypes.string.isRequired,
+  format: PropTypes.string,
   id: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   onLoaded: PropTypes.func,
 };
 
 Unit.defaultProps = {
+  format: null,
   onLoaded: undefined,
 };
 
