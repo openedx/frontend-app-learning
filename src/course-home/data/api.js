@@ -93,7 +93,7 @@ export async function getOutlineTabData(courseId) {
 
 export async function postCourseDeadlines(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
-  await getAuthenticatedHttpClient().post(url.href, { course_key: courseId });
+  return getAuthenticatedHttpClient().post(url.href, { course_key: courseId });
 }
 
 export async function postDismissWelcomeMessage(courseId) {
@@ -104,4 +104,9 @@ export async function postDismissWelcomeMessage(courseId) {
 export async function postRequestCert(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/generate_user_cert`);
   await getAuthenticatedHttpClient().post(url.href);
+}
+
+export async function executePostFromPostEvent(postData) {
+  const url = new URL(postData.url);
+  return getAuthenticatedHttpClient().post(url.href, { course_key: postData.bodyParams.courseId });
 }

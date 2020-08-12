@@ -10,7 +10,8 @@ const slice = createSlice({
   initialState: {
     courseStatus: 'loading',
     courseId: null,
-    displayResetDatesToast: false,
+    resetDatesToastBody: null,
+    resetDatesToastHeader: null,
   },
   reducers: {
     fetchTabRequest: (state, { payload }) => {
@@ -25,8 +26,13 @@ const slice = createSlice({
       state.courseId = payload.courseId;
       state.courseStatus = FAILED;
     },
-    toggleResetDatesToast: (state, { payload }) => {
-      state.displayResetDatesToast = payload.displayResetDatesToast;
+    setResetDatesToast: (state, { payload }) => {
+      const {
+        body,
+        header,
+      } = payload;
+      state.resetDatesToastBody = body;
+      state.resetDatesToastHeader = header;
     },
   },
 });
@@ -35,7 +41,7 @@ export const {
   fetchTabRequest,
   fetchTabSuccess,
   fetchTabFailure,
-  toggleResetDatesToast,
+  setResetDatesToast,
 } = slice.actions;
 
 export const {

@@ -109,7 +109,7 @@ describe('Data layer integration tests', () => {
   describe('Test resetDeadlines', () => {
     it('Should reset course deadlines', async () => {
       const resetUrl = `${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`;
-      axiosMock.onPost(resetUrl).reply(201);
+      axiosMock.onPost(resetUrl).reply(201, {});
 
       const getTabDataMock = jest.fn(() => ({
         type: 'MOCK_ACTION',
