@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAlert } from '../../generic/user-messages';
 
 const OfferAlert = React.lazy(() => import('./OfferAlert'));
@@ -10,7 +10,7 @@ export function useOfferAlert(offerHtml, topic) {
   useAlert(isVisible, {
     code: 'clientOfferAlert',
     topic,
-    payload: { rawHtml },
+    payload: useMemo(() => ({ rawHtml }), [rawHtml]),
   });
 
   return { clientOfferAlert: OfferAlert };
