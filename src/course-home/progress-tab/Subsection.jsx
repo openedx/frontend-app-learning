@@ -24,6 +24,7 @@ function Subsection({
     <section className="my-3 ml-3">
       <div className="row">
         <a className="h6" href={subsection.url}>
+          {/* eslint-disable-next-line react/no-danger */}
           <div dangerouslySetInnerHTML={{ __html: subsection.displayName }} />
           {showTotalScore && <span className="sr-only">{totalScoreSr}</span>}
         </a>

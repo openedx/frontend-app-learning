@@ -25,9 +25,11 @@ export default function LearningToast({
       }}
     >
       <Toast.Header className="bg-gray-700 border-bottom-0 text-light">
+        {/* eslint-disable-next-line react/no-danger */}
         <div dangerouslySetInnerHTML={{ __html: header }} />
       </Toast.Header>
       <Toast.Body className="bg-gray-700 text-light">
+        {/* eslint-disable-next-line react/no-danger */}
         <div dangerouslySetInnerHTML={{ __html: body }} />
       </Toast.Body>
     </Toast>

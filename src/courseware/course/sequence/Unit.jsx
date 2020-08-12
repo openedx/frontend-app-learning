@@ -140,7 +140,7 @@ function Unit({
           scrolling="no"
           referrerPolicy="origin"
           onLoad={() => {
-            window.onmessage = function (e) {
+            window.onmessage = function handleResetDates(e) {
               if (e.data.event_name) {
                 dispatch(processEvent(e.data, fetchCourse));
               }
