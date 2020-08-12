@@ -1,5 +1,7 @@
 import { logError } from '@edx/frontend-platform/logging';
+import { camelCaseObject } from '@edx/frontend-platform';
 import {
+  executePostFromPostEvent,
   getCourseHomeCourseMetadata,
   getDatesTabData,
   getOutlineTabData,
@@ -17,8 +19,12 @@ import {
   fetchTabFailure,
   fetchTabRequest,
   fetchTabSuccess,
-  toggleResetDatesToast,
+  setResetDatesToast,
 } from './slice';
+
+const eventTypes = {
+  POST_EVENT: 'post_event',
+};
 
 export function fetchTab(courseId, tab, getTabData) {
   return async (dispatch) => {
@@ -77,9 +83,14 @@ export function fetchOutlineTab(courseId) {
 
 export function resetDeadlines(courseId, getTabData) {
   return async (dispatch) => {
-    postCourseDeadlines(courseId).then(() => {
+    postCourseDeadlines(courseId).then(response => {
+      const { data } = response;
+      const {
+        body,
+        header,
+      } = data;
       dispatch(getTabData(courseId));
-      dispatch(toggleResetDatesToast({ displayResetDatesToast: true }));
+      dispatch(setResetDatesToast({ body, header }));
     });
   };
 }
@@ -90,4 +101,21 @@ export function dismissWelcomeMessage(courseId) {
 
 export function requestCert(courseId) {
   return async () => postRequestCert(courseId);
+}
+
+export function processEvent(eventData, getTabData) {
+  return async (dispatch) => {
+    const event = camelCaseObject(eventData);
+    if (event.eventName === eventTypes.POST_EVENT) {
+      executePostFromPostEvent(event.postData).then(response => {
+        const { data } = response;
+        const {
+          body,
+          header,
+        } = data;
+        dispatch(getTabData(event.postData.bodyParams.courseId));
+        dispatch(setResetDatesToast({ body, header }));
+      });
+    }
+  };
 }

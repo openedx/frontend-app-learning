@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Toast } from '@edx/paragon';
-import { Link } from 'react-router-dom';
 
 import './LearningToast.scss';
 
-function LearningToast({
-  intl,
+export default function LearningToast({
   body,
   header,
-  link,
   onClose,
   show,
 }) {
@@ -29,29 +25,23 @@ function LearningToast({
       }}
     >
       <Toast.Header className="bg-gray-700 border-bottom-0 text-light">
-        <div className="mr-auto">{intl.formatMessage(header)}</div>
+        <div dangerouslySetInnerHTML={{ __html: header }} />
       </Toast.Header>
       <Toast.Body className="bg-gray-700 text-light">
-        <Link className="text-light" to={link}>{intl.formatMessage(body)}</Link>
+        <div dangerouslySetInnerHTML={{ __html: body }} />
       </Toast.Body>
     </Toast>
   );
 }
 
 LearningToast.propTypes = {
-  body: PropTypes.shape({
-    possible: PropTypes.number,
-    earned: PropTypes.number,
-    graded: PropTypes.bool,
-  }).isRequired,
-  header: PropTypes.shape({
-    id: PropTypes.string,
-    defaultMessage: PropTypes.string,
-  }).isRequired,
-  intl: intlShape.isRequired,
-  link: PropTypes.string.isRequired,
+  body: PropTypes.string,
+  header: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   show: PropTypes.bool.isRequired,
 };
 
-export default injectIntl(LearningToast);
+LearningToast.defaultProps = {
+  body: null,
+  header: null,
+};

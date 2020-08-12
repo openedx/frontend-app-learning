@@ -13,7 +13,7 @@ import messages from './messages';
 import BookmarkButton from '../bookmark/BookmarkButton';
 import { useModel } from '../../../generic/model-store';
 import PageLoading from '../../../generic/PageLoading';
-import { resetDeadlines } from '../../../course-home/data/thunks';
+import { processEvent } from '../../../course-home/data/thunks';
 import { fetchCourse } from '../../data/thunks';
 
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
@@ -137,8 +137,8 @@ function Unit({
           referrerPolicy="origin"
           onLoad={() => {
             window.onmessage = function (e) {
-              if (e.data === 'reset_dates') {
-                dispatch(resetDeadlines(courseId, fetchCourse));
+              if (e.data.event_name) {
+                dispatch(processEvent(e.data, fetchCourse));
               }
             };
           }}

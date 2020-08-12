@@ -9,16 +9,16 @@ import PageLoading from '../generic/PageLoading';
 import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
 import LearningToast from '../toast/LearningToast';
-import { toggleResetDatesToast } from '../course-home/data/slice';
+import { setResetDatesToast } from '../course-home/data/slice';
 
 function TabPage({
   intl,
   courseStatus,
   ...passthroughProps
 }) {
-  const courseId = useSelector(state => state.courseHome.courseId || state.courseware.courseId);
   const {
-    displayResetDatesToast,
+    resetDatesToastBody,
+    resetDatesToastHeader,
   } = useSelector(state => state.courseHome);
   const dispatch = useDispatch();
 
@@ -37,11 +37,10 @@ function TabPage({
     return (
       <>
         <LearningToast
-          body={messages.datesResetSuccessBody}
-          header={messages.datesResetSuccessHeader}
-          link={`/course/${courseId}/dates`}
-          onClose={() => dispatch(toggleResetDatesToast({ displayResetDatesToast: false }))}
-          show={displayResetDatesToast}
+          body={resetDatesToastBody}
+          header={resetDatesToastHeader}
+          onClose={() => dispatch(setResetDatesToast({ body: null, header: null }))}
+          show={!!(resetDatesToastBody && resetDatesToastHeader)}
         />
         <LoadedTabPage {...passthroughProps} />
       </>
