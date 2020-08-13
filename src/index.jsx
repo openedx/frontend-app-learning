@@ -20,7 +20,7 @@ import './index.scss';
 import './assets/favicon.ico';
 import OutlineTab from './course-home/outline-tab';
 import CoursewareContainer from './courseware';
-import CoursewareRedirect from './CoursewareRedirect';
+import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandingPage';
 import DatesTab from './course-home/dates-tab';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
@@ -33,7 +33,7 @@ subscribe(APP_READY, () => {
     <AppProvider store={initializeStore()}>
       <UserMessagesProvider>
         <Switch>
-          <Route path="/redirect" component={CoursewareRedirect} />
+          <Route path="/redirect" component={CoursewareRedirectLandingPage} />
           <Route path="/course/:courseId/home">
             <TabContainer tab="outline" fetch={fetchOutlineTab}>
               <OutlineTab />
