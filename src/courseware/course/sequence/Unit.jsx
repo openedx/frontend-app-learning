@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { Modal } from '@edx/paragon';
 import messages from './messages';
 import BookmarkButton from '../bookmark/BookmarkButton';
 import { useModel } from '../../../generic/model-store';
@@ -64,6 +65,7 @@ function Unit({
 
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [modalOptions, setModalOptions] = useState({ open: false });
 
   const unit = useModel('units', id);
   const course = useModel('courses', courseId);
@@ -89,6 +91,9 @@ function Unit({
             onLoaded();
           }
         }
+      } else if (type === 'plugin.modal') {
+        payload.open = true;
+        setModalOptions(payload);
       }
     }
     // If we currently have an event listener, remove it.
@@ -128,6 +133,27 @@ function Unit({
       {!hasLoaded && (
         <PageLoading
           srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+        />
+      )}
+      {modalOptions.open && (
+        <Modal
+          body={(
+            <>
+              {modalOptions.body
+                ? <div className="unit-modal">{ modalOptions.body }</div>
+                : (
+                  <iframe
+                    title={modalOptions.title}
+                    allow="microphone *; camera *; midi *; geolocation *; encrypted-media *"
+                    frameBorder="0"
+                    src={modalOptions.url}
+                  />
+                )}
+            </>
+          )}
+          title={modalOptions.title}
+          onClose={() => { setModalOptions({ open: false }); }}
+          open
         />
       )}
       <div className="unit-iframe-wrapper">
