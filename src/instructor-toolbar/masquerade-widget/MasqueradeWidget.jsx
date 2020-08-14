@@ -23,8 +23,10 @@ class MasqueradeWidget extends Component {
     super(props);
     this.courseId = props.courseId;
     this.state = {
+      masquerade: 'Staff',
       options: [],
       shouldShowUserNameInput: false,
+      masqueradeUsername: null,
     };
   }
 
@@ -32,6 +34,7 @@ class MasqueradeWidget extends Component {
     getMasqueradeOptions(this.courseId).then((data) => {
       if (data.success) {
         this.onSuccess(data);
+        this.onError('Unable to get masquerade options')
       } else {
         // This was explicitly denied by the backend;
         // assume it's disabled/unavailable.
@@ -48,6 +51,7 @@ class MasqueradeWidget extends Component {
   }
 
   onError(message) {
+    this.props.onError(message);
     if (message) {
       this.errorAlertId = this.context.add({
         text: message,
@@ -101,13 +105,9 @@ class MasqueradeWidget extends Component {
   }
 
   toggle(show) {
-    let shouldShow;
-    if (show === undefined) {
-      shouldShow = !this.state.shouldShowUserNameInput;
-    } else {
-      shouldShow = show;
-    }
+    const shouldShow = show === undefined ? !this.state.shouldShowUserNameInput : show;
     this.setState({
+      masquerade: 'Specific Student...',
       shouldShowUserNameInput: shouldShow,
     });
   }
@@ -116,8 +116,8 @@ class MasqueradeWidget extends Component {
     const data = postData || {};
     const active = data.active || {};
     const available = data.available || [];
-    const options = available.map((group) => (
-      <MasqueradeWidgetOption
+    const options = available.map((group) => {
+      return <MasqueradeWidgetOption
         groupId={group.groupId}
         groupName={group.name}
         key={group.name}
@@ -129,37 +129,57 @@ class MasqueradeWidget extends Component {
         userNameInputToggle={(...args) => this.toggle(...args)}
         onSubmit={(payload) => this.onSubmit(payload)}
       />
-    ));
+    });
+    if (active.userName) {
+      this.setState({
+        masquerade: 'Specific Student...',
+        shouldShowUserNameInput: true,
+        masqueradeUsername: active.userName,
+      });
+    } else if (active.groupName) {
+      this.setState({ masquerade: active.groupName });
+    } else if (active.role === 'student') {
+      this.setState({ masquerade: 'Learner' });
+    }
     return options;
   }
 
   render() {
     const {
+      masquerade,
       options,
+      shouldShowUserNameInput,
+      masqueradeUsername
     } = this.state;
+    const specificLearnerInputText = this.props.intl.formatMessage(messages['userName.input.placeholder']);
     return (
-      <>
+      <div>
         <Dropdown
           className="flex-shrink-1 mx-1 my-1"
           style={{ textAlign: 'center' }}
         >
-          <Dropdown.Toggle variant="light">
-            View this course as
-          </Dropdown.Toggle>
+          View this course as
+          <Dropdown.Button>
+            {masquerade}
+          </Dropdown.Button>
           <Dropdown.Menu>
             {options}
           </Dropdown.Menu>
         </Dropdown>
-        {this.state.shouldShowUserNameInput && (
-          <MasqueradeUserNameInput
-            className="flex-shrink-0 mx-1 my-1"
-            label="test"
-            onError={(errorMessage) => this.onError(errorMessage)}
-            onSubmit={(payload) => this.onSubmit(payload)}
-            ref={(input) => { this.userNameInput = input; }}
-          />
+        {shouldShowUserNameInput && (
+          <div>
+            {`${specificLearnerInputText}:`}
+            <MasqueradeUserNameInput
+              // className="flex-shrink-0 mx-1 my-1"
+              defaultValue={masqueradeUsername}
+              label="test"
+              onError={(errorMessage) => this.onError(errorMessage)}
+              onSubmit={(payload) => this.onSubmit(payload)}
+              ref={(input) => { this.userNameInput = input; }}
+            />
+          </div>
         )}
-      </>
+      </div>
     );
   }
 }

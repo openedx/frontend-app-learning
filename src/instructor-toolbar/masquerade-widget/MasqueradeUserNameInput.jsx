@@ -42,11 +42,10 @@ class MasqueradeUserNameInput extends Component {
     return (
       <Input
         autoFocus
-        className="flex-shrink-1"
-        defaultValue=""
+        // className="flex-shrink-1"
+        defaultValue={this.props.defaultValue}
         label={this.props.intl.formatMessage(messages['userName.input.label'])}
         onKeyPress={(event) => this.onKeyPress(event)}
-        placeholder={this.props.intl.formatMessage(messages['userName.input.placeholder'])}
         type="text"
       />
     );

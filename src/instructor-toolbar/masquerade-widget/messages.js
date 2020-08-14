@@ -9,7 +9,7 @@ const messages = defineMessages({
   'status.learner': {
     id: 'masquerade-widget.status.learner',
     defaultMessage: 'You are masquerading as a learner.',
-    description: 'Message when masquerading as a specific user',
+    description: 'Message when masquerading as a general user',
   },
   'status.userName': {
     id: 'masquerade-widget.status.userName',
@@ -28,7 +28,7 @@ const messages = defineMessages({
   },
   'userName.input.placeholder': {
     id: 'masquerade-widget.userName.input.placeholder',
-    defaultMessage: 'username or email',
+    defaultMessage: 'Username or email',
     description: 'Placeholder text to prompt for a user to masquerade as',
   },
 });
