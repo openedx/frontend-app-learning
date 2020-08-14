@@ -56,7 +56,67 @@ const messages = defineMessages({
   },
   studioLink: {
     id: 'learning.progress.badge.studioLink',
-    defaultMessage: 'View grading in studio',
+    defaultMessage: 'View grading in Studio',
+  },
+  courseCreditHeader: {
+    id: 'learning.progress.courseCreditHeader',
+    defaultMessage: 'Course Credit Eligibility',
+  },
+  creditNotEligible: {
+    id: 'learning.progress.creditNotEligible',
+    defaultMessage: 'You are not eligible for course credit because you have not met the requirements for credit.',
+  },
+  creditEligible: {
+    id: 'learning.progress.creditEligible',
+    defaultMessage: 'You have met the requirements for credit in this course.',
+  },
+  creditPartialEligible: {
+    id: 'learning.progress.creditPartialEligible',
+    defaultMessage: 'You have not met the minimum requirements for credit.',
+  },
+  start: {
+    id: 'learning.progress.startVerification',
+    defaultMessage: 'Start now',
+  },
+  tryAgain: {
+    id: 'learning.progress.start',
+    defaultMessage: 'Try again',
+  },
+  notStarted: {
+    id: 'learning.progress.notStarted',
+    defaultMessage: 'Not started',
+  },
+  failed: {
+    id: 'learning.progress.failed',
+    defaultMessage: 'Incomplete',
+  },
+  notMet: {
+    id: 'learning.progress.notMet',
+    defaultMessage: 'Not met',
+  },
+  pending: {
+    id: 'learning.progress.pending',
+    defaultMessage: 'Pending',
+  },
+  rejected: {
+    id: 'learning.progress.rejected',
+    defaultMessage: 'Rejected',
+  },
+  completed: {
+    id: 'learning.progress.completed',
+    defaultMessage: 'Completed',
+  },
+  submitted: {
+    id: 'learning.progress.submitted',
+    defaultMessage: 'Submitted',
+  },
+  learnMoreCredit: {
+    id: 'learning.progress.learnMoreCredit',
+    defaultMessage: 'Learn more about course credit',
+  },
+  purchaseCredit: {
+    id: 'learning.progress.purchaseCredit',
+    defaultMessage: 'Purchase course credit',
   },
 });
 

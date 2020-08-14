@@ -6,6 +6,7 @@ import { useModel } from '../../generic/model-store';
 import Chapter from './Chapter';
 import CertificateBanner from './CertificateBanner';
 import messages from './messages';
+import CreditRequirements from './CreditRequirements';
 
 function ProgressTab({ intl }) {
   const {
@@ -29,6 +30,7 @@ function ProgressTab({ intl }) {
         </div>
       )}
       <CertificateBanner />
+      <CreditRequirements />
       {coursewareSummary.map((chapter) => (
         <Chapter
           key={chapter.displayName}

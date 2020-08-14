@@ -17,6 +17,7 @@ function CertificateBanner({ intl }) {
     certificateData,
     enrollmentMode,
   } = useModel('progress', courseId);
+
   if (certificateData === null || enrollmentMode === 'audit') { return null; }
   const { certUrl, certDownloadUrl } = certificateData;
   const dispatch = useDispatch();
