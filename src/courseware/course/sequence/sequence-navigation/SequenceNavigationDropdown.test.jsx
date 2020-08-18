@@ -39,11 +39,11 @@ describe('Sequence Navigation Dropdown', () => {
   });
 
   unitBlocks.forEach((unit, index) => {
-    it(`marks unit ${index + 1} as active`, () => {
+    it(`marks unit ${index + 1} as active`, async () => {
       const { container } = render(<SequenceNavigationDropdown {...mockData} unitId={unit.id} />);
       const dropdownToggle = container.querySelector('.dropdown-toggle');
-      act(() => {
-        fireEvent.click(dropdownToggle);
+      await act(async () => {
+        await fireEvent.click(dropdownToggle);
       });
       const dropdownMenu = container.querySelector('.dropdown-menu');
       // Only the current unit should be marked as active.

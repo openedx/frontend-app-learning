@@ -1,5 +1,7 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import { act, fireEvent, getAllByRole } from '@testing-library/react';
+
 import { initializeTestStore, render, screen } from '../../../../setupTest';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
@@ -44,12 +46,23 @@ describe('Sequence Navigation Tabs', () => {
     expect(screen.getAllByRole('button')).toHaveLength(unitBlocks.length);
   });
 
-  it('renders unit buttons and dropdown button', () => {
-    useIndexOfLastVisibleChild.mockReturnValue([-1, null, null]);
-    render(<SequenceNavigationTabs {...mockData} />);
+  it('renders unit buttons and dropdown button', async () => {
+    let container = null;
+    await act(async () => {
+      useIndexOfLastVisibleChild.mockReturnValue([-1, null, null]);
+      const booyah = render(<SequenceNavigationTabs {...mockData} />);
+      container = booyah.container;
 
-    expect(screen.getAllByRole('button')).toHaveLength(unitBlocks.length + 1);
+      const dropdownToggle = container.querySelector('.dropdown-toggle');
+      // We need to await this click here, which requires us to await the `act` as well above.
+      // https://github.com/testing-library/react-testing-library/issues/535
+      // Without doing this, we get a warning about using `act` even though we are.
+      await fireEvent.click(dropdownToggle);
+    });
+    const dropdownMenu = container.querySelector('.dropdown');
+    const dropdownButtons = getAllByRole(dropdownMenu, 'button');
+    expect(dropdownButtons).toHaveLength(unitBlocks.length + 1);
     expect(screen.getByRole('button', { name: `${activeBlockNumber} of ${unitBlocks.length}` }))
-      .toHaveClass('dropdown-button');
+      .toHaveClass('dropdown-toggle');
   });
 });
