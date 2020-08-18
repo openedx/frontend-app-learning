@@ -21,7 +21,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": ""
+      "pre-commit": "npm run lint"
     }
   },
   "author": "edX",

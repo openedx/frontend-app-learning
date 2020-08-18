@@ -5,10 +5,7 @@ import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Dropdown } from '@edx/paragon';
 
-import {
-  ALERT_TYPES,
-  UserMessagesContext,
-} from '../../generic/user-messages';
+import { UserMessagesContext } from '../../generic/user-messages';
 
 import MasqueradeUserNameInput from './MasqueradeUserNameInput';
 import MasqueradeWidgetOption from './MasqueradeWidgetOption';
@@ -23,6 +20,7 @@ class MasqueradeWidget extends Component {
     super(props);
     this.courseId = props.courseId;
     this.state = {
+      autoFocus: false,
       masquerade: 'Staff',
       options: [],
       shouldShowUserNameInput: false,
@@ -34,7 +32,6 @@ class MasqueradeWidget extends Component {
     getMasqueradeOptions(this.courseId).then((data) => {
       if (data.success) {
         this.onSuccess(data);
-        this.onError('Unable to get masquerade options')
       } else {
         // This was explicitly denied by the backend;
         // assume it's disabled/unavailable.
@@ -52,18 +49,10 @@ class MasqueradeWidget extends Component {
 
   onError(message) {
     this.props.onError(message);
-    if (message) {
-      this.errorAlertId = this.context.add({
-        text: message,
-        topic: 'course',
-        type: ALERT_TYPES.ERROR,
-        dismissible: false,
-      });
-    }
   }
 
   async onSubmit(payload) {
-    this.context.remove(this.errorAlertId);
+    this.clearError();
     const options = await postMasqueradeOptions(this.courseId, payload);
     return options;
   }
@@ -73,51 +62,26 @@ class MasqueradeWidget extends Component {
     this.setState({
       options,
     });
-    const active = data.active || {};
-    const message = this.getStatusMessage(active);
-    if (message) {
-      this.context.add({
-        text: message,
-        topic: 'course',
-        type: ALERT_TYPES.INFO,
-        dismissible: false,
-      });
-    }
   }
 
-  getStatusMessage(active) {
-    const {
-      groupName,
-    } = active;
-    let message = '';
-    if (active.userName) {
-      message = this.props.intl.formatMessage(messages['status.userName'], {
-        userName: active.userName,
-      });
-    } else if (groupName) {
-      message = this.props.intl.formatMessage(messages['status.groupName'], {
-        groupName,
-      });
-    } else if (active.role === 'student') {
-      message = this.props.intl.formatMessage(messages['status.learner']);
-    }
-    return message;
+  clearError() {
+    this.props.onError('');
   }
 
   toggle(show) {
-    const shouldShow = show === undefined ? !this.state.shouldShowUserNameInput : show;
-    this.setState({
+    this.setState(prevState => ({
+      autoFocus: true,
       masquerade: 'Specific Student...',
-      shouldShowUserNameInput: shouldShow,
-    });
+      shouldShowUserNameInput: show === undefined ? !prevState.shouldShowUserNameInput : show,
+    }));
   }
 
   parseAvailableOptions(postData) {
     const data = postData || {};
     const active = data.active || {};
     const available = data.available || [];
-    const options = available.map((group) => {
-      return <MasqueradeWidgetOption
+    const options = available.map((group) => (
+      <MasqueradeWidgetOption
         groupId={group.groupId}
         groupName={group.name}
         key={group.name}
@@ -125,16 +89,16 @@ class MasqueradeWidget extends Component {
         selected={active}
         userName={group.userName}
         userPartitionId={group.userPartitionId}
-        userNameInput={this.userNameInput}
         userNameInputToggle={(...args) => this.toggle(...args)}
         onSubmit={(payload) => this.onSubmit(payload)}
       />
-    });
+    ));
     if (active.userName) {
       this.setState({
+        autoFocus: false,
         masquerade: 'Specific Student...',
-        shouldShowUserNameInput: true,
         masqueradeUsername: active.userName,
+        shouldShowUserNameInput: true,
       });
     } else if (active.groupName) {
       this.setState({ masquerade: active.groupName });
@@ -146,36 +110,36 @@ class MasqueradeWidget extends Component {
 
   render() {
     const {
+      autoFocus,
       masquerade,
       options,
       shouldShowUserNameInput,
-      masqueradeUsername
+      masqueradeUsername,
     } = this.state;
-    const specificLearnerInputText = this.props.intl.formatMessage(messages['userName.input.placeholder']);
+    const specificLearnerInputText = this.props.intl.formatMessage(messages.placeholder);
     return (
-      <div>
-        <Dropdown
-          className="flex-shrink-1 mx-1 my-1"
-          style={{ textAlign: 'center' }}
-        >
-          View this course as
-          <Dropdown.Button>
-            {masquerade}
-          </Dropdown.Button>
-          <Dropdown.Menu>
-            {options}
-          </Dropdown.Menu>
-        </Dropdown>
+      <div className="flex-grow-1">
+        <div className="row">
+          <span className="col-auto col-form-label pl-3">View this course as:</span>
+          <Dropdown className="flex-shrink-1 mx-1">
+            <Dropdown.Toggle variant="light">
+              {masquerade}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              {options}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
         {shouldShowUserNameInput && (
-          <div>
-            {`${specificLearnerInputText}:`}
+          <div className="row mt-2">
+            <span className="col-auto col-form-label pl-3">{`${specificLearnerInputText}:`}</span>
             <MasqueradeUserNameInput
-              // className="flex-shrink-0 mx-1 my-1"
+              id="masquerade-search"
+              className="col-4 form-control"
+              autoFocus={autoFocus}
               defaultValue={masqueradeUsername}
-              label="test"
               onError={(errorMessage) => this.onError(errorMessage)}
               onSubmit={(payload) => this.onSubmit(payload)}
-              ref={(input) => { this.userNameInput = input; }}
             />
           </div>
         )}
@@ -186,6 +150,7 @@ class MasqueradeWidget extends Component {
 MasqueradeWidget.propTypes = {
   courseId: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
+  onError: PropTypes.func.isRequired,
 };
 MasqueradeWidget.contextType = UserMessagesContext;
 export default injectIntl(MasqueradeWidget);

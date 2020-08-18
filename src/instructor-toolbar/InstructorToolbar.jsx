@@ -54,27 +54,30 @@ export default function InstructorToolbar(props) {
   return (
     <div>
       <div className="bg-primary text-light">
-        <div className="container-fluid py-3 d-md-flex justify-content-end align-items-center">
+        <div className="container-fluid py-3 d-md-flex justify-content-end align-items-start">
           <div className="align-items-center flex-grow-1 d-md-flex mx-1 my-1">
             <MasqueradeWidget courseId={courseId} onError={showMasqueradeError} />
           </div>
           {(urlLms || urlStudio || urlInsights) && (
-            <div className="mr-2">View course in:</div>
+            <>
+              <hr className="border-light" />
+              <span className="mr-2 mt-1 col-form-label">View course in:</span>
+            </>
           )}
           {urlLms && (
-            <div className="flex-shrink-0 mx-1 my-1">
-              <a className="btn d-block btn-outline-light" href={urlLms}>Existing experience</a>
-            </div>
+            <span className="mx-1 my-1">
+              <a className="btn btn-outline-light" href={urlLms}>Existing experience</a>
+            </span>
           )}
           {urlStudio && (
-            <div className="flex-shrink-0 mx-1 my-1">
-              <a className="btn d-block btn-outline-light" href={urlStudio}>Studio</a>
-            </div>
+            <span className="mx-1 my-1">
+              <a className="btn btn-outline-light" href={urlStudio}>Studio</a>
+            </span>
           )}
           {urlInsights && (
-            <div className="flex-shrink-0 mx-1 my-1">
-              <a className="btn d-block btn-outline-light" href={urlInsights}>Insights</a>
-            </div>
+            <span className="mx-1 my-1">
+              <a className="btn btn-outline-light" href={urlInsights}>Insights</a>
+            </span>
           )}
         </div>
       </div>

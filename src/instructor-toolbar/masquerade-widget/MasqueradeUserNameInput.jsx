@@ -32,21 +32,25 @@ class MasqueradeUserNameInput extends Component {
         this.onError(error);
       }
     }).catch(() => {
-      const message = this.props.intl.formatMessage(messages['userName.error.generic']);
+      const message = this.props.intl.formatMessage(messages.genericError);
       this.onError(message);
     });
     return true;
   }
 
   render() {
+    const {
+      intl,
+      onError,
+      onSubmit,
+      ...rest
+    } = this.props;
     return (
       <Input
-        autoFocus
-        // className="flex-shrink-1"
-        defaultValue={this.props.defaultValue}
-        label={this.props.intl.formatMessage(messages['userName.input.label'])}
+        label={intl.formatMessage(messages.userNameLabel)}
         onKeyPress={(event) => this.onKeyPress(event)}
         type="text"
+        {...rest}
       />
     );
   }
