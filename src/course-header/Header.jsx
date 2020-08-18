@@ -55,6 +55,22 @@ export default function Header({
         </div>
 
         <Dropdown className="user-dropdown">
+          <Dropdown.Toggle variant="light">
+            <FontAwesomeIcon icon={faUserCircle} className="d-md-none" size="lg" />
+            <span className="d-none d-md-inline">
+              {authenticatedUser.username}
+            </span>
+          </Dropdown.Toggle>
+          <Dropdown.Menu className="dropdown-menu-right">
+            <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/dashboard`}>Dashboard</Dropdown.Item>
+            <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/u/${authenticatedUser.username}`}>Profile</Dropdown.Item>
+            <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/account/settings`}>Account</Dropdown.Item>
+            <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>Order History</Dropdown.Item>
+            <Dropdown.Item href={getConfig().LOGOUT_URL}>Sign Out</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+
+        {/* <Dropdown className="user-dropdown">
           <Dropdown.Button>
             <FontAwesomeIcon icon={faUserCircle} className="d-md-none" size="lg" />
             <span className="d-none d-md-inline">
@@ -73,7 +89,7 @@ export default function Header({
               && <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>Order History</Dropdown.Item>}
             <Dropdown.Item href={getConfig().LOGOUT_URL}>Sign Out</Dropdown.Item>
           </Dropdown.Menu>
-        </Dropdown>
+        </Dropdown> */}
       </div>
     </header>
   );

@@ -143,9 +143,9 @@ class MasqueradeWidget extends Component {
           className="flex-shrink-1 mx-1 my-1"
           style={{ textAlign: 'center' }}
         >
-          <Dropdown.Button>
+          <Dropdown.Toggle variant="light">
             View this course as
-          </Dropdown.Button>
+          </Dropdown.Toggle>
           <Dropdown.Menu>
             {options}
           </Dropdown.Menu>

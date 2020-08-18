@@ -19,7 +19,8 @@ export default function UnitNavigation(props) {
   return (
     <div className="unit-navigation d-flex">
       <Button
-        className="btn-outline-secondary previous-button mr-2"
+        variant="outline-secondary"
+        className="previous-button mr-2"
         disabled={isFirstUnit}
         onClick={onClickPrevious}
       >
@@ -42,7 +43,8 @@ export default function UnitNavigation(props) {
         </div>
       ) : (
         <Button
-          className="btn-outline-primary next-button"
+          variant="outline-primary"
+          className="next-button"
           onClick={onClickNext}
           disabled={isLastUnit}
         >

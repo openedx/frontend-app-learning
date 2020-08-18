@@ -51,7 +51,7 @@ export default function SequenceNavigation({
 
   return sequenceStatus === LOADED && (
     <nav className={classNames('sequence-navigation', className)}>
-      <Button className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
+      <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
         <FormattedMessage
           defaultMessage="Previous"
@@ -60,7 +60,7 @@ export default function SequenceNavigation({
         />
       </Button>
       {renderUnitButtons()}
-      <Button className="next-btn" onClick={nextSequenceHandler} disabled={isLastUnit}>
+      <Button variant="link" className="next-btn" onClick={nextSequenceHandler} disabled={isLastUnit}>
         <FormattedMessage
           defaultMessage="Next"
           id="learn.sequence.navigation.next.button"

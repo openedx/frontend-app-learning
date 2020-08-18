@@ -29,7 +29,7 @@ function ContentLock({
         })}
       </p>
       <p>
-        <Button className="btn-primary" onClick={handleClick}>{intl.formatMessage(messages['learn.contentLock.goToSection'])}</Button>
+        <Button variant="primary" onClick={handleClick}>{intl.formatMessage(messages['learn.contentLock.goToSection'])}</Button>
       </p>
     </>
   );

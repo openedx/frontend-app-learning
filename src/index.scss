@@ -223,6 +223,12 @@ $primary: #1176B2;
         }
       }
     }
+    .dropdown-item {
+      &.active {
+        // This is un-doing the default react-bootstrap styling for active dropdown-item elements.
+        background-color: transparent;
+      }
+    }
   }
 
   .previous-btn, .next-btn {
