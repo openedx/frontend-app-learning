@@ -1,6 +1,7 @@
 import React from 'react';
 import { Factory } from 'rosie';
 import { getAllByRole } from '@testing-library/dom';
+import { act } from '@testing-library/react';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import {
   render, screen, fireEvent, initializeTestStore,
@@ -37,10 +38,13 @@ describe('Sequence Navigation Dropdown', () => {
     });
   });
 
-  unitBlocks.forEach((unit, indedx) => {
-    it(`marks unit ${indedx + 1} as active`, () => {
+  unitBlocks.forEach((unit, index) => {
+    it(`marks unit ${index + 1} as active`, async () => {
       const { container } = render(<SequenceNavigationDropdown {...mockData} unitId={unit.id} />);
-
+      const dropdownToggle = container.querySelector('.dropdown-toggle');
+      await act(async () => {
+        await fireEvent.click(dropdownToggle);
+      });
       const dropdownMenu = container.querySelector('.dropdown-menu');
       // Only the current unit should be marked as active.
       getAllByRole(dropdownMenu, 'button', { hidden: true }).forEach(button => {
@@ -57,6 +61,10 @@ describe('Sequence Navigation Dropdown', () => {
     const onNavigate = jest.fn();
     const { container } = render(<SequenceNavigationDropdown {...mockData} onNavigate={onNavigate} />);
 
+    const dropdownToggle = container.querySelector('.dropdown-toggle');
+    act(() => {
+      fireEvent.click(dropdownToggle);
+    });
     const dropdownMenu = container.querySelector('.dropdown-menu');
     getAllByRole(dropdownMenu, 'button', { hidden: true }).forEach(button => fireEvent.click(button));
     expect(onNavigate).toHaveBeenCalledTimes(unitBlocks.length);

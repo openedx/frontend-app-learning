@@ -30,6 +30,7 @@ function UnitButton({
         active: isActive,
         complete: showCompletion && complete,
       }, className)}
+      variant="link"
       onClick={handleClick}
       title={title}
     >

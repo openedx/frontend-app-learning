@@ -33,7 +33,7 @@ function EnrollmentAlert({ intl, payload }) {
   }
 
   const button = canEnroll && (
-    <Button disabled={loading} className="btn-link p-0 border-0 align-top" onClick={enrollClickHandler}>
+    <Button disabled={loading} variant="link" className="p-0 border-0 align-top" onClick={enrollClickHandler}>
       {intl.formatMessage(messages.enroll)}
     </Button>
   );

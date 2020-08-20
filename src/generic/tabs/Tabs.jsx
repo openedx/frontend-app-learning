@@ -37,13 +37,13 @@ export default function Tabs({ children, className, ...attrs }) {
         key="overflow"
       >
         <Dropdown>
-          <Dropdown.Button className="nav-link font-weight-normal">
+          <Dropdown.Toggle variant="link" className="nav-link font-weight-normal">
             <FormattedMessage
               id="learn.course.tabs.navigation.overflow.menu"
               description="The title of the overflow menu for course tabs"
               defaultMessage="More..."
             />
-          </Dropdown.Button>
+          </Dropdown.Toggle>
           <Dropdown.Menu className="dropdown-menu-right">{overflowChildren}</Dropdown.Menu>
         </Dropdown>
       </div>
