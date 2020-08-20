@@ -65,12 +65,13 @@ export default function Header({
             <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/dashboard`}>Dashboard</Dropdown.Item>
             <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/u/${authenticatedUser.username}`}>Profile</Dropdown.Item>
             <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/account/settings`}>Account</Dropdown.Item>
-	    { !enterpriseLearnerPortalLink
+            {!enterpriseLearnerPortalLink && (
               // Users should only see Order History if they do not have an available
               // learner portal, because an available learner portal currently means
               // that they access content via Subscriptions, in which context an "order"
               // is not relevant.
-              && <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>Order History</Dropdown.Item>}
+              <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>Order History</Dropdown.Item>
+            )}
             <Dropdown.Item href={getConfig().LOGOUT_URL}>Sign Out</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
