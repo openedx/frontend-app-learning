@@ -317,21 +317,6 @@ $primary: #1176B2;
   }
 }
 
-.modal {
-  max-width: 100%;
-  height: 100vh;
-  .modal-dialog {
-    max-width: 100%;
-  }
-  .modal-body {
-    width: 100%;
-
-    iframe {
-      width: 100%;
-      min-height:100vh;
-    }
-  }
-}
 // Import component-specific sass files
 @import 'courseware/course/celebration/CelebrationModal.scss';
 @import 'courseware/course/content-tools/calculator/calculator.scss';
