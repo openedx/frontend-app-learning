@@ -5,10 +5,7 @@ import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Dropdown } from '@edx/paragon';
 
-import {
-  ALERT_TYPES,
-  UserMessagesContext,
-} from '../../generic/user-messages';
+import { UserMessagesContext } from '../../generic/user-messages';
 
 import MasqueradeUserNameInput from './MasqueradeUserNameInput';
 import MasqueradeWidgetOption from './MasqueradeWidgetOption';
@@ -23,8 +20,11 @@ class MasqueradeWidget extends Component {
     super(props);
     this.courseId = props.courseId;
     this.state = {
+      autoFocus: false,
+      masquerade: 'Staff',
       options: [],
       shouldShowUserNameInput: false,
+      masqueradeUsername: null,
     };
   }
 
@@ -48,18 +48,11 @@ class MasqueradeWidget extends Component {
   }
 
   onError(message) {
-    if (message) {
-      this.errorAlertId = this.context.add({
-        text: message,
-        topic: 'course',
-        type: ALERT_TYPES.ERROR,
-        dismissible: false,
-      });
-    }
+    this.props.onError(message);
   }
 
   async onSubmit(payload) {
-    this.context.remove(this.errorAlertId);
+    this.clearError();
     const options = await postMasqueradeOptions(this.courseId, payload);
     return options;
   }
@@ -69,47 +62,18 @@ class MasqueradeWidget extends Component {
     this.setState({
       options,
     });
-    const active = data.active || {};
-    const message = this.getStatusMessage(active);
-    if (message) {
-      this.context.add({
-        text: message,
-        topic: 'course',
-        type: ALERT_TYPES.INFO,
-        dismissible: false,
-      });
-    }
   }
 
-  getStatusMessage(active) {
-    const {
-      groupName,
-    } = active;
-    let message = '';
-    if (active.userName) {
-      message = this.props.intl.formatMessage(messages['status.userName'], {
-        userName: active.userName,
-      });
-    } else if (groupName) {
-      message = this.props.intl.formatMessage(messages['status.groupName'], {
-        groupName,
-      });
-    } else if (active.role === 'student') {
-      message = this.props.intl.formatMessage(messages['status.learner']);
-    }
-    return message;
+  clearError() {
+    this.props.onError('');
   }
 
   toggle(show) {
-    let shouldShow;
-    if (show === undefined) {
-      shouldShow = !this.state.shouldShowUserNameInput;
-    } else {
-      shouldShow = show;
-    }
-    this.setState({
-      shouldShowUserNameInput: shouldShow,
-    });
+    this.setState(prevState => ({
+      autoFocus: true,
+      masquerade: 'Specific Student...',
+      shouldShowUserNameInput: show === undefined ? !prevState.shouldShowUserNameInput : show,
+    }));
   }
 
   parseAvailableOptions(postData) {
@@ -125,47 +89,68 @@ class MasqueradeWidget extends Component {
         selected={active}
         userName={group.userName}
         userPartitionId={group.userPartitionId}
-        userNameInput={this.userNameInput}
         userNameInputToggle={(...args) => this.toggle(...args)}
         onSubmit={(payload) => this.onSubmit(payload)}
       />
     ));
+    if (active.userName) {
+      this.setState({
+        autoFocus: false,
+        masquerade: 'Specific Student...',
+        masqueradeUsername: active.userName,
+        shouldShowUserNameInput: true,
+      });
+    } else if (active.groupName) {
+      this.setState({ masquerade: active.groupName });
+    } else if (active.role === 'student') {
+      this.setState({ masquerade: 'Learner' });
+    }
     return options;
   }
 
   render() {
     const {
+      autoFocus,
+      masquerade,
       options,
+      shouldShowUserNameInput,
+      masqueradeUsername,
     } = this.state;
+    const specificLearnerInputText = this.props.intl.formatMessage(messages.placeholder);
     return (
-      <>
-        <Dropdown
-          className="flex-shrink-1 mx-1 my-1"
-          style={{ textAlign: 'center' }}
-        >
-          <Dropdown.Toggle variant="light">
-            View this course as
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {options}
-          </Dropdown.Menu>
-        </Dropdown>
-        {this.state.shouldShowUserNameInput && (
-          <MasqueradeUserNameInput
-            className="flex-shrink-0 mx-1 my-1"
-            label="test"
-            onError={(errorMessage) => this.onError(errorMessage)}
-            onSubmit={(payload) => this.onSubmit(payload)}
-            ref={(input) => { this.userNameInput = input; }}
-          />
+      <div className="flex-grow-1">
+        <div className="row">
+          <span className="col-auto col-form-label pl-3">View this course as:</span>
+          <Dropdown className="flex-shrink-1 mx-1">
+            <Dropdown.Toggle variant="light">
+              {masquerade}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              {options}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+        {shouldShowUserNameInput && (
+          <div className="row mt-2">
+            <span className="col-auto col-form-label pl-3">{`${specificLearnerInputText}:`}</span>
+            <MasqueradeUserNameInput
+              id="masquerade-search"
+              className="col-4 form-control"
+              autoFocus={autoFocus}
+              defaultValue={masqueradeUsername}
+              onError={(errorMessage) => this.onError(errorMessage)}
+              onSubmit={(payload) => this.onSubmit(payload)}
+            />
+          </div>
         )}
-      </>
+      </div>
     );
   }
 }
 MasqueradeWidget.propTypes = {
   courseId: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
+  onError: PropTypes.func.isRequired,
 };
 MasqueradeWidget.contextType = UserMessagesContext;
 export default injectIntl(MasqueradeWidget);
