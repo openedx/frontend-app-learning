@@ -154,6 +154,7 @@ function Unit({
           title={modalOptions.title}
           onClose={() => { setModalOptions({ open: false }); }}
           open
+          dialogClassName="modal-lg"
         />
       )}
       <div className="unit-iframe-wrapper">
