@@ -165,12 +165,9 @@
   "learn.redirect.interstitial.message": "Redirecting...",
   "learn.loading.error": "Error: {error}",
   "learn.course.tabs.navigation.overflow.menu": "More...",
-  "masquerade-widget.status.groupName": "You are masquerading as a learner in the {groupName} group.",
-  "masquerade-widget.status.learner": "You are masquerading as a learner.",
-  "masquerade-widget.status.userName": "You are masquerading as the following user: {userName}",
-  "masquerade-widget.userName.input.label": "Masquerade as this user",
   "masquerade-widget.userName.error.generic": "An error has occurred; please try again.",
-  "masquerade-widget.userName.input.placeholder": "username or email",
+  "masquerade-widget.userName.input.placeholder": "Username or email",
+  "masquerade-widget.userName.input.label": "Masquerade as this user",
   "learning.loading.failure": "There was an error loading this course.",
   "learning.loading": "Loading course page…"
 }
