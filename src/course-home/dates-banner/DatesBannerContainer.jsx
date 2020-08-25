@@ -45,12 +45,14 @@ function DatesBannerContainer(props) {
     },
     {
       name: 'upgradeToCompleteGradedBanner',
-      shouldDisplay: upgradeToCompleteGraded,
+      // verifiedUpgradeLink can be null if we've passed the upgrade deadline
+      shouldDisplay: upgradeToCompleteGraded && verifiedUpgradeLink,
       clickHandler: () => global.location.replace(verifiedUpgradeLink),
     },
     {
       name: 'upgradeToResetBanner',
-      shouldDisplay: upgradeToReset,
+      // verifiedUpgradeLink can be null if we've passed the upgrade deadline
+      shouldDisplay: upgradeToReset && verifiedUpgradeLink,
       clickHandler: () => global.location.replace(verifiedUpgradeLink),
     },
     {
