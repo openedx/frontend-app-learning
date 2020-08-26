@@ -20,13 +20,21 @@ export default function SequenceNavigation({
   onNavigate,
   nextSequenceHandler,
   previousSequenceHandler,
+  goToCourseCompletion,
 }) {
   const sequence = useModel('sequences', sequenceId);
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
-  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const {
+    courseId,
+    sequenceStatus,
+  } = useSelector(state => state.courseware);
   const isLocked = sequenceStatus === LOADED ? (
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
+  const {
+    courseCompletionIsActive,
+    userHasPassingGrade,
+  } = useModel('courses', courseId);
 
   const renderUnitButtons = () => {
     if (isLocked) {
@@ -60,12 +68,38 @@ export default function SequenceNavigation({
         />
       </Button>
       {renderUnitButtons()}
-      <Button variant="link" className="next-btn" onClick={nextSequenceHandler} disabled={isLastUnit}>
-        <FormattedMessage
-          defaultMessage="Next"
-          id="learn.sequence.navigation.next.button"
-          description="The Next button in the sequence nav"
-        />
+      <Button
+        variant="link"
+        className="next-btn"
+        onClick={
+          courseCompletionIsActive && userHasPassingGrade && isLastUnit ? goToCourseCompletion : nextSequenceHandler
+        }
+        disabled={isLastUnit && (!courseCompletionIsActive || !userHasPassingGrade)}
+      >
+        {courseCompletionIsActive && isLastUnit ? (
+          <div>
+            <div>
+              <FormattedMessage
+                defaultMessage="Next"
+                id="learn.sequence.navigation.endOfCourse.button.next"
+                description="The 'next' text in the end of course button in the sequence nav"
+              />
+            </div>
+            <div>
+              <FormattedMessage
+                defaultMessage="(end of course)"
+                id="learn.sequence.navigation.endOfCourse.button.endOfCourse"
+                description="The '(end of course)' text in the end of course button in the sequence nav"
+              />
+            </div>
+          </div>
+        ) : (
+          <FormattedMessage
+            defaultMessage="Next"
+            id="learn.sequence.navigation.next.button"
+            description="The Next button in the sequence nav"
+          />
+        )}
         <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
       </Button>
     </nav>
@@ -79,6 +113,7 @@ SequenceNavigation.propTypes = {
   onNavigate: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
+  goToCourseCompletion: PropTypes.func.isRequired,
 };
 
 SequenceNavigation.defaultProps = {

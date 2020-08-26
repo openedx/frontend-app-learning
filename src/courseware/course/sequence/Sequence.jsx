@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
+import { history } from '@edx/frontend-platform';
 
 import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
@@ -113,6 +114,9 @@ function Sequence({
   }
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
+  const goToCourseCompletion = () => {
+    history.push(`/course/${courseId}/course-completion`);
+  };
 
   if (sequenceStatus === 'loaded') {
     return (
@@ -134,6 +138,7 @@ function Sequence({
               logEvent('edx.ui.lms.sequence.previous_selected', 'top');
               handlePrevious();
             }}
+            goToCourseCompletion={() => goToCourseCompletion()}
           />
           <div className="unit-container flex-grow-1">
             <SequenceContent
@@ -155,6 +160,7 @@ function Sequence({
                   logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
                   handleNext();
                 }}
+                goToCourseCompletion={() => goToCourseCompletion()}
               />
             )}
           </div>

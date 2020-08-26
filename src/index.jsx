@@ -24,8 +24,10 @@ import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandin
 import DatesTab from './course-home/dates-tab';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
+import CourseCompletion from './course-home/course-completion/CourseCompletion';
 
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
+import { fetchCourse } from './courseware/data';
 import initializeStore from './store';
 
 subscribe(APP_READY, () => {
@@ -47,6 +49,11 @@ subscribe(APP_READY, () => {
           <Route path="/course/:courseId/progress">
             <TabContainer tab="progress" fetch={fetchProgressTab}>
               <ProgressTab />
+            </TabContainer>
+          </Route>
+          <Route path="/course/:courseId/course-completion">
+            <TabContainer tab="outline" fetch={fetchCourse} isCompletion>
+              <CourseCompletion />
             </TabContainer>
           </Route>
           <Route

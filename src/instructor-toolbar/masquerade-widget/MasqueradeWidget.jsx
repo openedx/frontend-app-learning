@@ -16,6 +16,8 @@ import {
 import messages from './messages';
 
 class MasqueradeWidget extends Component {
+  isMounted = false;
+
   constructor(props) {
     super(props);
     this.courseId = props.courseId;
@@ -29,8 +31,9 @@ class MasqueradeWidget extends Component {
   }
 
   componentDidMount() {
+    this.isMounted = true;
     getMasqueradeOptions(this.courseId).then((data) => {
-      if (data.success) {
+      if (data.success && this.isMounted) {
         this.onSuccess(data);
       } else {
         // This was explicitly denied by the backend;
@@ -45,6 +48,10 @@ class MasqueradeWidget extends Component {
       // eslint-disable-next-line no-console
       console.error('Unable to get masquerade options', response);
     });
+  }
+
+  componentWillUnmount() {
+    this.isMounted = false;
   }
 
   onError(message) {

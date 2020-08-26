@@ -135,6 +135,9 @@ function normalizeMetadata(metadata) {
     notes: camelCaseObject(metadata.notes),
     marketingUrl: metadata.marketing_url,
     celebrations: camelCaseObject(metadata.celebrations),
+    userHasPassingGrade: metadata.user_has_passing_grade,
+    courseCompletionIsActive: metadata.course_completion_is_active,
+    certificateData: camelCaseObject(metadata.certificate_data),
   };
 }
 
