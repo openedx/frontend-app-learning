@@ -17,6 +17,10 @@ Factory.define('outlineTabData')
       blocks: courseBlocks.blocks,
     };
   })
+  .attr('course_goals', [], () => ({
+    goal_options: [],
+    selected_goal: {},
+  }))
   .attr('enroll_alert', {
     can_enroll: true,
     extra_text: 'Contact the administrator.',

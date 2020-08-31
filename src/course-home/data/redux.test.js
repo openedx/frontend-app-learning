@@ -106,6 +106,18 @@ describe('Data layer integration tests', () => {
     });
   });
 
+  describe('Test saveCourseGoal', () => {
+    it('Should save course goal', async () => {
+      const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`;
+      axiosMock.onPost(goalUrl).reply(200, {});
+
+      await thunks.saveCourseGoal(courseId, 'unsure');
+
+      expect(axiosMock.history.post[0].url).toEqual(goalUrl);
+      expect(axiosMock.history.post[0].data).toEqual(`{"course_id":"${courseId}","goal_key":"unsure"}`);
+    });
+  });
+
   describe('Test resetDeadlines', () => {
     it('Should reset course deadlines', async () => {
       const resetUrl = `${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`;

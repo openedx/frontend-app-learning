@@ -9,7 +9,7 @@ import PageLoading from '../generic/PageLoading';
 import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
 import LearningToast from '../toast/LearningToast';
-import { setResetDatesToast } from '../course-home/data/slice';
+import { setCallToActionToast } from '../course-home/data/slice';
 
 function TabPage({
   intl,
@@ -17,8 +17,9 @@ function TabPage({
   ...passthroughProps
 }) {
   const {
-    resetDatesToastBody,
-    resetDatesToastHeader,
+    toastBodyLink,
+    toastBodyText,
+    toastHeader,
   } = useSelector(state => state.courseHome);
   const dispatch = useDispatch();
 
@@ -37,10 +38,11 @@ function TabPage({
     return (
       <>
         <LearningToast
-          body={resetDatesToastBody}
-          header={resetDatesToastHeader}
-          onClose={() => dispatch(setResetDatesToast({ body: null, header: null }))}
-          show={!!(resetDatesToastBody && resetDatesToastHeader)}
+          bodyLink={toastBodyLink}
+          bodyText={toastBodyText}
+          header={toastHeader}
+          onClose={() => dispatch(setCallToActionToast({ header: null, link: null, link_text: null }))}
+          show={!!(toastHeader)}
         />
         <LoadedTabPage {...passthroughProps} />
       </>

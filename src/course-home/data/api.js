@@ -69,6 +69,7 @@ export async function getOutlineTabData(courseId) {
     data,
   } = tabData;
   const courseBlocks = normalizeBlocks(courseId, data.course_blocks.blocks);
+  const courseGoals = camelCaseObject(data.course_goals);
   const courseExpiredHtml = data.course_expired_html;
   const courseTools = camelCaseObject(data.course_tools);
   const datesWidget = camelCaseObject(data.dates_widget);
@@ -80,6 +81,7 @@ export async function getOutlineTabData(courseId) {
 
   return {
     courseBlocks,
+    courseGoals,
     courseExpiredHtml,
     courseTools,
     datesWidget,
@@ -94,6 +96,11 @@ export async function getOutlineTabData(courseId) {
 export async function postCourseDeadlines(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
   return getAuthenticatedHttpClient().post(url.href, { course_key: courseId });
+}
+
+export async function postCourseGoals(courseId, goalKey) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`);
+  return getAuthenticatedHttpClient().post(url.href, { course_id: courseId, goal_key: goalKey });
 }
 
 export async function postDismissWelcomeMessage(courseId) {

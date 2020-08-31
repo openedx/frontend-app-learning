@@ -1,8 +1,18 @@
-.toast-header {
-  div {
-    margin-top: 10px;
-  }
+.learning-toast {
+  bottom: 20px;
+  radius: 3px;
+  left: 20px;
+  max-width: 400px;
+  padding: 11px 20px;
 
+  @media only screen and (max-width: 768px) {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+  }
+}
+
+.toast-header {
   button {
     align-self: flex-start;
     color: #FFFFFF;
@@ -13,7 +23,7 @@
 }
 
 .toast-body {
-  a {
-    text-decoration: underline;
+  a:hover {
+    color: #2D323E;
   }
 }

@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
+import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
+import LearningToast from '../../toast/LearningToast';
 import messages from './messages';
 import Section from './Section';
+import UpdateGoalSelector from './widgets/UpdateGoalSelector';
 import useAccessExpirationAlert from '../../alerts/access-expiration-alert';
 import useCertificateAvailableAlert from './alerts/certificate-available-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
@@ -39,6 +42,10 @@ function OutlineTab({ intl }) {
       courses,
       sections,
     },
+    courseGoals: {
+      goalOptions,
+      selectedGoal,
+    },
     courseExpiredHtml,
     resumeCourse: {
       hasVisitedCourse,
@@ -46,6 +53,9 @@ function OutlineTab({ intl }) {
     },
     offerHtml,
   } = useModel('outline', courseId);
+
+  const [courseGoalToDisplay, setCourseGoalToDisplay] = useState(selectedGoal);
+  const [goalToastHeader, setGoalToastHeader] = useState(null);
 
   // Above the tab alerts (appearing in the order listed here)
   const logistrationAlert = useLogistrationAlert();
@@ -71,6 +81,11 @@ function OutlineTab({ intl }) {
           ...logistrationAlert,
         }}
       />
+      <LearningToast
+        header={goalToastHeader}
+        onClose={() => setGoalToastHeader(null)}
+        show={!!(goalToastHeader)}
+      />
       <div className="d-flex justify-content-between mb-3">
         <div role="heading" aria-level="1" className="h4">{title}</div>
         {resumeCourseUrl && (
@@ -80,7 +95,16 @@ function OutlineTab({ intl }) {
         )}
       </div>
       <div className="row">
-        <div className="col col-8">
+        <div className="col col-12 col-md-8">
+          {!courseGoalToDisplay && goalOptions && (
+            <CourseGoalCard
+              courseId={courseId}
+              goalOptions={goalOptions}
+              title={title}
+              setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
+              setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
+            />
+          )}
           <WelcomeMessage courseId={courseId} />
           <AlertList
             topic="outline-course-alerts"
@@ -102,7 +126,16 @@ function OutlineTab({ intl }) {
             />
           ))}
         </div>
-        <div className="col col-4">
+        <div className="col col-12 col-md-4">
+          {courseGoalToDisplay && goalOptions && (
+            <UpdateGoalSelector
+              courseId={courseId}
+              goalOptions={goalOptions}
+              selectedGoal={courseGoalToDisplay}
+              setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
+              setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
+            />
+          )}
           <CourseTools
             courseId={courseId}
           />
