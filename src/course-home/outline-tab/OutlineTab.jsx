@@ -96,7 +96,7 @@ function OutlineTab({ intl }) {
       </div>
       <div className="row">
         <div className="col col-12 col-md-8">
-          {!courseGoalToDisplay && goalOptions && (
+          {!courseGoalToDisplay && goalOptions.length > 0 && (
             <CourseGoalCard
               courseId={courseId}
               goalOptions={goalOptions}
@@ -127,7 +127,7 @@ function OutlineTab({ intl }) {
           ))}
         </div>
         <div className="col col-12 col-md-4">
-          {courseGoalToDisplay && goalOptions && (
+          {courseGoalToDisplay && goalOptions.length > 0 && (
             <UpdateGoalSelector
               courseId={courseId}
               goalOptions={goalOptions}
