@@ -1,7 +1,6 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-// TODO: Pull this normalization function up so we're not reaching into courseware
-import { normalizeBlocks } from '../../courseware/data/api';
+import { logError } from '@edx/frontend-platform/logging';
 
 function normalizeCourseHomeCourseMetadata(metadata) {
   const data = camelCaseObject(metadata);
@@ -13,6 +12,74 @@ function normalizeCourseHomeCourseMetadata(metadata) {
       url: tab.url,
     })),
   };
+}
+
+export function normalizeOutlineBlocks(courseId, blocks) {
+  const models = {
+    courses: {},
+    sections: {},
+    sequences: {},
+  };
+  Object.values(blocks).forEach(block => {
+    switch (block.type) {
+      case 'course':
+        models.courses[block.id] = {
+          id: courseId,
+          title: block.display_name,
+          sectionIds: block.children || [],
+        };
+        break;
+
+      case 'chapter':
+        models.sections[block.id] = {
+          complete: block.complete,
+          id: block.id,
+          title: block.display_name,
+          sequenceIds: block.children || [],
+        };
+        break;
+
+      case 'sequential':
+        models.sequences[block.id] = {
+          complete: block.complete,
+          description: block.description,
+          due: block.due,
+          icon: block.icon,
+          id: block.id,
+          showLink: !!block.lms_web_url, // we reconstruct the url ourselves as an MFE-internal <Link>
+          title: block.display_name,
+        };
+        break;
+
+      default:
+        logError(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, and sequential.`);
+    }
+  });
+
+  // Next go through each list and use their child lists to decorate those children with a
+  // reference back to their parent.
+  Object.values(models.courses).forEach(course => {
+    if (Array.isArray(course.sectionIds)) {
+      course.sectionIds.forEach(sectionId => {
+        const section = models.sections[sectionId];
+        section.courseId = course.id;
+      });
+    }
+  });
+
+  Object.values(models.sections).forEach(section => {
+    if (Array.isArray(section.sequenceIds)) {
+      section.sequenceIds.forEach(sequenceId => {
+        if (sequenceId in models.sequences) {
+          models.sequences[sequenceId].sectionId = section.id;
+        } else {
+          logError(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
+        }
+      });
+    }
+  });
+
+  return models;
 }
 
 export async function getCourseHomeCourseMetadata(courseId) {
@@ -68,7 +135,7 @@ export async function getOutlineTabData(courseId) {
   const {
     data,
   } = tabData;
-  const courseBlocks = normalizeBlocks(courseId, data.course_blocks.blocks);
+  const courseBlocks = normalizeOutlineBlocks(courseId, data.course_blocks.blocks);
   const courseGoals = camelCaseObject(data.course_goals);
   const courseExpiredHtml = data.course_expired_html;
   const courseTools = camelCaseObject(data.course_tools);

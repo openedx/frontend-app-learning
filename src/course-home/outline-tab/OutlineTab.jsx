@@ -121,8 +121,7 @@ function OutlineTab({ intl }) {
             <Section
               key={sectionId}
               courseId={courseId}
-              title={sections[sectionId].title}
-              sequenceIds={sections[sectionId].sequenceIds}
+              section={sections[sectionId]}
             />
           ))}
         </div>
