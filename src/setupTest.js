@@ -1,6 +1,8 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/extend-expect';
+import 'jest-chain';
 import './courseware/data/__factories__';
 import './course-home/data/__factories__';
 import { getConfig, mergeConfig } from '@edx/frontend-platform';
@@ -41,7 +43,7 @@ export const authenticatedUser = {
   administrator: false,
 };
 
-export default function initializeMockApp() {
+export function initializeMockApp() {
   mergeConfig({
     INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
     STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,

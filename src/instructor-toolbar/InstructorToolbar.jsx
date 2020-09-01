@@ -43,7 +43,7 @@ export default function InstructorToolbar(props) {
   const urlInsights = getInsightsUrl(courseId);
   const urlLms = useSelector((state) => {
     if (!unitId) {
-      return {};
+      return undefined;
     }
 
     const activeUnit = state.models.units[props.unitId];
