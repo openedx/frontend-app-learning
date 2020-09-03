@@ -70,10 +70,6 @@ describe('Outline Tab', () => {
 
   describe('Alert List', () => {
     describe('Enrollment Alert', () => {
-      // FIXME: In certain conditions (e.g. when specifying a single `describe` group),
-      //  running these tests is not deterministic - loading the alert may take a moment.
-      //  It should be possible to avoid this by spying on `useEnrollClickHandler`.
-
       const extraText = outlineTabData.enroll_alert.extra_text;
       const alertMessage = `You must be enrolled in the course to see course content. ${extraText}`;
       const staffMessage = 'You are viewing this course as staff, and are not enrolled.';
@@ -88,41 +84,33 @@ describe('Outline Tab', () => {
 
         render(<OutlineTab />);
 
-        await expect(waitFor(
-          () => expect(screen.getByText(alertMessage)).toBeInTheDocument(),
-          { timeout: 100 },
-        )).rejects.toThrowError(`Unable to find an element with the text: ${alertMessage}`);
+        expect(screen.queryByText(alertMessage)).not.toBeInTheDocument();
       });
 
-      // FIXME: This is failing when using the common store.
-      // it('does not display enrollment button if enrollment is not available', async () => {
-      //   const outlineTabDataCannotEnroll = Factory.build('outlineTabData', {
-      //     courseId: courseMetadata.id,
-      //     enroll_alert: {
-      //       can_enroll: false,
-      //       extra_text: extraText,
-      //     },
-      //   });
-      //   axiosMock.onGet(outlineUrl).reply(200, outlineTabDataCannotEnroll);
-      //   await executeThunk(thunks.fetchOutlineTab(courseMetadata.id), store.dispatch);
-      //
-      //   render(<OutlineTab />);
-      //
-      //   await expect(waitFor(
-      //     () => expect(screen.getByRole('button', { name: 'Enroll Now' })).toBeInTheDocument(),
-      //     { timeout: 100 },
-      //   )).rejects.toThrowError(/Unable to find role */);
-      // });
-      //
-      // FIXME: This is failing when ran along two tests above.
-      // it('displays enrollment alert for unenrolled user', async () => {
-      //   render(<OutlineTab />);
-      //
-      //   const alert = await screen.findByText(alertMessage);
-      //   expect(alert).toHaveAttribute('role', 'alert');
-      //   expect(screen.queryByText(staffMessage)).not.toBeInTheDocument();
-      //   expect(alert.parentElement.querySelector('svg')).toHaveClass('fa-exclamation-triangle');
-      // });
+      it('does not display enrollment button if enrollment is not available', async () => {
+        const outlineTabDataCannotEnroll = Factory.build('outlineTabData', {
+          courseId: courseMetadata.id,
+          enroll_alert: {
+            can_enroll: false,
+            extra_text: extraText,
+          },
+        });
+        axiosMock.onGet(outlineUrl).reply(200, outlineTabDataCannotEnroll);
+        await executeThunk(thunks.fetchOutlineTab(courseMetadata.id), store.dispatch);
+
+        render(<OutlineTab />);
+
+        expect(screen.queryByRole('button', { name: 'Enroll Now' })).not.toBeInTheDocument();
+      });
+
+      it('displays enrollment alert for unenrolled user', async () => {
+        render(<OutlineTab />);
+
+        const alert = await screen.findByText(alertMessage);
+        expect(alert).toHaveAttribute('role', 'alert');
+        expect(screen.queryByText(staffMessage)).not.toBeInTheDocument();
+        expect(alert.parentElement.querySelector('svg')).toHaveClass('fa-exclamation-triangle');
+      });
 
       it('displays different message for unenrolled staff user', async () => {
         const courseHomeMetadataForEnrolledUser = Factory.build(
@@ -161,6 +149,20 @@ describe('Outline Tab', () => {
       });
     });
 
-    // TODO: Test more alerts.
+    describe('Access Expiration Alert', () => {
+      // TODO: Test this alert.
+    });
+
+    describe('Course Start Alert', () => {
+      // TODO: Test this alert.
+    });
+
+    describe('Course End Alert', () => {
+      // TODO: Test this alert.
+    });
+
+    describe('Certificate Available Alert', () => {
+      // TODO: Test this alert.
+    });
   });
 });
