@@ -1,24 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Data layer integration tests Should initialize store 1`] = `
-Object {
-  "courseHome": Object {
-    "courseId": null,
-    "courseStatus": "loading",
-    "toastBodyLink": null,
-    "toastBodyText": null,
-    "toastHeader": null,
-  },
-  "courseware": Object {
-    "courseId": null,
-    "courseStatus": "loading",
-    "sequenceId": null,
-    "sequenceStatus": "loading",
-  },
-  "models": Object {},
-}
-`;
-
 exports[`Data layer integration tests Test fetchDatesTab Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseHome": Object {

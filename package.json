@@ -19,11 +19,6 @@
     "start": "fedx-scripts webpack-dev-server --progress",
     "test": "fedx-scripts jest --coverage --passWithNoTests"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
-  },
   "author": "edX",
   "license": "AGPL-3.0",
   "homepage": "https://github.com/edx/frontend-app-learning#readme",

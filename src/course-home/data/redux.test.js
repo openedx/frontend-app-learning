@@ -16,20 +16,9 @@ const { loggingService } = initializeMockApp();
 const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
 describe('Data layer integration tests', () => {
-  const courseMetadata = Factory.build('courseMetadata');
-  const courseHomeMetadata = Factory.build(
-    'courseHomeMetadata', {
-      course_id: courseMetadata.id,
-    },
-    { courseTabs: courseMetadata.tabs },
-  );
-
-  const courseId = courseMetadata.id;
-  const courseBaseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course`;
-  const courseMetadataBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata`;
-
-  const courseUrl = `${courseBaseUrl}/${courseId}`;
-  const courseMetadataUrl = `${courseMetadataBaseUrl}/${courseId}`;
+  const courseHomeMetadata = Factory.build('courseHomeMetadata');
+  const courseId = courseHomeMetadata.courseId;
+  const courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
 
   let store;
 
@@ -40,15 +29,10 @@ describe('Data layer integration tests', () => {
     store = initializeStore();
   });
 
-  it('Should initialize store', () => {
-    expect(store.getState()).toMatchSnapshot();
-  });
-
   describe('Test fetchDatesTab', () => {
     const datesBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dates`;
 
     it('Should fail to fetch if error occurs', async () => {
-      axiosMock.onGet(courseUrl).networkError();
       axiosMock.onGet(courseMetadataUrl).networkError();
       axiosMock.onGet(`${datesBaseUrl}/${courseId}`).networkError();
 
@@ -63,7 +47,6 @@ describe('Data layer integration tests', () => {
 
       const datesUrl = `${datesBaseUrl}/${courseId}`;
 
-      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
 
@@ -79,7 +62,6 @@ describe('Data layer integration tests', () => {
     const outlineBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline`;
 
     it('Should result in fetch failure if error occurs', async () => {
-      axiosMock.onGet(courseUrl).networkError();
       axiosMock.onGet(courseMetadataUrl).networkError();
       axiosMock.onGet(`${outlineBaseUrl}/${courseId}`).networkError();
 
@@ -94,7 +76,6 @@ describe('Data layer integration tests', () => {
 
       const outlineUrl = `${outlineBaseUrl}/${courseId}`;
 
-      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
 
