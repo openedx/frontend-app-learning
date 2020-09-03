@@ -2,10 +2,8 @@ import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dep
 
 Factory.define('courseHomeMetadata')
   .sequence(
-    'course_id',
-    (courseId) => `course-v1:edX+DemoX+Demo_Course_${courseId}`,
+    'courseId', (courseId) => `course-v1:edX+DemoX+Demo_Course_${courseId}`
   )
-  .option('courseTabs', [])
   .option('host', 'http://localhost:18000')
   .attrs({
     is_staff: false,
@@ -15,10 +13,67 @@ Factory.define('courseHomeMetadata')
     title: 'Demonstration Course',
     is_self_paced: false,
   })
-  .attr('tabs', ['courseTabs', 'host'], (courseTabs, host) => courseTabs.map(
-    tab => ({
-      tab_id: tab.slug,
-      title: tab.title,
-      url: `${host}${tab.url}`,
-    }),
-  ));
+  .attr(
+    'tabs', ['courseId', 'host'], (courseId, host) => {
+      const tabs = [
+        Factory.build(
+          'tab',
+          {
+            title: 'Course',
+            priority: 0,
+            slug: 'courseware',
+            type: 'courseware',
+          },
+          { courseId: courseId, path: 'course/' },
+        ),
+        Factory.build(
+          'tab',
+          {
+            title: 'Discussion',
+            priority: 1,
+            slug: 'discussion',
+            type: 'discussion',
+          },
+          { courseId: courseId, path: 'discussion/forum/' },
+        ),
+        Factory.build(
+          'tab',
+          {
+            title: 'Wiki',
+            priority: 2,
+            slug: 'wiki',
+            type: 'wiki',
+          },
+          { courseId: courseId, path: 'course_wiki' },
+        ),
+        Factory.build(
+          'tab',
+          {
+            title: 'Progress',
+            priority: 3,
+            slug: 'progress',
+            type: 'progress',
+          },
+          { courseId: courseId, path: 'progress' },
+        ),
+        Factory.build(
+          'tab',
+          {
+            title: 'Instructor',
+            priority: 4,
+            slug: 'instructor',
+            type: 'instructor',
+          },
+          { courseId: courseId, path: 'instructor' },
+        ),
+      ];
+
+      return tabs.map(
+        tab => ({
+          tab_id: tab.slug,
+          title: tab.title,
+          url: `${host}${tab.url}`,
+        })
+      );
+    },
+  );
