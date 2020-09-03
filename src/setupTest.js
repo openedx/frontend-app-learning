@@ -88,6 +88,15 @@ export function loadUnit(message = messageEvent) {
   window.postMessage(message, '*');
 }
 
+// Helper function to log unhandled API requests to the console while running tests.
+export function logUnhandledRequests(axiosMock) {
+  axiosMock.onAny().reply((config) => {
+    // eslint-disable-next-line no-console
+    console.log(config.method, config.url);
+    return [200, {}];
+  });
+}
+
 let globalStore;
 
 export async function initializeTestStore(options = {}, overrideStore = true) {
@@ -119,11 +128,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
     axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);
   });
 
-  axiosMock.onAny().reply((config) => {
-    // eslint-disable-next-line no-console
-    console.log(config.url);
-    return [200, {}];
-  });
+  logUnhandledRequests(axiosMock);
 
   // eslint-disable-next-line no-unused-expressions
   !options.excludeFetchCourse && await executeThunk(fetchCourse(courseMetadata.id), store.dispatch);

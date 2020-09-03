@@ -4,7 +4,7 @@ import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
-  fireEvent, initializeTestStore, render, screen,
+  fireEvent, initializeTestStore, logUnhandledRequests, render, screen,
 } from '../../../../setupTest';
 import NotesVisibility from './NotesVisibility';
 
@@ -42,11 +42,7 @@ describe('Notes Visibility', () => {
   beforeEach(() => {
     axiosMock.reset();
     axiosMock.onPut(visibilityUrl).reply(200);
-    axiosMock.onAny().reply((config) => {
-      // eslint-disable-next-line no-console
-      console.log(config.url);
-      return [200, {}];
-    });
+    logUnhandledRequests(axiosMock);
   });
 
   it('hides notes', () => {

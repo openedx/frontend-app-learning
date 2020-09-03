@@ -2,7 +2,9 @@ import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { initializeTestStore, render, screen } from '../setupTest';
+import {
+  initializeTestStore, logUnhandledRequests, render, screen,
+} from '../setupTest';
 import { TabPage } from './index';
 import executeThunk from '../utils';
 import * as thunks from '../course-home/data/thunks';
@@ -40,11 +42,7 @@ describe('Tab Page', () => {
       link_text: 'test-toast-body',
       header: 'test-toast-header',
     });
-    axiosMock.onAny().reply((config) => {
-      // eslint-disable-next-line no-console
-      console.log(config.url);
-      return [200, {}];
-    });
+    logUnhandledRequests(axiosMock);
 
     const getTabDataMock = jest.fn(() => ({
       type: 'MOCK_ACTION',

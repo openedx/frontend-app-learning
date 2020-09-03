@@ -4,7 +4,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
 import Calculator from './Calculator';
 import {
-  initializeTestStore, render, screen, fireEvent, waitFor,
+  initializeTestStore, render, screen, fireEvent, waitFor, logUnhandledRequests,
 } from '../../../../setupTest';
 
 describe('Calculator', () => {
@@ -16,15 +16,6 @@ describe('Calculator', () => {
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     equationUrl = new RegExp(`${getConfig().LMS_BASE_URL}/calculate*`);
-  });
-
-  beforeEach(() => {
-    axiosMock.reset();
-    axiosMock.onAny().reply((config) => {
-      // eslint-disable-next-line no-console
-      console.log(config.url);
-      return [200, {}];
-    });
   });
 
   it('expands on click', () => {
@@ -69,11 +60,7 @@ describe('Calculator', () => {
 
     axiosMock.reset();
     axiosMock.onGet(equationUrl).reply(200, { result });
-    axiosMock.onAny().reply((config) => {
-      // eslint-disable-next-line no-console
-      console.log(config.url);
-      return [200, {}];
-    });
+    logUnhandledRequests(axiosMock);
 
     render(<Calculator />);
     fireEvent.click(screen.getByRole('button', { name: 'Calculator' }));

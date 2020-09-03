@@ -3,7 +3,7 @@ import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
-  initializeTestStore, render, screen, waitFor, getByText,
+  initializeTestStore, render, screen, waitFor, getByText, logUnhandledRequests,
 } from '../setupTest';
 import InstructorToolbar from './index';
 
@@ -34,11 +34,7 @@ describe('Instructor Toolbar', () => {
   beforeEach(() => {
     axiosMock.reset();
     axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
-    axiosMock.onAny().reply((config) => {
-      // eslint-disable-next-line no-console
-      console.log(config.url);
-      return [200, {}];
-    });
+    logUnhandledRequests(axiosMock);
   });
 
   it('sends query to masquerade and does not display alerts by default', async () => {

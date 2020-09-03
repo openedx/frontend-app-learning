@@ -4,7 +4,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
 import { Factory } from 'rosie';
 import {
-  render, screen, fireEvent, initializeTestStore, waitFor, authenticatedUser,
+  render, screen, fireEvent, initializeTestStore, waitFor, authenticatedUser, logUnhandledRequests,
 } from '../../../setupTest';
 import { BookmarkButton } from './index';
 
@@ -37,11 +37,7 @@ describe('Bookmark Button', () => {
 
     const bookmarkDeleteUrlRegExp = new RegExp(`${bookmarkUrl}*,*`);
     axiosMock.onDelete(bookmarkDeleteUrlRegExp).reply(200, { });
-    axiosMock.onAny().reply((config) => {
-      // eslint-disable-next-line no-console
-      console.log(config.url);
-      return [200, {}];
-    });
+    logUnhandledRequests(axiosMock);
   });
 
   it('handles adding bookmark', async () => {
