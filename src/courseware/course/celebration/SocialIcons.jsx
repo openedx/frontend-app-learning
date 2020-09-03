@@ -54,7 +54,7 @@ function SocialIcons({ courseId, intl }) {
         <TwitterShareButton
           beforeOnClick={() => logClick('twitter')}
           className="ml-2"
-          hashtags={['mooc']}
+          hashtags={['myedxjourney']}
           title={intl.formatMessage(messages.social, { platform: `@${twitterAccount}`, title })}
           url={marketingUrl}
         >
@@ -73,7 +73,7 @@ function SocialIcons({ courseId, intl }) {
       </FacebookShareButton>
       <EmailShareButton
         beforeOnClick={() => logClick('email')}
-        body={intl.formatMessage(messages.emailBody)}
+        body={`${intl.formatMessage(messages.emailBody)}\n\n`}
         className="ml-2"
         subject={intl.formatMessage(messages.emailSubject, { platform: getConfig().SITE_NAME, title })}
         url={marketingUrl}

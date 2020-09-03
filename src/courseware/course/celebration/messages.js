@@ -20,7 +20,7 @@ const messages = defineMessages({
   },
   emailSubject: {
     id: 'learning.celebration.emailSubject',
-    defaultMessage: "I'm on my way to completing {title} online with @edxonline!",
+    defaultMessage: "I'm on my way to completing {title} online with {platform}!",
     description: 'Subject when sharing course progress via email',
   },
   forward: {
