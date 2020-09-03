@@ -5,7 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import OutlineTab from './OutlineTab';
 import {
-  fireEvent, initializeTestStore, render, screen, waitFor,
+  fireEvent, initializeTestStore, logUnhandledRequests, render, screen, waitFor,
 } from '../../setupTest';
 import executeThunk from '../../utils';
 import * as thunks from '../data/thunks';
@@ -39,11 +39,7 @@ describe('Outline Tab', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
-    axiosMock.onAny().reply((config) => {
-      // eslint-disable-next-line no-console
-      console.log(config.url);
-      return [200, {}];
-    });
+    logUnhandledRequests(axiosMock);
     await executeThunk(thunks.fetchOutlineTab(courseMetadata.id), store.dispatch);
   });
 
@@ -53,14 +49,14 @@ describe('Outline Tab', () => {
   });
 
   it('displays link to resume course', async () => {
-    const outlineTabDataCannotEnroll = Factory.build('outlineTabData', {
+    const outlineTabDataHasVisited = Factory.build('outlineTabData', {
       courseId: courseMetadata.id,
       resume_course: {
         has_visited_course: true,
         url: `${getConfig().LMS_BASE_URL}/courses/${courseMetadata.id}/jump_to/block-v1:edX+Test+Block@12345abcde`,
       },
     });
-    axiosMock.onGet(outlineUrl).reply(200, outlineTabDataCannotEnroll);
+    axiosMock.onGet(outlineUrl).reply(200, outlineTabDataHasVisited);
     await executeThunk(thunks.fetchOutlineTab(courseMetadata.id), store.dispatch);
 
     render(<OutlineTab />);
@@ -113,11 +109,11 @@ describe('Outline Tab', () => {
       });
 
       it('displays different message for unenrolled staff user', async () => {
-        const courseHomeMetadataForEnrolledUser = Factory.build(
+        const courseHomeMetadataForUnenrolledStaff = Factory.build(
           'courseHomeMetadata', { course_id: courseMetadata.id, is_staff: true },
           { courseTabs: courseMetadata.tabs },
         );
-        axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadataForEnrolledUser);
+        axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadataForUnenrolledStaff);
         await executeThunk(thunks.fetchOutlineTab(courseMetadata.id), store.dispatch);
 
         render(<OutlineTab />);
