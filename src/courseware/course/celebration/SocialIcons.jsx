@@ -41,11 +41,13 @@ function SocialIcons({ courseId, intl }) {
     });
   };
 
+  const socialUtmMarketingUrl = `${marketingUrl}?utm_campaign=edxmilestone&utm_medium=social`;
+
   return (
     <div className="social-icons">
       <LinkedinShareButton
         beforeOnClick={() => logClick('linkedin')}
-        url={marketingUrl}
+        url={`${socialUtmMarketingUrl}&utm_source=linkedin`}
       >
         <LinkedinIcon round size={32} />
         <span className="sr-only">{intl.formatMessage(messages.shareService, { service: 'LinkedIn' })}</span>
@@ -56,7 +58,7 @@ function SocialIcons({ courseId, intl }) {
           className="ml-2"
           hashtags={['myedxjourney']}
           title={intl.formatMessage(messages.social, { platform: `@${twitterAccount}`, title })}
-          url={marketingUrl}
+          url={`${socialUtmMarketingUrl}&utm_source=twitter`}
         >
           <TwitterIcon round size={32} />
           <span className="sr-only">{intl.formatMessage(messages.shareService, { service: 'Twitter' })}</span>
@@ -66,7 +68,7 @@ function SocialIcons({ courseId, intl }) {
         beforeOnClick={() => logClick('facebook')}
         className="ml-2"
         quote={intl.formatMessage(messages.social, { platform: getConfig().SITE_NAME, title })}
-        url={marketingUrl}
+        url={`${socialUtmMarketingUrl}&utm_source=facebook`}
       >
         <FacebookIcon round size={32} />
         <span className="sr-only">{intl.formatMessage(messages.shareService, { service: 'Facebook' })}</span>
@@ -76,7 +78,7 @@ function SocialIcons({ courseId, intl }) {
         body={`${intl.formatMessage(messages.emailBody)}\n\n`}
         className="ml-2"
         subject={intl.formatMessage(messages.emailSubject, { platform: getConfig().SITE_NAME, title })}
-        url={marketingUrl}
+        url={`${marketingUrl}?utm_campaign=edxmilestone&utm_medium=email&utm_source=email`}
       >
         <EmailIcon round size={32} />
         <span className="sr-only">{intl.formatMessage(messages.shareEmail)}</span>
