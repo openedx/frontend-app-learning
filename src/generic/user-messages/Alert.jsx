@@ -5,10 +5,12 @@ import {
   faExclamationTriangle, faInfoCircle, faCheckCircle, faMinusCircle, faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button } from '@edx/paragon';
+import { IconButton } from '@edx/paragon';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { ALERT_TYPES } from './UserMessagesProvider';
 import './Alert.scss';
+import messages from '../messages';
 
 function getAlertClass(type) {
   if (type === ALERT_TYPES.ERROR) {
@@ -40,21 +42,33 @@ function getAlertIcon(type) {
 }
 
 function Alert({
-  type, dismissible, children, onDismiss,
+  type, dismissible, children, footer, intl, onDismiss,
 }) {
   return (
-    <div className={classNames('alert', { 'alert-dismissible': dismissible }, getAlertClass(type))}>
-      <div className="d-flex align-items-start">
+    <div className={classNames('alert', { 'alert-dismissible': dismissible }, getAlertClass(type))} style={{ padding: '20px' }}>
+      <div className="row w-100 m-0">
         {type !== ALERT_TYPES.WELCOME && (
-          <div className="mr-2">
+          <div className="col-auto p-0 mr-2">
             <FontAwesomeIcon icon={getAlertIcon(type)} />
           </div>
         )}
-        <div role="alert" className="flex-grow-1">
-          {children}
+        <div className="col mr-4 p-0 align-items-start">
+          <div role="alert" className="flex-grow-1">
+            {children}
+          </div>
         </div>
+        {dismissible && (
+          <div className="col-auto p-0">
+            <IconButton
+              icon={faTimes}
+              className="close"
+              onClick={onDismiss}
+              alt={intl.formatMessage(messages.close)}
+            />
+          </div>
+        )}
       </div>
-      {dismissible && <Button className="close" onClick={onDismiss}><FontAwesomeIcon size="sm" icon={faTimes} /></Button>}
+      {footer}
     </div>
   );
 }
@@ -69,13 +83,16 @@ Alert.propTypes = {
   ]).isRequired,
   dismissible: PropTypes.bool,
   children: PropTypes.node,
+  footer: PropTypes.node,
+  intl: intlShape.isRequired,
   onDismiss: PropTypes.func,
 };
 
 Alert.defaultProps = {
   dismissible: false,
   children: undefined,
+  footer: null,
   onDismiss: null,
 };
 
-export default Alert;
+export default injectIntl(Alert);

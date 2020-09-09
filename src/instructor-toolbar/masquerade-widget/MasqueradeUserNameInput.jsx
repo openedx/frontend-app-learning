@@ -47,6 +47,7 @@ class MasqueradeUserNameInput extends Component {
     } = this.props;
     return (
       <Input
+        aria-labelledby="masquerade-search-label"
         label={intl.formatMessage(messages.userNameLabel)}
         onKeyPress={(event) => this.onKeyPress(event)}
         type="text"

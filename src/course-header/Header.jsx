@@ -78,13 +78,13 @@ function Header({
 
   return (
     <header className="course-header">
-      <div className="container-fluid py-2 d-flex align-items-center ">
+      <div className="container-fluid py-2 d-flex align-items-center">
         {headerLogo}
         <div className="flex-grow-1 course-title-lockup" style={{ lineHeight: 1 }}>
           <span className="d-block small m-0">{courseOrg} {courseNumber}</span>
           <span className="d-block m-0 font-weight-bold course-title">{courseTitle}</span>
         </div>
-
+        <a className="text-gray-700 mr-3" href={`${getConfig().SUPPORT_URL}`}>{intl.formatMessage(messages.help)}</a>
         <Dropdown className="user-dropdown">
           <Dropdown.Toggle variant="light">
             <FontAwesomeIcon icon={faUserCircle} className="d-md-none" size="lg" />

@@ -75,6 +75,7 @@ initialize({
       mergeConfig({
         INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
         STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,
+        SUPPORT_URL: process.env.SUPPORT_URL || null,
         TWITTER_URL: process.env.TWITTER_URL || null,
         ENTERPRISE_LEARNER_PORTAL_HOSTNAME: process.env.ENTERPRISE_LEARNER_PORTAL_HOSTNAME || null,
       }, 'LearnerAppConfig');

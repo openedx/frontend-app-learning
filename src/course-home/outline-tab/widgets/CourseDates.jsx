@@ -9,20 +9,24 @@ import { useModel } from '../../../generic/model-store';
 
 function CourseDates({ courseId, intl }) {
   const {
-    datesWidget,
+    datesWidget: {
+      courseDateBlocks,
+      datesTabLink,
+      userTimezone,
+    },
   } = useModel('outline', courseId);
 
   return (
     <section className="mb-3">
       <h2 className="h6">{intl.formatMessage(messages.dates)}</h2>
-      {datesWidget.courseDateBlocks.map((courseDateBlock) => (
+      {courseDateBlocks.map((courseDateBlock) => (
         <DateSummary
           key={courseDateBlock.title + courseDateBlock.date}
           dateBlock={courseDateBlock}
-          userTimezone={datesWidget.userTimezone}
+          userTimezone={userTimezone}
         />
       ))}
-      <a className="font-weight-bold ml-4 pl-2" href={datesWidget.datesTabLink}>
+      <a className="font-weight-bold ml-4 pl-1" href={datesTabLink}>
         {intl.formatMessage(messages.allDates)}
       </a>
     </section>

@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
+import { Button, Toast } from '@edx/paragon';
 import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
 import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
-import LearningToast from '../../toast/LearningToast';
+import genericMessages from '../../generic/messages';
 import messages from './messages';
 import Section from './Section';
 import UpdateGoalSelector from './widgets/UpdateGoalSelector';
@@ -55,7 +56,8 @@ function OutlineTab({ intl }) {
   } = useModel('outline', courseId);
 
   const [courseGoalToDisplay, setCourseGoalToDisplay] = useState(selectedGoal);
-  const [goalToastHeader, setGoalToastHeader] = useState(null);
+  const [goalToastHeader, setGoalToastHeader] = useState('');
+  const [expandAll, setExpandAll] = useState(false);
 
   // Above the tab alerts (appearing in the order listed here)
   const logistrationAlert = useLogistrationAlert();
@@ -81,17 +83,23 @@ function OutlineTab({ intl }) {
           ...logistrationAlert,
         }}
       />
-      <LearningToast
-        header={goalToastHeader}
-        onClose={() => setGoalToastHeader(null)}
+      <Toast
+        closeLabel={intl.formatMessage(genericMessages.close)}
+        onClose={() => setGoalToastHeader('')}
         show={!!(goalToastHeader)}
-      />
-      <div className="d-flex justify-content-between mb-3">
-        <div role="heading" aria-level="1" className="h4">{title}</div>
+      >
+        {goalToastHeader}
+      </Toast>
+      <div className="row w-100 m-0 mb-3 justify-content-between">
+        <div className="col-12 col-sm-auto p-0">
+          <div role="heading" aria-level="1" className="h4">{title}</div>
+        </div>
         {resumeCourseUrl && (
-          <a className="btn btn-primary" href={resumeCourseUrl}>
-            {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
-          </a>
+          <div className="col-12 col-sm-auto p-0">
+            <a className="btn btn-primary btn-block" href={resumeCourseUrl}>
+              {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
+            </a>
+          </div>
         )}
       </div>
       <div className="row">
@@ -117,10 +125,18 @@ function OutlineTab({ intl }) {
               ...offerAlert,
             }}
           />
+          <div className="row w-100 m-0 mb-3 justify-content-end">
+            <div className="col-12 col-sm-auto p-0">
+              <Button variant="outline-primary" block onClick={() => { setExpandAll(!expandAll); }}>
+                {expandAll ? intl.formatMessage(messages.collapseAll) : intl.formatMessage(messages.expandAll)}
+              </Button>
+            </div>
+          </div>
           {sectionIds.map((sectionId) => (
             <Section
               key={sectionId}
               courseId={courseId}
+              expand={expandAll}
               section={sections[sectionId]}
             />
           ))}

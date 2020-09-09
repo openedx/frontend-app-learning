@@ -132,7 +132,7 @@ class MasqueradeWidget extends Component {
         </div>
         {shouldShowUserNameInput && (
           <div className="row mt-2">
-            <span className="col-auto col-form-label pl-3">{`${specificLearnerInputText}:`}</span>
+            <span className="col-auto col-form-label pl-3" id="masquerade-search-label">{`${specificLearnerInputText}:`}</span>
             <MasqueradeUserNameInput
               id="masquerade-search"
               className="col-4 form-control"

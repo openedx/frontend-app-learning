@@ -11,6 +11,11 @@ const messages = defineMessages({
     defaultMessage: 'Dashboard',
     description: 'The text for the user menu Dashboard navigation link.',
   },
+  help: {
+    id: 'header.help.label',
+    defaultMessage: 'Help',
+    description: 'The text for the link to the Help Center',
+  },
   profile: {
     id: 'header.menu.profile.label',
     defaultMessage: 'Profile',

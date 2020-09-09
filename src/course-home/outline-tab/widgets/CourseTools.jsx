@@ -52,7 +52,7 @@ function CourseTools({ courseId, intl }) {
       {courseTools.map((courseTool) => (
         <div key={courseTool.analyticsId}>
           <a href={courseTool.url} onClick={() => logClick(courseTool.analyticsId)}>
-            <FontAwesomeIcon icon={renderIcon(courseTool.analyticsId)} className="mr-2" style={{ width: '20px' }} />
+            <FontAwesomeIcon icon={renderIcon(courseTool.analyticsId)} className="mr-2" fixedWidth />
             {courseTool.title}
           </a>
         </div>

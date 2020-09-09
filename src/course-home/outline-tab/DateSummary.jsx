@@ -15,8 +15,8 @@ export default function DateSummary({
   return (
     <section className="container p-0 mb-3">
       <div className="row">
-        <FontAwesomeIcon icon={faCalendarAlt} className="ml-3 mt-1 mr-1" style={{ width: '20px' }} />
-        <div className="ml-2 font-weight-bold">
+        <FontAwesomeIcon icon={faCalendarAlt} className="ml-3 mt-1 mr-1" fixedWidth />
+        <div className="ml-1 font-weight-bold">
           <FormattedDate
             value={dateBlock.date}
             day="numeric"
@@ -27,7 +27,7 @@ export default function DateSummary({
           />
         </div>
       </div>
-      <div className="row ml-4 px-2">
+      <div className="row ml-4 pl-1 pr-2">
         <div className="date-summary-text">
           {linkedTitle
           && <div className="font-weight-bold mt-2"><a href={dateBlock.link}>{dateBlock.title}</a></div>}
