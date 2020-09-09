@@ -14,7 +14,7 @@ function CourseTabsNavigation({
       <div className="container-fluid">
         <Tabs
           className="nav-underline-tabs"
-          aria-label={intl.formatMessage(messages['learn.navigation.course.tabs.label'])}
+          aria-label={intl.formatMessage(messages.courseMaterial)}
         >
           {tabs.map(({ url, title, slug }) => (
             <a
