@@ -17,7 +17,7 @@ const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
 describe('Data layer integration tests', () => {
   const courseHomeMetadata = Factory.build('courseHomeMetadata');
-  const courseId = courseHomeMetadata.courseId;
+  const { courseId } = courseHomeMetadata;
   const courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
 
   let store;

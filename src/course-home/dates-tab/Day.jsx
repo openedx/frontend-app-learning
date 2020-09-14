@@ -27,7 +27,7 @@ function Day({
   const { color, badges } = getBadgeListAndColor(date, intl, null, items);
 
   return (
-    <li className="dates-day pb-4">
+    <li className="dates-day pb-4" data-testid="dates-day">
       {/* Top Line */}
       {!first && <div className="dates-line-top border-1 border-left border-gray-900 bg-gray-900" />}
 
@@ -39,7 +39,7 @@ function Day({
 
       {/* Content */}
       <div className="d-inline-block ml-3 pl-2">
-        <div className="mb-1">
+        <div className="mb-1" data-testid="dates-header">
           <p className="d-inline text-dark-500 font-weight-bold">
             <FormattedDate
               value={date}
@@ -59,7 +59,7 @@ function Day({
           const available = item.learnerHasAccess && (item.link || !isLearnerAssignment(item));
           const textColor = available ? 'text-dark-500' : 'text-dark-200';
           return (
-            <div key={item.title + item.date} className={textColor}>
+            <div key={item.title + item.date} className={textColor} data-testid="dates-item">
               <div>
                 <span className="font-weight-bold small mt-1">
                   {item.assignmentType && `${item.assignmentType}: `}{title}
@@ -72,7 +72,7 @@ function Day({
                       <Tooltip>{item.extraInfo}</Tooltip>
                     }
                   >
-                    <FontAwesomeIcon icon={faInfoCircle} className="fa-xs ml-1 text-gray-700" />
+                    <FontAwesomeIcon icon={faInfoCircle} className="fa-xs ml-1 text-gray-700" data-testid="dates-extra-info" />
                   </OverlayTrigger>
                 )}
               </div>

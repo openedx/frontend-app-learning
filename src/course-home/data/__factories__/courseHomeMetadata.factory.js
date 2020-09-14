@@ -2,7 +2,7 @@ import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dep
 
 Factory.define('courseHomeMetadata')
   .sequence(
-    'courseId', (courseId) => `course-v1:edX+DemoX+Demo_Course_${courseId}`
+    'courseId', (courseId) => `course-v1:edX+DemoX+Demo_Course_${courseId}`,
   )
   .option('host', 'http://localhost:18000')
   .attrs({
@@ -24,7 +24,7 @@ Factory.define('courseHomeMetadata')
             slug: 'courseware',
             type: 'courseware',
           },
-          { courseId: courseId, path: 'course/' },
+          { courseId, path: 'course/' },
         ),
         Factory.build(
           'tab',
@@ -34,7 +34,7 @@ Factory.define('courseHomeMetadata')
             slug: 'discussion',
             type: 'discussion',
           },
-          { courseId: courseId, path: 'discussion/forum/' },
+          { courseId, path: 'discussion/forum/' },
         ),
         Factory.build(
           'tab',
@@ -44,7 +44,7 @@ Factory.define('courseHomeMetadata')
             slug: 'wiki',
             type: 'wiki',
           },
-          { courseId: courseId, path: 'course_wiki' },
+          { courseId, path: 'course_wiki' },
         ),
         Factory.build(
           'tab',
@@ -54,7 +54,7 @@ Factory.define('courseHomeMetadata')
             slug: 'progress',
             type: 'progress',
           },
-          { courseId: courseId, path: 'progress' },
+          { courseId, path: 'progress' },
         ),
         Factory.build(
           'tab',
@@ -64,7 +64,7 @@ Factory.define('courseHomeMetadata')
             slug: 'instructor',
             type: 'instructor',
           },
-          { courseId: courseId, path: 'instructor' },
+          { courseId, path: 'instructor' },
         ),
       ];
 
@@ -73,7 +73,7 @@ Factory.define('courseHomeMetadata')
           tab_id: tab.slug,
           title: tab.title,
           url: `${host}${tab.url}`,
-        })
+        }),
       );
     },
   );
