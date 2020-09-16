@@ -136,6 +136,7 @@ function OutlineTab({ intl }) {
             <Section
               key={sectionId}
               courseId={courseId}
+              defaultOpen={sections[sectionId].resumeBlock}
               expand={expandAll}
               section={sections[sectionId]}
             />

@@ -12,6 +12,7 @@ import messages from './messages';
 
 function Section({
   courseId,
+  defaultOpen,
   expand,
   intl,
   section,
@@ -27,11 +28,15 @@ function Section({
     },
   } = useModel('outline', courseId);
 
-  const [open, setOpen] = useState(expand);
+  const [open, setOpen] = useState(defaultOpen);
 
   useEffect(() => {
     setOpen(expand);
   }, [expand]);
+
+  useEffect(() => {
+    setOpen(defaultOpen);
+  }, []);
 
   const sectionTitle = (
     <div>
@@ -96,6 +101,7 @@ function Section({
 
 Section.propTypes = {
   courseId: PropTypes.string.isRequired,
+  defaultOpen: PropTypes.bool.isRequired,
   expand: PropTypes.bool.isRequired,
   intl: intlShape.isRequired,
   section: PropTypes.shape().isRequired,
