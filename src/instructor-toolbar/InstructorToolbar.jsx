@@ -53,7 +53,7 @@ export default function InstructorToolbar(props) {
   const [masqueradeErrorMessage, showMasqueradeError] = useState(null);
   return (
     <div>
-      <div className="bg-primary text-light">
+      <div className="bg-primary text-white">
         <div className="container-fluid py-3 d-md-flex justify-content-end align-items-start">
           <div className="align-items-center flex-grow-1 d-md-flex mx-1 my-1">
             <MasqueradeWidget courseId={courseId} onError={showMasqueradeError} />

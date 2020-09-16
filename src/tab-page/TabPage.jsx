@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Toast } from '@edx/paragon';
 import { Header } from '../course-header';
 import PageLoading from '../generic/PageLoading';
 
+import genericMessages from '../generic/messages';
 import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
-import LearningToast from '../toast/LearningToast';
 import { setCallToActionToast } from '../course-home/data/slice';
 
 function TabPage({
@@ -37,13 +38,17 @@ function TabPage({
   if (courseStatus === 'loaded') {
     return (
       <>
-        <LearningToast
-          bodyLink={toastBodyLink}
-          bodyText={toastBodyText}
-          header={toastHeader}
-          onClose={() => dispatch(setCallToActionToast({ header: null, link: null, link_text: null }))}
+        <Toast
+          action={toastBodyText ? {
+            label: toastBodyText,
+            href: toastBodyLink,
+          } : null}
+          closeLabel={intl.formatMessage(genericMessages.close)}
+          onClose={() => dispatch(setCallToActionToast({ header: '', link: null, link_text: null }))}
           show={!!(toastHeader)}
-        />
+        >
+          {toastHeader}
+        </Toast>
         <LoadedTabPage {...passthroughProps} />
       </>
     );

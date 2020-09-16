@@ -12,7 +12,7 @@ const slice = createSlice({
     courseId: null,
     toastBodyText: null,
     toastBodyLink: null,
-    toastHeader: null,
+    toastHeader: '',
   },
   reducers: {
     fetchTabRequest: (state, { payload }) => {
