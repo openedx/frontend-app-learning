@@ -35,6 +35,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           complete: block.complete,
           id: block.id,
           title: block.display_name,
+          resumeBlock: block.resume_block,
           sequenceIds: block.children || [],
         };
         break;

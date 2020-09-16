@@ -177,6 +177,7 @@ Object {
               "complete": false,
               "courseId": "course-v1:edX+DemoX+Demo_Course_1",
               "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
+              "resumeBlock": false,
               "sequenceIds": Array [
                 "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
               ],
