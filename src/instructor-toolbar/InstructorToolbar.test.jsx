@@ -60,7 +60,7 @@ describe('Instructor Toolbar', () => {
     render(<InstructorToolbar {...mockData} />);
 
     const linksContainer = screen.getByText('View course in:').parentElement;
-    ['Existing experience', 'Studio', 'Insights'].forEach(service => {
+    ['Legacy experience', 'Studio', 'Insights'].forEach(service => {
       expect(getByText(linksContainer, service).getAttribute('href')).toMatch(/http.*/);
     });
   });

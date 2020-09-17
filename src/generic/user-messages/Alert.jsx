@@ -45,7 +45,7 @@ function Alert({
   type, dismissible, children, footer, intl, onDismiss,
 }) {
   return (
-    <div className={classNames('alert', { 'alert-dismissible': dismissible }, getAlertClass(type))} style={{ padding: '20px' }}>
+    <div data-testid={`alert-container-${type}`} className={classNames('alert', { 'alert-dismissible': dismissible }, getAlertClass(type))} style={{ padding: '20px' }}>
       <div className="row w-100 m-0">
         {type !== ALERT_TYPES.WELCOME && (
           <div className="col-auto p-0 mr-2">

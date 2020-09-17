@@ -11,7 +11,7 @@ import userEvent from '@testing-library/user-event';
 
 import DatesTab from './DatesTab';
 import { fetchDatesTab } from '../data';
-import initializeMockApp from '../../setupTest';
+import { initializeMockApp } from '../../setupTest';
 import initializeStore from '../../store';
 import { TabContainer } from '../../tab-page';
 import { UserMessagesProvider } from '../../generic/user-messages';

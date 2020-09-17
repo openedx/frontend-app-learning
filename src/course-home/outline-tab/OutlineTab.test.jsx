@@ -9,6 +9,7 @@ import {
 } from '../../setupTest';
 import executeThunk from '../../utils';
 import * as thunks from '../data/thunks';
+import { ALERT_TYPES } from '../../generic/user-messages';
 
 jest.mock('@edx/frontend-platform/analytics');
 
@@ -104,8 +105,10 @@ describe('Outline Tab', () => {
 
         const alert = await screen.findByText(alertMessage);
         expect(alert).toHaveAttribute('role', 'alert');
+        const alertContainer = await screen.findByTestId(`alert-container-${ALERT_TYPES.ERROR}`);
         expect(screen.queryByText(staffMessage)).not.toBeInTheDocument();
-        expect(alert.parentElement.querySelector('svg')).toHaveClass('fa-exclamation-triangle');
+
+        expect(alertContainer.querySelector('svg')).toHaveClass('fa-exclamation-triangle');
       });
 
       it('displays different message for unenrolled staff user', async () => {
@@ -114,13 +117,24 @@ describe('Outline Tab', () => {
           { courseTabs: courseMetadata.tabs },
         );
         axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadataForUnenrolledStaff);
+        // We need to remove offer_html and course_expired_html to limit the number of alerts we
+        // show, which makes this test easier to write.  If there's only one, it's easy to query
+        // for below.
+        const outlineTabDataCannotEnroll = Factory.build('outlineTabData', {
+          courseId: courseMetadata.id,
+          offer_html: null,
+          course_expired_html: null,
+        });
+        axiosMock.onGet(outlineUrl).reply(200, outlineTabDataCannotEnroll);
         await executeThunk(thunks.fetchOutlineTab(courseMetadata.id), store.dispatch);
 
         render(<OutlineTab />);
 
         const alert = await screen.findByText(staffMessage);
+        expect(alert).toHaveAttribute('role', 'alert');
         expect(screen.queryByText(alertMessage)).not.toBeInTheDocument();
-        expect(alert.parentElement.querySelector('svg')).toHaveClass('fa-info-circle');
+        const alertContainer = await screen.findByTestId(`alert-container-${ALERT_TYPES.INFO}`);
+        expect(alertContainer.querySelector('svg')).toHaveClass('fa-info-circle');
       });
 
       it('handles button click', async () => {
