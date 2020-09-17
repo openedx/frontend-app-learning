@@ -66,7 +66,7 @@ export default function InstructorToolbar(props) {
           )}
           {urlLms && (
             <span className="mx-1 my-1">
-              <a className="btn btn-outline-light" href={urlLms}>Existing experience</a>
+              <a className="btn btn-outline-light" href={urlLms}>Legacy experience</a>
             </span>
           )}
           {urlStudio && (
