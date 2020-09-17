@@ -89,7 +89,12 @@ export async function getCourseHomeCourseMetadata(courseId) {
   return normalizeCourseHomeCourseMetadata(data);
 }
 
+// For debugging purposes, you might like to see a fully loaded dates tab.
+// Just uncomment the next few lines and the immediate 'return' in the function below
+// import { Factory } from 'rosie';
+// import './__factories__';
 export async function getDatesTabData(courseId) {
+  // return camelCaseObject(Factory.build('datesTabData'));
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
