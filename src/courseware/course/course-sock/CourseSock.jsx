@@ -191,9 +191,5 @@ CourseSock.propTypes = {
     currencySymbol: PropTypes.string,
     sku: PropTypes.string,
     upgradeUrl: PropTypes.string,
-  }),
-};
-
-CourseSock.defaultProps = {
-  verifiedMode: null,
+  }).isRequired,
 };

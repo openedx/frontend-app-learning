@@ -11,7 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 
 import { UserMessagesProvider } from '../generic/user-messages';
 import tabMessages from '../tab-page/messages';
-import initializeMockApp from '../setupTest';
+import { initializeMockApp } from '../setupTest';
 
 import CoursewareContainer from './CoursewareContainer';
 import buildSimpleCourseBlocks from './data/__factories__/courseBlocks.factory';

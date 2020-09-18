@@ -8,7 +8,7 @@ import * as thunks from './thunks';
 
 import executeThunk from '../../utils';
 
-import initializeMockApp from '../../setupTest';
+import { initializeMockApp } from '../../setupTest';
 import initializeStore from '../../store';
 
 const { loggingService } = initializeMockApp();

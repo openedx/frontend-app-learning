@@ -57,11 +57,10 @@ class NotesVisibility extends Component {
 NotesVisibility.propTypes = {
   intl: intlShape.isRequired,
   course: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.string.isRequired,
     notes: PropTypes.shape({
-      enabled: PropTypes.bool,
       visible: PropTypes.bool,
-    }),
+    }).isRequired,
   }).isRequired,
 };
 

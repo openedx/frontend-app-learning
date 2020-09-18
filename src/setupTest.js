@@ -1,6 +1,8 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/extend-expect';
+import 'jest-chain';
 import './courseware/data/__factories__';
 import './course-home/data/__factories__';
 import { getConfig, mergeConfig } from '@edx/frontend-platform';
@@ -34,7 +36,14 @@ window.getComputedStyle = jest.fn(() => ({
   getPropertyValue: jest.fn(),
 }));
 
-export default function initializeMockApp() {
+export const authenticatedUser = {
+  userId: 'abc123',
+  username: 'Mock User',
+  roles: [],
+  administrator: false,
+};
+
+export function initializeMockApp() {
   mergeConfig({
     INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
     STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,
@@ -79,6 +88,15 @@ export function loadUnit(message = messageEvent) {
   window.postMessage(message, '*');
 }
 
+// Helper function to log unhandled API requests to the console while running tests.
+export function logUnhandledRequests(axiosMock) {
+  axiosMock.onAny().reply((config) => {
+    // eslint-disable-next-line no-console
+    console.log(config.method, config.url);
+    return [200, {}];
+  });
+}
+
 let globalStore;
 
 export async function initializeTestStore(options = {}, overrideStore = true) {
@@ -110,11 +128,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
     axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);
   });
 
-  axiosMock.onAny().reply((config) => {
-    // eslint-disable-next-line no-console
-    console.log(config.url);
-    return [200, {}];
-  });
+  logUnhandledRequests(axiosMock);
 
   // eslint-disable-next-line no-unused-expressions
   !options.excludeFetchCourse && await executeThunk(fetchCourse(courseMetadata.id), store.dispatch);
