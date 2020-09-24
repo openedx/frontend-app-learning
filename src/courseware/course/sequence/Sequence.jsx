@@ -114,8 +114,8 @@ function Sequence({
   }
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
-  const goToCourseCompletion = () => {
-    history.push(`/course/${courseId}/course-completion`);
+  const goToCourseExitPage = () => {
+    history.push(`/course/${courseId}/course-exit`);
   };
 
   if (sequenceStatus === 'loaded') {
@@ -138,7 +138,7 @@ function Sequence({
               logEvent('edx.ui.lms.sequence.previous_selected', 'top');
               handlePrevious();
             }}
-            goToCourseCompletion={() => goToCourseCompletion()}
+            goToCourseExitPage={() => goToCourseExitPage()}
           />
           <div className="unit-container flex-grow-1">
             <SequenceContent
@@ -160,7 +160,7 @@ function Sequence({
                   logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
                   handleNext();
                 }}
-                goToCourseCompletion={() => goToCourseCompletion()}
+                goToCourseExitPage={() => goToCourseExitPage()}
               />
             )}
           </div>

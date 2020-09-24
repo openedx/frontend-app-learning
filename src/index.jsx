@@ -19,12 +19,12 @@ import { UserMessagesProvider } from './generic/user-messages';
 import './index.scss';
 import './assets/favicon.ico';
 import OutlineTab from './course-home/outline-tab';
+import CourseExit from './courseware/course/course-exit/CourseExit';
 import CoursewareContainer from './courseware';
 import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandingPage';
 import DatesTab from './course-home/dates-tab';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
-import CourseCompletion from './course-home/course-completion/CourseCompletion';
 
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
@@ -51,9 +51,9 @@ subscribe(APP_READY, () => {
               <ProgressTab />
             </TabContainer>
           </Route>
-          <Route path="/course/:courseId/course-completion">
-            <TabContainer tab="outline" fetch={fetchCourse} isCompletion>
-              <CourseCompletion />
+          <Route path="/course/:courseId/course-exit">
+            <TabContainer tab="exit" fetch={fetchCourse} isExitPage>
+              <CourseExit />
             </TabContainer>
           </Route>
           <Route

@@ -136,8 +136,9 @@ function normalizeMetadata(metadata) {
     marketingUrl: metadata.marketing_url,
     celebrations: camelCaseObject(metadata.celebrations),
     userHasPassingGrade: metadata.user_has_passing_grade,
-    courseCompletionIsActive: metadata.course_completion_is_active,
+    courseExitPageIsActive: metadata.course_exit_page_is_active,
     certificateData: camelCaseObject(metadata.certificate_data),
+    verifyIdentityUrl: metadata.verify_identity_url,
   };
 }
 
