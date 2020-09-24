@@ -45,7 +45,7 @@ function UpdateGoalSelector({
           </div>
           <div className="col-12 p-0">
             <Dropdown className="py-2">
-              <Dropdown.Toggle variant="outline-primary" block id="edit-goal-selector">
+              <Dropdown.Toggle variant="outline-primary" block id="edit-goal-selector" data-testid="edit-goal-selector">
                 {selectedGoal.text}
               </Dropdown.Toggle>
               <Dropdown.Menu>

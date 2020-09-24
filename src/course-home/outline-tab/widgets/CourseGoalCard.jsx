@@ -34,7 +34,7 @@ function CourseGoalCard({
   }
 
   return (
-    <Card className="mb-3">
+    <Card className="mb-3" data-testid="course-goal-card">
       <Card.Body>
         <div className="row w-100 m-0 justify-content-between align-items-center">
           <div className="col col-8 p-0">

@@ -19,31 +19,26 @@ import { UserMessagesProvider } from '../../generic/user-messages';
 initializeMockApp();
 
 describe('DatesTab', () => {
-  let store;
-  let component;
   let axiosMock;
-  let courseId;
+
+  const store = initializeStore();
+  const component = (
+    <AppProvider store={store}>
+      <UserMessagesProvider>
+        <Route path="/course/:courseId/dates">
+          <TabContainer tab="dates" fetch={fetchDatesTab}>
+            <DatesTab />
+          </TabContainer>
+        </Route>
+      </UserMessagesProvider>
+    </AppProvider>
+  );
+  const courseMetadata = Factory.build('courseHomeMetadata');
+  const { courseId } = courseMetadata;
 
   beforeEach(() => {
-    store = initializeStore();
-    component = (
-      <AppProvider store={store}>
-        <UserMessagesProvider>
-          <Route path="/course/:courseId/dates">
-            <TabContainer tab="dates" fetch={fetchDatesTab}>
-              <DatesTab />
-            </TabContainer>
-          </Route>
-        </UserMessagesProvider>
-      </AppProvider>
-    );
-
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-
-    const courseMetadata = Factory.build('courseHomeMetadata');
-    courseId = courseMetadata.courseId;
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`).reply(200, courseMetadata);
-
     history.push(`/course/${courseId}/dates`); // so tab can pull course id from url
   });
 

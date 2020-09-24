@@ -19,7 +19,7 @@ Factory.define('outlineTabData')
   })
   .attr('course_goals', [], () => ({
     goal_options: [],
-    selected_goal: {},
+    selected_goal: null,
   }))
   .attr('enroll_alert', {
     can_enroll: true,
