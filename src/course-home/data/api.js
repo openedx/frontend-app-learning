@@ -141,7 +141,7 @@ export async function getOutlineTabData(courseId) {
   const {
     data,
   } = tabData;
-  const courseBlocks = normalizeOutlineBlocks(courseId, data.course_blocks.blocks);
+  const courseBlocks = data.course_blocks ? normalizeOutlineBlocks(courseId, data.course_blocks.blocks) : {};
   const courseGoals = camelCaseObject(data.course_goals);
   const courseExpiredHtml = data.course_expired_html;
   const courseTools = camelCaseObject(data.course_tools);
