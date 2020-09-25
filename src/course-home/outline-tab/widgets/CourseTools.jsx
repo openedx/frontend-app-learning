@@ -18,6 +18,10 @@ function CourseTools({ courseId, intl }) {
     courseTools,
   } = useModel('outline', courseId);
 
+  if (courseTools.length === 0) {
+    return null;
+  }
+
   const logClick = (analyticsId) => {
     const { administrator } = getAuthenticatedUser();
     sendTrackEvent('edx.course.tool.accessed', {
