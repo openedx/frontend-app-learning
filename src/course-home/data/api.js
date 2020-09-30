@@ -1,6 +1,9 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { logError } from '@edx/frontend-platform/logging';
+import {
+  logError,
+  logInfo,
+} from '@edx/frontend-platform/logging';
 
 function normalizeCourseHomeCourseMetadata(metadata) {
   const data = camelCaseObject(metadata);
@@ -53,7 +56,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
         break;
 
       default:
-        logError(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, and sequential.`);
+        logInfo(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, and sequential.`);
     }
   });
 

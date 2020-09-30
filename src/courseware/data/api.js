@@ -1,6 +1,9 @@
 import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { logError } from '@edx/frontend-platform/logging';
+import {
+  logError,
+  logInfo,
+} from '@edx/frontend-platform/logging';
 
 export function normalizeBlocks(courseId, blocks) {
   const models = {
@@ -43,7 +46,7 @@ export function normalizeBlocks(courseId, blocks) {
         };
         break;
       default:
-        logError(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, and vertical.`);
+        logInfo(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, and vertical.`);
     }
   });
 
