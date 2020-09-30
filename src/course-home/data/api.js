@@ -1,9 +1,6 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import {
-  logError,
-  logInfo,
-} from '@edx/frontend-platform/logging';
+import { logInfo } from '@edx/frontend-platform/logging';
 
 function normalizeCourseHomeCourseMetadata(metadata) {
   const data = camelCaseObject(metadata);
@@ -77,7 +74,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
         if (sequenceId in models.sequences) {
           models.sequences[sequenceId].sectionId = section.id;
         } else {
-          logError(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
+          logInfo(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
         }
       });
     }
