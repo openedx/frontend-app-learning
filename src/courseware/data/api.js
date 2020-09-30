@@ -1,6 +1,6 @@
 import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { logError } from '@edx/frontend-platform/logging';
+import { logInfo } from '@edx/frontend-platform/logging';
 
 export function normalizeBlocks(courseId, blocks) {
   const models = {
@@ -43,7 +43,7 @@ export function normalizeBlocks(courseId, blocks) {
         };
         break;
       default:
-        logError(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, and vertical.`);
+        logInfo(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, and vertical.`);
     }
   });
 
@@ -64,7 +64,7 @@ export function normalizeBlocks(courseId, blocks) {
         if (sequenceId in models.sequences) {
           models.sequences[sequenceId].sectionId = section.id;
         } else {
-          logError(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
+          logInfo(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
         }
       });
     }
@@ -76,7 +76,7 @@ export function normalizeBlocks(courseId, blocks) {
         if (unitId in models.units) {
           models.units[unitId].sequenceId = sequence.id;
         } else {
-          logError(`Sequence ${sequence.id} has child block ${unitId}, but that block is not in the list of units.`);
+          logInfo(`Sequence ${sequence.id} has child block ${unitId}, but that block is not in the list of units.`);
         }
       });
     }
