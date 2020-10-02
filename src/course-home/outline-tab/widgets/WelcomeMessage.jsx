@@ -53,12 +53,14 @@ function WelcomeMessage({ courseId, intl }) {
         <TransitionReplace className="mb-3" enterDuration={200} exitDuration={200}>
           {showShortMessage ? (
             <LmsHtmlFragment
+              data-testid="short-welcome-message-iframe"
               key="short-html"
               html={shortWelcomeMessageHtml}
               title={intl.formatMessage(messages.welcomeMessage)}
             />
           ) : (
             <LmsHtmlFragment
+              data-testid="long-welcome-message-iframe"
               key="full-html"
               html={welcomeMessageHtml}
               title={intl.formatMessage(messages.welcomeMessage)}

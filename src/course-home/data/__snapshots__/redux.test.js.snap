@@ -358,7 +358,7 @@ Object {
               "sequenceIds": Array [
                 "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
               ],
-              "title": "bcdabcdabcdabcdabcdabcdabcdabcd2",
+              "title": "Title of Section",
             },
           },
           "sequences": Object {
@@ -377,7 +377,7 @@ Object {
         "courseExpiredHtml": "<div>Course expired</div>",
         "courseGoals": Object {
           "goalOptions": Array [],
-          "selectedGoal": Object {},
+          "selectedGoal": null,
         },
         "courseTools": Array [
           Object {

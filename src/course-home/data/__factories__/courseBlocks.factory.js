@@ -61,10 +61,16 @@ export default function buildSimpleCourseBlocks(courseId, title, options = {}) {
   )];
   const sectionBlock = options.sectionBlock || Factory.build(
     'block',
-    { type: 'chapter', children: sequenceBlock.map(block => block.id), resume_block: false },
+    {
+      type: 'chapter',
+      display_name: 'Title of Section',
+      complete: options.complete || false,
+      resume_block: options.resumeBlock || false,
+      children: sequenceBlock.map(block => block.id),
+    },
     { courseId },
   );
-  const courseBlock = options.courseBlocks || Factory.build(
+  const courseBlock = options.courseBlock || Factory.build(
     'block',
     { type: 'course', display_name: title, children: [sectionBlock.id] },
     { courseId },

@@ -35,11 +35,10 @@ export default function DateSummary({
           && <div className="font-weight-bold mt-2">{dateBlock.title}</div>}
         </div>
         {dateBlock.description
-          && <div className="date-summary-text m-0 mt-1">{dateBlock.description}</div>}
+          && <div className="date-summary-text mt-1">{dateBlock.description}</div>}
         {!linkedTitle && dateBlock.link
           && <a href={dateBlock.link} className="description-link">{dateBlock.linkText}</a>}
       </div>
-
     </section>
   );
 }
