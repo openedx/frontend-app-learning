@@ -20,13 +20,21 @@ export default function SequenceNavigation({
   onNavigate,
   nextSequenceHandler,
   previousSequenceHandler,
+  goToCourseExitPage,
 }) {
   const sequence = useModel('sequences', sequenceId);
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
-  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const {
+    courseId,
+    sequenceStatus,
+  } = useSelector(state => state.courseware);
   const isLocked = sequenceStatus === LOADED ? (
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
+  const {
+    courseExitPageIsActive,
+    userHasPassingGrade,
+  } = useModel('courses', courseId);
 
   const renderUnitButtons = () => {
     if (isLocked) {
@@ -49,6 +57,52 @@ export default function SequenceNavigation({
     );
   };
 
+  const renderNextButton = () => {
+    // AA-198: The userHasPassingGrade condition can be removed once we have a view for learners with failing grades
+    const buttonOnClick = (isLastUnit && courseExitPageIsActive && userHasPassingGrade
+      ? goToCourseExitPage : nextSequenceHandler);
+    // AA-198: The userHasPassingGrade condition can be removed once we have a view for learners with failing grades
+    const disabled = isLastUnit && (!courseExitPageIsActive || !userHasPassingGrade);
+
+    let buttonText = (
+      <FormattedMessage
+        defaultMessage="Next"
+        id="learn.sequence.navigation.next.button"
+        description="The Next button in the sequence nav"
+      />
+    );
+    if (isLastUnit && courseExitPageIsActive && userHasPassingGrade) {
+      buttonText = (
+        <FormattedMessage
+          defaultMessage="Complete the course"
+          id="learn.sequence.navigation.completeCourse.button"
+          description="The 'Complete the course' button in the sequence nav"
+        />
+      );
+    }
+    // AA-198: Uncomment once there is a view for learners with failing grades
+    // else if (isLastUnit && courseExitPageIsActive && !userHasPassingGrade) {
+    //   buttonText = (
+    //     <FormattedMessage
+    //       defaultMessage="Next"
+    //       id="learn.sequence.navigation.endOfCourse.button.next"
+    //       description="The 'next' text in the end of course button in the sequence nav"
+    //     />
+    //     <FormattedMessage
+    //       defaultMessage="(end of course)"
+    //       id="learn.sequence.navigation.endOfCourse.button.endOfCourse"
+    //       description="The '(end of course)' text in the end of course button in the sequence nav"
+    //     />
+    //   )
+    // }
+    return (
+      <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled}>
+        {buttonText}
+        <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
+      </Button>
+    );
+  };
+
   return sequenceStatus === LOADED && (
     <nav className={classNames('sequence-navigation', className)}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
@@ -60,14 +114,7 @@ export default function SequenceNavigation({
         />
       </Button>
       {renderUnitButtons()}
-      <Button variant="link" className="next-btn" onClick={nextSequenceHandler} disabled={isLastUnit}>
-        <FormattedMessage
-          defaultMessage="Next"
-          id="learn.sequence.navigation.next.button"
-          description="The Next button in the sequence nav"
-        />
-        <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
-      </Button>
+      {renderNextButton()}
     </nav>
   );
 }
@@ -79,6 +126,7 @@ SequenceNavigation.propTypes = {
   onNavigate: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
+  goToCourseExitPage: PropTypes.func.isRequired,
 };
 
 SequenceNavigation.defaultProps = {

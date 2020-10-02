@@ -10,6 +10,7 @@ export default function TabContainer(props) {
     children,
     fetch,
     tab,
+    isExitPage,
   } = props;
 
   const { courseId: courseIdFromUrl } = useParams();
@@ -21,10 +22,11 @@ export default function TabContainer(props) {
 
   // The courseId from the store is the course we HAVE loaded.  If the URL changes,
   // we don't want the application to adjust to it until it has actually loaded the new data.
+  const slice = isExitPage ? 'courseware' : 'courseHome';
   const {
     courseId,
     courseStatus,
-  } = useSelector(state => state.courseHome);
+  } = useSelector(state => state[slice]);
 
   return (
     <TabPage
@@ -40,5 +42,10 @@ export default function TabContainer(props) {
 TabContainer.propTypes = {
   children: PropTypes.node.isRequired,
   fetch: PropTypes.func.isRequired,
+  isExitPage: PropTypes.bool,
   tab: PropTypes.string.isRequired,
+};
+
+TabContainer.defaultProps = {
+  isExitPage: false,
 };

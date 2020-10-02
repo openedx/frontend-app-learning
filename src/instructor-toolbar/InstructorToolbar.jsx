@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
@@ -36,6 +36,12 @@ function getStudioUrl(courseId, unitId) {
 }
 
 export default function InstructorToolbar(props) {
+  const [didMount, setDidMount] = useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
   const {
     courseId,
     unitId,
@@ -51,6 +57,10 @@ export default function InstructorToolbar(props) {
   });
   const urlStudio = getStudioUrl(courseId, unitId);
   const [masqueradeErrorMessage, showMasqueradeError] = useState(null);
+
+  if (!didMount) {
+    return null;
+  }
   return (
     <div>
       <div className="bg-primary text-white">
