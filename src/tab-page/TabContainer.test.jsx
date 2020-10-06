@@ -17,6 +17,7 @@ describe('Tab Container', () => {
     children: [],
     fetch: mockFetch,
     tab: 'dummy',
+    slice: 'courseware',
   };
   let courseId;
 
