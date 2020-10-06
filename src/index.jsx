@@ -52,7 +52,7 @@ subscribe(APP_READY, () => {
             </TabContainer>
           </Route>
           <Route path="/course/:courseId/course-exit">
-            <TabContainer tab="exit" fetch={fetchCourse} isExitPage>
+            <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
               <CourseExit />
             </TabContainer>
           </Route>

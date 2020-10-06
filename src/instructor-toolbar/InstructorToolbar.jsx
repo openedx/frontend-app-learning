@@ -36,11 +36,19 @@ function getStudioUrl(courseId, unitId) {
 }
 
 export default function InstructorToolbar(props) {
+  // This didMount logic became necessary once we had a page that does a redirect on a quick exit.
+  // As a result, it unmounts the InstructorToolbar (which will be remounted by the new component),
+  // but the InstructorToolbar's MasqueradeWidget has an outgoing request. Since it is unmounted
+  // during that time, it raises an error about a potential memory leak. By stopping the render
+  // when the InstructorToolbar is unmounted, we avoid the memory leak.
+  // NOTE: This was originally added because of the CourseExit page redirect. Once that page stops
+  //   doing a redirect because a CourseExit experience exists for all learners, this could be removed
   const [didMount, setDidMount] = useState(false);
   useEffect(() => {
     setDidMount(true);
+    // Returning this function here will run setDidMount(false) when this component is unmounted
     return () => setDidMount(false);
-  }, []);
+  });
 
   const {
     courseId,
@@ -58,10 +66,7 @@ export default function InstructorToolbar(props) {
   const urlStudio = getStudioUrl(courseId, unitId);
   const [masqueradeErrorMessage, showMasqueradeError] = useState(null);
 
-  if (!didMount) {
-    return null;
-  }
-  return (
+  return (!didMount ? null : (
     <div>
       <div className="bg-primary text-white">
         <div className="container-fluid py-3 d-md-flex justify-content-end align-items-start">
@@ -102,7 +107,7 @@ export default function InstructorToolbar(props) {
         </div>
       )}
     </div>
-  );
+  ));
 }
 
 InstructorToolbar.propTypes = {

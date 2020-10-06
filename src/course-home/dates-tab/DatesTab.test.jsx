@@ -26,7 +26,7 @@ describe('DatesTab', () => {
     <AppProvider store={store}>
       <UserMessagesProvider>
         <Route path="/course/:courseId/dates">
-          <TabContainer tab="dates" fetch={fetchDatesTab}>
+          <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
             <DatesTab />
           </TabContainer>
         </Route>
