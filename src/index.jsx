@@ -37,17 +37,17 @@ subscribe(APP_READY, () => {
         <Switch>
           <Route path="/redirect" component={CoursewareRedirectLandingPage} />
           <Route path="/course/:courseId/home">
-            <TabContainer tab="outline" fetch={fetchOutlineTab}>
+            <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
               <OutlineTab />
             </TabContainer>
           </Route>
           <Route path="/course/:courseId/dates">
-            <TabContainer tab="dates" fetch={fetchDatesTab}>
+            <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
               <DatesTab />
             </TabContainer>
           </Route>
           <Route path="/course/:courseId/progress">
-            <TabContainer tab="progress" fetch={fetchProgressTab}>
+            <TabContainer tab="progress" fetch={fetchProgressTab} slice="courseHome">
               <ProgressTab />
             </TabContainer>
           </Route>
