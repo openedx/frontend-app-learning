@@ -28,6 +28,7 @@ describe('Sequence Navigation', () => {
       previousSequenceHandler: () => {},
       onNavigate: () => {},
       nextSequenceHandler: () => {},
+      goToCourseExitPage: () => {},
     };
   });
 

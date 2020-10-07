@@ -9,7 +9,7 @@ const messages = defineMessages({
   certificateHeaderNotAvailable: {
     id: 'courseCelebration.certificateHeader.notAvailable',
     defaultMessage: 'Your certificate will be available soon!',
-    description: 'Text displayed when course certificate is not yet available to view',
+    description: 'Text displayed when course certificate is not yet available to be viewed',
   },
   certificateHeaderUnverified: {
     id: 'courseCelebration.certificateHeader.unverified',
@@ -21,55 +21,67 @@ const messages = defineMessages({
     defaultMessage: 'Congratulations, you qualified for a certificate!',
     description: 'Text displayed when a user has completed the course and can request a certificate',
   },
+  certificateImage: {
+    id: 'courseCelebration.certificateImage',
+    defaultMessage: 'Sample certificate',
+    description: 'Alt text used to describe an image of a certificate',
+  },
   congratulationsHeader: {
     id: 'courseCelebration.congratulationsHeader',
     defaultMessage: 'Congratulations!',
-    description: 'Congratulations header on course completion page',
+  },
+  congratulationsImage: {
+    id: 'courseCelebration.congratulationsImage',
+    defaultMessage: 'Four people raising their hands in celebration',
+    description: 'Alt text used to describe celebratory image',
   },
   dashboardLink: {
     id: 'courseExit.dashboardLink',
     defaultMessage: 'Dashboard',
-    description: "Link to learner's dashboard",
+    description: "Link to user's dashboard",
   },
   downloadButton: {
     id: 'courseCelebration.downloadButton',
     defaultMessage: 'Download my certificate',
-    description: 'Text for download button in certificate banner',
+    description: 'Button to download the course certificate',
   },
   idVerificationSupportLink: {
     id: 'courseExit.idVerificationSupportLink',
     defaultMessage: 'Learn more about ID verification',
-    description: 'Link to help article about ID verification',
+    description: 'Link to an article about identity verification',
   },
   profileLink: {
     id: 'courseExit.profileLink',
     defaultMessage: 'Profile',
-    description: 'Link to profile',
+    description: "Link to user's profile",
   },
   requestCertificateBodyText: {
     id: 'courseCelebration.requestCertificateBodyText',
     defaultMessage: 'In order to access your certificate, request it below.',
-    description: 'Body text for certificate banner',
   },
   requestCertificateButton: {
     id: 'courseCelebration.requestCertificateButton',
     defaultMessage: 'Request certificate',
-    description: 'Text for request certificate button in certificate banner',
+    description: 'Button to request the course certificate',
   },
   shareHeader: {
     id: 'courseCelebration.shareHeader',
     defaultMessage: 'You have completed your course. Share your success on social media or email.',
-    description: 'Social media/email share header',
   },
   verifyIdentityButton: {
     id: 'courseCelebration.verifyIdentityButton',
-    defaultMessage: 'Verify now',
-    description: 'Text for verify identity button in certificate banner',
+    defaultMessage: 'Verify ID now',
+    description: 'Button to verify the identify of the user',
   },
   viewCertificateButton: {
     id: 'courseCelebration.viewCertificateButton',
-    defaultMessage: 'View now',
-    description: 'Text for view certificate button in certificate banner',
+    defaultMessage: 'View my certificate',
+    description: 'Button to view the course certificate',
+  },
+  viewCoursesButton: {
+    id: 'courseExit.viewCoursesButton',
+    defaultMessage: 'View my courses',
+    description: 'Button to redirect user to their course dashboard',
   },
 });
 

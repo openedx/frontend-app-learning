@@ -3,20 +3,21 @@ import PropTypes from 'prop-types';
 import { Button } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
 
-export default function UnitNavigation(props) {
-  const {
-    sequenceId,
-    unitId,
-    onClickPrevious,
-    onClickNext,
-    goToCourseExitPage,
-  } = props;
+import messages from './messages';
 
+function UnitNavigation({
+  intl,
+  sequenceId,
+  unitId,
+  onClickPrevious,
+  onClickNext,
+  goToCourseExitPage,
+}) {
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
   const { courseId } = useSelector(state => state.courseware);
   const {
@@ -38,45 +39,18 @@ export default function UnitNavigation(props) {
         <div className="m-2">
           <span role="img" aria-hidden="true">&#129303;</span> {/* This is a hugging face emoji */}
           {' '}
-          <FormattedMessage
-            id="learn.end.of.course"
-            description="Message shown to students in place of a 'Next' button when they're at the end of a course."
-            defaultMessage="You've reached the end of this course!"
-          />
+          {intl.formatMessage(messages.endOfCourse)}
         </div>
       );
     }
 
-    let buttonText = (
-      <FormattedMessage
-        id="learn.sequence.navigation.after.unit.next"
-        description="The button to go to the next unit"
-        defaultMessage="Next"
-      />
-    );
+    let buttonText = (intl.formatMessage(messages.nextButton));
     if (isLastUnit && courseExitPageIsActive && userHasPassingGrade) {
-      buttonText = (
-        <FormattedMessage
-          defaultMessage="Complete the course"
-          id="learn.sequence.navigation.after.unit.completeCourse"
-          description="The 'Complete the course' button in the unit nav"
-        />
-      );
+      buttonText = (intl.formatMessage(messages.completeCourseButton));
     }
     // AA-198: Uncomment once there is a view for learners with failing grades
     // else if (isLastUnit && courseExitPageIsActive && !userHasPassingGrade) {
-    //   buttonText = (
-    //     <FormattedMessage
-    //       defaultMessage="Next"
-    //       id="learn.sequence.navigation.endOfCourse.button.next"
-    //       description="The 'next' text in the end of course button in the sequence nav"
-    //     />
-    //     <FormattedMessage
-    //       defaultMessage="(end of course)"
-    //       id="learn.sequence.navigation.endOfCourse.button.endOfCourse"
-    //       description="The '(end of course)' text in the end of course button in the sequence nav"
-    //     />
-    //   )
+    //   buttonText = (`${intl.formatMessage(messages.nextButton)} (${intl.formatMessage(messages.endOfCourse)})`);
     // }
     return (
       <Button variant="outline-primary" className="next-button" onClick={buttonOnClick} disabled={disabled}>
@@ -95,11 +69,7 @@ export default function UnitNavigation(props) {
         onClick={onClickPrevious}
       >
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
-        <FormattedMessage
-          id="learn.sequence.navigation.after.unit.previous"
-          description="The button to go to the previous unit"
-          defaultMessage="Previous"
-        />
+        {intl.formatMessage(messages.previousButton)}
       </Button>
       {renderNextButton()}
     </div>
@@ -107,6 +77,7 @@ export default function UnitNavigation(props) {
 }
 
 UnitNavigation.propTypes = {
+  intl: intlShape.isRequired,
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   onClickPrevious: PropTypes.func.isRequired,
@@ -117,3 +88,5 @@ UnitNavigation.propTypes = {
 UnitNavigation.defaultProps = {
   unitId: null,
 };
+
+export default injectIntl(UnitNavigation);

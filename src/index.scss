@@ -246,7 +246,9 @@ $primary: #1176B2;
       }
     }
     @media (min-width: map-get($grid-breakpoints, 'sm')) {
-      min-width: 10rem;
+      min-width: fit-content;
+      padding-left: 2rem;
+      padding-right: 2rem;
     }
   }
 
