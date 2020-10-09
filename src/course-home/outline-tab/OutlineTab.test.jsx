@@ -21,63 +21,72 @@ jest.mock('@edx/frontend-platform/analytics');
 describe('Outline Tab', () => {
   let axiosMock;
 
-  const courseMetadataUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/*`);
-  const goalUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`);
-  const outlineUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/*`);
+  const courseId = 'course-v1:edX+Test+run';
+  const courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
+  const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`;
+  const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
 
   const store = initializeStore();
+  const defaultMetadata = Factory.build('courseHomeMetadata', { courseId });
+  const defaultTabData = Factory.build('outlineTabData');
 
-  const courseMetadata = Factory.build('courseHomeMetadata');
-  const { courseId } = courseMetadata;
-  const outlineTabData = Factory.build('outlineTabData');
+  function setMetadata(attributes, options) {
+    const courseMetadata = Factory.build('courseHomeMetadata', { courseId, ...attributes }, options);
+    axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+  }
+
+  function setTabData(attributes, options) {
+    const outlineTabData = Factory.build('outlineTabData', attributes, options);
+    axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
+  }
+
+  async function fetchAndRender() {
+    await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
+    render(<OutlineTab />, { store });
+  }
 
   beforeEach(async () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
-    axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
+
+    // Set defaults for network requests
+    axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
+    axiosMock.onPost(enrollmentUrl).reply(200, {});
     axiosMock.onPost(goalUrl).reply(200, { header: 'Success' });
+    axiosMock.onGet(outlineUrl).reply(200, defaultTabData);
+
     logUnhandledRequests(axiosMock);
-    await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
   });
 
   describe('Course Outline', () => {
-    it('displays link to start course', () => {
-      render(<OutlineTab />, { store });
+    it('displays link to start course', async () => {
+      await fetchAndRender();
       expect(screen.getByRole('link', { name: 'Start Course' })).toBeInTheDocument();
     });
 
     it('displays link to resume course', async () => {
-      const outlineTabDataHasVisited = Factory.build('outlineTabData', {
-        courseId,
+      setTabData({
         resume_course: {
           has_visited_course: true,
           url: `${getConfig().LMS_BASE_URL}/courses/${courseId}/jump_to/block-v1:edX+Test+Block@12345abcde`,
         },
       });
-      axiosMock.onGet(outlineUrl).reply(200, outlineTabDataHasVisited);
-      await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-      render(<OutlineTab />, { store });
-
+      await fetchAndRender();
       expect(screen.getByRole('link', { name: 'Resume Course' })).toBeInTheDocument();
     });
 
     it('expands section that contains resume block', async () => {
-      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, outlineTabData.title, { resumeBlock: true });
-      const outlineTabDataResumeBlock = Factory.build('outlineTabData', {
-        courseId,
+      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      setTabData({
         course_blocks: { blocks: courseBlocks.blocks },
       });
-      axiosMock.onGet(outlineUrl).reply(200, outlineTabDataResumeBlock);
-      await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-      render(<OutlineTab />, { store });
+      await fetchAndRender();
       const expandedSectionNode = screen.getByRole('button', { name: /Title of Section/ });
       expect(expandedSectionNode).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('handles expand/collapse all button click', () => {
-      render(<OutlineTab />, { store });
+    it('handles expand/collapse all button click', async () => {
+      await fetchAndRender();
       // Button renders as "Expand All"
       const expandButton = screen.getByRole('button', { name: 'Expand All' });
       expect(expandButton).toBeInTheDocument();
@@ -96,43 +105,34 @@ describe('Outline Tab', () => {
     });
 
     it('displays correct icon for complete assignment', async () => {
-      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, outlineTabData.title, { complete: true });
-      const outlineTabDataCompleteAssignment = Factory.build('outlineTabData', {
-        courseId,
+      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { complete: true });
+      setTabData({
         course_blocks: { blocks: courseBlocks.blocks },
       });
-      axiosMock.onGet(outlineUrl).reply(200, outlineTabDataCompleteAssignment);
-      await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-      render(<OutlineTab />, { store });
+      await fetchAndRender();
       expect(screen.getByTitle('Completed section')).toBeInTheDocument();
     });
 
     it('displays correct icon for incomplete assignment', async () => {
-      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, outlineTabData.title, { complete: false });
-      const outlineTabDataIncompleteAssignment = Factory.build('outlineTabData', {
-        courseId,
+      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { complete: false });
+      setTabData({
         course_blocks: { blocks: courseBlocks.blocks },
       });
-      axiosMock.onGet(outlineUrl).reply(200, outlineTabDataIncompleteAssignment);
-      await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-      render(<OutlineTab />, { store });
+      await fetchAndRender();
       expect(screen.getByTitle('Incomplete section')).toBeInTheDocument();
     });
   });
 
   describe('Welcome Message', () => {
-    it('does not render show more/less button under 100 words', () => {
-      render(<OutlineTab />, { store });
+    it('does not render show more/less button under 100 words', async () => {
+      await fetchAndRender();
       expect(screen.getByTestId('alert-container-welcome')).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeInTheDocument();
     });
 
     describe('over 100 words', () => {
       beforeEach(async () => {
-        const outlineTabDataLongMessage = Factory.build('outlineTabData', {
-          courseId,
+        setTabData({
           welcome_message_html: '<p>'
             + 'This is a test welcome message that happens to be longer than one hundred words. We hope it will be shortened.'
             + 'This is a test welcome message that happens to be longer than one hundred words. We hope it will be shortened.'
@@ -141,10 +141,7 @@ describe('Outline Tab', () => {
             + 'This is a test welcome message that happens to be longer than one hundred words. We hope it will be shortened.'
             + '</p>',
         });
-        axiosMock.onGet(outlineUrl).reply(200, outlineTabDataLongMessage);
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-        render(<OutlineTab />, { store });
+        await fetchAndRender();
       });
 
       it('shortens message', async () => {
@@ -172,14 +169,8 @@ describe('Outline Tab', () => {
     });
 
     it('does not display if no update available', async () => {
-      const outlineTabDataSansUpdate = Factory.build('outlineTabData', {
-        courseId,
-        welcome_message_html: null,
-      });
-      axiosMock.onGet(outlineUrl).reply(200, outlineTabDataSansUpdate);
-      await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-      render(<OutlineTab />, { store });
+      setTabData({ welcome_message_html: null });
+      await fetchAndRender();
       expect(screen.queryByTestId('alert-container-welcome')).not.toBeInTheDocument();
     });
   });
@@ -192,8 +183,8 @@ describe('Outline Tab', () => {
       ['unsure', 'Not sure yet'],
     ];
 
-    it('does not render goal widgets if no goals available', () => {
-      render(<OutlineTab />, { store });
+    it('does not render goal widgets if no goals available', async () => {
+      await fetchAndRender();
       expect(screen.queryByTestId('course-goal-card')).not.toBeInTheDocument();
       expect(screen.queryByLabelText('Goal')).not.toBeInTheDocument();
       expect(screen.queryByTestId('edit-goal-selector')).not.toBeInTheDocument();
@@ -201,17 +192,13 @@ describe('Outline Tab', () => {
 
     describe('goal is not set', () => {
       beforeEach(async () => {
-        const outlineTabDataGoalNotSet = Factory.build('outlineTabData', {
-          courseId,
+        setTabData({
           course_goals: {
             goal_options: goalOptions,
             selected_goal: null,
           },
         });
-        axiosMock.onGet(outlineUrl).reply(200, outlineTabDataGoalNotSet);
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-        render(<OutlineTab />, { store });
+        await fetchAndRender();
       });
 
       it('renders goal card', () => {
@@ -234,18 +221,13 @@ describe('Outline Tab', () => {
 
     describe('goal is set', () => {
       beforeEach(async () => {
-        const outlineTabDataGoalSet = Factory.build('outlineTabData', {
-          courseId,
+        setTabData({
           course_goals: {
             goal_options: goalOptions,
             selected_goal: { text: 'Earn a certificate', key: 'certify' },
           },
         });
-
-        axiosMock.onGet(outlineUrl).reply(200, outlineTabDataGoalSet);
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-        render(<OutlineTab />, { store });
+        await fetchAndRender();
       });
 
       it('renders edit goal selector', () => {
@@ -279,67 +261,47 @@ describe('Outline Tab', () => {
   });
 
   describe('Course Handouts', () => {
-    it('renders title when handouts are available', () => {
-      render(<OutlineTab />, { store });
+    it('renders title when handouts are available', async () => {
+      await fetchAndRender();
       expect(screen.queryByRole('heading', { name: 'Course Handouts' })).toBeInTheDocument();
     });
 
     it('does not display title if no handouts available', async () => {
-      const outlineTabDataSansHandout = Factory.build('outlineTabData', {
-        courseId,
-        handouts_html: null,
-      });
-      axiosMock.onGet(outlineUrl).reply(200, outlineTabDataSansHandout);
-      await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-      render(<OutlineTab />, { store });
+      setTabData({ handouts_html: null });
+      await fetchAndRender();
       expect(screen.queryByRole('heading', { name: 'Course Handouts' })).not.toBeInTheDocument();
     });
   });
 
   describe('Alert List', () => {
     describe('Enrollment Alert', () => {
-      let extraText;
       let alertMessage;
       let staffMessage;
 
       beforeEach(() => {
-        extraText = outlineTabData.enroll_alert.extra_text;
+        const extraText = defaultTabData.enroll_alert.extra_text;
         alertMessage = `You must be enrolled in the course to see course content. ${extraText}`;
         staffMessage = 'You are viewing this course as staff, and are not enrolled.';
       });
 
       it('does not display enrollment alert for enrolled user', async () => {
-        const courseHomeMetadataForEnrolledUser = Factory.build(
-          'courseHomeMetadata', { course_id: courseId, is_enrolled: true },
-          { courseTabs: courseMetadata.tabs },
-        );
-        axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadataForEnrolledUser);
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-        render(<OutlineTab />, { store });
-
+        setMetadata({ is_enrolled: true });
+        await fetchAndRender();
         expect(screen.queryByText(alertMessage)).not.toBeInTheDocument();
       });
 
       it('does not display enrollment button if enrollment is not available', async () => {
-        const outlineTabDataCannotEnroll = Factory.build('outlineTabData', {
-          courseId,
+        setTabData({
           enroll_alert: {
             can_enroll: false,
-            extra_text: extraText,
           },
         });
-        axiosMock.onGet(outlineUrl).reply(200, outlineTabDataCannotEnroll);
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-        render(<OutlineTab />, { store });
-
+        await fetchAndRender();
         expect(screen.queryByRole('button', { name: 'Enroll Now' })).not.toBeInTheDocument();
       });
 
       it('displays enrollment alert for unenrolled user', async () => {
-        render(<OutlineTab />, { store });
+        await fetchAndRender();
 
         const alert = await screen.findByText(alertMessage);
         expect(alert).toHaveAttribute('role', 'alert');
@@ -350,23 +312,8 @@ describe('Outline Tab', () => {
       });
 
       it('displays different message for unenrolled staff user', async () => {
-        const courseHomeMetadataForUnenrolledStaff = Factory.build(
-          'courseHomeMetadata', { course_id: courseId, is_staff: true },
-          { courseTabs: courseMetadata.tabs },
-        );
-        axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadataForUnenrolledStaff);
-        // We need to remove offer_html and course_expired_html to limit the number of alerts we
-        // show, which makes this test easier to write.  If there's only one, it's easy to query
-        // for below.
-        const outlineTabDataCannotEnroll = Factory.build('outlineTabData', {
-          courseId,
-          offer_html: null,
-          course_expired_html: null,
-        });
-        axiosMock.onGet(outlineUrl).reply(200, outlineTabDataCannotEnroll);
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-        render(<OutlineTab />, { store });
+        setMetadata({ is_staff: true });
+        await fetchAndRender();
 
         const alert = await screen.findByText(staffMessage);
         expect(alert).toHaveAttribute('role', 'alert');
@@ -376,15 +323,12 @@ describe('Outline Tab', () => {
       });
 
       it('handles button click', async () => {
-        const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
-        axiosMock.reset();
-        axiosMock.onPost(enrollmentUrl).reply(200, { });
         const { location } = window;
         delete window.location;
         window.location = {
           reload: jest.fn(),
         };
-        render(<OutlineTab />, { store });
+        await fetchAndRender();
 
         const button = await screen.findByRole('button', { name: 'Enroll Now' });
         fireEvent.click(button);
@@ -398,19 +342,116 @@ describe('Outline Tab', () => {
     });
 
     describe('Access Expiration Alert', () => {
-      // TODO: Test this alert.
+      // Appears if course_expired_html is provided
+      it('appears', async () => {
+        setTabData({ course_expired_html: '<p>Course Will Expire, Uh Oh</p>' });
+        await fetchAndRender();
+        await screen.findByText('Course Will Expire, Uh Oh');
+      });
     });
 
     describe('Course Start Alert', () => {
-      // TODO: Test this alert.
+      // Only appears if enrolled and before start of course
+      it('appears several days out', async () => {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() + 100);
+        setMetadata({ is_enrolled: true });
+        setTabData({}, {
+          dateBlocks: [
+            {
+              date_type: 'course-start-date',
+              date: startDate.toISOString(),
+              title: 'Start',
+            },
+          ],
+        });
+        await fetchAndRender();
+        const node = await screen.findByText('Course starts', { exact: false });
+        expect(node.textContent).toMatch(/.* on .*/); // several days away uses "on" before date
+      });
+
+      it('appears today', async () => {
+        const startDate = new Date();
+        startDate.setHours(startDate.getHours() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({}, {
+          dateBlocks: [
+            {
+              date_type: 'course-start-date',
+              date: startDate.toISOString(),
+              title: 'Start',
+            },
+          ],
+        });
+        await fetchAndRender();
+        const node = await screen.findByText('Course starts', { exact: false });
+        expect(node.textContent).toMatch(/.* at .*/); // same day uses "at" before date
+      });
     });
 
     describe('Course End Alert', () => {
-      // TODO: Test this alert.
+      // Only appears if enrolled and within 14 days before the end of course
+      it('appears several days out', async () => {
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 13);
+        setMetadata({ is_enrolled: true });
+        setTabData({}, {
+          dateBlocks: [
+            {
+              date_type: 'course-end-date',
+              date: endDate.toISOString(),
+              title: 'End',
+            },
+          ],
+        });
+        await fetchAndRender();
+        const node = await screen.findByText('This course is ending', { exact: false });
+        expect(node.textContent).toMatch(/.* on .*/); // several days away uses "on" before date
+      });
+
+      it('appears today', async () => {
+        const endDate = new Date();
+        endDate.setHours(endDate.getHours() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({}, {
+          dateBlocks: [
+            {
+              date_type: 'course-end-date',
+              date: endDate.toISOString(),
+              title: 'End',
+            },
+          ],
+        });
+        await fetchAndRender();
+        const node = await screen.findByText('This course is ending', { exact: false });
+        expect(node.textContent).toMatch(/.* at .*/); // same day uses "at" before date
+      });
     });
 
     describe('Certificate Available Alert', () => {
-      // TODO: Test this alert.
+      // Must satisfy two conditions for alert to appear: enrolled and between course end and cert availability
+      it('appears', async () => {
+        const now = new Date();
+        const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({}, {
+          dateBlocks: [
+            {
+              date_type: 'course-end-date',
+              date: yesterday.toISOString(),
+              title: 'End',
+            },
+            {
+              date_type: 'certificate-available-date',
+              date: tomorrow.toISOString(),
+              title: 'Cert Available',
+            },
+          ],
+        });
+        await fetchAndRender();
+        await screen.findByText('We are working on generating course certificates.');
+      });
     });
   });
 });

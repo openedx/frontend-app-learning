@@ -5,7 +5,7 @@ import buildSimpleCourseBlocks from './courseBlocks.factory';
 Factory.define('outlineTabData')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
   .option('host', 'http://localhost:18000')
-  .attr('course_expired_html', [], () => '<div>Course expired</div>')
+  .option('dateBlocks', [])
   .attr('course_tools', ['host', 'courseId'], (host, courseId) => ([{
     analytics_id: 'edx.bookmarks',
     title: 'Bookmarks',
@@ -17,27 +17,30 @@ Factory.define('outlineTabData')
       blocks: courseBlocks.blocks,
     };
   })
-  .attr('course_goals', [], () => ({
-    goal_options: [],
-    selected_goal: null,
+  .attr('dates_widget', ['dateBlocks'], (dateBlocks) => ({
+    course_date_blocks: dateBlocks,
+    user_timezone: 'UTC',
   }))
-  .attr('enroll_alert', {
-    can_enroll: true,
-    extra_text: 'Contact the administrator.',
-  })
-  .attr('dates_banner_info', {
-    content_type_gating_enabled: false,
-    missed_gated_content: false,
-    missed_deadlines: false,
-  })
-  .attr('dates_widget', {
-    courseDateBlocks: [],
-    userTimezone: 'UTC',
-  })
-  .attr('handouts_html', [], () => '<ul><li>Handout 1</li></ul>')
-  .attr('offer_html', [], () => '<div>Great offer here</div>')
   .attr('resume_course', ['host', 'courseId'], (host, courseId) => ({
     has_visited_course: false,
     url: `${host}/courses/${courseId}/jump_to/block-v1:edX+Test+Block@12345abcde`,
   }))
-  .attr('welcome_message_html', [], () => '<p>Welcome to this course!</p>');
+  .attrs({
+    course_expired_html: null,
+    course_goals: {
+      goal_options: [],
+      selected_goal: null,
+    },
+    dates_banner_info: {
+      content_type_gating_enabled: false,
+      missed_gated_content: false,
+      missed_deadlines: false,
+    },
+    enroll_alert: {
+      can_enroll: true,
+      extra_text: 'Contact the administrator.',
+    },
+    handouts_html: '<ul><li>Handout 1</li></ul>',
+    offer_html: null,
+    welcome_message_html: '<p>Welcome to this course!</p>',
+  });
