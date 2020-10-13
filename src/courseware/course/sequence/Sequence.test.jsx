@@ -78,6 +78,37 @@ describe('Sequence', () => {
     expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
   });
 
+  it('renders correctly for exam content', async () => {
+    // Exams should NOT render in the Sequence.  They should permanently show a spinner until the
+    // application redirects away from the page.  Note that this component is not responsible for
+    // that redirect behavior, so there's no record of it here.
+    // See CoursewareContainer.jsx "checkExamRedirect" function.
+    const sequenceBlock = [Factory.build(
+      'block',
+      { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+      { courseId: courseMetadata.id },
+    )];
+    const sequenceMetadata = [Factory.build(
+      'sequenceMetadata',
+      { is_time_limited: true },
+      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlock[0] },
+    )];
+    const testStore = await initializeTestStore(
+      {
+        courseMetadata, unitBlocks, sequenceBlock, sequenceMetadata,
+      }, false,
+    );
+    const { container } = render(
+      <Sequence {...mockData} {...{ sequenceId: sequenceBlock[0].id }} />,
+      { store: testStore },
+    );
+
+    // We expect that the sequence container isn't rendering at all.
+    expect(container.querySelector('.sequence-container')).toBeNull();
+    // But that we're seeing a nice spinner.
+    expect(screen.queryByText('Loading learning sequence...')).toBeInTheDocument();
+  });
+
   it('displays error message on sequence load failure', async () => {
     const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
     testStore.dispatch(fetchSequenceFailure({ sequenceId: mockData.sequenceId }));
