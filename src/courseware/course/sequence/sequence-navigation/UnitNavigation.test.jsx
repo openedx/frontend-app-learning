@@ -22,6 +22,7 @@ describe('Unit Navigation', () => {
       sequenceId: courseware.sequenceId,
       onClickPrevious: () => {},
       onClickNext: () => {},
+      goToCourseExitPage: () => {},
     };
   });
 

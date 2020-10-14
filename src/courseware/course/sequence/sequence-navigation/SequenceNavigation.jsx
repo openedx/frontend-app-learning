@@ -4,7 +4,7 @@ import { Button } from '@edx/paragon';
 import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';
 import UnitButton from './UnitButton';
@@ -13,7 +13,10 @@ import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
 
-export default function SequenceNavigation({
+import messages from './messages';
+
+function SequenceNavigation({
+  intl,
   unitId,
   sequenceId,
   className,
@@ -64,21 +67,9 @@ export default function SequenceNavigation({
     // AA-198: The userHasPassingGrade condition can be removed once we have a view for learners with failing grades
     const disabled = isLastUnit && (!courseExitPageIsActive || !userHasPassingGrade);
 
-    let buttonText = (
-      <FormattedMessage
-        defaultMessage="Next"
-        id="learn.sequence.navigation.next.button"
-        description="The Next button in the sequence nav"
-      />
-    );
+    let buttonText = (intl.formatMessage(messages.nextButton));
     if (isLastUnit && courseExitPageIsActive && userHasPassingGrade) {
-      buttonText = (
-        <FormattedMessage
-          defaultMessage="Complete the course"
-          id="learn.sequence.navigation.completeCourse.button"
-          description="The 'Complete the course' button in the sequence nav"
-        />
-      );
+      buttonText = (intl.formatMessage(messages.completeCourseButton));
     }
     // AA-198: Uncomment once there is a view for learners with failing grades
     // else if (isLastUnit && courseExitPageIsActive && !userHasPassingGrade) {
@@ -107,11 +98,7 @@ export default function SequenceNavigation({
     <nav className={classNames('sequence-navigation', className)}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
-        <FormattedMessage
-          defaultMessage="Previous"
-          id="learn.sequence.navigation.previous.button"
-          description="The Previous button in the sequence nav"
-        />
+        {intl.formatMessage(messages.previousButton)}
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
@@ -120,6 +107,7 @@ export default function SequenceNavigation({
 }
 
 SequenceNavigation.propTypes = {
+  intl: intlShape.isRequired,
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   className: PropTypes.string,
@@ -133,3 +121,5 @@ SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
 };
+
+export default injectIntl(SequenceNavigation);
