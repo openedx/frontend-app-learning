@@ -145,9 +145,11 @@ export async function getOutlineTabData(courseId) {
   const courseGoals = camelCaseObject(data.course_goals);
   const courseExpiredHtml = data.course_expired_html;
   const courseTools = camelCaseObject(data.course_tools);
+  const datesBannerInfo = camelCaseObject(data.dates_banner_info);
   const datesWidget = camelCaseObject(data.dates_widget);
   const enrollAlert = camelCaseObject(data.enroll_alert);
   const handoutsHtml = data.handouts_html;
+  const hasEnded = data.has_ended;
   const offerHtml = data.offer_html;
   const resumeCourse = camelCaseObject(data.resume_course);
   const welcomeMessageHtml = data.welcome_message_html;
@@ -157,9 +159,11 @@ export async function getOutlineTabData(courseId) {
     courseGoals,
     courseExpiredHtml,
     courseTools,
+    datesBannerInfo,
     datesWidget,
     enrollAlert,
     handoutsHtml,
+    hasEnded,
     offerHtml,
     resumeCourse,
     welcomeMessageHtml,

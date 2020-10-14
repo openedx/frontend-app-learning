@@ -189,18 +189,18 @@ function CourseCelebration({ intl }) {
               {/* The requesting status needs a different button because it does a POST instead of a GET */}
               {certStatus === 'requesting' && (
                 <Button
+                  className="bg-white"
                   variant="outline-primary"
                   onClick={() => dispatch(requestCert(courseId))}
-                  style={{ backgroundColor: 'white' }}
                 >
                   {buttonText}
                 </Button>
               )}
               {buttonLocation && (
                 <Button
+                  className="bg-white"
                   variant="outline-primary"
                   href={buttonLocation}
-                  style={{ backgroundColor: 'white' }}
                 >
                   {buttonText}
                 </Button>

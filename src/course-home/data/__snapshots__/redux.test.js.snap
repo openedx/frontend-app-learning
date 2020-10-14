@@ -386,6 +386,11 @@ Object {
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/bookmarks/",
           },
         ],
+        "datesBannerInfo": Object {
+          "contentTypeGatingEnabled": false,
+          "missedDeadlines": false,
+          "missedGatedContent": false,
+        },
         "datesWidget": Object {
           "courseDateBlocks": Array [],
           "userTimezone": "UTC",
@@ -395,6 +400,7 @@ Object {
           "extraText": "Contact the administrator.",
         },
         "handoutsHtml": "<ul><li>Handout 1</li></ul>",
+        "hasEnded": undefined,
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "offerHtml": "<div>Great offer here</div>",
         "resumeCourse": Object {

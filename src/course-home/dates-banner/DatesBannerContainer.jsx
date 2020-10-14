@@ -7,20 +7,15 @@ import { useModel } from '../../generic/model-store';
 import DatesBanner from './DatesBanner';
 import { fetchDatesTab, resetDeadlines } from '../data/thunks';
 
-function DatesBannerContainer(props) {
-  const {
-    model,
-  } = props;
-
+function DatesBannerContainer({
+  courseDateBlocks,
+  datesBannerInfo,
+  hasEnded,
+  model,
+}) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
-
-  const {
-    courseDateBlocks,
-    datesBannerInfo,
-    hasEnded,
-  } = useModel(model, courseId);
 
   const {
     contentTypeGatingEnabled,
@@ -76,7 +71,19 @@ function DatesBannerContainer(props) {
 }
 
 DatesBannerContainer.propTypes = {
+  courseDateBlocks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  datesBannerInfo: PropTypes.shape({
+    contentTypeGatingEnabled: PropTypes.bool.isRequired,
+    missedDeadlines: PropTypes.bool.isRequired,
+    missedGatedContent: PropTypes.bool.isRequired,
+    verifiedUpgradeLink: PropTypes.string,
+  }).isRequired,
+  hasEnded: PropTypes.bool,
   model: PropTypes.string.isRequired,
+};
+
+DatesBannerContainer.defaultProps = {
+  hasEnded: false,
 };
 
 export default DatesBannerContainer;
