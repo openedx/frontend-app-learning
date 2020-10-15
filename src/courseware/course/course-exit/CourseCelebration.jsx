@@ -15,7 +15,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import CelebrationMobile from './assets/celebration_456x328.gif';
 import CelebrationDesktop from './assets/celebration_750x540.gif';
-import certificate from './assets/certificate.png';
+import certificate from './assets/edx_certificate.png';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
@@ -47,6 +47,7 @@ function CourseCelebration({ intl }) {
 
   const dashboardLink = (
     <Hyperlink
+      className="text-gray-700"
       style={{ textDecoration: 'underline' }}
       destination={`${getConfig().LMS_BASE_URL}/dashboard`}
     >
@@ -56,6 +57,7 @@ function CourseCelebration({ intl }) {
   // todo: remove this hardcoded link to edX support
   const idVerificationSupportLink = getConfig().SUPPORT_URL && (
     <Hyperlink
+      className="text-gray-700"
       style={{ textDecoration: 'underline' }}
       destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/206503858-How-do-I-verify-my-identity`}
     >
@@ -64,6 +66,7 @@ function CourseCelebration({ intl }) {
   );
   const profileLink = (
     <Hyperlink
+      className="text-gray-700"
       style={{ textDecoration: 'underline' }}
       destination={`${getConfig().LMS_BASE_URL}/u/${username}`}
     >
@@ -106,15 +109,9 @@ function CourseCelebration({ intl }) {
             <FormattedMessage
               id="courseCelebration.certificateBody.notAvailable.endDate"
               defaultMessage="After this course officially ends on {endDate}, you will receive an
-                email notification with your certificate."
+                email notification with your certificate. Once you have your certificate, be sure
+                to showcase your accomplishment on LinkedIn or your resumé."
               values={{ endDate }}
-            />
-          </div>
-          <div className="mb-2">
-            <FormattedMessage
-              id="courseCelebration.certificateBody.notAvailable.shareSuggestion"
-              defaultMessage="Once you have your certificate, be sure to showcase your accomplishment on
-              LinkedIn or your resumé."
             />
           </div>
           <div className="mb-2">
@@ -222,7 +219,7 @@ function CourseCelebration({ intl }) {
               <FontAwesomeIcon icon={faCalendarAlt} style={{ width: '20px' }} />&nbsp;
               <FormattedMessage
                 id="courseCelebration.dashboardInfo"
-                defaultMessage="You can always access this course and its materials on your {dashboardLink}."
+                defaultMessage="You can access this course and its materials on your {dashboardLink}."
                 values={{ dashboardLink }}
               />
             </p>
