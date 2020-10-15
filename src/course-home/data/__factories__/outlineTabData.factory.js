@@ -25,6 +25,11 @@ Factory.define('outlineTabData')
     can_enroll: true,
     extra_text: 'Contact the administrator.',
   })
+  .attr('dates_banner_info', {
+    content_type_gating_enabled: false,
+    missed_gated_content: false,
+    missed_deadlines: false,
+  })
   .attr('dates_widget', {
     courseDateBlocks: [],
     userTimezone: 'UTC',
