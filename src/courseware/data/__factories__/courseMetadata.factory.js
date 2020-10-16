@@ -51,6 +51,11 @@ Factory.define('courseMetadata')
     marketing_url: null,
     celebrations: null,
     enroll_alert: null,
+    course_exit_page_is_active: true,
+    user_has_passing_grade: false,
+    certificate_data: {
+      cert_status: 'audit_passing',
+    },
   }).attr(
     'tabs', ['tabs', 'id'], (passedTabs, id) => {
       if (passedTabs) {

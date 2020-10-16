@@ -19,7 +19,7 @@ import { UserMessagesProvider } from './generic/user-messages';
 import './index.scss';
 import './assets/favicon.ico';
 import OutlineTab from './course-home/outline-tab';
-import CourseExit from './courseware/course/course-exit/CourseExit';
+import { CourseExit } from './courseware/course/course-exit';
 import CoursewareContainer from './courseware';
 import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandingPage';
 import DatesTab from './course-home/dates-tab';

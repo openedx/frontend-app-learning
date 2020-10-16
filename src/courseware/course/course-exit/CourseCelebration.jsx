@@ -7,9 +7,7 @@ import { layoutGenerator } from 'react-break';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Button, Hyperlink } from '@edx/paragon';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
+import { Alert, Button, Hyperlink } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
@@ -19,6 +17,7 @@ import certificate from './assets/edx_certificate.png';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
+import DashboardFootnote from './DashboardFootnote';
 
 function CourseCelebration({ intl }) {
   const layout = layoutGenerator({
@@ -154,7 +153,7 @@ function CourseCelebration({ intl }) {
       <Helmet>
         <title>{`${intl.formatMessage(messages.congratulationsHeader)} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
-      <div className="row w-100 mx-0 my-4 px-5 py-3 border border-light">
+      <div className="row w-100 mx-0 mb-4 px-5 py-4 border border-light">
         <div className="col-12 p-0 h2 text-center">
           {intl.formatMessage(messages.congratulationsHeader)}
         </div>
@@ -179,7 +178,7 @@ function CourseCelebration({ intl }) {
           </OnAtLeastTablet>
         </div>
         <div className="col-12 px-0 px-md-5">
-          <div className="row w-100 m-0 p-4 bg-primary-100">
+          <Alert variant="primary" className="row w-100 m-0">
             <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
               <div className="h4">{title}</div>
               <p>{message}</p>
@@ -213,17 +212,8 @@ function CourseCelebration({ intl }) {
                 />
               </div>
             )}
-          </div>
-          <div className="row w-100 mx-0 my-3 justify-content-center">
-            <p className="text-gray-700">
-              <FontAwesomeIcon icon={faCalendarAlt} style={{ width: '20px' }} />&nbsp;
-              <FormattedMessage
-                id="courseCelebration.dashboardInfo"
-                defaultMessage="You can access this course and its materials on your {dashboardLink}."
-                values={{ dashboardLink }}
-              />
-            </p>
-          </div>
+          </Alert>
+          <DashboardFootnote />
         </div>
       </div>
     </>
