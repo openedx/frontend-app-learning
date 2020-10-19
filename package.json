@@ -58,7 +58,8 @@
     "react-share": "4.2.1",
     "redux": "4.0.5",
     "regenerator-runtime": "0.13.7",
-    "reselect": "4.0.0"
+    "reselect": "4.0.0",
+    "truncate-html": "^1.0.3"
   },
   "devDependencies": {
     "@edx/frontend-build": "5.2.7",

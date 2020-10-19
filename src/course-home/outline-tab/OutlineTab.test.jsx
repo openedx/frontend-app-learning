@@ -123,19 +123,22 @@ describe('Outline Tab', () => {
   });
 
   describe('Welcome Message', () => {
-    it('does not render show more/less button under 200 characters', () => {
+    it('does not render show more/less button under 100 words', () => {
       render(<OutlineTab />, { store });
       expect(screen.getByTestId('alert-container-welcome')).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeInTheDocument();
     });
 
-    describe('over 200 characters', () => {
+    describe('over 100 words', () => {
       beforeEach(async () => {
         const outlineTabDataLongMessage = Factory.build('outlineTabData', {
           courseId,
           welcome_message_html: '<p>'
-            + 'Welcome to Demonstration Course!!! This message is over 200 characters long. We would like to test the '
-            + 'shorten message feature! When the page renders, this text should be shortened because it is very long.'
+            + 'This is a test welcome message that happens to be longer than one hundred words. We hope it will be shortened.'
+            + 'This is a test welcome message that happens to be longer than one hundred words. We hope it will be shortened.'
+            + 'This is a test welcome message that happens to be longer than one hundred words. We hope it will be shortened.'
+            + 'This is a test welcome message that happens to be longer than one hundred words. We hope it will be shortened.'
+            + 'This is a test welcome message that happens to be longer than one hundred words. We hope it will be shortened.'
             + '</p>',
         });
         axiosMock.onGet(outlineUrl).reply(200, outlineTabDataLongMessage);

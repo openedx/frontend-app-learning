@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button, TransitionReplace } from '@edx/paragon';
+import truncate from 'truncate-html';
 
 import { useDispatch } from 'react-redux';
 import LmsHtmlFragment from '../LmsHtmlFragment';
@@ -22,8 +23,9 @@ function WelcomeMessage({ courseId, intl }) {
 
   const [display, setDisplay] = useState(true);
 
-  const shortWelcomeMessageHtml = welcomeMessageHtml.length > 200 && `${welcomeMessageHtml.substring(0, 199)}...`;
-  const [showShortMessage, setShowShortMessage] = useState(!!shortWelcomeMessageHtml);
+  const shortWelcomeMessageHtml = truncate(welcomeMessageHtml, 100, { byWords: true, keepWhitespaces: true });
+  const messageCanBeShortened = shortWelcomeMessageHtml.length < welcomeMessageHtml.length;
+  const [showShortMessage, setShowShortMessage] = useState(messageCanBeShortened);
   const dispatch = useDispatch();
 
   return (
@@ -35,7 +37,7 @@ function WelcomeMessage({ courseId, intl }) {
           setDisplay(false);
           dispatch(dismissWelcomeMessage(courseId));
         }}
-        footer={shortWelcomeMessageHtml && (
+        footer={messageCanBeShortened && (
           <div className="row w-100 m-0">
             <div className="col-12 col-sm-auto p-0">
               <Button
