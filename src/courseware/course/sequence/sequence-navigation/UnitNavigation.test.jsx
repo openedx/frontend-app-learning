@@ -7,7 +7,11 @@ import UnitNavigation from './UnitNavigation';
 
 describe('Unit Navigation', () => {
   let mockData;
-  const courseMetadata = Factory.build('courseMetadata');
+  const courseMetadata = Factory.build('courseMetadata', {
+    certificate_data: {
+      cert_status: 'notpassing', // some interesting status that will trigger the last unit button to be active
+    },
+  });
   const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
     'block',
     { type: 'vertical' },
@@ -73,11 +77,10 @@ describe('Unit Navigation', () => {
     expect(screen.getByRole('button', { name: /next/i })).toBeEnabled();
   });
 
-  it('displays "learn.end.of.course" message instead of the "Next" button for the last unit in the sequence', () => {
+  it('displays end of course message instead of the "Next" button as needed', () => {
     render(<UnitNavigation {...mockData} unitId={unitBlocks[unitBlocks.length - 1].id} />);
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
-    expect(screen.queryByRole('button', { name: /next/i })).not.toBeInTheDocument();
-    expect(screen.getByText("You've reached the end of this course!")).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /next \(end of course\)/i })).toBeEnabled();
   });
 });

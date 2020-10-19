@@ -5,9 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
-import { useSequenceNavigationMetadata } from './hooks';
-import { useModel } from '../../../../generic/model-store';
 
+import { getCourseExitText } from '../../course-exit';
+
+import { useSequenceNavigationMetadata } from './hooks';
 import messages from './messages';
 
 function UnitNavigation({
@@ -20,38 +21,12 @@ function UnitNavigation({
 }) {
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
   const { courseId } = useSelector(state => state.courseware);
-  const {
-    courseExitPageIsActive,
-    userHasPassingGrade,
-  } = useModel('courses', courseId);
 
   const renderNextButton = () => {
-    // AA-198: The userHasPassingGrade condition can be removed once we have a view for learners with failing grades
-    const buttonOnClick = (isLastUnit && courseExitPageIsActive && userHasPassingGrade
-      ? goToCourseExitPage : onClickNext);
-    // AA-198: The userHasPassingGrade condition can be removed once we have a view for learners with failing grades
-    const disabled = isLastUnit && (!courseExitPageIsActive || !userHasPassingGrade);
-
-    // This is just to support what used to show while we are getting courseExitPageIsActive turned on.
-    // This should be good to remove once disabled goes away.
-    if (disabled) {
-      return (
-        <div className="m-2">
-          <span role="img" aria-hidden="true">&#129303;</span> {/* This is a hugging face emoji */}
-          {' '}
-          {intl.formatMessage(messages.endOfCourse)}
-        </div>
-      );
-    }
-
-    let buttonText = (intl.formatMessage(messages.nextButton));
-    if (isLastUnit && courseExitPageIsActive && userHasPassingGrade) {
-      buttonText = (intl.formatMessage(messages.completeCourseButton));
-    }
-    // AA-198: Uncomment once there is a view for learners with failing grades
-    // else if (isLastUnit && courseExitPageIsActive && !userHasPassingGrade) {
-    //   buttonText = (`${intl.formatMessage(messages.nextButton)} (${intl.formatMessage(messages.endOfCourse)})`);
-    // }
+    const exitText = getCourseExitText(courseId, intl);
+    const buttonOnClick = isLastUnit ? goToCourseExitPage : onClickNext;
+    const buttonText = isLastUnit && exitText ? exitText : intl.formatMessage(messages.nextButton);
+    const disabled = isLastUnit && !exitText;
     return (
       <Button variant="outline-primary" className="next-button" onClick={buttonOnClick} disabled={disabled}>
         {buttonText}

@@ -7,6 +7,7 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';
+import { getCourseExitText } from '../../course-exit';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
@@ -34,10 +35,6 @@ function SequenceNavigation({
   const isLocked = sequenceStatus === LOADED ? (
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
-  const {
-    courseExitPageIsActive,
-    userHasPassingGrade,
-  } = useModel('courses', courseId);
 
   const renderUnitButtons = () => {
     if (isLocked) {
@@ -61,31 +58,10 @@ function SequenceNavigation({
   };
 
   const renderNextButton = () => {
-    // AA-198: The userHasPassingGrade condition can be removed once we have a view for learners with failing grades
-    const buttonOnClick = (isLastUnit && courseExitPageIsActive && userHasPassingGrade
-      ? goToCourseExitPage : nextSequenceHandler);
-    // AA-198: The userHasPassingGrade condition can be removed once we have a view for learners with failing grades
-    const disabled = isLastUnit && (!courseExitPageIsActive || !userHasPassingGrade);
-
-    let buttonText = (intl.formatMessage(messages.nextButton));
-    if (isLastUnit && courseExitPageIsActive && userHasPassingGrade) {
-      buttonText = (intl.formatMessage(messages.completeCourseButton));
-    }
-    // AA-198: Uncomment once there is a view for learners with failing grades
-    // else if (isLastUnit && courseExitPageIsActive && !userHasPassingGrade) {
-    //   buttonText = (
-    //     <FormattedMessage
-    //       defaultMessage="Next"
-    //       id="learn.sequence.navigation.endOfCourse.button.next"
-    //       description="The 'next' text in the end of course button in the sequence nav"
-    //     />
-    //     <FormattedMessage
-    //       defaultMessage="(end of course)"
-    //       id="learn.sequence.navigation.endOfCourse.button.endOfCourse"
-    //       description="The '(end of course)' text in the end of course button in the sequence nav"
-    //     />
-    //   )
-    // }
+    const exitText = getCourseExitText(courseId, intl);
+    const buttonOnClick = isLastUnit ? goToCourseExitPage : nextSequenceHandler;
+    const buttonText = isLastUnit && exitText ? exitText : intl.formatMessage(messages.nextButton);
+    const disabled = isLastUnit && !exitText;
     return (
       <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled}>
         {buttonText}
