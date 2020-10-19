@@ -62,6 +62,11 @@ const messages = defineMessages({
     defaultMessage: 'Learn more about ID verification',
     description: 'Link to an article about identity verification',
   },
+  linkedinAddToProfileButton: {
+    id: 'courseCelebration.linkedinAddToProfileButton',
+    defaultMessage: 'Add to LinkedIn profile',
+    description: "Button to add certificate information to the user's LinkedIn profile",
+  },
   nextButtonComplete: {
     id: 'learn.sequence.navigation.complete.button', // for historical reasons
     defaultMessage: 'Complete the course',

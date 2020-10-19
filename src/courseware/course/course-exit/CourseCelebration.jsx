@@ -7,8 +7,10 @@ import { layoutGenerator } from 'react-break';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { LinkedinIcon } from 'react-share';
 import { Alert, Button, Hyperlink } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import CelebrationMobile from './assets/celebration_456x328.gif';
@@ -18,6 +20,8 @@ import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
 import DashboardFootnote from './DashboardFootnote';
+
+const LINKEDIN_BLUE = '#007fb1';
 
 function CourseCelebration({ intl }) {
   const layout = layoutGenerator({
@@ -33,6 +37,7 @@ function CourseCelebration({ intl }) {
   const {
     certificateData,
     end,
+    linkedinAddToProfileUrl,
     verifyIdentityUrl,
   } = useModel('courses', courseId);
 
@@ -42,7 +47,7 @@ function CourseCelebration({ intl }) {
     downloadUrl,
   } = certificateData;
 
-  const { username } = getAuthenticatedUser();
+  const { administrator, username } = getAuthenticatedUser();
 
   const dashboardLink = (
     <Hyperlink
@@ -72,6 +77,14 @@ function CourseCelebration({ intl }) {
       {intl.formatMessage(messages.profileLink)}
     </Hyperlink>
   );
+
+  const logClick = (service) => {
+    sendTrackEvent('edx.ui.lms.course_celebration.linkedin_add_to_profile.clicked', {
+      course_id: courseId,
+      is_staff: administrator,
+      service,
+    });
+  };
 
   let buttonLocation;
   let buttonText;
@@ -192,9 +205,20 @@ function CourseCelebration({ intl }) {
                   {buttonText}
                 </Button>
               )}
+              {certStatus === 'downloadable' && linkedinAddToProfileUrl && (
+                <Button
+                  className="mr-3 mb-2 mb-sm-0"
+                  href={linkedinAddToProfileUrl}
+                  onClick={() => logClick('linkedin')}
+                  style={{ backgroundColor: LINKEDIN_BLUE, padding: '0.25rem 1.25rem 0.25rem 0.5rem' }}
+                >
+                  <LinkedinIcon bgStyle={{ fill: 'white' }} className="mr-2" iconFillColor={LINKEDIN_BLUE} round size={28} />
+                  {`${intl.formatMessage(messages.linkedinAddToProfileButton)}`}
+                </Button>
+              )}
               {buttonLocation && (
                 <Button
-                  className="bg-white"
+                  className="bg-white mb-2 mb-sm-0"
                   variant="outline-primary"
                   href={buttonLocation}
                 >
