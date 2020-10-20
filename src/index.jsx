@@ -5,10 +5,10 @@ import {
   APP_INIT_ERROR, APP_READY, subscribe, initialize,
   mergeConfig,
 } from '@edx/frontend-platform';
-import { AppProvider, ErrorPage, PageRoute } from '@edx/frontend-platform/react';
+import { AppProvider, ErrorPage } from '@edx/frontend-platform/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import { messages as headerMessages } from '@edx/frontend-component-header';
 import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
@@ -35,28 +35,28 @@ subscribe(APP_READY, () => {
     <AppProvider store={initializeStore()}>
       <UserMessagesProvider>
         <Switch>
-          <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
-          <PageRoute path="/course/:courseId/home">
+          <Route path="/redirect" component={CoursewareRedirectLandingPage} />
+          <Route path="/course/:courseId/home">
             <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
               <OutlineTab />
             </TabContainer>
-          </PageRoute>
-          <PageRoute path="/course/:courseId/dates">
+          </Route>
+          <Route path="/course/:courseId/dates">
             <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
               <DatesTab />
             </TabContainer>
-          </PageRoute>
-          <PageRoute path="/course/:courseId/progress">
+          </Route>
+          <Route path="/course/:courseId/progress">
             <TabContainer tab="progress" fetch={fetchProgressTab} slice="courseHome">
               <ProgressTab />
             </TabContainer>
-          </PageRoute>
-          <PageRoute path="/course/:courseId/course-exit">
+          </Route>
+          <Route path="/course/:courseId/course-exit">
             <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
               <CourseExit />
             </TabContainer>
-          </PageRoute>
-          <PageRoute
+          </Route>
+          <Route
             path={[
               '/course/:courseId/:sequenceId/:unitId',
               '/course/:courseId/:sequenceId',

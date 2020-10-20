@@ -1,8 +1,7 @@
 import React from 'react';
-import { Switch, useRouteMatch } from 'react-router';
+import { Switch, Route, useRouteMatch } from 'react-router';
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
-import { PageRoute } from '@edx/frontend-platform/react';
 
 import PageLoading from '../generic/PageLoading';
 import CoursewareRedirect from './CoursewareRedirect';
@@ -21,17 +20,17 @@ export default () => {
       />
 
       <Switch>
-        <PageRoute
+        <Route
           path={`${path}/courseware/:courseId/unit/:unitId`}
           component={CoursewareRedirect}
         />
-        <PageRoute
+        <Route
           path={`${path}/course-home/:courseId`}
           render={({ match }) => {
             global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${match.params.courseId}/course/`);
           }}
         />
-        <PageRoute
+        <Route
           path={`${path}/dashboard`}
           render={({ location }) => {
             global.location.assign(`${getConfig().LMS_BASE_URL}/dashboard${location.search}`);
