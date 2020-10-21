@@ -60,7 +60,7 @@ function SequenceNavigation({
   const renderNextButton = () => {
     const exitText = getCourseExitText(courseId, intl);
     const buttonOnClick = isLastUnit ? goToCourseExitPage : nextSequenceHandler;
-    const buttonText = isLastUnit && exitText ? exitText : intl.formatMessage(messages.nextButton);
+    const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitText;
     return (
       <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled}>

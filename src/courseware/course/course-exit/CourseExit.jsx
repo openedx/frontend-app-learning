@@ -3,7 +3,8 @@ import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@edx/paragon';
-import { Redirect, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import CourseCelebration from './CourseCelebration';
 import CourseNonPassing from './CourseNonPassing';
@@ -11,7 +12,7 @@ import { COURSE_EXIT_MODES, getCourseExitMode } from './utils';
 import messages from './messages';
 
 function CourseExit({ intl }) {
-  const { courseId } = useParams();
+  const { courseId } = useSelector(state => state.courseware);
   const mode = getCourseExitMode(courseId);
 
   let body = null;

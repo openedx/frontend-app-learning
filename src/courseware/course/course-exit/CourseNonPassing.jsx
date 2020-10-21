@@ -1,10 +1,8 @@
 import React from 'react';
 
-import {
-  injectIntl, intlShape,
-} from '@edx/frontend-platform/i18n';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Helmet } from 'react-helmet';
-import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Alert, Button } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 
@@ -14,7 +12,7 @@ import DashboardFootnote from './DashboardFootnote';
 import messages from './messages';
 
 function CourseNonPassing({ intl }) {
-  const { courseId } = useParams();
+  const { courseId } = useSelector(state => state.courseware);
   const { tabs } = useModel('courses', courseId);
 
   // Get progress tab link for 'view grades' button

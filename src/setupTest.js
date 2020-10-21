@@ -36,6 +36,22 @@ window.getComputedStyle = jest.fn(() => ({
   getPropertyValue: jest.fn(),
 }));
 
+// Mock media queries because any component that uses `react-break` for responsive breakpoints will
+// run into `TypeError: window.matchMedia is not a function`. This avoids that for all of our tests now.
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
 export const authenticatedUser = {
   userId: 'abc123',
   username: 'Mock User',

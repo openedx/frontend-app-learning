@@ -25,7 +25,7 @@ function UnitNavigation({
   const renderNextButton = () => {
     const exitText = getCourseExitText(courseId, intl);
     const buttonOnClick = isLastUnit ? goToCourseExitPage : onClickNext;
-    const buttonText = isLastUnit && exitText ? exitText : intl.formatMessage(messages.nextButton);
+    const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitText;
     return (
       <Button variant="outline-primary" className="next-button" onClick={buttonOnClick} disabled={disabled}>

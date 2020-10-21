@@ -5,8 +5,7 @@ import {
 } from '@edx/frontend-platform/i18n';
 import { layoutGenerator } from 'react-break';
 import { Helmet } from 'react-helmet';
-import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { LinkedinIcon } from 'react-share';
 import { Alert, Button, Hyperlink } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
@@ -32,7 +31,7 @@ function CourseCelebration({ intl }) {
   const OnMobile = layout.is('mobile');
   const OnAtLeastTablet = layout.isAtLeast('tablet');
 
-  const { courseId } = useParams();
+  const { courseId } = useSelector(state => state.courseware);
   const dispatch = useDispatch();
   const {
     certificateData,
@@ -95,14 +94,16 @@ function CourseCelebration({ intl }) {
     case 'downloadable':
       title = intl.formatMessage(messages.certificateHeaderDownloadable);
       message = (
-        <FormattedMessage
-          id="courseCelebration.certificateBody.available"
-          defaultMessage="
-            Showcase your accomplishment on LinkedIn or your resumé today.
-            You can download your certificate now and access it any time from your
-            {dashboardLink} and {profileLink}."
-          values={{ dashboardLink, profileLink }}
-        />
+        <p>
+          <FormattedMessage
+            id="courseCelebration.certificateBody.available"
+            defaultMessage="
+              Showcase your accomplishment on LinkedIn or your resumé today.
+              You can download your certificate now and access it any time from your
+              {dashboardLink} and {profileLink}."
+            values={{ dashboardLink, profileLink }}
+          />
+        </p>
       );
       if (certWebViewUrl) {
         buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
@@ -117,7 +118,7 @@ function CourseCelebration({ intl }) {
       title = intl.formatMessage(messages.certificateHeaderNotAvailable);
       message = (
         <>
-          <div className="mb-2">
+          <p>
             <FormattedMessage
               id="courseCelebration.certificateBody.notAvailable.endDate"
               defaultMessage="After this course officially ends on {endDate}, you will receive an
@@ -125,15 +126,15 @@ function CourseCelebration({ intl }) {
                 to showcase your accomplishment on LinkedIn or your resumé."
               values={{ endDate }}
             />
-          </div>
-          <div className="mb-2">
+          </p>
+          <p>
             <FormattedMessage
               id="courseCelebration.certificateBody.notAvailable.accessCertificate"
               defaultMessage="You will be able to access your certificate any time from your
                 {dashboardLink} and {profileLink}."
               values={{ dashboardLink, profileLink }}
             />
-          </div>
+          </p>
         </>
       );
       break;
@@ -141,7 +142,7 @@ function CourseCelebration({ intl }) {
     case 'requesting':
       buttonText = intl.formatMessage(messages.requestCertificateButton);
       title = intl.formatMessage(messages.certificateHeaderRequestable);
-      message = intl.formatMessage(messages.requestCertificateBodyText);
+      message = (<p>{intl.formatMessage(messages.requestCertificateBodyText)}</p>);
       break;
     case 'unverified':
       buttonText = intl.formatMessage(messages.verifyIdentityButton);
@@ -149,12 +150,14 @@ function CourseCelebration({ intl }) {
       title = intl.formatMessage(messages.certificateHeaderUnverified);
       // todo: check for idVerificationSupportLink null
       message = (
-        <FormattedMessage
-          id="courseCelebration.certificateBody.unverified"
-          defaultMessage="In order to generate a certificate, you must complete ID verification.
-            {idVerificationSupportLink} now."
-          values={{ idVerificationSupportLink }}
-        />
+        <p>
+          <FormattedMessage
+            id="courseCelebration.certificateBody.unverified"
+            defaultMessage="In order to generate a certificate, you must complete ID verification.
+              {idVerificationSupportLink} now."
+            values={{ idVerificationSupportLink }}
+          />
+        </p>
       );
       break;
     default:
@@ -194,7 +197,7 @@ function CourseCelebration({ intl }) {
           <Alert variant="primary" className="row w-100 m-0">
             <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
               <div className="h4">{title}</div>
-              <p>{message}</p>
+              {message}
               {/* The requesting status needs a different button because it does a POST instead of a GET */}
               {certStatus === 'requesting' && (
                 <Button
