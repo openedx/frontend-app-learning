@@ -72,6 +72,11 @@ describe('Course Exit Pages', () => {
     });
 
     it('Redirects if it does not match any statuses', async () => {
+      setMetadata({
+        certificate_data: {
+          cert_status: 'bogus_status',
+        },
+      });
       await fetchAndRender(<CourseExit />);
       expect(global.location.href).toEqual(`http://localhost/course/${defaultMetadata.id}`);
     });
@@ -121,6 +126,38 @@ describe('Course Exit Pages', () => {
       await fetchAndRender(<CourseCelebration />);
       expect(screen.getByRole('link', { name: 'Verify ID now' })).toBeInTheDocument();
       expect(screen.queryByRole('img', { name: 'Sample certificate' })).not.toBeInTheDocument();
+    });
+
+    it('Displays upgrade link when available', async () => {
+      setMetadata({
+        certificate_data: { cert_status: 'audit_passing' },
+        verified_mode: {
+          access_expiration_date: '9999-08-06T12:00:00Z',
+          upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+          price: 600,
+          currency_symbol: '€',
+        },
+      });
+      await fetchAndRender(<CourseCelebration />);
+      // Keep these text checks in sync with "audit only" test below, so it doesn't end up checking for text that is
+      // never actually there, when/if the text changes.
+      expect(screen.getByText('Upgrade to pursue a verified certificate')).toBeInTheDocument();
+      expect(screen.getByText('For €600 you will unlock access', { exact: false })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Upgrade now' })).toBeInTheDocument();
+      const node = screen.getByText('Access to this course and its materials', { exact: false });
+      expect(node.textContent).toMatch(/until August 6, 9999\./);
+    });
+
+    it('Displays nothing if audit only', async () => {
+      setMetadata({
+        certificate_data: { cert_status: 'audit_passing' },
+        verified_mode: null,
+      });
+      await fetchAndRender(<CourseCelebration />);
+      // Keep these queries in sync with "upgrade link" test above, so we don't end up checking for text that is
+      // never actually there, when/if the text changes.
+      expect(screen.queryByText('Upgrade to pursue a verified certificate')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Upgrade now' })).not.toBeInTheDocument();
     });
 
     it('Displays LinkedIn Add to Profile button', async () => {

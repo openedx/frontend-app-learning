@@ -10,14 +10,16 @@ const COURSE_EXIT_MODES = {
 
 // These are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
 const CELEBRATION_STATUSES = [
+  'audit_passing',
   'downloadable',
   'earned_but_not_available',
+  'honor_passing',
   'requesting',
   'unverified',
 ];
 const NON_CERTIFICATE_STATUSES = [ // no certificate will be given, though a valid certificateData block is provided
   'audit_passing',
-  'honor_passing', // honor can be configured to not give a certificate
+  'honor_passing', // provided when honor is configured to not give a certificate
 ];
 
 function getCourseExitMode(courseId) {
@@ -27,19 +29,28 @@ function getCourseExitMode(courseId) {
     userHasPassingGrade,
   } = useModel('courses', courseId);
 
-  if (!courseExitPageIsActive || !certificateData) {
+  if (!courseExitPageIsActive) {
     return COURSE_EXIT_MODES.disabled;
   }
 
-  const {
-    certStatus,
-  } = certificateData;
-  const isEligibleForCertificate = NON_CERTIFICATE_STATUSES.indexOf(certStatus) === -1;
+  // Set defaults for our status-calculated variables, used when no certificateData is provided.
+  // This happens when `get_cert_data` in edx-platform returns None, which it does if we are
+  // in a certificate-earning mode, but the certificate is not available (maybe they didn't pass
+  // or course is not set up for certificates or something). Audit users will always have a
+  // certificateData sent over.
+  let isCelebratoryStatus = true;
+  let isEligibleForCertificate = true;
+
+  if (certificateData) {
+    const { certStatus } = certificateData;
+    isCelebratoryStatus = CELEBRATION_STATUSES.indexOf(certStatus) !== -1;
+    isEligibleForCertificate = NON_CERTIFICATE_STATUSES.indexOf(certStatus) === -1;
+  }
 
   if (isEligibleForCertificate && !userHasPassingGrade) {
     return COURSE_EXIT_MODES.nonPassing;
   }
-  if (CELEBRATION_STATUSES.indexOf(certStatus) !== -1) {
+  if (isCelebratoryStatus) {
     return COURSE_EXIT_MODES.celebration;
   }
   return COURSE_EXIT_MODES.disabled;

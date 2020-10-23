@@ -15,10 +15,12 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import CelebrationMobile from './assets/celebration_456x328.gif';
 import CelebrationDesktop from './assets/celebration_750x540.gif';
 import certificate from './assets/edx_certificate.png';
+import certificateLocked from './assets/edx_certificate_locked.png';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
 import DashboardFootnote from './DashboardFootnote';
+import UpgradeFootnote from './UpgradeFootnote';
 
 const LINKEDIN_BLUE = '#007fb1';
 
@@ -37,6 +39,7 @@ function CourseCelebration({ intl }) {
     certificateData,
     end,
     linkedinAddToProfileUrl,
+    verifiedMode,
     verifyIdentityUrl,
   } = useModel('courses', courseId);
 
@@ -44,7 +47,7 @@ function CourseCelebration({ intl }) {
     certStatus,
     certWebViewUrl,
     downloadUrl,
-  } = certificateData;
+  } = certificateData || {};
 
   const { administrator, username } = getAuthenticatedUser();
 
@@ -87,6 +90,10 @@ function CourseCelebration({ intl }) {
 
   let buttonLocation;
   let buttonText;
+  let buttonBackground = 'bg-white';
+  let buttonVariant = 'outline-primary';
+  let certificateImage = certificate;
+  let footnote;
   let message;
   let title;
   // These cases are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
@@ -112,6 +119,7 @@ function CourseCelebration({ intl }) {
         buttonLocation = downloadUrl;
         buttonText = intl.formatMessage(messages.downloadButton);
       }
+      footnote = <DashboardFootnote />;
       break;
     case 'earned_but_not_available': {
       const endDate = <FormattedDate value={end} day="numeric" month="long" year="numeric" />;
@@ -137,12 +145,14 @@ function CourseCelebration({ intl }) {
           </p>
         </>
       );
+      footnote = <DashboardFootnote />;
       break;
     }
     case 'requesting':
       buttonText = intl.formatMessage(messages.requestCertificateButton);
       title = intl.formatMessage(messages.certificateHeaderRequestable);
       message = (<p>{intl.formatMessage(messages.requestCertificateBodyText)}</p>);
+      footnote = <DashboardFootnote />;
       break;
     case 'unverified':
       buttonText = intl.formatMessage(messages.verifyIdentityButton);
@@ -159,6 +169,46 @@ function CourseCelebration({ intl }) {
           />
         </p>
       );
+      footnote = <DashboardFootnote />;
+      break;
+    case 'audit_passing':
+    case 'honor_passing':
+      if (verifiedMode) {
+        title = intl.formatMessage(messages.certificateHeaderUpgradable);
+        message = (
+          <p>
+            <FormattedMessage
+              id="courseCelebration.certificateBody.upgradable"
+              defaultMessage="It’s not too late to upgrade. For {price} you will unlock access to all graded
+                assignments in this course. Upon completion, you will receive a verified certificate which is a
+                valuable credential to improve your job prospects and advance your career, or highlight your
+                certificate in school applications."
+              values={{ price: verifiedMode.currencySymbol + verifiedMode.price }}
+            />
+            <br />
+            { /* todo: remove this hardcoded link to edX support */ }
+            {getConfig().SUPPORT_URL && (
+              <Hyperlink
+                className="text-gray-700"
+                style={{ textDecoration: 'underline' }}
+                destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/206502008-What-is-a-verified-certificate`}
+              >
+                {intl.formatMessage(messages.verifiedCertificateSupportLink)}
+              </Hyperlink>
+            )}
+          </p>
+        );
+        buttonText = intl.formatMessage(messages.upgradeButton);
+        buttonLocation = verifiedMode.upgradeUrl;
+        buttonBackground = '';
+        buttonVariant = 'primary';
+        certificateImage = certificateLocked;
+        if (verifiedMode.accessExpirationDate) {
+          footnote = <UpgradeFootnote deadline={verifiedMode.accessExpirationDate} href={verifiedMode.upgradeUrl} />;
+        } else {
+          footnote = <DashboardFootnote />;
+        }
+      }
       break;
     default:
       break;
@@ -194,6 +244,7 @@ function CourseCelebration({ intl }) {
           </OnAtLeastTablet>
         </div>
         <div className="col-12 px-0 px-md-5">
+          {title && (
           <Alert variant="primary" className="row w-100 m-0">
             <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
               <div className="h4">{title}</div>
@@ -201,8 +252,8 @@ function CourseCelebration({ intl }) {
               {/* The requesting status needs a different button because it does a POST instead of a GET */}
               {certStatus === 'requesting' && (
                 <Button
-                  className="bg-white"
-                  variant="outline-primary"
+                  className={buttonBackground}
+                  variant={buttonVariant}
                   onClick={() => dispatch(requestCert(courseId))}
                 >
                   {buttonText}
@@ -221,8 +272,8 @@ function CourseCelebration({ intl }) {
               )}
               {buttonLocation && (
                 <Button
-                  className="bg-white mb-2 mb-sm-0"
-                  variant="outline-primary"
+                  className={`${buttonBackground} mb-2 mb-sm-0`}
+                  variant={buttonVariant}
                   href={buttonLocation}
                 >
                   {buttonText}
@@ -232,7 +283,7 @@ function CourseCelebration({ intl }) {
             {certStatus !== 'unverified' && (
               <div className="col-12 order-0 col-md-3 order-md-1 w-100 mb-3 p-0 text-center">
                 <img
-                  src={certificate}
+                  src={certificateImage}
                   alt={`${intl.formatMessage(messages.certificateImage)}`}
                   className="w-100"
                   style={{ maxWidth: '13rem' }}
@@ -240,7 +291,8 @@ function CourseCelebration({ intl }) {
               </div>
             )}
           </Alert>
-          <DashboardFootnote />
+          )}
+          {footnote}
         </div>
       </div>
     </>

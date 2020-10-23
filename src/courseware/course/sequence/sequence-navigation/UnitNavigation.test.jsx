@@ -73,8 +73,17 @@ describe('Unit Navigation', () => {
     expect(screen.getByRole('button', { name: /next/i })).toBeEnabled();
   });
 
-  it('has the "Next" button disabled for the last unit in the sequence if there is no Exit Page', () => {
-    render(<UnitNavigation {...mockData} unitId={unitBlocks[unitBlocks.length - 1].id} />);
+  it('has the "Next" button disabled for the last unit in the sequence if there is no Exit Page', async () => {
+    const testCourseMetadata = { ...courseMetadata, certificate_data: { cert_status: 'bogus_status' }, user_has_passing_grade: true };
+    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
+    // Have to refetch the sequenceId since the new store generates new sequences
+    const { courseware } = testStore.getState();
+    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+
+    render(
+      <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
+      { store: testStore },
+    );
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
