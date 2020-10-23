@@ -97,6 +97,11 @@ const messages = defineMessages({
     id: 'courseCelebration.shareHeader',
     defaultMessage: 'You have completed your course. Share your success on social media or email.',
   },
+  socialMessage: {
+    id: 'courseExit.social.shareCompletionMessage',
+    defaultMessage: 'I just completed {title} with {platform}!',
+    description: 'Shown when sharing course progress on a social network',
+  },
   upgradeButton: {
     id: 'courseExit.upgradeButton',
     defaultMessage: 'Upgrade now',

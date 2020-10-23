@@ -21,6 +21,7 @@ import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
 import DashboardFootnote from './DashboardFootnote';
 import UpgradeFootnote from './UpgradeFootnote';
+import SocialIcons from '../../social-share/SocialIcons';
 
 const LINKEDIN_BLUE = '#007fb1';
 
@@ -95,11 +96,11 @@ function CourseCelebration({ intl }) {
   let certificateImage = certificate;
   let footnote;
   let message;
-  let title;
+  let certHeader;
   // These cases are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
   switch (certStatus) {
     case 'downloadable':
-      title = intl.formatMessage(messages.certificateHeaderDownloadable);
+      certHeader = intl.formatMessage(messages.certificateHeaderDownloadable);
       message = (
         <p>
           <FormattedMessage
@@ -123,7 +124,7 @@ function CourseCelebration({ intl }) {
       break;
     case 'earned_but_not_available': {
       const endDate = <FormattedDate value={end} day="numeric" month="long" year="numeric" />;
-      title = intl.formatMessage(messages.certificateHeaderNotAvailable);
+      certHeader = intl.formatMessage(messages.certificateHeaderNotAvailable);
       message = (
         <>
           <p>
@@ -150,14 +151,14 @@ function CourseCelebration({ intl }) {
     }
     case 'requesting':
       buttonText = intl.formatMessage(messages.requestCertificateButton);
-      title = intl.formatMessage(messages.certificateHeaderRequestable);
+      certHeader = intl.formatMessage(messages.certificateHeaderRequestable);
       message = (<p>{intl.formatMessage(messages.requestCertificateBodyText)}</p>);
       footnote = <DashboardFootnote />;
       break;
     case 'unverified':
       buttonText = intl.formatMessage(messages.verifyIdentityButton);
       buttonLocation = verifyIdentityUrl;
-      title = intl.formatMessage(messages.certificateHeaderUnverified);
+      certHeader = intl.formatMessage(messages.certificateHeaderUnverified);
       // todo: check for idVerificationSupportLink null
       message = (
         <p>
@@ -174,7 +175,7 @@ function CourseCelebration({ intl }) {
     case 'audit_passing':
     case 'honor_passing':
       if (verifiedMode) {
-        title = intl.formatMessage(messages.certificateHeaderUpgradable);
+        certHeader = intl.formatMessage(messages.certificateHeaderUpgradable);
         message = (
           <p>
             <FormattedMessage
@@ -225,8 +226,15 @@ function CourseCelebration({ intl }) {
         </div>
         <div className="col-12 p-0 font-weight-normal lead text-center">
           {intl.formatMessage(messages.shareHeader)}
+          <SocialIcons
+            analyticsId="edx.ui.lms.course_exit.social_share.clicked"
+            className="mt-2"
+            courseId={courseId}
+            emailSubject={messages.socialMessage}
+            socialMessage={messages.socialMessage}
+          />
         </div>
-        <div className="col-12 my-4 px-0 px-md-5 text-center">
+        <div className="col-12 mt-3 mb-4 px-0 px-md-5 text-center">
           <OnMobile>
             <img
               src={CelebrationMobile}
@@ -244,10 +252,10 @@ function CourseCelebration({ intl }) {
           </OnAtLeastTablet>
         </div>
         <div className="col-12 px-0 px-md-5">
-          {title && (
+          {certHeader && (
           <Alert variant="primary" className="row w-100 m-0">
             <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
-              <div className="h4">{title}</div>
+              <div className="h4">{certHeader}</div>
               {message}
               {/* The requesting status needs a different button because it does a POST instead of a GET */}
               {certStatus === 'requesting' && (

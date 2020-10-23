@@ -7,7 +7,7 @@ import { layoutGenerator } from 'react-break';
 import ClapsMobile from './assets/claps_280x201.gif';
 import ClapsTablet from './assets/claps_456x328.gif';
 import messages from './messages';
-import SocialIcons from './SocialIcons';
+import SocialIcons from '../../social-share/SocialIcons';
 import { recordFirstSectionCelebration } from './utils';
 
 function CelebrationModal({
@@ -41,7 +41,12 @@ function CelebrationModal({
           <p className="mt-3">
             <strong>{intl.formatMessage(messages.earned)}</strong> {intl.formatMessage(messages.share)}
           </p>
-          <SocialIcons courseId={courseId} />
+          <SocialIcons
+            analyticsId="edx.ui.lms.celebration.social_share.clicked"
+            courseId={courseId}
+            emailSubject={messages.emailSubject}
+            socialMessage={messages.socialMessage}
+          />
         </>
       )}
       closeText={intl.formatMessage(messages.forward)}
