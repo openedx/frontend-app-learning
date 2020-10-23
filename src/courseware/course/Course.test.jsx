@@ -57,21 +57,6 @@ describe('Course', () => {
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    // Mock media queries, because `Celebration` modal uses `react-break` for responsive breakpoints.
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-
     const courseMetadata = Factory.build('courseMetadata', { celebrations: { firstSection: true } });
     const testStore = await initializeTestStore({ courseMetadata }, false);
     const { courseware, models } = testStore.getState();

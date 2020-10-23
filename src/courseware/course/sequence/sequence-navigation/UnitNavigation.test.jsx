@@ -7,11 +7,7 @@ import UnitNavigation from './UnitNavigation';
 
 describe('Unit Navigation', () => {
   let mockData;
-  const courseMetadata = Factory.build('courseMetadata', {
-    certificate_data: {
-      cert_status: 'notpassing', // some interesting status that will trigger the last unit button to be active
-    },
-  });
+  const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
     'block',
     { type: 'vertical' },
@@ -77,10 +73,46 @@ describe('Unit Navigation', () => {
     expect(screen.getByRole('button', { name: /next/i })).toBeEnabled();
   });
 
-  it('displays end of course message instead of the "Next" button as needed', () => {
+  it('has the "Next" button disabled for the last unit in the sequence if there is no Exit Page', () => {
     render(<UnitNavigation {...mockData} unitId={unitBlocks[unitBlocks.length - 1].id} />);
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
+  });
+
+  it('displays end of course message instead of the "Next" button as needed', async () => {
+    const testCourseMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' } };
+    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
+    // Have to refetch the sequenceId since the new store generates new sequences
+    const { courseware } = testStore.getState();
+    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+
+    render(
+      <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
+      { store: testStore },
+    );
+
+    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /next \(end of course\)/i })).toBeEnabled();
+  });
+
+  it('displays complete course message instead of the "Next" button as needed', async () => {
+    const testCourseMetadata = {
+      ...courseMetadata,
+      certificate_data: { cert_status: 'downloadable' },
+      user_has_passing_grade: true,
+    };
+    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
+    // Have to refetch the sequenceId since the new store generates new sequences
+    const { courseware } = testStore.getState();
+    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+
+    render(
+      <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
+      { store: testStore },
+    );
+
+    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /Complete the course/i })).toBeEnabled();
   });
 });

@@ -108,6 +108,42 @@ describe('Sequence Navigation', () => {
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });
 
+  it('displays end of course message instead of the "Next" button as needed', async () => {
+    const testMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' } };
+    const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
+    // Have to refetch the sequenceId since the new store generates new sequences
+    const { courseware } = testStore.getState();
+    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+
+    render(
+      <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
+      { store: testStore },
+    );
+
+    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /next \(end of course\)/i })).toBeEnabled();
+  });
+
+  it('displays complete course message instead of the "Next" button as needed', async () => {
+    const testMetadata = {
+      ...courseMetadata,
+      certificate_data: { cert_status: 'downloadable' },
+      user_has_passing_grade: true,
+    };
+    const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
+    // Have to refetch the sequenceId since the new store generates new sequences
+    const { courseware } = testStore.getState();
+    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+
+    render(
+      <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
+      { store: testStore },
+    );
+
+    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /Complete the course/i })).toBeEnabled();
+  });
+
   it('handles "Previous" and "Next" click', () => {
     const previousSequenceHandler = jest.fn();
     const nextSequenceHandler = jest.fn();

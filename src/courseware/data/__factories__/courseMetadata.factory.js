@@ -53,9 +53,9 @@ Factory.define('courseMetadata')
     enroll_alert: null,
     course_exit_page_is_active: true,
     user_has_passing_grade: false,
-    certificate_data: {
-      cert_status: 'audit_passing',
-    },
+    certificate_data: null,
+    verify_identity_url: null,
+    linkedin_add_to_profile_url: null,
   }).attr(
     'tabs', ['tabs', 'id'], (passedTabs, id) => {
       if (passedTabs) {

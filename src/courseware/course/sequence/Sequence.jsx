@@ -129,7 +129,7 @@ function Sequence({
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
   const goToCourseExitPage = () => {
-    history.push(`/course/${courseId}/course-exit`);
+    history.push(`/course/${courseId}/course-end`);
   };
 
   if (sequenceStatus === 'loaded') {
