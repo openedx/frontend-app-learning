@@ -26,6 +26,7 @@ Factory.define('courseMetadata')
       is_active: null,
     },
     verified_mode: {
+      access_expiration_date: null,
       currency: 'USD',
       upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
       sku: '8CF08E5',

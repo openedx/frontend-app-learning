@@ -21,6 +21,10 @@ const messages = defineMessages({
     defaultMessage: 'Congratulations, you qualified for a certificate!',
     description: 'Text displayed when a user has completed the course and can request a certificate',
   },
+  certificateHeaderUpgradable: {
+    id: 'courseCelebration.certificateHeader.upgradable',
+    defaultMessage: 'Upgrade to pursue a verified certificate',
+  },
   certificateImage: {
     id: 'courseCelebration.certificateImage',
     defaultMessage: 'Sample certificate',
@@ -92,6 +96,18 @@ const messages = defineMessages({
   shareHeader: {
     id: 'courseCelebration.shareHeader',
     defaultMessage: 'You have completed your course. Share your success on social media or email.',
+  },
+  upgradeButton: {
+    id: 'courseExit.upgradeButton',
+    defaultMessage: 'Upgrade now',
+  },
+  upgradeLink: {
+    id: 'courseExit.upgradeLink',
+    defaultMessage: 'upgrade now',
+  },
+  verifiedCertificateSupportLink: {
+    id: 'courseExit.verifiedCertificateSupportLink',
+    defaultMessage: 'Learn more about verified certificates',
   },
   verifyIdentityButton: {
     id: 'courseCelebration.verifyIdentityButton',
