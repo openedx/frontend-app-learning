@@ -1,3 +1,5 @@
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+
 import { useModel } from '../../../generic/model-store';
 
 import messages from './messages';
@@ -68,4 +70,38 @@ function getCourseExitText(courseId, intl) {
   }
 }
 
-export { COURSE_EXIT_MODES, getCourseExitMode, getCourseExitText };
+// Meant to be used as part of a button's onClick handler.
+// For convenience, you can pass a falsy event and it will be ignored.
+const logClick = (courseId, administrator, event) => {
+  if (!event) {
+    return;
+  }
+
+  sendTrackEvent(`edx.ui.lms.course_exit.${event}.clicked`, {
+    course_id: courseId,
+    is_staff: administrator,
+  });
+};
+
+// Use like the following to call this only once on initial page load:
+// useEffect(() => logVisit(courseId, administrator, variant), [courseId, administrator, variant]);
+// For convenience, you can pass a falsy variant and it will be ignored.
+const logVisit = (courseId, administrator, variant) => {
+  if (!variant) {
+    return;
+  }
+
+  sendTrackEvent('edx.ui.lms.course_exit.visited', {
+    course_id: courseId,
+    is_staff: administrator,
+    variant,
+  });
+};
+
+export {
+  COURSE_EXIT_MODES,
+  getCourseExitMode,
+  getCourseExitText,
+  logClick,
+  logVisit,
+};

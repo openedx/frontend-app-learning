@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Helmet } from 'react-helmet';
 import { useSelector } from 'react-redux';
@@ -10,14 +11,18 @@ import { useModel } from '../../../generic/model-store';
 
 import DashboardFootnote from './DashboardFootnote';
 import messages from './messages';
+import { logClick, logVisit } from './utils';
 
 function CourseNonPassing({ intl }) {
   const { courseId } = useSelector(state => state.courseware);
   const { tabs } = useModel('courses', courseId);
+  const { administrator } = getAuthenticatedUser();
 
   // Get progress tab link for 'view grades' button
   const progressTab = tabs.find(tab => tab.slug === 'progress');
   const progressLink = progressTab && progressTab.url;
+
+  useEffect(() => logVisit(courseId, administrator, 'nonpassing'), [courseId, administrator]);
 
   return (
     <>
@@ -31,7 +36,12 @@ function CourseNonPassing({ intl }) {
         <Alert variant="primary" className="col col-lg-10 mt-4 d-flex align-items-start">
           <div className="flex-grow-1 mr-5">{ intl.formatMessage(messages.endOfCourseDescription) }</div>
           {progressLink && (
-            <Button variant="primary" className="flex-shrink-0" href={progressLink}>
+            <Button
+              variant="primary"
+              className="flex-shrink-0"
+              href={progressLink}
+              onClick={() => logClick(courseId, administrator, 'view_grades')}
+            >
               {intl.formatMessage(messages.viewGradesButton)}
             </Button>
           )}
