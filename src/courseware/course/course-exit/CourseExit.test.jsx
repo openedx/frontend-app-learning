@@ -118,6 +118,24 @@ describe('Course Exit Pages', () => {
       expect(screen.getByRole('button', { name: 'Request certificate' })).toBeInTheDocument();
     });
 
+    it('Displays social share icons', async () => {
+      setMetadata({ certificate_data: { cert_status: 'unverified' }, marketing_url: 'https://edx.org' });
+      await fetchAndRender(<CourseCelebration />);
+      expect(screen.getByRole('button', { name: 'linkedin' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'facebook' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'twitter' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'email' })).toBeInTheDocument();
+    });
+
+    it('Does not display social share icons if no marketing URL', async () => {
+      setMetadata({ certificate_data: { cert_status: 'unverified' } });
+      await fetchAndRender(<CourseCelebration />);
+      expect(screen.queryByRole('button', { name: 'linkedin' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'facebook' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'twitter' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'email' })).not.toBeInTheDocument();
+    });
+
     it('Displays verify identity link', async () => {
       setMetadata({
         certificate_data: { cert_status: 'unverified' },

@@ -17,9 +17,18 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
-import { useModel } from '../../../generic/model-store';
+import { useModel } from '../../generic/model-store';
 
-function SocialIcons({ courseId, intl }) {
+function SocialIcons({
+  analyticsId,
+  className,
+  courseId,
+  emailBody,
+  emailSubject,
+  hashtags,
+  intl,
+  socialMessage,
+}) {
   const {
     marketingUrl,
     title,
@@ -33,8 +42,12 @@ function SocialIcons({ courseId, intl }) {
   const twitterAccount = twitterUrl && twitterUrl.substring(twitterUrl.lastIndexOf('/') + 1);
 
   const logClick = (service) => {
+    if (!analyticsId) {
+      return;
+    }
+
     const { administrator } = getAuthenticatedUser();
-    sendTrackEvent('edx.ui.lms.celebration.social_share.clicked', {
+    sendTrackEvent(analyticsId, {
       course_id: courseId,
       is_staff: administrator,
       service,
@@ -44,7 +57,7 @@ function SocialIcons({ courseId, intl }) {
   const socialUtmMarketingUrl = `${marketingUrl}?utm_campaign=edxmilestone&utm_medium=social`;
 
   return (
-    <div className="social-icons">
+    <div className={`social-icons ${className}`}>
       <LinkedinShareButton
         beforeOnClick={() => logClick('linkedin')}
         url={`${socialUtmMarketingUrl}&utm_source=linkedin`}
@@ -52,12 +65,12 @@ function SocialIcons({ courseId, intl }) {
         <LinkedinIcon round size={32} />
         <span className="sr-only">{intl.formatMessage(messages.shareService, { service: 'LinkedIn' })}</span>
       </LinkedinShareButton>
-      { twitterAccount && (
+      {twitterAccount && (
         <TwitterShareButton
           beforeOnClick={() => logClick('twitter')}
           className="ml-2"
-          hashtags={['myedxjourney']}
-          title={intl.formatMessage(messages.social, { platform: `@${twitterAccount}`, title })}
+          hashtags={hashtags}
+          title={socialMessage ? intl.formatMessage(socialMessage, { platform: `@${twitterAccount}`, title }) : ''}
           url={`${socialUtmMarketingUrl}&utm_source=twitter`}
         >
           <TwitterIcon round size={32} />
@@ -67,7 +80,7 @@ function SocialIcons({ courseId, intl }) {
       <FacebookShareButton
         beforeOnClick={() => logClick('facebook')}
         className="ml-2"
-        quote={intl.formatMessage(messages.social, { platform: getConfig().SITE_NAME, title })}
+        quote={socialMessage ? intl.formatMessage(socialMessage, { platform: getConfig().SITE_NAME, title }) : ''}
         url={`${socialUtmMarketingUrl}&utm_source=facebook`}
       >
         <FacebookIcon round size={32} />
@@ -75,9 +88,9 @@ function SocialIcons({ courseId, intl }) {
       </FacebookShareButton>
       <EmailShareButton
         beforeOnClick={() => logClick('email')}
-        body={`${intl.formatMessage(messages.emailBody)}\n\n`}
+        body={emailBody ? `${intl.formatMessage(emailBody)}\n\n` : ''}
         className="ml-2"
-        subject={intl.formatMessage(messages.emailSubject, { platform: getConfig().SITE_NAME, title })}
+        subject={emailSubject ? intl.formatMessage(emailSubject, { platform: getConfig().SITE_NAME, title }) : ''}
         url={`${marketingUrl}?utm_campaign=edxmilestone&utm_medium=email&utm_source=email`}
       >
         <EmailIcon round size={32} />
@@ -87,9 +100,24 @@ function SocialIcons({ courseId, intl }) {
   );
 }
 
+SocialIcons.defaultProps = {
+  analyticsId: '',
+  className: '',
+  emailBody: messages.defaultEmailBody,
+  emailSubject: null,
+  hashtags: ['myedxjourney'],
+  socialMessage: null,
+};
+
 SocialIcons.propTypes = {
+  analyticsId: PropTypes.string,
+  className: PropTypes.string,
   courseId: PropTypes.string.isRequired,
+  emailBody: PropTypes.shape({}),
+  emailSubject: PropTypes.shape({}),
+  hashtags: PropTypes.arrayOf(PropTypes.string),
   intl: intlShape.isRequired,
+  socialMessage: PropTypes.shape({}),
 };
 
 export default injectIntl(SocialIcons);

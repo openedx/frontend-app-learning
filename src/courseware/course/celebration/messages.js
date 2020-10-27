@@ -13,11 +13,6 @@ const messages = defineMessages({
     id: 'learning.celebration.earned',
     defaultMessage: 'You earned it!',
   },
-  emailBody: {
-    id: 'learning.celebration.emailBody',
-    defaultMessage: 'What are you spending your time learning?',
-    description: 'Body when sharing course progress via email',
-  },
   emailSubject: {
     id: 'learning.celebration.emailSubject',
     defaultMessage: "I'm on my way to completing {title} online with {platform}!",
@@ -32,15 +27,7 @@ const messages = defineMessages({
     id: 'learning.celebration.share',
     defaultMessage: 'Take a moment to celebrate and share your progress.',
   },
-  shareEmail: {
-    id: 'learning.celebration.share.email',
-    defaultMessage: 'Share your progress via email.',
-  },
-  shareService: {
-    id: 'learning.celebration.share.service',
-    defaultMessage: 'Share your progress on {service}.',
-  },
-  social: {
+  socialMessage: {
     id: 'learning.celebration.social',
     defaultMessage: 'I’m on my way to completing {title} online with {platform}. What are you spending your time learning?',
     description: 'Shown when sharing course progress on a social network',
