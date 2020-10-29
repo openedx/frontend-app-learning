@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   FormattedDate, FormattedMessage, injectIntl, intlShape,
@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { LinkedinIcon } from 'react-share';
 import { Alert, Button, Hyperlink } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import CelebrationMobile from './assets/celebration_456x328.gif';
@@ -22,6 +21,7 @@ import { requestCert } from '../../../course-home/data/thunks';
 import DashboardFootnote from './DashboardFootnote';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
+import { logClick, logVisit } from './utils';
 
 const LINKEDIN_BLUE = '#007fb1';
 
@@ -81,22 +81,16 @@ function CourseCelebration({ intl }) {
     </Hyperlink>
   );
 
-  const logClick = (service) => {
-    sendTrackEvent('edx.ui.lms.course_celebration.linkedin_add_to_profile.clicked', {
-      course_id: courseId,
-      is_staff: administrator,
-      service,
-    });
-  };
-
   let buttonLocation;
   let buttonText;
   let buttonBackground = 'bg-white';
   let buttonVariant = 'outline-primary';
+  let buttonEvent = null;
   let certificateImage = certificate;
   let footnote;
   let message;
   let certHeader;
+  let visitEvent = 'celebration_generic';
   // These cases are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
   switch (certStatus) {
     case 'downloadable':
@@ -120,6 +114,8 @@ function CourseCelebration({ intl }) {
         buttonLocation = downloadUrl;
         buttonText = intl.formatMessage(messages.downloadButton);
       }
+      buttonEvent = 'view_cert';
+      visitEvent = 'celebration_with_cert';
       footnote = <DashboardFootnote />;
       break;
     case 'earned_but_not_available': {
@@ -146,17 +142,21 @@ function CourseCelebration({ intl }) {
           </p>
         </>
       );
+      visitEvent = 'celebration_with_unavailable_cert';
       footnote = <DashboardFootnote />;
       break;
     }
     case 'requesting':
       buttonText = intl.formatMessage(messages.requestCertificateButton);
+      buttonEvent = 'request_cert';
       certHeader = intl.formatMessage(messages.certificateHeaderRequestable);
       message = (<p>{intl.formatMessage(messages.requestCertificateBodyText)}</p>);
+      visitEvent = 'celebration_with_requestable_cert';
       footnote = <DashboardFootnote />;
       break;
     case 'unverified':
       buttonText = intl.formatMessage(messages.verifyIdentityButton);
+      buttonEvent = 'verify_id';
       buttonLocation = verifyIdentityUrl;
       certHeader = intl.formatMessage(messages.certificateHeaderUnverified);
       // todo: check for idVerificationSupportLink null
@@ -170,6 +170,7 @@ function CourseCelebration({ intl }) {
           />
         </p>
       );
+      visitEvent = 'celebration_unverified';
       footnote = <DashboardFootnote />;
       break;
     case 'audit_passing':
@@ -200,10 +201,12 @@ function CourseCelebration({ intl }) {
           </p>
         );
         buttonText = intl.formatMessage(messages.upgradeButton);
+        buttonEvent = 'upgrade';
         buttonLocation = verifiedMode.upgradeUrl;
         buttonBackground = '';
         buttonVariant = 'primary';
         certificateImage = certificateLocked;
+        visitEvent = 'celebration_upgrade';
         if (verifiedMode.accessExpirationDate) {
           footnote = <UpgradeFootnote deadline={verifiedMode.accessExpirationDate} href={verifiedMode.upgradeUrl} />;
         } else {
@@ -214,6 +217,8 @@ function CourseCelebration({ intl }) {
     default:
       break;
   }
+
+  useEffect(() => logVisit(courseId, administrator, visitEvent), [courseId, administrator, visitEvent]);
 
   return (
     <>
@@ -262,7 +267,10 @@ function CourseCelebration({ intl }) {
                 <Button
                   className={buttonBackground}
                   variant={buttonVariant}
-                  onClick={() => dispatch(requestCert(courseId))}
+                  onClick={() => {
+                    logClick(courseId, administrator, buttonEvent);
+                    dispatch(requestCert(courseId));
+                  }}
                 >
                   {buttonText}
                 </Button>
@@ -271,7 +279,7 @@ function CourseCelebration({ intl }) {
                 <Button
                   className="mr-3 mb-2 mb-sm-0"
                   href={linkedinAddToProfileUrl}
-                  onClick={() => logClick('linkedin')}
+                  onClick={() => logClick(courseId, administrator, 'linkedin_add_to_profile')}
                   style={{ backgroundColor: LINKEDIN_BLUE, padding: '0.25rem 1.25rem 0.25rem 0.5rem' }}
                 >
                   <LinkedinIcon bgStyle={{ fill: 'white' }} className="mr-2" iconFillColor={LINKEDIN_BLUE} round size={28} />
@@ -283,6 +291,7 @@ function CourseCelebration({ intl }) {
                   className={`${buttonBackground} mb-2 mb-sm-0`}
                   variant={buttonVariant}
                   href={buttonLocation}
+                  onClick={() => logClick(courseId, administrator, buttonEvent)}
                 >
                   {buttonText}
                 </Button>
