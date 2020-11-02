@@ -147,14 +147,17 @@ function Unit({
                     allow="microphone *; camera *; midi *; geolocation *; encrypted-media *"
                     frameBorder="0"
                     src={modalOptions.url}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                    }}
                   />
                 )}
             </>
           )}
-          title={modalOptions.title}
           onClose={() => { setModalOptions({ open: false }); }}
           open
-          dialogClassName="modal-lg"
+          dialogClassName="modal-lti"
         />
       )}
       <div className="unit-iframe-wrapper">
