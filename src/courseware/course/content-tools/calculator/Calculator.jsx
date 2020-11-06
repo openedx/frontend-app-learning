@@ -98,21 +98,13 @@ class Calculator extends Component {
               <FormattedMessage
                 tagName="h6"
                 id="calculator.instructions"
-                defaultMessage="For detailed information, see {expressions_link} in the {edx_guide}."
+                defaultMessage="For detailed information, see the {expressions_link}."
                 values={{
                   expressions_link: (
-                    <a href="https://edx.readthedocs.io/projects/edx-guide-for-students/en/latest/completing_assignments/SFD_mathformatting.html#math-formatting">
+                    <a href={getConfig().SUPPORT_URL_CALCULATOR_MATH}>
                       <FormattedMessage
-                        id="calculator.instructions.expressions.link.title"
-                        defaultMessage="Entering Mathematical and Scientific Expressions"
-                      />
-                    </a>
-                  ),
-                  edx_guide: (
-                    <a href="https://edx-guide-for-students.readthedocs.io/en/latest/index.html">
-                      <FormattedMessage
-                        id="calculator.instructions.edx.guide.link.title"
-                        defaultMessage="edX Guide for Students"
+                        id="calculator.instructions.support.title"
+                        defaultMessage="Help Center"
                       />
                     </a>
                   ),

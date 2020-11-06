@@ -61,12 +61,11 @@ function CourseCelebration({ intl }) {
       {intl.formatMessage(messages.dashboardLink)}
     </Hyperlink>
   );
-  // todo: remove this hardcoded link to edX support
-  const idVerificationSupportLink = getConfig().SUPPORT_URL && (
+  const idVerificationSupportLink = getConfig().SUPPORT_URL_ID_VERIFICATION && (
     <Hyperlink
       className="text-gray-700"
       style={{ textDecoration: 'underline' }}
-      destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/206503858-How-do-I-verify-my-identity`}
+      destination={getConfig().SUPPORT_URL_ID_VERIFICATION}
     >
       {intl.formatMessage(messages.idVerificationSupportLink)}
     </Hyperlink>
@@ -188,12 +187,11 @@ function CourseCelebration({ intl }) {
               values={{ price: verifiedMode.currencySymbol + verifiedMode.price }}
             />
             <br />
-            { /* todo: remove this hardcoded link to edX support */ }
-            {getConfig().SUPPORT_URL && (
+            {getConfig().SUPPORT_URL_VERIFIED_CERTIFICATE && (
               <Hyperlink
                 className="text-gray-700"
                 style={{ textDecoration: 'underline' }}
-                destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/206502008-What-is-a-verified-certificate`}
+                destination={getConfig().SUPPORT_URL_VERIFIED_CERTIFICATE}
               >
                 {intl.formatMessage(messages.verifiedCertificateSupportLink)}
               </Hyperlink>
