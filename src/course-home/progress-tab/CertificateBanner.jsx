@@ -6,7 +6,7 @@ import { requestCert } from '../data/thunks';
 
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
-import VerifiedCert from '../../courseware/course/sequence/lock-paywall/assets/edx-verified-mini-cert.png';
+import VerifiedCert from '../../generic/assets/edX_verified_certificate.png';
 
 function CertificateBanner({ intl }) {
   const {

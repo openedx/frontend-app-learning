@@ -80,6 +80,7 @@ initialize({
   handlers: {
     config: () => {
       mergeConfig({
+        CREDENTIALS_BASE_URL: process.env.CREDENTIALS_BASE_URL || null,
         INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
         SOCIAL_UTM_MILESTONE_CAMPAIGN: process.env.SOCIAL_UTM_MILESTONE_CAMPAIGN || null,
         STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,

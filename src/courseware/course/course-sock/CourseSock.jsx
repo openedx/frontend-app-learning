@@ -4,7 +4,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import LearnerQuote1 from './assets/learner-quote.png';
 import LearnerQuote2 from './assets/learner-quote2.png';
-import VerifiedCert from './assets/verified-cert.png';
+import VerifiedCert from '../../../generic/assets/edX_verified_certificate.png';
 
 export default class CourseSock extends Component {
   constructor(props) {

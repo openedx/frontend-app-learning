@@ -57,6 +57,7 @@ Factory.define('courseMetadata')
     certificate_data: null,
     verify_identity_url: null,
     linkedin_add_to_profile_url: null,
+    related_programs: null,
   }).attr(
     'tabs', ['tabs', 'id'], (passedTabs, id) => {
       if (passedTabs) {
