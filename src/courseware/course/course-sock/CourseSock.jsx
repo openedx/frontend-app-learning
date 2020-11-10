@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import LearnerQuote1 from './assets/learner-quote.png';
 import LearnerQuote2 from './assets/learner-quote2.png';
@@ -36,7 +37,10 @@ export default class CourseSock extends Component {
             <h2 className="mt-3 mb-4">
               <FormattedMessage
                 id="coursesock.upsell.verifiedcert"
-                defaultMessage="edX Verified Certificate"
+                defaultMessage="{siteName} Verified Certificate"
+                values={{
+                  siteName: getConfig().SITE_NAME,
+                }}
               />
             </h2>
             <div className="row flex-row-reverse">
@@ -94,7 +98,10 @@ export default class CourseSock extends Component {
                   <li>
                     <FormattedMessage
                       id="coursesock.upsell.reason4"
-                      defaultMessage="Certificate purchases help edX continue to offer free courses"
+                      defaultMessage="Certificate purchases help {siteName} continue to offer free courses"
+                      values={{
+                        siteName: getConfig().SITE_NAME,
+                      }}
                     />
                   </li>
                 </ul>
@@ -134,7 +141,10 @@ export default class CourseSock extends Component {
                 <h3 className="h5">
                   <FormattedMessage
                     id="coursesock.upsell.storytitle"
-                    defaultMessage="edX Learner Stories"
+                    defaultMessage="{siteName} Learner Stories"
+                    values={{
+                      siteName: getConfig().SITE_NAME,
+                    }}
                   />
                 </h3>
                 <div className="media my-3">
@@ -150,8 +160,11 @@ export default class CourseSock extends Component {
                       &mdash; <FormattedMessage
                         id="coursesock.upsell.learner"
                         description="Name of learner"
-                        defaultMessage="{ name }, edX Learner"
-                        values={{ name: 'Christina Fong' }}
+                        defaultMessage="{name}, {siteName} Learner"
+                        values={{
+                          name: 'Christina Fong',
+                          siteName: getConfig().SITE_NAME,
+                        }}
                       />
                     </p>
                   </div>
@@ -169,8 +182,11 @@ export default class CourseSock extends Component {
                       &mdash; <FormattedMessage
                         id="coursesock.upsell.learner"
                         description="Name of learner"
-                        defaultMessage="{ name }, edX Learner"
-                        values={{ name: 'Cheryl Troell' }}
+                        defaultMessage="{name}, {siteName} Learner"
+                        values={{
+                          name: 'Cheryl Troell',
+                          siteName: getConfig().SITE_NAME,
+                        }}
                       />
                     </p>
                   </div>

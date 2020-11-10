@@ -54,7 +54,9 @@ function SocialIcons({
     });
   };
 
-  const socialUtmMarketingUrl = `${marketingUrl}?utm_campaign=edxmilestone&utm_medium=social`;
+  const socialUtmCampaign = getConfig().SOCIAL_UTM_MILESTONE_CAMPAIGN
+    ? `utm_campaign=${getConfig().SOCIAL_UTM_MILESTONE_CAMPAIGN}&` : '';
+  const socialUtmMarketingUrl = `${marketingUrl}?${socialUtmCampaign}utm_medium=social`;
 
   return (
     <div className={`social-icons ${className}`}>
@@ -91,7 +93,7 @@ function SocialIcons({
         body={emailBody ? `${intl.formatMessage(emailBody)}\n\n` : ''}
         className="ml-2"
         subject={emailSubject ? intl.formatMessage(emailSubject, { platform: getConfig().SITE_NAME, title }) : ''}
-        url={`${marketingUrl}?utm_campaign=edxmilestone&utm_medium=email&utm_source=email`}
+        url={`${marketingUrl}?${socialUtmCampaign}utm_medium=email&utm_source=email`}
       >
         <EmailIcon round size={32} />
         <span className="sr-only">{intl.formatMessage(messages.shareEmail)}</span>
@@ -105,7 +107,7 @@ SocialIcons.defaultProps = {
   className: '',
   emailBody: messages.defaultEmailBody,
   emailSubject: null,
-  hashtags: ['myedxjourney'],
+  hashtags: [getConfig().TWITTER_HASHTAG],
   socialMessage: null,
 };
 
