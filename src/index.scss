@@ -89,12 +89,15 @@ $primary: #1176B2;
     border-right: 0;
     border-radius: 0;
 
-    &:hover,
+    &:hover {
+      background: theme-color('gray', 100);
+    }
+
     &:focus,
     &.active {
-      font-weight: $font-weight-normal;
+      font-weight: $font-weight-bold;
       color: theme-color('primary', 500);
-      border-bottom-color: theme-color('primary', 500);
+      background: theme-color('primary', 200);
     }
   }
 }
@@ -142,25 +145,16 @@ $primary: #1176B2;
     color: theme-color('gray', 400);
     white-space: nowrap;
 
-    &:hover,
+    &:hover {
+      background: theme-color('gray', 100);
+    }
+
     &:focus,
     &.active {
-      color: theme-color('gray', 700);
+      color: theme-color('primary', 500);
+      background: theme-color('primary', 200);
     }
-    &:focus {
-      z-index: 1;
-    }
-    &.active {
-      &:after {
-        content: '';
-        position: absolute;
-        bottom: -1px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: $primary;
-      }
-    }
+
     &.complete {
       background-color: #EEF7E5;
       color: $success;
