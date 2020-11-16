@@ -140,6 +140,7 @@ function normalizeMetadata(metadata) {
     certificateData: camelCaseObject(metadata.certificate_data),
     verifyIdentityUrl: metadata.verify_identity_url,
     linkedinAddToProfileUrl: metadata.linkedin_add_to_profile_url,
+    relatedPrograms: camelCaseObject(metadata.related_programs),
   };
 }
 

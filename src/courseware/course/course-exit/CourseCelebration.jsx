@@ -13,11 +13,12 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import CelebrationMobile from './assets/celebration_456x328.gif';
 import CelebrationDesktop from './assets/celebration_750x540.gif';
-import certificate from './assets/edx_certificate.png';
-import certificateLocked from './assets/edx_certificate_locked.png';
+import certificate from '../../../generic/assets/edX_verified_certificate.png';
+import certificateLocked from '../../../generic/assets/edX_locked_verified_certificate.png';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
+import ProgramCompletion from './ProgramCompletion';
 import DashboardFootnote from './DashboardFootnote';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
@@ -40,6 +41,7 @@ function CourseCelebration({ intl }) {
     certificateData,
     end,
     linkedinAddToProfileUrl,
+    relatedPrograms,
     verifiedMode,
     verifyIdentityUrl,
   } = useModel('courses', courseId);
@@ -307,6 +309,15 @@ function CourseCelebration({ intl }) {
             )}
           </Alert>
           )}
+          {relatedPrograms && relatedPrograms.map(program => (
+            <ProgramCompletion
+              key={program.uuid}
+              progress={program.progress}
+              title={program.title}
+              type={program.slug}
+              url={program.url}
+            />
+          ))}
           {footnote}
         </div>
       </div>

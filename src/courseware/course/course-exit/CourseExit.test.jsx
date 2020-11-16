@@ -190,6 +190,81 @@ describe('Course Exit Pages', () => {
       expect(screen.getByRole('link', { name: 'View my certificate' })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Add to LinkedIn profile' })).toBeInTheDocument();
     });
+
+    describe('Program Completion experience', () => {
+      beforeEach(() => {
+        setMetadata({
+          certificate_data: {
+            cert_status: 'downloadable',
+            cert_web_view_url: '/certificates/cooluuidgoeshere',
+          },
+        });
+      });
+
+      it('Does not render ProgramCompletion no related programs', async () => {
+        await fetchAndRender(<CourseCelebration />);
+        expect(screen.queryByTestId('program-completion')).not.toBeInTheDocument();
+      });
+
+      it('Does not render ProgramCompletion if program is incomplete', async () => {
+        setMetadata({
+          related_programs: [{
+            progress: {
+              completed: 1,
+              in_progress: 1,
+              not_started: 1,
+            },
+            slug: 'micromasters',
+            title: 'Example MicroMasters Program',
+            uuid: '123456',
+            url: 'http://localhost:18000/dashboard/programs/123456',
+          }],
+        });
+        await fetchAndRender(<CourseCelebration />);
+
+        expect(screen.queryByTestId('program-completion')).not.toBeInTheDocument();
+      });
+
+      it('Renders ProgramCompletion if program is complete', async () => {
+        setMetadata({
+          related_programs: [{
+            progress: {
+              completed: 3,
+              in_progress: 0,
+              not_started: 0,
+            },
+            slug: 'micromasters',
+            title: 'Example MicroMasters Program',
+            uuid: '123456',
+            url: 'http://localhost:18000/dashboard/programs/123456',
+          }],
+        });
+        await fetchAndRender(<CourseCelebration />);
+
+        expect(screen.queryByTestId('program-completion')).toBeInTheDocument();
+        expect(screen.queryByTestId('micromasters')).toBeInTheDocument();
+      });
+
+      it('Does not render ProgramCompletion if program is an excluded type', async () => {
+        setMetadata({
+          related_programs: [{
+            progress: {
+              completed: 3,
+              in_progress: 0,
+              not_started: 0,
+            },
+            slug: 'excluded-program-type',
+            title: 'Example Excluded Program',
+            uuid: '123456',
+            url: 'http://localhost:18000/dashboard/programs/123456',
+          }],
+        });
+        await fetchAndRender(<CourseCelebration />);
+
+        expect(screen.queryByTestId('program-completion')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('excluded-program-type')).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe('Course Non-passing Experience', () => {
