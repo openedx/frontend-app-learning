@@ -52,3 +52,18 @@ pull_translations:
 validate-no-uncommitted-package-lock-changes:
 	# Checking for package-lock.json changes...
 	git diff --exit-code package-lock.json
+
+.PHONY: validate
+validate:
+	make validate-no-uncommitted-package-lock-changes
+	npm run i18n_extract
+	npm run lint -- --max-warnings 0
+	npm run test
+	npm run build
+	npm run is-es5
+
+.PHONY: validate.ci
+validate.ci:
+	npm ci
+	make validate
+	codecov
