@@ -3,7 +3,10 @@ import React, {
   useEffect, useContext, useState,
 } from 'react';
 import PropTypes from 'prop-types';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import {
+  sendTrackEvent,
+  sendTrackingLogEvent,
+} from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import { history } from '@edx/frontend-platform';
@@ -69,6 +72,7 @@ function Sequence({
       payload.target_tab = targetIndex + 1;
     }
     sendTrackEvent(eventName, payload);
+    sendTrackingLogEvent(eventName, payload);
   };
 
   const { add, remove } = useContext(UserMessagesContext);
