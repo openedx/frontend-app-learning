@@ -5,7 +5,6 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import userEvent from '@testing-library/user-event';
 
-import { ALERT_TYPES } from '../../generic/user-messages';
 import buildSimpleCourseBlocks from '../data/__factories__/courseBlocks.factory';
 import {
   fireEvent, initializeMockApp, logUnhandledRequests, render, screen, waitFor,
@@ -124,6 +123,10 @@ describe('Outline Tab', () => {
   });
 
   describe('Welcome Message', () => {
+    beforeEach(() => {
+      setMetadata({ is_enrolled: true });
+    });
+
     it('does not render show more/less button under 100 words', async () => {
       await fetchAndRender();
       expect(screen.getByTestId('alert-container-welcome')).toBeInTheDocument();
@@ -274,20 +277,12 @@ describe('Outline Tab', () => {
   });
 
   describe('Alert List', () => {
-    describe('Enrollment Alert', () => {
-      let alertMessage;
-      let staffMessage;
-
-      beforeEach(() => {
-        const extraText = defaultTabData.enroll_alert.extra_text;
-        alertMessage = `You must be enrolled in the course to see course content. ${extraText}`;
-        staffMessage = 'You are viewing this course as staff, and are not enrolled.';
-      });
-
-      it('does not display enrollment alert for enrolled user', async () => {
+    describe('Private Course Alert', () => {
+      it('does not display alert for enrolled user', async () => {
         setMetadata({ is_enrolled: true });
         await fetchAndRender();
-        expect(screen.queryByText(alertMessage)).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Enroll now' })).not.toBeInTheDocument();
+        expect(screen.queryByText('to access the full course')).not.toBeInTheDocument();
       });
 
       it('does not display enrollment button if enrollment is not available', async () => {
@@ -297,29 +292,21 @@ describe('Outline Tab', () => {
           },
         });
         await fetchAndRender();
-        expect(screen.queryByRole('button', { name: 'Enroll Now' })).not.toBeInTheDocument();
+
+        const alert = await screen.findByText('Welcome to Demonstration Course');
+        expect(alert.parentElement).toHaveAttribute('role', 'alert');
+
+        expect(screen.queryByRole('button', { name: 'Enroll now' })).not.toBeInTheDocument();
+        expect(screen.getByText('You must be enrolled in the course to see course content.')).toBeInTheDocument();
       });
 
-      it('displays enrollment alert for unenrolled user', async () => {
+      it('displays alert for unenrolled user', async () => {
         await fetchAndRender();
 
-        const alert = await screen.findByText(alertMessage);
-        expect(alert).toHaveAttribute('role', 'alert');
-        const alertContainer = await screen.findByTestId(`alert-container-${ALERT_TYPES.ERROR}`);
-        expect(screen.queryByText(staffMessage)).not.toBeInTheDocument();
+        const alert = await screen.findByText('Welcome to Demonstration Course');
+        expect(alert.parentElement).toHaveAttribute('role', 'alert');
 
-        expect(alertContainer.querySelector('svg')).toHaveClass('fa-exclamation-triangle');
-      });
-
-      it('displays different message for unenrolled staff user', async () => {
-        setMetadata({ is_staff: true });
-        await fetchAndRender();
-
-        const alert = await screen.findByText(staffMessage);
-        expect(alert).toHaveAttribute('role', 'alert');
-        expect(screen.queryByText(alertMessage)).not.toBeInTheDocument();
-        const alertContainer = await screen.findByTestId(`alert-container-${ALERT_TYPES.INFO}`);
-        expect(alertContainer.querySelector('svg')).toHaveClass('fa-info-circle');
+        expect(screen.getByRole('button', { name: 'Enroll now' })).toBeInTheDocument();
       });
 
       it('handles button click', async () => {
@@ -330,7 +317,7 @@ describe('Outline Tab', () => {
         };
         await fetchAndRender();
 
-        const button = await screen.findByRole('button', { name: 'Enroll Now' });
+        const button = await screen.findByRole('button', { name: 'Enroll now' });
         fireEvent.click(button);
         await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
         expect(axiosMock.history.post[0].data)

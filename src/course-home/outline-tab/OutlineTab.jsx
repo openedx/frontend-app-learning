@@ -21,9 +21,8 @@ import useAccessExpirationAlert from '../../alerts/access-expiration-alert';
 import useCertificateAvailableAlert from './alerts/certificate-available-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from './alerts/course-start-alert';
-import useEnrollmentAlert from '../../alerts/enrollment-alert';
-import useLogistrationAlert from '../../alerts/logistration-alert';
 import useOfferAlert from '../../alerts/offer-alert';
+import usePrivateCourseAlert from '../../alerts/private-course-alert';
 import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 
@@ -34,12 +33,6 @@ function OutlineTab({ intl }) {
 
   const {
     title,
-    start,
-    end,
-    enrollmentStart,
-    enrollmentEnd,
-    enrollmentMode,
-    isEnrolled,
   } = useModel('courses', courseId);
 
   const {
@@ -71,16 +64,13 @@ function OutlineTab({ intl }) {
   const [goalToastHeader, setGoalToastHeader] = useState('');
   const [expandAll, setExpandAll] = useState(false);
 
-  // Above the tab alerts (appearing in the order listed here)
-  const logistrationAlert = useLogistrationAlert();
-  const enrollmentAlert = useEnrollmentAlert(courseId);
-
   // Below the course title alerts (appearing in the order listed here)
   const offerAlert = useOfferAlert(offer, userTimezone, 'outline-course-alerts');
   const accessExpirationAlert = useAccessExpirationAlert(accessExpiration, userTimezone, 'outline-course-alerts');
   const courseStartAlert = useCourseStartAlert(courseId);
   const courseEndAlert = useCourseEndAlert(courseId);
   const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
+  const privateCourseAlert = usePrivateCourseAlert(courseId);
 
   const rootCourseId = courses && Object.keys(courses)[0];
 
@@ -88,14 +78,6 @@ function OutlineTab({ intl }) {
 
   return (
     <>
-      <AlertList
-        topic="outline"
-        className="mb-3"
-        customAlerts={{
-          ...enrollmentAlert,
-          ...logistrationAlert,
-        }}
-      />
       <Toast
         closeLabel={intl.formatMessage(genericMessages.close)}
         onClose={() => setGoalToastHeader('')}
@@ -116,16 +98,15 @@ function OutlineTab({ intl }) {
         )}
       </div>
       <div className="row">
+        <div className="col-12">
+          <AlertList
+            topic="outline-private-alerts"
+            customAlerts={{
+              ...privateCourseAlert,
+            }}
+          />
+        </div>
         <div className="col col-12 col-md-8">
-          {!courseGoalToDisplay && goalOptions.length > 0 && (
-            <CourseGoalCard
-              courseId={courseId}
-              goalOptions={goalOptions}
-              title={title}
-              setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
-              setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
-            />
-          )}
           <AlertList
             topic="outline-course-alerts"
             className="mb-3"
@@ -137,13 +118,24 @@ function OutlineTab({ intl }) {
               ...offerAlert,
             }}
           />
-          <DatesBannerContainer
-            courseDateBlocks={courseDateBlocks}
-            datesBannerInfo={datesBannerInfo}
-            hasEnded={hasEnded}
-            model="outline"
-            tabFetch={fetchOutlineTab}
-          />
+          {courseDateBlocks && (
+            <DatesBannerContainer
+              courseDateBlocks={courseDateBlocks}
+              datesBannerInfo={datesBannerInfo}
+              hasEnded={hasEnded}
+              model="outline"
+              tabFetch={fetchOutlineTab}
+            />
+          )}
+          {!courseGoalToDisplay && goalOptions.length > 0 && (
+            <CourseGoalCard
+              courseId={courseId}
+              goalOptions={goalOptions}
+              title={title}
+              setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
+              setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
+            />
+          )}
           <WelcomeMessage courseId={courseId} />
           {rootCourseId && (
             <>
@@ -166,36 +158,32 @@ function OutlineTab({ intl }) {
             </>
           )}
         </div>
-        <div className="col col-12 col-md-4">
-          {courseGoalToDisplay && goalOptions.length > 0 && (
-            <UpdateGoalSelector
+        {rootCourseId && (
+          <div className="col col-12 col-md-4">
+            {courseGoalToDisplay && goalOptions.length > 0 && (
+              <UpdateGoalSelector
+                courseId={courseId}
+                goalOptions={goalOptions}
+                selectedGoal={courseGoalToDisplay}
+                setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
+                setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
+              />
+            )}
+            <CourseTools
               courseId={courseId}
-              goalOptions={goalOptions}
-              selectedGoal={courseGoalToDisplay}
-              setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
-              setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
             />
-          )}
-          <CourseTools
-            courseId={courseId}
-          />
-          <UpgradeCard
-            courseId={courseId}
-            onLearnMore={canShowUpgradeSock ? () => { courseSock.current.showToUser(); } : null}
-          />
-          <CourseDates
-            start={start}
-            end={end}
-            enrollmentStart={enrollmentStart}
-            enrollmentEnd={enrollmentEnd}
-            enrollmentMode={enrollmentMode}
-            isEnrolled={isEnrolled}
-            courseId={courseId}
-          />
-          <CourseHandouts
-            courseId={courseId}
-          />
-        </div>
+            <UpgradeCard
+              courseId={courseId}
+              onLearnMore={canShowUpgradeSock ? () => { courseSock.current.showToUser(); } : null}
+            />
+            <CourseDates
+              courseId={courseId}
+            />
+            <CourseHandouts
+              courseId={courseId}
+            />
+          </div>
+        )}
       </div>
       {canShowUpgradeSock && <CourseSock ref={courseSock} verifiedMode={verifiedMode} />}
     </>

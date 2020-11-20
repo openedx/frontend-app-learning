@@ -16,6 +16,10 @@ function CourseDates({ courseId, intl }) {
     },
   } = useModel('outline', courseId);
 
+  if (courseDateBlocks.length === 0) {
+    return null;
+  }
+
   return (
     <section className="mb-4">
       <h2 className="h6">{intl.formatMessage(messages.dates)}</h2>

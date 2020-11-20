@@ -11,9 +11,15 @@ const messages = defineMessages({
     defaultMessage: 'You are viewing this course as staff, and are not enrolled.',
     description: 'Message shown to indicate that a user is not enrolled, but is able to view a course anyway because they are staff. Shown as part of an alert, along with a link to enroll.',
   },
-  enroll: {
-    id: 'learning.enrollment.enroll.now',
-    defaultMessage: 'Enroll Now',
+  enrollNowInline: {
+    id: 'learning.enrollment.enrollNow.Inline',
+    defaultMessage: 'Enroll now',
+    description: 'A link prompting the user to click on it to enroll in the currently viewed course.'
+      + 'This text is meant to be used at the beginning of a sentence (example: Enroll now to view course content.)',
+  },
+  enrollNowSentence: {
+    id: 'learning.enrollment.enrollNow.Sentence',
+    defaultMessage: 'Enroll now.',
     description: 'A link prompting the user to click on it to enroll in the currently viewed course.',
   },
   success: {

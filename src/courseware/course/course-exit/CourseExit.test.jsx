@@ -55,6 +55,9 @@ describe('Course Exit Pages', () => {
           cert_status: 'downloadable',
           cert_web_view_url: '/certificates/cooluuidgoeshere',
         },
+        enrollment: {
+          is_active: true,
+        },
       });
       await fetchAndRender(<CourseExit />);
       expect(screen.getByText('Congratulations!')).toBeInTheDocument();
@@ -64,6 +67,9 @@ describe('Course Exit Pages', () => {
       setMetadata({
         certificate_data: {
           cert_status: 'unverified',
+        },
+        enrollment: {
+          is_active: true,
         },
         user_has_passing_grade: false,
       });

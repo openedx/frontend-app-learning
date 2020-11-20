@@ -7,7 +7,9 @@ function normalizeCourseHomeCourseMetadata(metadata) {
   return {
     ...data,
     tabs: data.tabs.map(tab => ({
-      slug: tab.tabId,
+      // The API uses "courseware" as a slug for both courseware and the outline tab. We switch it to "outline" here for
+      // use within the MFE to differentiate between course home and courseware.
+      slug: tab.tabId === 'courseware' ? 'outline' : tab.tabId,
       title: tab.title,
       url: tab.url,
     })),
@@ -103,6 +105,10 @@ export async function getDatesTabData(courseId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`);
+      return {};
+    }
+    if (httpErrorStatus === 401) {
+      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`);
       return {};
     }
     throw error;

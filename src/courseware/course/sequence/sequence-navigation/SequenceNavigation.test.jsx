@@ -115,7 +115,7 @@ describe('Sequence Navigation', () => {
   });
 
   it('displays end of course message instead of the "Next" button as needed', async () => {
-    const testMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' } };
+    const testMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' }, enrollment: { is_active: true } };
     const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
     const { courseware } = testStore.getState();
@@ -134,6 +134,7 @@ describe('Sequence Navigation', () => {
     const testMetadata = {
       ...courseMetadata,
       certificate_data: { cert_status: 'downloadable' },
+      enrollment: { is_active: true },
       user_has_passing_grade: true,
     };
     const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);

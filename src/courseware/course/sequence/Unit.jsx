@@ -1,5 +1,6 @@
 import React, {
   Suspense,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -9,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { AppContext } from '@edx/frontend-platform/react';
 import { Modal } from '@edx/paragon';
 import messages from './messages';
 import BookmarkButton from '../bookmark/BookmarkButton';
@@ -59,7 +61,9 @@ function Unit({
   id,
   intl,
 }) {
-  let iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0`;
+  const { authenticatedUser } = useContext(AppContext);
+  const view = authenticatedUser ? 'student_view' : 'public_view';
+  let iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0&view=${view}`;
   if (format) {
     iframeUrl += `&format=${format}`;
   }
