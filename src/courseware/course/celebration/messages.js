@@ -9,6 +9,18 @@ const messages = defineMessages({
     id: 'learning.celebration.congrats',
     defaultMessage: 'Congratulations!',
   },
+  conversation: {
+    id: 'learning.celebration.conversation',
+    defaultMessage: 'Nice job being part of the conversation.',
+  },
+  discussionBodyText1: {
+    id: 'learning.celebration.discussionBodyText1',
+    defaultMessage: "Learners who participate in discussions are 10x more likely to complete their course than those who don't.",
+  },
+  discussionBodyText2: {
+    id: 'learning.celebration.discussionBodyText2',
+    defaultMessage: "Learners who participate in discussions complete 3x as much course content on average vs. those who don't.",
+  },
   earned: {
     id: 'learning.celebration.earned',
     defaultMessage: 'You earned it!',
@@ -18,9 +30,18 @@ const messages = defineMessages({
     defaultMessage: "I'm on my way to completing {title} online with {platform}!",
     description: 'Subject when sharing course progress via email',
   },
+  firstDiscussionPost: {
+    id: 'learning.celebration.firstDiscussionPost',
+    defaultMessage: 'First Discussion post!',
+  },
   forward: {
     id: 'learning.celebration.forward',
     defaultMessage: 'Keep going',
+    description: 'Button to close celebration dialog and get back to course',
+  },
+  keepItUp: {
+    id: 'learning.celebration.keepItUp',
+    defaultMessage: 'Keep it up',
     description: 'Button to close celebration dialog and get back to course',
   },
   share: {

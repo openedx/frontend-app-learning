@@ -1,2 +1,7 @@
-export { default as CelebrationModal } from './CelebrationModal';
-export { handleNextSectionCelebration, shouldCelebrateOnSectionLoad } from './utils';
+export { default as FirstDiscussionCelebrationModal } from './FirstDiscussionCelebrationModal';
+export { default as FirstSectionCelebrationModal } from './FirstSectionCelebrationModal';
+export {
+  handleNextSectionCelebration,
+  shouldCelebrateOnSectionLoad,
+  shouldCelebrateOnDiscussionPost,
+} from './utils';

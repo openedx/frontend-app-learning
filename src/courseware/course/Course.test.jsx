@@ -71,9 +71,9 @@ describe('Course', () => {
     handleNextSectionCelebration(sequenceId, sequenceId, testData.unitId);
     render(<Course {...testData} />, { store: testStore });
 
-    const celebrationModal = screen.getByRole('dialog');
-    expect(celebrationModal).toBeInTheDocument();
-    expect(getByRole(celebrationModal, 'heading', { name: 'Congratulations!' })).toBeInTheDocument();
+    const FirstSectionCelebrationModal = screen.getByRole('dialog');
+    expect(FirstSectionCelebrationModal).toBeInTheDocument();
+    expect(getByRole(FirstSectionCelebrationModal, 'heading', { name: 'Congratulations!' })).toBeInTheDocument();
   });
 
   it('displays upgrade sock', async () => {

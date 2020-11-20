@@ -10,7 +10,7 @@ import useOfferAlert from '../../alerts/offer-alert';
 
 import Sequence from './sequence';
 
-import { CelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
+import { FirstSectionCelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseSock from './course-sock';
 import ContentTools from './content-tools';
@@ -78,7 +78,7 @@ function Course({
         previousSequenceHandler={previousSequenceHandler}
       />
       {celebrationOpen && (
-        <CelebrationModal
+        <FirstSectionCelebrationModal
           courseId={courseId}
           open
         />

@@ -12,6 +12,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Modal } from '@edx/paragon';
 import messages from './messages';
 import BookmarkButton from '../bookmark/BookmarkButton';
+import { FirstDiscussionCelebrationModal, shouldCelebrateOnDiscussionPost } from '../celebration';
 import { useModel } from '../../../generic/model-store';
 import PageLoading from '../../../generic/PageLoading';
 import { processEvent } from '../../../course-home/data/thunks';
@@ -65,15 +66,21 @@ function Unit({
 
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [discussionPosted, setDiscussionPosted] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
 
   const unit = useModel('units', id);
   const course = useModel('courses', courseId);
   const {
+    celebrations: {
+      firstDiscussion,
+      firstDiscussionUserBucket,
+    },
     contentTypeGatingEnabled,
   } = course;
 
   const dispatch = useDispatch();
+  const shouldCelebrateDiscussionPost = shouldCelebrateOnDiscussionPost(firstDiscussion, firstDiscussionUserBucket);
 
   // Do not remove this hook.  See function description.
   useLoadBearingHook(id);
@@ -108,6 +115,9 @@ function Unit({
     // When the component finally unmounts, use the ref to remove the correct handler.
     return () => global.removeEventListener('message', messageEventListenerRef.current);
   }, [id, setIframeHeight, hasLoaded, iframeHeight, setHasLoaded, onLoaded]);
+
+  console.log('shouldCelebrateDiscussionPost:', shouldCelebrateDiscussionPost);
+  console.log('discussionPosted:', discussionPosted);
 
   return (
     <div className="unit">
@@ -157,6 +167,13 @@ function Unit({
           dialogClassName="modal-lg"
         />
       )}
+      {discussionPosted && shouldCelebrateDiscussionPost && (
+        <FirstDiscussionCelebrationModal
+          courseId={courseId}
+          firstDiscussionUserBucket={firstDiscussionUserBucket}
+          open
+        />
+      )}
       <div className="unit-iframe-wrapper">
         <iframe
           id="unit-iframe"
@@ -167,9 +184,11 @@ function Unit({
           scrolling="no"
           referrerPolicy="origin"
           onLoad={() => {
-            window.onmessage = function handleResetDates(e) {
-              if (e.data.event_name) {
+            window.onmessage = function handleMessageEvent(e) {
+              if (e.data.event_name === 'post_event') {
                 dispatch(processEvent(e.data, fetchCourse));
+              } else if (e.data.event_name === 'discussion_post') {
+                setDiscussionPosted(true);
               }
             };
           }}

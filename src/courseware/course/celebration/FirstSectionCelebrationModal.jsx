@@ -10,7 +10,7 @@ import messages from './messages';
 import SocialIcons from '../../social-share/SocialIcons';
 import { recordFirstSectionCelebration } from './utils';
 
-function CelebrationModal({
+function FirstSectionCelebrationModal({
   courseId, intl, open, ...rest
 }) {
   const layout = layoutGenerator({
@@ -58,14 +58,14 @@ function CelebrationModal({
   );
 }
 
-CelebrationModal.defaultProps = {
+FirstSectionCelebrationModal.defaultProps = {
   open: false,
 };
 
-CelebrationModal.propTypes = {
+FirstSectionCelebrationModal.propTypes = {
   courseId: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   open: PropTypes.bool,
 };
 
-export default injectIntl(CelebrationModal);
+export default injectIntl(FirstSectionCelebrationModal);
