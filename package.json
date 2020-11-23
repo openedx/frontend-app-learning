@@ -34,6 +34,7 @@
     "url": "https://github.com/edx/frontend-app-learning/issues"
   },
   "dependencies": {
+    "@edx/brand": "npm:@edx/brand-openedx@1.1.0",
     "@edx/frontend-component-footer": "10.0.11",
     "@edx/frontend-component-header": "2.0.6",
     "@edx/frontend-enterprise": "4.2.3",
@@ -59,10 +60,10 @@
     "redux": "4.0.5",
     "regenerator-runtime": "0.13.7",
     "reselect": "4.0.0",
-    "truncate-html": "^1.0.3"
+    "truncate-html": "1.0.3"
   },
   "devDependencies": {
-    "@edx/frontend-build": "5.4.0",
+    "@edx/frontend-build": "5.5.1",
     "@testing-library/dom": "7.16.3",
     "@testing-library/jest-dom": "5.10.1",
     "@testing-library/react": "10.3.0",
@@ -73,7 +74,7 @@
     "glob": "7.1.6",
     "husky": "3.1.0",
     "jest": "24.9.0",
-    "jest-chain": "^1.1.5",
+    "jest-chain": "1.1.5",
     "reactifex": "1.1.1",
     "rosie": "2.0.1"
   }
