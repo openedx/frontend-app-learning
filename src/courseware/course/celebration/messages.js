@@ -15,11 +15,11 @@ const messages = defineMessages({
   },
   discussionBodyText1: {
     id: 'learning.celebration.discussionBodyText1',
-    defaultMessage: "Learners who participate in discussions are 10x more likely to complete their course than those who don't.",
+    defaultMessage: 'Learners who participate in discussions are 10x more likely to complete their course than those who don’t.',
   },
   discussionBodyText2: {
     id: 'learning.celebration.discussionBodyText2',
-    defaultMessage: "Learners who participate in discussions complete 3x as much course content on average vs. those who don't.",
+    defaultMessage: 'Learners who participate in discussions complete 3x as much course content on average vs. those who don’t.',
   },
   earned: {
     id: 'learning.celebration.earned',
@@ -27,7 +27,7 @@ const messages = defineMessages({
   },
   emailSubject: {
     id: 'learning.celebration.emailSubject',
-    defaultMessage: "I'm on my way to completing {title} online with {platform}!",
+    defaultMessage: 'I’m on my way to completing {title} online with {platform}!',
     description: 'Subject when sharing course progress via email',
   },
   firstDiscussionPost: {

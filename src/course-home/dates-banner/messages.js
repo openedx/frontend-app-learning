@@ -3,7 +3,7 @@ import { defineMessages } from '@edx/frontend-platform/i18n';
 const messages = defineMessages({
   'datesBanner.datesTabInfoBanner.header': {
     id: 'datesBanner.datesTabInfoBanner.header',
-    defaultMessage: "We've built a suggested schedule to help you stay on track. ",
+    defaultMessage: 'We’ve built a suggested schedule to help you stay on track. ',
     description: 'Strong text in Dates Tab Info Banner',
   },
   'datesBanner.datesTabInfoBanner.body': {
@@ -35,8 +35,8 @@ const messages = defineMessages({
   },
   'datesBanner.upgradeToResetBanner.body': {
     id: 'datesBanner.upgradeToResetBanner.body',
-    defaultMessage: `which means that you are unable to participate in graded assignments. It looks like you missed 
-      some important deadlines based on our suggested schedule. To complete graded assignments as part of this course 
+    defaultMessage: `which means that you are unable to participate in graded assignments. It looks like you missed
+      some important deadlines based on our suggested schedule. To complete graded assignments as part of this course
       and shift the past due assignments into the future, you can upgrade today.`,
     description: 'Body in Upgrade To Reset Banner',
   },
@@ -52,7 +52,7 @@ const messages = defineMessages({
   },
   'datesBanner.resetDatesBanner.body': {
     id: 'datesBanner.resetDatesBanner.body',
-    defaultMessage: `To keep yourself on track, you can update this schedule and shift the past due assignments into 
+    defaultMessage: `To keep yourself on track, you can update this schedule and shift the past due assignments into
       the future. Don’t worry—you won’t lose any of the progress you’ve made when you shift your due dates.`,
     description: 'Body in Reset Dates Banner',
   },

@@ -42,7 +42,7 @@ const messages = defineMessages({
   dashboardLink: {
     id: 'courseExit.dashboardLink',
     defaultMessage: 'Dashboard',
-    description: "Link to user's dashboard",
+    description: 'Link to user’s dashboard',
   },
   downloadButton: {
     id: 'courseCelebration.downloadButton',
@@ -69,7 +69,7 @@ const messages = defineMessages({
   linkedinAddToProfileButton: {
     id: 'courseCelebration.linkedinAddToProfileButton',
     defaultMessage: 'Add to LinkedIn profile',
-    description: "Button to add certificate information to the user's LinkedIn profile",
+    description: 'Button to add certificate information to the user’s LinkedIn profile',
   },
   nextButtonComplete: {
     id: 'learn.sequence.navigation.complete.button', // for historical reasons
@@ -82,7 +82,7 @@ const messages = defineMessages({
   profileLink: {
     id: 'courseExit.profileLink',
     defaultMessage: 'Profile',
-    description: "Link to user's profile",
+    description: 'Link to user’s profile',
   },
   requestCertificateBodyText: {
     id: 'courseCelebration.requestCertificateBodyText',

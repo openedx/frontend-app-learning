@@ -38,7 +38,7 @@ function recordFirstDiscussionCelebration(courseId) {
      See edx-platform/common/static/common/js/discussion/views/new_post_view.js and
      edx-platform/cms/static/common/js/discussion/views/discussion_thread_view.js */
   // Tell the LMS
-  // postCelebrationComplete(courseId, {first_discussion: false});
+  // postCelebrationComplete(courseId, { first_discussion: false });
 
   // Tell our analytics
   sendCelebrationSegmentEvent(courseId, 'edx.ui.lms.celebration.first_discussion.opened');
@@ -82,7 +82,7 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFir
 function shouldCelebrateOnDiscussionPost(firstDiscussion, firstDiscussionUserBucket) {
   // Bucket 0 === Control group which does not get the discussion celebration.
   // That check can be removed when we stop using the flag as an experiment.
-  return firstDiscussion && firstDiscussionUserBucket === 0;
+  return firstDiscussion && firstDiscussionUserBucket !== 0;
 }
 
 export {

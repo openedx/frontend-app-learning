@@ -31,7 +31,7 @@ function FirstDiscussionCelebrationModal({
 
   let normativeDataBodyText;
   // Bucket 2 corresponds to showing normative data in the body text
-  if (firstDiscussionUserBucket === 0) {
+  if (firstDiscussionUserBucket === 2) {
     if (Math.random() > 0.5) {
       normativeDataBodyText = (<p className="mt-3">{intl.formatMessage(messages.discussionBodyText1)}</p>);
     } else {

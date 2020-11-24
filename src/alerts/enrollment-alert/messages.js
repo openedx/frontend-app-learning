@@ -18,7 +18,7 @@ const messages = defineMessages({
   },
   success: {
     id: 'learning.enrollment.success',
-    defaultMessage: "You've successfully enrolled in this course!",
+    defaultMessage: 'You’ve successfully enrolled in this course!',
     description: 'A message telling the user that their course enrollment was successful.',
   },
 });
