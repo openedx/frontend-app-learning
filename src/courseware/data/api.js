@@ -158,6 +158,15 @@ function normalizeSequenceMetadata(sequence) {
       bannerText: sequence.banner_text,
       format: sequence.format,
       title: sequence.display_name,
+      /*
+      Example structure of gated_content when prerequisites exist:
+      {
+        prereq_id: 'id of the prereq section',
+        prereq_url: 'unused by this frontend',
+        prereq_section_name: 'Name of the prerequisite section',
+        gated: true,
+        gated_section_name: 'Name of this gated section',
+      */
       gatedContent: camelCaseObject(sequence.gated_content),
       isTimeLimited: sequence.is_time_limited,
       // Position comes back from the server 1-indexed. Adjust here.
