@@ -31,7 +31,7 @@ function SequenceContent({
         <ContentLock
           courseId={courseId}
           sequenceTitle={sequence.title}
-          prereqSectionName={sequence.gatedContent.gatedSectionName}
+          prereqSectionName={sequence.gatedContent.prereqSectionName}
           prereqId={sequence.gatedContent.prereqId}
         />
       </Suspense>
