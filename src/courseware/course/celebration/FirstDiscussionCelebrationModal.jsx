@@ -5,8 +5,8 @@ import { Modal } from '@edx/paragon';
 import { layoutGenerator } from 'react-break';
 import { useDispatch } from 'react-redux';
 
-import ClapsMobile from './assets/claps_280x201.gif';
-import ClapsTablet from './assets/claps_456x328.gif';
+import DiscussionMobile from './assets/FirstDiscussion_mobile.png';
+import DiscussionTablet from './assets/FirstDiscussion_desktop_500.png';
 import messages from './messages';
 import { recordFirstDiscussionCelebration } from './utils';
 import { updateModel } from '../../../generic/model-store';
@@ -47,10 +47,10 @@ function FirstDiscussionCelebrationModal({
         <>
           <p>{intl.formatMessage(messages.conversation)}</p>
           <OnMobile>
-            <img src={ClapsMobile} alt="" className="img-fluid" />
+            <img src={DiscussionMobile} alt="" className="img-fluid" />
           </OnMobile>
           <OnAtLeastTablet>
-            <img src={ClapsTablet} alt="" className="img-fluid w-100" />
+            <img src={DiscussionTablet} alt="" className="img-fluid" />
           </OnAtLeastTablet>
           {normativeDataBodyText}
         </>
