@@ -339,6 +339,7 @@ Object {
     },
     "outline": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "canShowUpgradeSock": true,
         "courseBlocks": Object {
           "courses": Object {
             "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
@@ -406,6 +407,14 @@ Object {
         "resumeCourse": Object {
           "hasVisitedCourse": false,
           "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+Test+Block@12345abcde",
+        },
+        "verifiedMode": Object {
+          "accessExpirationDate": "2050-01-01T12:00:00",
+          "currency": "USD",
+          "currencySymbol": "$",
+          "price": 149,
+          "sku": "ABCD1234",
+          "upgradeUrl": "http://localhost:18000/dashboard",
         },
         "welcomeMessageHtml": "<p>Welcome to this course!</p>",
       },

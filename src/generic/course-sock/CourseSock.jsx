@@ -4,13 +4,14 @@ import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import LearnerQuote1 from './assets/learner-quote.png';
 import LearnerQuote2 from './assets/learner-quote2.png';
-import VerifiedCert from '../../../generic/assets/edX_verified_certificate.png';
+import VerifiedCert from '../assets/edX_verified_certificate.png';
 
 export default class CourseSock extends Component {
   constructor(props) {
     super(props);
     this.verifiedMode = props.verifiedMode;
     this.state = { showUpsell: false };
+    this.sockElement = React.createRef();
   }
 
   handleClick = () => {
@@ -19,10 +20,24 @@ export default class CourseSock extends Component {
     }));
   }
 
+  showToUser = () => {
+    this.setState({
+      showUpsell: true,
+    }, () => {
+      if (this.sockElement.current) {
+        this.sockElement.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
   render() {
+    if (!this.verifiedMode) {
+      return null;
+    }
+
     const buttonClass = this.state.showUpsell ? 'btn-success' : 'btn-outline-success';
     return (
-      <div className="verification-sock container py-5">
+      <div ref={this.sockElement} className="verification-sock container py-5">
         <div className="d-flex justify-content-center">
           <button type="button" aria-expanded="false" className={`btn ${buttonClass}`} onClick={this.handleClick}>
             <FormattedMessage

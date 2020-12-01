@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -8,6 +8,7 @@ import { AlertList } from '../../generic/user-messages';
 import CourseDates from './widgets/CourseDates';
 import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
+import CourseSock from '../../generic/course-sock';
 import CourseTools from './widgets/CourseTools';
 import DatesBannerContainer from '../dates-banner/DatesBannerContainer';
 import { fetchOutlineTab } from '../data';
@@ -15,6 +16,7 @@ import genericMessages from '../../generic/messages';
 import messages from './messages';
 import Section from './Section';
 import UpdateGoalSelector from './widgets/UpdateGoalSelector';
+import UpgradeCard from './widgets/UpgradeCard';
 import useAccessExpirationAlert from '../../alerts/access-expiration-alert';
 import useCertificateAvailableAlert from './alerts/certificate-available-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
@@ -41,6 +43,7 @@ function OutlineTab({ intl }) {
   } = useModel('courses', courseId);
 
   const {
+    canShowUpgradeSock,
     courseBlocks: {
       courses,
       sections,
@@ -60,6 +63,7 @@ function OutlineTab({ intl }) {
       url: resumeCourseUrl,
     },
     offerHtml,
+    verifiedMode,
   } = useModel('outline', courseId);
 
   const [courseGoalToDisplay, setCourseGoalToDisplay] = useState(selectedGoal);
@@ -78,6 +82,8 @@ function OutlineTab({ intl }) {
   const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
 
   const rootCourseId = courses && Object.keys(courses)[0];
+
+  const courseSock = useRef(null);
 
   return (
     <>
@@ -172,6 +178,10 @@ function OutlineTab({ intl }) {
           <CourseTools
             courseId={courseId}
           />
+          <UpgradeCard
+            courseId={courseId}
+            onLearnMore={canShowUpgradeSock ? () => { courseSock.current.showToUser(); } : null}
+          />
           <CourseDates
             start={start}
             end={end}
@@ -186,6 +196,7 @@ function OutlineTab({ intl }) {
           />
         </div>
       </div>
+      {canShowUpgradeSock && <CourseSock ref={courseSock} verifiedMode={verifiedMode} />}
     </>
   );
 }

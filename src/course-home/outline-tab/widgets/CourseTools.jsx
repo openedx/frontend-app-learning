@@ -54,7 +54,7 @@ function CourseTools({ courseId, intl }) {
   };
 
   return (
-    <section className="mb-3">
+    <section className="mb-4">
       <h2 className="h6">{intl.formatMessage(messages.tools)}</h2>
       {courseTools.map((courseTool) => (
         <div key={courseTool.analyticsId}>

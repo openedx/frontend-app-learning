@@ -36,7 +36,7 @@ function UpdateGoalSelector({
 
   return (
     <>
-      <section className="mb-3">
+      <section className="mb-4">
         <div className="row w-100 m-0">
           <div className="col-12 p-0">
             <label className="h6 m-0" htmlFor="edit-goal-selector">

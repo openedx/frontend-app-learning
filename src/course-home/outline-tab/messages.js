@@ -62,6 +62,10 @@ const messages = defineMessages({
     defaultMessage: 'Incomplete section',
     description: 'Text used to describe the gray checkmark icon in front of a section title',
   },
+  learnMore: {
+    id: 'learning.outline.learnMore',
+    defaultMessage: 'Learn More',
+  },
   openSection: {
     id: 'learning.outline.altText.openSection',
     defaultMessage: 'Open',
@@ -82,6 +86,19 @@ const messages = defineMessages({
   tools: {
     id: 'learning.outline.tools',
     defaultMessage: 'Course Tools',
+  },
+  upgradeButton: {
+    id: 'learning.outline.upgradeButton',
+    defaultMessage: 'Upgrade ({symbol}{price})',
+  },
+  upgradeTitle: {
+    id: 'learning.outline.upgradeTitle',
+    defaultMessage: 'Pursue a verified certificate',
+  },
+  certAlt: {
+    id: 'learning.outline.certificateAlt',
+    defaultMessage: 'Example Certificate',
+    description: 'Alternate text displayed when the example certificate image cannot be displayed.',
   },
   welcomeMessage: {
     id: 'learning.outline.welcomeMessage',
