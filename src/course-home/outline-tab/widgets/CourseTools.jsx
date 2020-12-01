@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,6 +14,7 @@ import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 
 function CourseTools({ courseId, intl }) {
+  const { org } = useModel('courses', courseId);
   const {
     courseTools,
   } = useModel('outline', courseId);
@@ -24,8 +25,10 @@ function CourseTools({ courseId, intl }) {
 
   const logClick = (analyticsId) => {
     const { administrator } = getAuthenticatedUser();
-    sendTrackEvent('edx.course.tool.accessed', {
-      course_id: courseId,
+    sendTrackingLogEvent('edx.course.tool.accessed', {
+      org_key: org,
+      courserun_key: courseId,
+      course_id: courseId, // should only be courserun_key, but left as-is for historical reasons
       is_staff: administrator,
       tool_name: analyticsId,
     });

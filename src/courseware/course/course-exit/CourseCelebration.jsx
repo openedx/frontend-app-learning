@@ -41,6 +41,7 @@ function CourseCelebration({ intl }) {
     certificateData,
     end,
     linkedinAddToProfileUrl,
+    org,
     relatedPrograms,
     verifiedMode,
     verifyIdentityUrl,
@@ -218,7 +219,7 @@ function CourseCelebration({ intl }) {
       break;
   }
 
-  useEffect(() => logVisit(courseId, administrator, visitEvent), [courseId, administrator, visitEvent]);
+  useEffect(() => logVisit(org, courseId, administrator, visitEvent), [org, courseId, administrator, visitEvent]);
 
   return (
     <>
