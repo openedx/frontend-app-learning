@@ -33,18 +33,20 @@ function CourseNonPassing({ intl }) {
         <div className="col-12 p-0 h2 text-center">
           { intl.formatMessage(messages.endOfCourseHeader) }
         </div>
-        <Alert variant="primary" className="col col-lg-10 mt-4 d-flex align-items-start">
-          <div className="flex-grow-1 mr-5">{ intl.formatMessage(messages.endOfCourseDescription) }</div>
-          {progressLink && (
-            <Button
-              variant="primary"
-              className="flex-shrink-0"
-              href={progressLink}
-              onClick={() => logClick(courseId, administrator, 'view_grades')}
-            >
-              {intl.formatMessage(messages.viewGradesButton)}
-            </Button>
-          )}
+        <Alert variant="primary" className="col col-lg-10 mt-4 d-flex">
+          <div className="row align-items-start">
+            <div className="flex-grow-1 col-sm">{ intl.formatMessage(messages.endOfCourseDescription) }</div>
+            {progressLink && (
+              <Button
+                variant="primary"
+                className="flex-shrink-0 mt-3 mt-sm-0 mb-1 mb-sm-0 ml-2 ml-sm-5"
+                href={progressLink}
+                onClick={() => logClick(courseId, administrator, 'view_grades')}
+              >
+                {intl.formatMessage(messages.viewGradesButton)}
+              </Button>
+            )}
+          </div>
         </Alert>
         <DashboardFootnote />
       </div>
