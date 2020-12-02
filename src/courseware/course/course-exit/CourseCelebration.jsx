@@ -282,7 +282,7 @@ function CourseCelebration({ intl }) {
                   onClick={() => logClick(courseId, administrator, 'linkedin_add_to_profile')}
                   style={{ backgroundColor: LINKEDIN_BLUE, padding: '0.25rem 1.25rem 0.25rem 0.5rem' }}
                 >
-                  <LinkedinIcon bgStyle={{ fill: 'white' }} className="mr-2" iconFillColor={LINKEDIN_BLUE} round size={28} />
+                  <LinkedinIcon bgStyle={{ fill: 'white' }} className="mr-2" iconFillColor={LINKEDIN_BLUE} round size={24} />
                   {`${intl.formatMessage(messages.linkedinAddToProfileButton)}`}
                 </Button>
               )}
