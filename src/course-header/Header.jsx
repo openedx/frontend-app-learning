@@ -88,7 +88,7 @@ function Header({
         <Dropdown className="user-dropdown">
           <Dropdown.Toggle variant="light">
             <FontAwesomeIcon icon={faUserCircle} className="d-md-none" size="lg" />
-            <span className="d-none d-md-inline">
+            <span data-hj-suppress className="d-none d-md-inline">
               {authenticatedUser.username}
             </span>
           </Dropdown.Toggle>
