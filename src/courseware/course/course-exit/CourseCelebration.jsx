@@ -85,7 +85,6 @@ function CourseCelebration({ intl }) {
 
   let buttonLocation;
   let buttonText;
-  let buttonBackground = 'bg-white';
   let buttonVariant = 'outline-primary';
   let buttonEvent = null;
   let certificateImage = certificate;
@@ -204,7 +203,6 @@ function CourseCelebration({ intl }) {
         buttonText = intl.formatMessage(messages.upgradeButton);
         buttonEvent = 'upgrade';
         buttonLocation = verifiedMode.upgradeUrl;
-        buttonBackground = '';
         buttonVariant = 'primary';
         certificateImage = certificateLocked;
         visitEvent = 'celebration_upgrade';
@@ -266,7 +264,6 @@ function CourseCelebration({ intl }) {
               {/* The requesting status needs a different button because it does a POST instead of a GET */}
               {certStatus === 'requesting' && (
                 <Button
-                  className={buttonBackground}
                   variant={buttonVariant}
                   onClick={() => {
                     logClick(org, courseId, administrator, buttonEvent);
@@ -278,18 +275,18 @@ function CourseCelebration({ intl }) {
               )}
               {certStatus === 'downloadable' && linkedinAddToProfileUrl && (
                 <Button
-                  className="mr-3 mb-2 mb-sm-0"
+                  className="mr-3 mt-2"
                   href={linkedinAddToProfileUrl}
                   onClick={() => logClick(org, courseId, administrator, 'linkedin_add_to_profile')}
-                  style={{ backgroundColor: LINKEDIN_BLUE, padding: '0.25rem 1.25rem 0.25rem 0.5rem' }}
+                  style={{ backgroundColor: LINKEDIN_BLUE, border: 'none', padding: '0.25rem 1.25rem 0.25rem 0.25rem' }}
                 >
-                  <LinkedinIcon bgStyle={{ fill: 'white' }} className="mr-2" iconFillColor={LINKEDIN_BLUE} round size={24} />
+                  <LinkedinIcon bgStyle={{ fill: 'white' }} className="mr-2" iconFillColor={LINKEDIN_BLUE} size={34} />
                   {`${intl.formatMessage(messages.linkedinAddToProfileButton)}`}
                 </Button>
               )}
               {buttonLocation && (
                 <Button
-                  className={`${buttonBackground} mb-2 mb-sm-0`}
+                  className="mt-2"
                   variant={buttonVariant}
                   href={buttonLocation}
                   onClick={() => logClick(org, courseId, administrator, buttonEvent)}
