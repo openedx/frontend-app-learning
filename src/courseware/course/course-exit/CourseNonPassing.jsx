@@ -15,14 +15,14 @@ import { logClick, logVisit } from './utils';
 
 function CourseNonPassing({ intl }) {
   const { courseId } = useSelector(state => state.courseware);
-  const { tabs } = useModel('courses', courseId);
+  const { org, tabs } = useModel('courses', courseId);
   const { administrator } = getAuthenticatedUser();
 
   // Get progress tab link for 'view grades' button
   const progressTab = tabs.find(tab => tab.slug === 'progress');
   const progressLink = progressTab && progressTab.url;
 
-  useEffect(() => logVisit(courseId, administrator, 'nonpassing'), [courseId, administrator]);
+  useEffect(() => logVisit(org, courseId, administrator, 'nonpassing'), [org, courseId, administrator]);
 
   return (
     <>

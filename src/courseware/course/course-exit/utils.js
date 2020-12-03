@@ -72,27 +72,29 @@ function getCourseExitText(courseId, intl) {
 
 // Meant to be used as part of a button's onClick handler.
 // For convenience, you can pass a falsy event and it will be ignored.
-const logClick = (courseId, administrator, event) => {
+const logClick = (org, courseId, administrator, event) => {
   if (!event) {
     return;
   }
 
   sendTrackEvent(`edx.ui.lms.course_exit.${event}.clicked`, {
-    course_id: courseId,
+    org_key: org,
+    courserun_key: courseId,
     is_staff: administrator,
   });
 };
 
 // Use like the following to call this only once on initial page load:
-// useEffect(() => logVisit(courseId, administrator, variant), [courseId, administrator, variant]);
+// useEffect(() => logVisit(org, courseId, administrator, variant), [org, courseId, administrator, variant]);
 // For convenience, you can pass a falsy variant and it will be ignored.
-const logVisit = (courseId, administrator, variant) => {
+const logVisit = (org, courseId, administrator, variant) => {
   if (!variant) {
     return;
   }
 
   sendTrackEvent('edx.ui.lms.course_exit.visited', {
-    course_id: courseId,
+    org_key: org,
+    courserun_key: courseId,
     is_staff: administrator,
     variant,
   });

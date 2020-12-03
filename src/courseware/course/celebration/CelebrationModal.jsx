@@ -9,10 +9,13 @@ import ClapsTablet from './assets/claps_456x328.gif';
 import messages from './messages';
 import SocialIcons from '../../social-share/SocialIcons';
 import { recordFirstSectionCelebration } from './utils';
+import { useModel } from '../../../generic/model-store';
 
 function CelebrationModal({
   courseId, intl, open, ...rest
 }) {
+  const { org } = useModel('courses', courseId);
+
   const layout = layoutGenerator({
     mobile: 0,
     tablet: 400,
@@ -23,7 +26,7 @@ function CelebrationModal({
 
   useEffect(() => {
     if (open) {
-      recordFirstSectionCelebration(courseId);
+      recordFirstSectionCelebration(org, courseId);
     }
   }, [open]);
 
