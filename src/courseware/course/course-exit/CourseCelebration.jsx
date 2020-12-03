@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
 import {
   FormattedDate, FormattedMessage, injectIntl, intlShape,
@@ -6,7 +8,6 @@ import {
 import { layoutGenerator } from 'react-break';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
-import { LinkedinIcon } from 'react-share';
 import { Alert, Button, Hyperlink } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -24,7 +25,7 @@ import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 
-const LINKEDIN_BLUE = '#007fb1';
+const LINKEDIN_BLUE = '#2867B2';
 
 function CourseCelebration({ intl }) {
   const layout = layoutGenerator({
@@ -278,9 +279,9 @@ function CourseCelebration({ intl }) {
                   className="mr-3 mt-2"
                   href={linkedinAddToProfileUrl}
                   onClick={() => logClick(org, courseId, administrator, 'linkedin_add_to_profile')}
-                  style={{ backgroundColor: LINKEDIN_BLUE, border: 'none', padding: '0.25rem 1.25rem 0.25rem 0.25rem' }}
+                  style={{ backgroundColor: LINKEDIN_BLUE, border: 'none' }}
                 >
-                  <LinkedinIcon bgStyle={{ fill: 'white' }} className="mr-2" iconFillColor={LINKEDIN_BLUE} size={34} />
+                  <FontAwesomeIcon icon={faLinkedinIn} className="mr-3" />
                   {`${intl.formatMessage(messages.linkedinAddToProfileButton)}`}
                 </Button>
               )}
