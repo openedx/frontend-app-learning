@@ -41,7 +41,7 @@ function CourseNonPassing({ intl }) {
                 variant="primary"
                 className="flex-shrink-0 mt-3 mt-sm-0 mb-1 mb-sm-0 ml-2 ml-sm-5"
                 href={progressLink}
-                onClick={() => logClick(courseId, administrator, 'view_grades')}
+                onClick={() => logClick(org, courseId, administrator, 'view_grades')}
               >
                 {intl.formatMessage(messages.viewGradesButton)}
               </Button>

@@ -12,9 +12,11 @@ import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import Footnote from './Footnote';
 import { logClick } from './utils';
 import messages from './messages';
+import { useModel } from '../../../generic/model-store';
 
 function UpgradeFootnote({ deadline, href, intl }) {
   const { courseId } = useSelector(state => state.courseware);
+  const { org } = useModel('courses', courseId);
   const { administrator } = getAuthenticatedUser();
 
   const upgradeLink = (
@@ -22,7 +24,7 @@ function UpgradeFootnote({ deadline, href, intl }) {
       style={{ textDecoration: 'underline' }}
       destination={href}
       className="text-reset"
-      onClick={() => logClick(courseId, administrator, 'upgrade_footnote')}
+      onClick={() => logClick(org, courseId, administrator, 'upgrade_footnote')}
     >
       {intl.formatMessage(messages.upgradeLink)}
     </Hyperlink>

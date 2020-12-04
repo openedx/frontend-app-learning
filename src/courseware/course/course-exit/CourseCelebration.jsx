@@ -269,7 +269,7 @@ function CourseCelebration({ intl }) {
                   className={buttonBackground}
                   variant={buttonVariant}
                   onClick={() => {
-                    logClick(courseId, administrator, buttonEvent);
+                    logClick(org, courseId, administrator, buttonEvent);
                     dispatch(requestCert(courseId));
                   }}
                 >
@@ -280,7 +280,7 @@ function CourseCelebration({ intl }) {
                 <Button
                   className="mr-3 mb-2 mb-sm-0"
                   href={linkedinAddToProfileUrl}
-                  onClick={() => logClick(courseId, administrator, 'linkedin_add_to_profile')}
+                  onClick={() => logClick(org, courseId, administrator, 'linkedin_add_to_profile')}
                   style={{ backgroundColor: LINKEDIN_BLUE, padding: '0.25rem 1.25rem 0.25rem 0.5rem' }}
                 >
                   <LinkedinIcon bgStyle={{ fill: 'white' }} className="mr-2" iconFillColor={LINKEDIN_BLUE} round size={24} />
@@ -292,7 +292,7 @@ function CourseCelebration({ intl }) {
                   className={`${buttonBackground} mb-2 mb-sm-0`}
                   variant={buttonVariant}
                   href={buttonLocation}
-                  onClick={() => logClick(courseId, administrator, buttonEvent)}
+                  onClick={() => logClick(org, courseId, administrator, buttonEvent)}
                 >
                   {buttonText}
                 </Button>
