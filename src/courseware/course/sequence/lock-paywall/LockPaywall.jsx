@@ -35,7 +35,7 @@ function LockPaywall({
         <p className="mb-0">
           <span>{intl.formatMessage(messages['learn.lockPaywall.content'])}</span>
           &nbsp;
-          <a href={upgradeUrl}>
+          <a className="lock_paywall_upgrade_link" href={upgradeUrl}>
             {intl.formatMessage(messages['learn.lockPaywall.upgrade.link'], {
               currencySymbol,
               price,
