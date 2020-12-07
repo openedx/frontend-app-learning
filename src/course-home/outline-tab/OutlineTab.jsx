@@ -10,6 +10,7 @@ import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
 import DatesBannerContainer from '../dates-banner/DatesBannerContainer';
+import { fetchOutlineTab } from '../data';
 import genericMessages from '../../generic/messages';
 import messages from './messages';
 import Section from './Section';
@@ -134,6 +135,7 @@ function OutlineTab({ intl }) {
             datesBannerInfo={datesBannerInfo}
             hasEnded={hasEnded}
             model="outline"
+            tabFetch={fetchOutlineTab}
           />
           <WelcomeMessage courseId={courseId} />
           {rootCourseId && (

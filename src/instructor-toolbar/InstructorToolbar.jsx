@@ -29,7 +29,7 @@ function getStudioUrl(courseId, unitId) {
     if (unitId) {
       urlFull = `${urlBase}/container/${unitId}`;
     } else if (courseId) {
-      urlFull = `{$urlBase}/course/${courseId}`;
+      urlFull = `${urlBase}/course/${courseId}`;
     }
   }
   return urlFull;
