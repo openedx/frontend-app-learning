@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
@@ -50,6 +50,31 @@ function Course({
   const celebrateFirstSection = celebrations && celebrations.firstSection;
   const celebrationOpen = shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection, dispatch);
 
+  // The below block of code should be reverted after the REV1512 experiment
+  const [REV1512FlyoverEnabled, setREV1512FlyoverEnabled] = useState(false);
+  window.enableREV1512Flyover = () => {
+    setREV1512FlyoverEnabled(true);
+  };
+  const getCookie = (name) => {
+    const match = document.cookie.match(`${name}=([^;]*)`);
+    return match ? match[1] : undefined;
+  };
+  const [REV1512FlyoverVisible, setREV1512FlyoverVisible] = useState(getCookie('REV1512FlyoverVisible') === 'true');
+  const isREV1512FlyoverVisible = () => REV1512FlyoverEnabled && (REV1512FlyoverVisible || getCookie('REV1512FlyoverVisible') === 'true');
+  const toggleREV1512Flyover = () => {
+    const setCookie = (cookieName, value, domain, exdays) => {
+      const cookieDomain = (typeof domain === 'undefined') ? '' : `domain=${domain};`;
+      const exdate = new Date();
+      exdate.setDate(exdate.getDate() + exdays);
+      const cookieValue = escape(value) + ((exdays == null) ? '' : `; expires=${exdate.toUTCString()}`);
+      document.cookie = `${cookieName}=${cookieValue};${cookieDomain}path=/`;
+    };
+    const isVisible = isREV1512FlyoverVisible();
+    setCookie('REV1512FlyoverVisible', !isVisible);
+    setREV1512FlyoverVisible(!isVisible);
+  };
+  // The above block of code should be reverted after the REV1512 experiment
+
   return (
     <>
       <Helmet>
@@ -67,6 +92,8 @@ function Course({
         courseId={courseId}
         sectionId={section ? section.id : null}
         sequenceId={sequenceId}
+        toggleREV1512Flyover={toggleREV1512Flyover} /* This line should be reverted after REV1512 experiment */
+        REV1512FlyoverEnabled={REV1512FlyoverEnabled} /* This line should be reverted after REV1512 experiment */
       />
       <AlertList topic="sequence" />
       <Sequence
@@ -76,6 +103,8 @@ function Course({
         unitNavigationHandler={unitNavigationHandler}
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
+        isREV1512FlyoverVisible={isREV1512FlyoverVisible} /* This line should be reverted after REV1512 experiment */
+        REV1512FlyoverEnabled={REV1512FlyoverEnabled} /* This line should be reverted after REV1512 experiment */
       />
       {celebrationOpen && (
         <CelebrationModal
