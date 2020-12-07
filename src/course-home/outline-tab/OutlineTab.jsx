@@ -118,7 +118,6 @@ function OutlineTab({ intl }) {
               setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
             />
           )}
-          <WelcomeMessage courseId={courseId} />
           <AlertList
             topic="outline-course-alerts"
             className="mb-3"
@@ -136,6 +135,7 @@ function OutlineTab({ intl }) {
             hasEnded={hasEnded}
             model="outline"
           />
+          <WelcomeMessage courseId={courseId} />
           {rootCourseId && (
             <>
               <div className="row w-100 m-0 mb-3 justify-content-end">
