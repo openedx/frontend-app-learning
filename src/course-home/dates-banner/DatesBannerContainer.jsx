@@ -5,13 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useModel } from '../../generic/model-store';
 
 import DatesBanner from './DatesBanner';
-import { fetchDatesTab, resetDeadlines } from '../data/thunks';
+import { resetDeadlines } from '../data';
 
 function DatesBannerContainer({
   courseDateBlocks,
   datesBannerInfo,
   hasEnded,
   model,
+  tabFetch,
 }) {
   const {
     courseId,
@@ -53,7 +54,7 @@ function DatesBannerContainer({
     {
       name: 'resetDatesBanner',
       shouldDisplay: resetDates,
-      clickHandler: () => dispatch(resetDeadlines(courseId, fetchDatesTab)),
+      clickHandler: () => dispatch(resetDeadlines(courseId, tabFetch)),
     },
   ];
 
@@ -80,6 +81,7 @@ DatesBannerContainer.propTypes = {
   }).isRequired,
   hasEnded: PropTypes.bool,
   model: PropTypes.string.isRequired,
+  tabFetch: PropTypes.func.isRequired,
 };
 
 DatesBannerContainer.defaultProps = {

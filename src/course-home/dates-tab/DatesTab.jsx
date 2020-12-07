@@ -6,6 +6,7 @@ import messages from './messages';
 import Timeline from './Timeline';
 import DatesBannerContainer from '../dates-banner/DatesBannerContainer';
 
+import { fetchDatesTab } from '../data';
 import { useModel } from '../../generic/model-store';
 
 function DatesTab({ intl }) {
@@ -29,6 +30,7 @@ function DatesTab({ intl }) {
         datesBannerInfo={datesBannerInfo}
         hasEnded={hasEnded}
         model="dates"
+        tabFetch={fetchDatesTab}
       />
       <Timeline />
     </>
