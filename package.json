@@ -62,7 +62,7 @@
     "truncate-html": "^1.0.3"
   },
   "devDependencies": {
-    "@edx/frontend-build": "5.4.0",
+    "@edx/frontend-build": "5.5.1",
     "@testing-library/dom": "7.16.3",
     "@testing-library/jest-dom": "5.10.1",
     "@testing-library/react": "10.3.0",
