@@ -9,7 +9,6 @@ import { AppContext } from '@edx/frontend-platform/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
-import logo from './assets/logo.svg';
 import messages from './messages';
 
 function LinkedLogo({
@@ -61,7 +60,7 @@ function Header({
     <LinkedLogo
       className="logo"
       href={`${getConfig().LMS_BASE_URL}/dashboard`}
-      src={logo}
+      src={getConfig().LOGO_URL}
       alt={getConfig().SITE_NAME}
     />
   );

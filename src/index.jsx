@@ -10,14 +10,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Switch } from 'react-router-dom';
 
-import { messages as headerMessages } from '@edx/frontend-component-header';
 import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
 
 import appMessages from './i18n';
 import { UserMessagesProvider } from './generic/user-messages';
 
 import './index.scss';
-import './assets/favicon.ico';
 import OutlineTab from './course-home/outline-tab';
 import { CourseExit } from './courseware/course/course-exit';
 import CoursewareContainer from './courseware';
@@ -99,7 +97,6 @@ initialize({
   requireAuthenticatedUser: true,
   messages: [
     appMessages,
-    headerMessages,
     footerMessages,
   ],
 });

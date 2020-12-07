@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
 import {
   FormattedDate, FormattedMessage, injectIntl, intlShape,
@@ -6,7 +8,6 @@ import {
 import { layoutGenerator } from 'react-break';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
-import { LinkedinIcon } from 'react-share';
 import { Alert, Button, Hyperlink } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -24,7 +25,7 @@ import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 
-const LINKEDIN_BLUE = '#007fb1';
+const LINKEDIN_BLUE = '#2867B2';
 
 function CourseCelebration({ intl }) {
   const layout = layoutGenerator({
@@ -85,7 +86,6 @@ function CourseCelebration({ intl }) {
 
   let buttonLocation;
   let buttonText;
-  let buttonBackground = 'bg-white';
   let buttonVariant = 'outline-primary';
   let buttonEvent = null;
   let certificateImage = certificate;
@@ -204,7 +204,6 @@ function CourseCelebration({ intl }) {
         buttonText = intl.formatMessage(messages.upgradeButton);
         buttonEvent = 'upgrade';
         buttonLocation = verifiedMode.upgradeUrl;
-        buttonBackground = '';
         buttonVariant = 'primary';
         certificateImage = certificateLocked;
         visitEvent = 'celebration_upgrade';
@@ -266,7 +265,6 @@ function CourseCelebration({ intl }) {
               {/* The requesting status needs a different button because it does a POST instead of a GET */}
               {certStatus === 'requesting' && (
                 <Button
-                  className={buttonBackground}
                   variant={buttonVariant}
                   onClick={() => {
                     logClick(org, courseId, administrator, buttonEvent);
@@ -278,18 +276,18 @@ function CourseCelebration({ intl }) {
               )}
               {certStatus === 'downloadable' && linkedinAddToProfileUrl && (
                 <Button
-                  className="mr-3 mb-2 mb-sm-0"
+                  className="mr-3 mt-2"
                   href={linkedinAddToProfileUrl}
                   onClick={() => logClick(org, courseId, administrator, 'linkedin_add_to_profile')}
-                  style={{ backgroundColor: LINKEDIN_BLUE, padding: '0.25rem 1.25rem 0.25rem 0.5rem' }}
+                  style={{ backgroundColor: LINKEDIN_BLUE, border: 'none' }}
                 >
-                  <LinkedinIcon bgStyle={{ fill: 'white' }} className="mr-2" iconFillColor={LINKEDIN_BLUE} round size={24} />
+                  <FontAwesomeIcon icon={faLinkedinIn} className="mr-3" />
                   {`${intl.formatMessage(messages.linkedinAddToProfileButton)}`}
                 </Button>
               )}
               {buttonLocation && (
                 <Button
-                  className={`${buttonBackground} mb-2 mb-sm-0`}
+                  className="mt-2"
                   variant={buttonVariant}
                   href={buttonLocation}
                   onClick={() => logClick(org, courseId, administrator, buttonEvent)}

@@ -34,8 +34,8 @@ function CourseNonPassing({ intl }) {
           { intl.formatMessage(messages.endOfCourseHeader) }
         </div>
         <Alert variant="primary" className="col col-lg-10 mt-4 d-flex">
-          <div className="row align-items-start">
-            <div className="flex-grow-1 col-sm">{ intl.formatMessage(messages.endOfCourseDescription) }</div>
+          <div className="row w-100 m-0 align-items-start">
+            <div className="flex-grow-1 col-sm p-0">{ intl.formatMessage(messages.endOfCourseDescription) }</div>
             {progressLink && (
               <Button
                 variant="primary"
