@@ -89,7 +89,7 @@ function LockPaywall({
   );
 
   return (
-    <div className="border border-gray rounded d-flex justify-content-between mt-2 p-3 value-prop-lock-paywall-banner">
+    <div className="border border-gray d-flex justify-content-between mt-2 p-3 value-prop-lock-paywall-banner">
       <div className={classNames({ 'is-mobile': isMobile })}>
         <div className="font-weight-bold top-banner-text-header">
           <FontAwesomeIcon icon={faLock} className="text-black mr-2 ml-1 lock-icon" style={{ fontSize: '1rem' }} />

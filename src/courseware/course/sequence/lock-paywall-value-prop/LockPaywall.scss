@@ -1,4 +1,8 @@
+@import "~@edx/brand/paragon/variables";
+
 .value-prop-lock-paywall-banner {
+    background-color: $gray-100;
+
     .listItemRow {
         display: flex;
         margin-left: -7px;
