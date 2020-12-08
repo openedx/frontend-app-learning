@@ -111,7 +111,7 @@ function Unit({
 
   return (
     <div className="unit">
-      <h2 className="mb-0 h4">{unit.title}</h2>
+      <h2 className="mb-0 h3">{unit.title}</h2>
       <BookmarkButton
         unitId={unit.id}
         isBookmarked={unit.bookmarked}
