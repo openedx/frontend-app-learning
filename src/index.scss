@@ -83,7 +83,7 @@
   .nav-link {
     border-bottom: 4px solid transparent;
     border-top: 4px solid transparent;
-    color: theme-color('gray', 700);
+    color: $gray-700;
 
     // temporary until we can remove .btn class from dropdowns
     border-left: 0;
@@ -94,8 +94,8 @@
     &:focus,
     &.active {
       font-weight: $font-weight-normal;
-      color: theme-color('primary', 500);
-      border-bottom-color: theme-color('primary', 500);
+      color: $primary-500;
+      border-bottom-color: $primary-500;
     }
   }
 }
@@ -140,13 +140,13 @@
     height: 3rem;
     justify-content: center;
     align-items: center;
-    color: theme-color('gray', 500);
+    color: $gray-500;
     white-space: nowrap;
 
     &:hover,
     &:focus,
     &.active {
-      color: theme-color('gray', 700);
+      color: $gray-700;
     }
     &:focus {
       z-index: 1;
@@ -234,7 +234,7 @@
   }
 
   .previous-btn, .next-btn {
-    color: theme-color('gray', 700);
+    color: $gray-700;
     display: inline-flex;
     justify-content: center;
     align-items: center;
