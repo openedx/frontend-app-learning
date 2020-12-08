@@ -1,3 +1,4 @@
+/* This file should be deleted after REV1512 value prop experiment */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
