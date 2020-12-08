@@ -31,7 +31,10 @@ function LockPaywall({
 
   let upgradeButtonText;
   if (document.querySelector('.price.discount') !== null) {
-    const discountPrice = document.querySelector('.price.discount').textContent;
+    let discountPrice = document.querySelector('.price.discount').textContent;
+    if (discountPrice !== null) {
+      discountPrice = discountPrice.replace(/[^0-9.]/g, '');
+    }
     upgradeButtonText = (
       <>
         <span className="font-weight-bold" style={{ paddingRight: '5px' }}>
