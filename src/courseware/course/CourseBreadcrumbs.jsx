@@ -13,10 +13,10 @@ function CourseBreadcrumb({
   return (
     <>
       {withSeparator && (
-        <li className="mx-2 text-gray-300" role="presentation" aria-hidden>/</li>
+        <li className="mx-2 text-primary-500" role="presentation" aria-hidden>/</li>
       )}
       <li {...attrs}>
-        <a href={url}>{children}</a>
+        <a className="text-primary-500" href={url}>{children}</a>
       </li>
     </>
   );
