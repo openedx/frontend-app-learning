@@ -9,6 +9,7 @@ import { getConfig } from '@edx/frontend-platform';
 
 import { useModel } from '../../../generic/model-store';
 
+import CatalogSuggestion from './CatalogSuggestion';
 import DashboardFootnote from './DashboardFootnote';
 import messages from './messages';
 import { logClick, logVisit } from './utils';
@@ -48,7 +49,8 @@ function CourseNonPassing({ intl }) {
             )}
           </div>
         </Alert>
-        <DashboardFootnote />
+        <DashboardFootnote variant="nonpassing" />
+        <CatalogSuggestion variant="nonpassing" />
       </div>
     </>
   );

@@ -72,7 +72,7 @@ function getCourseExitText(courseId, intl) {
 
 // Meant to be used as part of a button's onClick handler.
 // For convenience, you can pass a falsy event and it will be ignored.
-const logClick = (org, courseId, administrator, event) => {
+const logClick = (org, courseId, administrator, event, extraProperties) => {
   if (!event) {
     return;
   }
@@ -81,6 +81,7 @@ const logClick = (org, courseId, administrator, event) => {
     org_key: org,
     courserun_key: courseId,
     is_staff: administrator,
+    ...extraProperties,
   });
 };
 

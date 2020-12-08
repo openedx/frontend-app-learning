@@ -79,7 +79,9 @@ initialize({
     config: () => {
       mergeConfig({
         CREDENTIALS_BASE_URL: process.env.CREDENTIALS_BASE_URL || null,
+        ENTERPRISE_LEARNER_PORTAL_HOSTNAME: process.env.ENTERPRISE_LEARNER_PORTAL_HOSTNAME || null,
         INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
+        SEARCH_CATALOG_URL: process.env.SEARCH_CATALOG_URL || null,
         SOCIAL_UTM_MILESTONE_CAMPAIGN: process.env.SOCIAL_UTM_MILESTONE_CAMPAIGN || null,
         STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,
         SUPPORT_URL: process.env.SUPPORT_URL || null,
@@ -88,7 +90,6 @@ initialize({
         SUPPORT_URL_VERIFIED_CERTIFICATE: process.env.SUPPORT_URL_VERIFIED_CERTIFICATE || null,
         TWITTER_HASHTAG: process.env.TWITTER_HASHTAG || null,
         TWITTER_URL: process.env.TWITTER_URL || null,
-        ENTERPRISE_LEARNER_PORTAL_HOSTNAME: process.env.ENTERPRISE_LEARNER_PORTAL_HOSTNAME || null,
       }, 'LearnerAppConfig');
     },
   },
