@@ -28,7 +28,7 @@ export default function UnitIcon({ type }) {
   }
 
   return (
-    <FontAwesomeIcon icon={icon} />
+    <FontAwesomeIcon className="unit-icon" icon={icon} />
   );
 }
 
