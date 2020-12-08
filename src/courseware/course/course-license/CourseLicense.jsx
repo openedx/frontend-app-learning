@@ -108,17 +108,15 @@ function CourseLicense({
   intl,
 }) {
   const renderAllRightsReservedLicense = () => (
-    <div>
+    <div className="text-gray-500">
       <FontAwesomeIcon aria-hidden="true" className="mr-1" icon={faCopyright} />
-      <span className="license-text">
-        {intl.formatMessage(messages['learn.course.license.allRightsReserved.text'])}
-      </span>
+      {intl.formatMessage(messages['learn.course.license.allRightsReserved.text'])}
     </div>
   );
 
   const renderCreativeCommonsLicense = (activeCreativeCommonsLicenseTags, version) => (
     <a
-      className="text-decoration-none text-gray-700"
+      className="text-decoration-none text-gray-500"
       rel="license noopener noreferrer"
       target="_blank"
       href={`https://creativecommons.org/licenses/${activeCreativeCommonsLicenseTags.join('-')}/${version}/`}
@@ -135,16 +133,14 @@ function CourseLicense({
           <FontAwesomeIcon aria-hidden="true" className="mr-1" icon={CreativeCommonsLicenseTags[tag].icon} />
         </span>
       ))}
-      <span className="license-text">
-        {intl.formatMessage(messages['learn.course.license.creativeCommons.text'])}
-      </span>
+      {intl.formatMessage(messages['learn.course.license.creativeCommons.text'])}
     </a>
   );
 
   const [licenseType, licenseOptions, licenseVersion] = parseLicense(license);
 
   return (
-    <div className="course-license text-right small">
+    <div className="text-right small py-1">
       {licenseType === 'all-rights-reserved' && renderAllRightsReservedLicense()}
       {licenseType === 'creative-commons' && renderCreativeCommonsLicense(
         Object.keys(licenseOptions),

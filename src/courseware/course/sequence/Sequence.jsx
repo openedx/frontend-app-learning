@@ -183,9 +183,7 @@ function Sequence({
             )}
           </div>
         </div>
-        <div className="sequence-footer px-4 py-1">
-          <CourseLicense license={course.license || undefined} />
-        </div>
+        <CourseLicense license={course.license || undefined} />
       </div>
     );
   }
