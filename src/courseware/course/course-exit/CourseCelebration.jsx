@@ -46,6 +46,7 @@ function CourseCelebration({ intl }) {
     relatedPrograms,
     verifiedMode,
     verifyIdentityUrl,
+    verificationStatus,
   } = useModel('courses', courseId);
 
   const {
@@ -157,23 +158,27 @@ function CourseCelebration({ intl }) {
       footnote = <DashboardFootnote />;
       break;
     case 'unverified':
-      buttonText = intl.formatMessage(messages.verifyIdentityButton);
-      buttonEvent = 'verify_id';
-      buttonLocation = verifyIdentityUrl;
       certHeader = intl.formatMessage(messages.certificateHeaderUnverified);
-      // todo: check for idVerificationSupportLink null
-      message = (
-        <p>
-          <FormattedMessage
-            id="courseCelebration.certificateBody.unverified"
-            defaultMessage="In order to generate a certificate, you must complete ID verification.
-              {idVerificationSupportLink} now."
-            values={{ idVerificationSupportLink }}
-          />
-        </p>
-      );
       visitEvent = 'celebration_unverified';
       footnote = <DashboardFootnote />;
+      if (verificationStatus === 'pending') {
+        message = (<p>{intl.formatMessage(messages.verificationPending)}</p>);
+      } else {
+        buttonText = intl.formatMessage(messages.verifyIdentityButton);
+        buttonEvent = 'verify_id';
+        buttonLocation = verifyIdentityUrl;
+        // todo: check for idVerificationSupportLink null
+        message = (
+          <p>
+            <FormattedMessage
+              id="courseCelebration.certificateBody.unverified"
+              defaultMessage="In order to generate a certificate, you must complete ID verification.
+                {idVerificationSupportLink} now."
+              values={{ idVerificationSupportLink }}
+            />
+          </p>
+        );
+      }
       break;
     case 'audit_passing':
     case 'honor_passing':

@@ -146,6 +146,18 @@ describe('Course Exit Pages', () => {
       expect(screen.queryByRole('img', { name: 'Sample certificate' })).not.toBeInTheDocument();
     });
 
+    it('Displays verification pending message', async () => {
+      setMetadata({
+        certificate_data: { cert_status: 'unverified' },
+        verification_status: 'pending',
+        verify_identity_url: `${getConfig().LMS_BASE_URL}/verify_student/verify-now/${defaultMetadata.id}/`,
+      });
+      await fetchAndRender(<CourseCelebration />);
+      expect(screen.getByText('Your ID verification is pending and your certificate will be available once approved.')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Verify ID now' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('img', { name: 'Sample certificate' })).not.toBeInTheDocument();
+    });
+
     it('Displays upgrade link when available', async () => {
       setMetadata({
         certificate_data: { cert_status: 'audit_passing' },
