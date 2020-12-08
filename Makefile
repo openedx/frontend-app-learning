@@ -66,4 +66,3 @@ validate:
 validate.ci:
 	npm ci
 	make validate
-	codecov
