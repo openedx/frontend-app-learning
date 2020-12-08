@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   render, screen, fireEvent, initializeMockApp,
-} from '../../../setupTest';
+} from '../../setupTest';
 import CourseSock from './CourseSock';
 
 describe('Course Sock', () => {

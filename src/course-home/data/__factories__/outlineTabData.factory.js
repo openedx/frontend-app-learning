@@ -25,7 +25,16 @@ Factory.define('outlineTabData')
     has_visited_course: false,
     url: `${host}/courses/${courseId}/jump_to/block-v1:edX+Test+Block@12345abcde`,
   }))
+  .attr('verified_mode', ['host'], (host) => ({
+    access_expiration_date: '2050-01-01T12:00:00',
+    currency: 'USD',
+    currency_symbol: '$',
+    price: 149,
+    sku: 'ABCD1234',
+    upgrade_url: `${host}/dashboard`,
+  }))
   .attrs({
+    can_show_upgrade_sock: true,
     course_expired_html: null,
     course_goals: {
       goal_options: [],

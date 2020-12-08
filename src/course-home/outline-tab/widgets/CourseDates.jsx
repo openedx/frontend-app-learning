@@ -17,7 +17,7 @@ function CourseDates({ courseId, intl }) {
   } = useModel('outline', courseId);
 
   return (
-    <section className="mb-3">
+    <section className="mb-4">
       <h2 className="h6">{intl.formatMessage(messages.dates)}</h2>
       {courseDateBlocks.map((courseDateBlock) => (
         <DateSummary

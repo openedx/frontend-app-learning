@@ -11,9 +11,9 @@ import useOfferAlert from '../../alerts/offer-alert';
 import Sequence from './sequence';
 
 import { CelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
-import CourseBreadcrumbs from './CourseBreadcrumbs';
-import CourseSock from './course-sock';
 import ContentTools from './content-tools';
+import CourseBreadcrumbs from './CourseBreadcrumbs';
+import CourseSock from '../../generic/course-sock';
 import { useModel } from '../../generic/model-store';
 
 function Course({
@@ -83,7 +83,7 @@ function Course({
           open
         />
       )}
-      {canShowUpgradeSock && verifiedMode && <CourseSock verifiedMode={verifiedMode} />}
+      {canShowUpgradeSock && <CourseSock verifiedMode={verifiedMode} />}
       <ContentTools course={course} />
     </>
   );

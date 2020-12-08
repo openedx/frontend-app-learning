@@ -141,6 +141,7 @@ export async function getOutlineTabData(courseId) {
   const {
     data,
   } = tabData;
+  const canShowUpgradeSock = data.can_show_upgrade_sock;
   const courseBlocks = data.course_blocks ? normalizeOutlineBlocks(courseId, data.course_blocks.blocks) : {};
   const courseGoals = camelCaseObject(data.course_goals);
   const courseExpiredHtml = data.course_expired_html;
@@ -152,9 +153,11 @@ export async function getOutlineTabData(courseId) {
   const hasEnded = data.has_ended;
   const offerHtml = data.offer_html;
   const resumeCourse = camelCaseObject(data.resume_course);
+  const verifiedMode = camelCaseObject(data.verified_mode);
   const welcomeMessageHtml = data.welcome_message_html;
 
   return {
+    canShowUpgradeSock,
     courseBlocks,
     courseGoals,
     courseExpiredHtml,
@@ -166,6 +169,7 @@ export async function getOutlineTabData(courseId) {
     hasEnded,
     offerHtml,
     resumeCourse,
+    verifiedMode,
     welcomeMessageHtml,
   };
 }
