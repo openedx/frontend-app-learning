@@ -5,18 +5,6 @@
 
 @import "~@edx/frontend-component-footer/dist/footer";
 
-// TODO: Fix .btn-outline-light style in paragon
-.btn-outline-light {
-  &:hover, &:focus {
-    color: $primary;
-    border-color: $white;
-    background-color: $white;
-  }
-  &:not(:disabled):not(.disabled):active {
-    border-color: $white;
-  }
-}
-
 // TODO: Fix .container-fluid for mobile in paragon
 .container-fluid {
   @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
