@@ -5,18 +5,6 @@
 
 @import "~@edx/frontend-component-footer/dist/footer";
 
-// TODO: Fix .btn-outline-light style in paragon
-.btn-outline-light {
-  &:hover, &:focus {
-    color: $primary;
-    border-color: $white;
-    background-color: $white;
-  }
-  &:not(:disabled):not(.disabled):active {
-    border-color: $white;
-  }
-}
-
 // TODO: Fix .container-fluid for mobile in paragon
 .container-fluid {
   @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
@@ -29,9 +17,11 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+
   main {
     flex-grow: 1;
   }
+
   header {
     flex: 0 0 auto;
 
@@ -56,8 +46,10 @@
 
 .course-header {
   min-width: 0;
+
   .course-title-lockup {
     min-width: 0;
+
     span {
       white-space: nowrap;
       overflow: hidden;
@@ -65,6 +57,7 @@
       padding-bottom: .1rem;
     }
   }
+
   .user-dropdown {
     .btn {
       height: 3rem;
@@ -80,10 +73,11 @@
 
 .nav-underline-tabs {
   margin: 0 0 -1px;
+
   .nav-link {
     border-bottom: 4px solid transparent;
     border-top: 4px solid transparent;
-    color: theme-color('gray', 700);
+    color: $gray-700;
 
     // temporary until we can remove .btn class from dropdowns
     border-left: 0;
@@ -94,8 +88,8 @@
     &:focus,
     &.active {
       font-weight: $font-weight-normal;
-      color: theme-color('primary', 500);
-      border-bottom-color: theme-color('primary', 500);
+      color: $primary-500;
+      border-bottom-color: $primary-500;
     }
   }
 }
@@ -105,6 +99,7 @@
   flex-direction: column;
   flex-grow: 1;
   margin-bottom: 4rem;
+
   // On mobile, the unit container will be responsible
   // for container padding.
   @media (min-width: map-get($grid-breakpoints, 'sm')) {
@@ -124,6 +119,7 @@
 
 .sequence-navigation {
   display: flex;
+
   @media (min-width: map-get($grid-breakpoints, 'sm')) {
     margin: -1px -1px 0;
   }
@@ -140,17 +136,19 @@
     height: 3rem;
     justify-content: center;
     align-items: center;
-    color: theme-color('gray', 500);
+    color: $gray-500;
     white-space: nowrap;
 
     &:hover,
     &:focus,
     &.active {
-      color: theme-color('gray', 700);
+      color: $gray-700;
     }
+
     &:focus {
       z-index: 1;
     }
+
     &.active {
       &:after {
         content: '';
@@ -162,6 +160,7 @@
         background: $primary;
       }
     }
+
     &.complete {
       background-color: #EEF7E5;
       color: $success;
@@ -170,6 +169,7 @@
     &:first-child {
       border-left-width: 0;
     }
+
     &:last-child {
       border-right-width: 0;
     }
@@ -184,12 +184,14 @@
     // https://dev.to/martyhimmel/quick-tip-to-stop-flexbox-from-overflowing-peb
     min-width: 0;
   }
+
   .sequence-navigation-tabs {
     .btn {
       flex-basis: 100%;
       min-width: 2rem;
     }
   }
+
   .sequence-navigation-dropdown {
     .dropdown-menu .btn {
       flex-basis: 100%;
@@ -200,9 +202,11 @@
       align-items: center;
       justify-content: flex-start;
       border-right: 0;
+
       & + .btn {
         border-top: 0;
       }
+
       .unit-title {
         flex-grow: 1;
         text-align: left;
@@ -210,14 +214,20 @@
         min-width: 0;
         margin: 0 1rem;
         text-overflow: ellipsis;
+        color: $gray-700;
       }
+
       &.active {
+        .unit-icon {
+          color: $primary-500;
+        }
+
         &:after {
           content: '';
           position: absolute;
           bottom: 0px;
-          left: -1px;
-          top: 0;
+          left: 0px;
+          top: 0px;
           right: auto;
           width: 2px;
           height: auto;
@@ -225,6 +235,7 @@
         }
       }
     }
+
     .dropdown-item {
       &.active {
         // This is un-doing the default react-bootstrap styling for active dropdown-item elements.
@@ -234,17 +245,20 @@
   }
 
   .previous-btn, .next-btn {
-    color: theme-color('gray', 700);
+    color: $gray-700;
     display: inline-flex;
     justify-content: center;
     align-items: center;
+
     @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
       padding-top: 1rem;
       padding-bottom: 1rem;
+
       span {
         @include sr-only();
       }
     }
+
     @media (min-width: map-get($grid-breakpoints, 'sm')) {
       min-width: fit-content;
       padding-left: 2rem;
@@ -255,6 +269,7 @@
   .previous-btn {
     border-left-width: 0;
     margin-left: 0;
+
     @media (min-width: map-get($grid-breakpoints, 'sm')) {
       border-left-width: 1px;
       border-top-left-radius: 4px;
@@ -264,6 +279,7 @@
   .next-btn {
     border-left-width: 1px;
     border-right-width: 0;
+
     @media (min-width: map-get($grid-breakpoints, 'sm')) {
       border-top-right-radius: 4px;
       border-right-width: 1px;
@@ -271,15 +287,12 @@
   }
 }
 
-.sequence-footer .course-license a:hover {
-  color: theme-color('primary', 500) !important;
-}
-
 .unit-container {
   padding: 0 $grid-gutter-width 2rem;
   max-width: 1024px;
   margin-left: auto;
   margin-right: auto;
+
   @media (min-width: 830px) {
     padding-left: 40px;
     padding-right: 40px;
@@ -288,6 +301,7 @@
 
 .unit-iframe-wrapper {
   margin: 0 -20px 2rem;
+
   @media (min-width: 830px) {
     margin: 0 -40px 2rem;
   }
@@ -304,17 +318,21 @@
   justify-content: center;
   max-width: 640px;
   margin: 0 auto;
+
   .previous-button,
   .next-button {
     white-space: nowrap;
     border-radius: 4px;
+
     &:focus:before {
       border-radius: 6px;
     }
   }
+
   .next-button {
     flex-basis: 75%;
   }
+
   .previous-button {
     flex-basis: 25%;
   }
