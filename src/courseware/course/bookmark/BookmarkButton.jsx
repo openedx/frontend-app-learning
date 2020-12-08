@@ -41,7 +41,7 @@ export default function BookmarkButton({
   return (
     <StatefulButton
       variant="link"
-      className="px-1 ml-n1 btn-sm"
+      className="px-1 ml-n1 btn-sm text-primary-500"
       onClick={toggleBookmark}
       state={state}
       disabledStates={['defaultProcessing', 'bookmarkedProcessing']}
