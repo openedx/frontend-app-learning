@@ -23,7 +23,7 @@ function DatesBanner(props) {
         </div>
         {bannerClickHandler && (
           <div className="col-auto col-lg-3 p-lg-0 d-inline-flex align-items-center justify-content-start justify-content-lg-center">
-            <Button variant="outline-primary" className="align-self-center bg-white mt-3 mt-lg-0" onClick={bannerClickHandler}>
+            <Button variant="outline-primary" className="align-self-center mt-3 mt-lg-0" onClick={bannerClickHandler}>
               {intl.formatMessage(messages[`datesBanner.${name}.button`])}
             </Button>
           </div>
