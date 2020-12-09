@@ -67,11 +67,13 @@ function Unit({
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
-  const [valuePropExperimentLock, setValuePropExperimentLock] = useState(window.valuePropExperimentLock);
-  /* The code block below + code referencing it should be deleted after REV1512 value prop experiment */
-  window.toggleValuePropPaywallLock = () => {
-    window.valuePropExperimentLock = !valuePropExperimentLock;
-    setValuePropExperimentLock(!valuePropExperimentLock);
+  const [rev1512ValuePropExperimentLock, setRev1512ValuePropExperimentLock] = useState(
+    window.rev1512ValuePropExperimentLock,
+  );
+  /* TODO: The code block below + code referencing it should be deleted after REV1512 value prop experiment */
+  window.rev1512ToggleValuePropPaywallLock = () => {
+    window.rev1512ValuePropExperimentLock = !rev1512ValuePropExperimentLock;
+    setRev1512ValuePropExperimentLock(!rev1512ValuePropExperimentLock);
   };
 
   const unit = useModel('units', id);
@@ -132,7 +134,7 @@ function Unit({
             />
           )}
         >
-          {(valuePropExperimentLock)
+          {(rev1512ValuePropExperimentLock)
             ? <LockPaywallValuePropExperiment courseId={courseId} />
             : <LockPaywall courseId={courseId} />}
         </Suspense>

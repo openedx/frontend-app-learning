@@ -1,4 +1,4 @@
-/* This file should be deleted after REV1512 value prop experiment */
+/* TODO: This file should be deleted after REV1512 value prop experiment */
 import React from 'react';
 import { Factory } from 'rosie';
 import { initializeTestStore, render, screen } from '../../../../setupTest';

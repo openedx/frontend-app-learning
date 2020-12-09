@@ -1,20 +1,20 @@
-/* This file should be deleted after REV1512 value prop experiment */
+/* TODO: This file should be deleted after REV1512 value prop experiment */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { faCheckCircle } from '@fortawesome/free-regular-svg-icons';
-import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
+import {
+  injectIntl, getLocale,
+} from '@edx/frontend-platform/i18n';
 import { Button } from '@edx/paragon';
 import classNames from 'classnames';
 
-import messages from './messages';
 import VerifiedCert from '../../../../generic/assets/edX_verified_certificate.png';
 import { useModel } from '../../../../generic/model-store';
 import './LockPaywall.scss';
 
 function LockPaywall({
-  intl,
   courseId,
 }) {
   const course = useModel('courses', courseId);
@@ -30,36 +30,52 @@ function LockPaywall({
     upgradeUrl,
   } = verifiedMode;
 
+  const isSpanish = getLocale() === 'es-419';
+
   let upgradeButtonText;
+
   if (document.querySelector('.price.discount') !== null) {
     let discountPrice = document.querySelector('.price.discount').textContent;
     if (discountPrice !== null) {
       discountPrice = discountPrice.replace(/[^0-9.]/g, '');
     }
+
+    if (isSpanish) {
+      upgradeButtonText = (
+        <>
+          <span className="font-weight-bold" style={{ paddingRight: '5px' }}>
+            Cómpralo por {currencySymbol}{discountPrice}
+          </span>
+          <span style={{ textDecoration: 'line-through' }}>
+            ({currencySymbol}{price})
+          </span>
+        </>
+      );
+    } else {
+      upgradeButtonText = (
+        <>
+          <span className="font-weight-bold" style={{ paddingRight: '5px' }}>
+            Upgrade for {currencySymbol}{discountPrice}
+          </span>
+          <span style={{ textDecoration: 'line-through' }}>
+            ({currencySymbol}{price})
+          </span>
+        </>
+      );
+    }
+  } else if (isSpanish) {
     upgradeButtonText = (
       <>
         <span className="font-weight-bold" style={{ paddingRight: '5px' }}>
-          {intl.formatMessage(messages['learn.lockPaywall.upgrade.link.text'], {
-            currencySymbol,
-            price: discountPrice,
-          })}
-        </span>
-        <span style={{ textDecoration: 'line-through' }}>
-          ({intl.formatMessage(messages['learn.lockPaywall.upgrade.link.strikethrough.price'], {
-          currencySymbol,
-          price,
-        })})
+          Cómpralo por {currencySymbol}{price}
         </span>
       </>
     );
   } else {
     upgradeButtonText = (
       <>
-        <span className="font-weight-bold">
-          {intl.formatMessage(messages['learn.lockPaywall.upgrade.link.text'], {
-            currencySymbol,
-            price,
-          })}
+        <span className="font-weight-bold" style={{ paddingRight: '5px' }}>
+          Upgrade for {currencySymbol}{price}
         </span>
       </>
     );
@@ -78,11 +94,11 @@ function LockPaywall({
   const verifiedCertificateLink = (
     <b>
       <a
-        className="text-gray-700 value_prop_verified_certificate_link"
+        className="text-gray-700 value-prop-verified-certificate-link"
         style={{ textDecoration: 'underline' }}
         href="https://www.edx.org/verified-certificate"
       >
-        {intl.formatMessage(messages['lock.description.reason1.linkText'])}
+        { (isSpanish) ? 'certificado verificado' : 'verified certificate' }
       </a>
     </b>
   );
@@ -97,62 +113,115 @@ function LockPaywall({
       <div className={classNames({ 'is-mobile': isMobile })}>
         <div className="font-weight-bold top-banner-text-header">
           <FontAwesomeIcon icon={faLock} className="text-black mr-2 ml-1 lock-icon" style={{ fontSize: '1rem' }} />
-          <span>{intl.formatMessage(messages['lock.title'])}</span>
+          <span>
+            {
+              isSpanish
+                ? 'Las tareas calificadas están bloqueadas'
+                : 'Graded assignments are locked'
+            }
+          </span>
         </div>
         <div className="font-weight top-banner-text">
-          {intl.formatMessage(messages['lock.title.text'])}
+          {
+            isSpanish
+              ? 'Cámbiate a la opción verificada para obtener acceso a funciones bloqueadas como esta y aprovechar al máximo tu curso.'
+              : 'Upgrade to gain access to locked features like this one and get the most out of your course.'
+          }
         </div>
 
         <div className="mb-0">
           <div className="certificate-image-banner-container">
             <img
-              alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
+              alt="Example Certificate"
               src={VerifiedCert}
               className="border-0 certificate-image-banner"
             />
           </div>
           <div style={{ float: 'left', paddingLeft: '18px' }}>
-            <div style={{ paddingBottom: '10px' }}>{intl.formatMessage(messages['lock.description.start'])}</div>
+            <div style={{ paddingBottom: '10px' }}>
+              {
+                isSpanish
+                  ? 'Cuando te cambias a la opción verificada, tú:'
+                  : 'When you upgrade, you:'
+              }
+            </div>
 
-            <div className="listItemRow">
-              <div className="checkCircleIconWrapper">{circleCheckIcon}</div>
-              <div className="listItemWrapper"><FormattedMessage
-                id="lock.description.reason1"
-                defaultMessage="Earn a {verifiedCertificateLink} of completion to showcase on your resume"
-                values={{ verifiedCertificateLink }}
-              />
+            <div className="list-item-row">
+              <div className="check-circle-icon-wrapper">{circleCheckIcon}</div>
+              <div className="list-item-wrapper">
+                <span>
+                  {
+                      isSpanish
+                        ? <>Obtén un {verifiedCertificateLink} de finalización para compartirlo en tu currículum</>
+                        : <>Earn a {verifiedCertificateLink} of completion to showcase on your resume</>
+                    }
+                </span>
               </div>
             </div>
 
-            <div className="listItemRow">
-              <div className="checkCircleIconWrapper">{circleCheckIcon}</div>
-              <div className="listItemWrapper">
-                {intl.formatMessage(messages['lock.description.reason2'])}
-                <span className="font-weight-bold">{intl.formatMessage(messages['lock.description.reason2.highlight'])}</span>
+            <div className="list-item-row">
+              <div className="check-circle-icon-wrapper">{circleCheckIcon}</div>
+              <div className="list-item-wrapper">
+                {
+                  isSpanish
+                    ? 'Desbloquea el acceso a todas las actividades del curso, incluidas las '
+                    : 'Unlock access to all course activities, including '
+                }
+                <span className="font-weight-bold">
+                  {
+                    isSpanish
+                      ? 'tareas calificadas'
+                      : 'graded assignments'
+                  }
+                </span>
               </div>
             </div>
 
-            <div className="listItemRow">
-              <div className="checkCircleIconWrapper">{circleCheckIcon}</div>
-              <div className="listItemWrapper">
-                <span className="font-weight-bold">{intl.formatMessage(messages['lock.description.reason3.highlight'])}</span>
-                {intl.formatMessage(messages['lock.description.reason3'])}
+            <div className="list-item-row">
+              <div className="check-circle-icon-wrapper">{circleCheckIcon}</div>
+              <div className="list-item-wrapper">
+                <span className="font-weight-bold">
+                  {
+                    isSpanish
+                      ? 'Acceso completo'
+                      : 'Full access'
+                  }
+                </span>
+                {
+                  isSpanish
+                    ? ' al contenido y los materiales del curso, incluso después de que finalice el curso'
+                    : ' to course content and materials, even after the course ends'
+                }
               </div>
             </div>
 
-            <div className="listItemRow">
-              <div className="checkCircleIconWrapper">{circleCheckIcon}</div>
-              <div className="listItemWrapper">
-                {intl.formatMessage(messages['lock.description.reason4.beginning'])}
-                <span className="font-weight-bold">{intl.formatMessage(messages['lock.description.reason4.highlight'])}</span>
-                {intl.formatMessage(messages['lock.description.reason4.end'])}
+            <div className="list-item-row">
+              <div className="check-circle-icon-wrapper">{circleCheckIcon}</div>
+              <div className="list-item-wrapper">
+                {
+                  isSpanish
+                    ? 'Apoya nuestra '
+                    : 'Support our '
+                }
+                <span className="font-weight-bold">
+                  {
+                    isSpanish
+                      ? 'misión sin fines de lucro'
+                      : 'non-profit mission'
+                  }
+                </span>
+                {
+                  isSpanish
+                    ? ' en edX'
+                    : ' at edX'
+                }
               </div>
             </div>
           </div>
 
           <br clear="both" />
           <div className="value-prop-upgrade-button-container">
-            <Button variant="primary" href={upgradeUrl} className="value_prop_lock_paywall_upgrade_link">
+            <Button variant="primary" href={upgradeUrl} className="value-prop-lock-paywall-upgrade-link">
               {upgradeButtonText}
             </Button>
           </div>
@@ -162,7 +231,6 @@ function LockPaywall({
   );
 }
 LockPaywall.propTypes = {
-  intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
 };
 export default injectIntl(LockPaywall);
