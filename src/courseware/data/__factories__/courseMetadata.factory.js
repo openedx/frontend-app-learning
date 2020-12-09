@@ -56,6 +56,7 @@ Factory.define('courseMetadata')
     user_has_passing_grade: false,
     certificate_data: null,
     verify_identity_url: null,
+    verification_status: 'none',
     linkedin_add_to_profile_url: null,
     related_programs: null,
   }).attr(

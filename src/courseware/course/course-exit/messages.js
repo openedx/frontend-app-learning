@@ -131,6 +131,10 @@ const messages = defineMessages({
     id: 'courseExit.upgradeLink',
     defaultMessage: 'upgrade now',
   },
+  verificationPending: {
+    id: 'courseCelebration.verificationPending',
+    defaultMessage: 'Your ID verification is pending and your certificate will be available once approved.',
+  },
   verifiedCertificateSupportLink: {
     id: 'courseExit.verifiedCertificateSupportLink',
     defaultMessage: 'Learn more about verified certificates',

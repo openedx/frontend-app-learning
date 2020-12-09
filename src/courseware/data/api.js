@@ -139,6 +139,7 @@ function normalizeMetadata(metadata) {
     courseExitPageIsActive: metadata.course_exit_page_is_active,
     certificateData: camelCaseObject(metadata.certificate_data),
     verifyIdentityUrl: metadata.verify_identity_url,
+    verificationStatus: metadata.verification_status,
     linkedinAddToProfileUrl: metadata.linkedin_add_to_profile_url,
     relatedPrograms: camelCaseObject(metadata.related_programs),
   };
