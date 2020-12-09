@@ -1,4 +1,4 @@
-|Build Status| |Coveralls| |npm_version| |npm_downloads| |license|
+|Coveralls| |npm_version| |npm_downloads| |license|
 
 frontend-app-learning
 =========================
@@ -10,8 +10,6 @@ Introduction
 
 React app for edX learning.
 
-.. |Build Status| image:: https://api.travis-ci.org/edx/frontend-app-learning.svg?branch=master
-   :target: https://travis-ci.org/edx/frontend-app-learning
 .. |Coveralls| image:: https://img.shields.io/coveralls/edx/frontend-app-learning.svg?branch=master
    :target: https://coveralls.io/github/edx/frontend-app-learning
 .. |npm_version| image:: https://img.shields.io/npm/v/@edx/frontend-app-learning.svg
