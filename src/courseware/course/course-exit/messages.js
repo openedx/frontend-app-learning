@@ -114,6 +114,11 @@ const messages = defineMessages({
     defaultMessage: 'Request certificate',
     description: 'Button to request the course certificate',
   },
+  searchOurCatalogLink: {
+    id: 'courseExit.searchOurCatalogLink',
+    defaultMessage: 'Search our catalog',
+    description: 'First part of a sentence that continues afterward',
+  },
   shareHeader: {
     id: 'courseCelebration.shareHeader',
     defaultMessage: 'You have completed your course. Share your success on social media or email.',

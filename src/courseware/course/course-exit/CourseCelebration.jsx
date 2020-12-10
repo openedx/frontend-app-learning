@@ -12,6 +12,7 @@ import { Alert, Button, Hyperlink } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
+import CatalogSuggestion from './CatalogSuggestion';
 import CelebrationMobile from './assets/celebration_456x328.gif';
 import CelebrationDesktop from './assets/celebration_750x540.gif';
 import certificate from '../../../generic/assets/edX_verified_certificate.png';
@@ -119,7 +120,7 @@ function CourseCelebration({ intl }) {
       }
       buttonEvent = 'view_cert';
       visitEvent = 'celebration_with_cert';
-      footnote = <DashboardFootnote />;
+      footnote = <DashboardFootnote variant={visitEvent} />;
       break;
     case 'earned_but_not_available': {
       const endDate = <FormattedDate value={end} day="numeric" month="long" year="numeric" />;
@@ -146,7 +147,7 @@ function CourseCelebration({ intl }) {
         </>
       );
       visitEvent = 'celebration_with_unavailable_cert';
-      footnote = <DashboardFootnote />;
+      footnote = <DashboardFootnote variant={visitEvent} />;
       break;
     }
     case 'requesting':
@@ -155,12 +156,12 @@ function CourseCelebration({ intl }) {
       certHeader = intl.formatMessage(messages.certificateHeaderRequestable);
       message = (<p>{intl.formatMessage(messages.requestCertificateBodyText)}</p>);
       visitEvent = 'celebration_with_requestable_cert';
-      footnote = <DashboardFootnote />;
+      footnote = <DashboardFootnote variant={visitEvent} />;
       break;
     case 'unverified':
       certHeader = intl.formatMessage(messages.certificateHeaderUnverified);
       visitEvent = 'celebration_unverified';
-      footnote = <DashboardFootnote />;
+      footnote = <DashboardFootnote variant={visitEvent} />;
       if (verificationStatus === 'pending') {
         message = (<p>{intl.formatMessage(messages.verificationPending)}</p>);
       } else {
@@ -215,7 +216,7 @@ function CourseCelebration({ intl }) {
         if (verifiedMode.accessExpirationDate) {
           footnote = <UpgradeFootnote deadline={verifiedMode.accessExpirationDate} href={verifiedMode.upgradeUrl} />;
         } else {
-          footnote = <DashboardFootnote />;
+          footnote = <DashboardFootnote variant={visitEvent} />;
         }
       }
       break;
@@ -323,6 +324,7 @@ function CourseCelebration({ intl }) {
             />
           ))}
           {footnote}
+          <CatalogSuggestion variant={visitEvent} />
         </div>
       </div>
     </>
