@@ -28,6 +28,8 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
+  isREV1512FlyoverVisible, /* This line should be reverted after the REV1512 experiment */
+  REV1512FlyoverEnabled, /* This line should be reverted after the REV1512 experiment */
 }) {
   const course = useModel('courses', courseId);
   const sequence = useModel('sequences', sequenceId);
@@ -138,35 +140,36 @@ function Sequence({
 
   if (sequenceStatus === 'loaded') {
     return (
-      <div className="sequence-container">
-        <div className="sequence">
-          <SequenceNavigation
-            sequenceId={sequenceId}
-            unitId={unitId}
-            className="mb-4"
-            nextSequenceHandler={() => {
-              logEvent('edx.ui.lms.sequence.next_selected', 'top');
-              handleNext();
-            }}
-            onNavigate={(destinationUnitId) => {
-              logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-              handleNavigate(destinationUnitId);
-            }}
-            previousSequenceHandler={() => {
-              logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-              handlePrevious();
-            }}
-            goToCourseExitPage={() => goToCourseExitPage()}
-          />
-          <div className="unit-container flex-grow-1">
-            <SequenceContent
-              courseId={courseId}
-              gated={gated}
+      <div>
+        <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
+          <div className="sequence" style={{ width: '100%' }}>
+            <SequenceNavigation
               sequenceId={sequenceId}
               unitId={unitId}
-              unitLoadedHandler={handleUnitLoaded}
+              className="mb-4"
+              nextSequenceHandler={() => {
+                logEvent('edx.ui.lms.sequence.next_selected', 'top');
+                handleNext();
+              }}
+              onNavigate={(destinationUnitId) => {
+                logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+                handleNavigate(destinationUnitId);
+              }}
+              previousSequenceHandler={() => {
+                logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+                handlePrevious();
+              }}
+              goToCourseExitPage={() => goToCourseExitPage()}
             />
-            {unitHasLoaded && (
+            <div className="unit-container flex-grow-1">
+              <SequenceContent
+                courseId={courseId}
+                gated={gated}
+                sequenceId={sequenceId}
+                unitId={unitId}
+                unitLoadedHandler={handleUnitLoaded}
+              />
+              {unitHasLoaded && (
               <UnitNavigation
                 sequenceId={sequenceId}
                 unitId={unitId}
@@ -180,8 +183,23 @@ function Sequence({
                 }}
                 goToCourseExitPage={() => goToCourseExitPage()}
               />
-            )}
+              )}
+            </div>
           </div>
+          {/* This block of code should be reverted post REV1512 experiment */}
+          {REV1512FlyoverEnabled && isREV1512FlyoverVisible() && (
+            <div
+              className="rev-1512-box"
+              style={{
+                border: 'solid 1px #e1dddb',
+                height: '393px',
+                width: '330px',
+                verticalAlign: 'top',
+                marginLeft: '20px',
+                padding: '20px',
+              }}
+            />
+          )}
         </div>
         <CourseLicense license={course.license || undefined} />
       </div>
@@ -204,6 +222,8 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
+  isREV1512FlyoverVisible: PropTypes.func.isRequired, /* This line should be reverted after the REV1512 experiment */
+  REV1512FlyoverEnabled: PropTypes.bool.isRequired, /* This line should be reverted after the REV1512 experiment */
 };
 
 Sequence.defaultProps = {
