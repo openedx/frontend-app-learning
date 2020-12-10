@@ -129,7 +129,7 @@ function LockPaywall({
           }
         </div>
 
-        <div className="mb-0">
+        <div className={classNames('mb-0', { 'd-flex': !isMobile })}>
           <div className="certificate-image-banner-container">
             <img
               alt="Example Certificate"
@@ -137,7 +137,7 @@ function LockPaywall({
               className="border-0 certificate-image-banner"
             />
           </div>
-          <div style={{ float: 'left', paddingLeft: '18px' }}>
+          <div style={{ float: 'left', paddingLeft: '18px', paddingBottom: '24px' }}>
             <div style={{ paddingBottom: '10px' }}>
               {
                 isSpanish
@@ -218,13 +218,12 @@ function LockPaywall({
               </div>
             </div>
           </div>
+        </div>
 
-          <br clear="both" />
-          <div className="value-prop-upgrade-button-container">
-            <Button variant="primary" href={upgradeUrl} className="value-prop-lock-paywall-upgrade-link">
-              {upgradeButtonText}
-            </Button>
-          </div>
+        <div className="value-prop-upgrade-button-container">
+          <Button variant="primary" href={upgradeUrl} className="value-prop-lock-paywall-upgrade-link">
+            {upgradeButtonText}
+          </Button>
         </div>
       </div>
     </div>

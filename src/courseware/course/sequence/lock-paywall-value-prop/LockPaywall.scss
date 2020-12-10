@@ -15,6 +15,7 @@
         display: inline-block;
         float: left;
         padding-left: 20px;
+        flex-shrink: 0;
     }
     .top-banner-text {
         margin-bottom: 16px;
@@ -24,14 +25,16 @@
         padding-left: 20px;
     }
     .value-prop-upgrade-button-container {
-        margin-top: 16px;
         padding-left: 20px;
     }
     .is-mobile {
+        padding-top: 10px;
+
         .certificate-image-banner-container {
             text-align: center;
             display: block;
             float: none;
+            padding-left: 0px;
         }
         .certificate-image-banner {
             width: 180px;
@@ -42,11 +45,13 @@
         .top-banner-text-header {
             margin-left:36px;
             position: relative;
+            padding-left: 10px;
         }
         .top-banner-text {
             margin-left:36px;
             margin-bottom: 4px;
             position: relative;
+            padding-left: 10px;
         }
         .lock-icon {
             position: absolute;
@@ -55,8 +60,9 @@
         }
         .value-prop-upgrade-button-container {
             text-align: center;
-            padding-bottom: 10px;
-            padding-top: 6px;
+            padding-bottom: 20px;
+            padding-top: 20px;
+            padding-left: 0px;
         }
     }
 }
