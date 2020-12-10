@@ -5,12 +5,12 @@
     .list-item-row {
         display: flex;
         margin-left: -7px;
-    };
+    }
     .certificate-image-banner {
         width: 166px;
         height: 119px;
         margin-top: 3px;
-    };
+    }
     .certificate-image-banner-container {
         display: inline-block;
         float: left;
@@ -19,45 +19,45 @@
     .top-banner-text {
         margin-bottom: 16px;
         padding-left: 20px;
-    };
+    }
     .top-banner-text-header {
         padding-left: 20px;
-    };
+    }
     .value-prop-upgrade-button-container {
         margin-top: 16px;
         padding-left: 20px;
-    };
+    }
     .is-mobile {
         .certificate-image-banner-container {
             text-align: center;
             display: block;
             float: none;
-        };
+        }
         .certificate-image-banner {
             width: 180px;
             height: 128px;
             margin-top: 3px;
             margin-bottom: 5px;
-        };
+        }
         .top-banner-text-header {
             margin-left:36px;
             position: relative;
-        };
+        }
         .top-banner-text {
             margin-left:36px;
             margin-bottom: 4px;
             position: relative;
-        };
+        }
         .lock-icon {
             position: absolute;
             left: -28px;
             top: 4px;
-        };
+        }
         .value-prop-upgrade-button-container {
             text-align: center;
             padding-bottom: 10px;
             padding-top: 6px;
-        };
-    };
-};
+        }
+    }
+}
 
