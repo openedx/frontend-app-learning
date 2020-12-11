@@ -18,6 +18,7 @@ import { processEvent } from '../../../course-home/data/thunks';
 import { fetchCourse } from '../../data/thunks';
 
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
+const LockPaywallValuePropExperiment = React.lazy(() => import('./lock-paywall-value-prop'));
 
 /**
  * We discovered an error in Firefox where - upon iframe load - React would cease to call any
@@ -66,6 +67,14 @@ function Unit({
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
+  const [rev1512ValuePropExperimentLock, setRev1512ValuePropExperimentLock] = useState(
+    window.rev1512ValuePropExperimentLock,
+  );
+  /* TODO: The code block below + code referencing it should be deleted after REV1512 value prop experiment */
+  window.rev1512ToggleValuePropPaywallLock = () => {
+    window.rev1512ValuePropExperimentLock = !rev1512ValuePropExperimentLock;
+    setRev1512ValuePropExperimentLock(!rev1512ValuePropExperimentLock);
+  };
 
   const unit = useModel('units', id);
   const course = useModel('courses', courseId);
@@ -125,9 +134,9 @@ function Unit({
             />
           )}
         >
-          <LockPaywall
-            courseId={courseId}
-          />
+          {(rev1512ValuePropExperimentLock)
+            ? <LockPaywallValuePropExperiment courseId={courseId} />
+            : <LockPaywall courseId={courseId} />}
         </Suspense>
       )}
       {!hasLoaded && (
