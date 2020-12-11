@@ -339,6 +339,7 @@ Object {
     },
     "outline": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "accessExpiration": null,
         "canShowUpgradeSock": true,
         "courseBlocks": Object {
           "courses": Object {
@@ -375,7 +376,6 @@ Object {
             },
           },
         },
-        "courseExpiredHtml": null,
         "courseGoals": Object {
           "goalOptions": Array [],
           "selectedGoal": null,
@@ -403,7 +403,7 @@ Object {
         "handoutsHtml": "<ul><li>Handout 1</li></ul>",
         "hasEnded": undefined,
         "id": "course-v1:edX+DemoX+Demo_Course_1",
-        "offerHtml": null,
+        "offer": null,
         "resumeCourse": Object {
           "hasVisitedCourse": false,
           "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+Test+Block@12345abcde",

@@ -218,6 +218,8 @@ function CourseCelebration({ intl }) {
         } else {
           footnote = <DashboardFootnote variant={visitEvent} />;
         }
+      } else {
+        visitEvent = 'celebration_audit_no_upgrade';
       }
       break;
     default:

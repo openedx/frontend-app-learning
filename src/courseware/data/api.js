@@ -110,14 +110,13 @@ function normalizeTabUrls(id, tabs) {
 
 function normalizeMetadata(metadata) {
   return {
+    accessExpiration: camelCaseObject(metadata.access_expiration),
     canShowUpgradeSock: metadata.can_show_upgrade_sock,
     contentTypeGatingEnabled: metadata.content_type_gating_enabled,
-    // TODO: TNL-7185: return course expired _date_, instead of _message_
-    courseExpiredMessage: metadata.course_expired_message,
     id: metadata.id,
     title: metadata.name,
     number: metadata.number,
-    offerHtml: metadata.offer_html,
+    offer: camelCaseObject(metadata.offer),
     org: metadata.org,
     enrollmentStart: metadata.enrollment_start,
     enrollmentEnd: metadata.enrollment_end,
@@ -131,6 +130,7 @@ function normalizeMetadata(metadata) {
     license: metadata.license,
     verifiedMode: camelCaseObject(metadata.verified_mode),
     tabs: normalizeTabUrls(metadata.id, camelCaseObject(metadata.tabs)),
+    userTimezone: metadata.user_timezone,
     showCalculator: metadata.show_calculator,
     notes: camelCaseObject(metadata.notes),
     marketingUrl: metadata.marketing_url,

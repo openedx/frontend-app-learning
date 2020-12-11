@@ -43,6 +43,7 @@ function OutlineTab({ intl }) {
   } = useModel('courses', courseId);
 
   const {
+    accessExpiration,
     canShowUpgradeSock,
     courseBlocks: {
       courses,
@@ -52,17 +53,17 @@ function OutlineTab({ intl }) {
       goalOptions,
       selectedGoal,
     },
-    courseExpiredHtml,
     datesBannerInfo,
     datesWidget: {
       courseDateBlocks,
+      userTimezone,
     },
     hasEnded,
     resumeCourse: {
       hasVisitedCourse,
       url: resumeCourseUrl,
     },
-    offerHtml,
+    offer,
     verifiedMode,
   } = useModel('outline', courseId);
 
@@ -75,8 +76,8 @@ function OutlineTab({ intl }) {
   const enrollmentAlert = useEnrollmentAlert(courseId);
 
   // Below the course title alerts (appearing in the order listed here)
-  const offerAlert = useOfferAlert(offerHtml, 'outline-course-alerts');
-  const accessExpirationAlert = useAccessExpirationAlert(courseExpiredHtml, 'outline-course-alerts');
+  const offerAlert = useOfferAlert(offer, userTimezone, 'outline-course-alerts');
+  const accessExpirationAlert = useAccessExpirationAlert(accessExpiration, userTimezone, 'outline-course-alerts');
   const courseStartAlert = useCourseStartAlert(courseId);
   const courseEndAlert = useCourseEndAlert(courseId);
   const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
