@@ -85,23 +85,27 @@ describe('Course', () => {
   });
 
   it('displays offer and expiration alert', async () => {
-    const offerText = 'test-offer';
-    const offerId = `${offerText}-id`;
-    const offerHtml = `<div data-testid="${offerId}">${offerText}</div>`;
-
-    const expirationText = 'test-expiration';
-    const expirationId = `${expirationText}-id`;
-    const expirationHtml = `<div data-testid="${expirationId}">${expirationText}</div>`;
-
     const courseMetadata = Factory.build('courseMetadata', {
-      offer_html: offerHtml,
-      course_expired_message: expirationHtml,
+      access_expiration: {
+        expiration_date: '2080-01-01T12:00:00Z',
+        masquerading_expired_course: false,
+        upgrade_deadline: null,
+        upgrade_url: null,
+      },
+      offer: {
+        code: 'EDXWELCOME',
+        expiration_date: '2070-01-01T12:00:00Z',
+        original_price: '$100',
+        discounted_price: '$85',
+        percentage: 15,
+        upgrade_url: 'https://example.com/upgrade',
+      },
     });
     const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
     render(<Course {...mockData} courseId={courseMetadata.id} />, { store: testStore });
 
-    expect(await screen.findByTestId(offerId)).toHaveTextContent(offerText);
-    expect(screen.getByTestId(expirationId)).toHaveTextContent(expirationText);
+    await screen.findByText('EDXWELCOME');
+    await screen.findByText('Audit Access Expires');
   });
 
   it('passes handlers to the sequence', async () => {

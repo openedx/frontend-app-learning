@@ -34,8 +34,8 @@ Factory.define('outlineTabData')
     upgrade_url: `${host}/dashboard`,
   }))
   .attrs({
+    access_expiration: null,
     can_show_upgrade_sock: true,
-    course_expired_html: null,
     course_goals: {
       goal_options: [],
       selected_goal: null,
@@ -50,6 +50,6 @@ Factory.define('outlineTabData')
       extra_text: 'Contact the administrator.',
     },
     handouts_html: '<ul><li>Handout 1</li></ul>',
-    offer_html: null,
+    offer: null,
     welcome_message_html: '<p>Welcome to this course!</p>',
   });

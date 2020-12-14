@@ -3,14 +3,13 @@ import { useAlert } from '../../generic/user-messages';
 
 const OfferAlert = React.lazy(() => import('./OfferAlert'));
 
-export function useOfferAlert(offerHtml, topic) {
-  const rawHtml = offerHtml || null;
-  const isVisible = !!rawHtml; // if it exists, show it.
+export function useOfferAlert(offer, userTimezone, topic) {
+  const isVisible = !!offer; // if it exists, show it.
 
   useAlert(isVisible, {
     code: 'clientOfferAlert',
     topic,
-    payload: useMemo(() => ({ rawHtml }), [rawHtml]),
+    payload: useMemo(() => ({ offer, userTimezone }), [offer, userTimezone]),
   });
 
   return { clientOfferAlert: OfferAlert };
