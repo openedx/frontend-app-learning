@@ -7,11 +7,13 @@ import { Button } from '@edx/paragon';
 
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
+import { UpgradeButton } from '../../../generic/upgrade-button';
 import VerifiedCert from '../../../generic/assets/edX_certificate.png';
 
 function UpgradeCard({ courseId, intl, onLearnMore }) {
   const { org } = useModel('courses', courseId);
   const {
+    offer,
     verifiedMode,
   } = useModel('outline', courseId);
 
@@ -44,16 +46,11 @@ function UpgradeCard({ courseId, intl, onLearnMore }) {
         style={{ width: '124px' }}
       />
       <div className="float-right d-flex flex-column align-items-center">
-        <Button
-          variant="success"
-          href={verifiedMode.upgradeUrl}
+        <UpgradeButton
+          offer={offer}
           onClick={logClick}
-        >
-          {intl.formatMessage(messages.upgradeButton, {
-            price: verifiedMode.price,
-            symbol: verifiedMode.currencySymbol,
-          })}
-        </Button>
+          verifiedMode={verifiedMode}
+        />
         {onLearnMore && (
           <Button
             variant="link"

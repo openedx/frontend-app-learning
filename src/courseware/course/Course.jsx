@@ -114,7 +114,7 @@ function Course({
           open
         />
       )}
-      {canShowUpgradeSock && <CourseSock verifiedMode={verifiedMode} />}
+      {canShowUpgradeSock && <CourseSock offer={offer} verifiedMode={verifiedMode} />}
       <ContentTools course={course} />
     </>
   );

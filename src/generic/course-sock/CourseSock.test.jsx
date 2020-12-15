@@ -32,8 +32,8 @@ describe('Course Sock', () => {
     fireEvent.click(upsellButton);
 
     expect(screen.getByText('edX Verified Certificate')).toBeInTheDocument();
-    const { currencySymbol, price, currency } = mockData.verifiedMode;
-    expect(screen.getByText(`Upgrade (${currencySymbol}${price} ${currency})`)).toBeInTheDocument();
+    const { currencySymbol, price } = mockData.verifiedMode;
+    expect(screen.getByText(`Upgrade (${currencySymbol}${price})`)).toBeInTheDocument();
 
     fireEvent.click(upsellButton);
     expect(screen.queryByText('edX Verified Certificate')).not.toBeInTheDocument();

@@ -17,6 +17,7 @@ import CelebrationMobile from './assets/celebration_456x328.gif';
 import CelebrationDesktop from './assets/celebration_750x540.gif';
 import certificate from '../../../generic/assets/edX_certificate.png';
 import certificateLocked from '../../../generic/assets/edX_locked_certificate.png';
+import { FormattedPricing } from '../../../generic/upgrade-button';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
@@ -43,6 +44,7 @@ function CourseCelebration({ intl }) {
     certificateData,
     end,
     linkedinAddToProfileUrl,
+    offer,
     org,
     relatedPrograms,
     verifiedMode,
@@ -86,10 +88,12 @@ function CourseCelebration({ intl }) {
     </Hyperlink>
   );
 
+  let buttonPrefix = null;
   let buttonLocation;
   let buttonText;
   let buttonVariant = 'outline-primary';
   let buttonEvent = null;
+  let buttonSuffix = null;
   let certificateImage = certificate;
   let footnote;
   let message;
@@ -117,6 +121,19 @@ function CourseCelebration({ intl }) {
       } else if (downloadUrl) {
         buttonLocation = downloadUrl;
         buttonText = intl.formatMessage(messages.downloadButton);
+      }
+      if (linkedinAddToProfileUrl) {
+        buttonPrefix = (
+          <Button
+            className="mr-3"
+            href={linkedinAddToProfileUrl}
+            onClick={() => logClick(org, courseId, administrator, 'linkedin_add_to_profile')}
+            style={{ backgroundColor: LINKEDIN_BLUE, border: 'none' }}
+          >
+            <FontAwesomeIcon icon={faLinkedinIn} className="mr-3" />
+            {`${intl.formatMessage(messages.linkedinAddToProfileButton)}`}
+          </Button>
+        );
       }
       buttonEvent = 'view_cert';
       visitEvent = 'celebration_with_cert';
@@ -151,8 +168,20 @@ function CourseCelebration({ intl }) {
       break;
     }
     case 'requesting':
-      buttonText = intl.formatMessage(messages.requestCertificateButton);
+      // The requesting status needs a different button because it does a POST instead of a GET.
+      // So we don't set buttonLocation and instead define a custom button as a buttonPrefix.
       buttonEvent = 'request_cert';
+      buttonPrefix = (
+        <Button
+          variant={buttonVariant}
+          onClick={() => {
+            logClick(org, courseId, administrator, buttonEvent);
+            dispatch(requestCert(courseId));
+          }}
+        >
+          {intl.formatMessage(messages.requestCertificateButton)}
+        </Button>
+      );
       certHeader = intl.formatMessage(messages.certificateHeaderRequestable);
       message = (<p>{intl.formatMessage(messages.requestCertificateBodyText)}</p>);
       visitEvent = 'celebration_with_requestable_cert';
@@ -193,7 +222,7 @@ function CourseCelebration({ intl }) {
                 assignments in this course. Upon completion, you will receive a verified certificate which is a
                 valuable credential to improve your job prospects and advance your career, or highlight your
                 certificate in school applications."
-              values={{ price: verifiedMode.currencySymbol + verifiedMode.price }}
+              values={{ price: <FormattedPricing inline offer={offer} verifiedMode={verifiedMode} /> }}
             />
             <br />
             {getConfig().SUPPORT_URL_VERIFIED_CERTIFICATE && (
@@ -211,6 +240,20 @@ function CourseCelebration({ intl }) {
         buttonEvent = 'upgrade';
         buttonLocation = verifiedMode.upgradeUrl;
         buttonVariant = 'primary';
+        if (offer) {
+          buttonSuffix = (
+            <span className="ml-2 align-middle">
+              <FormattedMessage
+                id="courseCelebration.upgradeDiscountCodePrompt"
+                defaultMessage="Use code {code} at checkout for {percent}% off!"
+                values={{
+                  code: (<b>{offer.code}</b>),
+                  percent: offer.percentage,
+                }}
+              />
+            </span>
+          );
+        }
         certificateImage = certificateLocked;
         visitEvent = 'celebration_upgrade';
         if (verifiedMode.accessExpirationDate) {
@@ -270,39 +313,19 @@ function CourseCelebration({ intl }) {
             <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
               <div className="h4">{certHeader}</div>
               {message}
-              {/* The requesting status needs a different button because it does a POST instead of a GET */}
-              {certStatus === 'requesting' && (
-                <Button
-                  variant={buttonVariant}
-                  onClick={() => {
-                    logClick(org, courseId, administrator, buttonEvent);
-                    dispatch(requestCert(courseId));
-                  }}
-                >
-                  {buttonText}
-                </Button>
-              )}
-              {certStatus === 'downloadable' && linkedinAddToProfileUrl && (
-                <Button
-                  className="mr-3 mt-2"
-                  href={linkedinAddToProfileUrl}
-                  onClick={() => logClick(org, courseId, administrator, 'linkedin_add_to_profile')}
-                  style={{ backgroundColor: LINKEDIN_BLUE, border: 'none' }}
-                >
-                  <FontAwesomeIcon icon={faLinkedinIn} className="mr-3" />
-                  {`${intl.formatMessage(messages.linkedinAddToProfileButton)}`}
-                </Button>
-              )}
-              {buttonLocation && (
-                <Button
-                  className="mt-2"
-                  variant={buttonVariant}
-                  href={buttonLocation}
-                  onClick={() => logClick(org, courseId, administrator, buttonEvent)}
-                >
-                  {buttonText}
-                </Button>
-              )}
+              <div className="mt-2">
+                {buttonPrefix}
+                {buttonLocation && (
+                  <Button
+                    variant={buttonVariant}
+                    href={buttonLocation}
+                    onClick={() => logClick(org, courseId, administrator, buttonEvent)}
+                  >
+                    {buttonText}
+                  </Button>
+                )}
+                {buttonSuffix}
+              </div>
             </div>
             {certStatus !== 'unverified' && (
               <div className="col-12 order-0 col-md-3 order-md-1 w-100 mb-3 p-0 text-center">
