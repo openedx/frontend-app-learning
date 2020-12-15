@@ -34,14 +34,16 @@ function OfferAlert({ intl, payload }) {
         {intl.formatMessage(messages.srPrices, { discountedPrice, originalPrice })}
       </span>
       <span aria-hidden="true">
-        {discountedPrice} <del>{originalPrice}</del>
+        {/* the price discount and price original classes can be removed post REV-1512 experiment */}
+        <span className="price discount">{discountedPrice}</span> <del className="price original">{originalPrice}</del>
       </span>
     </>
   );
 
   return (
     <Alert type={ALERT_TYPES.INFO}>
-      <span className="font-weight-bold">
+      {/* the first-purchase-offer-banner class can be removed post REV-1512 experiment */}
+      <span className="font-weight-bold first-purchase-offer-banner">
         <FormattedMessage
           id="learning.offer.header"
           defaultMessage="Upgrade by {date} and save {percentage}% [{fullPricing}]"
