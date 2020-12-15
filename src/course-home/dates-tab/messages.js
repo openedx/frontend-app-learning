@@ -7,15 +7,15 @@ const messages = defineMessages({
   },
   dueNext: {
     id: 'learning.dates.badge.dueNext',
-    defaultMessage: 'Due Next',
+    defaultMessage: 'Due next',
   },
   pastDue: {
     id: 'learning.dates.badge.pastDue',
-    defaultMessage: 'Past Due',
+    defaultMessage: 'Past due',
   },
   title: {
     id: 'learning.dates.title',
-    defaultMessage: 'Important Dates',
+    defaultMessage: 'Important dates',
   },
   today: {
     id: 'learning.dates.badge.today',
@@ -23,11 +23,11 @@ const messages = defineMessages({
   },
   unreleased: {
     id: 'learning.dates.badge.unreleased',
-    defaultMessage: 'Not Yet Released',
+    defaultMessage: 'Not yet released',
   },
   verifiedOnly: {
     id: 'learning.dates.badge.verifiedOnly',
-    defaultMessage: 'Verified Only',
+    defaultMessage: 'Verified only',
   },
 });
 

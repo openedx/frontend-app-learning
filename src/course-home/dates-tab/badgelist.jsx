@@ -37,13 +37,15 @@ function getBadgeListAndColor(date, intl, item, items) {
     {
       message: messages.today,
       shownForDay: isToday,
-      bg: 'dates-bg-today',
+      bg: 'bg-warning-300',
+      className: 'text-gray-900',
     },
     {
       message: messages.completed,
       shownForDay: assignments.length && assignments.every(isComplete),
       shownForItem: x => isLearnerAssignment(x) && isComplete(x),
       bg: 'bg-dark-100',
+      className: 'text-gray-900',
     },
     {
       message: messages.pastDue,
@@ -63,7 +65,7 @@ function getBadgeListAndColor(date, intl, item, items) {
       message: messages.unreleased,
       shownForDay: assignments.length && assignments.every(isUnreleased),
       shownForItem: x => isLearnerAssignment(x) && isUnreleased(x),
-      className: 'border border-dark-200 text-gray-500 align-top',
+      className: 'border border-gray-500 text-gray-500',
     },
     {
       message: messages.verifiedOnly,
