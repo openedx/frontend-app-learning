@@ -5,7 +5,7 @@ import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
-import VerifiedCert from '../../../../generic/assets/edX_verified_certificate.png';
+import VerifiedCert from '../../../../generic/assets/edX_certificate.png';
 import { useModel } from '../../../../generic/model-store';
 
 function LockPaywall({

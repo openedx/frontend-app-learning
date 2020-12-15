@@ -4,10 +4,7 @@ import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Alert, Button, Hyperlink } from '@edx/paragon';
-import microBachelorsCertImage from '../../../generic/assets/edX_microBachelors_certificate.png';
-import microMastersCertImage from '../../../generic/assets/edX_microMasters_certificate.png';
-import professionalCertImage from '../../../generic/assets/edX_professionalCertificate_certificate.png';
-import xSeriesCertImage from '../../../generic/assets/edX_xSeries_certificate.png';
+import certImage from '../../../generic/assets/edX_certificate.png';
 import messages from './messages';
 
 /**
@@ -20,6 +17,8 @@ import messages from './messages';
  * four aforementioned types. This will not impact the parent components (i.e. CourseCelebration will render normally).
  */
 
+const programTypes = ['microbachelors', 'micromasters', 'professional-certificate', 'xseries'];
+
 function ProgramCompletion({
   intl,
   progress,
@@ -27,26 +26,8 @@ function ProgramCompletion({
   type,
   url,
 }) {
-  if (progress.notStarted !== 0 || progress.inProgress !== 0) {
+  if (!programTypes.includes(type) || progress.notStarted !== 0 || progress.inProgress !== 0) {
     return null;
-  }
-
-  let certImage;
-  switch (type) {
-    case 'microbachelors':
-      certImage = microBachelorsCertImage;
-      break;
-    case 'micromasters':
-      certImage = microMastersCertImage;
-      break;
-    case 'professional-certificate':
-      certImage = professionalCertImage;
-      break;
-    case 'xseries':
-      certImage = xSeriesCertImage;
-      break;
-    default:
-      return null;
   }
 
   const programLink = (
