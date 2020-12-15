@@ -7,7 +7,7 @@ import { Button } from '@edx/paragon';
 
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
-import VerifiedCert from '../../../generic/assets/edX_verified_certificate.png';
+import VerifiedCert from '../../../generic/assets/edX_certificate.png';
 
 function UpgradeCard({ courseId, intl, onLearnMore }) {
   const { org } = useModel('courses', courseId);

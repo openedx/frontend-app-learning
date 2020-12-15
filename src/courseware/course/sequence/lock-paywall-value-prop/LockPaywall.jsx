@@ -10,7 +10,7 @@ import {
 import { Button } from '@edx/paragon';
 import classNames from 'classnames';
 
-import VerifiedCert from '../../../../generic/assets/edX_verified_certificate.png';
+import VerifiedCert from '../../../../generic/assets/edX_certificate.png';
 import { useModel } from '../../../../generic/model-store';
 import './LockPaywall.scss';
 
