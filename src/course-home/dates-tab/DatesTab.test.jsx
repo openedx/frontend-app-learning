@@ -76,21 +76,21 @@ describe('DatesTab', () => {
       const badges = within(header).getAllByTestId('dates-badge');
       expect(badges).toHaveLength(2);
       expect(badges[0]).toHaveTextContent('Completed');
-      expect(badges[1]).toHaveTextContent('Not Yet Released');
+      expect(badges[1]).toHaveTextContent('Not yet released');
     });
 
     it('handles unreleased & past due', async () => {
       const { header } = await getDay('Mon, May 4, 2020');
       const badges = within(header).getAllByTestId('dates-badge');
       expect(badges).toHaveLength(2);
-      expect(badges[0]).toHaveTextContent('Past Due');
-      expect(badges[1]).toHaveTextContent('Not Yet Released');
+      expect(badges[0]).toHaveTextContent('Past due');
+      expect(badges[1]).toHaveTextContent('Not yet released');
     });
 
     it('handles verified only', async () => {
       const { day } = await getDay('Sun, Aug 18, 2030');
       const badge = within(day).getByTestId('dates-badge');
-      expect(badge).toHaveTextContent('Verified Only');
+      expect(badge).toHaveTextContent('Verified only');
     });
 
     it('verified only has no link', async () => {
@@ -101,7 +101,7 @@ describe('DatesTab', () => {
     it('same status items have header badge', async () => {
       const { day, header } = await getDay('Tue, May 26, 2020');
       const badge = within(header).getByTestId('dates-badge');
-      expect(badge).toHaveTextContent('Past Due'); // one header badge
+      expect(badge).toHaveTextContent('Past due'); // one header badge
       expect(within(day).getAllByTestId('dates-badge')).toHaveLength(1); // no other badges
     });
 
@@ -111,7 +111,7 @@ describe('DatesTab', () => {
       expect(headerBadges).toHaveLength(0); // no header badges
       expect(items).toHaveLength(2);
       expect(within(items[0]).getByTestId('dates-badge')).toHaveTextContent('Completed');
-      expect(within(items[1]).getByTestId('dates-badge')).toHaveTextContent('Past Due');
+      expect(within(items[1]).getByTestId('dates-badge')).toHaveTextContent('Past due');
     });
 
     it('shows extra info', async () => {
