@@ -16,7 +16,8 @@ function useCertificateAvailableAlert(courseId) {
       userTimezone,
     },
   } = useModel('outline', courseId);
-  const { username } = getAuthenticatedUser();
+  const authenticatedUser = getAuthenticatedUser();
+  const username = authenticatedUser ? authenticatedUser.username : '';
 
   const certBlock = courseDateBlocks.find(b => b.dateType === 'certificate-available-date');
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');

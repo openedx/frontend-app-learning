@@ -38,7 +38,7 @@ function CourseGoalCard({
       <Card.Body>
         <div className="row w-100 m-0 justify-content-between align-items-center">
           <div className="col col-8 p-0">
-            <Card.Title className="h6 m-0">{intl.formatMessage(messages.goalWelcome)} {title}</Card.Title>
+            <Card.Title className="h6 m-0">{intl.formatMessage(messages.welcomeTo)} {title}</Card.Title>
           </div>
           <div className="col col-auto p-0">
             <Button

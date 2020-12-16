@@ -1,4 +1,5 @@
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import { useModel } from '../../../generic/model-store';
 
@@ -28,10 +29,13 @@ function getCourseExitMode(courseId) {
   const {
     certificateData,
     courseExitPageIsActive,
+    isEnrolled,
     userHasPassingGrade,
   } = useModel('courses', courseId);
 
-  if (!courseExitPageIsActive) {
+  const authenticatedUser = getAuthenticatedUser();
+
+  if (!courseExitPageIsActive || !authenticatedUser || !isEnrolled) {
     return COURSE_EXIT_MODES.disabled;
   }
 

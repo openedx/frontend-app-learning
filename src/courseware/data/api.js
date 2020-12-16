@@ -86,10 +86,10 @@ export function normalizeBlocks(courseId, blocks) {
 }
 
 export async function getCourseBlocks(courseId) {
-  const { username } = getAuthenticatedUser();
+  const authenticatedUser = getAuthenticatedUser();
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/`);
   url.searchParams.append('course_id', courseId);
-  url.searchParams.append('username', username);
+  url.searchParams.append('username', authenticatedUser ? authenticatedUser.username : '');
   url.searchParams.append('depth', 3);
   url.searchParams.append('requested_fields', 'children,show_gated_sections,graded,special_exam_info');
 

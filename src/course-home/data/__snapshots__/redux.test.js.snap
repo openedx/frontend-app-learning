@@ -28,7 +28,7 @@ Object {
         "originalUserIsStaff": false,
         "tabs": Array [
           Object {
-            "slug": "courseware",
+            "slug": "outline",
             "title": "Course",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course/",
           },
@@ -309,7 +309,7 @@ Object {
         "originalUserIsStaff": false,
         "tabs": Array [
           Object {
-            "slug": "courseware",
+            "slug": "outline",
             "title": "Course",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course/",
           },

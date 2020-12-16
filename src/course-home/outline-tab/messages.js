@@ -43,11 +43,6 @@ const messages = defineMessages({
     id: 'learning.outline.goalUnsure',
     defaultMessage: 'Not sure yet',
   },
-  goalWelcome: {
-    id: 'learning.outline.goalWelcome',
-    defaultMessage: 'Welcome to',
-    description: 'This precedes the title of the course',
-  },
   handouts: {
     id: 'learning.outline.handouts',
     defaultMessage: 'Course Handouts',
@@ -111,6 +106,11 @@ const messages = defineMessages({
   welcomeMessageShowLessButton: {
     id: 'learning.outline.welcomeMessageShowLessButton',
     defaultMessage: 'Show Less',
+  },
+  welcomeTo: {
+    id: 'learning.outline.goalWelcome',
+    defaultMessage: 'Welcome to',
+    description: 'This precedes the title of the course',
   },
 });
 
