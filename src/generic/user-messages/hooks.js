@@ -20,17 +20,20 @@ export function useAlert(isVisible, {
   // establishes: memoize the payload so that the exact same object is used if the
   // payload has not changed.
   useEffect(() => {
+    let cleanupId = alertId;
     if (isVisible && alertId === null) {
-      setAlertId(add({
+      cleanupId = add({
         code, text, topic, type, payload, dismissible,
-      }));
+      });
+      setAlertId(cleanupId);
     } else if (!isVisible && alertId !== null) {
       remove(alertId);
+      cleanupId = null;
       setAlertId(null);
     }
     return () => {
-      if (alertId !== null) {
-        remove(alertId);
+      if (cleanupId !== null) {
+        remove(cleanupId);
       }
     };
   }, [isVisible, code, text, topic, type, dismissible, payload]);
