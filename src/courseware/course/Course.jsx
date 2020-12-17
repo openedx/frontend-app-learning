@@ -60,18 +60,22 @@ function Course({
     const match = document.cookie.match(`${name}=([^;]*)`);
     return match ? match[1] : undefined;
   };
-  const [REV1512FlyoverVisible, setREV1512FlyoverVisible] = useState(getCookie('REV1512FlyoverVisible') === 'true');
+  const userAgent = typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
+  const isMobile = Boolean(
+    userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i),
+  );
+  const [REV1512FlyoverVisible, setREV1512FlyoverVisible] = useState(isMobile ? false : !(getCookie(`REV1512FlyoverVisible${courseId}`) === 'false'));
   const isREV1512FlyoverVisible = () => REV1512FlyoverEnabled && (REV1512FlyoverVisible || getCookie('REV1512FlyoverVisible') === 'true');
   const toggleREV1512Flyover = () => {
-    const setCookie = (cookieName, value, domain, exdays) => {
+    const setCookie = (cookieName, value, domain) => {
       const cookieDomain = (typeof domain === 'undefined') ? '' : `domain=${domain};`;
       const exdate = new Date();
-      exdate.setDate(exdate.getDate() + exdays);
-      const cookieValue = escape(value) + ((exdays == null) ? '' : `; expires=${exdate.toUTCString()}`);
+      exdate.setHours(exdate.getHours() + 4);
+      const cookieValue = `${escape(value)}; expires=${exdate.toUTCString()}`;
       document.cookie = `${cookieName}=${cookieValue};${cookieDomain}path=/`;
     };
     const isVisible = isREV1512FlyoverVisible();
-    setCookie('REV1512FlyoverVisible', !isVisible);
+    setCookie(`REV1512FlyoverVisible${courseId}`, !isVisible);
     setREV1512FlyoverVisible(!isVisible);
   };
   // The above block of code should be reverted after the REV1512 experiment
