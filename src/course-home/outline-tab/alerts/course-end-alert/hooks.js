@@ -24,7 +24,6 @@ export function useCourseEndAlert(courseId) {
   const delta = endBlock ? endDate - new Date() : 0;
   const isVisible = isEnrolled && endBlock && delta > 0 && delta < WARNING_PERIOD_MS;
   const payload = {
-    delta,
     description: endBlock && endBlock.description,
     endDate: endBlock && endBlock.date,
     userTimezone,

@@ -13,7 +13,6 @@ const DAY_MS = 24 * 60 * 60 * 1000; // in ms
 
 function CourseEndAlert({ payload }) {
   const {
-    delta,
     description,
     endDate,
     userTimezone,
@@ -30,6 +29,7 @@ function CourseEndAlert({ payload }) {
   );
 
   let msg;
+  const delta = new Date(endDate) - new Date();
   if (delta < DAY_MS) {
     const courseEndTime = (
       <FormattedTime
@@ -88,7 +88,6 @@ function CourseEndAlert({ payload }) {
 
 CourseEndAlert.propTypes = {
   payload: PropTypes.shape({
-    delta: PropTypes.number,
     description: PropTypes.string,
     endDate: PropTypes.string,
     userTimezone: PropTypes.string,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAlert } from '../../../../generic/user-messages';
 import { useModel } from '../../../../generic/model-store';
 
@@ -18,14 +18,14 @@ function useCourseStartAlert(courseId) {
   const startBlock = courseDateBlocks.find(b => b.dateType === 'course-start-date');
   const delta = startBlock ? new Date(startBlock.date) - new Date() : 0;
   const isVisible = isEnrolled && startBlock && delta > 0;
+  const payload = {
+    startDate: startBlock && startBlock.date,
+    userTimezone,
+  };
 
   useAlert(isVisible, {
     code: 'clientCourseStartAlert',
-    payload: {
-      delta,
-      startDate: startBlock && startBlock.date,
-      userTimezone,
-    },
+    payload: useMemo(() => payload, Object.values(payload).sort()),
     topic: 'outline-course-alerts',
   });
 
