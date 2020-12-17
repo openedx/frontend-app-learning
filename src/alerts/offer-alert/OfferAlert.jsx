@@ -6,6 +6,7 @@ import {
 import { Hyperlink } from '@edx/paragon';
 
 import { Alert, ALERT_TYPES } from '../../generic/user-messages';
+import { FormattedPricing } from '../../generic/upgrade-button';
 import messages from './messages';
 
 function OfferAlert({ intl, payload }) {
@@ -20,25 +21,11 @@ function OfferAlert({ intl, payload }) {
 
   const {
     code,
-    discountedPrice,
     expirationDate,
-    originalPrice,
     percentage,
     upgradeUrl,
   } = offer;
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
-
-  const fullPricing = (
-    <>
-      <span className="sr-only">
-        {intl.formatMessage(messages.srPrices, { discountedPrice, originalPrice })}
-      </span>
-      <span aria-hidden="true">
-        {/* the price discount and price original classes can be removed post REV-1512 experiment */}
-        <span className="price discount">{discountedPrice}</span> <del className="price original">{originalPrice}</del>
-      </span>
-    </>
-  );
 
   return (
     <Alert type={ALERT_TYPES.INFO}>
@@ -57,7 +44,7 @@ function OfferAlert({ intl, payload }) {
                 {...timezoneFormatArgs}
               />
             ),
-            fullPricing,
+            fullPricing: <FormattedPricing offer={offer} />,
             percentage,
           }}
         />

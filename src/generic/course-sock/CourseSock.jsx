@@ -4,12 +4,12 @@ import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import LearnerQuote1 from './assets/learner-quote.png';
 import LearnerQuote2 from './assets/learner-quote2.png';
+import { UpgradeButton } from '../upgrade-button';
 import VerifiedCert from '../assets/edX_certificate.png';
 
 export default class CourseSock extends Component {
   constructor(props) {
     super(props);
-    this.verifiedMode = props.verifiedMode;
     this.state = { showUpsell: false };
     this.sockElement = React.createRef();
   }
@@ -31,7 +31,7 @@ export default class CourseSock extends Component {
   }
 
   render() {
-    if (!this.verifiedMode) {
+    if (!this.props.verifiedMode) {
       return null;
     }
 
@@ -65,22 +65,14 @@ export default class CourseSock extends Component {
                 </div>
                 <div className="position-relative flex-grow-1 d-flex flex-column justify-content-end align-items-md-end">
                   <div style={{ position: 'sticky', bottom: '4rem' }}>
-                    <a
-                      href={this.verifiedMode.upgradeUrl}
-                      className="btn btn-success btn-lg btn-upgrade focusable mb-3"
+                    <UpgradeButton
+                      size="lg"
+                      offer={this.props.offer}
+                      verifiedMode={this.props.verifiedMode}
+                      className="mb-3"
                       data-creative="original_sock"
                       data-position="sock"
-                    >
-                      <FormattedMessage
-                        id="coursesock.upsell.upgrade"
-                        defaultMessage="Upgrade ({symbol}{price} {currency})"
-                        values={{
-                          symbol: this.verifiedMode.currencySymbol,
-                          price: this.verifiedMode.price,
-                          currency: this.verifiedMode.currency,
-                        }}
-                      />
-                    </a>
+                    />
                   </div>
                 </div>
               </div>
@@ -215,12 +207,11 @@ export default class CourseSock extends Component {
   }
 }
 
+CourseSock.defaultProps = {
+  offer: null,
+};
+
 CourseSock.propTypes = {
-  verifiedMode: PropTypes.shape({
-    price: PropTypes.number,
-    currency: PropTypes.string,
-    currencySymbol: PropTypes.string,
-    sku: PropTypes.string,
-    upgradeUrl: PropTypes.string,
-  }).isRequired,
+  offer: PropTypes.shape({}),
+  verifiedMode: PropTypes.shape({}).isRequired,
 };

@@ -185,7 +185,7 @@ function OutlineTab({ intl }) {
           </div>
         )}
       </div>
-      {canShowUpgradeSock && <CourseSock ref={courseSock} verifiedMode={verifiedMode} />}
+      {canShowUpgradeSock && <CourseSock ref={courseSock} offer={offer} verifiedMode={verifiedMode} />}
     </>
   );
 }
