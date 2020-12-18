@@ -31,6 +31,11 @@ const messages = defineMessages({
     defaultMessage: 'Order History',
     description: 'The text for the user menu Order History navigation link.',
   },
+  skipNavLink: {
+    id: 'header.navigation.skipNavLink',
+    defaultMessage: 'Skip to main content.',
+    description: 'A link used by screen readers to allow users to skip to the main content of the page.',
+  },
   signOut: {
     id: 'header.menu.signOut.label',
     defaultMessage: 'Sign Out',

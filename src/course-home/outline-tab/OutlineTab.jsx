@@ -146,15 +146,17 @@ function OutlineTab({ intl }) {
                   </Button>
                 </div>
               </div>
-              {courses[rootCourseId].sectionIds.map((sectionId) => (
-                <Section
-                  key={sectionId}
-                  courseId={courseId}
-                  defaultOpen={sections[sectionId].resumeBlock}
-                  expand={expandAll}
-                  section={sections[sectionId]}
-                />
-              ))}
+              <ol className="list-unstyled">
+                {courses[rootCourseId].sectionIds.map((sectionId) => (
+                  <Section
+                    key={sectionId}
+                    courseId={courseId}
+                    defaultOpen={sections[sectionId].resumeBlock}
+                    expand={expandAll}
+                    section={sections[sectionId]}
+                  />
+                ))}
+              </ol>
             </>
           )}
         </div>

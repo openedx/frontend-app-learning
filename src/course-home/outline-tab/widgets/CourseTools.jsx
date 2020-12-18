@@ -56,14 +56,16 @@ function CourseTools({ courseId, intl }) {
   return (
     <section className="mb-4">
       <h2 className="h6">{intl.formatMessage(messages.tools)}</h2>
-      {courseTools.map((courseTool) => (
-        <div key={courseTool.analyticsId}>
-          <a href={courseTool.url} onClick={() => logClick(courseTool.analyticsId)}>
-            <FontAwesomeIcon icon={renderIcon(courseTool.analyticsId)} className="mr-2" fixedWidth />
-            {courseTool.title}
-          </a>
-        </div>
-      ))}
+      <ul className="list-unstyled">
+        {courseTools.map((courseTool) => (
+          <li key={courseTool.analyticsId}>
+            <a href={courseTool.url} onClick={() => logClick(courseTool.analyticsId)}>
+              <FontAwesomeIcon icon={renderIcon(courseTool.analyticsId)} className="mr-2" fixedWidth />
+              {courseTool.title}
+            </a>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

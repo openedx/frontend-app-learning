@@ -52,6 +52,11 @@ Object {
             "title": "Instructor",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/instructor",
           },
+          Object {
+            "slug": "dates",
+            "title": "Dates",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/dates",
+          },
         ],
         "title": "Demonstration Course",
       },
@@ -332,6 +337,11 @@ Object {
             "slug": "instructor",
             "title": "Instructor",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/instructor",
+          },
+          Object {
+            "slug": "dates",
+            "title": "Dates",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/dates",
           },
         ],
         "title": "Demonstration Course",

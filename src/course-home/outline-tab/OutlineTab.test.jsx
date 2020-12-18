@@ -71,7 +71,7 @@ describe('Outline Tab', () => {
         },
       });
       await fetchAndRender();
-      expect(screen.getByRole('link', { name: 'Resume Course' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Resume course' })).toBeInTheDocument();
     });
 
     it('expands section that contains resume block', async () => {
@@ -87,7 +87,7 @@ describe('Outline Tab', () => {
     it('handles expand/collapse all button click', async () => {
       await fetchAndRender();
       // Button renders as "Expand All"
-      const expandButton = screen.getByRole('button', { name: 'Expand All' });
+      const expandButton = screen.getByRole('button', { name: 'Expand all' });
       expect(expandButton).toBeInTheDocument();
 
       // Section initially renders collapsed

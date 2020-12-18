@@ -39,23 +39,27 @@ function Section({
   }, []);
 
   const sectionTitle = (
-    <div>
-      {complete ? (
-        <FontAwesomeIcon
-          icon={fasCheckCircle}
-          className="float-left mt-1 text-success"
-          aria-hidden="true"
-          title={intl.formatMessage(messages.completedSection)}
-        />
-      ) : (
-        <FontAwesomeIcon
-          icon={farCheckCircle}
-          className="float-left mt-1 text-gray-200"
-          aria-hidden="true"
-          title={intl.formatMessage(messages.incompleteSection)}
-        />
-      )}
-      <div className="ml-3 pl-3 font-weight-bold">
+    <div className="row w-100 m-0">
+      <div className="col-auto p-0">
+        {complete ? (
+          <FontAwesomeIcon
+            icon={fasCheckCircle}
+            fixedWidth
+            className="float-left mt-1 text-success"
+            aria-hidden="true"
+            title={intl.formatMessage(messages.completedSection)}
+          />
+        ) : (
+          <FontAwesomeIcon
+            icon={farCheckCircle}
+            fixedWidth
+            className="float-left mt-1 text-gray-200"
+            aria-hidden="true"
+            title={intl.formatMessage(messages.incompleteSection)}
+          />
+        )}
+      </div>
+      <div className="col-10 ml-2 p-0 font-weight-bold">
         {title}
         <span className="sr-only">
           , {intl.formatMessage(complete ? messages.completedSection : messages.incompleteSection)}
@@ -65,37 +69,41 @@ function Section({
   );
 
   return (
-    <Collapsible
-      className="mb-2"
-      styling="card-lg"
-      title={sectionTitle}
-      open={open}
-      onToggle={() => { setOpen(!open); }}
-      iconWhenClosed={(
-        <IconButton
-          alt={intl.formatMessage(messages.openSection)}
-          icon={faPlus}
-          onClick={() => { setOpen(true); }}
-        />
-      )}
-      iconWhenOpen={(
-        <IconButton
-          alt={intl.formatMessage(genericMessages.close)}
-          icon={faMinus}
-          onClick={() => { setOpen(false); }}
-        />
-      )}
-    >
-      {sequenceIds.map((sequenceId, index) => (
-        <SequenceLink
-          key={sequenceId}
-          id={sequenceId}
-          courseId={courseId}
-          sequence={sequences[sequenceId]}
-          first={index === 0}
-        />
-      ))}
-    </Collapsible>
+    <li>
+      <Collapsible
+        className="mb-2"
+        styling="card-lg"
+        title={sectionTitle}
+        open={open}
+        onToggle={() => { setOpen(!open); }}
+        iconWhenClosed={(
+          <IconButton
+            alt={intl.formatMessage(messages.openSection)}
+            icon={faPlus}
+            onClick={() => { setOpen(true); }}
+          />
+        )}
+        iconWhenOpen={(
+          <IconButton
+            alt={intl.formatMessage(genericMessages.close)}
+            icon={faMinus}
+            onClick={() => { setOpen(false); }}
+          />
+        )}
+      >
+        <ol className="list-unstyled">
+          {sequenceIds.map((sequenceId, index) => (
+            <SequenceLink
+              key={sequenceId}
+              id={sequenceId}
+              courseId={courseId}
+              sequence={sequences[sequenceId]}
+              first={index === 0}
+            />
+          ))}
+        </ol>
+      </Collapsible>
+    </li>
   );
 }
 
