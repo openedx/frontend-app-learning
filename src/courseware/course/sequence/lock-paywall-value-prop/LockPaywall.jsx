@@ -138,7 +138,7 @@ function LockPaywall({
             />
           </div>
           <div style={{ float: 'left', paddingLeft: '18px', paddingBottom: '24px' }}>
-            <div style={{ paddingBottom: '10px' }}>
+            <div style={{ paddingBottom: '5px' }}>
               {
                 isSpanish
                   ? 'Cuando te cambias a la opción verificada, tú:'
