@@ -46,7 +46,7 @@ function REV1512Flyover({ toggleREV1512Flyover }) {
           fontSize: '16px',
         }}
       >
-        <span className="rev-1512-notification-span">Notification</span>
+        <span className="rev-1512-notification-span">Notifications</span>
         <svg
           onClick={toggleREV1512Flyover}
           className="hideFlyover"
@@ -127,7 +127,9 @@ function REV1512FlyoverMobile({ toggleREV1512Flyover }) {
               marginBottom: 2,
             }}
           />
-          Back to course
+          <span className="rev-1512-mobile-return-text">
+            Back to course
+          </span>
         </span>
       </div>
       <div
