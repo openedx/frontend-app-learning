@@ -85,6 +85,7 @@ function REV1512Flyover({ toggleREV1512Flyover }) {
           }}
         />
       </div>
+      <div className="rev-1512-optimizely-flyover-container" />
     </div>
   );
 }
@@ -172,6 +173,7 @@ function REV1512FlyoverMobile({ toggleREV1512Flyover }) {
           }}
         />
       </div>
+      <div className="rev-1512-optimizely-flyover-container" />
     </div>
   );
 }
