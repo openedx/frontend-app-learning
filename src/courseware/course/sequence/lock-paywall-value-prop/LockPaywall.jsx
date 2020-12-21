@@ -94,9 +94,10 @@ function LockPaywall({
   const verifiedCertificateLink = (
     <b>
       <a
-        className="text-gray-700 value-prop-verified-certificate-link"
-        style={{ textDecoration: 'underline' }}
+        className="value-prop-verified-certificate-link"
+        style={{ textDecoration: 'underline', color: '#00688D' }}
         href="https://www.edx.org/verified-certificate"
+        target="blank"
       >
         { (isSpanish) ? 'certificado verificado' : 'verified certificate' }
       </a>
@@ -129,7 +130,8 @@ function LockPaywall({
           }
         </div>
 
-        <div className={classNames('mb-0', { 'd-flex': !isMobile })}>
+        <div className={classNames('mb-0', 'cert-list-wrapper', { 'd-flex': !isMobile })}>
+
           <div className="certificate-image-banner-container">
             <img
               alt="Example Certificate"
@@ -137,7 +139,7 @@ function LockPaywall({
               className="border-0 certificate-image-banner"
             />
           </div>
-          <div style={{ float: 'left', paddingLeft: '18px', paddingBottom: '24px' }}>
+          <div className="list-container" style={{ float: 'left', paddingLeft: '18px', paddingBottom: '24px' }}>
             <div style={{ paddingBottom: '5px' }}>
               {
                 isSpanish

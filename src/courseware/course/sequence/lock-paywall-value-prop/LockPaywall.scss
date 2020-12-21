@@ -67,5 +67,27 @@
             padding-left: 0px;
         }
     }
-}
 
+    @media only screen and (max-width: 576px) {
+        .top-banner-text-header {
+            padding-top: 10px;
+        }
+        .top-banner-text {
+            padding-left: 47px !important;
+        }
+        .cert-list-wrapper {
+            display: block !important;
+        }
+        .certificate-image-banner-container {
+            width: 100%;
+            padding-bottom: 10px;
+            padding-left: 0px !important;
+            text-align: center;
+        }
+        .value-prop-upgrade-button-container {
+            padding-bottom: 20px;
+            text-align: center;
+            padding-left: 0px !important;
+        }
+    }
+}
