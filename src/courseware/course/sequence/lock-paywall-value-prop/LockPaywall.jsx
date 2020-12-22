@@ -94,8 +94,10 @@ function LockPaywall({
   const verifiedCertificateLink = (
     <b>
       <a
-        className="text-gray-700 value-prop-verified-certificate-link"
-        style={{ textDecoration: 'underline' }}
+        className="value-prop-verified-certificate-link"
+        style={{ textDecoration: 'underline', color: '#00688D' }}
+        rel="noopener noreferrer"
+        target="_blank"
         href="https://www.edx.org/verified-certificate"
       >
         { (isSpanish) ? 'certificado verificado' : 'verified certificate' }
@@ -113,7 +115,7 @@ function LockPaywall({
       <div className={classNames({ 'is-mobile': isMobile })}>
         <div className="font-weight-bold top-banner-text-header">
           <FontAwesomeIcon icon={faLock} className="text-black mr-2 ml-1 lock-icon" style={{ fontSize: '1rem' }} />
-          <span>
+          <span className="top-banner-title">
             {
               isSpanish
                 ? 'Las tareas calificadas están bloqueadas'
@@ -129,7 +131,8 @@ function LockPaywall({
           }
         </div>
 
-        <div className={classNames('mb-0', { 'd-flex': !isMobile })}>
+        <div className={classNames('mb-0', 'cert-list-wrapper', { 'd-flex': !isMobile })}>
+
           <div className="certificate-image-banner-container">
             <img
               alt="Example Certificate"
@@ -137,8 +140,8 @@ function LockPaywall({
               className="border-0 certificate-image-banner"
             />
           </div>
-          <div style={{ float: 'left', paddingLeft: '18px', paddingBottom: '24px' }}>
-            <div style={{ paddingBottom: '10px' }}>
+          <div className="list-container" style={{ float: 'left', paddingLeft: '18px', paddingBottom: '24px' }}>
+            <div style={{ paddingBottom: '5px' }}>
               {
                 isSpanish
                   ? 'Cuando te cambias a la opción verificada, tú:'
