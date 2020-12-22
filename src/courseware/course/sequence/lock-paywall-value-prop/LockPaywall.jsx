@@ -96,8 +96,9 @@ function LockPaywall({
       <a
         className="value-prop-verified-certificate-link"
         style={{ textDecoration: 'underline', color: '#00688D' }}
+        rel="noopener noreferrer"
+        target="_blank"
         href="https://www.edx.org/verified-certificate"
-        target="blank"
       >
         { (isSpanish) ? 'certificado verificado' : 'verified certificate' }
       </a>
@@ -114,7 +115,7 @@ function LockPaywall({
       <div className={classNames({ 'is-mobile': isMobile })}>
         <div className="font-weight-bold top-banner-text-header">
           <FontAwesomeIcon icon={faLock} className="text-black mr-2 ml-1 lock-icon" style={{ fontSize: '1rem' }} />
-          <span>
+          <span className="top-banner-title">
             {
               isSpanish
                 ? 'Las tareas calificadas están bloqueadas'
