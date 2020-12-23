@@ -57,6 +57,11 @@ function SequenceNavigation({
     );
   };
 
+  const userAgent = typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
+  const isMobile = Boolean(
+    userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i),
+  );
+
   const renderNextButton = () => {
     const exitText = getCourseExitText(courseId, intl);
     const buttonOnClick = isLastUnit ? goToCourseExitPage : nextSequenceHandler;
@@ -64,7 +69,7 @@ function SequenceNavigation({
     const disabled = isLastUnit && !exitText;
     return (
       <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled}>
-        {buttonText}
+        {isMobile ? null : { buttonText }}
         <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
       </Button>
     );
@@ -72,10 +77,18 @@ function SequenceNavigation({
 
   return sequenceStatus === LOADED && (
     <nav className={classNames('sequence-navigation', className)}>
-      <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
-        <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
-        {intl.formatMessage(messages.previousButton)}
-      </Button>
+      {isMobile
+        ? (
+          <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
+            <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
+          </Button>
+        )
+        : (
+          <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
+            <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
+            {intl.formatMessage(messages.previousButton)}
+          </Button>
+        )}
       {renderUnitButtons()}
       {renderNextButton()}
     </nav>
