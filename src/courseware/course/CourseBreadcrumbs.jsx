@@ -38,6 +38,7 @@ export default function CourseBreadcrumbs({
   sequenceId,
   toggleREV1512Flyover, /* This line should be reverted after the REV1512 experiment */
   REV1512FlyoverEnabled, /* This line should be reverted after the REV1512 experiment */
+  isREV1512FlyoverVisible, /* This line should be reverted after the REV1512 experiment */
 }) {
   const course = useModel('courses', courseId);
   const sequence = useModel('sequences', sequenceId);
@@ -90,7 +91,7 @@ export default function CourseBreadcrumbs({
         <div
           className="toggleFlyoverButton"
           aria-hidden="true"
-          style={{ marginLeft: 'auto', marginTop: '-16px' }}
+          style={{ marginLeft: 'auto', marginTop: '-16px', borderBottom: isREV1512FlyoverVisible() ? '4px solid #00262b' : 'none' }}
           onClick={() => {
             toggleREV1512Flyover();
           }}
@@ -111,6 +112,7 @@ CourseBreadcrumbs.propTypes = {
   sequenceId: PropTypes.string,
   toggleREV1512Flyover: PropTypes.func.isRequired, /* This line should be reverted after the REV1512 experiment */
   REV1512FlyoverEnabled: PropTypes.bool.isRequired, /* This line should be reverted after the REV1512 experiment */
+  isREV1512FlyoverVisible: PropTypes.func.isRequired, /* This line should be reverted after the REV1512 experiment */
 };
 
 CourseBreadcrumbs.defaultProps = {
