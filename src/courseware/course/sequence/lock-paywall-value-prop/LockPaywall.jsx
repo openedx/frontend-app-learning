@@ -187,7 +187,7 @@ function LockPaywall({
                   {
                     isSpanish
                       ? 'Acceso completo'
-                      : 'Full access'
+                      : 'Gain full access'
                   }
                 </span>
                 {
