@@ -1,4 +1,4 @@
 import CourseExit from './CourseExit';
-import { getCourseExitText } from './utils';
+import { getCourseExitNavigation } from './utils';
 
-export { CourseExit, getCourseExitText };
+export { CourseExit, getCourseExitNavigation };

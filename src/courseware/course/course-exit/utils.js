@@ -9,6 +9,7 @@ const COURSE_EXIT_MODES = {
   disabled: 0,
   celebration: 1,
   nonPassing: 2,
+  inProgress: 3,
 };
 
 // These are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
@@ -29,6 +30,7 @@ function getCourseExitMode(courseId) {
   const {
     certificateData,
     courseExitPageIsActive,
+    hasScheduledContent,
     isEnrolled,
     userHasPassingGrade,
   } = useModel('courses', courseId);
@@ -53,6 +55,9 @@ function getCourseExitMode(courseId) {
     isEligibleForCertificate = NON_CERTIFICATE_STATUSES.indexOf(certStatus) === -1;
   }
 
+  if (hasScheduledContent && !userHasPassingGrade) {
+    return COURSE_EXIT_MODES.inProgress;
+  }
   if (isEligibleForCertificate && !userHasPassingGrade) {
     return COURSE_EXIT_MODES.nonPassing;
   }
@@ -62,16 +67,23 @@ function getCourseExitMode(courseId) {
   return COURSE_EXIT_MODES.disabled;
 }
 
-// Returns null if course exit is either not active or not handling the current case
-function getCourseExitText(courseId, intl) {
-  switch (getCourseExitMode(courseId)) {
+// Returns null in order to render the default navigation text
+function getCourseExitNavigation(courseId, intl) {
+  const exitMode = getCourseExitMode(courseId);
+  const exitActive = exitMode !== COURSE_EXIT_MODES.disabled;
+
+  let exitText;
+  switch (exitMode) {
     case COURSE_EXIT_MODES.celebration:
-      return intl.formatMessage(messages.nextButtonComplete);
+      exitText = intl.formatMessage(messages.nextButtonComplete);
+      break;
     case COURSE_EXIT_MODES.nonPassing:
-      return intl.formatMessage(messages.nextButtonEnd);
+      exitText = intl.formatMessage(messages.nextButtonEnd);
+      break;
     default:
-      return null;
+      exitText = null;
   }
+  return { exitActive, exitText };
 }
 
 // Meant to be used as part of a button's onClick handler.
@@ -108,7 +120,7 @@ const logVisit = (org, courseId, administrator, variant) => {
 export {
   COURSE_EXIT_MODES,
   getCourseExitMode,
-  getCourseExitText,
+  getCourseExitNavigation,
   logClick,
   logVisit,
 };

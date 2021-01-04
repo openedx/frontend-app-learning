@@ -13,6 +13,7 @@ import initializeStore from '../../../store';
 import executeThunk from '../../../utils';
 import CourseCelebration from './CourseCelebration';
 import CourseExit from './CourseExit';
+import CourseInProgress from './CourseInProgress';
 import CourseNonPassing from './CourseNonPassing';
 
 initializeMockApp();
@@ -291,6 +292,19 @@ describe('Course Exit Pages', () => {
       await fetchAndRender(<CourseNonPassing />);
       expect(screen.getByText('You’ve reached the end of the course!')).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'View grades' })).toBeInTheDocument();
+    });
+  });
+
+  describe('Course in progress experience', () => {
+    it('Displays link to dates tab', async () => {
+      setMetadata({ user_has_passing_grade: false });
+      const courseBlocks = buildSimpleCourseBlocks(defaultMetadata.id, defaultMetadata.name,
+        { hasScheduledContent: true });
+      axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
+
+      await fetchAndRender(<CourseInProgress />);
+      expect(screen.getByText('More content is coming soon!')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'View course schedule' })).toBeInTheDocument();
     });
   });
 });

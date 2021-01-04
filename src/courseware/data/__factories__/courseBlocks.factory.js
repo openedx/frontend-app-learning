@@ -77,7 +77,10 @@ export default function buildSimpleCourseBlocks(courseId, title, options = {}) {
   return {
     courseBlocks: options.courseBlocks || Factory.build(
       'courseBlocks',
-      { courseId },
+      {
+        courseId,
+        hasScheduledContent: options.hasScheduledContent || false,
+      },
       {
         units: unitBlocks,
         sequence: sequenceBlock,

@@ -16,6 +16,7 @@ export function normalizeBlocks(courseId, blocks) {
           id: courseId,
           title: block.display_name,
           sectionIds: block.children || [],
+          hasScheduledContent: block.has_scheduled_content || false,
         };
         break;
       case 'chapter':
@@ -91,7 +92,7 @@ export async function getCourseBlocks(courseId) {
   url.searchParams.append('course_id', courseId);
   url.searchParams.append('username', authenticatedUser ? authenticatedUser.username : '');
   url.searchParams.append('depth', 3);
-  url.searchParams.append('requested_fields', 'children,show_gated_sections,graded,special_exam_info');
+  url.searchParams.append('requested_fields', 'children,show_gated_sections,graded,special_exam_info,has_scheduled_content');
 
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
   return normalizeBlocks(courseId, data.blocks);

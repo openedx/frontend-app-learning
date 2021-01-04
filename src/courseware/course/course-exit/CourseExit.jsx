@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 import CourseCelebration from './CourseCelebration';
+import CourseInProgress from './CourseInProgress';
 import CourseNonPassing from './CourseNonPassing';
 import { COURSE_EXIT_MODES, getCourseExitMode } from './utils';
 import messages from './messages';
@@ -18,6 +19,8 @@ function CourseExit({ intl }) {
   let body = null;
   if (mode === COURSE_EXIT_MODES.nonPassing) {
     body = (<CourseNonPassing />);
+  } else if (mode === COURSE_EXIT_MODES.inProgress) {
+    body = (<CourseInProgress />);
   } else if (mode === COURSE_EXIT_MODES.celebration) {
     body = (<CourseCelebration />);
   } else {
