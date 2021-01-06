@@ -91,7 +91,7 @@ export default function CourseBreadcrumbs({
         <div
           className="toggleFlyoverButton"
           aria-hidden="true"
-          style={{ marginLeft: 'auto', marginTop: '-16px', borderBottom: isREV1512FlyoverVisible() ? '4px solid #00262b' : 'none' }}
+          style={{ marginLeft: 'auto', marginTop: '-16px', borderBottom: isREV1512FlyoverVisible() ? '2px solid #00262b' : 'none' }}
           onClick={() => {
             toggleREV1512Flyover();
           }}
