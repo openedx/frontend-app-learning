@@ -44,6 +44,14 @@ const messages = defineMessages({
     defaultMessage: 'Four people raising their hands in celebration',
     description: 'Alt text used to describe celebratory image',
   },
+  courseInProgressDescription: {
+    id: 'courseExit.courseInProgressDescription',
+    defaultMessage: 'It looks like there is more content in this course that will be released in the future. Look out for email updates or check back on your course for when this content will be available.',
+  },
+  courseInProgressHeader: {
+    id: 'courseExit.courseInProgressHeader',
+    defaultMessage: 'More content is coming soon!',
+  },
   dashboardLink: {
     id: 'courseExit.dashboardLink',
     defaultMessage: 'Dashboard',
@@ -153,6 +161,11 @@ const messages = defineMessages({
     id: 'courseCelebration.viewCertificateButton',
     defaultMessage: 'View my certificate',
     description: 'Button to view the course certificate',
+  },
+  viewCourseScheduleButton: {
+    id: 'courseExit.viewCourseScheduleButton',
+    defaultMessage: 'View course schedule',
+    description: 'Button to view the course schedule',
   },
   viewCoursesButton: {
     id: 'courseExit.viewCoursesButton',

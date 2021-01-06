@@ -116,6 +116,16 @@ Factory.define('courseMetadata')
           },
           { courseId: id, path: 'instructor' },
         ),
+        Factory.build(
+          'tab',
+          {
+            title: 'Dates',
+            priority: 5,
+            slug: 'dates',
+            type: 'dates',
+          },
+          { courseId: id, path: 'dates' },
+        ),
       ];
 
       return tabs;
