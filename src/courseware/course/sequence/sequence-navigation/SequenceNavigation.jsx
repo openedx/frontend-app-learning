@@ -78,6 +78,7 @@ function SequenceNavigation({
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
+      <div className="rev1512ToggleFlyoverSequenceLocation" />
     </nav>
   );
 }
