@@ -57,6 +57,12 @@ export default function CourseBreadcrumbs({
     return [];
   }, [courseStatus, sequenceStatus]);
 
+  // These should be reverted after the REV1512 experiment
+  const userAgent = typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
+  const isMobile = Boolean(
+    userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i),
+  );
+
   return (
     <nav aria-label="breadcrumb" className="my-4">
       <ol className="list-unstyled d-flex m-0">
@@ -87,7 +93,7 @@ export default function CourseBreadcrumbs({
         ))}
         {/* The below block of code should be reverted after the REV1512 experiment */}
         {REV1512FlyoverEnabled
-        && (
+        && !isMobile && (
         <div
           className="toggleFlyoverButton"
           aria-hidden="true"
