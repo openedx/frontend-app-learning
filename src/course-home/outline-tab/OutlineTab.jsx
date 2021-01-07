@@ -87,7 +87,7 @@ function OutlineTab({ intl }) {
       </Toast>
       <div className="row w-100 m-0 mb-3 justify-content-between">
         <div className="col-12 col-sm-auto p-0">
-          <div role="heading" aria-level="1" className="h4">{title}</div>
+          <div role="heading" aria-level="1" className="h2">{title}</div>
         </div>
         {resumeCourseUrl && (
           <div className="col-12 col-sm-auto p-0">

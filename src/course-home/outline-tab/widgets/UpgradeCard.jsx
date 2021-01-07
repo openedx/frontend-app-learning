@@ -38,29 +38,39 @@ function UpgradeCard({ courseId, intl, onLearnMore }) {
   };
 
   return (
-    <section className="mb-4 p-4 outline-sidebar-upgrade-card">
-      <h2 className="h6" id="outline-sidebar-upgrade-header">{intl.formatMessage(messages.upgradeTitle)}</h2>
-      <img
-        alt={intl.formatMessage(messages.certAlt)}
-        src={VerifiedCert}
-        style={{ width: '124px' }}
-      />
-      <div className="float-right d-flex flex-column align-items-center">
-        <UpgradeButton
-          offer={offer}
-          onClick={logClick}
-          verifiedMode={verifiedMode}
-        />
-        {onLearnMore && (
-          <Button
-            variant="link"
-            size="sm"
-            onClick={onLearnMore}
-            aria-labelledby="outline-sidebar-upgrade-header"
-          >
-            {intl.formatMessage(messages.learnMore)}
-          </Button>
-        )}
+    <section className="mb-4 p-3 outline-sidebar-upgrade-card">
+      <h2 className="h4" id="outline-sidebar-upgrade-header">{intl.formatMessage(messages.upgradeTitle)}</h2>
+      <div className="row w-100 m-0">
+        <div className="col-6 col-md-12 col-lg-3 col-xl-4 p-0 text-md-center text-lg-left">
+          <img
+            alt={intl.formatMessage(messages.certAlt)}
+            className="w-100"
+            src={VerifiedCert}
+            style={{ maxWidth: '10rem' }}
+          />
+        </div>
+        <div className="col-6 col-md-12 col-lg-9 col-xl-8 p-0 pl-lg-2 text-center mt-md-2 mt-lg-0">
+          <div className="row w-100 m-0 justify-content-center">
+            <UpgradeButton
+              offer={offer}
+              onClick={logClick}
+              verifiedMode={verifiedMode}
+            />
+            {onLearnMore && (
+              <div className="col-12">
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="pb-0"
+                  onClick={onLearnMore}
+                  aria-labelledby="outline-sidebar-upgrade-header"
+                >
+                  {intl.formatMessage(messages.learnMore)}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );

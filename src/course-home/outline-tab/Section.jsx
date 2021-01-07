@@ -53,13 +53,13 @@ function Section({
           <FontAwesomeIcon
             icon={farCheckCircle}
             fixedWidth
-            className="float-left mt-1 text-gray-200"
+            className="float-left mt-1 text-gray-400"
             aria-hidden="true"
             title={intl.formatMessage(messages.incompleteSection)}
           />
         )}
       </div>
-      <div className="col-10 ml-2 p-0 font-weight-bold">
+      <div className="col-10 ml-3 p-0 font-weight-bold text-dark-500">
         {title}
         <span className="sr-only">
           , {intl.formatMessage(complete ? messages.completedSection : messages.incompleteSection)}

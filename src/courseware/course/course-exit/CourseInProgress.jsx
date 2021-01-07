@@ -16,7 +16,7 @@ import { logClick, logVisit } from './utils';
 
 function CourseInProgress({ intl }) {
   const { courseId } = useSelector(state => state.courseware);
-  const { org, tabs } = useModel('courses', courseId);
+  const { org, tabs, title } = useModel('courses', courseId);
   const { administrator } = getAuthenticatedUser();
 
   // Get dates tab link for 'view course schedule' button
@@ -28,7 +28,7 @@ function CourseInProgress({ intl }) {
   return (
     <>
       <Helmet>
-        <title>{`${intl.formatMessage(messages.endOfCourseTitle)} | ${getConfig().SITE_NAME}`}</title>
+        <title>{`${intl.formatMessage(messages.endOfCourseTitle)} | ${title} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
       <div className="row w-100 mx-0 mb-4 px-5 py-4 border border-light justify-content-center">
         <div className="col-12 p-0 h2 text-center">

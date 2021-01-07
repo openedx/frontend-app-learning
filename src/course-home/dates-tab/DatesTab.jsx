@@ -22,7 +22,7 @@ function DatesTab({ intl }) {
 
   return (
     <>
-      <div role="heading" aria-level="1" className="h4 my-3">
+      <div role="heading" aria-level="1" className="h2 my-3">
         {intl.formatMessage(messages.title)}
       </div>
       <DatesBannerContainer
