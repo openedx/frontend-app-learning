@@ -80,6 +80,7 @@ export default function buildSimpleCourseBlocks(courseId, title, options = {}) {
       {
         courseId,
         hasScheduledContent: options.hasScheduledContent || false,
+        title: 'Demo Course',
       },
       {
         units: unitBlocks,

@@ -7,7 +7,7 @@ const messages = defineMessages({
   },
   collapseAll: {
     id: 'learning.outline.collapseAll',
-    defaultMessage: 'Collapse All',
+    defaultMessage: 'Collapse all',
     description: 'Label for button to close all of the collapsible sections',
   },
   completedAssignment: {
@@ -31,7 +31,7 @@ const messages = defineMessages({
   },
   expandAll: {
     id: 'learning.outline.expandAll',
-    defaultMessage: 'Expand All',
+    defaultMessage: 'Expand all',
     description: 'Label for button to open all of the collapsible sections',
   },
   goal: {
@@ -68,7 +68,7 @@ const messages = defineMessages({
   },
   resume: {
     id: 'learning.outline.resume',
-    defaultMessage: 'Resume Course',
+    defaultMessage: 'Resume course',
   },
   setGoal: {
     id: 'learning.outline.setGoal',

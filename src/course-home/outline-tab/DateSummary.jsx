@@ -13,7 +13,7 @@ export default function DateSummary({
   const linkedTitle = dateBlock.link && isLearnerAssignment(dateBlock);
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
   return (
-    <section className="container p-0 mb-3">
+    <li className="container p-0 mb-3">
       <div className="row">
         <FontAwesomeIcon icon={faCalendarAlt} className="ml-3 mt-1 mr-1" fixedWidth />
         <div className="ml-1 font-weight-bold">
@@ -39,7 +39,7 @@ export default function DateSummary({
         {!linkedTitle && dateBlock.link
           && <a href={dateBlock.link} className="description-link">{dateBlock.linkText}</a>}
       </div>
-    </section>
+    </li>
   );
 }
 

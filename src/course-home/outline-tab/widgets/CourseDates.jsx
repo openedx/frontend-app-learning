@@ -23,13 +23,15 @@ function CourseDates({ courseId, intl }) {
   return (
     <section className="mb-4">
       <h2 className="h6">{intl.formatMessage(messages.dates)}</h2>
-      {courseDateBlocks.map((courseDateBlock) => (
-        <DateSummary
-          key={courseDateBlock.title + courseDateBlock.date}
-          dateBlock={courseDateBlock}
-          userTimezone={userTimezone}
-        />
-      ))}
+      <ol className="list-unstyled">
+        {courseDateBlocks.map((courseDateBlock) => (
+          <DateSummary
+            key={courseDateBlock.title + courseDateBlock.date}
+            dateBlock={courseDateBlock}
+            userTimezone={userTimezone}
+          />
+        ))}
+      </ol>
       <a className="font-weight-bold ml-4 pl-1" href={datesTabLink}>
         {intl.formatMessage(messages.allDates)}
       </a>

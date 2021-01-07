@@ -40,59 +40,61 @@ function SequenceLink({
   const displayTitle = showLink ? <Link to={`/course/${courseId}/${id}`}>{title}</Link> : title;
 
   return (
-    <div className={classNames('', { 'mt-2 pt-2 border-top border-light': !first })}>
-      <div className="row w-100 m-0">
-        <div className="col-auto p-0">
-          {complete ? (
-            <FontAwesomeIcon
-              icon={fasCheckCircle}
-              fixedWidth
-              className="float-left text-success mt-1"
-              aria-hidden="true"
-              title={intl.formatMessage(messages.completedAssignment)}
-            />
-          ) : (
-            <FontAwesomeIcon
-              icon={farCheckCircle}
-              fixedWidth
-              className="float-left text-gray-200 mt-1"
-              aria-hidden="true"
-              title={intl.formatMessage(messages.incompleteAssignment)}
-            />
-          )}
+    <li>
+      <div className={classNames('', { 'mt-2 pt-2 border-top border-light': !first })}>
+        <div className="row w-100 m-0">
+          <div className="col-auto p-0">
+            {complete ? (
+              <FontAwesomeIcon
+                icon={fasCheckCircle}
+                fixedWidth
+                className="float-left text-success mt-1"
+                aria-hidden="true"
+                title={intl.formatMessage(messages.completedAssignment)}
+              />
+            ) : (
+              <FontAwesomeIcon
+                icon={farCheckCircle}
+                fixedWidth
+                className="float-left text-gray-200 mt-1"
+                aria-hidden="true"
+                title={intl.formatMessage(messages.incompleteAssignment)}
+              />
+            )}
+          </div>
+          <div className="col-10 p-0 ml-2 text-break">{displayTitle}</div>
+          <span className="sr-only">
+            , {intl.formatMessage(complete ? messages.completedAssignment : messages.incompleteAssignment)}
+          </span>
         </div>
-        <div className="col-10 p-0 ml-2 pl-1 text-break">{displayTitle}</div>
-        <span className="sr-only">
-          , {intl.formatMessage(complete ? messages.completedAssignment : messages.incompleteAssignment)}
-        </span>
+        {due && (
+          <div className="row w-100 m-0 ml-3 pl-3">
+            <small className="text-body">
+              <FormattedMessage
+                id="learning.outline.sequence-due"
+                defaultMessage="{description} due {assignmentDue}"
+                description="Used below an assignment title"
+                values={{
+                  assignmentDue: (
+                    <FormattedTime
+                      key={`${id}-due`}
+                      day="numeric"
+                      month="short"
+                      year="numeric"
+                      hour12={false}
+                      timeZoneName="short"
+                      value={due}
+                      {...timezoneFormatArgs}
+                    />
+                  ),
+                  description: description || '',
+                }}
+              />
+            </small>
+          </div>
+        )}
       </div>
-      {due && (
-        <div className="row w-100 m-0 ml-3 pl-3">
-          <small className="text-body">
-            <FormattedMessage
-              id="learning.outline.sequence-due"
-              defaultMessage="{description} due {assignmentDue}"
-              description="Used below an assignment title"
-              values={{
-                assignmentDue: (
-                  <FormattedTime
-                    key={`${id}-due`}
-                    day="numeric"
-                    month="short"
-                    year="numeric"
-                    hour12={false}
-                    timeZoneName="short"
-                    value={due}
-                    {...timezoneFormatArgs}
-                  />
-                ),
-                description: description || '',
-              }}
-            />
-          </small>
-        </div>
-      )}
-    </div>
+    </li>
   );
 }
 

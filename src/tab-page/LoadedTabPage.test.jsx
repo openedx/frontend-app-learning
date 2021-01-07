@@ -7,7 +7,7 @@ jest.mock('../course-header/CourseTabsNavigation', () => () => <div data-testid=
 jest.mock('../instructor-toolbar/InstructorToolbar', () => () => <div data-testid="InstructorToolbar" />);
 
 describe('Loaded Tab Page', () => {
-  const mockData = { activeTabSlug: 'dummy' };
+  const mockData = { activeTabSlug: 'courseware' };
 
   beforeAll(async () => {
     const store = await initializeTestStore({ excludeFetchSequence: true });
