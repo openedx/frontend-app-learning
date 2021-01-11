@@ -45,10 +45,10 @@ function Alert({
   type, dismissible, children, footer, intl, onDismiss,
 }) {
   return (
-    <div data-testid={`alert-container-${type}`} className={classNames('alert', { 'alert-dismissible': dismissible }, getAlertClass(type))} style={{ padding: '20px' }}>
+    <div data-testid={`alert-container-${type}`} className={classNames('alert', { 'alert-dismissible': dismissible }, getAlertClass(type))} style={{ padding: '1em' }}>
       <div className="row w-100 m-0">
         {type !== ALERT_TYPES.WELCOME && (
-          <div className="col-auto p-0 mr-2">
+          <div className="col-auto p-0 mr-3">
             <FontAwesomeIcon icon={getAlertIcon(type)} />
           </div>
         )}
@@ -58,12 +58,12 @@ function Alert({
           </div>
         </div>
         {dismissible && (
-          <div className="col-auto p-0">
+          <div className="col-auto p-0" style={{ margin: '-0.2em -0.2em 0em 0em' }}>
             <IconButton
               icon={faTimes}
-              className="close"
               onClick={onDismiss}
               alt={intl.formatMessage(messages.close)}
+              variant="primary"
             />
           </div>
         )}

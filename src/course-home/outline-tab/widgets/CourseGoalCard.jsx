@@ -38,7 +38,7 @@ function CourseGoalCard({
       <Card.Body>
         <div className="row w-100 m-0 justify-content-between align-items-center">
           <div className="col col-8 p-0">
-            <Card.Title role="heading" aria-level="2" className="h6 m-0">{intl.formatMessage(messages.welcomeTo)} {title}</Card.Title>
+            <h2 className="h4 m-0">{intl.formatMessage(messages.welcomeTo)} {title}</h2>
           </div>
           <div className="col col-auto p-0">
             <Button
@@ -54,7 +54,7 @@ function CourseGoalCard({
             </Button>
           </div>
         </div>
-        <Card.Text className="my-2 mx-1">{intl.formatMessage(messages.setGoal)}</Card.Text>
+        <Card.Text className="my-2 mx-1 text-dark-500">{intl.formatMessage(messages.setGoal)}</Card.Text>
         <div className="row w-100 m-0">
           {goalOptions.map((goal) => {
             const [goalKey, goalText] = goal;

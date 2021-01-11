@@ -35,7 +35,7 @@ export default class CourseSock extends Component {
       return null;
     }
 
-    const buttonClass = this.state.showUpsell ? 'btn-success' : 'btn-outline-success';
+    const buttonClass = this.state.showUpsell ? 'btn-primary' : 'btn-outline-primary';
     return (
       <div ref={this.sockElement} className="verification-sock container py-5">
         <div className="d-flex justify-content-center">

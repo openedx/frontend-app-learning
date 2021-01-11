@@ -56,20 +56,20 @@ function SequenceLink({
               <FontAwesomeIcon
                 icon={farCheckCircle}
                 fixedWidth
-                className="float-left text-gray-200 mt-1"
+                className="float-left text-gray-400 mt-1"
                 aria-hidden="true"
                 title={intl.formatMessage(messages.incompleteAssignment)}
               />
             )}
           </div>
-          <div className="col-10 p-0 ml-2 text-break">{displayTitle}</div>
+          <div className="col-10 p-0 ml-3 text-break">{displayTitle}</div>
           <span className="sr-only">
             , {intl.formatMessage(complete ? messages.completedAssignment : messages.incompleteAssignment)}
           </span>
         </div>
         {due && (
           <div className="row w-100 m-0 ml-3 pl-3">
-            <small className="text-body">
+            <small className="text-body pl-2">
               <FormattedMessage
                 id="learning.outline.sequence-due"
                 defaultMessage="{description} due {assignmentDue}"

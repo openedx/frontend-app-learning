@@ -39,7 +39,7 @@ function UpdateGoalSelector({
       <section className="mb-4">
         <div className="row w-100 m-0">
           <div className="col-12 p-0">
-            <label className="h6 m-0" htmlFor="edit-goal-selector">
+            <label className="h4 m-0" htmlFor="edit-goal-selector">
               {intl.formatMessage(messages.goal)}
             </label>
           </div>

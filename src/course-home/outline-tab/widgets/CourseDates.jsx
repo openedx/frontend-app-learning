@@ -22,7 +22,7 @@ function CourseDates({ courseId, intl }) {
 
   return (
     <section className="mb-4">
-      <h2 className="h6">{intl.formatMessage(messages.dates)}</h2>
+      <h2 className="h4">{intl.formatMessage(messages.dates)}</h2>
       <ol className="list-unstyled">
         {courseDateBlocks.map((courseDateBlock) => (
           <DateSummary
@@ -32,7 +32,7 @@ function CourseDates({ courseId, intl }) {
           />
         ))}
       </ol>
-      <a className="font-weight-bold ml-4 pl-1" href={datesTabLink}>
+      <a className="font-weight-bold ml-4 pl-1 small" href={datesTabLink}>
         {intl.formatMessage(messages.allDates)}
       </a>
     </section>

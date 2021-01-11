@@ -47,6 +47,7 @@ function CourseCelebration({ intl }) {
     offer,
     org,
     relatedPrograms,
+    title,
     verifiedMode,
     verifyIdentityUrl,
     verificationStatus,
@@ -274,7 +275,7 @@ function CourseCelebration({ intl }) {
   return (
     <>
       <Helmet>
-        <title>{`${intl.formatMessage(messages.congratulationsHeader)} | ${getConfig().SITE_NAME}`}</title>
+        <title>{`${intl.formatMessage(messages.congratulationsHeader)} | ${title} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
       <div className="row w-100 mx-0 mb-4 px-5 py-4 border border-light">
         <div className="col-12 p-0 h2 text-center">

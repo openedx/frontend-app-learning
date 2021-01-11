@@ -19,7 +19,7 @@ function UpgradeButton(props) {
 
   return (
     <Button
-      variant="success"
+      variant="primary"
       href={url}
       onClick={onClick}
       {...rest}
