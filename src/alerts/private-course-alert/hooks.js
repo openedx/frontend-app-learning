@@ -20,7 +20,7 @@ export function usePrivateCourseAlert(courseId) {
   const isVisible = !enrolledUser && (privateOutline || authenticatedUser !== null);
   const payload = {
     anonymousUser: authenticatedUser === null,
-    canEnroll: outline ? outline.enrollAlert.canEnroll : false,
+    canEnroll: outline && outline.enrollAlert ? outline.enrollAlert.canEnroll : false,
     courseId,
   };
 

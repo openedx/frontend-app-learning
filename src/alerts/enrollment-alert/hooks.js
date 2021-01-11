@@ -25,9 +25,9 @@ export function useEnrollmentAlert(courseId) {
    */
   const isVisible = !enrolledUser && authenticatedUser !== null && privateOutline;
   const payload = {
-    canEnroll: outline ? outline.enrollAlert.canEnroll : false,
+    canEnroll: outline && outline.enrollAlert ? outline.enrollAlert.canEnroll : false,
     courseId,
-    extraText: outline ? outline.enrollAlert.extraText : '',
+    extraText: outline && outline.enrollAlert ? outline.enrollAlert.extraText : '',
     isStaff: course.isStaff,
   };
 
