@@ -9,6 +9,7 @@ Factory.define('datesTabData')
       content_type_gating_enabled: false,
       missed_gated_content: false,
       missed_deadlines: false,
+      verified_upgrade_link: 'http://localhost:18130/basket/add/?sku=8CF08E5',
     },
     course_date_blocks: [
       {
@@ -216,9 +217,7 @@ Factory.define('datesTabData')
         extra_info: null,
       },
     ],
-    missed_deadlines: false,
-    missed_gated_content: false,
+    has_ended: false,
     learner_is_full_access: true,
     user_timezone: 'America/New_York',
-    verified_upgrade_link: 'http://localhost:18130/basket/add/?sku=8CF08E5',
   });
