@@ -112,6 +112,78 @@ const messages = defineMessages({
     defaultMessage: 'Welcome to',
     description: 'This precedes the title of the course',
   },
+  proctoringInfoPanel: {
+    id: 'learning.proctoringPanel.header',
+    defaultMessage: 'This course contains proctored exams',
+  },
+  notStartedProctoringStatus: {
+    id: 'learning.proctoringPanel.status.notStarted',
+    defaultMessage: 'Not Started',
+  },
+  startedProctoringStatus: {
+    id: 'learning.proctoringPanel.status.started',
+    defaultMessage: 'Started',
+  },
+  submittedProctoringStatus: {
+    id: 'learning.proctoringPanel.status.submitted',
+    defaultMessage: 'Submitted',
+  },
+  verifiedProctoringStatus: {
+    id: 'learning.proctoringPanel.status.verified',
+    defaultMessage: 'Verified',
+  },
+  rejectedProctoringStatus: {
+    id: 'learning.proctoringPanel.status.rejected',
+    defaultMessage: 'Rejected',
+  },
+  errorProctoringStatus: {
+    id: 'learning.proctoringPanel.status.error',
+    defaultMessage: 'Error',
+  },
+  proctoringCurrentStatus: {
+    id: 'learning.proctoringPanel.status',
+    defaultMessage: 'Current Onboarding Status:',
+  },
+  notStartedProctoringMessage: {
+    id: 'learning.proctoringPanel.message.notStarted',
+    defaultMessage: 'You have not started your onboarding exam.',
+  },
+  startedProctoringMessage: {
+    id: 'learning.proctoringPanel.message.started',
+    defaultMessage: 'You have started your onboarding exam.',
+  },
+  submittedProctoringMessage: {
+    id: 'learning.proctoringPanel.message.submitted',
+    defaultMessage: 'You have submitted your onboarding exam.',
+  },
+  verifiedProctoringMessage: {
+    id: 'learning.proctoringPanel.message.verified',
+    defaultMessage: 'You can now take proctored exams in this course.',
+  },
+  rejectedProctoringMessage: {
+    id: 'learning.proctoringPanel.message.rejected',
+    defaultMessage: 'Your onboarding exam has been rejected. Please retry onboarding.',
+  },
+  errorProctoringMessage: {
+    id: 'learning.proctoringPanel.message.error',
+    defaultMessage: 'An error has occurred during your onboarding exam. Please retry onboarding.',
+  },
+  proctoringPanelGeneralInfo: {
+    id: 'learning.proctoringPanel.generalInfo',
+    defaultMessage: 'You must complete the onboarding process prior to taking any proctored exam. ',
+  },
+  proctoringPanelGeneralTime: {
+    id: 'learning.proctoringPanel.generalTime',
+    defaultMessage: 'Onboarding profile review, including identity verification, can take 2+ business days.',
+  },
+  proctoringOnboardingButton: {
+    id: 'learning.proctoringPanel.onboardingButton',
+    defaultMessage: 'Complete Onboarding',
+  },
+  proctoringReviewRequirementsButton: {
+    id: 'learning.proctoringPanel.reviewRequirementsButton',
+    defaultMessage: 'Review instructions and system requirements',
+  },
 });
 
 export default messages;

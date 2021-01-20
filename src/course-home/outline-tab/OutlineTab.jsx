@@ -25,6 +25,7 @@ import useOfferAlert from '../../alerts/offer-alert';
 import usePrivateCourseAlert from '../../alerts/private-course-alert';
 import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
+import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 
 function OutlineTab({ intl }) {
   const {
@@ -162,6 +163,9 @@ function OutlineTab({ intl }) {
         </div>
         {rootCourseId && (
           <div className="col col-12 col-md-4">
+            <ProctoringInfoPanel
+              courseId={courseId}
+            />
             {courseGoalToDisplay && goalOptions.length > 0 && (
               <UpdateGoalSelector
                 courseId={courseId}
