@@ -130,6 +130,20 @@ export async function getProgressTabData(courseId) {
   }
 }
 
+export async function getProctoringInfoData(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${courseId}`;
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(url);
+    return data;
+  } catch (error) {
+    const { httpErrorStatus } = error && error.customAttributes;
+    if (httpErrorStatus === 404) {
+      return {};
+    }
+    throw error;
+  }
+}
+
 export async function getOutlineTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
   let { tabData } = {};
