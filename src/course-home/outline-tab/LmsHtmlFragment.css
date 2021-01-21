@@ -1,0 +1,11 @@
+body a {
+    color: #00688D;
+}
+
+body.inline-link a {
+    text-decoration: underline;
+}
+
+body.small {
+    font-size: 0.875rem;
+}
