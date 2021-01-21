@@ -25,7 +25,7 @@ describe('Outline Tab', () => {
   const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
   const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`;
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
-  const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${courseId}`;
+  const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
 
   const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata', { courseId });
@@ -493,6 +493,14 @@ describe('Outline Tab', () => {
 
     it('appears for rejected', async () => {
       axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: 'rejected', onboarding_link: 'test' });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
+    });
+
+    it('appears for no status', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: '', onboarding_link: 'test' });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
