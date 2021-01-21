@@ -131,7 +131,7 @@ export async function getProgressTabData(courseId) {
 }
 
 export async function getProctoringInfoData(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${courseId}`;
+  const url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return data;

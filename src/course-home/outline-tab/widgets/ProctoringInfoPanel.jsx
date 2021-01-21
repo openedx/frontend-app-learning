@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@edx/paragon';
 
@@ -56,7 +57,7 @@ function ProctoringInfoPanel({ courseId, intl }) {
 
   return (
     <>
-      { status && (
+      { link && (
         <section className={`mb-4 p-3 outline-sidebar-proctoring-panel ${getBorderClass(status)}`}>
           <h2 className="h4" id="outline-sidebar-upgrade-header">{intl.formatMessage(messages.proctoringInfoPanel)}</h2>
           <div>
@@ -77,7 +78,7 @@ function ProctoringInfoPanel({ courseId, intl }) {
               </>
             )}
             {showExamLink(status) && (
-              <Button variant="primary" block href={link}>
+              <Button variant="primary" block href={`${getConfig().LMS_BASE_URL}${link}`}>
                 {intl.formatMessage(messages.proctoringOnboardingButton)}
               </Button>
             )}
