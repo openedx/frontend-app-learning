@@ -51,7 +51,7 @@ function CourseCelebration({ intl }) {
     verifiedMode,
     verifyIdentityUrl,
     verificationStatus,
-  } = useModel('courses', courseId);
+  } = useModel('coursewareMeta', courseId);
 
   const {
     certStatus,

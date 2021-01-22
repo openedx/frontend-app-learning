@@ -28,7 +28,7 @@ export function fetchCourse(courseId) {
     ]).then(([courseMetadataResult, courseBlocksResult]) => {
       if (courseMetadataResult.status === 'fulfilled') {
         dispatch(addModel({
-          modelType: 'courses',
+          modelType: 'coursewareMeta',
           model: courseMetadataResult.value,
         }));
       }
@@ -40,7 +40,7 @@ export function fetchCourse(courseId) {
 
         // This updates the course with a sectionIds array from the blocks data.
         dispatch(updateModelsMap({
-          modelType: 'courses',
+          modelType: 'coursewareMeta',
           modelsMap: courses,
         }));
         dispatch(addModelsMap({

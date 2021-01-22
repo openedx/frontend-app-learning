@@ -14,7 +14,7 @@ import { useModel } from '../../../generic/model-store';
 function CelebrationModal({
   courseId, intl, open, ...rest
 }) {
-  const { org } = useModel('courses', courseId);
+  const { org } = useModel('coursewareMeta', courseId);
 
   const layout = layoutGenerator({
     mobile: 0,

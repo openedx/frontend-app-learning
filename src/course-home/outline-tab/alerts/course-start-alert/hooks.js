@@ -7,7 +7,7 @@ const CourseStartAlert = React.lazy(() => import('./CourseStartAlert'));
 function useCourseStartAlert(courseId) {
   const {
     isEnrolled,
-  } = useModel('courses', courseId);
+  } = useModel('courseHomeMeta', courseId);
   const {
     datesWidget: {
       courseDateBlocks,

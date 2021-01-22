@@ -193,7 +193,7 @@ function Sequence({
   REV1512FlyoverEnabled, /* This line should be reverted after the REV1512 experiment */
   toggleREV1512Flyover, /* This line should be reverted after the REV1512 experiment */
 }) {
-  const course = useModel('courses', courseId);
+  const course = useModel('coursewareMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);

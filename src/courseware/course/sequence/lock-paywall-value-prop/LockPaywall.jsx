@@ -17,7 +17,7 @@ import './LockPaywall.scss';
 function LockPaywall({
   courseId,
 }) {
-  const course = useModel('courses', courseId);
+  const course = useModel('coursewareMeta', courseId);
   const {
     verifiedMode,
   } = course;

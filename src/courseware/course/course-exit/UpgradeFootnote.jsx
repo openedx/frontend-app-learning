@@ -16,7 +16,7 @@ import { useModel } from '../../../generic/model-store';
 
 function UpgradeFootnote({ deadline, href, intl }) {
   const { courseId } = useSelector(state => state.courseware);
-  const { org } = useModel('courses', courseId);
+  const { org } = useModel('coursewareMeta', courseId);
   const { administrator } = getAuthenticatedUser();
 
   const upgradeLink = (

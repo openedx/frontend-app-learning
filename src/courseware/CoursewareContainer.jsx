@@ -234,6 +234,7 @@ class CoursewareContainer extends Component {
         courseId={courseId}
         unitId={routeUnitId}
         courseStatus={courseStatus}
+        metadataModel="coursewareMeta"
       >
         <Course
           courseId={courseId}
@@ -296,7 +297,7 @@ CoursewareContainer.defaultProps = {
 };
 
 const currentCourseSelector = createSelector(
-  (state) => state.models.courses || {},
+  (state) => state.models.coursewareMeta || {},
   (state) => state.courseware.courseId,
   (coursesById, courseId) => (coursesById[courseId] ? coursesById[courseId] : null),
 );

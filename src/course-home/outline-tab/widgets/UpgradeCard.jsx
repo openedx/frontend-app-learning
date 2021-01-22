@@ -11,7 +11,7 @@ import { UpgradeButton } from '../../../generic/upgrade-button';
 import VerifiedCert from '../../../generic/assets/edX_certificate.png';
 
 function UpgradeCard({ courseId, intl, onLearnMore }) {
-  const { org } = useModel('courses', courseId);
+  const { org } = useModel('courseHomeMeta', courseId);
   const {
     offer,
     verifiedMode,

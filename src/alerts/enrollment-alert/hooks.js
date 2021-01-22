@@ -13,7 +13,7 @@ const EnrollmentAlert = React.lazy(() => import('./EnrollmentAlert'));
 
 export function useEnrollmentAlert(courseId) {
   const { authenticatedUser } = useContext(AppContext);
-  const course = useModel('courses', courseId);
+  const course = useModel('courseHomeMeta', courseId);
   const outline = useModel('outline', courseId);
   const enrolledUser = course && course.isEnrolled !== undefined && course.isEnrolled;
   const privateOutline = outline && outline.courseBlocks && !outline.courseBlocks.courses;
@@ -28,7 +28,7 @@ export function useEnrollmentAlert(courseId) {
     canEnroll: outline && outline.enrollAlert ? outline.enrollAlert.canEnroll : false,
     courseId,
     extraText: outline && outline.enrollAlert ? outline.enrollAlert.extraText : '',
-    isStaff: course.isStaff,
+    isStaff: course && course.isStaff,
   };
 
   useAlert(isVisible, {

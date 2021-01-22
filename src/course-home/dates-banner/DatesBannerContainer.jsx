@@ -27,7 +27,7 @@ function DatesBannerContainer({
 
   const {
     isSelfPaced,
-  } = useModel('courses', courseId);
+  } = useModel('courseHomeMeta', courseId);
 
   const dispatch = useDispatch();
   const hasDeadlines = courseDateBlocks.some(x => x.dateType === 'assignment-due-date');

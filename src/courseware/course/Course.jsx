@@ -24,7 +24,7 @@ function Course({
   previousSequenceHandler,
   unitNavigationHandler,
 }) {
-  const course = useModel('courses', courseId);
+  const course = useModel('coursewareMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
 

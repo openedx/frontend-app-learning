@@ -15,6 +15,7 @@ function LoadedTabPage({
   activeTabSlug,
   children,
   courseId,
+  metadataModel,
   unitId,
 }) {
   const {
@@ -23,8 +24,10 @@ function LoadedTabPage({
     org,
     tabs,
     title,
-  } = useModel('courses', courseId);
+  } = useModel(metadataModel, courseId);
 
+  // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
+  // breadcrumbs when they are visible.
   const logistrationAlert = useLogistrationAlert(courseId);
   const enrollmentAlert = useEnrollmentAlert(courseId);
 
@@ -68,11 +71,13 @@ LoadedTabPage.propTypes = {
   activeTabSlug: PropTypes.string.isRequired,
   children: PropTypes.node,
   courseId: PropTypes.string.isRequired,
+  metadataModel: PropTypes.string,
   unitId: PropTypes.string,
 };
 
 LoadedTabPage.defaultProps = {
   children: null,
+  metadataModel: 'courseHomeMeta',
   unitId: null,
 };
 

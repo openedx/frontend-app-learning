@@ -9,7 +9,7 @@ const CertificateAvailableAlert = React.lazy(() => import('./CertificateAvailabl
 function useCertificateAvailableAlert(courseId) {
   const {
     isEnrolled,
-  } = useModel('courses', courseId);
+  } = useModel('courseHomeMeta', courseId);
   const {
     datesWidget: {
       courseDateBlocks,
