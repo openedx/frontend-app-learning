@@ -33,7 +33,7 @@ function SocialIcons({
     marketingUrl,
     org,
     title,
-  } = useModel('courses', courseId);
+  } = useModel('coursewareMeta', courseId);
 
   if (!marketingUrl) {
     return null;

@@ -22,7 +22,11 @@ describe('Lock Paywall', () => {
   });
 
   it('displays unlock link with price', () => {
-    const { currencySymbol, price, upgradeUrl } = store.getState().models.courses[mockData.courseId].verifiedMode;
+    const {
+      currencySymbol,
+      price,
+      upgradeUrl,
+    } = store.getState().models.coursewareMeta[mockData.courseId].verifiedMode;
     render(<LockPaywall {...mockData} />);
 
     const upgradeLink = screen.getByRole('link', { name: `Upgrade to unlock (${currencySymbol}${price})` });

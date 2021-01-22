@@ -14,7 +14,7 @@ import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 
 function CourseTools({ courseId, intl }) {
-  const { org } = useModel('courses', courseId);
+  const { org } = useModel('courseHomeMeta', courseId);
   const {
     courseTools,
   } = useModel('outline', courseId);

@@ -81,7 +81,7 @@ function Unit({
   };
 
   const unit = useModel('units', id);
-  const course = useModel('courses', courseId);
+  const course = useModel('coursewareMeta', courseId);
   const {
     contentTypeGatingEnabled,
   } = course;

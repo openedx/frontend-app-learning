@@ -33,7 +33,7 @@ function getCourseExitMode(courseId) {
     hasScheduledContent,
     isEnrolled,
     userHasPassingGrade,
-  } = useModel('courses', courseId);
+  } = useModel('coursewareMeta', courseId);
 
   const authenticatedUser = getAuthenticatedUser();
 

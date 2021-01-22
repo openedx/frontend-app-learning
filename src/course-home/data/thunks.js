@@ -39,7 +39,7 @@ export function fetchTab(courseId, tab, getTabData) {
 
       if (fetchedCourseHomeCourseMetadata) {
         dispatch(addModel({
-          modelType: 'courses',
+          modelType: 'courseHomeMeta',
           model: {
             id: courseId,
             ...courseHomeCourseMetadataResult.value,

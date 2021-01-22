@@ -40,7 +40,7 @@ export default function CourseBreadcrumbs({
   REV1512FlyoverEnabled, /* This line should be reverted after the REV1512 experiment */
   isREV1512FlyoverVisible, /* This line should be reverted after the REV1512 experiment */
 }) {
-  const course = useModel('courses', courseId);
+  const course = useModel('coursewareMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sectionId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);

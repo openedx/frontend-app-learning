@@ -16,7 +16,7 @@ Object {
     "sequenceStatus": "loading",
   },
   "models": Object {
-    "courses": Object {
+    "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
@@ -301,7 +301,7 @@ Object {
     "sequenceStatus": "loading",
   },
   "models": Object {
-    "courses": Object {
+    "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "id": "course-v1:edX+DemoX+Demo_Course_1",

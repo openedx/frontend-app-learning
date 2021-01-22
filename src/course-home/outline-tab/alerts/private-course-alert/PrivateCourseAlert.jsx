@@ -7,12 +7,12 @@ import { Button, Hyperlink } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-import { Alert } from '../../generic/user-messages';
-import enrollmentMessages from '../enrollment-alert/messages';
-import genericMessages from '../../generic/messages';
-import outlineMessages from '../../course-home/outline-tab/messages';
-import { useEnrollClickHandler } from '../enrollment-alert/hooks';
-import { useModel } from '../../generic/model-store';
+import { Alert } from '../../../../generic/user-messages';
+import enrollmentMessages from '../../../../alerts/enrollment-alert/messages';
+import genericMessages from '../../../../generic/messages';
+import outlineMessages from '../../messages';
+import { useEnrollClickHandler } from '../../../../alerts/enrollment-alert/hooks';
+import { useModel } from '../../../../generic/model-store';
 
 function PrivateCourseAlert({ intl, payload }) {
   const {
@@ -23,7 +23,7 @@ function PrivateCourseAlert({ intl, payload }) {
 
   const {
     title,
-  } = useModel('courses', courseId);
+  } = useModel('courseHomeMeta', courseId);
 
   const { enrollClickHandler, loading } = useEnrollClickHandler(
     courseId,

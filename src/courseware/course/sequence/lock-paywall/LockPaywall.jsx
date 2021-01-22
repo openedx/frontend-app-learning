@@ -12,7 +12,7 @@ function LockPaywall({
   intl,
   courseId,
 }) {
-  const course = useModel('courses', courseId);
+  const course = useModel('coursewareMeta', courseId);
   const {
     verifiedMode,
   } = course;

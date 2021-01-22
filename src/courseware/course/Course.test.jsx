@@ -46,7 +46,7 @@ describe('Course', () => {
     const { models } = store.getState();
     const sequence = models.sequences[mockData.sequenceId];
     const section = models.sections[sequence.sectionId];
-    const course = models.courses[mockData.courseId];
+    const course = models.coursewareMeta[mockData.courseId];
     expect(document.title).toMatch(
       `${sequence.title} | ${section.title} | ${course.title} | edX`,
     );

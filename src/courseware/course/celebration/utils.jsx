@@ -52,7 +52,7 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFir
 
     // Update our local copy of course data from LMS
     dispatch(updateModel({
-      modelType: 'courses',
+      modelType: 'coursewareMeta',
       model: {
         id: courseId,
         celebrations: {

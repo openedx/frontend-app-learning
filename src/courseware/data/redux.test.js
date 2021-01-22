@@ -81,7 +81,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.courseStatus).toEqual('denied');
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.courses[forbiddenCourseMetadata.id].canLoadCourseware).not.toBeUndefined();
+      expect(state.models.coursewareMeta[forbiddenCourseMetadata.id].canLoadCourseware).not.toBeUndefined();
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
@@ -98,7 +98,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.courses[courseId].canLoadCourseware).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].canLoadCourseware).not.toBeUndefined();
     });
   });
 
