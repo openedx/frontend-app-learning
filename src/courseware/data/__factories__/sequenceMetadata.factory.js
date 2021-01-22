@@ -48,6 +48,7 @@ Factory.define('sequenceMetadata')
       complete: unitBlock.complete || null,
       content: '',
       page_title: unitBlock.display_name,
+      contains_content_type_gated_content: unitBlock.contains_content_type_gated_content,
     }),
   ))
   .attrs({

@@ -17,10 +17,10 @@ describe('Unit', () => {
     { courseId: courseMetadata.id },
   ), Factory.build(
     'block',
-    { type: 'vertical', graded: true, bookmarked: true },
+    { type: 'vertical', contains_content_type_gated_content: true, bookmarked: true },
     { courseId: courseMetadata.id },
   )];
-  const [unit, gradedUnit] = unitBlocks;
+  const [unit, unitThatContainsGatedContent] = unitBlocks;
 
   beforeAll(async () => {
     await initializeTestStore({ courseMetadata, unitBlocks });
@@ -43,7 +43,7 @@ describe('Unit', () => {
   });
 
   it('renders proper message for gated content', () => {
-    render(<Unit {...mockData} id={gradedUnit.id} />);
+    render(<Unit {...mockData} id={unitThatContainsGatedContent.id} />);
 
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();

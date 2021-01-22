@@ -130,7 +130,7 @@ function Unit({
         isBookmarked={unit.bookmarked}
         isProcessing={unit.bookmarkedUpdateState === 'loading'}
       />
-      { contentTypeGatingEnabled && unit.graded && (
+      {contentTypeGatingEnabled && unit.containsContentTypeGatedContent && (
         <Suspense
           fallback={(
             <PageLoading
