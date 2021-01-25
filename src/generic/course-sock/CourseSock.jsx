@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
+import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import LearnerQuote1 from './assets/learner-quote.png';
 import LearnerQuote2 from './assets/learner-quote2.png';
@@ -12,12 +13,42 @@ export default class CourseSock extends Component {
     super(props);
     this.state = { showUpsell: false };
     this.sockElement = React.createRef();
+    this.commonEventProperties = {
+      courserun_key: this.props.courseId,
+      org_key: this.props.orgKey,
+    };
+    this.promotionEventProperties = {
+      creative: 'original_sock',
+      name: 'In-Course Verification Prompt',
+      position: 'sock',
+      promotion_id: 'courseware_verified_certificate_upsell',
+      ...this.commonEventProperties,
+    };
+  }
+
+  componentDidMount() {
+    sendTrackEvent('Promotion Viewed', this.promotionEventProperties);
   }
 
   handleClick = () => {
     this.setState(state => ({
       showUpsell: !state.showUpsell,
     }));
+
+    const toggleLogEvent = this.state.showUpsell ? 'edx.bi.course.sock.toggle_opened'
+      : 'edx.bi.course.sock.toggle_closed';
+    sendTrackEvent(toggleLogEvent, {
+      from_page: this.props.pageLocation,
+      ...this.commonEventProperties,
+    });
+    sendTrackEvent('Promotion Clicked', this.promotionEventProperties);
+  }
+
+  logClick = () => {
+    sendTrackingLogEvent('edx.course.enrollment.upgrade.clicked', {
+      location: 'sock',
+      ...this.commonEventProperties,
+    });
   }
 
   showToUser = () => {
@@ -68,6 +99,7 @@ export default class CourseSock extends Component {
                     <UpgradeButton
                       size="lg"
                       offer={this.props.offer}
+                      onClick={this.logClick}
                       verifiedMode={this.props.verifiedMode}
                       className="mb-3"
                       data-creative="original_sock"
@@ -208,10 +240,15 @@ export default class CourseSock extends Component {
 }
 
 CourseSock.defaultProps = {
+  courseId: null,
   offer: null,
+  orgKey: null,
 };
 
 CourseSock.propTypes = {
+  courseId: PropTypes.string,
   offer: PropTypes.shape({}),
+  orgKey: PropTypes.string,
+  pageLocation: PropTypes.string.isRequired,
   verifiedMode: PropTypes.shape({}).isRequired,
 };

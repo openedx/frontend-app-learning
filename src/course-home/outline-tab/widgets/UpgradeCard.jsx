@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@edx/paragon';
 
@@ -26,15 +26,26 @@ function UpgradeCard({ courseId, intl, onLearnMore }) {
     courserun_key: courseId,
   };
 
+  const promotionEventProperties = {
+    creative: 'sidebarupsell',
+    name: 'In-Course Verification Prompt',
+    position: 'sidebar-message',
+    promotion_id: 'courseware_verified_certificate_upsell',
+    ...eventProperties,
+  };
+
   useEffect(() => {
     sendTrackingLogEvent('edx.bi.course.upgrade.sidebarupsell.displayed', eventProperties);
+    sendTrackEvent('Promotion Viewed', promotionEventProperties);
   });
 
   const logClick = () => {
     sendTrackingLogEvent('edx.bi.course.upgrade.sidebarupsell.clicked', eventProperties);
     sendTrackingLogEvent('edx.course.enrollment.upgrade.clicked', {
+      ...eventProperties,
       location: 'sidebar-message',
     });
+    sendTrackEvent('Promotion Clicked', promotionEventProperties);
   };
 
   return (

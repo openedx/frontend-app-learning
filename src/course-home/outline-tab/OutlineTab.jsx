@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { Button, Toast } from '@edx/paragon';
@@ -33,6 +34,7 @@ function OutlineTab({ intl }) {
   } = useSelector(state => state.courseHome);
 
   const {
+    org,
     title,
   } = useModel('courseHomeMeta', courseId);
 
@@ -65,6 +67,15 @@ function OutlineTab({ intl }) {
   const [goalToastHeader, setGoalToastHeader] = useState('');
   const [expandAll, setExpandAll] = useState(false);
 
+  const logResumeCourseClick = () => {
+    sendTrackingLogEvent('edx.course.home.resume_course.clicked', {
+      courserun_key: courseId,
+      event_type: hasVisitedCourse ? 'resume' : 'start',
+      org_key: org,
+      url: resumeCourseUrl,
+    });
+  };
+
   // Below the course title alerts (appearing in the order listed here)
   const offerAlert = useOfferAlert(offer, userTimezone, 'outline-course-alerts');
   const accessExpirationAlert = useAccessExpirationAlert(accessExpiration, userTimezone, 'outline-course-alerts');
@@ -92,9 +103,9 @@ function OutlineTab({ intl }) {
         </div>
         {resumeCourseUrl && (
           <div className="col-12 col-sm-auto p-0">
-            <a className="btn btn-primary btn-block" href={resumeCourseUrl}>
+            <Button block href={resumeCourseUrl} onClick={() => logResumeCourseClick()}>
               {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
-            </a>
+            </Button>
           </div>
         )}
       </div>
@@ -191,7 +202,16 @@ function OutlineTab({ intl }) {
           </div>
         )}
       </div>
-      {canShowUpgradeSock && <CourseSock ref={courseSock} offer={offer} verifiedMode={verifiedMode} />}
+      {canShowUpgradeSock && (
+        <CourseSock
+          courseId={courseId}
+          offer={offer}
+          orgKey={org}
+          pageLocation="Home Page"
+          ref={courseSock}
+          verifiedMode={verifiedMode}
+        />
+      )}
     </>
   );
 }
