@@ -13,7 +13,6 @@ const DAY_MS = 24 * 60 * 60 * 1000; // in ms
 
 function CourseStartAlert({ payload }) {
   const {
-    delta,
     startDate,
     userTimezone,
   } = payload;
@@ -28,6 +27,7 @@ function CourseStartAlert({ payload }) {
     />
   );
 
+  const delta = new Date(startDate) - new Date();
   if (delta < DAY_MS) {
     return (
       <Alert type={ALERT_TYPES.INFO}>
@@ -88,7 +88,6 @@ function CourseStartAlert({ payload }) {
 
 CourseStartAlert.propTypes = {
   payload: PropTypes.shape({
-    delta: PropTypes.number,
     startDate: PropTypes.string,
     userTimezone: PropTypes.string,
   }).isRequired,
