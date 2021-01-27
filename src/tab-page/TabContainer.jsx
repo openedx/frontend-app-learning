@@ -32,6 +32,7 @@ export default function TabContainer(props) {
       activeTabSlug={tab}
       courseId={courseId}
       courseStatus={courseStatus}
+      metadataModel={`${slice}Meta`}
     >
       {children}
     </TabPage>
