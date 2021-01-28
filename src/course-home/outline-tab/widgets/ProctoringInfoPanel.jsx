@@ -27,7 +27,7 @@ function ProctoringInfoPanel({ courseId, intl }) {
     return readableClass;
   }
 
-  function showExamLink(examStatus) {
+  function isNotYetSubmitted(examStatus) {
     const NO_SHOW_STATES = ['submitted', 'second_review_required', 'verified'];
     return !NO_SHOW_STATES.includes(examStatus);
   }
@@ -73,11 +73,22 @@ function ProctoringInfoPanel({ courseId, intl }) {
             )}
             {(readableStatus !== 'verified') && (
               <>
-                <p>{intl.formatMessage(messages.proctoringPanelGeneralInfo)}</p>
+                <p>
+                  {isNotYetSubmitted(status) && (
+                    <>
+                      {intl.formatMessage(messages.proctoringPanelGeneralInfo)}
+                    </>
+                  )}
+                  {!isNotYetSubmitted(status) && (
+                    <>
+                      {intl.formatMessage(messages.proctoringPanelGeneralInfoSubmitted)}
+                    </>
+                  )}
+                </p>
                 <p>{intl.formatMessage(messages.proctoringPanelGeneralTime)}</p>
               </>
             )}
-            {showExamLink(status) && (
+            {isNotYetSubmitted(status) && (
               <Button variant="primary" block href={`${getConfig().LMS_BASE_URL}${link}`}>
                 {intl.formatMessage(messages.proctoringOnboardingButton)}
               </Button>
