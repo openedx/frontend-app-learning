@@ -172,6 +172,10 @@ const messages = defineMessages({
     id: 'learning.proctoringPanel.generalInfo',
     defaultMessage: 'You must complete the onboarding process prior to taking any proctored exam. ',
   },
+  proctoringPanelGeneralInfoSubmitted: {
+    id: 'learning.proctoringPanel.generalInfoSubmitted',
+    defaultMessage: 'Your submitted profile is in review.',
+  },
   proctoringPanelGeneralTime: {
     id: 'learning.proctoringPanel.generalTime',
     defaultMessage: 'Onboarding profile review, including identity verification, can take 2+ business days.',

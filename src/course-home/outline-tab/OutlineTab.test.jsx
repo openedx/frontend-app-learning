@@ -489,6 +489,8 @@ describe('Outline Tab', () => {
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).not.toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
+      expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).not.toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).not.toBeInTheDocument();
     });
 
     it('appears for rejected', async () => {
@@ -497,6 +499,24 @@ describe('Outline Tab', () => {
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
+      expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
+    });
+
+    it('appears for submitted', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: 'submitted', onboarding_link: 'test' });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Your submitted profile is in review.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
+    });
+
+    it('appears for second_review_required', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: 'second_review_required', onboarding_link: 'test' });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Your submitted profile is in review.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
     });
 
     it('appears for no status', async () => {
@@ -505,6 +525,8 @@ describe('Outline Tab', () => {
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
+      expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
     });
 
     it('does not appear for 404', async () => {
