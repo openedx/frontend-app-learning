@@ -5,6 +5,7 @@ import LoadedTabPage from './LoadedTabPage';
 
 jest.mock('../course-header/CourseTabsNavigation', () => () => <div data-testid="CourseTabsNavigation" />);
 jest.mock('../instructor-toolbar/InstructorToolbar', () => () => <div data-testid="InstructorToolbar" />);
+jest.mock('../shared/streak-celebration/StreakCelebrationModal', () => () => <div data-testid="StreakModal" />);
 
 describe('Loaded Tab Page', () => {
   const mockData = { activeTabSlug: 'courseware', metadataModel: 'coursewareMeta' };
@@ -27,5 +28,12 @@ describe('Loaded Tab Page', () => {
     render(<LoadedTabPage {...mockData} courseId={courseMetadata.id} />, { store: testStore });
 
     expect(screen.getByTestId('InstructorToolbar')).toBeInTheDocument();
+  });
+
+  it('shows streak celebration modal', async () => {
+    const courseMetadata = Factory.build('courseMetadata', { celebrations: { streakLengthToCelebrate: 3 } });
+    const testStore = await initializeTestStore({ courseMetadata }, false);
+    render(<LoadedTabPage {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+    expect(screen.getByTestId('StreakModal')).toBeInTheDocument();
   });
 });

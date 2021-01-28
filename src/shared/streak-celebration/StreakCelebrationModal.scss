@@ -1,0 +1,67 @@
+.streak-modal {
+  text-align: center;
+
+  .modal-header {
+    padding-bottom: 0;
+    border-bottom: 0; // override default hr line
+    justify-content: center;
+
+    button {
+      // This lets us center the modal title at full width, without taking button width into account
+      position: absolute;
+      right: 1rem;
+    }
+
+    button::after {
+      content: none;
+    }
+  }
+
+  .modal-title {
+    padding-top: 1.25rem;
+  }
+
+  .modal-body {
+    padding-top: .5rem;
+    font-size: 1.2rem;
+  }
+
+  .modal-footer {
+    border-top: 0; // override default hr line
+    justify-content: center;
+
+    button {
+      @extend .btn-primary;
+      font-size: 1.2rem;
+      width: 50%;
+    }
+  }
+
+  .modal-image {
+    margin-top: 1.875rem;
+    margin-bottom: 1.875rem;
+  }
+
+  .factoid-wrapper {
+    font-size: .875rem;
+    text-align: left;
+    max-width: 85%;
+  }
+}
+
+
+@media screen and (min-width: 570px) {
+  .streak-modal {
+    width: 33.25rem;
+    max-width: 33.25rem;
+
+    .calendar {
+      margin-top: 2.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .factoid-wrapper {
+      max-width: 90%;
+    }
+  }
+}

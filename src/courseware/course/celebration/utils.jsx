@@ -32,7 +32,7 @@ function recordFirstSectionCelebration(org, courseId) {
 
 // Looks at local storage to see whether we just came from the end of a section.
 // Note! This does have side effects (will clear some local storage and may start an api call).
-function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection, dispatch) {
+function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations) {
   const celebrationIds = getLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY);
   if (!celebrationIds) {
     return false;
@@ -44,7 +44,15 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFir
     nextUnitId,
   } = celebrationIds;
   const onTargetUnit = sequenceId === nextSequenceId && (!nextUnitId || unitId === nextUnitId);
-  const shouldCelebrate = onTargetUnit && celebrateFirstSection;
+  let shouldCelebrate = onTargetUnit && celebrateFirstSection;
+
+  if (shouldCelebrate && celebrations.streakLengthToCelebrate) {
+    // We don't want two modals to show up on the same page.
+    // If we are going to celebrate a streak then we will not also celebrate the first section.
+    // We will still mark the first section as celebrated, so that we don't incorrectly celebrate the second section.
+    shouldCelebrate = false;
+    postFirstSectionCelebrationComplete(courseId);
+  }
 
   if (sequenceId !== prevSequenceId && !onTargetUnit) {
     // Don't clear until we move off of current/prev sequence
@@ -56,6 +64,7 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFir
       model: {
         id: courseId,
         celebrations: {
+          ...celebrations,
           firstSection: false,
         },
       },

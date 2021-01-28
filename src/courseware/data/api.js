@@ -1,6 +1,7 @@
 import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { logInfo } from '@edx/frontend-platform/logging';
+import { appendBrowserTimezoneToUrl } from '../../utils';
 
 export function normalizeBlocks(courseId, blocks) {
   const models = {
@@ -153,7 +154,8 @@ function normalizeMetadata(metadata) {
 }
 
 export async function getCourseMetadata(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
+  let url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
+  url = appendBrowserTimezoneToUrl(url);
   const { data } = await getAuthenticatedHttpClient().get(url);
   return normalizeMetadata(data);
 }

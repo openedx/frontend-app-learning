@@ -9,7 +9,7 @@ import buildSimpleCourseBlocks from '../data/__factories__/courseBlocks.factory'
 import {
   fireEvent, initializeMockApp, logUnhandledRequests, render, screen, waitFor, act,
 } from '../../setupTest';
-import executeThunk from '../../utils';
+import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
 import initializeStore from '../../store';
 import OutlineTab from './OutlineTab';
@@ -21,7 +21,8 @@ describe('Outline Tab', () => {
   let axiosMock;
 
   const courseId = 'course-v1:edX+Test+run';
-  const courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
   const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
   const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`;
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
