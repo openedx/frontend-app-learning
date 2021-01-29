@@ -54,7 +54,7 @@ function DatesBannerContainer({
     {
       name: 'resetDatesBanner',
       shouldDisplay: resetDates,
-      clickHandler: () => dispatch(resetDeadlines(courseId, tabFetch)),
+      clickHandler: () => dispatch(resetDeadlines(courseId, model, tabFetch)),
     },
   ];
 
