@@ -47,8 +47,9 @@ describe('Tab Page', () => {
     const getTabDataMock = jest.fn(() => ({
       type: 'MOCK_ACTION',
     }));
+    const model = 'outline';
 
-    await executeThunk(thunks.resetDeadlines('courseId', getTabDataMock), testStore.dispatch);
+    await executeThunk(thunks.resetDeadlines('courseId', model, getTabDataMock), testStore.dispatch);
 
     expect(screen.getByText('test-toast-header')).toBeInTheDocument();
     expect(screen.getByText('test-toast-body')).toBeInTheDocument();

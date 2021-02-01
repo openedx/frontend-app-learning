@@ -102,16 +102,17 @@ describe('Data layer integration tests', () => {
   describe('Test resetDeadlines', () => {
     it('Should reset course deadlines', async () => {
       const resetUrl = `${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`;
+      const model = 'dates';
       axiosMock.onPost(resetUrl).reply(201, {});
 
       const getTabDataMock = jest.fn(() => ({
         type: 'MOCK_ACTION',
       }));
 
-      await executeThunk(thunks.resetDeadlines(courseId, getTabDataMock), store.dispatch);
+      await executeThunk(thunks.resetDeadlines(courseId, model, getTabDataMock), store.dispatch);
 
       expect(axiosMock.history.post[0].url).toEqual(resetUrl);
-      expect(axiosMock.history.post[0].data).toEqual(`{"course_key":"${courseId}"}`);
+      expect(axiosMock.history.post[0].data).toEqual(`{"course_key":"${courseId}","research_event_data":{"location":"dates-tab"}}`);
 
       expect(getTabDataMock).toHaveBeenCalledWith(courseId);
     });

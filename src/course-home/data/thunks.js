@@ -90,9 +90,9 @@ export function requestCert(courseId) {
   return async () => postRequestCert(courseId);
 }
 
-export function resetDeadlines(courseId, getTabData) {
+export function resetDeadlines(courseId, model, getTabData) {
   return async (dispatch) => {
-    postCourseDeadlines(courseId).then(response => {
+    postCourseDeadlines(courseId, model).then(response => {
       const { data } = response;
       const {
         header,
@@ -111,9 +111,12 @@ export async function saveCourseGoal(courseId, goalKey) {
 
 export function processEvent(eventData, getTabData) {
   return async (dispatch) => {
+    // Pulling this out early so the data doesn't get camelCased and is easier
+    // to use when it's passed to the backend
+    const { research_event_data: researchEventData } = eventData;
     const event = camelCaseObject(eventData);
     if (event.eventName === eventTypes.POST_EVENT) {
-      executePostFromPostEvent(event.postData).then(response => {
+      executePostFromPostEvent(event.postData, researchEventData).then(response => {
         const { data } = response;
         const {
           header,

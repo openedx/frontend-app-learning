@@ -194,9 +194,12 @@ export async function getOutlineTabData(courseId) {
   };
 }
 
-export async function postCourseDeadlines(courseId) {
+export async function postCourseDeadlines(courseId, model) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
-  return getAuthenticatedHttpClient().post(url.href, { course_key: courseId });
+  return getAuthenticatedHttpClient().post(url.href, {
+    course_key: courseId,
+    research_event_data: { location: `${model}-tab` },
+  });
 }
 
 export async function postCourseGoals(courseId, goalKey) {
@@ -214,7 +217,10 @@ export async function postRequestCert(courseId) {
   await getAuthenticatedHttpClient().post(url.href);
 }
 
-export async function executePostFromPostEvent(postData) {
+export async function executePostFromPostEvent(postData, researchEventData) {
   const url = new URL(postData.url);
-  return getAuthenticatedHttpClient().post(url.href, { course_key: postData.bodyParams.courseId });
+  return getAuthenticatedHttpClient().post(url.href, {
+    course_key: postData.bodyParams.courseId,
+    research_event_data: researchEventData,
+  });
 }
