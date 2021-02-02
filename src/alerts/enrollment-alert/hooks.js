@@ -2,6 +2,7 @@
 import React, {
   useContext, useState, useCallback, useMemo,
 } from 'react';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { AppContext } from '@edx/frontend-platform/react';
 
 import { UserMessagesContext, ALERT_TYPES, useAlert } from '../../generic/user-messages';
@@ -40,7 +41,7 @@ export function useEnrollmentAlert(courseId) {
   return { clientEnrollmentAlert: EnrollmentAlert };
 }
 
-export function useEnrollClickHandler(courseId, successText) {
+export function useEnrollClickHandler(courseId, orgId, successText) {
   const [loading, setLoading] = useState(false);
   const { addFlash } = useContext(UserMessagesContext);
   const enrollClickHandler = useCallback(() => {
@@ -54,6 +55,10 @@ export function useEnrollClickHandler(courseId, successText) {
         topic: 'course',
       });
       setLoading(false);
+      sendTrackEvent('edx.bi.user.course-home.enrollment', {
+        org_key: orgId,
+        courserun_key: courseId,
+      });
       global.location.reload();
     });
   }, [courseId]);

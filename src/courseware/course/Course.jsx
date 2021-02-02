@@ -39,6 +39,7 @@ function Course({
     canShowUpgradeSock,
     celebrations,
     offer,
+    org,
     userTimezone,
     verifiedMode,
   } = course;
@@ -119,7 +120,15 @@ function Course({
           open
         />
       )}
-      {canShowUpgradeSock && <CourseSock offer={offer} verifiedMode={verifiedMode} />}
+      {canShowUpgradeSock && (
+        <CourseSock
+          courseId={courseId}
+          offer={offer}
+          orgKey={org}
+          pageLocation="Course Content Page"
+          verifiedMode={verifiedMode}
+        />
+      )}
       <ContentTools course={course} />
     </>
   );

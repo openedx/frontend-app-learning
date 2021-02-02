@@ -5,6 +5,7 @@ import { Button } from '@edx/paragon';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { useModel } from '../../generic/model-store';
 import { Alert, ALERT_TYPES } from '../../generic/user-messages';
 
 import messages from './messages';
@@ -18,8 +19,13 @@ function EnrollmentAlert({ intl, payload }) {
     isStaff,
   } = payload;
 
+  const {
+    org,
+  } = useModel('courseHomeMeta', courseId);
+
   const { enrollClickHandler, loading } = useEnrollClickHandler(
     courseId,
+    org,
     intl.formatMessage(messages.success),
   );
 

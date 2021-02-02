@@ -22,11 +22,13 @@ function PrivateCourseAlert({ intl, payload }) {
   } = payload;
 
   const {
+    org,
     title,
   } = useModel('courseHomeMeta', courseId);
 
   const { enrollClickHandler, loading } = useEnrollClickHandler(
     courseId,
+    org,
     intl.formatMessage(enrollmentMessages.success),
   );
 

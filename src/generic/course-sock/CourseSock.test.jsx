@@ -4,6 +4,8 @@ import {
 } from '../../setupTest';
 import CourseSock from './CourseSock';
 
+jest.mock('@edx/frontend-platform/analytics');
+
 describe('Course Sock', () => {
   const mockData = {
     verifiedMode: {
@@ -12,6 +14,7 @@ describe('Course Sock', () => {
       currency: 'dollars',
       currencySymbol: '$',
     },
+    pageLocation: 'Course Content Page',
   };
 
   beforeAll(async () => {
