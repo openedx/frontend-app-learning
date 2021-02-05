@@ -183,6 +183,7 @@ function normalizeSequenceMetadata(sequence) {
       complete: unit.complete,
       title: unit.page_title,
       contentType: unit.type,
+      containsContentTypeGatedContent: unit.contains_content_type_gated_content,
     })),
   };
 }
