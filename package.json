@@ -71,7 +71,7 @@
     "codecov": "3.7.2",
     "es-check": "5.1.4",
     "glob": "7.1.6",
-    "husky": "3.1.0",
+    "husky": "4.3.8",
     "jest": "24.9.0",
     "jest-chain": "1.1.5",
     "reactifex": "1.1.1",
