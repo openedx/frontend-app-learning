@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 
 import { getCourseExitNavigation } from '../../course-exit';
 
+import UnitNavigationEffortEstimate from './UnitNavigationEffortEstimate';
 import { useSequenceNavigationMetadata } from './hooks';
 import messages from './messages';
 
@@ -28,8 +29,15 @@ function UnitNavigation({
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
     return (
-      <Button variant="outline-primary" className="next-button" onClick={buttonOnClick} disabled={disabled}>
-        {buttonText}
+      <Button
+        variant="outline-primary"
+        className="next-button d-flex align-items-center justify-content-center"
+        onClick={buttonOnClick}
+        disabled={disabled}
+      >
+        <UnitNavigationEffortEstimate sequenceId={sequenceId} unitId={unitId}>
+          {buttonText}
+        </UnitNavigationEffortEstimate>
         <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
       </Button>
     );
@@ -39,7 +47,7 @@ function UnitNavigation({
     <div className="unit-navigation d-flex">
       <Button
         variant="outline-secondary"
-        className="previous-button mr-2"
+        className="previous-button mr-2 d-flex align-items-center justify-content-center"
         disabled={isFirstUnit}
         onClick={onClickPrevious}
       >

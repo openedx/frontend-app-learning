@@ -65,6 +65,8 @@ export default function buildSimpleCourseBlocks(courseId, title, options = {}) {
       type: 'chapter',
       display_name: 'Title of Section',
       complete: options.complete || false,
+      effort_time: 15,
+      effort_activities: 2,
       resume_block: options.resumeBlock || false,
       children: sequenceBlock.map(block => block.id),
     },
