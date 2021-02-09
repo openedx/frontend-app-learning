@@ -8,7 +8,7 @@ import {
 import { AppProvider, ErrorPage, PageRoute } from '@edx/frontend-platform/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
 
@@ -27,12 +27,14 @@ import { TabContainer } from './tab-page';
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import initializeStore from './store';
+import PluginTest from './plugin-test/PluginTest';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider store={initializeStore()}>
       <UserMessagesProvider>
         <Switch>
+          <Route exact path="/" component={PluginTest} />
           <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
           <PageRoute path="/course/:courseId/home">
             <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
