@@ -27,6 +27,7 @@ import { TabContainer } from './tab-page';
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import initializeStore from './store';
+import NexBlockPage from './plugin-test/NexBlockPage';
 import PluginTestPage from './plugin-test/PluginTestPage';
 
 subscribe(APP_READY, () => {
@@ -34,7 +35,8 @@ subscribe(APP_READY, () => {
     <AppProvider store={initializeStore()}>
       <UserMessagesProvider>
         <Switch>
-          <Route exact path="/" component={PluginTestPage} />
+          <Route exact path="/plugintest" component={PluginTestPage} />
+          <Route exact path="/nexblock" component={NexBlockPage} />
           <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
           <PageRoute path="/course/:courseId/home">
             <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
