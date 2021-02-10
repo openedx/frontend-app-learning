@@ -6,9 +6,12 @@ import PageLoading from '../generic/PageLoading';
 import messages from './messages';
 import { loadDynamicScript, loadScriptComponent } from './utils';
 
-export const COMPONENT = 'component';
-export const SCRIPT = 'script';
-export const IFRAME = 'iframe';
+// These are intended to represent three different plugin types.  They're not fully used yet.
+// Different plugins of different types would have different loading functionality.
+export const COMPONENT = 'component'; // loads JS script then loads react component from its exports
+export const SCRIPT = 'script'; // loads JS script
+export const IFRAME = 'iframe'; // loads iframe at the URL, rather than loading a JS file.
+export const LTI = 'lti'; // loads LTI iframe at the URL, rather than loading a JS file.
 
 const useDynamicScript = (url) => {
   const [ready, setReady] = React.useState(false);
