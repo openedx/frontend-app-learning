@@ -27,14 +27,14 @@ import { TabContainer } from './tab-page';
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import initializeStore from './store';
-import PluginTest from './plugin-test/PluginTest';
+import PluginTestPage from './plugin-test/PluginTestPage';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider store={initializeStore()}>
       <UserMessagesProvider>
         <Switch>
-          <Route exact path="/" component={PluginTest} />
+          <Route exact path="/" component={PluginTestPage} />
           <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
           <PageRoute path="/course/:courseId/home">
             <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
