@@ -22,6 +22,10 @@ module.exports = createConfig('webpack-dev', {
           singleton: true,
           eager: true,
         },
+        '@edx/frontend-platform/auth': {
+          singleton: true,
+          eager: true,
+        },
       },
     }),
   ],
