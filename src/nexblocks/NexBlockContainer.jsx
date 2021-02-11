@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-import Plugin, { COMPONENT } from './Plugin';
+import Plugin, { COMPONENT } from '../plugin-test/Plugin';
 
 const FALLBACK_URL = 'http://localhost:7331/remoteEntry.js';
 const FALLBACK_VIEW = 'PluginOne';
 
 // eslint-disable-next-line react/prefer-stateless-function
-export default class NexBlockPage extends Component {
+export default class NexBlockContainer extends Component {
   render() {
     // eslint-disable-next-line react/prop-types
     const query = new URLSearchParams(this.props.location.search);
