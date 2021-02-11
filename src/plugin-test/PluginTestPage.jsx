@@ -1,30 +1,9 @@
 import React from 'react';
 
-import { Button } from '@edx/paragon';
-
-import Plugin, { SCRIPT, COMPONENT } from './Plugin';
+import { getConfig } from '@edx/frontend-platform';
+import PluginComponent from './PluginComponent';
 
 function PluginTestPage() {
-  const [plugin, setPlugin] = React.useState(undefined);
-
-  function setPluginOne() {
-    setPlugin({
-      url: 'http://localhost:7331/remoteEntry.js',
-      scope: 'plugin',
-      module: './PluginOne',
-      type: SCRIPT,
-    });
-  }
-
-  function setPluginTwo() {
-    setPlugin({
-      url: 'http://localhost:7331/remoteEntry.js',
-      scope: 'plugin',
-      module: './PluginTwo',
-      type: COMPONENT,
-    });
-  }
-
   return (
     <div>
       <h1>Dynamic Plugin Host</h1>
@@ -34,10 +13,15 @@ function PluginTestPage() {
         <strong>remotes</strong> and <strong>exposes</strong>. It will no load
         components that have been loaded already.
       </p>
-      <Button className="mr-3" onClick={setPluginOne}>Load Plugin One</Button>
-      <Button onClick={setPluginTwo}>Load Plugin Two</Button>
+      {/* <Button className="mr-3" onClick={setPluginOne}>Load Plugin One</Button>
+      <Button onClick={setPluginTwo}>Load Plugin Two</Button> */}
       <div style={{ marginTop: '2em' }}>
-        <Plugin plugin={plugin} />
+        {getConfig().plugins.slots.testPage.map((plugin) => (
+          <PluginComponent
+            key={`plugin-${plugin.url}-${plugin.module}`}
+            plugin={plugin}
+          />
+        ))}
       </div>
     </div>
   );

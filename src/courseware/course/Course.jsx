@@ -105,6 +105,7 @@ function Course({
       <AlertList topic="sequence" />
       <Sequence
         unitId={unitId}
+        sectionId={section ? section.id : null}
         sequenceId={sequenceId}
         courseId={courseId}
         unitNavigationHandler={unitNavigationHandler}

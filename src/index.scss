@@ -95,8 +95,6 @@
 }
 
 .sequence-container {
-  display: flex;
-  flex-direction: column;
   flex-grow: 1;
   margin-bottom: 4rem;
 
@@ -111,6 +109,7 @@
 }
 
 .sequence {
+  width: 100%;
   @media (min-width: map-get($grid-breakpoints, 'sm')) {
     border: solid 1px #EAEAEA;
     border-radius: 4px;
@@ -302,9 +301,9 @@
 .unit-iframe-wrapper {
   margin: 0 -20px 2rem;
 
-  @media (min-width: 830px) {
-    margin: 0 -40px 2rem;
-  }
+  // @media (min-width: 830px) {
+  //   margin: 0 -20px 2rem;
+  // }
 }
 
 #unit-iframe {

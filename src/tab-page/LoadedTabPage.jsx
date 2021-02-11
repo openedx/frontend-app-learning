@@ -10,6 +10,7 @@ import { AlertList } from '../generic/user-messages';
 import InstructorToolbar from '../instructor-toolbar';
 import useEnrollmentAlert from '../alerts/enrollment-alert';
 import useLogistrationAlert from '../alerts/logistration-alert';
+import PluginComponent from '../plugin-test/PluginComponent';
 
 function LoadedTabPage({
   activeTabSlug,
@@ -38,6 +39,12 @@ function LoadedTabPage({
       <Helmet>
         <title>{`${activeTab.title} | ${title} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
+      {getConfig().plugins.slots.header.map((plugin) => (
+        <PluginComponent
+          key={`plugin-${plugin.url}-${plugin.module}`}
+          plugin={plugin}
+        />
+      ))}
       <Header
         courseOrg={org}
         courseNumber={number}
@@ -49,6 +56,7 @@ function LoadedTabPage({
           unitId={unitId}
         />
       )}
+
       <main id="main-content" className="d-flex flex-column flex-grow-1">
         <AlertList
           topic="outline"

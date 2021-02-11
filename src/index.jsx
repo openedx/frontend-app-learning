@@ -4,6 +4,7 @@ import 'regenerator-runtime/runtime';
 import {
   APP_INIT_ERROR, APP_READY, subscribe, initialize,
   mergeConfig,
+  getConfig,
 } from '@edx/frontend-platform';
 import { AppProvider, ErrorPage, PageRoute } from '@edx/frontend-platform/react';
 import React from 'react';
@@ -28,6 +29,8 @@ import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/
 import { fetchCourse } from './courseware/data';
 import initializeStore from './store';
 import PluginTestPage from './plugin-test/PluginTestPage';
+import { COMPONENT } from './plugin-test/PluginComponent';
+import { loadDynamicScript, loadScriptComponent } from './plugin-test/utils';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
@@ -70,6 +73,13 @@ subscribe(APP_READY, () => {
     </AppProvider>,
     document.getElementById('root'),
   );
+
+  getConfig().plugins.scripts.forEach((plugin) => {
+    loadDynamicScript(plugin.url).then(() => {
+      const pluginFunction = loadScriptComponent(plugin.scope, plugin.module);
+      pluginFunction();
+    });
+  });
 });
 
 subscribe(APP_INIT_ERROR, (error) => {
@@ -92,6 +102,43 @@ initialize({
         SUPPORT_URL_VERIFIED_CERTIFICATE: process.env.SUPPORT_URL_VERIFIED_CERTIFICATE || null,
         TWITTER_HASHTAG: process.env.TWITTER_HASHTAG || null,
         TWITTER_URL: process.env.TWITTER_URL || null,
+        plugins: {
+          scripts: [
+            // {
+            //   url: 'http://localhost:7331/remoteEntry.js',
+            //   scope: 'plugin',
+            //   module: './Pomodoro',
+            //   type: SCRIPT,
+            // },
+          ],
+          slots: {
+            header: [
+              {
+                url: 'http://localhost:7331/remoteEntry.js',
+                scope: 'plugin',
+                module: './Banner',
+                type: COMPONENT,
+              },
+            ],
+            coursewareSidebar: [
+              {
+                url: 'http://localhost:7331/remoteEntry.js',
+                scope: 'plugin',
+                module: './Discussions',
+                type: COMPONENT,
+              },
+              {
+                url: 'http://localhost:7331/remoteEntry.js',
+                scope: 'plugin',
+                module: './Calendly',
+                type: COMPONENT,
+                props: {
+                  username: 'djoy',
+                },
+              },
+            ],
+          },
+        },
       }, 'LearnerAppConfig');
     },
   },

@@ -15,6 +15,7 @@ import { history } from '@edx/frontend-platform';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
+import { Col, Container, Row } from '@edx/paragon';
 import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
 import { useModel } from '../../../generic/model-store';
@@ -23,6 +24,7 @@ import CourseLicense from '../course-license';
 import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+import InContextSidebar from './InContextSidebar';
 
 function REV1512Flyover({ toggleREV1512Flyover }) {
   // This component should be reverted after the REV1512 experiment
@@ -183,6 +185,7 @@ REV1512FlyoverMobile.propTypes = {
 
 function Sequence({
   unitId,
+  sectionId,
   sequenceId,
   courseId,
   unitNavigationHandler,
@@ -309,61 +312,74 @@ function Sequence({
   if (sequenceStatus === 'loaded') {
     return (
       <div>
-        <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
-          <div className="sequence" style={{ width: '100%' }}>
-            <SequenceNavigation
-              sequenceId={sequenceId}
-              unitId={unitId}
-              className="mb-4"
-              toggleREV1512Flyover={toggleREV1512Flyover} /* This line should be reverted after REV1512 experiment */
-              REV1512FlyoverEnabled={REV1512FlyoverEnabled} /* This line should be reverted after REV1512 experiment */
-              isREV1512FlyoverVisible={isREV1512FlyoverVisible} /* should be reverted after REV1512 experiment */
-              nextSequenceHandler={() => {
-                logEvent('edx.ui.lms.sequence.next_selected', 'top');
-                handleNext();
-              }}
-              onNavigate={(destinationUnitId) => {
-                logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-                handleNavigate(destinationUnitId);
-              }}
-              previousSequenceHandler={() => {
-                logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-                handlePrevious();
-              }}
-              goToCourseExitPage={() => goToCourseExitPage()}
-            />
-            <div className="unit-container flex-grow-1">
-              <SequenceContent
-                courseId={courseId}
-                gated={gated}
+        <Container className="sequence-container px-3">
+          <Row>
+            <Col sm={8} xs={12} className="sequence px-0">
+              <SequenceNavigation
                 sequenceId={sequenceId}
                 unitId={unitId}
-                unitLoadedHandler={handleUnitLoaded}
-              />
-              {unitHasLoaded && (
-              <UnitNavigation
-                sequenceId={sequenceId}
-                unitId={unitId}
-                onClickPrevious={() => {
-                  logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-                  handlePrevious();
-                }}
-                onClickNext={() => {
-                  logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+                className="mb-4"
+                /* This line should be reverted after REV1512 experiment */
+                toggleREV1512Flyover={toggleREV1512Flyover}
+                /* This line should be reverted after REV1512 experiment */
+                REV1512FlyoverEnabled={REV1512FlyoverEnabled}
+                /* should be reverted after REV1512 experiment */
+                isREV1512FlyoverVisible={isREV1512FlyoverVisible}
+                nextSequenceHandler={() => {
+                  logEvent('edx.ui.lms.sequence.next_selected', 'top');
                   handleNext();
+                }}
+                onNavigate={(destinationUnitId) => {
+                  logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+                  handleNavigate(destinationUnitId);
+                }}
+                previousSequenceHandler={() => {
+                  logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+                  handlePrevious();
                 }}
                 goToCourseExitPage={() => goToCourseExitPage()}
               />
-              )}
-            </div>
-          </div>
-          {/* This block of code should be reverted post REV1512 experiment */}
-          {REV1512FlyoverEnabled && isREV1512FlyoverVisible() && (
-            isMobile
-              ? <REV1512FlyoverMobile toggleREV1512Flyover={toggleREV1512Flyover} />
-              : <REV1512Flyover toggleREV1512Flyover={toggleREV1512Flyover} />
-          )}
-        </div>
+              <div className="unit-container flex-grow-1">
+                <SequenceContent
+                  courseId={courseId}
+                  gated={gated}
+                  sequenceId={sequenceId}
+                  unitId={unitId}
+                  unitLoadedHandler={handleUnitLoaded}
+                />
+                {unitHasLoaded && (
+                <UnitNavigation
+                  sequenceId={sequenceId}
+                  unitId={unitId}
+                  onClickPrevious={() => {
+                    logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
+                    handlePrevious();
+                  }}
+                  onClickNext={() => {
+                    logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+                    handleNext();
+                  }}
+                  goToCourseExitPage={() => goToCourseExitPage()}
+                />
+                )}
+              </div>
+            </Col>
+            <Col className="ml-3 sequence">
+              <InContextSidebar
+                courseId={courseId}
+                sectionId={sectionId}
+                sequenceId={sequenceId}
+                unitId={unitId}
+              />
+            </Col>
+            {/* This block of code should be reverted post REV1512 experiment */}
+            {REV1512FlyoverEnabled && isREV1512FlyoverVisible() && (
+              isMobile
+                ? <REV1512FlyoverMobile toggleREV1512Flyover={toggleREV1512Flyover} />
+                : <REV1512Flyover toggleREV1512Flyover={toggleREV1512Flyover} />
+            )}
+          </Row>
+        </Container>
         <CourseLicense license={course.license || undefined} />
       </div>
     );
@@ -380,6 +396,7 @@ function Sequence({
 Sequence.propTypes = {
   unitId: PropTypes.string,
   sequenceId: PropTypes.string,
+  sectionId: PropTypes.string,
   courseId: PropTypes.string.isRequired,
   unitNavigationHandler: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
@@ -392,6 +409,7 @@ Sequence.propTypes = {
 
 Sequence.defaultProps = {
   sequenceId: null,
+  sectionId: null,
   unitId: null,
 };
 

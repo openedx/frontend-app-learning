@@ -5,6 +5,7 @@ import PageLoading from '../generic/PageLoading';
 
 import messages from './messages';
 import { loadDynamicScript, loadScriptComponent } from './utils';
+import PluginErrorBoundary from './PluginErrorBoundary';
 
 // These are intended to represent three different plugin types.  They're not fully used yet.
 // Different plugins of different types would have different loading functionality.
@@ -16,6 +17,7 @@ export const LTI = 'lti'; // loads LTI iframe at the URL, rather than loading a 
 const useDynamicScript = (url) => {
   const [ready, setReady] = React.useState(false);
   const [failed, setFailed] = React.useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [element, setElement] = React.useState(null);
   React.useEffect(() => {
     if (!url) {
@@ -34,7 +36,9 @@ const useDynamicScript = (url) => {
     });
 
     return () => {
-      document.head.removeChild(element);
+      // TODO: How to do reference checking on this script to only remove it when the last
+      // component using it has unmounted?
+      // document.head.removeChild(element);
     };
   }, [url]);
 
@@ -44,7 +48,7 @@ const useDynamicScript = (url) => {
   };
 };
 
-function Plugin({ plugin, intl }) {
+function PluginComponent({ plugin, intl, ...props }) {
   const url = plugin ? plugin.url : null;
   const { ready, failed } = useDynamicScript(url);
 
@@ -64,7 +68,7 @@ function Plugin({ plugin, intl }) {
     return null;
   }
 
-  const PluginComponent = React.lazy(
+  const Component = React.lazy(
     loadScriptComponent(plugin.scope, plugin.module),
   );
 
@@ -76,23 +80,26 @@ function Plugin({ plugin, intl }) {
         />
       )}
     >
-      <PluginComponent />
+      <PluginErrorBoundary>
+        <Component {...props} {...plugin.props} />
+      </PluginErrorBoundary>
     </Suspense>
   );
 }
 
-Plugin.propTypes = {
+PluginComponent.propTypes = {
   plugin: PropTypes.shape({
     scope: PropTypes.string.isRequired,
     module: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
     type: PropTypes.oneOf([COMPONENT, SCRIPT, IFRAME]).isRequired,
+    props: PropTypes.object,
   }),
   intl: intlShape.isRequired,
 };
 
-Plugin.defaultProps = {
+PluginComponent.defaultProps = {
   plugin: null,
 };
 
-export default injectIntl(Plugin);
+export default injectIntl(PluginComponent);
