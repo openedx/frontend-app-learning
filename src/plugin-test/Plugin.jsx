@@ -44,7 +44,7 @@ const useDynamicScript = (url) => {
   };
 };
 
-function Plugin({ plugin, intl }) {
+function Plugin({ plugin, intl, ...props }) {
   const url = plugin ? plugin.url : null;
   const { ready, failed } = useDynamicScript(url);
 
@@ -76,7 +76,7 @@ function Plugin({ plugin, intl }) {
         />
       )}
     >
-      <PluginComponent />
+      <PluginComponent {...props} {...plugin.props} />
     </Suspense>
   );
 }
@@ -87,6 +87,7 @@ Plugin.propTypes = {
     module: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
     type: PropTypes.oneOf([COMPONENT, SCRIPT, IFRAME]).isRequired,
+    props: PropTypes.object,
   }),
   intl: intlShape.isRequired,
 };
