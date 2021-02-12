@@ -1,48 +1,36 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { useModel } from '../../generic/model-store';
-import Chapter from './Chapter';
-import CertificateBanner from './CertificateBanner';
-import messages from './messages';
-import CreditRequirements from './CreditRequirements';
 
-function ProgressTab({ intl }) {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+import CertificateStatus from './certificate-status/CertificateStatus';
+import CourseCompletion from './course-completion/CourseCompletion';
+import CourseGrade from './grades/course-grade/CourseGrade';
+import DetailedGrades from './grades/detailed-grades/DetailedGrades';
+import GradeSummary from './grades/grade-summary/GradeSummary';
+import ProgressHeader from './ProgressHeader';
+import RelatedLinks from './related-links/RelatedLinks';
 
-  const { administrator } = getAuthenticatedUser();
-
-  const {
-    coursewareSummary,
-    studioUrl,
-  } = useModel('progress', courseId);
-
+function ProgressTab() {
   return (
-    <section>
-      {administrator && studioUrl && (
-        <div className="row mb-3 mr-3 justify-content-end">
-          <a className="btn-sm border border-info" href={studioUrl}>
-            {intl.formatMessage(messages.studioLink)}
-          </a>
+    <>
+      <ProgressHeader />
+      <div className="row w-100 m-0">
+        {/* Main body */}
+        <div className="col-12 col-lg-8 p-0">
+          <CourseCompletion />
+          <CourseGrade />
+          <div className="my-4 p-4 rounded shadow-sm">
+            <GradeSummary />
+            <DetailedGrades />
+          </div>
         </div>
-      )}
-      <CertificateBanner />
-      <CreditRequirements />
-      {coursewareSummary.map((chapter) => (
-        <Chapter
-          key={chapter.displayName}
-          chapter={chapter}
-        />
-      ))}
-    </section>
+
+        {/* Side panel */}
+        <div className="col-12 col-lg-4 p-0 px-lg-4">
+          <CertificateStatus />
+          <RelatedLinks />
+        </div>
+      </div>
+    </>
   );
 }
 
-ProgressTab.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(ProgressTab);
+export default ProgressTab;

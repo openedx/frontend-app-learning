@@ -124,20 +124,18 @@ export async function getDatesTabData(courseId) {
 }
 
 export async function getProgressTabData(courseId) {
-  global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
-  // TODO: (AA-213) update once flag is in place
-  // const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
-  // try {
-  //   const { data } = await getAuthenticatedHttpClient().get(url);
-  //   return camelCaseObject(data);
-  // } catch (error) {
-  //   const { httpErrorStatus } = error && error.customAttributes;
-  //   if (httpErrorStatus === 404) {
-  //     global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
-  //     return {};
-  //   }
-  //   throw error;
-  // }
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(url);
+    return camelCaseObject(data);
+  } catch (error) {
+    const { httpErrorStatus } = error && error.customAttributes;
+    if (httpErrorStatus === 404) {
+      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
+      return {};
+    }
+    throw error;
+  }
 }
 
 export async function getProctoringInfoData(courseId) {
