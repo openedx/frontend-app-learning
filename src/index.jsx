@@ -96,8 +96,7 @@ initialize({
         SUPPORT_URL_VERIFIED_CERTIFICATE: process.env.SUPPORT_URL_VERIFIED_CERTIFICATE || null,
         TWITTER_HASHTAG: process.env.TWITTER_HASHTAG || null,
         TWITTER_URL: process.env.TWITTER_URL || null,
-        NEXBLOCK_INSTANCE_DATA_API_PATH: process.env.NEXBLOCK_INSTANCE_DATA_API_PATH || null,
-        NEXBLOCK_LEARNER_DATA_API_PATH: process.env.NEXBLOCK_LEARNER_DATA_API_PATH || null,
+        NEXBLOCK_API_PATH: process.env.NEXBLOCK_API_PATH || null,
       }, 'LearnerAppConfig');
     },
   },
