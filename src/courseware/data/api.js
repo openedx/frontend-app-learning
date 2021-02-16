@@ -13,6 +13,8 @@ export function normalizeBlocks(courseId, blocks) {
     switch (block.type) {
       case 'course':
         models.courses[block.id] = {
+          effortActivities: block.effort_activities,
+          effortTime: block.effort_time,
           id: courseId,
           title: block.display_name,
           sectionIds: block.children || [],
@@ -21,6 +23,8 @@ export function normalizeBlocks(courseId, blocks) {
         break;
       case 'chapter':
         models.sections[block.id] = {
+          effortActivities: block.effort_activities,
+          effortTime: block.effort_time,
           id: block.id,
           title: block.display_name,
           sequenceIds: block.children || [],
@@ -29,6 +33,8 @@ export function normalizeBlocks(courseId, blocks) {
 
       case 'sequential':
         models.sequences[block.id] = {
+          effortActivities: block.effort_activities,
+          effortTime: block.effort_time,
           id: block.id,
           title: block.display_name,
           lmsWebUrl: block.lms_web_url,
@@ -92,7 +98,7 @@ export async function getCourseBlocks(courseId) {
   url.searchParams.append('course_id', courseId);
   url.searchParams.append('username', authenticatedUser ? authenticatedUser.username : '');
   url.searchParams.append('depth', 3);
-  url.searchParams.append('requested_fields', 'children,show_gated_sections,graded,special_exam_info,has_scheduled_content');
+  url.searchParams.append('requested_fields', 'children,effort_activities,effort_time,show_gated_sections,graded,special_exam_info,has_scheduled_content');
 
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
   return normalizeBlocks(courseId, data.blocks);

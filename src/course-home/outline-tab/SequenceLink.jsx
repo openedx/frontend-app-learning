@@ -12,6 +12,7 @@ import { faCheckCircle as fasCheckCircle } from '@fortawesome/free-solid-svg-ico
 import { faCheckCircle as farCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import EffortEstimate from '../../shared/effort-estimate';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
@@ -62,10 +63,13 @@ function SequenceLink({
               />
             )}
           </div>
-          <div className="col-10 p-0 ml-3 text-break">{displayTitle}</div>
-          <span className="sr-only">
-            , {intl.formatMessage(complete ? messages.completedAssignment : messages.incompleteAssignment)}
-          </span>
+          <div className="col-10 p-0 ml-3 text-break">
+            <span className="align-middle">{displayTitle}</span>
+            <span className="sr-only">
+              , {intl.formatMessage(complete ? messages.completedAssignment : messages.incompleteAssignment)}
+            </span>
+            <EffortEstimate className="ml-3 align-middle" block={sequence} />
+          </div>
         </div>
         {due && (
           <div className="row w-100 m-0 ml-3 pl-3">
