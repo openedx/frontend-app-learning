@@ -27,7 +27,7 @@ import { TabContainer } from './tab-page';
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import initializeStore from './store';
-import NexBlockContainer from './nexblocks/NexBlockContainer';
+import NexBlockContainer from './nex-runtime/NexContainer';
 import PluginTestPage from './plugin-test/PluginTestPage';
 
 subscribe(APP_READY, () => {
