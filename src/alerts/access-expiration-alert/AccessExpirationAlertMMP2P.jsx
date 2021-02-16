@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedDate } from '@edx/frontend-platform/i18n';
+import { FormattedDate, injectIntl } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@edx/paragon';
 
 import { Alert, ALERT_TYPES } from '../../generic/user-messages';
@@ -77,4 +77,4 @@ AccessExpirationAlertMMP2P.propTypes = {
   }).isRequired,
 };
 
-export default AccessExpirationAlertMMP2P;
+export default injectIntl(AccessExpirationAlertMMP2P);

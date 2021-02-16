@@ -62,7 +62,7 @@ function AccessExpirationAlert({ intl, payload }) {
   /** [MM-P2P] Experiment */
   if (showMMP2P) {
     return (
-      <AccessExpirationAlertMMP2P intl={intl} payload={payload} />
+      <AccessExpirationAlertMMP2P payload={payload} />
     );
   }
 
