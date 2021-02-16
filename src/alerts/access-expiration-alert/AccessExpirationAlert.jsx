@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   FormattedMessage, FormattedDate, injectIntl, intlShape,
@@ -7,8 +7,18 @@ import { Hyperlink } from '@edx/paragon';
 
 import { Alert, ALERT_TYPES } from '../../generic/user-messages';
 import messages from './messages';
+import AccessExpirationAlertMMP2P from './AccessExpirationAlertMMP2P';
 
 function AccessExpirationAlert({ intl, payload }) {
+  /** [MM-P2P] Experiment */
+  const [showMMP2P, setShowMMP2P] = useState(!!window.experiment__home_alert_bShowMMP2P);
+  if (window.experiment__home_alert_showMMP2P === undefined) {
+    window.experiment__home_alert_showMMP2P = (val) => {
+      window.experiment__home_alert_bShowMMP2P = !!val;
+      setShowMMP2P(!!val);
+    };
+  }
+
   const {
     accessExpiration,
     userTimezone,
@@ -46,6 +56,13 @@ function AccessExpirationAlert({ intl, payload }) {
           }}
         />
       </Alert>
+    );
+  }
+
+  /** [MM-P2P] Experiment */
+  if (showMMP2P) {
+    return (
+      <AccessExpirationAlertMMP2P payload={payload} />
     );
   }
 
