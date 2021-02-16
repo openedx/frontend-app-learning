@@ -1,61 +1,57 @@
 
+import PropTypes from 'prop-types';
 
-function renderFallbackAuthoringUiTo(nexBlock, element) {
-	throw new Error("renderFallbackAuthoringUiTo not yet implemented.");
-}
-
-export class NexBlock {
-
-	renderLearnerUiTo(element) {
-		throw new Error("NexBlock.renderLearnerUiTo must be implemented.");
-	}
-
-	renderInstructorUiTo(element) {
-		return this.renderLearnerUiTo(element);
-	}
-
-	renderAuthorUiTo(element) {
-		renderFallbackAuthoringUi(this, element);
-	}
-
-	getCoreClass() {
-		if(this.constructor.Core ) { return this.constructor.Core; } else {
-			throw new Error("NexBlock.Core must be defined");
-		}
-	}
-}
-
-
-export class NexCore {
-
-	constructor(nexApiProvider) {
-		this._nexApiProvider = nexApiProvider
-	}
-
-	async query(requestData) {
-		throw new Error("NexCore.query must be implemented.");
-	}
-}
-
-
-export class NexApiProvider {
+export class NexDataProvider {
 
 	constructor(instanceKey, learningContextKey) {
 		this.instanceKey = instanceKey;
 		this.learningContextKey = learningContextKey;
 	}
 
-	async fetchInstanceData(key) {
-		throw new Error("NexApiProvider.fetchInstanceData must be implemented.");
+	async fetchInstanceData(dataKey) {
+		throw new Error("NexDataProvider.fetchInstanceData must be implemented.")
 	}
 
-	async fetchLearnerData(key) {
-		throw new Error("NexApiProvider.fetchLearnerData must be implemented.");
+	async fetchLearnerData(dataKey) {
+		throw new Error("NexDataProvider.fetchLearnerData must be implemented.")
 	}
 
-	async emitLearnerEvent(learner, event) {
-		throw new Error("NexApiProvider.emitLearnerEvent must be implemented.");
+	async emitLearnerEvent(eventData) {
+		throw new Error("NexDataProvider.emitLearnerEvent must be implemented.")
 	}
-
 }
 
+export class NexCore {
+
+	constructor(dataProvider) {
+		this.dataProvider = dataProvider;
+	}
+	
+	async query(queryData) {
+		throw new Error("NexCore.query must be implemented.")
+	}
+}
+
+export function NexBlock({core, learnerUi, instructorUi, authorUi, instanceDataSchema}) {
+	const injectCoreIntoProps = ui => (props => ui({core, ...props}));
+
+	this.learnerUi = injectCoreIntoProps(learnerUi);
+	this.instructorUi = instructorUi ? injectCoreIntoProps(instructorUi) : this.learnerUi;
+	this.authorUi = authorUi || FallbackAuthoringUi(instanceDataSchema || null);
+}
+
+NexBlock.propTypes = {
+	core: PropTypes.instanceOf(NexCore).isRequired,
+	learnerUi: PropTypes.elementType.isRequired,
+	instructorUi: PropTypes.elementType,
+	authorUi: PropTypes.elementType,
+	instanceDataSchema: PropTypes.object,
+}
+
+function FallbackAuthoringUi({instanceDataSchema}) {
+	return "Fallback Authoring UI not yet implemented";
+}
+
+FallbackAuthoringUi.propTypes = {
+	instanceDataSchema: PropTypes.object;
+}
