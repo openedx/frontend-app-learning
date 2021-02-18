@@ -139,7 +139,7 @@ function OutlineTab({ intl }) {
               tabFetch={fetchOutlineTab}
             />
           )}
-          {!courseGoalToDisplay && goalOptions.length > 0 && (
+          {!courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
             <CourseGoalCard
               courseId={courseId}
               goalOptions={goalOptions}
@@ -177,7 +177,7 @@ function OutlineTab({ intl }) {
             <ProctoringInfoPanel
               courseId={courseId}
             />
-            {courseGoalToDisplay && goalOptions.length > 0 && (
+            {courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
               <UpdateGoalSelector
                 courseId={courseId}
                 goalOptions={goalOptions}
