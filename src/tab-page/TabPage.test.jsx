@@ -6,7 +6,7 @@ import {
   initializeTestStore, logUnhandledRequests, render, screen,
 } from '../setupTest';
 import { TabPage } from './index';
-import executeThunk from '../utils';
+import { executeThunk } from '../utils';
 import * as thunks from '../course-home/data/thunks';
 
 // We should not test `LoadedTabPage` page here, as `TabPage` is used only for passing `passthroughProps`.

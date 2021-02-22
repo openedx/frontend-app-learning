@@ -6,7 +6,7 @@ import { getConfig } from '@edx/frontend-platform';
 
 import * as thunks from './thunks';
 
-import executeThunk from '../../utils';
+import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 
 import { initializeMockApp } from '../../setupTest';
 import initializeStore from '../../store';
@@ -18,7 +18,8 @@ const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 describe('Data layer integration tests', () => {
   const courseHomeMetadata = Factory.build('courseHomeMetadata');
   const { courseId } = courseHomeMetadata;
-  const courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
   let store;
 

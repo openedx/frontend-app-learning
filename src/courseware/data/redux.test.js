@@ -6,7 +6,7 @@ import { getConfig } from '@edx/frontend-platform';
 
 import * as thunks from './thunks';
 
-import executeThunk from '../../utils';
+import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 
 import buildSimpleCourseBlocks from './__factories__/courseBlocks.factory';
 import { initializeMockApp } from '../../setupTest';
@@ -31,7 +31,9 @@ describe('Data layer integration tests', () => {
     { courseId, unitBlocks, sequenceBlock: sequenceBlock[0] },
   );
 
-  const courseUrl = `${courseBaseUrl}/${courseId}`;
+  let courseUrl = `${courseBaseUrl}/${courseId}`;
+  courseUrl = appendBrowserTimezoneToUrl(courseUrl);
+
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
   const sequenceId = sequenceBlock[0].id;
   const unitId = unitBlocks[0].id;
@@ -69,7 +71,8 @@ describe('Data layer integration tests', () => {
         courseId: forbiddenCourseMetadata.id,
       });
 
-      const forbiddenCourseUrl = `${courseBaseUrl}/${forbiddenCourseMetadata.id}`;
+      let forbiddenCourseUrl = `${courseBaseUrl}/${forbiddenCourseMetadata.id}`;
+      forbiddenCourseUrl = appendBrowserTimezoneToUrl(forbiddenCourseUrl);
 
       axiosMock.onGet(forbiddenCourseUrl).reply(200, forbiddenCourseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, forbiddenCourseBlocks);

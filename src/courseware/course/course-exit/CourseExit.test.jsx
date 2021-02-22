@@ -10,7 +10,7 @@ import {
   initializeMockApp, logUnhandledRequests, render, screen,
 } from '../../../setupTest';
 import initializeStore from '../../../store';
-import executeThunk from '../../../utils';
+import { appendBrowserTimezoneToUrl, executeThunk } from '../../../utils';
 import CourseCelebration from './CourseCelebration';
 import CourseExit from './CourseExit';
 import CourseInProgress from './CourseInProgress';
@@ -28,7 +28,8 @@ describe('Course Exit Pages', () => {
   });
   const defaultCourseBlocks = buildSimpleCourseBlocks(defaultMetadata.id, defaultMetadata.name);
 
-  const courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
+  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
+  courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
   const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
 
   function setMetadata(attributes) {

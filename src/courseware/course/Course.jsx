@@ -50,7 +50,9 @@ function Course({
 
   const dispatch = useDispatch();
   const celebrateFirstSection = celebrations && celebrations.firstSection;
-  const celebrationOpen = shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection, dispatch);
+  const celebrationOpen = shouldCelebrateOnSectionLoad(
+    courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
+  );
 
   // The below block of code should be reverted after the REV1512 experiment
   const [REV1512FlyoverEnabled, setREV1512FlyoverEnabled] = useState(false);

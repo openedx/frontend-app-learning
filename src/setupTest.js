@@ -23,7 +23,7 @@ import { UserMessagesProvider } from './generic/user-messages';
 
 import appMessages from './i18n';
 import { fetchCourse, fetchSequence } from './courseware/data';
-import executeThunk from './utils';
+import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 
 class MockLoggingService {
@@ -135,7 +135,9 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
     courseBlocks, sequenceBlock, courseMetadata, sequenceMetadata,
   } = buildSimpleCourseAndSequenceMetadata(options);
 
-  const forbiddenCourseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseMetadata.id}`;
+  let forbiddenCourseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseMetadata.id}`;
+  forbiddenCourseUrl = appendBrowserTimezoneToUrl(forbiddenCourseUrl);
+
   const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
 
   axiosMock.onGet(forbiddenCourseUrl).reply(200, courseMetadata);

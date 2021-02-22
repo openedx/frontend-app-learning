@@ -14,6 +14,7 @@ import { fetchDatesTab } from '../data';
 import { fireEvent, initializeMockApp, waitFor } from '../../setupTest';
 import initializeStore from '../../store';
 import { TabContainer } from '../../tab-page';
+import { appendBrowserTimezoneToUrl } from '../../utils';
 import { UserMessagesProvider } from '../../generic/user-messages';
 
 initializeMockApp();
@@ -61,9 +62,11 @@ describe('DatesTab', () => {
       const datesTabData = Factory.build('datesTabData');
       const courseMetadata = Factory.build('courseHomeMetadata');
       const { courseId } = courseMetadata;
+      let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+      courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
       axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`).reply(200, courseMetadata);
+      axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
       axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
       history.push(`/course/${courseId}/dates`); // so tab can pull course id from url
 
@@ -133,9 +136,12 @@ describe('DatesTab', () => {
     const { courseId } = courseMetadata;
     const datesTabData = Factory.build('datesTabData');
 
+    let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+    courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
+
     beforeEach(() => {
       axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`).reply(200, courseMetadata);
+      axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
       history.push(`/course/${courseId}/dates`);
     });
 

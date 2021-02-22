@@ -16,6 +16,7 @@ import { initializeMockApp } from '../setupTest';
 import CoursewareContainer from './CoursewareContainer';
 import buildSimpleCourseBlocks from './data/__factories__/courseBlocks.factory';
 import initializeStore from '../store';
+import { appendBrowserTimezoneToUrl } from '../utils';
 
 // NOTE: Because the unit creates an iframe, we choose to mock it out as its rendering isn't
 // pertinent to this test.  Instead, we render a simple div that displays the properties we expect
@@ -106,7 +107,7 @@ describe('CoursewareContainer', () => {
     }
 
     function setupMockRequests() {
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`).reply(200, courseMetadata);
+      axiosMock.onGet(appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`)).reply(200, courseMetadata);
       axiosMock.onGet(new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`)).reply(200, courseBlocks);
       axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceBlock.id}`).reply(200, sequenceMetadata);
     }
@@ -340,7 +341,8 @@ describe('CoursewareContainer', () => {
         { courseId, unitBlocks, sequenceBlock },
       );
 
-      const forbiddenCourseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
+      let forbiddenCourseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
+      forbiddenCourseUrl = appendBrowserTimezoneToUrl(forbiddenCourseUrl);
       const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
       const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceBlock.id}`;
 
