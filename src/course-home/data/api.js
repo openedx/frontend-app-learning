@@ -48,6 +48,8 @@ export function normalizeOutlineBlocks(courseId, blocks) {
         break;
 
       case 'sequential':
+      case 'problemset':
+      case 'videosequence':
         models.sequences[block.id] = {
           complete: block.complete,
           description: block.description,

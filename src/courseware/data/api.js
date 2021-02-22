@@ -33,6 +33,8 @@ export function normalizeBlocks(courseId, blocks) {
         break;
 
       case 'sequential':
+      case 'problemset':
+      case 'videosequence':
         models.sequences[block.id] = {
           effortActivities: block.effort_activities,
           effortTime: block.effort_time,
