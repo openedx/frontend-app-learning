@@ -15,7 +15,7 @@ export default function DateSummary({
 
   /** [MM-P2P experiment] */
   const [showMMP2P, setShowMMP2P] = useState(window.experiment__home_dates_bShowMMP2P);
-  if (window.experiment__home_dates_showMMP2P !== undefined) {
+  if (window.experiment__home_dates_showMMP2P === undefined) {
     window.experiment__home_dates_showMMP2P = (value) => {
       setShowMMP2P(!!value);
       window.experiment__home_dates_bShowMMP2P = !!value;
