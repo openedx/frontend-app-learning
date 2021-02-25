@@ -19,7 +19,7 @@ function recordModalClosing(metadataModel, celebrations, org, courseId, dispatch
     modelType: metadataModel,
     model: {
       id: courseId,
-      celebrations: { ...celebrations, shouldCelebrateStreak: false },
+      celebrations: { ...celebrations, streakLengthToCelebrate: null },
     },
   }));
 }
