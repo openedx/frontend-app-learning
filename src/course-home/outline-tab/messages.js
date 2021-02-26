@@ -140,6 +140,14 @@ const messages = defineMessages({
     id: 'learning.proctoringPanel.status.error',
     defaultMessage: 'Error',
   },
+  otherCourseApprovedProctoringStatus: {
+    id: 'learning.proctoringPanel.status.otherCourseApproved',
+    defaultMessage: 'Approved in Another Course',
+  },
+  expiringSoonProctoringStatus: {
+    id: 'learning.proctoringPanel.status.expiringSoon',
+    defaultMessage: 'Expiring Soon',
+  },
   proctoringCurrentStatus: {
     id: 'learning.proctoringPanel.status',
     defaultMessage: 'Current Onboarding Status:',
@@ -167,6 +175,14 @@ const messages = defineMessages({
   errorProctoringMessage: {
     id: 'learning.proctoringPanel.message.error',
     defaultMessage: 'An error has occurred during your onboarding exam. Please retry onboarding.',
+  },
+  otherCourseApprovedProctoringMessage: {
+    id: 'learning.proctoringPanel.message.otherCourseApproved',
+    defaultMessage: 'Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, it is highly recommended that you complete this course’s onboarding exam in order to ensure that your device still meets the requirements for proctoring.',
+  },
+  expiringSoonProctoringMessage: {
+    id: 'learning.proctoringPanel.message.expiringSoon',
+    defaultMessage: 'Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.',
   },
   proctoringPanelGeneralInfo: {
     id: 'learning.proctoringPanel.generalInfo',
