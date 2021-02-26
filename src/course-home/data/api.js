@@ -117,8 +117,7 @@ export async function getDatesTabData(courseId) {
       return {};
     }
     if (httpErrorStatus === 401) {
-      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`);
-      return {};
+      global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
     }
     throw error;
   }
