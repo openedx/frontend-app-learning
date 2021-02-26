@@ -123,6 +123,34 @@ describe('Outline Tab', () => {
       await fetchAndRender();
       expect(screen.getByTitle('Incomplete section')).toBeInTheDocument();
     });
+
+    it('SequenceLink displays points to legacy courseware', async () => {
+      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      setMetadata({
+        can_load_courseware: false,
+      });
+      setTabData({
+        course_blocks: { blocks: courseBlocks.blocks },
+      });
+      await fetchAndRender();
+
+      const sequenceLink = screen.getByText('Title of Sequence');
+      expect(sequenceLink.getAttribute('href')).toContain(`/courses/${courseId}`);
+    });
+
+    it('SequenceLink displays points to courseware MFE', async () => {
+      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      setMetadata({
+        can_load_courseware: true,
+      });
+      setTabData({
+        course_blocks: { blocks: courseBlocks.blocks },
+      });
+      await fetchAndRender();
+
+      const sequenceLink = screen.getByText('Title of Sequence');
+      expect(sequenceLink.getAttribute('href')).toContain(`/course/${courseId}`);
+    });
   });
 
   describe('Welcome Message', () => {

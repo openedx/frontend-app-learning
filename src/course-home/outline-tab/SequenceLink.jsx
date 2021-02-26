@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
+import { Hyperlink } from '@edx/paragon';
 import {
   FormattedMessage,
   FormattedTime,
@@ -27,6 +28,7 @@ function SequenceLink({
     complete,
     description,
     due,
+    lmsWebUrl,
     showLink,
     title,
   } = sequence;
@@ -35,10 +37,15 @@ function SequenceLink({
       userTimezone,
     },
   } = useModel('outline', courseId);
+  const {
+    canLoadCourseware,
+  } = useModel('courseHomeMeta', courseId);
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
-  const displayTitle = showLink ? <Link to={`/course/${courseId}/${id}`}>{title}</Link> : title;
+  // canLoadCourseware is true if the Courseware MFE is enabled, false otherwise
+  const coursewareUrl = canLoadCourseware ? <Link to={`/course/${courseId}/${id}`}>{title}</Link> : <Hyperlink destination={lmsWebUrl}>{title}</Hyperlink>;
+  const displayTitle = showLink ? coursewareUrl : title;
 
   return (
     <li>

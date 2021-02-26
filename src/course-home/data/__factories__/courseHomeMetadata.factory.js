@@ -13,6 +13,7 @@ Factory.define('courseHomeMetadata')
     title: 'Demonstration Course',
     is_self_paced: false,
     is_enrolled: false,
+    can_load_courseware: false,
   })
   .attr(
     'tabs', ['courseId', 'host'], (courseId, host) => {

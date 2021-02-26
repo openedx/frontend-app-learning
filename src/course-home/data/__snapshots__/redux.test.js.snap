@@ -18,6 +18,7 @@ Object {
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "canLoadCourseware": false,
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
@@ -303,6 +304,7 @@ Object {
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "canLoadCourseware": false,
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
@@ -385,9 +387,10 @@ Object {
               "effortTime": undefined,
               "icon": null,
               "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
+              "lmsWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
               "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               "showLink": true,
-              "title": "bcdabcdabcdabcdabcdabcdabcdabcd1",
+              "title": "Title of Sequence",
             },
           },
         },

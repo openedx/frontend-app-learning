@@ -56,6 +56,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           effortTime: block.effort_time,
           icon: block.icon,
           id: block.id,
+          lmsWebUrl: block.lms_web_url,
           showLink: !!block.lms_web_url, // we reconstruct the url ourselves as an MFE-internal <Link>
           title: block.display_name,
         };

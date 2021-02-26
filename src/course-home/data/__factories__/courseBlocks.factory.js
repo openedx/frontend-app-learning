@@ -56,7 +56,7 @@ Factory.define('courseBlocks')
 export default function buildSimpleCourseBlocks(courseId, title, options = {}) {
   const sequenceBlock = options.sequenceBlock || [Factory.build(
     'block',
-    { type: 'sequential' },
+    { display_name: 'Title of Sequence', type: 'sequential' },
     { courseId },
   )];
   const sectionBlock = options.sectionBlock || Factory.build(
