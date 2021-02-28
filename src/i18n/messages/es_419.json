@@ -273,6 +273,14 @@
   "masquerade-widget.userName.error.generic": "An error has occurred; please try again.",
   "masquerade-widget.userName.input.placeholder": "Username or email",
   "masquerade-widget.userName.input.label": "Masquerade as this user",
+  "learning.streakCelebration.header": "day streak",
+  "learning.streakCelebration.body": "Keep it up, you’re on a roll!",
+  "learning.streakCelebration.button": "Keep it up",
+  "learning.streakCelebration.buttonSrOnly": "Close modal and continue",
+  "learning.streakCelebration.factoidABoldedSection": "are 20x more likely to pass their course",
+  "learning.streakCelebration.factoidBBoldedSection": "complete 5x as much course content on average",
+  "learning.streakcelebration.factoida": "Users who learn {streak_length} days in a row {bolded_section} than those who don’t.",
+  "learning.streakcelebration.factoidb": "Users who learn {streak_length} days in a row {bolded_section} vs. those who don’t.",
   "learning.loading.failure": "There was an error loading this course.",
   "learning.loading": "Loading course page…"
 }

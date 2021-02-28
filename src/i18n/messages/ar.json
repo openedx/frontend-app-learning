@@ -273,6 +273,14 @@
   "masquerade-widget.userName.error.generic": "حدث خطأ؛ يرجى المحاولة مرة أخرى.",
   "masquerade-widget.userName.input.placeholder": "اسم المستخدم أو البريد الإلكتروني",
   "masquerade-widget.userName.input.label": "عرف كهذا المستخدم",
+  "learning.streakCelebration.header": "day streak",
+  "learning.streakCelebration.body": "Keep it up, you’re on a roll!",
+  "learning.streakCelebration.button": "Keep it up",
+  "learning.streakCelebration.buttonSrOnly": "Close modal and continue",
+  "learning.streakCelebration.factoidABoldedSection": "are 20x more likely to pass their course",
+  "learning.streakCelebration.factoidBBoldedSection": "complete 5x as much course content on average",
+  "learning.streakcelebration.factoida": "Users who learn {streak_length} days in a row {bolded_section} than those who don’t.",
+  "learning.streakcelebration.factoidb": "Users who learn {streak_length} days in a row {bolded_section} vs. those who don’t.",
   "learning.loading.failure": "حدث خطأ أثناء تحميل هذا المساق.",
   "learning.loading": "يتم الآن تحميل صفحة المساق..."
 }
