@@ -510,6 +510,8 @@ describe('Outline Tab', () => {
   });
 
   describe('Proctoring Info Panel', () => {
+    const onboardingReleaseDate = new Date();
+    onboardingReleaseDate.setDate(new Date().getDate() - 7);
     it('appears', async () => {
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -521,6 +523,7 @@ describe('Outline Tab', () => {
         onboarding_status: 'verified',
         onboarding_link: 'test',
         expiration_date: null,
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -535,6 +538,7 @@ describe('Outline Tab', () => {
         onboarding_status: 'rejected',
         onboarding_link: 'test',
         expiration_date: null,
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -549,6 +553,7 @@ describe('Outline Tab', () => {
         onboarding_status: 'submitted',
         onboarding_link: 'test',
         expiration_date: null,
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -561,6 +566,7 @@ describe('Outline Tab', () => {
         onboarding_status: 'second_review_required',
         onboarding_link: 'test',
         expiration_date: null,
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -576,6 +582,7 @@ describe('Outline Tab', () => {
         onboarding_status: 'other_course_approved',
         onboarding_link: 'test',
         expiration_date: expirationDate.toString(),
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -591,6 +598,7 @@ describe('Outline Tab', () => {
         onboarding_status: 'other_course_approved',
         onboarding_link: 'test',
         expiration_date: expirationDate.toString(),
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -603,6 +611,7 @@ describe('Outline Tab', () => {
         onboarding_status: '',
         onboarding_link: 'test',
         expiration_date: null,
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -615,6 +624,42 @@ describe('Outline Tab', () => {
     it('does not appear for 404', async () => {
       axiosMock.onGet(proctoringInfoUrl).reply(404);
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).not.toBeInTheDocument();
+    });
+
+    it('appears with a disabled link if onboarding not yet released', async () => {
+      const futureReleaseDate = new Date();
+      futureReleaseDate.setDate(new Date().getDate() + 7);
+      const expectedDateStr = new Intl.DateTimeFormat('en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }).format(futureReleaseDate);
+
+
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: '',
+        onboarding_link: 'test',
+        expiration_date: expirationDate.toString(),
+        onboarding_release_date: futureReleaseDate.toISOString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText(`Onboarding Opens: ${expectedDateStr}`)).toBeInTheDocument();
+    });
+
+    it('appears and ignores a missing release date', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'verified',
+        onboarding_link: 'test',
+        expiration_date: null,
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
+      expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).not.toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).not.toBeInTheDocument();
     });
   });
 });
