@@ -125,24 +125,28 @@ function ProctoringInfoPanel({ courseId, intl }) {
                 <p>{intl.formatMessage(messages.proctoringPanelGeneralTime)}</p>
               </>
             )}
-            {isNotYetSubmitted(status) && !isNotYetReleased(releaseDate) && (
-              <Button variant="primary" block href={`${getConfig().LMS_BASE_URL}${link}`}>
-                {intl.formatMessage(messages.proctoringOnboardingButton)}
-              </Button>
-            )}
-            {isNotYetSubmitted(status) && isNotYetReleased(releaseDate) && (
-              <Button variant="secondary" block disabled aria-disabled="true">
-                {intl.formatMessage(
-                  messages.proctoringOnboardingButtonNotOpen,
-                  {
-                    releaseDate: intl.formatDate(releaseDate, {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    }),
-                  },
+            {isNotYetSubmitted(status) && (
+              <>
+                {!isNotYetReleased(releaseDate) && (
+                  <Button variant="primary" block href={`${getConfig().LMS_BASE_URL}${link}`}>
+                    {intl.formatMessage(messages.proctoringOnboardingButton)}
+                  </Button>
                 )}
-              </Button>
+                {isNotYetReleased(releaseDate) && (
+                  <Button variant="secondary" block disabled aria-disabled="true">
+                    {intl.formatMessage(
+                      messages.proctoringOnboardingButtonNotOpen,
+                      {
+                        releaseDate: intl.formatDate(releaseDate, {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        }),
+                      },
+                    )}
+                  </Button>
+                )}
+              </>
             )}
             <Button variant="outline-primary" block href="https://support.edx.org/hc/en-us/sections/115004169247-Taking-Timed-and-Proctored-Exams">
               {intl.formatMessage(messages.proctoringReviewRequirementsButton)}
