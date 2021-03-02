@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import camelCase from 'lodash.camelcase';
 import PropTypes from 'prop-types';
 
 import { getConfig } from '@edx/frontend-platform';
@@ -13,16 +14,30 @@ function ProctoringInfoPanel({ courseId, intl }) {
   const [link, setLink] = useState('');
   const [readableStatus, setReadableStatus] = useState('');
 
+  const readableStatuses = {
+    notStarted: 'notStarted',
+    started: 'started',
+    submitted: 'submitted',
+    verified: 'verified',
+    rejected: 'rejected',
+    error: 'error',
+    otherCourseApproved: 'otherCourseApproved',
+    expiringSoon: 'expiringSoon',
+  };
+
   function getReadableStatusClass(examStatus) {
     let readableClass = '';
     if (['created', 'download_software_clicked', 'ready_to_start'].includes(examStatus) || !examStatus) {
-      readableClass = 'notStarted';
+      readableClass = readableStatuses.notStarted;
     } else if (['started', 'ready_to_submit'].includes(examStatus)) {
-      readableClass = 'started';
+      readableClass = readableStatuses.started;
     } else if (['second_review_required', 'submitted'].includes(examStatus)) {
-      readableClass = 'submitted';
-    } else if (['verified', 'rejected', 'error'].includes(examStatus)) {
-      readableClass = examStatus;
+      readableClass = readableStatuses.submitted;
+    } else {
+      const examStatusCamelCase = camelCase(examStatus);
+      if (examStatusCamelCase in readableStatuses) {
+        readableClass = readableStatuses[examStatusCamelCase];
+      }
     }
     return readableClass;
   }
@@ -32,14 +47,21 @@ function ProctoringInfoPanel({ courseId, intl }) {
     return !NO_SHOW_STATES.includes(examStatus);
   }
 
-  function getBorderClass(examStatus) {
+  function getBorderClass() {
     let borderClass = '';
-    if (['submitted', 'second_review_required'].includes(examStatus)) {
+    if (readableStatus === readableStatuses.submitted) {
       borderClass = 'proctoring-onboarding-submitted';
-    } else if (examStatus === 'verified') {
+    } else if (readableStatus === readableStatuses.verified) {
       borderClass = 'proctoring-onboarding-success';
     }
     return borderClass;
+  }
+
+  function isExpiringSoon(dateString) {
+    // Returns true if the expiration date is within 28 days
+    const today = new Date();
+    const expirationDateObject = new Date(dateString);
+    return today > expirationDateObject.getTime() - 2419200000;
   }
 
   useEffect(() => {
@@ -49,7 +71,12 @@ function ProctoringInfoPanel({ courseId, intl }) {
           if (response) {
             setStatus(response.onboarding_status);
             setLink(response.onboarding_link);
-            setReadableStatus(getReadableStatusClass(response.onboarding_status));
+            const expirationDate = response.expiration_date;
+            if (expirationDate && isExpiringSoon(expirationDate)) {
+              setReadableStatus(getReadableStatusClass('expiringSoon'));
+            } else {
+              setReadableStatus(getReadableStatusClass(response.onboarding_status));
+            }
           }
         },
       );
@@ -58,7 +85,7 @@ function ProctoringInfoPanel({ courseId, intl }) {
   return (
     <>
       { link && (
-        <section className={`mb-4 p-3 outline-sidebar-proctoring-panel ${getBorderClass(status)}`}>
+        <section className={`mb-4 p-3 outline-sidebar-proctoring-panel ${getBorderClass()}`}>
           <h2 className="h4" id="outline-sidebar-upgrade-header">{intl.formatMessage(messages.proctoringInfoPanel)}</h2>
           <div>
             {readableStatus && (
@@ -71,7 +98,7 @@ function ProctoringInfoPanel({ courseId, intl }) {
                 </p>
               </>
             )}
-            {(readableStatus !== 'verified') && (
+            {![readableStatuses.verified, readableStatuses.otherCourseApproved].includes(readableStatus) && (
               <>
                 <p>
                   {isNotYetSubmitted(status) && (

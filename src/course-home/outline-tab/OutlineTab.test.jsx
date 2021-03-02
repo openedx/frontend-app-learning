@@ -55,7 +55,11 @@ describe('Outline Tab', () => {
     axiosMock.onPost(enrollmentUrl).reply(200, {});
     axiosMock.onPost(goalUrl).reply(200, { header: 'Success' });
     axiosMock.onGet(outlineUrl).reply(200, defaultTabData);
-    axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: 'created', onboarding_link: 'test' });
+    axiosMock.onGet(proctoringInfoUrl).reply(200, {
+      onboarding_status: 'created',
+      onboarding_link: 'test',
+      expiration_date: null,
+    });
 
     logUnhandledRequests(axiosMock);
   });
@@ -513,7 +517,11 @@ describe('Outline Tab', () => {
     });
 
     it('appears for verified', async () => {
-      axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: 'verified', onboarding_link: 'test' });
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'verified',
+        onboarding_link: 'test',
+        expiration_date: null,
+      });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).not.toBeInTheDocument();
@@ -523,7 +531,11 @@ describe('Outline Tab', () => {
     });
 
     it('appears for rejected', async () => {
-      axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: 'rejected', onboarding_link: 'test' });
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'rejected',
+        onboarding_link: 'test',
+        expiration_date: null,
+      });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
@@ -533,7 +545,11 @@ describe('Outline Tab', () => {
     });
 
     it('appears for submitted', async () => {
-      axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: 'submitted', onboarding_link: 'test' });
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'submitted',
+        onboarding_link: 'test',
+        expiration_date: null,
+      });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByText('Your submitted profile is in review.')).toBeInTheDocument();
@@ -541,15 +557,53 @@ describe('Outline Tab', () => {
     });
 
     it('appears for second_review_required', async () => {
-      axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: 'second_review_required', onboarding_link: 'test' });
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'second_review_required',
+        onboarding_link: 'test',
+        expiration_date: null,
+      });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByText('Your submitted profile is in review.')).toBeInTheDocument();
       expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
     });
 
+    it('appears for other_course_approved if not expiring soon', async () => {
+      const expirationDate = new Date();
+      // Set the expiration date 40 days in the future, so as not to trigger the 28 day expiration warning
+      expirationDate.setTime(expirationDate.getTime() + 3456900000);
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'other_course_approved',
+        onboarding_link: 'test',
+        expiration_date: expirationDate.toString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, it is highly recommended that you complete this course’s onboarding exam in order to ensure that your device still meets the requirements for proctoring.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).not.toBeInTheDocument();
+    });
+
+    it('displays expiration warning', async () => {
+      const expirationDate = new Date();
+      // This message will render if the expiration date is within 28 days; set the date 10 days in future
+      expirationDate.setTime(expirationDate.getTime() + 864800000);
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'other_course_approved',
+        onboarding_link: 'test',
+        expiration_date: expirationDate.toString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
+    });
+
     it('appears for no status', async () => {
-      axiosMock.onGet(proctoringInfoUrl).reply(200, { onboarding_status: '', onboarding_link: 'test' });
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: '',
+        onboarding_link: 'test',
+        expiration_date: null,
+      });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
