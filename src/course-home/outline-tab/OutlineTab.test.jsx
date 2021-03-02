@@ -635,11 +635,10 @@ describe('Outline Tab', () => {
         year: 'numeric',
       }).format(futureReleaseDate);
 
-
       axiosMock.onGet(proctoringInfoUrl).reply(200, {
         onboarding_status: '',
         onboarding_link: 'test',
-        expiration_date: expirationDate.toString(),
+        expiration_date: null,
         onboarding_release_date: futureReleaseDate.toISOString(),
       });
       await fetchAndRender();
