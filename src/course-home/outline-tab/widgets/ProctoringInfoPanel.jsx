@@ -12,6 +12,7 @@ import { getProctoringInfoData } from '../../data/api';
 function ProctoringInfoPanel({ courseId, intl }) {
   const [status, setStatus] = useState('');
   const [link, setLink] = useState('');
+  const [releaseDate, setReleaseDate] = useState(null);
   const [readableStatus, setReadableStatus] = useState('');
 
   const readableStatuses = {
@@ -47,6 +48,14 @@ function ProctoringInfoPanel({ courseId, intl }) {
     return !NO_SHOW_STATES.includes(examStatus);
   }
 
+  function isNotYetReleased(examReleaseDate) {
+    if (!examReleaseDate) {
+      return false;
+    }
+    const now = new Date();
+    return now < examReleaseDate;
+  }
+
   function getBorderClass() {
     let borderClass = '';
     if (readableStatus === readableStatuses.submitted) {
@@ -77,6 +86,7 @@ function ProctoringInfoPanel({ courseId, intl }) {
             } else {
               setReadableStatus(getReadableStatusClass(response.onboarding_status));
             }
+            setReleaseDate(new Date(response.onboarding_release_date));
           }
         },
       );
@@ -116,9 +126,27 @@ function ProctoringInfoPanel({ courseId, intl }) {
               </>
             )}
             {isNotYetSubmitted(status) && (
-              <Button variant="primary" block href={`${getConfig().LMS_BASE_URL}${link}`}>
-                {intl.formatMessage(messages.proctoringOnboardingButton)}
-              </Button>
+              <>
+                {!isNotYetReleased(releaseDate) && (
+                  <Button variant="primary" block href={`${getConfig().LMS_BASE_URL}${link}`}>
+                    {intl.formatMessage(messages.proctoringOnboardingButton)}
+                  </Button>
+                )}
+                {isNotYetReleased(releaseDate) && (
+                  <Button variant="secondary" block disabled aria-disabled="true">
+                    {intl.formatMessage(
+                      messages.proctoringOnboardingButtonNotOpen,
+                      {
+                        releaseDate: intl.formatDate(releaseDate, {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        }),
+                      },
+                    )}
+                  </Button>
+                )}
+              </>
             )}
             <Button variant="outline-primary" block href="https://support.edx.org/hc/en-us/sections/115004169247-Taking-Timed-and-Proctored-Exams">
               {intl.formatMessage(messages.proctoringReviewRequirementsButton)}

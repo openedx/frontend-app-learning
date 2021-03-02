@@ -200,6 +200,10 @@ const messages = defineMessages({
     id: 'learning.proctoringPanel.onboardingButton',
     defaultMessage: 'Complete Onboarding',
   },
+  proctoringOnboardingButtonNotOpen: {
+    id: 'learning.proctoringPanel.onboardingButtonNotOpen',
+    defaultMessage: 'Onboarding Opens: {releaseDate}',
+  },
   proctoringReviewRequirementsButton: {
     id: 'learning.proctoringPanel.reviewRequirementsButton',
     defaultMessage: 'Review instructions and system requirements',
