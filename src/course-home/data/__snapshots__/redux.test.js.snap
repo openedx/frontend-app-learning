@@ -282,6 +282,9 @@ Object {
       },
     },
   },
+  "recommendations": Object {
+    "recommendationsStatus": "loading",
+  },
 }
 `;
 
@@ -434,6 +437,9 @@ Object {
         "welcomeMessageHtml": "<p>Welcome to this course!</p>",
       },
     },
+  },
+  "recommendations": Object {
+    "recommendationsStatus": "loading",
   },
 }
 `;

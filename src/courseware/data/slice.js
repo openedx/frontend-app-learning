@@ -54,6 +54,9 @@ export const {
   fetchSequenceRequest,
   fetchSequenceSuccess,
   fetchSequenceFailure,
+  fetchCourseRecommendationsRequest,
+  fetchCourseRecommendationsSuccess,
+  fetchCourseRecommendationsFailure,
 } = slice.actions;
 
 export const {
