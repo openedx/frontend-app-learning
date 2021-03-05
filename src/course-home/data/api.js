@@ -201,6 +201,7 @@ export async function getOutlineTabData(courseId) {
     resumeCourse,
     verifiedMode,
     welcomeMessageHtml,
+    timeOffsetMillis: 0,
   };
 }
 

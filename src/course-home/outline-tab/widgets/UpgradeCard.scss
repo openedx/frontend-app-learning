@@ -2,3 +2,19 @@
   border: 1px solid $dark-500;
   border-top: 5px solid $dark-500;
 }
+
+.upsell-warning{
+  background-color: #FCF1F4;
+}
+
+.upsell-warning-light{
+  background-color: #FFFAED;;
+}
+
+.discount-info {
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.inline-link-underline {
+  text-decoration: underline;
+}
