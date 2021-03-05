@@ -21,6 +21,31 @@ const messages = defineMessages({
     defaultMessage: 'Example Certificate',
     description: 'Alternate text displayed when the example certificate image cannot be displayed.',
   },
+  'learn.lockPaywall.list.intro': {
+    id: 'learn.lockPaywall.list.intro',
+    defaultMessage: 'When you upgrade, you:',
+    description: 'TBD',
+  },
+  'learn.lockPaywall.list.bullet1.linktext': {
+    id: 'learn.lockPaywall.list.bullet1.linktext',
+    defaultMessage: 'verified certificate',
+    description: 'TBD',
+  },
+  'learn.lockPaywall.list.bullet2.boldtext': {
+    id: 'learn.lockPaywall.list.bullet2.boldtext',
+    defaultMessage: 'graded assignments',
+    description: 'TBD',
+  },
+  'learn.lockPaywall.list.bullet3.boldtext': {
+    id: 'learn.lockPaywall.list.bullet3.boldtext',
+    defaultMessage: 'Full access',
+    description: 'TBD',
+  },
+  'learn.lockPaywall.list.bullet4.boldtext': {
+    id: 'learn.lockPaywall.list.bullet4.boldtext',
+    defaultMessage: 'non-profit',
+    description: 'TBD',
+  },
 });
 
 export default messages;

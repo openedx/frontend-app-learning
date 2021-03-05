@@ -19,14 +19,6 @@ describe('Lock Paywall', () => {
     mockData.courseId = courseware.courseId;
   });
 
-  it('displays message along with lock icon', () => {
-    const { container } = render(<LockPaywall {...mockData} />);
-
-    const lockIcon = container.querySelector('svg');
-    expect(lockIcon).toHaveClass('fa-lock');
-    expect(lockIcon.parentElement).toHaveTextContent('Verified Track Access');
-  });
-
   it('displays unlock link with price', () => {
     const {
       currencySymbol,
@@ -35,7 +27,7 @@ describe('Lock Paywall', () => {
     } = store.getState().models.coursewareMeta[mockData.courseId].verifiedMode;
     render(<LockPaywall {...mockData} />);
 
-    const upgradeLink = screen.getByRole('link', { name: `Upgrade to unlock (${currencySymbol}${price})` });
+    const upgradeLink = screen.getByRole('link', { name: `Upgrade for (${currencySymbol}${price})` });
     expect(upgradeLink).toHaveAttribute('href', `${upgradeUrl}`);
   });
 
