@@ -7,12 +7,13 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Hyperlink, DataTable, CardView } from '@edx/paragon';
 import PropTypes from 'prop-types';
-import Truncate from 'react-truncate';
 import { useModel } from '../../../../generic/model-store';
 import fetchCourseRecommendations from './data/thunks.exp';
 import { FAILED, LOADED, LOADING } from './data/slice.exp';
 import CatalogSuggestion from '../CatalogSuggestion';
 import PageLoading from '../../../../generic/PageLoading';
+import truncate from 'truncate-html';
+
 
 const messages = defineMessages({
   recommendationsHeading: {
@@ -85,12 +86,7 @@ function Card({
           </div>
           <div className="d-card-body">
             <h3 className="name-heading">
-              <Truncate
-                lines={3}
-                width={230}
-                trimWhitespace
-              >{title}
-              </Truncate>
+             {truncate(title, 70, { reserveLastWord: -1 })}
             </h3>
             <div className="provider">
               <FormattedMessage
@@ -100,12 +96,7 @@ function Card({
               >{text => (
                 <>
                   <span className="sr-only">{text}: </span>
-                  <Truncate
-                    lines={1}
-                    width={220}
-                    trimWhitespace
-                  >{formattedOwners}
-                  </Truncate>
+                  {truncate(formattedOwners, 40, { reserveLastWord: -1 })}
                 </>
               )}
               </FormattedMessage>
