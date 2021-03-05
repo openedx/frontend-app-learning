@@ -1,4 +1,53 @@
-.outline-sidebar-upgrade-card {
-  border: 1px solid $dark-500;
-  border-top: 5px solid $dark-500;
+.upgrade-card {
+  border-radius: 0 !important;
+}
+
+.upgrade-card-header{
+  margin: 1.25rem;
+
+}
+
+.upsell-warning{
+  background-color: $danger-100;
+}
+
+.upsell-warning-light{
+  background-color: $warning-100;
+}
+
+.upsell-warning, .upsell-warning-light{
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.upgrade-card-ul{
+  margin-left: 3rem;
+  padding-top: 0.875rem;
+  padding-right: 1.25rem;
+}
+
+.upgrade-card-li{
+  left: -2.125rem;
+}
+
+.upgrade-card-button{
+  margin-left: 1.25rem;
+  margin-right: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.discount-info {
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+}
+
+.inline-link-underline {
+  text-decoration: underline;
+}
+
+.upgrade-card .upgrade-card-message a{
+  color: $primary-500;
 }
