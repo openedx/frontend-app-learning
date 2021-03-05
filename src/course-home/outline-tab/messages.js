@@ -90,6 +90,10 @@ const messages = defineMessages({
     id: 'learning.outline.upgradeTitle',
     defaultMessage: 'Pursue a verified certificate',
   },
+  upsellFirstPurchaseDiscount: {
+    id: 'learning.outline.upsellFirstPurchaseDiscount',
+    defaultMessage: '15% First-Time Learner Discount',
+  },
   certAlt: {
     id: 'learning.outline.certificateAlt',
     defaultMessage: 'Example Certificate',
