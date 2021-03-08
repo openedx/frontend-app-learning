@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { getConfig } from '@edx/frontend-platform';
-
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   FormattedMessage, injectIntl, intlShape, defineMessages,
 } from '@edx/frontend-platform/i18n';
@@ -137,9 +137,19 @@ function CourseRecommendations({ intl, variant }) {
   const { org, number, recommendations } = useModel('coursewareMeta', courseId);
   const dispatch = useDispatch();
 
+  const courseKey = `${org}+${number}`;
+
   useEffect(() => {
-    dispatch(fetchCourseRecommendations(`${org}+${number}`, courseId));
+    dispatch(fetchCourseRecommendations(courseKey, courseId));
   }, [dispatch]);
+
+  if (recommendationsStatus && recommendationsStatus !== LOADING) {
+    sendTrackEvent('edx.ui.lms.course_exit.recommendations.viewed', {
+      course_key: courseKey,
+      recommendations_status: recommendationsStatus,
+      recommendations_length: recommendations ? recommendations.length : 0,
+    });
+  }
 
   if (recommendationsStatus === FAILED || (recommendationsStatus === LOADED && recommendations.length < 2)) {
     return (<CatalogSuggestion variant={variant} />);
