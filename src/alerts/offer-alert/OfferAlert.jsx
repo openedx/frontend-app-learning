@@ -29,8 +29,7 @@ function OfferAlert({ intl, payload }) {
 
   return (
     <Alert type={ALERT_TYPES.INFO}>
-      {/* the first-purchase-offer-banner class can be removed post REV-1512 experiment */}
-      <span className="font-weight-bold first-purchase-offer-banner">
+      <span className="font-weight-bold">
         <FormattedMessage
           id="learning.offer.header"
           defaultMessage="Upgrade by {date} and save {percentage}% [{fullPricing}]"
