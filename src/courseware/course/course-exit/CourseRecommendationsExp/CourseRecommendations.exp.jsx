@@ -7,13 +7,12 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Hyperlink, DataTable, CardView } from '@edx/paragon';
 import PropTypes from 'prop-types';
+import truncate from 'truncate-html';
 import { useModel } from '../../../../generic/model-store';
 import fetchCourseRecommendations from './data/thunks.exp';
 import { FAILED, LOADED, LOADING } from './data/slice.exp';
 import CatalogSuggestion from '../CatalogSuggestion';
 import PageLoading from '../../../../generic/PageLoading';
-import truncate from 'truncate-html';
-
 
 const messages = defineMessages({
   recommendationsHeading: {
@@ -86,7 +85,7 @@ function Card({
           </div>
           <div className="d-card-body">
             <h3 className="name-heading">
-             {truncate(title, 70, { reserveLastWord: -1 })}
+              {truncate(title, 70, { reserveLastWord: -1 })}
             </h3>
             <div className="provider">
               <FormattedMessage

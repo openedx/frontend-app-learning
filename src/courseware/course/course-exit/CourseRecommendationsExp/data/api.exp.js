@@ -32,7 +32,7 @@ export default async function getCourseRecommendations(courseKey) {
   const enrollmentsUrl = new URL(`${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`);
   const [recommendationsResponse, enrollmentsResponse] = await Promise.all([
     getAuthenticatedHttpClient().get(recommendationsUrl),
-    getAuthenticatedHttpClient().get(enrollmentsUrl)
+    getAuthenticatedHttpClient().get(enrollmentsUrl),
   ]);
   return filterRecommendationsList(camelCaseObject(recommendationsResponse), camelCaseObject(enrollmentsResponse));
 }
