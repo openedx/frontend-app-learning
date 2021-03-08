@@ -7,5 +7,6 @@ module.exports = createConfig('jest', {
   coveragePathIgnorePatterns: [
     'src/setupTest.js',
     'src/i18n',
+    'src/.*\\.exp\\..*',
   ],
 });

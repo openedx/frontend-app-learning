@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
@@ -26,6 +26,7 @@ import DashboardFootnote from './DashboardFootnote';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
+import CourseRecommendations from './CourseRecommendationsExp/CourseRecommendations.exp';
 
 const LINKEDIN_BLUE = '#2867B2';
 
@@ -58,6 +59,10 @@ function CourseCelebration({ intl }) {
     certWebViewUrl,
     downloadUrl,
   } = certificateData || {};
+
+  /** [WS-1681 experiment] */
+  const [showWS1681, setShowWS1681] = useState(window.experiment__courseware_celebration_bShowWS1681);
+  useEffect(() => { setShowWS1681(window.experiment__courseware_celebration_bShowWS1681); });
 
   const { administrator, username } = getAuthenticatedUser();
 
@@ -350,7 +355,9 @@ function CourseCelebration({ intl }) {
             />
           ))}
           {footnote}
-          <CatalogSuggestion variant={visitEvent} />
+          { showWS1681 && <CourseRecommendations variant={visitEvent} />}
+          { !showWS1681 && <CatalogSuggestion variant={visitEvent} /> }
+
         </div>
       </div>
     </>
