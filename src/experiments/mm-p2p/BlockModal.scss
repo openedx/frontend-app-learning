@@ -1,0 +1,43 @@
+.mmp2p-modal-dialog.modal-content {
+  padding: 15px;
+  border-radius: 0px;
+  .mmp2p-block-modal-wrapper {
+    background-color: white;
+    text-align: left;
+    .bullet-list-item {
+      font-size: 18px;
+      line-height: 28px;
+      font-weight: 400;
+      &:not(:last-child) {
+        margin-bottom: 20px;
+      }
+      color: $gray-900;
+      .icon-container {
+        vertical-align: top;
+        display: inline-block;
+        margin-right: 7px;
+      }
+      .bullet-item-content {
+        display: inline-block;
+        width: calc(100% - 245px);
+      }
+    }
+    .subheader {
+      font-size: 18px;
+      line-height: 28px;
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
+    img.certificate-image {
+      position: absolute;
+      top: 32px;
+      right: 32px;
+      width: 184px;
+    }
+    #mmp2p-modal-explore-btn {
+      float: right;
+      margin-bottom: 16px;
+      margin-right: 16px;
+    }
+  }
+}
