@@ -408,11 +408,14 @@ Sequence.propTypes = {
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
-    state: PropTypes.shape({
-      isEnabled: PropTypes.bool.isRequired,
-    }),
     flyover: PropTypes.shape({
       isVisible: PropTypes.bool.isRequired,
+    }),
+    meta: PropTypes.shape({
+      showLock: PropTypes.bool,
+    }),
+    state: PropTypes.shape({
+      isEnabled: PropTypes.bool.isRequired,
     }),
   }),
 };
@@ -423,8 +426,9 @@ Sequence.defaultProps = {
 
   /** [MM-P2P] Experiment */
   mmp2p: {
-    state: { isEnabled: false },
     flyover: { isVisible: false },
+    meta: { showLock: false },
+    state: { isEnabled: false },
   },
 };
 

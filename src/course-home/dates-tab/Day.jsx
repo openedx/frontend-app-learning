@@ -128,7 +128,7 @@ Day.propTypes = {
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({
       isEnabled: PropTypes.bool.isRequired,
-      upgradeDeadline: PropTypes.string.isRequired,
+      upgradeDeadline: PropTypes.string,
     }),
   }),
 };
