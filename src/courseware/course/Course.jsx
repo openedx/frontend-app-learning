@@ -16,6 +16,8 @@ import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseSock from '../../generic/course-sock';
 import { useModel } from '../../generic/model-store';
 
+import { initCoursewareMMP2P, MMP2PBlockModal } from '../../experiments/mm-p2p';
+
 function Course({
   courseId,
   sequenceId,
@@ -83,19 +85,25 @@ function Course({
   };
   // The above block of code should be reverted after the REV1512 experiment
 
+  /** [MM-P2P] Experiment */
+  const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
+
   return (
     <>
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
-      <AlertList
-        className="my-3"
-        topic="course"
-        customAlerts={{
-          ...accessExpirationAlert,
-          ...offerAlert,
-        }}
-      />
+      { /** This conditional is for the [MM-P2P] Experiment */}
+      { !MMP2P.state.isEnabled && (
+        <AlertList
+          className="my-3"
+          topic="course"
+          customAlerts={{
+            ...accessExpirationAlert,
+            ...offerAlert,
+          }}
+        />
+      )}
       <CourseBreadcrumbs
         courseId={courseId}
         sectionId={section ? section.id : null}
@@ -103,6 +111,8 @@ function Course({
         toggleREV1512Flyover={toggleREV1512Flyover} /* This line should be reverted after REV1512 experiment */
         REV1512FlyoverEnabled={REV1512FlyoverEnabled} /* This line should be reverted after REV1512 experiment */
         isREV1512FlyoverVisible={isREV1512FlyoverVisible} /* This line should be reverted after REV1512 experiment */
+        //* * [MM-P2P] Experiment */
+        mmp2p={MMP2P}
       />
       <AlertList topic="sequence" />
       <Sequence
@@ -115,6 +125,8 @@ function Course({
         toggleREV1512Flyover={toggleREV1512Flyover} /* This line should be reverted after REV1512 experiment */
         isREV1512FlyoverVisible={isREV1512FlyoverVisible} /* This line should be reverted after REV1512 experiment */
         REV1512FlyoverEnabled={REV1512FlyoverEnabled} /* This line should be reverted after REV1512 experiment */
+        //* * [MM-P2P] Experiment */
+        mmp2p={MMP2P}
       />
       {celebrationOpen && (
         <CelebrationModal
@@ -132,6 +144,7 @@ function Course({
         />
       )}
       <ContentTools course={course} />
+      { MMP2P.meta.modalLock && <MMP2PBlockModal options={MMP2P} /> }
     </>
   );
 }
