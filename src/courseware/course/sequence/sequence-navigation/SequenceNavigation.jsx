@@ -15,6 +15,7 @@ import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
 
 import messages from './messages';
+/** [MM-P2P] Experiment */
 import { MMP2PFlyoverTriggerMobile } from '../../../../experiments/mm-p2p';
 
 function SequenceNavigation({
@@ -90,6 +91,7 @@ function SequenceNavigation({
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
+      {/** [MM-P2P] Experiment (additional conditional) */}
       {!mmp2p.state.isEnabled && REV1512FlyoverEnabled
         && isMobile && (
         <div
@@ -105,6 +107,7 @@ function SequenceNavigation({
           </svg>
         </div>
       )}
+      {/** [MM-P2P] Experiment */}
       { mmp2p.state.isEnabled && <MMP2PFlyoverTriggerMobile options={mmp2p} /> }
       <div className="rev1512ToggleFlyoverSequenceLocation" />
     </nav>

@@ -1,4 +1,5 @@
 import React from 'react';
+/** [MM-P2P] Experiment (import) */
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
@@ -7,6 +8,7 @@ import { useModel } from '../../generic/model-store';
 import Day from './Day';
 import { daycmp, isLearnerAssignment } from './utils';
 
+/** [MM-P2P] Experiment (argument) */
 export default function Timeline({ mmp2p }) {
   const {
     courseId,

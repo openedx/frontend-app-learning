@@ -28,6 +28,7 @@ import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 
+/** [MM-P2P] Experiment */
 import { initHomeMMP2P, MMP2PFlyover } from '../../experiments/mm-p2p';
 
 function OutlineTab({ intl }) {
@@ -114,6 +115,7 @@ function OutlineTab({ intl }) {
           </div>
         )}
       </div>
+      {/** [MM-P2P] Experiment (className for optimizely trigger) */}
       <div className="row course-outline-tab">
         <div className="col-12">
           <AlertList
@@ -146,6 +148,7 @@ function OutlineTab({ intl }) {
               hasEnded={hasEnded}
               model="outline"
               tabFetch={fetchOutlineTab}
+              /** [MM-P2P] Experiment */
               isMMP2PEnabled={MMP2P.state.isEnabled}
             />
           )}

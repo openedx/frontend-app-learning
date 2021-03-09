@@ -10,6 +10,7 @@ import { useModel } from '../../../generic/model-store';
 function CourseDates({
   courseId,
   intl,
+  /** [MM-P2P] Experiment */
   mmp2p,
 }) {
   const {

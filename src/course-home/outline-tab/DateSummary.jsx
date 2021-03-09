@@ -24,6 +24,7 @@ export default function DateSummary({
         <FontAwesomeIcon icon={faCalendarAlt} className="ml-3 mt-1 mr-1" fixedWidth />
         <div className="ml-1 font-weight-bold">
           <FormattedDate
+            /** [MM-P2P] Experiment */
             value={showMMP2P ? mmp2p.state.upgradeDeadline : dateBlock.date}
             day="numeric"
             month="short"
@@ -88,6 +89,7 @@ DateSummary.propTypes = {
 
 DateSummary.defaultProps = {
   userTimezone: null,
+  /** [MM-P2P] Experiment */
   mmp2p: {
     state: {
       isEnabled: false,

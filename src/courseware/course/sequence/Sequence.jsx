@@ -347,6 +347,7 @@ function Sequence({
                 sequenceId={sequenceId}
                 unitId={unitId}
                 unitLoadedHandler={handleUnitLoaded}
+                /** [MM-P2P] Experiment */
                 mmp2p={mmp2p}
               />
               {unitHasLoaded && (
@@ -367,11 +368,13 @@ function Sequence({
             </div>
           </div>
           {/* This block of code should be reverted post REV1512 experiment */}
+          {/** [MM-P2P] Experiment (additional conditional) */}
           {!mmp2p.state.isEnabled && REV1512FlyoverEnabled && isREV1512FlyoverVisible() && (
             isMobile
               ? <REV1512FlyoverMobile toggleREV1512Flyover={toggleREV1512Flyover} />
               : <REV1512Flyover toggleREV1512Flyover={toggleREV1512Flyover} />
           )}
+          {/** [MM-P2P] Experiment */}
           {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
             isMobile
               ? <MMP2PFlyoverMobile options={mmp2p} />

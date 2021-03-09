@@ -97,6 +97,7 @@ export default function CourseBreadcrumbs({
           </CourseBreadcrumb>
         ))}
         {/* The below block of code should be reverted after the REV1512 experiment */}
+        {/** [MM-P2P] Experiment (additional conditional) */}
         {REV1512FlyoverEnabled && !mmp2p.state.isEnabled && !isMobile && (
           <div
             className="toggleFlyoverButton"
@@ -111,6 +112,7 @@ export default function CourseBreadcrumbs({
             </svg>
           </div>
         )}
+        {/** [MM-P2P] Experiment */}
         {mmp2p.state.isEnabled && (
           <MMP2PFlyoverTrigger options={mmp2p} />
         )}

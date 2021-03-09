@@ -18,6 +18,7 @@ import { useModel } from '../../../generic/model-store';
 import PageLoading from '../../../generic/PageLoading';
 import { processEvent } from '../../../course-home/data/thunks';
 import { fetchCourse } from '../../data/thunks';
+/** [MM-P2P] Experiment */
 import { MMP2PLockPaywall } from '../../../experiments/mm-p2p';
 
 const LockPaywall = React.lazy(() => import('./lock-paywall'));

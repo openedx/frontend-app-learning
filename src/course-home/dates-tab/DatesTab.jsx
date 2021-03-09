@@ -23,6 +23,7 @@ function DatesTab({ intl }) {
     hasEnded,
   } = useModel('dates', courseId);
 
+  /** [MM-P2P] Experiment */
   const mmp2p = initDatesMMP2P(courseId);
 
   return (

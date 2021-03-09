@@ -16,6 +16,7 @@ import CourseBreadcrumbs from './CourseBreadcrumbs';
 import CourseSock from '../../generic/course-sock';
 import { useModel } from '../../generic/model-store';
 
+/** [MM-P2P] Experiment */
 import { initCoursewareMMP2P, MMP2PBlockModal } from '../../experiments/mm-p2p';
 
 function Course({
@@ -144,6 +145,7 @@ function Course({
         />
       )}
       <ContentTools course={course} />
+      { /** [MM-P2P] Experiment */ }
       { MMP2P.meta.modalLock && <MMP2PBlockModal options={MMP2P} /> }
     </>
   );
