@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { useModel } from '../../generic/model-store';
@@ -6,7 +7,7 @@ import { useModel } from '../../generic/model-store';
 import Day from './Day';
 import { daycmp, isLearnerAssignment } from './utils';
 
-export default function Timeline() {
+export default function Timeline({ mmp2p }) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -63,8 +64,17 @@ export default function Timeline() {
   return (
     <ul className="list-unstyled m-0">
       {groupedDates.map((groupedDate) => (
-        <Day key={groupedDate.date} {...groupedDate} />
+        <Day key={groupedDate.date} {...groupedDate} mmp2p={mmp2p} />
       ))}
     </ul>
   );
 }
+
+/** [MM-P2P] Experiment */
+Timeline.propTypes = {
+  mmp2p: PropTypes.shape({}),
+};
+
+Timeline.defaultProps = {
+  mmp2p: {},
+};

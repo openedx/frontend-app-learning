@@ -13,7 +13,13 @@ import { getBadgeListAndColor } from './badgelist';
 import { isLearnerAssignment } from './utils';
 
 function Day({
-  date, first, intl, items, last,
+  date,
+  first,
+  intl,
+  items,
+  last,
+  /** [MM-P2P] Example */
+  mmp2p,
 }) {
   const {
     courseId,
@@ -26,6 +32,11 @@ function Day({
 
   const { color, badges } = getBadgeListAndColor(date, intl, null, items);
 
+  /** [MM-P2P] Experiment */
+  const mmp2pOverride = (
+    mmp2p.state.isEnabled
+    && items.some((item) => item.dateType === 'verified-upgrade-deadline')
+  );
   return (
     <li className="dates-day pb-4" data-testid="dates-day">
       {/* Top Line */}
@@ -42,7 +53,8 @@ function Day({
         <div className="mb-1" data-testid="dates-header">
           <p className="d-inline text-dark-500 font-weight-bold">
             <FormattedDate
-              value={date}
+              /** [MM-P2P] Experiment */
+              value={mmp2pOverride ? mmp2p.state.upgradeDeadline : date}
               day="numeric"
               month="short"
               weekday="short"
@@ -53,11 +65,16 @@ function Day({
           {badges}
         </div>
         {items.map((item) => {
-          const { badges: itemBadges } = getBadgeListAndColor(date, intl, item, items);
+          /** [MM-P2P] Experiment (conditional) */
+          const { badges: itemBadges } = mmp2pOverride
+            ? getBadgeListAndColor(new Date(mmp2p.state.upgradeDeadline), intl, item, items)
+            : getBadgeListAndColor(date, intl, item, items);
+
           const showLink = item.link && isLearnerAssignment(item);
           const title = showLink ? (<u><a href={item.link} className="text-reset">{item.title}</a></u>) : item.title;
           const available = item.learnerHasAccess && (item.link || !isLearnerAssignment(item));
           const textColor = available ? 'text-dark-500' : 'text-dark-200';
+
           return (
             <div key={item.title + item.date} className={textColor} data-testid="dates-item">
               <div>
@@ -76,7 +93,15 @@ function Day({
                   </OverlayTrigger>
                 )}
               </div>
-              {item.description && <div className="small mb-2">{item.description}</div>}
+              { /** [MM-P2P] Experiment (conditional) */ }
+              { mmp2pOverride
+                ? (
+                  <div className="small mb-2">
+                    You are still elligible to upgrade to a Verified Certificate!
+                    &nbsp; Unlock full course access and highlight the knowledge you&apos;ll gain.
+                  </div>
+                )
+                : (item.description && <div className="small mb-2">{item.description}</div>)}
             </div>
           );
         })}
@@ -99,11 +124,25 @@ Day.propTypes = {
     title: PropTypes.string,
   })).isRequired,
   last: PropTypes.bool,
+  /** [MM-P2P] Experiment */
+  mmp2p: PropTypes.shape({
+    state: PropTypes.shape({
+      isEnabled: PropTypes.bool.isRequired,
+      upgradeDeadline: PropTypes.string.isRequired,
+    }),
+  }),
 };
 
 Day.defaultProps = {
   first: false,
   last: false,
+  /** [MM-P2P] Experiment */
+  mmp2p: {
+    state: {
+      isEnabled: false,
+      upgradeDeadline: '',
+    },
+  },
 };
 
 export default injectIntl(Day);
