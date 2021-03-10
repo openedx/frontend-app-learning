@@ -15,8 +15,6 @@ import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
 
 import messages from './messages';
-/** [MM-P2P] Experiment */
-import { MMP2PFlyoverTriggerMobile } from '../../../../experiments/mm-p2p';
 
 function SequenceNavigation({
   intl,
@@ -30,8 +28,6 @@ function SequenceNavigation({
   toggleREV1512Flyover, /* This line should be reverted after the REV1512 experiment */
   REV1512FlyoverEnabled, /* This line should be reverted after the REV1512 experiment */
   isREV1512FlyoverVisible, /* This line should be reverted after the REV1512 experiment */
-  /** [MM-P2P] Experiment */
-  mmp2p,
 }) {
   const sequence = useModel('sequences', sequenceId);
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
@@ -91,8 +87,7 @@ function SequenceNavigation({
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
-      {/** [MM-P2P] Experiment (additional conditional) */}
-      {!mmp2p.state.isEnabled && REV1512FlyoverEnabled
+      {REV1512FlyoverEnabled
         && isMobile && (
         <div
           className="toggleFlyoverButton toggleFlyoverButtonMobile"
@@ -107,8 +102,6 @@ function SequenceNavigation({
           </svg>
         </div>
       )}
-      {/** [MM-P2P] Experiment */}
-      { mmp2p.state.isEnabled && <MMP2PFlyoverTriggerMobile options={mmp2p} /> }
       <div className="rev1512ToggleFlyoverSequenceLocation" />
     </nav>
   );
@@ -126,23 +119,11 @@ SequenceNavigation.propTypes = {
   toggleREV1512Flyover: PropTypes.func.isRequired, /* This line should be reverted after the REV1512 experiment */
   REV1512FlyoverEnabled: PropTypes.bool.isRequired, /* This line should be reverted after the REV1512 experiment */
   isREV1512FlyoverVisible: PropTypes.func.isRequired, /* This line should be reverted after the REV1512 experiment */
-
-  /** [MM-P2P] Experiment */
-  mmp2p: PropTypes.shape({
-    state: PropTypes.shape({
-      isEnabled: PropTypes.bool.isRequired,
-    }),
-  }),
 };
 
 SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
-
-  /** [MM-P2P] Experiment */
-  mmp2p: {
-    state: { isEnabled: false },
-  },
 };
 
 export default injectIntl(SequenceNavigation);

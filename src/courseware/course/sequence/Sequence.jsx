@@ -24,9 +24,6 @@ import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 
-/** [MM-P2P] Experiment */
-import { MMP2PFlyover, MMP2PFlyoverMobile } from '../../../experiments/mm-p2p';
-
 function REV1512Flyover({ toggleREV1512Flyover }) {
   // This component should be reverted after the REV1512 experiment
   return (
@@ -195,8 +192,6 @@ function Sequence({
   isREV1512FlyoverVisible, /* This line should be reverted after the REV1512 experiment */
   REV1512FlyoverEnabled, /* This line should be reverted after the REV1512 experiment */
   toggleREV1512Flyover, /* This line should be reverted after the REV1512 experiment */
-  /** [MM-P2P] Experiment */
-  mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
@@ -323,9 +318,6 @@ function Sequence({
               toggleREV1512Flyover={toggleREV1512Flyover} /* This line should be reverted after REV1512 experiment */
               REV1512FlyoverEnabled={REV1512FlyoverEnabled} /* This line should be reverted after REV1512 experiment */
               isREV1512FlyoverVisible={isREV1512FlyoverVisible} /* should be reverted after REV1512 experiment */
-              /** [MM-P2P] Experiment */
-              mmp2p={mmp2p}
-
               nextSequenceHandler={() => {
                 logEvent('edx.ui.lms.sequence.next_selected', 'top');
                 handleNext();
@@ -347,8 +339,6 @@ function Sequence({
                 sequenceId={sequenceId}
                 unitId={unitId}
                 unitLoadedHandler={handleUnitLoaded}
-                /** [MM-P2P] Experiment */
-                mmp2p={mmp2p}
               />
               {unitHasLoaded && (
               <UnitNavigation
@@ -368,17 +358,10 @@ function Sequence({
             </div>
           </div>
           {/* This block of code should be reverted post REV1512 experiment */}
-          {/** [MM-P2P] Experiment (additional conditional) */}
-          {!mmp2p.state.isEnabled && REV1512FlyoverEnabled && isREV1512FlyoverVisible() && (
+          {REV1512FlyoverEnabled && isREV1512FlyoverVisible() && (
             isMobile
               ? <REV1512FlyoverMobile toggleREV1512Flyover={toggleREV1512Flyover} />
               : <REV1512Flyover toggleREV1512Flyover={toggleREV1512Flyover} />
-          )}
-          {/** [MM-P2P] Experiment */}
-          {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
-            isMobile
-              ? <MMP2PFlyoverMobile options={mmp2p} />
-              : <MMP2PFlyover options={mmp2p} />
           )}
         </div>
         <CourseLicense license={course.license || undefined} />
@@ -405,31 +388,11 @@ Sequence.propTypes = {
   toggleREV1512Flyover: PropTypes.func.isRequired, /* This line should be reverted after the REV1512 experiment */
   isREV1512FlyoverVisible: PropTypes.func.isRequired, /* This line should be reverted after the REV1512 experiment */
   REV1512FlyoverEnabled: PropTypes.bool.isRequired, /* This line should be reverted after the REV1512 experiment */
-
-  /** [MM-P2P] Experiment */
-  mmp2p: PropTypes.shape({
-    flyover: PropTypes.shape({
-      isVisible: PropTypes.bool.isRequired,
-    }),
-    meta: PropTypes.shape({
-      showLock: PropTypes.bool,
-    }),
-    state: PropTypes.shape({
-      isEnabled: PropTypes.bool.isRequired,
-    }),
-  }),
 };
 
 Sequence.defaultProps = {
   sequenceId: null,
   unitId: null,
-
-  /** [MM-P2P] Experiment */
-  mmp2p: {
-    flyover: { isVisible: false },
-    meta: { showLock: false },
-    state: { isEnabled: false },
-  },
 };
 
 export default injectIntl(Sequence);
