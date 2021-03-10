@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon } from '@edx/paragon';
+import { Check } from '@edx/paragon/icons';
 
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
@@ -250,6 +252,28 @@ function UpgradeCard({ courseId }) {
     promotion_id: 'courseware_verified_certificate_upsell',
     ...eventProperties,
   };
+
+  function expirationHighlight(hoursToExpiration){
+    let expirationText;
+    if(hoursToExpiration < 24){
+      expirationText= <FormattedMessage
+      id="learning.outline.alert.upgradecard.expiration"
+      defaultMessage="{expiration} hours left"
+      values={{
+        expiration: (hoursToDiscountExpiration),
+      }}
+    />
+    } else {
+      expirationText =<FormattedMessage
+          id="learning.outline.alert.upgradecard.expiration"
+          defaultMessage="{expiration} days left"
+          values={{
+            expiration: (Math.floor(hoursToExpiration/24)),
+          }}
+        />
+    }
+    return(<div className="p-3 upsell-warning">{expirationText}</div>)
+  }
 
   useEffect(() => {
     sendTrackingLogEvent('edx.bi.course.upgrade.sidebarupsell.displayed', eventProperties);
