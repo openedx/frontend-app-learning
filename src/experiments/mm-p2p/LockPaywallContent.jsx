@@ -6,7 +6,7 @@ import { faLock } from '@fortawesome/free-solid-svg-icons';
 import VerifiedCert from '../../generic/assets/edX_certificate.png';
 
 const LockPaywallContent = ({ options }) => (
-  <>
+  <div className="border border-gray rounded d-flex justify-content-between mt-2 p-3">
     <div>
       <h4 className="font-weight-bold mb-2">
         <FontAwesomeIcon
@@ -43,7 +43,7 @@ const LockPaywallContent = ({ options }) => (
         style={{ height: '70px' }}
       />
     </div>
-  </>
+  </div>
 );
 LockPaywallContent.propTypes = {
   options: PropTypes.shape({
