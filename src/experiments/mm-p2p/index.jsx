@@ -116,7 +116,7 @@ const initHomeMMP2P = (courseId) => {
     access.isAudit = true;
     access.accessExpirationDate = accessExpiration.expirationDate;
     access.upgradeUrl = accessExpiration.upgradeUrl;
-    access.price = `$${verifiedMode.price}`;
+    access.price = `${verifiedMode.currencySymbol}${verifiedMode.price}`;
   }
 
   return {
