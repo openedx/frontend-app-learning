@@ -9,9 +9,6 @@ import DatesBannerContainer from '../dates-banner/DatesBannerContainer';
 import { fetchDatesTab } from '../data';
 import { useModel } from '../../generic/model-store';
 
-/** [MM-P2P] Experiment */
-import { initDatesMMP2P } from '../../experiments/mm-p2p';
-
 function DatesTab({ intl }) {
   const {
     courseId,
@@ -23,25 +20,19 @@ function DatesTab({ intl }) {
     hasEnded,
   } = useModel('dates', courseId);
 
-  /** [MM-P2P] Experiment */
-  const mmp2p = initDatesMMP2P(courseId);
-
   return (
     <>
       <div role="heading" aria-level="1" className="h2 my-3">
         {intl.formatMessage(messages.title)}
       </div>
-      { /** [MM-P2P] Experiment */ }
-      { !mmp2p.state.isEnabled && (
-        <DatesBannerContainer
-          courseDateBlocks={courseDateBlocks}
-          datesBannerInfo={datesBannerInfo}
-          hasEnded={hasEnded}
-          model="dates"
-          tabFetch={fetchDatesTab}
-        />
-      ) }
-      <Timeline mmp2p={mmp2p} />
+      <DatesBannerContainer
+        courseDateBlocks={courseDateBlocks}
+        datesBannerInfo={datesBannerInfo}
+        hasEnded={hasEnded}
+        model="dates"
+        tabFetch={fetchDatesTab}
+      />
+      <Timeline />
     </>
   );
 }

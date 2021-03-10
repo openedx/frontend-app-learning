@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { FormattedDate } from '@edx/frontend-platform/i18n';
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { isLearnerAssignment } from '../dates-tab/utils';
 import './DateSummary.scss';
@@ -9,14 +9,22 @@ import './DateSummary.scss';
 export default function DateSummary({
   dateBlock,
   userTimezone,
-  /** [MM-P2P] Experiment */
-  mmp2p,
 }) {
   const linkedTitle = dateBlock.link && isLearnerAssignment(dateBlock);
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
-  /** [MM-P2P] Experiment */
-  const showMMP2P = mmp2p.state.isEnabled && (dateBlock.dateType === 'verified-upgrade-deadline');
+  /** [MM-P2P experiment] */
+  const [showMMP2P, setShowMMP2P] = useState(window.experiment__home_dates_bShowMMP2P);
+  if (
+    dateBlock.dateType === 'verified-upgrade-deadline'
+    && window.experiment__home_dates_showMMP2P === undefined
+  ) {
+    window.experiment__home_dates_showMMP2P = (value) => {
+      setShowMMP2P(!!value);
+      window.experiment__home_dates_bShowMMP2P = !!value;
+    };
+  }
+  const activateMMP2P = (showMMP2P && dateBlock.dateType === 'verified-upgrade-deadline');
 
   return (
     <li className="container p-0 mb-3 small text-dark-500">
@@ -24,8 +32,7 @@ export default function DateSummary({
         <FontAwesomeIcon icon={faCalendarAlt} className="ml-3 mt-1 mr-1" fixedWidth />
         <div className="ml-1 font-weight-bold">
           <FormattedDate
-            /** [MM-P2P] Experiment */
-            value={showMMP2P ? mmp2p.state.upgradeDeadline : dateBlock.date}
+            value={dateBlock.date}
             day="numeric"
             month="short"
             weekday="short"
@@ -34,8 +41,7 @@ export default function DateSummary({
           />
         </div>
       </div>
-      {/** [MM-P2P] Experiment (conditional) */}
-      { showMMP2P ? (
+      {activateMMP2P ? (
         <div className="row ml-4 pr-2">
           <div className="date-summary-text">
             <div className="font-weight-bold mt-2">
@@ -78,22 +84,8 @@ DateSummary.propTypes = {
     learnerHasAccess: PropTypes.bool,
   }).isRequired,
   userTimezone: PropTypes.string,
-  /** [MM-P2P] Experiment */
-  mmp2p: PropTypes.shape({
-    state: PropTypes.shape({
-      isEnabled: PropTypes.bool.isRequired,
-      upgradeDeadline: PropTypes.string,
-    }),
-  }),
 };
 
 DateSummary.defaultProps = {
   userTimezone: null,
-  /** [MM-P2P] Experiment */
-  mmp2p: {
-    state: {
-      isEnabled: false,
-      upgradeDeadline: '',
-    },
-  },
 };
