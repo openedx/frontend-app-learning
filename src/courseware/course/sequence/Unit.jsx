@@ -18,6 +18,8 @@ import { useModel } from '../../../generic/model-store';
 import PageLoading from '../../../generic/PageLoading';
 import { processEvent } from '../../../course-home/data/thunks';
 import { fetchCourse } from '../../data/thunks';
+/** [MM-P2P] Experiment */
+import { MMP2PLockPaywall } from '../../../experiments/mm-p2p';
 
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
 const LockPaywallValuePropExperiment = React.lazy(() => import('./lock-paywall-value-prop'));
@@ -60,6 +62,8 @@ function Unit({
   onLoaded,
   id,
   intl,
+  /** [MM-P2P] Experiment */
+  mmp2p,
 }) {
   const { authenticatedUser } = useContext(AppContext);
   const view = authenticatedUser ? 'student_view' : 'public_view';
@@ -130,7 +134,7 @@ function Unit({
         isBookmarked={unit.bookmarked}
         isProcessing={unit.bookmarkedUpdateState === 'loading'}
       />
-      {contentTypeGatingEnabled && unit.containsContentTypeGatedContent && (
+      { !mmp2p.state.isEnabled && contentTypeGatingEnabled && unit.containsContentTypeGatedContent && (
         <Suspense
           fallback={(
             <PageLoading
@@ -143,7 +147,12 @@ function Unit({
             : <LockPaywall courseId={courseId} />}
         </Suspense>
       )}
-      {!hasLoaded && (
+      { /** [MM-P2P] Experiment */ }
+      { mmp2p.meta.showLock && (
+        <MMP2PLockPaywall options={mmp2p} />
+      )}
+      { /** [MM-P2P] Experiment (conditional) */ }
+      {!mmp2p.meta.blockContent && !hasLoaded && (
         <PageLoading
           srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
         />
@@ -173,24 +182,27 @@ function Unit({
           dialogClassName="modal-lti"
         />
       )}
-      <div className="unit-iframe-wrapper">
-        <iframe
-          id="unit-iframe"
-          title={unit.title}
-          src={iframeUrl}
-          allowFullScreen
-          height={iframeHeight}
-          scrolling="no"
-          referrerPolicy="origin"
-          onLoad={() => {
-            window.onmessage = function handleResetDates(e) {
-              if (e.data.event_name) {
-                dispatch(processEvent(e.data, fetchCourse));
-              }
-            };
-          }}
-        />
-      </div>
+      { /** [MM-P2P] Experiment (conditional) */ }
+      { !mmp2p.meta.blockContent && (
+        <div className="unit-iframe-wrapper">
+          <iframe
+            id="unit-iframe"
+            title={unit.title}
+            src={iframeUrl}
+            allowFullScreen
+            height={iframeHeight}
+            scrolling="no"
+            referrerPolicy="origin"
+            onLoad={() => {
+              window.onmessage = function handleResetDates(e) {
+                if (e.data.event_name) {
+                  dispatch(processEvent(e.data, fetchCourse));
+                }
+              };
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -201,11 +213,31 @@ Unit.propTypes = {
   id: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   onLoaded: PropTypes.func,
+  /** [MM-P2P] Experiment */
+  mmp2p: PropTypes.shape({
+    state: PropTypes.shape({
+      isEnabled: PropTypes.bool.isRequired,
+    }),
+    meta: PropTypes.shape({
+      showLock: PropTypes.bool,
+      blockContent: PropTypes.bool,
+    }),
+  }),
 };
 
 Unit.defaultProps = {
   format: null,
   onLoaded: undefined,
+  /** [MM-P2P] Experiment */
+  mmp2p: {
+    state: {
+      isEnabled: false,
+    },
+    meta: {
+      showLock: false,
+      blockContent: false,
+    },
+  },
 };
 
 export default injectIntl(Unit);

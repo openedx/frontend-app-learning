@@ -1,0 +1,38 @@
+@media only screen and (min-width: 600px) {
+  .mmp2p-flyover {
+    min-width: 315px !important;
+    h4 {
+      font-size: 16px;
+    }
+  }
+}
+.mmp2p-flyover {
+  &:not(.static) {
+    height: 100% !important;
+    height: 393px;
+  }
+  &.static {
+    margin-bottom: 20px;
+  }
+  border: solid 1px #e1dddb;
+  width: 330px;
+  vertical-align: top;
+  margin-left: 20px;
+  padding: 0 20px 20px 20px;
+  .mmp2p-notification-div {
+    margin: 0 -20px 0px;
+    padding: 9px 20px 0;
+    font-size: 16px;
+  }
+  .mmp2p-notification-block {
+    height: 9px;
+    background: #F9F9F9;
+    margin: 7px -20px 0;
+    border-top: 1px solid rgb(225, 221, 219);
+    border-bottom: 1px solid rgb(225, 221, 219);
+  }
+  svg.mmp2p-flyover-icon {
+    float: right;
+    margin-top: 5.5px;
+  }
+}

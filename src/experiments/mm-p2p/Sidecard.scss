@@ -1,0 +1,53 @@
+.mmp2p-sidecard-wrapper {
+  padding-top: 15px;
+  .cert-link {
+    font-weight: 600;
+    color: #00688D;
+    text-decoration: 'underline',
+  }
+  .mmp2p-bullet-list-item {
+    .icon-container {
+      vertical-align: top;
+      display: inline-block;
+      margin-right: 7px;
+    }
+    .bullet-item-content {
+      display: inline-block;
+      width: calc(100% - 26px);
+    }
+    svg {
+      font-size: 14px;
+      margin-right: 5px;
+    }
+  }
+  .mmp2p-sidecard-alert {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin-top: 15px;
+    line-height: 1;
+    background-color: #fffadb;
+    color: black;
+    font-size: 14px;
+    border-radius: 0px !important;
+    &.danger {
+      background-color: #fcf1f4;
+    }
+  }
+
+  .mmp2p-coupon-code {
+    border: solid 1px #e1dddb;
+    padding: 20px;
+    margin: -21px;
+    background: #fbfaf9;
+    font-size: 14px;
+    text-align: center;
+  }
+  .verification-sock {
+    display: none;
+  }
+  .alert-info {
+    display: none;
+  }
+}
