@@ -112,7 +112,12 @@ const initHomeMMP2P = (courseId) => {
   };
 
   const { accessExpiration, verifiedMode } = useModel('outline', courseId);
-  if (accessExpiration !== null && accessExpiration !== undefined) {
+  if (
+    accessExpiration !== null
+    && accessExpiration !== undefined
+    && verifiedMode !== null
+    && verifiedMode !== undefined
+  ) {
     access.isAudit = true;
     access.accessExpirationDate = accessExpiration.expirationDate;
     access.upgradeUrl = accessExpiration.upgradeUrl;
@@ -178,11 +183,16 @@ const initCoursewareMMP2P = (courseId, sequenceId, unitId) => {
   };
 
   const { accessExpiration, verifiedMode } = useModel('coursewareMeta', courseId);
-  if (accessExpiration !== null && accessExpiration !== undefined) {
+  if (
+    accessExpiration !== null
+    && accessExpiration !== undefined
+    && verifiedMode !== null
+    && verifiedMode !== undefined
+  ) {
     access.isAudit = true;
     access.accessExpirationDate = accessExpiration.expirationDate;
     access.upgradeUrl = accessExpiration.upgradeUrl;
-    access.price = `$${verifiedMode.price}`;
+    access.price = `${verifiedMode.currencySymbol}${verifiedMode.price}`;
   }
 
   // testing
