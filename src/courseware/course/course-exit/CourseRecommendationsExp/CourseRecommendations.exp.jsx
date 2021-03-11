@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
   FormattedMessage, injectIntl, intlShape, defineMessages,
 } from '@edx/frontend-platform/i18n';
@@ -13,12 +14,13 @@ import fetchCourseRecommendations from './data/thunks.exp';
 import { FAILED, LOADED, LOADING } from './data/slice.exp';
 import CatalogSuggestion from '../CatalogSuggestion';
 import PageLoading from '../../../../generic/PageLoading';
+import { logClick } from '../utils';
 
 const messages = defineMessages({
   recommendationsHeading: {
     id: 'courseCelebration.recommendations.heading',
     description: 'Header for recommendations section of course celebration',
-    defaultMessage: 'Check out more popular courses on edX',
+    defaultMessage: 'Keep building your skills with these courses!',
   },
   listJoin: {
     id: 'courseCelebration.recommendations.formatting.list_join',
@@ -53,6 +55,7 @@ function Card({
     image,
     owners,
     marketingUrl,
+    onClick,
   },
   intl,
 }) {
@@ -78,6 +81,7 @@ function Card({
       <Hyperlink
         destination={marketingUrl}
         className="discovery-card-link"
+        onClick={onClick}
       >
         <div className="d-flex flex-column d-card-wrapper">
           <div className="d-card-hero">
@@ -126,6 +130,7 @@ Card.propTypes = {
     owners: PropTypes.arrayOf(PropTypes.shape({
       key: PropTypes.string,
     })),
+    onClick: PropTypes.func,
   }).isRequired,
   intl: intlShape.isRequired,
 };
@@ -138,6 +143,7 @@ function CourseRecommendations({ intl, variant }) {
   const dispatch = useDispatch();
 
   const courseKey = `${org}+${number}`;
+  const { administrator } = getAuthenticatedUser();
 
   useEffect(() => {
     dispatch(fetchCourseRecommendations(courseKey, courseId));
@@ -159,14 +165,26 @@ function CourseRecommendations({ intl, variant }) {
     return <PageLoading srMessage={`${intl.formatMessage(messages.loadingRecommendations)}`} />;
   }
 
+  const onCardClick = (url) => (e) => {
+    e.preventDefault();
+    logClick(org, courseId, administrator, 'recommendation_discovery_card');
+    setTimeout(() => {
+      window.location.href = url;
+    }, (200));
+  };
+
+  const recommendationData = recommendations.map((recommendation) => (
+    { ...recommendation, onClick: onCardClick(recommendation.marketingUrl) }
+  ));
+
   return (
     <div className="course-recommendations d-flex flex-column align-items-center">
-      <h2 className="text-center mb-4">{intl.formatMessage(messages.recommendationsHeading)}</h2>
-      <div className="my-4">
+      <h2 className="text-center mb-3">{intl.formatMessage(messages.recommendationsHeading)}</h2>
+      <div className="mb-2 mt-3">
         <DataTable
           isPaginated
           itemCount={recommendations.length}
-          data={recommendations}
+          data={recommendationData}
           columns={[{ Header: 'Title', accessor: 'title' }]}
           initialState={{
             pageSize: 3,
@@ -179,7 +197,7 @@ function CourseRecommendations({ intl, variant }) {
       <Hyperlink
         style={{ textDecoration: 'underline' }}
         destination={getConfig().SEARCH_CATALOG_URL}
-        className="text-center mt-3"
+        className="text-center"
       >
         {intl.formatMessage(messages.browseCatalog)}
       </Hyperlink>
