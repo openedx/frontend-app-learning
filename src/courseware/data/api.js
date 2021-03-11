@@ -118,6 +118,7 @@ function normalizeTabUrls(id, tabs) {
 
 function normalizeMetadata(metadata) {
   return {
+    timeOffsetMillis: metadata.timeOffsetMillis, // This should move to a global time correction reference
     accessExpiration: camelCaseObject(metadata.access_expiration),
     canShowUpgradeSock: metadata.can_show_upgrade_sock,
     contentTypeGatingEnabled: metadata.content_type_gating_enabled,
@@ -156,7 +157,23 @@ function normalizeMetadata(metadata) {
 export async function getCourseMetadata(courseId) {
   let url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
   url = appendBrowserTimezoneToUrl(url);
-  const { data } = await getAuthenticatedHttpClient().get(url);
+  const requestTime = Date.now();
+  const { data, headers } = await getAuthenticatedHttpClient().get(url);
+  const responseTime = Date.now();
+
+  // Time offset computation should move down into the HttpClient wrapper to maintain a global time correction reference
+  // Requires 'Access-Control-Expose-Headers: Date' on the server response per https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#access-control-expose-headers
+  const headerDate = headers.date;
+
+  let timeOffsetMillis = 0;
+  if (headerDate !== undefined) {
+    const headerTime = Date.parse(headerDate);
+    const roundTripMillis = requestTime - responseTime;
+    const localTime = responseTime - (roundTripMillis / 2); // Roughly compensate for transit time
+    timeOffsetMillis = headerTime - localTime;
+  }
+
+  data.timeOffsetMillis = timeOffsetMillis; // This should move to a global time correction reference
   return normalizeMetadata(data);
 }
 
