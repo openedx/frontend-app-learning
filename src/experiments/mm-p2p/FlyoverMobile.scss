@@ -1,0 +1,37 @@
+.mmp2p-flyover-mobile {
+  vertical-align: top;
+  padding: 0 20px 20px 20px;
+  position: fixed;
+  background-color: white;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+
+  .mmp2p-mobile-return-div {
+    margin: 0 -20px;
+    padding: 9px 20px 15px;
+    font-size: 16px;
+    border-bottom: 1px solid rgb(225, 221, 219);
+  }
+  .mmp2p-mobile-return-span {
+    color: #00262B;
+    cursor: pointer;
+  }
+  .mmp2p-notification-div {
+    margin: 0 -20px 15px;
+    padding: 9px 20px 0;
+    font-size: 16px;
+  }
+  .mmp2p-notification-span {
+    color: #00262B;
+  }
+  .mmp2p-notification-block {
+    height: 9px;
+    background: #F9F9F9;
+    margin: 7px -20px 0;
+    border-top: 1px solid rgb(225, 221, 219);
+    border-bottom: 1px solid rgb(225, 221, 219);
+  }
+}

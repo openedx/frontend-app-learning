@@ -7,7 +7,12 @@ import DateSummary from '../DateSummary';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 
-function CourseDates({ courseId, intl }) {
+function CourseDates({
+  courseId,
+  intl,
+  /** [MM-P2P] Experiment */
+  mmp2p,
+}) {
   const {
     datesWidget: {
       courseDateBlocks,
@@ -29,6 +34,8 @@ function CourseDates({ courseId, intl }) {
             key={courseDateBlock.title + courseDateBlock.date}
             dateBlock={courseDateBlock}
             userTimezone={userTimezone}
+            /** [MM-P2P] Experiment */
+            mmp2p={mmp2p}
           />
         ))}
       </ol>
@@ -42,10 +49,14 @@ function CourseDates({ courseId, intl }) {
 CourseDates.propTypes = {
   courseId: PropTypes.string,
   intl: intlShape.isRequired,
+  /** [MM-P2P] Experiment */
+  mmp2p: PropTypes.shape({}),
 };
 
 CourseDates.defaultProps = {
   courseId: null,
+  /** [MM-P2P] Experiment */
+  mmp2p: {},
 };
 
 export default injectIntl(CourseDates);

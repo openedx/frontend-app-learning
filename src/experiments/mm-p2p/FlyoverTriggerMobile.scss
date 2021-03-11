@@ -1,0 +1,7 @@
+.mmp2p-toggle-flyover-button-mobile {
+  border-bottom: none;
+  margin-left: 10px !important;
+  &.flyover-visible {
+    border-bottom: 2px solid #00262b;
+  }
+}

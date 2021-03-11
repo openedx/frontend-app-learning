@@ -28,6 +28,9 @@ import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 
+/** [MM-P2P] Experiment */
+import { initHomeMMP2P, MMP2PFlyover } from '../../experiments/mm-p2p';
+
 function OutlineTab({ intl }) {
   const {
     courseId,
@@ -88,6 +91,9 @@ function OutlineTab({ intl }) {
 
   const courseSock = useRef(null);
 
+  /** [[MM-P2P] Experiment */
+  const MMP2P = initHomeMMP2P(courseId);
+
   return (
     <>
       <Toast
@@ -109,7 +115,8 @@ function OutlineTab({ intl }) {
           </div>
         )}
       </div>
-      <div className="row">
+      {/** [MM-P2P] Experiment (className for optimizely trigger) */}
+      <div className="row course-outline-tab">
         <div className="col-12">
           <AlertList
             topic="outline-private-alerts"
@@ -119,17 +126,21 @@ function OutlineTab({ intl }) {
           />
         </div>
         <div className="col col-12 col-md-8">
-          <AlertList
-            topic="outline-course-alerts"
-            className="mb-3"
-            customAlerts={{
-              ...accessExpirationAlert,
-              ...certificateAvailableAlert,
-              ...courseEndAlert,
-              ...courseStartAlert,
-              ...offerAlert,
-            }}
-          />
+          { /** [MM-P2P] Experiment (the conditional) */ }
+          { !MMP2P.state.isEnabled
+            && (
+            <AlertList
+              topic="outline-course-alerts"
+              className="mb-3"
+              customAlerts={{
+                ...accessExpirationAlert,
+                ...certificateAvailableAlert,
+                ...courseEndAlert,
+                ...courseStartAlert,
+                ...offerAlert,
+              }}
+            />
+            )}
           {courseDateBlocks && (
             <DatesBannerContainer
               courseDateBlocks={courseDateBlocks}
@@ -137,6 +148,8 @@ function OutlineTab({ intl }) {
               hasEnded={hasEnded}
               model="outline"
               tabFetch={fetchOutlineTab}
+              /** [MM-P2P] Experiment */
+              isMMP2PEnabled={MMP2P.state.isEnabled}
             />
           )}
           {!courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
@@ -189,12 +202,21 @@ function OutlineTab({ intl }) {
             <CourseTools
               courseId={courseId}
             />
-            <UpgradeCard
-              courseId={courseId}
-              onLearnMore={canShowUpgradeSock ? () => { courseSock.current.showToUser(); } : null}
-            />
+            { /** [MM-P2P] Experiment (conditional) */ }
+            { MMP2P.state.isEnabled
+              ? <MMP2PFlyover isStatic options={MMP2P} />
+              : (
+                <UpgradeCard
+                  courseId={courseId}
+                  onLearnMore={
+                    canShowUpgradeSock ? () => { courseSock.current.showToUser(); } : null
+                  }
+                />
+              )}
             <CourseDates
               courseId={courseId}
+              /** [MM-P2P] Experiment */
+              mmp2p={MMP2P}
             />
             <CourseHandouts
               courseId={courseId}

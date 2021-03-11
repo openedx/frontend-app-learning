@@ -10,7 +10,14 @@ import Unit from './Unit';
 const ContentLock = React.lazy(() => import('./content-lock'));
 
 function SequenceContent({
-  gated, intl, courseId, sequenceId, unitId, unitLoadedHandler,
+  gated,
+  intl,
+  courseId,
+  sequenceId,
+  unitId,
+  unitLoadedHandler,
+  /** [MM-P2P] Experiment */
+  mmp2p,
 }) {
   const sequence = useModel('sequences', sequenceId);
 
@@ -54,6 +61,8 @@ function SequenceContent({
       key={unitId}
       id={unitId}
       onLoaded={unitLoadedHandler}
+      /** [MM-P2P] Experiment */
+      mmp2p={mmp2p}
     />
   );
 }
@@ -65,10 +74,28 @@ SequenceContent.propTypes = {
   unitId: PropTypes.string,
   unitLoadedHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
+  /** [MM-P2P] Experiment */
+  mmp2p: PropTypes.shape({
+    flyover: PropTypes.shape({
+      isVisible: PropTypes.bool.isRequired,
+    }),
+    meta: PropTypes.shape({
+      showLock: PropTypes.bool,
+    }),
+    state: PropTypes.shape({
+      isEnabled: PropTypes.bool.isRequired,
+    }),
+  }),
 };
 
 SequenceContent.defaultProps = {
   unitId: null,
+  /** [MM-P2P] Experiment */
+  mmp2p: {
+    flyover: { isVisible: false },
+    meta: { showLock: false },
+    state: { isEnabled: false },
+  },
 };
 
 export default injectIntl(SequenceContent);
