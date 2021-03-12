@@ -21,6 +21,7 @@ import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 
 /** [MM-P2P] Experiment */
+import { isMobile } from '../../../experiments/mm-p2p/utils';
 import { MMP2PFlyover, MMP2PFlyoverMobile } from '../../../experiments/mm-p2p';
 
 function Sequence({
