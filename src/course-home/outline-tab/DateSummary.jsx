@@ -43,11 +43,9 @@ export default function DateSummary({
             </div>
           </div>
           <div className="date-summary-text mt-1">
-            Don&apos;t miss the opportunity to highlight your knowledge and skills by earning a verified certificate.
+            You are still eligible to upgrade to a Verified Certificate!
+            &nbsp; Unlock full course access and highlight the knowledge you&apos;ll gain.
           </div>
-          <a href={dateBlock.link} className="description-link">
-            {dateBlock.linkText}
-          </a>
         </div>
       ) : (
         <div className="row ml-4 pr-2">
