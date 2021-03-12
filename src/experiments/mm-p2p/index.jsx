@@ -150,7 +150,7 @@ const initCoursewareMMP2P = (courseId, sequenceId, unitId) => {
   };
 
   const [isMMP2PFlyoverVisible, setMMP2PFlyoverVisible] = useState(
-    isMobile() ? false : defaultWindowVal(MMP2PKeys.flyoverVisible, false),
+    isMobile() ? false : defaultWindowVal(MMP2PKeys.flyoverVisible, true),
   );
   const flyover = {
     isVisible: isMMP2PFlyoverVisible,
