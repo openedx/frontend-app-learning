@@ -198,7 +198,7 @@ function Sequence({
 
           {/** [MM-P2P] Experiment */}
           {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
-            isMobile
+            isMobile()
               ? <MMP2PFlyoverMobile options={mmp2p} />
               : <MMP2PFlyover options={mmp2p} />
           )}
