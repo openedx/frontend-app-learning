@@ -11,10 +11,6 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import { history } from '@edx/frontend-platform';
 
-// These should be reverted after the REV1512 experiment
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-
 import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
 import { useModel } from '../../../generic/model-store';
@@ -25,164 +21,8 @@ import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 
 /** [MM-P2P] Experiment */
+import { isMobile } from '../../../experiments/mm-p2p/utils';
 import { MMP2PFlyover, MMP2PFlyoverMobile } from '../../../experiments/mm-p2p';
-
-function REV1512Flyover({ toggleREV1512Flyover }) {
-  // This component should be reverted after the REV1512 experiment
-  return (
-    <div
-      className="rev-1512-box"
-      style={{
-        border: 'solid 1px #e1dddb',
-        height: '393px',
-        width: '330px',
-        verticalAlign: 'top',
-        marginLeft: '20px',
-        padding: '0 20px 20px 20px',
-      }}
-    >
-      <div
-        className="rev-1512-notification-div"
-        style={{
-          margin: '0 -20px 15px',
-          padding: '9px 20px 0',
-          fontSize: '16px',
-        }}
-      >
-        <span className="rev-1512-notification-span">Notifications</span>
-        <span
-          onClick={() => {
-            toggleREV1512Flyover();
-          }}
-          className="hideFlyover"
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') {
-              toggleREV1512Flyover();
-            }
-          }}
-          role="button"
-          tabIndex={0}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            style={{
-              float: 'right',
-              marginTop: '5.5px',
-            }}
-          >
-            <path d="M9.60625 7L13.5152 3.09102C13.9949 2.61133 13.9949 1.83359 13.5152 1.35352L12.6465 0.484766C12.1668 0.00507814 11.3891 0.00507814 10.909 0.484766L7 4.39375L3.09102 0.484766C2.61133 0.00507814 1.83359 0.00507814 1.35352 0.484766L0.484766 1.35352C0.00507814 1.8332 0.00507814 2.61094 0.484766 3.09102L4.39375 7L0.484766 10.909C0.00507814 11.3887 0.00507814 12.1664 0.484766 12.6465L1.35352 13.5152C1.8332 13.9949 2.61133 13.9949 3.09102 13.5152L7 9.60625L10.909 13.5152C11.3887 13.9949 12.1668 13.9949 12.6465 13.5152L13.5152 12.6465C13.9949 12.1668 13.9949 11.3891 13.5152 10.909L9.60625 7Z" fill="black" />
-          </svg>
-        </span>
-        <div
-          className="rev-1512-notification-block"
-          style={{
-            height: '9px',
-            background: '#F9F9F9',
-            margin: '7px -20px 0',
-            borderTop: '1px solid rgb(225, 221, 219)',
-            borderBottom: '1px solid rgb(225, 221, 219)',
-          }}
-        />
-      </div>
-      <div className="rev-1512-optimizely-flyover-container" />
-    </div>
-  );
-}
-REV1512Flyover.propTypes = {
-  toggleREV1512Flyover: PropTypes.func.isRequired,
-};
-
-function REV1512FlyoverMobile({ toggleREV1512Flyover }) {
-  // This component should be reverted after the REV1512 experiment
-  return (
-    <div
-      className="rev-1512-box"
-      style={{
-        verticalAlign: 'top',
-        padding: '0 20px 20px 20px',
-        position: 'fixed',
-        backgroundColor: 'white',
-        zIndex: 1,
-        height: '100%',
-        width: '100%',
-        top: 0,
-        left: 0,
-      }}
-    >
-      <div
-        className="rev-1512-mobile-return-div"
-        style={{
-          margin: '0 -20px',
-          padding: '9px 20px 15px',
-          fontSize: '16px',
-          borderBottom: '1px solid rgb(225, 221, 219)',
-        }}
-      >
-        <span
-          className="rev-1512-mobile-return-span"
-          onClick={toggleREV1512Flyover}
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') {
-              toggleREV1512Flyover();
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          style={{
-            color: '#00262B',
-            cursor: 'pointer',
-          }}
-        >
-          <FontAwesomeIcon
-            icon={faChevronLeft}
-            className="mr-2 fa-lg"
-            style={{
-              marginBottom: 2,
-            }}
-          />
-          <span className="rev-1512-mobile-return-text">
-            Back to course
-          </span>
-        </span>
-      </div>
-      <div
-        className="rev-1512-notification-div"
-        style={{
-          margin: '0 -20px 15px',
-          padding: '9px 20px 0',
-          fontSize: '16px',
-        }}
-      >
-        <span
-          className="rev-1512-notification-span"
-          style={{
-            color: '#00262B',
-          }}
-        >
-          Notifications
-        </span>
-        <div
-          className="rev-1512-notification-block"
-          style={{
-            height: '9px',
-            background: '#F9F9F9',
-            margin: '7px -20px 0',
-            borderTop: '1px solid rgb(225, 221, 219)',
-            borderBottom: '1px solid rgb(225, 221, 219)',
-          }}
-        />
-      </div>
-      <div className="rev-1512-optimizely-flyover-container" />
-    </div>
-  );
-}
-REV1512FlyoverMobile.propTypes = {
-  toggleREV1512Flyover: PropTypes.func.isRequired,
-};
 
 function Sequence({
   unitId,
@@ -192,10 +32,6 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
-  isREV1512FlyoverVisible, /* This line should be reverted after the REV1512 experiment */
-  REV1512FlyoverEnabled, /* This line should be reverted after the REV1512 experiment */
-  toggleREV1512Flyover, /* This line should be reverted after the REV1512 experiment */
-  /** [MM-P2P] Experiment */
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
@@ -211,12 +47,6 @@ function Sequence({
       nextSequenceHandler();
     }
   };
-
-  // These should be reverted after the REV1512 experiment:
-  const userAgent = typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
-  const isMobile = Boolean(
-    userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i),
-  );
 
   const handlePrevious = () => {
     const previousIndex = sequence.unitIds.indexOf(unitId) - 1;
@@ -320,9 +150,7 @@ function Sequence({
               sequenceId={sequenceId}
               unitId={unitId}
               className="mb-4"
-              toggleREV1512Flyover={toggleREV1512Flyover} /* This line should be reverted after REV1512 experiment */
-              REV1512FlyoverEnabled={REV1512FlyoverEnabled} /* This line should be reverted after REV1512 experiment */
-              isREV1512FlyoverVisible={isREV1512FlyoverVisible} /* should be reverted after REV1512 experiment */
+
               /** [MM-P2P] Experiment */
               mmp2p={mmp2p}
 
@@ -367,16 +195,10 @@ function Sequence({
               )}
             </div>
           </div>
-          {/* This block of code should be reverted post REV1512 experiment */}
-          {/** [MM-P2P] Experiment (additional conditional) */}
-          {!mmp2p.state.isEnabled && REV1512FlyoverEnabled && isREV1512FlyoverVisible() && (
-            isMobile
-              ? <REV1512FlyoverMobile toggleREV1512Flyover={toggleREV1512Flyover} />
-              : <REV1512Flyover toggleREV1512Flyover={toggleREV1512Flyover} />
-          )}
+
           {/** [MM-P2P] Experiment */}
           {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
-            isMobile
+            isMobile()
               ? <MMP2PFlyoverMobile options={mmp2p} />
               : <MMP2PFlyover options={mmp2p} />
           )}
@@ -402,9 +224,6 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
-  toggleREV1512Flyover: PropTypes.func.isRequired, /* This line should be reverted after the REV1512 experiment */
-  isREV1512FlyoverVisible: PropTypes.func.isRequired, /* This line should be reverted after the REV1512 experiment */
-  REV1512FlyoverEnabled: PropTypes.bool.isRequired, /* This line should be reverted after the REV1512 experiment */
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
