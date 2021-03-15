@@ -37,7 +37,7 @@ function UpgradeCard({ courseId, intl, onLearnMore }) {
   useEffect(() => {
     sendTrackingLogEvent('edx.bi.course.upgrade.sidebarupsell.displayed', eventProperties);
     sendTrackEvent('Promotion Viewed', promotionEventProperties);
-  });
+  }, []);
 
   const logClick = () => {
     sendTrackingLogEvent('edx.bi.course.upgrade.sidebarupsell.clicked', eventProperties);
@@ -46,6 +46,13 @@ function UpgradeCard({ courseId, intl, onLearnMore }) {
       location: 'sidebar-message',
     });
     sendTrackEvent('Promotion Clicked', promotionEventProperties);
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      ...eventProperties,
+      linkCategory: 'green_upgrade',
+      linkName: 'course_home_green',
+      linkType: 'button',
+      pageName: 'course_home',
+    });
   };
 
   return (

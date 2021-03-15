@@ -1,6 +1,7 @@
 import React from 'react';
 import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
+import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import userEvent from '@testing-library/user-event';
@@ -659,6 +660,81 @@ describe('Outline Tab', () => {
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
       expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).not.toBeInTheDocument();
       expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Upgrade Card', () => {
+    it('renders title when upgrade is available', async () => {
+      await fetchAndRender();
+      expect(screen.queryByRole('heading', { name: 'Pursue a verified certificate' })).toBeInTheDocument();
+    });
+
+    it('displays link to upgrade', async () => {
+      await fetchAndRender();
+      expect(screen.getByRole('link', { name: 'Upgrade ($149)' })).toBeInTheDocument();
+    });
+
+    it('viewing upgrade card sends analytics', async () => {
+      sendTrackEvent.mockClear();
+      sendTrackingLogEvent.mockClear();
+      await fetchAndRender();
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('Promotion Viewed', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        creative: 'sidebarupsell',
+        name: 'In-Course Verification Prompt',
+        position: 'sidebar-message',
+        promotion_id: 'courseware_verified_certificate_upsell',
+      });
+
+      expect(sendTrackingLogEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.bi.course.upgrade.sidebarupsell.displayed', {
+        org_key: 'edX',
+        courserun_key: courseId,
+      });
+    });
+
+    it('clicking upgrade link sends analytics', async () => {
+      sendTrackEvent.mockClear();
+      sendTrackingLogEvent.mockClear();
+
+      await fetchAndRender();
+      const upgradeButton = screen.getByRole('link', { name: 'Upgrade ($149)' });
+
+      fireEvent.click(upgradeButton);
+
+      // 3 sendTrackEvent calls are expected because 1 happens on render, and 2 happen onClick
+      expect(sendTrackEvent).toHaveBeenCalledTimes(3);
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'Promotion Clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        creative: 'sidebarupsell',
+        name: 'In-Course Verification Prompt',
+        position: 'sidebar-message',
+        promotion_id: 'courseware_verified_certificate_upsell',
+      });
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: 'green_upgrade',
+        linkName: 'course_home_green',
+        linkType: 'button',
+        pageName: 'course_home',
+      });
+
+      // 3 sendTrackingLogEvent calls are expected because 1 happens on render, and 2 happen onClick
+      expect(sendTrackingLogEvent).toHaveBeenCalledTimes(3);
+      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(2, 'edx.bi.course.upgrade.sidebarupsell.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+      });
+      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(3, 'edx.course.enrollment.upgrade.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        location: 'sidebar-message',
+      });
     });
   });
 });
