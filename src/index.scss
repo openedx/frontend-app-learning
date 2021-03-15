@@ -94,6 +94,12 @@
   }
 }
 
+.breadcrumb-container {
+  @media (min-width: map-get($grid-breakpoints, 'sm')) {
+    max-width: 1440px;
+  }
+}
+
 .sequence-container {
   display: flex;
   flex-direction: column;
@@ -361,6 +367,8 @@
 
 // Import component-specific sass files
 @import 'courseware/course/celebration/CelebrationModal.scss';
+@import 'courseware/course/Sidebar.scss';
+@import 'courseware/course/SidebarNotificationButton.scss';
 @import 'shared/streak-celebration/StreakCelebrationModal.scss';
 @import 'courseware/course/content-tools/calculator/calculator.scss';
 @import 'courseware/course/content-tools/contentTools.scss';

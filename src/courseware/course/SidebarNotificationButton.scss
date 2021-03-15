@@ -1,0 +1,44 @@
+@import "~@edx/brand/paragon/fonts";
+@import "~@edx/brand/paragon/variables";
+@import "~@edx/paragon/scss/core/core";
+@import "~@edx/brand/paragon/overrides";
+
+.sidebar-notification-btn-container {
+    border: 1px solid $gray-200;
+    width: 54px;
+    height: 40px;
+    float: right;
+    margin-top: 10px;
+
+    @media (max-width: map-get($grid-breakpoints, 'md')) {
+        border: none;
+        margin: 5px 20px 0 20px;
+    }
+}
+
+.active {
+    border-bottom: 3px solid $primary-700;
+}
+
+.sidebar-notification-btn {
+    position: relative;
+}
+
+.sidebar-notification-icon {
+    top: 7px;
+    bottom: 13px;
+    margin: 0 auto;
+    width: 20px;
+}
+
+.notification-dot {
+    right: 15px;
+    top: 0.5rem;
+    background-color: $danger-500;
+    border-radius: 50%;
+    position: absolute;
+    display: inline-block;
+    @media (max-width: map-get($grid-breakpoints, 'md')) {
+        right: 7px;
+    }
+}

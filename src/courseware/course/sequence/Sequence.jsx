@@ -19,6 +19,7 @@ import CourseLicense from '../course-license';
 import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+import Sidebar from '../Sidebar';
 
 /** [MM-P2P] Experiment */
 import { isMobile } from '../../../experiments/mm-p2p/utils';
@@ -32,6 +33,10 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
+  toggleSidebar,
+  sidebarVisible,
+  isSidebarVisible,
+  isMobileWidth,
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
@@ -167,6 +172,9 @@ function Sequence({
                 handlePrevious();
               }}
               goToCourseExitPage={() => goToCourseExitPage()}
+              toggleSidebar={toggleSidebar}
+              isSidebarVisible={isSidebarVisible}
+              isMobileWidth={isMobileWidth}
             />
             <div className="unit-container flex-grow-1">
               <SequenceContent
@@ -196,6 +204,12 @@ function Sequence({
             </div>
           </div>
 
+          <Sidebar
+            toggleSidebar={toggleSidebar}
+            sidebarVisible={sidebarVisible}
+            isMobileWidth={isMobileWidth}
+          />
+
           {/** [MM-P2P] Experiment */}
           {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
             isMobile()
@@ -224,6 +238,10 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
+  toggleSidebar: PropTypes.func.isRequired,
+  sidebarVisible: PropTypes.bool.isRequired,
+  isSidebarVisible: PropTypes.func.isRequired,
+  isMobileWidth: PropTypes.bool.isRequired,
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
