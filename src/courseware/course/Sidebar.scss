@@ -1,0 +1,63 @@
+@import "~@edx/brand/paragon/fonts";
+@import "~@edx/brand/paragon/variables";
+@import "~@edx/paragon/scss/core/core";
+@import "~@edx/brand/paragon/overrides";
+
+.sidebar-container {
+    border: 1px solid rgb(225, 221, 219);
+    width: 330px;
+    vertical-align: top;
+
+    @media (max-width: map-get($grid-breakpoints, 'md')) {
+        position: fixed; 
+        top: 0; 
+        bottom: 0; 
+        left: 0; 
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        margin: 0;
+        border: none;
+    }
+}
+
+.sidebar-header {
+    padding-top: 14px;
+    padding-bottom: 10px;
+    font-size: 1rem;
+
+    span {
+        display: inline-block;
+    }
+}
+
+.close-btn {
+    float: right;
+}
+
+.sidebar-divider {
+    height: 0.5rem;
+    background: rgb(249, 249, 249);
+    border-top: 1px solid rgb(225, 221, 219);
+    border-bottom: 1px solid rgb(225, 221, 219);
+}
+
+.mobile-close-container {
+    padding-top: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #E4E4E4;
+
+    span {
+        display: inline-block;
+    }
+    svg {
+        margin-top: 7px;
+        margin-left: 15px;
+    }
+}
+
+.mobile-close {
+    font-weight: 500;
+    margin-left: 1.5rem;
+}

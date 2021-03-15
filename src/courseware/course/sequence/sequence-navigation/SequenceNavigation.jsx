@@ -13,6 +13,7 @@ import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
+import SidebarNotificationButton from '../../SidebarNotificationButton';
 
 import messages from './messages';
 /** [MM-P2P] Experiment */
@@ -27,6 +28,9 @@ function SequenceNavigation({
   nextSequenceHandler,
   previousSequenceHandler,
   goToCourseExitPage,
+  toggleSidebar,
+  isSidebarVisible,
+  isMobileWidth,
   mmp2p,
 }) {
   const sequence = useModel('sequences', sequenceId);
@@ -67,7 +71,7 @@ function SequenceNavigation({
     const disabled = isLastUnit && !exitActive;
     return (
       <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled}>
-        {buttonText}
+        {!isMobileWidth ? buttonText : null}
         <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
       </Button>
     );
@@ -77,10 +81,17 @@ function SequenceNavigation({
     <nav className={classNames('sequence-navigation', className)}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
-        {intl.formatMessage(messages.previousButton)}
+        {!isMobileWidth ? intl.formatMessage(messages.previousButton) : null}
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
+
+      {isMobileWidth ? (
+        <SidebarNotificationButton
+          toggleSidebar={toggleSidebar}
+          isSidebarVisible={isSidebarVisible}
+        />
+      ) : null}
 
       {/** [MM-P2P] Experiment */}
       { mmp2p.state.isEnabled && <MMP2PFlyoverTriggerMobile options={mmp2p} /> }
@@ -98,6 +109,9 @@ SequenceNavigation.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   goToCourseExitPage: PropTypes.func.isRequired,
+  toggleSidebar: PropTypes.func.isRequired,
+  isSidebarVisible: PropTypes.func.isRequired,
+  isMobileWidth: PropTypes.bool.isRequired,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({
