@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
@@ -14,6 +15,7 @@ function LockPaywall({
 }) {
   const course = useModel('coursewareMeta', courseId);
   const {
+    org,
     verifiedMode,
   } = course;
 
@@ -25,6 +27,21 @@ function LockPaywall({
     price,
     upgradeUrl,
   } = verifiedMode;
+
+  const eventProperties = {
+    org_key: org,
+    courserun_key: courseId,
+  };
+
+  const logClick = () => {
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      ...eventProperties,
+      linkCategory: '(none)',
+      linkName: 'in_course_upgrade',
+      linkType: 'link',
+      pageName: 'in_course',
+    });
+  };
   return (
     <div className="border border-gray rounded d-flex justify-content-between mt-2 p-3">
       <div>
@@ -35,7 +52,7 @@ function LockPaywall({
         <p className="mb-0">
           <span>{intl.formatMessage(messages['learn.lockPaywall.content'])}</span>
           &nbsp;
-          <a className="lock_paywall_upgrade_link" href={upgradeUrl}>
+          <a className="lock_paywall_upgrade_link" href={upgradeUrl} onClick={logClick}>
             {intl.formatMessage(messages['learn.lockPaywall.upgrade.link'], {
               currencySymbol,
               price,

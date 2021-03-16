@@ -35,7 +35,7 @@ Factory.define('outlineTabData')
   }))
   .attrs({
     access_expiration: null,
-    can_show_upgrade_sock: true,
+    can_show_upgrade_sock: false,
     course_goals: {
       goal_options: [],
       selected_goal: null,

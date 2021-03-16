@@ -354,7 +354,7 @@ Object {
     "outline": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "accessExpiration": null,
-        "canShowUpgradeSock": true,
+        "canShowUpgradeSock": false,
         "courseBlocks": Object {
           "courses": Object {
             "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
