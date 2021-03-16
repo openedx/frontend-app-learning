@@ -214,6 +214,63 @@ describe('Outline Tab', () => {
     });
   });
 
+  describe('Course Dates', () => {
+    it('renders when course date blocks are populated', async () => {
+      const startDate = new Date();
+      startDate.setHours(startDate.getHours() + 1);
+      setMetadata({ is_enrolled: true });
+      setTabData({}, {
+        dateBlocks: [
+          {
+            date_type: 'course-start-date',
+            date: startDate.toISOString(),
+            title: 'Start',
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.getByRole('heading', { name: 'Upcoming Dates' })).toBeInTheDocument();
+    });
+
+    it('does not render when course date blocks are not populated', async () => {
+      setMetadata({ is_enrolled: true });
+      await fetchAndRender();
+      expect(screen.queryByRole('heading', { name: 'Upcoming Dates' })).not.toBeInTheDocument();
+    });
+
+    it('renders', async () => {
+      const now = new Date();
+      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      setMetadata({ is_enrolled: true });
+      setTabData({}, {
+        dateBlocks: [
+          {
+            date_type: 'verified-upgrade-deadline',
+            date: tomorrow.toISOString(),
+            link: 'https://example.com/upgrade',
+            link_text: 'Upgrade to Verified Certificate',
+            title: 'Verification Upgrade Deadline',
+          },
+        ],
+      });
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+
+      const upgradeLink = screen.getByRole('link', { name: 'Upgrade to Verified Certificate' });
+      fireEvent.click(upgradeLink);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: '(none)',
+        linkName: 'course_home_dates',
+        linkType: 'link',
+        pageName: 'course_home',
+      });
+    });
+  });
+
   describe('Course Goals', () => {
     const goalOptions = [
       ['certify', 'Earn a certificate'],
