@@ -81,7 +81,7 @@ function OutlineTab({ intl }) {
 
   // Below the course title alerts (appearing in the order listed here)
   const offerAlert = useOfferAlert(offer, userTimezone, 'outline-course-alerts');
-  const accessExpirationAlert = useAccessExpirationAlert(accessExpiration, userTimezone, 'outline-course-alerts');
+  const accessExpirationAlert = useAccessExpirationAlert(accessExpiration, courseId, org, userTimezone, 'outline-course-alerts', 'course_home');
   const courseStartAlert = useCourseStartAlert(courseId);
   const courseEndAlert = useCourseEndAlert(courseId);
   const certificateAvailableAlert = useCertificateAvailableAlert(courseId);

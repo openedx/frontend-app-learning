@@ -403,6 +403,33 @@ describe('Outline Tab', () => {
         await fetchAndRender();
         await screen.findByText('to get unlimited access to the course as long as it exists on the site.', { exact: false });
       });
+
+      it('sends analytics event onClick of upgrade link', async () => {
+        setTabData({
+          access_expiration: {
+            expiration_date: '2080-01-01T12:00:00Z',
+            masquerading_expired_course: false,
+            upgrade_deadline: '2070-01-01T12:00:00Z',
+            upgrade_url: 'https://example.com/upgrade',
+          },
+        });
+        await fetchAndRender();
+
+        // Clearing after render to remove any events sent on view (ex. 'Promotion Viewed')
+        sendTrackEvent.mockClear();
+        const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
+        fireEvent.click(upgradeLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          linkCategory: 'FBE_banner',
+          linkName: 'course_home_audit_access_expires',
+          linkType: 'link',
+          pageName: 'course_home',
+        });
+      });
     });
 
     describe('Course Start Alert', () => {
@@ -697,17 +724,17 @@ describe('Outline Tab', () => {
     });
 
     it('clicking upgrade link sends analytics', async () => {
+      await fetchAndRender();
+
+      // Clearing after render to remove any events sent on view (ex. 'Promotion Viewed')
       sendTrackEvent.mockClear();
       sendTrackingLogEvent.mockClear();
-
-      await fetchAndRender();
       const upgradeButton = screen.getByRole('link', { name: 'Upgrade ($149)' });
 
       fireEvent.click(upgradeButton);
 
-      // 3 sendTrackEvent calls are expected because 1 happens on render, and 2 happen onClick
-      expect(sendTrackEvent).toHaveBeenCalledTimes(3);
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'Promotion Clicked', {
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(1, 'Promotion Clicked', {
         org_key: 'edX',
         courserun_key: courseId,
         creative: 'sidebarupsell',
@@ -715,7 +742,7 @@ describe('Outline Tab', () => {
         position: 'sidebar-message',
         promotion_id: 'courseware_verified_certificate_upsell',
       });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.bi.ecommerce.upsell_links_clicked', {
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.bi.ecommerce.upsell_links_clicked', {
         org_key: 'edX',
         courserun_key: courseId,
         linkCategory: 'green_upgrade',
@@ -724,13 +751,12 @@ describe('Outline Tab', () => {
         pageName: 'course_home',
       });
 
-      // 3 sendTrackingLogEvent calls are expected because 1 happens on render, and 2 happen onClick
-      expect(sendTrackingLogEvent).toHaveBeenCalledTimes(3);
-      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(2, 'edx.bi.course.upgrade.sidebarupsell.clicked', {
+      expect(sendTrackingLogEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(1, 'edx.bi.course.upgrade.sidebarupsell.clicked', {
         org_key: 'edX',
         courserun_key: courseId,
       });
-      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(3, 'edx.course.enrollment.upgrade.clicked', {
+      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(2, 'edx.course.enrollment.upgrade.clicked', {
         org_key: 'edX',
         courserun_key: courseId,
         location: 'sidebar-message',
