@@ -429,6 +429,7 @@ Object {
           "hasVisitedCourse": false,
           "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+Test+Block@12345abcde",
         },
+        "timeOffsetMillis": 0,
         "verifiedMode": Object {
           "accessExpirationDate": "2050-01-01T12:00:00",
           "currency": "USD",
