@@ -48,7 +48,7 @@ function Course({
   } = course;
 
   // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
-  const offerAlert = useOfferAlert(offer, userTimezone, 'course');
+  const offerAlert = useOfferAlert(courseId, offer, org, userTimezone, 'course', 'in_course');
   const accessExpirationAlert = useAccessExpirationAlert(accessExpiration, courseId, org, userTimezone, 'course', 'in_course');
 
   const dispatch = useDispatch();

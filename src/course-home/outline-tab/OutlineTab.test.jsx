@@ -535,6 +535,53 @@ describe('Outline Tab', () => {
         await screen.findByText('We are working on generating course certificates.');
       });
     });
+
+    describe('Offer Alert', () => {
+      it('sends analytics event onClick of upgrade link', async () => {
+        setTabData({
+          offer: {
+            code: 'EDXWELCOME',
+            expiration_date: '2070-01-01T12:00:00Z',
+            original_price: '$100',
+            discounted_price: '$85',
+            percentage: 15,
+            upgrade_url: 'https://example.com/upgrade',
+          },
+        });
+        await fetchAndRender();
+
+        expect(screen.getByRole('link', { name: 'Upgrade now' })).toBeInTheDocument();
+      });
+
+      it('sends analytics event onClick of upgrade link', async () => {
+        setTabData({
+          offer: {
+            code: 'EDXWELCOME',
+            expiration_date: '2070-01-01T12:00:00Z',
+            original_price: '$100',
+            discounted_price: '$85',
+            percentage: 15,
+            upgrade_url: 'https://example.com/upgrade',
+          },
+        });
+        await fetchAndRender();
+
+        // Clearing after render to remove any events sent on view (ex. 'Promotion Viewed')
+        sendTrackEvent.mockClear();
+        const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
+        fireEvent.click(upgradeLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          linkCategory: 'welcome',
+          linkName: 'course_home_welcome',
+          linkType: 'link',
+          pageName: 'course_home',
+        });
+      });
+    });
   });
 
   describe('Proctoring Info Panel', () => {
