@@ -6,11 +6,6 @@ Factory.define('outlineTabData')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
   .option('host', 'http://localhost:18000')
   .option('dateBlocks', [])
-  .attr('course_tools', ['host', 'courseId'], (host, courseId) => ([{
-    analytics_id: 'edx.bookmarks',
-    title: 'Bookmarks',
-    url: `${host}/courses/${courseId}/bookmarks/`,
-  }]))
   .attr('course_blocks', ['courseId'], courseId => {
     const { courseBlocks } = buildSimpleCourseBlocks(courseId);
     return {
@@ -40,6 +35,18 @@ Factory.define('outlineTabData')
       goal_options: [],
       selected_goal: null,
     },
+    course_tools: [
+      {
+        analytics_id: 'edx.bookmarks',
+        title: 'Bookmarks',
+        url: 'example.com/bookmarks',
+      },
+      {
+        analytics_id: 'edx.tool.verified_upgrade',
+        title: 'Upgrade to Verified',
+        url: 'example.com/upgrade',
+      },
+    ],
     dates_banner_info: {
       content_type_gating_enabled: false,
       missed_gated_content: false,
