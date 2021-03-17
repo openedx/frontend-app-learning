@@ -159,6 +159,7 @@ function LockPaywall({
                   <Button
                     className="lock_paywall_upgrade_link"
                     href={upgradeUrl}
+                    onClick={logClick}
                     style={{ verticalAlign: 'middle' }}
                   >
                     {intl.formatMessage(messages['learn.lockPaywall.upgrade.link'], {
@@ -171,18 +172,6 @@ function LockPaywall({
             </div>
           </div>
         </div>
-
-        <Button
-          className="lock_paywall_upgrade_link"
-          href={upgradeUrl}
-          onClick={logClick}
-        >
-          {intl.formatMessage(messages['learn.lockPaywall.upgrade.link'], {
-            currencySymbol,
-            price,
-          })}
-        </Button>
-
 
       </Alert>
     </div>
