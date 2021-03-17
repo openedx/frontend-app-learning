@@ -27,6 +27,7 @@ describe('Lock Paywall', () => {
     } = store.getState().models.coursewareMeta[mockData.courseId].verifiedMode;
     render(<LockPaywall {...mockData} />);
 
+
     const upgradeLink = screen.getByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
     expect(upgradeLink).toHaveAttribute('href', `${upgradeUrl}`);
   });

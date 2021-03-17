@@ -13,6 +13,7 @@ const messages = defineMessages({
   },
   'learn.lockPaywall.upgrade.link': {
     id: 'learn.lockPaywall.upgrade.link',
+
     defaultMessage: 'Upgrade for {currencySymbol}{price}',
     description: 'A link users can click that navigates their browser to the upgrade payment page.',
   },
@@ -34,16 +35,19 @@ const messages = defineMessages({
   'learn.lockPaywall.list.bullet2.boldtext': {
     id: 'learn.lockPaywall.list.bullet2.boldtext',
     defaultMessage: 'graded assignments',
+
     description: 'Bolded text for graded assignments.',
   },
   'learn.lockPaywall.list.bullet3.boldtext': {
     id: 'learn.lockPaywall.list.bullet3.boldtext',
     defaultMessage: 'Full access',
+
     description: 'Bolded text for full access.',
   },
   'learn.lockPaywall.list.bullet4.boldtext': {
     id: 'learn.lockPaywall.list.bullet4.boldtext',
     defaultMessage: 'non-profit',
+
     description: 'Bolded text to highlight our non-profit status.',
   },
 });
