@@ -64,7 +64,7 @@ function Course({
   const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
 
   const windowSize = useWindowSize();
-  const isMobileWidth = windowSize.width <= 576;
+  const isResponsiveWidth = windowSize.width <= 768;
 
   const [sidebarVisible, setSidebar] = useState(false);
   const isSidebarVisible = () => sidebarVisible && setSidebar;
@@ -96,7 +96,7 @@ function Course({
           //* * [MM-P2P] Experiment */
           mmp2p={MMP2P}
         />
-        { !isMobileWidth ? (
+        { !isResponsiveWidth ? (
           <SidebarNotificationButton
             toggleSidebar={toggleSidebar}
             isSidebarVisible={isSidebarVisible}
@@ -115,7 +115,7 @@ function Course({
         toggleSidebar={toggleSidebar}
         isSidebarVisible={isSidebarVisible}
         sidebarVisible={sidebarVisible}
-        isMobileWidth={isMobileWidth}
+        isResponsiveWidth={isResponsiveWidth}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />

@@ -36,7 +36,7 @@ function Sequence({
   toggleSidebar,
   sidebarVisible,
   isSidebarVisible,
-  isMobileWidth,
+  isResponsiveWidth,
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
@@ -174,7 +174,7 @@ function Sequence({
               goToCourseExitPage={() => goToCourseExitPage()}
               toggleSidebar={toggleSidebar}
               isSidebarVisible={isSidebarVisible}
-              isMobileWidth={isMobileWidth}
+              isResponsiveWidth={isResponsiveWidth}
             />
             <div className="unit-container flex-grow-1">
               <SequenceContent
@@ -203,11 +203,10 @@ function Sequence({
               )}
             </div>
           </div>
-
           <Sidebar
             toggleSidebar={toggleSidebar}
             sidebarVisible={sidebarVisible}
-            isMobileWidth={isMobileWidth}
+            isResponsiveWidth={isResponsiveWidth}
           />
 
           {/** [MM-P2P] Experiment */}
@@ -238,10 +237,10 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
-  toggleSidebar: PropTypes.func.isRequired,
-  sidebarVisible: PropTypes.bool.isRequired,
-  isSidebarVisible: PropTypes.func.isRequired,
-  isMobileWidth: PropTypes.bool.isRequired,
+  toggleSidebar: PropTypes.func,
+  sidebarVisible: PropTypes.bool,
+  isSidebarVisible: PropTypes.func,
+  isResponsiveWidth: PropTypes.bool,
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
@@ -260,6 +259,10 @@ Sequence.propTypes = {
 Sequence.defaultProps = {
   sequenceId: null,
   unitId: null,
+  toggleSidebar: null,
+  sidebarVisible: null,
+  isSidebarVisible: null,
+  isResponsiveWidth: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {

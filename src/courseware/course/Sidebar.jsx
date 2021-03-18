@@ -7,12 +7,12 @@ import './Sidebar.scss';
 import messages from './messages';
 
 function Sidebar({
-  intl, sidebarVisible, toggleSidebar, isMobileWidth,
+  intl, sidebarVisible, toggleSidebar, isResponsiveWidth,
 }) {
   return (
     sidebarVisible ? (
-      <div className="sidebar-container ml-0 ml-sm-4">
-        {isMobileWidth
+      <div className="sidebar-container ml-0 ml-lg-4">
+        {isResponsiveWidth
           ? (
             <div className="mobile-close-container" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.responsiveCloseSidebar)}>
               <Icon src={ArrowBackIos} />
@@ -22,7 +22,7 @@ function Sidebar({
           : null}
         <div className="sidebar-header px-3">
           <span>{intl.formatMessage(messages.notification)}</span>
-          {!isMobileWidth
+          {!isResponsiveWidth
             ? <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeButton)} />
             : null}
         </div>
@@ -35,9 +35,15 @@ function Sidebar({
 
 Sidebar.propTypes = {
   intl: intlShape.isRequired,
-  toggleSidebar: PropTypes.func.isRequired,
-  sidebarVisible: PropTypes.bool.isRequired,
-  isMobileWidth: PropTypes.bool.isRequired,
+  toggleSidebar: PropTypes.func,
+  sidebarVisible: PropTypes.bool,
+  isResponsiveWidth: PropTypes.bool,
+};
+
+Sidebar.defaultProps = {
+  toggleSidebar: null,
+  sidebarVisible: null,
+  isResponsiveWidth: null,
 };
 
 export default injectIntl(Sidebar);
