@@ -37,6 +37,9 @@ Today, if the URL only specifies the course ID, we need to pick a sequence to sh
 
 Similarly, if the URL doesn't contain a unit ID, we use the `position` field of the sequence to determine which unit we want to display from that sequence.  If the position isn't specified in the sequence, we choose the first unit of the sequence.  After determining which unit to display, we update the URL to match.  After the URL is updated, the application will attempt to load that unit via an iFrame.
 
+_This URL scheme has been expanded upon in
+[ADR #8: Liberal courseware path handling](./0008-liberal-courseware-path-handling.md)._
+
 ## "Container" components vs. display components
 
 This application makes use of a few "container" components at the top level - CoursewareContainer and CourseHomeContainer.
