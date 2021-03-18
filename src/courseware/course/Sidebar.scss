@@ -4,7 +4,7 @@
 @import "~@edx/brand/paragon/overrides";
 
 .sidebar-container {
-    border: 1px solid rgb(225, 221, 219);
+    border: 1px solid $gray-200;
     width: 330px;
     vertical-align: top;
 
@@ -23,9 +23,7 @@
 }
 
 .sidebar-header {
-    padding-top: 14px;
-    padding-bottom: 10px;
-    font-size: 1rem;
+    padding: 0.625rem 0;
 
     span {
         display: inline-block;
@@ -38,15 +36,15 @@
 
 .sidebar-divider {
     height: 0.5rem;
-    background: rgb(249, 249, 249);
-    border-top: 1px solid rgb(225, 221, 219);
-    border-bottom: 1px solid rgb(225, 221, 219);
+    background: $gray-100;
+    border-top: 1px solid $gray-200;
+    border-bottom: 1px solid $gray-200;
 }
 
 .mobile-close-container {
     padding-top: 0.5rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid #E4E4E4;
+    border-bottom: 1px solid $gray-200;
 
     span {
         display: inline-block;
