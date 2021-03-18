@@ -158,6 +158,58 @@ describe('Outline Tab', () => {
     });
   });
 
+  describe('Dates Banner', () => {
+    beforeEach(() => {
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        dates_banner_info: {
+          content_type_gating_enabled: true,
+          missed_deadlines: true,
+          missed_gated_content: true,
+          verified_upgrade_link: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+        },
+      }, {
+        date_blocks: [
+          {
+            assignment_type: 'Homework',
+            date: '2010-08-20T05:59:40.942669Z',
+            date_type: 'assignment-due-date',
+            description: '',
+            learner_has_access: true,
+            title: 'Missed assignment',
+            extra_info: null,
+          },
+        ],
+      });
+    });
+
+    it('renders upgradeToReset', async () => {
+      await fetchAndRender();
+
+      expect(screen.getByText('You are auditing this course,')).toBeInTheDocument();
+      expect(screen.getByText('which means that you are unable to participate in graded assignments. It looks like you missed some important deadlines based on our suggested schedule. To complete graded assignments as part of this course and shift the past due assignments into the future, you can upgrade today.')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Upgrade to shift due dates' })).toBeInTheDocument();
+    });
+
+    it('sends analytics event onClick of upgrade button in banner', async () => {
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+
+      const upgradeButton = screen.getByRole('button', { name: 'Upgrade to shift due dates' });
+      fireEvent.click(upgradeButton);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: 'personalized_learner_schedules',
+        linkName: 'course_home_upgrade_shift_dates',
+        linkType: 'button',
+        pageName: 'course_home',
+      });
+    });
+  });
+
   describe('Welcome Message', () => {
     beforeEach(() => {
       setMetadata({ is_enrolled: true });
@@ -220,7 +272,7 @@ describe('Outline Tab', () => {
       startDate.setHours(startDate.getHours() + 1);
       setMetadata({ is_enrolled: true });
       setTabData({}, {
-        dateBlocks: [
+        date_blocks: [
           {
             date_type: 'course-start-date',
             date: startDate.toISOString(),
@@ -243,7 +295,7 @@ describe('Outline Tab', () => {
       const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
       setMetadata({ is_enrolled: true });
       setTabData({}, {
-        dateBlocks: [
+        date_blocks: [
           {
             date_type: 'verified-upgrade-deadline',
             date: tomorrow.toISOString(),
@@ -541,7 +593,7 @@ describe('Outline Tab', () => {
         startDate.setDate(startDate.getDate() + 100);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-start-date',
               date: startDate.toISOString(),
@@ -559,7 +611,7 @@ describe('Outline Tab', () => {
         startDate.setHours(startDate.getHours() + 1);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-start-date',
               date: startDate.toISOString(),
@@ -580,7 +632,7 @@ describe('Outline Tab', () => {
         endDate.setDate(endDate.getDate() + 13);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-end-date',
               date: endDate.toISOString(),
@@ -598,7 +650,7 @@ describe('Outline Tab', () => {
         endDate.setHours(endDate.getHours() + 1);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-end-date',
               date: endDate.toISOString(),
@@ -620,7 +672,7 @@ describe('Outline Tab', () => {
         const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-end-date',
               date: yesterday.toISOString(),

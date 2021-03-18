@@ -5,14 +5,14 @@ import buildSimpleCourseBlocks from './courseBlocks.factory';
 Factory.define('outlineTabData')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
   .option('host', 'http://localhost:18000')
-  .option('dateBlocks', [])
+  .option('date_blocks', [])
   .attr('course_blocks', ['courseId'], courseId => {
     const { courseBlocks } = buildSimpleCourseBlocks(courseId);
     return {
       blocks: courseBlocks.blocks,
     };
   })
-  .attr('dates_widget', ['dateBlocks'], (dateBlocks) => ({
+  .attr('dates_widget', ['date_blocks'], (dateBlocks) => ({
     course_date_blocks: dateBlocks,
     user_timezone: 'UTC',
   }))
