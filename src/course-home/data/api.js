@@ -157,8 +157,12 @@ export async function getProctoringInfoData(courseId) {
 export async function getOutlineTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
   let { tabData } = {};
+  let requestTime = Date.now();
+  let responseTime = requestTime;
   try {
+    requestTime = Date.now();
     tabData = await getAuthenticatedHttpClient().get(url);
+    responseTime = Date.now();
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
@@ -166,6 +170,18 @@ export async function getOutlineTabData(courseId) {
       return {};
     }
     throw error;
+  }
+
+  // Time offset computation should move down into the HttpClient wrapper to maintain a global time correction reference
+  // Requires 'Access-Control-Expose-Headers: Date' on the server response per https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#access-control-expose-headers
+  const headerDate = tabData.headers.date;
+
+  let timeOffsetMillis = 0;
+  if (headerDate !== undefined) {
+    const headerTime = Date.parse(headerDate);
+    const roundTripMillis = requestTime - responseTime;
+    const localTime = responseTime - (roundTripMillis / 2); // Roughly compensate for transit time
+    timeOffsetMillis = headerTime - localTime;
   }
 
   const {
@@ -187,6 +203,7 @@ export async function getOutlineTabData(courseId) {
   const welcomeMessageHtml = data.welcome_message_html;
 
   return {
+    timeOffsetMillis, // This should move to a global time correction reference
     accessExpiration,
     canShowUpgradeSock,
     courseBlocks,
@@ -201,7 +218,6 @@ export async function getOutlineTabData(courseId) {
     resumeCourse,
     verifiedMode,
     welcomeMessageHtml,
-    timeOffsetMillis: 0,
   };
 }
 
