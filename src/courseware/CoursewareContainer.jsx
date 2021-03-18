@@ -41,6 +41,32 @@ const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSe
   }
 });
 
+const checkSectionUnitToUnitRedirect = memoize((courseStatus, courseId, sequenceStatus, section, unitId) => {
+  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && unitId) {
+    history.replace(`/course/${courseId}/${unitId}`);
+  }
+});
+
+const checkSectionToSequenceRedirect = memoize((courseStatus, courseId, sequenceStatus, section, unitId) => {
+  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && !unitId) {
+    // If the section is non-empty, redirect to its first sequence.
+    if (section.sequenceIds && section.sequenceIds[0]) {
+      history.replace(`/course/${courseId}/${section.sequenceIds[0]}`);
+    // Otherwise, just go to the course root, letting the resume redirect take care of things.
+    } else {
+      history.replace(`/course/${courseId}`);
+    }
+  }
+});
+
+const checkUnitToSequenceUnitRedirect = memoize((courseStatus, courseId, sequenceStatus, unit) => {
+  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && unit) {
+    // If the sequence failed to load as a sequence, but it *did* load as a unit, then
+    // insert the unit's parent sequenceId into the URL.
+    history.replace(`/course/${courseId}/${unit.sequenceId}/${unit.id}`);
+  }
+});
+
 const checkContentRedirect = memoize((courseId, sequenceStatus, sequenceId, sequence, unitId) => {
   if (sequenceStatus === 'loaded' && sequenceId && !unitId) {
     if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
@@ -97,6 +123,8 @@ class CoursewareContainer extends Component {
       sequenceStatus,
       sequence,
       firstSequenceId,
+      unitViaSequenceId,
+      sectionViaSequenceId,
       match: {
         params: {
           courseId: routeCourseId,
@@ -112,6 +140,29 @@ class CoursewareContainer extends Component {
 
     // Redirect to the legacy experience for exams.
     checkExamRedirect(sequenceStatus, sequence);
+
+    // Check section-unit to unit redirect:
+    //    /course/:courseId/:sectionId/:unitId -> /course/:courseId/:unitId
+    // by simply ignoring the :sectionId.
+    // (It may be desirable at some point to be smarter here; for example, we could replace
+    //  :sectionId with the parent sequence of :unitId and/or check whether the :unitId
+    //  is actually within :sectionId. However, the way our Redux store is currently factored,
+    //  the unit's metadata is not available to us if the section isn't loadable.)
+    // Before performing this redirect, we *do* still check that a section is loadable;
+    // otherwise, we could get stuck in a redirect loop, since a sequence that failed to load
+    // would endlessly redirect to itself through `checkSectionUnitToUnitRedirect`
+    // and `checkUnitToSequenceUnitRedirect`.
+    checkSectionUnitToUnitRedirect(courseStatus, courseId, sequenceStatus, sectionViaSequenceId, routeUnitId);
+
+    // Check section to sequence redirect:
+    //    /course/:courseId/:sectionId         -> /course/:courseId/:sequenceId
+    // by redirecting to the first sequence within the section.
+    checkSectionToSequenceRedirect(courseStatus, courseId, sequenceStatus, sectionViaSequenceId, routeUnitId);
+
+    // Check unit to sequence-unit redirect:
+    //    /course/:courseId/:unitId -> /course/:courseId/:sequenceId/:unitId
+    // by filling in the ID of the parent sequence of :unitId.
+    checkUnitToSequenceUnitRedirect(courseStatus, courseId, sequenceStatus, unitViaSequenceId);
 
     // Determine if we need to redirect because our URL is incomplete.
     checkContentRedirect(courseId, sequenceStatus, sequenceId, sequence, routeUnitId);
@@ -249,11 +300,22 @@ class CoursewareContainer extends Component {
   }
 }
 
+const unitShape = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  sequenceId: PropTypes.string.isRequired,
+});
+
 const sequenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  sectionId: PropTypes.string.isRequired,
   isTimeLimited: PropTypes.bool,
   lmsWebUrl: PropTypes.string,
+});
+
+const sectionShape = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  sequenceIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 });
 
 const courseShape = PropTypes.shape({
@@ -278,6 +340,8 @@ CoursewareContainer.propTypes = {
   sequenceStatus: PropTypes.oneOf(['loaded', 'loading', 'failed']).isRequired,
   nextSequence: sequenceShape,
   previousSequence: sequenceShape,
+  unitViaSequenceId: unitShape,
+  sectionViaSequenceId: sectionShape,
   course: courseShape,
   sequence: sequenceShape,
   saveSequencePosition: PropTypes.func.isRequired,
@@ -292,6 +356,8 @@ CoursewareContainer.defaultProps = {
   firstSequenceId: null,
   nextSequence: null,
   previousSequence: null,
+  unitViaSequenceId: null,
+  sectionViaSequenceId: null,
   course: null,
   sequence: null,
 };
@@ -367,6 +433,18 @@ const firstSequenceIdSelector = createSelector(
   },
 );
 
+const sectionViaSequenceIdSelector = createSelector(
+  (state) => state.models.sections || {},
+  (state) => state.courseware.sequenceId,
+  (sectionsById, sequenceId) => (sectionsById[sequenceId] ? sectionsById[sequenceId] : null),
+);
+
+const unitViaSequenceIdSelector = createSelector(
+  (state) => state.models.units || {},
+  (state) => state.courseware.sequenceId,
+  (unitsById, sequenceId) => (unitsById[sequenceId] ? unitsById[sequenceId] : null),
+);
+
 const mapStateToProps = (state) => {
   const {
     courseId, sequenceId, courseStatus, sequenceStatus,
@@ -382,6 +460,8 @@ const mapStateToProps = (state) => {
     previousSequence: previousSequenceSelector(state),
     nextSequence: nextSequenceSelector(state),
     firstSequenceId: firstSequenceIdSelector(state),
+    sectionViaSequenceId: sectionViaSequenceIdSelector(state),
+    unitViaSequenceId: unitViaSequenceIdSelector(state),
   };
 };
 

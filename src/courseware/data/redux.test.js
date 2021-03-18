@@ -115,6 +115,22 @@ describe('Data layer integration tests', () => {
       expect(store.getState().courseware.sequenceStatus).toEqual('failed');
     });
 
+    it('Should result in fetch failure if a non-sequential block is returned', async () => {
+      const sectionMetadata = {
+        ...sequenceMetadata,
+        // 'chapter' is the block_type of a Section, which the sequence metadata
+        // API will happily return if requested, since SectionBlock is implemented
+        // as a subclass of SequenceBlock.
+        tag: 'chapter',
+      };
+      axiosMock.onGet(sequenceUrl).reply(200, sectionMetadata);
+
+      await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
+
+      expect(loggingService.logError).toHaveBeenCalled();
+      expect(store.getState().courseware.sequenceStatus).toEqual('failed');
+    });
+
     it('Should fetch and normalize metadata, and then update existing models with sequence metadata', async () => {
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);

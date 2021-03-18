@@ -93,15 +93,26 @@ export function fetchSequence(sequenceId) {
     dispatch(fetchSequenceRequest({ sequenceId }));
     try {
       const { sequence, units } = await getSequenceMetadata(sequenceId);
-      dispatch(updateModel({
-        modelType: 'sequences',
-        model: sequence,
-      }));
-      dispatch(updateModels({
-        modelType: 'units',
-        models: units,
-      }));
-      dispatch(fetchSequenceSuccess({ sequenceId }));
+      if (sequence.blockType !== 'sequential') {
+        // Some other block types (particularly 'chapter') can be returned
+        // by this API. We want to error in that case, since downstream
+        // courseware code is written to render Sequences of Units.
+        logError(
+          `Requested sequence '${sequenceId}' `
+          + `has block type '${sequence.blockType}'; expected block type 'sequential'.`,
+        );
+        dispatch(fetchSequenceFailure({ sequenceId }));
+      } else {
+        dispatch(updateModel({
+          modelType: 'sequences',
+          model: sequence,
+        }));
+        dispatch(updateModels({
+          modelType: 'units',
+          models: units,
+        }));
+        dispatch(fetchSequenceSuccess({ sequenceId }));
+      }
     } catch (error) {
       logError(error);
       dispatch(fetchSequenceFailure({ sequenceId }));
