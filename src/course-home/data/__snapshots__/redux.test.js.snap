@@ -405,7 +405,12 @@ Object {
           Object {
             "analyticsId": "edx.bookmarks",
             "title": "Bookmarks",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/bookmarks/",
+            "url": "https://example.com/bookmarks",
+          },
+          Object {
+            "analyticsId": "edx.tool.verified_upgrade",
+            "title": "Upgrade to Verified",
+            "url": "https://example.com/upgrade",
           },
         ],
         "datesBannerInfo": Object {

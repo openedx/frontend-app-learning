@@ -11,6 +11,7 @@ function DatesBannerContainer({
   courseDateBlocks,
   datesBannerInfo,
   hasEnded,
+  logUpgradeLinkClick,
   model,
   tabFetch,
 }) {
@@ -43,13 +44,19 @@ function DatesBannerContainer({
       name: 'upgradeToCompleteGradedBanner',
       // verifiedUpgradeLink can be null if we've passed the upgrade deadline
       shouldDisplay: upgradeToCompleteGraded && verifiedUpgradeLink,
-      clickHandler: () => global.location.replace(verifiedUpgradeLink),
+      clickHandler: () => {
+        logUpgradeLinkClick();
+        global.location.replace(verifiedUpgradeLink);
+      },
     },
     {
       name: 'upgradeToResetBanner',
       // verifiedUpgradeLink can be null if we've passed the upgrade deadline
       shouldDisplay: upgradeToReset && verifiedUpgradeLink,
-      clickHandler: () => global.location.replace(verifiedUpgradeLink),
+      clickHandler: () => {
+        logUpgradeLinkClick();
+        global.location.replace(verifiedUpgradeLink);
+      },
     },
     {
       name: 'resetDatesBanner',
@@ -80,12 +87,14 @@ DatesBannerContainer.propTypes = {
     verifiedUpgradeLink: PropTypes.string,
   }).isRequired,
   hasEnded: PropTypes.bool,
+  logUpgradeLinkClick: PropTypes.func,
   model: PropTypes.string.isRequired,
   tabFetch: PropTypes.func.isRequired,
 };
 
 DatesBannerContainer.defaultProps = {
   hasEnded: false,
+  logUpgradeLinkClick: () => {},
 };
 
 export default DatesBannerContainer;

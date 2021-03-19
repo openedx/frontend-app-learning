@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   FormattedMessage, FormattedDate, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
@@ -21,7 +22,10 @@ function AccessExpirationAlert({ intl, payload }) {
 
   const {
     accessExpiration,
+    courseId,
+    org,
     userTimezone,
+    analyticsPageName,
   } = payload;
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
@@ -66,6 +70,17 @@ function AccessExpirationAlert({ intl, payload }) {
     );
   }
 
+  const logClick = () => {
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      org_key: org,
+      courserun_key: courseId,
+      linkCategory: 'FBE_banner',
+      linkName: `${analyticsPageName}_audit_access_expires`,
+      linkType: 'link',
+      pageName: analyticsPageName,
+    });
+  };
+
   let deadlineMessage = null;
   if (upgradeDeadline && upgradeUrl) {
     deadlineMessage = (
@@ -92,6 +107,7 @@ function AccessExpirationAlert({ intl, payload }) {
           className="font-weight-bold"
           style={{ textDecoration: 'underline' }}
           destination={upgradeUrl}
+          onClick={logClick}
         >
           {intl.formatMessage(messages.upgradeNow)}
         </Hyperlink>
@@ -150,7 +166,10 @@ AccessExpirationAlert.propTypes = {
       upgradeDeadline: PropTypes.string,
       upgradeUrl: PropTypes.string,
     }).isRequired,
+    courseId: PropTypes.string.isRequired,
+    org: PropTypes.string.isRequired,
     userTimezone: PropTypes.string.isRequired,
+    analyticsPageName: PropTypes.string.isRequired,
   }).isRequired,
 };
 

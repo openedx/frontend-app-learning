@@ -3,6 +3,7 @@ import { Route } from 'react-router';
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 import { getConfig, history } from '@edx/frontend-platform';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
@@ -18,6 +19,7 @@ import { appendBrowserTimezoneToUrl } from '../../utils';
 import { UserMessagesProvider } from '../../generic/user-messages';
 
 initializeMockApp();
+jest.mock('@edx/frontend-platform/analytics');
 
 describe('DatesTab', () => {
   let axiosMock;
@@ -240,6 +242,58 @@ describe('DatesTab', () => {
       await waitFor(() => expect(screen.getByText("You've successfully shifted your dates!")).toBeInTheDocument());
       // confirm "Shift due dates" button has not rendered
       expect(screen.queryByRole('button', { name: 'Shift due dates' })).not.toBeInTheDocument();
+    });
+
+    it('sends analytics event onClick of upgrade button in upgradeToCompleteGradedBanner', async () => {
+      sendTrackEvent.mockClear();
+      datesTabData.datesBannerInfo = {
+        contentTypeGatingEnabled: true,
+        missedDeadlines: false,
+        missedGatedContent: false,
+        verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+      };
+
+      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      render(component);
+
+      const upgradeButton = await waitFor(() => screen.getByRole('button', { name: 'Upgrade now' }));
+      fireEvent.click(upgradeButton);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: 'personalized_learner_schedules',
+        linkName: 'dates_upgrade',
+        linkType: 'button',
+        pageName: 'dates_tab',
+      });
+    });
+
+    it('sends analytics event onClick of upgrade button in upgradeToResetBanner', async () => {
+      sendTrackEvent.mockClear();
+      datesTabData.datesBannerInfo = {
+        contentTypeGatingEnabled: true,
+        missedDeadlines: true,
+        missedGatedContent: true,
+        verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+      };
+
+      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      render(component);
+
+      const upgradeButton = await waitFor(() => screen.getByRole('button', { name: 'Upgrade to shift due dates' }));
+      fireEvent.click(upgradeButton);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: 'personalized_learner_schedules',
+        linkName: 'dates_upgrade',
+        linkType: 'button',
+        pageName: 'dates_tab',
+      });
     });
   });
 });

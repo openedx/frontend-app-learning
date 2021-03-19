@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   FormattedMessage, FormattedDate, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
@@ -11,7 +12,10 @@ import messages from './messages';
 
 function OfferAlert({ intl, payload }) {
   const {
+    analyticsPageName,
+    courseId,
     offer,
+    org,
     userTimezone,
   } = payload;
 
@@ -26,6 +30,17 @@ function OfferAlert({ intl, payload }) {
     upgradeUrl,
   } = offer;
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
+
+  const logClick = () => {
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      org_key: org,
+      courserun_key: courseId,
+      linkCategory: 'welcome',
+      linkName: `${analyticsPageName}_welcome`,
+      linkType: 'link',
+      pageName: analyticsPageName,
+    });
+  };
 
   return (
     <Alert type={ALERT_TYPES.INFO}>
@@ -61,6 +76,7 @@ function OfferAlert({ intl, payload }) {
         className="font-weight-bold"
         style={{ textDecoration: 'underline' }}
         destination={upgradeUrl}
+        onClick={logClick}
       >
         {intl.formatMessage(messages.upgradeNow)}
       </Hyperlink>
@@ -71,6 +87,7 @@ function OfferAlert({ intl, payload }) {
 OfferAlert.propTypes = {
   intl: intlShape.isRequired,
   payload: PropTypes.shape({
+    courseId: PropTypes.string.isRequired,
     offer: PropTypes.shape({
       code: PropTypes.string.isRequired,
       discountedPrice: PropTypes.string.isRequired,
@@ -79,7 +96,9 @@ OfferAlert.propTypes = {
       percentage: PropTypes.number.isRequired,
       upgradeUrl: PropTypes.string.isRequired,
     }).isRequired,
+    org: PropTypes.string.isRequired,
     userTimezone: PropTypes.string.isRequired,
+    analyticsPageName: PropTypes.string.isRequired,
   }).isRequired,
 };
 

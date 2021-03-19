@@ -3,11 +3,14 @@ import { useAlert } from '../../generic/user-messages';
 
 const AccessExpirationAlert = React.lazy(() => import('./AccessExpirationAlert'));
 
-function useAccessExpirationAlert(accessExpiration, userTimezone, topic) {
+function useAccessExpirationAlert(accessExpiration, courseId, org, userTimezone, topic, analyticsPageName) {
   const isVisible = !!accessExpiration; // If it exists, show it.
   const payload = {
     accessExpiration,
+    courseId,
+    org,
     userTimezone,
+    analyticsPageName,
   };
 
   useAlert(isVisible, {

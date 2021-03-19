@@ -158,6 +158,58 @@ describe('Outline Tab', () => {
     });
   });
 
+  describe('Dates Banner', () => {
+    beforeEach(() => {
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        dates_banner_info: {
+          content_type_gating_enabled: true,
+          missed_deadlines: true,
+          missed_gated_content: true,
+          verified_upgrade_link: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+        },
+      }, {
+        date_blocks: [
+          {
+            assignment_type: 'Homework',
+            date: '2010-08-20T05:59:40.942669Z',
+            date_type: 'assignment-due-date',
+            description: '',
+            learner_has_access: true,
+            title: 'Missed assignment',
+            extra_info: null,
+          },
+        ],
+      });
+    });
+
+    it('renders upgradeToReset', async () => {
+      await fetchAndRender();
+
+      expect(screen.getByText('You are auditing this course,')).toBeInTheDocument();
+      expect(screen.getByText('which means that you are unable to participate in graded assignments. It looks like you missed some important deadlines based on our suggested schedule. To complete graded assignments as part of this course and shift the past due assignments into the future, you can upgrade today.')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Upgrade to shift due dates' })).toBeInTheDocument();
+    });
+
+    it('sends analytics event onClick of upgrade button in banner', async () => {
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+
+      const upgradeButton = screen.getByRole('button', { name: 'Upgrade to shift due dates' });
+      fireEvent.click(upgradeButton);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: 'personalized_learner_schedules',
+        linkName: 'course_home_upgrade_shift_dates',
+        linkType: 'button',
+        pageName: 'course_home',
+      });
+    });
+  });
+
   describe('Welcome Message', () => {
     beforeEach(() => {
       setMetadata({ is_enrolled: true });
@@ -211,6 +263,63 @@ describe('Outline Tab', () => {
       setTabData({ welcome_message_html: null });
       await fetchAndRender();
       expect(screen.queryByTestId('alert-container-welcome')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Course Dates', () => {
+    it('renders when course date blocks are populated', async () => {
+      const startDate = new Date();
+      startDate.setHours(startDate.getHours() + 1);
+      setMetadata({ is_enrolled: true });
+      setTabData({}, {
+        date_blocks: [
+          {
+            date_type: 'course-start-date',
+            date: startDate.toISOString(),
+            title: 'Start',
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.getByRole('heading', { name: 'Upcoming Dates' })).toBeInTheDocument();
+    });
+
+    it('does not render when course date blocks are not populated', async () => {
+      setMetadata({ is_enrolled: true });
+      await fetchAndRender();
+      expect(screen.queryByRole('heading', { name: 'Upcoming Dates' })).not.toBeInTheDocument();
+    });
+
+    it('sends analytics event onClick of upgrade link', async () => {
+      const now = new Date();
+      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      setMetadata({ is_enrolled: true });
+      setTabData({}, {
+        date_blocks: [
+          {
+            date_type: 'verified-upgrade-deadline',
+            date: tomorrow.toISOString(),
+            link: 'https://example.com/upgrade',
+            link_text: 'Upgrade to Verified Certificate',
+            title: 'Verification Upgrade Deadline',
+          },
+        ],
+      });
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+
+      const upgradeLink = screen.getByRole('link', { name: 'Upgrade to Verified Certificate' });
+      fireEvent.click(upgradeLink);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: '(none)',
+        linkName: 'course_home_dates',
+        linkType: 'link',
+        pageName: 'course_home',
+      });
     });
   });
 
@@ -312,6 +421,51 @@ describe('Outline Tab', () => {
     });
   });
 
+  describe('Course Tools', () => {
+    it('renders title when tools are available', async () => {
+      await fetchAndRender();
+      expect(screen.getByRole('heading', { name: 'Course Tools' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Bookmarks' })).toBeInTheDocument();
+    });
+
+    it('does not render title when tools are not available', async () => {
+      setTabData({
+        course_tools: [],
+      });
+      await fetchAndRender();
+      expect(screen.queryByRole('heading', { name: 'Course Tools' })).not.toBeInTheDocument();
+    });
+
+    it('analytics sent when upgrade link clicked', async () => {
+      await fetchAndRender();
+      expect(screen.getByRole('heading', { name: 'Course Tools' })).toBeInTheDocument();
+      sendTrackEvent.mockClear();
+      sendTrackingLogEvent.mockClear();
+
+      const upgradeLink = screen.getByRole('link', { name: 'Upgrade to Verified' });
+      fireEvent.click(upgradeLink);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: '(none)',
+        linkName: 'course_home_course_tools',
+        linkType: 'link',
+        pageName: 'course_home',
+      });
+
+      expect(sendTrackingLogEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.course.tool.accessed', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        course_id: courseId,
+        is_staff: false,
+        tool_name: 'edx.tool.verified_upgrade',
+      });
+    });
+  });
+
   describe('Alert List', () => {
     describe('Private Course Alert', () => {
       it('does not display alert for enrolled user', async () => {
@@ -403,6 +557,33 @@ describe('Outline Tab', () => {
         await fetchAndRender();
         await screen.findByText('to get unlimited access to the course as long as it exists on the site.', { exact: false });
       });
+
+      it('sends analytics event onClick of upgrade link', async () => {
+        setTabData({
+          access_expiration: {
+            expiration_date: '2080-01-01T12:00:00Z',
+            masquerading_expired_course: false,
+            upgrade_deadline: '2070-01-01T12:00:00Z',
+            upgrade_url: 'https://example.com/upgrade',
+          },
+        });
+        await fetchAndRender();
+
+        // Clearing after render to remove any events sent on view (ex. 'Promotion Viewed')
+        sendTrackEvent.mockClear();
+        const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
+        fireEvent.click(upgradeLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          linkCategory: 'FBE_banner',
+          linkName: 'course_home_audit_access_expires',
+          linkType: 'link',
+          pageName: 'course_home',
+        });
+      });
     });
 
     describe('Course Start Alert', () => {
@@ -412,7 +593,7 @@ describe('Outline Tab', () => {
         startDate.setDate(startDate.getDate() + 100);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-start-date',
               date: startDate.toISOString(),
@@ -430,7 +611,7 @@ describe('Outline Tab', () => {
         startDate.setHours(startDate.getHours() + 1);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-start-date',
               date: startDate.toISOString(),
@@ -451,7 +632,7 @@ describe('Outline Tab', () => {
         endDate.setDate(endDate.getDate() + 13);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-end-date',
               date: endDate.toISOString(),
@@ -469,7 +650,7 @@ describe('Outline Tab', () => {
         endDate.setHours(endDate.getHours() + 1);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-end-date',
               date: endDate.toISOString(),
@@ -491,7 +672,7 @@ describe('Outline Tab', () => {
         const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
         setMetadata({ is_enrolled: true });
         setTabData({}, {
-          dateBlocks: [
+          date_blocks: [
             {
               date_type: 'course-end-date',
               date: yesterday.toISOString(),
@@ -506,6 +687,53 @@ describe('Outline Tab', () => {
         });
         await fetchAndRender();
         await screen.findByText('We are working on generating course certificates.');
+      });
+    });
+
+    describe('Offer Alert', () => {
+      it('sends analytics event onClick of upgrade link', async () => {
+        setTabData({
+          offer: {
+            code: 'EDXWELCOME',
+            expiration_date: '2070-01-01T12:00:00Z',
+            original_price: '$100',
+            discounted_price: '$85',
+            percentage: 15,
+            upgrade_url: 'https://example.com/upgrade',
+          },
+        });
+        await fetchAndRender();
+
+        expect(screen.getByRole('link', { name: 'Upgrade now' })).toBeInTheDocument();
+      });
+
+      it('sends analytics event onClick of upgrade link', async () => {
+        setTabData({
+          offer: {
+            code: 'EDXWELCOME',
+            expiration_date: '2070-01-01T12:00:00Z',
+            original_price: '$100',
+            discounted_price: '$85',
+            percentage: 15,
+            upgrade_url: 'https://example.com/upgrade',
+          },
+        });
+        await fetchAndRender();
+
+        // Clearing after render to remove any events sent on view (ex. 'Promotion Viewed')
+        sendTrackEvent.mockClear();
+        const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
+        fireEvent.click(upgradeLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          linkCategory: 'welcome',
+          linkName: 'course_home_welcome',
+          linkType: 'link',
+          pageName: 'course_home',
+        });
       });
     });
   });
@@ -697,17 +925,17 @@ describe('Outline Tab', () => {
     });
 
     it('clicking upgrade link sends analytics', async () => {
+      await fetchAndRender();
+
+      // Clearing after render to remove any events sent on view (ex. 'Promotion Viewed')
       sendTrackEvent.mockClear();
       sendTrackingLogEvent.mockClear();
-
-      await fetchAndRender();
       const upgradeButton = screen.getByRole('link', { name: 'Upgrade ($149)' });
 
       fireEvent.click(upgradeButton);
 
-      // 3 sendTrackEvent calls are expected because 1 happens on render, and 2 happen onClick
-      expect(sendTrackEvent).toHaveBeenCalledTimes(3);
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'Promotion Clicked', {
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(1, 'Promotion Clicked', {
         org_key: 'edX',
         courserun_key: courseId,
         creative: 'sidebarupsell',
@@ -715,7 +943,7 @@ describe('Outline Tab', () => {
         position: 'sidebar-message',
         promotion_id: 'courseware_verified_certificate_upsell',
       });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.bi.ecommerce.upsell_links_clicked', {
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.bi.ecommerce.upsell_links_clicked', {
         org_key: 'edX',
         courserun_key: courseId,
         linkCategory: 'green_upgrade',
@@ -724,13 +952,12 @@ describe('Outline Tab', () => {
         pageName: 'course_home',
       });
 
-      // 3 sendTrackingLogEvent calls are expected because 1 happens on render, and 2 happen onClick
-      expect(sendTrackingLogEvent).toHaveBeenCalledTimes(3);
-      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(2, 'edx.bi.course.upgrade.sidebarupsell.clicked', {
+      expect(sendTrackingLogEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(1, 'edx.bi.course.upgrade.sidebarupsell.clicked', {
         org_key: 'edX',
         courserun_key: courseId,
       });
-      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(3, 'edx.course.enrollment.upgrade.clicked', {
+      expect(sendTrackingLogEvent).toHaveBeenNthCalledWith(2, 'edx.course.enrollment.upgrade.clicked', {
         org_key: 'edX',
         courserun_key: courseId,
         location: 'sidebar-message',

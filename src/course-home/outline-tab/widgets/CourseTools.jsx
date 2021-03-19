@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -23,15 +23,29 @@ function CourseTools({ courseId, intl }) {
     return null;
   }
 
+  const eventProperties = {
+    org_key: org,
+    courserun_key: courseId,
+  };
+
   const logClick = (analyticsId) => {
     const { administrator } = getAuthenticatedUser();
     sendTrackingLogEvent('edx.course.tool.accessed', {
-      org_key: org,
-      courserun_key: courseId,
+      ...eventProperties,
       course_id: courseId, // should only be courserun_key, but left as-is for historical reasons
       is_staff: administrator,
       tool_name: analyticsId,
     });
+
+    if (analyticsId === 'edx.tool.verified_upgrade') {
+      sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+        ...eventProperties,
+        linkCategory: '(none)',
+        linkName: 'course_home_course_tools',
+        linkType: 'link',
+        pageName: 'course_home',
+      });
+    }
   };
 
   const renderIcon = (iconClasses) => {
