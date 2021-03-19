@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
@@ -18,6 +19,10 @@ function DatesTab({ intl }) {
   } = useSelector(state => state.courseHome);
 
   const {
+    org,
+  } = useModel('courseHomeMeta', courseId);
+
+  const {
     courseDateBlocks,
     datesBannerInfo,
     hasEnded,
@@ -25,6 +30,17 @@ function DatesTab({ intl }) {
 
   /** [MM-P2P] Experiment */
   const mmp2p = initDatesMMP2P(courseId);
+
+  const logUpgradeLinkClick = () => {
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      org_key: org,
+      courserun_key: courseId,
+      linkCategory: 'personalized_learner_schedules',
+      linkName: 'dates_upgrade',
+      linkType: 'button',
+      pageName: 'dates_tab',
+    });
+  };
 
   return (
     <>
@@ -37,6 +53,7 @@ function DatesTab({ intl }) {
           courseDateBlocks={courseDateBlocks}
           datesBannerInfo={datesBannerInfo}
           hasEnded={hasEnded}
+          logUpgradeLinkClick={logUpgradeLinkClick}
           model="dates"
           tabFetch={fetchDatesTab}
         />

@@ -405,12 +405,12 @@ Object {
           Object {
             "analyticsId": "edx.bookmarks",
             "title": "Bookmarks",
-            "url": "example.com/bookmarks",
+            "url": "https://example.com/bookmarks",
           },
           Object {
             "analyticsId": "edx.tool.verified_upgrade",
             "title": "Upgrade to Verified",
-            "url": "example.com/upgrade",
+            "url": "https://example.com/upgrade",
           },
         ],
         "datesBannerInfo": Object {

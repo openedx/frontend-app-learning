@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { Button, Toast } from '@edx/paragon';
@@ -70,11 +70,15 @@ function OutlineTab({ intl }) {
   const [goalToastHeader, setGoalToastHeader] = useState('');
   const [expandAll, setExpandAll] = useState(false);
 
+  const eventProperties = {
+    org_key: org,
+    courserun_key: courseId,
+  };
+
   const logResumeCourseClick = () => {
     sendTrackingLogEvent('edx.course.home.resume_course.clicked', {
-      courserun_key: courseId,
+      ...eventProperties,
       event_type: hasVisitedCourse ? 'resume' : 'start',
-      org_key: org,
       url: resumeCourseUrl,
     });
   };
@@ -90,6 +94,16 @@ function OutlineTab({ intl }) {
   const rootCourseId = courses && Object.keys(courses)[0];
 
   const courseSock = useRef(null);
+
+  const logUpgradeLinkClick = () => {
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      ...eventProperties,
+      linkCategory: 'personalized_learner_schedules',
+      linkName: 'course_home_upgrade_shift_dates',
+      linkType: 'button',
+      pageName: 'course_home',
+    });
+  };
 
   /** [[MM-P2P] Experiment */
   const MMP2P = initHomeMMP2P(courseId);
@@ -146,6 +160,7 @@ function OutlineTab({ intl }) {
               courseDateBlocks={courseDateBlocks}
               datesBannerInfo={datesBannerInfo}
               hasEnded={hasEnded}
+              logUpgradeLinkClick={logUpgradeLinkClick}
               model="outline"
               tabFetch={fetchOutlineTab}
               /** [MM-P2P] Experiment */

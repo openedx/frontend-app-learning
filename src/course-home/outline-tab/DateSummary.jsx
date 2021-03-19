@@ -26,9 +26,9 @@ export default function DateSummary({
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
   /** [MM-P2P] Experiment */
-  const showMMP2P = false; // mmp2p.state.isEnabled && (dateBlock.dateType === 'verified-upgrade-deadline');
+  const showMMP2P = mmp2p.state.isEnabled && (dateBlock.dateType === 'verified-upgrade-deadline');
 
-  const logClick = () => {
+  const logVerifiedUpgradeClick = () => {
     sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
       org_key: org,
       courserun_key: courseId,
@@ -86,7 +86,7 @@ export default function DateSummary({
           {!linkedTitle && dateBlock.link && (
             <a
               href={dateBlock.link}
-              onClick={dateBlock.dateType === 'verified-upgrade-deadline' ? logClick : () => {}}
+              onClick={dateBlock.dateType === 'verified-upgrade-deadline' ? logVerifiedUpgradeClick : () => {}}
               className="description-link"
             >
               {dateBlock.linkText}

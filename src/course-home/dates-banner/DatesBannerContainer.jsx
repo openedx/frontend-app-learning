@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 
 import { useModel } from '../../generic/model-store';
 
@@ -12,6 +11,7 @@ function DatesBannerContainer({
   courseDateBlocks,
   datesBannerInfo,
   hasEnded,
+  logUpgradeLinkClick,
   model,
   tabFetch,
 }) {
@@ -28,33 +28,7 @@ function DatesBannerContainer({
 
   const {
     isSelfPaced,
-    org,
   } = useModel('courseHomeMeta', courseId);
-
-  const eventProperties = {
-    org_key: org,
-    courserun_key: courseId,
-  };
-
-  const sendDatesTabUpgradeEvent = () => {
-    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
-      ...eventProperties,
-      linkCategory: 'personalized_learner_schedules',
-      linkName: 'dates_upgrade',
-      linkType: 'button',
-      pageName: 'dates_tab',
-    });
-  };
-
-  const sendOutlineTabUpgradeEvent = () => {
-    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
-      ...eventProperties,
-      linkCategory: 'personalized_learner_schedules',
-      linkName: 'course_home_upgrade_shift_dates',
-      linkType: 'button',
-      pageName: 'course_home',
-    });
-  };
 
   const dispatch = useDispatch();
   const hasDeadlines = courseDateBlocks.some(x => x.dateType === 'assignment-due-date');
@@ -71,7 +45,7 @@ function DatesBannerContainer({
       // verifiedUpgradeLink can be null if we've passed the upgrade deadline
       shouldDisplay: upgradeToCompleteGraded && verifiedUpgradeLink,
       clickHandler: () => {
-        sendDatesTabUpgradeEvent();
+        logUpgradeLinkClick();
         global.location.replace(verifiedUpgradeLink);
       },
     },
@@ -80,11 +54,7 @@ function DatesBannerContainer({
       // verifiedUpgradeLink can be null if we've passed the upgrade deadline
       shouldDisplay: upgradeToReset && verifiedUpgradeLink,
       clickHandler: () => {
-        if (model === 'dates') {
-          sendDatesTabUpgradeEvent();
-        } else {
-          sendOutlineTabUpgradeEvent();
-        }
+        logUpgradeLinkClick();
         global.location.replace(verifiedUpgradeLink);
       },
     },
@@ -117,12 +87,14 @@ DatesBannerContainer.propTypes = {
     verifiedUpgradeLink: PropTypes.string,
   }).isRequired,
   hasEnded: PropTypes.bool,
+  logUpgradeLinkClick: PropTypes.func,
   model: PropTypes.string.isRequired,
   tabFetch: PropTypes.func.isRequired,
 };
 
 DatesBannerContainer.defaultProps = {
   hasEnded: false,
+  logUpgradeLinkClick: () => {},
 };
 
 export default DatesBannerContainer;

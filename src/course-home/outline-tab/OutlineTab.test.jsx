@@ -290,7 +290,7 @@ describe('Outline Tab', () => {
       expect(screen.queryByRole('heading', { name: 'Upcoming Dates' })).not.toBeInTheDocument();
     });
 
-    it('renders', async () => {
+    it('sends analytics event onClick of upgrade link', async () => {
       const now = new Date();
       const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
       setMetadata({ is_enrolled: true });
