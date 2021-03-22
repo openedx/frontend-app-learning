@@ -11,10 +11,6 @@
       position: absolute;
       right: 1rem;
     }
-
-    button::after {
-      content: "⨉";
-    }
   }
 
   .modal-body {
