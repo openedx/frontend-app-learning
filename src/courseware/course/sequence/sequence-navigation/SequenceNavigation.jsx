@@ -95,7 +95,6 @@ function SequenceNavigation({
 
       {/** [MM-P2P] Experiment */}
       { mmp2p.state.isEnabled && <MMP2PFlyoverTriggerMobile options={mmp2p} /> }
-      <div className="rev1512ToggleFlyoverSequenceLocation" />
     </nav>
   );
 }
