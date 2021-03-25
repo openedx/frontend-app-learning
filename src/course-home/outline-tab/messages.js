@@ -178,9 +178,17 @@ const messages = defineMessages({
   },
   otherCourseApprovedProctoringMessage: {
     id: 'learning.proctoringPanel.message.otherCourseApproved',
-    defaultMessage: 'Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, it is highly recommended that you complete this course’s onboarding exam in order to ensure that your device still meets the requirements for proctoring.',
+    defaultMessage: 'You are eligible to take proctored exams in this course.',
+  },
+  otherCourseApprovedProctoringDetail: {
+    id: 'learning.proctoringPanel.detail.otherCourseApproved',
+    defaultMessage: 'If your device has changed, we recommend that you complete this course\'s onboarding exam in order to ensure that your setup still meets the requirements for proctoring.',
   },
   expiringSoonProctoringMessage: {
+    id: 'learning.proctoringPanel.message.expiringSoon',
+    defaultMessage: 'Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.',
+  },
+  expiringSoonProctoringDetail: {
     id: 'learning.proctoringPanel.message.expiringSoon',
     defaultMessage: 'Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.',
   },
@@ -194,11 +202,15 @@ const messages = defineMessages({
   },
   proctoringPanelGeneralTime: {
     id: 'learning.proctoringPanel.generalTime',
-    defaultMessage: 'Onboarding profile review, including identity verification, can take 2+ business days.',
+    defaultMessage: 'Onboarding profile review can take 2+ business days.',
   },
   proctoringOnboardingButton: {
     id: 'learning.proctoringPanel.onboardingButton',
     defaultMessage: 'Complete Onboarding',
+  },
+  proctoringOnboardingPracticeButton: {
+    id: 'learning.proctoringPanel.onboardingPracticeButton',
+    defaultMessage: 'View Onboarding Exam',
   },
   proctoringOnboardingButtonNotOpen: {
     id: 'learning.proctoringPanel.onboardingButtonNotOpen',

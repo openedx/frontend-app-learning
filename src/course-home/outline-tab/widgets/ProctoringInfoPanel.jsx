@@ -106,6 +106,9 @@ function ProctoringInfoPanel({ courseId, intl }) {
                 <p>
                   {intl.formatMessage(messages[`${readableStatus}ProctoringMessage`])}
                 </p>
+                <p>
+                  {readableStatus === readableStatuses.otherCourseApproved && intl.formatMessage(messages[`${readableStatus}ProctoringDetail`])}
+                </p>
               </>
             )}
             {![readableStatuses.verified, readableStatuses.otherCourseApproved].includes(readableStatus) && (
@@ -129,7 +132,16 @@ function ProctoringInfoPanel({ courseId, intl }) {
               <>
                 {!isNotYetReleased(releaseDate) && (
                   <Button variant="primary" block href={`${getConfig().LMS_BASE_URL}${link}`}>
-                    {intl.formatMessage(messages.proctoringOnboardingButton)}
+                    {readableStatus === readableStatuses.otherCourseApproved && (
+                      <>
+                        {intl.formatMessage(messages.proctoringOnboardingPracticeButton)}
+                      </>
+                    )}
+                    {readableStatus !== readableStatuses.otherCourseApproved && (
+                      <>
+                        {intl.formatMessage(messages.proctoringOnboardingButton)}
+                      </>
+                    )}
                   </Button>
                 )}
                 {isNotYetReleased(releaseDate) && (
