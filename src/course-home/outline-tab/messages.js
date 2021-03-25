@@ -188,10 +188,6 @@ const messages = defineMessages({
     id: 'learning.proctoringPanel.message.expiringSoon',
     defaultMessage: 'Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.',
   },
-  expiringSoonProctoringDetail: {
-    id: 'learning.proctoringPanel.message.expiringSoon',
-    defaultMessage: 'Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.',
-  },
   proctoringPanelGeneralInfo: {
     id: 'learning.proctoringPanel.generalInfo',
     defaultMessage: 'You must complete the onboarding process prior to taking any proctored exam. ',
