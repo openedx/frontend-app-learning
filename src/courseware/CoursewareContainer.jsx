@@ -19,14 +19,6 @@ import { TabPage } from '../tab-page';
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
 
-const checkExamRedirect = memoize((sequenceStatus, sequence) => {
-  if (sequenceStatus === 'loaded') {
-    if (sequence.isTimeLimited && sequence.lmsWebUrl !== undefined) {
-      global.location.assign(sequence.lmsWebUrl);
-    }
-  }
-});
-
 const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSequenceId) => {
   if (courseStatus === 'loaded' && !sequenceId) {
     // Note that getResumeBlock is just an API call, not a redux thunk.
@@ -67,8 +59,16 @@ const checkUnitToSequenceUnitRedirect = memoize((courseStatus, courseId, sequenc
   }
 });
 
-const checkContentRedirect = memoize((courseId, sequenceStatus, sequenceId, sequence, unitId) => {
-  if (sequenceStatus === 'loaded' && sequenceId && !unitId) {
+const checkSpecialExamRedirect = memoize((sequenceStatus, sequence) => {
+  if (sequenceStatus === 'loaded') {
+    if (sequence.isTimeLimited && sequence.lmsWebUrl !== undefined) {
+      global.location.assign(sequence.lmsWebUrl);
+    }
+  }
+});
+
+const checkSequenceToSequenceUnitRedirect = memoize((courseId, sequenceStatus, sequence, unitId) => {
+  if (sequenceStatus === 'loaded' && sequence.id && !unitId) {
     if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
       const nextUnitId = sequence.unitIds[sequence.activeUnitIndex];
       // This is a replace because we don't want this change saved in the browser's history.
@@ -138,8 +138,14 @@ class CoursewareContainer extends Component {
     this.checkFetchCourse(routeCourseId);
     this.checkFetchSequence(routeSequenceId);
 
-    // Redirect to the legacy experience for exams.
-    checkExamRedirect(sequenceStatus, sequence);
+    // All courseware URLs should normalize to the format /course/:courseId/:sequenceId/:unitId
+    // via the series of redirection rules below.
+    // See docs/decisions/0008-liberal-courseware-path-handling.md for more context.
+
+    // Check resume redirect:
+    //   /course/:courseId -> /course/:courseId/:sequenceId/:unitId
+    // based on sequence/unit where user was last active.
+    checkResumeRedirect(courseStatus, courseId, sequenceId, firstSequenceId);
 
     // Check section-unit to unit redirect:
     //    /course/:courseId/:sectionId/:unitId -> /course/:courseId/:unitId
@@ -164,11 +170,16 @@ class CoursewareContainer extends Component {
     // by filling in the ID of the parent sequence of :unitId.
     checkUnitToSequenceUnitRedirect(courseStatus, courseId, sequenceStatus, unitViaSequenceId);
 
-    // Determine if we need to redirect because our URL is incomplete.
-    checkContentRedirect(courseId, sequenceStatus, sequenceId, sequence, routeUnitId);
+    // Check special exam redirect:
+    //    /course/:courseId/:sequenceId(/:unitId) -> :legacyWebUrl
+    // because special exams are currently still served in the legacy LMS frontend.
+    checkSpecialExamRedirect(sequenceStatus, sequence);
 
-    // Determine if we can resume where we left off.
-    checkResumeRedirect(courseStatus, courseId, sequenceId, firstSequenceId);
+    // Check to sequence to sequence-unit redirect:
+    //    /course/:courseId/:sequenceId -> /course/:courseId/:sequenceId/:unitId
+    // by filling in the ID the most-recently-active unit in the sequence, OR
+    // the ID of the first unit the sequence if none is active.
+    checkSequenceToSequenceUnitRedirect(courseId, sequenceStatus, sequence, routeUnitId);
 
     // Check if we should save our sequence position.  Only do this when the route unit ID changes.
     this.checkSaveSequencePosition(routeUnitId);
