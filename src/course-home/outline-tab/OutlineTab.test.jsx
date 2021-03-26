@@ -759,7 +759,7 @@ describe('Outline Tab', () => {
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).not.toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
       expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).not.toBeInTheDocument();
-      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).not.toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).not.toBeInTheDocument();
     });
 
     it('appears for rejected', async () => {
@@ -774,7 +774,7 @@ describe('Outline Tab', () => {
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
       expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).toBeInTheDocument();
-      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
     });
 
     it('appears for submitted', async () => {
@@ -787,7 +787,7 @@ describe('Outline Tab', () => {
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByText('Your submitted profile is in review.')).toBeInTheDocument();
-      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
     });
 
     it('appears for second_review_required', async () => {
@@ -800,7 +800,7 @@ describe('Outline Tab', () => {
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByText('Your submitted profile is in review.')).toBeInTheDocument();
-      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
     });
 
     it('appears for other_course_approved if not expiring soon', async () => {
@@ -815,8 +815,8 @@ describe('Outline Tab', () => {
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
-      expect(screen.queryByText('Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, it is highly recommended that you complete this course’s onboarding exam in order to ensure that your device still meets the requirements for proctoring.')).toBeInTheDocument();
-      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).not.toBeInTheDocument();
+      expect(screen.queryByText('You are eligible to take proctored exams in this course.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).not.toBeInTheDocument();
     });
 
     it('displays expiration warning', async () => {
@@ -832,7 +832,7 @@ describe('Outline Tab', () => {
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
       expect(screen.queryByText('Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
-      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
     });
 
     it('appears for no status', async () => {
@@ -847,7 +847,7 @@ describe('Outline Tab', () => {
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
       expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).toBeInTheDocument();
-      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
     });
 
     it('does not appear for 404', async () => {
@@ -887,7 +887,7 @@ describe('Outline Tab', () => {
       expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).not.toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
       expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).not.toBeInTheDocument();
-      expect(screen.queryByText('Onboarding profile review, including identity verification, can take 2+ business days.')).not.toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).not.toBeInTheDocument();
     });
   });
 
