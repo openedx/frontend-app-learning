@@ -53,7 +53,7 @@ Factory.define('courseBlocks')
 /**
  * Builds a course with a single chapter, sequence, and unit.
  */
-export default function buildSimpleCourseBlocks(courseId, title, options = {}) {
+export function buildSimpleCourseBlocks(courseId, title, options = {}) {
   const unitBlocks = options.unitBlocks || [Factory.build(
     'block',
     { type: 'vertical' },
@@ -90,6 +90,51 @@ export default function buildSimpleCourseBlocks(courseId, title, options = {}) {
       },
     ),
     unitBlocks,
+    sequenceBlock,
+    sectionBlock,
+    courseBlock,
+  };
+}
+
+/**
+ * Builds a course with a single chapter and sequence, but no units.
+ */
+export function buildMinimalCourseBlocks(courseId, title, options = {}) {
+  const sequenceBlock = options.sequenceBlock || [Factory.build(
+    'block',
+    { display_name: 'Title of Sequence', type: 'sequential' },
+    { courseId },
+  )];
+  const sectionBlock = options.sectionBlock || Factory.build(
+    'block',
+    {
+      type: 'chapter',
+      display_name: 'Title of Section',
+      complete: options.complete || false,
+      effort_time: 15,
+      effort_activities: 2,
+      resume_block: options.resumeBlock || false,
+      children: sequenceBlock.map(block => block.id),
+    },
+    { courseId },
+  );
+  const courseBlock = options.courseBlock || Factory.build(
+    'block',
+    { type: 'course', display_name: title, children: [sectionBlock.id] },
+    { courseId },
+  );
+  return {
+    courseBlocks: options.courseBlocks || Factory.build(
+      'courseBlocks',
+      { courseId },
+      {
+        sequence: sequenceBlock,
+        section: sectionBlock,
+        course: courseBlock,
+        units: [],
+      },
+    ),
+    unitBlocks: [],
     sequenceBlock,
     sectionBlock,
     courseBlock,

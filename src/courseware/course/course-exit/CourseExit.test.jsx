@@ -5,7 +5,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 import { fetchCourse } from '../../data';
-import buildSimpleCourseBlocks from '../../data/__factories__/courseBlocks.factory';
+import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
 import {
   initializeMockApp, logUnhandledRequests, render, screen,
 } from '../../../setupTest';

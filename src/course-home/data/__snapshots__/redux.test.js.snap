@@ -19,7 +19,6 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
-        "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
         "isSelfPaced": false,
@@ -308,7 +307,6 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
-        "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
         "isSelfPaced": false,

@@ -1,9 +1,10 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
 
-import './tab.factory';
+import courseMetadataBase from '../../../shared/data/__factories__/courseMetadataBase.factory';
 
 Factory.define('courseMetadata')
-  .sequence('id', (id) => `course-v1:edX+DemoX+Demo_Course_${id}`)
+  .extend(courseMetadataBase)
+  .option('host', '')
   .attrs({
     can_show_upgrade_sock: false,
     content_type_gating_enabled: false,
@@ -13,9 +14,7 @@ Factory.define('courseMetadata')
     enrollment_start: null,
     enrollment_end: null,
     name: 'Demonstration Course',
-    number: 'DemoX',
     offer_html: null,
-    org: 'edX',
     short_description: null,
     start: '2013-02-05T05:00:00Z',
     start_display: 'Feb. 5, 2013',
@@ -34,8 +33,6 @@ Factory.define('courseMetadata')
       currency_symbol: '$',
     },
     show_calculator: false,
-    is_staff: false,
-    original_user_is_staff: false,
     license: 'all-rights-reserved',
     can_load_courseware: {
       has_access: true,
@@ -59,75 +56,4 @@ Factory.define('courseMetadata')
     verification_status: 'none',
     linkedin_add_to_profile_url: null,
     related_programs: null,
-  }).attr(
-    'tabs', ['tabs', 'id'], (passedTabs, id) => {
-      if (passedTabs) {
-        return passedTabs;
-      }
-
-      const tabs = [
-        Factory.build(
-          'tab',
-          {
-            title: 'Course',
-            priority: 0,
-            slug: 'courseware',
-            type: 'courseware',
-          },
-          { courseId: id, path: 'course/' },
-        ),
-        Factory.build(
-          'tab',
-          {
-            title: 'Discussion',
-            priority: 1,
-            slug: 'discussion',
-            type: 'discussion',
-          },
-          { courseId: id, path: 'discussion/forum/' },
-        ),
-        Factory.build(
-          'tab',
-          {
-            title: 'Wiki',
-            priority: 2,
-            slug: 'wiki',
-            type: 'wiki',
-          },
-          { courseId: id, path: 'course_wiki' },
-        ),
-        Factory.build(
-          'tab',
-          {
-            title: 'Progress',
-            priority: 3,
-            slug: 'progress',
-            type: 'progress',
-          },
-          { courseId: id, path: 'progress' },
-        ),
-        Factory.build(
-          'tab',
-          {
-            title: 'Instructor',
-            priority: 4,
-            slug: 'instructor',
-            type: 'instructor',
-          },
-          { courseId: id, path: 'instructor' },
-        ),
-        Factory.build(
-          'tab',
-          {
-            title: 'Dates',
-            priority: 5,
-            slug: 'dates',
-            type: 'dates',
-          },
-          { courseId: id, path: 'dates' },
-        ),
-      ];
-
-      return tabs;
-    },
-  );
+  });

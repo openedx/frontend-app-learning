@@ -6,7 +6,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import userEvent from '@testing-library/user-event';
 
-import buildSimpleCourseBlocks from '../data/__factories__/courseBlocks.factory';
+import { buildMinimalCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
 import {
   fireEvent, initializeMockApp, logUnhandledRequests, render, screen, waitFor, act,
 } from '../../setupTest';
@@ -30,11 +30,11 @@ describe('Outline Tab', () => {
   const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
 
   const store = initializeStore();
-  const defaultMetadata = Factory.build('courseHomeMetadata', { courseId });
+  const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
   const defaultTabData = Factory.build('outlineTabData');
 
   function setMetadata(attributes, options) {
-    const courseMetadata = Factory.build('courseHomeMetadata', { courseId, ...attributes }, options);
+    const courseMetadata = Factory.build('courseHomeMetadata', { id: courseId, ...attributes }, options);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   }
 
@@ -83,7 +83,7 @@ describe('Outline Tab', () => {
     });
 
     it('expands section that contains resume block', async () => {
-      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
       setTabData({
         course_blocks: { blocks: courseBlocks.blocks },
       });
@@ -112,7 +112,7 @@ describe('Outline Tab', () => {
     });
 
     it('displays correct icon for complete assignment', async () => {
-      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { complete: true });
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { complete: true });
       setTabData({
         course_blocks: { blocks: courseBlocks.blocks },
       });
@@ -121,7 +121,7 @@ describe('Outline Tab', () => {
     });
 
     it('displays correct icon for incomplete assignment', async () => {
-      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { complete: false });
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { complete: false });
       setTabData({
         course_blocks: { blocks: courseBlocks.blocks },
       });
@@ -130,7 +130,7 @@ describe('Outline Tab', () => {
     });
 
     it('SequenceLink displays points to legacy courseware', async () => {
-      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
       setMetadata({
         can_load_courseware: false,
       });
@@ -144,7 +144,7 @@ describe('Outline Tab', () => {
     });
 
     it('SequenceLink displays points to courseware MFE', async () => {
-      const { courseBlocks } = await buildSimpleCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
       setMetadata({
         can_load_courseware: true,
       });
