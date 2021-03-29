@@ -1,6 +1,6 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
 
-import './tab.factory';
+import '../../../shared/data/__factories__/tab.factory';
 
 Factory.define('courseMetadata')
   .sequence('id', (id) => `course-v1:edX+DemoX+Demo_Course_${id}`)
