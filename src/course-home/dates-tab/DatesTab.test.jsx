@@ -63,7 +63,7 @@ describe('DatesTab', () => {
     beforeEach(() => {
       const datesTabData = Factory.build('datesTabData');
       const courseMetadata = Factory.build('courseHomeMetadata');
-      const { courseId } = courseMetadata;
+      const { id: courseId } = courseMetadata;
       let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
       courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
@@ -135,7 +135,7 @@ describe('DatesTab', () => {
 
   describe('Dates banner container ', () => {
     const courseMetadata = Factory.build('courseHomeMetadata', { is_self_paced: true, is_enrolled: true });
-    const { courseId } = courseMetadata;
+    const { id: courseId } = courseMetadata;
     const datesTabData = Factory.build('datesTabData');
 
     let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;

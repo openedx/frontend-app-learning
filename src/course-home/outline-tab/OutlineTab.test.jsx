@@ -30,11 +30,11 @@ describe('Outline Tab', () => {
   const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
 
   const store = initializeStore();
-  const defaultMetadata = Factory.build('courseHomeMetadata', { courseId });
+  const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
   const defaultTabData = Factory.build('outlineTabData');
 
   function setMetadata(attributes, options) {
-    const courseMetadata = Factory.build('courseHomeMetadata', { courseId, ...attributes }, options);
+    const courseMetadata = Factory.build('courseHomeMetadata', { id: courseId, ...attributes }, options);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   }
 

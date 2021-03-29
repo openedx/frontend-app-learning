@@ -17,7 +17,7 @@ const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
 describe('Data layer integration tests', () => {
   const courseHomeMetadata = Factory.build('courseHomeMetadata');
-  const { courseId } = courseHomeMetadata;
+  const { id: courseId } = courseHomeMetadata;
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
