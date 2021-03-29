@@ -1,5 +1,5 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
-import './block.factory';
+import '../../../shared/data/__factories__/block.factory';
 
 // Generates an Array of block IDs, either from a single block or an array of blocks.
 const getIds = (attr) => {
