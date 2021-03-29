@@ -8,7 +8,7 @@ import * as thunks from './thunks';
 
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 
-import buildSimpleCourseBlocks from './__factories__/courseBlocks.factory';
+import { buildSimpleCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
 import { initializeMockApp } from '../../setupTest';
 import initializeStore from '../../store';
 

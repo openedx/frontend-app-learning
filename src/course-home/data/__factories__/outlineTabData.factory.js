@@ -1,13 +1,13 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
 
-import buildSimpleCourseBlocks from './courseBlocks.factory';
+import { buildMinimalCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
 
 Factory.define('outlineTabData')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
   .option('host', 'http://localhost:18000')
   .option('date_blocks', [])
   .attr('course_blocks', ['courseId'], courseId => {
-    const { courseBlocks } = buildSimpleCourseBlocks(courseId);
+    const { courseBlocks } = buildMinimalCourseBlocks(courseId);
     return {
       blocks: courseBlocks.blocks,
     };

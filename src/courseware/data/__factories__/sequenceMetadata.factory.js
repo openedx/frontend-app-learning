@@ -1,6 +1,6 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
 import '../../../shared/data/__factories__/block.factory';
-import buildSimpleCourseBlocks from './courseBlocks.factory';
+import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
 
 Factory.define('sequenceMetadata')
   .option('courseId', (courseId) => {
