@@ -140,8 +140,11 @@ export async function getProgressTabData(courseId) {
   // }
 }
 
-export async function getProctoringInfoData(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
+export async function getProctoringInfoData(courseId, username) {
+  let url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
+  if (username) {
+    url += `&username=${encodeURIComponent(username)}`;
+  }
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return data;
