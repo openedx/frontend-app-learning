@@ -86,81 +86,72 @@ function LockPaywall({
   return (
     <Alert variant="light">
       <div className="row">
-        {/* Thin left-hand column for lock */}
         <div className="col-auto px-0">
           {lockIcon}
         </div>
 
-        {/* Wide column for all the middle contents */}
         <div className="col">
-          <div>
-            <div>
-              <h4>
-                <span>{intl.formatMessage(messages['learn.lockPaywall.title'])}</span>
-              </h4>
-            </div>
-            {/* "Upgrade to gain access to locked features..." */}
-            <div className="mb-2 upgrade-intro">
-              {intl.formatMessage(messages['learn.lockPaywall.content'])}
+          <h4>
+            <span>{intl.formatMessage(messages['learn.lockPaywall.title'])}</span>
+          </h4>
+
+          <div className="mb-2 upgrade-intro">
+            {intl.formatMessage(messages['learn.lockPaywall.content'])}
+          </div>
+
+          <div className="d-flex flex-row flex-wrap">
+            <div style={{ float: 'left' }} className="mr-3 mb-2">
+              <img
+                alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
+                src={certificateLocked}
+                className="border-0 certificate-image-banner"
+                style={{ height: '128px', width: '175px' }}
+              />
             </div>
 
-            {/* overall div for cert image, 'when you upgrade', bullets, button */}
-            <div className="d-flex flex-row flex-wrap">
-              <div style={{ float: 'left' }} className="mr-3 mb-2">
-                <img
-                  alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
-                  src={certificateLocked}
-                  className="border-0 certificate-image-banner"
-                  style={{ height: '128px', width: '175px' }}
-                />
+            <div className="mw-xs list-div">
+              <div className="mb-2">
+                {intl.formatMessage(messages['learn.lockPaywall.list.intro'])}
               </div>
-
-              {/* div for bulleted list */}
-              <div className="mw-xs list-div">
-                <div className="mb-2">
-                  {intl.formatMessage(messages['learn.lockPaywall.list.intro'])}
-                </div>
-                <ul className="fa-ul ml-4 pl-2">
-                  <li>
-                    <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-                    <FormattedMessage
-                      id="gatedContent.paragraph.bulletOne"
-                      defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
-                      values={{ verifiedCertLink }}
-                      className="bullet-text"
-                    />
-                  </li>
-                  <li>
-                    <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-                    <FormattedMessage
-                      id="gatedContent.paragraph.bulletTwo"
-                      defaultMessage="Unlock access to all course activities, including {gradedAssignments}"
-                      values={{ gradedAssignments }}
-                    />
-                  </li>
-                  <li>
-                    <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-                    <FormattedMessage
-                      id="gatedContent.paragraph.bulletThree"
-                      defaultMessage="{fullAccess} to course content and materials, even after the course ends"
-                      values={{ fullAccess }}
-                    />
-                  </li>
-                  <li>
-                    <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-                    <FormattedMessage
-                      id="gatedContent.paragraph.bulletFour"
-                      defaultMessage="Support our {nonProfit} mission at edX"
-                      values={{ nonProfit }}
-                    />
-                  </li>
-                </ul>
-              </div>
+              <ul className="fa-ul ml-4 pl-2">
+                <li>
+                  <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+                  <FormattedMessage
+                    id="gatedContent.paragraph.bulletOne"
+                    defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
+                    values={{ verifiedCertLink }}
+                    className="bullet-text"
+                  />
+                </li>
+                <li>
+                  <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+                  <FormattedMessage
+                    id="gatedContent.paragraph.bulletTwo"
+                    defaultMessage="Unlock access to all course activities, including {gradedAssignments}"
+                    values={{ gradedAssignments }}
+                  />
+                </li>
+                <li>
+                  <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+                  <FormattedMessage
+                    id="gatedContent.paragraph.bulletThree"
+                    defaultMessage="{fullAccess} to course content and materials, even after the course ends"
+                    values={{ fullAccess }}
+                  />
+                </li>
+                <li>
+                  <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+                  <FormattedMessage
+                    id="gatedContent.paragraph.bulletFour"
+                    defaultMessage="Support our {nonProfit} mission at edX"
+                    values={{ nonProfit }}
+                  />
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
-        {/* Column for upgrade button */}
         <div
           className="col-md-auto p-md-0 d-md-flex align-items-md-center mr-md-3"
           style={{ textAlign: 'right' }}
@@ -169,6 +160,7 @@ function LockPaywall({
             className="lock_paywall_upgrade_link"
             href={upgradeUrl}
             onClick={logClick}
+            role="link"
           >
             {intl.formatMessage(messages['learn.lockPaywall.upgrade.link'], {
               currencySymbol,
