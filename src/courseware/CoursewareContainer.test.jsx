@@ -141,7 +141,7 @@ describe('CoursewareContainer', () => {
       courseBlocks = result.courseBlocks;
       unitBlocks = result.unitBlocks;
       // eslint-disable-next-line prefer-destructuring
-      sequenceBlock = result.sequenceBlock[0];
+      sequenceBlock = result.sequenceBlocks[0];
 
       sequenceMetadata = Factory.build(
         'sequenceMetadata',
@@ -334,7 +334,9 @@ describe('CoursewareContainer', () => {
         },
       });
       const courseId = courseMetadata.id;
-      const { courseBlocks, unitBlocks, sequenceBlock } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
+      const { courseBlocks, unitBlocks, sequenceBlocks: [sequenceBlock] } = buildSimpleCourseBlocks(
+        courseId, courseMetadata.name,
+      );
       const sequenceMetadata = Factory.build(
         'sequenceMetadata',
         {},

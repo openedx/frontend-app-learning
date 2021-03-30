@@ -46,7 +46,7 @@ describe('Sequence Navigation', () => {
   });
 
   it('renders locked button for gated content', async () => {
-    const sequenceBlock = [Factory.build(
+    const sequenceBlocks = [Factory.build(
       'block',
       { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
       { courseId: courseMetadata.id },
@@ -54,12 +54,12 @@ describe('Sequence Navigation', () => {
     const sequenceMetadata = [Factory.build(
       'sequenceMetadata',
       { gated_content: { gated: true } },
-      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlock[0] },
+      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore({ unitBlocks, sequenceBlock, sequenceMetadata }, false);
+    const testStore = await initializeTestStore({ unitBlocks, sequenceBlocks, sequenceMetadata }, false);
     const testData = {
       ...mockData,
-      sequenceId: sequenceBlock[0].id,
+      sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
     render(<SequenceNavigation {...testData} />, { store: testStore });

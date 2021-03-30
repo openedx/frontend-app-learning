@@ -24,18 +24,18 @@ describe('Data layer integration tests', () => {
   // building minimum set of api responses to test all thunks
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
-  const { courseBlocks, unitBlocks, sequenceBlock } = buildSimpleCourseBlocks(courseId);
+  const { courseBlocks, unitBlocks, sequenceBlocks } = buildSimpleCourseBlocks(courseId);
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
     {},
-    { courseId, unitBlocks, sequenceBlock: sequenceBlock[0] },
+    { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
   );
 
   let courseUrl = `${courseBaseUrl}/${courseId}`;
   courseUrl = appendBrowserTimezoneToUrl(courseUrl);
 
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
-  const sequenceId = sequenceBlock[0].id;
+  const sequenceId = sequenceBlocks[0].id;
   const unitId = unitBlocks[0].id;
 
   let store;
