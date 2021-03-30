@@ -115,13 +115,16 @@ const initHomeMMP2P = (courseId) => {
   if (
     accessExpiration !== null
     && accessExpiration !== undefined
-    && verifiedMode !== null
-    && verifiedMode !== undefined
   ) {
     access.isAudit = true;
     access.accessExpirationDate = accessExpiration.expirationDate;
     access.upgradeUrl = accessExpiration.upgradeUrl;
-    access.price = `${verifiedMode.currencySymbol}${verifiedMode.price}`;
+    if (
+      verifiedMode !== null
+      && verifiedMode !== undefined
+    ) {
+      access.price = `${verifiedMode.currencySymbol}${verifiedMode.price}`;
+    }
   }
 
   return {
@@ -186,13 +189,16 @@ const initCoursewareMMP2P = (courseId, sequenceId, unitId) => {
   if (
     accessExpiration !== null
     && accessExpiration !== undefined
-    && verifiedMode !== null
-    && verifiedMode !== undefined
   ) {
     access.isAudit = true;
     access.accessExpirationDate = accessExpiration.expirationDate;
     access.upgradeUrl = accessExpiration.upgradeUrl;
-    access.price = `${verifiedMode.currencySymbol}${verifiedMode.price}`;
+    if (
+      verifiedMode !== null
+      && verifiedMode !== undefined
+    ) {
+      access.price = `${verifiedMode.currencySymbol}${verifiedMode.price}`;
+    }
   }
 
   // testing
@@ -222,12 +228,14 @@ const initCoursewareMMP2P = (courseId, sequenceId, unitId) => {
   );
   meta.blockContent = (MMP2POptions.isEnabled && meta.verifiedLock);
 
-  return {
+  const config = {
     access,
     flyover,
     meta,
     state: MMP2POptions,
   };
+
+  return config;
 };
 
 export {
