@@ -14,7 +14,7 @@ import tabMessages from '../tab-page/messages';
 import { initializeMockApp } from '../setupTest';
 
 import CoursewareContainer from './CoursewareContainer';
-import { buildSimpleCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
+import { buildSimpleCourseBlocks, buildBinaryCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
 import initializeStore from '../store';
 import { appendBrowserTimezoneToUrl } from '../utils';
 
@@ -130,6 +130,14 @@ describe('CoursewareContainer', () => {
     });
   }
 
+  async function loadContainer() {
+    const { container } = render(component);
+    // Wait for the page spinner to be removed, such that we can wait for our main
+    // content to load before making any assertions.
+    await waitForElementToBeRemoved(screen.getByRole('status'));
+    return container;
+  }
+
   it('should initialize to show a spinner', () => {
     history.push('/course/abc123');
     render(component);
@@ -154,15 +162,15 @@ describe('CoursewareContainer', () => {
       expect(courseHeader.querySelector('.course-title')).toHaveTextContent(courseMetadata.name);
     }
 
-    function assertSequenceNavigation(container) {
+    function assertSequenceNavigation(container, expectedUnitCount = 3) {
       // Ensure we had appropriate sequence navigation buttons.  We should only have one unit.
       const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
-      expect(sequenceNavButtons).toHaveLength(5);
+      expect(sequenceNavButtons).toHaveLength(expectedUnitCount + 2);
 
       expect(sequenceNavButtons[0]).toHaveTextContent('Previous');
       // Prove this button is rendering an SVG tasks icon, meaning it's a unit/vertical.
       expect(sequenceNavButtons[1].querySelector('svg')).toHaveClass('fa-tasks');
-      expect(sequenceNavButtons[4]).toHaveTextContent('Next');
+      expect(sequenceNavButtons[sequenceNavButtons.length - 1]).toHaveTextContent('Next');
     }
 
     beforeEach(async () => {
@@ -175,18 +183,14 @@ describe('CoursewareContainer', () => {
       const sequenceBlock = defaultSequenceBlock;
       const unitBlocks = defaultUnitBlocks;
 
-      it('should use the resume block repsonse to pick a unit if it ldcontains one', async () => {
+      it('should use the resume block repsonse to pick a unit if it contains one', async () => {
         axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {
           sectionId: sequenceBlock.id,
           unitId: unitBlocks[1].id,
         });
 
         history.push(`/course/${courseId}`);
-        const { container } = render(component);
-
-        // This is an important line that ensures the spinner has been removed - and thus our main
-        // content has been loaded - prior to proceeding with our expectations.
-        await waitForElementToBeRemoved(screen.getByRole('status'));
+        const container = await loadContainer();
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -209,11 +213,7 @@ describe('CoursewareContainer', () => {
         axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {});
 
         history.push(`/course/${courseId}`);
-        const { container } = render(component);
-
-        // This is an important line that ensures the spinner has been removed - and thus our main
-        // content has been loaded - prior to proceeding with our expectations.
-        await waitForElementToBeRemoved(screen.getByRole('status'));
+        const container = await loadContainer();
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -224,17 +224,110 @@ describe('CoursewareContainer', () => {
       });
     });
 
+    describe('when the URL contains a section ID instead of a sequence ID', () => {
+      const {
+        courseBlocks, unitTree, sequenceTree, sectionTree,
+      } = buildBinaryCourseBlocks(
+        courseId, courseMetadata.name,
+      );
+
+      function setUrl(urlSequenceId, urlUnitId = null) {
+        history.push(`/course/${courseId}/${urlSequenceId}/${urlUnitId || ''}`);
+      }
+
+      function assertLocation(container, sequenceId, unitId) {
+        const expectedUrl = `http://localhost/course/${courseId}/${sequenceId}/${unitId}`;
+        expect(global.location.href).toEqual(expectedUrl);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitId);
+      }
+
+      beforeEach(async () => {
+        setUpMockRequests({ courseBlocks });
+      });
+
+      describe('when the URL contains a unit ID', () => {
+        it('should ignore the section ID and redirect based on the unit ID', async () => {
+          const urlUnit = unitTree[1][1][1];
+          setUrl(sectionTree[1].id, urlUnit.id);
+          const container = await loadContainer();
+          assertLoadedHeader(container);
+          assertSequenceNavigation(container, 2);
+          assertLocation(container, sequenceTree[1][1].id, urlUnit.id);
+        });
+      });
+
+      describe('when the URL does not contain a unit ID', () => {
+        it('should choose a unit within the section\'s first sequence', async () => {
+          setUrl(sectionTree[1].id);
+          const container = await loadContainer();
+          assertLoadedHeader(container);
+          assertSequenceNavigation(container, 2);
+          assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id);
+        });
+      });
+
+      describe('when the section is empty', () => {
+        // Make a (shallow-)copy of the course blocks.
+        // Remove all descendents of the second section.
+        const blocksWithEmptySection = { ...courseBlocks.blocks };
+        blocksWithEmptySection[sectionTree[1].id] = {
+          ...sectionTree[1],
+          children: [],
+        };
+        sequenceTree[1].forEach(sequence => { delete blocksWithEmptySection[sequence.id]; });
+        unitTree[1].flat().forEach(unit => { delete blocksWithEmptySection[unit.id]; });
+        const courseBlocksWithEmptySection = {
+          ...courseBlocks,
+          blocks: blocksWithEmptySection,
+        };
+
+        beforeEach(async () => {
+          setUpMockRequests({ courseBlocks: courseBlocksWithEmptySection });
+        });
+
+        it('should ignore the section ID and instead redirect to the course root', async () => {
+          setUrl(sectionTree[1].id);
+          await loadContainer();
+          expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+        });
+
+        it('should ignore the section and unit IDs and instead to the course root', async () => {
+          // Specific unit ID used here shouldn't matter; is ignored due to empty section.
+          setUrl(sectionTree[1].id, unitTree[0][0][0]);
+          await loadContainer();
+          expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+        });
+      });
+    });
+
+    describe('when the URL only contains a unit ID', () => {
+      const { courseBlocks, unitTree, sequenceTree } = buildBinaryCourseBlocks(courseId, courseMetadata.name);
+
+      beforeEach(async () => {
+        setUpMockRequests({ courseBlocks });
+      });
+
+      it('should insert the sequence ID into the URL', async () => {
+        const unit = unitTree[1][0][1];
+        history.push(`/course/${courseId}/${unit.id}`);
+        const container = await loadContainer();
+
+        assertLoadedHeader(container);
+        assertSequenceNavigation(container, 2);
+        const expectedSequenceId = sequenceTree[1][0].id;
+        const expectedUrl = `http://localhost/course/${courseId}/${expectedSequenceId}/${unit.id}`;
+        expect(global.location.href).toEqual(expectedUrl);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unit.id);
+      });
+    });
+
     describe('when the URL contains a course ID and sequence ID', () => {
       const sequenceBlock = defaultSequenceBlock;
       const unitBlocks = defaultUnitBlocks;
 
       it('should pick the first unit if position was not defined (activeUnitIndex becomes 0)', async () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}`);
-        const { container } = render(component);
-
-        // This is an important line that ensures the spinner has been removed - and thus our main
-        // content has been loaded - prior to proceeding with our expectations.
-        await waitForElementToBeRemoved(screen.getByRole('status'));
+        const container = await loadContainer();
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -253,11 +346,7 @@ describe('CoursewareContainer', () => {
         setUpMockRequests({ sequenceMetadatas: [sequenceMetadata] });
 
         history.push(`/course/${courseId}/${sequenceBlock.id}`);
-        const { container } = render(component);
-
-        // This is an important line that ensures the spinner has been removed - and thus our main
-        // content has been loaded - prior to proceeding with our expectations.
-        await waitForElementToBeRemoved(screen.getByRole('status'));
+        const container = await loadContainer();
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -274,11 +363,7 @@ describe('CoursewareContainer', () => {
 
       it('should load the specified unit', async () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
-        const { container } = render(component);
-
-        // This is an important line that ensures the spinner has been removed - and thus our main
-        // content has been loaded - prior to proceeding with our expectations.
-        await waitForElementToBeRemoved(screen.getByRole('status'));
+        const container = await loadContainer();
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -289,16 +374,12 @@ describe('CoursewareContainer', () => {
       });
 
       it('should navigate between units and check block completion', async () => {
-        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
-        const { container } = render(component);
-
         axiosMock.onPost(`${courseId}/xblock/${sequenceBlock.id}/handler/xmodule_handler/get_completion`).reply(200, {
           complete: true,
         });
 
-        // This is an important line that ensures the spinner has been removed - and thus our main
-        // content has been loaded - prior to proceeding with our expectations.
-        await waitForElementToBeRemoved(screen.getByRole('status'));
+        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
+        const container = await loadContainer();
 
         const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
         const sequenceNextButton = sequenceNavButtons[4];
@@ -334,11 +415,7 @@ describe('CoursewareContainer', () => {
         setUpMockRequests({ sequenceMetadatas: [sequenceMetadata] });
 
         history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
-        render(component);
-
-        // This is an important line that ensures the spinner has been removed - and thus our main
-        // content has been loaded - prior to proceeding with our expectations.
-        await waitForElementToBeRemoved(screen.getByRole('status'));
+        await loadContainer();
 
         expect(global.location.assign).toHaveBeenCalledWith(sequenceBlock.lms_web_url);
       });
@@ -363,45 +440,35 @@ describe('CoursewareContainer', () => {
 
     it('should go to course home for an enrollment_required error code', async () => {
       const courseMetadata = setUpWithDeniedStatus('enrollment_required');
-
-      render(component);
-      await waitForElementToBeRemoved(screen.getByRole('status'));
+      await loadContainer();
 
       expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);
     });
 
     it('should go to course home for an authentication_required error code', async () => {
       const courseMetadata = setUpWithDeniedStatus('authentication_required');
-
-      render(component);
-      await waitForElementToBeRemoved(screen.getByRole('status'));
+      await loadContainer();
 
       expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);
     });
 
     it('should go to dashboard for an unfulfilled_milestones error code', async () => {
       setUpWithDeniedStatus('unfulfilled_milestones');
-
-      render(component);
-      await waitForElementToBeRemoved(screen.getByRole('status'));
+      await loadContainer();
 
       expect(global.location.href).toEqual('http://localhost/redirect/dashboard');
     });
 
     it('should go to the dashboard with an attached access_response_error for an audit_expired error code', async () => {
       setUpWithDeniedStatus('audit_expired');
-
-      render(component);
-      await waitForElementToBeRemoved(screen.getByRole('status'));
+      await loadContainer();
 
       expect(global.location.href).toEqual('http://localhost/redirect/dashboard?access_response_error=uhoh%20oh%20no');
     });
 
     it('should go to the dashboard with a notlive start date for a course_not_started error code', async () => {
       setUpWithDeniedStatus('course_not_started');
-
-      render(component);
-      await waitForElementToBeRemoved(screen.getByRole('status'));
+      await loadContainer();
 
       const startDate = '2/5/2013'; // This date is based on our courseMetadata factory's sample data.
       expect(global.location.href).toEqual(`http://localhost/redirect/dashboard?notlive=${startDate}`);
