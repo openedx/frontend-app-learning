@@ -141,6 +141,9 @@ class CoursewareContainer extends Component {
     // All courseware URLs should normalize to the format /course/:courseId/:sequenceId/:unitId
     // via the series of redirection rules below.
     // See docs/decisions/0008-liberal-courseware-path-handling.md for more context.
+    // (It would be ideal to move this logic into the thunks layer and perform
+    //  all URL-changing checks at once. This should be done once the MFE is moved
+    //  to the new Outlines API. See TNL-8182.)
 
     // Check resume redirect:
     //   /course/:courseId -> /course/:courseId/:sequenceId/:unitId
