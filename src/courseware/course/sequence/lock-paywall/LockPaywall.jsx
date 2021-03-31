@@ -52,8 +52,6 @@ function LockPaywall({
       className="float-left"
       src={Locked}
       aria-hidden="true"
-      alt=""
-      title="icon"
     />
   );
 
@@ -84,14 +82,14 @@ function LockPaywall({
   );
 
   return (
-    <Alert variant="light">
+    <Alert variant="light" aria-live="off">
       <div className="row">
         <div className="col-auto px-0">
           {lockIcon}
         </div>
 
         <div className="col">
-          <h4>
+          <h4 aria-level="3">
             <span>{intl.formatMessage(messages['learn.lockPaywall.title'])}</span>
           </h4>
 

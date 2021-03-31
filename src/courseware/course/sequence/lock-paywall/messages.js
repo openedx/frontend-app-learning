@@ -13,7 +13,6 @@ const messages = defineMessages({
   },
   'learn.lockPaywall.upgrade.link': {
     id: 'learn.lockPaywall.upgrade.link',
-
     defaultMessage: 'Upgrade for {currencySymbol}{price}',
     description: 'A link users can click that navigates their browser to the upgrade payment page.',
   },
