@@ -40,29 +40,29 @@ describe('Sequence', () => {
   });
 
   it('renders correctly for gated content', async () => {
-    const sequenceBlock = [Factory.build(
+    const sequenceBlocks = [Factory.build(
       'block',
       { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
       { courseId: courseMetadata.id },
     )];
     const gatedContent = {
       gated: true,
-      prereq_id: `${sequenceBlock[0].id}-prereq`,
-      prereq_section_name: `${sequenceBlock[0].display_name}-prereq`,
-      gated_section_name: sequenceBlock[0].display_name,
+      prereq_id: `${sequenceBlocks[0].id}-prereq`,
+      prereq_section_name: `${sequenceBlocks[0].display_name}-prereq`,
+      gated_section_name: sequenceBlocks[0].display_name,
     };
     const sequenceMetadata = [Factory.build(
       'sequenceMetadata',
       { gated_content: gatedContent },
-      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlock[0] },
+      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
     const testStore = await initializeTestStore(
       {
-        courseMetadata, unitBlocks, sequenceBlock, sequenceMetadata,
+        courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
       }, false,
     );
     const { container } = render(
-      <Sequence {...mockData} {...{ sequenceId: sequenceBlock[0].id }} />,
+      <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
       { store: testStore },
     );
 
@@ -83,7 +83,7 @@ describe('Sequence', () => {
     // application redirects away from the page.  Note that this component is not responsible for
     // that redirect behavior, so there's no record of it here.
     // See CoursewareContainer.jsx "checkExamRedirect" function.
-    const sequenceBlock = [Factory.build(
+    const sequenceBlocks = [Factory.build(
       'block',
       { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
       { courseId: courseMetadata.id },
@@ -91,15 +91,15 @@ describe('Sequence', () => {
     const sequenceMetadata = [Factory.build(
       'sequenceMetadata',
       { is_time_limited: true },
-      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlock[0] },
+      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
     const testStore = await initializeTestStore(
       {
-        courseMetadata, unitBlocks, sequenceBlock, sequenceMetadata,
+        courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
       }, false,
     );
     const { container } = render(
-      <Sequence {...mockData} {...{ sequenceId: sequenceBlock[0].id }} />,
+      <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
       { store: testStore },
     );
 
@@ -131,7 +131,7 @@ describe('Sequence', () => {
 
   describe('sequence and unit navigation buttons', () => {
     let testStore;
-    const sequenceBlock = [Factory.build(
+    const sequenceBlocks = [Factory.build(
       'block',
       { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
       { courseId: courseMetadata.id },
@@ -142,7 +142,7 @@ describe('Sequence', () => {
     )];
 
     beforeAll(async () => {
-      testStore = await initializeTestStore({ courseMetadata, unitBlocks, sequenceBlock }, false);
+      testStore = await initializeTestStore({ courseMetadata, unitBlocks, sequenceBlocks }, false);
     });
 
     beforeEach(() => {
@@ -152,7 +152,7 @@ describe('Sequence', () => {
     it('navigates to the previous sequence if the unit is the first in the sequence', async () => {
       const testData = {
         ...mockData,
-        sequenceId: sequenceBlock[1].id,
+        sequenceId: sequenceBlocks[1].id,
         previousSequenceHandler: jest.fn(),
       };
       render(<Sequence {...testData} />, { store: testStore });
@@ -187,7 +187,7 @@ describe('Sequence', () => {
       const testData = {
         ...mockData,
         unitId: unitBlocks[unitBlocks.length - 1].id,
-        sequenceId: sequenceBlock[0].id,
+        sequenceId: sequenceBlocks[0].id,
         nextSequenceHandler: jest.fn(),
       };
       render(<Sequence {...testData} />, { store: testStore });
@@ -222,7 +222,7 @@ describe('Sequence', () => {
       const testData = {
         ...mockData,
         unitId: unitBlocks[unitNumber].id,
-        sequenceId: sequenceBlock[0].id,
+        sequenceId: sequenceBlocks[0].id,
         unitNavigationHandler: jest.fn(),
         previousSequenceHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
@@ -246,7 +246,7 @@ describe('Sequence', () => {
       const testData = {
         ...mockData,
         unitId: unitBlocks[0].id,
-        sequenceId: sequenceBlock[0].id,
+        sequenceId: sequenceBlocks[0].id,
         unitNavigationHandler: jest.fn(),
         previousSequenceHandler: jest.fn(),
       };
@@ -265,7 +265,7 @@ describe('Sequence', () => {
       const testData = {
         ...mockData,
         unitId: unitBlocks[unitBlocks.length - 1].id,
-        sequenceId: sequenceBlock[sequenceBlock.length - 1].id,
+        sequenceId: sequenceBlocks[sequenceBlocks.length - 1].id,
         unitNavigationHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
       };
@@ -281,7 +281,7 @@ describe('Sequence', () => {
     });
 
     it('handles the navigation buttons for empty sequence', async () => {
-      const testSequenceBlock = [Factory.build(
+      const testSequenceBlocks = [Factory.build(
         'block',
         { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
         { courseId: courseMetadata.id },
@@ -294,18 +294,18 @@ describe('Sequence', () => {
         { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
         { courseId: courseMetadata.id },
       )];
-      const testSequenceMetadata = testSequenceBlock.map(block => Factory.build(
+      const testSequenceMetadata = testSequenceBlocks.map(block => Factory.build(
         'sequenceMetadata',
         {},
         { courseId: courseMetadata.id, unitBlocks: block.children.length ? unitBlocks : [], sequenceBlock: block },
       ));
       const innerTestStore = await initializeTestStore({
-        courseMetadata, unitBlocks, sequenceBlock: testSequenceBlock, sequenceMetadata: testSequenceMetadata,
+        courseMetadata, unitBlocks, sequenceBlocks: testSequenceBlocks, sequenceMetadata: testSequenceMetadata,
       }, false);
       const testData = {
         ...mockData,
         unitId: unitBlocks[0].id,
-        sequenceId: testSequenceBlock[1].id,
+        sequenceId: testSequenceBlocks[1].id,
         unitNavigationHandler: jest.fn(),
         previousSequenceHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
@@ -356,7 +356,7 @@ describe('Sequence', () => {
       const testData = {
         ...mockData,
         unitId: unitBlocks[currentTabNumber - 1].id,
-        sequenceId: sequenceBlock[0].id,
+        sequenceId: sequenceBlocks[0].id,
         unitNavigationHandler: jest.fn(),
       };
       render(<Sequence {...testData} />, { store: testStore });

@@ -24,18 +24,18 @@ describe('Data layer integration tests', () => {
   // building minimum set of api responses to test all thunks
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
-  const { courseBlocks, unitBlocks, sequenceBlock } = buildSimpleCourseBlocks(courseId);
+  const { courseBlocks, unitBlocks, sequenceBlocks } = buildSimpleCourseBlocks(courseId);
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
     {},
-    { courseId, unitBlocks, sequenceBlock: sequenceBlock[0] },
+    { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
   );
 
   let courseUrl = `${courseBaseUrl}/${courseId}`;
   courseUrl = appendBrowserTimezoneToUrl(courseUrl);
 
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
-  const sequenceId = sequenceBlock[0].id;
+  const sequenceId = sequenceBlocks[0].id;
   const unitId = unitBlocks[0].id;
 
   let store;
@@ -108,6 +108,22 @@ describe('Data layer integration tests', () => {
   describe('Test fetchSequence', () => {
     it('Should result in fetch failure if error occurs', async () => {
       axiosMock.onGet(sequenceUrl).networkError();
+
+      await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
+
+      expect(loggingService.logError).toHaveBeenCalled();
+      expect(store.getState().courseware.sequenceStatus).toEqual('failed');
+    });
+
+    it('Should result in fetch failure if a non-sequential block is returned', async () => {
+      const sectionMetadata = {
+        ...sequenceMetadata,
+        // 'chapter' is the block_type of a Section, which the sequence metadata
+        // API will happily return if requested, since SectionBlock is implemented
+        // as a subclass of SequenceBlock.
+        tag: 'chapter',
+      };
+      axiosMock.onGet(sequenceUrl).reply(200, sectionMetadata);
 
       await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
 

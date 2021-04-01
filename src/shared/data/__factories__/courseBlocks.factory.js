@@ -16,35 +16,39 @@ const getBlocks = (attr) => {
 
 Factory.define('courseBlocks')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')
-  .option('units', ['courseId'], courseId => ([
+  .option('units', ['courseId'], courseId => [
     Factory.build(
       'block',
       { type: 'vertical' },
       { courseId },
     ),
-  ]))
-  .option('sequence', ['courseId', 'units'], (courseId, child) => Factory.build(
+  ])
+  .option('sequences', ['courseId', 'units'], (courseId, units) => [
+    Factory.build(
+      'block',
+      { type: 'sequential', children: getIds(units) },
+      { courseId },
+    ),
+  ])
+  .option('sections', ['courseId', 'sequences'], (courseId, sequences) => [
+    Factory.build(
+      'block',
+      { type: 'chapter', children: getIds(sequences) },
+      { courseId },
+    ),
+  ])
+  .option('course', ['courseId', 'sections'], (courseId, sections) => Factory.build(
     'block',
-    { type: 'sequential', children: getIds(child) },
-    { courseId },
-  ))
-  .option('section', ['courseId', 'sequence'], (courseId, child) => Factory.build(
-    'block',
-    { type: 'chapter', children: getIds(child) },
-    { courseId },
-  ))
-  .option('course', ['courseId', 'section'], (courseId, child) => Factory.build(
-    'block',
-    { type: 'course', children: getIds(child) },
+    { type: 'course', children: getIds(sections) },
     { courseId },
   ))
   .attr(
     'blocks',
-    ['course', 'section', 'sequence', 'units'],
-    (course, section, sequence, units) => ({
+    ['course', 'sections', 'sequences', 'units'],
+    (course, sections, sequences, units) => ({
       [course.id]: course,
-      ...getBlocks(section),
-      ...getBlocks(sequence),
+      ...getBlocks(sections),
+      ...getBlocks(sequences),
       ...getBlocks(units),
     }),
   )
@@ -59,19 +63,19 @@ export function buildSimpleCourseBlocks(courseId, title, options = {}) {
     { type: 'vertical' },
     { courseId },
   )];
-  const sequenceBlock = options.sequenceBlock || [Factory.build(
+  const sequenceBlocks = options.sequenceBlocks || [Factory.build(
     'block',
     { type: 'sequential', children: unitBlocks.map(block => block.id) },
     { courseId },
   )];
-  const sectionBlock = options.sectionBlock || Factory.build(
+  const sectionBlocks = options.sectionBlocks || [Factory.build(
     'block',
-    { type: 'chapter', children: sequenceBlock.map(block => block.id) },
+    { type: 'chapter', children: sequenceBlocks.map(block => block.id) },
     { courseId },
-  );
-  const courseBlock = options.courseBlocks || Factory.build(
+  )];
+  const courseBlock = options.courseBlock || Factory.build(
     'block',
-    { type: 'course', display_name: title, children: [sectionBlock.id] },
+    { type: 'course', display_name: title, children: sectionBlocks.map(block => block.id) },
     { courseId },
   );
   return {
@@ -84,14 +88,14 @@ export function buildSimpleCourseBlocks(courseId, title, options = {}) {
       },
       {
         units: unitBlocks,
-        sequence: sequenceBlock,
-        section: sectionBlock,
+        sequences: sequenceBlocks,
+        sections: sectionBlocks,
         course: courseBlock,
       },
     ),
     unitBlocks,
-    sequenceBlock,
-    sectionBlock,
+    sequenceBlocks,
+    sectionBlocks,
     courseBlock,
   };
 }
@@ -100,12 +104,12 @@ export function buildSimpleCourseBlocks(courseId, title, options = {}) {
  * Builds a course with a single chapter and sequence, but no units.
  */
 export function buildMinimalCourseBlocks(courseId, title, options = {}) {
-  const sequenceBlock = options.sequenceBlock || [Factory.build(
+  const sequenceBlocks = options.sequenceBlocks || [Factory.build(
     'block',
     { display_name: 'Title of Sequence', type: 'sequential' },
     { courseId },
   )];
-  const sectionBlock = options.sectionBlock || Factory.build(
+  const sectionBlocks = options.sectionBlocks || [Factory.build(
     'block',
     {
       type: 'chapter',
@@ -114,13 +118,13 @@ export function buildMinimalCourseBlocks(courseId, title, options = {}) {
       effort_time: 15,
       effort_activities: 2,
       resume_block: options.resumeBlock || false,
-      children: sequenceBlock.map(block => block.id),
+      children: sequenceBlocks.map(block => block.id),
     },
     { courseId },
-  );
+  )];
   const courseBlock = options.courseBlock || Factory.build(
     'block',
-    { type: 'course', display_name: title, children: [sectionBlock.id] },
+    { type: 'course', display_name: title, children: sectionBlocks.map(block => block.id) },
     { courseId },
   );
   return {
@@ -128,15 +132,105 @@ export function buildMinimalCourseBlocks(courseId, title, options = {}) {
       'courseBlocks',
       { courseId },
       {
-        sequence: sequenceBlock,
-        section: sectionBlock,
+        sequences: sequenceBlocks,
+        sections: sectionBlocks,
         course: courseBlock,
         units: [],
       },
     ),
     unitBlocks: [],
-    sequenceBlock,
-    sectionBlock,
+    sequenceBlocks,
+    sectionBlocks,
     courseBlock,
+  };
+}
+
+/**
+ * Builds a course with two branches at each node. That is:
+ *
+ *                  Crs
+ *                   |
+ *        Sec--------+-------Sec
+ *         |                  |
+ *   Seq---+---Seq      Seq---+---Seq
+ *    |         |        |         |
+ * U--+--U   U--+--U  U--+--U   U--+--U
+ *                          ^
+ *
+ * Each left branch is indexed 0, and each right branch is indexed 1.
+ * So, the caret in the diagram above is pointing to `unitTree[1][0][1]`,
+ * whose parent is `sequenceTree[1][0]`, whose parent is `sectionTree[1]`.
+ */
+export function buildBinaryCourseBlocks(courseId, title) {
+  const sectionTree = [];
+  const sequenceTree = [[], []];
+  const unitTree = [[[], []], [[], []]];
+  [0, 1].forEach(sectionIndex => {
+    [0, 1].forEach(sequenceIndex => {
+      [0, 1].forEach(unitIndex => {
+        unitTree[sectionIndex][sequenceIndex][unitIndex] = Factory.build(
+          'block',
+          { type: 'vertical' },
+          { courseId },
+        );
+      });
+      sequenceTree[sectionIndex][sequenceIndex] = Factory.build(
+        'block',
+        { type: 'sequential', children: unitTree[sectionIndex][sequenceIndex].map(block => block.id) },
+        { courseId },
+      );
+    });
+    sectionTree[sectionIndex] = Factory.build(
+      'block',
+      { type: 'chapter', children: sequenceTree[sectionIndex].map(block => block.id) },
+      { courseId },
+    );
+  });
+  const courseBlock = Factory.build(
+    'block',
+    { type: 'course', display_name: title, children: sectionTree.map(block => block.id) },
+    { courseId },
+  );
+  const sectionBlocks = [
+    sectionTree[0],
+    sectionTree[1],
+  ];
+  const sequenceBlocks = [
+    sequenceTree[0][0],
+    sequenceTree[0][1],
+    sequenceTree[1][0],
+    sequenceTree[1][1],
+  ];
+  const unitBlocks = [
+    unitTree[0][0][0],
+    unitTree[0][0][1],
+    unitTree[0][1][0],
+    unitTree[0][1][1],
+    unitTree[1][0][0],
+    unitTree[1][0][1],
+    unitTree[1][1][0],
+    unitTree[1][1][1],
+  ];
+  return {
+    // Expose blocks as a combined list, lists separated by type, and as
+    // trees separated by type. The caller can decide which they want to
+    // work with.
+    courseBlocks: Factory.build(
+      'courseBlocks',
+      { courseId },
+      {
+        units: unitBlocks,
+        sequences: sequenceBlocks,
+        sections: sectionBlocks,
+        course: courseBlock,
+      },
+    ),
+    unitBlocks,
+    sequenceBlocks,
+    sectionBlocks,
+    courseBlock,
+    unitTree,
+    sequenceTree,
+    sectionTree,
   };
 }

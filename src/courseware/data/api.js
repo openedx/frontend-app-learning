@@ -164,6 +164,7 @@ function normalizeSequenceMetadata(sequence) {
   return {
     sequence: {
       id: sequence.item_id,
+      blockType: sequence.tag,
       unitIds: sequence.items.map(unit => unit.id),
       bannerText: sequence.banner_text,
       format: sequence.format,

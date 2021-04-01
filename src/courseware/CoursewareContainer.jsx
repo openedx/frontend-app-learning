@@ -19,14 +19,6 @@ import { TabPage } from '../tab-page';
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
 
-const checkExamRedirect = memoize((sequenceStatus, sequence) => {
-  if (sequenceStatus === 'loaded') {
-    if (sequence.isTimeLimited && sequence.lmsWebUrl !== undefined) {
-      global.location.assign(sequence.lmsWebUrl);
-    }
-  }
-});
-
 const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSequenceId) => {
   if (courseStatus === 'loaded' && !sequenceId) {
     // Note that getResumeBlock is just an API call, not a redux thunk.
@@ -41,8 +33,42 @@ const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSe
   }
 });
 
-const checkContentRedirect = memoize((courseId, sequenceStatus, sequenceId, sequence, unitId) => {
-  if (sequenceStatus === 'loaded' && sequenceId && !unitId) {
+const checkSectionUnitToUnitRedirect = memoize((courseStatus, courseId, sequenceStatus, section, unitId) => {
+  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && unitId) {
+    history.replace(`/course/${courseId}/${unitId}`);
+  }
+});
+
+const checkSectionToSequenceRedirect = memoize((courseStatus, courseId, sequenceStatus, section, unitId) => {
+  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && !unitId) {
+    // If the section is non-empty, redirect to its first sequence.
+    if (section.sequenceIds && section.sequenceIds[0]) {
+      history.replace(`/course/${courseId}/${section.sequenceIds[0]}`);
+    // Otherwise, just go to the course root, letting the resume redirect take care of things.
+    } else {
+      history.replace(`/course/${courseId}`);
+    }
+  }
+});
+
+const checkUnitToSequenceUnitRedirect = memoize((courseStatus, courseId, sequenceStatus, unit) => {
+  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && unit) {
+    // If the sequence failed to load as a sequence, but it *did* load as a unit, then
+    // insert the unit's parent sequenceId into the URL.
+    history.replace(`/course/${courseId}/${unit.sequenceId}/${unit.id}`);
+  }
+});
+
+const checkSpecialExamRedirect = memoize((sequenceStatus, sequence) => {
+  if (sequenceStatus === 'loaded') {
+    if (sequence.isTimeLimited && sequence.lmsWebUrl !== undefined) {
+      global.location.assign(sequence.lmsWebUrl);
+    }
+  }
+});
+
+const checkSequenceToSequenceUnitRedirect = memoize((courseId, sequenceStatus, sequence, unitId) => {
+  if (sequenceStatus === 'loaded' && sequence.id && !unitId) {
     if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
       const nextUnitId = sequence.unitIds[sequence.activeUnitIndex];
       // This is a replace because we don't want this change saved in the browser's history.
@@ -97,6 +123,8 @@ class CoursewareContainer extends Component {
       sequenceStatus,
       sequence,
       firstSequenceId,
+      unitViaSequenceId,
+      sectionViaSequenceId,
       match: {
         params: {
           courseId: routeCourseId,
@@ -110,14 +138,51 @@ class CoursewareContainer extends Component {
     this.checkFetchCourse(routeCourseId);
     this.checkFetchSequence(routeSequenceId);
 
-    // Redirect to the legacy experience for exams.
-    checkExamRedirect(sequenceStatus, sequence);
+    // All courseware URLs should normalize to the format /course/:courseId/:sequenceId/:unitId
+    // via the series of redirection rules below.
+    // See docs/decisions/0008-liberal-courseware-path-handling.md for more context.
+    // (It would be ideal to move this logic into the thunks layer and perform
+    //  all URL-changing checks at once. This should be done once the MFE is moved
+    //  to the new Outlines API. See TNL-8182.)
 
-    // Determine if we need to redirect because our URL is incomplete.
-    checkContentRedirect(courseId, sequenceStatus, sequenceId, sequence, routeUnitId);
-
-    // Determine if we can resume where we left off.
+    // Check resume redirect:
+    //   /course/:courseId -> /course/:courseId/:sequenceId/:unitId
+    // based on sequence/unit where user was last active.
     checkResumeRedirect(courseStatus, courseId, sequenceId, firstSequenceId);
+
+    // Check section-unit to unit redirect:
+    //    /course/:courseId/:sectionId/:unitId -> /course/:courseId/:unitId
+    // by simply ignoring the :sectionId.
+    // (It may be desirable at some point to be smarter here; for example, we could replace
+    //  :sectionId with the parent sequence of :unitId and/or check whether the :unitId
+    //  is actually within :sectionId. However, the way our Redux store is currently factored,
+    //  the unit's metadata is not available to us if the section isn't loadable.)
+    // Before performing this redirect, we *do* still check that a section is loadable;
+    // otherwise, we could get stuck in a redirect loop, since a sequence that failed to load
+    // would endlessly redirect to itself through `checkSectionUnitToUnitRedirect`
+    // and `checkUnitToSequenceUnitRedirect`.
+    checkSectionUnitToUnitRedirect(courseStatus, courseId, sequenceStatus, sectionViaSequenceId, routeUnitId);
+
+    // Check section to sequence redirect:
+    //    /course/:courseId/:sectionId         -> /course/:courseId/:sequenceId
+    // by redirecting to the first sequence within the section.
+    checkSectionToSequenceRedirect(courseStatus, courseId, sequenceStatus, sectionViaSequenceId, routeUnitId);
+
+    // Check unit to sequence-unit redirect:
+    //    /course/:courseId/:unitId -> /course/:courseId/:sequenceId/:unitId
+    // by filling in the ID of the parent sequence of :unitId.
+    checkUnitToSequenceUnitRedirect(courseStatus, courseId, sequenceStatus, unitViaSequenceId);
+
+    // Check special exam redirect:
+    //    /course/:courseId/:sequenceId(/:unitId) -> :legacyWebUrl
+    // because special exams are currently still served in the legacy LMS frontend.
+    checkSpecialExamRedirect(sequenceStatus, sequence);
+
+    // Check to sequence to sequence-unit redirect:
+    //    /course/:courseId/:sequenceId -> /course/:courseId/:sequenceId/:unitId
+    // by filling in the ID the most-recently-active unit in the sequence, OR
+    // the ID of the first unit the sequence if none is active.
+    checkSequenceToSequenceUnitRedirect(courseId, sequenceStatus, sequence, routeUnitId);
 
     // Check if we should save our sequence position.  Only do this when the route unit ID changes.
     this.checkSaveSequencePosition(routeUnitId);
@@ -249,11 +314,22 @@ class CoursewareContainer extends Component {
   }
 }
 
+const unitShape = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  sequenceId: PropTypes.string.isRequired,
+});
+
 const sequenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  sectionId: PropTypes.string.isRequired,
   isTimeLimited: PropTypes.bool,
   lmsWebUrl: PropTypes.string,
+});
+
+const sectionShape = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  sequenceIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 });
 
 const courseShape = PropTypes.shape({
@@ -278,6 +354,8 @@ CoursewareContainer.propTypes = {
   sequenceStatus: PropTypes.oneOf(['loaded', 'loading', 'failed']).isRequired,
   nextSequence: sequenceShape,
   previousSequence: sequenceShape,
+  unitViaSequenceId: unitShape,
+  sectionViaSequenceId: sectionShape,
   course: courseShape,
   sequence: sequenceShape,
   saveSequencePosition: PropTypes.func.isRequired,
@@ -292,6 +370,8 @@ CoursewareContainer.defaultProps = {
   firstSequenceId: null,
   nextSequence: null,
   previousSequence: null,
+  unitViaSequenceId: null,
+  sectionViaSequenceId: null,
   course: null,
   sequence: null,
 };
@@ -367,6 +447,18 @@ const firstSequenceIdSelector = createSelector(
   },
 );
 
+const sectionViaSequenceIdSelector = createSelector(
+  (state) => state.models.sections || {},
+  (state) => state.courseware.sequenceId,
+  (sectionsById, sequenceId) => (sectionsById[sequenceId] ? sectionsById[sequenceId] : null),
+);
+
+const unitViaSequenceIdSelector = createSelector(
+  (state) => state.models.units || {},
+  (state) => state.courseware.sequenceId,
+  (unitsById, sequenceId) => (unitsById[sequenceId] ? unitsById[sequenceId] : null),
+);
+
 const mapStateToProps = (state) => {
   const {
     courseId, sequenceId, courseStatus, sequenceStatus,
@@ -382,6 +474,8 @@ const mapStateToProps = (state) => {
     previousSequence: previousSequenceSelector(state),
     nextSequence: nextSequenceSelector(state),
     firstSequenceId: firstSequenceIdSelector(state),
+    sectionViaSequenceId: sectionViaSequenceIdSelector(state),
+    unitViaSequenceId: unitViaSequenceIdSelector(state),
   };
 };
 

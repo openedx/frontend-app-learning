@@ -132,7 +132,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   axiosMock.reset();
 
   const {
-    courseBlocks, sequenceBlock, courseMetadata, sequenceMetadata,
+    courseBlocks, sequenceBlocks, courseMetadata, sequenceMetadata,
   } = buildSimpleCourseAndSequenceMetadata(options);
 
   let forbiddenCourseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseMetadata.id}`;
@@ -153,7 +153,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   !options.excludeFetchCourse && await executeThunk(fetchCourse(courseMetadata.id), store.dispatch);
 
   if (!options.excludeFetchSequence) {
-    await Promise.all(sequenceBlock
+    await Promise.all(sequenceBlocks
       .map(block => executeThunk(fetchSequence(block.id), store.dispatch)));
   }
 
