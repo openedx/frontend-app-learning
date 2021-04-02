@@ -28,7 +28,7 @@ function SequenceLink({
     complete,
     description,
     due,
-    lmsWebUrl,
+    legacyWebUrl,
     showLink,
     title,
   } = sequence;
@@ -44,7 +44,11 @@ function SequenceLink({
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
   // canLoadCourseware is true if the Courseware MFE is enabled, false otherwise
-  const coursewareUrl = canLoadCourseware ? <Link to={`/course/${courseId}/${id}`}>{title}</Link> : <Hyperlink destination={lmsWebUrl}>{title}</Hyperlink>;
+  const coursewareUrl = (
+    canLoadCourseware
+      ? <Link to={`/course/${courseId}/${id}`}>{title}</Link>
+      : <Hyperlink destination={legacyWebUrl}>{title}</Hyperlink>
+  );
   const displayTitle = showLink ? coursewareUrl : title;
 
   return (

@@ -61,8 +61,8 @@ const checkUnitToSequenceUnitRedirect = memoize((courseStatus, courseId, sequenc
 
 const checkSpecialExamRedirect = memoize((sequenceStatus, sequence) => {
   if (sequenceStatus === 'loaded') {
-    if (sequence.isTimeLimited && sequence.lmsWebUrl !== undefined) {
-      global.location.assign(sequence.lmsWebUrl);
+    if (sequence.isTimeLimited && sequence.legacyWebUrl !== undefined) {
+      global.location.assign(sequence.legacyWebUrl);
     }
   }
 });
@@ -324,7 +324,7 @@ const sequenceShape = PropTypes.shape({
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   sectionId: PropTypes.string.isRequired,
   isTimeLimited: PropTypes.bool,
-  lmsWebUrl: PropTypes.string,
+  legacyWebUrl: PropTypes.string,
 });
 
 const sectionShape = PropTypes.shape({
