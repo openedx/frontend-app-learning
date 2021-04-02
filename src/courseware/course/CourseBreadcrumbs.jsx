@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
@@ -39,6 +40,7 @@ export default function CourseBreadcrumbs({
   courseId,
   sectionId,
   sequenceId,
+  isMobileWidth,
   /** [MM-P2P] Experiment */
   mmp2p,
 }) {
@@ -60,7 +62,7 @@ export default function CourseBreadcrumbs({
   }, [courseStatus, sequenceStatus]);
 
   return (
-    <nav aria-label="breadcrumb" className="my-4 d-inline-block">
+    <nav aria-label="breadcrumb" className={classNames('my-4 d-inline-block', { 'col-10': !isMobileWidth })}>
       <ol className="list-unstyled d-flex m-0">
         <CourseBreadcrumb
           url={`${getConfig().LMS_BASE_URL}/courses/${course.id}/course/`}
@@ -101,6 +103,7 @@ CourseBreadcrumbs.propTypes = {
   courseId: PropTypes.string.isRequired,
   sectionId: PropTypes.string,
   sequenceId: PropTypes.string,
+  isMobileWidth: PropTypes.bool,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({
@@ -112,6 +115,7 @@ CourseBreadcrumbs.propTypes = {
 CourseBreadcrumbs.defaultProps = {
   sectionId: null,
   sequenceId: null,
+  isMobileWidth: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {},

@@ -251,6 +251,7 @@
   }
 
   .previous-btn, .next-btn {
+    border: 1px solid $light-400 !important;
     color: $gray-700;
     display: inline-flex;
     justify-content: center;

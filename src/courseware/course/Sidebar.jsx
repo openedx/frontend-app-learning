@@ -7,12 +7,12 @@ import './Sidebar.scss';
 import messages from './messages';
 
 function Sidebar({
-  intl, sidebarVisible, toggleSidebar, isResponsiveWidth,
+  intl, sidebarVisible, toggleSidebar, isTabletWidth,
 }) {
   return (
     sidebarVisible ? (
       <div className="sidebar-container ml-0 ml-lg-4">
-        {isResponsiveWidth
+        {isTabletWidth
           ? (
             <div className="mobile-close-container" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.responsiveCloseSidebar)}>
               <Icon src={ArrowBackIos} />
@@ -22,12 +22,16 @@ function Sidebar({
           : null}
         <div className="sidebar-header px-3">
           <span>{intl.formatMessage(messages.notification)}</span>
-          {!isResponsiveWidth
+          {!isTabletWidth
             ? <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeButton)} />
             : null}
         </div>
         <div className="sidebar-divider" />
-        {/* expiration box to be inserted here */}
+        <div className="sidebar-content">
+          {/* JK: add conditional here */}
+          <p>You have no new notifications at this time.</p>
+          {/* expiration box to be inserted here */}
+        </div>
       </div>
     ) : null
   );
@@ -37,13 +41,13 @@ Sidebar.propTypes = {
   intl: intlShape.isRequired,
   toggleSidebar: PropTypes.func,
   sidebarVisible: PropTypes.bool,
-  isResponsiveWidth: PropTypes.bool,
+  isTabletWidth: PropTypes.bool,
 };
 
 Sidebar.defaultProps = {
   toggleSidebar: null,
   sidebarVisible: null,
-  isResponsiveWidth: null,
+  isTabletWidth: null,
 };
 
 export default injectIntl(Sidebar);
