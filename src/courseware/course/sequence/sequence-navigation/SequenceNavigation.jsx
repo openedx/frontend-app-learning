@@ -30,7 +30,7 @@ function SequenceNavigation({
   goToCourseExitPage,
   toggleSidebar,
   isSidebarVisible,
-  isResponsiveWidth,
+  isMobileWidth,
   mmp2p,
 }) {
   const sequence = useModel('sequences', sequenceId);
@@ -71,8 +71,8 @@ function SequenceNavigation({
     const disabled = isLastUnit && !exitActive;
     return (
       <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled}>
-        {!isResponsiveWidth ? buttonText : null}
-        <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
+        {!isMobileWidth ? buttonText : null}
+        <FontAwesomeIcon icon={faChevronRight} className="mx-3 mr-sm-0 ml-sm-2" size="sm" />
       </Button>
     );
   };
@@ -80,13 +80,13 @@ function SequenceNavigation({
   return sequenceStatus === LOADED && (
     <nav className={classNames('sequence-navigation', className)}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
-        <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
-        {!isResponsiveWidth ? intl.formatMessage(messages.previousButton) : null}
+        <FontAwesomeIcon icon={faChevronLeft} className="mx-3 ml-sm-0 mr-sm-2" size="sm" />
+        {!isMobileWidth ? intl.formatMessage(messages.previousButton) : null}
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
 
-      {isResponsiveWidth ? (
+      {isMobileWidth ? (
         <SidebarNotificationButton
           toggleSidebar={toggleSidebar}
           isSidebarVisible={isSidebarVisible}
@@ -110,7 +110,7 @@ SequenceNavigation.propTypes = {
   goToCourseExitPage: PropTypes.func.isRequired,
   toggleSidebar: PropTypes.func,
   isSidebarVisible: PropTypes.func,
-  isResponsiveWidth: PropTypes.bool,
+  isMobileWidth: PropTypes.bool,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({
@@ -124,7 +124,7 @@ SequenceNavigation.defaultProps = {
   unitId: null,
   toggleSidebar: null,
   isSidebarVisible: null,
-  isResponsiveWidth: null,
+  isMobileWidth: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {

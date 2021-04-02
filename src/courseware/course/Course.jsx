@@ -60,17 +60,18 @@ function Course({
     courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
   );
 
-  /** [MM-P2P] Experiment */
-  const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
-
   const windowSize = useWindowSize();
-  const isResponsiveWidth = windowSize.width <= 768;
+  const isTabletWidth = windowSize.width < 992;
+  const isMobileWidth = windowSize.width < 576;
 
   const [sidebarVisible, setSidebar] = useState(false);
   const isSidebarVisible = () => sidebarVisible && setSidebar;
   const toggleSidebar = () => {
     if (!sidebarVisible) { setSidebar(true); } else { setSidebar(false); }
   };
+
+  /** [MM-P2P] Experiment */
+  const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
 
   return (
     <>
@@ -93,10 +94,12 @@ function Course({
           courseId={courseId}
           sectionId={section ? section.id : null}
           sequenceId={sequenceId}
+          isMobileWidth={isMobileWidth}
           //* * [MM-P2P] Experiment */
           mmp2p={MMP2P}
         />
-        { !isResponsiveWidth ? (
+        {/* JK: add conditional/cookie to hide/show Sidebar here */}
+        { !isMobileWidth ? (
           <SidebarNotificationButton
             toggleSidebar={toggleSidebar}
             isSidebarVisible={isSidebarVisible}
@@ -115,7 +118,8 @@ function Course({
         toggleSidebar={toggleSidebar}
         isSidebarVisible={isSidebarVisible}
         sidebarVisible={sidebarVisible}
-        isResponsiveWidth={isResponsiveWidth}
+        isTabletWidth={isTabletWidth}
+        isMobileWidth={isMobileWidth}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />

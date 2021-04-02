@@ -4,11 +4,12 @@
 @import "~@edx/brand/paragon/overrides";
 
 .sidebar-container {
-    border: 1px solid $gray-200;
-    width: 330px;
+    border: 1px solid $light-400;
+    border-radius: 4px;
+    width: 20rem;
     vertical-align: top;
 
-    @media (max-width: map-get($grid-breakpoints, 'md')) {
+    @media (max-width: map-get($grid-breakpoints, 'lg')) {
         position: fixed; 
         top: 0; 
         bottom: 0; 
@@ -19,6 +20,7 @@
         background-color: white;
         margin: 0;
         border: none;
+        border-radius: 0;
     }
 }
 
@@ -35,27 +37,33 @@
 }
 
 .sidebar-divider {
+    width: 100.5%;
     height: 0.5rem;
     background: $gray-100;
-    border-top: 1px solid $gray-200;
-    border-bottom: 1px solid $gray-200;
+    border: 1px solid $light-400;
+    border-left: 0;
+}
+
+.sidebar-content {
+    padding: 1rem;
+    font-size: 0.875rem;
 }
 
 .mobile-close-container {
     padding-top: 0.5rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid $gray-200;
+    border-bottom: 1px solid $light-400;
 
     span {
         display: inline-block;
     }
     svg {
-        margin-top: 7px;
-        margin-left: 15px;
+        top: 0.4rem;
+        left: 0.8rem;
     }
 }
 
 .mobile-close {
     font-weight: 500;
-    margin-left: 1.5rem;
+    margin-left: 1.2rem;
 }

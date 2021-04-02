@@ -4,15 +4,19 @@
 @import "~@edx/brand/paragon/overrides";
 
 .sidebar-notification-btn-container {
-    border: 1px solid $gray-200;
-    width: 54px;
-    height: 40px;
+    border: 1px solid $light-400;
+    width: 3.375rem;
+    height: 2.5rem;
     float: right;
     margin-top: 0.625rem;
 
-    @media (max-width: map-get($grid-breakpoints, 'md')) {
+    position: relative;
+    display: flex;
+	align-items: center;
+
+    @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
         border: none;
-        margin: 5px 20px 0 20px;
+        margin: 0.3rem 1.25rem 0 1.25rem;
     }
 }
 
@@ -20,25 +24,19 @@
     border-bottom: 3px solid $primary-700;
 }
 
-.sidebar-notification-btn {
-    position: relative;
-}
-
 .sidebar-notification-icon {
-    top: 7px;
-    bottom: 13px;
+    position: absolute;
     margin: 0 auto;
-    width: 1.25rem;
 }
 
 .notification-dot {
-    right: 15px;
-    top: 0.5rem;
     background-color: $danger-500;
     border-radius: 50%;
     position: absolute;
-    display: inline-block;
-    @media (max-width: map-get($grid-breakpoints, 'md')) {
-        right: 7px;
+    right: 1rem;
+    top: 0.5rem;
+
+    @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
+        right: 0.5rem;
     }
 }

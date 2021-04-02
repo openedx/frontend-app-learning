@@ -10,11 +10,18 @@ import messages from './messages';
 
 function SidebarNotificationButton({ intl, toggleSidebar, isSidebarVisible }) {
   return (
-    <div className={classNames('sidebar-notification-btn-container', { active: isSidebarVisible() })} data-testid="SidebarButton" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.notificationButton)}>
-      <div className="sidebar-notification-btn">
-        <Icon src={WatchOutline} className="sidebar-notification-icon" alt={intl.formatMessage(messages.notificationButton)} />
-        <span className="notification-dot p-1" />
-      </div>
+    <div
+      className={classNames('sidebar-notification-btn-container', { active: isSidebarVisible() })}
+      data-testid="SidebarButton"
+      role="button"
+      tabIndex="0"
+      onClick={() => { toggleSidebar(); }}
+      onKeyDown={() => { toggleSidebar(); }}
+      alt={intl.formatMessage(messages.notificationButton)}
+    >
+      <Icon src={WatchOutline} className="sidebar-notification-icon" alt={intl.formatMessage(messages.notificationButton)} />
+      {/* JK: add conditional for icon with red dot */}
+      <span className="notification-dot p-1" />
     </div>
   );
 }
