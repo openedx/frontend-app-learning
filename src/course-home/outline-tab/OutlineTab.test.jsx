@@ -899,7 +899,7 @@ describe('Outline Tab', () => {
 
     it('displays link to upgrade', async () => {
       await fetchAndRender();
-      expect(screen.getByRole('link', { name: 'Upgrade ($149)' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Upgrade for $149' })).toBeInTheDocument();
     });
 
     it('viewing upgrade card sends analytics', async () => {
@@ -930,7 +930,7 @@ describe('Outline Tab', () => {
       // Clearing after render to remove any events sent on view (ex. 'Promotion Viewed')
       sendTrackEvent.mockClear();
       sendTrackingLogEvent.mockClear();
-      const upgradeButton = screen.getByRole('link', { name: 'Upgrade ($149)' });
+      const upgradeButton = screen.getByRole('link', { name: 'Upgrade for $149' });
 
       fireEvent.click(upgradeButton);
 

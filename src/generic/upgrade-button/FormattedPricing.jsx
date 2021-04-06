@@ -49,7 +49,7 @@ function FormattedPricing(props) {
         {intl.formatMessage(messages.srPrices, { discountedPrice, originalPrice })}
       </span>
       <span aria-hidden="true">
-        <span>{discountedPrice}</span> <del>{originalPrice}</del>
+        <span>{discountedPrice}</span> (<del>{originalPrice}</del>)
       </span>
     </>
   );

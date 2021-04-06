@@ -26,7 +26,7 @@ function UpgradeButton(props) {
     >
       <FormattedMessage
         id="learning.upgradeButton.buttonText"
-        defaultMessage="Upgrade ({pricing})"
+        defaultMessage="Upgrade for {pricing}"
         values={{
           pricing: (
             <FormattedPricing
