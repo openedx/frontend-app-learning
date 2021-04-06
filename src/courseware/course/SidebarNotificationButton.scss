@@ -3,16 +3,15 @@
 @import "~@edx/paragon/scss/core/core";
 @import "~@edx/brand/paragon/overrides";
 
-.sidebar-notification-btn-container {
+.sidebar-notification-btn {
     border: 1px solid $light-400;
+    background: none;
     width: 3.375rem;
     height: 2.5rem;
-    float: right;
     margin-top: 0.625rem;
 
-    position: relative;
-    display: flex;
-	align-items: center;
+    position: absolute;
+    right: 0;
 
     @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
         border: none;
@@ -22,21 +21,4 @@
 
 .active {
     border-bottom: 3px solid $primary-700;
-}
-
-.sidebar-notification-icon {
-    position: absolute;
-    margin: 0 auto;
-}
-
-.notification-dot {
-    background-color: $danger-500;
-    border-radius: 50%;
-    position: absolute;
-    right: 1rem;
-    top: 0.5rem;
-
-    @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
-        right: 0.5rem;
-    }
 }
