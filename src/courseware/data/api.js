@@ -38,8 +38,7 @@ export function normalizeBlocks(courseId, blocks) {
           effortTime: block.effort_time,
           id: block.id,
           title: block.display_name,
-          // Fall back to `lms_web_url` until `legacy_web_url` is added to API (TNL-7796).
-          legacyWebUrl: block.legacy_web_url || block.lms_web_url,
+          legacyWebUrl: block.legacy_web_url,
           unitIds: block.children || [],
         };
         break;
@@ -48,8 +47,7 @@ export function normalizeBlocks(courseId, blocks) {
           graded: block.graded,
           id: block.id,
           title: block.display_name,
-          // Fall back to `lms_web_url` until `legacy_web_url` is added to API (TNL-7796).
-          legacyWebUrl: block.legacy_web_url || block.lms_web_url,
+          legacyWebUrl: block.legacy_web_url,
         };
         break;
       default:
