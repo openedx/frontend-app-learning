@@ -55,13 +55,13 @@ export default function InstructorToolbar(props) {
     unitId,
   } = props;
   const urlInsights = getInsightsUrl(courseId);
-  const urlLms = useSelector((state) => {
+  const urlLegacy = useSelector((state) => {
     if (!unitId) {
       return undefined;
     }
 
     const activeUnit = state.models.units[props.unitId];
-    return activeUnit ? activeUnit.lmsWebUrl : undefined;
+    return activeUnit ? activeUnit.legacyWebUrl : undefined;
   });
   const urlStudio = getStudioUrl(courseId, unitId);
   const [masqueradeErrorMessage, showMasqueradeError] = useState(null);
@@ -73,15 +73,15 @@ export default function InstructorToolbar(props) {
           <div className="align-items-center flex-grow-1 d-md-flex mx-1 my-1">
             <MasqueradeWidget courseId={courseId} onError={showMasqueradeError} />
           </div>
-          {(urlLms || urlStudio || urlInsights) && (
+          {(urlLegacy || urlStudio || urlInsights) && (
             <>
               <hr className="border-light" />
               <span className="mr-2 mt-1 col-form-label">View course in:</span>
             </>
           )}
-          {urlLms && (
+          {urlLegacy && (
             <span className="mx-1 my-1">
-              <a className="btn btn-inverse-outline-primary" href={urlLms}>Legacy experience</a>
+              <a className="btn btn-inverse-outline-primary" href={urlLegacy}>Legacy experience</a>
             </span>
           )}
           {urlStudio && (

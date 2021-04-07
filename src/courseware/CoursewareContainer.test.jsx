@@ -406,7 +406,7 @@ describe('CoursewareContainer', () => {
         window.location = location;
       });
 
-      it('should redirect to the sequence lmsWebUrl', async () => {
+      it('should redirect to the sequence legacyWebUrl', async () => {
         const sequenceMetadata = Factory.build(
           'sequenceMetadata',
           { is_time_limited: true }, // position index is 1-based and is converted to 0-based for activeUnitIndex
@@ -417,7 +417,7 @@ describe('CoursewareContainer', () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
         await loadContainer();
 
-        expect(global.location.assign).toHaveBeenCalledWith(sequenceBlock.lms_web_url);
+        expect(global.location.assign).toHaveBeenCalledWith(sequenceBlock.legacy_web_url);
       });
     });
   });
