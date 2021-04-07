@@ -3,6 +3,7 @@ import React, {
   useEffect, useContext, useState,
 } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import {
   sendTrackEvent,
   sendTrackingLogEvent,
@@ -20,6 +21,8 @@ import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 import Sidebar from '../Sidebar';
+import SidebarNotificationButton from '../SidebarNotificationButton';
+import useWindowSize from '../../../generic/tabs/useWindowSize';
 
 /** [MM-P2P] Experiment */
 import { isMobile } from '../../../experiments/mm-p2p/utils';
@@ -36,8 +39,6 @@ function Sequence({
   toggleSidebar,
   sidebarVisible,
   isSidebarVisible,
-  isTabletWidth,
-  isMobileWidth,
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
@@ -147,11 +148,13 @@ function Sequence({
     history.push(`/course/${courseId}/course-end`);
   };
 
+  const shouldDisplaySidebarButton = useWindowSize().width < 576;
+
   if (sequenceStatus === 'loaded') {
     return (
       <div>
         <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
-          <div className="sequence" style={{ width: '100%' }}>
+          <div className={classNames('sequence', { 'position-relative': shouldDisplaySidebarButton })} style={{ width: '100%' }}>
             <SequenceNavigation
               sequenceId={sequenceId}
               unitId={unitId}
@@ -175,8 +178,15 @@ function Sequence({
               goToCourseExitPage={() => goToCourseExitPage()}
               toggleSidebar={toggleSidebar}
               isSidebarVisible={isSidebarVisible}
-              isMobileWidth={isMobileWidth}
             />
+
+            {shouldDisplaySidebarButton ? (
+              <SidebarNotificationButton
+                toggleSidebar={toggleSidebar}
+                isSidebarVisible={isSidebarVisible}
+              />
+            ) : null}
+
             <div className="unit-container flex-grow-1">
               <SequenceContent
                 courseId={courseId}
@@ -204,11 +214,13 @@ function Sequence({
               )}
             </div>
           </div>
-          <Sidebar
-            toggleSidebar={toggleSidebar}
-            sidebarVisible={sidebarVisible}
-            isTabletWidth={isTabletWidth}
-          />
+
+          {sidebarVisible ? (
+            <Sidebar
+              toggleSidebar={toggleSidebar}
+              sidebarVisible={sidebarVisible}
+            />
+          ) : null }
 
           {/** [MM-P2P] Experiment */}
           {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
@@ -241,8 +253,6 @@ Sequence.propTypes = {
   toggleSidebar: PropTypes.func,
   sidebarVisible: PropTypes.bool,
   isSidebarVisible: PropTypes.func,
-  isTabletWidth: PropTypes.bool,
-  isMobileWidth: PropTypes.bool,
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
@@ -264,8 +274,6 @@ Sequence.defaultProps = {
   toggleSidebar: null,
   sidebarVisible: null,
   isSidebarVisible: null,
-  isTabletWidth: null,
-  isMobileWidth: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {

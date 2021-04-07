@@ -29,7 +29,7 @@ describe('Sequence Navigation', () => {
       onNavigate: () => {},
       nextSequenceHandler: () => {},
       goToCourseExitPage: () => {},
-      isResponsiveWidth: false,
+      shouldDisplaySidebarButton: false,
     };
   });
 
@@ -167,8 +167,8 @@ describe('Sequence Navigation', () => {
   it('renders sidebar notification button in sequence', async () => {
     const toggleSidebar = jest.fn();
     const isSidebarVisible = jest.fn();
-    const isResponsiveWidth = true;
-    render(<SequenceNavigation {...mockData} {...{ toggleSidebar, isSidebarVisible, isResponsiveWidth }} />);
+    const shouldDisplaySidebarButton = true;
+    render(<SequenceNavigation {...mockData} {...{ toggleSidebar, isSidebarVisible, shouldDisplaySidebarButton }} />);
 
     const sidebarButton = screen.getByRole('button', { name: /Sidebar notification button/i });
 

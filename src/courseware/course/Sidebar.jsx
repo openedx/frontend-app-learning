@@ -5,49 +5,43 @@ import { Icon } from '@edx/paragon';
 import { ArrowBackIos, Close } from '@edx/paragon/icons';
 import './Sidebar.scss';
 import messages from './messages';
+import useWindowSize from '../../generic/tabs/useWindowSize';
 
 function Sidebar({
-  intl, sidebarVisible, toggleSidebar, isTabletWidth,
+  intl, toggleSidebar,
 }) {
+  const shouldDisplayFullScreen = useWindowSize().width < 992;
   return (
-    sidebarVisible ? (
-      <div className="sidebar-container ml-0 ml-lg-4">
-        {isTabletWidth
-          ? (
-            <div className="mobile-close-container" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.responsiveCloseSidebar)}>
-              <Icon src={ArrowBackIos} />
-              <span className="mobile-close">{intl.formatMessage(messages.responsiveCloseSidebar)}</span>
-            </div>
-          )
-          : null}
-        <div className="sidebar-header px-3">
-          <span>{intl.formatMessage(messages.notification)}</span>
-          {!isTabletWidth
-            ? <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeButton)} />
-            : null}
+    <div className="sidebar-container ml-0 ml-lg-4">
+      {shouldDisplayFullScreen ? (
+        <div className="mobile-close-container" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.responsiveCloseSidebar)}>
+          <Icon src={ArrowBackIos} />
+          <span className="mobile-close">{intl.formatMessage(messages.responsiveCloseSidebar)}</span>
         </div>
-        <div className="sidebar-divider" />
-        <div className="sidebar-content">
-          {/* JK: add conditional here */}
-          <p>You have no new notifications at this time.</p>
-          {/* expiration box to be inserted here */}
-        </div>
+      ) : null}
+      <div className="sidebar-header px-3">
+        <span>{intl.formatMessage(messages.notification)}</span>
+        {shouldDisplayFullScreen
+          ? null
+          : <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeButton)} />}
       </div>
-    ) : null
+      <div className="sidebar-divider" />
+      <div className="sidebar-content">
+        {/* JK: add conditional here */}
+        <p>You have no new notifications at this time.</p>
+        {/* expiration box to be inserted here */}
+      </div>
+    </div>
   );
 }
 
 Sidebar.propTypes = {
   intl: intlShape.isRequired,
   toggleSidebar: PropTypes.func,
-  sidebarVisible: PropTypes.bool,
-  isTabletWidth: PropTypes.bool,
 };
 
 Sidebar.defaultProps = {
   toggleSidebar: null,
-  sidebarVisible: null,
-  isTabletWidth: null,
 };
 
 export default injectIntl(Sidebar);

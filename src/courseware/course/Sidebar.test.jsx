@@ -13,7 +13,7 @@ describe('Sidebar', () => {
     mockData = {
       sidebarVisible: false,
       toggleSidebar: () => {},
-      isResponsiveWidth: false,
+      shouldDisplayFullScreen: false,
     };
   });
 
@@ -28,13 +28,13 @@ describe('Sidebar', () => {
 
   it('renders sidebar and mobile close button at responsive width', async () => {
     const sidebarVisible = true;
-    const isResponsiveWidth = true;
+    const shouldDisplayFullScreen = true;
     const toggleSidebar = jest.fn();
     const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
     const testData = {
       ...mockData,
       sidebarVisible,
-      isResponsiveWidth,
+      shouldDisplayFullScreen,
       toggleSidebar,
     };
     render(<Sidebar {...testData} />, { store: testStore });
