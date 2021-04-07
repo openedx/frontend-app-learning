@@ -5,7 +5,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  initializeMockApp, logUnhandledRequests, render, screen, act,
+  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act,
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
@@ -45,6 +45,117 @@ describe('Progress Tab', () => {
     axiosMock.onGet(progressUrl).reply(200, defaultTabData);
 
     logUnhandledRequests(axiosMock);
+  });
+
+  describe('Course Grade', () => {
+    it('renders Course Grade', async () => {
+      await fetchAndRender();
+      expect(screen.getByText('Grades')).toBeInTheDocument();
+      expect(screen.getByText('This represents your weighted grade against the grade needed to pass this course.')).toBeInTheDocument();
+    });
+
+    it('renders correct copy for non-passing', async () => {
+      await fetchAndRender();
+      expect(screen.queryByRole('button', { name: 'Grade range tooltip' })).not.toBeInTheDocument();
+      expect(screen.getByText('A weighted grade of 75% is required to pass in this course')).toBeInTheDocument();
+    });
+
+    it('renders correct copy for passing with pass/fail grade range', async () => {
+      setTabData({
+        course_grade: {
+          is_passing: true,
+          letter_grade: 'Pass',
+          percent: 0.9,
+        },
+      });
+      await fetchAndRender();
+      expect(screen.queryByRole('button', { name: 'Grade range tooltip' })).not.toBeInTheDocument();
+      expect(screen.getByText('You’re currently passing this course')).toBeInTheDocument();
+    });
+
+    it('renders correct copy and tooltip for non-passing with letter grade range', async () => {
+      setTabData({
+        course_grade: {
+          is_passing: false,
+          letter_grade: null,
+          percent: 0,
+        },
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 1,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            A: 0.9,
+            B: 0.8,
+          },
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByRole('button', { name: 'Grade range tooltip' }));
+      expect(screen.getByText('A weighted grade of 80% is required to pass in this course')).toBeInTheDocument();
+    });
+
+    it('renders correct copy and tooltip for passing with letter grade range', async () => {
+      setTabData({
+        course_grade: {
+          is_passing: true,
+          letter_grade: 'B',
+          percent: 0.85,
+        },
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 1,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            A: 0.9,
+            B: 0.8,
+          },
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByRole('button', { name: 'Grade range tooltip' }));
+      expect(await screen.findByText('You’re currently passing this course with a grade of B (80-90%)')).toBeInTheDocument();
+    });
+
+    it('renders tooltip for grade range', async () => {
+      setTabData({
+        course_grade: {
+          percent: 0,
+          is_passing: false,
+        },
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 1,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            A: 0.9,
+            B: 0.8,
+          },
+        },
+      });
+      await fetchAndRender();
+      const tooltip = await screen.getByRole('button', { name: 'Grade range tooltip' });
+      fireEvent.click(tooltip);
+      expect(screen.getByText('Grade ranges for this course:'));
+      expect(screen.getByText('A: 90%-100%'));
+      expect(screen.getByText('B: 80%-90%'));
+      expect(screen.getByText('F: <80%'));
+    });
   });
 
   describe('Grade Summary', () => {

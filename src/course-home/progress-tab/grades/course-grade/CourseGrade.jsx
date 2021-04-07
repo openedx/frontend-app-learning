@@ -1,13 +1,52 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-function CourseGrade() {
+import { useModel } from '../../../../generic/model-store';
+
+import CourseGradeFooter from './CourseGradeFooter';
+import GradeBar from './GradeBar';
+
+import messages from '../messages';
+
+function CourseGrade({ intl }) {
+  const {
+    courseId,
+  } = useSelector(state => state.courseHome);
+
+  const {
+    gradingPolicy: {
+      gradeRange,
+    },
+  } = useModel('progress', courseId);
+
+  let passingGrade;
+  if (gradeRange.pass) {
+    passingGrade = gradeRange.pass * 100;
+  } else {
+    passingGrade = Object.entries(gradeRange).pop()[1] * 100;
+  }
+
+  passingGrade = Number(passingGrade.toFixed(0));
+
   return (
-    <section className="text-dark-700 my-4 rounded shadow-sm p-4">
-      {/* TODO: AA-721 */}
-      <h2>Grades</h2>
-      <p className="small">This represents your weighted grade against the grade needed to pass this course.</p>
+    <section className="text-dark-700 my-4 rounded shadow-sm">
+      <div className="row w-100 m-0 p-4">
+        <div className="col-12 col-sm-6 p-0 pr-sm-2">
+          <h2>{intl.formatMessage(messages.grades)}</h2>
+          <p className="small">
+            {intl.formatMessage(messages.courseGradeBody)}
+          </p>
+        </div>
+        <GradeBar passingGrade={passingGrade} />
+      </div>
+      <CourseGradeFooter passingGrade={passingGrade} />
     </section>
   );
 }
 
-export default CourseGrade;
+CourseGrade.propTypes = {
+  intl: intlShape.isRequired,
+};
+
+export default injectIntl(CourseGrade);

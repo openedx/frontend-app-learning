@@ -9,9 +9,37 @@ const messages = defineMessages({
     id: 'progress.footnotes.backToContent',
     defaultMessage: 'Back to content',
   },
+  courseGradeBody: {
+    id: 'progress.courseGrade.body',
+    defaultMessage: 'This represents your weighted grade against the grade needed to pass this course.',
+  },
+  courseGradeBarAltText: {
+    id: 'progress.courseGrade.gradeBar.altText',
+    defaultMessage: 'Your current grade is {currentGrade}%. A weighted grade of {passingGrade}% is required to pass in this course.',
+  },
+  courseGradeFooterGenericPassing: {
+    id: 'progress.courseGrade.footer.generic.passing',
+    defaultMessage: 'You’re currently passing this course',
+  },
+  courseGradeFooterNonPassing: {
+    id: 'progress.courseGrade.footer.nonPassing',
+    defaultMessage: 'A weighted grade of {passingGrade}% is required to pass in this course',
+  },
+  courseGradeFooterPassingWithGrade: {
+    id: 'progress.courseGrade.footer.passing',
+    defaultMessage: 'You’re currently passing this course with a grade of {letterGrade} ({minGrade}-{maxGrade}%)',
+  },
+  courseGradeRangeTooltip: {
+    id: 'progress.courseGrade.gradeRange.tooltip',
+    defaultMessage: 'Grade ranges for this course:',
+  },
   courseOutline: {
     id: 'progress.courseOutline',
     defaultMessage: 'Course Outline',
+  },
+  currentGradeLabel: {
+    id: 'progress.courseGrade.label.currentGrade',
+    defaultMessage: 'Your current grade',
   },
   detailedGrades: {
     id: 'progress.detailedGrades',
@@ -25,15 +53,31 @@ const messages = defineMessages({
     id: 'progress.footnotes.title',
     defaultMessage: 'Grade summary footnotes',
   },
+  grades: {
+    id: 'progress.courseGrade.grades',
+    defaultMessage: 'Grades',
+  },
+  gradeRangeTooltipAlt: {
+    id: 'progress.courseGrade.gradeRange.Tooltip',
+    defaultMessage: 'Grade range tooltip',
+  },
   gradeSummary: {
     id: 'progress.gradeSummary',
     defaultMessage: 'Grade summary',
   },
-  gradeSummaryTooltip: {
-    id: 'progress.gradeSummary.tooltip',
+  gradeSummaryTooltipAlt: {
+    id: 'progress.gradeSummary.tooltip.alt',
+    defaultMessage: 'Grade summary tooltip',
+  },
+  gradeSummaryTooltipBody: {
+    id: 'progress.gradeSummary.tooltip.body',
     defaultMessage: "Your course assignment's weight is determined by your instructor. "
       + 'By multiplying your score by the weight for that assignment type, your weighted grade is calculated. '
       + "Your weighted grade is what's used to determine if you pass the course.",
+  },
+  passingGradeLabel: {
+    id: 'progress.courseGrade.label.passingGrade',
+    defaultMessage: 'Passing grade',
   },
   score: {
     id: 'progress.score',

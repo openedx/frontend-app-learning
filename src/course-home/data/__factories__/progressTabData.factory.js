@@ -11,6 +11,7 @@ Factory.define('progressTabData')
       locked_count: 0,
     },
     course_grade: {
+      letter_grade: null,
       percent: 0,
       is_passing: false,
     },
