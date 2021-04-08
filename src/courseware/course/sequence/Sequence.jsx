@@ -128,81 +128,85 @@ function Sequence({
   because we expect CoursewareContainer to be performing a redirect to the legacy experience while
   we're waiting. That redirect may take a few seconds, so we show the spinner in the meantime.
   */
-  if (sequenceStatus === 'loaded' && sequence.isTimeLimited) {
-    return (
-      <PageLoading
-        srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
-      />
-    );
-  }
+  // if (sequenceStatus === 'loaded' && sequence.isTimeLimited) {
+  //   return (
+  //     <PageLoading
+  //       srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+  //     />
+  //   );
+  // }
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
   const goToCourseExitPage = () => {
     history.push(`/course/${courseId}/course-end`);
   };
 
+  const defaultContent = (
+    <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
+      <div className="sequence" style={{ width: '100%' }}>
+        <SequenceNavigation
+          sequenceId={sequenceId}
+          unitId={unitId}
+          className="mb-4"
+
+          /** [MM-P2P] Experiment */
+          mmp2p={mmp2p}
+
+          nextSequenceHandler={() => {
+            logEvent('edx.ui.lms.sequence.next_selected', 'top');
+            handleNext();
+          }}
+          onNavigate={(destinationUnitId) => {
+            logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+            handleNavigate(destinationUnitId);
+          }}
+          previousSequenceHandler={() => {
+            logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+            handlePrevious();
+          }}
+          goToCourseExitPage={() => goToCourseExitPage()}
+        />
+        <div className="unit-container flex-grow-1">
+          <SequenceContent
+            courseId={courseId}
+            gated={gated}
+            sequenceId={sequenceId}
+            unitId={unitId}
+            unitLoadedHandler={handleUnitLoaded}
+            /** [MM-P2P] Experiment */
+            mmp2p={mmp2p}
+          />
+          {unitHasLoaded && (
+          <UnitNavigation
+            sequenceId={sequenceId}
+            unitId={unitId}
+            onClickPrevious={() => {
+              logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
+              handlePrevious();
+            }}
+            onClickNext={() => {
+              logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+              handleNext();
+            }}
+            goToCourseExitPage={() => goToCourseExitPage()}
+          />
+          )}
+        </div>
+      </div>
+
+      {/** [MM-P2P] Experiment */}
+      {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
+        isMobile()
+          ? <MMP2PFlyoverMobile options={mmp2p} />
+          : <MMP2PFlyover options={mmp2p} />
+      )}
+    </div>
+  );
+
   if (sequenceStatus === 'loaded') {
     return (
       <div>
-        <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
-          <div className="sequence" style={{ width: '100%' }}>
-            <SequenceNavigation
-              sequenceId={sequenceId}
-              unitId={unitId}
-              className="mb-4"
-
-              /** [MM-P2P] Experiment */
-              mmp2p={mmp2p}
-
-              nextSequenceHandler={() => {
-                logEvent('edx.ui.lms.sequence.next_selected', 'top');
-                handleNext();
-              }}
-              onNavigate={(destinationUnitId) => {
-                logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-                handleNavigate(destinationUnitId);
-              }}
-              previousSequenceHandler={() => {
-                logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-                handlePrevious();
-              }}
-              goToCourseExitPage={() => goToCourseExitPage()}
-            />
-            <div className="unit-container flex-grow-1">
-              <SequenceContent
-                courseId={courseId}
-                gated={gated}
-                sequenceId={sequenceId}
-                unitId={unitId}
-                unitLoadedHandler={handleUnitLoaded}
-                /** [MM-P2P] Experiment */
-                mmp2p={mmp2p}
-              />
-              {unitHasLoaded && (
-              <UnitNavigation
-                sequenceId={sequenceId}
-                unitId={unitId}
-                onClickPrevious={() => {
-                  logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-                  handlePrevious();
-                }}
-                onClickNext={() => {
-                  logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-                  handleNext();
-                }}
-                goToCourseExitPage={() => goToCourseExitPage()}
-              />
-              )}
-            </div>
-          </div>
-
-          {/** [MM-P2P] Experiment */}
-          {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
-            isMobile()
-              ? <MMP2PFlyoverMobile options={mmp2p} />
-              : <MMP2PFlyover options={mmp2p} />
-          )}
-        </div>
+        {defaultContent}
         <CourseLicense license={course.license || undefined} />
       </div>
     );

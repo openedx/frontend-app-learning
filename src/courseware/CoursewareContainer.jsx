@@ -62,7 +62,9 @@ const checkUnitToSequenceUnitRedirect = memoize((courseStatus, courseId, sequenc
 const checkSpecialExamRedirect = memoize((sequenceStatus, sequence) => {
   if (sequenceStatus === 'loaded') {
     if (sequence.isTimeLimited && sequence.legacyWebUrl !== undefined) {
-      global.location.assign(sequence.legacyWebUrl);
+      // global.location.assign(sequence.legacyWebUrl);
+      // eslint-disable-next-line no-console
+      console.log('Exam redirect');
     }
   }
 });
