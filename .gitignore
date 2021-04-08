@@ -19,3 +19,4 @@ temp/babel-plugin-react-intl
 
 # Local package dependencies
 module.config.js
+packages
