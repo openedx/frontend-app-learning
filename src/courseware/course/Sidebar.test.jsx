@@ -4,6 +4,9 @@ import {
   render, initializeTestStore, screen, fireEvent, waitFor,
 } from '../../setupTest';
 import Sidebar from './Sidebar';
+import useWindowSize from '../../generic/tabs/useWindowSize';
+
+jest.mock('../../generic/tabs/useWindowSize');
 
 describe('Sidebar', () => {
   let mockData;
@@ -11,33 +14,40 @@ describe('Sidebar', () => {
 
   beforeEach(async () => {
     mockData = {
-      sidebarVisible: false,
       toggleSidebar: () => {},
-      shouldDisplayFullScreen: false,
     };
+  });
+
+  beforeAll(async () => {
+    await initializeTestStore({ courseMetadata, excludeFetchCourse: true, excludeFetchSequence: true });
   });
 
   it('renders sidebar', async () => {
-    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
-    const testData = { ...mockData, sidebarVisible: true };
-    const { container } = render(<Sidebar {...testData} />, { store: testStore });
+    useWindowSize.mockReturnValue({ width: 1200, height: 422 });
+    const { container } = render(<Sidebar {...mockData} />);
 
     expect(container).toBeInTheDocument();
     expect(container).toHaveTextContent('Notifications');
+    expect(container).not.toHaveTextContent('Back to course');
   });
 
-  it('renders sidebar and mobile close button at responsive width', async () => {
-    const sidebarVisible = true;
-    const shouldDisplayFullScreen = true;
+  it('renders no notifications message', async () => {
+    // JK: add conditional if "no notifications"/upgradeable
+    const testData = { ...mockData };
+    const { container } = render(<Sidebar {...testData} />);
+
+    expect(container).toBeInTheDocument();
+    expect(container).toHaveTextContent('You have no new notifications at this time.');
+  });
+
+  it('renders sidebar with full screen "Back to course" at response width', async () => {
+    useWindowSize.mockReturnValue({ width: 991, height: 422 });
     const toggleSidebar = jest.fn();
-    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
     const testData = {
       ...mockData,
-      sidebarVisible,
-      shouldDisplayFullScreen,
       toggleSidebar,
     };
-    render(<Sidebar {...testData} />, { store: testStore });
+    render(<Sidebar {...testData} />);
 
     const responsiveCloseButton = screen.getByRole('button', { name: 'Back to course' });
     await waitFor(() => expect(responsiveCloseButton).toBeInTheDocument());
