@@ -11,6 +11,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import { history } from '@edx/frontend-platform';
 
+import { SequenceExamWrapper } from '../../../../packages/frontend-lib-special-exams/src/components/Unit';
 import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
 import { useModel } from '../../../generic/model-store';
@@ -206,7 +207,9 @@ function Sequence({
   if (sequenceStatus === 'loaded') {
     return (
       <div>
-        {defaultContent}
+        <SequenceExamWrapper sequence={sequence}>
+          {defaultContent}
+        </SequenceExamWrapper>
         <CourseLicense license={course.license || undefined} />
       </div>
     );
