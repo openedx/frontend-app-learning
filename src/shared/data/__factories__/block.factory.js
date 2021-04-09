@@ -47,17 +47,6 @@ Factory.define('block')
     },
   )
   .attr(
-    'lms_web_url',
-    ['legacy_web_url', 'host', 'courseId', 'id'],
-    (url, host, courseId, id) => {
-      if (url) {
-        return url;
-      }
-
-      return `${host}/courses/${courseId}/jump_to/${id}`;
-    },
-  )
-  .attr(
     'legacy_web_url',
     ['legacy_web_url', 'host', 'courseId', 'id'],
     (url, host, courseId, id) => {
