@@ -278,7 +278,7 @@
   "learn.course.tabs.navigation.overflow.menu": "المزيد...",
   "learning.offer.screenReaderPrices": "السعر الأصلي: {originalPrice}, سعر الخصم: {discountedPrice}",
   "learning.upgradeButton.screenReaderInlinePrices": "السعر الأصلي: {originalPrice}",
-  "learning.upgradeButton.buttonText": "قم بالترقية ({pricing})",
+  "learning.upgradeButton.buttonText": "Upgrade for {pricing}",
   "masquerade-widget.userName.error.generic": "حدث خطأ؛ يرجى المحاولة مرة أخرى.",
   "masquerade-widget.userName.input.placeholder": "اسم المستخدم أو البريد الإلكتروني",
   "masquerade-widget.userName.input.label": "عرف كهذا المستخدم",
