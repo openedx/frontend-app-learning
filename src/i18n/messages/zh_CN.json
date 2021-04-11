@@ -278,7 +278,7 @@
   "learn.course.tabs.navigation.overflow.menu": "More...",
   "learning.offer.screenReaderPrices": "Original price: {originalPrice}, discount price: {discountedPrice}",
   "learning.upgradeButton.screenReaderInlinePrices": "Original price: {originalPrice}",
-  "learning.upgradeButton.buttonText": "Upgrade ({pricing})",
+  "learning.upgradeButton.buttonText": "Upgrade for {pricing}",
   "masquerade-widget.userName.error.generic": "An error has occurred; please try again.",
   "masquerade-widget.userName.input.placeholder": "Username or email",
   "masquerade-widget.userName.input.label": "Masquerade as this user",
