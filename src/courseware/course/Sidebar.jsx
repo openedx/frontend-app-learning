@@ -27,9 +27,8 @@ function Sidebar({
       </div>
       <div className="sidebar-divider" />
       <div className="sidebar-content">
-        {/* JK: add conditional here */}
+        {/* REV-2130 TODO: add conditional here to display expiration box or display below message */}
         <p>You have no new notifications at this time.</p>
-        {/* expiration box to be inserted here */}
       </div>
     </div>
   );
