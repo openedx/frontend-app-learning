@@ -12,7 +12,6 @@ function SidebarNotificationButton({ intl, toggleSidebar, isSidebarVisible }) {
     <button
       className={classNames('sidebar-notification-btn', { active: isSidebarVisible() })}
       type="button"
-      data-testid="SidebarButton"
       onClick={() => { toggleSidebar(); }}
       alt={intl.formatMessage(messages.notificationButton)}
     >

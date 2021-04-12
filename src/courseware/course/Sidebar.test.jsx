@@ -32,7 +32,7 @@ describe('Sidebar', () => {
   });
 
   it('renders no notifications message', async () => {
-    // JK: add conditional if "no notifications"/upgradeable
+    // REV-2130 TODO: add conditional if no expiration box/upgradeable
     const testData = { ...mockData };
     const { container } = render(<Sidebar {...testData} />);
 

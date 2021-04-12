@@ -39,6 +39,7 @@ function Sequence({
   toggleSidebar,
   sidebarVisible,
   isSidebarVisible,
+  isCookieSet,
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
@@ -176,11 +177,10 @@ function Sequence({
                 handlePrevious();
               }}
               goToCourseExitPage={() => goToCourseExitPage()}
-              toggleSidebar={toggleSidebar}
-              isSidebarVisible={isSidebarVisible}
+              isCookieSet={isCookieSet}
             />
 
-            {shouldDisplaySidebarButton ? (
+            {shouldDisplaySidebarButton && isCookieSet ? (
               <SidebarNotificationButton
                 toggleSidebar={toggleSidebar}
                 isSidebarVisible={isSidebarVisible}
@@ -252,6 +252,7 @@ Sequence.propTypes = {
   toggleSidebar: PropTypes.func,
   sidebarVisible: PropTypes.bool,
   isSidebarVisible: PropTypes.func,
+  isCookieSet: PropTypes.bool,
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
@@ -273,6 +274,7 @@ Sequence.defaultProps = {
   toggleSidebar: null,
   sidebarVisible: null,
   isSidebarVisible: null,
+  isCookieSet: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {

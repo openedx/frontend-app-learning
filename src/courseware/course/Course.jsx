@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
+import Cookies from 'js-cookie';
 import { getConfig } from '@edx/frontend-platform';
 
 import { AlertList } from '../../generic/user-messages';
@@ -60,6 +61,11 @@ function Course({
     courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
   );
 
+  // In order to see the Value Prop sidebar in prod, a cookie should be set in
+  // the browser console and refresh: document.cookie = 'value_prop_cookie=true';
+  // All of the cookie code temporary and should be removed in REV-2130.
+  const isCookieSet = Cookies.get('value_prop_cookie') === 'true';
+
   const shouldDisplaySidebarButton = useWindowSize().width > 576;
 
   const [sidebarVisible, setSidebar] = useState(false);
@@ -95,8 +101,8 @@ function Course({
           //* * [MM-P2P] Experiment */
           mmp2p={MMP2P}
         />
-        {/* JK: add conditional/cookie to hide/show Sidebar here */}
-        { shouldDisplaySidebarButton ? (
+
+        { shouldDisplaySidebarButton && isCookieSet ? (
           <SidebarNotificationButton
             toggleSidebar={toggleSidebar}
             isSidebarVisible={isSidebarVisible}
@@ -115,6 +121,7 @@ function Course({
         toggleSidebar={toggleSidebar}
         isSidebarVisible={isSidebarVisible}
         sidebarVisible={sidebarVisible}
+        isCookieSet={isCookieSet}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />

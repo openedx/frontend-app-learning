@@ -28,6 +28,7 @@ function SequenceNavigation({
   nextSequenceHandler,
   previousSequenceHandler,
   goToCourseExitPage,
+  isCookieSet,
   mmp2p,
 }) {
   const sequence = useModel('sequences', sequenceId);
@@ -40,7 +41,7 @@ function SequenceNavigation({
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
 
-  const shouldDisplaySidebarButton = useWindowSize().width > 576;
+  const shouldDisplaySidebarButton = useWindowSize().width < 576 && isCookieSet;
 
   const renderUnitButtons = () => {
     if (isLocked) {
@@ -70,17 +71,17 @@ function SequenceNavigation({
     const disabled = isLastUnit && !exitActive;
     return (
       <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled}>
-        {shouldDisplaySidebarButton ? buttonText : null}
+        {shouldDisplaySidebarButton ? null : buttonText}
         <FontAwesomeIcon icon={faChevronRight} className="mx-3 mr-sm-0 ml-sm-2" size="sm" />
       </Button>
     );
   };
 
   return sequenceStatus === LOADED && (
-    <nav className={classNames('sequence-navigation', className, { 'mr-4': !shouldDisplaySidebarButton })}>
+    <nav className={classNames('sequence-navigation', className, { 'mr-4': !shouldDisplaySidebarButton && isCookieSet })}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mx-3 ml-sm-0 mr-sm-2" size="sm" />
-        {shouldDisplaySidebarButton ? intl.formatMessage(messages.previousButton) : null}
+        {shouldDisplaySidebarButton ? null : intl.formatMessage(messages.previousButton)}
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
@@ -100,6 +101,7 @@ SequenceNavigation.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   goToCourseExitPage: PropTypes.func.isRequired,
+  isCookieSet: PropTypes.bool,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({
@@ -111,6 +113,7 @@ SequenceNavigation.propTypes = {
 SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
+  isCookieSet: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {

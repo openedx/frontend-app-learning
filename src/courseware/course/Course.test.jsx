@@ -1,5 +1,6 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import Cookies from 'js-cookie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   loadUnit, render, screen, waitFor, getByRole, initializeTestStore, fireEvent,
@@ -90,6 +91,11 @@ describe('Course', () => {
     const toggleSidebar = jest.fn();
     const isSidebarVisible = jest.fn();
 
+    const cookieName = 'value_prop_cookie';
+    Cookies.set = jest.fn();
+    Cookies.get = jest.fn().mockImplementation(() => cookieName);
+    const getSpy = jest.spyOn(Cookies, 'get').mockReturnValueOnce('true');
+
     const courseMetadata = Factory.build('courseMetadata');
     const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
     const testData = {
@@ -101,10 +107,8 @@ describe('Course', () => {
 
     const sidebarButton = screen.getByRole('button', { name: /Sidebar notification button/i });
 
-    fireEvent.click(sidebarButton);
-    expect(sidebarButton)
-      .toBeInTheDocument()
-      .toHaveClass('active');
+    expect(getSpy).toBeCalledWith(cookieName);
+    expect(sidebarButton).toBeInTheDocument();
   });
 
   it('displays offer and expiration alert', async () => {
