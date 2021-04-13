@@ -31,15 +31,15 @@ function DetailedGrades({ intl }) {
   );
 
   return (
-    <section className="text-dark-700 mb-4">
+    <section className="text-dark-700">
       <h3 className="h4 mb-3">{intl.formatMessage(messages.detailedGrades)}</h3>
       {hasSectionScores && (
         <DetailedGradesTable sectionScores={sectionScores} />
       )}
       {!hasSectionScores && (
-        <p className="small">You currently have no graded problem scores.</p>
+        <p className="small">{intl.formatMessage(messages.detailedGradesEmpty)}</p>
       )}
-      <p className="x-small">
+      <p className="x-small m-0">
         <FormattedMessage
           id="progress.ungradedAlert"
           defaultMessage="For progress on ungraded aspects of the course, view your {outlineLink}."

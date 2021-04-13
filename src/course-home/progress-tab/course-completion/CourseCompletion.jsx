@@ -1,35 +1,29 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { useModel } from '../../../generic/model-store';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-function CourseCompletion() {
-  // TODO: AA-720
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+import CompletionDonutChart from './CompletionDonutChart';
+import messages from './messages';
 
-  const {
-    completionSummary: {
-      completeCount,
-      incompleteCount,
-      lockedCount,
-    },
-  } = useModel('progress', courseId);
-
-  const total = completeCount + incompleteCount + lockedCount;
-  const completePercentage = ((completeCount / total) * 100).toFixed(0);
-  const incompletePercentage = ((incompleteCount / total) * 100).toFixed(0);
-  const lockedPercentage = ((lockedCount / total) * 100).toFixed(0);
-
+function CourseCompletion({ intl }) {
   return (
     <section className="text-dark-700 mb-4 rounded shadow-sm p-4">
-      <h2>Course completion</h2>
-      <p className="small">This represents how much course content you have completed.</p>
-      Complete: {completePercentage}%
-      Incomplete: {incompletePercentage}%
-      Locked: {lockedPercentage}%
+      <div className="row w-100 m-0">
+        <div className="col-12 col-sm-6 col-md-7 p-0">
+          <h2>{intl.formatMessage(messages.courseCompletion)}</h2>
+          <p className="small">
+            {intl.formatMessage(messages.completionBody)}
+          </p>
+        </div>
+        <div className="col-12 col-sm-6 col-md-5 mt-sm-n3 p-0 text-center">
+          <CompletionDonutChart />
+        </div>
+      </div>
     </section>
   );
 }
 
-export default CourseCompletion;
+CourseCompletion.propTypes = {
+  intl: intlShape.isRequired,
+};
+
+export default injectIntl(CourseCompletion);
