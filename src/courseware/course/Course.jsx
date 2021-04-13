@@ -61,12 +61,12 @@ function Course({
     courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
   );
 
+  // REV-2130 TODO: temporary cookie code that should be removed.
   // In order to see the Value Prop sidebar in prod, a cookie should be set in
   // the browser console and refresh: document.cookie = 'value_prop_cookie=true';
-  // All of the cookie code temporary and should be removed in REV-2130.
   const isCookieSet = Cookies.get('value_prop_cookie') === 'true';
 
-  const shouldDisplaySidebarButton = useWindowSize().width > 576;
+  const shouldDisplaySidebarButton = useWindowSize().width >= 576;
 
   const [sidebarVisible, setSidebar] = useState(false);
   const isSidebarVisible = () => sidebarVisible && setSidebar;

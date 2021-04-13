@@ -13,7 +13,7 @@
 
     @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
         border: none;
-        margin: 0.3rem 1.25rem 0 1.25rem;
+        margin: 0.3rem 1.25rem 0 0.25rem;
         top: 0.1rem;
         right: -3rem;
     }
@@ -21,4 +21,12 @@
 
 .active {
     border-bottom: 3px solid $primary-700;
+}
+
+.icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 2.4rem;
+    height: 2rem;
 }
