@@ -78,7 +78,7 @@ function SequenceNavigation({
   };
 
   return sequenceStatus === LOADED && (
-    <nav className={classNames('sequence-navigation', className, { 'mr-4': !shouldDisplaySidebarButton && isCookieSet })}>
+    <nav className={classNames('sequence-navigation', className)} style={{ width: shouldDisplaySidebarButton ? '90%' : null }}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mx-3 ml-sm-0 mr-sm-2" size="sm" />
         {shouldDisplaySidebarButton ? null : intl.formatMessage(messages.previousButton)}

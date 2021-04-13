@@ -13,9 +13,10 @@ function SidebarNotificationButton({ intl, toggleSidebar, isSidebarVisible }) {
       className={classNames('sidebar-notification-btn', { active: isSidebarVisible() })}
       type="button"
       onClick={() => { toggleSidebar(); }}
-      alt={intl.formatMessage(messages.notificationButton)}
+      aria-label={intl.formatMessage(messages.openSidebarButton)}
     >
-      <div className="position-relative d-flex align-items-center" style={{ width: '2.4rem', height: '2rem' }}>
+      <div className="icon-container">
+        {/* REV-2130 TODO: add logic for status "active" if red dot should display */}
         <NotificationIcon status="active" notificationColor="bg-danger-500" />
       </div>
     </button>

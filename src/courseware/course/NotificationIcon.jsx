@@ -10,8 +10,10 @@ import messages from './messages';
 function NotificationIcon({ intl, status, notificationColor }) {
   return (
     <>
-      <Icon src={WatchOutline} className="m-0 m-auto" alt={intl.formatMessage(messages.notificationButton)} />
-      {status === 'active' ? <span className={classNames(notificationColor, 'rounded-circle p-1 position-absolute')} style={{ top: '0.3rem', right: '0.55rem' }} /> : null }
+      <Icon src={WatchOutline} className="m-0 m-auto" alt={intl.formatMessage(messages.openSidebarButton)} />
+      {status === 'active'
+        ? <span className={classNames(notificationColor, 'rounded-circle p-1 position-absolute')} style={{ top: '0.3rem', right: '0.55rem' }} />
+        : null}
     </>
   );
 }

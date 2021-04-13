@@ -12,7 +12,7 @@ function Sidebar({
 }) {
   const shouldDisplayFullScreen = useWindowSize().width < 992;
   return (
-    <div className="sidebar-container ml-0 ml-lg-4">
+    <section className="sidebar-container ml-0 ml-lg-4" aria-label={intl.formatMessage(messages.sidebarNotification)}>
       {shouldDisplayFullScreen ? (
         <div className="mobile-close-container" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.responsiveCloseSidebar)}>
           <Icon src={ArrowBackIos} />
@@ -20,17 +20,17 @@ function Sidebar({
         </div>
       ) : null}
       <div className="sidebar-header px-3">
-        <span>{intl.formatMessage(messages.notification)}</span>
+        <span>{intl.formatMessage(messages.notificationTitle)}</span>
         {shouldDisplayFullScreen
           ? null
-          : <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeButton)} />}
+          : <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeSidebarButton)} />}
       </div>
       <div className="sidebar-divider" />
       <div className="sidebar-content">
         {/* REV-2130 TODO: add conditional here to display expiration box or display below message */}
-        <p>You have no new notifications at this time.</p>
+        <p>{intl.formatMessage(messages.noNotificationsMessage)}</p>
       </div>
-    </div>
+    </section>
   );
 }
 
