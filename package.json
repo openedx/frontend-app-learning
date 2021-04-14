@@ -70,7 +70,7 @@
     "@testing-library/react": "10.3.0",
     "@testing-library/user-event": "12.0.17",
     "axios-mock-adapter": "1.18.2",
-    "codecov": "3.7.2",
+    "codecov": "3.8.1",
     "es-check": "5.1.4",
     "glob": "7.1.6",
     "husky": "3.1.0",
