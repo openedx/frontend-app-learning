@@ -16,7 +16,9 @@ function SidebarNotificationButton({ intl, toggleSidebar, isSidebarVisible }) {
       onClick={() => { toggleSidebar(); }}
       alt={intl.formatMessage(messages.notificationButton)}
     >
-      <NotificationIcon status="active" notificationColor="bg-danger-500" />
+      <div className="position-relative d-flex align-items-center" style={{ width: '2.4rem', height: '2rem' }}>
+        <NotificationIcon status="active" notificationColor="bg-danger-500" />
+      </div>
     </button>
   );
 }
