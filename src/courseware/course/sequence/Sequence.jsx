@@ -36,7 +36,6 @@ function Sequence({
   toggleSidebar,
   sidebarVisible,
   isSidebarVisible,
-  isTabletWidth,
   isMobileWidth,
   mmp2p,
 }) {
@@ -204,11 +203,12 @@ function Sequence({
               )}
             </div>
           </div>
-          <Sidebar
-            toggleSidebar={toggleSidebar}
-            sidebarVisible={sidebarVisible}
-            isTabletWidth={isTabletWidth}
-          />
+          {sidebarVisible ? (
+            <Sidebar
+              toggleSidebar={toggleSidebar}
+              sidebarVisible={sidebarVisible}
+            />
+          ) : null }
 
           {/** [MM-P2P] Experiment */}
           {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
@@ -241,7 +241,6 @@ Sequence.propTypes = {
   toggleSidebar: PropTypes.func,
   sidebarVisible: PropTypes.bool,
   isSidebarVisible: PropTypes.func,
-  isTabletWidth: PropTypes.bool,
   isMobileWidth: PropTypes.bool,
 
   /** [MM-P2P] Experiment */
@@ -264,7 +263,6 @@ Sequence.defaultProps = {
   toggleSidebar: null,
   sidebarVisible: null,
   isSidebarVisible: null,
-  isTabletWidth: null,
   isMobileWidth: null,
 
   /** [MM-P2P] Experiment */
