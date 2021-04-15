@@ -13,6 +13,7 @@ import { history } from '@edx/frontend-platform';
 
 import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
+import useWindowSize from '../../../generic/tabs/useWindowSize';
 import { useModel } from '../../../generic/model-store';
 
 import CourseLicense from '../course-license';
@@ -20,6 +21,7 @@ import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 import Sidebar from '../Sidebar';
+import SidebarNotificationButton from '../SidebarNotificationButton';
 
 /** [MM-P2P] Experiment */
 import { isMobile } from '../../../experiments/mm-p2p/utils';
@@ -42,6 +44,8 @@ function Sequence({
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const shouldDisplaySidebarButton = useWindowSize().width < 576;
+
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
     if (nextIndex < sequence.unitIds.length) {
@@ -174,6 +178,14 @@ function Sequence({
               toggleSidebar={toggleSidebar}
               isSidebarVisible={isSidebarVisible}
             />
+
+            {shouldDisplaySidebarButton ? (
+              <SidebarNotificationButton
+                toggleSidebar={toggleSidebar}
+                isSidebarVisible={isSidebarVisible}
+              />
+            ) : null}
+
             <div className="unit-container flex-grow-1">
               <SequenceContent
                 courseId={courseId}
