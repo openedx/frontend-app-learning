@@ -3,6 +3,7 @@ import React, {
   useEffect, useContext, useState,
 } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import {
   sendTrackEvent,
   sendTrackingLogEvent,
@@ -153,7 +154,7 @@ function Sequence({
     return (
       <div>
         <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
-          <div className="sequence" style={{ width: '100%' }}>
+          <div className={classNames('sequence', { 'position-relative': shouldDisplaySidebarButton })} style={{ width: '100%' }}>
             <SequenceNavigation
               sequenceId={sequenceId}
               unitId={unitId}
