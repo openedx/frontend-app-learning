@@ -27,6 +27,11 @@ describe('Progress Tab', () => {
   const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
   const defaultTabData = Factory.build('progressTabData');
 
+  function setMetadata(attributes, options) {
+    const courseMetadata = Factory.build('courseHomeMetadata', { id: courseId, ...attributes }, options);
+    axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+  }
+
   function setTabData(attributes, options) {
     const progressTabData = Factory.build('progressTabData', attributes, options);
     axiosMock.onGet(progressUrl).reply(200, progressTabData);
@@ -191,6 +196,155 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       expect(screen.getByText('Detailed grades')).toBeInTheDocument();
       expect(screen.getByText('You currently have no graded problem scores.')).toBeInTheDocument();
+    });
+  });
+
+  describe('Certificate Status', () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockImplementation(query => {
+        const matches = !!(query === 'screen and (min-width: 768px)' || query === 'screen and (min-width: 992px)');
+        return {
+          matches,
+          media: query,
+          onchange: null,
+          addListener: jest.fn(), // deprecated
+          removeListener: jest.fn(), // deprecated
+          addEventListener: jest.fn(),
+          removeEventListener: jest.fn(),
+          dispatchEvent: jest.fn(),
+        };
+      }),
+    });
+
+    describe('enrolled user', () => {
+      beforeEach(async () => {
+        setMetadata({ is_enrolled: true });
+      });
+
+      it('Displays text for nonPassing case when learner does not have a passing grade', async () => {
+        setTabData({
+          user_has_passing_grade: false,
+        });
+        await fetchAndRender();
+        expect(screen.getByText('In order to qualify for a certificate, you must have a passing grade.')).toBeInTheDocument();
+      });
+
+      it('Displays text for inProgress case when more content is scheduled and the learner does not have a passing grade', async () => {
+        setTabData({
+          user_has_passing_grade: false,
+          has_scheduled_content: true,
+        });
+        await fetchAndRender();
+        expect(screen.getByText('It looks like there is more content in this course that will be released in the future. Look out for email updates or check back on your course for when this content will be available.')).toBeInTheDocument();
+      });
+
+      it('Displays request certificate link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'requesting' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(screen.getByRole('button', { name: 'Request certificate' })).toBeInTheDocument();
+      });
+
+      it('Displays verify identity link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'unverified' },
+          user_has_passing_grade: true,
+          verification_data: { link: 'test' },
+        });
+        await fetchAndRender();
+        expect(screen.getByRole('link', { name: 'Verify ID' })).toBeInTheDocument();
+      });
+
+      it('Displays verification pending message', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'unverified' },
+          verification_data: { status: 'pending' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(screen.getByText('Your ID verification is pending and your certificate will be available once approved.')).toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: 'Verify ID' })).not.toBeInTheDocument();
+      });
+
+      it('Displays download link', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'downloadable',
+            download_url: 'fake.download.url',
+          },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(screen.getByRole('link', { name: 'Download my certificate' })).toBeInTheDocument();
+      });
+
+      it('Displays webview link', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'downloadable',
+            cert_web_view_url: '/certificates/cooluuidgoeshere',
+          },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(screen.getByRole('link', { name: 'View my certificate' })).toBeInTheDocument();
+      });
+
+      it('Displays certificate is earned but unavailable message', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'earned_but_not_available' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(screen.queryByText('Certificate status')).toBeInTheDocument();
+      });
+
+      it('Displays upgrade link when available', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'audit_passing' },
+          verified_mode: {
+            upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+          },
+        });
+        await fetchAndRender();
+        // Keep these text checks in sync with "audit only" test below, so it doesn't end up checking for text that is
+        // never actually there, when/if the text changes.
+        expect(screen.getByText('You are in an audit track and do not qualify for a certificate. In order to work towards a certificate, upgrade your course today.')).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'Upgrade now' })).toBeInTheDocument();
+      });
+
+      it('Displays nothing if audit only', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'audit_passing' },
+          verified_mode: null,
+        });
+        await fetchAndRender();
+        // Keep these queries in sync with "upgrade link" test above, so we don't end up checking for text that is
+        // never actually there, when/if the text changes.
+        expect(screen.queryByText('You are in an audit track and do not qualify for a certificate. In order to work towards a certificate, upgrade your course today.')).not.toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: 'Upgrade now' })).not.toBeInTheDocument();
+      });
+
+      it('Does not display the certificate component if it does not match any statuses', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'bogus_status',
+          },
+          user_has_passing_grade: true,
+        });
+        setMetadata({ is_enrolled: true });
+        await fetchAndRender();
+        expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+      });
+    });
+
+    it('Does not display the certificate component if the user is not enrolled', async () => {
+      setMetadata({ is_enrolled: false });
+      await fetchAndRender();
+      expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
     });
   });
 });
