@@ -13,7 +13,7 @@ import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
-import SidebarNotificationButton from '../../SidebarNotificationButton';
+import useWindowSize from '../../../../generic/tabs/useWindowSize';
 
 import messages from './messages';
 /** [MM-P2P] Experiment */
@@ -28,9 +28,6 @@ function SequenceNavigation({
   nextSequenceHandler,
   previousSequenceHandler,
   goToCourseExitPage,
-  toggleSidebar,
-  isSidebarVisible,
-  isMobileWidth,
   mmp2p,
 }) {
   const sequence = useModel('sequences', sequenceId);
@@ -42,6 +39,8 @@ function SequenceNavigation({
   const isLocked = sequenceStatus === LOADED ? (
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
+
+  const shouldDisplaySidebarButton = useWindowSize().width > 576;
 
   const renderUnitButtons = () => {
     if (isLocked) {
@@ -71,27 +70,20 @@ function SequenceNavigation({
     const disabled = isLastUnit && !exitActive;
     return (
       <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled}>
-        {!isMobileWidth ? buttonText : null}
+        {shouldDisplaySidebarButton ? buttonText : null}
         <FontAwesomeIcon icon={faChevronRight} className="mx-3 mr-sm-0 ml-sm-2" size="sm" />
       </Button>
     );
   };
 
   return sequenceStatus === LOADED && (
-    <nav className={classNames('sequence-navigation', className)}>
+    <nav className={classNames('sequence-navigation', className, { 'mr-4': !shouldDisplaySidebarButton })}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
         <FontAwesomeIcon icon={faChevronLeft} className="mx-3 ml-sm-0 mr-sm-2" size="sm" />
-        {!isMobileWidth ? intl.formatMessage(messages.previousButton) : null}
+        {shouldDisplaySidebarButton ? intl.formatMessage(messages.previousButton) : null}
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
-
-      {isMobileWidth ? (
-        <SidebarNotificationButton
-          toggleSidebar={toggleSidebar}
-          isSidebarVisible={isSidebarVisible}
-        />
-      ) : null}
 
       {/** [MM-P2P] Experiment */}
       { mmp2p.state.isEnabled && <MMP2PFlyoverTriggerMobile options={mmp2p} /> }
@@ -108,9 +100,6 @@ SequenceNavigation.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   goToCourseExitPage: PropTypes.func.isRequired,
-  toggleSidebar: PropTypes.func,
-  isSidebarVisible: PropTypes.func,
-  isMobileWidth: PropTypes.bool,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({
@@ -122,9 +111,6 @@ SequenceNavigation.propTypes = {
 SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
-  toggleSidebar: null,
-  isSidebarVisible: null,
-  isMobileWidth: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {
