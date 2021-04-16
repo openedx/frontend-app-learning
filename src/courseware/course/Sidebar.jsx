@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Icon } from '@edx/paragon';
 import { ArrowBackIos, Close } from '@edx/paragon/icons';
@@ -11,8 +12,11 @@ function Sidebar({
   intl, toggleSidebar,
 }) {
   const shouldDisplayFullScreen = useWindowSize().width < 992;
+  // REV-2130 TODO: temporary variable set to true, should be replaced with whether the course can be upgraded.
+  const shouldDisplayNoNotification = true;
+
   return (
-    <section className="sidebar-container ml-0 ml-lg-4" aria-label={intl.formatMessage(messages.sidebarNotification)}>
+    <section className={classNames('sidebar-container ml-0 ml-lg-4', { 'no-notification': shouldDisplayNoNotification && !shouldDisplayFullScreen })} aria-label={intl.formatMessage(messages.sidebarNotification)}>
       {shouldDisplayFullScreen ? (
         <div className="mobile-close-container" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.responsiveCloseSidebar)}>
           <Icon src={ArrowBackIos} />
@@ -27,8 +31,8 @@ function Sidebar({
       </div>
       <div className="sidebar-divider" />
       <div className="sidebar-content">
-        {/* REV-2130 TODO: add conditional here to display expiration box or display below message */}
-        <p>{intl.formatMessage(messages.noNotificationsMessage)}</p>
+        {/* REV-2130 TODO: replace null with upgrade expiration box */}
+        {shouldDisplayNoNotification ? <p>{intl.formatMessage(messages.noNotificationsMessage)}</p> : null}
       </div>
     </section>
   );

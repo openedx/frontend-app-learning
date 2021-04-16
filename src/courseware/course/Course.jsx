@@ -93,7 +93,7 @@ function Course({
           }}
         />
       )}
-      <div className="breadcrumb-container">
+      <div className="position-relative">
         <CourseBreadcrumbs
           courseId={courseId}
           sectionId={section ? section.id : null}

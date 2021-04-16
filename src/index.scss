@@ -94,14 +94,6 @@
   }
 }
 
-.breadcrumb-container {
-  position: relative;
-
-  @media (min-width: map-get($grid-breakpoints, 'sm')) {
-    max-width: 1440px;
-  }
-}
-
 .sequence-container {
   display: flex;
   flex-direction: column;
