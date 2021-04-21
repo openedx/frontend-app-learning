@@ -42,7 +42,7 @@ function CourseStartAlert({ payload }) {
                 day="numeric"
                 month="short"
                 year="numeric"
-                hour12={false}
+                hourCycle="h23"
                 timeZoneName="short"
                 value={startDate}
                 {...timezoneFormatArgs}
