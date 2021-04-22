@@ -7,6 +7,7 @@
 
 // TODO: Fix .container-fluid for mobile in paragon
 .container-fluid {
+  max-width: 1140px + 2 * $grid-gutter-width;
   @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
     padding-left: $grid-gutter-width/2;
     padding-right: $grid-gutter-width/2;
