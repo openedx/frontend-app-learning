@@ -96,7 +96,6 @@ function SequenceLink({
                       day="numeric"
                       month="short"
                       year="numeric"
-                      hourCycle="h23"
                       timeZoneName="short"
                       value={due}
                       {...timezoneFormatArgs}
