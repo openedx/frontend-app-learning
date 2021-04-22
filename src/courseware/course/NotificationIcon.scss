@@ -1,0 +1,15 @@
+.icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 2.4rem;
+    height: 2rem;
+}
+
+.notification-dot {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.55rem;
+    border-radius: 50% !important;
+    padding: 0.25rem !important;
+}
