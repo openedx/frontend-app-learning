@@ -37,7 +37,6 @@ function CourseEndAlert({ payload }) {
         day="numeric"
         month="short"
         year="numeric"
-        hourCycle="h23"
         timeZoneName="short"
         value={endDate}
         {...timezoneFormatArgs}
