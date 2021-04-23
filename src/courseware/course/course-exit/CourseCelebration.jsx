@@ -45,6 +45,7 @@ function CourseCelebration({ intl }) {
     certificateData,
     end,
     linkedinAddToProfileUrl,
+    marketingUrl,
     offer,
     org,
     relatedPrograms,
@@ -287,7 +288,8 @@ function CourseCelebration({ intl }) {
           {intl.formatMessage(messages.congratulationsHeader)}
         </div>
         <div className="col-12 p-0 font-weight-normal lead text-center">
-          {intl.formatMessage(messages.shareHeader)}
+          {intl.formatMessage(messages.completedCourseHeader)}
+          {marketingUrl && ` ${intl.formatMessage(messages.shareMessage)}`}
           <SocialIcons
             analyticsId="edx.ui.lms.course_exit.social_share.clicked"
             className="mt-2"

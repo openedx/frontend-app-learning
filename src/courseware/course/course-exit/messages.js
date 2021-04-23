@@ -35,6 +35,10 @@ const messages = defineMessages({
     defaultMessage: 'Sample certificate',
     description: 'Alt text used to describe an image of a certificate',
   },
+  completedCourseHeader: {
+    id: 'courseCelebration.completedCourseHeader',
+    defaultMessage: 'You have completed your course.',
+  },
   congratulationsHeader: {
     id: 'courseCelebration.congratulationsHeader',
     defaultMessage: 'Congratulations!',
@@ -127,9 +131,9 @@ const messages = defineMessages({
     defaultMessage: 'Search our catalog',
     description: 'First part of a sentence that continues afterward',
   },
-  shareHeader: {
-    id: 'courseCelebration.shareHeader',
-    defaultMessage: 'You have completed your course. Share your success on social media or email.',
+  shareMessage: {
+    id: 'courseCelebration.shareMessage',
+    defaultMessage: 'Share your success on social media or email.',
   },
   socialMessage: {
     id: 'courseExit.social.shareCompletionMessage',
