@@ -9,7 +9,7 @@ import { Button } from '@edx/paragon';
 import messages from '../messages';
 import { getProctoringInfoData } from '../../data/api';
 
-function ProctoringInfoPanel({ courseId, intl }) {
+function ProctoringInfoPanel({ courseId, username, intl }) {
   const [status, setStatus] = useState('');
   const [link, setLink] = useState('');
   const [releaseDate, setReleaseDate] = useState(null);
@@ -74,7 +74,7 @@ function ProctoringInfoPanel({ courseId, intl }) {
   }
 
   useEffect(() => {
-    getProctoringInfoData(courseId)
+    getProctoringInfoData(courseId, username)
       .then(
         response => {
           if (response) {
@@ -172,7 +172,12 @@ function ProctoringInfoPanel({ courseId, intl }) {
 
 ProctoringInfoPanel.propTypes = {
   courseId: PropTypes.string.isRequired,
+  username: PropTypes.string,
   intl: intlShape.isRequired,
+};
+
+ProctoringInfoPanel.defaultProps = {
+  username: null,
 };
 
 export default injectIntl(ProctoringInfoPanel);

@@ -17,6 +17,10 @@ const messages = defineMessages({
     id: 'progress.detailedGrades',
     defaultMessage: 'Detailed grades',
   },
+  detailedGradesEmpty: {
+    id: 'progress.detailedGrades.emptyTable',
+    defaultMessage: 'You currently have no graded problem scores.',
+  },
   footnotesTitle: {
     id: 'progress.footnotes.title',
     defaultMessage: 'Grade summary footnotes',

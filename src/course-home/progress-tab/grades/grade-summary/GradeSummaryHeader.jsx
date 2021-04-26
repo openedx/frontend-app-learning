@@ -11,7 +11,7 @@ function GradeSummaryHeader({ intl }) {
     <div className="row w-100 m-0 align-items-center">
       <h3 className="h4 mb-3 mr-2">{intl.formatMessage(messages.gradeSummary)}</h3>
       <OverlayTrigger
-        trigger={['hover', 'click']}
+        trigger="click"
         placement="top"
         overlay={(
           <Popover>
