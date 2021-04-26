@@ -204,48 +204,22 @@ export async function getSequenceMetadata(sequenceId) {
   return normalizeSequenceMetadata(data);
 }
 
-const getSequenceXModuleHandlerUrl = (courseId, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/xmodule_handler`;
+const getSequenceHandlerUrl = (courseId, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler`;
 
 export async function getBlockCompletion(courseId, sequenceId, usageKey) {
-  // Post data sent to this endpoint must be url encoded
-  // TODO: Remove the need for this to be the case.
-  // TODO: Ensure this usage of URLSearchParams is working in Internet Explorer
-  const urlEncoded = new URLSearchParams();
-  urlEncoded.append('usage_key', usageKey);
-  const requestConfig = {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  };
-
   const { data } = await getAuthenticatedHttpClient().post(
-    `${getSequenceXModuleHandlerUrl(courseId, sequenceId)}/get_completion`,
-    urlEncoded.toString(),
-    requestConfig,
+    `${getSequenceHandlerUrl(courseId, sequenceId)}/get_completion`,
+    { usage_key: usageKey },
   );
-
-  if (data.complete) {
-    return true;
-  }
-
-  return false;
+  return data.complete === true;
 }
 
 export async function postSequencePosition(courseId, sequenceId, activeUnitIndex) {
-  // Post data sent to this endpoint must be url encoded
-  // TODO: Remove the need for this to be the case.
-  // TODO: Ensure this usage of URLSearchParams is working in Internet Explorer
-  const urlEncoded = new URLSearchParams();
-  // Position is 1-indexed on the server and 0-indexed in this app. Adjust here.
-  urlEncoded.append('position', activeUnitIndex + 1);
-  const requestConfig = {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  };
-
   const { data } = await getAuthenticatedHttpClient().post(
-    `${getSequenceXModuleHandlerUrl(courseId, sequenceId)}/goto_position`,
-    urlEncoded.toString(),
-    requestConfig,
+    `${getSequenceHandlerUrl(courseId, sequenceId)}/goto_position`,
+    // Position is 1-indexed on the server and 0-indexed in this app. Adjust here.
+    { position: activeUnitIndex + 1 },
   );
-
   return data;
 }
 
