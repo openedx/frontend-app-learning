@@ -131,7 +131,9 @@ export async function getProgressTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
-    return camelCaseObject(data);
+    const camelCasedData = camelCaseObject(data);
+    camelCasedData.gradingPolicy.gradeRange = data.grading_policy.grade_range;
+    return camelCasedData;
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
