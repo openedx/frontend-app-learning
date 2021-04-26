@@ -18,5 +18,6 @@ temp/babel-plugin-react-intl
 /.vscode
 
 # Local package dependencies
+packages
 module.config.js
 packages
