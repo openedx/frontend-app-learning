@@ -13,7 +13,7 @@ import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
-import useWindowSize from '../../../../generic/tabs/useWindowSize';
+import useWindowSize, { responsiveBreakpoints } from '../../../../generic/tabs/useWindowSize';
 
 import messages from './messages';
 /** [MM-P2P] Experiment */
@@ -41,7 +41,7 @@ function SequenceNavigation({
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
 
-  const shouldDisplaySidebarButton = useWindowSize().width < 576 && isCookieSet;
+  const shouldDisplaySidebarButton = useWindowSize().width < responsiveBreakpoints.small.minWidth && isCookieSet;
 
   const renderUnitButtons = () => {
     if (isLocked) {

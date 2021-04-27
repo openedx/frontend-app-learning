@@ -18,7 +18,7 @@ import SidebarNotificationButton from './SidebarNotificationButton';
 
 import CourseSock from '../../generic/course-sock';
 import { useModel } from '../../generic/model-store';
-import useWindowSize from '../../generic/tabs/useWindowSize';
+import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 
 /** [MM-P2P] Experiment */
 import { initCoursewareMMP2P, MMP2PBlockModal } from '../../experiments/mm-p2p';
@@ -66,7 +66,7 @@ function Course({
   // the browser console and refresh: document.cookie = 'value_prop_cookie=true';
   const isCookieSet = Cookies.get('value_prop_cookie') === 'true';
 
-  const shouldDisplaySidebarButton = useWindowSize().width >= 576;
+  const shouldDisplaySidebarButton = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
 
   const [sidebarVisible, setSidebar] = useState(false);
   const isSidebarVisible = () => sidebarVisible && setSidebar;

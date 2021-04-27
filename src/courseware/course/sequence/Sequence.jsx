@@ -14,7 +14,7 @@ import { history } from '@edx/frontend-platform';
 
 import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
-import useWindowSize from '../../../generic/tabs/useWindowSize';
+import useWindowSize, { responsiveBreakpoints } from '../../../generic/tabs/useWindowSize';
 import { useModel } from '../../../generic/model-store';
 
 import CourseLicense from '../course-license';
@@ -46,7 +46,7 @@ function Sequence({
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
-  const shouldDisplaySidebarButton = useWindowSize().width < 576;
+  const shouldDisplaySidebarButton = useWindowSize().width < responsiveBreakpoints.small.minWidth;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;

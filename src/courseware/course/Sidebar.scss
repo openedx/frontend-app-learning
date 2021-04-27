@@ -9,14 +9,14 @@
     width: 20rem;
     vertical-align: top;
 
-    @media (max-width: map-get($grid-breakpoints, 'lg')) {
+    @media (max-width: -1 + map-get($grid-breakpoints, 'lg')) {
         position: fixed; 
         top: 0; 
         bottom: 0; 
         left: 0; 
         right: 0;
         width: 100%;
-        height: 100%;
+        height: 100% !important;
         background-color: white;
         margin: 0;
         border: none;

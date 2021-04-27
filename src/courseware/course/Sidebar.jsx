@@ -6,12 +6,13 @@ import { Icon } from '@edx/paragon';
 import { ArrowBackIos, Close } from '@edx/paragon/icons';
 import './Sidebar.scss';
 import messages from './messages';
-import useWindowSize from '../../generic/tabs/useWindowSize';
+import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 
 function Sidebar({
   intl, toggleSidebar,
 }) {
-  const shouldDisplayFullScreen = useWindowSize().width < 992;
+  const shouldDisplayFullScreen = useWindowSize().width < responsiveBreakpoints.large.minWidth;
+
   // REV-2130 TODO: temporary variable set to true, should be replaced with whether the course can be upgraded.
   const shouldDisplayNoNotification = true;
 
