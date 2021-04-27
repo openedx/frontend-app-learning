@@ -49,6 +49,14 @@ export default class CourseSock extends Component {
       location: 'sock',
       ...this.commonEventProperties,
     });
+    const onCourseHome = this.props.pageLocation === 'Home Page';
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      ...this.commonEventProperties,
+      linkCategory: 'green_upgrade',
+      linkName: onCourseHome ? 'course_home_sock' : 'in_course_sock',
+      linkType: 'button',
+      pageName: onCourseHome ? 'course_home' : 'in_course',
+    });
   }
 
   showToUser = () => {
