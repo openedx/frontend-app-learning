@@ -7,6 +7,7 @@ export {
 } from './thunks';
 export {
   getResumeBlock,
+  sendActivationEmail,
 } from './api';
 export {
   sequenceIdsSelector,
