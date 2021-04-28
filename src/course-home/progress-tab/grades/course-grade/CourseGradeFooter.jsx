@@ -55,37 +55,33 @@ function CourseGradeFooter({ intl, passingGrade }) {
     }
   }
 
-  const footerHtml = (
-    <>
-      <OnMobile>
-        <span className="h5">{footerText}</span>
-      </OnMobile>
-      <OnAtLeastTablet>
-        <span className="h4">{footerText}</span>
-      </OnAtLeastTablet>
-    </>
-  );
-
   return (
-    <div className={`row w-100 m-0 px-4 py-3 py-md-4 rounded-bottom ${isPassing ? 'bg-success-100' : 'bg-warning-100'}`}>
-      <div className="col-1 col-md-auto pl-0 pr-2 align-self-top">
+    <div className={`row w-100 m-0 px-4 py-3 py-md-4 align-items-baseline rounded-bottom ${isPassing ? 'bg-success-100' : 'bg-warning-100'}`}>
+      <div className="col-auto p-0 align-self-md-center">
         {isPassing && (
-          <Icon src={CheckCircle} className="text-success-300" />
+          <Icon src={CheckCircle} className="text-success-300 mt-n1 mr-2" />
         )}
         {!isPassing && (
-          <Icon src={WarningFilled} />
+          <Icon src={WarningFilled} className="mt-n1 mr-2" />
         )}
       </div>
-      <div className="col-11 p-0">
-        {!hasLetterGrades && footerHtml}
-        {hasLetterGrades && (
-          <div className="row w-100 m-0 flex-nowrap">
-            <div className="col-11 col-md-auto m-0 p-0">
-              {footerHtml}
-            </div>
-            <GradeRangeTooltip passingGrade={passingGrade} />
-          </div>
-        )}
+      <div className="col-11 col-md-auto p-0">
+        <OnMobile>
+          <span className="h5" style={{ verticalAlign: 'super' }}>
+            {footerText}
+            {hasLetterGrades && (
+              <GradeRangeTooltip iconButtonClassName="h4 ml-1" passingGrade={passingGrade} />
+            )}
+          </span>
+        </OnMobile>
+        <OnAtLeastTablet>
+          <span className="h4 m-0">
+            {footerText}
+            {hasLetterGrades && (
+              <GradeRangeTooltip iconButtonClassName="h3 ml-1" passingGrade={passingGrade} />
+            )}
+          </span>
+        </OnAtLeastTablet>
       </div>
     </div>
   );

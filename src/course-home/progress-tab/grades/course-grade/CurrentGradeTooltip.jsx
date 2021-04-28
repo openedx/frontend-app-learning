@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -8,7 +9,7 @@ import { useModel } from '../../../../generic/model-store';
 
 import messages from '../messages';
 
-function CurrentGradeTooltip({ intl }) {
+function CurrentGradeTooltip({ intl, tooltipClassName }) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -28,7 +29,7 @@ function CurrentGradeTooltip({ intl }) {
         show
         placement="top"
         overlay={(
-          <Popover id={`${isPassing ? 'passing' : 'non-passing'}-grade-tooltip`} aria-hidden="true">
+          <Popover id={`${isPassing ? 'passing' : 'non-passing'}-grade-tooltip`} aria-hidden="true" className={tooltipClassName}>
             <Popover.Content className={isPassing ? 'text-white' : 'text-dark-700'}>
               {currentGrade.toFixed(0)}%
             </Popover.Content>
@@ -53,8 +54,13 @@ function CurrentGradeTooltip({ intl }) {
   );
 }
 
+CurrentGradeTooltip.defaultProps = {
+  tooltipClassName: '',
+};
+
 CurrentGradeTooltip.propTypes = {
   intl: intlShape.isRequired,
+  tooltipClassName: PropTypes.string,
 };
 
 export default injectIntl(CurrentGradeTooltip);

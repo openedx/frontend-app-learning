@@ -29,6 +29,22 @@ const messages = defineMessages({
     id: 'progress.courseGrade.footer.passing',
     defaultMessage: 'You’re currently passing this course with a grade of {letterGrade} ({minGrade}-{maxGrade}%)',
   },
+  courseGradePreviewHeader: {
+    id: 'progress.courseGrade.preview.header',
+    defaultMessage: 'locked feature',
+  },
+  courseGradePreviewHeaderAriaHidden: {
+    id: 'progress.courseGrade.preview.header.ariaHidden',
+    defaultMessage: 'Preview of a ',
+  },
+  courseGradePreviewBody: {
+    id: 'progress.courseGrade.preview.body',
+    defaultMessage: 'Unlock to view grades and work towards a certificate',
+  },
+  courseGradePreviewUpgradeButton: {
+    id: 'progress.courseGrade.preview.button.upgrade',
+    defaultMessage: 'Upgrade now',
+  },
   courseGradeRangeTooltip: {
     id: 'progress.courseGrade.gradeRange.tooltip',
     defaultMessage: 'Grade ranges for this course:',

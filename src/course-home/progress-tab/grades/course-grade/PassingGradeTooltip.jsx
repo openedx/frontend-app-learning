@@ -6,14 +6,14 @@ import { OverlayTrigger, Popover } from '@edx/paragon';
 
 import messages from '../messages';
 
-function PassingGradeTooltip({ intl, passingGrade }) {
+function PassingGradeTooltip({ intl, passingGrade, tooltipClassName }) {
   return (
     <>
       <OverlayTrigger
         show
         placement="bottom"
         overlay={(
-          <Popover id="minimum-grade-tooltip" className="bg-primary-500" aria-hidden="true">
+          <Popover id="minimum-grade-tooltip" className={`bg-primary-500 ${tooltipClassName}`} aria-hidden="true">
             <Popover.Content className="text-white">
               {passingGrade}%
             </Popover.Content>
@@ -39,9 +39,14 @@ function PassingGradeTooltip({ intl, passingGrade }) {
   );
 }
 
+PassingGradeTooltip.defaultProps = {
+  tooltipClassName: '',
+};
+
 PassingGradeTooltip.propTypes = {
   intl: intlShape.isRequired,
   passingGrade: PropTypes.number.isRequired,
+  tooltipClassName: PropTypes.string,
 };
 
 export default injectIntl(PassingGradeTooltip);

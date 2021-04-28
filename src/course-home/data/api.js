@@ -138,7 +138,6 @@ export async function getProgressTabData(courseId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
-      return {};
     }
     throw error;
   }
