@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 
 import { getConfig } from '@edx/frontend-platform';
+import { useToggle } from '@edx/paragon';
 
 import { Header, CourseTabsNavigation } from '../course-header';
 import { useModel } from '../generic/model-store';
@@ -37,6 +38,10 @@ function LoadedTabPage({
   const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
+  const AA759ExperimentEnabled = celebrations && celebrations.streakDiscountExperimentEnabled;
+  const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(streakLengthToCelebrate);
+
+  const { verifiedMode } = useModel(metadataModel, courseId);
 
   return (
     <>
@@ -55,14 +60,15 @@ function LoadedTabPage({
           canViewLegacyCourseware={canViewLegacyCourseware}
         />
       )}
-      {streakLengthToCelebrate && (
-        <StreakModal
-          courseId={courseId}
-          metadataModel={metadataModel}
-          streakLengthToCelebrate={streakLengthToCelebrate}
-          open
-        />
-      )}
+      <StreakModal
+        courseId={courseId}
+        metadataModel={metadataModel}
+        streakLengthToCelebrate={streakLengthToCelebrate}
+        isStreakCelebrationOpen={isStreakCelebrationOpen}
+        closeStreakCelebration={closeStreakCelebration}
+        AA759ExperimentEnabled={AA759ExperimentEnabled}
+        verifiedMode={verifiedMode}
+      />
       <main id="main-content" className="d-flex flex-column flex-grow-1">
         <AlertList
           topic="outline"
