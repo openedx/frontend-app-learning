@@ -4,7 +4,7 @@ import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dep
 // This set of data may not be realistic, but it is intended to demonstrate many UI results.
 Factory.define('progressTabData')
   .attrs({
-    certificate_data: null,
+    certificate_data: {},
     completion_summary: {
       complete_count: 1,
       incomplete_count: 1,
