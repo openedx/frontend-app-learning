@@ -13,7 +13,7 @@ function NotificationIcon({ intl, status, notificationColor }) {
     <div className="icon-container">
       <Icon src={WatchOutline} className="m-0 m-auto" alt={intl.formatMessage(messages.openSidebarButton)} />
       {status === 'active'
-        ? <span className={classNames(notificationColor, 'notification-dot')} />
+        ? <span className={classNames(notificationColor, 'notification-dot')} data-testid="notification-dot" />
         : null}
     </div>
   );

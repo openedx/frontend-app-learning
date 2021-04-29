@@ -91,6 +91,7 @@ describe('Course', () => {
     const toggleSidebar = jest.fn();
     const isSidebarVisible = jest.fn();
 
+    // REV-2130 TODO: remove cookie related code once temporary value prop cookie code is removed.
     const cookieName = 'value_prop_cookie';
     Cookies.set = jest.fn();
     Cookies.get = jest.fn().mockImplementation(() => cookieName);

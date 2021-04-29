@@ -64,14 +64,14 @@ function Course({
   // REV-2130 TODO: temporary cookie code that should be removed.
   // In order to see the Value Prop sidebar in prod, a cookie should be set in
   // the browser console and refresh: document.cookie = 'value_prop_cookie=true';
-  const isCookieSet = Cookies.get('value_prop_cookie') === 'true';
+  const isValuePropCookieSet = Cookies.get('value_prop_cookie') === 'true';
 
   const shouldDisplaySidebarButton = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
 
   const [sidebarVisible, setSidebar] = useState(false);
   const isSidebarVisible = () => sidebarVisible && setSidebar;
   const toggleSidebar = () => {
-    if (!sidebarVisible) { setSidebar(true); } else { setSidebar(false); }
+    if (sidebarVisible) { setSidebar(false); } else { setSidebar(true); }
   };
 
   /** [MM-P2P] Experiment */
@@ -102,7 +102,7 @@ function Course({
           mmp2p={MMP2P}
         />
 
-        { shouldDisplaySidebarButton && isCookieSet ? (
+        { isValuePropCookieSet && shouldDisplaySidebarButton ? (
           <SidebarNotificationButton
             toggleSidebar={toggleSidebar}
             isSidebarVisible={isSidebarVisible}
@@ -121,7 +121,7 @@ function Course({
         toggleSidebar={toggleSidebar}
         isSidebarVisible={isSidebarVisible}
         sidebarVisible={sidebarVisible}
-        isCookieSet={isCookieSet}
+        isValuePropCookieSet={isValuePropCookieSet}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />

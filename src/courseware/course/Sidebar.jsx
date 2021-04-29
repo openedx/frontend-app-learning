@@ -13,7 +13,8 @@ function Sidebar({
 }) {
   const shouldDisplayFullScreen = useWindowSize().width < responsiveBreakpoints.large.minWidth;
 
-  // REV-2130 TODO: temporary variable set to true, should be replaced with whether the course can be upgraded.
+  // REV-2130 TODO: temporary variable set to true, should be replaced with
+  // whether the course can be upgraded (ie. shouldDisplayUpgradeNotification)
   const shouldDisplayNoNotification = true;
 
   return (
@@ -32,7 +33,7 @@ function Sidebar({
       </div>
       <div className="sidebar-divider" />
       <div className="sidebar-content">
-        {/* REV-2130 TODO: replace null with upgrade expiration box */}
+        {/* REV-2130 TODO: replace logic to display upgrade expiration box if condition is true */}
         {shouldDisplayNoNotification ? <p>{intl.formatMessage(messages.noNotificationsMessage)}</p> : null}
       </div>
     </section>
