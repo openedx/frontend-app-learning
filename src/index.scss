@@ -246,6 +246,7 @@
   }
 
   .previous-btn, .next-btn {
+    border: 1px solid $light-400 !important;
     color: $gray-700;
     display: inline-flex;
     justify-content: center;
@@ -362,6 +363,9 @@
 
 // Import component-specific sass files
 @import 'courseware/course/celebration/CelebrationModal.scss';
+@import 'courseware/course/Sidebar.scss';
+@import 'courseware/course/SidebarNotificationButton.scss';
+@import 'courseware/course/NotificationIcon.scss';
 @import 'shared/streak-celebration/StreakCelebrationModal.scss';
 @import 'courseware/course/content-tools/calculator/calculator.scss';
 @import 'courseware/course/content-tools/contentTools.scss';

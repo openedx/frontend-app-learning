@@ -3,6 +3,7 @@ import React, {
   useEffect, useContext, useState,
 } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import {
   sendTrackEvent,
   sendTrackingLogEvent,
@@ -13,12 +14,15 @@ import { history } from '@edx/frontend-platform';
 
 import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
+import useWindowSize, { responsiveBreakpoints } from '../../../generic/tabs/useWindowSize';
 import { useModel } from '../../../generic/model-store';
 
 import CourseLicense from '../course-license';
 import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+import Sidebar from '../Sidebar';
+import SidebarNotificationButton from '../SidebarNotificationButton';
 
 /** [MM-P2P] Experiment */
 import { isMobile } from '../../../experiments/mm-p2p/utils';
@@ -32,12 +36,18 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
+  toggleSidebar,
+  sidebarVisible,
+  isSidebarVisible,
+  isValuePropCookieSet,
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const shouldDisplaySidebarButton = useWindowSize().width < responsiveBreakpoints.small.minWidth;
+
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
     if (nextIndex < sequence.unitIds.length) {
@@ -145,7 +155,7 @@ function Sequence({
     return (
       <div>
         <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
-          <div className="sequence" style={{ width: '100%' }}>
+          <div className={classNames('sequence', { 'position-relative': shouldDisplaySidebarButton })} style={{ width: '100%' }}>
             <SequenceNavigation
               sequenceId={sequenceId}
               unitId={unitId}
@@ -167,7 +177,16 @@ function Sequence({
                 handlePrevious();
               }}
               goToCourseExitPage={() => goToCourseExitPage()}
+              isValuePropCookieSet={isValuePropCookieSet}
             />
+
+            {isValuePropCookieSet && shouldDisplaySidebarButton ? (
+              <SidebarNotificationButton
+                toggleSidebar={toggleSidebar}
+                isSidebarVisible={isSidebarVisible}
+              />
+            ) : null}
+
             <div className="unit-container flex-grow-1">
               <SequenceContent
                 courseId={courseId}
@@ -195,6 +214,12 @@ function Sequence({
               )}
             </div>
           </div>
+          {sidebarVisible ? (
+            <Sidebar
+              toggleSidebar={toggleSidebar}
+              sidebarVisible={sidebarVisible}
+            />
+          ) : null }
 
           {/** [MM-P2P] Experiment */}
           {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
@@ -224,6 +249,10 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
+  toggleSidebar: PropTypes.func,
+  sidebarVisible: PropTypes.bool,
+  isSidebarVisible: PropTypes.func,
+  isValuePropCookieSet: PropTypes.bool,
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
@@ -242,6 +271,10 @@ Sequence.propTypes = {
 Sequence.defaultProps = {
   sequenceId: null,
   unitId: null,
+  toggleSidebar: null,
+  sidebarVisible: null,
+  isSidebarVisible: null,
+  isValuePropCookieSet: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {

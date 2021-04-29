@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
+import Cookies from 'js-cookie';
 import { getConfig } from '@edx/frontend-platform';
 
 import { AlertList } from '../../generic/user-messages';
@@ -13,8 +14,11 @@ import Sequence from './sequence';
 import { CelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
 import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
+import SidebarNotificationButton from './SidebarNotificationButton';
+
 import CourseSock from '../../generic/course-sock';
 import { useModel } from '../../generic/model-store';
+import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 
 /** [MM-P2P] Experiment */
 import { initCoursewareMMP2P, MMP2PBlockModal } from '../../experiments/mm-p2p';
@@ -57,6 +61,19 @@ function Course({
     courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
   );
 
+  // REV-2130 TODO: temporary cookie code that should be removed.
+  // In order to see the Value Prop sidebar in prod, a cookie should be set in
+  // the browser console and refresh: document.cookie = 'value_prop_cookie=true';
+  const isValuePropCookieSet = Cookies.get('value_prop_cookie') === 'true';
+
+  const shouldDisplaySidebarButton = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
+
+  const [sidebarVisible, setSidebar] = useState(false);
+  const isSidebarVisible = () => sidebarVisible && setSidebar;
+  const toggleSidebar = () => {
+    if (sidebarVisible) { setSidebar(false); } else { setSidebar(true); }
+  };
+
   /** [MM-P2P] Experiment */
   const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
 
@@ -76,13 +93,23 @@ function Course({
           }}
         />
       )}
-      <CourseBreadcrumbs
-        courseId={courseId}
-        sectionId={section ? section.id : null}
-        sequenceId={sequenceId}
-        //* * [MM-P2P] Experiment */
-        mmp2p={MMP2P}
-      />
+      <div className="position-relative">
+        <CourseBreadcrumbs
+          courseId={courseId}
+          sectionId={section ? section.id : null}
+          sequenceId={sequenceId}
+          //* * [MM-P2P] Experiment */
+          mmp2p={MMP2P}
+        />
+
+        { isValuePropCookieSet && shouldDisplaySidebarButton ? (
+          <SidebarNotificationButton
+            toggleSidebar={toggleSidebar}
+            isSidebarVisible={isSidebarVisible}
+          />
+        ) : null}
+      </div>
+
       <AlertList topic="sequence" />
       <Sequence
         unitId={unitId}
@@ -91,6 +118,10 @@ function Course({
         unitNavigationHandler={unitNavigationHandler}
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
+        toggleSidebar={toggleSidebar}
+        isSidebarVisible={isSidebarVisible}
+        sidebarVisible={sidebarVisible}
+        isValuePropCookieSet={isValuePropCookieSet}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />
