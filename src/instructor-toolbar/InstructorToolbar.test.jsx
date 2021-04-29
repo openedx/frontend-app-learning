@@ -25,6 +25,7 @@ describe('Instructor Toolbar', () => {
     mockData = {
       courseId: courseware.courseId,
       unitId: Object.values(models.units)[0].id,
+      canViewLegacyCourseware: true,
     };
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
@@ -53,7 +54,7 @@ describe('Instructor Toolbar', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Unable to get masquerade options');
   });
 
-  it('displays links to view course in different services', () => {
+  it('displays links to view course in available services', () => {
     const config = { ...originalConfig };
     config.INSIGHTS_BASE_URL = 'http://localhost:18100';
     getConfig.mockImplementation(() => config);
@@ -61,6 +62,32 @@ describe('Instructor Toolbar', () => {
 
     const linksContainer = screen.getByText('View course in:').parentElement;
     ['Legacy experience', 'Studio', 'Insights'].forEach(service => {
+      expect(getByText(linksContainer, service).getAttribute('href')).toMatch(/http.*/);
+    });
+  });
+
+  it('displays links to view course in available services - false legacy courseware flag', () => {
+    const config = { ...originalConfig };
+    config.INSIGHTS_BASE_URL = 'http://localhost:18100';
+    getConfig.mockImplementation(() => config);
+    mockData.canViewLegacyCourseware = false;
+    render(<InstructorToolbar {...mockData} />);
+
+    const linksContainer = screen.getByText('View course in:').parentElement;
+    ['Studio', 'Insights'].forEach(service => {
+      expect(getByText(linksContainer, service).getAttribute('href')).toMatch(/http.*/);
+    });
+  });
+
+  it('displays links to view course in available services - empty unit', () => {
+    const config = { ...originalConfig };
+    config.INSIGHTS_BASE_URL = 'http://localhost:18100';
+    getConfig.mockImplementation(() => config);
+    mockData.unitId = undefined;
+    render(<InstructorToolbar {...mockData} />);
+
+    const linksContainer = screen.getByText('View course in:').parentElement;
+    ['Studio', 'Insights'].forEach(service => {
       expect(getByText(linksContainer, service).getAttribute('href')).toMatch(/http.*/);
     });
   });
