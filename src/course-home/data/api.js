@@ -160,11 +160,30 @@ export async function getProctoringInfoData(courseId, username) {
   }
 }
 
+export function getTimeOffsetMillis(headerDate, requestTime, responseTime) {
+  // Time offset computation should move down into the HttpClient wrapper to maintain a global time correction reference
+  // Requires 'Access-Control-Expose-Headers: Date' on the server response per https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#access-control-expose-headers
+
+  let timeOffsetMillis = 0;
+  if (headerDate !== undefined) {
+    const headerTime = Date.parse(headerDate);
+    const roundTripMillis = requestTime - responseTime;
+    const localTime = responseTime - (roundTripMillis / 2); // Roughly compensate for transit time
+    timeOffsetMillis = headerTime - localTime;
+  }
+
+  return timeOffsetMillis;
+}
+
 export async function getOutlineTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
   let { tabData } = {};
+  let requestTime = Date.now();
+  let responseTime = requestTime;
   try {
+    requestTime = Date.now();
     tabData = await getAuthenticatedHttpClient().get(url);
+    responseTime = Date.now();
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
@@ -189,6 +208,7 @@ export async function getOutlineTabData(courseId) {
   const hasEnded = data.has_ended;
   const offer = camelCaseObject(data.offer);
   const resumeCourse = camelCaseObject(data.resume_course);
+  const timeOffsetMillis = getTimeOffsetMillis(tabData.headers.date, requestTime, responseTime);
   const verifiedMode = camelCaseObject(data.verified_mode);
   const welcomeMessageHtml = data.welcome_message_html;
 
@@ -205,9 +225,9 @@ export async function getOutlineTabData(courseId) {
     hasEnded,
     offer,
     resumeCourse,
+    timeOffsetMillis, // This should move to a global time correction reference
     verifiedMode,
     welcomeMessageHtml,
-    timeOffsetMillis: 0,
   };
 }
 
