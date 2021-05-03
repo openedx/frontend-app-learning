@@ -15,6 +15,9 @@ function GradeBar({ intl, passingGrade }) {
   } = useSelector(state => state.courseHome);
 
   const {
+    completionSummary: {
+      lockedCount,
+    },
     courseGrade: {
       isPassing,
       percent,
@@ -22,6 +25,9 @@ function GradeBar({ intl, passingGrade }) {
   } = useModel('progress', courseId);
 
   const currentGrade = percent * 100;
+
+  const isLocked = lockedCount > 0;
+  const lockedTooltipClassName = isLocked ? 'locked-overlay' : '';
 
   return (
     <div className="col-12 col-sm-6 pr-sm-0 align-self-center">
@@ -37,8 +43,8 @@ function GradeBar({ intl, passingGrade }) {
           {/* End divider */}
           <rect className="grade-bar__divider" x="99.7%" />
         </g>
-        <PassingGradeTooltip passingGrade={passingGrade} />
-        <CurrentGradeTooltip />
+        <PassingGradeTooltip passingGrade={passingGrade} tooltipClassName={lockedTooltipClassName} />
+        <CurrentGradeTooltip tooltipClassName={lockedTooltipClassName} />
       </svg>
     </div>
   );

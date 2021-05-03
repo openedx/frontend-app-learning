@@ -39,7 +39,7 @@
     "@edx/frontend-component-footer": "10.1.4",
     "@edx/frontend-enterprise": "4.2.3",
     "@edx/frontend-platform": "1.8.4",
-    "@edx/paragon": "14.6.0",
+    "@edx/paragon": "14.8.0",
     "@fortawesome/fontawesome-svg-core": "1.2.34",
     "@fortawesome/free-brands-svg-icons": "5.13.1",
     "@fortawesome/free-regular-svg-icons": "5.13.1",

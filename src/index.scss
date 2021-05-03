@@ -361,6 +361,19 @@
   }
 }
 
+.locked-overlay {
+  opacity: 30%;
+  pointer-events: none;
+
+  &.grades {
+    overflow: hidden;
+    max-height: 852px;
+    @media screen and (min-width: 992px) {
+      max-height: 920px;
+    }
+  }
+}
+
 // Import component-specific sass files
 @import 'courseware/course/celebration/CelebrationModal.scss';
 @import 'courseware/course/Sidebar.scss';

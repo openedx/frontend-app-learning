@@ -161,6 +161,22 @@ describe('Progress Tab', () => {
       expect(screen.getByText('B: 80%-90%'));
       expect(screen.getByText('F: <80%'));
     });
+
+    it('renders locked feature preview when user has locked content', async () => {
+      setTabData({
+        completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 1,
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByText('locked feature')).toBeInTheDocument();
+    });
+    it('does not render locked feature preview when user does not have locked content', async () => {
+      await fetchAndRender();
+      expect(screen.queryByText('locked feature')).not.toBeInTheDocument();
+    });
   });
 
   describe('Grade Summary', () => {
@@ -200,21 +216,23 @@ describe('Progress Tab', () => {
   });
 
   describe('Certificate Status', () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => {
-        const matches = !!(query === 'screen and (min-width: 768px)' || query === 'screen and (min-width: 992px)');
-        return {
-          matches,
-          media: query,
-          onchange: null,
-          addListener: jest.fn(), // deprecated
-          removeListener: jest.fn(), // deprecated
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
-          dispatchEvent: jest.fn(),
-        };
-      }),
+    beforeAll(() => {
+      Object.defineProperty(window, 'matchMedia', {
+        writable: true,
+        value: jest.fn().mockImplementation(query => {
+          const matches = !!(query === 'screen and (min-width: 992px)');
+          return {
+            matches,
+            media: query,
+            onchange: null,
+            addListener: jest.fn(), // deprecated
+            removeListener: jest.fn(), // deprecated
+            addEventListener: jest.fn(),
+            removeEventListener: jest.fn(),
+            dispatchEvent: jest.fn(),
+          };
+        }),
+      });
     });
 
     describe('enrolled user', () => {
@@ -223,16 +241,12 @@ describe('Progress Tab', () => {
       });
 
       it('Displays text for nonPassing case when learner does not have a passing grade', async () => {
-        setTabData({
-          user_has_passing_grade: false,
-        });
         await fetchAndRender();
         expect(screen.getByText('In order to qualify for a certificate, you must have a passing grade.')).toBeInTheDocument();
       });
 
       it('Displays text for inProgress case when more content is scheduled and the learner does not have a passing grade', async () => {
         setTabData({
-          user_has_passing_grade: false,
           has_scheduled_content: true,
         });
         await fetchAndRender();
@@ -319,7 +333,6 @@ describe('Progress Tab', () => {
       it('Displays nothing if audit only', async () => {
         setTabData({
           certificate_data: { cert_status: 'audit_passing' },
-          verified_mode: null,
         });
         await fetchAndRender();
         // Keep these queries in sync with "upgrade link" test above, so we don't end up checking for text that is
@@ -342,7 +355,6 @@ describe('Progress Tab', () => {
     });
 
     it('Does not display the certificate component if the user is not enrolled', async () => {
-      setMetadata({ is_enrolled: false });
       await fetchAndRender();
       expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
     });
