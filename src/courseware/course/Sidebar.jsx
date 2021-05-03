@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Icon } from '@edx/paragon';
 import { ArrowBackIos, Close } from '@edx/paragon/icons';
-import './Sidebar.scss';
 import messages from './messages';
 import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 

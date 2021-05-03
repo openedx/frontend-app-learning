@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import NotificationIcon from './NotificationIcon';
-import './SidebarNotificationButton.scss';
 import messages from './messages';
 
 function SidebarNotificationButton({ intl, toggleSidebar, isSidebarVisible }) {
