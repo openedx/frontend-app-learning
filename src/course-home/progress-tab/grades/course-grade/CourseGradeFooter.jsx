@@ -35,7 +35,7 @@ function CourseGradeFooter({ intl, passingGrade }) {
   const OnMobile = layout.is('mobile');
   const OnAtLeastTablet = layout.isAtLeast('tablet');
 
-  const hasLetterGrades = !gradeRange.pass;
+  const hasLetterGrades = Object.keys(gradeRange).length > 1; // A pass/fail course will only have one key
   let footerText = intl.formatMessage(messages.courseGradeFooterNonPassing, { passingGrade });
 
   if (isPassing) {
