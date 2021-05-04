@@ -196,6 +196,7 @@ export async function getOutlineTabData(courseId) {
 
   const {
     data,
+    headers,
   } = tabData;
   const accessExpiration = camelCaseObject(data.access_expiration);
   const canShowUpgradeSock = data.can_show_upgrade_sock;
@@ -209,7 +210,7 @@ export async function getOutlineTabData(courseId) {
   const hasEnded = data.has_ended;
   const offer = camelCaseObject(data.offer);
   const resumeCourse = camelCaseObject(data.resume_course);
-  const timeOffsetMillis = getTimeOffsetMillis(tabData.headers.date, requestTime, responseTime);
+  const timeOffsetMillis = getTimeOffsetMillis(headers.date, requestTime, responseTime);
   const verifiedMode = camelCaseObject(data.verified_mode);
   const welcomeMessageHtml = data.welcome_message_html;
 

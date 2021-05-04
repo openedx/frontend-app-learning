@@ -97,7 +97,7 @@ function UpsellFBEFarAwayCardContent() {
 
 function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) {
   return (
-    <div>
+    <div className="upgrade-card-text">
       <p>
         <FormattedMessage
           id="learning.outline.alert.upgradecard.expirationAccessLoss"
@@ -279,20 +279,10 @@ function UpgradeCard({
   let offerCode;
 
   if (!!accessExpiration && !!contentTypeGatingEnabled) {
-    if (offer) { // if there's a first purchase discount, show it
-      const hoursToDiscountExpiration = Math.floor((new Date(offer.expirationDate) - correctedTime) / 1000 / 60 / 60);
+    const accessExpirationDate = new Date(accessExpiration.expirationDate);
+    const hoursToAccessExpiration = Math.floor((accessExpirationDate - correctedTime) / 1000 / 60 / 60);
 
-      upgradeCardHeaderText = (
-        <FormattedMessage
-          id="learning.outline.alert.upgradecard.firstTimeLearnerDiscount"
-          defaultMessage="{percentage}% First-Time Learner Discount"
-          values={{
-            percentage: (offer.percentage),
-          }}
-        />
-      );
-      expirationBanner = <ExpirationCountdown hoursToExpiration={hoursToDiscountExpiration} />;
-      upsellMessage = <UpsellFBEFarAwayCardContent />;
+    if (offer) { // if there's a first purchase discount, message the code at the bottom
       offerCode = (
         <div className="text-center discount-info">
           <FormattedMessage
@@ -304,11 +294,22 @@ function UpgradeCard({
           />
         </div>
       );
-    } else {
-      const accessExpirationDate = new Date(accessExpiration.expirationDate);
-      const hoursToAccessExpiration = Math.floor((accessExpirationDate - correctedTime) / 1000 / 60 / 60);
+    }
 
-      if (hoursToAccessExpiration >= (7 * 24)) {
+    if (hoursToAccessExpiration >= (7 * 24)) {
+      if (offer) { // countdown to the first purchase discount if there is one
+        const hoursToDiscountExpiration = Math.floor((new Date(offer.expirationDate) - correctedTime) / 1000 / 60 / 60);
+        upgradeCardHeaderText = (
+          <FormattedMessage
+            id="learning.outline.alert.upgradecard.firstTimeLearnerDiscount"
+            defaultMessage="{percentage}% First-Time Learner Discount"
+            values={{
+              percentage: (offer.percentage),
+            }}
+          />
+        );
+        expirationBanner = <ExpirationCountdown hoursToExpiration={hoursToDiscountExpiration} />;
+      } else {
         upgradeCardHeaderText = (
           <FormattedMessage
             id="learning.outline.alert.upgradecard.accessExpiration"
@@ -321,22 +322,22 @@ function UpgradeCard({
             timezoneFormatArgs={timezoneFormatArgs}
           />
         );
-        upsellMessage = <UpsellFBEFarAwayCardContent />;
-      } else { // more urgent messaging if there's less than 7 days left
-        upgradeCardHeaderText = (
-          <FormattedMessage
-            id="learning.outline.alert.upgradecard.accessExpirationUrgent"
-            defaultMessage="Course Access Expiration"
-          />
-        );
-        expirationBanner = <ExpirationCountdown hoursToExpiration={hoursToAccessExpiration} />;
-        upsellMessage = (
-          <UpsellFBESoonCardContent
-            accessExpirationDate={accessExpirationDate}
-            timezoneFormatArgs={timezoneFormatArgs}
-          />
-        );
       }
+      upsellMessage = <UpsellFBEFarAwayCardContent />;
+    } else { // more urgent messaging if there's less than 7 days left to access expiration
+      upgradeCardHeaderText = (
+        <FormattedMessage
+          id="learning.outline.alert.upgradecard.accessExpirationUrgent"
+          defaultMessage="Course Access Expiration"
+        />
+      );
+      expirationBanner = <ExpirationCountdown hoursToExpiration={hoursToAccessExpiration} />;
+      upsellMessage = (
+        <UpsellFBESoonCardContent
+          accessExpirationDate={accessExpirationDate}
+          timezoneFormatArgs={timezoneFormatArgs}
+        />
+      );
     }
   } else { // FBE is turned off
     upgradeCardHeaderText = (
