@@ -255,10 +255,6 @@
     @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
       padding-top: 1rem;
       padding-bottom: 1rem;
-
-      span {
-        @include sr-only();
-      }
     }
 
     @media (min-width: map-get($grid-breakpoints, 'sm')) {
