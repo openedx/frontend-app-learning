@@ -13,8 +13,12 @@ const slice = createSlice({
     courseId: null,
     sequenceStatus: 'loading',
     sequenceId: null,
+    specialExamsEnabled: false,
   },
   reducers: {
+    setsSpecialExamsEnabled: (state, { payload }) => {
+      state.specialExamsEnabled = payload.specialExamsEnabled;
+    },
     fetchCourseRequest: (state, { payload }) => {
       state.courseId = payload.courseId;
       state.courseStatus = LOADING;
@@ -47,6 +51,7 @@ const slice = createSlice({
 });
 
 export const {
+  setsSpecialExamsEnabled,
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,
