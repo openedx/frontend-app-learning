@@ -174,7 +174,7 @@ function Unit({
                     src={modalOptions.url}
                     style={{
                       width: '100%',
-                      height: '100%',
+                      height: '100vh',
                     }}
                   />
                 )}
