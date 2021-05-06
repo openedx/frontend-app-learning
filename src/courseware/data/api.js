@@ -152,7 +152,7 @@ function normalizeMetadata(metadata) {
     verificationStatus: metadata.verification_status,
     linkedinAddToProfileUrl: metadata.linkedin_add_to_profile_url,
     relatedPrograms: camelCaseObject(metadata.related_programs),
-    specialExamsEnabled: metadata.is_special_exams_enabled,
+    specialExamsEnabled: metadata.is_mfe_special_exams_enabled,
   };
 }
 
