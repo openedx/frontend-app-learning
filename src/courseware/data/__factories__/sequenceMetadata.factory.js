@@ -29,7 +29,6 @@ Factory.define('sequenceMetadata')
   .attr('element_id', ['sequenceBlock'], sequenceBlock => sequenceBlock.block_id)
   .attr('item_id', ['sequenceBlock'], sequenceBlock => sequenceBlock.id)
   .attr('display_name', ['sequenceBlock'], sequenceBlock => sequenceBlock.display_name)
-  .attr('ajax_url', ['sequenceBlock'], sequenceBlock => `${sequenceBlock.student_view_url}/handler/xmodule_handler}`)
   .attr('gated_content', ['sequenceBlock'], sequenceBlock => ({
     gated: false,
     prereq_url: null,

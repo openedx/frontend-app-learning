@@ -374,7 +374,7 @@ describe('CoursewareContainer', () => {
       });
 
       it('should navigate between units and check block completion', async () => {
-        axiosMock.onPost(`${courseId}/xblock/${sequenceBlock.id}/handler/xmodule_handler/get_completion`).reply(200, {
+        axiosMock.onPost(`${courseId}/xblock/${sequenceBlock.id}/handler/get_completion`).reply(200, {
           complete: true,
         });
 
