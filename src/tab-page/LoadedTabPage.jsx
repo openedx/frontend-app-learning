@@ -26,6 +26,7 @@ function LoadedTabPage({
     tabs,
     title,
     celebrations,
+    canViewLegacyCourseware,
   } = useModel(metadataModel, courseId);
 
   // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
@@ -51,6 +52,7 @@ function LoadedTabPage({
         <InstructorToolbar
           courseId={courseId}
           unitId={unitId}
+          canViewLegacyCourseware={canViewLegacyCourseware}
         />
       )}
       {streakLengthToCelebrate && (

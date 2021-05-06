@@ -1,27 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Icon, OverlayTrigger, Popover } from '@edx/paragon';
+import {
+  Icon, IconButton, OverlayTrigger, Popover,
+} from '@edx/paragon';
 import { InfoOutline } from '@edx/paragon/icons';
 
 import messages from '../messages';
 
 function GradeSummaryHeader({ intl }) {
+  const [showTooltip, setShowTooltip] = useState(false);
   return (
     <div className="row w-100 m-0 align-items-center">
-      <h3 className="h4 mb-3 mr-2">{intl.formatMessage(messages.gradeSummary)}</h3>
+      <h3 className="h4 mb-3 mr-1">{intl.formatMessage(messages.gradeSummary)}</h3>
       <OverlayTrigger
-        trigger={['hover', 'click']}
+        trigger="click"
         placement="top"
+        show={showTooltip}
         overlay={(
           <Popover>
             <Popover.Content className="small text-dark-700">
-              {intl.formatMessage(messages.gradeSummaryTooltip)}
+              {intl.formatMessage(messages.gradeSummaryTooltipBody)}
             </Popover.Content>
           </Popover>
         )}
       >
-        <Icon src={InfoOutline} className="mb-3" style={{ height: '1rem', width: '1rem' }} />
+        <IconButton
+          onClick={() => { setShowTooltip(!showTooltip); }}
+          onBlur={() => { setShowTooltip(false); }}
+          alt={intl.formatMessage(messages.gradeSummaryTooltipAlt)}
+          src={InfoOutline}
+          iconAs={Icon}
+          className="mb-3"
+          size="sm"
+        />
       </OverlayTrigger>
     </div>
   );

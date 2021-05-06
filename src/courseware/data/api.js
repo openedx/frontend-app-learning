@@ -38,8 +38,7 @@ export function normalizeBlocks(courseId, blocks) {
           effortTime: block.effort_time,
           id: block.id,
           title: block.display_name,
-          // Fall back to `lms_web_url` until `legacy_web_url` is added to API (TNL-7796).
-          legacyWebUrl: block.legacy_web_url || block.lms_web_url,
+          legacyWebUrl: block.legacy_web_url,
           unitIds: block.children || [],
         };
         break;
@@ -48,8 +47,7 @@ export function normalizeBlocks(courseId, blocks) {
           graded: block.graded,
           id: block.id,
           title: block.display_name,
-          // Fall back to `lms_web_url` until `legacy_web_url` is added to API (TNL-7796).
-          legacyWebUrl: block.legacy_web_url || block.lms_web_url,
+          legacyWebUrl: block.legacy_web_url,
         };
         break;
       default:
@@ -135,6 +133,7 @@ function normalizeMetadata(metadata) {
     enrollmentMode: metadata.enrollment.mode,
     isEnrolled: metadata.enrollment.is_active,
     canLoadCourseware: camelCaseObject(metadata.can_load_courseware),
+    canViewLegacyCourseware: metadata.can_view_legacy_courseware,
     originalUserIsStaff: metadata.original_user_is_staff,
     isStaff: metadata.is_staff,
     license: metadata.license,
@@ -207,48 +206,22 @@ export async function getSequenceMetadata(sequenceId) {
   return normalizeSequenceMetadata(data);
 }
 
-const getSequenceXModuleHandlerUrl = (courseId, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/xmodule_handler`;
+const getSequenceHandlerUrl = (courseId, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler`;
 
 export async function getBlockCompletion(courseId, sequenceId, usageKey) {
-  // Post data sent to this endpoint must be url encoded
-  // TODO: Remove the need for this to be the case.
-  // TODO: Ensure this usage of URLSearchParams is working in Internet Explorer
-  const urlEncoded = new URLSearchParams();
-  urlEncoded.append('usage_key', usageKey);
-  const requestConfig = {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  };
-
   const { data } = await getAuthenticatedHttpClient().post(
-    `${getSequenceXModuleHandlerUrl(courseId, sequenceId)}/get_completion`,
-    urlEncoded.toString(),
-    requestConfig,
+    `${getSequenceHandlerUrl(courseId, sequenceId)}/get_completion`,
+    { usage_key: usageKey },
   );
-
-  if (data.complete) {
-    return true;
-  }
-
-  return false;
+  return data.complete === true;
 }
 
 export async function postSequencePosition(courseId, sequenceId, activeUnitIndex) {
-  // Post data sent to this endpoint must be url encoded
-  // TODO: Remove the need for this to be the case.
-  // TODO: Ensure this usage of URLSearchParams is working in Internet Explorer
-  const urlEncoded = new URLSearchParams();
-  // Position is 1-indexed on the server and 0-indexed in this app. Adjust here.
-  urlEncoded.append('position', activeUnitIndex + 1);
-  const requestConfig = {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  };
-
   const { data } = await getAuthenticatedHttpClient().post(
-    `${getSequenceXModuleHandlerUrl(courseId, sequenceId)}/goto_position`,
-    urlEncoded.toString(),
-    requestConfig,
+    `${getSequenceHandlerUrl(courseId, sequenceId)}/goto_position`,
+    // Position is 1-indexed on the server and 0-indexed in this app. Adjust here.
+    { position: activeUnitIndex + 1 },
   );
-
   return data;
 }
 

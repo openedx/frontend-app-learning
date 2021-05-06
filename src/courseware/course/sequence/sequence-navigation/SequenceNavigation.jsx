@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '@edx/paragon';
+import { ChevronLeft, ChevronRight } from '@edx/paragon/icons';
 import classNames from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';
@@ -13,6 +12,7 @@ import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
+import useWindowSize, { responsiveBreakpoints } from '../../../../generic/tabs/useWindowSize';
 
 import messages from './messages';
 /** [MM-P2P] Experiment */
@@ -27,6 +27,7 @@ function SequenceNavigation({
   nextSequenceHandler,
   previousSequenceHandler,
   goToCourseExitPage,
+  isValuePropCookieSet,
   mmp2p,
 }) {
   const sequence = useModel('sequences', sequenceId);
@@ -38,6 +39,8 @@ function SequenceNavigation({
   const isLocked = sequenceStatus === LOADED ? (
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
+
+  const shouldDisplaySidebarButton = useWindowSize().width < responsiveBreakpoints.small.minWidth;
 
   const renderUnitButtons = () => {
     if (isLocked) {
@@ -66,25 +69,22 @@ function SequenceNavigation({
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
     return (
-      <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled}>
-        {buttonText}
-        <FontAwesomeIcon icon={faChevronRight} className="ml-2" size="sm" />
+      <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled} iconAfter={ChevronRight}>
+        {isValuePropCookieSet && shouldDisplaySidebarButton ? null : buttonText}
       </Button>
     );
   };
 
   return sequenceStatus === LOADED && (
-    <nav className={classNames('sequence-navigation', className)}>
-      <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit}>
-        <FontAwesomeIcon icon={faChevronLeft} className="mr-2" size="sm" />
-        {intl.formatMessage(messages.previousButton)}
+    <nav className={classNames('sequence-navigation', className)} style={{ width: isValuePropCookieSet && shouldDisplaySidebarButton ? '90%' : null }}>
+      <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit} iconBefore={ChevronLeft}>
+        {isValuePropCookieSet && shouldDisplaySidebarButton ? null : intl.formatMessage(messages.previousButton)}
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
 
       {/** [MM-P2P] Experiment */}
       { mmp2p.state.isEnabled && <MMP2PFlyoverTriggerMobile options={mmp2p} /> }
-      <div className="rev1512ToggleFlyoverSequenceLocation" />
     </nav>
   );
 }
@@ -98,6 +98,7 @@ SequenceNavigation.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   goToCourseExitPage: PropTypes.func.isRequired,
+  isValuePropCookieSet: PropTypes.bool,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({
@@ -109,6 +110,7 @@ SequenceNavigation.propTypes = {
 SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
+  isValuePropCookieSet: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {

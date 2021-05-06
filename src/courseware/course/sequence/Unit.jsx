@@ -24,6 +24,20 @@ import { MMP2PLockPaywall } from '../../../experiments/mm-p2p';
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
 
 /**
+ * Feature policy for iframe, allowing access to certain courseware-related media.
+ *
+ * We must use the wildcard (*) origin for each feature, as courseware content
+ * may be embedded in external iframes. Notably, xblock-lti-consumer is a popular
+ * block that iframes external course content.
+
+ * This policy was selected in conference with the edX Security Working Group.
+ * Changes to it should be vetted by them (security@edx.org).
+ */
+const IFRAME_FEATURE_POLICY = (
+  'microphone *; camera *; midi *; geolocation *; encrypted-media *'
+);
+
+/**
  * We discovered an error in Firefox where - upon iframe load - React would cease to call any
  * useEffect hooks until the user interacts with the page again.  This is particularly confusing
  * when navigating between sequences, as the UI partially updates leaving the user in a nebulous
@@ -155,12 +169,12 @@ function Unit({
                 : (
                   <iframe
                     title={modalOptions.title}
-                    allow="microphone *; camera *; midi *; geolocation *; encrypted-media *"
+                    allow={IFRAME_FEATURE_POLICY}
                     frameBorder="0"
                     src={modalOptions.url}
                     style={{
                       width: '100%',
-                      height: '100%',
+                      height: '100vh',
                     }}
                   />
                 )}
@@ -178,6 +192,7 @@ function Unit({
             id="unit-iframe"
             title={unit.title}
             src={iframeUrl}
+            allow={IFRAME_FEATURE_POLICY}
             allowFullScreen
             height={iframeHeight}
             scrolling="no"

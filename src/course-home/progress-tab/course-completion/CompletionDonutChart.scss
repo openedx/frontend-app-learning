@@ -1,0 +1,74 @@
+.donut rect {
+  fill: transparent;
+  width: 4px;
+  height: 4px;
+  transform-origin: center;
+}
+
+.donut-chart-label {
+  font: {
+    family: $font-family-sans-serif;
+    size: .2rem;
+    weight: $font-weight-normal;
+  }
+  text-anchor: middle;
+}
+
+.donut-chart-number {
+  font: {
+    family: $font-family-monospace;
+    size: .5rem;
+    weight: $font-weight-bold;
+  }
+  line-height: 1rem;
+  text-anchor: middle;
+  -moz-transform: translateY(-0.6em);
+  -ms-transform: translateY(-0.6em);
+  -webkit-transform: translateY(-0.6em);
+  transform: translateY(-0.6em);
+}
+
+.donut-chart-text {
+  fill: $primary-500;
+  -moz-transform: translateY(0.25em);
+  -ms-transform: translateY(0.25em);
+  -webkit-transform: translateY(0.25em);
+  transform: translateY(0.25em);
+}
+
+.donut-ring, .donut-segment {
+  stroke-width: 6px;
+  fill: transparent;
+}
+
+.donut-segment-group {
+  cursor: pointer;
+  pointer-events: visibleStroke;
+
+  &:focus {
+    outline: none;
+
+    circle {
+      stroke-width: 7px;
+    }
+  }
+}
+
+.donut-ring, .donut-segment, .donut-hole {
+  &.complete-stroke {
+    stroke: $info-500;
+  }
+
+  &.divider-stroke {
+    stroke-width: 7px;
+    stroke: white;
+  }
+
+  &.incomplete-stroke {
+    stroke: $light-300;
+  }
+
+  &.locked-stroke {
+    stroke: $primary-500;
+  }
+}

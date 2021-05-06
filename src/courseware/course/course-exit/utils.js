@@ -1,9 +1,8 @@
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
-import { useModel } from '../../../generic/model-store';
-
 import messages from './messages';
+import { useModel } from '../../../generic/model-store';
 
 const COURSE_EXIT_MODES = {
   disabled: 0,
@@ -26,18 +25,16 @@ const NON_CERTIFICATE_STATUSES = [ // no certificate will be given, though a val
   'honor_passing', // provided when honor is configured to not give a certificate
 ];
 
-function getCourseExitMode(courseId) {
-  const {
-    certificateData,
-    courseExitPageIsActive,
-    hasScheduledContent,
-    isEnrolled,
-    userHasPassingGrade,
-  } = useModel('coursewareMeta', courseId);
-
+function getCourseExitMode(
+  certificateData,
+  hasScheduledContent,
+  isEnrolled,
+  userHasPassingGrade,
+  courseExitPageIsActive = null,
+) {
   const authenticatedUser = getAuthenticatedUser();
 
-  if (!courseExitPageIsActive || !authenticatedUser || !isEnrolled) {
+  if (courseExitPageIsActive === false || !authenticatedUser || !isEnrolled) {
     return COURSE_EXIT_MODES.disabled;
   }
 
@@ -69,7 +66,20 @@ function getCourseExitMode(courseId) {
 
 // Returns null in order to render the default navigation text
 function getCourseExitNavigation(courseId, intl) {
-  const exitMode = getCourseExitMode(courseId);
+  const {
+    certificateData,
+    hasScheduledContent,
+    isEnrolled,
+    userHasPassingGrade,
+    courseExitPageIsActive,
+  } = useModel('coursewareMeta', courseId);
+  const exitMode = getCourseExitMode(
+    certificateData,
+    hasScheduledContent,
+    isEnrolled,
+    userHasPassingGrade,
+    courseExitPageIsActive,
+  );
   const exitActive = exitMode !== COURSE_EXIT_MODES.disabled;
 
   let exitText;
