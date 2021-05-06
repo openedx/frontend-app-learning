@@ -53,9 +53,14 @@ export default function InstructorToolbar(props) {
   const {
     courseId,
     unitId,
+    canViewLegacyCourseware,
   } = props;
   const urlInsights = getInsightsUrl(courseId);
   const urlLegacy = useSelector((state) => {
+    if (!canViewLegacyCourseware) {
+      return undefined;
+    }
+
     if (!unitId) {
       return undefined;
     }
@@ -113,9 +118,11 @@ export default function InstructorToolbar(props) {
 InstructorToolbar.propTypes = {
   courseId: PropTypes.string,
   unitId: PropTypes.string,
+  canViewLegacyCourseware: PropTypes.bool,
 };
 
 InstructorToolbar.defaultProps = {
   courseId: undefined,
   unitId: undefined,
+  canViewLegacyCourseware: undefined,
 };

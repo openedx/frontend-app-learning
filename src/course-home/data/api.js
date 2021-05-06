@@ -56,13 +56,12 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           effortTime: block.effort_time,
           icon: block.icon,
           id: block.id,
-          // Fall back to `lms_web_url` until `legacy_web_url` is added to API (TNL-7796).
-          legacyWebUrl: block.legacy_web_url || block.lms_web_url,
-          // The presence of an LMS URL for the sequence indicates that we want this
+          legacyWebUrl: block.legacy_web_url,
+          // The presence of an legacy URL for the sequence indicates that we want this
           // sequence to be a clickable link in the outline (even though, if the new
           // courseware experience is active, we will ignore `legacyWebUrl` and build a
           // link to the MFE ourselves).
-          showLink: !!(block.legacy_web_url || block.lms_web_url),
+          showLink: !!block.legacy_web_url,
           title: block.display_name,
         };
         break;
@@ -132,19 +131,23 @@ export async function getProgressTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
-    return camelCaseObject(data);
+    const camelCasedData = camelCaseObject(data);
+    camelCasedData.gradingPolicy.gradeRange = data.grading_policy.grade_range;
+    return camelCasedData;
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
-      return {};
     }
     throw error;
   }
 }
 
-export async function getProctoringInfoData(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
+export async function getProctoringInfoData(courseId, username) {
+  let url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
+  if (username) {
+    url += `&username=${encodeURIComponent(username)}`;
+  }
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return data;

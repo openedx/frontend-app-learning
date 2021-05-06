@@ -1,0 +1,12 @@
+
+// Temporary CSS intervention until paragon list items will support icons (PAR-429)
+.fa-li {
+    left: -31px !important;
+    padding-right: 22px;
+}
+
+    @media only screen and (min-width: 992px) and (max-width: 1100px) {
+        .list-div {
+            width: 62%;
+    }
+}

@@ -26,6 +26,7 @@ import DashboardFootnote from './DashboardFootnote';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
+import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import CourseRecommendations from './CourseRecommendationsExp/CourseRecommendations.exp';
 
 const LINKEDIN_BLUE = '#2867B2';
@@ -45,6 +46,7 @@ function CourseCelebration({ intl }) {
     certificateData,
     end,
     linkedinAddToProfileUrl,
+    marketingUrl,
     offer,
     org,
     relatedPrograms,
@@ -64,35 +66,11 @@ function CourseCelebration({ intl }) {
   const [showWS1681, setShowWS1681] = useState(window.experiment__courseware_celebration_bShowWS1681);
   useEffect(() => { setShowWS1681(window.experiment__courseware_celebration_bShowWS1681); });
 
-  const { administrator, username } = getAuthenticatedUser();
+  const { administrator } = getAuthenticatedUser();
 
-  const dashboardLink = (
-    <Hyperlink
-      className="text-gray-700"
-      style={{ textDecoration: 'underline' }}
-      destination={`${getConfig().LMS_BASE_URL}/dashboard`}
-    >
-      {intl.formatMessage(messages.dashboardLink)}
-    </Hyperlink>
-  );
-  const idVerificationSupportLink = getConfig().SUPPORT_URL_ID_VERIFICATION && (
-    <Hyperlink
-      className="text-gray-700"
-      style={{ textDecoration: 'underline' }}
-      destination={getConfig().SUPPORT_URL_ID_VERIFICATION}
-    >
-      {intl.formatMessage(messages.idVerificationSupportLink)}
-    </Hyperlink>
-  );
-  const profileLink = (
-    <Hyperlink
-      className="text-gray-700"
-      style={{ textDecoration: 'underline' }}
-      destination={`${getConfig().LMS_BASE_URL}/u/${username}`}
-    >
-      {intl.formatMessage(messages.profileLink)}
-    </Hyperlink>
-  );
+  const dashboardLink = <DashboardLink />;
+  const idVerificationSupportLink = <IdVerificationSupportLink />;
+  const profileLink = <ProfileLink />;
 
   let buttonPrefix = null;
   let buttonLocation;
@@ -287,7 +265,8 @@ function CourseCelebration({ intl }) {
           {intl.formatMessage(messages.congratulationsHeader)}
         </div>
         <div className="col-12 p-0 font-weight-normal lead text-center">
-          {intl.formatMessage(messages.shareHeader)}
+          {intl.formatMessage(messages.completedCourseHeader)}
+          {marketingUrl && ` ${intl.formatMessage(messages.shareMessage)}`}
           <SocialIcons
             analyticsId="edx.ui.lms.course_exit.social_share.clicked"
             className="mt-2"

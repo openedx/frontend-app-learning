@@ -19,7 +19,7 @@ function AssignmentTypeCell({ assignmentType, footnoteMarker, footnoteId }) {
 AssignmentTypeCell.propTypes = {
   assignmentType: PropTypes.string.isRequired,
   footnoteId: PropTypes.string,
-  footnoteMarker: PropTypes.string,
+  footnoteMarker: PropTypes.number,
 };
 
 AssignmentTypeCell.defaultProps = {

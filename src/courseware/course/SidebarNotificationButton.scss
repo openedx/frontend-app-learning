@@ -1,0 +1,19 @@
+.sidebar-notification-btn {
+    border: 1px solid $light-400;
+    background: none;
+    margin-top: 0.625rem;
+
+    position: absolute;
+    right: 0;
+
+    @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
+        border: none;
+        margin: 0.3rem 1.25rem 0 0.25rem;
+        top: 0.1rem;
+        right: -3rem;
+    }
+}
+
+.active {
+    border-bottom: 3px solid $primary-700;
+}

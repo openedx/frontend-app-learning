@@ -85,6 +85,7 @@ function Section({
             alt={intl.formatMessage(messages.openSection)}
             icon={faPlus}
             onClick={() => { setOpen(true); }}
+            size="sm"
           />
         )}
         iconWhenOpen={(
@@ -92,6 +93,7 @@ function Section({
             alt={intl.formatMessage(genericMessages.close)}
             icon={faMinus}
             onClick={() => { setOpen(false); }}
+            size="sm"
           />
         )}
       >

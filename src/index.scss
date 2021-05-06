@@ -7,6 +7,7 @@
 
 // TODO: Fix .container-fluid for mobile in paragon
 .container-fluid {
+  max-width: 1140px + 2 * $grid-gutter-width;
   @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
     padding-left: $grid-gutter-width/2;
     padding-right: $grid-gutter-width/2;
@@ -245,6 +246,7 @@
   }
 
   .previous-btn, .next-btn {
+    border: 1px solid $light-400 !important;
     color: $gray-700;
     display: inline-flex;
     justify-content: center;
@@ -253,10 +255,6 @@
     @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
       padding-top: 1rem;
       padding-bottom: 1rem;
-
-      span {
-        @include sr-only();
-      }
     }
 
     @media (min-width: map-get($grid-breakpoints, 'sm')) {
@@ -359,8 +357,24 @@
   }
 }
 
+.locked-overlay {
+  opacity: .3;
+  pointer-events: none;
+
+  &.grades {
+    overflow: hidden;
+    max-height: 852px;
+    @media screen and (min-width: 992px) {
+      max-height: 920px;
+    }
+  }
+}
+
 // Import component-specific sass files
 @import 'courseware/course/celebration/CelebrationModal.scss';
+@import 'courseware/course/Sidebar.scss';
+@import 'courseware/course/SidebarNotificationButton.scss';
+@import 'courseware/course/NotificationIcon.scss';
 @import 'shared/streak-celebration/StreakCelebrationModal.scss';
 @import 'courseware/course/content-tools/calculator/calculator.scss';
 @import 'courseware/course/content-tools/contentTools.scss';
@@ -368,6 +382,8 @@
 @import 'course-home/dates-tab/Day.scss';
 @import 'course-home/outline-tab/widgets/UpgradeCard.scss';
 @import 'course-home/outline-tab/widgets/ProctoringInfoPanel.scss';
+@import 'course-home/progress-tab/course-completion/CompletionDonutChart.scss';
+@import 'course-home/progress-tab/grades/course-grade/GradeBar.scss';
 @import 'courseware/course/course-exit/CourseRecommendationsExp/course_recommendations.exp';
 
 /** [MM-P2P] Experiment */

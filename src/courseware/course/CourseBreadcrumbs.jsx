@@ -60,7 +60,7 @@ export default function CourseBreadcrumbs({
   }, [courseStatus, sequenceStatus]);
 
   return (
-    <nav aria-label="breadcrumb" className="my-4">
+    <nav aria-label="breadcrumb" className="my-4 d-inline-block col-sm-10">
       <ol className="list-unstyled d-flex m-0">
         <CourseBreadcrumb
           url={`${getConfig().LMS_BASE_URL}/courses/${course.id}/course/`}

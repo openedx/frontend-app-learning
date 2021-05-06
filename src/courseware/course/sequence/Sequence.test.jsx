@@ -28,6 +28,7 @@ describe('Sequence', () => {
       unitNavigationHandler: () => {},
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},
+      sidebarVisible: false,
     };
   });
 
@@ -127,6 +128,16 @@ describe('Sequence', () => {
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
     // At this point there will be 2 `Previous` and 2 `Next` buttons.
     expect(screen.getAllByRole('button', { name: /previous|next/i }).length).toEqual(4);
+  });
+
+  it('renders sidebar in sequence', async () => {
+    const testData = {
+      ...mockData,
+      sidebarVisible: true,
+    };
+
+    render(<Sequence {...testData} />);
+    expect(await screen.findByText('Notifications')).toBeInTheDocument();
   });
 
   describe('sequence and unit navigation buttons', () => {

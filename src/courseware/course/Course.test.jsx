@@ -1,5 +1,6 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import Cookies from 'js-cookie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   loadUnit, render, screen, waitFor, getByRole, initializeTestStore, fireEvent,
@@ -19,6 +20,7 @@ describe('Course', () => {
     nextSequenceHandler: () => {},
     previousSequenceHandler: () => {},
     unitNavigationHandler: () => {},
+    toggleSidebar: () => {},
   };
 
   beforeAll(async () => {
@@ -83,6 +85,31 @@ describe('Course', () => {
 
     render(<Course {...mockData} courseId={courseMetadata.id} />, { store: testStore });
     expect(screen.getByRole('button', { name: 'Learn About Verified Certificates' })).toBeInTheDocument();
+  });
+
+  it('displays sidebar notification button', async () => {
+    const toggleSidebar = jest.fn();
+    const isSidebarVisible = jest.fn();
+
+    // REV-2130 TODO: remove cookie related code once temporary value prop cookie code is removed.
+    const cookieName = 'value_prop_cookie';
+    Cookies.set = jest.fn();
+    Cookies.get = jest.fn().mockImplementation(() => cookieName);
+    const getSpy = jest.spyOn(Cookies, 'get').mockReturnValueOnce('true');
+
+    const courseMetadata = Factory.build('courseMetadata');
+    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
+    const testData = {
+      ...mockData,
+      toggleSidebar,
+      isSidebarVisible,
+    };
+    render(<Course {...testData} courseId={courseMetadata.id} />, { store: testStore });
+
+    const sidebarOpenButton = screen.getByRole('button', { name: /Show sidebar notification/i });
+
+    expect(getSpy).toBeCalledWith(cookieName);
+    expect(sidebarOpenButton).toBeInTheDocument();
   });
 
   it('displays offer and expiration alert', async () => {

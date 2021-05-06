@@ -12,9 +12,25 @@ import CourseNonPassing from './CourseNonPassing';
 import { COURSE_EXIT_MODES, getCourseExitMode } from './utils';
 import messages from './messages';
 
+import { useModel } from '../../../generic/model-store';
+
 function CourseExit({ intl }) {
   const { courseId } = useSelector(state => state.courseware);
-  const mode = getCourseExitMode(courseId);
+  const {
+    certificateData,
+    hasScheduledContent,
+    isEnrolled,
+    userHasPassingGrade,
+    courseExitPageIsActive,
+  } = useModel('coursewareMeta', courseId);
+
+  const mode = getCourseExitMode(
+    certificateData,
+    hasScheduledContent,
+    isEnrolled,
+    userHasPassingGrade,
+    courseExitPageIsActive,
+  );
 
   let body = null;
   if (mode === COURSE_EXIT_MODES.nonPassing) {
