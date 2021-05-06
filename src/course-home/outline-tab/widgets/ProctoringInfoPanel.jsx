@@ -58,9 +58,9 @@ function ProctoringInfoPanel({ courseId, username, intl }) {
 
   function getBorderClass() {
     let borderClass = '';
-    if (readableStatus === readableStatuses.submitted) {
+    if ([readableStatuses.submitted, readableStatuses.expiringSoon].includes(readableStatus)) {
       borderClass = 'proctoring-onboarding-submitted';
-    } else if (readableStatus === readableStatuses.verified) {
+    } else if ([readableStatuses.verified, readableStatuses.otherCourseApproved].includes(readableStatus)) {
       borderClass = 'proctoring-onboarding-success';
     }
     return borderClass;
