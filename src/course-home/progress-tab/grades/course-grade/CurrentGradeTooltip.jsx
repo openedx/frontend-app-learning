@@ -46,7 +46,7 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
         textAnchor={currentGrade < 50 ? 'start' : 'end'}
         x={`${currentGrade}%`}
         y="20px"
-        style={{ transform: `translateX(${currentGrade < 50 ? '' : '-'}3em)` }}
+        style={{ transform: `translateX(${currentGrade < 50 ? '' : '-'}3.4em)` }}
       >
         {intl.formatMessage(messages.currentGradeLabel)}
       </text>
