@@ -31,7 +31,7 @@ function PassingGradeTooltip({ intl, passingGrade, tooltipClassName }) {
         textAnchor={passingGrade < 50 ? 'start' : 'end'}
         x={`${passingGrade}%`}
         y="90px"
-        style={{ transform: `translateX(${passingGrade < 50 ? '' : '-'}3em)` }}
+        style={{ transform: `translateX(${passingGrade < 50 ? '' : '-'}3.4em)` }}
       >
         {intl.formatMessage(messages.passingGradeLabel)}
       </text>

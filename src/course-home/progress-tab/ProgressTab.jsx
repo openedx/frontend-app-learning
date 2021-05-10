@@ -37,7 +37,7 @@ function ProgressTab() {
       <ProgressHeader />
       <div className="row w-100 m-0">
         {/* Main body */}
-        <div className="col-12 col-lg-8 p-0">
+        <div className="col-12 col-md-8 p-0">
           <CourseCompletion />
           <OnMobile>
             <CertificateStatus />
@@ -50,7 +50,7 @@ function ProgressTab() {
         </div>
 
         {/* Side panel */}
-        <div className="col-12 col-lg-4 p-0 px-lg-4">
+        <div className="col-12 col-md-4 p-0 px-md-4">
           <OnDesktop>
             <CertificateStatus />
           </OnDesktop>
