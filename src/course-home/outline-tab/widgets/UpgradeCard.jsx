@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
 import { getConfig } from '@edx/frontend-platform';
+import { Hyperlink } from '@edx/paragon';
 
 import { UpgradeButton } from '../../../generic/upgrade-button';
 
@@ -19,8 +20,17 @@ function UpsellNoFBECardContent() {
           defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
           values={{
             verifiedCertLink: (
-              <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>verified certificate</a>
-            ),
+              <Hyperlink
+                destination={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}
+                className="font-weight-bold"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FormattedMessage
+                  id="learning.outline.widgets.upgradeCard.verifiedCertLink"
+                  defaultMessage="verified certificate"
+                />
+              </Hyperlink>),
           }}
         />
       </li>
@@ -41,6 +51,47 @@ function UpsellNoFBECardContent() {
 }
 
 function UpsellFBEFarAwayCardContent() {
+  const verifiedCertLink = (
+    <Hyperlink
+      destination={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}
+      className="font-weight-bold"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <FormattedMessage
+        id="learning.outline.widgets.upgradeCard.verifiedCertLink"
+        defaultMessage="verified certificate"
+      />
+    </Hyperlink>
+  );
+
+  const gradedAssignments = (
+    <span className="font-weight-bold">
+      <FormattedMessage
+        id="learning.outline.widgets.upgradeCard.gradedAssignments"
+        defaultMessage="graded assignments"
+      />
+    </span>
+  );
+
+  const fullAccess = (
+    <span className="font-weight-bold">
+      <FormattedMessage
+        id="learning.upgradeCard.verifiedCertLink"
+        defaultMessage="Full access"
+      />
+    </span>
+  );
+
+  const nonProfitMission = (
+    <span className="font-weight-bold">
+      <FormattedMessage
+        id="learning.upgradeCard.nonProfitMission"
+        defaultMessage="non-profit mission"
+      />
+    </span>
+  );
+
   return (
     <ul className="fa-ul upgrade-card-ul">
       <li>
@@ -48,11 +99,7 @@ function UpsellFBEFarAwayCardContent() {
         <FormattedMessage
           id="learning.outline.widgets.upgradeCard.verifiedCertMessage"
           defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
-          values={{
-            verifiedCertLink: (
-              <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>verified certificate</a>
-            ),
-          }}
+          values={{ verifiedCertLink }}
         />
       </li>
       <li>
@@ -60,11 +107,7 @@ function UpsellFBEFarAwayCardContent() {
         <FormattedMessage
           id="learning.outline.widgets.upgradeCard.unlockGraded"
           defaultMessage="Unlock your access to all course activities, including {gradedAssignments}"
-          values={{
-            gradedAssignments: (
-              <span className="font-weight-bold">graded assignments</span>
-            ),
-          }}
+          values={{ gradedAssignments }}
         />
       </li>
       <li>
@@ -72,11 +115,7 @@ function UpsellFBEFarAwayCardContent() {
         <FormattedMessage
           id="learning.outline.widgets.upgradeCard.fullAccess"
           defaultMessage="{fullAccess} to course content and materials, even after the course ends"
-          values={{
-            fullAccess: (
-              <span className="font-weight-bold">Full access</span>
-            ),
-          }}
+          values={{ fullAccess }}
         />
       </li>
       <li>
@@ -84,11 +123,7 @@ function UpsellFBEFarAwayCardContent() {
         <FormattedMessage
           id="learning.outline.widgets.upgradeCard.nonProfitMission"
           defaultMessage="Support our {nonProfitMission} at edX"
-          values={{
-            nonProfitMission: (
-              <span className="font-weight-bold">non-profit mission</span>
-            ),
-          }}
+          values={{ nonProfitMission }}
         />
       </li>
     </ul>
@@ -96,6 +131,39 @@ function UpsellFBEFarAwayCardContent() {
 }
 
 function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) {
+  const includingAnyProgress = (
+    <span className="font-weight-bold">
+      <FormattedMessage
+        id="learning.upgradeCard.expirationAccessLoss.progress"
+        defaultMessage="including any progress"
+      />
+    </span>
+  );
+
+  const date = (
+    <FormattedDate
+      key="accessDate"
+      day="numeric"
+      month="long"
+      value={new Date(accessExpirationDate)}
+      {...timezoneFormatArgs}
+    />
+  );
+
+  const benefitsOfUpgrading = (
+    <Hyperlink
+      destination="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-"
+      className="font-weight-bold"
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      <FormattedMessage
+        id="learning.outline.widgets.upgradeCard.expirationVerifiedCert.benefits"
+        defaultMessage="benefits of upgrading"
+      />
+    </Hyperlink>
+  );
+
   return (
     <div className="upgrade-card-text">
       <p>
@@ -103,16 +171,8 @@ function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) 
           id="learning.outline.widgets.upgradeCard.expirationAccessLoss"
           defaultMessage="You will lose all access to this course, {includingAnyProgress}, on {date}."
           values={{
-            includingAnyProgress: (<span className="font-weight-bold">including any progress</span>),
-            date: (
-              <FormattedDate
-                key="accessDate"
-                day="numeric"
-                month="long"
-                value={new Date(accessExpirationDate)}
-                {...timezoneFormatArgs}
-              />
-            ),
+            includingAnyProgress,
+            date,
           }}
         />
       </p>
@@ -120,9 +180,7 @@ function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) 
         <FormattedMessage
           id="learning.outline.widgets.upgradeCard.expirationVerifiedCert"
           defaultMessage="Upgrading your course enables you to pursue a verified certificate and unlocks numerous features. Learn more about the {benefitsOfUpgrading}."
-          values={{
-            benefitsOfUpgrading: (<a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-">benefits of upgrading</a>),
-          }}
+          values={{ benefitsOfUpgrading }}
         />
       </p>
     </div>
