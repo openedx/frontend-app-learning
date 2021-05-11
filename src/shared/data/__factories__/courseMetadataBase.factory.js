@@ -12,6 +12,11 @@ export default new Factory()
     original_user_is_staff: false,
     number: 'DemoX',
     org: 'edX',
+    verifiedMode: {
+      upgradeUrl: 'test',
+      price: 10,
+      currencySymbol: '$',
+    },
   })
   .attr(
     'tabs', ['id', 'host'], (id, host) => {

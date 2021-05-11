@@ -145,7 +145,7 @@ describe('Upgrade Card', () => {
     expect(screen.getByText(/Unlock your access/s).textContent).toMatch('Unlock your access to all course activities, including graded assignments');
     expect(screen.getByText(/to course content and materials/s).textContent).toMatch('Full access to course content and materials, even after the course ends');
     expect(screen.getByText(/Support our.*?at edX/s).textContent).toMatch('Support our non-profit mission at edX');
-    expect(screen.getByText(/Upgrade for/).textContent).toMatch('126.65 (149)');
+    expect(screen.getByText(/Upgrade for/).textContent).toMatch('$126.65 ($149)');
     expect(screen.getByText(/Use code.*?at checkout/s).textContent).toMatch('Use code Welcome15 at checkout');
   });
 
@@ -174,7 +174,7 @@ describe('Upgrade Card', () => {
     expect(screen.getByText(/Unlock your access/s).textContent).toMatch('Unlock your access to all course activities, including graded assignments');
     expect(screen.getByText(/to course content and materials/s).textContent).toMatch('Full access to course content and materials, even after the course ends');
     expect(screen.getByText(/Support our.*?at edX/s).textContent).toMatch('Support our non-profit mission at edX');
-    expect(screen.getByText(/Upgrade for/).textContent).toMatch('126.65 (149)');
+    expect(screen.getByText(/Upgrade for/).textContent).toMatch('$126.65 ($149)');
     expect(screen.getByText(/Use code.*?at checkout/s).textContent).toMatch('Use code Welcome15 at checkout');
   });
 
@@ -203,7 +203,7 @@ describe('Upgrade Card', () => {
     expect(screen.getByText(/Unlock your access/s).textContent).toMatch('Unlock your access to all course activities, including graded assignments');
     expect(screen.getByText(/to course content and materials/s).textContent).toMatch('Full access to course content and materials, even after the course ends');
     expect(screen.getByText(/Support our.*?at edX/s).textContent).toMatch('Support our non-profit mission at edX');
-    expect(screen.getByText(/Upgrade for/).textContent).toMatch('126.65 (149)');
+    expect(screen.getByText(/Upgrade for/).textContent).toMatch('$126.65 ($149)');
     expect(screen.getByText(/Use code.*?at checkout/s).textContent).toMatch('Use code Welcome15 at checkout');
   });
 
@@ -230,7 +230,7 @@ describe('Upgrade Card', () => {
     expect(screen.getByText('5 days left')).toBeInTheDocument(); // setting the time to 12 will mean that it's slightly less than 12
     expect(screen.getByText(/You will lose all access to this course.*?on/s).textContent).toMatch('You will lose all access to this course, including any progress, on April 18.');
     expect(screen.getByText(/Upgrading your course enables you/s).textContent).toMatch('Upgrading your course enables you to pursue a verified certificate and unlocks numerous features. Learn more about the benefits of upgrading.');
-    expect(screen.getByText(/Upgrade for/).textContent).toMatch('126.65 (149)');
+    expect(screen.getByText(/Upgrade for/).textContent).toMatch('$126.65 ($149)');
     expect(screen.getByText(/Use code.*?at checkout/s).textContent).toMatch('Use code Welcome15 at checkout');
   });
 });

@@ -36,6 +36,12 @@ window.getComputedStyle = jest.fn(() => ({
   getPropertyValue: jest.fn(),
 }));
 
+// Mock Intersection Observer which is unavailable in the context of a test.
+global.IntersectionObserver = jest.fn(function mockIntersectionObserver() {
+  this.observe = jest.fn();
+  this.disconnect = jest.fn();
+});
+
 // Mock media queries because any component that uses `react-break` for responsive breakpoints will
 // run into `TypeError: window.matchMedia is not a function`. This avoids that for all of our tests now.
 Object.defineProperty(window, 'matchMedia', {

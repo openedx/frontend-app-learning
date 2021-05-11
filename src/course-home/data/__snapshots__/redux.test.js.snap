@@ -59,6 +59,11 @@ Object {
           },
         ],
         "title": "Demonstration Course",
+        "verifiedMode": Object {
+          "currencySymbol": "$",
+          "price": 10,
+          "upgradeUrl": "test",
+        },
       },
     },
     "dates": Object {
@@ -347,6 +352,11 @@ Object {
           },
         ],
         "title": "Demonstration Course",
+        "verifiedMode": Object {
+          "currencySymbol": "$",
+          "price": 10,
+          "upgradeUrl": "test",
+        },
       },
     },
     "outline": Object {
