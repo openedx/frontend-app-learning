@@ -88,6 +88,35 @@ describe('Data layer integration tests', () => {
     });
   });
 
+  describe('Test fetchProgressTab', () => {
+    const progressBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress`;
+
+    it('Should result in fetch failure if error occurs', async () => {
+      axiosMock.onGet(courseMetadataUrl).networkError();
+      axiosMock.onGet(`${progressBaseUrl}/${courseId}`).networkError();
+
+      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
+
+      expect(loggingService.logError).toHaveBeenCalled();
+      expect(store.getState().courseHome.courseStatus).toEqual('failed');
+    });
+
+    it('Should fetch, normalize, and save metadata', async () => {
+      const progressTabData = Factory.build('progressTabData', { courseId });
+
+      const progressUrl = `${progressBaseUrl}/${courseId}`;
+
+      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
+      axiosMock.onGet(progressUrl).reply(200, progressTabData);
+
+      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
+
+      const state = store.getState();
+      expect(state.courseHome.courseStatus).toEqual('loaded');
+      expect(state).toMatchSnapshot();
+    });
+  });
+
   describe('Test saveCourseGoal', () => {
     it('Should save course goal', async () => {
       const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`;

@@ -22,8 +22,8 @@ function CompletionDonutChart({ intl }) {
   } = useModel('progress', courseId);
 
   const numTotalUnits = completeCount + incompleteCount + lockedCount;
-  const completePercentage = Number(((completeCount / numTotalUnits) * 100).toFixed(0));
-  const lockedPercentage = Number(((lockedCount / numTotalUnits) * 100).toFixed(0));
+  const completePercentage = completeCount ? Number(((completeCount / numTotalUnits) * 100).toFixed(0)) : 0;
+  const lockedPercentage = lockedCount ? Number(((lockedCount / numTotalUnits) * 100).toFixed(0)) : 0;
   const incompletePercentage = 100 - completePercentage - lockedPercentage;
 
   return (

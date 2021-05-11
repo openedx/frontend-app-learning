@@ -23,8 +23,11 @@ function CertificateStatus({ intl }) {
 
   const {
     certificateData,
+    end,
     hasScheduledContent,
     userHasPassingGrade,
+    verificationData,
+    verifiedMode,
   } = useModel('progress', courseId);
 
   const mode = getCourseExitMode(
@@ -35,16 +38,15 @@ function CertificateStatus({ intl }) {
   );
   const dispatch = useDispatch();
 
-  const {
-    end,
-    verificationData,
-    certificateData: {
-      certStatus,
-      certWebViewUrl,
-      downloadUrl,
-    },
-    verifiedMode,
-  } = useModel('progress', courseId);
+  let certStatus;
+  let certWebViewUrl;
+  let downloadUrl;
+
+  if (certificateData) {
+    certStatus = certificateData.certStatus;
+    certWebViewUrl = certificateData.certWebViewUrl;
+    downloadUrl = certificateData.downloadUrl;
+  }
 
   let certCase;
   let body;
@@ -66,7 +68,6 @@ function CertificateStatus({ intl }) {
   } else if (mode === COURSE_EXIT_MODES.celebration) {
     switch (certStatus) {
       case 'requesting':
-        // Requestable
         certCase = 'requestable';
         buttonAction = () => { dispatch(requestCert(courseId)); };
         body = intl.formatMessage(messages[`${certCase}Body`]);

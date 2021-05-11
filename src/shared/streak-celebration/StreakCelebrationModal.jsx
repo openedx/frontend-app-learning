@@ -188,22 +188,24 @@ function StreakModal({
 
 StreakModal.defaultProps = {
   isStreakCelebrationOpen: false,
+  streakLengthToCelebrate: -1,
+  verifiedMode: {},
   AA759ExperimentEnabled: false,
 };
 
 StreakModal.propTypes = {
   courseId: PropTypes.string.isRequired,
   metadataModel: PropTypes.string.isRequired,
-  streakLengthToCelebrate: PropTypes.number.isRequired,
+  streakLengthToCelebrate: PropTypes.number,
   intl: intlShape.isRequired,
   isStreakCelebrationOpen: PropTypes.bool,
   closeStreakCelebration: PropTypes.func.isRequired,
   AA759ExperimentEnabled: PropTypes.bool,
   verifiedMode: PropTypes.shape({
-    currencySymbol: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    upgradeUrl: PropTypes.string.isRequired,
-  }).isRequired,
+    currencySymbol: PropTypes.string,
+    price: PropTypes.number,
+    upgradeUrl: PropTypes.string,
+  }),
 };
 
 export default injectIntl(StreakModal);
