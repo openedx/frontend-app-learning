@@ -11,6 +11,20 @@ import { Hyperlink } from '@edx/paragon';
 import { UpgradeButton } from '../../../generic/upgrade-button';
 
 function UpsellNoFBECardContent() {
+  const verifiedCertLink = (
+    <Hyperlink
+      destination={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}
+      className="font-weight-bold"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <FormattedMessage
+        id="learning.outline.widgets.upgradeCard.verifiedCertLink"
+        defaultMessage="verified certificate"
+      />
+    </Hyperlink>
+  );
+
   return (
     <ul className="fa-ul upgrade-card-ul pt-0">
       <li>
@@ -18,20 +32,7 @@ function UpsellNoFBECardContent() {
         <FormattedMessage
           id="learning.outline.widgets.upgradeCard.verifiedCertMessage"
           defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
-          values={{
-            verifiedCertLink: (
-              <Hyperlink
-                destination={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}
-                className="font-weight-bold"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FormattedMessage
-                  id="learning.outline.widgets.upgradeCard.verifiedCertLink"
-                  defaultMessage="verified certificate"
-                />
-              </Hyperlink>),
-          }}
+          values={{ verifiedCertLink }}
         />
       </li>
       <li>
