@@ -6,23 +6,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
 import { getConfig } from '@edx/frontend-platform';
-import { Hyperlink } from '@edx/paragon';
 
 import { UpgradeButton } from '../../../generic/upgrade-button';
 
 function UpsellNoFBECardContent() {
   const verifiedCertLink = (
-    <Hyperlink
-      destination={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}
-      className="font-weight-bold"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>
       <FormattedMessage
         id="learning.outline.widgets.upgradeCard.verifiedCertLink"
         defaultMessage="verified certificate"
       />
-    </Hyperlink>
+    </a>
   );
 
   return (
@@ -53,17 +47,12 @@ function UpsellNoFBECardContent() {
 
 function UpsellFBEFarAwayCardContent() {
   const verifiedCertLink = (
-    <Hyperlink
-      destination={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}
-      className="font-weight-bold"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>
       <FormattedMessage
         id="learning.outline.widgets.upgradeCard.verifiedCertLink"
         defaultMessage="verified certificate"
       />
-    </Hyperlink>
+    </a>
   );
 
   const gradedAssignments = (
@@ -152,17 +141,12 @@ function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) 
   );
 
   const benefitsOfUpgrading = (
-    <Hyperlink
-      destination="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-"
-      className="font-weight-bold"
-      rel="noopener noreferrer"
-      target="_blank"
-    >
+    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-">
       <FormattedMessage
         id="learning.outline.widgets.upgradeCard.expirationVerifiedCert.benefits"
         defaultMessage="benefits of upgrading"
       />
-    </Hyperlink>
+    </a>
   );
 
   return (
