@@ -28,6 +28,7 @@ function LoadedTabPage({
     title,
     celebrations,
     canViewLegacyCourseware,
+    verifiedMode,
   } = useModel(metadataModel, courseId);
 
   // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
@@ -38,10 +39,8 @@ function LoadedTabPage({
   const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
-  const AA759ExperimentEnabled = celebrations && celebrations.streakDiscountExperimentEnabled;
+  const AA759ExperimentEnabled = celebrations && celebrations.streakDiscountExperimentEnabled && verifiedMode;
   const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(streakLengthToCelebrate);
-
-  const { verifiedMode } = useModel(metadataModel, courseId);
 
   return (
     <>
