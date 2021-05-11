@@ -45,6 +45,9 @@ function StreakModal({
   courseId, metadataModel, streakLengthToCelebrate, intl, isStreakCelebrationOpen,
   closeStreakCelebration, AA759ExperimentEnabled, verifiedMode, ...rest
 }) {
+  if (!isStreakCelebrationOpen) {
+    return null;
+  }
   const { org, celebrations } = useModel(metadataModel, courseId);
   const factoid = getRandomFactoid(intl, streakLengthToCelebrate);
   // eslint-disable-next-line no-unused-vars
@@ -74,18 +77,24 @@ function StreakModal({
     );
   }
 
-  const upgradeUrl = `${verifiedMode.upgradeUrl}&code=3DayStreak`;
-  const mode = {
-    currencySymbol: verifiedMode.currencySymbol,
-    price: verifiedMode.price,
-    upgradeUrl,
-  };
+  let upgradeUrl;
+  let mode;
+  let offer;
 
-  const offer = {
-    discountedPrice: (mode.price * 0.85).toFixed(2).toString(),
-    originalPrice: mode.price.toString(),
-    upgradeUrl: mode.upgradeUrl,
-  };
+  if (verifiedMode) {
+    upgradeUrl = `${verifiedMode.upgradeUrl}&code=3DayStreak`;
+    mode = {
+      currencySymbol: verifiedMode.currencySymbol,
+      price: verifiedMode.price,
+      upgradeUrl,
+    };
+
+    offer = {
+      discountedPrice: (mode.price * 0.85).toFixed(2).toString(),
+      originalPrice: mode.price.toString(),
+      upgradeUrl: mode.upgradeUrl,
+    };
+  }
 
   const title = `${streakLengthToCelebrate} ${intl.formatMessage(messages.streakHeader)}`;
 
