@@ -10,24 +10,29 @@ import { getConfig } from '@edx/frontend-platform';
 import { UpgradeButton } from '../../../generic/upgrade-button';
 
 function UpsellNoFBECardContent() {
+  const verifiedCertLink = (
+    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>
+      <FormattedMessage
+        id="learning.outline.widgets.upgradeCard.verifiedCertLink"
+        defaultMessage="verified certificate"
+      />
+    </a>
+  );
+
   return (
     <ul className="fa-ul upgrade-card-ul pt-0">
       <li>
         <span className="fa-li upgrade-card-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
-          id="learning.outline.alert.upgradecard.verifiedCertLink"
+          id="learning.outline.widgets.upgradeCard.verifiedCertMessage"
           defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
-          values={{
-            verifiedCertLink: (
-              <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>verified certificate</a>
-            ),
-          }}
+          values={{ verifiedCertLink }}
         />
       </li>
       <li>
         <span className="fa-li upgrade-card-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
-          id="learning.outline.alert.upgradecard.nonProfitMission"
+          id="learning.outline.widgets.upgradeCard.nonProfitMission"
           defaultMessage="Support our {nonProfitMission} at edX"
           values={{
             nonProfitMission: (
@@ -41,54 +46,74 @@ function UpsellNoFBECardContent() {
 }
 
 function UpsellFBEFarAwayCardContent() {
+  const verifiedCertLink = (
+    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>
+      <FormattedMessage
+        id="learning.outline.widgets.upgradeCard.verifiedCertLink"
+        defaultMessage="verified certificate"
+      />
+    </a>
+  );
+
+  const gradedAssignments = (
+    <span className="font-weight-bold">
+      <FormattedMessage
+        id="learning.outline.widgets.upgradeCard.gradedAssignments"
+        defaultMessage="graded assignments"
+      />
+    </span>
+  );
+
+  const fullAccess = (
+    <span className="font-weight-bold">
+      <FormattedMessage
+        id="learning.upgradeCard.verifiedCertLink"
+        defaultMessage="Full access"
+      />
+    </span>
+  );
+
+  const nonProfitMission = (
+    <span className="font-weight-bold">
+      <FormattedMessage
+        id="learning.upgradeCard.nonProfitMission"
+        defaultMessage="non-profit mission"
+      />
+    </span>
+  );
+
   return (
     <ul className="fa-ul upgrade-card-ul">
       <li>
         <span className="fa-li upgrade-card-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
-          id="learning.outline.alert.upgradecard.verifiedCertLink"
+          id="learning.outline.widgets.upgradeCard.verifiedCertMessage"
           defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
-          values={{
-            verifiedCertLink: (
-              <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>verified certificate</a>
-            ),
-          }}
+          values={{ verifiedCertLink }}
         />
       </li>
       <li>
         <span className="fa-li upgrade-card-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
-          id="learning.outline.alert.upgradecard.unlock-graded"
+          id="learning.outline.widgets.upgradeCard.unlockGraded"
           defaultMessage="Unlock your access to all course activities, including {gradedAssignments}"
-          values={{
-            gradedAssignments: (
-              <span className="font-weight-bold">graded assignments</span>
-            ),
-          }}
+          values={{ gradedAssignments }}
         />
       </li>
       <li>
         <span className="fa-li upgrade-card-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
-          id="learning.outline.alert.upgradecard.fullAccess"
+          id="learning.outline.widgets.upgradeCard.fullAccess"
           defaultMessage="{fullAccess} to course content and materials, even after the course ends"
-          values={{
-            fullAccess: (
-              <span className="font-weight-bold">Full access</span>
-            ),
-          }}
+          values={{ fullAccess }}
         />
       </li>
       <li>
         <span className="fa-li upgrade-card-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
-          id="learning.outline.alert.upgradecard.nonProfitMission"
+          id="learning.outline.widgets.upgradeCard.nonProfitMission"
           defaultMessage="Support our {nonProfitMission} at edX"
-          values={{
-            nonProfitMission: (
-              <span className="font-weight-bold">non-profit mission</span>
-            ),
-          }}
+          values={{ nonProfitMission }}
         />
       </li>
     </ul>
@@ -96,33 +121,51 @@ function UpsellFBEFarAwayCardContent() {
 }
 
 function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) {
+  const includingAnyProgress = (
+    <span className="font-weight-bold">
+      <FormattedMessage
+        id="learning.upgradeCard.expirationAccessLoss.progress"
+        defaultMessage="including any progress"
+      />
+    </span>
+  );
+
+  const date = (
+    <FormattedDate
+      key="accessDate"
+      day="numeric"
+      month="long"
+      value={new Date(accessExpirationDate)}
+      {...timezoneFormatArgs}
+    />
+  );
+
+  const benefitsOfUpgrading = (
+    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-">
+      <FormattedMessage
+        id="learning.outline.widgets.upgradeCard.expirationVerifiedCert.benefits"
+        defaultMessage="benefits of upgrading"
+      />
+    </a>
+  );
+
   return (
     <div className="upgrade-card-text">
       <p>
         <FormattedMessage
-          id="learning.outline.alert.upgradecard.expirationAccessLoss"
+          id="learning.outline.widgets.upgradeCard.expirationAccessLoss"
           defaultMessage="You will lose all access to this course, {includingAnyProgress}, on {date}."
           values={{
-            includingAnyProgress: (<span className="font-weight-bold">including any progress</span>),
-            date: (
-              <FormattedDate
-                key="accessDate"
-                day="numeric"
-                month="long"
-                value={new Date(accessExpirationDate)}
-                {...timezoneFormatArgs}
-              />
-            ),
+            includingAnyProgress,
+            date,
           }}
         />
       </p>
       <p>
         <FormattedMessage
-          id="learning.outline.alert.upgradecard.expirationVerifiedCert"
+          id="learning.outline.widgets.upgradeCard.expirationVerifiedCert"
           defaultMessage="Upgrading your course enables you to pursue a verified certificate and unlocks numerous features. Learn more about the {benefitsOfUpgrading}."
-          values={{
-            benefitsOfUpgrading: (<a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-">benefits of upgrading</a>),
-          }}
+          values={{ benefitsOfUpgrading }}
         />
       </p>
     </div>
@@ -146,7 +189,7 @@ function ExpirationCountdown({ hoursToExpiration }) {
   if (hoursToExpiration >= 24) {
     expirationText = (
       <FormattedMessage
-        id="learning.outline.alert.upgradecard.expiration.days"
+        id="learning.outline.widgets.upgradeCard.expirationDays"
         defaultMessage={`{dayCount, number} {dayCount, plural, 
           one {day}
           other {days}} left`}
@@ -158,7 +201,7 @@ function ExpirationCountdown({ hoursToExpiration }) {
   } else if (hoursToExpiration >= 1) {
     expirationText = (
       <FormattedMessage
-        id="learning.outline.alert.upgradecard.expiration.hours"
+        id="learning.outline.widgets.upgradeCard.expirationHours"
         defaultMessage={`{hourCount, number} {hourCount, plural,
           one {hour}
           other {hours}} left`}
@@ -170,7 +213,7 @@ function ExpirationCountdown({ hoursToExpiration }) {
   } else {
     expirationText = (
       <FormattedMessage
-        id="learning.outline.alert.upgradecard.expiration.minutes"
+        id="learning.outline.widgets.upgradeCard.expirationMinutes"
         defaultMessage="Less than 1 hour left"
       />
     );
@@ -186,7 +229,7 @@ function AccessExpirationDateBanner({ accessExpirationDate, timezoneFormatArgs }
   return (
     <div className="upsell-warning-light">
       <FormattedMessage
-        id="learning.outline.alert.upgradecard.expirationr"
+        id="learning.outline.widgets.upgradeCard.expiration"
         defaultMessage="Course access will expire {date}"
         values={{
           date: (
@@ -286,7 +329,7 @@ function UpgradeCard({
       offerCode = (
         <div className="text-center discount-info">
           <FormattedMessage
-            id="learning.outline.alert.upgradecard.code"
+            id="learning.outline.widgets.upgradeCard.code"
             defaultMessage="Use code {code} at checkout"
             values={{
               code: (<span className="font-weight-bold">{offer.code}</span>),
@@ -301,7 +344,7 @@ function UpgradeCard({
         const hoursToDiscountExpiration = Math.floor((new Date(offer.expirationDate) - correctedTime) / 1000 / 60 / 60);
         upgradeCardHeaderText = (
           <FormattedMessage
-            id="learning.outline.alert.upgradecard.firstTimeLearnerDiscount"
+            id="learning.outline.widgets.upgradeCard.firstTimeLearnerDiscount"
             defaultMessage="{percentage}% First-Time Learner Discount"
             values={{
               percentage: (offer.percentage),
@@ -312,7 +355,7 @@ function UpgradeCard({
       } else {
         upgradeCardHeaderText = (
           <FormattedMessage
-            id="learning.outline.alert.upgradecard.accessExpiration"
+            id="learning.outline.widgets.upgradeCard.accessExpiration"
             defaultMessage="Upgrade your course today"
           />
         );
@@ -327,7 +370,7 @@ function UpgradeCard({
     } else { // more urgent messaging if there's less than 7 days left to access expiration
       upgradeCardHeaderText = (
         <FormattedMessage
-          id="learning.outline.alert.upgradecard.accessExpirationUrgent"
+          id="learning.outline.widgets.upgradeCard.accessExpirationUrgent"
           defaultMessage="Course Access Expiration"
         />
       );
@@ -342,7 +385,7 @@ function UpgradeCard({
   } else { // FBE is turned off
     upgradeCardHeaderText = (
       <FormattedMessage
-        id="learning.outline.alert.upgradecard.pursueAverifiedCertificate"
+        id="learning.outline.widgets.upgradeCard.pursueAverifiedCertificate"
         defaultMessage="Pursue a verified certificate"
       />
     );
