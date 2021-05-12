@@ -33,7 +33,7 @@ export function fetchCourse(courseId) {
           model: courseMetadataResult.value,
         }));
         dispatch(setsSpecialExamsEnabled({
-          specialExamsEnabled: courseMetadataResult.value.specialExamsEnabled,
+          specialExamsEnabledWaffleFlag: courseMetadataResult.value.specialExamsEnabledWaffleFlag,
         }));
       }
 
