@@ -118,8 +118,8 @@ export async function getDatesTabData(courseId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`);
-      return {};
     }
+    // 401 can be returned for unauthenticated users or users who are not enrolled
     if (httpErrorStatus === 401) {
       global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
     }
@@ -138,6 +138,10 @@ export async function getProgressTabData(courseId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
+    }
+    // 401 can be returned for unauthenticated users or users who are not enrolled
+    if (httpErrorStatus === 401) {
+      global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
     }
     throw error;
   }

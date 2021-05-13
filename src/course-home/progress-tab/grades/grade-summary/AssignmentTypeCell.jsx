@@ -24,7 +24,7 @@ AssignmentTypeCell.propTypes = {
 
 AssignmentTypeCell.defaultProps = {
   footnoteId: '',
-  footnoteMarker: '',
+  footnoteMarker: null,
 };
 
 export default AssignmentTypeCell;

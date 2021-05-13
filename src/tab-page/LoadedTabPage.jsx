@@ -45,7 +45,7 @@ function LoadedTabPage({
   return (
     <>
       <Helmet>
-        <title>{`${activeTab.title} | ${title} | ${getConfig().SITE_NAME}`}</title>
+        <title>{`${activeTab ? `${activeTab.title} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
       <Header
         courseOrg={org}
