@@ -90,8 +90,8 @@ function StreakModal({
     };
 
     offer = {
-      discountedPrice: (mode.price * 0.85).toFixed(2).toString(),
-      originalPrice: mode.price.toString(),
+      discountedPrice: `${verifiedMode.currencySymbol}${(mode.price * 0.85).toFixed(2).toString()}`,
+      originalPrice: `${verifiedMode.currencySymbol}${mode.price.toString()}`,
       upgradeUrl: mode.upgradeUrl,
     };
   }
