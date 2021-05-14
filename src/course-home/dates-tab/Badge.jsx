@@ -5,7 +5,7 @@ import classNames from 'classnames';
 export default function Badge({ children, className }) {
   return (
     <span
-      className={classNames('dates-badge small ml-2', className)}
+      className={classNames('dates-badge x-small ml-2', className)}
       data-testid="dates-badge"
     >
       {children}
