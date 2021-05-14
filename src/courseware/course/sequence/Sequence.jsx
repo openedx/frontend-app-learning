@@ -11,8 +11,8 @@ import {
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import { history } from '@edx/frontend-platform';
+import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 
-import SequenceExamWrapper from '../../../../packages/frontend-lib-special-exams/src';
 import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
 import useWindowSize, { responsiveBreakpoints } from '../../../generic/tabs/useWindowSize';
