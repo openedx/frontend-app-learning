@@ -24,14 +24,7 @@ function CourseGrade({ intl }) {
     },
   } = useModel('progress', courseId);
 
-  let passingGrade;
-  if (gradeRange.pass) {
-    passingGrade = gradeRange.pass * 100;
-  } else {
-    passingGrade = Object.entries(gradeRange).pop()[1] * 100;
-  }
-
-  passingGrade = Number(passingGrade.toFixed(0));
+  const passingGrade = Number((Math.min(...Object.values(gradeRange)) * 100).toFixed(0));
 
   const isLocked = lockedCount > 0;
   const applyLockedOverlay = isLocked ? 'locked-overlay' : '';

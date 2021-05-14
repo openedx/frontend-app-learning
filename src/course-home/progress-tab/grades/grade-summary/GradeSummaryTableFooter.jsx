@@ -20,7 +20,7 @@ function GradeSummaryTableFooter({ intl }) {
   } = useModel('progress', courseId);
 
   const bgColor = isPassing ? 'bg-success-100' : 'bg-warning-100';
-  const totalGrade = percent * 100;
+  const totalGrade = (percent * 100).toFixed(0);
 
   return (
     <DataTable.TableFooter className={`border-top border-primary ${bgColor}`}>
