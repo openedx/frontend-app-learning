@@ -134,8 +134,8 @@ describe('Upgrade Card', () => {
         expirationDate: discountExpirationDate.toString(),
         percentage: 15,
         code: 'Welcome15',
-        discountedPrice: '126.65',
-        originalPrice: '149',
+        discountedPrice: '$126.65',
+        originalPrice: '$149',
         upgradeUrl: 'www.exampleUpgradeUrl.com',
       },
     });
@@ -163,8 +163,8 @@ describe('Upgrade Card', () => {
         expirationDate: discountExpirationDate.toString(),
         percentage: 15,
         code: 'Welcome15',
-        discountedPrice: '126.65',
-        originalPrice: '149',
+        discountedPrice: '$126.65',
+        originalPrice: '$149',
         upgradeUrl: 'www.exampleUpgradeUrl.com',
       },
     });
@@ -192,8 +192,8 @@ describe('Upgrade Card', () => {
         expirationDate: discountExpirationDate.toString(),
         percentage: 15,
         code: 'Welcome15',
-        discountedPrice: '126.65',
-        originalPrice: '149',
+        discountedPrice: '$126.65',
+        originalPrice: '$149',
         upgradeUrl: 'www.exampleUpgradeUrl.com',
       },
     });
@@ -221,8 +221,8 @@ describe('Upgrade Card', () => {
         expirationDate: discountExpirationDate.toString(),
         percentage: 15,
         code: 'Welcome15',
-        discountedPrice: '126.65',
-        originalPrice: '149',
+        discountedPrice: '$126.65',
+        originalPrice: '$149',
         upgradeUrl: 'www.exampleUpgradeUrl.com',
       },
     });
