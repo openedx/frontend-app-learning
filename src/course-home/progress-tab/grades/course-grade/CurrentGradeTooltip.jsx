@@ -37,14 +37,14 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
         )}
       >
         <g>
-          <circle cx={`${currentGrade}%`} cy="50%" r="8.5" fill="transparent" />
-          <rect className="grade-bar__divider" x={`${currentGrade}%`} style={{ transform: 'translateY(2.61em)' }} />
+          <circle cx={`${Math.min(...[currentGrade, 100])}%`} cy="50%" r="8.5" fill="transparent" />
+          <rect className="grade-bar__divider" x={`${Math.min(...[currentGrade, 100])}%`} style={{ transform: 'translateY(2.61em)' }} />
         </g>
       </OverlayTrigger>
       <text
         className="x-small"
         textAnchor={currentGrade < 50 ? 'start' : 'end'}
-        x={`${currentGrade}%`}
+        x={`${Math.min(...[currentGrade, 100])}%`}
         y="20px"
         style={{ transform: `translateX(${currentGrade < 50 ? '' : '-'}3.4em)` }}
       >
