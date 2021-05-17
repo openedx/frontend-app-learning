@@ -77,6 +77,7 @@ function getBadgeListAndColor(date, intl, item, items) {
     },
   ];
   let color = null; // first color of any badge
+  const marginTopStyle = item ? { marginTop: 0 } : { marginTop: '2px' };
   const badges = (
     <>
       {badgesInfo.map(b => {
@@ -96,7 +97,7 @@ function getBadgeListAndColor(date, intl, item, items) {
           color = b.bg;
         }
         return (
-          <Badge key={b.message.id} className={classNames(b.bg, b.className)}>
+          <Badge key={b.message.id} style={marginTopStyle} className={classNames(b.bg, b.className)}>
             {b.icon && <FontAwesomeIcon icon={b.icon} className="mr-1" />}
             {intl.formatMessage(b.message)}
           </Badge>
