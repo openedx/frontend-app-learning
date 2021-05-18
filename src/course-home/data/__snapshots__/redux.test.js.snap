@@ -536,9 +536,9 @@ Object {
           "lockedCount": 0,
         },
         "courseGrade": Object {
-          "isPassing": false,
-          "letterGrade": null,
-          "percent": 0,
+          "isPassing": true,
+          "letterGrade": "pass",
+          "percent": 1,
         },
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "end": "3027-03-31T00:00:00Z",
@@ -547,6 +547,7 @@ Object {
           "assignmentPolicies": Array [
             Object {
               "numDroppable": 1,
+              "numTotal": 2,
               "shortLabel": "HW",
               "type": "Homework",
               "weight": 1,

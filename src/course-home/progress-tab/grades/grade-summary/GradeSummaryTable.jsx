@@ -27,9 +27,23 @@ function GradeSummaryTable({
 
   const footnotes = [];
 
-  const calculateWeightedGrade = (numPointsEarned, numPointsPossible, assignmentWeight) => (
-    numPointsPossible > 0 ? ((numPointsEarned * assignmentWeight * 100) / numPointsPossible).toFixed(0) : 0
-  );
+  const calculateAssignmentTypeGrades = (points, assignmentWeight, numDroppable) => {
+    let dropCount = numDroppable;
+    // Drop the lowest grades
+    while (dropCount && points.length >= dropCount) {
+      const lowestScore = Math.min(...points);
+      const lowestScoreIndex = points.indexOf(lowestScore);
+      points.splice(lowestScoreIndex, 1);
+      dropCount--;
+    }
+    let averageGrade = 0;
+    let weightedGrade = 0;
+    if (points.length) {
+      averageGrade = Number(((points.reduce((a, b) => a + b, 0) / points.length) * 100).toFixed(0));
+      weightedGrade = (averageGrade * assignmentWeight).toFixed(0);
+    }
+    return { averageGrade, weightedGrade };
+  };
 
   const getFootnoteId = (assignment) => {
     const footnoteId = assignment.shortLabel ? assignment.shortLabel : assignment.type;
@@ -51,16 +65,19 @@ function GradeSummaryTable({
       footnoteMarker = footnotes.length;
     }
 
-    const weightedGrade = calculateWeightedGrade(
-      gradeByAssignmentType[assignment.type].numPointsEarned,
-      gradeByAssignmentType[assignment.type].numPointsPossible,
+    const {
+      averageGrade,
+      weightedGrade,
+    } = calculateAssignmentTypeGrades(
+      gradeByAssignmentType[assignment.type].grades,
       assignment.weight,
+      assignment.numDroppable,
     );
 
     return {
       type: { footnoteId, footnoteMarker, type: assignment.type },
       weight: `${assignment.weight * 100}%`,
-      score: `${gradeByAssignmentType[assignment.type].numPointsEarned}/${gradeByAssignmentType[assignment.type].numPointsPossible}`,
+      grade: `${averageGrade}%`,
       weightedGrade: `${weightedGrade}%`,
     };
   });
@@ -91,8 +108,8 @@ function GradeSummaryTable({
             cellClassName: 'float-right small',
           },
           {
-            Header: `${intl.formatMessage(messages.score)}`,
-            accessor: 'score',
+            Header: `${intl.formatMessage(messages.grade)}`,
+            accessor: 'grade',
             headerClassName: 'justify-content-end h5 mb-0',
             cellClassName: 'float-right small',
           },

@@ -69,6 +69,10 @@ const messages = defineMessages({
     id: 'progress.footnotes.title',
     defaultMessage: 'Grade summary footnotes',
   },
+  grade: {
+    id: 'progress.gradeSummary.grade',
+    defaultMessage: 'Grade',
+  },
   grades: {
     id: 'progress.courseGrade.grades',
     defaultMessage: 'Grades',
@@ -88,7 +92,7 @@ const messages = defineMessages({
   gradeSummaryTooltipBody: {
     id: 'progress.gradeSummary.tooltip.body',
     defaultMessage: "Your course assignment's weight is determined by your instructor. "
-      + 'By multiplying your score by the weight for that assignment type, your weighted grade is calculated. '
+      + 'By multiplying your grade by the weight for that assignment type, your weighted grade is calculated. '
       + "Your weighted grade is what's used to determine if you pass the course.",
   },
   passingGradeLabel: {

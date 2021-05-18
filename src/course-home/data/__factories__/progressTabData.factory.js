@@ -12,9 +12,9 @@ Factory.define('progressTabData')
       locked_count: 0,
     },
     course_grade: {
-      letter_grade: null,
-      percent: 0,
-      is_passing: false,
+      letter_grade: 'pass',
+      percent: 1,
+      is_passing: true,
     },
     section_scores: [
       {
@@ -55,6 +55,7 @@ Factory.define('progressTabData')
       assignment_policies: [
         {
           num_droppable: 1,
+          num_total: 2,
           short_label: 'HW',
           type: 'Homework',
           weight: 1,
