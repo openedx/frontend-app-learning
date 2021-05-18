@@ -64,6 +64,7 @@ function OutlineTab({ intl }) {
       url: resumeCourseUrl,
     },
     offer,
+    timeOffsetMillis,
     verifiedMode,
   } = useModel('outline', courseId);
 
@@ -118,7 +119,7 @@ function OutlineTab({ intl }) {
       >
         {goalToastHeader}
       </Toast>
-      <div className="row w-100 m-0 mb-3 justify-content-between">
+      <div className="row w-100 mx-0 my-3 justify-content-between">
         <div className="col-12 col-sm-auto p-0">
           <div role="heading" aria-level="1" className="h2">{title}</div>
         </div>
@@ -224,10 +225,14 @@ function OutlineTab({ intl }) {
               ? <MMP2PFlyover isStatic options={MMP2P} />
               : (
                 <UpgradeCard
+                  offer={offer}
+                  verifiedMode={verifiedMode}
+                  accessExpiration={accessExpiration}
+                  contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
+                  userTimezone={userTimezone}
+                  timeOffsetMillis={timeOffsetMillis}
                   courseId={courseId}
-                  onLearnMore={
-                    canShowUpgradeSock ? () => { courseSock.current.showToUser(); } : null
-                  }
+                  org={org}
                 />
               )}
             <CourseDates

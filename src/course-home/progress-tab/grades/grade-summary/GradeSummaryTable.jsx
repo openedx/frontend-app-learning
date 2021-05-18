@@ -38,7 +38,7 @@ function GradeSummaryTable({
 
   const gradeSummaryData = assignmentPolicies.map((assignment) => {
     let footnoteId = '';
-    let footnoteMarker = '';
+    let footnoteMarker;
 
     if (assignment.numDroppable > 0) {
       footnoteId = getFootnoteId(assignment);

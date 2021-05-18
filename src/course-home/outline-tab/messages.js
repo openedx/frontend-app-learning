@@ -166,7 +166,7 @@ const messages = defineMessages({
   },
   verifiedProctoringMessage: {
     id: 'learning.proctoringPanel.message.verified',
-    defaultMessage: 'You can now take proctored exams in this course.',
+    defaultMessage: 'Your onboarding exam has been approved in this course.',
   },
   rejectedProctoringMessage: {
     id: 'learning.proctoringPanel.message.rejected',
@@ -178,7 +178,7 @@ const messages = defineMessages({
   },
   otherCourseApprovedProctoringMessage: {
     id: 'learning.proctoringPanel.message.otherCourseApproved',
-    defaultMessage: 'You are eligible to take proctored exams in this course.',
+    defaultMessage: 'Your onboarding exam has been approved in another course.',
   },
   otherCourseApprovedProctoringDetail: {
     id: 'learning.proctoringPanel.detail.otherCourseApproved',
@@ -186,7 +186,7 @@ const messages = defineMessages({
   },
   expiringSoonProctoringMessage: {
     id: 'learning.proctoringPanel.message.expiringSoon',
-    defaultMessage: 'Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.',
+    defaultMessage: 'Your onboarding profile has been approved in another course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.',
   },
   proctoringPanelGeneralInfo: {
     id: 'learning.proctoringPanel.generalInfo',

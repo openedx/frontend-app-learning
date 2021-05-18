@@ -815,7 +815,7 @@ describe('Outline Tab', () => {
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
-      expect(screen.queryByText('You are eligible to take proctored exams in this course.')).toBeInTheDocument();
+      expect(screen.queryByText('Your onboarding exam has been approved in another course.')).toBeInTheDocument();
       expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).not.toBeInTheDocument();
     });
 
@@ -831,7 +831,7 @@ describe('Outline Tab', () => {
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
-      expect(screen.queryByText('Your onboarding profile has been approved in another course, so you are eligible to take proctored exams in this course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
+      expect(screen.queryByText('Your onboarding profile has been approved in another course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
       expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
     });
 

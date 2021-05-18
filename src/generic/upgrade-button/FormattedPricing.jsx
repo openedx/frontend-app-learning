@@ -12,9 +12,13 @@ function FormattedPricing(props) {
     verifiedMode,
   } = props;
 
+  let currencySymbol;
+  if (verifiedMode) {
+    currencySymbol = verifiedMode.currencySymbol;
+  }
+
   if (!offer) {
     const {
-      currencySymbol,
       price,
     } = verifiedMode;
     return `${currencySymbol}${price}`;

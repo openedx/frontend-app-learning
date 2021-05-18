@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Lightbulb } from '@edx/paragon/icons';
-import { Icon, Modal } from '@edx/paragon';
+import {
+  FormattedMessage, injectIntl, intlShape,
+} from '@edx/frontend-platform/i18n';
+import { Lightbulb, MoneyFilled } from '@edx/paragon/icons';
+import {
+  Alert, Icon, ModalDialog,
+} from '@edx/paragon';
 import { layoutGenerator } from 'react-break';
 import { useDispatch } from 'react-redux';
+import { UpgradeNowButton } from '../../generic/upgrade-button';
 
 import { useModel } from '../../generic/model-store';
 import StreakMobileImage from './assets/Streak_mobile.png';
@@ -37,8 +42,12 @@ function getRandomFactoid(intl, streakLength) {
 }
 
 function StreakModal({
-  courseId, metadataModel, streakLengthToCelebrate, intl, open, ...rest
+  courseId, metadataModel, streakLengthToCelebrate, intl, isStreakCelebrationOpen,
+  closeStreakCelebration, AA759ExperimentEnabled, verifiedMode, ...rest
 }) {
+  if (!isStreakCelebrationOpen) {
+    return null;
+  }
   const { org, celebrations } = useModel(metadataModel, courseId);
   const factoid = getRandomFactoid(intl, streakLengthToCelebrate);
   // eslint-disable-next-line no-unused-vars
@@ -54,10 +63,10 @@ function StreakModal({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (open) {
+    if (isStreakCelebrationOpen) {
       recordStreakCelebration(org, courseId);
     }
-  }, [open, org, courseId]);
+  }, [isStreakCelebrationOpen, org, courseId]);
 
   function CloseText() {
     return (
@@ -68,51 +77,135 @@ function StreakModal({
     );
   }
 
+  let upgradeUrl;
+  let mode;
+  let offer;
+
+  if (verifiedMode) {
+    upgradeUrl = `${verifiedMode.upgradeUrl}&code=3DayStreak`;
+    mode = {
+      currencySymbol: verifiedMode.currencySymbol,
+      price: verifiedMode.price,
+      upgradeUrl,
+    };
+
+    offer = {
+      discountedPrice: `${verifiedMode.currencySymbol}${(mode.price * 0.85).toFixed(2).toString()}`,
+      originalPrice: `${verifiedMode.currencySymbol}${mode.price.toString()}`,
+      upgradeUrl: mode.upgradeUrl,
+    };
+  }
+
+  const title = `${streakLengthToCelebrate} ${intl.formatMessage(messages.streakHeader)}`;
+
   return (
-    <div>
-      <Modal
-        dialogClassName="streak-modal modal-dialog-centered"
-        body={(
-          <>
-            <p>{intl.formatMessage(messages.streakBody)}</p>
-            <p className="modal-image">
-              <OnMobile>
-                <img src={StreakMobileImage} alt="" className="img-fluid" />
-              </OnMobile>
-              <OnDesktop>
-                <img src={StreakDesktopImage} alt="" className="img-fluid" />
-              </OnDesktop>
-            </p>
-            <div className="row mt-3 mx-3 py-3 bg-light-300">
-              <Icon className="col-small ml-3" src={Lightbulb} />
-              <div className="col-11 factoid-wrapper">
-                {randomFactoid}
-              </div>
+    <ModalDialog
+      className="streak-modal modal-dialog-centered"
+      title={title}
+      onClose={() => {
+        closeStreakCelebration();
+        recordModalClosing(metadataModel, celebrations, org, courseId, dispatch);
+      }}
+      isOpen={isStreakCelebrationOpen}
+      isFullscreenScroll
+      {...rest}
+    >
+      <ModalDialog.Header className="modal-header">
+        <ModalDialog.Title className="mr-0 modal-title">
+          {title}
+        </ModalDialog.Title>
+      </ModalDialog.Header>
+      <ModalDialog.Body className="modal-body">
+        <p>{intl.formatMessage(messages.streakBody)}</p>
+        <p className="modal-image">
+          <OnMobile>
+            <img src={StreakMobileImage} alt="" className="img-fluid" />
+          </OnMobile>
+          <OnDesktop>
+            <img src={StreakDesktopImage} alt="" className="img-fluid" />
+          </OnDesktop>
+        </p>
+        { !AA759ExperimentEnabled && (
+          <div className="d-flex py-3 bg-light-300">
+            <Icon className="col-small ml-3" src={Lightbulb} />
+            <div className="col-11 factoid-wrapper">
+              {randomFactoid}
             </div>
+          </div>
+        )}
+        { AA759ExperimentEnabled && (
+          <Alert variant="success" className="px-0 d-flex">
+            <Icon className="col-small ml-3 text-success-500" src={MoneyFilled} />
+            <div className="col-11 factoid-wrapper">
+              <b>{intl.formatMessage(messages.congratulations)}</b>
+              &nbsp;{intl.formatMessage(messages.streakDiscountMessage)}&nbsp;
+              <FormattedMessage
+                id="learning.streakCelebration.streakAA759EndDateMessage"
+                defaultMessage="Ends {date}."
+                values={{
+                  date: new Date('2021-6-25 00:00').toLocaleDateString({ timeZone: 'UTC' }),
+                }}
+              />
+            </div>
+          </Alert>
+        )}
+      </ModalDialog.Body>
+      <ModalDialog.Footer className="modal-footer d-block">
+        { AA759ExperimentEnabled && (
+          <>
+            <OnMobile>
+              <UpgradeNowButton
+                className="upgrade mb-3"
+                size="sm"
+                offer={offer}
+                variant="brand"
+                verifiedMode={mode}
+              />
+              <ModalDialog.CloseButton variant="outline-brand" className="btn-sm">
+                {intl.formatMessage(messages.streakButtonAA759)}
+              </ModalDialog.CloseButton>
+            </OnMobile>
+            <OnDesktop>
+              <UpgradeNowButton
+                className="upgrade mb-3"
+                offer={offer}
+                variant="brand"
+                verifiedMode={mode}
+              />
+              <ModalDialog.CloseButton variant="outline-brand">
+                {intl.formatMessage(messages.streakButtonAA759)}
+              </ModalDialog.CloseButton>
+            </OnDesktop>
           </>
         )}
-        closeText={<CloseText />}
-        onClose={() => {
-          recordModalClosing(metadataModel, celebrations, org, courseId, dispatch);
-        }}
-        open={open}
-        title={`${streakLengthToCelebrate} ${intl.formatMessage(messages.streakHeader)}`}
-        {...rest}
-      />
-    </div>
+        { !AA759ExperimentEnabled && (
+          <ModalDialog.CloseButton className="px-5" variant="primary"><CloseText /></ModalDialog.CloseButton>
+        )}
+      </ModalDialog.Footer>
+    </ModalDialog>
   );
 }
 
 StreakModal.defaultProps = {
-  open: false,
+  isStreakCelebrationOpen: false,
+  streakLengthToCelebrate: -1,
+  verifiedMode: {},
+  AA759ExperimentEnabled: false,
 };
 
 StreakModal.propTypes = {
   courseId: PropTypes.string.isRequired,
   metadataModel: PropTypes.string.isRequired,
-  streakLengthToCelebrate: PropTypes.number.isRequired,
+  streakLengthToCelebrate: PropTypes.number,
   intl: intlShape.isRequired,
-  open: PropTypes.bool,
+  isStreakCelebrationOpen: PropTypes.bool,
+  closeStreakCelebration: PropTypes.func.isRequired,
+  AA759ExperimentEnabled: PropTypes.bool,
+  verifiedMode: PropTypes.shape({
+    currencySymbol: PropTypes.string,
+    price: PropTypes.number,
+    upgradeUrl: PropTypes.string,
+  }),
 };
 
 export default injectIntl(StreakModal);

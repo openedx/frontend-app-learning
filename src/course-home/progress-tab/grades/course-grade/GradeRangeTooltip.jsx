@@ -24,7 +24,9 @@ function GradeRangeTooltip({ intl, iconButtonClassName, passingGrade }) {
 
   const [showTooltip, setShowTooltip] = useState(false);
 
-  const gradeRangeEntries = Object.entries(gradeRange);
+  const orderedGradeRange = Object.entries(gradeRange).sort((a, b) => (
+    gradeRange[b[0]] - gradeRange[a[0]]
+  ));
 
   return (
     <OverlayTrigger
@@ -36,18 +38,18 @@ function GradeRangeTooltip({ intl, iconButtonClassName, passingGrade }) {
           <Popover.Content className="px-3">
             {intl.formatMessage(messages.courseGradeRangeTooltip)}
             <ul className="list-unstyled m-0">
-              {gradeRangeEntries.map((entry, index) => {
+              {orderedGradeRange.map((range, index) => {
                 if (index === 0) {
                   return (
-                    <li key={entry[0]}>
-                      {entry[0]}: {(entry[1] * 100).toFixed(0)}%-100%
+                    <li key={range[0]}>
+                      {range[0]}: {(range[1] * 100).toFixed(0)}%-100%
                     </li>
                   );
                 }
-                const previousGrade = gradeRangeEntries[index - 1];
+                const previousGrade = orderedGradeRange[index - 1];
                 return (
-                  <li key={entry[0]}>
-                    {entry[0]}: {(entry[1] * 100).toFixed(0)}%-{(previousGrade[1] * 100).toFixed(0)}%
+                  <li key={range[0]}>
+                    {range[0]}: {(range[1] * 100).toFixed(0)}%-{(previousGrade[1] * 100).toFixed(0)}%
                   </li>
                 );
               })}

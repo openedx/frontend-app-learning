@@ -118,8 +118,8 @@ export async function getDatesTabData(courseId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`);
-      return {};
     }
+    // 401 can be returned for unauthenticated users or users who are not enrolled
     if (httpErrorStatus === 401) {
       global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
     }
@@ -138,6 +138,10 @@ export async function getProgressTabData(courseId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
+    }
+    // 401 can be returned for unauthenticated users or users who are not enrolled
+    if (httpErrorStatus === 401) {
+      global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
     }
     throw error;
   }
@@ -160,11 +164,30 @@ export async function getProctoringInfoData(courseId, username) {
   }
 }
 
+export function getTimeOffsetMillis(headerDate, requestTime, responseTime) {
+  // Time offset computation should move down into the HttpClient wrapper to maintain a global time correction reference
+  // Requires 'Access-Control-Expose-Headers: Date' on the server response per https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#access-control-expose-headers
+
+  let timeOffsetMillis = 0;
+  if (headerDate !== undefined) {
+    const headerTime = Date.parse(headerDate);
+    const roundTripMillis = requestTime - responseTime;
+    const localTime = responseTime - (roundTripMillis / 2); // Roughly compensate for transit time
+    timeOffsetMillis = headerTime - localTime;
+  }
+
+  return timeOffsetMillis;
+}
+
 export async function getOutlineTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
   let { tabData } = {};
+  let requestTime = Date.now();
+  let responseTime = requestTime;
   try {
+    requestTime = Date.now();
     tabData = await getAuthenticatedHttpClient().get(url);
+    responseTime = Date.now();
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
@@ -176,7 +199,9 @@ export async function getOutlineTabData(courseId) {
 
   const {
     data,
+    headers,
   } = tabData;
+
   const accessExpiration = camelCaseObject(data.access_expiration);
   const canShowUpgradeSock = data.can_show_upgrade_sock;
   const courseBlocks = data.course_blocks ? normalizeOutlineBlocks(courseId, data.course_blocks.blocks) : {};
@@ -189,6 +214,7 @@ export async function getOutlineTabData(courseId) {
   const hasEnded = data.has_ended;
   const offer = camelCaseObject(data.offer);
   const resumeCourse = camelCaseObject(data.resume_course);
+  const timeOffsetMillis = getTimeOffsetMillis(headers && headers.date, requestTime, responseTime);
   const verifiedMode = camelCaseObject(data.verified_mode);
   const welcomeMessageHtml = data.welcome_message_html;
 
@@ -205,6 +231,7 @@ export async function getOutlineTabData(courseId) {
     hasEnded,
     offer,
     resumeCourse,
+    timeOffsetMillis, // This should move to a global time correction reference
     verifiedMode,
     welcomeMessageHtml,
   };

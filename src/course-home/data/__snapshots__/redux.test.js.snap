@@ -59,6 +59,11 @@ Object {
           },
         ],
         "title": "Demonstration Course",
+        "verifiedMode": Object {
+          "currencySymbol": "$",
+          "price": 10,
+          "upgradeUrl": "test",
+        },
       },
     },
     "dates": Object {
@@ -347,6 +352,11 @@ Object {
           },
         ],
         "title": "Demonstration Course",
+        "verifiedMode": Object {
+          "currencySymbol": "$",
+          "price": 10,
+          "upgradeUrl": "test",
+        },
       },
     },
     "outline": Object {
@@ -432,6 +442,7 @@ Object {
           "hasVisitedCourse": false,
           "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+Test+Block@12345abcde",
         },
+        "timeOffsetMillis": 0,
         "verifiedMode": Object {
           "accessExpirationDate": "2050-01-01T12:00:00",
           "currency": "USD",
@@ -441,6 +452,154 @@ Object {
           "upgradeUrl": "http://localhost:18000/dashboard",
         },
         "welcomeMessageHtml": "<p>Welcome to this course!</p>",
+      },
+    },
+  },
+  "recommendations": Object {
+    "recommendationsStatus": "loading",
+  },
+}
+`;
+
+exports[`Data layer integration tests Test fetchProgressTab Should fetch, normalize, and save metadata 1`] = `
+Object {
+  "courseHome": Object {
+    "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+    "courseStatus": "loaded",
+    "toastBodyLink": null,
+    "toastBodyText": null,
+    "toastHeader": "",
+  },
+  "courseware": Object {
+    "courseId": null,
+    "courseStatus": "loading",
+    "sequenceId": null,
+    "sequenceStatus": "loading",
+  },
+  "models": Object {
+    "courseHomeMeta": Object {
+      "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "canLoadCourseware": false,
+        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "isEnrolled": false,
+        "isSelfPaced": false,
+        "isStaff": false,
+        "number": "DemoX",
+        "org": "edX",
+        "originalUserIsStaff": false,
+        "tabs": Array [
+          Object {
+            "slug": "outline",
+            "title": "Course",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course/",
+          },
+          Object {
+            "slug": "discussion",
+            "title": "Discussion",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/discussion/forum/",
+          },
+          Object {
+            "slug": "wiki",
+            "title": "Wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course_wiki",
+          },
+          Object {
+            "slug": "progress",
+            "title": "Progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/progress",
+          },
+          Object {
+            "slug": "instructor",
+            "title": "Instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/instructor",
+          },
+          Object {
+            "slug": "dates",
+            "title": "Dates",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/dates",
+          },
+        ],
+        "title": "Demonstration Course",
+        "verifiedMode": Object {
+          "currencySymbol": "$",
+          "price": 10,
+          "upgradeUrl": "test",
+        },
+      },
+    },
+    "progress": Object {
+      "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "certificateData": Object {},
+        "completionSummary": Object {
+          "completeCount": 1,
+          "incompleteCount": 1,
+          "lockedCount": 0,
+        },
+        "courseGrade": Object {
+          "isPassing": false,
+          "letterGrade": null,
+          "percent": 0,
+        },
+        "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+        "end": "3027-03-31T00:00:00Z",
+        "enrollmentMode": "audit",
+        "gradingPolicy": Object {
+          "assignmentPolicies": Array [
+            Object {
+              "numDroppable": 1,
+              "shortLabel": "HW",
+              "type": "Homework",
+              "weight": 1,
+            },
+          ],
+          "gradeRange": Object {
+            "pass": 0.75,
+          },
+        },
+        "hasScheduledContent": false,
+        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "sectionScores": Array [
+          Object {
+            "displayName": "First section",
+            "subsections": Array [
+              Object {
+                "assignmentType": "Homework",
+                "displayName": "First subsection",
+                "hasGradedAssignment": true,
+                "numPointsEarned": 0,
+                "numPointsPossible": 1,
+                "percentGraded": 0,
+                "showCorrectness": "always",
+                "showGrades": true,
+                "url": "http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection",
+              },
+            ],
+          },
+          Object {
+            "displayName": "Second section",
+            "subsections": Array [
+              Object {
+                "assignmentType": "Homework",
+                "displayName": "Second subsection",
+                "hasGradedAssignment": true,
+                "numPointsEarned": 1,
+                "numPointsPossible": 1,
+                "percentGraded": 1,
+                "showCorrectness": "always",
+                "showGrades": true,
+                "url": "http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection",
+              },
+            ],
+          },
+        ],
+        "studioUrl": "http://studio.edx.org/settings/grading/course-v1:edX+Test+run",
+        "userHasPassingGrade": false,
+        "verificationData": Object {
+          "link": null,
+          "status": "none",
+          "statusDate": null,
+        },
+        "verifiedMode": null,
       },
     },
   },

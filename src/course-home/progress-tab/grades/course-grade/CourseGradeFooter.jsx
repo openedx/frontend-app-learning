@@ -55,30 +55,34 @@ function CourseGradeFooter({ intl, passingGrade }) {
     }
   }
 
+  const icon = isPassing ? <Icon src={CheckCircle} className="text-success-300 d-inline-flex align-bottom" />
+    : <Icon src={WarningFilled} className="d-inline-flex align-bottom" />;
+
   return (
-    <div className={`row w-100 m-0 px-4 py-3 py-md-4 align-items-baseline rounded-bottom ${isPassing ? 'bg-success-100' : 'bg-warning-100'}`}>
-      <div className="col-auto p-0 align-self-md-center">
-        {isPassing && (
-          <Icon src={CheckCircle} className="text-success-300 mt-n1 mr-2" />
-        )}
-        {!isPassing && (
-          <Icon src={WarningFilled} className="mt-n1 mr-2" />
-        )}
+    <div className={`row w-100 m-0 px-4 py-3 py-md-4 rounded-bottom ${isPassing ? 'bg-success-100' : 'bg-warning-100'}`}>
+      <div className="col-auto p-0">
+        {icon}
       </div>
-      <div className="col-11 col-md-auto p-0">
+      <div className="col-11 pl-2 px-0">
         <OnMobile>
-          <span className="h5" style={{ verticalAlign: 'super' }}>
+          <span className="h5 align-bottom">
             {footerText}
             {hasLetterGrades && (
-              <GradeRangeTooltip iconButtonClassName="h4 ml-1" passingGrade={passingGrade} />
+              <span style={{ whiteSpace: 'nowrap' }}>
+                &nbsp;
+                <GradeRangeTooltip iconButtonClassName="h4" passingGrade={passingGrade} />
+              </span>
             )}
           </span>
         </OnMobile>
         <OnAtLeastTablet>
-          <span className="h4 m-0">
+          <span className="h4 m-0 align-bottom">
             {footerText}
             {hasLetterGrades && (
-              <GradeRangeTooltip iconButtonClassName="h3 ml-1" passingGrade={passingGrade} />
+              <span style={{ whiteSpace: 'nowrap' }}>
+                &nbsp;
+                <GradeRangeTooltip iconButtonClassName="h3" passingGrade={passingGrade} />
+              </span>
             )}
           </span>
         </OnAtLeastTablet>

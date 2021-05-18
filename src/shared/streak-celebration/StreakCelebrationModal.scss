@@ -2,6 +2,7 @@
   text-align: center;
 
   .modal-header {
+    padding-top: 1.875rem;
     padding-bottom: 0;
     border-bottom: 0; // override default hr line
     justify-content: center;
@@ -19,6 +20,7 @@
 
   .modal-title {
     padding-top: 1.25rem;
+    font-size: 2rem;
   }
 
   .modal-body {
@@ -29,12 +31,6 @@
   .modal-footer {
     border-top: 0; // override default hr line
     justify-content: center;
-
-    button {
-      @extend .btn-primary;
-      font-size: 1.2rem;
-      width: 50%;
-    }
   }
 
   .modal-image {
