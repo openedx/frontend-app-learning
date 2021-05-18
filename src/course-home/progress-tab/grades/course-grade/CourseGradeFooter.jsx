@@ -40,15 +40,17 @@ function CourseGradeFooter({ intl, passingGrade }) {
 
   if (isPassing) {
     if (hasLetterGrades) {
-      const letterGrades = Object.keys(gradeRange);
-      const gradeIndex = letterGrades.indexOf(letterGrade);
-      const minGrade = gradeRange[letterGrade] * 100;
-      const maxGrade = gradeIndex > 0 ? gradeRange[letterGrades[gradeIndex - 1]] * 100 : 100;
+      const minGradeRangeCutoff = gradeRange[letterGrade] * 100;
+      const possibleMaxGradeRangeValues = [...Object.values(gradeRange).filter(
+        (grade) => (grade * 100 > minGradeRangeCutoff),
+      )];
+      const maxGradeRangeCutoff = possibleMaxGradeRangeValues.length ? Math.min(...possibleMaxGradeRangeValues) * 100
+        : 100;
 
       footerText = intl.formatMessage(messages.courseGradeFooterPassingWithGrade, {
         letterGrade,
-        minGrade: minGrade.toFixed(0),
-        maxGrade: maxGrade.toFixed(0),
+        minGrade: minGradeRangeCutoff.toFixed(0),
+        maxGrade: maxGradeRangeCutoff.toFixed(0),
       });
     } else {
       footerText = intl.formatMessage(messages.courseGradeFooterGenericPassing);

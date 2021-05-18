@@ -281,13 +281,13 @@ describe('Outline Tab', () => {
         ],
       });
       await fetchAndRender();
-      expect(screen.getByRole('heading', { name: 'Upcoming Dates' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Important dates' })).toBeInTheDocument();
     });
 
     it('does not render when course date blocks are not populated', async () => {
       setMetadata({ is_enrolled: true });
       await fetchAndRender();
-      expect(screen.queryByRole('heading', { name: 'Upcoming Dates' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: 'Important dates' })).not.toBeInTheDocument();
     });
 
     it('sends analytics event onClick of upgrade link', async () => {

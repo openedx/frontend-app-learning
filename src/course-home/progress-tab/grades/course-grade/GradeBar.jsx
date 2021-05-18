@@ -24,7 +24,7 @@ function GradeBar({ intl, passingGrade }) {
     },
   } = useModel('progress', courseId);
 
-  const currentGrade = percent * 100;
+  const currentGrade = Number((percent * 100).toFixed(0));
 
   const isLocked = lockedCount > 0;
   const lockedTooltipClassName = isLocked ? 'locked-overlay' : '';
