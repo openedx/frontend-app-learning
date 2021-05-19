@@ -56,4 +56,5 @@ Factory.define('courseMetadata')
     verification_status: 'none',
     linkedin_add_to_profile_url: null,
     related_programs: null,
+    is_mfe_special_exams_enabled: false,
   });
