@@ -60,19 +60,19 @@ describe('Progress Tab', () => {
     });
 
     it('renders correct copy for non-passing', async () => {
+      setTabData({
+        course_grade: {
+          is_passing: false,
+          letter_grade: null,
+          percent: 0.5,
+        },
+      });
       await fetchAndRender();
       expect(screen.queryByRole('button', { name: 'Grade range tooltip' })).not.toBeInTheDocument();
       expect(screen.getByText('A weighted grade of 75% is required to pass in this course')).toBeInTheDocument();
     });
 
     it('renders correct copy for passing with pass/fail grade range', async () => {
-      setTabData({
-        course_grade: {
-          is_passing: true,
-          letter_grade: 'Pass',
-          percent: 0.9,
-        },
-      });
       await fetchAndRender();
       expect(screen.queryByRole('button', { name: 'Grade range tooltip' })).not.toBeInTheDocument();
       expect(screen.getByText('You’re currently passing this course')).toBeInTheDocument();
@@ -193,6 +193,131 @@ describe('Progress Tab', () => {
       });
       await fetchAndRender();
       expect(screen.queryByText('Grade summary')).not.toBeInTheDocument();
+    });
+
+    it('calculates grades correctly when number of droppable assignments equals total number of assignments', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 2,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByText('Grade summary')).toBeInTheDocument();
+      // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
+      expect(screen.getByRole('row', { name: 'Homework 1 100% 0% 0%' })).toBeInTheDocument();
+    });
+    it('calculates grades correctly when number of droppable assignments is less than total number of assignments', async () => {
+      await fetchAndRender();
+      expect(screen.getByText('Grade summary')).toBeInTheDocument();
+      // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
+      expect(screen.getByRole('row', { name: 'Homework 1 100% 100% 100%' })).toBeInTheDocument();
+    });
+    it('calculates grades correctly when number of droppable assignments is zero', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByText('Grade summary')).toBeInTheDocument();
+      // The row is comprised of "{Assignment type} {weight} {grade} {weighted grade}"
+      expect(screen.getByRole('row', { name: 'Homework 100% 50% 50%' })).toBeInTheDocument();
+    });
+    it('calculates grades correctly when number of total assignments is less than the number of assignments created', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 1,
+              num_total: 1, // two assignments created in the factory, but 1 is expected per Studio settings
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByText('Grade summary')).toBeInTheDocument();
+      // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
+      expect(screen.getByRole('row', { name: 'Homework 1 100% 100% 100%' })).toBeInTheDocument();
+    });
+    it('calculates grades correctly when number of total assignments is greater than the number of assignments created', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 5, // two assignments created in the factory, but 5 are expected per Studio settings
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByText('Grade summary')).toBeInTheDocument();
+      // The row is comprised of "{Assignment type} {weight} {grade} {weighted grade}"
+      expect(screen.getByRole('row', { name: 'Homework 100% 20% 20%' })).toBeInTheDocument();
+    });
+    it('calculates weighted grades correctly', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 1,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 0.5,
+            },
+            {
+              num_droppable: 0,
+              num_total: 1,
+              short_label: 'Ex',
+              type: 'Exam',
+              weight: 0.5,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByText('Grade summary')).toBeInTheDocument();
+      // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
+      expect(screen.getByRole('row', { name: 'Homework 1 50% 100% 50%' })).toBeInTheDocument();
+      expect(screen.getByRole('row', { name: 'Exam 50% 0% 0%' })).toBeInTheDocument();
     });
   });
 
