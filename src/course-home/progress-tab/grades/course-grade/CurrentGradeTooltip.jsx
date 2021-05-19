@@ -21,7 +21,7 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
     },
   } = useModel('progress', courseId);
 
-  const currentGrade = percent * 100;
+  const currentGrade = Number((percent * 100).toFixed(0));
 
   return (
     <>

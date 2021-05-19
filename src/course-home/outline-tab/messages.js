@@ -22,7 +22,7 @@ const messages = defineMessages({
   },
   dates: {
     id: 'learning.outline.dates',
-    defaultMessage: 'Upcoming Dates',
+    defaultMessage: 'Important dates',
   },
   editGoal: {
     id: 'learning.outline.editGoal',
