@@ -686,7 +686,7 @@ describe('Outline Tab', () => {
           ],
         });
         await fetchAndRender();
-        await screen.findByText('We are working on generating course certificates.');
+        await screen.findByText('Your grade and certificate will be ready soon!');
       });
     });
 
