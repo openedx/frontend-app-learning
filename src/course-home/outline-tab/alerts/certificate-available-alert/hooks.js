@@ -18,7 +18,6 @@ function useCertificateAvailableAlert(courseId) {
   } = useModel('outline', courseId);
   const authenticatedUser = getAuthenticatedUser();
   const username = authenticatedUser ? authenticatedUser.username : '';
-
   const certBlock = courseDateBlocks.find(b => b.dateType === 'certificate-available-date');
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
   const endDate = endBlock ? new Date(endBlock.date) : null;
@@ -26,6 +25,7 @@ function useCertificateAvailableAlert(courseId) {
   const isVisible = isEnrolled && certBlock && hasEnded; // only show if we're between end and cert dates
   const payload = {
     certDate: certBlock && certBlock.date,
+    courseEndDate: endBlock && endBlock.date,
     username,
     userTimezone,
   };

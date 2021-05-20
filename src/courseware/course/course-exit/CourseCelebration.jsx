@@ -60,6 +60,7 @@ function CourseCelebration({ intl }) {
     certStatus,
     certWebViewUrl,
     downloadUrl,
+    certificateAvailableDate,
   } = certificateData || {};
 
   /** [WS-1681 experiment] */
@@ -125,24 +126,22 @@ function CourseCelebration({ intl }) {
       break;
     case 'earned_but_not_available': {
       const endDate = <FormattedDate value={end} day="numeric" month="long" year="numeric" />;
+      const certAvailableDate = <FormattedDate value={certificateAvailableDate} day="numeric" month="long" year="numeric" />;
       certHeader = intl.formatMessage(messages.certificateHeaderNotAvailable);
       message = (
         <>
           <p>
             <FormattedMessage
               id="courseCelebration.certificateBody.notAvailable.endDate"
-              defaultMessage="After this course officially ends on {endDate}, you will receive an
-                email notification with your certificate. Once you have your certificate, be sure
-                to showcase your accomplishment on LinkedIn or your resumé."
-              values={{ endDate }}
+              defaultMessage="This course ended on {endDate} and final grades and certificates are scheduled to be
+              available after {certAvailableDate}"
+              values={{ endDate, certAvailableDate }}
             />
           </p>
           <p>
             <FormattedMessage
               id="courseCelebration.certificateBody.notAvailable.accessCertificate"
-              defaultMessage="You will be able to access your certificate any time from your
-                {dashboardLink} and {profileLink}."
-              values={{ dashboardLink, profileLink }}
+              defaultMessage="If you have earned a passing grade, your certificate will be automatically issued."
             />
           </p>
         </>
@@ -294,7 +293,7 @@ function CourseCelebration({ intl }) {
         </div>
         <div className="col-12 px-0 px-md-5">
           {certHeader && (
-          <Alert variant="primary" className="row w-100 m-0">
+          <Alert variant="success" className="row w-100 m-0">
             <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
               <div className="h4">{certHeader}</div>
               {message}
