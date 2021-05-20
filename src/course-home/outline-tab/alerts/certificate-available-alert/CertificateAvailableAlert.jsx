@@ -28,7 +28,7 @@ function CertificateAvailableAlert({ payload }) {
         scheduled to be available after {certificateAvailableDate}."
         values={{
           courseEndDateFormatted,
-          certificateAvailableDate
+          certificateAvailableDate,
         }}
       />
     </Alert>
@@ -38,8 +38,7 @@ function CertificateAvailableAlert({ payload }) {
 CertificateAvailableAlert.propTypes = {
   payload: PropTypes.shape({
     certDate: PropTypes.string,
-    username: PropTypes.string,
-    userTimezone: PropTypes.string,
+    courseEndDate: PropTypes.string,
   }).isRequired,
 };
 
