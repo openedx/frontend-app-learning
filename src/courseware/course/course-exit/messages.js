@@ -13,7 +13,12 @@ const messages = defineMessages({
   },
   certificateHeaderNotAvailable: {
     id: 'courseCelebration.certificateHeader.notAvailable',
-    defaultMessage: 'Your certificate will be available soon!',
+    defaultMessage: 'Your grade and certificate will be ready soon!',
+    description: 'Header displayed when course certificate is not yet available to be viewed',
+  },
+  certificateNotAvailableBodyAccessCert: {
+    id: 'courseCelebration.certificateBody.notAvailable.accessCertificate',
+    defaultMessage: 'If you have earned a passing grade, your certificate will be automatically issued.',
     description: 'Text displayed when course certificate is not yet available to be viewed',
   },
   certificateHeaderUnverified: {
@@ -180,6 +185,7 @@ const messages = defineMessages({
     id: 'courseExit.viewGradesButton',
     defaultMessage: 'View grades',
   },
+
 });
 
 export default messages;
