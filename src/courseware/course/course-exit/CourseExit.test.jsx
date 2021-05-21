@@ -115,9 +115,14 @@ describe('Course Exit Pages', () => {
     });
 
     it('Displays certificate is earned but unavailable message', async () => {
-      setMetadata({ certificate_data: { cert_status: 'earned_but_not_available' } });
+      setMetadata({
+        certificate_data: {
+          cert_status: 'earned_but_not_available',
+          certificate_available_date: '2021-05-21T12:00:00Z'
+        }
+      });
       await fetchAndRender(<CourseCelebration />);
-      expect(screen.getByText('Your certificate will be available soon!')).toBeInTheDocument();
+      expect(screen.getByText('Your grade and certificate will be ready soon!')).toBeInTheDocument();
     });
 
     it('Displays request certificate link', async () => {
