@@ -25,7 +25,7 @@ function useCertificateAvailableAlert(courseId) {
   const isVisible = isEnrolled && certBlock && hasEnded; // only show if we're between end and cert dates
   const payload = {
     certDate: certBlock && certBlock.date,
-    courseEndDate: endBlock && endBlock.date,
+    courseEndDate: endDate,
     username,
     userTimezone,
   };

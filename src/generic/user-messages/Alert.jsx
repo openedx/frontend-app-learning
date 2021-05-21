@@ -41,6 +41,12 @@ function getAlertIcon(type) {
   return faInfoCircle;
 }
 
+function getAlertIconColor(type) {
+  if (type === ALERT_TYPES.SUCCESS) {
+    return 'text-success-500';
+  }
+}
+
 function Alert({
   type, dismissible, children, footer, intl, onDismiss,
 }) {
@@ -49,7 +55,7 @@ function Alert({
       <div className="row w-100 m-0">
         {type !== ALERT_TYPES.WELCOME && (
           <div className="col-auto p-0 mr-3">
-            <FontAwesomeIcon icon={getAlertIcon(type)} />
+            <FontAwesomeIcon icon={getAlertIcon(type)} className={getAlertIconColor(type)}/>
           </div>
         )}
         <div className="col mr-4 p-0 align-items-start">

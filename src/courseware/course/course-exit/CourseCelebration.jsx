@@ -134,15 +134,12 @@ function CourseCelebration({ intl }) {
             <FormattedMessage
               id="courseCelebration.certificateBody.notAvailable.endDate"
               defaultMessage="This course ended on {endDate} and final grades and certificates are scheduled to be
-              available after {certAvailableDate}"
+              available after {certAvailableDate}."
               values={{ endDate, certAvailableDate }}
             />
           </p>
           <p>
-            <FormattedMessage
-              id="courseCelebration.certificateBody.notAvailable.accessCertificate"
-              defaultMessage="If you have earned a passing grade, your certificate will be automatically issued."
-            />
+            {intl.formatMessage(messages.certificateNotAvailableBodyAccessCert)}
           </p>
         </>
       );

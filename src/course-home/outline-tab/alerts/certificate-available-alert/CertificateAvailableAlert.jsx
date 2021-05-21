@@ -7,10 +7,12 @@ import { Alert, ALERT_TYPES } from '../../../../generic/user-messages';
 function CertificateAvailableAlert({ payload }) {
   const {
     certDate,
+    userTimezone,
     courseEndDate,
   } = payload;
 
-  const certificateAvailableDate = <FormattedDate value={certDate} day="numeric" month="long" year="numeric" />;
+  const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
+  const certificateAvailableDateFormatted = <FormattedDate value={certDate} day="numeric" month="long" year="numeric" />;
   const courseEndDateFormatted = <FormattedDate value={courseEndDate} day="numeric" month="long" year="numeric" />;
 
   return (
@@ -28,8 +30,9 @@ function CertificateAvailableAlert({ payload }) {
         scheduled to be available after {certificateAvailableDate}."
         values={{
           courseEndDateFormatted,
-          certificateAvailableDate,
+          certificateAvailableDate: certificateAvailableDateFormatted,
         }}
+        {...timezoneFormatArgs}
       />
     </Alert>
   );
