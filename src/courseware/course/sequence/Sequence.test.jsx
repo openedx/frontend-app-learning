@@ -67,11 +67,11 @@ describe('Sequence', () => {
       { store: testStore },
     );
 
-    expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
-    // Only `Previous`, `Next` and `Bookmark` buttons.
-    expect(screen.getAllByRole('button').length).toEqual(3);
+    await waitFor(() => expect(screen.queryByText('Loading locked content messaging...')).toBeInTheDocument());
+    // `Previous`, `Active`, `Next` and `Prerequisite` buttons.
+    expect(screen.getAllByRole('button').length).toEqual(4);
 
-    expect(await screen.findByText('Content Locked')).toBeInTheDocument();
+    expect(screen.getByText('Content Locked')).toBeInTheDocument();
     const unitContainer = container.querySelector('.unit-container');
     expect(unitContainer.querySelector('svg')).toHaveClass('fa-lock');
     expect(screen.getByText(/You must complete the prerequisite/)).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe('Sequence', () => {
 
   it('handles loading unit', async () => {
     render(<Sequence {...mockData} />);
-    expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
+    expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
     // Renders navigation buttons plus one button for each unit.
     expect(screen.getAllByRole('button')).toHaveLength(3 + unitBlocks.length);
 
@@ -167,6 +167,7 @@ describe('Sequence', () => {
         previousSequenceHandler: jest.fn(),
       };
       render(<Sequence {...testData} />, { store: testStore });
+      expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       const sequencePreviousButton = screen.getByRole('button', { name: /previous/i });
       fireEvent.click(sequencePreviousButton);
@@ -202,6 +203,7 @@ describe('Sequence', () => {
         nextSequenceHandler: jest.fn(),
       };
       render(<Sequence {...testData} />, { store: testStore });
+      expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       const sequenceNextButton = screen.getByRole('button', { name: /next/i });
       fireEvent.click(sequenceNextButton);
@@ -228,7 +230,7 @@ describe('Sequence', () => {
       });
     });
 
-    it('navigates to the previous/next unit if the unit is not in the corner of the sequence', () => {
+    it('navigates to the previous/next unit if the unit is not in the corner of the sequence', async () => {
       const unitNumber = 1;
       const testData = {
         ...mockData,
@@ -239,6 +241,7 @@ describe('Sequence', () => {
         nextSequenceHandler: jest.fn(),
       };
       render(<Sequence {...testData} />, { store: testStore });
+      await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).toBeInTheDocument());
 
       fireEvent.click(screen.getByRole('button', { name: /previous/i }));
       expect(testData.previousSequenceHandler).not.toHaveBeenCalled();
@@ -360,7 +363,7 @@ describe('Sequence', () => {
       });
     });
 
-    it('handles unit navigation button', () => {
+    it('handles unit navigation button', async () => {
       const currentTabNumber = 1;
       const targetUnitNumber = 2;
       const targetUnit = unitBlocks[targetUnitNumber - 1];
@@ -371,6 +374,7 @@ describe('Sequence', () => {
         unitNavigationHandler: jest.fn(),
       };
       render(<Sequence {...testData} />, { store: testStore });
+      await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).toBeInTheDocument());
 
       fireEvent.click(screen.getByRole('button', { name: targetUnit.display_name }));
       expect(testData.unitNavigationHandler).toHaveBeenCalledWith(targetUnit.id);
