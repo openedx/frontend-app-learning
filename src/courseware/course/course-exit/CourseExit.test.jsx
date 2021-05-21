@@ -118,8 +118,8 @@ describe('Course Exit Pages', () => {
       setMetadata({
         certificate_data: {
           cert_status: 'earned_but_not_available',
-          certificate_available_date: '2021-05-21T12:00:00Z'
-        }
+          certificate_available_date: '2021-05-21T12:00:00Z',
+        },
       });
       await fetchAndRender(<CourseCelebration />);
       expect(screen.getByText('Your grade and certificate will be ready soon!')).toBeInTheDocument();
