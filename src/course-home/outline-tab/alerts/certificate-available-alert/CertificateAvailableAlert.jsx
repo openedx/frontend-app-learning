@@ -26,7 +26,7 @@ function CertificateAvailableAlert({ payload }) {
       <br />
       <FormattedMessage
         id="learning.outline.alert.cert.when"
-        defaultMessage="This course ended on {courseEndDateFormatted} and final grades and certificates are
+        defaultMessage="This course ended on {courseEndDateFormatted}. Final grades and certificates are
         scheduled to be available after {certificateAvailableDate}."
         values={{
           courseEndDateFormatted,
