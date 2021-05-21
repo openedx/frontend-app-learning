@@ -42,6 +42,7 @@ CertificateAvailableAlert.propTypes = {
   payload: PropTypes.shape({
     certDate: PropTypes.string,
     courseEndDate: PropTypes.string,
+    userTimezone: PropTypes.string,
   }).isRequired,
 };
 
