@@ -11,6 +11,7 @@ import {
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import { history } from '@edx/frontend-platform';
+import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 
 import PageLoading from '../../../generic/PageLoading';
 import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
@@ -46,6 +47,7 @@ function Sequence({
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const specialExamsEnabledWaffleFlag = useSelector(state => state.courseware.specialExamsEnabledWaffleFlag);
   const shouldDisplaySidebarButton = useWindowSize().width < responsiveBreakpoints.small.minWidth;
 
   const handleNext = () => {
@@ -138,7 +140,7 @@ function Sequence({
   because we expect CoursewareContainer to be performing a redirect to the legacy experience while
   we're waiting. That redirect may take a few seconds, so we show the spinner in the meantime.
   */
-  if (sequenceStatus === 'loaded' && sequence.isTimeLimited) {
+  if (sequenceStatus === 'loaded' && sequence.isTimeLimited && !specialExamsEnabledWaffleFlag) {
     return (
       <PageLoading
         srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
@@ -151,83 +153,89 @@ function Sequence({
     history.push(`/course/${courseId}/course-end`);
   };
 
+  const defaultContent = (
+    <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
+      <div className={classNames('sequence', { 'position-relative': shouldDisplaySidebarButton })} style={{ width: '100%' }}>
+        <SequenceNavigation
+          sequenceId={sequenceId}
+          unitId={unitId}
+          className="mb-4"
+
+          /** [MM-P2P] Experiment */
+          mmp2p={mmp2p}
+
+          nextSequenceHandler={() => {
+            logEvent('edx.ui.lms.sequence.next_selected', 'top');
+            handleNext();
+          }}
+          onNavigate={(destinationUnitId) => {
+            logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+            handleNavigate(destinationUnitId);
+          }}
+          previousSequenceHandler={() => {
+            logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+            handlePrevious();
+          }}
+          goToCourseExitPage={() => goToCourseExitPage()}
+          isValuePropCookieSet={isValuePropCookieSet}
+        />
+
+        {isValuePropCookieSet && shouldDisplaySidebarButton ? (
+          <SidebarNotificationButton
+            toggleSidebar={toggleSidebar}
+            isSidebarVisible={isSidebarVisible}
+          />
+        ) : null}
+
+        <div className="unit-container flex-grow-1">
+          <SequenceContent
+            courseId={courseId}
+            gated={gated}
+            sequenceId={sequenceId}
+            unitId={unitId}
+            unitLoadedHandler={handleUnitLoaded}
+            /** [MM-P2P] Experiment */
+            mmp2p={mmp2p}
+          />
+          {unitHasLoaded && (
+          <UnitNavigation
+            sequenceId={sequenceId}
+            unitId={unitId}
+            onClickPrevious={() => {
+              logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
+              handlePrevious();
+            }}
+            onClickNext={() => {
+              logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+              handleNext();
+            }}
+            goToCourseExitPage={() => goToCourseExitPage()}
+          />
+          )}
+        </div>
+      </div>
+      {sidebarVisible ? (
+        <Sidebar
+          toggleSidebar={toggleSidebar}
+          sidebarVisible={sidebarVisible}
+        />
+      ) : null }
+
+      {/** [MM-P2P] Experiment */}
+      {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
+        isMobile()
+          ? <MMP2PFlyoverMobile options={mmp2p} />
+          : <MMP2PFlyover options={mmp2p} />
+      )}
+    </div>
+  );
+
   if (sequenceStatus === 'loaded') {
     return (
       <div>
-        <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
-          <div className={classNames('sequence', { 'position-relative': shouldDisplaySidebarButton })} style={{ width: '100%' }}>
-            <SequenceNavigation
-              sequenceId={sequenceId}
-              unitId={unitId}
-              className="mb-4"
-
-              /** [MM-P2P] Experiment */
-              mmp2p={mmp2p}
-
-              nextSequenceHandler={() => {
-                logEvent('edx.ui.lms.sequence.next_selected', 'top');
-                handleNext();
-              }}
-              onNavigate={(destinationUnitId) => {
-                logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-                handleNavigate(destinationUnitId);
-              }}
-              previousSequenceHandler={() => {
-                logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-                handlePrevious();
-              }}
-              goToCourseExitPage={() => goToCourseExitPage()}
-              isValuePropCookieSet={isValuePropCookieSet}
-            />
-
-            {isValuePropCookieSet && shouldDisplaySidebarButton ? (
-              <SidebarNotificationButton
-                toggleSidebar={toggleSidebar}
-                isSidebarVisible={isSidebarVisible}
-              />
-            ) : null}
-
-            <div className="unit-container flex-grow-1">
-              <SequenceContent
-                courseId={courseId}
-                gated={gated}
-                sequenceId={sequenceId}
-                unitId={unitId}
-                unitLoadedHandler={handleUnitLoaded}
-                /** [MM-P2P] Experiment */
-                mmp2p={mmp2p}
-              />
-              {unitHasLoaded && (
-              <UnitNavigation
-                sequenceId={sequenceId}
-                unitId={unitId}
-                onClickPrevious={() => {
-                  logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-                  handlePrevious();
-                }}
-                onClickNext={() => {
-                  logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-                  handleNext();
-                }}
-                goToCourseExitPage={() => goToCourseExitPage()}
-              />
-              )}
-            </div>
-          </div>
-          {sidebarVisible ? (
-            <Sidebar
-              toggleSidebar={toggleSidebar}
-              sidebarVisible={sidebarVisible}
-            />
-          ) : null }
-
-          {/** [MM-P2P] Experiment */}
-          {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
-            isMobile()
-              ? <MMP2PFlyoverMobile options={mmp2p} />
-              : <MMP2PFlyover options={mmp2p} />
-          )}
-        </div>
+        <SequenceExamWrapper sequence={sequence} courseId={courseId}>
+          {defaultContent}
+        </SequenceExamWrapper>
         <CourseLicense license={course.license || undefined} />
       </div>
     );

@@ -127,6 +127,8 @@ describe('CoursewareContainer', () => {
     sequenceMetadatas.forEach(sequenceMetadata => {
       const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
       axiosMock.onGet(sequenceMetadataUrl).reply(200, sequenceMetadata);
+      const proctoredExamApiUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${courseId}/content_id/${sequenceMetadata.item_id}?is_learning_mfe=true`;
+      axiosMock.onGet(proctoredExamApiUrl).reply(200, { exam: {}, active_attempt: {} });
     });
   }
 

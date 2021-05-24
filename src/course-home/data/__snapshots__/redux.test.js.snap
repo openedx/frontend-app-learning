@@ -14,6 +14,7 @@ Object {
     "courseStatus": "loading",
     "sequenceId": null,
     "sequenceStatus": "loading",
+    "specialExamsEnabledWaffleFlag": false,
   },
   "models": Object {
     "courseHomeMeta": Object {
@@ -307,6 +308,7 @@ Object {
     "courseStatus": "loading",
     "sequenceId": null,
     "sequenceStatus": "loading",
+    "specialExamsEnabledWaffleFlag": false,
   },
   "models": Object {
     "courseHomeMeta": Object {
@@ -475,6 +477,7 @@ Object {
     "courseStatus": "loading",
     "sequenceId": null,
     "sequenceStatus": "loading",
+    "specialExamsEnabledWaffleFlag": false,
   },
   "models": Object {
     "courseHomeMeta": Object {

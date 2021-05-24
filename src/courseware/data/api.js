@@ -151,6 +151,7 @@ function normalizeMetadata(metadata) {
     verificationStatus: metadata.verification_status,
     linkedinAddToProfileUrl: metadata.linkedin_add_to_profile_url,
     relatedPrograms: camelCaseObject(metadata.related_programs),
+    specialExamsEnabledWaffleFlag: metadata.is_mfe_special_exams_enabled,
   };
 }
 
