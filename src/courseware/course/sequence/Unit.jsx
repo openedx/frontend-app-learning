@@ -21,6 +21,7 @@ import { fetchCourse } from '../../data/thunks';
 /** [MM-P2P] Experiment */
 import { MMP2PLockPaywall } from '../../../experiments/mm-p2p';
 
+const HonorCode = React.lazy(() => import('./honor-code'));
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
 
 /**
@@ -93,6 +94,7 @@ function Unit({
   const course = useModel('coursewareMeta', courseId);
   const {
     contentTypeGatingEnabled,
+    userNeedsIntegritySignature,
   } = course;
 
   const dispatch = useDispatch();
@@ -154,8 +156,19 @@ function Unit({
       { mmp2p.meta.showLock && (
         <MMP2PLockPaywall options={mmp2p} />
       )}
+      {!mmp2p.meta.blockContent && unit.graded && userNeedsIntegritySignature && (
+        <Suspense
+          fallback={(
+            <PageLoading
+              srMessage={intl.formatMessage(messages['learn.loading.honor.code'])}
+            />
+          )}
+        >
+          <HonorCode courseId={courseId} />
+        </Suspense>
+      )}
       { /** [MM-P2P] Experiment (conditional) */ }
-      {!mmp2p.meta.blockContent && !hasLoaded && (
+      {!mmp2p.meta.blockContent && !userNeedsIntegritySignature && !hasLoaded && (
         <PageLoading
           srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
         />
@@ -186,7 +199,7 @@ function Unit({
         />
       )}
       { /** [MM-P2P] Experiment (conditional) */ }
-      { !mmp2p.meta.blockContent && (
+      { !mmp2p.meta.blockContent && !userNeedsIntegritySignature && (
         <div className="unit-iframe-wrapper">
           <iframe
             id="unit-iframe"

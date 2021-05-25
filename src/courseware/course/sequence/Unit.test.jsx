@@ -13,11 +13,16 @@ describe('Unit', () => {
   );
   const unitBlocks = [Factory.build(
     'block',
-    { type: 'problem' },
+    { type: 'problem', graded: 'true' },
     { courseId: courseMetadata.id },
   ), Factory.build(
     'block',
-    { type: 'vertical', contains_content_type_gated_content: true, bookmarked: true },
+    {
+      type: 'vertical',
+      contains_content_type_gated_content: true,
+      bookmarked: true,
+      graded: true,
+    },
     { courseId: courseMetadata.id },
   )];
   const [unit, unitThatContainsGatedContent] = unitBlocks;
@@ -47,6 +52,24 @@ describe('Unit', () => {
 
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
+  });
+
+  it('displays HonorCode when userNeedsIntegritySignature is true', async () => {
+    const signatureMetadata = Factory.build(
+      'courseMetadata',
+      { user_needs_integrity_signature: true },
+    );
+    const signatureStore = await initializeTestStore(
+      { courseMetadata: signatureMetadata, unitBlocks },
+      false,
+    );
+    const signatureData = {
+      id: unit.id,
+      courseId: signatureMetadata.id,
+      format: 'Homework',
+    };
+    render(<Unit {...signatureData} />, { store: signatureStore });
+    expect(screen.getByText('Loading honor code messaging...')).toBeInTheDocument();
   });
 
   it('handles receiving MessageEvent', async () => {

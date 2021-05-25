@@ -262,4 +262,33 @@ describe('Data layer integration tests', () => {
       });
     });
   });
+
+  describe('test saveIntegritySignature', () => {
+    it('Should update userNeedsIntegritySignature upon success', async () => {
+      const courseMetadataNeedSignature = Factory.build('courseMetadata', {
+        user_needs_integrity_signature: true,
+      });
+
+      let courseUrlNeedSignature = `${courseBaseUrl}/${courseMetadataNeedSignature.id}`;
+      courseUrlNeedSignature = appendBrowserTimezoneToUrl(courseUrlNeedSignature);
+
+      axiosMock.onGet(courseUrlNeedSignature).reply(200, courseMetadataNeedSignature);
+
+      await executeThunk(thunks.fetchCourse(courseMetadataNeedSignature.id), store.dispatch);
+      expect(
+        store.getState().models.coursewareMeta[courseMetadataNeedSignature.id].userNeedsIntegritySignature,
+      ).toEqual(true);
+
+      const integritySignatureUrl = `${getConfig().LMS_BASE_URL}/api/agreements/v1/integrity_signature/${courseMetadataNeedSignature.id}`;
+      axiosMock.onPost(integritySignatureUrl).reply(200, {});
+      await executeThunk(
+        thunks.saveIntegritySignature(courseMetadataNeedSignature.id),
+        store.dispatch,
+        store.getState,
+      );
+      expect(
+        store.getState().models.coursewareMeta[courseMetadataNeedSignature.id].userNeedsIntegritySignature,
+      ).toEqual(false);
+    });
+  });
 });

@@ -151,6 +151,7 @@ function normalizeMetadata(metadata) {
     verificationStatus: metadata.verification_status,
     linkedinAddToProfileUrl: metadata.linkedin_add_to_profile_url,
     relatedPrograms: camelCaseObject(metadata.related_programs),
+    userNeedsIntegritySignature: metadata.user_needs_integrity_signature,
     specialExamsEnabledWaffleFlag: metadata.is_mfe_special_exams_enabled,
   };
 }
@@ -194,6 +195,7 @@ function normalizeSequenceMetadata(sequence) {
       complete: unit.complete,
       title: unit.page_title,
       contentType: unit.type,
+      graded: unit.graded,
       containsContentTypeGatedContent: unit.contains_content_type_gated_content,
     })),
   };
@@ -228,5 +230,12 @@ export async function postSequencePosition(courseId, sequenceId, activeUnitIndex
 export async function getResumeBlock(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`);
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
+  return camelCaseObject(data);
+}
+
+export async function postIntegritySignature(courseId) {
+  const { data } = await getAuthenticatedHttpClient().post(
+    `${getConfig().LMS_BASE_URL}/api/agreements/v1/integrity_signature/${courseId}`, {},
+  );
   return camelCaseObject(data);
 }
