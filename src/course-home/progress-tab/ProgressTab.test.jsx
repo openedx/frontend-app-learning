@@ -162,7 +162,29 @@ describe('Progress Tab', () => {
       expect(screen.getByText('F: <80%'));
     });
 
-    it('renders locked feature preview when user has locked content', async () => {
+    it('renders locked feature preview with upgrade button when user has locked content', async () => {
+      setTabData({
+        completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 1,
+        },
+        verified_mode: {
+          access_expiration_date: '2050-01-01T12:00:00',
+          currency: 'USD',
+          currency_symbol: '$',
+          price: 149,
+          sku: 'ABCD1234',
+          upgrade_url: 'edx.org/upgrade',
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByText('locked feature')).toBeInTheDocument();
+      expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
+      expect(screen.getAllByRole('link', 'Unlock now')).toHaveLength(3);
+    });
+
+    it('renders locked feature preview with no upgrade button when user has locked content but cannot upgrade', async () => {
       setTabData({
         completion_summary: {
           complete_count: 1,
@@ -172,7 +194,9 @@ describe('Progress Tab', () => {
       });
       await fetchAndRender();
       expect(screen.getByText('locked feature')).toBeInTheDocument();
+      expect(screen.getByText('The deadline to upgrade in this course has passed.')).toBeInTheDocument();
     });
+
     it('does not render locked feature preview when user does not have locked content', async () => {
       await fetchAndRender();
       expect(screen.queryByText('locked feature')).not.toBeInTheDocument();

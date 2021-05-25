@@ -17,7 +17,7 @@ function CourseGradeHeader({ intl }) {
   } = useModel('progress', courseId);
   return (
     <div className="row w-100 m-0 p-4 rounded-top bg-primary-500 text-white">
-      <div className="col-12 col-md-9 p-0">
+      <div className={`col-12 ${verifiedMode ? 'col-md-9' : ''} p-0`}>
         <div className="row w-100 m-0 p-0">
           <div className="col-1 p-0">
             <Icon src={Locked} />
@@ -31,17 +31,18 @@ function CourseGradeHeader({ intl }) {
         </div>
         <div className="row w-100 m-0 p-0 justify-content-end">
           <div className="col-11 px-2 p-sm-0 small">
-            {intl.formatMessage(messages.courseGradePreviewBody)}
+            {verifiedMode ? intl.formatMessage(messages.courseGradePreviewUnlockCertificateBody)
+              : intl.formatMessage(messages.courseGradePreviewUpgradeDeadlinePassedBody)}
           </div>
         </div>
       </div>
-      <div className="col-12 col-md-3 mt-3 mt-md-0 p-0 align-self-center text-right">
-        {verifiedMode && (
+      {verifiedMode && (
+        <div className="col-12 col-md-3 mt-3 mt-md-0 p-0 align-self-center text-right">
           <Button variant="brand" size="sm" href={verifiedMode.upgradeUrl}>
             {intl.formatMessage(messages.courseGradePreviewUpgradeButton)}
           </Button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

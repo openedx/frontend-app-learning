@@ -37,9 +37,13 @@ const messages = defineMessages({
     id: 'progress.courseGrade.preview.header.ariaHidden',
     defaultMessage: 'Preview of a ',
   },
-  courseGradePreviewBody: {
-    id: 'progress.courseGrade.preview.body',
-    defaultMessage: 'Unlock to view grades and work towards a certificate',
+  courseGradePreviewUnlockCertificateBody: {
+    id: 'progress.courseGrade.preview.body.unlockCertificate',
+    defaultMessage: 'Unlock to view grades and work towards a certificate.',
+  },
+  courseGradePreviewUpgradeDeadlinePassedBody: {
+    id: 'progress.courseGrade.preview.body.upgradeDeadlinePassed',
+    defaultMessage: 'The deadline to upgrade in this course has passed.',
   },
   courseGradePreviewUpgradeButton: {
     id: 'progress.courseGrade.preview.button.upgrade',
