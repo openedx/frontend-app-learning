@@ -134,6 +134,8 @@ function CertificateStatus({ intl }) {
           body = intl.formatMessage(messages[`${certCase}Body`]);
           buttonLocation = verifiedMode.upgradeUrl;
           buttonText = intl.formatMessage(messages[`${certCase}Button`]);
+        } else {
+          certCase = null; // Do not render the certificate component if the upgrade deadline has passed
         }
         break;
 
