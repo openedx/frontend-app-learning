@@ -1,8 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 
+import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { Hyperlink } from '@edx/paragon';
 import { useModel } from '../../../../generic/model-store';
 
 import DetailedGradesTable from './DetailedGradesTable';
@@ -21,13 +22,9 @@ function DetailedGrades({ intl }) {
   const hasSectionScores = sectionScores.length > 0;
 
   const outlineLink = (
-    <Link
-      className="text-dark-700"
-      style={{ textDecoration: 'underline' }}
-      to={`/course/${courseId}/home`}
-    >
+    <Hyperlink className="muted-link inline-link" destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`}>
       {intl.formatMessage(messages.courseOutline)}
-    </Link>
+    </Hyperlink>
   );
 
   return (

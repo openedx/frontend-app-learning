@@ -1,7 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { Hyperlink } from '@edx/paragon';
 
 import messages from './messages';
 
@@ -15,11 +16,15 @@ function RelatedLinks({ intl }) {
       <h3 className="h4">{intl.formatMessage(messages.relatedLinks)}</h3>
       <ul className="pl-4">
         <li>
-          <Link to={`course/${courseId}/dates`}>{intl.formatMessage(messages.datesCardLink)}</Link>
+          <Hyperlink destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`}>
+            {intl.formatMessage(messages.datesCardLink)}
+          </Hyperlink>
           <p>{intl.formatMessage(messages.datesCardDescription)}</p>
         </li>
         <li>
-          <Link to={`course/${courseId}/home`}>{intl.formatMessage(messages.outlineCardLink)}</Link>
+          <Hyperlink destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`}>
+            {intl.formatMessage(messages.outlineCardLink)}
+          </Hyperlink>
           <p>{intl.formatMessage(messages.outlineCardDescription)}</p>
         </li>
       </ul>
