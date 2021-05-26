@@ -152,6 +152,7 @@ function normalizeMetadata(metadata) {
     linkedinAddToProfileUrl: metadata.linkedin_add_to_profile_url,
     relatedPrograms: camelCaseObject(metadata.related_programs),
     specialExamsEnabledWaffleFlag: metadata.is_mfe_special_exams_enabled,
+    proctoredExamsEnabledWaffleFlag: metadata.is_mfe_proctored_exams_enabled,
   };
 }
 
@@ -182,6 +183,7 @@ function normalizeSequenceMetadata(sequence) {
       */
       gatedContent: camelCaseObject(sequence.gated_content),
       isTimeLimited: sequence.is_time_limited,
+      isProctored: sequence.is_proctored,
       // Position comes back from the server 1-indexed. Adjust here.
       activeUnitIndex: sequence.position ? sequence.position - 1 : 0,
       saveUnitPosition: sequence.save_position,
