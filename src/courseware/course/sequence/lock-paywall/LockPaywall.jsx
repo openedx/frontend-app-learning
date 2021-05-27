@@ -5,12 +5,13 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
-  Alert, Button, Icon,
+  Alert, Icon,
 } from '@edx/paragon';
 import { Locked } from '@edx/paragon/icons';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
 import { useModel } from '../../../../generic/model-store';
+import { UpgradeButton } from '../../../../generic/upgrade-button';
 import './LockPaywall.scss';
 
 function LockPaywall({
@@ -19,6 +20,7 @@ function LockPaywall({
 }) {
   const course = useModel('coursewareMeta', courseId);
   const {
+    offer,
     org,
     verifiedMode,
   } = course;
@@ -26,11 +28,6 @@ function LockPaywall({
   if (!verifiedMode) {
     return null;
   }
-  const {
-    currencySymbol,
-    price,
-    upgradeUrl,
-  } = verifiedMode;
 
   const eventProperties = {
     org_key: org,
@@ -154,17 +151,12 @@ function LockPaywall({
           className="col-md-auto p-md-0 d-md-flex align-items-md-center mr-md-3"
           style={{ textAlign: 'right' }}
         >
-          <Button
-            className="lock_paywall_upgrade_link"
-            href={upgradeUrl}
+          <UpgradeButton
+            offer={offer}
             onClick={logClick}
-            role="link"
-          >
-            {intl.formatMessage(messages['learn.lockPaywall.upgrade.link'], {
-              currencySymbol,
-              price,
-            })}
-          </Button>
+            verifiedMode={verifiedMode}
+            className="lock_paywall_upgrade_link"
+          />
         </div>
       </div>
     </Alert>
