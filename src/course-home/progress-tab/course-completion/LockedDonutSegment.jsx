@@ -9,7 +9,7 @@ import messages from './messages';
 function LockedDonutSegment({ intl, lockedPercentage }) {
   const [showLockedPopover, setShowLockedPopover] = useState(false);
 
-  if (!lockedPercentage > 0) {
+  if (!lockedPercentage) {
     return null;
   }
 

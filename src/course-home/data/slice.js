@@ -10,6 +10,7 @@ const slice = createSlice({
   initialState: {
     courseStatus: 'loading',
     courseId: null,
+    gradesFeatureIsLocked: false,
     toastBodyText: null,
     toastBodyLink: null,
     toastHeader: '',
@@ -37,6 +38,9 @@ const slice = createSlice({
       state.toastBodyText = linkText;
       state.toastHeader = header;
     },
+    setGradesFeatureStatus: (state, { payload }) => {
+      state.gradesFeatureIsLocked = payload.gradesFeatureIsLocked;
+    },
   },
 });
 
@@ -45,6 +49,7 @@ export const {
   fetchTabSuccess,
   fetchTabFailure,
   setCallToActionToast,
+  setGradesFeatureStatus,
 } = slice.actions;
 
 export const {

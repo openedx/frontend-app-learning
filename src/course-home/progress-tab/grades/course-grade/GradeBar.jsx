@@ -12,12 +12,10 @@ import messages from '../messages';
 function GradeBar({ intl, passingGrade }) {
   const {
     courseId,
+    gradesFeatureIsLocked,
   } = useSelector(state => state.courseHome);
 
   const {
-    completionSummary: {
-      lockedCount,
-    },
     courseGrade: {
       isPassing,
       visiblePercent,
@@ -26,8 +24,7 @@ function GradeBar({ intl, passingGrade }) {
 
   const currentGrade = Number((visiblePercent * 100).toFixed(0));
 
-  const isLocked = lockedCount > 0;
-  const lockedTooltipClassName = isLocked ? 'locked-overlay' : '';
+  const lockedTooltipClassName = gradesFeatureIsLocked ? 'locked-overlay' : '';
 
   return (
     <div className="col-12 col-sm-6 align-self-center">

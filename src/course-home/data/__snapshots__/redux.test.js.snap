@@ -5,6 +5,7 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
+    "gradesFeatureIsLocked": false,
     "toastBodyLink": null,
     "toastBodyText": null,
     "toastHeader": "",
@@ -300,6 +301,7 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
+    "gradesFeatureIsLocked": false,
     "toastBodyLink": null,
     "toastBodyText": null,
     "toastHeader": "",
@@ -476,6 +478,7 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
+    "gradesFeatureIsLocked": false,
     "toastBodyLink": null,
     "toastBodyText": null,
     "toastHeader": "",

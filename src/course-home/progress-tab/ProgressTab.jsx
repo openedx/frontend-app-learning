@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { layoutGenerator } from 'react-break';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import CertificateStatus from './certificate-status/CertificateStatus';
 import CourseCompletion from './course-completion/CourseCompletion';
@@ -10,6 +10,7 @@ import GradeSummary from './grades/grade-summary/GradeSummary';
 import ProgressHeader from './ProgressHeader';
 import RelatedLinks from './related-links/RelatedLinks';
 
+import { setGradesFeatureStatus } from '../data/slice';
 import { useModel } from '../../generic/model-store';
 
 function ProgressTab() {
@@ -22,8 +23,14 @@ function ProgressTab() {
       lockedCount,
     },
   } = useModel('progress', courseId);
-  const isLocked = lockedCount > 0;
-  const applyLockedOverlay = isLocked ? 'locked-overlay' : '';
+
+  const gradesFeatureIsLocked = lockedCount > 0;
+  const applyLockedOverlay = gradesFeatureIsLocked ? 'locked-overlay' : '';
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setGradesFeatureStatus({ gradesFeatureIsLocked }));
+  }, []);
 
   const layout = layoutGenerator({
     mobile: 0,
@@ -43,7 +50,7 @@ function ProgressTab() {
             <CertificateStatus />
           </OnMobile>
           <CourseGrade />
-          <div className={`grades my-4 p-4 rounded shadow-sm ${applyLockedOverlay}`} aria-hidden={isLocked}>
+          <div className={`grades my-4 p-4 rounded shadow-sm ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsLocked}>
             <GradeSummary />
             <DetailedGrades />
           </div>

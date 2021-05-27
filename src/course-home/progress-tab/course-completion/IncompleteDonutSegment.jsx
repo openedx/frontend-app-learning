@@ -7,6 +7,10 @@ import { OverlayTrigger, Popover } from '@edx/paragon';
 import messages from './messages';
 
 function IncompleteDonutSegment({ incompletePercentage, intl }) {
+  if (!incompletePercentage) {
+    return null;
+  }
+
   const [showIncompletePopover, setShowIncompletePopover] = useState(false);
 
   const incompleteSegmentOffset = (3.6 * incompletePercentage) / 16;
