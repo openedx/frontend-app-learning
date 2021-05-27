@@ -155,7 +155,6 @@ function LockPaywall({
             offer={offer}
             onClick={logClick}
             verifiedMode={verifiedMode}
-            className="lock_paywall_upgrade_link"
           />
         </div>
       </div>
