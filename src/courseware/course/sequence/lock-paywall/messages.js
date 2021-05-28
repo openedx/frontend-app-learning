@@ -11,11 +11,6 @@ const messages = defineMessages({
     defaultMessage: 'Upgrade to gain access to locked features like this one and get the most out of your course.',
     description: 'Message shown to indicate that a piece of content is unavailable to audit track users.',
   },
-  'learn.lockPaywall.upgrade.link': {
-    id: 'learn.lockPaywall.upgrade.link',
-    defaultMessage: 'Upgrade for {currencySymbol}{price}',
-    description: 'A link users can click that navigates their browser to the upgrade payment page.',
-  },
   'learn.lockPaywall.example.alt': {
     id: 'learn.lockPaywall.example.alt',
     defaultMessage: 'Example Certificate',
@@ -43,7 +38,7 @@ const messages = defineMessages({
   },
   'learn.lockPaywall.list.bullet4.boldtext': {
     id: 'learn.lockPaywall.list.bullet4.boldtext',
-    defaultMessage: 'non-profit',
+    defaultMessage: 'non-profit mission',
     description: 'Bolded text to highlight our non-profit status.',
   },
 });

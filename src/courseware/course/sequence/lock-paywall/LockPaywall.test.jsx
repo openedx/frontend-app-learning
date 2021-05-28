@@ -11,12 +11,14 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Lock Paywall', () => {
   let store;
-  const mockData = {};
+  const mockData = { metadataModel: 'coursewareMeta' };
 
   beforeAll(async () => {
     store = await initializeTestStore();
     const { courseware } = store.getState();
-    mockData.courseId = courseware.courseId;
+    Object.assign(mockData, {
+      courseId: courseware.courseId,
+    });
   });
 
   it('displays unlock link with price', () => {
@@ -29,6 +31,23 @@ describe('Lock Paywall', () => {
 
     const upgradeLink = screen.getByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
     expect(upgradeLink).toHaveAttribute('href', `${upgradeUrl}`);
+  });
+
+  it('displays discounted price if there is an offer/first time purchase', async () => {
+    const courseMetadata = Factory.build('courseMetadata', {
+      offer: {
+        code: 'EDXWELCOME',
+        expiration_date: '2070-01-01T12:00:00Z',
+        original_price: '$100',
+        discounted_price: '$85',
+        percentage: 15,
+        upgrade_url: 'https://example.com/upgrade',
+      },
+    });
+    const testStore = await initializeTestStore({ courseMetadata }, false);
+    render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+
+    expect(screen.getByText(/Upgrade for/).textContent).toMatch('$85 ($100)');
   });
 
   it('sends analytics event onClick of unlock link', () => {
