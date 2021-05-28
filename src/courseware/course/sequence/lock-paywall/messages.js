@@ -38,7 +38,7 @@ const messages = defineMessages({
   },
   'learn.lockPaywall.list.bullet4.boldtext': {
     id: 'learn.lockPaywall.list.bullet4.boldtext',
-    defaultMessage: 'non-profit',
+    defaultMessage: 'non-profit mission',
     description: 'Bolded text to highlight our non-profit status.',
   },
 });

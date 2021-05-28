@@ -72,7 +72,7 @@ function LockPaywall({
       {intl.formatMessage(messages['learn.lockPaywall.list.bullet3.boldtext'])}
     </span>
   );
-  const nonProfit = (
+  const nonProfitMission = (
     <span className="font-weight-bold">
       {intl.formatMessage(messages['learn.lockPaywall.list.bullet4.boldtext'])}
     </span>
@@ -138,8 +138,8 @@ function LockPaywall({
                   <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
                   <FormattedMessage
                     id="gatedContent.paragraph.bulletFour"
-                    defaultMessage="Support our {nonProfit} mission at edX"
-                    values={{ nonProfit }}
+                    defaultMessage="Support our {nonProfitMission} at edX"
+                    values={{ nonProfitMission }}
                   />
                 </li>
               </ul>
