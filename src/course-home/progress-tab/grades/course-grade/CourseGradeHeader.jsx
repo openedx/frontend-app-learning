@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Locked } from '@edx/paragon/icons';
 import { Button, Icon } from '@edx/paragon';
@@ -13,8 +15,20 @@ function CourseGradeHeader({ intl }) {
     courseId,
   } = useSelector(state => state.courseHome);
   const {
+    org,
+  } = useModel('courseHomeMeta', courseId);
+  const {
     verifiedMode,
   } = useModel('progress', courseId);
+
+  const { administrator } = getAuthenticatedUser();
+  const logUpgradeButtonClick = () => {
+    sendTrackEvent('edx.ui.lms.course_progress.grades_upgrade.clicked', {
+      org_key: org,
+      courserun_key: courseId,
+      is_staff: administrator,
+    });
+  };
   return (
     <div className="row w-100 m-0 p-4 rounded-top bg-primary-500 text-white">
       <div className={`col-12 ${verifiedMode ? 'col-md-9' : ''} p-0`}>
@@ -38,7 +52,7 @@ function CourseGradeHeader({ intl }) {
       </div>
       {verifiedMode && (
         <div className="col-12 col-md-3 mt-3 mt-md-0 p-0 align-self-center text-right">
-          <Button variant="brand" size="sm" href={verifiedMode.upgradeUrl}>
+          <Button variant="brand" size="sm" href={verifiedMode.upgradeUrl} onClick={logUpgradeButtonClick}>
             {intl.formatMessage(messages.courseGradePreviewUpgradeButton)}
           </Button>
         </div>
