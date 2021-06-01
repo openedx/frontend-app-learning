@@ -22,7 +22,6 @@ import useAccessExpirationAlert from '../../alerts/access-expiration-alert';
 import useCertificateAvailableAlert from './alerts/certificate-available-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from './alerts/course-start-alert';
-import useOfferAlert from '../../alerts/offer-alert';
 import usePrivateCourseAlert from './alerts/private-course-alert';
 import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
@@ -86,7 +85,6 @@ function OutlineTab({ intl }) {
   };
 
   // Below the course title alerts (appearing in the order listed here)
-  const offerAlert = useOfferAlert(courseId, offer, org, userTimezone, 'outline-course-alerts', 'course_home');
   const accessExpirationAlert = useAccessExpirationAlert(accessExpiration, courseId, org, userTimezone, 'outline-course-alerts', 'course_home');
   const courseStartAlert = useCourseStartAlert(courseId);
   const courseEndAlert = useCourseEndAlert(courseId);
@@ -153,7 +151,6 @@ function OutlineTab({ intl }) {
                 ...certificateAvailableAlert,
                 ...courseEndAlert,
                 ...courseStartAlert,
-                ...offerAlert,
               }}
             />
             )}
