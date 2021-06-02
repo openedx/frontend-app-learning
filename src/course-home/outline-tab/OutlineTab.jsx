@@ -19,7 +19,7 @@ import Section from './Section';
 import UpdateGoalSelector from './widgets/UpdateGoalSelector';
 import UpgradeCard from './widgets/UpgradeCard';
 import useAccessExpirationAlert from '../../alerts/access-expiration-alert';
-import useCertificateAvailableAlert from './alerts/certificate-available-alert';
+import useCertificateAvailableAlert from './alerts/certificate-status-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from './alerts/course-start-alert';
 import usePrivateCourseAlert from './alerts/private-course-alert';

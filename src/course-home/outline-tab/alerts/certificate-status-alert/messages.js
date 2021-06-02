@@ -1,0 +1,16 @@
+import { defineMessages } from '@edx/frontend-platform/i18n';
+
+const messages = defineMessages({
+  certStatusEarnedNotAvailableHeader: {
+    id: 'cert.alert.earned.unavailable.header',
+    defaultMessage: 'Your grade and certificate will be ready soon!',
+    description: 'Header alerting the user that their certificate will be available soon.',
+  },
+  certStatusDownloadableHeader: {
+    id: 'cert.alert.earned.ready.header',
+    defaultMessage: 'Congratulations! Your certificate is ready.',
+    description: 'Header alerting the user that their certificate is ready.',
+  },
+});
+
+export default messages;
