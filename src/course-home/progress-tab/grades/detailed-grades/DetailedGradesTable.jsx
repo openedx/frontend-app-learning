@@ -1,12 +1,31 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@edx/paragon';
 
 import messages from '../messages';
+import { useModel } from '../../../../generic/model-store';
 
 function DetailedGradesTable({ intl, sectionScores }) {
+  const {
+    courseId,
+  } = useSelector(state => state.courseHome);
+  const {
+    org,
+  } = useModel('courseHomeMeta', courseId);
+  const { administrator } = getAuthenticatedUser();
+  const logSubsectionClicked = (blockKey) => {
+    sendTrackEvent('edx.ui.lms.course_progress.detailed_grades_assignment.clicked', {
+      org_key: org,
+      courserun_key: courseId,
+      is_staff: administrator,
+      assignment_block_key: blockKey,
+    });
+  };
   return (
     sectionScores.map((chapter) => {
       const subsectionScores = chapter.subsections.filter(
@@ -21,7 +40,17 @@ function DetailedGradesTable({ intl, sectionScores }) {
       }
 
       const detailedGradesData = subsectionScores.map((subsection) => {
-        const title = <a href={subsection.url} className="text-dark-700 small">{subsection.displayName}</a>;
+        const title = (
+          <a
+            href={subsection.url}
+            className="text-dark-700 small"
+            onClick={() => {
+              logSubsectionClicked(subsection.blockKey);
+            }}
+          >
+            {subsection.displayName}
+          </a>
+        );
         return {
           subsectionTitle: title,
           score: `${subsection.numPointsEarned}/${subsection.numPointsPossible}`,

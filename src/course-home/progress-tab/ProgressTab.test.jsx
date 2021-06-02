@@ -1,6 +1,7 @@
 import React from 'react';
 import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 
@@ -50,6 +51,42 @@ describe('Progress Tab', () => {
     axiosMock.onGet(progressUrl).reply(200, defaultTabData);
 
     logUnhandledRequests(axiosMock);
+  });
+
+  describe('Related links', () => {
+    beforeEach(() => {
+      sendTrackEvent.mockClear();
+    });
+
+    it('sends event on click of dates tab link', async () => {
+      await fetchAndRender();
+
+      const datesTabLink = screen.getByRole('link', { name: 'Dates' });
+      fireEvent.click(datesTabLink);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.related_links.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+        link_clicked: 'dates',
+      });
+    });
+
+    it('sends event on click of outline tab link', async () => {
+      await fetchAndRender();
+
+      const outlineTabLink = screen.getAllByRole('link', { name: 'Course Outline' });
+      fireEvent.click(outlineTabLink[1]); // outlineTabLink[0] corresponds to the link in the DetailedGrades component
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.related_links.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+        link_clicked: 'course_outline',
+      });
+    });
   });
 
   describe('Course Grade', () => {
@@ -182,6 +219,38 @@ describe('Progress Tab', () => {
       expect(screen.getByText('locked feature')).toBeInTheDocument();
       expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
       expect(screen.getAllByRole('link', 'Unlock now')).toHaveLength(3);
+    });
+
+    it('sends event on click of upgrade button in locked content header', async () => {
+      sendTrackEvent.mockClear();
+      setTabData({
+        completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 1,
+        },
+        verified_mode: {
+          access_expiration_date: '2050-01-01T12:00:00',
+          currency: 'USD',
+          currency_symbol: '$',
+          price: 149,
+          sku: 'ABCD1234',
+          upgrade_url: 'edx.org/upgrade',
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByText('locked feature')).toBeInTheDocument();
+      expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
+
+      const upgradeButton = screen.getAllByRole('link', 'Unlock now')[0];
+      fireEvent.click(upgradeButton);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.grades_upgrade.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+      });
     });
 
     it('renders locked feature preview with no upgrade button when user has locked content but cannot upgrade', async () => {
@@ -354,6 +423,39 @@ describe('Progress Tab', () => {
       expect(screen.getByRole('link', { name: 'Second subsection' }));
     });
 
+    it('sends event on click of subsection link', async () => {
+      sendTrackEvent.mockClear();
+      await fetchAndRender();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+
+      const subsectionLink = screen.getByRole('link', { name: 'First subsection' });
+      fireEvent.click(subsectionLink);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.detailed_grades_assignment.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+        assignment_block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+      });
+    });
+
+    it('sends event on click of course outline link', async () => {
+      sendTrackEvent.mockClear();
+      await fetchAndRender();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+
+      const outlineLink = screen.getAllByRole('link', { name: 'Course Outline' })[0];
+      fireEvent.click(outlineLink);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.detailed_grades.course_outline_link.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+      });
+    });
+
     it('render message when section scores are not populated', async () => {
       setTabData({
         section_scores: [],
@@ -387,11 +489,26 @@ describe('Progress Tab', () => {
     describe('enrolled user', () => {
       beforeEach(async () => {
         setMetadata({ is_enrolled: true });
+        sendTrackEvent.mockClear();
       });
 
       it('Displays text for nonPassing case when learner does not have a passing grade', async () => {
         await fetchAndRender();
         expect(screen.getByText('In order to qualify for a certificate, you must have a passing grade.')).toBeInTheDocument();
+      });
+
+      it('sends event when visiting progress tab when learner is not passing', async () => {
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'not_passing',
+          certificate_status_variant: 'not_passing',
+        });
       });
 
       it('Displays text for inProgress case when more content is scheduled and the learner does not have a passing grade', async () => {
@@ -402,6 +519,23 @@ describe('Progress Tab', () => {
         expect(screen.getByText('It looks like there is more content in this course that will be released in the future. Look out for email updates or check back on your course for when this content will be available.')).toBeInTheDocument();
       });
 
+      it('sends event when visiting progress tab when user has scheduled content', async () => {
+        setTabData({
+          has_scheduled_content: true,
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'not_passing',
+          certificate_status_variant: 'has_scheduled_content',
+        });
+      });
+
       it('Displays request certificate link', async () => {
         setTabData({
           certificate_data: { cert_status: 'requesting' },
@@ -409,6 +543,34 @@ describe('Progress Tab', () => {
         });
         await fetchAndRender();
         expect(screen.getByRole('button', { name: 'Request certificate' })).toBeInTheDocument();
+      });
+
+      it('sends events on view of progress tab and on click of request certificate link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'requesting' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'requesting',
+        });
+
+        const requestCertificateLink = screen.getByRole('button', { name: 'Request certificate' });
+        fireEvent.click(requestCertificateLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          certificate_status_variant: 'requesting',
+        });
       });
 
       it('Displays verify identity link', async () => {
@@ -421,6 +583,35 @@ describe('Progress Tab', () => {
         expect(screen.getByRole('link', { name: 'Verify ID' })).toBeInTheDocument();
       });
 
+      it('sends events on view of progress tab and on click of ID verification link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'unverified' },
+          user_has_passing_grade: true,
+          verification_data: { link: 'test' },
+        });
+        await fetchAndRender();
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'unverified',
+        });
+
+        const idVerificationLink = screen.getByRole('link', { name: 'Verify ID' });
+        fireEvent.click(idVerificationLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          certificate_status_variant: 'unverified',
+        });
+      });
+
       it('Displays verification pending message', async () => {
         setTabData({
           certificate_data: { cert_status: 'unverified' },
@@ -430,6 +621,25 @@ describe('Progress Tab', () => {
         await fetchAndRender();
         expect(screen.getByText('Your ID verification is pending and your certificate will be available once approved.')).toBeInTheDocument();
         expect(screen.queryByRole('link', { name: 'Verify ID' })).not.toBeInTheDocument();
+      });
+
+      it('sends event when visiting progress tab with ID verification pending message', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'unverified' },
+          verification_data: { status: 'pending' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'unverified',
+        });
       });
 
       it('Displays download link', async () => {
@@ -444,6 +654,37 @@ describe('Progress Tab', () => {
         expect(screen.getByRole('link', { name: 'Download my certificate' })).toBeInTheDocument();
       });
 
+      it('sends events on view of progress tab and on click of downloadable certificate link', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'downloadable',
+            download_url: 'fake.download.url',
+          },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'earned_downloadable',
+        });
+
+        const downloadCertificateLink = screen.getByRole('link', { name: 'Download my certificate' });
+        fireEvent.click(downloadCertificateLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          certificate_status_variant: 'earned_downloadable',
+        });
+      });
+
       it('Displays webview link', async () => {
         setTabData({
           certificate_data: {
@@ -456,6 +697,37 @@ describe('Progress Tab', () => {
         expect(screen.getByRole('link', { name: 'View my certificate' })).toBeInTheDocument();
       });
 
+      it('sends events on view of progress tab and on click of view certificate link', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'downloadable',
+            cert_web_view_url: '/certificates/cooluuidgoeshere',
+          },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'earned_viewable',
+        });
+
+        const viewCertificateLink = screen.getByRole('link', { name: 'View my certificate' });
+        fireEvent.click(viewCertificateLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          certificate_status_variant: 'earned_viewable',
+        });
+      });
+
       it('Displays certificate is earned but unavailable message', async () => {
         setTabData({
           certificate_data: { cert_status: 'earned_but_not_available' },
@@ -463,6 +735,57 @@ describe('Progress Tab', () => {
         });
         await fetchAndRender();
         expect(screen.queryByText('Certificate status')).toBeInTheDocument();
+      });
+
+      it('sends event when visiting the progress tab when cert is earned but unavailable', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'earned_but_not_available' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'earned_but_not_available',
+        });
+      });
+
+      it('sends event with correct grade variant for passing with letter grades', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'earned_but_not_available' },
+          grading_policy: {
+            assignment_policies: [
+              {
+                num_droppable: 1,
+                num_total: 2,
+                short_label: 'HW',
+                type: 'Homework',
+                weight: 1,
+              },
+            ],
+            grade_range: {
+              A: 0.9,
+              B: 0.8,
+            },
+          },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing_grades',
+          certificate_status_variant: 'earned_but_not_available',
+        });
       });
 
       it('Displays upgrade link when available', async () => {
@@ -479,6 +802,36 @@ describe('Progress Tab', () => {
         expect(screen.getByRole('link', { name: 'Upgrade now' })).toBeInTheDocument();
       });
 
+      it('sends events on view of progress tab and when audit learner clicks upgrade link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'audit_passing' },
+          verified_mode: {
+            upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+          },
+        });
+        await fetchAndRender();
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'not_passing',
+          certificate_status_variant: 'audit_passing',
+        });
+
+        const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
+        fireEvent.click(upgradeLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          certificate_status_variant: 'audit_passing',
+        });
+      });
+
       it('Displays nothing if audit only', async () => {
         setTabData({
           certificate_data: { cert_status: 'audit_passing' },
@@ -488,6 +841,23 @@ describe('Progress Tab', () => {
         // never actually there, when/if the text changes.
         expect(screen.queryByText('You are in an audit track and do not qualify for a certificate. In order to work towards a certificate, upgrade your course today.')).not.toBeInTheDocument();
         expect(screen.queryByRole('link', { name: 'Upgrade now' })).not.toBeInTheDocument();
+      });
+
+      it('sends event when visiting the progress tab even when audit user cannot upgrade (i.e. certificate component does not render)', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'audit_passing' },
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'not_passing',
+          certificate_status_variant: 'audit_passing_missed_upgrade_deadline',
+        });
       });
 
       it('Does not display the certificate component if it does not match any statuses', async () => {
@@ -500,6 +870,27 @@ describe('Progress Tab', () => {
         setMetadata({ is_enrolled: true });
         await fetchAndRender();
         expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+      });
+
+      it('sends event when visiting progress tab, although no certificate statuses match', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'bogus_status',
+          },
+          user_has_passing_grade: true,
+        });
+        setMetadata({ is_enrolled: true });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'certificate_status_disabled',
+        });
       });
     });
 
