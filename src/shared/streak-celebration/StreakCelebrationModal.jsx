@@ -143,7 +143,7 @@ function StreakModal({
                 id="learning.streakCelebration.streakAA759EndDateMessage"
                 defaultMessage="Ends {date}."
                 values={{
-                  date: new Date('2021-6-25 00:00').toLocaleDateString({ timeZone: 'UTC' }),
+                  date: new Date('2021-7-20 00:00').toLocaleDateString({ timeZone: 'UTC' }),
                 }}
               />
             </div>
