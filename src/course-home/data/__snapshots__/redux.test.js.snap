@@ -365,6 +365,12 @@ Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "accessExpiration": null,
         "canShowUpgradeSock": false,
+        "certData": Object {
+          "certStatus": null,
+          "certWebViewUrl": null,
+          "certificateAvailableDate": null,
+          "downloadUrl": null,
+        },
         "courseBlocks": Object {
           "courses": Object {
             "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {

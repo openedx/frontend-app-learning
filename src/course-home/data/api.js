@@ -204,6 +204,7 @@ export async function getOutlineTabData(courseId) {
 
   const accessExpiration = camelCaseObject(data.access_expiration);
   const canShowUpgradeSock = data.can_show_upgrade_sock;
+  const certData = camelCaseObject(data.cert_data);
   const courseBlocks = data.course_blocks ? normalizeOutlineBlocks(courseId, data.course_blocks.blocks) : {};
   const courseGoals = camelCaseObject(data.course_goals);
   const courseTools = camelCaseObject(data.course_tools);
@@ -221,6 +222,7 @@ export async function getOutlineTabData(courseId) {
   return {
     accessExpiration,
     canShowUpgradeSock,
+    certData,
     courseBlocks,
     courseGoals,
     courseTools,

@@ -14,6 +14,7 @@ import {
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
 import initializeStore from '../../store';
+import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 import OutlineTab from './OutlineTab';
 
 initializeMockApp();
@@ -672,7 +673,14 @@ describe('Outline Tab', () => {
         const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
         const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
         setMetadata({ is_enrolled: true });
-        setTabData({}, {
+        setTabData({
+          cert_data: {
+            cert_status: CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE,
+            cert_web_view_url: null,
+            certificate_available_date: tomorrow.toISOString(),
+            download_url: null,
+          },
+        }, {
           date_blocks: [
             {
               date_type: 'course-end-date',
@@ -687,8 +695,60 @@ describe('Outline Tab', () => {
           ],
         });
         await fetchAndRender();
-        await screen.findByText('Your grade and certificate will be ready soon!');
+        expect(screen.queryByText('Your grade and certificate will be ready soon!')).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('Certificate (web) Complete Alert', () => {
+    it('appears', async () => {
+      const now = new Date();
+      const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        cert_data: {
+          cert_status: CERT_STATUS_TYPE.DOWNLOADABLE,
+          cert_web_view_url: 'certificate/testuuid',
+          certificate_available_date: null,
+          download_url: null,
+        },
+      }, {
+        date_blocks: [
+          {
+            date_type: 'course-end-date',
+            date: yesterday.toISOString(),
+            title: 'End',
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.queryByText('Congratulations! Your certificate is ready.')).toBeInTheDocument();
+    });
+  });
+
+  describe('Certificate (pdf) Complete Alert', () => {
+    it('appears', async () => {
+      const now = new Date();
+      const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        cert_data: {
+          cert_status: CERT_STATUS_TYPE.DOWNLOADABLE,
+          cert_web_view_url: null,
+          certificate_available_date: null,
+          download_url: 'download/url',
+        },
+      }, {
+        date_blocks: [
+          {
+            date_type: 'course-end-date',
+            date: yesterday.toISOString(),
+            title: 'End',
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.queryByText('Congratulations! Your certificate is ready.')).not.toBeInTheDocument();
     });
   });
 
