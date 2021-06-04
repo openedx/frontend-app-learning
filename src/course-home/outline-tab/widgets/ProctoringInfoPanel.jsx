@@ -9,10 +9,12 @@ import messages from '../messages';
 import { getProctoringInfoData } from '../../data/api';
 
 function ProctoringInfoPanel({ courseId, username, intl }) {
-  const [status, setStatus] = useState('');
   const [link, setLink] = useState('');
-  const [releaseDate, setReleaseDate] = useState(null);
+  const [onboardingPastDue, setOnboardingPastDue] = useState(false);
+  const [showInfoPanel, setShowInfoPanel] = useState(false);
+  const [status, setStatus] = useState('');
   const [readableStatus, setReadableStatus] = useState('');
+  const [releaseDate, setReleaseDate] = useState(null);
 
   const readableStatuses = {
     notStarted: 'notStarted',
@@ -77,6 +79,10 @@ function ProctoringInfoPanel({ courseId, username, intl }) {
       .then(
         response => {
           if (response) {
+            if (Object.keys(response).length > 0) {
+              setShowInfoPanel(true);
+            }
+
             setStatus(response.onboarding_status);
             setLink(response.onboarding_link);
             const expirationDate = response.expiration_date;
@@ -86,14 +92,54 @@ function ProctoringInfoPanel({ courseId, username, intl }) {
               setReadableStatus(getReadableStatusClass(response.onboarding_status));
             }
             setReleaseDate(new Date(response.onboarding_release_date));
+            setOnboardingPastDue(response.onboarding_past_due);
           }
         },
       );
   }, []);
 
+  let onboardingExamButton = null;
+
+  if (isNotYetReleased(releaseDate)) {
+    onboardingExamButton = (
+      <Button variant="secondary" block disabled aria-disabled="true">
+        {intl.formatMessage(
+          messages.proctoringOnboardingButtonNotOpen,
+          {
+            releaseDate: intl.formatDate(releaseDate, {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            }),
+          },
+        )}
+      </Button>
+    );
+  } else if (onboardingPastDue) {
+    onboardingExamButton = (
+      <Button variant="secondary" block disabled aria-disabled="true">
+        {intl.formatMessage(messages.proctoringOnboardingButtonPastDue)}
+      </Button>
+    );
+  } else if (!isNotYetReleased(releaseDate)) {
+    if (readableStatus === readableStatuses.otherCourseApproved) {
+      onboardingExamButton = (
+        <Button variant="primary" block href={link}>
+          {intl.formatMessage(messages.proctoringOnboardingPracticeButton)}
+        </Button>
+      );
+    } else if (readableStatus !== readableStatuses.otherCourseApproved) {
+      onboardingExamButton = (
+        <Button variant="primary" block href={link}>
+          {intl.formatMessage(messages.proctoringOnboardingButton)}
+        </Button>
+      );
+    }
+  }
+
   return (
     <>
-      { link && (
+      { showInfoPanel && (
         <section className={`mb-4 p-3 outline-sidebar-proctoring-panel ${getBorderClass()}`}>
           <h2 className="h4" id="outline-sidebar-upgrade-header">{intl.formatMessage(messages.proctoringInfoPanel)}</h2>
           <div>
@@ -114,50 +160,17 @@ function ProctoringInfoPanel({ courseId, username, intl }) {
               <>
                 <p>
                   {isNotYetSubmitted(status) && (
-                    <>
-                      {intl.formatMessage(messages.proctoringPanelGeneralInfo)}
-                    </>
+                    intl.formatMessage(messages.proctoringPanelGeneralInfo)
                   )}
                   {!isNotYetSubmitted(status) && (
-                    <>
-                      {intl.formatMessage(messages.proctoringPanelGeneralInfoSubmitted)}
-                    </>
+                    intl.formatMessage(messages.proctoringPanelGeneralInfoSubmitted)
                   )}
                 </p>
                 <p>{intl.formatMessage(messages.proctoringPanelGeneralTime)}</p>
               </>
             )}
             {isNotYetSubmitted(status) && (
-              <>
-                {!isNotYetReleased(releaseDate) && (
-                  <Button variant="primary" block href={link}>
-                    {readableStatus === readableStatuses.otherCourseApproved && (
-                      <>
-                        {intl.formatMessage(messages.proctoringOnboardingPracticeButton)}
-                      </>
-                    )}
-                    {readableStatus !== readableStatuses.otherCourseApproved && (
-                      <>
-                        {intl.formatMessage(messages.proctoringOnboardingButton)}
-                      </>
-                    )}
-                  </Button>
-                )}
-                {isNotYetReleased(releaseDate) && (
-                  <Button variant="secondary" block disabled aria-disabled="true">
-                    {intl.formatMessage(
-                      messages.proctoringOnboardingButtonNotOpen,
-                      {
-                        releaseDate: intl.formatDate(releaseDate, {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        }),
-                      },
-                    )}
-                  </Button>
-                )}
-              </>
+              onboardingExamButton
             )}
             <Button variant="outline-primary" block href="https://support.edx.org/hc/en-us/sections/115004169247-Taking-Timed-and-Proctored-Exams">
               {intl.formatMessage(messages.proctoringReviewRequirementsButton)}
