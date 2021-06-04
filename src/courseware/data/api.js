@@ -239,3 +239,8 @@ export async function postIntegritySignature(courseId) {
   );
   return camelCaseObject(data);
 }
+export async function sendActivationEmail() {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/send_account_activation_email`);
+  const { data } = await getAuthenticatedHttpClient().post(url.href, {});
+  return data;
+}
