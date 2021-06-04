@@ -26,7 +26,6 @@ import usePrivateCourseAlert from './alerts/private-course-alert';
 import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
-import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
 
 /** [MM-P2P] Experiment */
 import { initHomeMMP2P, MMP2PFlyover } from '../../experiments/mm-p2p';
@@ -132,7 +131,6 @@ function OutlineTab({ intl }) {
       </div>
       {/** [MM-P2P] Experiment (className for optimizely trigger) */}
       <div className="row course-outline-tab">
-        <AccountActivationAlert />
         <div className="col-12">
           <AlertList
             topic="outline-private-alerts"

@@ -4,7 +4,6 @@ import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
-import Cookies from 'js-cookie';
 import userEvent from '@testing-library/user-event';
 
 import { buildMinimalCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
@@ -916,53 +915,6 @@ describe('Outline Tab', () => {
         courserun_key: courseId,
         location: 'sidebar-message',
       });
-    });
-  });
-
-  describe('Accont Activation Alert', () => {
-    beforeEach(() => {
-      const intersectionObserverMock = () => ({
-        observe: () => null,
-        disconnect: () => null,
-      });
-      window.IntersectionObserver = jest.fn().mockImplementation(intersectionObserverMock);
-    });
-    it('displays account activation alert if cookie is set true', async () => {
-      Cookies.set = jest.fn();
-      Cookies.get = jest.fn().mockImplementation(() => 'true');
-      Cookies.remove = jest.fn().mockImplementation(() => { Cookies.get = jest.fn(); });
-
-      await fetchAndRender();
-      expect(screen.queryByText('Activate your account so you can log back in')).toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'resend the email' })).toBeInTheDocument();
-    });
-
-    it('do not displays account activation alert if cookie is not set true', async () => {
-      Cookies.set = jest.fn();
-      Cookies.get = jest.fn();
-      Cookies.remove = jest.fn().mockImplementation(() => { Cookies.get = jest.fn(); });
-
-      await fetchAndRender();
-      expect(screen.queryByText('Activate your account so you can log back in')).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'resend the email' })).not.toBeInTheDocument();
-    });
-
-    it('sends account activation email on clicking the resened email in account activation alert', async () => {
-      Cookies.set = jest.fn();
-      Cookies.get = jest.fn().mockImplementation(() => 'true');
-      Cookies.remove = jest.fn().mockImplementation(() => { Cookies.get = jest.fn(); });
-
-      await fetchAndRender();
-
-      axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-      const resendEmailUrl = `${getConfig().LMS_BASE_URL}/api/send_account_activation_email`;
-      axiosMock.onPost(resendEmailUrl).reply(200, {});
-
-      const resendLink = screen.getByRole('button', { name: 'resend the email' });
-      fireEvent.click(resendLink);
-
-      await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
-      expect(axiosMock.history.post[0].url).toEqual(resendEmailUrl);
     });
   });
 });
