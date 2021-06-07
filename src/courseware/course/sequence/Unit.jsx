@@ -5,23 +5,23 @@ import React, {
   useRef,
   useState,
   useLayoutEffect,
-} from 'react';
-import { useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
-import { getConfig } from '@edx/frontend-platform';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { AppContext } from '@edx/frontend-platform/react';
-import { Modal } from '@edx/paragon';
-import messages from './messages';
-import BookmarkButton from '../bookmark/BookmarkButton';
-import { useModel } from '../../../generic/model-store';
-import PageLoading from '../../../generic/PageLoading';
-import { processEvent } from '../../../course-home/data/thunks';
-import { fetchCourse } from '../../data/thunks';
+} from "react";
+import { useDispatch } from "react-redux";
+import PropTypes from "prop-types";
+import { getConfig } from "@edx/frontend-platform";
+import { injectIntl, intlShape } from "@edx/frontend-platform/i18n";
+import { AppContext } from "@edx/frontend-platform/react";
+import { Modal } from "@edx/paragon";
+import messages from "./messages";
+import BookmarkButton from "../bookmark/BookmarkButton";
+import { useModel } from "../../../generic/model-store";
+import PageLoading from "../../../generic/PageLoading";
+import { processEvent } from "../../../course-home/data/thunks";
+import { fetchCourse } from "../../data/thunks";
 /** [MM-P2P] Experiment */
-import { MMP2PLockPaywall } from '../../../experiments/mm-p2p';
+import { MMP2PLockPaywall } from "../../../experiments/mm-p2p";
 
-const LockPaywall = React.lazy(() => import('./lock-paywall'));
+const LockPaywall = React.lazy(() => import("./lock-paywall"));
 
 /**
  * Feature policy for iframe, allowing access to certain courseware-related media.
@@ -33,9 +33,8 @@ const LockPaywall = React.lazy(() => import('./lock-paywall'));
  * This policy was selected in conference with the edX Security Working Group.
  * Changes to it should be vetted by them (security@edx.org).
  */
-const IFRAME_FEATURE_POLICY = (
-  'microphone *; camera *; midi *; geolocation *; encrypted-media *'
-);
+const IFRAME_FEATURE_POLICY =
+  "microphone *; camera *; midi *; geolocation *; encrypted-media *";
 
 /**
  * We discovered an error in Firefox where - upon iframe load - React would cease to call any
@@ -65,7 +64,7 @@ const IFRAME_FEATURE_POLICY = (
 function useLoadBearingHook(id) {
   const setValue = useState(0)[1];
   useLayoutEffect(() => {
-    setValue(currentValue => currentValue + 1);
+    setValue((currentValue) => currentValue + 1);
   }, [id]);
 }
 
@@ -79,21 +78,20 @@ function Unit({
   mmp2p,
 }) {
   const { authenticatedUser } = useContext(AppContext);
-  const view = authenticatedUser ? 'student_view' : 'public_view';
-  let iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=${view}`;
+  const view = authenticatedUser ? "student_view" : "public_view";
+  let iframeUrl = `${
+    getConfig().LMS_BASE_URL
+  }/xblock/${id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=${view}`;
   if (format) {
     iframeUrl += `&format=${format}`;
   }
-
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
 
-  const unit = useModel('units', id);
-  const course = useModel('coursewareMeta', courseId);
-  const {
-    contentTypeGatingEnabled,
-  } = course;
+  const unit = useModel("units", id);
+  const course = useModel("coursewareMeta", courseId);
+  const { contentTypeGatingEnabled } = course;
 
   const dispatch = useDispatch();
 
@@ -102,10 +100,11 @@ function Unit({
 
   // We use this ref so that we can hold a reference to the currently active event listener.
   const messageEventListenerRef = useRef(null);
+
   useEffect(() => {
     function receiveMessage(event) {
       const { type, payload } = event.data;
-      if (type === 'plugin.resize') {
+      if (type === "plugin.resize") {
         setIframeHeight(payload.height);
         if (!hasLoaded && iframeHeight === 0 && payload.height > 0) {
           setHasLoaded(true);
@@ -113,22 +112,25 @@ function Unit({
             onLoaded();
           }
         }
-      } else if (type === 'plugin.modal') {
+      } else if (type === "plugin.modal") {
         payload.open = true;
         setModalOptions(payload);
+      } else if (event.data.offset) {
+        window.scrollTo(0, event.data.offset);
       }
     }
     // If we currently have an event listener, remove it.
     if (messageEventListenerRef.current !== null) {
-      global.removeEventListener('message', messageEventListenerRef.current);
+      global.removeEventListener("message", messageEventListenerRef.current);
       messageEventListenerRef.current = null;
     }
     // Now add our new receiveMessage handler as the event listener.
-    global.addEventListener('message', receiveMessage);
+    global.addEventListener("message", receiveMessage);
     // And then save it to our ref for next time.
     messageEventListenerRef.current = receiveMessage;
     // When the component finally unmounts, use the ref to remove the correct handler.
-    return () => global.removeEventListener('message', messageEventListenerRef.current);
+    return () =>
+      global.removeEventListener("message", messageEventListenerRef.current);
   }, [id, setIframeHeight, hasLoaded, iframeHeight, setHasLoaded, onLoaded]);
 
   return (
@@ -137,56 +139,62 @@ function Unit({
       <BookmarkButton
         unitId={unit.id}
         isBookmarked={unit.bookmarked}
-        isProcessing={unit.bookmarkedUpdateState === 'loading'}
+        isProcessing={unit.bookmarkedUpdateState === "loading"}
       />
-      { !mmp2p.state.isEnabled && contentTypeGatingEnabled && unit.containsContentTypeGatedContent && (
-        <Suspense
-          fallback={(
-            <PageLoading
-              srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
-            />
-          )}
-        >
-          <LockPaywall courseId={courseId} />
-        </Suspense>
-      )}
-      { /** [MM-P2P] Experiment */ }
-      { mmp2p.meta.showLock && (
-        <MMP2PLockPaywall options={mmp2p} />
-      )}
-      { /** [MM-P2P] Experiment (conditional) */ }
+      {!mmp2p.state.isEnabled &&
+        contentTypeGatingEnabled &&
+        unit.containsContentTypeGatedContent && (
+          <Suspense
+            fallback={
+              <PageLoading
+                srMessage={intl.formatMessage(
+                  messages["learn.loading.content.lock"]
+                )}
+              />
+            }
+          >
+            <LockPaywall courseId={courseId} />
+          </Suspense>
+        )}
+      {/** [MM-P2P] Experiment */}
+      {mmp2p.meta.showLock && <MMP2PLockPaywall options={mmp2p} />}
+      {/** [MM-P2P] Experiment (conditional) */}
       {!mmp2p.meta.blockContent && !hasLoaded && (
         <PageLoading
-          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+          srMessage={intl.formatMessage(
+            messages["learn.loading.learning.sequence"]
+          )}
         />
       )}
       {modalOptions.open && (
         <Modal
-          body={(
+          body={
             <>
-              {modalOptions.body
-                ? <div className="unit-modal">{ modalOptions.body }</div>
-                : (
-                  <iframe
-                    title={modalOptions.title}
-                    allow={IFRAME_FEATURE_POLICY}
-                    frameBorder="0"
-                    src={modalOptions.url}
-                    style={{
-                      width: '100%',
-                      height: '100vh',
-                    }}
-                  />
-                )}
+              {modalOptions.body ? (
+                <div className="unit-modal">{modalOptions.body}</div>
+              ) : (
+                <iframe
+                  title={modalOptions.title}
+                  allow={IFRAME_FEATURE_POLICY}
+                  frameBorder="0"
+                  src={modalOptions.url}
+                  style={{
+                    width: "100%",
+                    height: "100vh",
+                  }}
+                />
+              )}
             </>
-          )}
-          onClose={() => { setModalOptions({ open: false }); }}
+          }
+          onClose={() => {
+            setModalOptions({ open: false });
+          }}
           open
           dialogClassName="modal-lti"
         />
       )}
-      { /** [MM-P2P] Experiment (conditional) */ }
-      { !mmp2p.meta.blockContent && (
+      {/** [MM-P2P] Experiment (conditional) */}
+      {!mmp2p.meta.blockContent && (
         <div className="unit-iframe-wrapper">
           <iframe
             id="unit-iframe"
