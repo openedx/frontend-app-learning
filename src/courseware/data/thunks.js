@@ -5,6 +5,7 @@ import {
   getCourseMetadata,
   getCourseBlocks,
   getSequenceMetadata,
+  postIntegritySignature,
 } from './api';
 import {
   updateModel, addModel, updateModelsMap, addModelsMap, updateModels,
@@ -178,6 +179,23 @@ export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
           activeUnitIndex: initialActiveUnitIndex,
         },
       }));
+    }
+  };
+}
+
+export function saveIntegritySignature(courseId) {
+  return async (dispatch) => {
+    try {
+      await postIntegritySignature(courseId);
+      dispatch(updateModel({
+        modelType: 'coursewareMeta',
+        model: {
+          id: courseId,
+          userNeedsIntegritySignature: false,
+        },
+      }));
+    } catch (error) {
+      logError(error);
     }
   };
 }

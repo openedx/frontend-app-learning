@@ -6,6 +6,11 @@ const messages = defineMessages({
     defaultMessage: 'Loading locked content messaging...',
     description: 'Message shown when an interface about locked content is being loaded',
   },
+  'learn.loading.honor.code': {
+    id: 'learn.loading.honor.codk',
+    defaultMessage: 'Loading honor code messaging...',
+    description: 'Message shown when an interface about the honor code is being loaded',
+  },
   'learn.loading.learning.sequence': {
     id: 'learn.loading.learning.sequence',
     defaultMessage: 'Loading learning sequence...',
