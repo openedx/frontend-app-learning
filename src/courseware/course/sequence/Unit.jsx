@@ -171,10 +171,7 @@ function Unit({
       )}
       { /** [MM-P2P] Experiment (conditional) */ }
       {!mmp2p.meta.blockContent && !userNeedsIntegritySignature && !hasLoaded && (
-        <PageLoading
-          srMessage={intl.formatMessage(
-            messages["learn.loading.learning.sequence"]
-          )}
+        <PageLoading srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
         />
       )}
       {modalOptions.open && (
@@ -189,8 +186,8 @@ function Unit({
                   frameBorder="0"
                   src={modalOptions.url}
                   style={{
-                    width: "100%",
-                    height: "100vh",
+                    width: '100%',
+                    height: '100vh',
                   }}
                 />
               )}
