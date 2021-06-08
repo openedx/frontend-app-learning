@@ -105,11 +105,12 @@ describe('Unit', () => {
 
   it('scrolls page on MessagaeEvent when receiving offset', async () => {
     // Set message to constain offset data.
-    const testMessageWithOffset = { Offset: 1500 };
+    const testMessageWithOffset = { offset: 1500 };
     render(<Unit {...mockData} />);
     window.postMessage(testMessageWithOffset, '*');
 
     await expect(waitFor(() => expect(window.scrollTo()).toHaveBeenCalled()));
+    expect(window.scrollY === testMessageWithOffset.offset);
   });
 
   it('ignores MessageEvent with unhandled type', async () => {
