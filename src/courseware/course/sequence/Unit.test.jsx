@@ -103,6 +103,15 @@ describe('Unit', () => {
     expect(onLoaded).toHaveBeenCalledTimes(1);
   });
 
+  it('scrolls page on MessagaeEvent when receiving offset', async () => {
+    // Set message to constain offset data.
+    const testMessageWithOffset = { Offset: 1500 };
+    render(<Unit {...mockData} />);
+    window.postMessage(testMessageWithOffset, '*');
+
+    await expect(waitFor(() => expect(window.scrollTo()).toHaveBeenCalled()));
+  });
+
   it('ignores MessageEvent with unhandled type', async () => {
     // Clone message and set different type.
     const testMessageWithUnhandledType = { ...messageEvent, type: 'wrong type' };
