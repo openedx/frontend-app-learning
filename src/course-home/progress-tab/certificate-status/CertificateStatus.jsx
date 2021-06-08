@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
   FormattedDate, FormattedMessage, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
@@ -19,11 +21,16 @@ function CertificateStatus({ intl }) {
 
   const {
     isEnrolled,
+    org,
   } = useModel('courseHomeMeta', courseId);
 
   const {
     certificateData,
     end,
+    enrollmentMode,
+    gradingPolicy: {
+      gradeRange,
+    },
     hasScheduledContent,
     userHasPassingGrade,
     verificationData,
@@ -37,6 +44,7 @@ function CertificateStatus({ intl }) {
     userHasPassingGrade,
   );
   const dispatch = useDispatch();
+  const { administrator } = getAuthenticatedUser();
 
   let certStatus;
   let certWebViewUrl;
@@ -49,21 +57,31 @@ function CertificateStatus({ intl }) {
   }
 
   let certCase;
+  let certEventName = certStatus;
   let body;
   let buttonAction;
   let buttonLocation;
   let buttonText;
   let endDate;
 
+  let gradeEventName = 'not_passing';
+  if (userHasPassingGrade) {
+    gradeEventName = Object.entries(gradeRange).length > 1 ? 'passing_grades' : 'passing';
+  }
+
   const dashboardLink = <DashboardLink />;
   const idVerificationSupportLink = <IdVerificationSupportLink />;
   const profileLink = <ProfileLink />;
 
-  if (mode === COURSE_EXIT_MODES.nonPassing) {
+  if (mode === COURSE_EXIT_MODES.disabled) {
+    certEventName = 'certificate_status_disabled';
+  } else if (mode === COURSE_EXIT_MODES.nonPassing) {
     certCase = 'notPassing';
+    certEventName = 'not_passing';
     body = intl.formatMessage(messages[`${certCase}Body`]);
   } else if (mode === COURSE_EXIT_MODES.inProgress) {
     certCase = 'inProgress';
+    certEventName = 'has_scheduled_content';
     body = intl.formatMessage(messages[`${certCase}Body`]);
   } else if (mode === COURSE_EXIT_MODES.celebration) {
     switch (certStatus) {
@@ -106,9 +124,11 @@ function CertificateStatus({ intl }) {
         );
 
         if (certWebViewUrl) {
+          certEventName = 'earned_viewable';
           buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
           buttonText = intl.formatMessage(messages.viewableButton);
         } else if (downloadUrl) {
+          certEventName = 'earned_downloadable';
           buttonLocation = downloadUrl;
           buttonText = intl.formatMessage(messages.downloadableButton);
         }
@@ -136,21 +156,44 @@ function CertificateStatus({ intl }) {
           buttonText = intl.formatMessage(messages[`${certCase}Button`]);
         } else {
           certCase = null; // Do not render the certificate component if the upgrade deadline has passed
+          certEventName = 'audit_passing_missed_upgrade_deadline';
         }
         break;
 
       // This code shouldn't be hit but coding defensively since switch expects a default statement
       default:
         certCase = null;
+        certEventName = 'no_certificate_status';
         break;
     }
   }
+
+  // Log visit to progress tab
+  useEffect(() => {
+    sendTrackEvent('edx.ui.lms.course_progress.visited', {
+      org_key: org,
+      courserun_key: courseId,
+      is_staff: administrator,
+      track_variant: enrollmentMode,
+      grade_variant: gradeEventName,
+      certificate_status_variant: certEventName,
+    });
+  }, []);
 
   if (!certCase) {
     return null;
   }
 
   const header = intl.formatMessage(messages[`${certCase}Header`]);
+
+  const logCertificateStatusButtonClicked = () => {
+    sendTrackEvent('edx.ui.lms.course_progress.certificate_status.clicked', {
+      org_key: org,
+      courserun_key: courseId,
+      is_staff: administrator,
+      certificate_status_variant: certEventName,
+    });
+  };
 
   return (
     <section data-testid="certificate-status-component" className="text-dark-700 mb-4">
@@ -163,7 +206,17 @@ function CertificateStatus({ intl }) {
             {body}
           </Card.Text>
           {buttonText && (buttonLocation || buttonAction) && (
-            <Button variant="outline-brand" onClick={buttonAction} href={buttonLocation} block>{buttonText}</Button>
+            <Button
+              variant="outline-brand"
+              onClick={() => {
+                logCertificateStatusButtonClicked(certStatus);
+                if (buttonAction) { buttonAction(); }
+              }}
+              href={buttonLocation}
+              block
+            >
+              {buttonText}
+            </Button>
           )}
         </Card.Body>
       </Card>

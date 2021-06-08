@@ -21,6 +21,7 @@ import { fetchCourse } from '../../data/thunks';
 /** [MM-P2P] Experiment */
 import { MMP2PLockPaywall } from '../../../experiments/mm-p2p';
 
+const HonorCode = React.lazy(() => import('./honor-code'));
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
 
 /**
@@ -88,9 +89,12 @@ function Unit({
   const [hasLoaded, setHasLoaded] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
 
-  const unit = useModel("units", id);
-  const course = useModel("coursewareMeta", courseId);
-  const { contentTypeGatingEnabled } = course;
+  const unit = useModel('units', id);
+  const course = useModel('coursewareMeta', courseId);
+  const {
+    contentTypeGatingEnabled,
+    userNeedsIntegritySignature,
+  } = course;
 
   const dispatch = useDispatch();
 
@@ -133,29 +137,44 @@ function Unit({
 
   return (
     <div className="unit">
-      <h2 className="mb-0 h3">{unit.title}</h2>
+      <h1 className="mb-0 h3">{unit.title}</h1>
       <BookmarkButton
         unitId={unit.id}
         isBookmarked={unit.bookmarked}
         isProcessing={unit.bookmarkedUpdateState === 'loading'}
       />
-      {!mmp2p.state.isEnabled &&
-        contentTypeGatingEnabled &&
-        unit.containsContentTypeGatedContent && (
-          <Suspense
-            fallback={
-              <PageLoading srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
-              />
-            }
-          >
-            <LockPaywall courseId={courseId} />
-          </Suspense>
-        )}
-      {/** [MM-P2P] Experiment */}
-      {mmp2p.meta.showLock && <MMP2PLockPaywall options={mmp2p} />}
-      {/** [MM-P2P] Experiment (conditional) */}
-      {!mmp2p.meta.blockContent && !hasLoaded && (
-        <PageLoading srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+      { !mmp2p.state.isEnabled && contentTypeGatingEnabled && unit.containsContentTypeGatedContent && (
+        <Suspense
+          fallback={(
+            <PageLoading
+              srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
+            />
+          )}
+        >
+          <LockPaywall courseId={courseId} />
+        </Suspense>
+      )}
+      { /** [MM-P2P] Experiment */ }
+      { mmp2p.meta.showLock && (
+        <MMP2PLockPaywall options={mmp2p} />
+      )}
+      {!mmp2p.meta.blockContent && unit.graded && userNeedsIntegritySignature && (
+        <Suspense
+          fallback={(
+            <PageLoading
+              srMessage={intl.formatMessage(messages['learn.loading.honor.code'])}
+            />
+          )}
+        >
+          <HonorCode courseId={courseId} />
+        </Suspense>
+      )}
+      { /** [MM-P2P] Experiment (conditional) */ }
+      {!mmp2p.meta.blockContent && !userNeedsIntegritySignature && !hasLoaded && (
+        <PageLoading
+          srMessage={intl.formatMessage(
+            messages["learn.loading.learning.sequence"]
+          )}
         />
       )}
       {modalOptions.open && (
@@ -182,8 +201,8 @@ function Unit({
           dialogClassName="modal-lti"
         />
       )}
-      {/** [MM-P2P] Experiment (conditional) */}
-      {!mmp2p.meta.blockContent && (
+      { /** [MM-P2P] Experiment (conditional) */ }
+      { !mmp2p.meta.blockContent && !userNeedsIntegritySignature && (
         <div className="unit-iframe-wrapper">
           <iframe
             id="unit-iframe"

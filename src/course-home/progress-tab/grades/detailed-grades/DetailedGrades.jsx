@@ -2,6 +2,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { getConfig } from '@edx/frontend-platform';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@edx/paragon';
 import { useModel } from '../../../../generic/model-store';
@@ -11,18 +13,33 @@ import DetailedGradesTable from './DetailedGradesTable';
 import messages from '../messages';
 
 function DetailedGrades({ intl }) {
+  const { administrator } = getAuthenticatedUser();
   const {
     courseId,
   } = useSelector(state => state.courseHome);
-
+  const {
+    org,
+  } = useModel('courseHomeMeta', courseId);
   const {
     sectionScores,
   } = useModel('progress', courseId);
 
   const hasSectionScores = sectionScores.length > 0;
 
+  const logOutlineLinkClick = () => {
+    sendTrackEvent('edx.ui.lms.course_progress.detailed_grades.course_outline_link.clicked', {
+      org_key: org,
+      courserun_key: courseId,
+      is_staff: administrator,
+    });
+  };
+
   const outlineLink = (
-    <Hyperlink className="muted-link inline-link" destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`}>
+    <Hyperlink
+      className="muted-link inline-link"
+      destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`}
+      onClick={logOutlineLinkClick}
+    >
       {intl.formatMessage(messages.courseOutline)}
     </Hyperlink>
   );

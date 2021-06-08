@@ -568,6 +568,7 @@ Object {
             "subsections": Array [
               Object {
                 "assignmentType": "Homework",
+                "blockKey": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345",
                 "displayName": "First subsection",
                 "hasGradedAssignment": true,
                 "numPointsEarned": 0,

@@ -55,7 +55,7 @@ describe('Loaded Tab Page', () => {
     const testStore = await initializeTestStore({ courseMetadata }, false);
     render(<StreakModal {...mockData} courseId={courseMetadata.id} />, { store: testStore });
     expect(screen.getByText('You’ve unlocked a 15% off discount when you upgrade this course for a limited time only.')).toBeInTheDocument();
-    expect(screen.getByText('Ends 6/25/2021.')).toBeInTheDocument();
+    expect(screen.getByText('Ends 7/20/2021.')).toBeInTheDocument();
     expect(screen.getByText('Continue with course')).toBeInTheDocument();
   });
 });
