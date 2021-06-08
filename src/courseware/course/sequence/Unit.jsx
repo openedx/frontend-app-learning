@@ -34,7 +34,9 @@ const LockPaywall = React.lazy(() => import('./lock-paywall'));
  * This policy was selected in conference with the edX Security Working Group.
  * Changes to it should be vetted by them (security@edx.org).
  */
-const IFRAME_FEATURE_POLICY = ('microphone *; camera *; midi *; geolocation *; encrypted-media *');
+const IFRAME_FEATURE_POLICY = (
+  'microphone *; camera *; midi *; geolocation *; encrypted-media *'
+);
 
 /**
  * We discovered an error in Firefox where - upon iframe load - React would cease to call any
@@ -64,7 +66,7 @@ const IFRAME_FEATURE_POLICY = ('microphone *; camera *; midi *; geolocation *; e
 function useLoadBearingHook(id) {
   const setValue = useState(0)[1];
   useLayoutEffect(() => {
-    setValue((currentValue) => currentValue + 1);
+    setValue(currentValue => currentValue + 1);
   }, [id]);
 }
 
@@ -79,12 +81,11 @@ function Unit({
 }) {
   const { authenticatedUser } = useContext(AppContext);
   const view = authenticatedUser ? 'student_view' : 'public_view';
-  let iframeUrl = `${
-    getConfig().LMS_BASE_URL
-  }/xblock/${id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=${view}`;
+  let iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=${view}`;
   if (format) {
     iframeUrl += `&format=${format}`;
   }
+  
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
@@ -103,7 +104,6 @@ function Unit({
 
   // We use this ref so that we can hold a reference to the currently active event listener.
   const messageEventListenerRef = useRef(null);
-
   useEffect(() => {
     function receiveMessage(event) {
       const { type, payload } = event.data;
@@ -179,8 +179,9 @@ function Unit({
         <Modal
           body={(
             <>
-              {modalOptions.body ? (<div className="unit-modal">{modalOptions.body}</div>
-              ) : (
+              {modalOptions.body
+                ? <div className="unit-modal">{modalOptions.body}</div>
+                : (
                 <iframe
                   title={modalOptions.title}
                   allow={IFRAME_FEATURE_POLICY}
