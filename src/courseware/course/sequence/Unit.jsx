@@ -85,7 +85,7 @@ function Unit({
   if (format) {
     iframeUrl += `&format=${format}`;
   }
-  
+
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
@@ -180,19 +180,19 @@ function Unit({
           body={(
             <>
               {modalOptions.body
-                ? <div className="unit-modal">{modalOptions.body}</div>
+                ? <div className="unit-modal">{ modalOptions.body }</div>
                 : (
-                <iframe
-                  title={modalOptions.title}
-                  allow={IFRAME_FEATURE_POLICY}
-                  frameBorder="0"
-                  src={modalOptions.url}
-                  style={{
-                    width: '100%',
-                    height: '100vh',
-                  }}
-                />
-              )}
+                  <iframe
+                    title={modalOptions.title}
+                    allow={IFRAME_FEATURE_POLICY}
+                    frameBorder="0"
+                    src={modalOptions.url}
+                    style={{
+                      width: '100%',
+                      height: '100vh',
+                    }}
+                  />
+                )}
             </>
           )}
           onClose={() => { setModalOptions({ open: false }); }}
