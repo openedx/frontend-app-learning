@@ -171,7 +171,7 @@ function Unit({
       )}
       { /** [MM-P2P] Experiment (conditional) */ }
       {!mmp2p.meta.blockContent && !userNeedsIntegritySignature && !hasLoaded && (
-        <PageLoading 
+        <PageLoading
           srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
         />
       )}
