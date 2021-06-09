@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@edx/paragon';
@@ -12,9 +11,7 @@ import GradeSummaryTableFooter from './GradeSummaryTableFooter';
 
 import messages from '../messages';
 
-function GradeSummaryTable({
-  gradeByAssignmentType, intl,
-}) {
+function GradeSummaryTable({ intl }) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -26,24 +23,6 @@ function GradeSummaryTable({
   } = useModel('progress', courseId);
 
   const footnotes = [];
-
-  const calculateAssignmentTypeGrades = (points, assignmentWeight, numDroppable) => {
-    let dropCount = numDroppable;
-    // Drop the lowest grades
-    while (dropCount && points.length >= dropCount) {
-      const lowestScore = Math.min(...points);
-      const lowestScoreIndex = points.indexOf(lowestScore);
-      points.splice(lowestScoreIndex, 1);
-      dropCount--;
-    }
-    let averageGrade = 0;
-    let weightedGrade = 0;
-    if (points.length) {
-      averageGrade = Number(((points.reduce((a, b) => a + b, 0) / points.length) * 100).toFixed(0));
-      weightedGrade = (averageGrade * assignmentWeight).toFixed(0);
-    }
-    return { averageGrade, weightedGrade };
-  };
 
   const getFootnoteId = (assignment) => {
     const footnoteId = assignment.shortLabel ? assignment.shortLabel : assignment.type;
@@ -65,20 +44,11 @@ function GradeSummaryTable({
       footnoteMarker = footnotes.length;
     }
 
-    const {
-      averageGrade,
-      weightedGrade,
-    } = calculateAssignmentTypeGrades(
-      gradeByAssignmentType[assignment.type].grades,
-      assignment.weight,
-      assignment.numDroppable,
-    );
-
     return {
       type: { footnoteId, footnoteMarker, type: assignment.type },
       weight: `${assignment.weight * 100}%`,
-      grade: `${averageGrade}%`,
-      weightedGrade: `${weightedGrade}%`,
+      grade: `${(assignment.averageGrade * 100).toFixed(0)}%`,
+      weightedGrade: `${(assignment.weightedGrade * 100).toFixed(0)}%`,
     };
   });
 
@@ -133,7 +103,6 @@ function GradeSummaryTable({
 }
 
 GradeSummaryTable.propTypes = {
-  gradeByAssignmentType: PropTypes.shape({}).isRequired,
   intl: intlShape.isRequired,
 };
 

@@ -96,26 +96,45 @@ describe('Progress Tab', () => {
       expect(screen.getByText('This represents your weighted grade against the grade needed to pass this course.')).toBeInTheDocument();
     });
 
-    it('renders correct copy for non-passing', async () => {
+    it('renders correct copy in CourseGradeFooter for non-passing', async () => {
       setTabData({
         course_grade: {
           is_passing: false,
           letter_grade: null,
           percent: 0.5,
         },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 0.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
       });
       await fetchAndRender();
       expect(screen.queryByRole('button', { name: 'Grade range tooltip' })).not.toBeInTheDocument();
       expect(screen.getByText('A weighted grade of 75% is required to pass in this course')).toBeInTheDocument();
     });
 
-    it('renders correct copy for passing with pass/fail grade range', async () => {
+    it('renders correct copy in CourseGradeFooter for passing with pass/fail grade range', async () => {
       await fetchAndRender();
       expect(screen.queryByRole('button', { name: 'Grade range tooltip' })).not.toBeInTheDocument();
       expect(screen.getByText('You’re currently passing this course')).toBeInTheDocument();
     });
 
-    it('renders correct copy and tooltip for non-passing with letter grade range', async () => {
+    it('renders correct copy and tooltip in CourseGradeFooter for non-passing with letter grade range', async () => {
       setTabData({
         course_grade: {
           is_passing: false,
@@ -142,13 +161,32 @@ describe('Progress Tab', () => {
       expect(screen.getByText('A weighted grade of 80% is required to pass in this course')).toBeInTheDocument();
     });
 
-    it('renders correct copy and tooltip for passing with letter grade range', async () => {
+    it('renders correct copy and tooltip in CourseGradeFooter for passing with letter grade range', async () => {
       setTabData({
         course_grade: {
           is_passing: true,
           letter_grade: 'B',
-          percent: 0.85,
+          percent: 0.8,
         },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                has_graded_assignment: true,
+                num_points_earned: 8,
+                num_points_possible: 10,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
         grading_policy: {
           assignment_policies: [
             {
@@ -169,7 +207,7 @@ describe('Progress Tab', () => {
       expect(await screen.findByText('You’re currently passing this course with a grade of B (80-90%)')).toBeInTheDocument();
     });
 
-    it('renders tooltip for grade range', async () => {
+    it('renders tooltip in CourseGradeFooter for grade range', async () => {
       setTabData({
         course_grade: {
           percent: 0,
@@ -199,7 +237,7 @@ describe('Progress Tab', () => {
       expect(screen.getByText('F: <80%'));
     });
 
-    it('renders locked feature preview with upgrade button when user has locked content', async () => {
+    it('renders locked feature preview (CourseGradeHeader) with upgrade button when user has locked content', async () => {
       setTabData({
         completion_summary: {
           complete_count: 1,
@@ -221,7 +259,7 @@ describe('Progress Tab', () => {
       expect(screen.getAllByRole('link', 'Unlock now')).toHaveLength(3);
     });
 
-    it('sends event on click of upgrade button in locked content header', async () => {
+    it('sends event on click of upgrade button in locked content header (CourseGradeHeader)', async () => {
       sendTrackEvent.mockClear();
       setTabData({
         completion_summary: {
@@ -270,6 +308,54 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       expect(screen.queryByText('locked feature')).not.toBeInTheDocument();
     });
+
+    it('renders correct current grade tooltip when showGrades is false', async () => {
+      // The learner has a 50% on the first assignment and a 100% on the second, making their grade a 75%
+      // The second assignment has showGrades set to false, so the grade reflected to the learner should be 50%.
+      setTabData({
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+          {
+            display_name: 'Second section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                display_name: 'Second subsection',
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 1,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: false,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection',
+              },
+            ],
+          },
+        ],
+      });
+
+      await fetchAndRender();
+      expect(screen.getByTestId('currentGradeTooltipContent').innerHTML).toEqual('50%');
+      // Although the learner's true grade is passing, we should expect this to reflect the grade that's
+      // visible to them, which is non-passing
+      expect(screen.getByText('A weighted grade of 75% is required to pass in this course')).toBeInTheDocument();
+    });
   });
 
   describe('Grade Summary', () => {
@@ -282,7 +368,11 @@ describe('Progress Tab', () => {
       setTabData({
         grading_policy: {
           assignment_policies: [],
+          grade_range: {
+            pass: 0.75,
+          },
         },
+        section_scores: [],
       });
       await fetchAndRender();
       expect(screen.queryByText('Grade summary')).not.toBeInTheDocument();
@@ -411,6 +501,51 @@ describe('Progress Tab', () => {
       // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
       expect(screen.getByRole('row', { name: 'Homework 1 50% 100% 50%' })).toBeInTheDocument();
       expect(screen.getByRole('row', { name: 'Exam 50% 0% 0%' })).toBeInTheDocument();
+    });
+
+    it('renders correct total weighted grade when showGrades is false', async () => {
+      // The learner has a 50% on the first assignment and a 100% on the second, making their grade a 75%
+      // The second assignment has showGrades set to false, so the grade reflected to the learner should be 50%.
+      setTabData({
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+          {
+            display_name: 'Second section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                display_name: 'Second subsection',
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 1,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: false,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection',
+              },
+            ],
+          },
+        ],
+      });
+
+      await fetchAndRender();
+      expect(screen.getByTestId('gradeSummaryFooterTotalWeightedGrade').innerHTML).toEqual('50%');
     });
   });
 
