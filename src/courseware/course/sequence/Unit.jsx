@@ -118,6 +118,10 @@ function Unit({
       } else if (type === 'plugin.modal') {
         payload.open = true;
         setModalOptions(payload);
+      } else if (event.data.offset) {
+        // We listen for this message from LMS to know when the page needs to
+        // be scroll to another location on the page.
+        window.scrollTo(0, event.data.offset);
       }
     }
     // If we currently have an event listener, remove it.
