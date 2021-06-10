@@ -152,9 +152,11 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   forbiddenCourseUrl = appendBrowserTimezoneToUrl(forbiddenCourseUrl);
 
   const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
+  const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
 
   axiosMock.onGet(forbiddenCourseUrl).reply(200, courseMetadata);
   axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
+  axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
   sequenceMetadata.forEach(metadata => {
     const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${metadata.item_id}`;
     axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);
