@@ -121,6 +121,9 @@ describe('CoursewareContainer', () => {
     const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
     axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
 
+    const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
+    axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+
     const courseMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
 

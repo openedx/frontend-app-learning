@@ -4,6 +4,7 @@ import {
   postSequencePosition,
   getCourseMetadata,
   getCourseBlocks,
+  getLearningSequencesOutline,
   getSequenceMetadata,
   postIntegritySignature,
 } from './api';
@@ -22,13 +23,27 @@ import {
   fetchSequenceFailure,
 } from './slice';
 
+// Make a copy of the sectionData and return it, but with the sequences filtered
+// down to only those sequences in allowedSequences
+function filterSequencesFromSection(sectionData, allowedSequences) {
+  return Object.fromEntries(
+    Object.entries(sectionData).map(
+      ([key, value]) => [
+        key,
+        (key === 'sequenceIds') ? value.filter(seqId => seqId in allowedSequences) : value,
+      ],
+    ),
+  );
+}
+
 export function fetchCourse(courseId) {
   return async (dispatch) => {
     dispatch(fetchCourseRequest({ courseId }));
     Promise.allSettled([
       getCourseMetadata(courseId),
       getCourseBlocks(courseId),
-    ]).then(([courseMetadataResult, courseBlocksResult]) => {
+      getLearningSequencesOutline(courseId),
+    ]).then(([courseMetadataResult, courseBlocksResult, learningSequencesOutlineResult]) => {
       if (courseMetadataResult.status === 'fulfilled') {
         dispatch(addModel({
           modelType: 'coursewareMeta',
@@ -47,6 +62,28 @@ export function fetchCourse(courseId) {
           courses, sections, sequences, units,
         } = courseBlocksResult.value;
 
+        // Filter the data we get from the Course Blocks API using the data we
+        // get back from the Learning Sequences API (which knows to hide certain
+        // sequences that users shouldn't see).
+        //
+        // This is temporary – all this data should come from Learning Sequences
+        // soon.
+        let filteredSections = sections;
+        let filteredSequences = sequences;
+        if (learningSequencesOutlineResult.value) {
+          const allowedSequences = learningSequencesOutlineResult.value.outline.sequences;
+          filteredSequences = Object.fromEntries(
+            Object.entries(sequences).filter(
+              ([blockId]) => blockId in allowedSequences,
+            ),
+          );
+          filteredSections = Object.fromEntries(
+            Object.entries(sections).map(
+              ([blockId, sectionData]) => [blockId, filterSequencesFromSection(sectionData, allowedSequences)],
+            ),
+          );
+        }
+
         // This updates the course with a sectionIds array from the blocks data.
         dispatch(updateModelsMap({
           modelType: 'coursewareMeta',
@@ -54,12 +91,12 @@ export function fetchCourse(courseId) {
         }));
         dispatch(addModelsMap({
           modelType: 'sections',
-          modelsMap: sections,
+          modelsMap: filteredSections,
         }));
         // We update for sequences and units because the sequence metadata may have come back first.
         dispatch(updateModelsMap({
           modelType: 'sequences',
-          modelsMap: sequences,
+          modelsMap: filteredSequences,
         }));
         dispatch(updateModelsMap({
           modelType: 'units',

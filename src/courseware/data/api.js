@@ -10,6 +10,7 @@ export function normalizeBlocks(courseId, blocks) {
     sequences: {},
     units: {},
   };
+
   Object.values(blocks).forEach(block => {
     switch (block.type) {
       case 'course':
@@ -103,6 +104,29 @@ export async function getCourseBlocks(courseId) {
 
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
   return normalizeBlocks(courseId, data.blocks);
+}
+
+// Returns the output of the Learning Sequences API, or null if that API is not
+// currently available for this user in this course.
+export async function getLearningSequencesOutline(courseId) {
+  const outlineUrl = new URL(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/${courseId}`);
+
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(outlineUrl.href, {});
+    return data;
+  } catch (error) {
+    // This is not a critical API to use at the moment. If it errors for any
+    // reason, just send back a null so the higher layers know to ignore it.
+    if (error.response) {
+      if (error.response.status === 403) {
+        logInfo('Learning Sequences API not enabled for this user.');
+      } else {
+        logInfo(`Unexpected error calling Learning Sequences API (${error.response.status}). Ignoring.`);
+      }
+      return null;
+    }
+    throw error;
+  }
 }
 
 function normalizeTabUrls(id, tabs) {

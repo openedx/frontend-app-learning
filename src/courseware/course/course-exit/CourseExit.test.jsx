@@ -33,6 +33,8 @@ describe('Course Exit Pages', () => {
   const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
   const discoveryRecommendationsUrl = new RegExp(`${getConfig().DISCOVERY_API_BASE_URL}/api/v1/course_recommendations/*`);
   const enrollmentsUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment*`);
+  const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
+
   function setMetadata(attributes) {
     const courseMetadata = { ...defaultMetadata, ...attributes };
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
@@ -51,6 +53,8 @@ describe('Course Exit Pages', () => {
     axiosMock.onGet(discoveryRecommendationsUrl).reply(200,
       Factory.build('courseRecommendations', {}, { numRecs: 2 }));
     axiosMock.onGet(enrollmentsUrl).reply(200, []);
+    axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+
     logUnhandledRequests(axiosMock);
   });
 
@@ -366,6 +370,7 @@ describe('Course Exit Pages', () => {
       const courseBlocks = buildSimpleCourseBlocks(defaultMetadata.id, defaultMetadata.name,
         { hasScheduledContent: true });
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
 
       await fetchAndRender(<CourseInProgress />);
       expect(screen.getByText('More content is coming soon!')).toBeInTheDocument();
