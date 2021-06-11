@@ -47,6 +47,10 @@ function normalizeAssignmentPolicies(assignmentPolicies, sectionScores) {
         numAssignmentsCreated,
       } = gradeByAssignmentType[assignmentType];
 
+      if (!numPointsPossible) {
+        return;
+      }
+
       numAssignmentsCreated++;
       if (numAssignmentsCreated <= gradeByAssignmentType[assignmentType].numTotalExpectedAssignments) {
         // Remove a placeholder grade so long as the number of recorded created assignments is less than the number
