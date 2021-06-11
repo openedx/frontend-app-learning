@@ -15,18 +15,18 @@ function GradeSummaryTableFooter({ intl }) {
   const {
     courseGrade: {
       isPassing,
-      percent,
+      visiblePercent,
     },
   } = useModel('progress', courseId);
 
   const bgColor = isPassing ? 'bg-success-100' : 'bg-warning-100';
-  const totalGrade = (percent * 100).toFixed(0);
+  const totalGrade = (visiblePercent * 100).toFixed(0);
 
   return (
     <DataTable.TableFooter className={`border-top border-primary ${bgColor}`}>
       <div className="row w-100 m-0">
         <div id="weighted-grade-summary" className="col-8 p-0 small">{intl.formatMessage(messages.weightedGradeSummary)}</div>
-        <div aria-labelledby="weighted-grade-summary" className="col-4 p-0 text-right font-weight-bold small">{totalGrade}%</div>
+        <div data-testid="gradeSummaryFooterTotalWeightedGrade" aria-labelledby="weighted-grade-summary" className="col-4 p-0 text-right font-weight-bold small">{totalGrade}%</div>
       </div>
     </DataTable.TableFooter>
   );

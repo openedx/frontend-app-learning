@@ -548,6 +548,7 @@ Object {
           "isPassing": true,
           "letterGrade": "pass",
           "percent": 1,
+          "visiblePercent": 1,
         },
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "end": "3027-03-31T00:00:00Z",
@@ -555,11 +556,12 @@ Object {
         "gradingPolicy": Object {
           "assignmentPolicies": Array [
             Object {
+              "averageGrade": 1,
               "numDroppable": 1,
-              "numTotal": 2,
               "shortLabel": "HW",
               "type": "Homework",
               "weight": 1,
+              "weightedGrade": 1,
             },
           ],
           "gradeRange": Object {

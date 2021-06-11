@@ -17,11 +17,11 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
   const {
     courseGrade: {
       isPassing,
-      percent,
+      visiblePercent,
     },
   } = useModel('progress', courseId);
 
-  const currentGrade = Number((percent * 100).toFixed(0));
+  const currentGrade = Number((visiblePercent * 100).toFixed(0));
 
   return (
     <>
@@ -30,7 +30,7 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
         placement="top"
         overlay={(
           <Popover id={`${isPassing ? 'passing' : 'non-passing'}-grade-tooltip`} aria-hidden="true" className={tooltipClassName}>
-            <Popover.Content className={isPassing ? 'text-white' : 'text-dark-700'}>
+            <Popover.Content data-testid="currentGradeTooltipContent" className={isPassing ? 'text-white' : 'text-dark-700'}>
               {currentGrade.toFixed(0)}%
             </Popover.Content>
           </Popover>
