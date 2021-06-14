@@ -99,6 +99,13 @@ function Unit({
 
   const dispatch = useDispatch();
 
+  const checkForHash = () => {
+    const { hash } = window.location;
+    if (hash) {
+      const unitIframe = document.getElementById('unit-iframe');
+      unitIframe.contentWindow.postMessage({ hashName: hash }, `${getConfig().LMS_BASE_URL}`);
+    }
+  };
   // Do not remove this hook.  See function description.
   useLoadBearingHook(id);
 
@@ -215,6 +222,7 @@ function Unit({
             scrolling="no"
             referrerPolicy="origin"
             onLoad={() => {
+              checkForHash();
               window.onmessage = function handleResetDates(e) {
                 if (e.data.event_name) {
                   dispatch(processEvent(e.data, fetchCourse));
