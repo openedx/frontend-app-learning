@@ -1,31 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   FormattedMessage, FormattedDate, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
-import { Hyperlink } from '@edx/paragon';
 
 import { Alert, ALERT_TYPES } from '../../generic/user-messages';
-import messages from './messages';
-import AccessExpirationAlertMMP2P from './AccessExpirationAlertMMP2P';
 
-function AccessExpirationAlert({ intl, payload }) {
-  /** [MM-P2P] Experiment */
-  const [showMMP2P, setShowMMP2P] = useState(!!window.experiment__home_alert_bShowMMP2P);
-  if (window.experiment__home_alert_showMMP2P === undefined) {
-    window.experiment__home_alert_showMMP2P = (val) => {
-      window.experiment__home_alert_bShowMMP2P = !!val;
-      setShowMMP2P(!!val);
-    };
-  }
-
+function AccessExpirationAlert({ payload }) {
   const {
     accessExpiration,
-    courseId,
-    org,
     userTimezone,
-    analyticsPageName,
   } = payload;
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
@@ -36,8 +20,6 @@ function AccessExpirationAlert({ intl, payload }) {
   const {
     expirationDate,
     masqueradingExpiredCourse,
-    upgradeDeadline,
-    upgradeUrl,
   } = accessExpiration;
 
   if (masqueradingExpiredCourse) {
@@ -63,98 +45,7 @@ function AccessExpirationAlert({ intl, payload }) {
     );
   }
 
-  /** [MM-P2P] Experiment */
-  if (showMMP2P) {
-    return (
-      <AccessExpirationAlertMMP2P payload={payload} />
-    );
-  }
-
-  const logClick = () => {
-    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
-      org_key: org,
-      courserun_key: courseId,
-      linkCategory: 'FBE_banner',
-      linkName: `${analyticsPageName}_audit_access_expires`,
-      linkType: 'link',
-      pageName: analyticsPageName,
-    });
-  };
-
-  let deadlineMessage = null;
-  if (upgradeDeadline && upgradeUrl) {
-    deadlineMessage = (
-      <>
-        <br />
-        <FormattedMessage
-          id="learning.accessExpiration.deadline"
-          defaultMessage="Upgrade by {date} to get unlimited access to the course as long as it exists on the site."
-          values={{
-            date: (
-              <FormattedDate
-                key="accessExpirationUpgradeDeadline"
-                day="numeric"
-                month="short"
-                year="numeric"
-                value={upgradeDeadline}
-                {...timezoneFormatArgs}
-              />
-            ),
-          }}
-        />
-        &nbsp;
-        <Hyperlink
-          className="font-weight-bold"
-          style={{ textDecoration: 'underline' }}
-          destination={upgradeUrl}
-          onClick={logClick}
-        >
-          {intl.formatMessage(messages.upgradeNow)}
-        </Hyperlink>
-      </>
-    );
-  }
-
-  return (
-    <Alert type={ALERT_TYPES.INFO}>
-      <span className="font-weight-bold">
-        <FormattedMessage
-          id="learning.accessExpiration.header"
-          defaultMessage="Audit Access Expires {date}"
-          values={{
-            date: (
-              <FormattedDate
-                key="accessExpirationHeaderDate"
-                day="numeric"
-                month="short"
-                year="numeric"
-                value={expirationDate}
-                {...timezoneFormatArgs}
-              />
-            ),
-          }}
-        />
-      </span>
-      <br />
-      <FormattedMessage
-        id="learning.accessExpiration.body"
-        defaultMessage="You lose all access to this course, including your progress, on {date}."
-        values={{
-          date: (
-            <FormattedDate
-              key="accessExpirationBodyDate"
-              day="numeric"
-              month="short"
-              year="numeric"
-              value={expirationDate}
-              {...timezoneFormatArgs}
-            />
-          ),
-        }}
-      />
-      {deadlineMessage}
-    </Alert>
-  );
+  return null;
 }
 
 AccessExpirationAlert.propTypes = {
