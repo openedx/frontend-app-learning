@@ -35,7 +35,7 @@ function normalizeAssignmentPolicies(assignmentPolicies, sectionScores) {
 
   sectionScores.forEach((chapter) => {
     chapter.subsections.forEach((subsection) => {
-      if (!(subsection.hasGradedAssignment && subsection.showGrades)) {
+      if (!(subsection.hasGradedAssignment && subsection.showGrades && subsection.numPointsPossible)) {
         return;
       }
       const {
@@ -43,13 +43,18 @@ function normalizeAssignmentPolicies(assignmentPolicies, sectionScores) {
         numPointsEarned,
         numPointsPossible,
       } = subsection;
+
+      // If a subsection's assignment type does not match an assignment policy in Studio,
+      // we won't be able to include it in this accumulation of grades by assignment type.
+      // This may happen if a course author has removed/renamed an assignment policy in Studio and
+      // neglected to update the subsection's of that assignment type
+      if (!gradeByAssignmentType[assignmentType]) {
+        return;
+      }
+
       let {
         numAssignmentsCreated,
       } = gradeByAssignmentType[assignmentType];
-
-      if (!numPointsPossible) {
-        return;
-      }
 
       numAssignmentsCreated++;
       if (numAssignmentsCreated <= gradeByAssignmentType[assignmentType].numTotalExpectedAssignments) {
