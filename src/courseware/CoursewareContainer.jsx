@@ -122,6 +122,7 @@ class CoursewareContainer extends Component {
       courseStatus,
       sequenceStatus,
       specialExamsEnabledWaffleFlag,
+      proctoredExamsEnabledWaffleFlag,
       sequence,
       firstSequenceId,
       unitViaSequenceId,
@@ -177,7 +178,9 @@ class CoursewareContainer extends Component {
     // Check special exam redirect:
     //    /course/:courseId/:sequenceId(/:unitId) -> :legacyWebUrl
     // because special exams are currently still served in the legacy LMS frontend.
-    if (!specialExamsEnabledWaffleFlag) {
+    const shouldRedirectProctoredExams = specialExamsEnabledWaffleFlag && sequence.isProctored
+      && !proctoredExamsEnabledWaffleFlag;
+    if (!specialExamsEnabledWaffleFlag || shouldRedirectProctoredExams) {
       checkSpecialExamRedirect(sequenceStatus, sequence);
     }
 
@@ -327,6 +330,7 @@ const sequenceShape = PropTypes.shape({
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   sectionId: PropTypes.string.isRequired,
   isTimeLimited: PropTypes.bool,
+  isProctored: PropTypes.bool,
   legacyWebUrl: PropTypes.string,
 });
 
@@ -366,6 +370,7 @@ CoursewareContainer.propTypes = {
   fetchCourse: PropTypes.func.isRequired,
   fetchSequence: PropTypes.func.isRequired,
   specialExamsEnabledWaffleFlag: PropTypes.bool.isRequired,
+  proctoredExamsEnabledWaffleFlag: PropTypes.bool.isRequired,
 };
 
 CoursewareContainer.defaultProps = {
@@ -470,6 +475,7 @@ const mapStateToProps = (state) => {
     courseStatus,
     sequenceStatus,
     specialExamsEnabledWaffleFlag,
+    proctoredExamsEnabledWaffleFlag,
   } = state.courseware;
 
   return {
@@ -478,6 +484,7 @@ const mapStateToProps = (state) => {
     courseStatus,
     sequenceStatus,
     specialExamsEnabledWaffleFlag,
+    proctoredExamsEnabledWaffleFlag,
     course: currentCourseSelector(state),
     sequence: currentSequenceSelector(state),
     previousSequence: previousSequenceSelector(state),
