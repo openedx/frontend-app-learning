@@ -1,7 +1,7 @@
 import React from 'react';
 import { Factory } from 'rosie';
 import {
-  initializeTestStore, loadUnit, messageEvent, render, screen, waitFor,
+  initializeTestStore, loadUnit, loadScroll, messageEvent, scrollEvent, render, screen, waitFor,
 } from '../../../setupTest';
 import Unit from './Unit';
 
@@ -124,5 +124,17 @@ describe('Unit', () => {
       () => expect(screen.getByTitle(unit.display_name)).toHaveAttribute('height', String(testMessageWithUnhandledType.payload.height)),
       { timeout: 100 },
     )).rejects.toThrowError(/Expected the element to have attribute/);
+  });
+
+  it('scrolls to correct place onLoad', () => {
+    const onLoaded = jest.fn();
+    const message = { hashName: '#test' };
+    window.postMessage = jest.fn();
+
+    render(<Unit {...mockData} {...{ onLoaded }} />);
+    loadScroll(message);
+
+    expect(window.postMessage).toHaveBeenCalled();
+    expect(window.postMessage).toHaveBeenCalledWith(scrollEvent, '*');
   });
 });
