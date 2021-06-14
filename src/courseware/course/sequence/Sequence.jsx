@@ -117,11 +117,16 @@ function Sequence({
   const handleUnitLoaded = () => {
     setUnitHasLoaded(true);
   };
+
+  // We want hide the unit navigation if we're in the middle of navigating to another unit
+  // but not if other things about the unit change, like the bookmark status.
+  // The array property of this useEffect ensures that we only hide the unit navigation
+  // while navigating to another unit.
   useEffect(() => {
     if (unit) {
       setUnitHasLoaded(false);
     }
-  }, [unit]);
+  }, [(unit || {}).id]);
 
   if (sequenceStatus === 'loading') {
     if (!sequenceId) {
