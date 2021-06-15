@@ -1,9 +1,9 @@
 import React from 'react';
 import { Factory } from 'rosie';
 import {
-  initializeTestStore, loadUnit, loadScroll, messageEvent, scrollEvent, render, screen, waitFor,
+  initializeTestStore, loadUnit, messageEvent, render, screen, waitFor,
 } from '../../../setupTest';
-import Unit from './Unit';
+import Unit, { checkForHash } from './Unit';
 
 describe('Unit', () => {
   let mockData;
@@ -38,7 +38,6 @@ describe('Unit', () => {
 
   it('renders correctly', () => {
     render(<Unit {...mockData} />);
-
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     const renderedUnit = screen.getByTitle(unit.display_name);
     expect(renderedUnit).toHaveAttribute('height', String(0));
@@ -49,7 +48,6 @@ describe('Unit', () => {
 
   it('renders proper message for gated content', () => {
     render(<Unit {...mockData} id={unitThatContainsGatedContent.id} />);
-
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
   });
@@ -75,7 +73,6 @@ describe('Unit', () => {
   it('handles receiving MessageEvent', async () => {
     render(<Unit {...mockData} />);
     loadUnit();
-
     // Loading message is gone now.
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
     // Iframe's height is set via message.
@@ -127,14 +124,21 @@ describe('Unit', () => {
   });
 
   it('scrolls to correct place onLoad', () => {
-    const onLoaded = jest.fn();
-    const message = { hashName: '#test' };
-    window.postMessage = jest.fn();
+    document.body.innerHTML = "<iframe id='unit-iframe' />";
 
-    render(<Unit {...mockData} {...{ onLoaded }} />);
-    loadScroll(message);
+    const mockHashCheck = jest.fn(checkForHash());
+    const frame = document.getElementById('unit-iframe');
+    const originalWindow = { ...window };
+    const windowSpy = jest.spyOn(global, 'window', 'get');
+    windowSpy.mockImplementation(() => ({
+      ...originalWindow,
+      location: {
+        ...originalWindow.location,
+        hash: '#test',
+      },
+    }));
+    mockHashCheck(frame);
 
-    expect(window.postMessage).toHaveBeenCalled();
-    expect(window.postMessage).toHaveBeenCalledWith(scrollEvent, '*');
+    expect(mockHashCheck).toHaveBeenCalled();
   });
 });
