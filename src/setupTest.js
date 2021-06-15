@@ -118,16 +118,6 @@ export function loadUnit(message = messageEvent) {
   window.postMessage(message, '*');
 }
 
-export const scrollEvent = {
-  offset: 1500,
-};
-
-export function loadScroll(message) {
-  if (message.hashName[0] === '#') {
-    window.postMessage(scrollEvent, '*');
-  }
-}
-
 // Helper function to log unhandled API requests to the console while running tests.
 export function logUnhandledRequests(axiosMock) {
   axiosMock.onAny().reply((config) => {
