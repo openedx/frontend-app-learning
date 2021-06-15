@@ -52,7 +52,7 @@ function OutlineTab({ intl }) {
     courseGoals: {
       goalOptions,
       selectedGoal,
-    },
+    } = {},
     datesBannerInfo,
     datesWidget: {
       courseDateBlocks,
