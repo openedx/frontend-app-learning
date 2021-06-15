@@ -126,7 +126,7 @@ describe('Unit', () => {
   it('scrolls to correct place onLoad', () => {
     document.body.innerHTML = "<iframe id='unit-iframe' />";
 
-    const mockHashCheck = jest.fn(checkForHash());
+    const mockHashCheck = jest.fn(frameVar => checkForHash(frameVar));
     const frame = document.getElementById('unit-iframe');
     const originalWindow = { ...window };
     const windowSpy = jest.spyOn(global, 'window', 'get');
@@ -137,8 +137,11 @@ describe('Unit', () => {
         hash: '#test',
       },
     }));
+    const messageSpy = jest.spyOn(frame.contentWindow, 'postMessage');
+    messageSpy.mockImplementation(() => ({ hashName: originalWindow.location.hash }));
     mockHashCheck(frame);
 
     expect(mockHashCheck).toHaveBeenCalled();
+    expect(messageSpy).toHaveBeenCalled();
   });
 });
