@@ -79,6 +79,20 @@ describe('Unit', () => {
     expect(screen.getByTitle(unit.display_name)).toHaveAttribute('height', String(messageEvent.payload.height));
   });
 
+  it('calls iframe attribute onLoad', async () => {
+    const mockHashCheck = jest.fn(frameVar => checkForHash(frameVar));
+    render(<Unit {...mockData} />);
+    const frame = screen.getByTestId('iframe-unit');
+
+    expect(frame).toBeInTheDocument();
+
+    frame.onLoad = jest.fn(() => mockHashCheck);
+    const loadSpy = jest.spyOn(frame, 'onLoad');
+    frame.onLoad();
+
+    expect(loadSpy).toHaveBeenCalled();
+  });
+
   it('calls onLoaded after receiving MessageEvent', async () => {
     const onLoaded = jest.fn();
     render(<Unit {...mockData} {...{ onLoaded }} />);
