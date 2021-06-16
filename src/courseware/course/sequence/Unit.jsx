@@ -221,8 +221,7 @@ function Unit({
             scrolling="no"
             referrerPolicy="origin"
             onLoad={() => {
-              const unitIframe = document.getElementById('unit-iframe');
-              checkForHash(unitIframe);
+              checkForHash(document.getElementById('unit-iframe'));
               window.onmessage = function handleResetDates(e) {
                 if (e.data.event_name) {
                   dispatch(processEvent(e.data, fetchCourse));
