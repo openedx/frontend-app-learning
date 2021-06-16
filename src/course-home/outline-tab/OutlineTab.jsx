@@ -16,7 +16,7 @@ import genericMessages from '../../generic/messages';
 import messages from './messages';
 import Section from './Section';
 import UpdateGoalSelector from './widgets/UpdateGoalSelector';
-import UpgradeCard from './widgets/UpgradeCard';
+import UpgradeCard from '../../generic/upgrade-card/UpgradeCard';
 import { useAccessExpirationAlertMasquerade } from '../../alerts/access-expiration-alert';
 import useCertificateAvailableAlert from './alerts/certificate-status-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
