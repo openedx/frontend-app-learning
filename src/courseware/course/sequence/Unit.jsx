@@ -212,6 +212,7 @@ function Unit({
       { !mmp2p.meta.blockContent && !userNeedsIntegritySignature && (
         <div className="unit-iframe-wrapper">
           <iframe
+            data-testid="iframe-unit"
             id="unit-iframe"
             title={unit.title}
             src={iframeUrl}
