@@ -41,20 +41,26 @@ function useCertificateStatusAlert(courseId) {
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
 
   const certStatusType = verifyCertStatusType(certStatus);
-  const certURL = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
-  const hasCertStatus = certStatusType !== '';
   const isWebCert = downloadUrl === null;
 
-  // only show if there is a known cert status that we want to alert on.
-  // TODO Temporarily only show this for WebCertificates while we update the messaging
-  // in follow on work MICROBA-678
-  const isVisible = isEnrolled && hasCertStatus && isWebCert;
+  let certURL = '';
+  if (certWebViewUrl) {
+    certURL = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
+  } else if (downloadUrl) {
+    // PDF Certificate
+    certURL = downloadUrl;
+  }
+  const hasCertStatus = certStatusType !== '';
+
+  // Only show if there is a known cert status that we want provide status on.
+  const isVisible = isEnrolled && hasCertStatus;
   const payload = {
     certificateAvailableDate,
     certURL,
     certStatusType,
     courseEndDate: endBlock && endBlock.date,
     userTimezone,
+    isWebCert,
   };
 
   useAlert(isVisible, {
