@@ -7,7 +7,7 @@ import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/ana
 import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
 import { getConfig } from '@edx/frontend-platform';
 
-import { UpgradeButton } from '../../../generic/upgrade-button';
+import { UpgradeButton } from '../upgrade-button';
 
 function UpsellNoFBECardContent() {
   const verifiedCertLink = (
