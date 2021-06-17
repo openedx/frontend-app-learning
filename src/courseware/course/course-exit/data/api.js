@@ -29,7 +29,6 @@ export default async function getCourseRecommendations(courseKey) {
     return [];
   }
   const recommendationsUrl = new URL(`${discoveryApiUrl}/api/v1/course_recommendations/${courseKey}?exclude_utm=true`);
-
   const enrollmentsUrl = new URL(`${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`);
   const [recommendationsResponse, enrollmentsResponse] = await Promise.all([
     getAuthenticatedHttpClient().get(recommendationsUrl),
