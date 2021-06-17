@@ -10,18 +10,9 @@ function AccessExpirationAlertMasquerade({ payload }) {
     userTimezone,
   } = payload;
 
-  if (!accessExpiration) {
-    return null;
-  }
-
   const {
     expirationDate,
-    masqueradingExpiredCourse,
   } = accessExpiration;
-
-  if (!masqueradingExpiredCourse) {
-    return null;
-  }
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
