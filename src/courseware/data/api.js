@@ -1,6 +1,7 @@
 import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { logInfo } from '@edx/frontend-platform/logging';
+import { getTimeOffsetMillis } from '../../course-home/data/api';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 
 export function normalizeBlocks(courseId, blocks) {
@@ -141,51 +142,55 @@ function normalizeTabUrls(id, tabs) {
 }
 
 function normalizeMetadata(metadata) {
+  const requestTime = Date.now();
+  const responseTime = requestTime;
+  const { data, headers } = metadata;
   return {
-    accessExpiration: camelCaseObject(metadata.access_expiration),
-    canShowUpgradeSock: metadata.can_show_upgrade_sock,
-    contentTypeGatingEnabled: metadata.content_type_gating_enabled,
-    id: metadata.id,
-    title: metadata.name,
-    number: metadata.number,
-    offer: camelCaseObject(metadata.offer),
-    org: metadata.org,
-    enrollmentStart: metadata.enrollment_start,
-    enrollmentEnd: metadata.enrollment_end,
-    end: metadata.end,
-    start: metadata.start,
-    enrollmentMode: metadata.enrollment.mode,
-    isEnrolled: metadata.enrollment.is_active,
-    canLoadCourseware: camelCaseObject(metadata.can_load_courseware),
-    canViewLegacyCourseware: metadata.can_view_legacy_courseware,
-    originalUserIsStaff: metadata.original_user_is_staff,
-    isStaff: metadata.is_staff,
-    license: metadata.license,
-    verifiedMode: camelCaseObject(metadata.verified_mode),
-    tabs: normalizeTabUrls(metadata.id, camelCaseObject(metadata.tabs)),
-    userTimezone: metadata.user_timezone,
-    showCalculator: metadata.show_calculator,
-    notes: camelCaseObject(metadata.notes),
-    marketingUrl: metadata.marketing_url,
-    celebrations: camelCaseObject(metadata.celebrations),
-    userHasPassingGrade: metadata.user_has_passing_grade,
-    courseExitPageIsActive: metadata.course_exit_page_is_active,
-    certificateData: camelCaseObject(metadata.certificate_data),
-    verifyIdentityUrl: metadata.verify_identity_url,
-    verificationStatus: metadata.verification_status,
-    linkedinAddToProfileUrl: metadata.linkedin_add_to_profile_url,
-    relatedPrograms: camelCaseObject(metadata.related_programs),
-    userNeedsIntegritySignature: metadata.user_needs_integrity_signature,
-    specialExamsEnabledWaffleFlag: metadata.is_mfe_special_exams_enabled,
-    proctoredExamsEnabledWaffleFlag: metadata.is_mfe_proctored_exams_enabled,
+    accessExpiration: camelCaseObject(data.access_expiration),
+    canShowUpgradeSock: data.can_show_upgrade_sock,
+    contentTypeGatingEnabled: data.content_type_gating_enabled,
+    id: data.id,
+    title: data.name,
+    number: data.number,
+    offer: camelCaseObject(data.offer),
+    org: data.org,
+    enrollmentStart: data.enrollment_start,
+    enrollmentEnd: data.enrollment_end,
+    end: data.end,
+    start: data.start,
+    enrollmentMode: data.enrollment.mode,
+    isEnrolled: data.enrollment.is_active,
+    canLoadCourseware: camelCaseObject(data.can_load_courseware),
+    canViewLegacyCourseware: data.can_view_legacy_courseware,
+    originalUserIsStaff: data.original_user_is_staff,
+    isStaff: data.is_staff,
+    license: data.license,
+    verifiedMode: camelCaseObject(data.verified_mode),
+    tabs: normalizeTabUrls(data.id, camelCaseObject(data.tabs)),
+    userTimezone: data.user_timezone,
+    showCalculator: data.show_calculator,
+    notes: camelCaseObject(data.notes),
+    marketingUrl: data.marketing_url,
+    celebrations: camelCaseObject(data.celebrations),
+    userHasPassingGrade: data.user_has_passing_grade,
+    courseExitPageIsActive: data.course_exit_page_is_active,
+    certificateData: camelCaseObject(data.certificate_data),
+    timeOffsetMillis: getTimeOffsetMillis(headers && headers.date, requestTime, responseTime),
+    verifyIdentityUrl: data.verify_identity_url,
+    verificationStatus: data.verification_status,
+    linkedinAddToProfileUrl: data.linkedin_add_to_profile_url,
+    relatedPrograms: camelCaseObject(data.related_programs),
+    userNeedsIntegritySignature: data.user_needs_integrity_signature,
+    specialExamsEnabledWaffleFlag: data.is_mfe_special_exams_enabled,
+    proctoredExamsEnabledWaffleFlag: data.is_mfe_proctored_exams_enabled,
   };
 }
 
 export async function getCourseMetadata(courseId) {
   let url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
   url = appendBrowserTimezoneToUrl(url);
-  const { data } = await getAuthenticatedHttpClient().get(url);
-  return normalizeMetadata(data);
+  const metadata = await getAuthenticatedHttpClient().get(url);
+  return normalizeMetadata(metadata);
 }
 
 function normalizeSequenceMetadata(sequence) {
