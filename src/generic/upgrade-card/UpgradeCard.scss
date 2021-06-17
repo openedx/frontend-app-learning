@@ -2,50 +2,45 @@
   border-radius: 0 !important;
 }
 
-.upgrade-card-header{
+.upgrade-card-header {
   margin: 1.25rem;
 }
 
-.upsell-warning{
+.upsell-warning {
   background-color: $danger-100;
 }
 
-.upsell-warning-light{
+.upsell-warning-light {
   background-color: $warning-100;
 }
 
-.upsell-warning, .upsell-warning-light{
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+.upsell-warning, .upsell-warning-light {
+  padding: 0.5rem 1.25rem;
 }
 
-.upgrade-card-ul{
+.upgrade-card-ul {
   margin-left: 3rem;
   padding-top: 0.875rem;
   padding-right: 1.25rem;
 }
 
-.upgrade-card-li{
+.upgrade-card-li {
   left: -2.125rem;
   top: 0 !important;
 }
 
-.upgrade-card-text{
-  padding-top: 0.875rem;
-  padding-right: 1.25rem;
-  padding-left: 1.25rem;
+.upgrade-card-text {
+  padding: 0.875rem 1.25rem 0 1.25rem;
 }
 
-.upgrade-card-button{
+.upgrade-card-button {
   margin-left: 1.25rem;
   margin-right: 1.25rem;
   margin-bottom: 1.25rem;
 }
 
 .discount-info {
-  border-top: 1px solid rgba(0, 0, 0, 0.125);
+  border-top: 1px solid $light-400;
   padding-top: .75rem;
   padding-bottom: .75rem;
 }
@@ -54,6 +49,6 @@
   text-decoration: underline;
 }
 
-.upgrade-card .upgrade-card-message a{
+.upgrade-card .upgrade-card-message a {
   color: $primary-500;
 }
