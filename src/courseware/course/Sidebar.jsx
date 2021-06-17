@@ -6,18 +6,28 @@ import { Icon } from '@edx/paragon';
 import { ArrowBackIos, Close } from '@edx/paragon/icons';
 import messages from './messages';
 import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
+import { useModel } from '../../generic/model-store';
+import UpgradeCard from '../../generic/upgrade-card/UpgradeCard';
 
 function Sidebar({
-  intl, toggleSidebar,
+  intl, toggleSidebar, courseId,
 }) {
+  const course = useModel('coursewareMeta', courseId);
+
+  const {
+    accessExpiration,
+    contentTypeGatingEnabled,
+    offer,
+    org,
+    timeOffsetMillis,
+    userTimezone,
+    verifiedMode,
+  } = course;
+
   const shouldDisplayFullScreen = useWindowSize().width < responsiveBreakpoints.large.minWidth;
 
-  // REV-2130 TODO: temporary variable set to true, should be replaced with
-  // whether the course can be upgraded (ie. shouldDisplayUpgradeNotification)
-  const shouldDisplayNoNotification = true;
-
   return (
-    <section className={classNames('sidebar-container ml-0 ml-lg-4', { 'no-notification': shouldDisplayNoNotification && !shouldDisplayFullScreen })} aria-label={intl.formatMessage(messages.sidebarNotification)}>
+    <section className={classNames('sidebar-container ml-0 ml-lg-4', { 'no-notification': !verifiedMode && !shouldDisplayFullScreen })} aria-label={intl.formatMessage(messages.sidebarNotification)}>
       {shouldDisplayFullScreen ? (
         <div className="mobile-close-container" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.responsiveCloseSidebar)}>
           <Icon src={ArrowBackIos} />
@@ -31,9 +41,20 @@ function Sidebar({
           : <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeSidebarButton)} />}
       </div>
       <div className="sidebar-divider" />
-      <div className="sidebar-content">
-        {/* REV-2130 TODO: replace logic to display upgrade expiration box if condition is true */}
-        {shouldDisplayNoNotification ? <p>{intl.formatMessage(messages.noNotificationsMessage)}</p> : null}
+      <div>{verifiedMode
+        ? (
+          <UpgradeCard
+            offer={offer}
+            verifiedMode={verifiedMode}
+            accessExpiration={accessExpiration}
+            contentTypeGatingEnabled={contentTypeGatingEnabled}
+            userTimezone={userTimezone}
+            timeOffsetMillis={timeOffsetMillis}
+            courseId={courseId}
+            org={org}
+            shouldDisplayBorder={false}
+          />
+        ) : <p className="sidebar-content">{intl.formatMessage(messages.noNotificationsMessage)}</p>}
       </div>
     </section>
   );
@@ -41,6 +62,7 @@ function Sidebar({
 
 Sidebar.propTypes = {
   intl: intlShape.isRequired,
+  courseId: PropTypes.string.isRequired,
   toggleSidebar: PropTypes.func,
 };
 

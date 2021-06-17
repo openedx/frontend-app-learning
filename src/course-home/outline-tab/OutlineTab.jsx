@@ -228,6 +228,7 @@ function OutlineTab({ intl }) {
                   timeOffsetMillis={timeOffsetMillis}
                   courseId={courseId}
                   org={org}
+                  shouldDisplayBorder
                 />
               )}
             <CourseDates
