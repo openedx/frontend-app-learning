@@ -40,7 +40,6 @@ function useCertificateStatusAlert(courseId) {
     certificateAvailableDate,
     downloadUrl,
   } = certData || {};
-  console.log(useModel('outline', courseId));
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
 
   const certStatusType = verifyCertStatusType(certStatus);

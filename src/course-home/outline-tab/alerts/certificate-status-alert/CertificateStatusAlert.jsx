@@ -9,10 +9,9 @@ import {
 import { Alert, Button } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { getConfig } from '@edx/frontend-platform';
 import certMessages from './messages';
 import certStatusMessages from '../../../progress-tab/certificate-status/messages';
-import { IdVerificationSupportLink } from '../../../../shared/links';
-import { getConfig } from '@edx/frontend-platform';
 
 export const CERT_STATUS_TYPE = {
   EARNED_NOT_AVAILABLE: 'earned_but_not_available',
