@@ -8,13 +8,16 @@ import {
 } from '@edx/frontend-platform/i18n';
 import { Alert, Button } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import certMessages from './messages';
 import certStatusMessages from '../../../progress-tab/certificate-status/messages';
+import { IdVerificationSupportLink } from '../../../../shared/links';
+import { getConfig } from '@edx/frontend-platform';
 
 export const CERT_STATUS_TYPE = {
   EARNED_NOT_AVAILABLE: 'earned_but_not_available',
   DOWNLOADABLE: 'downloadable',
+  UNVERIFIED: 'unverified',
 };
 
 function CertificateStatusAlert({ intl, payload }) {
@@ -28,15 +31,25 @@ function CertificateStatusAlert({ intl, payload }) {
   } = payload;
 
   let variant = '';
+  let icon = '';
+  let iconClassName = '';
   if (certStatusType === CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE || certStatusType === CERT_STATUS_TYPE.DOWNLOADABLE) {
     variant = 'success';
+    icon = faCheckCircle;
+    iconClassName = 'alert-icon text-success-500';
+  }
+
+  if (certStatusType === CERT_STATUS_TYPE.UNVERIFIED) {
+    variant = 'warning';
+    icon = faExclamationTriangle;
+    iconClassName = 'alert-icon text-warning-500';
   }
 
   let header = '';
   let body = '';
   let buttonVisible = false;
   let buttonMessage = '';
-
+  let buttonLink = '';
   if (certStatusType === CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE) {
     const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
     const certificateAvailableDateFormatted = <FormattedDate value={certificateAvailableDate} day="numeric" month="long" year="numeric" />;
@@ -65,12 +78,19 @@ function CertificateStatusAlert({ intl, payload }) {
       buttonMessage = intl.formatMessage(certStatusMessages.downloadableButton);
     }
     buttonVisible = true;
+    buttonLink = certURL;
+  } else if (certStatusType === CERT_STATUS_TYPE.UNVERIFIED) {
+    header = intl.formatMessage(certStatusMessages.unverifiedHomeHeader);
+    buttonMessage = intl.formatMessage(certStatusMessages.unverifiedHomeButton);
+    body = intl.formatMessage(certStatusMessages.unverifiedHomeBody);
+    buttonVisible = true;
+    buttonLink = getConfig().SUPPORT_URL_ID_VERIFICATION;
   }
   return (
     <Alert variant={variant}>
       <div className="row justify-content-between align-items-center">
         <div className={buttonVisible ? '' : 'col-auto'}>
-          <FontAwesomeIcon icon={faCheckCircle} className="alert-icon text-success-500" />
+          <FontAwesomeIcon icon={icon} className={iconClassName} />
           <Alert.Heading>{header}</Alert.Heading>
           {body}
         </div>
@@ -78,7 +98,7 @@ function CertificateStatusAlert({ intl, payload }) {
           <div className="m-auto m-lg-0 pr-lg-3">
             <Button
               variant="primary"
-              href={certURL}
+              href={buttonLink}
             >
               {buttonMessage}
             </Button>
