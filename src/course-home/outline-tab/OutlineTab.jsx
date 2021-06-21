@@ -124,7 +124,7 @@ function OutlineTab({ intl }) {
         </div>
         {resumeCourseUrl && (
           <div className="col-12 col-sm-auto p-0">
-            <Button block href={resumeCourseUrl} onClick={() => logResumeCourseClick()}>
+            <Button variant="brand" block href={resumeCourseUrl} onClick={() => logResumeCourseClick()}>
               {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
             </Button>
           </div>
