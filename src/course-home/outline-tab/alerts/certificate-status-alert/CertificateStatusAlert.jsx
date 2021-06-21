@@ -88,7 +88,7 @@ function CertificateStatusAlert({ intl, payload }) {
   return (
     <Alert variant={variant}>
       <div className="row justify-content-between align-items-center">
-        <div className={buttonVisible ? '' : 'col-auto'}>
+        <div className={buttonVisible ? 'col-lg-8' : 'col-auto'}>
           <FontAwesomeIcon icon={icon} className={iconClassName} />
           <Alert.Heading>{header}</Alert.Heading>
           {body}
