@@ -21,7 +21,7 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Course Exit Pages', () => {
   let axiosMock;
-  const store = initializeStore();
+  let store;
   const defaultMetadata = Factory.build('courseMetadata', {
     user_has_passing_grade: true,
     end: '2014-02-05T05:00:00Z',
@@ -31,7 +31,8 @@ describe('Course Exit Pages', () => {
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
   const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
-
+  const discoveryRecommendationsUrl = new RegExp(`${getConfig().DISCOVERY_API_BASE_URL}/api/v1/course_recommendations/*`);
+  const enrollmentsUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment*`);
   function setMetadata(attributes) {
     const courseMetadata = { ...defaultMetadata, ...attributes };
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
@@ -43,10 +44,13 @@ describe('Course Exit Pages', () => {
   }
 
   beforeEach(() => {
+    store = initializeStore();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     axiosMock.onGet(courseBlocksUrlRegExp).reply(200, defaultCourseBlocks);
-
+    axiosMock.onGet(discoveryRecommendationsUrl).reply(200,
+      Factory.build('courseRecommendations', {}, { numRecs: 2 }));
+    axiosMock.onGet(enrollmentsUrl).reply(200, []);
     logUnhandledRequests(axiosMock);
   });
 
@@ -288,6 +292,61 @@ describe('Course Exit Pages', () => {
 
         expect(screen.queryByTestId('program-completion')).not.toBeInTheDocument();
         expect(screen.queryByTestId('excluded-program-type')).not.toBeInTheDocument();
+      });
+    });
+
+    describe('Course recommendations', () => {
+      it('Displays recommendations if at least two are available', async () => {
+        await fetchAndRender(<CourseCelebration />);
+        const recommendationsTable = await screen.findByTestId('course-recommendations');
+        expect(recommendationsTable).toBeInTheDocument();
+        expect(screen.queryByTestId('catalog-suggestion')).not.toBeInTheDocument();
+      });
+
+      it('Displays the generic catalog suggestion if fewer than two recommendations are available', async () => {
+        axiosMock.onGet(discoveryRecommendationsUrl).reply(200,
+          Factory.build('courseRecommendations', {}, { numRecs: 1 }));
+        await fetchAndRender(<CourseCelebration />);
+        const catalogSuggestion = await screen.findByTestId('catalog-suggestion');
+        expect(catalogSuggestion).toBeInTheDocument();
+        expect(screen.queryByTestId('course-recommendations')).not.toBeInTheDocument();
+      });
+
+      it('Will not recommend a course in which the user is already enrolled', async () => {
+        const initialRecommendations = Factory.build('courseRecommendations', {}, { numRecs: 2 });
+        initialRecommendations.recommendations.push(
+          Factory.build('courseRecommendation', { key: 'edX+EnrolledX', title: 'Already Enrolled' }),
+        );
+        initialRecommendations.recommendations.push(
+          Factory.build('courseRecommendation', { key: 'edX+NotEnrolledX', title: 'Not Already Enrolled' }),
+        );
+        axiosMock.onGet(discoveryRecommendationsUrl).reply(200, initialRecommendations);
+        axiosMock.onGet(enrollmentsUrl).reply(200, [
+          Factory.build('userEnrollment', '',
+            {
+              runKey: 'edX+EnrolledX+1T2021',
+            }),
+        ]);
+        await fetchAndRender(<CourseCelebration />);
+        const recommendationsTable = await screen.findByTestId('course-recommendations');
+        expect(recommendationsTable).toBeInTheDocument();
+        expect(screen.queryByText('Already Enrolled')).not.toBeInTheDocument();
+        expect(screen.queryByText('Not Already Enrolled')).toBeInTheDocument();
+      });
+
+      it('Will not recommend the same course that the user just finished', async () => {
+        // the uuid returned from the call to discovery is the uuid of the current course
+        const initialRecommendations = Factory.build('courseRecommendations',
+          { uuid: 'my_uuid' },
+          { numRecs: 2 });
+        initialRecommendations.recommendations.push(
+          Factory.build('courseRecommendation', { uuid: 'my_uuid', title: 'Same Course' }),
+        );
+        axiosMock.onGet(discoveryRecommendationsUrl).reply(200, initialRecommendations);
+        await fetchAndRender(<CourseCelebration />);
+        const recommendationsTable = await screen.findByTestId('course-recommendations');
+        expect(recommendationsTable).toBeInTheDocument();
+        expect(screen.queryByText('Same Course')).not.toBeInTheDocument();
       });
     });
   });

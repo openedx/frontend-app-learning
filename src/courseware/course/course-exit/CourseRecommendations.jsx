@@ -6,15 +6,17 @@ import {
   FormattedMessage, injectIntl, intlShape, defineMessages,
 } from '@edx/frontend-platform/i18n';
 import { useSelector, useDispatch } from 'react-redux';
-import { Hyperlink, DataTable, CardView } from '@edx/paragon';
+import {
+  Hyperlink, DataTable, CardView, Card,
+} from '@edx/paragon';
 import PropTypes from 'prop-types';
 import truncate from 'truncate-html';
-import { useModel } from '../../../../generic/model-store';
-import fetchCourseRecommendations from './data/thunks.exp';
-import { FAILED, LOADED, LOADING } from './data/slice.exp';
-import CatalogSuggestion from '../CatalogSuggestion';
-import PageLoading from '../../../../generic/PageLoading';
-import { logClick } from '../utils';
+import { useModel } from '../../../generic/model-store/hooks';
+import fetchCourseRecommendations from './data/thunks';
+import { FAILED, LOADED, LOADING } from './data/slice';
+import CatalogSuggestion from './CatalogSuggestion';
+import PageLoading from '../../../generic/PageLoading';
+import { logClick } from './utils';
 
 const messages = defineMessages({
   recommendationsHeading: {
@@ -48,8 +50,7 @@ const ListStyles = {
   conjunction: 'conjunction',
 };
 
-// TODO: replace custom card (copied from Prospectus) with Paragon Card component
-function Card({
+function CourseCard({
   original: {
     title,
     image,
@@ -74,24 +75,23 @@ function Card({
 
   return (
     <div
-      className="discovery-card"
       role="group"
       aria-label={title}
     >
       <Hyperlink
         destination={marketingUrl}
-        className="discovery-card-link"
+        className="text-decoration-none"
         onClick={onClick}
       >
-        <div className="d-flex flex-column d-card-wrapper">
-          <div className="d-card-hero">
-            <img src={image.src} alt="" />
-          </div>
-          <div className="d-card-body">
-            <h3 className="name-heading">
-              {truncate(title, 70, { reserveLastWord: -1 })}
-            </h3>
-            <div className="provider">
+        <Card style={{ width: '270px', height: '270px' }} className="discovery-card">
+          <Card.Img variant="top" src={image.src} bsPrefix="d-card-hero" />
+          <Card.Body>
+            <Card.Title>
+              <h3 className="h4 text-gray-700 font-weight-normal">
+                {truncate(title, 70, { reserveLastWord: -1 })}
+              </h3>
+            </Card.Title>
+            <div className="text-gray-500 small">
               <FormattedMessage
                 id="courseCelebration.recommendations.card.schools.label"
                 description="Screenreader label for the Schools and Partners running the course."
@@ -104,23 +104,22 @@ function Card({
               )}
               </FormattedMessage>
             </div>
-          </div>
-          <div className="d-card-footer">
-            <div className="card-type">
-              <FormattedMessage
-                id="courseCelebration.recommendations.label"
-                description="Label on a discovery-card that lets a user know that it is a course card"
-                defaultMessage="Course"
-              />
-            </div>
-          </div>
-        </div>
+          </Card.Body>
+          <footer className="pl-4 pb-2 x-small text-gray-500">
+            <FormattedMessage
+              id="courseCelebration.recommendations.label"
+              description="Label on a discovery-card that lets a user know that it is a course card"
+              defaultMessage="Course"
+            />
+          </footer>
+
+        </Card>
       </Hyperlink>
     </div>
   );
 }
 
-Card.propTypes = {
+CourseCard.propTypes = {
   original: PropTypes.shape({
     marketingUrl: PropTypes.string,
     title: PropTypes.string,
@@ -135,7 +134,7 @@ Card.propTypes = {
   intl: intlShape.isRequired,
 };
 
-const IntlCard = injectIntl(Card);
+const IntlCard = injectIntl(CourseCard);
 
 function CourseRecommendations({ intl, variant }) {
   const { courseId, recommendationsStatus } = useSelector(state => ({ ...state.recommendations, ...state.courseware }));
@@ -178,7 +177,7 @@ function CourseRecommendations({ intl, variant }) {
   ));
 
   return (
-    <div className="course-recommendations d-flex flex-column align-items-center">
+    <div className="course-recommendations d-flex flex-column align-items-center" data-testid="course-recommendations">
       <h2 className="text-center mb-3">{intl.formatMessage(messages.recommendationsHeading)}</h2>
       <div className="mb-2 mt-3">
         <DataTable

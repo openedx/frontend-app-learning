@@ -1,0 +1,30 @@
+.course-recommendations {
+  .pgn__data-table-wrapper {
+    border: 0;
+    box-shadow: none;
+    .pgn__card-grid {
+      .row > div[class*="col-"] {
+        justify-content: center;
+      }
+    }
+  }
+
+  .discovery-card {
+    &:hover,
+    &:focus {
+      box-shadow: 0 2px 4px 2px $gray-500
+    }
+  }
+
+    .d-card-hero-top {
+      height: 102px;
+      min-height: 102px;
+      background-color: $gray-200;
+      overflow: hidden;
+      border: {
+        radius: 3px 3px 0 0;
+        bottom: 1px solid $success-100;
+      }
+    }
+
+}

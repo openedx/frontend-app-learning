@@ -4,9 +4,9 @@ import {
   fetchCourseRecommendationsFailure,
   fetchCourseRecommendationsRequest,
   fetchCourseRecommendationsSuccess,
-} from './slice.exp';
-import getCourseRecommendations from './api.exp';
-import { updateModel } from '../../../../../generic/model-store';
+} from './slice';
+import getCourseRecommendations from './api';
+import { updateModel } from '../../../../generic/model-store';
 
 export default function fetchCourseRecommendations(courseKey, courseId) {
   return async (dispatch) => {
