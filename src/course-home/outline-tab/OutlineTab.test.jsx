@@ -748,7 +748,8 @@ describe('Outline Tab', () => {
         ],
       });
       await fetchAndRender();
-      expect(screen.queryByText('Congratulations! Your certificate is ready.')).not.toBeInTheDocument();
+      expect(screen.queryByText('Congratulations! Your certificate is ready.')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Download my certificate' })).toBeInTheDocument();
     });
   });
 

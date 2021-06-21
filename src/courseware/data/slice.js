@@ -14,10 +14,14 @@ const slice = createSlice({
     sequenceStatus: 'loading',
     sequenceId: null,
     specialExamsEnabledWaffleFlag: false,
+    proctoredExamsEnabledWaffleFlag: false,
   },
   reducers: {
     setsSpecialExamsEnabled: (state, { payload }) => {
       state.specialExamsEnabledWaffleFlag = payload.specialExamsEnabledWaffleFlag;
+    },
+    setsProctoredExamsEnabled: (state, { payload }) => {
+      state.proctoredExamsEnabledWaffleFlag = payload.proctoredExamsEnabledWaffleFlag;
     },
     fetchCourseRequest: (state, { payload }) => {
       state.courseId = payload.courseId;
@@ -52,6 +56,7 @@ const slice = createSlice({
 
 export const {
   setsSpecialExamsEnabled,
+  setsProctoredExamsEnabled,
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,

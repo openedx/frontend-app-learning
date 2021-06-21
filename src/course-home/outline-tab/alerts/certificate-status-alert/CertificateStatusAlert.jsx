@@ -23,6 +23,7 @@ function CertificateStatusAlert({ intl, payload }) {
     certStatusType,
     courseEndDate,
     certURL,
+    isWebCert,
     userTimezone,
   } = payload;
 
@@ -35,6 +36,7 @@ function CertificateStatusAlert({ intl, payload }) {
   let body = '';
   let buttonVisible = false;
   let buttonMessage = '';
+
   if (certStatusType === CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE) {
     const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
     const certificateAvailableDateFormatted = <FormattedDate value={certificateAvailableDate} day="numeric" month="long" year="numeric" />;
@@ -57,13 +59,17 @@ function CertificateStatusAlert({ intl, payload }) {
     );
   } else if (certStatusType === CERT_STATUS_TYPE.DOWNLOADABLE) {
     header = intl.formatMessage(certMessages.certStatusDownloadableHeader);
-    buttonMessage = intl.formatMessage(certStatusMessages.viewableButton);
+    if (isWebCert) {
+      buttonMessage = intl.formatMessage(certStatusMessages.viewableButton);
+    } else {
+      buttonMessage = intl.formatMessage(certStatusMessages.downloadableButton);
+    }
     buttonVisible = true;
   }
   return (
     <Alert variant={variant}>
       <div className="row justify-content-between align-items-center">
-        <div className={buttonVisible ? 'col-lg-8' : 'col-auto'}>
+        <div className={buttonVisible ? '' : 'col-auto'}>
           <FontAwesomeIcon icon={faCheckCircle} className="alert-icon text-success-500" />
           <Alert.Heading>{header}</Alert.Heading>
           {body}
@@ -90,6 +96,7 @@ CertificateStatusAlert.propTypes = {
     certStatusType: PropTypes.string,
     courseEndDate: PropTypes.string,
     certURL: PropTypes.string,
+    isWebCert: PropTypes.bool,
     userTimezone: PropTypes.string,
   }).isRequired,
 };

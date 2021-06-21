@@ -12,6 +12,7 @@ import {
 } from '../../generic/model-store';
 import {
   setsSpecialExamsEnabled,
+  setsProctoredExamsEnabled,
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,
@@ -35,6 +36,9 @@ export function fetchCourse(courseId) {
         }));
         dispatch(setsSpecialExamsEnabled({
           specialExamsEnabledWaffleFlag: courseMetadataResult.value.specialExamsEnabledWaffleFlag,
+        }));
+        dispatch(setsProctoredExamsEnabled({
+          proctoredExamsEnabledWaffleFlag: courseMetadataResult.value.proctoredExamsEnabledWaffleFlag,
         }));
       }
 

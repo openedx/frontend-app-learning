@@ -12,6 +12,7 @@ Object {
   "courseware": Object {
     "courseId": null,
     "courseStatus": "loading",
+    "proctoredExamsEnabledWaffleFlag": false,
     "sequenceId": null,
     "sequenceStatus": "loading",
     "specialExamsEnabledWaffleFlag": false,
@@ -306,6 +307,7 @@ Object {
   "courseware": Object {
     "courseId": null,
     "courseStatus": "loading",
+    "proctoredExamsEnabledWaffleFlag": false,
     "sequenceId": null,
     "sequenceStatus": "loading",
     "specialExamsEnabledWaffleFlag": false,
@@ -481,6 +483,7 @@ Object {
   "courseware": Object {
     "courseId": null,
     "courseStatus": "loading",
+    "proctoredExamsEnabledWaffleFlag": false,
     "sequenceId": null,
     "sequenceStatus": "loading",
     "specialExamsEnabledWaffleFlag": false,
