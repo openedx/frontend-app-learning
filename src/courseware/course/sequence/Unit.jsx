@@ -111,6 +111,7 @@ function Unit({
   // We use this ref so that we can hold a reference to the currently active event listener.
   const messageEventListenerRef = useRef(null);
   useEffect(() => {
+    checkForHash(document.getElementById('unit-iframe'));
     function receiveMessage(event) {
       const { type, payload } = event.data;
       if (type === 'plugin.resize') {
@@ -212,7 +213,6 @@ function Unit({
       { !mmp2p.meta.blockContent && !userNeedsIntegritySignature && (
         <div className="unit-iframe-wrapper">
           <iframe
-            data-testid="iframe-unit"
             id="unit-iframe"
             title={unit.title}
             src={iframeUrl}
@@ -222,7 +222,6 @@ function Unit({
             scrolling="no"
             referrerPolicy="origin"
             onLoad={() => {
-              checkForHash(document.getElementById('unit-iframe'));
               window.onmessage = function handleResetDates(e) {
                 if (e.data.event_name) {
                   dispatch(processEvent(e.data, fetchCourse));
