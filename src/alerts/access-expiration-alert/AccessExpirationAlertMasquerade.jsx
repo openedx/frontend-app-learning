@@ -43,8 +43,6 @@ AccessExpirationAlertMasquerade.propTypes = {
     accessExpiration: PropTypes.shape({
       expirationDate: PropTypes.string.isRequired,
       masqueradingExpiredCourse: PropTypes.bool.isRequired,
-      upgradeDeadline: PropTypes.string,
-      upgradeUrl: PropTypes.string,
     }).isRequired,
     userTimezone: PropTypes.string.isRequired,
   }).isRequired,
