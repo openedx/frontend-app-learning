@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -9,7 +9,6 @@ import { AlertList } from '../../generic/user-messages';
 import CourseDates from './widgets/CourseDates';
 import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
-import CourseSock from '../../generic/course-sock';
 import CourseTools from './widgets/CourseTools';
 import DatesBannerContainer from '../dates-banner/DatesBannerContainer';
 import { fetchOutlineTab } from '../data';
@@ -44,7 +43,6 @@ function OutlineTab({ intl }) {
 
   const {
     accessExpiration,
-    canShowUpgradeSock,
     courseBlocks: {
       courses,
       sections,
@@ -93,8 +91,6 @@ function OutlineTab({ intl }) {
   const privateCourseAlert = usePrivateCourseAlert(courseId);
 
   const rootCourseId = courses && Object.keys(courses)[0];
-
-  const courseSock = useRef(null);
 
   const logUpgradeLinkClick = () => {
     sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
@@ -245,16 +241,6 @@ function OutlineTab({ intl }) {
           </div>
         )}
       </div>
-      {canShowUpgradeSock && (
-        <CourseSock
-          courseId={courseId}
-          offer={offer}
-          orgKey={org}
-          pageLocation="Home Page"
-          ref={courseSock}
-          verifiedMode={verifiedMode}
-        />
-      )}
     </>
   );
 }
