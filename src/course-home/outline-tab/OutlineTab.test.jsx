@@ -533,6 +533,59 @@ describe('Outline Tab', () => {
         await fetchAndRender();
         await screen.findByText('This learner does not have access to this course.', { exact: false });
       });
+
+      it('shows expiration', async () => {
+        setTabData({
+          access_expiration: {
+            expiration_date: '2080-01-01T12:00:00Z',
+            masquerading_expired_course: false,
+            upgrade_deadline: null,
+            upgrade_url: null,
+          },
+        });
+        await fetchAndRender();
+        await screen.findByText('Audit Access Expires');
+      });
+
+      it('shows upgrade prompt', async () => {
+        setTabData({
+          access_expiration: {
+            expiration_date: '2080-01-01T12:00:00Z',
+            masquerading_expired_course: false,
+            upgrade_deadline: '2070-01-01T12:00:00Z',
+            upgrade_url: 'https://example.com/upgrade',
+          },
+        });
+        await fetchAndRender();
+        await screen.findByText('to get unlimited access to the course as long as it exists on the site.', { exact: false });
+      });
+
+      it('sends analytics event onClick of upgrade link', async () => {
+        setTabData({
+          access_expiration: {
+            expiration_date: '2080-01-01T12:00:00Z',
+            masquerading_expired_course: false,
+            upgrade_deadline: '2070-01-01T12:00:00Z',
+            upgrade_url: 'https://example.com/upgrade',
+          },
+        });
+        await fetchAndRender();
+
+        // Clearing after render to remove any events sent on view (ex. 'Promotion Viewed')
+        sendTrackEvent.mockClear();
+        const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
+        fireEvent.click(upgradeLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          linkCategory: 'FBE_banner',
+          linkName: 'course_home_audit_access_expires',
+          linkType: 'link',
+          pageName: 'course_home',
+        });
+      });
     });
 
     describe('Course Start Alert', () => {
