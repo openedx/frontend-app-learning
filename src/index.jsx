@@ -44,7 +44,12 @@ subscribe(APP_READY, () => {
               <DatesTab />
             </TabContainer>
           </PageRoute>
-          <PageRoute path="/course/:courseId/progress">
+          <PageRoute
+            path={[
+              '/course/:courseId/progress/:userId/',
+              '/course/:courseId/progress',
+            ]}
+          >
             <TabContainer tab="progress" fetch={fetchProgressTab} slice="courseHome">
               <ProgressTab />
             </TabContainer>

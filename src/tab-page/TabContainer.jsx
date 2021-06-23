@@ -13,7 +13,7 @@ export default function TabContainer(props) {
     tab,
   } = props;
 
-  const { courseId: courseIdFromUrl } = useParams();
+  const { courseId: courseIdFromUrl, userId } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
     // The courseId from the URL is the course we WANT to load.
@@ -31,6 +31,7 @@ export default function TabContainer(props) {
     <TabPage
       activeTabSlug={tab}
       courseId={courseId}
+      userId={userId}
       courseStatus={courseStatus}
       metadataModel={`${slice}Meta`}
     >
