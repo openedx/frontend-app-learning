@@ -3,7 +3,7 @@ import { Factory } from 'rosie';
 import {
   initializeTestStore, loadUnit, messageEvent, render, screen, waitFor,
 } from '../../../setupTest';
-import Unit from './Unit';
+import Unit, { sendUrlHashToFrame } from './Unit';
 
 describe('Unit', () => {
   let mockData;
@@ -38,7 +38,6 @@ describe('Unit', () => {
 
   it('renders correctly', () => {
     render(<Unit {...mockData} />);
-
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     const renderedUnit = screen.getByTitle(unit.display_name);
     expect(renderedUnit).toHaveAttribute('height', String(0));
@@ -49,7 +48,6 @@ describe('Unit', () => {
 
   it('renders proper message for gated content', () => {
     render(<Unit {...mockData} id={unitThatContainsGatedContent.id} />);
-
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
   });
@@ -75,7 +73,6 @@ describe('Unit', () => {
   it('handles receiving MessageEvent', async () => {
     render(<Unit {...mockData} />);
     loadUnit();
-
     // Loading message is gone now.
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
     // Iframe's height is set via message.
@@ -124,5 +121,38 @@ describe('Unit', () => {
       () => expect(screen.getByTitle(unit.display_name)).toHaveAttribute('height', String(testMessageWithUnhandledType.payload.height)),
       { timeout: 100 },
     )).rejects.toThrowError(/Expected the element to have attribute/);
+  });
+
+  it('scrolls to correct place onLoad', () => {
+    document.body.innerHTML = "<iframe id='unit-iframe' />";
+
+    const mockHashCheck = jest.fn(frameVar => sendUrlHashToFrame(frameVar));
+    const frame = document.getElementById('unit-iframe');
+    const originalWindow = { ...window };
+    const windowSpy = jest.spyOn(global, 'window', 'get');
+    windowSpy.mockImplementation(() => ({
+      ...originalWindow,
+      location: {
+        ...originalWindow.location,
+        hash: '#test',
+      },
+    }));
+    const messageSpy = jest.spyOn(frame.contentWindow, 'postMessage');
+    messageSpy.mockImplementation(() => ({ hashName: originalWindow.location.hash }));
+    mockHashCheck(frame);
+
+    expect(mockHashCheck).toHaveBeenCalled();
+    expect(messageSpy).toHaveBeenCalled();
+
+    windowSpy.mockRestore();
+  });
+
+  it('calls useEffect and checkForHash', () => {
+    const mockHashCheck = jest.fn(() => sendUrlHashToFrame());
+    const effectSpy = jest.spyOn(React, 'useEffect');
+    effectSpy.mockImplementation(() => mockHashCheck());
+    render(<Unit {...mockData} />);
+    expect(React.useEffect).toHaveBeenCalled();
+    expect(mockHashCheck).toHaveBeenCalled();
   });
 });

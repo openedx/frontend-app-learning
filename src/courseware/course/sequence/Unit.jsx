@@ -70,6 +70,15 @@ function useLoadBearingHook(id) {
   }, [id]);
 }
 
+export function sendUrlHashToFrame(frame) {
+  const { hash } = window.location;
+  if (hash) {
+    // The url hash will be sent to LMS-served iframe in order to find the location of the
+    // hash within the iframe.
+    frame.contentWindow.postMessage({ hashName: hash }, `${getConfig().LMS_BASE_URL}`);
+  }
+}
+
 function Unit({
   courseId,
   format,
@@ -98,13 +107,13 @@ function Unit({
   } = course;
 
   const dispatch = useDispatch();
-
   // Do not remove this hook.  See function description.
   useLoadBearingHook(id);
 
   // We use this ref so that we can hold a reference to the currently active event listener.
   const messageEventListenerRef = useRef(null);
   useEffect(() => {
+    sendUrlHashToFrame(document.getElementById('unit-iframe'));
     function receiveMessage(event) {
       const { type, payload } = event.data;
       if (type === 'plugin.resize') {
@@ -120,7 +129,7 @@ function Unit({
         setModalOptions(payload);
       } else if (event.data.offset) {
         // We listen for this message from LMS to know when the page needs to
-        // be scroll to another location on the page.
+        // be scrolled to another location on the page.
         window.scrollTo(0, event.data.offset);
       }
     }
