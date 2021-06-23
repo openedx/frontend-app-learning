@@ -46,7 +46,7 @@ function GradeSummaryTable({ intl }) {
 
     return {
       type: { footnoteId, footnoteMarker, type: assignment.type },
-      weight: `${assignment.weight * 100}%`,
+      weight: `${(assignment.weight * 100).toFixed(0)}%`,
       grade: `${(assignment.averageGrade * 100).toFixed(0)}%`,
       weightedGrade: `${(assignment.weightedGrade * 100).toFixed(0)}%`,
     };

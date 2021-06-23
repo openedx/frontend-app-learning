@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
@@ -9,6 +10,9 @@ import { InfoOutline } from '@edx/paragon/icons';
 import messages from '../messages';
 
 function GradeSummaryHeader({ intl }) {
+  const {
+    gradesFeatureIsLocked,
+  } = useSelector(state => state.courseHome);
   const [showTooltip, setShowTooltip] = useState(false);
   return (
     <div className="row w-100 m-0 align-items-center">
@@ -33,6 +37,7 @@ function GradeSummaryHeader({ intl }) {
           iconAs={Icon}
           className="mb-3"
           size="sm"
+          disabled={gradesFeatureIsLocked}
         />
       </OverlayTrigger>
     </div>

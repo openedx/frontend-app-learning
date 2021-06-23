@@ -16,6 +16,7 @@ function DetailedGrades({ intl }) {
   const { administrator } = getAuthenticatedUser();
   const {
     courseId,
+    gradesFeatureIsLocked,
   } = useSelector(state => state.courseHome);
   const {
     org,
@@ -39,6 +40,7 @@ function DetailedGrades({ intl }) {
       className="muted-link inline-link"
       destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`}
       onClick={logOutlineLinkClick}
+      tabIndex={gradesFeatureIsLocked ? '-1' : '0'}
     >
       {intl.formatMessage(messages.courseOutline)}
     </Hyperlink>

@@ -13,6 +13,7 @@ import { useModel } from '../../../../generic/model-store';
 function DetailedGradesTable({ intl, sectionScores }) {
   const {
     courseId,
+    gradesFeatureIsLocked,
   } = useSelector(state => state.courseHome);
   const {
     org,
@@ -43,10 +44,11 @@ function DetailedGradesTable({ intl, sectionScores }) {
         const title = (
           <a
             href={subsection.url}
-            className="text-dark-700 small"
+            className="muted-link small"
             onClick={() => {
               logSubsectionClicked(subsection.blockKey);
             }}
+            tabIndex={gradesFeatureIsLocked ? '-1' : '0'}
           >
             {subsection.displayName}
           </a>

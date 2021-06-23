@@ -7,6 +7,10 @@ import { OverlayTrigger, Popover } from '@edx/paragon';
 import messages from './messages';
 
 function CompleteDonutSegment({ completePercentage, intl, lockedPercentage }) {
+  if (!completePercentage) {
+    return null;
+  }
+
   const [showCompletePopover, setShowCompletePopover] = useState(false);
 
   const completeSegmentOffset = (3.6 * completePercentage) / 8;
@@ -24,15 +28,6 @@ function CompleteDonutSegment({ completePercentage, intl, lockedPercentage }) {
       onFocus={() => setShowCompletePopover(true)}
       tabIndex="-1"
     >
-      <circle
-        className="donut-segment complete-stroke"
-        cx="21"
-        cy="21"
-        r="15.91549430918954"
-        strokeDasharray={`${completePercentage} ${100 - completePercentage}`}
-        strokeDashoffset={lockedSegmentOffset + completePercentage}
-      />
-
       {/* Tooltip */}
       <OverlayTrigger
         show={showCompletePopover}
@@ -49,16 +44,33 @@ function CompleteDonutSegment({ completePercentage, intl, lockedPercentage }) {
         <rect x="19" y="3" style={{ transform: `rotate(${completeTooltipDegree}deg)` }} />
       </OverlayTrigger>
 
+      {/* Complete segment */}
+      <circle
+        className="donut-segment complete-stroke"
+        cx="21"
+        cy="21"
+        r="15.91549430918954"
+        strokeDasharray={`${completePercentage} ${100 - completePercentage}`}
+        strokeDashoffset={lockedSegmentOffset + completePercentage}
+      />
+
       {/* Segment dividers */}
       {lockedPercentage > 0 && lockedPercentage < 100 && (
         <circle
+          cx="21"
+          cy="21"
+          r="15.91549430918954"
           className="donut-segment divider-stroke"
           strokeDasharray="0.3 99.7"
           strokeDashoffset={0.15 + lockedSegmentOffset}
         />
       )}
-      {completePercentage < 100 && lockedPercentage < 100 && lockedPercentage + completePercentage === 100 && (
+      {completePercentage < 100 && lockedPercentage > 0 && lockedPercentage < 100
+      && lockedPercentage + completePercentage === 100 && (
         <circle
+          cx="21"
+          cy="21"
+          r="15.91549430918954"
           className="donut-segment divider-stroke"
           strokeDasharray="0.3 99.7"
           strokeDashoffset="25.15"

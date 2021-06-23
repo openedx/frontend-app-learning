@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -6,6 +7,9 @@ import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/
 import messages from '../messages';
 
 function DroppableAssignmentFootnote({ footnotes, intl }) {
+  const {
+    gradesFeatureIsLocked,
+  } = useSelector(state => state.courseHome);
   return (
     <>
       <span id="grade-summary-footnote-label" className="sr-only">{intl.formatMessage(messages.footnotesTitle)}</span>
@@ -21,7 +25,9 @@ function DroppableAssignmentFootnote({ footnotes, intl }) {
                 assignmentType: footnote.assignmentType,
               }}
             />
-            <a className="sr-only" href={`#${footnote.id}-ref`}>{intl.formatMessage(messages.backToContent)}</a>
+            <a className="sr-only" href={`#${footnote.id}-ref`} tabIndex={gradesFeatureIsLocked ? '-1' : '0'}>
+              {intl.formatMessage(messages.backToContent)}
+            </a>
           </li>
         ))}
       </ul>
