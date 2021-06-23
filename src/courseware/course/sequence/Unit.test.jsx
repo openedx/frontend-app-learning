@@ -3,7 +3,7 @@ import { Factory } from 'rosie';
 import {
   initializeTestStore, loadUnit, messageEvent, render, screen, waitFor,
 } from '../../../setupTest';
-import Unit, { checkForHash } from './Unit';
+import Unit, { sendHash } from './Unit';
 
 describe('Unit', () => {
   let mockData;
@@ -126,7 +126,7 @@ describe('Unit', () => {
   it('scrolls to correct place onLoad', () => {
     document.body.innerHTML = "<iframe id='unit-iframe' />";
 
-    const mockHashCheck = jest.fn(frameVar => checkForHash(frameVar));
+    const mockHashCheck = jest.fn(frameVar => sendHash(frameVar));
     const frame = document.getElementById('unit-iframe');
     const originalWindow = { ...window };
     const windowSpy = jest.spyOn(global, 'window', 'get');
@@ -148,7 +148,7 @@ describe('Unit', () => {
   });
 
   it('calls useEffect and checkForHash', () => {
-    const mockHashCheck = jest.fn(() => checkForHash());
+    const mockHashCheck = jest.fn(() => sendHash());
     const effectSpy = jest.spyOn(React, 'useEffect');
     effectSpy.mockImplementation(() => mockHashCheck());
     render(<Unit {...mockData} />);

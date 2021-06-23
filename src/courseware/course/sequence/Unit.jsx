@@ -70,9 +70,10 @@ function useLoadBearingHook(id) {
   }, [id]);
 }
 
-export function checkForHash(frame) {
+export function sendHash(frame) {
   const { hash } = window.location;
   if (hash) {
+    // The hash will be sent to LMS so that the location of the hash can be found.
     frame.contentWindow.postMessage({ hashName: hash }, `${getConfig().LMS_BASE_URL}`);
   }
 }
@@ -111,7 +112,7 @@ function Unit({
   // We use this ref so that we can hold a reference to the currently active event listener.
   const messageEventListenerRef = useRef(null);
   useEffect(() => {
-    checkForHash(document.getElementById('unit-iframe'));
+    sendHash(document.getElementById('unit-iframe'));
     function receiveMessage(event) {
       const { type, payload } = event.data;
       if (type === 'plugin.resize') {
