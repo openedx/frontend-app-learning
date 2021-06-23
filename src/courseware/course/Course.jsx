@@ -68,7 +68,7 @@ function Course({
 
   const shouldDisplaySidebarButton = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
 
-  const [sidebarVisible, setSidebar] = useState(false);
+  const [sidebarVisible, setSidebar] = useState(true);
   const isSidebarVisible = () => sidebarVisible && setSidebar;
   const toggleSidebar = () => {
     if (sidebarVisible) { setSidebar(false); } else { setSidebar(true); }

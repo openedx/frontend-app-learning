@@ -20,9 +20,11 @@ function UpgradeButton(props) {
 
   return (
     <Button
-      variant={variant}
       href={url}
       onClick={onClick}
+      size="lg"
+      variant={variant}
+      block
       {...rest}
     >
       <FormattedMessage

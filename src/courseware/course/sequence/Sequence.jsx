@@ -226,7 +226,7 @@ function Sequence({
           )}
         </div>
       </div>
-      {sidebarVisible ? (
+      {isValuePropCookieSet && sidebarVisible ? (
         <Sidebar
           toggleSidebar={toggleSidebar}
           sidebarVisible={sidebarVisible}
