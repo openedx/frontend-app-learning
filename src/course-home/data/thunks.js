@@ -27,12 +27,12 @@ const eventTypes = {
   POST_EVENT: 'post_event',
 };
 
-export function fetchTab(courseId, tab, getTabData) {
+export function fetchTab(courseId, tab, getTabData, targetUserId) {
   return async (dispatch) => {
     dispatch(fetchTabRequest({ courseId }));
     Promise.allSettled([
       getCourseHomeCourseMetadata(courseId),
-      getTabData(courseId),
+      getTabData(courseId, targetUserId),
     ]).then(([courseHomeCourseMetadataResult, tabDataResult]) => {
       const fetchedCourseHomeCourseMetadata = courseHomeCourseMetadataResult.status === 'fulfilled';
       const fetchedTabData = tabDataResult.status === 'fulfilled';
@@ -62,7 +62,7 @@ export function fetchTab(courseId, tab, getTabData) {
       }
 
       if (fetchedCourseHomeCourseMetadata && fetchedTabData) {
-        dispatch(fetchTabSuccess({ courseId }));
+        dispatch(fetchTabSuccess({ courseId, targetUserId }));
       } else {
         dispatch(fetchTabFailure({ courseId }));
       }
@@ -74,8 +74,8 @@ export function fetchDatesTab(courseId) {
   return fetchTab(courseId, 'dates', getDatesTabData);
 }
 
-export function fetchProgressTab(courseId) {
-  return fetchTab(courseId, 'progress', getProgressTabData);
+export function fetchProgressTab(courseId, targetUserId) {
+  return fetchTab(courseId, 'progress', getProgressTabData, parseInt(targetUserId, 10) || targetUserId);
 }
 
 export function fetchOutlineTab(courseId) {

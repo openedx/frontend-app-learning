@@ -44,11 +44,21 @@ subscribe(APP_READY, () => {
               <DatesTab />
             </TabContainer>
           </PageRoute>
-          <PageRoute path="/course/:courseId/progress">
-            <TabContainer tab="progress" fetch={fetchProgressTab} slice="courseHome">
-              <ProgressTab />
-            </TabContainer>
-          </PageRoute>
+          <PageRoute
+            path={[
+              '/course/:courseId/progress/:targetUserId/',
+              '/course/:courseId/progress',
+            ]}
+            render={({ match }) => (
+              <TabContainer
+                tab="progress"
+                fetch={(courseId) => fetchProgressTab(courseId, match.params.targetUserId)}
+                slice="courseHome"
+              >
+                <ProgressTab />
+              </TabContainer>
+            )}
+          />
           <PageRoute path="/course/:courseId/course-end">
             <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
               <CourseExit />
