@@ -1,1 +1,1 @@
-export { default } from './hooks';
+export { default, useAccessExpirationAlertMasquerade } from './hooks';

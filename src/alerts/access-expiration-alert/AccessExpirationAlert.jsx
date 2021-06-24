@@ -9,6 +9,7 @@ import { Hyperlink } from '@edx/paragon';
 import { Alert, ALERT_TYPES } from '../../generic/user-messages';
 import messages from './messages';
 import AccessExpirationAlertMMP2P from './AccessExpirationAlertMMP2P';
+import AccessExpirationAlertMasquerade from './AccessExpirationAlertMasquerade';
 
 function AccessExpirationAlert({ intl, payload }) {
   /** [MM-P2P] Experiment */
@@ -42,24 +43,7 @@ function AccessExpirationAlert({ intl, payload }) {
 
   if (masqueradingExpiredCourse) {
     return (
-      <Alert type={ALERT_TYPES.INFO}>
-        <FormattedMessage
-          id="learning.accessExpiration.expired"
-          defaultMessage="This learner does not have access to this course. Their access expired on {date}."
-          values={{
-            date: (
-              <FormattedDate
-                key="accessExpirationExpiredDate"
-                day="numeric"
-                month="short"
-                year="numeric"
-                value={expirationDate}
-                {...timezoneFormatArgs}
-              />
-            ),
-          }}
-        />
-      </Alert>
+      <AccessExpirationAlertMasquerade payload={payload} />
     );
   }
 

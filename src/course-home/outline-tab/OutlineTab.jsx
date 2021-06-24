@@ -17,7 +17,7 @@ import messages from './messages';
 import Section from './Section';
 import UpdateGoalSelector from './widgets/UpdateGoalSelector';
 import UpgradeCard from './widgets/UpgradeCard';
-import useAccessExpirationAlert from '../../alerts/access-expiration-alert';
+import { useAccessExpirationAlertMasquerade } from '../../alerts/access-expiration-alert';
 import useCertificateAvailableAlert from './alerts/certificate-status-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from './alerts/course-start-alert';
@@ -84,7 +84,7 @@ function OutlineTab({ intl }) {
   };
 
   // Below the course title alerts (appearing in the order listed here)
-  const accessExpirationAlert = useAccessExpirationAlert(accessExpiration, courseId, org, userTimezone, 'outline-course-alerts', 'course_home');
+  const accessExpirationAlertMasquerade = useAccessExpirationAlertMasquerade(accessExpiration, userTimezone, 'outline-course-alerts');
   const courseStartAlert = useCourseStartAlert(courseId);
   const courseEndAlert = useCourseEndAlert(courseId);
   const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
@@ -145,7 +145,7 @@ function OutlineTab({ intl }) {
               topic="outline-course-alerts"
               className="mb-3"
               customAlerts={{
-                ...accessExpirationAlert,
+                ...accessExpirationAlertMasquerade,
                 ...certificateAvailableAlert,
                 ...courseEndAlert,
                 ...courseStartAlert,
