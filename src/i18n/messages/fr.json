@@ -1,8 +1,8 @@
 {
-  "learning.accessExpiration.expired": "This learner does not have access to this course. Their access expired on {date}.",
   "learning.accessExpiration.deadline": "Upgrade by {date} to get unlimited access to the course as long as it exists on the site.",
   "learning.accessExpiration.header": "Audit Access Expires {date}",
   "learning.accessExpiration.body": "You lose all access to this course, including your progress, on {date}.",
+  "learning.accessExpiration.expired": "This learner does not have access to this course. Their access expired on {date}.",
   "learning.accessExpiration.upgradeNow": "Upgrade now",
   "learning.enrollment.alert": "You must be enrolled in the course to see course content.",
   "learning.staff.enrollment.alert": "You are viewing this course as staff, and are not enrolled.",

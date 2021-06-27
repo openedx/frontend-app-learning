@@ -1,8 +1,8 @@
 {
-  "learning.accessExpiration.expired": "هذا المتعلم ليس لديه حق الوصول إلى هذا المساق، انتهت صلاحية دخوله في{date}.",
   "learning.accessExpiration.deadline": "قم بالترقية قبل {date} للحصول على صلاحية دخول غير محدود طالما أنه موجود على الموقع.",
   "learning.accessExpiration.header": "تنتهي صلاحية المراجعة في {date}",
   "learning.accessExpiration.body": "ستفقد كل صلاحيات الدخول إلى هذا المساق، بما في ذلك مسار تقدمك في {date}.",
+  "learning.accessExpiration.expired": "هذا المتعلم ليس لديه حق الوصول إلى هذا المساق، انتهت صلاحية دخوله في{date}.",
   "learning.accessExpiration.upgradeNow": "ترقية الآن",
   "learning.enrollment.alert": "يجب أن تكون مسجلا في المساق لمشاهدة المحتوى.",
   "learning.staff.enrollment.alert": "أنت تستعرض هذا المساق كفرد من فريق طاقم المساق، ولم تلتحق بعد.",
