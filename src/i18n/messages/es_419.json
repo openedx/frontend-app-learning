@@ -1,8 +1,8 @@
 {
-  "learning.accessExpiration.expired": "Este estudiante no tiene acceso a este curso. Su acceso expiró el {fecha}.",
   "learning.accessExpiration.deadline": "Mejora de categoría antes del {fecha} para obtener acceso ilimitado al curso mientras exista en el sitio.",
   "learning.accessExpiration.header": "El acceso a tomar el curso de forma gratuita expira el {fecha}",
   "learning.accessExpiration.body": "Pierdes todo acceso a este curso, incluyendo tu progreso, el {fecha}.",
+  "learning.accessExpiration.expired": "Este estudiante no tiene acceso a este curso. Su acceso expiró el {fecha}.",
   "learning.accessExpiration.upgradeNow": "Upgrade now",
   "learning.enrollment.alert": "Debe estar inscrito en el curso para ver el contenido del curso.",
   "learning.staff.enrollment.alert": "Estás viendo este curso como instructor y no estás inscrito.",
