@@ -44,7 +44,7 @@ function NotificationTray({
         <span>{intl.formatMessage(messages.notificationTitle)}</span>
         {shouldDisplayFullScreen
           ? null
-          : <Icon src={Close} className="close-btn" onClick={() => { toggleNotificationTray(); }} onKeyDown={() => { toggleNotificationTray(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeSidebarButton)} />}
+          : <Icon src={Close} className="close-btn" onClick={() => { toggleNotificationTray(); }} onKeyDown={() => { toggleNotificationTray(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeNotificationTrigger)} />}
       </div>
       <div className="notification-tray-divider" />
       <div>{verifiedMode

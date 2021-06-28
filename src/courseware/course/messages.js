@@ -6,13 +6,13 @@ const messages = defineMessages({
     defaultMessage: 'Notification tray',
     description: 'Notification tray container',
   },
-  openSidebarButton: {
-    id: 'sidebar.open.button',
-    defaultMessage: 'Show sidebar notification',
-    description: 'Button to open the sidebar and show notifications',
+  openNotificationTrigger: {
+    id: 'notification.open.button',
+    defaultMessage: 'Show notification tray',
+    description: 'Button to open the notification tray and show notifications',
   },
-  closeSidebarButton: {
-    id: 'sidebar.close.button',
+  closeNotificationTrigger: {
+    id: 'notification.close.button',
     defaultMessage: 'Close sidebar notification',
     description: 'Button for the learner to close the sidebar',
   },

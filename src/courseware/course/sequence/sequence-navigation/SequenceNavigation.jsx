@@ -40,7 +40,7 @@ function SequenceNavigation({
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
 
-  const shouldDisplaySidebarButton = useWindowSize().width < responsiveBreakpoints.small.minWidth;
+  const shouldDisplayNotificationTrigger = useWindowSize().width < responsiveBreakpoints.small.minWidth;
 
   const renderUnitButtons = () => {
     if (isLocked) {
@@ -70,15 +70,15 @@ function SequenceNavigation({
     const disabled = isLastUnit && !exitActive;
     return (
       <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled} iconAfter={ChevronRight}>
-        {isValuePropCookieSet && shouldDisplaySidebarButton ? null : buttonText}
+        {isValuePropCookieSet && shouldDisplayNotificationTrigger ? null : buttonText}
       </Button>
     );
   };
 
   return sequenceStatus === LOADED && (
-    <nav className={classNames('sequence-navigation', className)} style={{ width: isValuePropCookieSet && shouldDisplaySidebarButton ? '90%' : null }}>
+    <nav className={classNames('sequence-navigation', className)} style={{ width: isValuePropCookieSet && shouldDisplayNotificationTrigger ? '90%' : null }}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit} iconBefore={ChevronLeft}>
-        {isValuePropCookieSet && shouldDisplaySidebarButton ? null : intl.formatMessage(messages.previousButton)}
+        {isValuePropCookieSet && shouldDisplayNotificationTrigger ? null : intl.formatMessage(messages.previousButton)}
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}

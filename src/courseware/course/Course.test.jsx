@@ -106,10 +106,10 @@ describe('Course', () => {
     };
     render(<Course {...testData} courseId={courseMetadata.id} />, { store: testStore });
 
-    const sidebarOpenButton = screen.getByRole('button', { name: /Show sidebar notification/i });
+    const notificationOpenButton = screen.getByRole('button', { name: /Show notification tray/i });
 
     expect(getSpy).toBeCalledWith(cookieName);
-    expect(sidebarOpenButton).toBeInTheDocument();
+    expect(notificationOpenButton).toBeInTheDocument();
   });
 
   it('displays offer and expiration alert', async () => {
