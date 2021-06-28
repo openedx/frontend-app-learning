@@ -22,7 +22,7 @@ import CourseLicense from '../course-license';
 import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
-import Sidebar from '../Sidebar';
+import NotificationTray from '../NotificationTray';
 import SidebarNotificationButton from '../SidebarNotificationButton';
 
 /** [MM-P2P] Experiment */
@@ -37,9 +37,9 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
-  toggleSidebar,
-  sidebarVisible,
-  isSidebarVisible,
+  toggleNotificationTray,
+  notificationTrayVisible,
+  isNotificationTrayVisible,
   isValuePropCookieSet,
   mmp2p,
 }) {
@@ -194,8 +194,8 @@ function Sequence({
 
         {isValuePropCookieSet && shouldDisplaySidebarButton ? (
           <SidebarNotificationButton
-            toggleSidebar={toggleSidebar}
-            isSidebarVisible={isSidebarVisible}
+            toggleNotificationTray={toggleNotificationTray}
+            isNotificationTrayVisible={isNotificationTrayVisible}
           />
         ) : null}
 
@@ -226,10 +226,10 @@ function Sequence({
           )}
         </div>
       </div>
-      {isValuePropCookieSet && sidebarVisible ? (
-        <Sidebar
-          toggleSidebar={toggleSidebar}
-          sidebarVisible={sidebarVisible}
+      {isValuePropCookieSet && notificationTrayVisible ? (
+        <NotificationTray
+          toggleNotificationTray={toggleNotificationTray}
+          notificationTrayVisible={notificationTrayVisible}
         />
       ) : null }
 
@@ -269,9 +269,9 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
-  toggleSidebar: PropTypes.func,
-  sidebarVisible: PropTypes.bool,
-  isSidebarVisible: PropTypes.func,
+  toggleNotificationTray: PropTypes.func,
+  notificationTrayVisible: PropTypes.bool,
+  isNotificationTrayVisible: PropTypes.func,
   isValuePropCookieSet: PropTypes.bool,
 
   /** [MM-P2P] Experiment */
@@ -291,9 +291,9 @@ Sequence.propTypes = {
 Sequence.defaultProps = {
   sequenceId: null,
   unitId: null,
-  toggleSidebar: null,
-  sidebarVisible: null,
-  isSidebarVisible: null,
+  toggleNotificationTray: null,
+  notificationTrayVisible: null,
+  isNotificationTrayVisible: null,
   isValuePropCookieSet: null,
 
   /** [MM-P2P] Experiment */

@@ -68,10 +68,10 @@ function Course({
 
   const shouldDisplaySidebarButton = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
 
-  const [sidebarVisible, setSidebar] = useState(true);
-  const isSidebarVisible = () => sidebarVisible && setSidebar;
-  const toggleSidebar = () => {
-    if (sidebarVisible) { setSidebar(false); } else { setSidebar(true); }
+  const [notificationTrayVisible, setNotificationTray] = useState(true);
+  const isNotificationTrayVisible = () => notificationTrayVisible && setNotificationTray;
+  const toggleNotificationTray = () => {
+    if (notificationTrayVisible) { setNotificationTray(false); } else { setNotificationTray(true); }
   };
 
   /** [MM-P2P] Experiment */
@@ -104,8 +104,8 @@ function Course({
 
         { isValuePropCookieSet && shouldDisplaySidebarButton ? (
           <SidebarNotificationButton
-            toggleSidebar={toggleSidebar}
-            isSidebarVisible={isSidebarVisible}
+            toggleNotificationTray={toggleNotificationTray}
+            isNotificationTrayVisible={isNotificationTrayVisible}
           />
         ) : null}
       </div>
@@ -118,9 +118,9 @@ function Course({
         unitNavigationHandler={unitNavigationHandler}
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
-        toggleSidebar={toggleSidebar}
-        isSidebarVisible={isSidebarVisible}
-        sidebarVisible={sidebarVisible}
+        toggleNotificationTray={toggleNotificationTray}
+        isNotificationTrayVisible={isNotificationTrayVisible}
+        notificationTrayVisible={notificationTrayVisible}
         isValuePropCookieSet={isValuePropCookieSet}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
