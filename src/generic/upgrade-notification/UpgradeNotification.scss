@@ -1,8 +1,8 @@
-.upgrade-card {
+.upgrade-notification {
   border-radius: 0 !important;
 }
 
-.upgrade-card-header {
+.upgrade-notification-header {
   margin: 1.25rem;
 }
 
@@ -18,22 +18,22 @@
   padding: 0.5rem 1.25rem;
 }
 
-.upgrade-card-ul {
+.upgrade-notification-ul {
   margin-left: 3rem;
   padding-top: 0.875rem;
   padding-right: 1.25rem;
 }
 
-.upgrade-card-li {
+.upgrade-notification-li {
   left: -2.125rem;
   top: 0 !important;
 }
 
-.upgrade-card-text {
+.upgrade-notification-text {
   padding: 0.875rem 1.25rem 0 1.25rem;
 }
 
-.upgrade-card-button {
+.upgrade-notification-button {
   width: 90%;
   margin: 0 auto;
   margin-bottom: 1.25rem;
@@ -49,6 +49,6 @@
   text-decoration: underline;
 }
 
-.upgrade-card .upgrade-card-message a {
+.upgrade-notification .upgrade-notification-message a {
   color: $primary-500;
 }
