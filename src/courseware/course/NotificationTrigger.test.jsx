@@ -3,9 +3,9 @@ import { Factory } from 'rosie';
 import {
   render, initializeTestStore, screen, fireEvent,
 } from '../../setupTest';
-import SidebarNotificationButton from './SidebarNotificationButton';
+import NotificationTrigger from './NotificationTrigger';
 
-describe('Sidebar Notification Button', () => {
+describe('Notification Trigger', () => {
   let mockData;
   const courseMetadata = Factory.build('courseMetadata');
 
@@ -17,8 +17,8 @@ describe('Sidebar Notification Button', () => {
     };
   });
 
-  it('renders sidebar notification button with icon', async () => {
-    const { container } = render(<SidebarNotificationButton {...mockData} />);
+  it('renders notification trigger with icon', async () => {
+    const { container } = render(<NotificationTrigger {...mockData} />);
     expect(container).toBeInTheDocument();
     const buttonIcon = container.querySelectorAll('svg');
     expect(buttonIcon).toHaveLength(1);
@@ -33,11 +33,11 @@ describe('Sidebar Notification Button', () => {
       ...mockData,
       toggleSidebar,
     };
-    render(<SidebarNotificationButton {...testData} />);
+    render(<NotificationTrigger {...testData} />);
 
-    const sidebarOpenButton = screen.getByRole('button', { name: /Show sidebar notification/i });
-    expect(sidebarOpenButton).toBeInTheDocument();
-    fireEvent.click(sidebarOpenButton);
+    const notificationOpenButton = screen.getByRole('button', { name: /Show notification tray/i });
+    expect(notificationOpenButton).toBeInTheDocument();
+    fireEvent.click(notificationOpenButton);
     expect(toggleSidebar).toHaveBeenCalledTimes(1);
   });
 });

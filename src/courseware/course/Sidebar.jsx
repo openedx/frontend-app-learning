@@ -44,7 +44,7 @@ function Sidebar({
         <span>{intl.formatMessage(messages.notificationTitle)}</span>
         {shouldDisplayFullScreen
           ? null
-          : <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeSidebarButton)} />}
+          : <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeNotificationTrigger)} />}
       </div>
       <div className="sidebar-divider" />
       <div>{verifiedMode

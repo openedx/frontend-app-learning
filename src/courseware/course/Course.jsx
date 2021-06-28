@@ -14,7 +14,7 @@ import Sequence from './sequence';
 import { CelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
 import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-import SidebarNotificationButton from './SidebarNotificationButton';
+import NotificationTrigger from './NotificationTrigger';
 
 import CourseSock from '../../generic/course-sock';
 import { useModel } from '../../generic/model-store';
@@ -66,7 +66,7 @@ function Course({
   // the browser console and refresh: document.cookie = 'value_prop_cookie=true';
   const isValuePropCookieSet = Cookies.get('value_prop_cookie') === 'true';
 
-  const shouldDisplaySidebarButton = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
+  const shouldDisplayNotificationTrigger = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
 
   const [sidebarVisible, setSidebar] = useState(true);
   const isSidebarVisible = () => sidebarVisible && setSidebar;
@@ -102,8 +102,8 @@ function Course({
           mmp2p={MMP2P}
         />
 
-        { isValuePropCookieSet && shouldDisplaySidebarButton ? (
-          <SidebarNotificationButton
+        { isValuePropCookieSet && shouldDisplayNotificationTrigger ? (
+          <NotificationTrigger
             toggleSidebar={toggleSidebar}
             isSidebarVisible={isSidebarVisible}
           />

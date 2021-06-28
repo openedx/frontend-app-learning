@@ -11,7 +11,7 @@ import messages from './messages';
 function NotificationIcon({ intl, status, notificationColor }) {
   return (
     <div className="icon-container">
-      <Icon src={WatchOutline} className="m-0 m-auto" alt={intl.formatMessage(messages.openSidebarButton)} />
+      <Icon src={WatchOutline} className="m-0 m-auto" alt={intl.formatMessage(messages.openNotificationTrigger)} />
       {status === 'active'
         ? <span className={classNames(notificationColor, 'notification-dot')} data-testid="notification-dot" />
         : null}

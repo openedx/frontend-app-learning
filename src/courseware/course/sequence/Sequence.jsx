@@ -23,7 +23,7 @@ import messages from './messages';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 import Sidebar from '../Sidebar';
-import SidebarNotificationButton from '../SidebarNotificationButton';
+import NotificationTrigger from '../NotificationTrigger';
 
 /** [MM-P2P] Experiment */
 import { isMobile } from '../../../experiments/mm-p2p/utils';
@@ -49,7 +49,7 @@ function Sequence({
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const specialExamsEnabledWaffleFlag = useSelector(state => state.courseware.specialExamsEnabledWaffleFlag);
   const proctoredExamsEnabledWaffleFlag = useSelector(state => state.courseware.proctoredExamsEnabledWaffleFlag);
-  const shouldDisplaySidebarButton = useWindowSize().width < responsiveBreakpoints.small.minWidth;
+  const shouldDisplayNotificationTrigger = useWindowSize().width < responsiveBreakpoints.small.minWidth;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -167,7 +167,7 @@ function Sequence({
 
   const defaultContent = (
     <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
-      <div className={classNames('sequence', { 'position-relative': shouldDisplaySidebarButton })} style={{ width: '100%' }}>
+      <div className={classNames('sequence', { 'position-relative': shouldDisplayNotificationTrigger })} style={{ width: '100%' }}>
         <SequenceNavigation
           sequenceId={sequenceId}
           unitId={unitId}
@@ -192,8 +192,8 @@ function Sequence({
           isValuePropCookieSet={isValuePropCookieSet}
         />
 
-        {isValuePropCookieSet && shouldDisplaySidebarButton ? (
-          <SidebarNotificationButton
+        {isValuePropCookieSet && shouldDisplayNotificationTrigger ? (
+          <NotificationTrigger
             toggleSidebar={toggleSidebar}
             isSidebarVisible={isSidebarVisible}
           />

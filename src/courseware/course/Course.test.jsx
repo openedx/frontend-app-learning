@@ -87,7 +87,7 @@ describe('Course', () => {
     expect(screen.getByRole('button', { name: 'Learn About Verified Certificates' })).toBeInTheDocument();
   });
 
-  it('displays sidebar notification button', async () => {
+  it('displays notification trigger', async () => {
     const toggleSidebar = jest.fn();
     const isSidebarVisible = jest.fn();
 
@@ -106,10 +106,10 @@ describe('Course', () => {
     };
     render(<Course {...testData} courseId={courseMetadata.id} />, { store: testStore });
 
-    const sidebarOpenButton = screen.getByRole('button', { name: /Show sidebar notification/i });
+    const notificationOpenButton = screen.getByRole('button', { name: /Show notification tray/i });
 
     expect(getSpy).toBeCalledWith(cookieName);
-    expect(sidebarOpenButton).toBeInTheDocument();
+    expect(notificationOpenButton).toBeInTheDocument();
   });
 
   it('displays offer and expiration alert', async () => {
