@@ -130,8 +130,7 @@ function Unit({
       } else if (event.data.offset) {
         // We listen for this message from LMS to know when the page needs to
         // be scrolled to another location on the page.
-        const diffToTopOfPage = window.innerHeight / 2;
-        window.scrollTo(0, event.data.offset + diffToTopOfPage);
+        window.scrollTo(0, event.data.offset + document.getElementById('unit-iframe').offsetTop);
       }
     }
     // If we currently have an event listener, remove it.
