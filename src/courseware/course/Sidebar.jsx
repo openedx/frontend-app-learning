@@ -1,17 +1,23 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Icon } from '@edx/paragon';
 import { ArrowBackIos, Close } from '@edx/paragon/icons';
+
 import messages from './messages';
-import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 import { useModel } from '../../generic/model-store';
+import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 import UpgradeCard from '../../generic/upgrade-card/UpgradeCard';
 
 function Sidebar({
-  intl, toggleSidebar, courseId,
+  intl, toggleSidebar,
 }) {
+  const {
+    courseId,
+  } = useSelector(state => state.courseware);
+
   const course = useModel('coursewareMeta', courseId);
 
   const {
@@ -62,7 +68,6 @@ function Sidebar({
 
 Sidebar.propTypes = {
   intl: intlShape.isRequired,
-  courseId: PropTypes.string.isRequired,
   toggleSidebar: PropTypes.func,
 };
 
