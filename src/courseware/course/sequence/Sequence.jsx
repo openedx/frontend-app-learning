@@ -230,7 +230,6 @@ function Sequence({
         <Sidebar
           toggleSidebar={toggleSidebar}
           sidebarVisible={sidebarVisible}
-          courseId={courseId}
         />
       ) : null }
 
