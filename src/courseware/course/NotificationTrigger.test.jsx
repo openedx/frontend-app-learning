@@ -12,8 +12,8 @@ describe('Notification Trigger', () => {
   beforeAll(async () => {
     await initializeTestStore({ courseMetadata, excludeFetchCourse: true, excludeFetchSequence: true });
     mockData = {
-      toggleSidebar: () => {},
-      isSidebarVisible: () => {},
+      toggleNotificationTray: () => {},
+      isNotificationTrayVisible: () => {},
     };
   });
 
@@ -27,17 +27,17 @@ describe('Notification Trigger', () => {
     expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
   });
 
-  it('handles onClick event toggling the sidebar', async () => {
-    const toggleSidebar = jest.fn();
+  it('handles onClick event toggling the notification tray', async () => {
+    const toggleNotificationTray = jest.fn();
     const testData = {
       ...mockData,
-      toggleSidebar,
+      toggleNotificationTray,
     };
     render(<NotificationTrigger {...testData} />);
 
     const notificationOpenButton = screen.getByRole('button', { name: /Show notification tray/i });
     expect(notificationOpenButton).toBeInTheDocument();
     fireEvent.click(notificationOpenButton);
-    expect(toggleSidebar).toHaveBeenCalledTimes(1);
+    expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
   });
 });

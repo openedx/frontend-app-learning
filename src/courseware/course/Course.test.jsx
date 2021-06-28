@@ -20,7 +20,7 @@ describe('Course', () => {
     nextSequenceHandler: () => {},
     previousSequenceHandler: () => {},
     unitNavigationHandler: () => {},
-    toggleSidebar: () => {},
+    toggleNotificationTray: () => {},
   };
 
   beforeAll(async () => {
@@ -88,8 +88,8 @@ describe('Course', () => {
   });
 
   it('displays notification trigger', async () => {
-    const toggleSidebar = jest.fn();
-    const isSidebarVisible = jest.fn();
+    const toggleNotificationTray = jest.fn();
+    const isNotificationTrayVisible = jest.fn();
 
     // REV-2130 TODO: remove cookie related code once temporary value prop cookie code is removed.
     const cookieName = 'value_prop_cookie';
@@ -101,8 +101,8 @@ describe('Course', () => {
     const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
     const testData = {
       ...mockData,
-      toggleSidebar,
-      isSidebarVisible,
+      toggleNotificationTray,
+      isNotificationTrayVisible,
     };
     render(<Course {...testData} courseId={courseMetadata.id} />, { store: testStore });
 

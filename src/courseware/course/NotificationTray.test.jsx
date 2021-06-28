@@ -10,14 +10,14 @@ import {
 } from '../../setupTest';
 import initializeStore from '../../store';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
-import Sidebar from './Sidebar';
+import NotificationTray from './NotificationTray';
 import useWindowSize from '../../generic/tabs/useWindowSize';
 
 initializeMockApp();
 jest.mock('../../generic/tabs/useWindowSize');
 jest.mock('@edx/frontend-platform/analytics');
 
-describe('Sidebar', () => {
+describe('NotificationTray', () => {
   let mockData;
   let axiosMock;
   let store;
@@ -43,19 +43,19 @@ describe('Sidebar', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     mockData = {
-      toggleSidebar: () => {},
+      toggleNotificationTray: () => {},
     };
   });
 
-  it('renders sidebar', async () => {
+  it('renders notification tray', async () => {
     useWindowSize.mockReturnValue({ width: 1200, height: 422 });
-    await fetchAndRender(<Sidebar />);
+    await fetchAndRender(<NotificationTray />);
     expect(screen.getByText('Notifications')).toBeInTheDocument();
     expect(screen.queryByText('Back to course')).not.toBeInTheDocument();
   });
 
   it('renders upgrade card', async () => {
-    await fetchAndRender(<Sidebar />);
+    await fetchAndRender(<NotificationTray />);
     const upgradeCard = document.querySelector('.upgrade-card');
 
     expect(upgradeCard).toBeInTheDocument();
@@ -65,23 +65,23 @@ describe('Sidebar', () => {
 
   it('renders no notifications message if no verified mode', async () => {
     setMetadata({ verified_mode: null });
-    await fetchAndRender(<Sidebar />);
+    await fetchAndRender(<NotificationTray />);
     expect(screen.queryByText('You have no new notifications at this time.')).toBeInTheDocument();
   });
 
-  it('renders sidebar with full screen "Back to course" at response width', async () => {
+  it('renders notification tray with full screen "Back to course" at response width', async () => {
     useWindowSize.mockReturnValue({ width: 991, height: 422 });
-    const toggleSidebar = jest.fn();
+    const toggleNotificationTray = jest.fn();
     const testData = {
       ...mockData,
-      toggleSidebar,
+      toggleNotificationTray,
     };
-    await fetchAndRender(<Sidebar {...testData} />);
+    await fetchAndRender(<NotificationTray {...testData} />);
 
     const responsiveCloseButton = screen.getByRole('button', { name: 'Back to course' });
     await waitFor(() => expect(responsiveCloseButton).toBeInTheDocument());
 
     fireEvent.click(responsiveCloseButton);
-    expect(toggleSidebar).toHaveBeenCalledTimes(1);
+    expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
   });
 });
