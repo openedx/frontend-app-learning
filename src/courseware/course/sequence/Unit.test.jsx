@@ -11,21 +11,32 @@ describe('Unit', () => {
     'courseMetadata',
     { content_type_gating_enabled: true },
   );
-  const unitBlocks = [Factory.build(
-    'block',
-    { type: 'problem', graded: 'true' },
-    { courseId: courseMetadata.id },
-  ), Factory.build(
-    'block',
-    {
-      type: 'vertical',
-      contains_content_type_gated_content: true,
-      bookmarked: true,
-      graded: true,
-    },
-    { courseId: courseMetadata.id },
-  )];
-  const [unit, unitThatContainsGatedContent] = unitBlocks;
+  const courseMetadataNeedsSignature = Factory.build(
+    'courseMetadata',
+    { user_needs_integrity_signature: true },
+  );
+  const unitBlocks = [
+    Factory.build(
+      'block',
+      { type: 'problem', graded: 'true' },
+      { courseId: courseMetadata.id },
+    ), Factory.build(
+      'block',
+      {
+        type: 'vertical',
+        contains_content_type_gated_content: true,
+        bookmarked: true,
+        graded: true,
+      },
+      { courseId: courseMetadata.id },
+    ),
+    Factory.build(
+      'block',
+      { type: 'problem', graded: false },
+      { courseId: courseMetadata.id },
+    ),
+  ];
+  const [unit, unitThatContainsGatedContent, ungradedUnit] = unitBlocks;
 
   beforeAll(async () => {
     await initializeTestStore({ courseMetadata, unitBlocks });
@@ -52,18 +63,28 @@ describe('Unit', () => {
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
   });
 
-  it('displays HonorCode when userNeedsIntegritySignature is true', async () => {
-    const signatureMetadata = Factory.build(
-      'courseMetadata',
-      { user_needs_integrity_signature: true },
-    );
+  it('does not display HonorCode for ungraded units', async () => {
     const signatureStore = await initializeTestStore(
-      { courseMetadata: signatureMetadata, unitBlocks },
+      { courseMetadata: courseMetadataNeedsSignature, unitBlocks },
+      false,
+    );
+    const signatureData = {
+      id: ungradedUnit.id,
+      courseId: courseMetadataNeedsSignature.id,
+      format: 'Homework',
+    };
+    render(<Unit {...signatureData} />, { store: signatureStore });
+    expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
+  });
+
+  it('displays HonorCode for graded units if user needs integrity signature', async () => {
+    const signatureStore = await initializeTestStore(
+      { courseMetadata: courseMetadataNeedsSignature, unitBlocks },
       false,
     );
     const signatureData = {
       id: unit.id,
-      courseId: signatureMetadata.id,
+      courseId: courseMetadataNeedsSignature.id,
       format: 'Homework',
     };
     render(<Unit {...signatureData} />, { store: signatureStore });
