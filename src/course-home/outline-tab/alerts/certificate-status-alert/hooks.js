@@ -16,6 +16,9 @@ function verifyCertStatusType(status) {
   if (status === CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE) {
     return CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE;
   }
+  if (status === CERT_STATUS_TYPE.UNVERIFIED) {
+    return CERT_STATUS_TYPE.UNVERIFIED;
+  }
   return '';
 }
 
@@ -37,9 +40,7 @@ function useCertificateStatusAlert(courseId) {
     certificateAvailableDate,
     downloadUrl,
   } = certData || {};
-
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
-
   const certStatusType = verifyCertStatusType(certStatus);
   const isWebCert = downloadUrl === null;
 

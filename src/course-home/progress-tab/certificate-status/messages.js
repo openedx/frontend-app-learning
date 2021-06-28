@@ -77,6 +77,18 @@ const messages = defineMessages({
     id: 'progress.certificateStatus.upgradeButton',
     defaultMessage: 'Upgrade now',
   },
+  unverifiedHomeHeader: {
+    id: 'progress.certificateStatus.unverifiedHomeHeader',
+    defaultMessage: 'Verify your identity to earn a certificate!',
+  },
+  unverifiedHomeButton: {
+    id: 'progress.certificateStatus.unverifiedHomeButton',
+    defaultMessage: 'Verify my ID',
+  },
+  unverifiedHomeBody: {
+    id: 'progress.certificateStatus.unverifiedHomeBody',
+    defaultMessage: 'In order to generate a certificate for this course, you must complete the ID verification process.',
+  },
 });
 
 export default messages;

@@ -82,7 +82,7 @@ export function initializeMockApp() {
       roles: [],
       administrator: false,
     },
-    SUPPORT_URL_ID_VERIFICATION: true,
+    SUPPORT_URL_ID_VERIFICATION: 'http://example.com',
   });
 
   const loggingService = configureLogging(MockLoggingService, {

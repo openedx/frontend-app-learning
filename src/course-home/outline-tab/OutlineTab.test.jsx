@@ -659,6 +659,40 @@ describe('Outline Tab', () => {
         await fetchAndRender();
         expect(screen.queryByText('Your grade and certificate will be ready soon!')).toBeInTheDocument();
       });
+      it('renders verification alert', async () => {
+        const now = new Date();
+        const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({
+          cert_data: {
+            cert_status: CERT_STATUS_TYPE.UNVERIFIED,
+            cert_web_view_url: null,
+            download_url: null,
+          },
+        }, {
+          date_blocks: [
+            {
+              date_type: 'course-end-date',
+              date: yesterday.toISOString(),
+              title: 'End',
+            },
+            {
+              date_type: 'certificate-available-date',
+              date: tomorrow.toISOString(),
+              title: 'Cert Available',
+            },
+            {
+              date_type: 'verification-deadline-date',
+              date: tomorrow.toISOString(),
+              link_text: 'Verify',
+              title: 'Verification Upgrade Deadline',
+            },
+          ],
+        });
+        await fetchAndRender();
+        expect(screen.queryByText('Verify your identity to earn a certificate!')).toBeInTheDocument();
+      });
     });
   });
 
