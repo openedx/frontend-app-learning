@@ -9,7 +9,7 @@ import { ArrowBackIos, Close } from '@edx/paragon/icons';
 import messages from './messages';
 import { useModel } from '../../generic/model-store';
 import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
-import UpgradeCard from '../../generic/upgrade-card/UpgradeCard';
+import UpgradeNotification from '../../generic/upgrade-notification/UpgradeNotification';
 
 function NotificationTray({
   intl, toggleNotificationTray,
@@ -49,7 +49,7 @@ function NotificationTray({
       <div className="notification-tray-divider" />
       <div>{verifiedMode
         ? (
-          <UpgradeCard
+          <UpgradeNotification
             offer={offer}
             verifiedMode={verifiedMode}
             accessExpiration={accessExpiration}

@@ -16,7 +16,7 @@ import genericMessages from '../../generic/messages';
 import messages from './messages';
 import Section from './Section';
 import UpdateGoalSelector from './widgets/UpdateGoalSelector';
-import UpgradeCard from './widgets/UpgradeCard';
+import UpgradeNotification from '../../generic/upgrade-notification/UpgradeNotification';
 import { useAccessExpirationAlertMasquerade } from '../../alerts/access-expiration-alert';
 import useCertificateAvailableAlert from './alerts/certificate-status-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
@@ -219,7 +219,7 @@ function OutlineTab({ intl }) {
             { MMP2P.state.isEnabled
               ? <MMP2PFlyover isStatic options={MMP2P} />
               : (
-                <UpgradeCard
+                <UpgradeNotification
                   offer={offer}
                   verifiedMode={verifiedMode}
                   accessExpiration={accessExpiration}

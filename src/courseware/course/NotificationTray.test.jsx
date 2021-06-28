@@ -56,9 +56,9 @@ describe('NotificationTray', () => {
 
   it('renders upgrade card', async () => {
     await fetchAndRender(<NotificationTray />);
-    const upgradeCard = document.querySelector('.upgrade-card');
+    const UpgradeNotification = document.querySelector('.upgrade-notification');
 
-    expect(upgradeCard).toBeInTheDocument();
+    expect(UpgradeNotification).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Upgrade for $149' })).toBeInTheDocument();
     expect(screen.queryByText('You have no new notifications at this time.')).not.toBeInTheDocument();
   });

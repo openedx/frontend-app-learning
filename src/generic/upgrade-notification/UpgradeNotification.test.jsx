@@ -2,7 +2,7 @@ import React from 'react';
 import { Factory } from 'rosie';
 
 import { initializeMockApp, render, screen } from '../../setupTest';
-import UpgradeCard from './UpgradeCard';
+import UpgradeNotification from './UpgradeNotification';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -11,10 +11,10 @@ jest
   .spyOn(global.Date, 'now')
   .mockImplementation(() => dateNow.valueOf());
 
-describe('Upgrade Card', () => {
+describe('Upgrade Notification', () => {
   function buildAndRender(attributes) {
-    const upgradeCardData = Factory.build('upgradeCardData', { ...attributes });
-    render(<UpgradeCard {...upgradeCardData} />);
+    const upgradeNotificationData = Factory.build('upgradeNotificationData', { ...attributes });
+    render(<UpgradeNotification {...upgradeNotificationData} />);
   }
 
   it('does not render when there is no verified mode', async () => {
