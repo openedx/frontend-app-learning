@@ -98,6 +98,7 @@ function Unit({
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
+  const [shouldDisplayHonorCode, setShouldDisplayHonorCode] = useState(false);
 
   const unit = useModel('units', id);
   const course = useModel('coursewareMeta', courseId);
@@ -109,6 +110,14 @@ function Unit({
   const dispatch = useDispatch();
   // Do not remove this hook.  See function description.
   useLoadBearingHook(id);
+
+  useEffect(() => {
+    if (userNeedsIntegritySignature && unit.graded) {
+      setShouldDisplayHonorCode(true);
+    } else {
+      setShouldDisplayHonorCode(false);
+    }
+  }, [userNeedsIntegritySignature]);
 
   // We use this ref so that we can hold a reference to the currently active event listener.
   const messageEventListenerRef = useRef(null);
@@ -169,7 +178,7 @@ function Unit({
       { mmp2p.meta.showLock && (
         <MMP2PLockPaywall options={mmp2p} />
       )}
-      {!mmp2p.meta.blockContent && unit.graded && userNeedsIntegritySignature && (
+      {!mmp2p.meta.blockContent && shouldDisplayHonorCode && (
         <Suspense
           fallback={(
             <PageLoading
@@ -181,7 +190,7 @@ function Unit({
         </Suspense>
       )}
       { /** [MM-P2P] Experiment (conditional) */ }
-      {!mmp2p.meta.blockContent && !userNeedsIntegritySignature && !hasLoaded && (
+      {!mmp2p.meta.blockContent && !shouldDisplayHonorCode && !hasLoaded && (
         <PageLoading
           srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
         />
@@ -212,7 +221,7 @@ function Unit({
         />
       )}
       { /** [MM-P2P] Experiment (conditional) */ }
-      { !mmp2p.meta.blockContent && !userNeedsIntegritySignature && (
+      { !mmp2p.meta.blockContent && !shouldDisplayHonorCode && (
         <div className="unit-iframe-wrapper">
           <iframe
             id="unit-iframe"
