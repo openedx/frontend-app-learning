@@ -91,7 +91,7 @@ describe('Course', () => {
     const toggleNotificationTray = jest.fn();
     const isNotificationTrayVisible = jest.fn();
 
-    // REV-2130 TODO: remove cookie related code once temporary value prop cookie code is removed.
+    // REV-2297 TODO: remove cookie related code once temporary value prop cookie code is removed.
     const cookieName = 'value_prop_cookie';
     Cookies.set = jest.fn();
     Cookies.get = jest.fn().mockImplementation(() => cookieName);

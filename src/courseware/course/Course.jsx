@@ -61,7 +61,7 @@ function Course({
     courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
   );
 
-  // REV-2130 TODO: temporary cookie code that should be removed.
+  // REV-2297 TODO: temporary cookie code that should be removed.
   // In order to see the Value Prop Notification Tray in prod, a cookie should be set in
   // the browser console and refresh: document.cookie = 'value_prop_cookie=true';
   const isValuePropCookieSet = Cookies.get('value_prop_cookie') === 'true';

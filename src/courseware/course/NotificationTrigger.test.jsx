@@ -23,8 +23,8 @@ describe('Notification Trigger', () => {
     const buttonIcon = container.querySelectorAll('svg');
     expect(buttonIcon).toHaveLength(1);
 
-    // REV-2130 TODO: update below test once the status=active or inactive is implemented
-    expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
+    // REV-2297 TODO: update below test once the status=active or inactive is implemented
+    // expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
   });
 
   it('handles onClick event toggling the notification tray', async () => {

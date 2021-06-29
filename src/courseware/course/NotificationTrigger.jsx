@@ -14,8 +14,8 @@ function NotificationTrigger({ intl, toggleNotificationTray, isNotificationTrayV
       onClick={() => { toggleNotificationTray(); }}
       aria-label={intl.formatMessage(messages.openNotificationTrigger)}
     >
-      {/* REV-2130 TODO: add logic for status "active" if red dot should display */}
-      <NotificationIcon status="active" notificationColor="bg-danger-500" />
+      {/* REV-2297 TODO: add logic for status "active" if red dot should display */}
+      <NotificationIcon status="inactive" notificationColor="bg-danger-500" />
     </button>
   );
 }
