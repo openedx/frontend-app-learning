@@ -108,9 +108,9 @@ const initHomeMMP2P = (courseId) => {
   const setMMP2POptions = createWindowStateSetter(_setMMP2POptions, MMP2PKeys.state);
   const setMMP2PAccess = createWindowStateSetter(_setMMP2PAccess, MMP2PKeys.access);
 
-  const loadAccess = () => {
-    const { accessExpiration, verifiedMode } = useModel('coursewareMeta', courseId);
+  const { accessExpiration, verifiedMode } = useModel('outline', courseId);
 
+  const loadAccess = () => {
     if (accessExpiration !== null && accessExpiration !== undefined) {
       setMMP2PAccess({
         isAudit: true,
