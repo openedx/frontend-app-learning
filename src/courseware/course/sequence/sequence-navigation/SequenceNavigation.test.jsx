@@ -70,7 +70,7 @@ describe('Sequence Navigation', () => {
     expect(testData.onNavigate).not.toHaveBeenCalled();
     // TODO: Not sure if this is working as expected, because the `contentType="lock"` will be overridden by the value
     //  from Redux. To make this provide a `fa-icon` lock we could introduce something like `overriddenContentType`.
-    expect(unitButton.firstChild.firstChild).toHaveClass('fa-edit');
+    expect(unitButton.firstChild).toHaveClass('fa-edit');
   });
 
   it('renders correctly and handles unit button clicks', () => {

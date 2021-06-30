@@ -10,14 +10,15 @@ import CourseDates from './widgets/CourseDates';
 import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
-import DatesBannerContainer from '../dates-banner/DatesBannerContainer';
 import { fetchOutlineTab } from '../data';
 import genericMessages from '../../generic/messages';
 import messages from './messages';
 import Section from './Section';
+import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpdateGoalSelector from './widgets/UpdateGoalSelector';
 import UpgradeCard from '../../generic/upgrade-card/UpgradeCard';
 import { useAccessExpirationAlertMasquerade } from '../../alerts/access-expiration-alert';
+import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
 import useCertificateAvailableAlert from './alerts/certificate-status-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from './alerts/course-start-alert';
@@ -36,6 +37,7 @@ function OutlineTab({ intl }) {
   } = useSelector(state => state.courseHome);
 
   const {
+    isSelfPaced,
     org,
     title,
     username,
@@ -56,7 +58,6 @@ function OutlineTab({ intl }) {
       courseDateBlocks,
       userTimezone,
     },
-    hasEnded,
     resumeCourse: {
       hasVisitedCourse,
       url: resumeCourseUrl,
@@ -92,7 +93,9 @@ function OutlineTab({ intl }) {
 
   const rootCourseId = courses && Object.keys(courses)[0];
 
-  const logUpgradeLinkClick = () => {
+  const hasDeadlines = courseDateBlocks && courseDateBlocks.some(x => x.dateType === 'assignment-due-date');
+
+  const logUpgradeToShiftDatesLinkClick = () => {
     sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
       ...eventProperties,
       linkCategory: 'personalized_learner_schedules',
@@ -152,17 +155,11 @@ function OutlineTab({ intl }) {
               }}
             />
             )}
-          {courseDateBlocks && (
-            <DatesBannerContainer
-              courseDateBlocks={courseDateBlocks}
-              datesBannerInfo={datesBannerInfo}
-              hasEnded={hasEnded}
-              logUpgradeLinkClick={logUpgradeLinkClick}
-              model="outline"
-              tabFetch={fetchOutlineTab}
-              /** [MM-P2P] Experiment */
-              isMMP2PEnabled={MMP2P.state.isEnabled}
-            />
+          {isSelfPaced && hasDeadlines && !MMP2P.state.isEnabled && (
+            <>
+              <ShiftDatesAlert model="outline" fetch={fetchOutlineTab} />
+              <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
+            </>
           )}
           {!courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
             <CourseGoalCard

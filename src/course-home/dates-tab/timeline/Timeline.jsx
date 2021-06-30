@@ -3,10 +3,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
-import { useModel } from '../../generic/model-store';
+import { useModel } from '../../../generic/model-store';
 
 import Day from './Day';
-import { daycmp, isLearnerAssignment } from './utils';
+import { daycmp, isLearnerAssignment } from '../utils';
 
 /** [MM-P2P] Experiment (argument) */
 export default function Timeline({ mmp2p }) {
@@ -64,7 +64,7 @@ export default function Timeline({ mmp2p }) {
   }
 
   return (
-    <ul className="list-unstyled m-0">
+    <ul className="list-unstyled m-0 mt-4 pt-2">
       {groupedDates.map((groupedDate) => (
         <Day key={groupedDate.date} {...groupedDate} mmp2p={mmp2p} />
       ))}

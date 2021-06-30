@@ -12,10 +12,10 @@ import { Tooltip, OverlayTrigger } from '@edx/paragon';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { useModel } from '../../generic/model-store';
+import { useModel } from '../../../generic/model-store';
 
 import { getBadgeListAndColor } from './badgelist';
-import { isLearnerAssignment } from './utils';
+import { isLearnerAssignment } from '../utils';
 
 function Day({
   date,
@@ -55,18 +55,16 @@ function Day({
 
       {/* Content */}
       <div className="d-inline-block ml-3 pl-2">
-        <div className="mb-1" data-testid="dates-header">
-          <p className="d-inline text-dark-400">
-            <FormattedDate
-              /** [MM-P2P] Experiment */
-              value={mmp2pOverride ? mmp2p.state.upgradeDeadline : date}
-              day="numeric"
-              month="short"
-              weekday="short"
-              year="numeric"
-              {...timezoneFormatArgs}
-            />
-          </p>
+        <div className="row w-100 m-0 mb-1 align-items-center text-primary-700" data-testid="dates-header">
+          <FormattedDate
+            /** [MM-P2P] Experiment */
+            value={mmp2pOverride ? mmp2p.state.upgradeDeadline : date}
+            day="numeric"
+            month="short"
+            weekday="short"
+            year="numeric"
+            {...timezoneFormatArgs}
+          />
           {badges}
         </div>
         {items.map((item) => {
@@ -82,7 +80,7 @@ function Day({
           const textColor = available ? 'text-primary-700' : 'text-gray-500';
 
           return (
-            <div key={item.title + item.date} className={classNames(textColor, 'small')} data-testid="dates-item">
+            <div key={item.title + item.date} className={classNames(textColor, 'small pb-1')} data-testid="dates-item">
               <div>
                 <span className="small">
                   <span className="font-weight-bold">{item.assignmentType && `${item.assignmentType}: `}{title}</span>
