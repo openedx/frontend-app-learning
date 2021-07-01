@@ -116,6 +116,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           id: courseId,
           title: block.display_name,
           sectionIds: block.children || [],
+          hasScheduledContent: block.has_scheduled_content,
         };
         break;
 
@@ -316,6 +317,7 @@ export async function getOutlineTabData(courseId) {
   const datesWidget = camelCaseObject(data.dates_widget);
   const enrollAlert = camelCaseObject(data.enroll_alert);
   const handoutsHtml = data.handouts_html;
+  const hasScheduledContent = data.has_scheduled_content;
   const hasEnded = data.has_ended;
   const offer = camelCaseObject(data.offer);
   const resumeCourse = camelCaseObject(data.resume_course);
@@ -334,6 +336,7 @@ export async function getOutlineTabData(courseId) {
     datesWidget,
     enrollAlert,
     handoutsHtml,
+    hasScheduledContent,
     hasEnded,
     offer,
     resumeCourse,
