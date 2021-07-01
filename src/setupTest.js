@@ -171,7 +171,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
 
   if (!options.excludeFetchSequence) {
     await Promise.all(sequenceBlocks
-      .map(block => executeThunk(fetchSequence(block.id), store.dispatch)));
+      .map(block => executeThunk(fetchSequence(courseMetadata.id, block.id), store.dispatch)));
   }
 
   return store;

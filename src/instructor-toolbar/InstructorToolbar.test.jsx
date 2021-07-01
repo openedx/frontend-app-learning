@@ -20,7 +20,7 @@ describe('Instructor Toolbar', () => {
   let masqueradeUrl;
 
   beforeAll(async () => {
-    const store = await initializeTestStore({ excludeFetchSequence: true });
+    const store = await initializeTestStore();
     const { courseware, models } = store.getState();
     mockData = {
       courseId: courseware.courseId,

@@ -36,7 +36,7 @@ Factory.define('sequenceMetadata')
     prereq_section_name: `${sequenceBlock.display_name}-prereq`,
     gated_section_name: sequenceBlock.display_name,
   }))
-  .attr('items', ['unitBlocks', 'sequenceBlock'], (unitBlocks, sequenceBlock) => unitBlocks.map(
+  .attr('items', ['unitBlocks', 'sequenceBlock', 'item_id'], (unitBlocks, sequenceBlock, itemId) => unitBlocks.map(
     unitBlock => ({
       href: '',
       graded: unitBlock.graded,
@@ -48,6 +48,7 @@ Factory.define('sequenceMetadata')
       content: '',
       page_title: unitBlock.display_name,
       contains_content_type_gated_content: unitBlock.contains_content_type_gated_content,
+      sequenceId: itemId,
     }),
   ))
   .attrs({
@@ -74,12 +75,12 @@ export default function buildSimpleCourseAndSequenceMetadata(options = {}) {
   });
   const courseId = courseMetadata.id;
   const simpleCourseBlocks = buildSimpleCourseBlocks(courseId, courseMetadata.name, options);
-  const { unitBlocks, sequenceBlocks } = simpleCourseBlocks;
+  const { sequenceBlocks } = simpleCourseBlocks;
   const sequenceMetadata = options.sequenceMetadata || sequenceBlocks.map(block => Factory.build(
     'sequenceMetadata',
     {},
     {
-      courseId, unitBlocks, sequenceBlock: block,
+      courseId, sequenceBlock: block,
     },
   ));
   return {

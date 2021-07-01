@@ -26,11 +26,11 @@ describe('Data layer integration tests', () => {
   // building minimum set of api responses to test all thunks
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
-  const { courseBlocks, unitBlocks, sequenceBlocks } = buildSimpleCourseBlocks(courseId);
+  const { courseBlocks, sequenceBlocks } = buildSimpleCourseBlocks(courseId);
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
     {},
-    { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
+    { courseId, sequenceBlock: sequenceBlocks[0] },
   );
   const emptyOutline = buildEmptyOutline(courseId);
   const simpleOutline = buildSimpleOutline(courseId, sequenceBlocks);
@@ -40,7 +40,7 @@ describe('Data layer integration tests', () => {
 
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
   const sequenceId = sequenceBlocks[0].id;
-  const unitId = unitBlocks[0].id;
+  const unitId = sequenceMetadata.items[0].id;
 
   let store;
 
@@ -159,7 +159,7 @@ describe('Data layer integration tests', () => {
     it('Should result in fetch failure if error occurs', async () => {
       axiosMock.onGet(sequenceUrl).networkError();
 
-      await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
+      await executeThunk(thunks.fetchSequence(courseId, sequenceId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().courseware.sequenceStatus).toEqual('failed');
@@ -175,7 +175,7 @@ describe('Data layer integration tests', () => {
       };
       axiosMock.onGet(sequenceUrl).reply(200, sectionMetadata);
 
-      await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
+      await executeThunk(thunks.fetchSequence(courseId, sequenceId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().courseware.sequenceStatus).toEqual('failed');
@@ -199,12 +199,7 @@ describe('Data layer integration tests', () => {
           activeUnitIndex: expect.any(Number),
         }),
       });
-      expect(state.models.units).toEqual({
-        [unitId]: expect.not.objectContaining({
-          complete: null,
-          bookmarked: expect.any(Boolean),
-        }),
-      });
+      expect(state.models).not.toHaveProperty('units');
 
       // Update our state variable again.
       state = store.getState();
@@ -214,7 +209,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
 
-      await executeThunk(thunks.fetchSequence(sequenceId), store.dispatch);
+      await executeThunk(thunks.fetchSequence(courseId, sequenceId), store.dispatch);
 
       // Update our state variable again.
       state = store.getState();
@@ -245,7 +240,7 @@ describe('Data layer integration tests', () => {
       // thunks tested in this block rely on fact, that store already has
       // some info about sequence
       axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
-      await executeThunk(thunks.fetchSequence(sequenceMetadata.item_id), store.dispatch);
+      await executeThunk(thunks.fetchSequence(courseId, sequenceMetadata.item_id), store.dispatch);
     });
 
     describe('Test checkBlockCompletion', () => {
