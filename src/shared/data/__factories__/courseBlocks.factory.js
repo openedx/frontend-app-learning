@@ -124,7 +124,12 @@ export function buildMinimalCourseBlocks(courseId, title, options = {}) {
   )];
   const courseBlock = options.courseBlock || Factory.build(
     'block',
-    { type: 'course', display_name: title, children: sectionBlocks.map(block => block.id) },
+    {
+      type: 'course',
+      display_name: title,
+      has_scheduled_content: options.hasScheduledContent || false,
+      children: sectionBlocks.map(block => block.id),
+    },
     { courseId },
   );
   return {
