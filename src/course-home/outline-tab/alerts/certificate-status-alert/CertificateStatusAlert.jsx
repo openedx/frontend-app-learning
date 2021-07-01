@@ -111,14 +111,14 @@ function CertificateStatusAlert({ intl, payload }) {
         buttonMessage,
       }) => (
         <Alert variant={variant}>
-          <div className="row justify-content-between align-items-center">
+          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-center">
             <div className={buttonVisible ? 'col-lg-8' : 'col-auto'}>
               <FontAwesomeIcon icon={icon} className={iconClassName} />
               <Alert.Heading>{header}</Alert.Heading>
               {body}
             </div>
             {buttonVisible && (
-              <div className="m-auto m-lg-0 pr-lg-3">
+              <div className="flex-grow-0 pt-3 pt-lg-0">
                 <Button
                   variant="primary"
                   href={buttonLink}
