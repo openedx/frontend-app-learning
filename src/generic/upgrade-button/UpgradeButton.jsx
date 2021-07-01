@@ -24,6 +24,8 @@ function UpgradeButton(props) {
       href={url}
       onClick={onClick}
       {...rest}
+      size="lg"
+      block
     >
       <FormattedMessage
         id="learning.upgradeButton.buttonText"

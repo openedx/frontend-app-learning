@@ -14,8 +14,8 @@ function SidebarNotificationButton({ intl, toggleSidebar, isSidebarVisible }) {
       onClick={() => { toggleSidebar(); }}
       aria-label={intl.formatMessage(messages.openSidebarButton)}
     >
-      {/* REV-2130 TODO: add logic for status "active" if red dot should display */}
-      <NotificationIcon status="active" notificationColor="bg-danger-500" />
+      {/* REV-2297 TODO: add logic for status "active" if red dot should display */}
+      <NotificationIcon status="inactive" notificationColor="bg-danger-500" />
     </button>
   );
 }
