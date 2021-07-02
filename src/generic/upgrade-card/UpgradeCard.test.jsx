@@ -1,7 +1,7 @@
 import React from 'react';
 import { Factory } from 'rosie';
 
-import { initializeMockApp, render, screen } from '../../../setupTest';
+import { initializeMockApp, render, screen } from '../../setupTest';
 import UpgradeCard from './UpgradeCard';
 
 initializeMockApp();
