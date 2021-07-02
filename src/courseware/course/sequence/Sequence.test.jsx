@@ -134,6 +134,7 @@ describe('Sequence', () => {
     const testData = {
       ...mockData,
       sidebarVisible: true,
+      isValuePropCookieSet: true,
     };
 
     render(<Sequence {...testData} />);

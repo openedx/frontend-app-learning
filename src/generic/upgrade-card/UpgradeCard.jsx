@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -267,6 +268,7 @@ function UpgradeCard({
   timeOffsetMillis,
   userTimezone,
   verifiedMode,
+  shouldDisplayBorder,
 }) {
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
   const correctedTime = new Date(Date.now() + timeOffsetMillis);
@@ -393,7 +395,7 @@ function UpgradeCard({
   }
 
   return (
-    <section className="mb-4 card upgrade-card small">
+    <section className={classNames('upgrade-card small', { 'card mb-4': shouldDisplayBorder })}>
       <h2 className="h5 upgrade-card-header" id="outline-sidebar-upgrade-header">
         {upgradeCardHeaderText}
       </h2>
@@ -431,6 +433,7 @@ UpgradeCard.propTypes = {
     price: PropTypes.number.isRequired,
     upgradeUrl: PropTypes.string.isRequired,
   }),
+  shouldDisplayBorder: PropTypes.bool,
 };
 
 UpgradeCard.defaultProps = {
@@ -440,6 +443,7 @@ UpgradeCard.defaultProps = {
   timeOffsetMillis: 0,
   userTimezone: null,
   verifiedMode: null,
+  shouldDisplayBorder: null,
 };
 
 export default injectIntl(UpgradeCard);
