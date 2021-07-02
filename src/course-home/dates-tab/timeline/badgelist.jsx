@@ -2,10 +2,10 @@ import React from 'react';
 import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
+import { Badge } from '@edx/paragon';
 
-import Badge from './Badge';
-import messages from './messages';
-import { daycmp, isLearnerAssignment } from './utils';
+import messages from '../messages';
+import { daycmp, isLearnerAssignment } from '../utils';
 
 function hasAccess(item) {
   return item.learnerHasAccess;
@@ -38,14 +38,14 @@ function getBadgeListAndColor(date, intl, item, items) {
       message: messages.today,
       shownForDay: isToday,
       bg: 'bg-warning-300',
-      className: 'text-gray-900',
+      className: 'text-black',
     },
     {
       message: messages.completed,
       shownForDay: assignments.length && assignments.every(isComplete),
       shownForItem: x => isLearnerAssignment(x) && isComplete(x),
-      bg: 'bg-dark-100',
-      className: 'text-gray-900',
+      bg: 'bg-light-500',
+      className: 'text-black',
     },
     {
       message: messages.pastDue,
@@ -72,12 +72,11 @@ function getBadgeListAndColor(date, intl, item, items) {
       shownForDay: items.length && items.every(x => !hasAccess(x)),
       shownForItem: x => !hasAccess(x),
       icon: faLock,
-      bg: 'bg-dark-500',
+      bg: 'bg-dark-700',
       className: 'text-white',
     },
   ];
   let color = null; // first color of any badge
-  const marginTopStyle = item ? { marginTop: 0 } : { marginTop: '2px' };
   const badges = (
     <>
       {badgesInfo.map(b => {
@@ -97,7 +96,7 @@ function getBadgeListAndColor(date, intl, item, items) {
           color = b.bg;
         }
         return (
-          <Badge key={b.message.id} style={marginTopStyle} className={classNames(b.bg, b.className)}>
+          <Badge key={b.message.id} className={classNames('ml-2', b.bg, b.className)} data-testid="dates-badge">
             {b.icon && <FontAwesomeIcon icon={b.icon} className="mr-1" />}
             {intl.formatMessage(b.message)}
           </Badge>

@@ -160,9 +160,9 @@ describe('Outline Tab', () => {
     });
   });
 
-  describe('Dates Banner', () => {
+  describe('Suggested schedule alerts', () => {
     beforeEach(() => {
-      setMetadata({ is_enrolled: true });
+      setMetadata({ is_enrolled: true, is_self_paced: true });
       setTabData({
         dates_banner_info: {
           content_type_gating_enabled: true,
@@ -185,15 +185,15 @@ describe('Outline Tab', () => {
       });
     });
 
-    it('renders upgradeToReset', async () => {
+    it('renders UpgradeToShiftDatesAlert', async () => {
       await fetchAndRender();
 
-      expect(screen.getByText('You are auditing this course,')).toBeInTheDocument();
-      expect(screen.getByText('which means that you are unable to participate in graded assignments. It looks like you missed some important deadlines based on our suggested schedule. To complete graded assignments as part of this course and shift the past due assignments into the future, you can upgrade today.')).toBeInTheDocument();
+      expect(screen.getByText('It looks like you missed some important deadlines based on our suggested schedule.')).toBeInTheDocument();
+      expect(screen.getByText('To keep yourself on track, you can update this schedule and shift the past due assignments into the future. Don’t worry—you won’t lose any of the progress you’ve made when you shift your due dates.')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Upgrade to shift due dates' })).toBeInTheDocument();
     });
 
-    it('sends analytics event onClick of upgrade button in banner', async () => {
+    it('sends analytics event onClick of upgrade button in UpgradeToShiftDatesAlert', async () => {
       await fetchAndRender();
       sendTrackEvent.mockClear();
 

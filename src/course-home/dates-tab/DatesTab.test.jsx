@@ -37,6 +37,19 @@ describe('DatesTab', () => {
     </AppProvider>
   );
 
+  const datesTabData = Factory.build('datesTabData');
+  let courseMetadata = Factory.build('courseHomeMetadata');
+  const { id: courseId } = courseMetadata;
+
+  const datesUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`;
+  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
+
+  function setMetadata(attributes, options) {
+    courseMetadata = Factory.build('courseHomeMetadata', { id: courseId, ...attributes }, options);
+    axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+  }
+
   // The dates tab is largely repetitive non-interactive static data. Thus it's a little tough to follow
   // testing-library's advice around testing the way your user uses the site (i.e. can't find form elements by label or
   // anything). Instead, we find elements by printed date (which is what the user sees) and data-testid. Which is
@@ -61,15 +74,9 @@ describe('DatesTab', () => {
 
   describe('when receiving a full set of dates data', () => {
     beforeEach(() => {
-      const datesTabData = Factory.build('datesTabData');
-      const courseMetadata = Factory.build('courseHomeMetadata');
-      const { id: courseId } = courseMetadata;
-      let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
-      courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-
       axiosMock = new MockAdapter(getAuthenticatedHttpClient());
       axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
       history.push(`/course/${courseId}/dates`); // so tab can pull course id from url
 
       render(component);
@@ -133,34 +140,27 @@ describe('DatesTab', () => {
     });
   });
 
-  describe('Dates banner container ', () => {
-    const courseMetadata = Factory.build('courseHomeMetadata', { is_self_paced: true, is_enrolled: true });
-    const { id: courseId } = courseMetadata;
-    const datesTabData = Factory.build('datesTabData');
-
-    let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
-    courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-
+  describe('Suggested schedule messaging', () => {
     beforeEach(() => {
       axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+      setMetadata({ is_self_paced: true, is_enrolled: true });
       history.push(`/course/${courseId}/dates`);
     });
 
-    it('renders datesTabInfoBanner', async () => {
+    it('renders SuggestedScheduleHeader', async () => {
       datesTabData.datesBannerInfo = {
         contentTypeGatingEnabled: false,
         missedDeadlines: false,
         missedGatedContent: false,
       };
 
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
-      await waitFor(() => expect(screen.getByText("We've built a suggested schedule to help you stay on track.")).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText('We’ve built a suggested schedule to help you stay on track. But don’t worry—it’s flexible so you can learn at your own pace.')).toBeInTheDocument());
     });
 
-    it('renders upgradeToCompleteGradedBanner', async () => {
+    it('renders UpgradeToCompleteAlert', async () => {
       datesTabData.datesBannerInfo = {
         contentTypeGatingEnabled: true,
         missedDeadlines: false,
@@ -168,15 +168,14 @@ describe('DatesTab', () => {
         verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
       };
 
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
-      await waitFor(() => expect(screen.getByText('You are auditing this course,')).toBeInTheDocument());
-      expect(screen.getByText('which means that you are unable to participate in graded assignments. To complete graded assignments as part of this course, you can upgrade today.')).toBeInTheDocument();
+      await waitFor(() => expect(screen.getByText('You are auditing this course, which means that you are unable to participate in graded assignments. To complete graded assignments as part of this course, you can upgrade today.')).toBeInTheDocument());
       expect(screen.getByRole('button', { name: 'Upgrade now' })).toBeInTheDocument();
     });
 
-    it('renders upgradeToResetBanner', async () => {
+    it('renders UpgradeToShiftDatesAlert', async () => {
       datesTabData.datesBannerInfo = {
         contentTypeGatingEnabled: true,
         missedDeadlines: true,
@@ -184,15 +183,15 @@ describe('DatesTab', () => {
         verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
       };
 
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
-      await waitFor(() => expect(screen.getByText('You are auditing this course,')).toBeInTheDocument());
-      expect(screen.getByText('which means that you are unable to participate in graded assignments. It looks like you missed some important deadlines based on our suggested schedule. To complete graded assignments as part of this course and shift the past due assignments into the future, you can upgrade today.')).toBeInTheDocument();
+      await waitFor(() => expect(screen.getByText('It looks like you missed some important deadlines based on our suggested schedule.')).toBeInTheDocument());
+      expect(screen.getByText('To keep yourself on track, you can update this schedule and shift the past due assignments into the future. Don’t worry—you won’t lose any of the progress you’ve made when you shift your due dates.')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Upgrade to shift due dates' })).toBeInTheDocument();
     });
 
-    it('renders resetDatesBanner', async () => {
+    it('renders ShiftDatesAlert', async () => {
       datesTabData.datesBannerInfo = {
         contentTypeGatingEnabled: true,
         missedDeadlines: true,
@@ -200,7 +199,7 @@ describe('DatesTab', () => {
         verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
       };
 
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
       await waitFor(() => expect(screen.getByText('It looks like you missed some important deadlines based on our suggested schedule.')).toBeInTheDocument());
@@ -216,7 +215,7 @@ describe('DatesTab', () => {
         verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
       };
 
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
       // confirm "Shift due dates" button has rendered
@@ -244,7 +243,7 @@ describe('DatesTab', () => {
       expect(screen.queryByRole('button', { name: 'Shift due dates' })).not.toBeInTheDocument();
     });
 
-    it('sends analytics event onClick of upgrade button in upgradeToCompleteGradedBanner', async () => {
+    it('sends analytics event onClick of upgrade button in UpgradeToCompleteAlert', async () => {
       sendTrackEvent.mockClear();
       datesTabData.datesBannerInfo = {
         contentTypeGatingEnabled: true,
@@ -253,7 +252,7 @@ describe('DatesTab', () => {
         verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
       };
 
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
       const upgradeButton = await waitFor(() => screen.getByRole('button', { name: 'Upgrade now' }));
@@ -270,7 +269,7 @@ describe('DatesTab', () => {
       });
     });
 
-    it('sends analytics event onClick of upgrade button in upgradeToResetBanner', async () => {
+    it('sends analytics event onClick of upgrade button in UpgradeToShiftDatesAlert', async () => {
       sendTrackEvent.mockClear();
       datesTabData.datesBannerInfo = {
         contentTypeGatingEnabled: true,
@@ -279,7 +278,7 @@ describe('DatesTab', () => {
         verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
       };
 
-      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`).reply(200, datesTabData);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
       const upgradeButton = await waitFor(() => screen.getByRole('button', { name: 'Upgrade to shift due dates' }));

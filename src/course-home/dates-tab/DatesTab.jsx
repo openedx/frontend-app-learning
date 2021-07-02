@@ -4,14 +4,17 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
-import Timeline from './Timeline';
-import DatesBannerContainer from '../dates-banner/DatesBannerContainer';
+import Timeline from './timeline/Timeline';
 
 import { fetchDatesTab } from '../data';
 import { useModel } from '../../generic/model-store';
 
 /** [MM-P2P] Experiment */
 import { initDatesMMP2P } from '../../experiments/mm-p2p';
+import SuggestedScheduleHeader from '../suggested-schedule-messaging/SuggestedScheduleHeader';
+import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
+import UpgradeToCompleteAlert from '../suggested-schedule-messaging/UpgradeToCompleteAlert';
+import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
 
 function DatesTab({ intl }) {
   const {
@@ -19,17 +22,18 @@ function DatesTab({ intl }) {
   } = useSelector(state => state.courseHome);
 
   const {
+    isSelfPaced,
     org,
   } = useModel('courseHomeMeta', courseId);
 
   const {
     courseDateBlocks,
-    datesBannerInfo,
-    hasEnded,
   } = useModel('dates', courseId);
 
   /** [MM-P2P] Experiment */
   const mmp2p = initDatesMMP2P(courseId);
+
+  const hasDeadlines = courseDateBlocks && courseDateBlocks.some(x => x.dateType === 'assignment-due-date');
 
   const logUpgradeLinkClick = () => {
     sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
@@ -48,16 +52,14 @@ function DatesTab({ intl }) {
         {intl.formatMessage(messages.title)}
       </div>
       { /** [MM-P2P] Experiment */ }
-      { !mmp2p.state.isEnabled && (
-        <DatesBannerContainer
-          courseDateBlocks={courseDateBlocks}
-          datesBannerInfo={datesBannerInfo}
-          hasEnded={hasEnded}
-          logUpgradeLinkClick={logUpgradeLinkClick}
-          model="dates"
-          tabFetch={fetchDatesTab}
-        />
-      ) }
+      {isSelfPaced && hasDeadlines && !mmp2p.state.isEnabled && (
+        <>
+          <ShiftDatesAlert model="dates" fetch={fetchDatesTab} />
+          <SuggestedScheduleHeader />
+          <UpgradeToCompleteAlert logUpgradeLinkClick={logUpgradeLinkClick} />
+          <UpgradeToShiftDatesAlert logUpgradeLinkClick={logUpgradeLinkClick} model="dates" />
+        </>
+      )}
       <Timeline mmp2p={mmp2p} />
     </>
   );
