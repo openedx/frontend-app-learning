@@ -28,7 +28,7 @@ describe('Sequence', () => {
       unitNavigationHandler: () => {},
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},
-      sidebarVisible: false,
+      notificationTrayVisible: false,
     };
   });
 
@@ -130,10 +130,10 @@ describe('Sequence', () => {
     expect(screen.getAllByRole('button', { name: /previous|next/i }).length).toEqual(4);
   });
 
-  it('renders sidebar in sequence', async () => {
+  it('renders notification tray in sequence', async () => {
     const testData = {
       ...mockData,
-      sidebarVisible: true,
+      notificationTrayVisible: true,
       isValuePropCookieSet: true,
     };
 

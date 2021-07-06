@@ -9,10 +9,10 @@ import { ArrowBackIos, Close } from '@edx/paragon/icons';
 import messages from './messages';
 import { useModel } from '../../generic/model-store';
 import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
-import UpgradeCard from '../../generic/upgrade-card/UpgradeCard';
+import UpgradeNotification from '../../generic/upgrade-notification/UpgradeNotification';
 
-function Sidebar({
-  intl, toggleSidebar,
+function NotificationTray({
+  intl, toggleNotificationTray,
 }) {
   const {
     courseId,
@@ -33,23 +33,23 @@ function Sidebar({
   const shouldDisplayFullScreen = useWindowSize().width < responsiveBreakpoints.large.minWidth;
 
   return (
-    <section className={classNames('sidebar-container ml-0 ml-lg-4', { 'no-notification': !verifiedMode && !shouldDisplayFullScreen })} aria-label={intl.formatMessage(messages.sidebarNotification)}>
+    <section className={classNames('notification-tray-container ml-0 ml-lg-4', { 'no-notification': !verifiedMode && !shouldDisplayFullScreen })} aria-label={intl.formatMessage(messages.notificationTray)}>
       {shouldDisplayFullScreen ? (
-        <div className="mobile-close-container" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.responsiveCloseSidebar)}>
+        <div className="mobile-close-container" onClick={() => { toggleNotificationTray(); }} onKeyDown={() => { toggleNotificationTray(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.responsiveCloseNotificationTray)}>
           <Icon src={ArrowBackIos} />
-          <span className="mobile-close">{intl.formatMessage(messages.responsiveCloseSidebar)}</span>
+          <span className="mobile-close">{intl.formatMessage(messages.responsiveCloseNotificationTray)}</span>
         </div>
       ) : null}
-      <div className="sidebar-header px-3">
+      <div className="notification-tray-header px-3">
         <span>{intl.formatMessage(messages.notificationTitle)}</span>
         {shouldDisplayFullScreen
           ? null
-          : <Icon src={Close} className="close-btn" onClick={() => { toggleSidebar(); }} onKeyDown={() => { toggleSidebar(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeSidebarButton)} />}
+          : <Icon src={Close} className="close-btn" onClick={() => { toggleNotificationTray(); }} onKeyDown={() => { toggleNotificationTray(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeNotificationTrigger)} />}
       </div>
-      <div className="sidebar-divider" />
+      <div className="notification-tray-divider" />
       <div>{verifiedMode
         ? (
-          <UpgradeCard
+          <UpgradeNotification
             offer={offer}
             verifiedMode={verifiedMode}
             accessExpiration={accessExpiration}
@@ -60,19 +60,19 @@ function Sidebar({
             org={org}
             shouldDisplayBorder={false}
           />
-        ) : <p className="sidebar-content">{intl.formatMessage(messages.noNotificationsMessage)}</p>}
+        ) : <p className="notification-tray-content">{intl.formatMessage(messages.noNotificationsMessage)}</p>}
       </div>
     </section>
   );
 }
 
-Sidebar.propTypes = {
+NotificationTray.propTypes = {
   intl: intlShape.isRequired,
-  toggleSidebar: PropTypes.func,
+  toggleNotificationTray: PropTypes.func,
 };
 
-Sidebar.defaultProps = {
-  toggleSidebar: null,
+NotificationTray.defaultProps = {
+  toggleNotificationTray: null,
 };
 
-export default injectIntl(Sidebar);
+export default injectIntl(NotificationTray);

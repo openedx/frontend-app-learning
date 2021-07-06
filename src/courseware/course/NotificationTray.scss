@@ -1,4 +1,4 @@
-.sidebar-container {
+.notification-tray-container {
     border: 1px solid $light-400;
     border-radius: 4px;
     width: 31rem;
@@ -23,7 +23,7 @@
     height: 15rem;
 }
 
-.sidebar-header {
+.notification-tray-header {
     padding: 0.625rem 0;
 
     span {
@@ -35,7 +35,7 @@
     float: right;
 }
 
-.sidebar-divider {
+.notification-tray-divider {
     width: 100.5%;
     height: 0.5rem;
     background: $gray-100;
@@ -43,7 +43,7 @@
     border-left: 0;
 }
 
-.sidebar-content {
+.notification-tray-content {
     padding: 1rem;
     font-size: 0.875rem;
 }
