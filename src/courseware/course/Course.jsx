@@ -68,7 +68,7 @@ function Course({
 
   const shouldDisplayNotificationTrigger = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
 
-  const [notificationTrayVisible, setNotificationTray] = useState(true);
+  const [notificationTrayVisible, setNotificationTray] = verifiedMode ? useState(true) : useState(false);
   const isNotificationTrayVisible = () => notificationTrayVisible && setNotificationTray;
   const toggleNotificationTray = () => {
     if (notificationTrayVisible) { setNotificationTray(false); } else { setNotificationTray(true); }
