@@ -1,6 +1,5 @@
 import React from 'react';
 import { Factory } from 'rosie';
-import Cookies from 'js-cookie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   loadUnit, render, screen, waitFor, getByRole, initializeTestStore, fireEvent,
@@ -91,12 +90,6 @@ describe('Course', () => {
     const toggleNotificationTray = jest.fn();
     const isNotificationTrayVisible = jest.fn();
 
-    // REV-2297 TODO: remove cookie related code once temporary value prop cookie code is removed.
-    const cookieName = 'value_prop_cookie';
-    Cookies.set = jest.fn();
-    Cookies.get = jest.fn().mockImplementation(() => cookieName);
-    const getSpy = jest.spyOn(Cookies, 'get').mockReturnValueOnce('true');
-
     const courseMetadata = Factory.build('courseMetadata');
     const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
     const testData = {
@@ -108,7 +101,6 @@ describe('Course', () => {
 
     const notificationOpenButton = screen.getByRole('button', { name: /Show notification tray/i });
 
-    expect(getSpy).toBeCalledWith(cookieName);
     expect(notificationOpenButton).toBeInTheDocument();
   });
 

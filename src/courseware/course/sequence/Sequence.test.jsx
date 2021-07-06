@@ -134,7 +134,6 @@ describe('Sequence', () => {
     const testData = {
       ...mockData,
       notificationTrayVisible: true,
-      isValuePropCookieSet: true,
     };
 
     render(<Sequence {...testData} />);
