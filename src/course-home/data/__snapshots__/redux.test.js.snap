@@ -380,7 +380,6 @@ Object {
             "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
               "effortActivities": undefined,
               "effortTime": undefined,
-              "hasScheduledContent": false,
               "id": "course-v1:edX+DemoX+Demo_Course_1",
               "sectionIds": Array [
                 "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
@@ -449,7 +448,6 @@ Object {
         },
         "handoutsHtml": "<ul><li>Handout 1</li></ul>",
         "hasEnded": undefined,
-        "hasScheduledContent": null,
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "offer": null,
         "resumeCourse": Object {
