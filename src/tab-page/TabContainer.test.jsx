@@ -5,7 +5,7 @@ import { initializeTestStore, render, screen } from '../setupTest';
 import { TabContainer } from './index';
 
 const mockDispatch = jest.fn();
-const mockFetch = jest.fn().mockImplementation((x) => x);
+
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
@@ -13,15 +13,18 @@ jest.mock('react-redux', () => ({
 jest.mock('./TabPage', () => () => <div data-testid="TabPage" />);
 
 describe('Tab Container', () => {
-  const mockData = {
-    children: [],
-    fetch: mockFetch,
-    tab: 'dummy',
-    slice: 'courseware',
-  };
   let courseId;
+  let mockFetch;
+  let mockData;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    mockFetch = jest.fn().mockImplementation((x) => x);
+    mockData = {
+      children: [],
+      fetch: mockFetch,
+      tab: 'dummy',
+      slice: 'courseware',
+    };
     const store = await initializeTestStore({ excludeFetchSequence: true });
     courseId = store.getState().courseware.courseId;
   });
@@ -40,6 +43,28 @@ describe('Tab Container', () => {
     expect(mockDispatch)
       .toHaveBeenCalledTimes(1)
       .toHaveBeenCalledWith(courseId);
+    expect(screen.getByTestId('TabPage')).toBeInTheDocument();
+  });
+
+  it('Should handle passing in a targetUserId', () => {
+    const targetUserId = '1';
+    history.push(`/course/${courseId}/progress/${targetUserId}/`);
+
+    render(
+      <Route
+        path="/course/:courseId/progress/:targetUserId/"
+        render={({ match }) => (
+          <TabContainer
+            fetch={() => mockFetch(match.params.courseId, match.params.targetUserId)}
+            slice="courseHome"
+          />
+        )}
+      />,
+    );
+
+    expect(mockFetch)
+      .toHaveBeenCalledTimes(1)
+      .toHaveBeenCalledWith(courseId, targetUserId);
     expect(screen.getByTestId('TabPage')).toBeInTheDocument();
   });
 });

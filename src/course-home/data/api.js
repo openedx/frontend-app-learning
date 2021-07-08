@@ -211,8 +211,15 @@ export async function getDatesTabData(courseId) {
   }
 }
 
-export async function getProgressTabData(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
+export async function getProgressTabData(courseId, targetUserId) {
+  let url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
+
+  // If targetUserId is passed in, we will get the progress page data
+  // for the user with the provided id, rather than the requesting user.
+  if (targetUserId) {
+    url += `/${targetUserId}/`;
+  }
+
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     const camelCasedData = camelCaseObject(data);

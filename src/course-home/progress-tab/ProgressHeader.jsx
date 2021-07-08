@@ -12,16 +12,23 @@ import messages from './messages';
 function ProgressHeader({ intl }) {
   const {
     courseId,
+    targetUserId,
   } = useSelector(state => state.courseHome);
 
-  const { administrator } = getAuthenticatedUser();
+  const { administrator, userId } = getAuthenticatedUser();
 
-  const { studioUrl } = useModel('progress', courseId);
+  const { studioUrl, username } = useModel('progress', courseId);
+
+  const viewingOtherStudentsProgressPage = (targetUserId && targetUserId !== userId);
+
+  const pageTitle = viewingOtherStudentsProgressPage
+    ? intl.formatMessage(messages.progressHeaderForTargetUser, { username })
+    : intl.formatMessage(messages.progressHeader);
 
   return (
     <>
       <div className="row w-100 m-0 mt-3 mb-4 justify-content-between">
-        <h1>{intl.formatMessage(messages.progressHeader)}</h1>
+        <h1>{pageTitle}</h1>
         {administrator && studioUrl && (
           <Button variant="outline-primary" size="sm" className="align-self-center" href={studioUrl}>
             {intl.formatMessage(messages.studioLink)}

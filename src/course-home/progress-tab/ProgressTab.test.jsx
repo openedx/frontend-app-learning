@@ -22,7 +22,7 @@ describe('Progress Tab', () => {
   const courseId = 'course-v1:edX+Test+run';
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-  const progressUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
+  const progressUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/*`);
 
   const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
@@ -1032,6 +1032,18 @@ describe('Progress Tab', () => {
     it('Does not display the certificate component if the user is not enrolled', async () => {
       await fetchAndRender();
       expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Viewing progress page of other students by changing url', () => {
+    it('Changing the url changes the header', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({ username: 'otherstudent' });
+
+      await executeThunk(thunks.fetchProgressTab(courseId, 10), store.dispatch);
+      await act(async () => render(<ProgressTab />, { store }));
+
+      expect(screen.getByText('Course progress for otherstudent')).toBeInTheDocument();
     });
   });
 });

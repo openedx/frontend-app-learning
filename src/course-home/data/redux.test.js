@@ -115,6 +115,20 @@ describe('Data layer integration tests', () => {
       expect(state.courseHome.courseStatus).toEqual('loaded');
       expect(state).toMatchSnapshot();
     });
+
+    it('Should handle the url including a targetUserId', async () => {
+      const progressTabData = Factory.build('progressTabData', { courseId });
+      const targetUserId = 2;
+      const progressUrl = `${progressBaseUrl}/${courseId}/${targetUserId}/`;
+
+      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
+      axiosMock.onGet(progressUrl).reply(200, progressTabData);
+
+      await executeThunk(thunks.fetchProgressTab(courseId, 2), store.dispatch);
+
+      const state = store.getState();
+      expect(state.courseHome.targetUserId).toEqual(2);
+    });
   });
 
   describe('Test saveCourseGoal', () => {
