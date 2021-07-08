@@ -22,12 +22,24 @@ function CourseGradeHeader({ intl }) {
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
 
+  const eventProperties = {
+    org_key: org,
+    courserun_key: courseId,
+  };
+
   const { administrator } = getAuthenticatedUser();
   const logUpgradeButtonClick = () => {
     sendTrackEvent('edx.ui.lms.course_progress.grades_upgrade.clicked', {
       org_key: org,
       courserun_key: courseId,
       is_staff: administrator,
+    });
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      ...eventProperties,
+      linkCategory: '(none)',
+      linkName: 'progress_locked',
+      linkType: 'button',
+      pageName: 'progress',
     });
   };
   let previewText;
