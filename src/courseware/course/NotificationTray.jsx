@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Icon } from '@edx/paragon';
+import { Icon, IconButton } from '@edx/paragon';
 import { ArrowBackIos, Close } from '@edx/paragon/icons';
 
 import messages from './messages';
@@ -40,11 +40,15 @@ function NotificationTray({
           <span className="mobile-close">{intl.formatMessage(messages.responsiveCloseNotificationTray)}</span>
         </div>
       ) : null}
-      <div className="notification-tray-header px-3">
-        <span>{intl.formatMessage(messages.notificationTitle)}</span>
+      <div>
+        <span className="notification-tray-title">{intl.formatMessage(messages.notificationTitle)}</span>
         {shouldDisplayFullScreen
           ? null
-          : <Icon src={Close} className="close-btn" onClick={() => { toggleNotificationTray(); }} onKeyDown={() => { toggleNotificationTray(); }} role="button" tabIndex="0" alt={intl.formatMessage(messages.closeNotificationTrigger)} />}
+          : (
+            <div className="d-inline-flex close-btn">
+              <IconButton src={Close} size="sm" iconAs={Icon} onClick={() => { toggleNotificationTray(); }} variant="primary" alt={intl.formatMessage(messages.closeNotificationTrigger)} />
+            </div>
+          )}
       </div>
       <div className="notification-tray-divider" />
       <div>{verifiedMode
