@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -36,16 +36,6 @@ function CourseTools({ courseId, intl }) {
       is_staff: administrator,
       tool_name: analyticsId,
     });
-
-    if (analyticsId === 'edx.tool.verified_upgrade') {
-      sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
-        ...eventProperties,
-        linkCategory: '(none)',
-        linkName: 'course_home_course_tools',
-        linkType: 'link',
-        pageName: 'course_home',
-      });
-    }
   };
 
   const renderIcon = (iconClasses) => {

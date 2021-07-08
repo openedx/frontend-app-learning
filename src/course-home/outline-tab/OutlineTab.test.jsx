@@ -437,35 +437,6 @@ describe('Outline Tab', () => {
       await fetchAndRender();
       expect(screen.queryByRole('heading', { name: 'Course Tools' })).not.toBeInTheDocument();
     });
-
-    it('analytics sent when upgrade link clicked', async () => {
-      await fetchAndRender();
-      expect(screen.getByRole('heading', { name: 'Course Tools' })).toBeInTheDocument();
-      sendTrackEvent.mockClear();
-      sendTrackingLogEvent.mockClear();
-
-      const upgradeLink = screen.getByRole('link', { name: 'Upgrade to Verified' });
-      fireEvent.click(upgradeLink);
-
-      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
-        org_key: 'edX',
-        courserun_key: courseId,
-        linkCategory: '(none)',
-        linkName: 'course_home_course_tools',
-        linkType: 'link',
-        pageName: 'course_home',
-      });
-
-      expect(sendTrackingLogEvent).toHaveBeenCalledTimes(1);
-      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.course.tool.accessed', {
-        org_key: 'edX',
-        courserun_key: courseId,
-        course_id: courseId,
-        is_staff: false,
-        tool_name: 'edx.tool.verified_upgrade',
-      });
-    });
   });
 
   describe('Alert List', () => {
