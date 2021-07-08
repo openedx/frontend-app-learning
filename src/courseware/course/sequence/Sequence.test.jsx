@@ -6,8 +6,11 @@ import {
 } from '../../../setupTest';
 import Sequence from './Sequence';
 import { fetchSequenceFailure } from '../../data/slice';
+import useWindowSize from '../../../generic/tabs/useWindowSize';
 
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('../../../generic/tabs/useWindowSize');
+useWindowSize.mockReturnValue({ width: 1200 });
 
 describe('Sequence', () => {
   let mockData;
@@ -28,7 +31,6 @@ describe('Sequence', () => {
       unitNavigationHandler: () => {},
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},
-      notificationTrayVisible: false,
     };
   });
 
@@ -128,16 +130,6 @@ describe('Sequence', () => {
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
     // At this point there will be 2 `Previous` and 2 `Next` buttons.
     expect(screen.getAllByRole('button', { name: /previous|next/i }).length).toEqual(4);
-  });
-
-  it('renders notification tray in sequence', async () => {
-    const testData = {
-      ...mockData,
-      notificationTrayVisible: true,
-    };
-
-    render(<Sequence {...testData} />);
-    expect(await screen.findByText('Notifications')).toBeInTheDocument();
   });
 
   describe('sequence and unit navigation buttons', () => {
@@ -385,6 +377,24 @@ describe('Sequence', () => {
         tab_count: unitBlocks.length,
         widget_placement: 'top',
       });
+    });
+  });
+
+  describe('notification feature', () => {
+    it('renders notification tray in sequence', async () => {
+      const testData = {
+        ...mockData,
+        notificationTrayVisible: true,
+      };
+      render(<Sequence {...testData} />);
+      expect(await screen.findByText('Notifications')).toBeInTheDocument();
+    });
+
+    it('does not render notification tray in sequence by default if in responsive view', async () => {
+      useWindowSize.mockReturnValue({ width: 991 });
+      const { container } = render(<Sequence {...mockData} />);
+      // unable to test the absence of 'Notifications' by finding it by text, using the class of the tray instead:
+      expect(container).not.toHaveClass('notification-tray-container');
     });
   });
 });

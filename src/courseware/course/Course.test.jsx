@@ -7,8 +7,11 @@ import {
 import Course from './Course';
 import { handleNextSectionCelebration } from './celebration';
 import * as celebrationUtils from './celebration/utils';
+import useWindowSize from '../../generic/tabs/useWindowSize';
 
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('../../generic/tabs/useWindowSize');
+useWindowSize.mockReturnValue({ width: 1200 });
 
 const recordFirstSectionCelebration = jest.fn();
 celebrationUtils.recordFirstSectionCelebration = recordFirstSectionCelebration;
@@ -19,7 +22,6 @@ describe('Course', () => {
     nextSequenceHandler: () => {},
     previousSequenceHandler: () => {},
     unitNavigationHandler: () => {},
-    toggleNotificationTray: () => {},
   };
 
   beforeAll(async () => {
@@ -86,22 +88,16 @@ describe('Course', () => {
     expect(screen.getByRole('button', { name: 'Learn About Verified Certificates' })).toBeInTheDocument();
   });
 
-  it('displays notification trigger', async () => {
-    const toggleNotificationTray = jest.fn();
-    const isNotificationTrayVisible = jest.fn();
+  it('displays notification trigger and toggles active class on click', async () => {
+    useWindowSize.mockReturnValue({ width: 1200 });
+    render(<Course {...mockData} />);
 
-    const courseMetadata = Factory.build('courseMetadata');
-    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
-    const testData = {
-      ...mockData,
-      toggleNotificationTray,
-      isNotificationTrayVisible,
-    };
-    render(<Course {...testData} courseId={courseMetadata.id} />, { store: testStore });
+    const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
 
-    const notificationOpenButton = screen.getByRole('button', { name: /Show notification tray/i });
-
-    expect(notificationOpenButton).toBeInTheDocument();
+    expect(notificationTrigger).toBeInTheDocument();
+    expect(notificationTrigger).toHaveClass('active');
+    fireEvent.click(notificationTrigger);
+    expect(notificationTrigger).not.toHaveClass('active');
   });
 
   it('displays offer and expiration alert', async () => {
