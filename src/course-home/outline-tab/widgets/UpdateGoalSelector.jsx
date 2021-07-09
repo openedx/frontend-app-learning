@@ -13,7 +13,6 @@ function UpdateGoalSelector({
   intl,
   selectedGoal,
   setGoalToDisplay,
-  setGoalToastHeader,
 }) {
   function selectGoalHandler(event) {
     const key = event.currentTarget.id;
@@ -24,14 +23,7 @@ function UpdateGoalSelector({
     };
 
     setGoalToDisplay(newGoal);
-    saveCourseGoal(courseId, key).then((response) => {
-      const { data } = response;
-      const {
-        header,
-      } = data;
-
-      setGoalToastHeader(header);
-    });
+    saveCourseGoal(courseId, key);
   }
 
   return (
@@ -79,7 +71,6 @@ UpdateGoalSelector.propTypes = {
     text: PropTypes.string,
   }).isRequired,
   setGoalToDisplay: PropTypes.func.isRequired,
-  setGoalToastHeader: PropTypes.func.isRequired,
 };
 
 export default injectIntl(UpdateGoalSelector);

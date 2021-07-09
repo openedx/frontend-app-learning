@@ -3,15 +3,13 @@ import { useSelector } from 'react-redux';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-import { Button, Toast } from '@edx/paragon';
+import { Button } from '@edx/paragon';
 import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
-import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
 import CourseTools from './widgets/CourseTools';
 import { fetchOutlineTab } from '../data';
-import genericMessages from '../../generic/messages';
 import messages from './messages';
 import Section from './Section';
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
@@ -69,7 +67,6 @@ function OutlineTab({ intl }) {
   } = useModel('outline', courseId);
 
   const [courseGoalToDisplay, setCourseGoalToDisplay] = useState(selectedGoal);
-  const [goalToastHeader, setGoalToastHeader] = useState('');
   const [expandAll, setExpandAll] = useState(false);
 
   const eventProperties = {
@@ -112,13 +109,6 @@ function OutlineTab({ intl }) {
 
   return (
     <>
-      <Toast
-        closeLabel={intl.formatMessage(genericMessages.close)}
-        onClose={() => setGoalToastHeader('')}
-        show={!!(goalToastHeader)}
-      >
-        {goalToastHeader}
-      </Toast>
       <div className="row w-100 mx-0 my-3 justify-content-between">
         <div className="col-12 col-sm-auto p-0">
           <div role="heading" aria-level="1" className="h2">{title}</div>
@@ -164,15 +154,6 @@ function OutlineTab({ intl }) {
               <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
             </>
           )}
-          {!courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
-            <CourseGoalCard
-              courseId={courseId}
-              goalOptions={goalOptions}
-              title={title}
-              setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
-              setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
-            />
-          )}
           <WelcomeMessage courseId={courseId} />
           {rootCourseId && (
             <>
@@ -203,13 +184,12 @@ function OutlineTab({ intl }) {
               courseId={courseId}
               username={username}
             />
-            {courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
+            {false && goalOptions && goalOptions.length > 0 && (
               <UpdateGoalSelector
                 courseId={courseId}
                 goalOptions={goalOptions}
                 selectedGoal={courseGoalToDisplay}
                 setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
-                setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
               />
             )}
             <CourseTools

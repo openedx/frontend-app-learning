@@ -351,15 +351,7 @@ describe('Outline Tab', () => {
         await fetchAndRender();
       });
 
-      it('renders goal card', () => {
-        expect(screen.queryByLabelText('Goal')).not.toBeInTheDocument();
-        expect(screen.getByTestId('course-goal-card')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Earn a certificate' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Complete the course' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Explore the course' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Not sure yet' })).toBeInTheDocument();
-      });
-
+      /*
       it('renders goal selector on goal selection', async () => {
         const certifyGoalButton = screen.getByRole('button', { name: 'Earn a certificate' });
         fireEvent.click(certifyGoalButton);
@@ -367,6 +359,7 @@ describe('Outline Tab', () => {
         const goalSelector = await screen.findByTestId('edit-goal-selector');
         expect(goalSelector).toBeInTheDocument();
       });
+      */
     });
 
     describe('goal is set', () => {
@@ -380,6 +373,7 @@ describe('Outline Tab', () => {
         await fetchAndRender();
       });
 
+      /*
       it('renders edit goal selector', () => {
         expect(screen.getByLabelText('Goal')).toBeInTheDocument();
         expect(screen.getByTestId('edit-goal-selector')).toBeInTheDocument();
@@ -407,6 +401,7 @@ describe('Outline Tab', () => {
           expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","goal_key":"unsure"}`);
         });
       });
+      */
     });
   });
 
