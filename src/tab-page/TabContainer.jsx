@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { OuterExamTimer } from '@edx/frontend-lib-special-exams';
 
 import TabPage from './TabPage';
 
@@ -34,6 +35,7 @@ export default function TabContainer(props) {
       courseStatus={courseStatus}
       metadataModel={`${slice}Meta`}
     >
+      {courseId && <OuterExamTimer courseId={courseId} />}
       {children}
     </TabPage>
   );
