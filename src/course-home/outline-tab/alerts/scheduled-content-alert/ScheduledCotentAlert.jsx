@@ -25,11 +25,12 @@ function ScheduledContentAlert({ payload }) {
         </div>
         <div className="flex-grow-0 pt-3 pt-lg-0">
           {datesTabLink && (
-            <Button>
+            <Button
+              href={datesTabLink}
+            >
               <FormattedMessage
                 id="learning.outline.alert.scheduled-content.button"
                 defaultMessage="View Course Schedule"
-                href={datesTabLink}
               />
             </Button>
           )}
