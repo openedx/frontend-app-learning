@@ -14,10 +14,10 @@ import messages from '../messages';
 function GradeRangeTooltip({ intl, iconButtonClassName, passingGrade }) {
   const {
     courseId,
-    gradesFeatureIsLocked,
   } = useSelector(state => state.courseHome);
 
   const {
+    gradesFeatureIsLocked,
     gradingPolicy: {
       gradeRange,
     },

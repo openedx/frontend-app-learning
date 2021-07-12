@@ -245,6 +245,8 @@ export async function getProgressTabData(courseId, targetUserId) {
     // in order to preserve a course team's desired grade formatting.
     camelCasedData.gradingPolicy.gradeRange = data.grading_policy.grade_range;
 
+    camelCasedData.gradesFeatureIsLocked = camelCasedData.completionSummary.lockedCount > 0;
+
     return camelCasedData;
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;

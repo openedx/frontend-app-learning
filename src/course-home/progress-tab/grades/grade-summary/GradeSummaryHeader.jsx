@@ -8,11 +8,15 @@ import {
 import { InfoOutline } from '@edx/paragon/icons';
 
 import messages from '../messages';
+import { useModel } from '../../../../generic/model-store';
 
 function GradeSummaryHeader({ intl }) {
   const {
-    gradesFeatureIsLocked,
+    courseId,
   } = useSelector(state => state.courseHome);
+  const {
+    gradesFeatureIsLocked,
+  } = useModel('progress', courseId);
   const [showTooltip, setShowTooltip] = useState(false);
   return (
     <div className="row w-100 m-0 align-items-center">

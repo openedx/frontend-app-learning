@@ -16,12 +16,12 @@ function DetailedGrades({ intl }) {
   const { administrator } = getAuthenticatedUser();
   const {
     courseId,
-    gradesFeatureIsLocked,
   } = useSelector(state => state.courseHome);
   const {
     org,
   } = useModel('courseHomeMeta', courseId);
   const {
+    gradesFeatureIsLocked,
     sectionScores,
   } = useModel('progress', courseId);
 
@@ -50,7 +50,7 @@ function DetailedGrades({ intl }) {
     <section className="text-dark-700">
       <h3 className="h4 mb-3">{intl.formatMessage(messages.detailedGrades)}</h3>
       {hasSectionScores && (
-        <DetailedGradesTable sectionScores={sectionScores} />
+        <DetailedGradesTable />
       )}
       {!hasSectionScores && (
         <p className="small">{intl.formatMessage(messages.detailedGradesEmpty)}</p>

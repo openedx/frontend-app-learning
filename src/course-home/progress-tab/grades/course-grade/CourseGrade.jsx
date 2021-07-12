@@ -13,10 +13,10 @@ import messages from '../messages';
 function CourseGrade({ intl }) {
   const {
     courseId,
-    gradesFeatureIsLocked,
   } = useSelector(state => state.courseHome);
 
   const {
+    gradesFeatureIsLocked,
     gradingPolicy: {
       gradeRange,
     },

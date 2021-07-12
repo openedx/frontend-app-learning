@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { layoutGenerator } from 'react-break';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import CertificateStatus from './certificate-status/CertificateStatus';
 import CourseCompletion from './course-completion/CourseCompletion';
@@ -10,7 +10,6 @@ import GradeSummary from './grades/grade-summary/GradeSummary';
 import ProgressHeader from './ProgressHeader';
 import RelatedLinks from './related-links/RelatedLinks';
 
-import { setGradesFeatureStatus } from '../data/slice';
 import { useModel } from '../../generic/model-store';
 
 function ProgressTab() {
@@ -19,18 +18,10 @@ function ProgressTab() {
   } = useSelector(state => state.courseHome);
 
   const {
-    completionSummary: {
-      lockedCount,
-    },
+    gradesFeatureIsLocked,
   } = useModel('progress', courseId);
 
-  const gradesFeatureIsLocked = lockedCount > 0;
   const applyLockedOverlay = gradesFeatureIsLocked ? 'locked-overlay' : '';
-
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(setGradesFeatureStatus({ gradesFeatureIsLocked }));
-  }, []);
 
   const layout = layoutGenerator({
     mobile: 0,

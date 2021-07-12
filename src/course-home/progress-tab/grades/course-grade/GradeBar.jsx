@@ -12,7 +12,6 @@ import messages from '../messages';
 function GradeBar({ intl, passingGrade }) {
   const {
     courseId,
-    gradesFeatureIsLocked,
   } = useSelector(state => state.courseHome);
 
   const {
@@ -20,6 +19,7 @@ function GradeBar({ intl, passingGrade }) {
       isPassing,
       visiblePercent,
     },
+    gradesFeatureIsLocked,
   } = useModel('progress', courseId);
 
   const currentGrade = Number((visiblePercent * 100).toFixed(0));

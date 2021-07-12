@@ -1,11 +1,15 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useModel } from '../../../../generic/model-store';
 
 function AssignmentTypeCell({ assignmentType, footnoteMarker, footnoteId }) {
   const {
-    gradesFeatureIsLocked,
+    courseId,
   } = useSelector(state => state.courseHome);
+  const {
+    gradesFeatureIsLocked,
+  } = useModel('progress', courseId);
   return (
     <div className="small">
       {assignmentType}

@@ -103,6 +103,14 @@ const messages = defineMessages({
     id: 'progress.courseGrade.label.passingGrade',
     defaultMessage: 'Passing grade',
   },
+  problemScoreLabel: {
+    id: 'progress.detailedGrades.problemScore.label',
+    defaultMessage: 'Problem Scores:',
+  },
+  problemScoreToggleAltText: {
+    id: 'progress.detailedGrades.problemScore.toggleButton',
+    defaultMessage: 'Toggle individual problem scores for {subsectionTitle}',
+  },
   score: {
     id: 'progress.score',
     defaultMessage: 'Score',
