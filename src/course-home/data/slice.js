@@ -22,6 +22,7 @@ const slice = createSlice({
     },
     fetchTabSuccess: (state, { payload }) => {
       state.courseId = payload.courseId;
+      state.targetUserId = payload.targetUserId;
       state.courseStatus = LOADED;
     },
     fetchTabFailure: (state, { payload }) => {

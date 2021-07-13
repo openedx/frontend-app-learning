@@ -1,6 +1,6 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
 
-Factory.define('upgradeCardData')
+Factory.define('upgradeNotificationData')
   .option('host', 'http://localhost:18000')
   .option('dateBlocks', [])
   .option('offer', null)

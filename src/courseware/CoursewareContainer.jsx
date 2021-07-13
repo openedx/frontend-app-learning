@@ -59,9 +59,11 @@ const checkUnitToSequenceUnitRedirect = memoize((courseStatus, courseId, sequenc
   }
 });
 
-const checkSpecialExamRedirect = memoize((sequenceStatus, sequence) => {
+const checkSpecialExamRedirect = memoize((sequenceStatus, sequence, specialExamsEnabled, proctoredExamsEnabled) => {
   if (sequenceStatus === 'loaded') {
-    if (sequence.isTimeLimited && sequence.legacyWebUrl !== undefined) {
+    const shouldRedirectTimeLimited = sequence.isTimeLimited && !specialExamsEnabled;
+    const shouldRedirectProctored = sequence.isProctored && !proctoredExamsEnabled;
+    if ((shouldRedirectTimeLimited || shouldRedirectProctored) && sequence.legacyWebUrl !== undefined) {
       global.location.assign(sequence.legacyWebUrl);
     }
   }
@@ -181,11 +183,7 @@ class CoursewareContainer extends Component {
     // Check special exam redirect:
     //    /course/:courseId/:sequenceId(/:unitId) -> :legacyWebUrl
     // because special exams are currently still served in the legacy LMS frontend.
-    const shouldRedirectProctoredExams = specialExamsEnabledWaffleFlag && sequence.isProctored
-      && !proctoredExamsEnabledWaffleFlag;
-    if (!specialExamsEnabledWaffleFlag || shouldRedirectProctoredExams) {
-      checkSpecialExamRedirect(sequenceStatus, sequence);
-    }
+    checkSpecialExamRedirect(sequenceStatus, sequence, specialExamsEnabledWaffleFlag, proctoredExamsEnabledWaffleFlag);
 
     // Check to sequence to sequence-unit redirect:
     //    /course/:courseId/:sequenceId -> /course/:courseId/:sequenceId/:unitId

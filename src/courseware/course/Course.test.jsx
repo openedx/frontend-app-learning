@@ -20,7 +20,7 @@ describe('Course', () => {
     nextSequenceHandler: () => {},
     previousSequenceHandler: () => {},
     unitNavigationHandler: () => {},
-    toggleSidebar: () => {},
+    toggleNotificationTray: () => {},
   };
 
   beforeAll(async () => {
@@ -87,9 +87,9 @@ describe('Course', () => {
     expect(screen.getByRole('button', { name: 'Learn About Verified Certificates' })).toBeInTheDocument();
   });
 
-  it('displays sidebar notification button', async () => {
-    const toggleSidebar = jest.fn();
-    const isSidebarVisible = jest.fn();
+  it('displays notification trigger', async () => {
+    const toggleNotificationTray = jest.fn();
+    const isNotificationTrayVisible = jest.fn();
 
     // REV-2297 TODO: remove cookie related code once temporary value prop cookie code is removed.
     const cookieName = 'value_prop_cookie';
@@ -101,15 +101,15 @@ describe('Course', () => {
     const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
     const testData = {
       ...mockData,
-      toggleSidebar,
-      isSidebarVisible,
+      toggleNotificationTray,
+      isNotificationTrayVisible,
     };
     render(<Course {...testData} courseId={courseMetadata.id} />, { store: testStore });
 
-    const sidebarOpenButton = screen.getByRole('button', { name: /Show sidebar notification/i });
+    const notificationOpenButton = screen.getByRole('button', { name: /Show notification tray/i });
 
     expect(getSpy).toBeCalledWith(cookieName);
-    expect(sidebarOpenButton).toBeInTheDocument();
+    expect(notificationOpenButton).toBeInTheDocument();
   });
 
   it('displays offer and expiration alert', async () => {

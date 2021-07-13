@@ -16,13 +16,14 @@ import messages from './messages';
 import Section from './Section';
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpdateGoalSelector from './widgets/UpdateGoalSelector';
-import UpgradeCard from '../../generic/upgrade-card/UpgradeCard';
+import UpgradeNotification from '../../generic/upgrade-notification/UpgradeNotification';
 import { useAccessExpirationAlertMasquerade } from '../../alerts/access-expiration-alert';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
 import useCertificateAvailableAlert from './alerts/certificate-status-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from './alerts/course-start-alert';
 import usePrivateCourseAlert from './alerts/private-course-alert';
+import useScheduledContentAlert from './alerts/scheduled-content-alert';
 import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
@@ -90,6 +91,7 @@ function OutlineTab({ intl }) {
   const courseEndAlert = useCourseEndAlert(courseId);
   const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
   const privateCourseAlert = usePrivateCourseAlert(courseId);
+  const scheduledContentAlert = useScheduledContentAlert(courseId);
 
   const rootCourseId = courses && Object.keys(courses)[0];
 
@@ -152,6 +154,7 @@ function OutlineTab({ intl }) {
                 ...certificateAvailableAlert,
                 ...courseEndAlert,
                 ...courseStartAlert,
+                ...scheduledContentAlert,
               }}
             />
             )}
@@ -216,7 +219,7 @@ function OutlineTab({ intl }) {
             { MMP2P.state.isEnabled
               ? <MMP2PFlyover isStatic options={MMP2P} />
               : (
-                <UpgradeCard
+                <UpgradeNotification
                   offer={offer}
                   verifiedMode={verifiedMode}
                   accessExpiration={accessExpiration}

@@ -116,6 +116,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           id: courseId,
           title: block.display_name,
           sectionIds: block.children || [],
+          hasScheduledContent: block.has_scheduled_content,
         };
         break;
 
@@ -211,8 +212,15 @@ export async function getDatesTabData(courseId) {
   }
 }
 
-export async function getProgressTabData(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
+export async function getProgressTabData(courseId, targetUserId) {
+  let url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
+
+  // If targetUserId is passed in, we will get the progress page data
+  // for the user with the provided id, rather than the requesting user.
+  if (targetUserId) {
+    url += `/${targetUserId}/`;
+  }
+
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     const camelCasedData = camelCaseObject(data);
@@ -316,6 +324,7 @@ export async function getOutlineTabData(courseId) {
   const datesWidget = camelCaseObject(data.dates_widget);
   const enrollAlert = camelCaseObject(data.enroll_alert);
   const handoutsHtml = data.handouts_html;
+  const hasScheduledContent = data.has_scheduled_content;
   const hasEnded = data.has_ended;
   const offer = camelCaseObject(data.offer);
   const resumeCourse = camelCaseObject(data.resume_course);
@@ -334,6 +343,7 @@ export async function getOutlineTabData(courseId) {
     datesWidget,
     enrollAlert,
     handoutsHtml,
+    hasScheduledContent,
     hasEnded,
     offer,
     resumeCourse,

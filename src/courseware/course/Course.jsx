@@ -14,7 +14,7 @@ import Sequence from './sequence';
 import { CelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
 import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-import SidebarNotificationButton from './SidebarNotificationButton';
+import NotificationTrigger from './NotificationTrigger';
 
 import CourseSock from '../../generic/course-sock';
 import { useModel } from '../../generic/model-store';
@@ -66,12 +66,12 @@ function Course({
   // the browser console and refresh: document.cookie = 'value_prop_cookie=true';
   const isValuePropCookieSet = Cookies.get('value_prop_cookie') === 'true';
 
-  const shouldDisplaySidebarButton = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
+  const shouldDisplayNotificationTrigger = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
 
-  const [sidebarVisible, setSidebar] = useState(true);
-  const isSidebarVisible = () => sidebarVisible && setSidebar;
-  const toggleSidebar = () => {
-    if (sidebarVisible) { setSidebar(false); } else { setSidebar(true); }
+  const [notificationTrayVisible, setNotificationTray] = verifiedMode ? useState(true) : useState(false);
+  const isNotificationTrayVisible = () => notificationTrayVisible && setNotificationTray;
+  const toggleNotificationTray = () => {
+    if (notificationTrayVisible) { setNotificationTray(false); } else { setNotificationTray(true); }
   };
 
   /** [MM-P2P] Experiment */
@@ -102,10 +102,10 @@ function Course({
           mmp2p={MMP2P}
         />
 
-        { isValuePropCookieSet && shouldDisplaySidebarButton ? (
-          <SidebarNotificationButton
-            toggleSidebar={toggleSidebar}
-            isSidebarVisible={isSidebarVisible}
+        { isValuePropCookieSet && shouldDisplayNotificationTrigger ? (
+          <NotificationTrigger
+            toggleNotificationTray={toggleNotificationTray}
+            isNotificationTrayVisible={isNotificationTrayVisible}
           />
         ) : null}
       </div>
@@ -118,9 +118,9 @@ function Course({
         unitNavigationHandler={unitNavigationHandler}
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
-        toggleSidebar={toggleSidebar}
-        isSidebarVisible={isSidebarVisible}
-        sidebarVisible={sidebarVisible}
+        toggleNotificationTray={toggleNotificationTray}
+        isNotificationTrayVisible={isNotificationTrayVisible}
+        notificationTrayVisible={notificationTrayVisible}
         isValuePropCookieSet={isValuePropCookieSet}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}

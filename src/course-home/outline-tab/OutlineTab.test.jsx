@@ -694,6 +694,47 @@ describe('Outline Tab', () => {
         expect(screen.queryByText('Verify your identity to earn a certificate!')).toBeInTheDocument();
       });
     });
+
+    describe('Scheduled Content Alert', () => {
+      it('appears correctly', async () => {
+        const now = new Date();
+        const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { hasScheduledContent: true });
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({
+          course_blocks: { blocks: courseBlocks.blocks },
+          date_blocks: [
+            {
+              date_type: 'course-end-date',
+              date: tomorrow.toISOString(),
+              title: 'End',
+            },
+          ],
+        });
+        await fetchAndRender();
+        expect(screen.queryByText('More content is coming soon!')).toBeInTheDocument();
+      });
+    });
+    describe('Scheduled Content Alert not present without courseBlocks', () => {
+      it('appears correctly', async () => {
+        const now = new Date();
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({
+          course_blocks: null,
+          date_blocks: [
+            {
+              date_type: 'course-end-date',
+              date: tomorrow.toISOString(),
+              title: 'End',
+            },
+          ],
+        });
+        await fetchAndRender();
+        expect(screen.getByRole('link', { name: 'Start Course' })).toBeInTheDocument();
+        expect(screen.queryByText('More content is coming soon!')).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe('Certificate (web) Complete Alert', () => {
@@ -719,6 +760,33 @@ describe('Outline Tab', () => {
       });
       await fetchAndRender();
       expect(screen.queryByText('Congratulations! Your certificate is ready.')).toBeInTheDocument();
+    });
+  });
+
+  describe('Requesting Certificate Alert', () => {
+    it('appears', async () => {
+      const now = new Date();
+      const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        cert_data: {
+          cert_status: CERT_STATUS_TYPE.REQUESTING,
+          cert_web_view_url: null,
+          certificate_available_date: null,
+          download_url: null,
+        },
+      }, {
+        date_blocks: [
+          {
+            date_type: 'course-end-date',
+            date: yesterday.toISOString(),
+            title: 'End',
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.queryByText('Congratulations! Your certificate is ready.')).toBeInTheDocument();
+      expect(screen.queryByText('Request certificate')).toBeInTheDocument();
     });
   });
 

@@ -3,29 +3,28 @@ import React, { useMemo } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { useAlert } from '../../../../generic/user-messages';
 import { useModel } from '../../../../generic/model-store';
+
 import { CERT_STATUS_TYPE } from './CertificateStatusAlert';
 
 const CertificateStatusAlert = React.lazy(() => import('./CertificateStatusAlert'));
 
 function verifyCertStatusType(status) {
-  // This method will only return cert statuses when we want to alert on them.
-  // It should be modified when we want to alert on a new status type.
-  if (status === CERT_STATUS_TYPE.DOWNLOADABLE) {
-    return CERT_STATUS_TYPE.DOWNLOADABLE;
+  switch (status) {
+    case CERT_STATUS_TYPE.DOWNLOADABLE:
+    case CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE:
+    case CERT_STATUS_TYPE.REQUESTING:
+    case CERT_STATUS_TYPE.UNVERIFIED:
+      return true;
+    default:
+      return false;
   }
-  if (status === CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE) {
-    return CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE;
-  }
-  if (status === CERT_STATUS_TYPE.UNVERIFIED) {
-    return CERT_STATUS_TYPE.UNVERIFIED;
-  }
-  return '';
 }
 
 function useCertificateStatusAlert(courseId) {
   const {
     isEnrolled,
   } = useModel('courseHomeMeta', courseId);
+
   const {
     datesWidget: {
       courseDateBlocks,
@@ -41,7 +40,6 @@ function useCertificateStatusAlert(courseId) {
     downloadUrl,
   } = certData || {};
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
-  const certStatusType = verifyCertStatusType(certStatus);
   const isWebCert = downloadUrl === null;
 
   let certURL = '';
@@ -51,14 +49,15 @@ function useCertificateStatusAlert(courseId) {
     // PDF Certificate
     certURL = downloadUrl;
   }
-  const hasCertStatus = certStatusType !== '';
+  const hasAlertingCertStatus = verifyCertStatusType(certStatus);
 
   // Only show if there is a known cert status that we want provide status on.
-  const isVisible = isEnrolled && hasCertStatus;
+  const isVisible = isEnrolled && hasAlertingCertStatus;
   const payload = {
     certificateAvailableDate,
     certURL,
-    certStatusType,
+    certStatus,
+    courseId,
     courseEndDate: endBlock && endBlock.date,
     userTimezone,
     isWebCert,

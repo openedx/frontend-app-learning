@@ -7,23 +7,29 @@ import {
   intlShape,
 } from '@edx/frontend-platform/i18n';
 import { Alert, Button } from '@edx/paragon';
+import { useDispatch } from 'react-redux';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { getConfig } from '@edx/frontend-platform';
 import certMessages from './messages';
 import certStatusMessages from '../../../progress-tab/certificate-status/messages';
+import { requestCert } from '../../../data/thunks';
 
 export const CERT_STATUS_TYPE = {
   EARNED_NOT_AVAILABLE: 'earned_but_not_available',
   DOWNLOADABLE: 'downloadable',
+  REQUESTING: 'requesting',
   UNVERIFIED: 'unverified',
 };
 
 function CertificateStatusAlert({ intl, payload }) {
+  const dispatch = useDispatch();
   const {
     certificateAvailableDate,
-    certStatusType,
+    certStatus,
     courseEndDate,
+    courseId,
     certURL,
     isWebCert,
     userTimezone,
@@ -38,7 +44,7 @@ function CertificateStatusAlert({ intl, payload }) {
       icon: faCheckCircle,
       iconClassName: 'alert-icon text-success-500',
     };
-    if (certStatusType === CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE) {
+    if (certStatus === CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE) {
       const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
       const certificateAvailableDateFormatted = <FormattedDate value={certificateAvailableDate} day="numeric" month="long" year="numeric" />;
       const courseEndDateFormatted = <FormattedDate value={courseEndDate} day="numeric" month="long" year="numeric" />;
@@ -57,7 +63,7 @@ function CertificateStatusAlert({ intl, payload }) {
           />
         </p>
       );
-    } else if (certStatusType === CERT_STATUS_TYPE.DOWNLOADABLE) {
+    } else if (certStatus === CERT_STATUS_TYPE.DOWNLOADABLE) {
       alertProps.header = intl.formatMessage(certMessages.certStatusDownloadableHeader);
       if (isWebCert) {
         alertProps.buttonMessage = intl.formatMessage(certStatusMessages.viewableButton);
@@ -66,6 +72,12 @@ function CertificateStatusAlert({ intl, payload }) {
       }
       alertProps.buttonVisible = true;
       alertProps.buttonLink = certURL;
+    } else if (certStatus === CERT_STATUS_TYPE.REQUESTING) {
+      alertProps.header = intl.formatMessage(certMessages.certStatusDownloadableHeader);
+      alertProps.buttonMessage = intl.formatMessage(certStatusMessages.requestableButton);
+      alertProps.buttonVisible = true;
+      alertProps.buttonLink = '';
+      alertProps.buttonAction = () => { dispatch(requestCert(courseId)); };
     }
     return alertProps;
   };
@@ -86,9 +98,10 @@ function CertificateStatusAlert({ intl, payload }) {
   };
 
   let alertProps = {};
-  switch (certStatusType) {
+  switch (certStatus) {
     case CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE:
     case CERT_STATUS_TYPE.DOWNLOADABLE:
+    case CERT_STATUS_TYPE.REQUESTING:
       alertProps = renderCertAwardedStatus();
       break;
     case CERT_STATUS_TYPE.UNVERIFIED:
@@ -106,22 +119,26 @@ function CertificateStatusAlert({ intl, payload }) {
         iconClassName,
         icon,
         header,
-        buttonLink,
         body,
+        buttonAction,
+        buttonLink,
         buttonMessage,
       }) => (
         <Alert variant={variant}>
-          <div className="row justify-content-between align-items-center">
+          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-center">
             <div className={buttonVisible ? 'col-lg-8' : 'col-auto'}>
               <FontAwesomeIcon icon={icon} className={iconClassName} />
               <Alert.Heading>{header}</Alert.Heading>
               {body}
             </div>
             {buttonVisible && (
-              <div className="m-auto m-lg-0 pr-lg-3">
+              <div className="flex-grow-0 pt-3 pt-lg-0">
                 <Button
                   variant="primary"
                   href={buttonLink}
+                  onClick={() => {
+                    if (buttonAction) { buttonAction(); }
+                  }}
                 >
                   {buttonMessage}
                 </Button>
@@ -139,8 +156,9 @@ CertificateStatusAlert.propTypes = {
   intl: intlShape.isRequired,
   payload: PropTypes.shape({
     certificateAvailableDate: PropTypes.string,
-    certStatusType: PropTypes.string,
+    certStatus: PropTypes.string,
     courseEndDate: PropTypes.string,
+    courseId: PropTypes.string,
     certURL: PropTypes.string,
     isWebCert: PropTypes.bool,
     userTimezone: PropTypes.string,
