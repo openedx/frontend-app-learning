@@ -34,31 +34,31 @@ subscribe(APP_READY, () => {
       <UserMessagesProvider>
         <Switch>
           <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
-          <PageRoute path="/course/:courseId/home">
+          <PageRoute path="/c/:courseId/home">
             <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
               <OutlineTab />
             </TabContainer>
           </PageRoute>
-          <PageRoute path="/course/:courseId/dates">
+          <PageRoute path="/c/:courseId/dates">
             <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
               <DatesTab />
             </TabContainer>
           </PageRoute>
-          <PageRoute path="/course/:courseId/progress">
+          <PageRoute path="/c/:courseId/progress">
             <TabContainer tab="progress" fetch={fetchProgressTab} slice="courseHome">
               <ProgressTab />
             </TabContainer>
           </PageRoute>
-          <PageRoute path="/course/:courseId/course-end">
+          <PageRoute path="/c/:courseId/course-end">
             <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
               <CourseExit />
             </TabContainer>
           </PageRoute>
           <PageRoute
             path={[
-              '/course/:courseId/:sequenceId/:unitId',
-              '/course/:courseId/:sequenceId',
-              '/course/:courseId',
+              '/c/:courseId/:sequenceId/:unitId',
+              '/c/:courseId/:sequenceId',
+              '/c/:courseId',
             ]}
             component={CoursewareContainer}
           />

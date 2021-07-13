@@ -67,7 +67,6 @@ export function normalizeBlocks(courseId, blocks) {
       });
     }
   });
-
   Object.values(models.sections).forEach(section => {
     if (Array.isArray(section.sequenceIds)) {
       section.sequenceIds.forEach(sequenceId => {
@@ -219,6 +218,7 @@ function normalizeSequenceMetadata(sequence) {
       saveUnitPosition: sequence.save_position,
       showCompletion: sequence.show_completion,
       allowProctoringOptOut: sequence.allow_proctoring_opt_out,
+      hash_key: sequence.hash_key,
     },
     units: sequence.items.map(unit => ({
       id: unit.id,
@@ -229,14 +229,13 @@ function normalizeSequenceMetadata(sequence) {
       contentType: unit.type,
       graded: unit.graded,
       containsContentTypeGatedContent: unit.contains_content_type_gated_content,
+      hash_key: unit.hash_key,
     })),
   };
 }
-
 export async function getSequenceMetadata(sequenceId) {
   const { data } = await getAuthenticatedHttpClient()
     .get(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceId}`, {});
-
   return normalizeSequenceMetadata(data);
 }
 

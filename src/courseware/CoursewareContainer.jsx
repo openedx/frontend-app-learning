@@ -25,9 +25,9 @@ const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSe
     getResumeBlock(courseId).then((data) => {
       // This is a replace because we don't want this change saved in the browser's history.
       if (data.sectionId && data.unitId) {
-        history.replace(`/course/${courseId}/${data.sectionId}/${data.unitId}`);
+        history.replace(`/c/${courseId}/${data.sectionId}/${data.unitId}`);
       } else if (firstSequenceId) {
-        history.replace(`/course/${courseId}/${firstSequenceId}`);
+        history.replace(`/c/${courseId}/${firstSequenceId}`);
       }
     });
   }
@@ -35,7 +35,7 @@ const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSe
 
 const checkSectionUnitToUnitRedirect = memoize((courseStatus, courseId, sequenceStatus, section, unitId) => {
   if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && unitId) {
-    history.replace(`/course/${courseId}/${unitId}`);
+    history.replace(`/c/${courseId}/${unitId}`);
   }
 });
 
@@ -43,10 +43,10 @@ const checkSectionToSequenceRedirect = memoize((courseStatus, courseId, sequence
   if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && !unitId) {
     // If the section is non-empty, redirect to its first sequence.
     if (section.sequenceIds && section.sequenceIds[0]) {
-      history.replace(`/course/${courseId}/${section.sequenceIds[0]}`);
+      history.replace(`/c/${courseId}/${section.sequenceIds[0]}`);
     // Otherwise, just go to the course root, letting the resume redirect take care of things.
     } else {
-      history.replace(`/course/${courseId}`);
+      history.replace(`/c/${courseId}`);
     }
   }
 });
@@ -55,7 +55,7 @@ const checkUnitToSequenceUnitRedirect = memoize((courseStatus, courseId, sequenc
   if (courseStatus === 'loaded' && sequenceStatus === 'failed' && unit) {
     // If the sequence failed to load as a sequence, but it *did* load as a unit, then
     // insert the unit's parent sequenceId into the URL.
-    history.replace(`/course/${courseId}/${unit.sequenceId}/${unit.id}`);
+    history.replace(`/c/${courseId}/${unit.sequenceId}/${unit.id}`);
   }
 });
 
@@ -72,7 +72,7 @@ const checkSequenceToSequenceUnitRedirect = memoize((courseId, sequenceStatus, s
     if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
       const nextUnitId = sequence.unitIds[sequence.activeUnitIndex];
       // This is a replace because we don't want this change saved in the browser's history.
-      history.replace(`/course/${courseId}/${sequence.id}/${nextUnitId}`);
+      history.replace(`/c/${courseId}/${sequence.id}/${nextUnitId}`);
     }
   }
 });
@@ -106,13 +106,17 @@ class CoursewareContainer extends Component {
       match: {
         params: {
           courseId: routeCourseId,
-          sequenceId: routeSequenceId,
+          // sequenceId: routeSequenceId,
+          sequenceId: routeSequenceHash,
         },
       },
     } = this.props;
+    // const routeSequenceId = decodeURIComponent(routeSequenceHash.replace(/\+/g, ' '));
+    // console.log(routeSequenceId);
     // Load data whenever the course or sequence ID changes.
     this.checkFetchCourse(routeCourseId);
-    this.checkFetchSequence(routeSequenceId);
+    // this.checkFetchSequence(routeSequenceId);
+    this.checkFetchSequence(routeSequenceHash);
   }
 
   componentDidUpdate() {
@@ -135,7 +139,6 @@ class CoursewareContainer extends Component {
         },
       },
     } = this.props;
-
     // Load data whenever the course or sequence ID changes.
     this.checkFetchCourse(routeCourseId);
     this.checkFetchSequence(routeSequenceId);
@@ -205,7 +208,7 @@ class CoursewareContainer extends Component {
     } = this.props;
 
     this.props.checkBlockCompletion(courseId, sequenceId, routeUnitId);
-    history.push(`/course/${courseId}/${sequenceId}/${nextUnitId}`);
+    history.push(`/c/${courseId}/${sequenceId}/${nextUnitId}`);
   }
 
   handleNextSequenceClick = () => {
@@ -221,10 +224,10 @@ class CoursewareContainer extends Component {
       let nextUnitId = null;
       if (nextSequence.unitIds.length > 0) {
         [nextUnitId] = nextSequence.unitIds;
-        history.push(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
+        history.push(`/c/${courseId}/${nextSequence.id}/${nextUnitId}`);
       } else {
         // Some sequences have no units.  This will show a blank page with prev/next buttons.
-        history.push(`/course/${courseId}/${nextSequence.id}`);
+        history.push(`/c/${courseId}/${nextSequence.id}`);
       }
 
       const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
@@ -239,10 +242,10 @@ class CoursewareContainer extends Component {
     if (previousSequence !== null) {
       if (previousSequence.unitIds.length > 0) {
         const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
-        history.push(`/course/${courseId}/${previousSequence.id}/${previousUnitId}`);
+        history.push(`/c/${courseId}/${previousSequence.id}/${previousUnitId}`);
       } else {
         // Some sequences have no units.  This will show a blank page with prev/next buttons.
-        history.push(`/course/${courseId}/${previousSequence.id}`);
+        history.push(`/c/${courseId}/${previousSequence.id}`);
       }
     }
   }
