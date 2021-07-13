@@ -38,6 +38,8 @@ The fields definition and requirements ar as follows:
 * :sequenceSlug (optional) - `display_name` of the current sequence.
 * :unitSlug (optional) - `display_name` of the current unit
 
+The slugs based on `display_name` are optional because not all blocks have an associated `display_name` attributes, most likely to occur in OLX imports.
+
 ## Consequences
 
 If old URLs are not properly routed then the content and those links will no longer be accessible to the user. The old URLs could include, but not limited to, bookmarks and exams.
