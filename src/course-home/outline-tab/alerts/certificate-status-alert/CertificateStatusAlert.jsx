@@ -12,6 +12,8 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { getConfig } from '@edx/frontend-platform';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import certMessages from './messages';
 import certStatusMessages from '../../../progress-tab/certificate-status/messages';
 import { requestCert } from '../../../data/thunks';
@@ -33,6 +35,7 @@ function CertificateStatusAlert({ intl, payload }) {
     certURL,
     isWebCert,
     userTimezone,
+    org,
   } = payload;
 
   // eslint-disable-next-line react/prop-types
@@ -72,12 +75,29 @@ function CertificateStatusAlert({ intl, payload }) {
       }
       alertProps.buttonVisible = true;
       alertProps.buttonLink = certURL;
+      alertProps.buttonAction = () => {
+        const { administrator } = getAuthenticatedUser();
+        sendTrackEvent('edx.ui.lms.course_outline.downloadable_button.clicked', {
+          org_key: org,
+          courserun_key: courseId,
+          is_staff: administrator,
+        });
+      };
     } else if (certStatus === CERT_STATUS_TYPE.REQUESTING) {
       alertProps.header = intl.formatMessage(certMessages.certStatusDownloadableHeader);
       alertProps.buttonMessage = intl.formatMessage(certStatusMessages.requestableButton);
       alertProps.buttonVisible = true;
       alertProps.buttonLink = '';
-      alertProps.buttonAction = () => { dispatch(requestCert(courseId)); };
+      alertProps.buttonAction = () => {
+        const { administrator } = getAuthenticatedUser();
+        sendTrackEvent('edx.ui.lms.course_outline.request_cert.clicked', {
+          org_key: org,
+          courserun_key: courseId,
+          is_staff: administrator,
+
+        });
+        dispatch(requestCert(courseId));
+      };
     }
     return alertProps;
   };
@@ -92,6 +112,15 @@ function CertificateStatusAlert({ intl, payload }) {
       body: intl.formatMessage(certStatusMessages.unverifiedHomeBody),
       buttonVisible: true,
       buttonLink: getConfig().SUPPORT_URL_ID_VERIFICATION,
+      buttonAction: () => {
+        const { administrator } = getAuthenticatedUser();
+        sendTrackEvent('edx.ui.lms.course_outline.unverified.clicked', {
+          org_key: org,
+          courserun_key: courseId,
+          is_staff: administrator,
+
+        });
+      },
     };
 
     return alertProps;
@@ -162,6 +191,7 @@ CertificateStatusAlert.propTypes = {
     certURL: PropTypes.string,
     isWebCert: PropTypes.bool,
     userTimezone: PropTypes.string,
+    org: PropTypes.string,
   }).isRequired,
 };
 
