@@ -12,7 +12,7 @@ function DroppableAssignmentFootnote({ footnotes, intl }) {
     courseId,
   } = useSelector(state => state.courseHome);
   const {
-    gradesFeatureIsLocked,
+    gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
   return (
     <>
@@ -29,7 +29,7 @@ function DroppableAssignmentFootnote({ footnotes, intl }) {
                 assignmentType: footnote.assignmentType,
               }}
             />
-            <a className="sr-only" href={`#${footnote.id}-ref`} tabIndex={gradesFeatureIsLocked ? '-1' : '0'}>
+            <a className="sr-only" href={`#${footnote.id}-ref`} tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}>
               {intl.formatMessage(messages.backToContent)}
             </a>
           </li>

@@ -5,7 +5,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
   Icon, IconButton, OverlayTrigger, Popover,
 } from '@edx/paragon';
-import { InfoOutline } from '@edx/paragon/icons';
+import { Blocked, InfoOutline } from '@edx/paragon/icons';
 
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
@@ -15,7 +15,8 @@ function GradeSummaryHeader({ intl }) {
     courseId,
   } = useSelector(state => state.courseHome);
   const {
-    gradesFeatureIsLocked,
+    gradesFeatureIsFullyLocked,
+    gradesFeatureIsPartiallyLocked,
   } = useModel('progress', courseId);
   const [showTooltip, setShowTooltip] = useState(false);
   return (
@@ -41,9 +42,15 @@ function GradeSummaryHeader({ intl }) {
           iconAs={Icon}
           className="mb-3"
           size="sm"
-          disabled={gradesFeatureIsLocked}
+          disabled={gradesFeatureIsFullyLocked}
         />
       </OverlayTrigger>
+      {gradesFeatureIsPartiallyLocked && (
+        <div className="mb-3 small row ml-0">
+          <Icon className="mr-1 mt-1" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" />
+          {intl.formatMessage(messages.gradeSummaryLimitedAccessExplanation)}
+        </div>
+      )}
     </div>
   );
 }

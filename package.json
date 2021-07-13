@@ -40,7 +40,7 @@
     "@edx/frontend-enterprise": "4.2.3",
     "@edx/frontend-lib-special-exams": "1.9.0",
     "@edx/frontend-platform": "1.11.0",
-    "@edx/paragon": "15.2.2",
+    "@edx/paragon": "16.2.0",
     "@fortawesome/fontawesome-svg-core": "1.2.34",
     "@fortawesome/free-brands-svg-icons": "5.13.1",
     "@fortawesome/free-regular-svg-icons": "5.13.1",

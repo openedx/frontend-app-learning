@@ -5,7 +5,6 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
-    "gradesFeatureIsLocked": false,
     "targetUserId": undefined,
     "toastBodyLink": null,
     "toastBodyText": null,
@@ -302,7 +301,6 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
-    "gradesFeatureIsLocked": false,
     "targetUserId": undefined,
     "toastBodyLink": null,
     "toastBodyText": null,
@@ -482,7 +480,6 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
-    "gradesFeatureIsLocked": false,
     "targetUserId": undefined,
     "toastBodyLink": null,
     "toastBodyText": null,
@@ -564,7 +561,8 @@ Object {
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "end": "3027-03-31T00:00:00Z",
         "enrollmentMode": "audit",
-        "gradesFeatureIsLocked": false,
+        "gradesFeatureIsFullyLocked": false,
+        "gradesFeatureIsPartiallyLocked": false,
         "gradingPolicy": Object {
           "assignmentPolicies": Array [
             Object {
@@ -591,6 +589,7 @@ Object {
                 "blockKey": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345",
                 "displayName": "First subsection",
                 "hasGradedAssignment": true,
+                "learnerHasAccess": true,
                 "numPointsEarned": 0,
                 "numPointsPossible": 3,
                 "percentGraded": 0,

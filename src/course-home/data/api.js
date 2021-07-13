@@ -245,7 +245,25 @@ export async function getProgressTabData(courseId, targetUserId) {
     // in order to preserve a course team's desired grade formatting.
     camelCasedData.gradingPolicy.gradeRange = data.grading_policy.grade_range;
 
-    camelCasedData.gradesFeatureIsLocked = camelCasedData.completionSummary.lockedCount > 0;
+    camelCasedData.gradesFeatureIsFullyLocked = camelCasedData.completionSummary.lockedCount > 0;
+
+    camelCasedData.gradesFeatureIsPartiallyLocked = false;
+    if (camelCasedData.gradesFeatureIsFullyLocked) {
+      camelCasedData.sectionScores.forEach((chapter) => {
+        chapter.subsections.forEach((subsection) => {
+          // If something is eligible to be gated by content type gating and would show up on the progress page
+          if (subsection.assignmentType !== null && subsection.hasGradedAssignment && subsection.showGrades
+            && (subsection.numPointsPossible > 0 || subsection.numPointsEarned > 0)) {
+            // but the learner still has access to it, then we are in a partially locked, rather than fully locked state
+            // since the learner has access to some (but not all) content that would normally be locked
+            if (subsection.learnerHasAccess) {
+              camelCasedData.gradesFeatureIsPartiallyLocked = true;
+              camelCasedData.gradesFeatureIsFullyLocked = false;
+            }
+          }
+        });
+      });
+    }
 
     return camelCasedData;
   } catch (error) {
