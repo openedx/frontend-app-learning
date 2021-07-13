@@ -27,6 +27,15 @@ The courseware URL will format to the following structure:
 ```
 
 https://learning.edx.org/c/:courseId/:sequenceHash/:unitHash/:sectionSlug/:sequenceSlug/:unitSlug/
+
+```
+
+Example URL:
+
+```
+
+https://learning.edx.org/c/course-v1:edX+DemoX.1+2T2019/YmxvY2/njuRCq/Optional_Example_Problem_Types/STEM_Problems/Code_Grader
+
 ```
 
 The fields definition and requirements ar as follows:
