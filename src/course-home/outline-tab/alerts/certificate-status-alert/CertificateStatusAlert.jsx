@@ -41,6 +41,15 @@ function CertificateStatusAlert({ intl, payload }) {
   // eslint-disable-next-line react/prop-types
   const AlertWrapper = (props) => props.children(props);
 
+  const sendAlertClickTracking = (id) => {
+    const { administrator } = getAuthenticatedUser();
+    sendTrackEvent(id, {
+      org_key: org,
+      courserun_key: courseId,
+      is_staff: administrator,
+    });
+  };
+
   const renderCertAwardedStatus = () => {
     const alertProps = {
       variant: 'success',
@@ -76,12 +85,7 @@ function CertificateStatusAlert({ intl, payload }) {
       alertProps.buttonVisible = true;
       alertProps.buttonLink = certURL;
       alertProps.buttonAction = () => {
-        const { administrator } = getAuthenticatedUser();
-        sendTrackEvent('edx.ui.lms.course_outline.downloadable_button.clicked', {
-          org_key: org,
-          courserun_key: courseId,
-          is_staff: administrator,
-        });
+        sendAlertClickTracking('edx.ui.lms.course_outline.certificate_alert_downloadable_button.clicked');
       };
     } else if (certStatus === CERT_STATUS_TYPE.REQUESTING) {
       alertProps.header = intl.formatMessage(certMessages.certStatusDownloadableHeader);
@@ -89,13 +93,7 @@ function CertificateStatusAlert({ intl, payload }) {
       alertProps.buttonVisible = true;
       alertProps.buttonLink = '';
       alertProps.buttonAction = () => {
-        const { administrator } = getAuthenticatedUser();
-        sendTrackEvent('edx.ui.lms.course_outline.request_cert.clicked', {
-          org_key: org,
-          courserun_key: courseId,
-          is_staff: administrator,
-
-        });
+        sendAlertClickTracking('edx.ui.lms.course_outline.certificate_alert_request_cert_button.clicked');
         dispatch(requestCert(courseId));
       };
     }
@@ -113,13 +111,7 @@ function CertificateStatusAlert({ intl, payload }) {
       buttonVisible: true,
       buttonLink: getConfig().SUPPORT_URL_ID_VERIFICATION,
       buttonAction: () => {
-        const { administrator } = getAuthenticatedUser();
-        sendTrackEvent('edx.ui.lms.course_outline.unverified.clicked', {
-          org_key: org,
-          courserun_key: courseId,
-          is_staff: administrator,
-
-        });
+        sendAlertClickTracking('edx.ui.lms.course_outline.certificate_alert_unverified_button.clicked');
       },
     };
 
