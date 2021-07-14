@@ -23,6 +23,7 @@ function verifyCertStatusType(status) {
 function useCertificateStatusAlert(courseId) {
   const {
     isEnrolled,
+    org,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -61,6 +62,7 @@ function useCertificateStatusAlert(courseId) {
     courseEndDate: endBlock && endBlock.date,
     userTimezone,
     isWebCert,
+    org,
   };
 
   useAlert(isVisible, {
