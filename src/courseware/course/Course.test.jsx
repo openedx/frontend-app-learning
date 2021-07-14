@@ -94,9 +94,9 @@ describe('Course', () => {
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
 
     expect(notificationTrigger).toBeInTheDocument();
-    expect(notificationTrigger).toHaveClass('active');
+    expect(notificationTrigger).toHaveClass('trigger-active');
     fireEvent.click(notificationTrigger);
-    expect(notificationTrigger).not.toHaveClass('active');
+    expect(notificationTrigger).not.toHaveClass('trigger-active');
   });
 
   it('passes handlers to the sequence', async () => {
