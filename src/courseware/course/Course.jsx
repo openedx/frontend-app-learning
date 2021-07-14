@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
-import Cookies from 'js-cookie';
 import { getConfig } from '@edx/frontend-platform';
 
 import { AlertList } from '../../generic/user-messages';
@@ -61,14 +60,12 @@ function Course({
     courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
   );
 
-  // REV-2297 TODO: temporary cookie code that should be removed.
-  // In order to see the Value Prop sidebar in prod, a cookie should be set in
-  // the browser console and refresh: document.cookie = 'value_prop_cookie=true';
-  const isValuePropCookieSet = Cookies.get('value_prop_cookie') === 'true';
-
   const shouldDisplayNotificationTrigger = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
 
-  const [notificationTrayVisible, setNotificationTray] = verifiedMode ? useState(true) : useState(false);
+  const shouldDisplayNotificationTrayOpen = useWindowSize().width > responsiveBreakpoints.medium.minWidth;
+
+  const [notificationTrayVisible, setNotificationTray] = verifiedMode
+    && shouldDisplayNotificationTrayOpen ? useState(true) : useState(false);
   const isNotificationTrayVisible = () => notificationTrayVisible && setNotificationTray;
   const toggleNotificationTray = () => {
     if (notificationTrayVisible) { setNotificationTray(false); } else { setNotificationTray(true); }
@@ -102,7 +99,7 @@ function Course({
           mmp2p={MMP2P}
         />
 
-        { isValuePropCookieSet && shouldDisplayNotificationTrigger ? (
+        { shouldDisplayNotificationTrigger ? (
           <NotificationTrigger
             toggleNotificationTray={toggleNotificationTray}
             isNotificationTrayVisible={isNotificationTrayVisible}
@@ -121,7 +118,6 @@ function Course({
         toggleNotificationTray={toggleNotificationTray}
         isNotificationTrayVisible={isNotificationTrayVisible}
         notificationTrayVisible={notificationTrayVisible}
-        isValuePropCookieSet={isValuePropCookieSet}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />

@@ -13,7 +13,7 @@ const messages = defineMessages({
   },
   closeNotificationTrigger: {
     id: 'notification.close.button',
-    defaultMessage: 'Close sidebar notification',
+    defaultMessage: 'Close notification tray',
     description: 'Button for the learner to close the sidebar',
   },
   responsiveCloseNotificationTray: {
