@@ -14,7 +14,7 @@
     }
 }
 
-.active::after {
+.trigger-active::after {
     content: '';
     position: absolute;
     border-bottom: 2px solid $primary-700;

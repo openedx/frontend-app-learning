@@ -9,7 +9,7 @@ import messages from './messages';
 function NotificationTrigger({ intl, toggleNotificationTray, isNotificationTrayVisible }) {
   return (
     <button
-      className={classNames('notification-trigger-btn', { active: isNotificationTrayVisible() })}
+      className={classNames('notification-trigger-btn', { 'trigger-active': isNotificationTrayVisible() })}
       type="button"
       onClick={() => { toggleNotificationTray(); }}
       aria-label={intl.formatMessage(messages.openNotificationTrigger)}
