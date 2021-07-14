@@ -5,8 +5,6 @@ import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 
 import { AlertList } from '../../generic/user-messages';
-import useAccessExpirationAlert from '../../alerts/access-expiration-alert';
-import useOfferAlert from '../../alerts/offer-alert';
 
 import Sequence from './sequence';
 
@@ -41,19 +39,14 @@ function Course({
   ].filter(element => element != null).map(element => element.title);
 
   const {
-    accessExpiration,
     canShowUpgradeSock,
     celebrations,
     offer,
     org,
-    userTimezone,
     verifiedMode,
   } = course;
 
   // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
-  const offerAlert = useOfferAlert(courseId, offer, org, userTimezone, 'course', 'in_course');
-  const accessExpirationAlert = useAccessExpirationAlert(accessExpiration, courseId, org, userTimezone, 'course', 'in_course');
-
   const dispatch = useDispatch();
   const celebrateFirstSection = celebrations && celebrations.firstSection;
   const celebrationOpen = shouldCelebrateOnSectionLoad(
@@ -79,17 +72,6 @@ function Course({
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
-      { /** This conditional is for the [MM-P2P] Experiment */}
-      { !MMP2P.state.isEnabled && (
-        <AlertList
-          className="my-3"
-          topic="course"
-          customAlerts={{
-            ...accessExpirationAlert,
-            ...offerAlert,
-          }}
-        />
-      )}
       <div className="position-relative">
         <CourseBreadcrumbs
           courseId={courseId}
