@@ -61,10 +61,6 @@ const messages = defineMessages({
     id: 'progress.certificateStatus.notAvailableHeader',
     defaultMessage: 'Certificate status',
   },
-  notAvailableBody: {
-    id: 'progress.certificateStatus.notAvailableBody',
-    defaultMessage: 'Your certificate will be available soon! After this course officially ends on {end_date}, you will receive an email notification with your certificate.',
-  },
   upgradeHeader: {
     id: 'progress.certificateStatus.upgradeHeader',
     defaultMessage: 'Earn a certificate',
