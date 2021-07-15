@@ -591,6 +591,20 @@ describe('Progress Tab', () => {
       });
     });
 
+    it('renders individual problem score drawer', async () => {
+      sendTrackEvent.mockClear();
+      await fetchAndRender();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+
+      const problemScoreDrawerToggle = screen.getByRole('button', { name: 'Toggle individual problem scores for First subsection' });
+      expect(problemScoreDrawerToggle).toBeInTheDocument();
+
+      // Open the problem score drawer
+      fireEvent.click(problemScoreDrawerToggle);
+      expect(screen.getByText('Problem Scores:')).toBeInTheDocument();
+      expect(screen.getAllByText('0/1')).toHaveLength(3);
+    });
+
     it('render message when section scores are not populated', async () => {
       setTabData({
         section_scores: [],

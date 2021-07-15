@@ -564,6 +564,7 @@ Object {
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "end": "3027-03-31T00:00:00Z",
         "enrollmentMode": "audit",
+        "gradesFeatureIsLocked": false,
         "gradingPolicy": Object {
           "assignmentPolicies": Array [
             Object {
@@ -591,8 +592,22 @@ Object {
                 "displayName": "First subsection",
                 "hasGradedAssignment": true,
                 "numPointsEarned": 0,
-                "numPointsPossible": 1,
+                "numPointsPossible": 3,
                 "percentGraded": 0,
+                "problemScores": Array [
+                  Object {
+                    "earned": 0,
+                    "possible": 1,
+                  },
+                  Object {
+                    "earned": 0,
+                    "possible": 1,
+                  },
+                  Object {
+                    "earned": 0,
+                    "possible": 1,
+                  },
+                ],
                 "showCorrectness": "always",
                 "showGrades": true,
                 "url": "http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection",
@@ -609,6 +624,12 @@ Object {
                 "numPointsEarned": 1,
                 "numPointsPossible": 1,
                 "percentGraded": 1,
+                "problemScores": Array [
+                  Object {
+                    "earned": 1,
+                    "possible": 1,
+                  },
+                ],
                 "showCorrectness": "always",
                 "showGrades": true,
                 "url": "http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection",
