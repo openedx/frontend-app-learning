@@ -47,7 +47,7 @@ The fields definition and requirements ar as follows:
 * :sequenceSlug (optional) - `display_name` of the current sequence.
 * :unitSlug (optional) - `display_name` of the current unit
 
-The slugs based on `display_name` are optional because not all blocks have an associated `display_name` attributes, most likely to occur in OLX imports.
+The slugs based on `display_name` are optional because not all blocks have an associated `display_name` attributes, most likely to occur in OLX imports. The `sequenceHash` and `unitHash` will shorten their respective ids using `hashlib.blake2b`. `Blake2b` will reduce the length of the id so the encoded version can also be short. Hashing will be handled by `blake2b` because it is the fastest hashing function in the `hashlib` library and is the most compatible with `urlsafe_b64encode`. The hash will be generated and mapped in LMS.
 
 ## Consequences
 
