@@ -11,7 +11,7 @@ function ProblemScoreDrawer({ intl, problemScores }) {
       <span id="problem-score-label">{intl.formatMessage(messages.problemScoreLabel)}</span>
       <ul className="list-unstyled row m-0" aria-labelledby="problem-score-label">
         {problemScores.map(problemScore => (
-          <li className="ml-3.5">{problemScore.earned}/{problemScore.possible}</li>
+          <li className="ml-3">{problemScore.earned}/{problemScore.possible}</li>
         ))}
       </ul>
     </span>
