@@ -29,7 +29,7 @@ describe('Outline Tab', () => {
   const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
   const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`;
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
-  const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
+  const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
 
   const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import camelCase from 'lodash.camelcase';
 import PropTypes from 'prop-types';
 
-import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@edx/paragon';
 
@@ -131,7 +130,7 @@ function ProctoringInfoPanel({ courseId, username, intl }) {
             {isNotYetSubmitted(status) && (
               <>
                 {!isNotYetReleased(releaseDate) && (
-                  <Button variant="primary" block href={`${getConfig().LMS_BASE_URL}${link}`}>
+                  <Button variant="primary" block href={link}>
                     {readableStatus === readableStatuses.otherCourseApproved && (
                       <>
                         {intl.formatMessage(messages.proctoringOnboardingPracticeButton)}
