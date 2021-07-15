@@ -36,6 +36,9 @@ function CertificateStatus({ intl }) {
     verificationData,
     verifiedMode,
   } = useModel('progress', courseId);
+  const {
+    certificateAvailableDate,
+  } = certificateData || {};
 
   const mode = getCourseExitMode(
     certificateData,
@@ -63,6 +66,7 @@ function CertificateStatus({ intl }) {
   let buttonLocation;
   let buttonText;
   let endDate;
+  let certAvailabilityDate;
 
   let gradeEventName = 'not_passing';
   if (userHasPassingGrade) {
@@ -137,12 +141,13 @@ function CertificateStatus({ intl }) {
       case 'earned_but_not_available':
         certCase = 'notAvailable';
         endDate = <FormattedDate value={end} day="numeric" month="long" year="numeric" />;
+        certAvailabilityDate = <FormattedDate value={certificateAvailableDate} day="numeric" month="long" year="numeric" />;
         body = (
           <FormattedMessage
             id="courseCelebration.certificateBody.notAvailable.endDate"
-            defaultMessage="Your certificate will be available soon! After this course officially ends on {endDate}, you will receive an
-              email notification with your certificate."
-            values={{ endDate }}
+            defaultMessage="This course ends on {endDate}. Final grades and certificates are
+            scheduled to be available after {certAvailabilityDate}."
+            values={{ endDate, certAvailabilityDate }}
           />
         );
         break;
