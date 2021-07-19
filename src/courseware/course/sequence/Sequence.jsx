@@ -204,6 +204,7 @@ function Sequence({
             sequenceId={sequenceId}
             unitId={unitId}
             unitLoadedHandler={handleUnitLoaded}
+            notificationTrayVisible={notificationTrayVisible}
             /** [MM-P2P] Experiment */
             mmp2p={mmp2p}
           />

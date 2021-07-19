@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
@@ -15,6 +16,7 @@ import './LockPaywall.scss';
 function LockPaywall({
   intl,
   courseId,
+  notificationTrayVisible,
 }) {
   const course = useModel('coursewareMeta', courseId);
   const {
@@ -80,7 +82,7 @@ function LockPaywall({
             {intl.formatMessage(messages['learn.lockPaywall.content'])}
           </div>
 
-          <div className="d-flex flex-row flex-wrap">
+          <div className={classNames('d-flex flex-row', { 'flex-wrap': notificationTrayVisible })}>
             <div style={{ float: 'left' }} className="mr-3 mb-2">
               <img
                 alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
@@ -134,7 +136,7 @@ function LockPaywall({
         </div>
 
         <div
-          className="col-md-auto p-md-0 d-md-flex align-items-md-center mr-md-3"
+          className={classNames('p-md-0 d-md-flex align-items-md-center', { 'col-md-5 mx-md-0': notificationTrayVisible, 'col-md-4 mx-md-3': !notificationTrayVisible })}
           style={{ textAlign: 'right' }}
         >
           <UpgradeButton
@@ -150,5 +152,6 @@ function LockPaywall({
 LockPaywall.propTypes = {
   intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
+  notificationTrayVisible: PropTypes.bool.isRequired,
 };
 export default injectIntl(LockPaywall);
