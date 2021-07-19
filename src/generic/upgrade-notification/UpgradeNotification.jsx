@@ -408,6 +408,7 @@ function UpgradeNotification({
         onClick={logClick}
         verifiedMode={verifiedMode}
         className="upgrade-notification-button"
+        block
       />
       {offerCode}
     </section>
