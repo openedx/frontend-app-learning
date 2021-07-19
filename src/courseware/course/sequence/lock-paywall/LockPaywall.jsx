@@ -4,9 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import {
-  Alert, Icon,
-} from '@edx/paragon';
+import { Alert } from '@edx/paragon';
 import { Locked } from '@edx/paragon/icons';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
@@ -44,14 +42,6 @@ function LockPaywall({
     });
   };
 
-  const lockIcon = (
-    <Icon
-      className="float-left"
-      src={Locked}
-      aria-hidden="true"
-    />
-  );
-
   const verifiedCertLink = (
     <Alert.Link
       href="https://www.edx.org/verified-certificate"
@@ -79,12 +69,8 @@ function LockPaywall({
   );
 
   return (
-    <Alert variant="light" aria-live="off">
+    <Alert variant="light" aria-live="off" icon={Locked} className="lock-paywall-container">
       <div className="row">
-        <div className="col-auto px-0">
-          {lockIcon}
-        </div>
-
         <div className="col">
           <h4 aria-level="3">
             <span>{intl.formatMessage(messages['learn.lockPaywall.title'])}</span>
