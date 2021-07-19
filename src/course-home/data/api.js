@@ -345,6 +345,7 @@ export async function getOutlineTabData(courseId) {
   const offer = camelCaseObject(data.offer);
   const resumeCourse = camelCaseObject(data.resume_course);
   const timeOffsetMillis = getTimeOffsetMillis(headers && headers.date, requestTime, responseTime);
+  const userHasPassingGrade = data.user_has_passing_grade;
   const verifiedMode = camelCaseObject(data.verified_mode);
   const welcomeMessageHtml = data.welcome_message_html;
 
@@ -364,6 +365,7 @@ export async function getOutlineTabData(courseId) {
     offer,
     resumeCourse,
     timeOffsetMillis, // This should move to a global time correction reference
+    userHasPassingGrade,
     verifiedMode,
     welcomeMessageHtml,
   };

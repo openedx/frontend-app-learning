@@ -24,6 +24,7 @@ function useCertificateStatusAlert(courseId) {
   const {
     isEnrolled,
     org,
+    tabs,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -32,6 +33,8 @@ function useCertificateStatusAlert(courseId) {
       userTimezone,
     },
     certData,
+    hasEnded,
+    userHasPassingGrade,
   } = useModel('outline', courseId);
 
   const {
@@ -51,6 +54,7 @@ function useCertificateStatusAlert(courseId) {
     certURL = downloadUrl;
   }
   const hasAlertingCertStatus = verifyCertStatusType(certStatus);
+  const notPassingCourseEnded = !hasAlertingCertStatus && hasEnded && !userHasPassingGrade;
 
   // Only show if there is a known cert status that we want provide status on.
   const isVisible = isEnrolled && hasAlertingCertStatus;
@@ -63,9 +67,11 @@ function useCertificateStatusAlert(courseId) {
     userTimezone,
     isWebCert,
     org,
+    notPassingCourseEnded,
+    tabs,
   };
 
-  useAlert(isVisible, {
+  useAlert(isVisible || notPassingCourseEnded, {
     code: 'clientCertificateStatusAlert',
     payload: useMemo(() => payload, Object.values(payload).sort()),
     topic: 'outline-course-alerts',
