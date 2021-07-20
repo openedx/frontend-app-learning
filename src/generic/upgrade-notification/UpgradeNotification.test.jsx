@@ -44,7 +44,27 @@ describe('Upgrade Notification', () => {
     expect(screen.getByRole('link', { name: 'Upgrade for $149' })).toBeInTheDocument();
   });
 
-  it('renders non-FBE when there is a verified mode and content gating, but no access expiration', async () => {
+  it('renders non-FBE when there is a verified mode and access expiration, but no content gating', async () => {
+    const discountExpirationDate = new Date(dateNow);
+    discountExpirationDate.setDate(discountExpirationDate.getDate() + 6);
+    buildAndRender({
+      offer: {
+        expirationDate: discountExpirationDate.toString(),
+        percentage: 15,
+        code: 'Welcome15',
+        discountedPrice: '$126.65',
+        originalPrice: '$149',
+        upgradeUrl: 'www.exampleUpgradeUrl.com',
+      },
+    });
+    expect(screen.getByRole('heading', { name: 'Pursue a verified certificate' })).toBeInTheDocument();
+    expect(screen.getByText(/Earn a.*?of completion to showcase on your resume/s).textContent).toMatch('Earn a verified certificate of completion to showcase on your resume');
+    expect(screen.getByText(/Support our.*?at edX/s).textContent).toMatch('Support our non-profit mission at edX');
+    expect(screen.getByText(/Upgrade for/).textContent).toMatch('$126.65 ($149)');
+    expect(screen.getByText(/Use code.*?at checkout/s).textContent).toMatch('Use code Welcome15 at checkout');
+  });
+
+  it('renders non-FBE with a discount properly', async () => {
     buildAndRender({
       contentTypeGatingEnabled: true,
     });
