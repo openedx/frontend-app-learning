@@ -91,6 +91,48 @@ export function normalizeBlocks(courseId, blocks) {
   return models;
 }
 
+export function normalizeLearningSequencesData(learningSequencesData) {
+  const models = {
+    courses: {},
+    sections: {},
+    sequences: {},
+  };
+
+  // Course
+  const now = new Date();
+  models.courses[learningSequencesData.course_key] = {
+    id: learningSequencesData.course_key,
+    title: learningSequencesData.title,
+    sectionIds: learningSequencesData.outline.sections.map(section => section.id),
+
+    // Scan through all the sequences and look for ones that aren't accessible
+    // to us yet because the start date has not yet passed. (Some may be
+    // inaccessible because the end_date has passed.)
+    hasScheduledContent: Object.values(learningSequencesData.outline.sequences).some(
+      seq => !seq.accessible && now < Date.parse(seq.effective_start),
+    ),
+  };
+
+  // Sections
+  learningSequencesData.outline.sections.forEach(section => {
+    models.sections[section.id] = {
+      id: section.id,
+      title: section.title,
+      sequenceIds: section.sequence_ids,
+    };
+  });
+
+  // Sequences
+  Object.entries(learningSequencesData.outline.sequences).forEach(([seqId, sequence]) => {
+    models.sequences[seqId] = {
+      id: seqId,
+      title: sequence.title,
+    };
+  });
+
+  return models;
+}
+
 export async function getCourseBlocks(courseId) {
   const authenticatedUser = getAuthenticatedUser();
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/`);
@@ -110,7 +152,7 @@ export async function getLearningSequencesOutline(courseId) {
 
   try {
     const { data } = await getAuthenticatedHttpClient().get(outlineUrl.href, {});
-    return data;
+    return normalizeLearningSequencesData(data);
   } catch (error) {
     // This is not a critical API to use at the moment. If it errors for any
     // reason, just send back a null so the higher layers know to ignore it.
@@ -179,6 +221,7 @@ function normalizeMetadata(metadata) {
     userNeedsIntegritySignature: data.user_needs_integrity_signature,
     specialExamsEnabledWaffleFlag: data.is_mfe_special_exams_enabled,
     proctoredExamsEnabledWaffleFlag: data.is_mfe_proctored_exams_enabled,
+    isMasquerading: data.original_user_is_staff && !data.is_staff,
   };
 }
 
