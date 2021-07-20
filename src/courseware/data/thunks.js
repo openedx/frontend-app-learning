@@ -23,17 +23,113 @@ import {
   fetchSequenceFailure,
 } from './slice';
 
-// Make a copy of the sectionData and return it, but with the sequences filtered
-// down to only those sequences in allowedSequences
-function filterSequencesFromSection(sectionData, allowedSequences) {
-  return Object.fromEntries(
-    Object.entries(sectionData).map(
-      ([key, value]) => [
-        key,
-        (key === 'sequenceIds') ? value.filter(seqId => seqId in allowedSequences) : value,
-      ],
-    ),
-  );
+/**
+ * Combines the models from the Course Blocks and Learning Sequences API into a
+ * new models obj that is returned. Does not mutate the models passed in.
+ *
+ * For performance and long term maintainability, we want to switch as much of
+ * the Courseware MFE to use the Learning Sequences API as possible, and
+ * eventually remove calls to the Course Blocks API. However, right now, certain
+ * data still has to come form the Course Blocks API. This function is a
+ * transitional step to help build out some of the data from the new API, while
+ * falling back to the Course Blocks API for other things.
+ *
+ * Overall performance gains will not be realized until we completely remove
+ * this call to the Course Blocks API (and the need for this function).
+ *
+ * @param {*} learningSequencesModels  Normalized model from normalizeLearningSequencesData
+ * @param {*} courseBlocksModels       Normalized model from normalizeBlocks
+ * @param {bool} isMasquerading        Is Masquerading being used?
+ */
+function mergeLearningSequencesWithCourseBlocks(learningSequencesModels, courseBlocksModels, isMasquerading) {
+  // If there's no Learning Sequences API data yet (not active for this course),
+  // send back the course blocks model as-is. Likewise, Learning Sequences
+  // doesn't currently handle masquerading properly for content groups.
+  if (isMasquerading || learningSequencesModels === null) {
+    return courseBlocksModels;
+  }
+  const mergedModels = {
+    courses: {},
+    sections: {},
+    sequences: {},
+
+    // Units are now copied over verbatim from Course Blocks API, but they
+    // should eventually come just-in-time, once the Sequence Metadata API is
+    // made to be acceptably fast.
+    units: courseBlocksModels.units,
+  };
+
+  // Top level course information
+  //
+  // It is not at all clear to me why courses is a dict when there's only ever
+  // one course, but I'm not going to make that model change right now.
+  const lsCourse = Object.values(learningSequencesModels.courses)[0];
+  const [courseBlockId, courseBlock] = Object.entries(courseBlocksModels.courses)[0];
+
+  // The Learning Sequences API never exposes the usage key of the root course
+  // block, which is used as the key here (instead of the CourseKey). It doesn't
+  // look like anything actually queries for this value though, and even the
+  // courseBlocksModels.courses uses the CourseKey as the "id" in the value. So
+  // I'm imitating the form here to minimize the chance of things breaking, but
+  // I think we should just forget the keys and replace courses with a singular
+  // course. I might end up doing that before my refactoring is done here. >_<
+  mergedModels.courses[courseBlockId] = {
+    // Learning Sequences API Data
+    id: lsCourse.id,
+    title: lsCourse.title,
+    sectionIds: lsCourse.sectionIds,
+    hasScheduledContent: lsCourse.hasScheduledContent,
+
+    // Still pulling from Course Blocks API
+    effortActivities: courseBlock.effortActivities,
+    effortTime: courseBlock.effortTime,
+  };
+
+  // List of Sequences comes from Learning Sequences. Course Blocks will have
+  // extra sequences that we don't want to display to the user, like ones that
+  // are empty because all the enclosed units are in user partition groups that
+  // the user is not a part of (e.g. Verified Track).
+  Object.entries(learningSequencesModels.sequences).forEach(([sequenceId, sequence]) => {
+    const blocksSequence = courseBlocksModels.sequences[sequenceId];
+    mergedModels.sequences[sequenceId] = {
+      // Learning Sequences API Data
+      id: sequenceId,
+      title: sequence.title,
+
+      // Still pulling from Course Blocks API Data:
+      effortActivities: blocksSequence.effortActivities,
+      effortTime: blocksSequence.effortTime,
+      legacyWebUrl: blocksSequence.legacyWebUrl,
+      unitIds: blocksSequence.unitIds,
+    };
+
+    // Add back-references to this sequence for all child units.
+    blocksSequence.unitIds.forEach(childUnitId => {
+      mergedModels.units[childUnitId].sequenceId = sequenceId;
+    });
+  });
+
+  // List of Sections comes from Learning Sequences.
+  Object.entries(learningSequencesModels.sections).forEach(([sectionId, section]) => {
+    const blocksSection = courseBlocksModels.sections[sectionId];
+    mergedModels.sections[sectionId] = {
+      // Learning Sequences API Data
+      id: sectionId,
+      title: section.title,
+      sequenceIds: section.sequenceIds,
+      courseId: lsCourse.id,
+
+      // Still pulling from Course Blocks API Data:
+      effortActivities: blocksSection.effortActivities,
+      effortTime: blocksSection.effortTime,
+    };
+    // Add back-references to this section for all child sequences.
+    section.sequenceIds.forEach(childSeqId => {
+      mergedModels.sequences[childSeqId].sectionId = sectionId;
+    });
+  });
+
+  return mergedModels;
 }
 
 export function fetchCourse(courseId) {
@@ -60,29 +156,11 @@ export function fetchCourse(courseId) {
       if (courseBlocksResult.status === 'fulfilled') {
         const {
           courses, sections, sequences, units,
-        } = courseBlocksResult.value;
-
-        // Filter the data we get from the Course Blocks API using the data we
-        // get back from the Learning Sequences API (which knows to hide certain
-        // sequences that users shouldn't see).
-        //
-        // This is temporary – all this data should come from Learning Sequences
-        // soon.
-        let filteredSections = sections;
-        let filteredSequences = sequences;
-        if (learningSequencesOutlineResult.value) {
-          const allowedSequences = learningSequencesOutlineResult.value.outline.sequences;
-          filteredSequences = Object.fromEntries(
-            Object.entries(sequences).filter(
-              ([blockId]) => blockId in allowedSequences,
-            ),
-          );
-          filteredSections = Object.fromEntries(
-            Object.entries(sections).map(
-              ([blockId, sectionData]) => [blockId, filterSequencesFromSection(sectionData, allowedSequences)],
-            ),
-          );
-        }
+        } = mergeLearningSequencesWithCourseBlocks(
+          learningSequencesOutlineResult.value,
+          courseBlocksResult.value,
+          courseMetadataResult.value.isMasquerading,
+        );
 
         // This updates the course with a sectionIds array from the blocks data.
         dispatch(updateModelsMap({
@@ -91,12 +169,12 @@ export function fetchCourse(courseId) {
         }));
         dispatch(addModelsMap({
           modelType: 'sections',
-          modelsMap: filteredSections,
+          modelsMap: sections,
         }));
         // We update for sequences and units because the sequence metadata may have come back first.
         dispatch(updateModelsMap({
           modelType: 'sequences',
-          modelsMap: filteredSequences,
+          modelsMap: sequences,
         }));
         dispatch(updateModelsMap({
           modelType: 'units',
