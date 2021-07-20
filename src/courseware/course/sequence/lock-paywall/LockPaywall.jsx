@@ -10,6 +10,7 @@ import { Locked } from '@edx/paragon/icons';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
 import { useModel } from '../../../../generic/model-store';
+import useWindowSize, { responsiveBreakpoints } from '../../../../generic/tabs/useWindowSize';
 import { UpgradeButton } from '../../../../generic/upgrade-button';
 import './LockPaywall.scss';
 
@@ -24,6 +25,8 @@ function LockPaywall({
     org,
     verifiedMode,
   } = course;
+
+  const shouldDisplayGatedContentResponsive = useWindowSize().width <= responsiveBreakpoints.medium.minWidth;
 
   if (!verifiedMode) {
     return null;
@@ -82,7 +85,7 @@ function LockPaywall({
             {intl.formatMessage(messages['learn.lockPaywall.content'])}
           </div>
 
-          <div className={classNames('d-flex flex-row', { 'flex-wrap': notificationTrayVisible })}>
+          <div className={classNames('d-flex flex-row', { 'flex-wrap': notificationTrayVisible || shouldDisplayGatedContentResponsive })}>
             <div style={{ float: 'left' }} className="mr-3 mb-2">
               <img
                 alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
