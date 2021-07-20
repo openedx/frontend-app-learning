@@ -120,7 +120,7 @@ function CertificateStatusAlert({ intl, payload }) {
     return alertProps;
   };
 
-  const renderNotPassingCourseEneded = () => {
+  const renderNotPassingCourseEnded = () => {
     const progressTab = tabs.find(tab => tab.slug === 'progress');
     const progressLink = progressTab && progressTab.url;
 
@@ -150,7 +150,7 @@ function CertificateStatusAlert({ intl, payload }) {
       break;
     default:
       if (notPassingCourseEnded) {
-        alertProps = renderNotPassingCourseEneded();
+        alertProps = renderNotPassingCourseEnded();
       }
       break;
   }
