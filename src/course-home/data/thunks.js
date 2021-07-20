@@ -49,6 +49,11 @@ export function fetchTab(courseId, tab, getTabData, targetUserId) {
         logError(courseHomeCourseMetadataResult.reason);
       }
 
+      if (fetchedTabData && tabDataResult.value === null) {
+        // null tab data indicates that we have redirected elsewhere - just exit and don't visibly stop loading
+        return;
+      }
+
       if (fetchedTabData) {
         dispatch(addModel({
           modelType: tab,

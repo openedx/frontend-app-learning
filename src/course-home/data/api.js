@@ -182,6 +182,26 @@ export function normalizeOutlineBlocks(courseId, blocks) {
   return models;
 }
 
+function processTabDataErrorRedirect(error) {
+  const { httpErrorResponseData, httpErrorStatus } = error && error.customAttributes;
+
+  if (httpErrorStatus === 403) {
+    // Currently, only 403 errors contain redirect content
+    try {
+      const { redirect } = JSON.parse(httpErrorResponseData);
+      if (redirect) {
+        global.location.replace(redirect);
+        return true;
+      }
+    } catch (exc) {
+      // ignore any json parse errors, might be an actual 403 without redirect json content
+    }
+  }
+
+  // Did not do any redirecting
+  return false;
+}
+
 export async function getCourseHomeCourseMetadata(courseId) {
   let url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
   url = appendBrowserTimezoneToUrl(url);
@@ -202,11 +222,18 @@ export async function getDatesTabData(courseId) {
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
+      // TODO: remove this - not needed once the backend uses 403s for redirects
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`);
+      return null;
     }
     // 401 can be returned for unauthenticated users or users who are not enrolled
     if (httpErrorStatus === 401) {
+      // TODO: remove this - not needed once the backend uses 403s for redirects
       global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
+      return null;
+    }
+    if (processTabDataErrorRedirect(error)) {
+      return null; // keeps loading screen active
     }
     throw error;
   }
@@ -249,11 +276,18 @@ export async function getProgressTabData(courseId, targetUserId) {
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
+      // TODO: remove this - not needed once the backend uses 403s for redirects
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
+      return null;
     }
     // 401 can be returned for unauthenticated users or users who are not enrolled
     if (httpErrorStatus === 401) {
+      // TODO: remove this - not needed once the backend uses 403s for redirects
       global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
+      return null;
+    }
+    if (processTabDataErrorRedirect(error)) {
+      return null; // keeps loading screen active
     }
     throw error;
   }
@@ -303,8 +337,12 @@ export async function getOutlineTabData(courseId) {
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
+      // TODO: remove this - not needed once the backend uses 403s for redirects
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/course/`);
-      return {};
+      return null;
+    }
+    if (processTabDataErrorRedirect(error)) {
+      return null; // keeps loading screen active
     }
     throw error;
   }
