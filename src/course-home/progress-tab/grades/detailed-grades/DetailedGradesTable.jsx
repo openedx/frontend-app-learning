@@ -12,6 +12,7 @@ function DetailedGradesTable({ intl }) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
+
   const {
     sectionScores,
   } = useModel('progress', courseId);
@@ -31,7 +32,7 @@ function DetailedGradesTable({ intl }) {
 
       const detailedGradesData = subsectionScores.map((subsection) => ({
         subsectionTitle: <SubsectionTitleCell subsection={subsection} />,
-        score: `${subsection.numPointsEarned}/${subsection.numPointsPossible}`,
+        score: <span className={subsection.learnerHasAccess ? '' : 'locked-overlay'}>{subsection.numPointsEarned}/{subsection.numPointsPossible}</span>,
       }));
 
       return (

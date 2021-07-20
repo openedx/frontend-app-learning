@@ -19,6 +19,7 @@ function CourseGradeHeader({ intl }) {
   } = useModel('courseHomeMeta', courseId);
   const {
     verifiedMode,
+    gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
 
   const { administrator } = getAuthenticatedUser();
@@ -29,6 +30,14 @@ function CourseGradeHeader({ intl }) {
       is_staff: administrator,
     });
   };
+  let previewText;
+  if (verifiedMode) {
+    previewText = gradesFeatureIsFullyLocked
+      ? intl.formatMessage(messages.courseGradePreviewUnlockCertificateBody)
+      : intl.formatMessage(messages.courseGradePartialPreviewUnlockCertificateBody);
+  } else {
+    previewText = intl.formatMessage(messages.courseGradePreviewUpgradeDeadlinePassedBody);
+  }
   return (
     <div className="row w-100 m-0 p-4 rounded-top bg-primary-500 text-white">
       <div className={`col-12 ${verifiedMode ? 'col-md-9' : ''} p-0`}>
@@ -40,13 +49,14 @@ function CourseGradeHeader({ intl }) {
             <span aria-hidden="true">
               {intl.formatMessage(messages.courseGradePreviewHeaderAriaHidden)}
             </span>
-            {intl.formatMessage(messages.courseGradePreviewHeader)}
+            {gradesFeatureIsFullyLocked
+              ? intl.formatMessage(messages.courseGradePreviewHeaderLocked)
+              : intl.formatMessage(messages.courseGradePreviewHeaderLimited)}
           </div>
         </div>
         <div className="row w-100 m-0 p-0 justify-content-end">
           <div className="col-11 px-2 p-sm-0 small">
-            {verifiedMode ? intl.formatMessage(messages.courseGradePreviewUnlockCertificateBody)
-              : intl.formatMessage(messages.courseGradePreviewUpgradeDeadlinePassedBody)}
+            {previewText}
           </div>
         </div>
       </div>

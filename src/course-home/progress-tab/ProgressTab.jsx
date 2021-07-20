@@ -18,10 +18,10 @@ function ProgressTab() {
   } = useSelector(state => state.courseHome);
 
   const {
-    gradesFeatureIsLocked,
+    gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
 
-  const applyLockedOverlay = gradesFeatureIsLocked ? 'locked-overlay' : '';
+  const applyLockedOverlay = gradesFeatureIsFullyLocked ? 'locked-overlay' : '';
 
   const layout = layoutGenerator({
     mobile: 0,
@@ -41,7 +41,7 @@ function ProgressTab() {
             <CertificateStatus />
           </OnMobile>
           <CourseGrade />
-          <div className={`grades my-4 p-4 rounded shadow-sm ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsLocked}>
+          <div className={`grades my-4 p-4 rounded shadow-sm ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
             <GradeSummary />
             <DetailedGrades />
           </div>

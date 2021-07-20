@@ -5,7 +5,8 @@ import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Hyperlink } from '@edx/paragon';
+import { Blocked } from '@edx/paragon/icons';
+import { Icon, Hyperlink } from '@edx/paragon';
 import { useModel } from '../../../../generic/model-store';
 
 import DetailedGradesTable from './DetailedGradesTable';
@@ -21,7 +22,8 @@ function DetailedGrades({ intl }) {
     org,
   } = useModel('courseHomeMeta', courseId);
   const {
-    gradesFeatureIsLocked,
+    gradesFeatureIsFullyLocked,
+    gradesFeatureIsPartiallyLocked,
     sectionScores,
   } = useModel('progress', courseId);
 
@@ -40,7 +42,7 @@ function DetailedGrades({ intl }) {
       className="muted-link inline-link"
       destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`}
       onClick={logOutlineLinkClick}
-      tabIndex={gradesFeatureIsLocked ? '-1' : '0'}
+      tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
     >
       {intl.formatMessage(messages.courseOutline)}
     </Hyperlink>
@@ -49,6 +51,12 @@ function DetailedGrades({ intl }) {
   return (
     <section className="text-dark-700">
       <h3 className="h4 mb-3">{intl.formatMessage(messages.detailedGrades)}</h3>
+      {gradesFeatureIsPartiallyLocked && (
+        <div className="mb-3 small row ml-0">
+          <Icon className="mr-1 mt-1" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" />
+          {intl.formatMessage(messages.gradeSummaryLimitedAccessExplanation)}
+        </div>
+      )}
       {hasSectionScores && (
         <DetailedGradesTable />
       )}

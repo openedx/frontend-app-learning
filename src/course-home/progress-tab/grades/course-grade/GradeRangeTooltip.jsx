@@ -17,7 +17,7 @@ function GradeRangeTooltip({ intl, iconButtonClassName, passingGrade }) {
   } = useSelector(state => state.courseHome);
 
   const {
-    gradesFeatureIsLocked,
+    gradesFeatureIsFullyLocked,
     gradingPolicy: {
       gradeRange,
     },
@@ -68,7 +68,7 @@ function GradeRangeTooltip({ intl, iconButtonClassName, passingGrade }) {
         src={InfoOutline}
         iconAs={Icon}
         size="inline"
-        disabled={gradesFeatureIsLocked}
+        disabled={gradesFeatureIsFullyLocked}
       />
     </OverlayTrigger>
   );
