@@ -25,7 +25,17 @@ function LockPaywall({
     verifiedMode,
   } = course;
 
-  const shouldDisplayGatedContentResponsive = useWindowSize().width <= responsiveBreakpoints.medium.minWidth;
+  // the following variables are set and used for resposive layout to work with
+  // whether the NotificationTray is open or not and if there's an offer with longer text
+  const shouldDisplayBulletPointsBelowCertificate = useWindowSize().width
+    <= responsiveBreakpoints.large.minWidth;
+  const shouldDisplayGatedContentOneColumn = useWindowSize().width <= responsiveBreakpoints.extraLarge.minWidth
+    && notificationTrayVisible;
+  const shouldDisplayGatedContentTwoColumns = useWindowSize().width < responsiveBreakpoints.large.minWidth
+    && notificationTrayVisible;
+  const shouldDisplayGatedContentTwoColumnsHalf = useWindowSize().width <= responsiveBreakpoints.large.minWidth
+    && !notificationTrayVisible;
+  const shouldWrapTextOnButton = useWindowSize().width > responsiveBreakpoints.extraSmall.minWidth;
 
   if (!verifiedMode) {
     return null;
@@ -84,7 +94,7 @@ function LockPaywall({
             {intl.formatMessage(messages['learn.lockPaywall.content'])}
           </div>
 
-          <div className={classNames('d-flex flex-row', { 'flex-wrap': notificationTrayVisible || shouldDisplayGatedContentResponsive })}>
+          <div className={classNames('d-flex flex-row', { 'flex-wrap': notificationTrayVisible || shouldDisplayBulletPointsBelowCertificate })}>
             <div style={{ float: 'left' }} className="mr-3 mb-2">
               <img
                 alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
@@ -138,13 +148,17 @@ function LockPaywall({
         </div>
 
         <div
-          className={classNames('p-md-0 d-md-flex align-items-md-center', { 'col-md-5 mx-md-0': notificationTrayVisible, 'col-md-4 mx-md-3': !notificationTrayVisible })}
-          style={{ textAlign: 'right' }}
+          className={
+            classNames('p-md-0 d-md-flex align-items-md-center text-right', {
+              'col-md-5 mx-md-0': notificationTrayVisible, 'col-md-4 mx-md-3 justify-content-center': !notificationTrayVisible && !shouldDisplayGatedContentTwoColumnsHalf, 'col-md-11 justify-content-end': shouldDisplayGatedContentOneColumn && !shouldDisplayGatedContentTwoColumns, 'col-md-6 justify-content-center': shouldDisplayGatedContentTwoColumnsHalf,
+            })
+          }
         >
           <UpgradeButton
             offer={offer}
             onClick={logClick}
             verifiedMode={verifiedMode}
+            style={{ whiteSpace: shouldWrapTextOnButton ? 'nowrap' : null }}
           />
         </div>
       </div>
