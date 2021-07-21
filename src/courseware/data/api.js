@@ -35,21 +35,23 @@ export function normalizeBlocks(courseId, blocks) {
         break;
 
       case 'sequential':
-        models.sequences[block.id] = {
+        models.sequences[block.hash_key] = {
           effortActivities: block.effort_activities,
           effortTime: block.effort_time,
           id: block.id,
           title: block.display_name,
           legacyWebUrl: block.legacy_web_url,
           unitIds: block.children || [],
+          hash_key: block.hash_key,
         };
         break;
       case 'vertical':
-        models.units[block.id] = {
+        models.units[block.hash_key] = {
           graded: block.graded,
           id: block.id,
           title: block.display_name,
           legacyWebUrl: block.legacy_web_url,
+          hash_key: block.hash_key,
         };
         break;
       default:
@@ -67,11 +69,19 @@ export function normalizeBlocks(courseId, blocks) {
       });
     }
   });
+
   Object.values(models.sections).forEach(section => {
     if (Array.isArray(section.sequenceIds)) {
       section.sequenceIds.forEach(sequenceId => {
-        if (sequenceId in models.sequences) {
-          models.sequences[sequenceId].sectionId = section.id;
+        const modelSequenceIds = {};
+        Object.values(models.sequences).forEach(sequence => {
+          if (sequenceId === sequence.id) {
+            modelSequenceIds[sequenceId] = sequence.hash_key;
+          }
+        });
+        if (sequenceId in modelSequenceIds) {
+          const sequence = modelSequenceIds[sequenceId];
+          models.sequences.[sequence].sectionId = section.id;
         } else {
           logInfo(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
         }
@@ -82,15 +92,21 @@ export function normalizeBlocks(courseId, blocks) {
   Object.values(models.sequences).forEach(sequence => {
     if (Array.isArray(sequence.unitIds)) {
       sequence.unitIds.forEach(unitId => {
-        if (unitId in models.units) {
-          models.units[unitId].sequenceId = sequence.id;
+        const modelUnitIds = {};
+        Object.values(models.units).forEach(unit => {
+          if (unitId === unit.id) {
+            modelUnitIds[unitId] = unit.hash_key;
+          }
+        });
+        if (unitId in modelUnitIds) {
+          const unit = modelUnitIds[unitId];
+          models.units.[unit].sequenceId = sequence.id;
         } else {
           logInfo(`Sequence ${sequence.id} has child block ${unitId}, but that block is not in the list of units.`);
         }
       });
     }
   });
-
   return models;
 }
 
@@ -195,7 +211,7 @@ export async function getCourseMetadata(courseId) {
 function normalizeSequenceMetadata(sequence) {
   return {
     sequence: {
-      id: sequence.item_id,
+      id: sequence.hash_key,
       blockType: sequence.tag,
       unitIds: sequence.items.map(unit => unit.id),
       bannerText: sequence.banner_text,
@@ -218,7 +234,6 @@ function normalizeSequenceMetadata(sequence) {
       saveUnitPosition: sequence.save_position,
       showCompletion: sequence.show_completion,
       allowProctoringOptOut: sequence.allow_proctoring_opt_out,
-      hash_key: sequence.hash_key,
     },
     units: sequence.items.map(unit => ({
       id: unit.id,
@@ -229,7 +244,7 @@ function normalizeSequenceMetadata(sequence) {
       contentType: unit.type,
       graded: unit.graded,
       containsContentTypeGatedContent: unit.contains_content_type_gated_content,
-      hash_key: unit.hash_key,
+      decoded_id: unit.decoded_id,
     })),
   };
 }
