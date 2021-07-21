@@ -85,6 +85,7 @@ function Unit({
   onLoaded,
   id,
   intl,
+  notificationTrayVisible,
   /** [MM-P2P] Experiment */
   mmp2p,
 }) {
@@ -171,7 +172,7 @@ function Unit({
             />
           )}
         >
-          <LockPaywall courseId={courseId} />
+          <LockPaywall courseId={courseId} notificationTrayVisible={notificationTrayVisible} />
         </Suspense>
       )}
       { /** [MM-P2P] Experiment */ }
@@ -252,6 +253,7 @@ Unit.propTypes = {
   id: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   onLoaded: PropTypes.func,
+  notificationTrayVisible: PropTypes.bool.isRequired,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({

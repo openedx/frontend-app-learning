@@ -1,22 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import {
-  Alert, Icon,
-} from '@edx/paragon';
+import { Alert } from '@edx/paragon';
 import { Locked } from '@edx/paragon/icons';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
 import { useModel } from '../../../../generic/model-store';
+import useWindowSize, { responsiveBreakpoints } from '../../../../generic/tabs/useWindowSize';
 import { UpgradeButton } from '../../../../generic/upgrade-button';
-import './LockPaywall.scss';
 
 function LockPaywall({
   intl,
   courseId,
+  notificationTrayVisible,
 }) {
   const course = useModel('coursewareMeta', courseId);
   const {
@@ -24,6 +24,18 @@ function LockPaywall({
     org,
     verifiedMode,
   } = course;
+
+  // the following variables are set and used for resposive layout to work with
+  // whether the NotificationTray is open or not and if there's an offer with longer text
+  const shouldDisplayBulletPointsBelowCertificate = useWindowSize().width
+    <= responsiveBreakpoints.large.minWidth;
+  const shouldDisplayGatedContentOneColumn = useWindowSize().width <= responsiveBreakpoints.extraLarge.minWidth
+    && notificationTrayVisible;
+  const shouldDisplayGatedContentTwoColumns = useWindowSize().width < responsiveBreakpoints.large.minWidth
+    && notificationTrayVisible;
+  const shouldDisplayGatedContentTwoColumnsHalf = useWindowSize().width <= responsiveBreakpoints.large.minWidth
+    && !notificationTrayVisible;
+  const shouldWrapTextOnButton = useWindowSize().width > responsiveBreakpoints.extraSmall.minWidth;
 
   if (!verifiedMode) {
     return null;
@@ -43,14 +55,6 @@ function LockPaywall({
       pageName: 'in_course',
     });
   };
-
-  const lockIcon = (
-    <Icon
-      className="float-left"
-      src={Locked}
-      aria-hidden="true"
-    />
-  );
 
   const verifiedCertLink = (
     <Alert.Link
@@ -79,12 +83,8 @@ function LockPaywall({
   );
 
   return (
-    <Alert variant="light" aria-live="off">
+    <Alert variant="light" aria-live="off" icon={Locked} className="lock-paywall-container">
       <div className="row">
-        <div className="col-auto px-0">
-          {lockIcon}
-        </div>
-
         <div className="col">
           <h4 aria-level="3">
             <span>{intl.formatMessage(messages['learn.lockPaywall.title'])}</span>
@@ -94,7 +94,7 @@ function LockPaywall({
             {intl.formatMessage(messages['learn.lockPaywall.content'])}
           </div>
 
-          <div className="d-flex flex-row flex-wrap">
+          <div className={classNames('d-flex flex-row', { 'flex-wrap': notificationTrayVisible || shouldDisplayBulletPointsBelowCertificate })}>
             <div style={{ float: 'left' }} className="mr-3 mb-2">
               <img
                 alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
@@ -148,13 +148,17 @@ function LockPaywall({
         </div>
 
         <div
-          className="col-md-auto p-md-0 d-md-flex align-items-md-center mr-md-3"
-          style={{ textAlign: 'right' }}
+          className={
+            classNames('p-md-0 d-md-flex align-items-md-center text-right', {
+              'col-md-5 mx-md-0': notificationTrayVisible, 'col-md-4 mx-md-3 justify-content-center': !notificationTrayVisible && !shouldDisplayGatedContentTwoColumnsHalf, 'col-md-11 justify-content-end': shouldDisplayGatedContentOneColumn && !shouldDisplayGatedContentTwoColumns, 'col-md-6 justify-content-center': shouldDisplayGatedContentTwoColumnsHalf,
+            })
+          }
         >
           <UpgradeButton
             offer={offer}
             onClick={logClick}
             verifiedMode={verifiedMode}
+            style={{ whiteSpace: shouldWrapTextOnButton ? 'nowrap' : null }}
           />
         </div>
       </div>
@@ -164,5 +168,6 @@ function LockPaywall({
 LockPaywall.propTypes = {
   intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
+  notificationTrayVisible: PropTypes.bool.isRequired,
 };
 export default injectIntl(LockPaywall);
