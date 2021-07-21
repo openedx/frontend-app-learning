@@ -1,7 +1,14 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 
-import { initializeMockApp, render, screen } from '../../setupTest';
+import {
+  fireEvent,
+  initializeMockApp,
+  render,
+  screen,
+  waitFor,
+} from '../../setupTest';
 import UpgradeNotification from './UpgradeNotification';
 
 initializeMockApp();
@@ -16,6 +23,24 @@ describe('Upgrade Notification', () => {
     const upgradeNotificationData = Factory.build('upgradeNotificationData', { ...attributes });
     render(<UpgradeNotification {...upgradeNotificationData} />);
   }
+
+  it('sends upgrade click info to segment', async () => {
+    sendTrackEvent.mockClear();
+    buildAndRender({ pageName: 'test' });
+
+    const upgradeButton = await waitFor(() => screen.queryByRole('link', { name: 'Upgrade for $149' }));
+    fireEvent.click(upgradeButton);
+
+    expect(sendTrackEvent).toHaveBeenCalledTimes(3);
+    expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.bi.ecommerce.upsell_links_clicked', {
+      org_key: 'edX',
+      courserun_key: 'course-v1:edX+DemoX+Demo_Course',
+      linkCategory: 'green_upgrade',
+      linkName: 'test_green',
+      linkType: 'button',
+      pageName: 'test',
+    });
+  });
 
   it('does not render when there is no verified mode', async () => {
     buildAndRender({ verifiedMode: null });

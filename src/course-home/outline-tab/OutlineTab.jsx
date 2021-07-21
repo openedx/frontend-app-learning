@@ -224,11 +224,12 @@ function OutlineTab({ intl }) {
                   verifiedMode={verifiedMode}
                   accessExpiration={accessExpiration}
                   contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
+                  upsellPageName="course_home"
                   userTimezone={userTimezone}
+                  shouldDisplayBorder
                   timeOffsetMillis={timeOffsetMillis}
                   courseId={courseId}
                   org={org}
-                  shouldDisplayBorder
                 />
               )}
             <CourseDates

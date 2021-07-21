@@ -58,11 +58,12 @@ function NotificationTray({
             verifiedMode={verifiedMode}
             accessExpiration={accessExpiration}
             contentTypeGatingEnabled={contentTypeGatingEnabled}
+            upsellPageName="in_course"
             userTimezone={userTimezone}
+            shouldDisplayBorder={false}
             timeOffsetMillis={timeOffsetMillis}
             courseId={courseId}
             org={org}
-            shouldDisplayBorder={false}
           />
         ) : <p className="notification-tray-content">{intl.formatMessage(messages.noNotificationsMessage)}</p>}
       </div>

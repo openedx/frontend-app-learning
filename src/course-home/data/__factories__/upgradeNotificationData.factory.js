@@ -8,6 +8,7 @@ Factory.define('upgradeNotificationData')
   .option('accessExpiration', null)
   .option('contentTypeGatingEnabled', false)
   .attr('courseId', 'course-v1:edX+DemoX+Demo_Course')
+  .attr('upsellPageName', 'test')
   .attr('verifiedMode', ['host'], (host) => ({
     access_expiration_date: '2050-01-01T12:00:00',
     currency: 'USD',
