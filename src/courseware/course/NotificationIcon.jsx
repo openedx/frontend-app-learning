@@ -5,7 +5,6 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Icon } from '@edx/paragon';
 import { WatchOutline } from '@edx/paragon/icons';
 
-import './NotificationIcon.scss';
 import messages from './messages';
 
 function NotificationIcon({ intl, status, notificationColor }) {

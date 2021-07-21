@@ -12,7 +12,6 @@ import certificateLocked from '../../../../generic/assets/edX_locked_certificate
 import { useModel } from '../../../../generic/model-store';
 import useWindowSize, { responsiveBreakpoints } from '../../../../generic/tabs/useWindowSize';
 import { UpgradeButton } from '../../../../generic/upgrade-button';
-import './LockPaywall.scss';
 
 function LockPaywall({
   intl,
