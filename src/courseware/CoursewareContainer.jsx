@@ -108,16 +108,12 @@ class CoursewareContainer extends Component {
       match: {
         params: {
           courseId: routeCourseId,
-          // sequenceId: routeSequenceId,
           sequenceId: routeSequenceHash,
         },
       },
     } = this.props;
-    // const routeSequenceId = decodeURIComponent(routeSequenceHash.replace(/\+/g, ' '));
-    // console.log(routeSequenceId);
     // Load data whenever the course or sequence ID changes.
     this.checkFetchCourse(routeCourseId);
-    // this.checkFetchSequence(routeSequenceId);
     this.checkFetchSequence(routeSequenceHash);
   }
 
@@ -136,14 +132,14 @@ class CoursewareContainer extends Component {
       match: {
         params: {
           courseId: routeCourseId,
-          sequenceId: routeSequenceId,
+          sequenceId: routeSequenceHash,
           unitId: routeUnitId,
         },
       },
     } = this.props;
     // Load data whenever the course or sequence ID changes.
     this.checkFetchCourse(routeCourseId);
-    this.checkFetchSequence(routeSequenceId);
+    this.checkFetchSequence(routeSequenceHash);
 
     // All courseware URLs should normalize to the format /course/:courseId/:sequenceId/:unitId
     // via the series of redirection rules below.
