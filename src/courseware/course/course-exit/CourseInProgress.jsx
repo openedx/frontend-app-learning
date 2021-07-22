@@ -34,13 +34,13 @@ function CourseInProgress({ intl }) {
         <div className="col-12 p-0 h2 text-center">
           { intl.formatMessage(messages.courseInProgressHeader) }
         </div>
-        <Alert variant="primary" className="col col-lg-10 mt-4 d-flex">
+        <Alert variant="primary" className="mt-4">
           <div className="row w-100 m-0 align-items-start">
-            <div className="flex-grow-1 col-md p-0">{ intl.formatMessage(messages.courseInProgressDescription) }</div>
+            <div className="col-md p-0">{ intl.formatMessage(messages.courseInProgressDescription) }</div>
             {datesTabLink && (
               <Button
                 variant="primary"
-                className="flex-shrink-0 mt-3 mt-md-0 mb-1 mb-md-0 ml-md-5"
+                className="mt-3 my-md-0 mb-1 ml-md-5 w-xs-100 w-md-auto"
                 href={datesTabLink}
                 onClick={() => logClick(org, courseId, administrator, 'view_dates_tab')}
               >

@@ -9,6 +9,7 @@ import { layoutGenerator } from 'react-break';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Button, Hyperlink } from '@edx/paragon';
+import { CheckCircle } from '@edx/paragon/icons';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
@@ -285,34 +286,37 @@ function CourseCelebration({ intl }) {
         </div>
         <div className="col-12 px-0 px-md-5">
           {certHeader && (
-          <Alert variant="success" className="row w-100 m-0">
-            <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
-              <div className="h4">{certHeader}</div>
-              {message}
-              <div className="mt-2">
-                {buttonPrefix}
-                {buttonLocation && (
-                  <Button
-                    variant={buttonVariant}
-                    href={buttonLocation}
-                    onClick={() => logClick(org, courseId, administrator, buttonEvent)}
-                  >
-                    {buttonText}
-                  </Button>
-                )}
-                {buttonSuffix}
+          <Alert variant="success" icon={CheckCircle}>
+            <div className="row w-100 m-0">
+              <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
+                <div className="h4">{certHeader}</div>
+                {message}
+                <div className="mt-2">
+                  {buttonPrefix}
+                  {buttonLocation && (
+                    <Button
+                      variant={buttonVariant}
+                      href={buttonLocation}
+                      className="w-xs-100 w-md-auto"
+                      onClick={() => logClick(org, courseId, administrator, buttonEvent)}
+                    >
+                      {buttonText}
+                    </Button>
+                  )}
+                  {buttonSuffix}
+                </div>
               </div>
+              {certStatus !== 'unverified' && (
+                <div className="col-12 order-0 col-md-3 order-md-1 w-100 mb-3 p-0 text-center">
+                  <img
+                    src={certificateImage}
+                    alt={`${intl.formatMessage(messages.certificateImage)}`}
+                    className="w-100"
+                    style={{ maxWidth: '13rem' }}
+                  />
+                </div>
+              )}
             </div>
-            {certStatus !== 'unverified' && (
-              <div className="col-12 order-0 col-md-3 order-md-1 w-100 mb-3 p-0 text-center">
-                <img
-                  src={certificateImage}
-                  alt={`${intl.formatMessage(messages.certificateImage)}`}
-                  className="w-100"
-                  style={{ maxWidth: '13rem' }}
-                />
-              </div>
-            )}
           </Alert>
           )}
           {relatedPrograms && relatedPrograms.map(program => (

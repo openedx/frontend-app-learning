@@ -485,8 +485,8 @@ describe('Outline Tab', () => {
         });
         await fetchAndRender();
 
-        const alert = await screen.findByText('Welcome to Demonstration Course');
-        expect(alert.parentElement).toHaveAttribute('role', 'alert');
+        const alert = await screen.findByTestId('private-course-alert');
+        expect(alert).toHaveAttribute('role', 'alert');
 
         expect(screen.queryByRole('button', { name: 'Enroll now' })).not.toBeInTheDocument();
         expect(screen.getByText('You must be enrolled in the course to see course content.')).toBeInTheDocument();
@@ -495,8 +495,8 @@ describe('Outline Tab', () => {
       it('displays alert for unenrolled user', async () => {
         await fetchAndRender();
 
-        const alert = await screen.findByText('Welcome to Demonstration Course');
-        expect(alert.parentElement).toHaveAttribute('role', 'alert');
+        const alert = await screen.findByTestId('private-course-alert');
+        expect(alert).toHaveAttribute('role', 'alert');
 
         expect(screen.getByRole('button', { name: 'Enroll now' })).toBeInTheDocument();
       });
