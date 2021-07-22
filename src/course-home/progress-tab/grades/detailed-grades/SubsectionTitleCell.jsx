@@ -53,14 +53,18 @@ function SubsectionTitleCell({ intl, subsection }) {
         </Collapsible.Trigger>
         <span className="small row ml-0">
           {gradesFeatureIsFullyLocked || subsection.learnerHasAccess ? '' : <Icon className="mr-1 mt-1" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" />}
-          <a
-            href={url}
-            className="muted-link small"
-            onClick={logSubsectionClicked}
-            tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
-          >
-            {displayName}
-          </a>
+          {url ? (
+            <a
+              href={url}
+              className="muted-link small"
+              onClick={logSubsectionClicked}
+              tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
+            >
+              {displayName}
+            </a>
+          ) : (
+            <span className="small">{displayName}</span>
+          )}
         </span>
       </Row>
       <Collapsible.Body>
