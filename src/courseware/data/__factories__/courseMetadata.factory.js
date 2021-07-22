@@ -6,7 +6,6 @@ Factory.define('courseMetadata')
   .extend(courseMetadataBase)
   .option('host', '')
   .attrs({
-    can_show_upgrade_sock: false,
     content_type_gating_enabled: false,
     course_expired_message: null,
     end: null,
