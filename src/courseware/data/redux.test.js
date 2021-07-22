@@ -68,7 +68,7 @@ describe('Data layer integration tests', () => {
 
     it('Should fetch, normalize, and save metadata, but with denied status', async () => {
       const forbiddenCourseMetadata = Factory.build('courseMetadata', {
-        can_load_courseware: {
+        course_access: {
           has_access: false,
         },
       });
@@ -89,7 +89,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.courseStatus).toEqual('denied');
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[forbiddenCourseMetadata.id].canLoadCourseware).not.toBeUndefined();
+      expect(state.models.coursewareMeta[forbiddenCourseMetadata.id].courseAccess).not.toBeUndefined();
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
@@ -107,7 +107,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].canLoadCourseware).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].courseAccess).not.toBeUndefined();
     });
 
     it('Should fetch, normalize, and save metadata; filtering has no effect', async () => {
@@ -127,7 +127,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].canLoadCourseware).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].courseAccess).not.toBeUndefined();
       expect(state.models.sequences.length === 1);
       Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 1));
     });
@@ -149,7 +149,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].canLoadCourseware).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].courseAccess).not.toBeUndefined();
       expect(state.models.sequences === null);
       Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 0));
     });

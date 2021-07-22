@@ -32,6 +32,12 @@ export default () => {
           }}
         />
         <PageRoute
+          path={`${path}/survey/:courseId`}
+          render={({ match }) => {
+            global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${match.params.courseId}/survey`);
+          }}
+        />
+        <PageRoute
           path={`${path}/dashboard`}
           render={({ location }) => {
             global.location.assign(`${getConfig().LMS_BASE_URL}/dashboard${location.search}`);

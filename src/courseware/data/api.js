@@ -160,7 +160,7 @@ function normalizeMetadata(metadata) {
     start: data.start,
     enrollmentMode: data.enrollment.mode,
     isEnrolled: data.enrollment.is_active,
-    canLoadCourseware: camelCaseObject(data.can_load_courseware),
+    courseAccess: camelCaseObject(data.course_access),
     canViewLegacyCourseware: data.can_view_legacy_courseware,
     originalUserIsStaff: data.original_user_is_staff,
     isStaff: data.is_staff,

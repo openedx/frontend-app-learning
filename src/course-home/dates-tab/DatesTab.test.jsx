@@ -23,19 +23,24 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('DatesTab', () => {
   let axiosMock;
+  let store;
+  let component;
 
-  const store = initializeStore();
-  const component = (
-    <AppProvider store={store}>
-      <UserMessagesProvider>
-        <Route path="/course/:courseId/dates">
-          <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-            <DatesTab />
-          </TabContainer>
-        </Route>
-      </UserMessagesProvider>
-    </AppProvider>
-  );
+  beforeEach(() => {
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+    store = initializeStore();
+    component = (
+      <AppProvider store={store}>
+        <UserMessagesProvider>
+          <Route path="/course/:courseId/dates">
+            <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
+              <DatesTab />
+            </TabContainer>
+          </Route>
+        </UserMessagesProvider>
+      </AppProvider>
+    );
+  });
 
   const datesTabData = Factory.build('datesTabData');
   let courseMetadata = Factory.build('courseHomeMetadata');
@@ -74,7 +79,6 @@ describe('DatesTab', () => {
 
   describe('when receiving a full set of dates data', () => {
     beforeEach(() => {
-      axiosMock = new MockAdapter(getAuthenticatedHttpClient());
       axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
       history.push(`/course/${courseId}/dates`); // so tab can pull course id from url
@@ -142,7 +146,6 @@ describe('DatesTab', () => {
 
   describe('Suggested schedule messaging', () => {
     beforeEach(() => {
-      axiosMock = new MockAdapter(getAuthenticatedHttpClient());
       setMetadata({ is_self_paced: true, is_enrolled: true });
       history.push(`/course/${courseId}/dates`);
     });
@@ -293,6 +296,47 @@ describe('DatesTab', () => {
         linkType: 'button',
         pageName: 'dates_tab',
       });
+    });
+  });
+
+  describe('when receiving an access denied error', () => {
+    // These tests could go into any particular tab, as they all go through the same flow. But dates tab works.
+
+    async function renderDenied(errorCode) {
+      setMetadata({
+        course_access: {
+          has_access: false,
+          error_code: errorCode,
+          additional_context_user_message: 'uhoh oh no', // only used by audit_expired
+        },
+      });
+      render(component);
+      await waitForElementToBeRemoved(screen.getByRole('status'));
+    }
+
+    beforeEach(() => {
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
+      history.push(`/course/${courseId}/dates`); // so tab can pull course id from url
+    });
+
+    it('redirects to course survey for a survey_required error code', async () => {
+      await renderDenied('survey_required');
+      expect(global.location.href).toEqual(`http://localhost/redirect/survey/${courseMetadata.id}`);
+    });
+
+    it('redirects to dashboard for an unfulfilled_milestones error code', async () => {
+      await renderDenied('unfulfilled_milestones');
+      expect(global.location.href).toEqual('http://localhost/redirect/dashboard');
+    });
+
+    it('redirects to the dashboard with an attached access_response_error for an audit_expired error code', async () => {
+      await renderDenied('audit_expired');
+      expect(global.location.href).toEqual('http://localhost/redirect/dashboard?access_response_error=uhoh%20oh%20no');
+    });
+
+    it('redirects to the dashboard with a notlive start date for a course_not_started error code', async () => {
+      await renderDenied('course_not_started');
+      expect(global.location.href).toEqual('http://localhost/redirect/dashboard?notlive=2/5/2013'); // date from factory
     });
   });
 });

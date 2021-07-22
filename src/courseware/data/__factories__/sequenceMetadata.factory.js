@@ -68,7 +68,7 @@ Factory.define('sequenceMetadata')
  */
 export default function buildSimpleCourseAndSequenceMetadata(options = {}) {
   const courseMetadata = options.courseMetadata || Factory.build('courseMetadata', {
-    can_load_courseware: {
+    course_access: {
       has_access: false,
     },
   });
