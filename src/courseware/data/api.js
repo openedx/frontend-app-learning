@@ -211,7 +211,7 @@ export async function getCourseMetadata(courseId) {
 function normalizeSequenceMetadata(sequence) {
   return {
     sequence: {
-      id: sequence.hash_key,
+      id: sequence.item_id,
       blockType: sequence.tag,
       unitIds: sequence.items.map(unit => unit.id),
       bannerText: sequence.banner_text,
@@ -234,6 +234,7 @@ function normalizeSequenceMetadata(sequence) {
       saveUnitPosition: sequence.save_position,
       showCompletion: sequence.show_completion,
       allowProctoringOptOut: sequence.allow_proctoring_opt_out,
+      decoded_id: sequence.decoded_id,
     },
     units: sequence.items.map(unit => ({
       id: unit.id,
