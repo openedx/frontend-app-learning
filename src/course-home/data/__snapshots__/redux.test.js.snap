@@ -22,6 +22,14 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
+        "courseAccess": Object {
+          "additionalContextUserMessage": null,
+          "developerMessage": null,
+          "errorCode": null,
+          "hasAccess": true,
+          "userFragment": null,
+          "userMessage": null,
+        },
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
         "isSelfPaced": false,
@@ -29,6 +37,7 @@ Object {
         "number": "DemoX",
         "org": "edX",
         "originalUserIsStaff": false,
+        "start": "2013-02-05T05:00:00Z",
         "tabs": Array [
           Object {
             "slug": "outline",
@@ -318,6 +327,14 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
+        "courseAccess": Object {
+          "additionalContextUserMessage": null,
+          "developerMessage": null,
+          "errorCode": null,
+          "hasAccess": true,
+          "userFragment": null,
+          "userMessage": null,
+        },
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
         "isSelfPaced": false,
@@ -325,6 +342,7 @@ Object {
         "number": "DemoX",
         "org": "edX",
         "originalUserIsStaff": false,
+        "start": "2013-02-05T05:00:00Z",
         "tabs": Array [
           Object {
             "slug": "outline",
@@ -497,6 +515,14 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
+        "courseAccess": Object {
+          "additionalContextUserMessage": null,
+          "developerMessage": null,
+          "errorCode": null,
+          "hasAccess": true,
+          "userFragment": null,
+          "userMessage": null,
+        },
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
         "isSelfPaced": false,
@@ -504,6 +530,7 @@ Object {
         "number": "DemoX",
         "org": "edX",
         "originalUserIsStaff": false,
+        "start": "2013-02-05T05:00:00Z",
         "tabs": Array [
           Object {
             "slug": "outline",
