@@ -44,21 +44,22 @@ function SubsectionTitleCell({ intl, subsection }) {
     <Collapsible.Advanced>
       <Row className="w-100 m-0">
         <Collapsible.Trigger
-          className="mr-1"
+          className="mr-1 position-absolute"
           aria-label={intl.formatMessage(messages.problemScoreToggleAltText, { subsectionTitle: displayName })}
           tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
         >
           <Collapsible.Visible whenClosed><Icon src={ArrowDropDown} /></Collapsible.Visible>
           <Collapsible.Visible whenOpen><Icon src={ArrowDropUp} /></Collapsible.Visible>
         </Collapsible.Trigger>
-        <span className="small row ml-0">
-          {gradesFeatureIsFullyLocked || subsection.learnerHasAccess ? '' : <Icon className="mr-1 mt-1" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" />}
+        <span className="small row d-inline" style={{ 'margin-left': '1.6rem' }}>
+          {gradesFeatureIsFullyLocked || subsection.learnerHasAccess ? '' : <Icon id={`detailedGradesBlockedIcon${subsection.blockKey}`} aria-label={intl.formatMessage(messages.noAcessToSubsection, { displayName })} className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" />}
           {url ? (
             <a
               href={url}
               className="muted-link small"
               onClick={logSubsectionClicked}
               tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
+              aria-labelledby={`detailedGradesBlockedIcon${subsection.blockKey}`}
             >
               {displayName}
             </a>
@@ -68,7 +69,7 @@ function SubsectionTitleCell({ intl, subsection }) {
         </span>
       </Row>
       <Collapsible.Body>
-        <ProblemScoreDrawer problemScores={problemScores} />
+        <ProblemScoreDrawer problemScores={problemScores} subsection={subsection} />
       </Collapsible.Body>
     </Collapsible.Advanced>
   );

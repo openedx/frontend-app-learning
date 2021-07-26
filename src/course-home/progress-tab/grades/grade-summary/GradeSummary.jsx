@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useModel } from '../../../../generic/model-store';
 
@@ -16,14 +16,16 @@ function GradeSummary() {
     },
   } = useModel('progress', courseId);
 
+  const [noAccessToSomeAssignmentTypes, setNoAccessToSomeAssignmentTypes] = useState(false);
+
   if (assignmentPolicies.length === 0) {
     return null;
   }
 
   return (
     <section className="text-dark-700 mb-4">
-      <GradeSummaryHeader />
-      <GradeSummaryTable />
+      <GradeSummaryHeader noAccessToSomeAssignmentTypes={noAccessToSomeAssignmentTypes} />
+      <GradeSummaryTable setNoAccessToSomeAssignmentTypes={setNoAccessToSomeAssignmentTypes} />
     </section>
   );
 }

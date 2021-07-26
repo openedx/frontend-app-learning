@@ -357,6 +357,10 @@
   }
 }
 
+.greyed-out {
+  opacity: .3;
+}
+
 .locked-overlay {
   opacity: .3;
   pointer-events: none;

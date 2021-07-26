@@ -1,12 +1,14 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Blocked } from '@edx/paragon/icons';
 import { Icon } from '@edx/paragon';
 import { useModel } from '../../../../generic/model-store';
+import messages from '../messages';
 
 function AssignmentTypeCell({
-  assignmentType, footnoteMarker, footnoteId, locked,
+  intl, assignmentType, footnoteMarker, footnoteId, locked,
 }) {
   const {
     courseId,
@@ -16,7 +18,7 @@ function AssignmentTypeCell({
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
 
-  const lockedIcon = locked ? <Icon className="mr-1 mt-1" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" /> : '';
+  const lockedIcon = locked ? <Icon id={`assignmentTypeBlockedIcon${assignmentType}`} aria-label={intl.formatMessage(messages.noAcessToAssignmentType, { assignmentType })} className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" /> : '';
 
   return (
     <div className="small">
@@ -29,6 +31,7 @@ function AssignmentTypeCell({
             href={`#${footnoteId}-footnote`}
             aria-describedby="grade-summary-footnote-label"
             tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
+            aria-labelledby={`assignmentTypeBlockedIcon${assignmentType}`}
           >
             {footnoteMarker}
           </a>
@@ -39,6 +42,7 @@ function AssignmentTypeCell({
 }
 
 AssignmentTypeCell.propTypes = {
+  intl: intlShape.isRequired,
   assignmentType: PropTypes.string.isRequired,
   footnoteId: PropTypes.string,
   footnoteMarker: PropTypes.number,
@@ -51,4 +55,4 @@ AssignmentTypeCell.defaultProps = {
   locked: false,
 };
 
-export default AssignmentTypeCell;
+export default injectIntl(AssignmentTypeCell);
