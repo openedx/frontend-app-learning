@@ -111,8 +111,6 @@ export function normalizeOutlineBlocks(courseId, blocks) {
     switch (block.type) {
       case 'course':
         models.courses[block.id] = {
-          effortActivities: block.effort_activities,
-          effortTime: block.effort_time,
           id: courseId,
           title: block.display_name,
           sectionIds: block.children || [],
@@ -123,8 +121,6 @@ export function normalizeOutlineBlocks(courseId, blocks) {
       case 'chapter':
         models.sections[block.id] = {
           complete: block.complete,
-          effortActivities: block.effort_activities,
-          effortTime: block.effort_time,
           id: block.id,
           title: block.display_name,
           resumeBlock: block.resume_block,

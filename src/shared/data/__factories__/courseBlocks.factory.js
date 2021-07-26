@@ -106,7 +106,12 @@ export function buildSimpleCourseBlocks(courseId, title, options = {}) {
 export function buildMinimalCourseBlocks(courseId, title, options = {}) {
   const sequenceBlocks = options.sequenceBlocks || [Factory.build(
     'block',
-    { display_name: 'Title of Sequence', type: 'sequential' },
+    {
+      display_name: 'Title of Sequence',
+      effort_activities: 2,
+      effort_time: 15,
+      type: 'sequential',
+    },
     { courseId },
   )];
   const sectionBlocks = options.sectionBlocks || [Factory.build(
@@ -115,8 +120,6 @@ export function buildMinimalCourseBlocks(courseId, title, options = {}) {
       type: 'chapter',
       display_name: 'Title of Section',
       complete: options.complete || false,
-      effort_time: 15,
-      effort_activities: 2,
       resume_block: options.resumeBlock || false,
       children: sequenceBlocks.map(block => block.id),
     },
