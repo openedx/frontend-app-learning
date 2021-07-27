@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -11,7 +12,7 @@ import GradeSummaryTableFooter from './GradeSummaryTableFooter';
 
 import messages from '../messages';
 
-function GradeSummaryTable({ intl }) {
+function GradeSummaryTable({ intl, setAllOfSomeAssignmentTypeIsLocked }) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -37,9 +38,13 @@ function GradeSummaryTable({ intl }) {
       && (subsection.numPointsPossible > 0 || subsection.numPointsEarned > 0)
     ))).flat();
     if (subsectionAssignmentsOfType.length) {
-      return !subsectionAssignmentsOfType.some((subsection) => (
+      const noAccessToAssignmentsOfType = !subsectionAssignmentsOfType.some((subsection) => (
         subsection.learnerHasAccess === true
       ));
+      if (noAccessToAssignmentsOfType) {
+        setAllOfSomeAssignmentTypeIsLocked(true);
+        return true;
+      }
     }
     return false;
   };
@@ -59,7 +64,7 @@ function GradeSummaryTable({ intl }) {
       footnoteMarker = footnotes.length;
     }
 
-    const locked = !gradesFeatureIsFullyLocked && hasNoAccessToAssignmentsOfType(assignment.type) ? 'locked-overlay' : '';
+    const locked = !gradesFeatureIsFullyLocked && hasNoAccessToAssignmentsOfType(assignment.type) ? 'greyed-out' : '';
 
     return {
       type: {
@@ -97,7 +102,7 @@ function GradeSummaryTable({ intl }) {
             headerClassName: 'justify-content-end h5 mb-0',
             // eslint-disable-next-line react/prop-types
             Cell: ({ value }) => (
-              <span className={value.locked ? 'locked-overlay' : ''}>{value.weight}</span> // eslint-disable-line react/prop-types
+              <span className={value.locked ? 'greyed-out' : ''}>{value.weight}</span> // eslint-disable-line react/prop-types
             ),
             cellClassName: 'float-right small',
           },
@@ -107,7 +112,7 @@ function GradeSummaryTable({ intl }) {
             headerClassName: 'justify-content-end h5 mb-0',
             // eslint-disable-next-line react/prop-types
             Cell: ({ value }) => (
-              <span className={value.locked ? 'locked-overlay' : ''}>{value.grade}</span> // eslint-disable-line react/prop-types
+              <span className={value.locked ? 'greyed-out' : ''}>{value.grade}</span> // eslint-disable-line react/prop-types
             ),
             cellClassName: 'float-right small',
           },
@@ -117,7 +122,7 @@ function GradeSummaryTable({ intl }) {
             headerClassName: 'justify-content-end h5 mb-0 text-right',
             // eslint-disable-next-line react/prop-types
             Cell: ({ value }) => (
-              <span className={value.locked ? 'locked-overlay' : ''}>{value.weightedGrade}</span> // eslint-disable-line react/prop-types
+              <span className={value.locked ? 'greyed-out' : ''}>{value.weightedGrade}</span> // eslint-disable-line react/prop-types
             ),
             cellClassName: 'float-right font-weight-bold small',
           },
@@ -136,6 +141,7 @@ function GradeSummaryTable({ intl }) {
 
 GradeSummaryTable.propTypes = {
   intl: intlShape.isRequired,
+  setAllOfSomeAssignmentTypeIsLocked: PropTypes.func.isRequired,
 };
 
 export default injectIntl(GradeSummaryTable);
