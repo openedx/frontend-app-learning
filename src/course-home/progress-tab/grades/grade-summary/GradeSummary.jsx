@@ -16,7 +16,7 @@ function GradeSummary() {
     },
   } = useModel('progress', courseId);
 
-  const [noAccessToSomeAssignmentTypes, setNoAccessToSomeAssignmentTypes] = useState(false);
+  const [allOfSomeAssignmentTypeIsLocked, setAllOfSomeAssignmentTypeIsLocked] = useState(false);
 
   if (assignmentPolicies.length === 0) {
     return null;
@@ -24,8 +24,8 @@ function GradeSummary() {
 
   return (
     <section className="text-dark-700 mb-4">
-      <GradeSummaryHeader noAccessToSomeAssignmentTypes={noAccessToSomeAssignmentTypes} />
-      <GradeSummaryTable setNoAccessToSomeAssignmentTypes={setNoAccessToSomeAssignmentTypes} />
+      <GradeSummaryHeader allOfSomeAssignmentTypeIsLocked={allOfSomeAssignmentTypeIsLocked} />
+      <GradeSummaryTable setAllOfSomeAssignmentTypeIsLocked={setAllOfSomeAssignmentTypeIsLocked} />
     </section>
   );
 }

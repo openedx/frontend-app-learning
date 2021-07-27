@@ -12,7 +12,7 @@ import GradeSummaryTableFooter from './GradeSummaryTableFooter';
 
 import messages from '../messages';
 
-function GradeSummaryTable({ intl, setNoAccessToSomeAssignmentTypes }) {
+function GradeSummaryTable({ intl, setAllOfSomeAssignmentTypeIsLocked }) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -42,7 +42,7 @@ function GradeSummaryTable({ intl, setNoAccessToSomeAssignmentTypes }) {
         subsection.learnerHasAccess === true
       ));
       if (noAccessToAssignmentsOfType) {
-        setNoAccessToSomeAssignmentTypes(true);
+        setAllOfSomeAssignmentTypeIsLocked(true);
         return true;
       }
     }
@@ -141,7 +141,7 @@ function GradeSummaryTable({ intl, setNoAccessToSomeAssignmentTypes }) {
 
 GradeSummaryTable.propTypes = {
   intl: intlShape.isRequired,
-  setNoAccessToSomeAssignmentTypes: PropTypes.func.isRequired,
+  setAllOfSomeAssignmentTypeIsLocked: PropTypes.func.isRequired,
 };
 
 export default injectIntl(GradeSummaryTable);

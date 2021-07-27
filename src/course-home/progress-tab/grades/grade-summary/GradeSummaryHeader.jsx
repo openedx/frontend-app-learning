@@ -11,7 +11,7 @@ import { Blocked, InfoOutline } from '@edx/paragon/icons';
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 
-function GradeSummaryHeader({ intl, noAccessToSomeAssignmentTypes }) {
+function GradeSummaryHeader({ intl, allOfSomeAssignmentTypeIsLocked }) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -46,8 +46,8 @@ function GradeSummaryHeader({ intl, noAccessToSomeAssignmentTypes }) {
           disabled={gradesFeatureIsFullyLocked}
         />
       </OverlayTrigger>
-      {!gradesFeatureIsFullyLocked && noAccessToSomeAssignmentTypes && (
-        <div className="mb-3 small row ml-0 d-inline">
+      {!gradesFeatureIsFullyLocked && allOfSomeAssignmentTypeIsLocked && (
+        <div className="mb-3 small ml-0 d-inline">
           <Icon className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" />
           {intl.formatMessage(messages.gradeSummaryLimitedAccessExplanation)}
         </div>
@@ -58,7 +58,7 @@ function GradeSummaryHeader({ intl, noAccessToSomeAssignmentTypes }) {
 
 GradeSummaryHeader.propTypes = {
   intl: intlShape.isRequired,
-  noAccessToSomeAssignmentTypes: PropTypes.bool.isRequired,
+  allOfSomeAssignmentTypeIsLocked: PropTypes.bool.isRequired,
 };
 
 export default injectIntl(GradeSummaryHeader);
