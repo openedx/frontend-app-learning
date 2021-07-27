@@ -16,8 +16,6 @@ export function normalizeBlocks(courseId, blocks) {
     switch (block.type) {
       case 'course':
         models.courses[block.id] = {
-          effortActivities: block.effort_activities,
-          effortTime: block.effort_time,
           id: courseId,
           title: block.display_name,
           sectionIds: block.children || [],
@@ -26,8 +24,6 @@ export function normalizeBlocks(courseId, blocks) {
         break;
       case 'chapter':
         models.sections[block.id] = {
-          effortActivities: block.effort_activities,
-          effortTime: block.effort_time,
           id: block.id,
           title: block.display_name,
           sequenceIds: block.children || [],

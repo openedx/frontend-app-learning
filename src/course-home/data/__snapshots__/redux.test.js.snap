@@ -396,8 +396,6 @@ Object {
         "courseBlocks": Object {
           "courses": Object {
             "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
-              "effortActivities": undefined,
-              "effortTime": undefined,
               "hasScheduledContent": false,
               "id": "course-v1:edX+DemoX+Demo_Course_1",
               "sectionIds": Array [
@@ -410,8 +408,6 @@ Object {
             "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2": Object {
               "complete": false,
               "courseId": "course-v1:edX+DemoX+Demo_Course_1",
-              "effortActivities": 2,
-              "effortTime": 15,
               "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               "resumeBlock": false,
               "sequenceIds": Array [
@@ -425,8 +421,8 @@ Object {
               "complete": false,
               "description": null,
               "due": null,
-              "effortActivities": undefined,
-              "effortTime": undefined,
+              "effortActivities": 2,
+              "effortTime": 15,
               "icon": null,
               "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
               "legacyWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1?experience=legacy",

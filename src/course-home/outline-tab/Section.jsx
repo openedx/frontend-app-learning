@@ -6,7 +6,6 @@ import { faCheckCircle as fasCheckCircle, faMinus, faPlus } from '@fortawesome/f
 import { faCheckCircle as farCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import EffortEstimate from '../../shared/effort-estimate';
 import SequenceLink from './SequenceLink';
 import { useModel } from '../../generic/model-store';
 
@@ -67,7 +66,6 @@ function Section({
         <span className="sr-only">
           , {intl.formatMessage(complete ? messages.completedSection : messages.incompleteSection)}
         </span>
-        <EffortEstimate className="ml-3 align-middle" block={section} />
       </div>
     </div>
   );

@@ -9,7 +9,6 @@ Factory.define('courseMetadata')
     can_show_upgrade_sock: false,
     content_type_gating_enabled: false,
     course_expired_message: null,
-    effort: null,
     end: null,
     enrollment_start: null,
     enrollment_end: null,

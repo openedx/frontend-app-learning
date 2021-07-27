@@ -6,6 +6,11 @@ const messages = defineMessages({
     defaultMessage: 'Next',
     description: 'Button to advance to the next section',
   },
+  nextUpButton: {
+    id: 'learn.sequence.navigation.next.up.button',
+    defaultMessage: 'Next Up: {title}',
+    description: 'Button to advance to the next section, with title',
+  },
   previousButton: {
     id: 'learn.sequence.navigation.previous.button',
     defaultMessage: 'Previous',

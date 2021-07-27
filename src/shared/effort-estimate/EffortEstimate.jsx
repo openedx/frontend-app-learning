@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+
+import messages from './messages';
 
 // This component shows an effort estimate provided by the backend block data. Either time, activities, or both.
-// Right now it is an experiment, and AA-659 is its cleanup ticket.
 
 function EffortEstimate(props) {
   const {
@@ -12,27 +14,34 @@ function EffortEstimate(props) {
       effortTime,
     },
     className,
+    intl,
   } = props;
 
-  // FIXME: This is not properly internationalized. This is just an experiment right now, so I chose to not mark
-  // FIXME: the strings for translation. That should be fixed if/when this is made real code. AA-659
   const minuteCount = Math.ceil(effortTime / 60); // effortTime is in seconds
+  const minutesAbbreviated = intl.formatMessage(messages.minutesAbbreviated, { minuteCount });
+  const minutesFull = intl.formatMessage(messages.minutesFull, { minuteCount });
   const minutes = (
     <>
-      {minuteCount}
-      <span aria-hidden="true"> min</span>
-      <span className="sr-only"> {minuteCount === 1 ? 'minute' : 'minutes'}</span>
+      <span aria-hidden="true">{minutesAbbreviated}</span>
+      <span className="sr-only">{minutesFull}</span>
     </>
   );
-  const activities = <>{effortActivities} {effortActivities === 1 ? 'activity' : 'activities'}</>;
+  const activities = intl.formatMessage(messages.activities, { activityCount: effortActivities });
   let content = null;
 
   if (effortTime && effortActivities) {
-    content = <>{minutes} + {activities}</>;
+    content = (
+      <FormattedMessage
+        id="learning.effortEstimation.combinedEstimate"
+        defaultMessage="{minutes} + {activities}"
+        description="You can likely leave this alone, unless you want to use a full width plus or similar change"
+        values={{ activities, minutes }}
+      />
+    );
   } else if (effortTime) {
-    content = <>{minutes}</>;
+    content = minutes;
   } else if (effortActivities) {
-    content = <>{activities}</>;
+    content = activities;
   } else {
     return null;
   }
@@ -57,6 +66,7 @@ EffortEstimate.propTypes = {
     effortTime: PropTypes.number,
   }).isRequired,
   className: PropTypes.string,
+  intl: intlShape.isRequired,
 };
 
-export default EffortEstimate;
+export default injectIntl(EffortEstimate);
