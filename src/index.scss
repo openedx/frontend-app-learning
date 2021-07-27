@@ -70,6 +70,22 @@
 }
 .course-tabs-navigation {
   border-bottom: solid 1px #EAEAEA;
+
+  .nav a, .nav button {
+    &:hover {
+      background-color: $light-400;
+    }
+    &:focus {
+      border: 2px solid $dark-500;
+    }
+  }
+
+  .nav a {
+    &:not(.active):hover {
+      background-color: $light-400;
+      border-bottom: none;
+    }
+  }
 }
 
 .nav-underline-tabs {
