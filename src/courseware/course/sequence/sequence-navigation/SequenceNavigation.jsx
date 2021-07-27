@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import { Button } from '@edx/paragon';
 import { ChevronLeft, ChevronRight } from '@edx/paragon/icons';
 import classNames from 'classnames';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import {
+  injectIntl,
+  intlShape,
+  isRtl,
+  getLocale,
+} from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';
 import { getCourseExitNavigation } from '../../course-exit';
@@ -67,16 +72,20 @@ function SequenceNavigation({
     const buttonOnClick = isLastUnit ? goToCourseExitPage : nextSequenceHandler;
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
+    const nextArrow = isRtl(getLocale()) ? ChevronLeft : ChevronRight;
+
     return (
-      <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled} iconAfter={ChevronRight}>
+      <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled} iconAfter={nextArrow}>
         {shouldDisplayNotificationTrigger ? null : buttonText}
       </Button>
     );
   };
 
+  const prevArrow = isRtl(getLocale()) ? ChevronRight : ChevronLeft;
+
   return sequenceStatus === LOADED && (
     <nav className={classNames('sequence-navigation', className)} style={{ width: shouldDisplayNotificationTrigger ? '90%' : null }}>
-      <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit} iconBefore={ChevronLeft}>
+      <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit} iconBefore={prevArrow}>
         {shouldDisplayNotificationTrigger ? null : intl.formatMessage(messages.previousButton)}
       </Button>
       {renderUnitButtons()}
