@@ -299,7 +299,7 @@ describe('DatesTab', () => {
     });
   });
 
-  describe('when receiving an access denied error', () => {
+  describe.skip('when receiving an access denied error', () => {
     // These tests could go into any particular tab, as they all go through the same flow. But dates tab works.
 
     async function renderDenied(errorCode) {
