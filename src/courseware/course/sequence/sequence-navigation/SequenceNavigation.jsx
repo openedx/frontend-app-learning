@@ -27,7 +27,6 @@ function SequenceNavigation({
   nextSequenceHandler,
   previousSequenceHandler,
   goToCourseExitPage,
-  isValuePropCookieSet,
   mmp2p,
 }) {
   const sequence = useModel('sequences', sequenceId);
@@ -70,15 +69,15 @@ function SequenceNavigation({
     const disabled = isLastUnit && !exitActive;
     return (
       <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled} iconAfter={ChevronRight}>
-        {isValuePropCookieSet && shouldDisplayNotificationTrigger ? null : buttonText}
+        {shouldDisplayNotificationTrigger ? null : buttonText}
       </Button>
     );
   };
 
   return sequenceStatus === LOADED && (
-    <nav className={classNames('sequence-navigation', className)} style={{ width: isValuePropCookieSet && shouldDisplayNotificationTrigger ? '90%' : null }}>
+    <nav className={classNames('sequence-navigation', className)} style={{ width: shouldDisplayNotificationTrigger ? '90%' : null }}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit} iconBefore={ChevronLeft}>
-        {isValuePropCookieSet && shouldDisplayNotificationTrigger ? null : intl.formatMessage(messages.previousButton)}
+        {shouldDisplayNotificationTrigger ? null : intl.formatMessage(messages.previousButton)}
       </Button>
       {renderUnitButtons()}
       {renderNextButton()}
@@ -98,7 +97,6 @@ SequenceNavigation.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   goToCourseExitPage: PropTypes.func.isRequired,
-  isValuePropCookieSet: PropTypes.bool,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({
@@ -110,7 +108,6 @@ SequenceNavigation.propTypes = {
 SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
-  isValuePropCookieSet: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {

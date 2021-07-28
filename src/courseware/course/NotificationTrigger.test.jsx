@@ -35,9 +35,9 @@ describe('Notification Trigger', () => {
     };
     render(<NotificationTrigger {...testData} />);
 
-    const notificationOpenButton = screen.getByRole('button', { name: /Show notification tray/i });
-    expect(notificationOpenButton).toBeInTheDocument();
-    fireEvent.click(notificationOpenButton);
+    const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
+    expect(notificationTrigger).toBeInTheDocument();
+    fireEvent.click(notificationTrigger);
     expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
   });
 });

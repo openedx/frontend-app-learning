@@ -111,6 +111,7 @@ describe('Progress Tab', () => {
                 assignment_type: 'Homework',
                 block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
                 display_name: 'First subsection',
+                learner_has_access: true,
                 has_graded_assignment: true,
                 num_points_earned: 1,
                 num_points_possible: 2,
@@ -176,6 +177,7 @@ describe('Progress Tab', () => {
                 assignment_type: 'Homework',
                 block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
                 display_name: 'First subsection',
+                learner_has_access: true,
                 has_graded_assignment: true,
                 num_points_earned: 8,
                 num_points_possible: 10,
@@ -252,6 +254,26 @@ describe('Progress Tab', () => {
           sku: 'ABCD1234',
           upgrade_url: 'edx.org/upgrade',
         },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: false,
+                has_graded_assignment: true,
+                num_points_earned: 8,
+                num_points_possible: 10,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
       });
       await fetchAndRender();
       expect(screen.getByText('locked feature')).toBeInTheDocument();
@@ -259,7 +281,7 @@ describe('Progress Tab', () => {
       expect(screen.getAllByRole('link', 'Unlock now')).toHaveLength(3);
     });
 
-    it('sends event on click of upgrade button in locked content header (CourseGradeHeader)', async () => {
+    it('sends events on click of upgrade button in locked content header (CourseGradeHeader)', async () => {
       sendTrackEvent.mockClear();
       setTabData({
         completion_summary: {
@@ -275,6 +297,26 @@ describe('Progress Tab', () => {
           sku: 'ABCD1234',
           upgrade_url: 'edx.org/upgrade',
         },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: false,
+                has_graded_assignment: true,
+                num_points_earned: 8,
+                num_points_possible: 10,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
       });
       await fetchAndRender();
       expect(screen.getByText('locked feature')).toBeInTheDocument();
@@ -283,11 +325,19 @@ describe('Progress Tab', () => {
       const upgradeButton = screen.getAllByRole('link', 'Unlock now')[0];
       fireEvent.click(upgradeButton);
 
-      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
       expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.grades_upgrade.clicked', {
         org_key: 'edX',
         courserun_key: courseId,
         is_staff: false,
+      });
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: '(none)',
+        linkName: 'progress_locked',
+        linkType: 'button',
+        pageName: 'progress',
       });
     });
 
@@ -298,6 +348,26 @@ describe('Progress Tab', () => {
           incomplete_count: 1,
           locked_count: 1,
         },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: false,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
       });
       await fetchAndRender();
       expect(screen.getByText('locked feature')).toBeInTheDocument();
@@ -307,6 +377,62 @@ describe('Progress Tab', () => {
     it('does not render locked feature preview when user does not have locked content', async () => {
       await fetchAndRender();
       expect(screen.queryByText('locked feature')).not.toBeInTheDocument();
+    });
+
+    it('renders limited feature preview with upgrade button when user has access to some content that would typically be locked', async () => {
+      setTabData({
+        completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 1,
+        },
+        verified_mode: {
+          access_expiration_date: '2050-01-01T12:00:00',
+          currency: 'USD',
+          currency_symbol: '$',
+          price: 149,
+          sku: 'ABCD1234',
+          upgrade_url: 'edx.org/upgrade',
+        },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@123456',
+                display_name: 'First subsection',
+                learner_has_access: false,
+                has_graded_assignment: true,
+                num_points_earned: 8,
+                num_points_possible: 10,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+              {
+                assignment_type: 'Exam',
+                display_name: 'Second subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 1,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection',
+              },
+            ],
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.getByText('limited feature')).toBeInTheDocument();
+      expect(screen.getByText('Unlock to work towards a certificate.')).toBeInTheDocument();
+      expect(screen.queryAllByText('You have limited access to graded assignments as part of the audit track in this course.')).toHaveLength(2);
+
+      expect(screen.queryAllByTestId('blocked-icon')).toHaveLength(4);
     });
 
     it('renders correct current grade tooltip when showGrades is false', async () => {
@@ -321,6 +447,7 @@ describe('Progress Tab', () => {
                 assignment_type: 'Homework',
                 block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
                 display_name: 'First subsection',
+                learner_has_access: true,
                 has_graded_assignment: true,
                 num_points_earned: 1,
                 num_points_possible: 2,
@@ -337,6 +464,7 @@ describe('Progress Tab', () => {
               {
                 assignment_type: 'Homework',
                 display_name: 'Second subsection',
+                learner_has_access: true,
                 has_graded_assignment: true,
                 num_points_earned: 1,
                 num_points_possible: 1,
@@ -531,6 +659,7 @@ describe('Progress Tab', () => {
               {
                 assignment_type: 'Homework',
                 display_name: 'Second subsection',
+                learner_has_access: true,
                 has_graded_assignment: true,
                 num_points_earned: 1,
                 num_points_possible: 1,
@@ -554,8 +683,8 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       expect(screen.getByText('Detailed grades')).toBeInTheDocument();
 
-      expect(screen.getByRole('link', { name: 'First subsection' }));
-      expect(screen.getByRole('link', { name: 'Second subsection' }));
+      expect(screen.getByText('First subsection'));
+      expect(screen.getByText('Second subsection'));
     });
 
     it('sends event on click of subsection link', async () => {
@@ -589,6 +718,20 @@ describe('Progress Tab', () => {
         courserun_key: courseId,
         is_staff: false,
       });
+    });
+
+    it('renders individual problem score drawer', async () => {
+      sendTrackEvent.mockClear();
+      await fetchAndRender();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+
+      const problemScoreDrawerToggle = screen.getByRole('button', { name: 'Toggle individual problem scores for First subsection' });
+      expect(problemScoreDrawerToggle).toBeInTheDocument();
+
+      // Open the problem score drawer
+      fireEvent.click(problemScoreDrawerToggle);
+      expect(screen.getByText('Problem Scores:')).toBeInTheDocument();
+      expect(screen.getAllByText('0/1')).toHaveLength(3);
     });
 
     it('render message when section scores are not populated', async () => {
@@ -958,12 +1101,20 @@ describe('Progress Tab', () => {
         const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
         fireEvent.click(upgradeLink);
 
-        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+        expect(sendTrackEvent).toHaveBeenCalledTimes(3);
         expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
           org_key: 'edX',
           courserun_key: courseId,
           is_staff: false,
           certificate_status_variant: 'audit_passing',
+        });
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          linkCategory: '(none)',
+          linkName: 'progress_certificate',
+          linkType: 'button',
+          pageName: 'progress',
         });
       });
 

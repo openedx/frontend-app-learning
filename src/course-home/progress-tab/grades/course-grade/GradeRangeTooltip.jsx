@@ -14,10 +14,10 @@ import messages from '../messages';
 function GradeRangeTooltip({ intl, iconButtonClassName, passingGrade }) {
   const {
     courseId,
-    gradesFeatureIsLocked,
   } = useSelector(state => state.courseHome);
 
   const {
+    gradesFeatureIsFullyLocked,
     gradingPolicy: {
       gradeRange,
     },
@@ -68,7 +68,7 @@ function GradeRangeTooltip({ intl, iconButtonClassName, passingGrade }) {
         src={InfoOutline}
         iconAs={Icon}
         size="inline"
-        disabled={gradesFeatureIsLocked}
+        disabled={gradesFeatureIsFullyLocked}
       />
     </OverlayTrigger>
   );

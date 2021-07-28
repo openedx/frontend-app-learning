@@ -23,24 +23,22 @@
     height: 15rem;
 }
 
-.notification-tray-header {
-    padding: 0.625rem 0;
-
-    span {
-        display: inline-block;
-    }
+.notification-tray-title {
+    display: inline-block;
+    padding: 0.625rem 0 0.625rem 1.25rem;
 }
 
 .close-btn {
     float: right;
+    margin-right: 0.5rem;
+    margin-top: 0.35rem;
 }
 
 .notification-tray-divider {
-    width: 100.5%;
     height: 0.5rem;
     background: $gray-100;
-    border: 1px solid $light-400;
-    border-left: 0;
+    border-top: 1px solid $light-400;
+    border-bottom: 1px solid $light-400;
 }
 
 .notification-tray-content {

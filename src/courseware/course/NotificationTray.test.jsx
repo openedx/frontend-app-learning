@@ -47,10 +47,23 @@ describe('NotificationTray', () => {
     };
   });
 
-  it('renders notification tray', async () => {
-    useWindowSize.mockReturnValue({ width: 1200, height: 422 });
-    await fetchAndRender(<NotificationTray />);
+  it('renders notification tray and close tray button', async () => {
+    useWindowSize.mockReturnValue({ width: 1200 });
+    const toggleNotificationTray = jest.fn();
+    const testData = {
+      ...mockData,
+      toggleNotificationTray,
+    };
+    await fetchAndRender(<NotificationTray {...testData} />);
+
     expect(screen.getByText('Notifications')).toBeInTheDocument();
+    const notificationCloseIconButton = screen.getByRole('button', { name: /Close notification tray/i });
+    expect(notificationCloseIconButton).toBeInTheDocument();
+    expect(notificationCloseIconButton).toHaveClass('btn-icon-primary');
+    fireEvent.click(notificationCloseIconButton);
+    expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
+
+    // should not render responsive "Back to course" to close the tray
     expect(screen.queryByText('Back to course')).not.toBeInTheDocument();
   });
 
@@ -69,8 +82,8 @@ describe('NotificationTray', () => {
     expect(screen.queryByText('You have no new notifications at this time.')).toBeInTheDocument();
   });
 
-  it('renders notification tray with full screen "Back to course" at response width', async () => {
-    useWindowSize.mockReturnValue({ width: 991, height: 422 });
+  it('renders notification tray with full screen "Back to course" at responsive view', async () => {
+    useWindowSize.mockReturnValue({ width: 991 });
     const toggleNotificationTray = jest.fn();
     const testData = {
       ...mockData,

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, FormattedDate } from '@edx/frontend-platform/i18n';
-
-import { Alert, ALERT_TYPES } from '../../generic/user-messages';
+import { Alert } from '@edx/paragon';
+import { Info } from '@edx/paragon/icons';
 
 function AccessExpirationAlertMasquerade({ payload }) {
   const {
@@ -26,7 +26,7 @@ function AccessExpirationAlertMasquerade({ payload }) {
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
   return (
-    <Alert type={ALERT_TYPES.INFO}>
+    <Alert variant="info" icon={Info}>
       <FormattedMessage
         id="learning.accessExpiration.expired"
         defaultMessage="This learner does not have access to this course. Their access expired on {date}."

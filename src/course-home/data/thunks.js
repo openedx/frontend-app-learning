@@ -17,6 +17,7 @@ import {
 } from '../../generic/model-store';
 
 import {
+  // fetchTabDenied,
   fetchTabFailure,
   fetchTabRequest,
   fetchTabSuccess,
@@ -61,6 +62,10 @@ export function fetchTab(courseId, tab, getTabData, targetUserId) {
         logError(tabDataResult.reason);
       }
 
+      // Disable the access-denied path for now - it caused a regression
+      /* if (fetchedCourseHomeCourseMetadata && !courseHomeCourseMetadataResult.value.courseAccess.hasAccess) {
+        dispatch(fetchTabDenied({ courseId }));
+      } else */
       if (fetchedCourseHomeCourseMetadata && fetchedTabData) {
         dispatch(fetchTabSuccess({ courseId, targetUserId }));
       } else {

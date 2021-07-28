@@ -4,18 +4,26 @@ import { createSlice } from '@reduxjs/toolkit';
 export const LOADING = 'loading';
 export const LOADED = 'loaded';
 export const FAILED = 'failed';
+export const DENIED = 'denied';
 
 const slice = createSlice({
   name: 'course-home',
   initialState: {
     courseStatus: 'loading',
     courseId: null,
-    gradesFeatureIsLocked: false,
     toastBodyText: null,
     toastBodyLink: null,
     toastHeader: '',
   },
   reducers: {
+    fetchTabDenied: (state, { payload }) => {
+      state.courseId = payload.courseId;
+      state.courseStatus = DENIED;
+    },
+    fetchTabFailure: (state, { payload }) => {
+      state.courseId = payload.courseId;
+      state.courseStatus = FAILED;
+    },
     fetchTabRequest: (state, { payload }) => {
       state.courseId = payload.courseId;
       state.courseStatus = LOADING;
@@ -24,10 +32,6 @@ const slice = createSlice({
       state.courseId = payload.courseId;
       state.targetUserId = payload.targetUserId;
       state.courseStatus = LOADED;
-    },
-    fetchTabFailure: (state, { payload }) => {
-      state.courseId = payload.courseId;
-      state.courseStatus = FAILED;
     },
     setCallToActionToast: (state, { payload }) => {
       const {
@@ -39,18 +43,15 @@ const slice = createSlice({
       state.toastBodyText = linkText;
       state.toastHeader = header;
     },
-    setGradesFeatureStatus: (state, { payload }) => {
-      state.gradesFeatureIsLocked = payload.gradesFeatureIsLocked;
-    },
   },
 });
 
 export const {
+  fetchTabDenied,
+  fetchTabFailure,
   fetchTabRequest,
   fetchTabSuccess,
-  fetchTabFailure,
   setCallToActionToast,
-  setGradesFeatureStatus,
 } = slice.actions;
 
 export const {

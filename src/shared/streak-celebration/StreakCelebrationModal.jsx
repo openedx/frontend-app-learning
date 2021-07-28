@@ -134,18 +134,20 @@ function StreakModal({
           </div>
         )}
         { AA759ExperimentEnabled && (
-          <Alert variant="success" className="px-0 d-flex">
-            <Icon className="col-small ml-3 text-success-500" src={MoneyFilled} />
-            <div className="col-11 factoid-wrapper">
-              <b>{intl.formatMessage(messages.congratulations)}</b>
-              &nbsp;{intl.formatMessage(messages.streakDiscountMessage)}&nbsp;
-              <FormattedMessage
-                id="learning.streakCelebration.streakAA759EndDateMessage"
-                defaultMessage="Ends {date}."
-                values={{
-                  date: new Date('2021-7-20 00:00').toLocaleDateString({ timeZone: 'UTC' }),
-                }}
-              />
+          <Alert variant="success" className="px-0">
+            <div className="d-flex">
+              <Icon className="col-small ml-3 text-success-500" src={MoneyFilled} />
+              <div className="col-11 factoid-wrapper">
+                <b>{intl.formatMessage(messages.congratulations)}</b>
+                &nbsp;{intl.formatMessage(messages.streakDiscountMessage)}&nbsp;
+                <FormattedMessage
+                  id="learning.streakCelebration.streakAA759EndDateMessage"
+                  defaultMessage="Ends {date}."
+                  values={{
+                    date: new Date('2021-7-20 00:00').toLocaleDateString({ timeZone: 'UTC' }),
+                  }}
+                />
+              </div>
             </div>
           </Alert>
         )}

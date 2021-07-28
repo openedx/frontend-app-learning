@@ -29,9 +29,13 @@ const messages = defineMessages({
     id: 'progress.courseGrade.footer.passing',
     defaultMessage: 'You’re currently passing this course with a grade of {letterGrade} ({minGrade}-{maxGrade}%)',
   },
-  courseGradePreviewHeader: {
-    id: 'progress.courseGrade.preview.header',
+  courseGradePreviewHeaderLocked: {
+    id: 'progress.courseGrade.preview.headerLocked',
     defaultMessage: 'locked feature',
+  },
+  courseGradePreviewHeaderLimited: {
+    id: 'progress.courseGrade.preview.headerLimited',
+    defaultMessage: 'limited feature',
   },
   courseGradePreviewHeaderAriaHidden: {
     id: 'progress.courseGrade.preview.header.ariaHidden',
@@ -40,6 +44,10 @@ const messages = defineMessages({
   courseGradePreviewUnlockCertificateBody: {
     id: 'progress.courseGrade.preview.body.unlockCertificate',
     defaultMessage: 'Unlock to view grades and work towards a certificate.',
+  },
+  courseGradePartialPreviewUnlockCertificateBody: {
+    id: 'progress.courseGrade.partialpreview.body.unlockCertificate',
+    defaultMessage: 'Unlock to work towards a certificate.',
   },
   courseGradePreviewUpgradeDeadlinePassedBody: {
     id: 'progress.courseGrade.preview.body.upgradeDeadlinePassed',
@@ -89,6 +97,10 @@ const messages = defineMessages({
     id: 'progress.gradeSummary',
     defaultMessage: 'Grade summary',
   },
+  gradeSummaryLimitedAccessExplanation: {
+    id: 'progress.gradeSummary.limitedAccessExplanation',
+    defaultMessage: 'You have limited access to graded assignments as part of the audit track in this course.',
+  },
   gradeSummaryTooltipAlt: {
     id: 'progress.gradeSummary.tooltip.alt',
     defaultMessage: 'Grade summary tooltip',
@@ -102,6 +114,14 @@ const messages = defineMessages({
   passingGradeLabel: {
     id: 'progress.courseGrade.label.passingGrade',
     defaultMessage: 'Passing grade',
+  },
+  problemScoreLabel: {
+    id: 'progress.detailedGrades.problemScore.label',
+    defaultMessage: 'Problem Scores:',
+  },
+  problemScoreToggleAltText: {
+    id: 'progress.detailedGrades.problemScore.toggleButton',
+    defaultMessage: 'Toggle individual problem scores for {subsectionTitle}',
   },
   score: {
     id: 'progress.score',
@@ -118,6 +138,14 @@ const messages = defineMessages({
   weightedGradeSummary: {
     id: 'progress.weightedGradeSummary',
     defaultMessage: 'Your current weighted grade summary',
+  },
+  noAcessToAssignmentType: {
+    id: 'progress.noAcessToAssignmentType',
+    defaultMessage: 'You do not have access to assignments of type {assignmentType}',
+  },
+  noAcessToSubsection: {
+    id: 'progress.noAcessToSubsection',
+    defaultMessage: 'You do not have access to subsection {displayName}',
   },
 });
 

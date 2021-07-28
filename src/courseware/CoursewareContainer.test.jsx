@@ -427,31 +427,46 @@ describe('CoursewareContainer', () => {
     });
   });
 
-  describe('when receiving a can_load_courseware error_code', () => {
+  describe('when receiving a course_access error_code', () => {
     function setUpWithDeniedStatus(errorCode) {
       const courseMetadata = Factory.build('courseMetadata', {
-        can_load_courseware: {
+        course_access: {
           has_access: false,
           error_code: errorCode,
           additional_context_user_message: 'uhoh oh no', // only used by audit_expired
         },
       });
       const courseId = courseMetadata.id;
-      const { courseBlocks } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
+
+      const { courseBlocks, sequenceBlocks, unitBlocks } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
       setUpMockRequests({ courseBlocks, courseMetadata });
-      history.push(`/course/${courseId}`);
-      return courseMetadata;
+      history.push(`/course/${courseId}/${sequenceBlocks[0].id}/${unitBlocks[0].id}`);
+      return { courseMetadata, unitBlocks };
     }
 
     it('should go to course home for an enrollment_required error code', async () => {
-      const courseMetadata = setUpWithDeniedStatus('enrollment_required');
+      const { courseMetadata } = setUpWithDeniedStatus('enrollment_required');
       await loadContainer();
 
       expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);
     });
 
+    it('should go to course survey for a survey_required error code', async () => {
+      const { courseMetadata } = setUpWithDeniedStatus('survey_required');
+      await loadContainer();
+
+      expect(global.location.href).toEqual(`http://localhost/redirect/survey/${courseMetadata.id}`);
+    });
+
+    it('should go to legacy courseware for a microfrontend_disabled error code', async () => {
+      const { courseMetadata, unitBlocks } = setUpWithDeniedStatus('microfrontend_disabled');
+      await loadContainer();
+
+      expect(global.location.href).toEqual(`http://localhost/redirect/courseware/${courseMetadata.id}/unit/${unitBlocks[0].id}`);
+    });
+
     it('should go to course home for an authentication_required error code', async () => {
-      const courseMetadata = setUpWithDeniedStatus('authentication_required');
+      const { courseMetadata } = setUpWithDeniedStatus('authentication_required');
       await loadContainer();
 
       expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);

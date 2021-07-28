@@ -5,7 +5,6 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
-    "gradesFeatureIsLocked": false,
     "targetUserId": undefined,
     "toastBodyLink": null,
     "toastBodyText": null,
@@ -23,6 +22,14 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
+        "courseAccess": Object {
+          "additionalContextUserMessage": null,
+          "developerMessage": null,
+          "errorCode": null,
+          "hasAccess": true,
+          "userFragment": null,
+          "userMessage": null,
+        },
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
         "isSelfPaced": false,
@@ -30,6 +37,7 @@ Object {
         "number": "DemoX",
         "org": "edX",
         "originalUserIsStaff": false,
+        "start": "2013-02-05T05:00:00Z",
         "tabs": Array [
           Object {
             "slug": "outline",
@@ -302,7 +310,6 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
-    "gradesFeatureIsLocked": false,
     "targetUserId": undefined,
     "toastBodyLink": null,
     "toastBodyText": null,
@@ -320,6 +327,14 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
+        "courseAccess": Object {
+          "additionalContextUserMessage": null,
+          "developerMessage": null,
+          "errorCode": null,
+          "hasAccess": true,
+          "userFragment": null,
+          "userMessage": null,
+        },
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
         "isSelfPaced": false,
@@ -327,6 +342,7 @@ Object {
         "number": "DemoX",
         "org": "edX",
         "originalUserIsStaff": false,
+        "start": "2013-02-05T05:00:00Z",
         "tabs": Array [
           Object {
             "slug": "outline",
@@ -380,8 +396,6 @@ Object {
         "courseBlocks": Object {
           "courses": Object {
             "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
-              "effortActivities": undefined,
-              "effortTime": undefined,
               "hasScheduledContent": false,
               "id": "course-v1:edX+DemoX+Demo_Course_1",
               "sectionIds": Array [
@@ -394,8 +408,6 @@ Object {
             "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2": Object {
               "complete": false,
               "courseId": "course-v1:edX+DemoX+Demo_Course_1",
-              "effortActivities": 2,
-              "effortTime": 15,
               "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               "resumeBlock": false,
               "sequenceIds": Array [
@@ -409,8 +421,8 @@ Object {
               "complete": false,
               "description": null,
               "due": null,
-              "effortActivities": undefined,
-              "effortTime": undefined,
+              "effortActivities": 2,
+              "effortTime": 15,
               "icon": null,
               "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
               "legacyWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1?experience=legacy",
@@ -482,7 +494,6 @@ Object {
   "courseHome": Object {
     "courseId": "course-v1:edX+DemoX+Demo_Course_1",
     "courseStatus": "loaded",
-    "gradesFeatureIsLocked": false,
     "targetUserId": undefined,
     "toastBodyLink": null,
     "toastBodyText": null,
@@ -500,6 +511,14 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
+        "courseAccess": Object {
+          "additionalContextUserMessage": null,
+          "developerMessage": null,
+          "errorCode": null,
+          "hasAccess": true,
+          "userFragment": null,
+          "userMessage": null,
+        },
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
         "isSelfPaced": false,
@@ -507,6 +526,7 @@ Object {
         "number": "DemoX",
         "org": "edX",
         "originalUserIsStaff": false,
+        "start": "2013-02-05T05:00:00Z",
         "tabs": Array [
           Object {
             "slug": "outline",
@@ -564,6 +584,8 @@ Object {
         "courseId": "course-v1:edX+DemoX+Demo_Course_1",
         "end": "3027-03-31T00:00:00Z",
         "enrollmentMode": "audit",
+        "gradesFeatureIsFullyLocked": false,
+        "gradesFeatureIsPartiallyLocked": false,
         "gradingPolicy": Object {
           "assignmentPolicies": Array [
             Object {
@@ -590,9 +612,24 @@ Object {
                 "blockKey": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345",
                 "displayName": "First subsection",
                 "hasGradedAssignment": true,
+                "learnerHasAccess": true,
                 "numPointsEarned": 0,
-                "numPointsPossible": 1,
+                "numPointsPossible": 3,
                 "percentGraded": 0,
+                "problemScores": Array [
+                  Object {
+                    "earned": 0,
+                    "possible": 1,
+                  },
+                  Object {
+                    "earned": 0,
+                    "possible": 1,
+                  },
+                  Object {
+                    "earned": 0,
+                    "possible": 1,
+                  },
+                ],
                 "showCorrectness": "always",
                 "showGrades": true,
                 "url": "http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection",
@@ -609,6 +646,12 @@ Object {
                 "numPointsEarned": 1,
                 "numPointsPossible": 1,
                 "percentGraded": 1,
+                "problemScores": Array [
+                  Object {
+                    "earned": 1,
+                    "possible": 1,
+                  },
+                ],
                 "showCorrectness": "always",
                 "showGrades": true,
                 "url": "http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection",

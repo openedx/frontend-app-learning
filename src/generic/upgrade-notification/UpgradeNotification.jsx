@@ -327,20 +327,6 @@ function UpgradeNotification({
     const accessExpirationDate = new Date(accessExpiration.expirationDate);
     const hoursToAccessExpiration = Math.floor((accessExpirationDate - correctedTime) / 1000 / 60 / 60);
 
-    if (offer) { // if there's a first purchase discount, message the code at the bottom
-      offerCode = (
-        <div className="text-center discount-info">
-          <FormattedMessage
-            id="learning.generic.upgradeNotification.code"
-            defaultMessage="Use code {code} at checkout"
-            values={{
-              code: (<span className="font-weight-bold">{offer.code}</span>),
-            }}
-          />
-        </div>
-      );
-    }
-
     if (hoursToAccessExpiration >= (7 * 24)) {
       if (offer) { // countdown to the first purchase discount if there is one
         const hoursToDiscountExpiration = Math.floor((new Date(offer.expirationDate) - correctedTime) / 1000 / 60 / 60);
@@ -394,6 +380,20 @@ function UpgradeNotification({
     upsellMessage = (<UpsellNoFBECardContent />);
   }
 
+  if (offer) { // if there's a first purchase discount, message the code at the bottom
+    offerCode = (
+      <div className="text-center discount-info">
+        <FormattedMessage
+          id="learning.generic.upgradeNotification.code"
+          defaultMessage="Use code {code} at checkout"
+          values={{
+            code: (<span className="font-weight-bold">{offer.code}</span>),
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <section className={classNames('upgrade-notification small', { 'card mb-4': shouldDisplayBorder })}>
       <h2 className="h5 upgrade-notification-header" id="outline-sidebar-upgrade-header">
@@ -408,6 +408,7 @@ function UpgradeNotification({
         onClick={logClick}
         verifiedMode={verifiedMode}
         className="upgrade-notification-button"
+        block
       />
       {offerCode}
     </section>

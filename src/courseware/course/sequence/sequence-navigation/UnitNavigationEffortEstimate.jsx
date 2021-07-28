@@ -1,23 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import EffortEstimate from '../../../../shared/effort-estimate';
 import { sequenceIdsSelector } from '../../../data';
 import { useModel } from '../../../../generic/model-store';
 
-// This component exists to peek ahead at the next subsection or section and grab its estimated effort.
-// If we should be showing the next block's effort, we display the title and effort instead of "Next".
-// This code currently tries to handle both section and subsection estimates. But once AA-659 happens, it can be
-// simplified to one or the other code path.
+import messages from './messages';
 
-function UnitNavigationEffortEstimate({ children, sequenceId, unitId }) {
+// This component exists to peek ahead at the next sequence and grab its estimated effort.
+// If we should be showing the next sequence's effort, we display the title and effort instead of "Next".
+
+function UnitNavigationEffortEstimate({
+  children,
+  intl,
+  sequenceId,
+  unitId,
+}) {
   const sequenceIds = useSelector(sequenceIdsSelector);
   const sequenceIndex = sequenceIds.indexOf(sequenceId);
   const nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
   const sequence = useModel('sequences', sequenceId);
   const nextSequence = useModel('sequences', nextSequenceId);
-  const nextSection = useModel('sections', nextSequence ? nextSequence.sectionId : null);
 
   if (!sequence || !nextSequence) {
     return children;
@@ -28,32 +33,23 @@ function UnitNavigationEffortEstimate({ children, sequenceId, unitId }) {
     return children;
   }
 
-  let blockToShow = nextSequence;
-  // The experimentation code currently only sets effort on either sequences, sections, or nothing. If we don't have
-  // sequence info, we are either doing sections or nothing. Let's look into it.
+  // If we don't have info to show for the next sequence, just bail
   if (!nextSequence.effortActivities && !nextSequence.effortTime) {
-    if (!nextSection.effortActivities && !nextSection.effortTime) {
-      return children; // control group - no effort estimates at all
-    }
-
-    // Are we at a section border? If so, let's show the next section's effort estimates
-    if (sequence.sectionId !== nextSequence.sectionId) {
-      blockToShow = nextSection;
-    }
+    return children;
   }
 
-  // Note: we don't use `children` here - we replace it with the next section name.
-  // AA-659: remember to add a translation for Next Up
+  // Note: we don't use `children` here - we replace it with the next sequence's title.
   return (
     <div className="d-inline-block text-wrap">
-      Next Up: {blockToShow.title}
-      <EffortEstimate className="d-block mt-1" block={blockToShow} />
+      {intl.formatMessage(messages.nextUpButton, { title: nextSequence.title })}
+      <EffortEstimate className="d-block mt-1" block={nextSequence} />
     </div>
   );
 }
 
 UnitNavigationEffortEstimate.propTypes = {
   children: PropTypes.node,
+  intl: intlShape.isRequired,
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
 };
@@ -63,4 +59,4 @@ UnitNavigationEffortEstimate.defaultProps = {
   unitId: null,
 };
 
-export default UnitNavigationEffortEstimate;
+export default injectIntl(UnitNavigationEffortEstimate);

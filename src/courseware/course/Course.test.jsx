@@ -1,15 +1,16 @@
 import React from 'react';
 import { Factory } from 'rosie';
-import Cookies from 'js-cookie';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   loadUnit, render, screen, waitFor, getByRole, initializeTestStore, fireEvent,
 } from '../../setupTest';
 import Course from './Course';
 import { handleNextSectionCelebration } from './celebration';
 import * as celebrationUtils from './celebration/utils';
+import useWindowSize from '../../generic/tabs/useWindowSize';
 
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('../../generic/tabs/useWindowSize');
+useWindowSize.mockReturnValue({ width: 1200 });
 
 const recordFirstSectionCelebration = jest.fn();
 celebrationUtils.recordFirstSectionCelebration = recordFirstSectionCelebration;
@@ -20,7 +21,6 @@ describe('Course', () => {
     nextSequenceHandler: () => {},
     previousSequenceHandler: () => {},
     unitNavigationHandler: () => {},
-    toggleNotificationTray: () => {},
   };
 
   beforeAll(async () => {
@@ -87,115 +87,16 @@ describe('Course', () => {
     expect(screen.getByRole('button', { name: 'Learn About Verified Certificates' })).toBeInTheDocument();
   });
 
-  it('displays notification trigger', async () => {
-    const toggleNotificationTray = jest.fn();
-    const isNotificationTrayVisible = jest.fn();
+  it('displays notification trigger and toggles active class on click', async () => {
+    useWindowSize.mockReturnValue({ width: 1200 });
+    render(<Course {...mockData} />);
 
-    // REV-2297 TODO: remove cookie related code once temporary value prop cookie code is removed.
-    const cookieName = 'value_prop_cookie';
-    Cookies.set = jest.fn();
-    Cookies.get = jest.fn().mockImplementation(() => cookieName);
-    const getSpy = jest.spyOn(Cookies, 'get').mockReturnValueOnce('true');
+    const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
 
-    const courseMetadata = Factory.build('courseMetadata');
-    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
-    const testData = {
-      ...mockData,
-      toggleNotificationTray,
-      isNotificationTrayVisible,
-    };
-    render(<Course {...testData} courseId={courseMetadata.id} />, { store: testStore });
-
-    const notificationOpenButton = screen.getByRole('button', { name: /Show notification tray/i });
-
-    expect(getSpy).toBeCalledWith(cookieName);
-    expect(notificationOpenButton).toBeInTheDocument();
-  });
-
-  it('displays offer and expiration alert', async () => {
-    const courseMetadata = Factory.build('courseMetadata', {
-      access_expiration: {
-        expiration_date: '2080-01-01T12:00:00Z',
-        masquerading_expired_course: false,
-        upgrade_deadline: null,
-        upgrade_url: null,
-      },
-      offer: {
-        code: 'EDXWELCOME',
-        expiration_date: '2070-01-01T12:00:00Z',
-        original_price: '$100',
-        discounted_price: '$85',
-        percentage: 15,
-        upgrade_url: 'https://example.com/upgrade',
-      },
-    });
-    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
-    render(<Course {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-
-    await screen.findByText('EDXWELCOME');
-    await screen.findByText('Audit Access Expires');
-  });
-
-  it('sends analytics event onClick of access expiration upgrade link', async () => {
-    sendTrackEvent.mockClear();
-
-    const courseMetadata = Factory.build('courseMetadata', {
-      access_expiration: {
-        expiration_date: '2080-01-01T12:00:00Z',
-        masquerading_expired_course: false,
-        upgrade_deadline: '2070-01-01T12:00:00Z',
-        upgrade_url: 'https://example.com/upgrade',
-      },
-      user_timezone: 'UTC',
-    });
-    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
-    render(<Course {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-    await screen.findByText('Audit Access Expires');
-
-    const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
-    fireEvent.click(upgradeLink);
-
-    expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-    expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
-      org_key: 'edX',
-      courserun_key: courseMetadata.id,
-      linkCategory: 'FBE_banner',
-      linkName: 'in_course_audit_access_expires',
-      linkType: 'link',
-      pageName: 'in_course',
-    });
-  });
-
-  it('sends analytics event onClick of offer alert link', async () => {
-    sendTrackEvent.mockClear();
-
-    const courseMetadata = Factory.build('courseMetadata', {
-      offer: {
-        code: 'EDXWELCOME',
-        expiration_date: '2070-01-01T12:00:00Z',
-        original_price: '$100',
-        discounted_price: '$85',
-        percentage: 15,
-        upgrade_url: 'https://example.com/upgrade',
-      },
-      user_timezone: 'UTC',
-    });
-    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
-    render(<Course {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-    await screen.findByText('EDXWELCOME');
-
-    const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
-    fireEvent.click(upgradeLink);
-
-    expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-    expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
-      org_key: 'edX',
-      courserun_key: courseMetadata.id,
-      linkCategory: 'welcome',
-      linkName: 'in_course_welcome',
-      linkType: 'link',
-      pageName: 'in_course',
-    });
+    expect(notificationTrigger).toBeInTheDocument();
+    expect(notificationTrigger).toHaveClass('trigger-active');
+    fireEvent.click(notificationTrigger);
+    expect(notificationTrigger).not.toHaveClass('trigger-active');
   });
 
   it('passes handlers to the sequence', async () => {

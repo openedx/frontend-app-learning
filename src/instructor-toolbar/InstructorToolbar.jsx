@@ -74,7 +74,7 @@ export default function InstructorToolbar(props) {
   return (!didMount ? null : (
     <div>
       <div className="bg-primary text-white">
-        <div className="container-fluid py-3 d-md-flex justify-content-end align-items-start">
+        <div className="container-xl py-3 d-md-flex justify-content-end align-items-start">
           <div className="align-items-center flex-grow-1 d-md-flex mx-1 my-1">
             <MasqueradeWidget courseId={courseId} onError={showMasqueradeError} />
           </div>
@@ -102,7 +102,7 @@ export default function InstructorToolbar(props) {
         </div>
       </div>
       {masqueradeErrorMessage && (
-        <div className="container-fluid mt-3">
+        <div className="container-xl mt-3">
           <Alert
             type={ALERT_TYPES.ERROR}
             dismissible={false}

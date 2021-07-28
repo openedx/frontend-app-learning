@@ -40,7 +40,6 @@ function Sequence({
   toggleNotificationTray,
   notificationTrayVisible,
   isNotificationTrayVisible,
-  isValuePropCookieSet,
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
@@ -189,10 +188,9 @@ function Sequence({
             handlePrevious();
           }}
           goToCourseExitPage={() => goToCourseExitPage()}
-          isValuePropCookieSet={isValuePropCookieSet}
         />
 
-        {isValuePropCookieSet && shouldDisplayNotificationTrigger ? (
+        {shouldDisplayNotificationTrigger ? (
           <NotificationTrigger
             toggleNotificationTray={toggleNotificationTray}
             isNotificationTrayVisible={isNotificationTrayVisible}
@@ -206,6 +204,7 @@ function Sequence({
             sequenceId={sequenceId}
             unitId={unitId}
             unitLoadedHandler={handleUnitLoaded}
+            notificationTrayVisible={notificationTrayVisible}
             /** [MM-P2P] Experiment */
             mmp2p={mmp2p}
           />
@@ -226,7 +225,7 @@ function Sequence({
           )}
         </div>
       </div>
-      {isValuePropCookieSet && notificationTrayVisible ? (
+      {notificationTrayVisible ? (
         <NotificationTray
           toggleNotificationTray={toggleNotificationTray}
           notificationTrayVisible={notificationTrayVisible}
@@ -272,7 +271,6 @@ Sequence.propTypes = {
   toggleNotificationTray: PropTypes.func,
   notificationTrayVisible: PropTypes.bool,
   isNotificationTrayVisible: PropTypes.func,
-  isValuePropCookieSet: PropTypes.bool,
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
@@ -294,7 +292,6 @@ Sequence.defaultProps = {
   toggleNotificationTray: null,
   notificationTrayVisible: null,
   isNotificationTrayVisible: null,
-  isValuePropCookieSet: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {

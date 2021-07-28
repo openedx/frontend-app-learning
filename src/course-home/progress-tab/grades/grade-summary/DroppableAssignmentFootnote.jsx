@@ -5,11 +5,15 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from '../messages';
+import { useModel } from '../../../../generic/model-store';
 
 function DroppableAssignmentFootnote({ footnotes, intl }) {
   const {
-    gradesFeatureIsLocked,
+    courseId,
   } = useSelector(state => state.courseHome);
+  const {
+    gradesFeatureIsFullyLocked,
+  } = useModel('progress', courseId);
   return (
     <>
       <span id="grade-summary-footnote-label" className="sr-only">{intl.formatMessage(messages.footnotesTitle)}</span>
@@ -25,7 +29,7 @@ function DroppableAssignmentFootnote({ footnotes, intl }) {
                 assignmentType: footnote.assignmentType,
               }}
             />
-            <a className="sr-only" href={`#${footnote.id}-ref`} tabIndex={gradesFeatureIsLocked ? '-1' : '0'}>
+            <a className="sr-only" href={`#${footnote.id}-ref`} tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}>
               {intl.formatMessage(messages.backToContent)}
             </a>
           </li>

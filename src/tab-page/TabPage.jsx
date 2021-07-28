@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Toast } from '@edx/paragon';
 import { Header } from '../course-header';
+import AccessDeniedRedirect from '../shared/access-denied-redirect';
 import PageLoading from '../generic/PageLoading';
 
 import genericMessages from '../generic/messages';
@@ -14,7 +15,10 @@ import { setCallToActionToast } from '../course-home/data/slice';
 
 function TabPage({
   intl,
+  courseId,
   courseStatus,
+  metadataModel,
+  unitId,
   ...passthroughProps
 }) {
   const {
@@ -49,8 +53,18 @@ function TabPage({
         >
           {toastHeader}
         </Toast>
-        <LoadedTabPage {...passthroughProps} />
+        <LoadedTabPage courseId={courseId} metadataModel={metadataModel} unitId={unitId} {...passthroughProps} />
       </>
+    );
+  }
+
+  if (courseStatus === 'denied') {
+    return (
+      <AccessDeniedRedirect
+        courseId={courseId}
+        metadataModel={metadataModel}
+        unitId={unitId}
+      />
     );
   }
 
@@ -65,9 +79,16 @@ function TabPage({
   );
 }
 
+TabPage.defaultProps = {
+  unitId: null,
+};
+
 TabPage.propTypes = {
   intl: intlShape.isRequired,
+  courseId: PropTypes.string.isRequired,
   courseStatus: PropTypes.string.isRequired,
+  metadataModel: PropTypes.string.isRequired,
+  unitId: PropTypes.string,
 };
 
 export default injectIntl(TabPage);

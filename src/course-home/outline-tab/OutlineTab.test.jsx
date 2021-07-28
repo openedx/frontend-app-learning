@@ -29,7 +29,7 @@ describe('Outline Tab', () => {
   const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
   const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`;
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
-  const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?course_id=${encodeURIComponent(courseId)}`;
+  const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
 
   const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
@@ -485,8 +485,8 @@ describe('Outline Tab', () => {
         });
         await fetchAndRender();
 
-        const alert = await screen.findByText('Welcome to Demonstration Course');
-        expect(alert.parentElement).toHaveAttribute('role', 'alert');
+        const alert = await screen.findByTestId('private-course-alert');
+        expect(alert).toHaveAttribute('role', 'alert');
 
         expect(screen.queryByRole('button', { name: 'Enroll now' })).not.toBeInTheDocument();
         expect(screen.getByText('You must be enrolled in the course to see course content.')).toBeInTheDocument();
@@ -495,8 +495,8 @@ describe('Outline Tab', () => {
       it('displays alert for unenrolled user', async () => {
         await fetchAndRender();
 
-        const alert = await screen.findByText('Welcome to Demonstration Course');
-        expect(alert.parentElement).toHaveAttribute('role', 'alert');
+        const alert = await screen.findByTestId('private-course-alert');
+        expect(alert).toHaveAttribute('role', 'alert');
 
         expect(screen.getByRole('button', { name: 'Enroll now' })).toBeInTheDocument();
       });
@@ -692,6 +692,138 @@ describe('Outline Tab', () => {
         });
         await fetchAndRender();
         expect(screen.queryByText('Verify your identity to earn a certificate!')).toBeInTheDocument();
+      });
+      it('tracks request cert button', async () => {
+        sendTrackEvent.mockClear();
+        const now = new Date();
+        const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({
+          cert_data: {
+            cert_status: CERT_STATUS_TYPE.REQUESTING,
+            cert_web_view_url: null,
+            download_url: null,
+          },
+        }, {
+          date_blocks: [
+            {
+              date_type: 'course-end-date',
+              date: yesterday.toISOString(),
+              title: 'End',
+            },
+            {
+              date_type: 'certificate-available-date',
+              date: tomorrow.toISOString(),
+              title: 'Cert Available',
+            },
+            {
+              date_type: 'verification-deadline-date',
+              date: tomorrow.toISOString(),
+              link_text: 'Verify',
+              title: 'Verification Upgrade Deadline',
+            },
+          ],
+        });
+        await fetchAndRender();
+        sendTrackEvent.mockClear();
+        const requestingButton = screen.getByRole('button', { name: 'Request certificate' });
+        fireEvent.click(requestingButton);
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_request_cert_button.clicked',
+          {
+            courserun_key: 'course-v1:edX+Test+run',
+            is_staff: false,
+            org_key: 'edX',
+          });
+      });
+      it('tracks download cert button', async () => {
+        sendTrackEvent.mockClear();
+        const now = new Date();
+        const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({
+          cert_data: {
+            cert_status: CERT_STATUS_TYPE.DOWNLOADABLE,
+            cert_web_view_url: null,
+            download_url: null,
+          },
+        }, {
+          date_blocks: [
+            {
+              date_type: 'course-end-date',
+              date: yesterday.toISOString(),
+              title: 'End',
+            },
+            {
+              date_type: 'certificate-available-date',
+              date: tomorrow.toISOString(),
+              title: 'Cert Available',
+            },
+            {
+              date_type: 'verification-deadline-date',
+              date: tomorrow.toISOString(),
+              link_text: 'Verify',
+              title: 'Verification Upgrade Deadline',
+            },
+          ],
+        });
+        await fetchAndRender();
+        sendTrackEvent.mockClear();
+        const requestingButton = screen.getByRole('button', { name: 'View my certificate' });
+        fireEvent.click(requestingButton);
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_downloadable_button.clicked',
+          {
+            courserun_key: 'course-v1:edX+Test+run',
+            is_staff: false,
+            org_key: 'edX',
+          });
+      });
+      it('tracks unverified cert button', async () => {
+        sendTrackEvent.mockClear();
+        const now = new Date();
+        const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({
+          cert_data: {
+            cert_status: CERT_STATUS_TYPE.UNVERIFIED,
+            cert_web_view_url: null,
+            download_url: null,
+          },
+        }, {
+          date_blocks: [
+            {
+              date_type: 'course-end-date',
+              date: yesterday.toISOString(),
+              title: 'End',
+            },
+            {
+              date_type: 'certificate-available-date',
+              date: tomorrow.toISOString(),
+              title: 'Cert Available',
+            },
+            {
+              date_type: 'verification-deadline-date',
+              date: tomorrow.toISOString(),
+              link_text: 'Verify',
+              title: 'Verification Upgrade Deadline',
+            },
+          ],
+        });
+        await fetchAndRender();
+        sendTrackEvent.mockClear();
+        const requestingButton = screen.getByRole('link', { name: 'Verify my ID' });
+        fireEvent.click(requestingButton);
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_unverified_button.clicked',
+          {
+            courserun_key: 'course-v1:edX+Test+run',
+            is_staff: false,
+            org_key: 'edX',
+          });
       });
     });
 

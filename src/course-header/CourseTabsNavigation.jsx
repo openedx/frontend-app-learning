@@ -11,7 +11,7 @@ function CourseTabsNavigation({
 }) {
   return (
     <div className={classNames('course-tabs-navigation', className)}>
-      <div className="container-fluid">
+      <div className="container-xl">
         <Tabs
           className="nav-underline-tabs"
           aria-label={intl.formatMessage(messages.courseMaterial)}

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { getLoginRedirectUrl } from '@edx/frontend-platform/auth';
-import { Button, Hyperlink } from '@edx/paragon';
+import { Alert, Button, Hyperlink } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-import { Alert } from '../../../../generic/user-messages';
 import enrollmentMessages from '../../../../alerts/enrollment-alert/messages';
 import genericMessages from '../../../../generic/messages';
+import messages from './messages';
 import outlineMessages from '../../messages';
 import { useEnrollClickHandler } from '../../../../alerts/enrollment-alert/hooks';
 import { useModel } from '../../../../generic/model-store';
@@ -32,12 +32,13 @@ function PrivateCourseAlert({ intl, payload }) {
     intl.formatMessage(enrollmentMessages.success),
   );
 
-  const enrollNow = (
+  const enrollNowButton = (
     <Button
       disabled={loading}
       variant="link"
-      className="p-0 border-0 align-top"
+      className="p-0 border-0 align-top mr-1"
       style={{ textDecoration: 'underline' }}
+      size="sm"
       onClick={enrollClickHandler}
     >
       {intl.formatMessage(enrollmentMessages.enrollNowInline)}
@@ -63,7 +64,7 @@ function PrivateCourseAlert({ intl, payload }) {
   );
 
   return (
-    <Alert type="welcome">
+    <Alert variant="light" data-testid="private-course-alert">
       {anonymousUser && (
         <>
           <p className="font-weight-bold">
@@ -84,15 +85,11 @@ function PrivateCourseAlert({ intl, payload }) {
         <>
           <p className="font-weight-bold">{intl.formatMessage(outlineMessages.welcomeTo)} {title}</p>
           {canEnroll && (
-            <>
-              <FormattedMessage
-                id="learning.privateCourse.canEnroll"
-                description="Prompts the user to enroll in the course to see course content."
-                defaultMessage="{enrollNow} to access the full course."
-                values={{ enrollNow }}
-              />
+            <div className="d-flex">
+              {enrollNowButton}
+              {intl.formatMessage(messages.toAccess)}
               {loading && <FontAwesomeIcon icon={faSpinner} spin />}
-            </>
+            </div>
           )}
           {!canEnroll && (
             <>

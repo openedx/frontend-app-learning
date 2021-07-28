@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { history } from '@edx/frontend-platform';
-import { getLocale } from '@edx/frontend-platform/i18n';
-import { Redirect } from 'react-router';
 import { createSelector } from '@reduxjs/toolkit';
 import { defaultMemoize as memoize } from 'reselect';
 
@@ -244,42 +242,6 @@ class CoursewareContainer extends Component {
     }
   }
 
-  renderDenied() {
-    const {
-      course,
-      courseId,
-      match: {
-        params: {
-          unitId: routeUnitId,
-        },
-      },
-    } = this.props;
-    let url = `/redirect/course-home/${courseId}`;
-    switch (course.canLoadCourseware.errorCode) {
-      case 'audit_expired':
-        url = `/redirect/dashboard?access_response_error=${course.canLoadCourseware.additionalContextUserMessage}`;
-        break;
-      case 'course_not_started':
-        // eslint-disable-next-line no-case-declarations
-        const startDate = (new Intl.DateTimeFormat(getLocale())).format(new Date(course.start));
-        url = `/redirect/dashboard?notlive=${startDate}`;
-        break;
-      case 'survey_required': // TODO: Redirect to the course survey
-      case 'unfulfilled_milestones':
-        url = '/redirect/dashboard';
-        break;
-      case 'microfrontend_disabled':
-        url = `/redirect/courseware/${courseId}/unit/${routeUnitId}`;
-        break;
-      case 'authentication_required':
-      case 'enrollment_required':
-      default:
-    }
-    return (
-      <Redirect to={url} />
-    );
-  }
-
   render() {
     const {
       courseStatus,
@@ -291,10 +253,6 @@ class CoursewareContainer extends Component {
         },
       },
     } = this.props;
-
-    if (courseStatus === 'denied') {
-      return this.renderDenied();
-    }
 
     return (
       <TabPage
@@ -337,10 +295,9 @@ const sectionShape = PropTypes.shape({
 });
 
 const courseShape = PropTypes.shape({
-  canLoadCourseware: PropTypes.shape({
-    errorCode: PropTypes.string,
-    additionalContextUserMessage: PropTypes.string,
-  }).isRequired,
+  celebrations: PropTypes.shape({
+    firstSection: PropTypes.bool,
+  }),
 });
 
 CoursewareContainer.propTypes = {
