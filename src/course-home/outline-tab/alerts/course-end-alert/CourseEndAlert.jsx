@@ -6,8 +6,8 @@ import {
   FormattedRelative,
   FormattedTime,
 } from '@edx/frontend-platform/i18n';
-
-import { Alert, ALERT_TYPES } from '../../../../generic/user-messages';
+import { Alert } from '@edx/paragon';
+import { Info } from '@edx/paragon/icons';
 
 const DAY_MS = 24 * 60 * 60 * 1000; // in ms
 
@@ -78,7 +78,7 @@ function CourseEndAlert({ payload }) {
   }
 
   return (
-    <Alert type={ALERT_TYPES.INFO}>
+    <Alert variant="info" icon={Info}>
       <strong>{msg}</strong><br />
       {description}
     </Alert>

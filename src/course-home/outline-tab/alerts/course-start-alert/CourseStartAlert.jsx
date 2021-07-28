@@ -6,8 +6,8 @@ import {
   FormattedRelative,
   FormattedTime,
 } from '@edx/frontend-platform/i18n';
-
-import { Alert, ALERT_TYPES } from '../../../../generic/user-messages';
+import { Alert } from '@edx/paragon';
+import { Info } from '@edx/paragon/icons';
 
 const DAY_MS = 24 * 60 * 60 * 1000; // in ms
 
@@ -30,7 +30,7 @@ function CourseStartAlert({ payload }) {
   const delta = new Date(startDate) - new Date();
   if (delta < DAY_MS) {
     return (
-      <Alert type={ALERT_TYPES.INFO}>
+      <Alert variant="info" icon={Info}>
         <FormattedMessage
           id="learning.outline.alert.start.short"
           defaultMessage="Course starts {timeRemaining} at {courseStartTime}."
@@ -55,7 +55,7 @@ function CourseStartAlert({ payload }) {
   }
 
   return (
-    <Alert type={ALERT_TYPES.INFO}>
+    <Alert variant="info" icon={Info}>
       <strong>
         <FormattedMessage
           id="learning.outline.alert.end.long"

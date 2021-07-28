@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedDate, injectIntl } from '@edx/frontend-platform/i18n';
-import { Hyperlink } from '@edx/paragon';
+import { Alert, Hyperlink } from '@edx/paragon';
+import { Info } from '@edx/paragon/icons';
 
-import { Alert, ALERT_TYPES } from '../../generic/user-messages';
 import messages from './messages';
 
 function AccessExpirationAlertMMP2P({ payload }) {
@@ -52,7 +52,7 @@ function AccessExpirationAlertMMP2P({ payload }) {
   }
 
   return (
-    <Alert type={ALERT_TYPES.INFO}>
+    <Alert variant="info" icon={Info}>
       <span className="font-weight-bold">
         Unlock full course content by {formatDate(upgradeDeadline, 'upgradeTitle')}
       </span>

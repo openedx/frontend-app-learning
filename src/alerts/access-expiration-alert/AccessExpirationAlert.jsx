@@ -4,9 +4,9 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   FormattedMessage, FormattedDate, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
-import { Hyperlink } from '@edx/paragon';
+import { Alert, Hyperlink } from '@edx/paragon';
+import { Info } from '@edx/paragon/icons';
 
-import { Alert, ALERT_TYPES } from '../../generic/user-messages';
 import messages from './messages';
 import AccessExpirationAlertMMP2P from './AccessExpirationAlertMMP2P';
 import AccessExpirationAlertMasquerade from './AccessExpirationAlertMasquerade';
@@ -100,7 +100,7 @@ function AccessExpirationAlert({ intl, payload }) {
   }
 
   return (
-    <Alert type={ALERT_TYPES.INFO}>
+    <Alert variant="info" icon={Info}>
       <span className="font-weight-bold">
         <FormattedMessage
           id="learning.accessExpiration.header"

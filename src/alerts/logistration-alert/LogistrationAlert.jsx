@@ -2,9 +2,9 @@ import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { getLoginRedirectUrl } from '@edx/frontend-platform/auth';
-import { Hyperlink } from '@edx/paragon';
+import { Alert, Hyperlink } from '@edx/paragon';
+import { WarningFilled } from '@edx/paragon/icons';
 
-import { Alert } from '../../generic/user-messages';
 import genericMessages from '../../generic/messages';
 
 function LogistrationAlert({ intl }) {
@@ -29,7 +29,7 @@ function LogistrationAlert({ intl }) {
   );
 
   return (
-    <Alert type="error">
+    <Alert variant="warning" icon={WarningFilled}>
       <FormattedMessage
         id="learning.logistration.alert"
         description="Prompts the user to sign in or register to see course content."

@@ -41,54 +41,56 @@ function ProgramCompletion({
   );
 
   return (
-    <Alert variant="primary" className="row w-100 mx-0 my-3" data-testid="program-completion">
-      <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
-        <div className="h4">{intl.formatMessage(messages.programsLastCourseHeader, { title })}</div>
-        <p>
-          <FormattedMessage
-            id="courseExit.programCompletion.dashboardMessage"
-            defaultMessage="To view your certificate status, check the Programs section of your {programLink}."
-            values={{ programLink }}
-          />
-        </p>
-        {type === 'microbachelors' && (
-          <>
+    <Alert variant="primary" className="my-3" data-testid="program-completion">
+      <div className="d-flex">
+        <div className="col order-1 order-md-0 pl-0 pr-0 pr-md-5">
+          <div className="h4">{intl.formatMessage(messages.programsLastCourseHeader, { title })}</div>
+          <p>
+            <FormattedMessage
+              id="courseExit.programCompletion.dashboardMessage"
+              defaultMessage="To view your certificate status, check the Programs section of your {programLink}."
+              values={{ programLink }}
+            />
+          </p>
+          {type === 'microbachelors' && (
+            <>
+              <p>
+                <Hyperlink
+                  style={{ textDecoration: 'underline' }}
+                  destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/360004623154`}
+                  className="text-reset"
+                >
+                  {intl.formatMessage(messages.microBachelorsLearnMore)}
+                </Hyperlink>
+              </p>
+              <Button variant="primary" className="mb-2 mb-sm-0" href={`${getConfig().CREDENTIALS_BASE_URL}/records`}>
+                {intl.formatMessage(messages.applyForCredit)}
+              </Button>
+            </>
+          )}
+          {type === 'micromasters' && (
             <p>
+              {intl.formatMessage(messages.microMastersMessage)}
+              {' '}
               <Hyperlink
                 style={{ textDecoration: 'underline' }}
-                destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/360004623154`}
+                destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/360010346853-Does-a-Micromasters-certificate-count-towards-the-online-Master-s-degree-`}
                 className="text-reset"
               >
-                {intl.formatMessage(messages.microBachelorsLearnMore)}
+                {intl.formatMessage(messages.microMastersLearnMore)}
               </Hyperlink>
             </p>
-            <Button variant="primary" className="mb-2 mb-sm-0" href={`${getConfig().CREDENTIALS_BASE_URL}/records`}>
-              {intl.formatMessage(messages.applyForCredit)}
-            </Button>
-          </>
-        )}
-        {type === 'micromasters' && (
-          <p>
-            {intl.formatMessage(messages.microMastersMessage)}
-            {' '}
-            <Hyperlink
-              style={{ textDecoration: 'underline' }}
-              destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/360010346853-Does-a-Micromasters-certificate-count-towards-the-online-Master-s-degree-`}
-              className="text-reset"
-            >
-              {intl.formatMessage(messages.microMastersLearnMore)}
-            </Hyperlink>
-          </p>
-        )}
-      </div>
-      <div className="col-12 order-0 col-md-3 order-md-1 w-100 mb-3 p-0 text-center">
-        <img
-          src={certImage}
-          alt={`${intl.formatMessage(messages.certificateImage)}`}
-          className="w-100"
-          style={{ maxWidth: '13rem' }}
-          data-testid={type}
-        />
+          )}
+        </div>
+        <div className="col-12 order-0 col-md-3 order-md-1 w-100 mb-3 p-0 text-center">
+          <img
+            src={certImage}
+            alt={`${intl.formatMessage(messages.certificateImage)}`}
+            className="w-100"
+            style={{ maxWidth: '13rem' }}
+            data-testid={type}
+          />
+        </div>
       </div>
     </Alert>
   );
