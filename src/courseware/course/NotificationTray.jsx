@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -12,7 +12,7 @@ import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWind
 import UpgradeNotification from '../../generic/upgrade-notification/UpgradeNotification';
 
 function NotificationTray({
-  intl, toggleNotificationTray,
+  intl, toggleNotificationTray, onNotificationSeen, currentState, setCurrentState,
 }) {
   const {
     courseId,
@@ -31,6 +31,9 @@ function NotificationTray({
   } = course;
 
   const shouldDisplayFullScreen = useWindowSize().width < responsiveBreakpoints.large.minWidth;
+
+  // After three seconds, update notificationSeen (to hide red dot)
+  useEffect(() => { setTimeout(onNotificationSeen, 3000); }, []);
 
   return (
     <section className={classNames('notification-tray-container ml-0 ml-lg-4', { 'no-notification': !verifiedMode && !shouldDisplayFullScreen })} aria-label={intl.formatMessage(messages.notificationTray)}>
@@ -64,6 +67,8 @@ function NotificationTray({
             timeOffsetMillis={timeOffsetMillis}
             courseId={courseId}
             org={org}
+            currentState={currentState}
+            setCurrentState={setCurrentState}
           />
         ) : <p className="notification-tray-content">{intl.formatMessage(messages.noNotificationsMessage)}</p>}
       </div>
@@ -74,10 +79,14 @@ function NotificationTray({
 NotificationTray.propTypes = {
   intl: intlShape.isRequired,
   toggleNotificationTray: PropTypes.func,
+  onNotificationSeen: PropTypes.func,
+  currentState: PropTypes.string.isRequired,
+  setCurrentState: PropTypes.func.isRequired,
 };
 
 NotificationTray.defaultProps = {
   toggleNotificationTray: null,
+  onNotificationSeen: null,
 };
 
 export default injectIntl(NotificationTray);

@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
 import { getConfig } from '@edx/frontend-platform';
+import { setLocalStorage } from '../../data/localStorage';
 
 import { UpgradeButton } from '../upgrade-button';
 
@@ -184,10 +185,20 @@ UpsellFBESoonCardContent.defaultProps = {
   timezoneFormatArgs: {},
 };
 
-function ExpirationCountdown({ hoursToExpiration }) {
+function ExpirationCountdown({ hoursToExpiration, setCurrentState, type }) {
   let expirationText;
-
   if (hoursToExpiration >= 24) {
+    // setCurrentState is available in NotificationTray (not course home)
+    if (setCurrentState) {
+      if (type === 'access') {
+        setCurrentState('accessDaysLeft');
+        setLocalStorage('currentState', 'accessDaysLeft');
+      }
+      if (type === 'offer') {
+        setCurrentState('FPDdaysLeft');
+        setLocalStorage('currentState', 'FPDdaysLeft');
+      }
+    }
     expirationText = (
       <FormattedMessage
         id="learning.generic.upgradeNotification.expirationDays"
@@ -200,6 +211,17 @@ function ExpirationCountdown({ hoursToExpiration }) {
       />
     );
   } else if (hoursToExpiration >= 1) {
+    // setCurrentState is available in NotificationTray (not course home)
+    if (setCurrentState) {
+      if (type === 'access') {
+        setCurrentState('accessHoursLeft');
+        setLocalStorage('currentState', 'accessHoursLeft');
+      }
+      if (type === 'offer') {
+        setCurrentState('FPDHoursLeft');
+        setLocalStorage('currentState', 'FPDHoursLeft');
+      }
+    }
     expirationText = (
       <FormattedMessage
         id="learning.generic.upgradeNotification.expirationHours"
@@ -212,6 +234,17 @@ function ExpirationCountdown({ hoursToExpiration }) {
       />
     );
   } else {
+    // setCurrentState is available in NotificationTray (not course home)
+    if (setCurrentState) {
+      if (type === 'access') {
+        setCurrentState('accessLastHour');
+        setLocalStorage('currentState', 'accessLastHour');
+      }
+      if (type === 'offer') {
+        setCurrentState('FPDLastHour');
+        setLocalStorage('currentState', 'FPDLastHour');
+      }
+    }
     expirationText = (
       <FormattedMessage
         id="learning.generic.upgradeNotification.expirationMinutes"
@@ -224,9 +257,19 @@ function ExpirationCountdown({ hoursToExpiration }) {
 
 ExpirationCountdown.propTypes = {
   hoursToExpiration: PropTypes.number.isRequired,
+  setCurrentState: PropTypes.func,
+  type: PropTypes.string,
+};
+ExpirationCountdown.defaultProps = {
+  setCurrentState: null,
+  type: null,
 };
 
-function AccessExpirationDateBanner({ accessExpirationDate, timezoneFormatArgs }) {
+function AccessExpirationDateBanner({ accessExpirationDate, timezoneFormatArgs, setCurrentState }) {
+  if (setCurrentState) {
+    setCurrentState('accessDateView');
+    setLocalStorage('currentState', 'accessDateView');
+  }
   return (
     <div className="upsell-warning-light">
       <FormattedMessage
@@ -253,10 +296,12 @@ AccessExpirationDateBanner.propTypes = {
   timezoneFormatArgs: PropTypes.shape({
     timeZone: PropTypes.string,
   }),
+  setCurrentState: PropTypes.func,
 };
 
 AccessExpirationDateBanner.defaultProps = {
   timezoneFormatArgs: {},
+  setCurrentState: null,
 };
 
 function UpgradeNotification({
@@ -265,6 +310,7 @@ function UpgradeNotification({
   courseId,
   offer,
   org,
+  setCurrentState,
   shouldDisplayBorder,
   timeOffsetMillis,
   upsellPageName,
@@ -340,7 +386,13 @@ function UpgradeNotification({
             }}
           />
         );
-        expirationBanner = <ExpirationCountdown hoursToExpiration={hoursToDiscountExpiration} />;
+        expirationBanner = (
+          <ExpirationCountdown
+            hoursToExpiration={hoursToDiscountExpiration}
+            setCurrentState={setCurrentState}
+            type="offer"
+          />
+        );
       } else {
         upgradeNotificationHeaderText = (
           <FormattedMessage
@@ -352,6 +404,7 @@ function UpgradeNotification({
           <AccessExpirationDateBanner
             accessExpirationDate={accessExpirationDate}
             timezoneFormatArgs={timezoneFormatArgs}
+            setCurrentState={setCurrentState}
           />
         );
       }
@@ -363,7 +416,13 @@ function UpgradeNotification({
           defaultMessage="Course Access Expiration"
         />
       );
-      expirationBanner = <ExpirationCountdown hoursToExpiration={hoursToAccessExpiration} />;
+      expirationBanner = (
+        <ExpirationCountdown
+          hoursToExpiration={hoursToAccessExpiration}
+          setCurrentState={setCurrentState}
+          type="access"
+        />
+      );
       upsellMessage = (
         <UpsellFBESoonCardContent
           accessExpirationDate={accessExpirationDate}
@@ -429,6 +488,7 @@ UpgradeNotification.propTypes = {
     code: PropTypes.string,
   }),
   shouldDisplayBorder: PropTypes.bool,
+  setCurrentState: PropTypes.func,
   timeOffsetMillis: PropTypes.number,
   upsellPageName: PropTypes.string.isRequired,
   userTimezone: PropTypes.string,
@@ -443,6 +503,7 @@ UpgradeNotification.defaultProps = {
   accessExpiration: null,
   contentTypeGatingEnabled: false,
   offer: null,
+  setCurrentState: null,
   shouldDisplayBorder: null,
   timeOffsetMillis: 0,
   userTimezone: null,
