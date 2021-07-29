@@ -174,7 +174,8 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
     }
 
     try {
-      const isComplete = await getBlockCompletion(courseId, sequenceId, unitId);
+      const isComplete = await getBlockCompletion(courseId, models.sequences[sequenceId].decoded_id,
+        models.units[unitId].decoded_id);
       dispatch(updateModel({
         modelType: 'units',
         model: {
@@ -201,7 +202,7 @@ export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
       },
     }));
     try {
-      await postSequencePosition(courseId, sequenceId, activeUnitIndex);
+      await postSequencePosition(courseId, models.sequences[sequenceId].decoded_id, activeUnitIndex);
       // Update again under the assumption that the above call succeeded, since it doesn't return a
       // meaningful response.
       dispatch(updateModel({
