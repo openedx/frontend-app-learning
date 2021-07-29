@@ -299,7 +299,7 @@ describe('DatesTab', () => {
     });
   });
 
-  describe.skip('when receiving an access denied error', () => {
+  describe('when receiving an access denied error', () => {
     // These tests could go into any particular tab, as they all go through the same flow. But dates tab works.
 
     async function renderDenied(errorCode) {
@@ -337,6 +337,16 @@ describe('DatesTab', () => {
     it('redirects to the dashboard with a notlive start date for a course_not_started error code', async () => {
       await renderDenied('course_not_started');
       expect(global.location.href).toEqual('http://localhost/redirect/dashboard?notlive=2/5/2013'); // date from factory
+    });
+
+    it('redirects to the home page when unauthenticated', async () => {
+      await renderDenied('authentication_required');
+      expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);
+    });
+
+    it('redirects to the home page when unenrolled', async () => {
+      await renderDenied('enrollment_required');
+      expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);
     });
   });
 });
