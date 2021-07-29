@@ -26,7 +26,7 @@ export function normalizeBlocks(courseId, blocks) {
         models.sections[block.id] = {
           id: block.id,
           title: block.display_name,
-          sequenceIds: block.children || [],
+          sequenceIds: block.hash_children || block.children || [],
         };
         break;
 
@@ -34,17 +34,17 @@ export function normalizeBlocks(courseId, blocks) {
         models.sequences[block.hash_key] = {
           effortActivities: block.effort_activities,
           effortTime: block.effort_time,
-          id: block.id,
+          id: block.hash_key || block.id,
           title: block.display_name,
           legacyWebUrl: block.legacy_web_url,
-          unitIds: block.children || [],
+          unitIds: block.hash_children || block.children || [],
           hash_key: block.hash_key,
         };
         break;
       case 'vertical':
         models.units[block.hash_key] = {
           graded: block.graded,
-          id: block.id,
+          id: block.hash_key || block.id,
           title: block.display_name,
           legacyWebUrl: block.legacy_web_url,
           hash_key: block.hash_key,
@@ -69,15 +69,8 @@ export function normalizeBlocks(courseId, blocks) {
   Object.values(models.sections).forEach(section => {
     if (Array.isArray(section.sequenceIds)) {
       section.sequenceIds.forEach(sequenceId => {
-        const modelSequenceIds = {};
-        Object.values(models.sequences).forEach(sequence => {
-          if (sequenceId === sequence.id) {
-            modelSequenceIds[sequenceId] = sequence.hash_key;
-          }
-        });
-        if (sequenceId in modelSequenceIds) {
-          const sequence = modelSequenceIds[sequenceId];
-          models.sequences.[sequence].sectionId = section.id;
+        if (sequenceId in models.sequences) {
+          models.sequences.[sequenceId].sectionId = section.id;
         } else {
           logInfo(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
         }
@@ -88,15 +81,8 @@ export function normalizeBlocks(courseId, blocks) {
   Object.values(models.sequences).forEach(sequence => {
     if (Array.isArray(sequence.unitIds)) {
       sequence.unitIds.forEach(unitId => {
-        const modelUnitIds = {};
-        Object.values(models.units).forEach(unit => {
-          if (unitId === unit.id) {
-            modelUnitIds[unitId] = unit.hash_key;
-          }
-        });
-        if (unitId in modelUnitIds) {
-          const unit = modelUnitIds[unitId];
-          models.units.[unit].sequenceId = sequence.id;
+        if (unitId in models.units) {
+          models.units.[unitId].sequenceId = sequence.id;
         } else {
           logInfo(`Sequence ${sequence.id} has child block ${unitId}, but that block is not in the list of units.`);
         }
