@@ -34,7 +34,7 @@ Example URL:
 
 ```
 
-https://learning.edx.org/c/course-v1:edX+DemoX.1+2T2019/YmxvY2/njuRCq/Optional_Example_Problem_Types/STEM_Problems/Code_Grader
+https://learning.edx.org/c/course-v1:edX+DemoX.1+2T2019/YmxvY2/njuRCq/optional-example-problem-types/stem-problems/code-grader
 
 ```
 
@@ -47,7 +47,7 @@ The fields definition and requirements ar as follows:
 * :sequenceSlug (optional) - `display_name` of the current sequence.
 * :unitSlug (optional) - `display_name` of the current unit
 
-The slugs based on `display_name` are optional because not all blocks have an associated `display_name` attributes, most likely to occur in OLX imports. The `sequenceHash` and `unitHash` will shorten their respective ids using `hashlib.blake2b`. `Blake2b` will reduce the length of the id so the encoded version can also be short. Hashing will be handled by `blake2b` because it is the fastest hashing function in the `hashlib` library. The hash will be generated and mapped in LMS.
+Partial paths will update with the required parameters as dicussed in [ADR #8: Liberal courseware path handling](./0008-liberal-courseware-path-handling.md). The `sequenceHash` and `unitHash` will shorten their respective ids using `hashlib.blake2b` with `digest_size` of 6 bytes. `Blake2b` will reduce the length of the id so the encoded version can also be short. Hashing will be handled by `blake2b` because it is the fastest hashing function in the `hashlib` library. The hash will be generated and mapped in LMS. The slugs based on `display_name` are optional because not all blocks have an associated `display_name` attributes, most likely to occur in OLX imports. The `display_name` will be pulled from the current section, sequence, and unit attribute, and if there is not an attribute `display`, the url will use the attribute `display_name_with_default`. The `display_name` will be formatted safely for a url using Django's [slugify](https://docs.djangoproject.com/en/3.2/ref/utils/#django.utils.text.slugify). Slugify allows unicode identifiers in the slug. If the slugs are omitted, it will redirect to the canonical version without the slugs.
 
 ## Consequences
 
