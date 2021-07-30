@@ -27,7 +27,7 @@ Factory.define('sequenceMetadata')
     ),
   )
   .attr('element_id', ['sequenceBlock'], sequenceBlock => sequenceBlock.block_id)
-  .attr('item_id', ['sequenceBlock'], sequenceBlock => sequenceBlock.id)
+  .attr('item_id', ['sequenceBlock'], sequenceBlock => (sequenceBlock.hash_key || sequenceBlock.id))
   .attr('display_name', ['sequenceBlock'], sequenceBlock => sequenceBlock.display_name)
   .attr('gated_content', ['sequenceBlock'], sequenceBlock => ({
     gated: false,
@@ -36,6 +36,9 @@ Factory.define('sequenceMetadata')
     prereq_section_name: `${sequenceBlock.display_name}-prereq`,
     gated_section_name: sequenceBlock.display_name,
   }))
+
+  .attr('decoded_id', ['sequenceBlock'], sequenceBlock => sequenceBlock.decoded_id)
+  .attr('hash_key', ['sequenceBlock'], sequenceBlock => sequenceBlock.hash_key)
   .attr('items', ['unitBlocks', 'sequenceBlock'], (unitBlocks, sequenceBlock) => unitBlocks.map(
     unitBlock => ({
       href: '',
@@ -44,10 +47,12 @@ Factory.define('sequenceMetadata')
       bookmarked: unitBlock.bookmarked || false,
       path: `Chapter Display Name > ${sequenceBlock.display_name} > ${unitBlock.display_name}`,
       type: unitBlock.type,
+      hash_key: unitBlock.hash_key,
       complete: unitBlock.complete || null,
       content: '',
       page_title: unitBlock.display_name,
       contains_content_type_gated_content: unitBlock.contains_content_type_gated_content,
+      decoded_id: unitBlock.decoded_id,
     }),
   ))
   .attrs({
