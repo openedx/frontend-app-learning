@@ -79,6 +79,14 @@ describe('Course', () => {
     expect(getByRole(celebrationModal, 'heading', { name: 'Congratulations!' })).toBeInTheDocument();
   });
 
+  it('displays upgrade sock', async () => {
+    const courseMetadata = Factory.build('courseMetadata', { can_show_upgrade_sock: true });
+    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
+
+    render(<Course {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+    expect(screen.getByRole('button', { name: 'Learn About Verified Certificates' })).toBeInTheDocument();
+  });
+
   it('displays notification trigger and toggles active class on click', async () => {
     useWindowSize.mockReturnValue({ width: 1200 });
     render(<Course {...mockData} />);
