@@ -199,10 +199,12 @@ export async function getDatesTabData(courseId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`);
+      return {};
     }
-    // 401 can be returned for unauthenticated users or users who are not enrolled
     if (httpErrorStatus === 401) {
-      global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
+      // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
+      // courseAccess in the metadata call, so just ignore this status for now.
+      return {};
     }
     throw error;
   }
@@ -266,10 +268,12 @@ export async function getProgressTabData(courseId, targetUserId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
+      return {};
     }
-    // 401 can be returned for unauthenticated users or users who are not enrolled
     if (httpErrorStatus === 401) {
-      global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
+      // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
+      // courseAccess in the metadata call, so just ignore this status for now.
+      return {};
     }
     throw error;
   }

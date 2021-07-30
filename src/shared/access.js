@@ -1,26 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+/* eslint-disable import/prefer-default-export */
 import { getLocale } from '@edx/frontend-platform/i18n';
-import { Redirect } from 'react-router';
-import { useModel } from '../../generic/model-store';
 
-// This component inspects an access denied error and redirects to a /redirect/... path, which then renders a nice
-// little message while the browser loads the next page.
+// This function inspects an access denied error and provides a redirect url (looks like a /redirect/... path),
+// which then renders a nice little message while the browser loads the next page.
 // This is basically a frontend version of check_course_access_with_redirect in the backend.
-
-function AccessDeniedRedirect(props) {
-  const {
-    courseId,
-    metadataModel,
-    unitId,
-  } = props;
-
-  const {
-    courseAccess,
-    start,
-  } = useModel(metadataModel, courseId);
-
-  let url = `/redirect/course-home/${courseId}`;
+export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start, unitId) {
+  let url = null;
   switch (courseAccess.errorCode) {
     case 'audit_expired':
       url = `/redirect/dashboard?access_response_error=${courseAccess.additionalContextUserMessage}`;
@@ -48,20 +33,9 @@ function AccessDeniedRedirect(props) {
     case 'authentication_required':
     case 'enrollment_required':
     default:
+      if (activeTabSlug !== 'outline') {
+        url = `/redirect/course-home/${courseId}`;
+      }
   }
-  return (
-    <Redirect to={url} />
-  );
+  return url;
 }
-
-AccessDeniedRedirect.defaultProps = {
-  unitId: null,
-};
-
-AccessDeniedRedirect.propTypes = {
-  courseId: PropTypes.string.isRequired,
-  metadataModel: PropTypes.string.isRequired,
-  unitId: PropTypes.string,
-};
-
-export default AccessDeniedRedirect;
