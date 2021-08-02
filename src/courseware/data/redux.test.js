@@ -37,7 +37,7 @@ describe('Data layer integration tests', () => {
   let courseUrl = `${courseBaseUrl}/${courseId}`;
   courseUrl = appendBrowserTimezoneToUrl(courseUrl);
 
-  const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.decoded_id}`;
+  const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
   const sequenceId = sequenceBlocks[0].id;
   const unitId = unitBlocks[0].id;
 
