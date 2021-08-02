@@ -9,7 +9,7 @@ import * as thunks from './thunks';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 
 import { buildSimpleCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
-import { buildEmptyOutline, buildSimpleOutline } from './__factories__/learningSequencesOutline.factory';
+import { buildOutlineFromBlocks } from './__factories__/learningSequencesOutline.factory';
 import { initializeMockApp } from '../../setupTest';
 import initializeStore from '../../store';
 
@@ -32,8 +32,7 @@ describe('Data layer integration tests', () => {
     {},
     { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
   );
-  const emptyOutline = buildEmptyOutline(courseId);
-  const simpleOutline = buildSimpleOutline(courseId, sequenceBlocks);
+  const simpleOutline = buildOutlineFromBlocks(courseBlocks);
 
   let courseUrl = `${courseBaseUrl}/${courseId}`;
   courseUrl = appendBrowserTimezoneToUrl(courseUrl);
@@ -129,6 +128,7 @@ describe('Data layer integration tests', () => {
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.coursewareMeta[courseId].courseAccess).not.toBeUndefined();
       expect(state.models.sequences.length === 1);
+
       Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 1));
     });
 
@@ -137,8 +137,12 @@ describe('Data layer integration tests', () => {
       // (even though it won't actually filter down in this case).
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, emptyOutline);
 
+      // Create an outline with basic matching metadata, but then empty it out...
+      const emptyOutline = buildOutlineFromBlocks(courseBlocks);
+      emptyOutline.sequences = {};
+      emptyOutline.sections = [];
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, emptyOutline);
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
       const state = store.getState();
@@ -151,6 +155,7 @@ describe('Data layer integration tests', () => {
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.coursewareMeta[courseId].courseAccess).not.toBeUndefined();
       expect(state.models.sequences === null);
+
       Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 0));
     });
   });

@@ -693,6 +693,40 @@ describe('Outline Tab', () => {
         await fetchAndRender();
         expect(screen.queryByText('Verify your identity to earn a certificate!')).toBeInTheDocument();
       });
+      it('renders non passing grade', async () => {
+        const now = new Date();
+        const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        setMetadata({ is_enrolled: true });
+        setTabData({
+          cert_data: {},
+          user_has_passing_grade: false,
+          has_ended: true,
+          enrollment_mode: 'verified',
+        }, {
+          date_blocks: [
+            {
+              date_type: 'course-end-date',
+              date: yesterday.toISOString(),
+              title: 'End',
+            },
+            {
+              date_type: 'certificate-available-date',
+              date: tomorrow.toISOString(),
+              title: 'Cert Available',
+            },
+            {
+              date_type: 'verification-deadline-date',
+              date: tomorrow.toISOString(),
+              link_text: 'Verify',
+              title: 'Verification Upgrade Deadline',
+            },
+          ],
+        });
+        await fetchAndRender();
+        screen.getAllByText('You are not eligible for a certificate');
+        expect(screen.queryByText('You are not eligible for a certificate')).toBeInTheDocument();
+      });
       it('tracks request cert button', async () => {
         sendTrackEvent.mockClear();
         const now = new Date();

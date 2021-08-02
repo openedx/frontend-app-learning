@@ -13,7 +13,6 @@ import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import NotificationTrigger from './NotificationTrigger';
 
-import CourseSock from '../../generic/course-sock';
 import { useModel } from '../../generic/model-store';
 import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 
@@ -39,10 +38,7 @@ function Course({
   ].filter(element => element != null).map(element => element.title);
 
   const {
-    canShowUpgradeSock,
     celebrations,
-    offer,
-    org,
     verifiedMode,
   } = course;
 
@@ -107,15 +103,6 @@ function Course({
         <CelebrationModal
           courseId={courseId}
           open
-        />
-      )}
-      {canShowUpgradeSock && (
-        <CourseSock
-          courseId={courseId}
-          offer={offer}
-          orgKey={org}
-          pageLocation="Course Content Page"
-          verifiedMode={verifiedMode}
         />
       )}
       <ContentTools course={course} />

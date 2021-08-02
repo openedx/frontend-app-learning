@@ -2,31 +2,37 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useDispatch, useSelector } from 'react-redux';
+import { Redirect } from 'react-router';
 
 import { Toast } from '@edx/paragon';
 import { Header } from '../course-header';
-import AccessDeniedRedirect from '../shared/access-denied-redirect';
+import { getAccessDeniedRedirectUrl } from '../shared/access';
 import PageLoading from '../generic/PageLoading';
+import { useModel } from '../generic/model-store';
 
 import genericMessages from '../generic/messages';
 import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
 import { setCallToActionToast } from '../course-home/data/slice';
 
-function TabPage({
-  intl,
-  courseId,
-  courseStatus,
-  metadataModel,
-  unitId,
-  ...passthroughProps
-}) {
+function TabPage({ intl, ...props }) {
+  const {
+    activeTabSlug,
+    courseId,
+    courseStatus,
+    metadataModel,
+    unitId,
+  } = props;
   const {
     toastBodyLink,
     toastBodyText,
     toastHeader,
   } = useSelector(state => state.courseHome);
   const dispatch = useDispatch();
+  const {
+    courseAccess,
+    start,
+  } = useModel(metadataModel, courseId);
 
   if (courseStatus === 'loading') {
     return (
@@ -39,7 +45,16 @@ function TabPage({
     );
   }
 
-  if (courseStatus === 'loaded') {
+  if (courseStatus === 'denied') {
+    const redirectUrl = getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start, unitId);
+    if (redirectUrl) {
+      return (<Redirect to={redirectUrl} />);
+    }
+  }
+
+  // Either a success state or a denied state that wasn't redirected above (some tabs handle denied states themselves,
+  // like the outline tab handling unenrolled learners)
+  if (courseStatus === 'loaded' || courseStatus === 'denied') {
     return (
       <>
         <Toast
@@ -53,18 +68,8 @@ function TabPage({
         >
           {toastHeader}
         </Toast>
-        <LoadedTabPage courseId={courseId} metadataModel={metadataModel} unitId={unitId} {...passthroughProps} />
+        <LoadedTabPage {...props} />
       </>
-    );
-  }
-
-  if (courseStatus === 'denied') {
-    return (
-      <AccessDeniedRedirect
-        courseId={courseId}
-        metadataModel={metadataModel}
-        unitId={unitId}
-      />
     );
   }
 
@@ -80,12 +85,14 @@ function TabPage({
 }
 
 TabPage.defaultProps = {
+  courseId: null,
   unitId: null,
 };
 
 TabPage.propTypes = {
+  activeTabSlug: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
-  courseId: PropTypes.string.isRequired,
+  courseId: PropTypes.string,
   courseStatus: PropTypes.string.isRequired,
   metadataModel: PropTypes.string.isRequired,
   unitId: PropTypes.string,

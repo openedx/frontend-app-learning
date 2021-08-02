@@ -36,6 +36,8 @@ function CertificateStatusAlert({ intl, payload }) {
     isWebCert,
     userTimezone,
     org,
+    notPassingCourseEnded,
+    tabs,
   } = payload;
 
   // eslint-disable-next-line react/prop-types
@@ -118,6 +120,24 @@ function CertificateStatusAlert({ intl, payload }) {
     return alertProps;
   };
 
+  const renderNotPassingCourseEnded = () => {
+    const progressTab = tabs.find(tab => tab.slug === 'progress');
+    const progressLink = progressTab && progressTab.url;
+
+    const alertProps = {
+      header: intl.formatMessage(certMessages.certStatusNotPassingHeader),
+      buttonMessage: intl.formatMessage(certMessages.certStatusNotPassingButton),
+      body: intl.formatMessage(certStatusMessages.notPassingBody),
+      buttonVisible: true,
+      buttonLink: progressLink,
+      buttonAction: () => {
+        sendAlertClickTracking('edx.ui.lms.course_outline.certificate_alert_view_grades_button.clicked');
+      },
+    };
+
+    return alertProps;
+  };
+
   let alertProps = {};
   switch (certStatus) {
     case CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE:
@@ -129,6 +149,9 @@ function CertificateStatusAlert({ intl, payload }) {
       alertProps = renderNotIDVerifiedStatus();
       break;
     default:
+      if (notPassingCourseEnded) {
+        alertProps = renderNotPassingCourseEnded();
+      }
       break;
   }
 
@@ -184,6 +207,12 @@ CertificateStatusAlert.propTypes = {
     isWebCert: PropTypes.bool,
     userTimezone: PropTypes.string,
     org: PropTypes.string,
+    notPassingCourseEnded: PropTypes.bool,
+    tabs: PropTypes.arrayOf(PropTypes.shape({
+      tab_id: PropTypes.string,
+      title: PropTypes.string,
+      url: PropTypes.string,
+    })),
   }).isRequired,
 };
 

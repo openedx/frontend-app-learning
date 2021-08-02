@@ -207,10 +207,12 @@ export async function getDatesTabData(courseId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`);
+      return {};
     }
-    // 401 can be returned for unauthenticated users or users who are not enrolled
     if (httpErrorStatus === 401) {
-      global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
+      // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
+      // courseAccess in the metadata call, so just ignore this status for now.
+      return {};
     }
     throw error;
   }
@@ -274,10 +276,12 @@ export async function getProgressTabData(courseId, targetUserId) {
     const { httpErrorStatus } = error && error.customAttributes;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
+      return {};
     }
-    // 401 can be returned for unauthenticated users or users who are not enrolled
     if (httpErrorStatus === 401) {
-      global.location.replace(`${getConfig().BASE_URL}/course/${courseId}/home`);
+      // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
+      // courseAccess in the metadata call, so just ignore this status for now.
+      return {};
     }
     throw error;
   }
@@ -347,12 +351,14 @@ export async function getOutlineTabData(courseId) {
   const datesBannerInfo = camelCaseObject(data.dates_banner_info);
   const datesWidget = camelCaseObject(data.dates_widget);
   const enrollAlert = camelCaseObject(data.enroll_alert);
+  const enrollmentMode = data.enrollment_mode;
   const handoutsHtml = data.handouts_html;
   const hasScheduledContent = data.has_scheduled_content;
   const hasEnded = data.has_ended;
   const offer = camelCaseObject(data.offer);
   const resumeCourse = camelCaseObject(data.resume_course);
   const timeOffsetMillis = getTimeOffsetMillis(headers && headers.date, requestTime, responseTime);
+  const userHasPassingGrade = data.user_has_passing_grade;
   const verifiedMode = camelCaseObject(data.verified_mode);
   const welcomeMessageHtml = data.welcome_message_html;
 
@@ -366,12 +372,14 @@ export async function getOutlineTabData(courseId) {
     datesBannerInfo,
     datesWidget,
     enrollAlert,
+    enrollmentMode,
     handoutsHtml,
     hasScheduledContent,
     hasEnded,
     offer,
     resumeCourse,
     timeOffsetMillis, // This should move to a global time correction reference
+    userHasPassingGrade,
     verifiedMode,
     welcomeMessageHtml,
   };

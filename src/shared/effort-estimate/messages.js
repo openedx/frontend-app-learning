@@ -7,7 +7,7 @@ const messages = defineMessages({
   },
   minutesAbbreviated: {
     id: 'learning.effortEstimation.minutesAbbreviated',
-    defaultMessage: '{minuteCount, plural, other {# min}}',
+    defaultMessage: '{minuteCount, plural, one {# min} other {# min}}',
     description: 'Number of minutes in a casual, shorthand manner: 5 min',
   },
   minutesFull: {
