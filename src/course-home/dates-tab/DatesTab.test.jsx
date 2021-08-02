@@ -32,7 +32,7 @@ describe('DatesTab', () => {
     component = (
       <AppProvider store={store}>
         <UserMessagesProvider>
-          <Route path="/course/:courseId/dates">
+          <Route path="/c/:courseId/dates">
             <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
               <DatesTab />
             </TabContainer>
