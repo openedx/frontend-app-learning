@@ -23,8 +23,11 @@ Factory.define('block')
     return blockId;
   })
   .attr(
-    'hash_key', ['hash_key'],
-    () => (Math.random().toString(36).substring(2, 15)),
+    'hash_key', ['block_id'],
+    (blockId) => {
+      const len = blockId.length;
+      return blockId.substring(23, len);
+    },
   )
   .attr(
     'id',
