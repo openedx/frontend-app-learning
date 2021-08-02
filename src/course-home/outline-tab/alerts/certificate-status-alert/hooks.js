@@ -21,9 +21,19 @@ function verifyCertStatusType(status) {
 }
 
 function useCertificateStatusAlert(courseId) {
+  const VERIFIED_MODES = {
+    PROFESSIONAL: 'professional',
+    VERIFIED: 'verified',
+    NO_ID_PROFESSIONAL_MODE: 'no-id-professional',
+    CREDIT_MODE: 'credit',
+    MASTERS: 'masters',
+    EXECUTIVE_EDUCATION: 'executive-education',
+  };
+
   const {
     isEnrolled,
     org,
+    tabs,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -32,6 +42,9 @@ function useCertificateStatusAlert(courseId) {
       userTimezone,
     },
     certData,
+    hasEnded,
+    userHasPassingGrade,
+    enrollmentMode,
   } = useModel('outline', courseId);
 
   const {
@@ -42,7 +55,11 @@ function useCertificateStatusAlert(courseId) {
   } = certData || {};
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
   const isWebCert = downloadUrl === null;
-
+  const isVerifiedEnrollmentMode = (
+    enrollmentMode !== null
+    && enrollmentMode !== undefined
+    && !!Object.values(VERIFIED_MODES).find(mode => mode === enrollmentMode)
+  );
   let certURL = '';
   if (certWebViewUrl) {
     certURL = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
@@ -52,8 +69,17 @@ function useCertificateStatusAlert(courseId) {
   }
   const hasAlertingCertStatus = verifyCertStatusType(certStatus);
 
-  // Only show if there is a known cert status that we want provide status on.
+  // Only show if:
+  // - there is a known cert status that we want provide status on.
+  // - Or the course has ended and the learner does not have a passing grade.
   const isVisible = isEnrolled && hasAlertingCertStatus;
+  const notPassingCourseEnded = (
+    isEnrolled
+    && isVerifiedEnrollmentMode
+    && !hasAlertingCertStatus
+    && hasEnded
+    && !userHasPassingGrade
+  );
   const payload = {
     certificateAvailableDate,
     certURL,
@@ -63,9 +89,11 @@ function useCertificateStatusAlert(courseId) {
     userTimezone,
     isWebCert,
     org,
+    notPassingCourseEnded,
+    tabs,
   };
 
-  useAlert(isVisible, {
+  useAlert(isVisible || notPassingCourseEnded, {
     code: 'clientCertificateStatusAlert',
     payload: useMemo(() => payload, Object.values(payload).sort()),
     topic: 'outline-course-alerts',

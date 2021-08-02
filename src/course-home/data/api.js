@@ -343,12 +343,14 @@ export async function getOutlineTabData(courseId) {
   const datesBannerInfo = camelCaseObject(data.dates_banner_info);
   const datesWidget = camelCaseObject(data.dates_widget);
   const enrollAlert = camelCaseObject(data.enroll_alert);
+  const enrollmentMode = data.enrollment_mode;
   const handoutsHtml = data.handouts_html;
   const hasScheduledContent = data.has_scheduled_content;
   const hasEnded = data.has_ended;
   const offer = camelCaseObject(data.offer);
   const resumeCourse = camelCaseObject(data.resume_course);
   const timeOffsetMillis = getTimeOffsetMillis(headers && headers.date, requestTime, responseTime);
+  const userHasPassingGrade = data.user_has_passing_grade;
   const verifiedMode = camelCaseObject(data.verified_mode);
   const welcomeMessageHtml = data.welcome_message_html;
 
@@ -362,12 +364,14 @@ export async function getOutlineTabData(courseId) {
     datesBannerInfo,
     datesWidget,
     enrollAlert,
+    enrollmentMode,
     handoutsHtml,
     hasScheduledContent,
     hasEnded,
     offer,
     resumeCourse,
     timeOffsetMillis, // This should move to a global time correction reference
+    userHasPassingGrade,
     verifiedMode,
     welcomeMessageHtml,
   };
