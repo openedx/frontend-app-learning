@@ -144,7 +144,7 @@ describe('CoursewareContainer', () => {
   }
 
   it('should initialize to show a spinner', () => {
-    history.push('/course/abc123');
+    history.push('/c/abc123');
     render(component);
 
     const spinner = screen.getByRole('status');
@@ -194,7 +194,7 @@ describe('CoursewareContainer', () => {
           unitId: unitBlocks[1].id,
         });
 
-        history.push(`/course/${courseId}`);
+        history.push(`/c/${courseId}`);
         const container = await loadContainer();
 
         assertLoadedHeader(container);
@@ -217,7 +217,7 @@ describe('CoursewareContainer', () => {
         // Note how there is no sectionId/unitId returned in this mock response!
         axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {});
 
-        history.push(`/course/${courseId}`);
+        history.push(`/c/${courseId}`);
         const container = await loadContainer();
 
         assertLoadedHeader(container);
@@ -237,7 +237,7 @@ describe('CoursewareContainer', () => {
       );
 
       function setUrl(urlSequenceId, urlUnitId = null) {
-        history.push(`/course/${courseId}/${urlSequenceId}/${urlUnitId || ''}`);
+        history.push(`/c/${courseId}/${urlSequenceId}/${urlUnitId || ''}`);
       }
 
       function assertLocation(container, sequenceId, unitId) {
@@ -379,11 +379,11 @@ describe('CoursewareContainer', () => {
       });
 
       it('should navigate between units and check block completion', async () => {
-        axiosMock.onPost(`${courseId}/xblock/${sequenceBlock.id}/handler/get_completion`).reply(200, {
+        axiosMock.onPost(`${courseId}/xblock/${sequenceBlock.decoded_id}/handler/get_completion`).reply(200, {
           complete: true,
         });
 
-        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
+        history.push(`/c/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
         const container = await loadContainer();
 
         const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
