@@ -395,38 +395,39 @@ Object {
         },
         "courseBlocks": Object {
           "courses": Object {
-            "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
+            "3iwl6mf8i6h": Object {
               "hasScheduledContent": false,
               "id": "course-v1:edX+DemoX+Demo_Course_1",
               "sectionIds": Array [
-                "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
+                "e42svlz653b",
               ],
               "title": "bcdabcdabcdabcdabcdabcdabcdabcd3",
             },
           },
           "sections": Object {
-            "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2": Object {
+            "e42svlz653b": Object {
               "complete": false,
               "courseId": "course-v1:edX+DemoX+Demo_Course_1",
-              "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
+              "id": "e42svlz653b",
               "resumeBlock": false,
               "sequenceIds": Array [
-                "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
+                "g3boz4y8ntm",
               ],
               "title": "Title of Section",
             },
           },
           "sequences": Object {
-            "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1": Object {
+            "g3boz4y8ntm": Object {
               "complete": false,
               "description": null,
               "due": null,
               "effortActivities": 2,
               "effortTime": 15,
+              "hash_key": "g3boz4y8ntm",
               "icon": null,
-              "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
+              "id": "g3boz4y8ntm",
               "legacyWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1?experience=legacy",
-              "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
+              "sectionId": "e42svlz653b",
               "showLink": true,
               "title": "Title of Sequence",
             },
