@@ -158,7 +158,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
   axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
   sequenceMetadata.forEach(metadata => {
-    const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${metadata.decoded_id}`;
+    const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${metadata.item_id}`;
     axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);
     const proctoredExamApiUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${courseMetadata.id}/content_id/${sequenceMetadata.item_id}?is_learning_mfe=true`;
     axiosMock.onGet(proctoredExamApiUrl).reply(200, { exam: {}, active_attempt: {} });
