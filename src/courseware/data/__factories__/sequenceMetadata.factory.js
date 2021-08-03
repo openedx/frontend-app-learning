@@ -27,12 +27,12 @@ Factory.define('sequenceMetadata')
     ),
   )
   .attr('element_id', ['sequenceBlock'], sequenceBlock => sequenceBlock.block_id)
-  .attr('item_id', ['sequenceBlock'], sequenceBlock => (sequenceBlock.hash_key || sequenceBlock.id))
+  .attr('item_id', ['sequenceBlock'], sequenceBlock => sequenceBlock.id)
   .attr('display_name', ['sequenceBlock'], sequenceBlock => sequenceBlock.display_name)
   .attr('gated_content', ['sequenceBlock'], sequenceBlock => ({
     gated: false,
     prereq_url: null,
-    prereq_id: `${sequenceBlock.id}-prereq`,
+    prereq_id: `${sequenceBlock.decode_id}-prereq`,
     prereq_section_name: `${sequenceBlock.display_name}-prereq`,
     gated_section_name: sequenceBlock.display_name,
   }))
