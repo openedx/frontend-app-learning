@@ -31,7 +31,7 @@ export function normalizeBlocks(courseId, blocks) {
         break;
 
       case 'sequential':
-        models.sequences[block.hash_key] = {
+        models.sequences[(block.hash_key || block.id)] = {
           effortActivities: block.effort_activities,
           effortTime: block.effort_time,
           id: block.hash_key || block.id,
@@ -42,7 +42,7 @@ export function normalizeBlocks(courseId, blocks) {
         };
         break;
       case 'vertical':
-        models.units[block.hash_key] = {
+        models.units[(block.hash_key || block.id)] = {
           graded: block.graded,
           id: block.hash_key || block.id,
           title: block.display_name,

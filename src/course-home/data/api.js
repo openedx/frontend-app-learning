@@ -129,7 +129,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
         break;
 
       case 'sequential':
-        models.sequences[block.hash_key] = {
+        models.sequences[(block.hash_key || block.id)] = {
           complete: block.complete,
           description: block.description,
           due: block.due,
@@ -167,15 +167,8 @@ export function normalizeOutlineBlocks(courseId, blocks) {
   Object.values(models.sections).forEach(section => {
     if (Array.isArray(section.sequenceIds)) {
       section.sequenceIds.forEach(sequenceId => {
-        const modelSequenceIds = {};
-        Object.values(models.sequences).forEach(sequence => {
-          if (sequenceId === sequence.id) {
-            modelSequenceIds[sequenceId] = sequence.hash_key;
-          }
-        });
-        if (sequenceId in modelSequenceIds) {
-          const sequence = modelSequenceIds[sequenceId];
-          models.sequences.[sequence].sectionId = section.id;
+        if (sequenceId in models.sequences) {
+          models.sequences.[sequenceId].sectionId = section.id;
         } else {
           logInfo(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
         }
