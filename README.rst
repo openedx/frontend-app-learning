@@ -1,23 +1,21 @@
-|Coveralls| |npm_version| |npm_downloads| |license|
+|codecov| |license|
 
 frontend-app-learning
 =========================
 
-Please tag **@edx/teaching-and-learning** on any PRs or issues.  Thanks.
-
 Introduction
 ------------
 
-React app for edX learning.
+This is the Learning MFE (micro-frontend application), which renders all
+learner-facing course pages (like the course outline, the progress page,
+actual course content, etc).
 
-.. |Coveralls| image:: https://img.shields.io/coveralls/edx/frontend-app-learning.svg?branch=master
-   :target: https://coveralls.io/github/edx/frontend-app-learning
-.. |npm_version| image:: https://img.shields.io/npm/v/@edx/frontend-app-learning.svg
-   :target: @edx/frontend-app-learning
-.. |npm_downloads| image:: https://img.shields.io/npm/dt/@edx/frontend-app-learning.svg
-   :target: @edx/frontend-app-learning
-.. |license| image:: https://img.shields.io/npm/l/@edx/frontend-app-learning.svg
-   :target: @edx/frontend-app-learning
+Please tag **@edx/engage-squad** on any PRs or issues.  Thanks.
+
+.. |codecov| image:: https://codecov.io/gh/edx/frontend-app-learning/branch/master/graph/badge.svg?token=3z7XvuzTq3
+   :target: https://codecov.io/gh/edx/frontend-app-learning
+.. |license| image:: https://img.shields.io/badge/license-AGPL-informational
+   :target: https://github.com/edx/frontend-app-account/blob/master/LICENSE
 
 Development
 -----------
@@ -25,22 +23,10 @@ Development
 Start Devstack
 ^^^^^^^^^^^^^^
 
-To use this application `devstack <https://github.com/edx/devstack>`__ must be running and you must be logged into it.
+To use this application, `devstack <https://github.com/edx/devstack>`__ must be running and you must be logged into it.
 
--  Start devstack
--  Log in (http://localhost:18000/login)
-
-Start the development server
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In this project, install requirements and start the development server by running:
-
-.. code:: bash
-
-   npm install
-   npm start # The server will run on port 1995
-
-Once the dev server is up, visit http://localhost:2000/course/course-v1:edX+DemoX+Demo_Course to view the demo course.  You can replace ``course-v1:edX+DemoX+Demo_Course`` with a different course key.
+- Run ``make dev.up.lms``
+- Visit http://localhost:2000/course/course-v1:edX+DemoX+Demo_Course to view the demo course.  You can replace ``course-v1:edX+DemoX+Demo_Course`` with a different course key.
 
 Local module development
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -67,3 +53,59 @@ file (which is git-ignored) that defines where to find your local modules, for i
    };
 
 See https://github.com/edx/frontend-build#local-module-configuration-for-webpack for more details.
+
+Deployment
+----------
+
+The Learning MFE is similar to all the other Open edX MFEs. Read the Open
+edX Developer Guide's section on
+`MFE applications <https://edx.readthedocs.io/projects/edx-developer-docs/en/latest/developers_guide/micro_frontends_in_open_edx.html>`_.
+
+Environment Variables
+^^^^^^^^^^^^^^^^^^^^^
+
+This MFE is configured via environment variables supplied at build time.
+All micro-frontends have a shared set of required environment variables,
+as documented in the Open edX Developer Guide under
+`Required Environment Variables <https://edx.readthedocs.io/projects/edx-developer-docs/en/latest/developers_guide/micro_frontends_in_open_edx.html#required-environment-variables>`_.
+
+The learning micro-frontend also supports the following additional variables:
+
+SOCIAL_UTM_MILESTONE_CAMPAIGN
+  This value is passed as the ``utm_campaign`` parameter for social-share
+  links when celebrating learning milestones in the course. Optional.
+
+  Example: ``milestone``
+
+SUPPORT_URL_CALCULATOR_MATH
+  A link that explains how to use the in-course calculator. You can use the
+  one in the example below, if you don't want to have your own branded version.
+
+  Example: https://support.edx.org/hc/en-us/articles/360000038428-Entering-math-expressions-in-assignments-or-the-calculator
+
+SUPPORT_URL_ID_VERIFICATION
+  A link that explains how to verify your ID. Shown in contexts where you need
+  to verify yourself to earn a certificate. The example link below is probably too
+  edx.org-specific to use for your own site.
+
+  Example: https://support.edx.org/hc/en-us/articles/206503858-How-do-I-verify-my-identity
+
+SUPPORT_URL_VERIFIED_CERTIFICATE
+  A link that explains what a verified certificate is.  You can use the
+  one in the example below, if you don't want to have your own branded version.
+  Optional.
+
+  Example: https://support.edx.org/hc/en-us/articles/206502008-What-is-a-verified-certificate
+
+TWITTER_HASHTAG
+  This value is used in the Twitter social-share link when celebrating learning
+  milestones in the course. Will prefill the suggested post with this hashtag.
+  Optional.
+
+  Example: ``brandedhashtag``
+
+TWITTER_URL
+  A link to your Twitter account. The Twitter social-share link won't appear
+  unless this is set. Optional.
+
+  Example: https://twitter.com/edXOnline
