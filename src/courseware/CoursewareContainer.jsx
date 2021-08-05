@@ -17,6 +17,12 @@ import { TabPage } from '../tab-page';
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
 
+const checkUrlLength = memoize((shortLinkFeatureFlag, courseStatus, courseId, sequence) => {
+  if (shortLinkFeatureFlag && courseStatus === 'loaded' && sequence) {
+    history.replace(`/c/${courseId}/${sequence.id}/${sequence.unitIds[sequence.activeUnitIndex]}`);
+  }
+});
+
 const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSequenceId) => {
   if (courseStatus === 'loaded' && !sequenceId) {
     // Note that getResumeBlock is just an API call, not a redux thunk.
@@ -127,6 +133,7 @@ class CoursewareContainer extends Component {
       firstSequenceId,
       unitViaSequenceId,
       sectionViaSequenceId,
+      shortLinkFeatureFlag,
       match: {
         params: {
           courseId: routeCourseId,
@@ -135,9 +142,14 @@ class CoursewareContainer extends Component {
         },
       },
     } = this.props;
+
     // Load data whenever the course or sequence ID changes.
     this.checkFetchCourse(routeCourseId);
     this.checkFetchSequence(routeSequenceHash);
+
+    if (sequence && routeSequenceHash.includes('block')) {
+      checkUrlLength(shortLinkFeatureFlag, courseStatus, courseId, sequence);
+    }
 
     // All courseware URLs should normalize to the format /course/:courseId/:sequenceId/:unitId
     // via the series of redirection rules below.
@@ -211,7 +223,6 @@ class CoursewareContainer extends Component {
       sequence,
       sequenceId,
     } = this.props;
-
     if (nextSequence !== null) {
       let nextUnitId = null;
       if (nextSequence.unitIds.length > 0) {
@@ -247,6 +258,8 @@ class CoursewareContainer extends Component {
       courseStatus,
       courseId,
       sequenceId,
+      sequence,
+      shortLinkFeatureFlag,
       match: {
         params: {
           unitId: routeUnitId,
@@ -254,18 +267,30 @@ class CoursewareContainer extends Component {
       },
     } = this.props;
 
+    // This helps process old URLS that still use a blocks usage key in the URL.
+    let updatedSequenceId;
+    let updatedUnitId;
+    if (sequence) {
+      if (sequenceId.includes('block') && shortLinkFeatureFlag) {
+        updatedSequenceId = sequence.id;
+      }
+      if (routeUnitId.includes('block') && shortLinkFeatureFlag) {
+        updatedUnitId = sequence.unitIds[sequence.activeUnitIndex];
+      }
+    }
+
     return (
       <TabPage
         activeTabSlug="courseware"
         courseId={courseId}
-        unitId={routeUnitId}
+        unitId={updatedUnitId || routeUnitId}
         courseStatus={courseStatus}
         metadataModel="coursewareMeta"
       >
         <Course
           courseId={courseId}
-          sequenceId={sequenceId}
-          unitId={routeUnitId}
+          sequenceId={updatedSequenceId || sequenceId}
+          unitId={updatedUnitId || routeUnitId}
           nextSequenceHandler={this.handleNextSequenceClick}
           previousSequenceHandler={this.handlePreviousSequenceClick}
           unitNavigationHandler={this.handleUnitNavigationClick}
@@ -325,6 +350,7 @@ CoursewareContainer.propTypes = {
   fetchSequence: PropTypes.func.isRequired,
   specialExamsEnabledWaffleFlag: PropTypes.bool.isRequired,
   proctoredExamsEnabledWaffleFlag: PropTypes.bool.isRequired,
+  shortLinkFeatureFlag: PropTypes.bool.isRequired,
 };
 
 CoursewareContainer.defaultProps = {
@@ -348,7 +374,18 @@ const currentCourseSelector = createSelector(
 const currentSequenceSelector = createSelector(
   (state) => state.models.sequences || {},
   (state) => state.courseware.sequenceId,
-  (sequencesById, sequenceId) => (sequencesById[sequenceId] ? sequencesById[sequenceId] : null),
+  (sequencesById, sequenceId) => {
+    if (!sequencesById[sequenceId] && Object.keys(sequencesById).length > 0) {
+      for (let i = 0; i < Object.values(sequencesById).length; i++) {
+        const sequence = Object.values(sequencesById)[i];
+        if (sequence.decoded_id === sequenceId) {
+          return sequence;
+        }
+      }
+      return null;
+    }
+    return sequencesById[sequenceId];
+  },
 );
 
 const sequenceIdsSelector = createSelector(
@@ -430,6 +467,7 @@ const mapStateToProps = (state) => {
     sequenceStatus,
     specialExamsEnabledWaffleFlag,
     proctoredExamsEnabledWaffleFlag,
+    shortLinkFeatureFlag,
   } = state.courseware;
 
   return {
@@ -439,6 +477,7 @@ const mapStateToProps = (state) => {
     sequenceStatus,
     specialExamsEnabledWaffleFlag,
     proctoredExamsEnabledWaffleFlag,
+    shortLinkFeatureFlag,
     course: currentCourseSelector(state),
     sequence: currentSequenceSelector(state),
     previousSequence: previousSequenceSelector(state),
