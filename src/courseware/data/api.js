@@ -70,7 +70,7 @@ export function normalizeBlocks(courseId, blocks) {
     if (Array.isArray(section.sequenceIds)) {
       section.sequenceIds.forEach(sequenceId => {
         if (sequenceId in models.sequences) {
-          models.sequences.[sequenceId].sectionId = section.id;
+          models.sequences[sequenceId].sectionId = section.id;
         } else {
           logInfo(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
         }
@@ -82,7 +82,7 @@ export function normalizeBlocks(courseId, blocks) {
     if (Array.isArray(sequence.unitIds)) {
       sequence.unitIds.forEach(unitId => {
         if (unitId in models.units) {
-          models.units.[unitId].sequenceId = sequence.id;
+          models.units[unitId].sequenceId = sequence.id;
         } else {
           logInfo(`Sequence ${sequence.id} has child block ${unitId}, but that block is not in the list of units.`);
         }
@@ -223,6 +223,7 @@ function normalizeMetadata(metadata) {
     specialExamsEnabledWaffleFlag: data.is_mfe_special_exams_enabled,
     proctoredExamsEnabledWaffleFlag: data.is_mfe_proctored_exams_enabled,
     isMasquerading: data.original_user_is_staff && !data.is_staff,
+    shortLinkFeatureFlag: data.mfe_short_url_is_active,
   };
 }
 
