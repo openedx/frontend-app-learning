@@ -18,7 +18,7 @@ https://learning.edx.org/course/course-v1:edX+DemoX.1+2T2019/block-v1:edX+DemoX.
 
 ```
 
-After exploring different URL patterns and possible redundancies in the current URL format. The course, run, and organization is stated in every portion of the URL. We also do not need the URL to tell us the type of block since it has been determined that all URLs will follow the path` /course/:courseId/:sequenceId/:unitId`.
+After exploring different URL patterns and possible redundancies in the current URL format, the following key points were noticed. The course, run, and organization are stated in every portion of the URL. We also do not need the URL to tell us the type of block since it has been determined that all URLs will follow the path` /course/:courseId/:sequenceId/:unitId`.
 
 ## Decision
 
@@ -41,8 +41,8 @@ https://learning.edx.org/c/course-v1:edX+DemoX.1+2T2019/YmxvY2/njuRCq/optional-e
 The fields definition and requirements ar as follows:
 
 * :courseId (required) - same as the previous `courseId`.
-* :sequenceHash (required) - a `urlsafe_b64encode` version of the `sequenceId`.
-* :unitHash (required) - a `urlsafe_b64encode` version of the `unitId`.
+* :sequenceHash (required) - a `blake2b` version of the `sequenceId`'s `urlsafe_b64encode` .
+* :unitHash (required) - a `blake2b` version of the `unitId`'s `urlsafe_b64encode`.
 * :sectionSlug (optional) - `display_name` of the current sequence's parent section.
 * :sequenceSlug (optional) - `display_name` of the current sequence.
 * :unitSlug (optional) - `display_name` of the current unit
