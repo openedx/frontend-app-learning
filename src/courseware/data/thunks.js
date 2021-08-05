@@ -14,6 +14,7 @@ import {
 import {
   setsSpecialExamsEnabled,
   setsProctoredExamsEnabled,
+  setsShortLinkFeatureFlag,
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,
@@ -150,6 +151,9 @@ export function fetchCourse(courseId) {
         }));
         dispatch(setsProctoredExamsEnabled({
           proctoredExamsEnabledWaffleFlag: courseMetadataResult.value.proctoredExamsEnabledWaffleFlag,
+        }));
+        dispatch(setsShortLinkFeatureFlag({
+          shortLinkFeatureFlag: courseMetadataResult.value.shortLinkFeatureFlag,
         }));
       }
 
