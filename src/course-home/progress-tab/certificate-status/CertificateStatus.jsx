@@ -83,17 +83,21 @@ function CertificateStatus({ intl }) {
   const idVerificationSupportLink = <IdVerificationSupportLink />;
   const profileLink = <ProfileLink />;
 
+  // Some learners have a valid ("downloadable") certificate without being in a passing
+  // state (e.g. learners who have been added to a course's allowlist), so we need to
+  // skip grade validation for these learners
+  const certIsDownloadable = certStatus === 'downloadable';
   if (mode === COURSE_EXIT_MODES.disabled) {
     certEventName = 'certificate_status_disabled';
-  } else if (mode === COURSE_EXIT_MODES.nonPassing) {
+  } else if (mode === COURSE_EXIT_MODES.nonPassing && !certIsDownloadable) {
     certCase = 'notPassing';
     certEventName = 'not_passing';
     body = intl.formatMessage(messages[`${certCase}Body`]);
-  } else if (mode === COURSE_EXIT_MODES.inProgress) {
+  } else if (mode === COURSE_EXIT_MODES.inProgress && !certIsDownloadable) {
     certCase = 'inProgress';
     certEventName = 'has_scheduled_content';
     body = intl.formatMessage(messages[`${certCase}Body`]);
-  } else if (mode === COURSE_EXIT_MODES.celebration) {
+  } else if (mode === COURSE_EXIT_MODES.celebration || certIsDownloadable) {
     switch (certStatus) {
       case 'requesting':
         certCase = 'requestable';
