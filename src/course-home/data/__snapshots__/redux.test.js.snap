@@ -16,6 +16,7 @@ Object {
     "proctoredExamsEnabledWaffleFlag": false,
     "sequenceId": null,
     "sequenceStatus": "loading",
+    "shortLinkFeatureFlag": false,
     "specialExamsEnabledWaffleFlag": false,
   },
   "models": Object {
@@ -321,6 +322,7 @@ Object {
     "proctoredExamsEnabledWaffleFlag": false,
     "sequenceId": null,
     "sequenceStatus": "loading",
+    "shortLinkFeatureFlag": false,
     "specialExamsEnabledWaffleFlag": false,
   },
   "models": Object {
@@ -508,6 +510,7 @@ Object {
     "proctoredExamsEnabledWaffleFlag": false,
     "sequenceId": null,
     "sequenceStatus": "loading",
+    "shortLinkFeatureFlag": false,
     "specialExamsEnabledWaffleFlag": false,
   },
   "models": Object {
