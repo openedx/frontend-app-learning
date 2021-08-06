@@ -270,11 +270,11 @@ class CoursewareContainer extends Component {
     // This helps process old URLS that still use a blocks usage key in the URL.
     let updatedSequenceId;
     let updatedUnitId;
-    if (sequence) {
-      if (sequenceId.includes('block') && shortLinkFeatureFlag) {
+    if (shortLinkFeatureFlag) {
+      if (sequence && sequenceId.includes('block')) {
         updatedSequenceId = sequence.id;
       }
-      if (routeUnitId.includes('block') && shortLinkFeatureFlag) {
+      if (routeUnitId && routeUnitId.includes('block')) {
         updatedUnitId = sequence.unitIds[sequence.activeUnitIndex];
       }
     }
