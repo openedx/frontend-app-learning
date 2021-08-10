@@ -74,7 +74,7 @@
     "@testing-library/user-event": "12.0.17",
     "axios-mock-adapter": "1.18.2",
     "codecov": "3.8.2",
-    "es-check": "5.1.4",
+    "es-check": "5.2.4",
     "glob": "7.1.7",
     "husky": "3.1.0",
     "jest": "24.9.0",
