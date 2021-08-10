@@ -1,6 +1,11 @@
 import React from 'react';
 import { Factory } from 'rosie';
-import { initializeTestStore, render, screen } from '../setupTest';
+import {
+  initializeTestStore,
+  render,
+  screen,
+  waitFor,
+} from '../setupTest';
 import LoadedTabPage from './LoadedTabPage';
 
 jest.mock('../course-header/CourseTabsNavigation', () => () => <div data-testid="CourseTabsNavigation" />);
@@ -35,5 +40,24 @@ describe('Loaded Tab Page', () => {
     const testStore = await initializeTestStore({ courseMetadata }, false);
     render(<LoadedTabPage {...mockData} courseId={courseMetadata.id} />, { store: testStore });
     expect(screen.getByTestId('StreakModal')).toBeInTheDocument();
+  });
+
+  it('adds course-wide scripts/styles to page', async () => {
+    const courseWideJs = ['https://testcdn.com/js/test.min.js', 'https://jquery.com/jquery.js'];
+    const courseWideCss = ['https://testcdn.com/js/test.min.css', 'https://jquery.com/jquery.css'];
+
+    const courseMetadata = Factory.build('courseMetadata', { course_wide_js: courseWideJs, course_wide_css: courseWideCss });
+    const testStore = await initializeTestStore({ courseMetadata }, false);
+    render(<LoadedTabPage {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+
+    await waitFor(() => {
+      const scripts = Array.from(document.getElementsByTagName('script'));
+      const scriptUrls = scripts.filter(s => s.src).map(s => s.src.replace(/\/$/, ''));
+      const styles = Array.from(document.getElementsByTagName('link'));
+      const styleUrls = styles.filter(s => s.href).map(s => s.href.replace(/\/$/, ''));
+
+      courseWideJs.forEach(js => expect(scriptUrls).toContain(js));
+      courseWideCss.forEach(css => expect(styleUrls).toContain(css));
+    });
   });
 });

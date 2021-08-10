@@ -29,6 +29,8 @@ function LoadedTabPage({
     celebrations,
     canViewLegacyCourseware,
     verifiedMode,
+    courseWideJs,
+    courseWideCss,
   } = useModel(metadataModel, courseId);
 
   // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
@@ -46,6 +48,8 @@ function LoadedTabPage({
     <>
       <Helmet>
         <title>{`${activeTab ? `${activeTab.title} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
+        {courseWideJs && courseWideJs.map(js => <script key={js} src={js} />)}
+        {courseWideCss && courseWideCss.map(css => <link key={css} rel="stylesheet" href={css} />)}
       </Helmet>
       <Header
         courseOrg={org}

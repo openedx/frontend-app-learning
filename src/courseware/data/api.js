@@ -222,6 +222,8 @@ function normalizeMetadata(metadata) {
     specialExamsEnabledWaffleFlag: data.is_mfe_special_exams_enabled,
     proctoredExamsEnabledWaffleFlag: data.is_mfe_proctored_exams_enabled,
     isMasquerading: data.original_user_is_staff && !data.is_staff,
+    courseWideJs: data.course_wide_js,
+    courseWideCss: data.course_wide_css,
   };
 }
 
