@@ -129,7 +129,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
         break;
 
       case 'sequential':
-        models.sequences[(block.hash_key || block.id)] = {
+        models.sequences[block.id] = {
           complete: block.complete,
           description: block.description,
           due: block.due,
@@ -168,7 +168,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
     if (Array.isArray(section.sequenceIds)) {
       section.sequenceIds.forEach(sequenceId => {
         if (sequenceId in models.sequences) {
-          models.sequences.[sequenceId].sectionId = section.id;
+          models.sequences[sequenceId].sectionId = section.id;
         } else {
           logInfo(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
         }
@@ -354,6 +354,7 @@ export async function getOutlineTabData(courseId) {
   const userHasPassingGrade = data.user_has_passing_grade;
   const verifiedMode = camelCaseObject(data.verified_mode);
   const welcomeMessageHtml = data.welcome_message_html;
+  const shortLinkFeatureFlag = data.mfe_short_url_is_active;
 
   return {
     accessExpiration,
@@ -375,6 +376,7 @@ export async function getOutlineTabData(courseId) {
     userHasPassingGrade,
     verifiedMode,
     welcomeMessageHtml,
+    shortLinkFeatureFlag,
   };
 }
 
