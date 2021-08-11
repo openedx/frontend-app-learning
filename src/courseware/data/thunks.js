@@ -101,6 +101,7 @@ function mergeLearningSequencesWithCourseBlocks(learningSequencesModels, courseB
       effortActivities: blocksSequence.effortActivities,
       effortTime: blocksSequence.effortTime,
       legacyWebUrl: blocksSequence.legacyWebUrl,
+      hash_key: blocksSequence.hash_key,
       unitIds: blocksSequence.unitIds,
     };
 
@@ -180,8 +181,16 @@ export function fetchCourse(courseId) {
           modelType: 'sequences',
           modelsMap: sequences,
         }));
+        dispatch(addModelsMap({
+          modelType: 'sequenceIdToHashKeyMap',
+          modelsMap: sequences,
+        }));
         dispatch(updateModelsMap({
           modelType: 'units',
+          modelsMap: units,
+        }));
+        dispatch(addModelsMap({
+          modelType: 'unitIdToHashKeyMap',
           modelsMap: units,
         }));
       }
@@ -235,8 +244,16 @@ export function fetchSequence(sequenceId) {
           modelType: 'sequences',
           model: sequence,
         }));
+        dispatch(updateModel({
+          modelType: 'sequenceIdToHashKeyMap',
+          model: sequence,
+        }));
         dispatch(updateModels({
           modelType: 'units',
+          models: units,
+        }));
+        dispatch(updateModels({
+          modelType: 'unitIdToHashKeyMap',
           models: units,
         }));
         dispatch(fetchSequenceSuccess({ sequenceId }));
