@@ -31,8 +31,16 @@ Factory.define('block')
   )
   .attr(
     'id',
-    ['hash_key'],
-    (hashKey) => (hashKey),
+    ['id', 'block_id', 'type', 'courseId'],
+    (id, blockId, type, courseId) => {
+      if (id) {
+        return id;
+      }
+
+      const courseInfo = courseId.split(':')[1];
+
+      return `block-v1:${courseInfo}+type@${type}+block@${blockId}`;
+    },
   )
   .attr(
     'decoded_id', ['block_id', 'type', 'courseId'],
