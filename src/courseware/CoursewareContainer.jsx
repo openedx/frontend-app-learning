@@ -19,7 +19,7 @@ import { handleNextSectionCelebration } from './course/celebration';
 
 const checkUrlLength = memoize((shortLinkFeatureFlag, courseStatus, courseId, sequence) => {
   if (shortLinkFeatureFlag && courseStatus === 'loaded' && sequence) {
-    history.replace(`/c/${courseId}/${sequence.id}/${sequence.unitIds[sequence.activeUnitIndex]}`);
+    history.replace(`/c/${courseId}/${sequence.hash_key}/${sequence.unitIds[sequence.activeUnitIndex]}`);
   }
 });
 
@@ -222,15 +222,20 @@ class CoursewareContainer extends Component {
       nextSequence,
       sequence,
       sequenceId,
+      shortLinkFeatureFlag,
     } = this.props;
     if (nextSequence !== null) {
+      let nextSequenceParam = nextSequence.id;
+      if (shortLinkFeatureFlag) {
+        nextSequenceParam = nextSequence.hash_key;
+      }
       let nextUnitId = null;
       if (nextSequence.unitIds.length > 0) {
         [nextUnitId] = nextSequence.unitIds;
-        history.push(`/c/${courseId}/${nextSequence.id}/${nextUnitId}`);
+        history.push(`/c/${courseId}/${nextSequenceParam}/${nextUnitId}`);
       } else {
         // Some sequences have no units.  This will show a blank page with prev/next buttons.
-        history.push(`/c/${courseId}/${nextSequence.id}`);
+        history.push(`/c/${courseId}/${nextSequenceParam}`);
       }
 
       const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
@@ -241,14 +246,22 @@ class CoursewareContainer extends Component {
   }
 
   handlePreviousSequenceClick = () => {
-    const { previousSequence, courseId } = this.props;
+    const {
+      previousSequence,
+      courseId,
+      shortLinkFeatureFlag,
+    } = this.props;
     if (previousSequence !== null) {
+      let previousSequenceParam = previousSequence.id;
+      if (shortLinkFeatureFlag) {
+        previousSequenceParam = previousSequence.hash_key;
+      }
       if (previousSequence.unitIds.length > 0) {
         const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
-        history.push(`/c/${courseId}/${previousSequence.id}/${previousUnitId}`);
+        history.push(`/c/${courseId}/${previousSequenceParam}/${previousUnitId}`);
       } else {
         // Some sequences have no units.  This will show a blank page with prev/next buttons.
-        history.push(`/c/${courseId}/${previousSequence.id}`);
+        history.push(`/c/${courseId}/${previousSequenceParam}`);
       }
     }
   }
@@ -270,11 +283,11 @@ class CoursewareContainer extends Component {
     // This helps process old URLS that still use a blocks usage key in the URL.
     let updatedSequenceId;
     let updatedUnitId;
-    if (shortLinkFeatureFlag) {
-      if (sequence && sequenceId.includes('block')) {
+    if (shortLinkFeatureFlag && sequence) {
+      if (!sequenceId.includes('block')) {
         updatedSequenceId = sequence.id;
       }
-      if (routeUnitId && routeUnitId.includes('block')) {
+      if (routeUnitId && !routeUnitId.includes('block')) {
         updatedUnitId = sequence.unitIds[sequence.activeUnitIndex];
       }
     }
@@ -309,6 +322,7 @@ const sequenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   sectionId: PropTypes.string.isRequired,
+  hash_key: PropTypes.string.isRequired,
   isTimeLimited: PropTypes.bool,
   isProctored: PropTypes.bool,
   legacyWebUrl: PropTypes.string,
@@ -374,17 +388,15 @@ const currentCourseSelector = createSelector(
 const currentSequenceSelector = createSelector(
   (state) => state.models.sequences || {},
   (state) => state.courseware.sequenceId,
-  (sequencesById, sequenceId) => {
-    if (!sequencesById[sequenceId] && Object.keys(sequencesById).length > 0) {
-      for (let i = 0; i < Object.values(sequencesById).length; i++) {
-        const sequence = Object.values(sequencesById)[i];
-        if (sequence.decoded_id === sequenceId) {
-          return sequence;
-        }
+  (state) => state.models.sequenceIdToHashKeyMap,
+  (sequencesById, sequenceId, sequenceMap) => {
+    if (!sequencesById[sequenceId] && Object.keys(sequencesById).length > 0 && sequenceMap) {
+      if (sequenceId in sequenceMap) {
+        const updatedSequenceId = sequenceMap[sequenceId];
+        return sequencesById[updatedSequenceId];
       }
-      return null;
     }
-    return sequencesById[sequenceId];
+    return sequencesById[sequenceId] ? sequencesById[sequenceId] : null;
   },
 );
 
@@ -405,11 +417,18 @@ const previousSequenceSelector = createSelector(
   sequenceIdsSelector,
   (state) => state.models.sequences || {},
   (state) => state.courseware.sequenceId,
-  (sequenceIds, sequencesById, sequenceId) => {
+  (state) => state.models.sequenceIdToHashKeyMap,
+  (sequenceIds, sequencesById, sequenceId, sequenceMap) => {
     if (!sequenceId || sequenceIds.length === 0) {
       return null;
     }
-    const sequenceIndex = sequenceIds.indexOf(sequenceId);
+    let sequenceIndex = sequenceIds.indexOf(sequenceId);
+    if (!sequencesById[sequenceId] && Object.keys(sequencesById).length > 0 && sequenceMap) {
+      if (sequenceId in sequenceMap) {
+        const updatedSequenceId = sequenceMap[sequenceId];
+        sequenceIndex = sequenceIds.indexOf(updatedSequenceId);
+      }
+    }
     const previousSequenceId = sequenceIndex > 0 ? sequenceIds[sequenceIndex - 1] : null;
     return previousSequenceId !== null ? sequencesById[previousSequenceId] : null;
   },
@@ -419,11 +438,18 @@ const nextSequenceSelector = createSelector(
   sequenceIdsSelector,
   (state) => state.models.sequences || {},
   (state) => state.courseware.sequenceId,
-  (sequenceIds, sequencesById, sequenceId) => {
+  (state) => state.models.sequenceIdToHashKeyMap,
+  (sequenceIds, sequencesById, sequenceId, sequenceMap) => {
     if (!sequenceId || sequenceIds.length === 0) {
       return null;
     }
-    const sequenceIndex = sequenceIds.indexOf(sequenceId);
+    let sequenceIndex = sequenceIds.indexOf(sequenceId);
+    if (!sequencesById[sequenceId] && Object.keys(sequencesById).length > 0 && sequenceMap) {
+      if (sequenceId in sequenceMap) {
+        const updatedSequenceId = sequenceMap[sequenceId];
+        sequenceIndex = sequenceIds.indexOf(updatedSequenceId);
+      }
+    }
     const nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
     return nextSequenceId !== null ? sequencesById[nextSequenceId] : null;
   },
