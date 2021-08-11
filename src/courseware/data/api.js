@@ -26,25 +26,25 @@ export function normalizeBlocks(courseId, blocks) {
         models.sections[block.id] = {
           id: block.id,
           title: block.display_name,
-          sequenceIds: block.hash_children || block.children || [],
+          sequenceIds: block.children || [],
         };
         break;
 
       case 'sequential':
-        models.sequences[(block.hash_key || block.id)] = {
+        models.sequences[block.id] = {
           effortActivities: block.effort_activities,
           effortTime: block.effort_time,
-          id: block.hash_key || block.id,
+          id: block.id,
           title: block.display_name,
           legacyWebUrl: block.legacy_web_url,
-          unitIds: block.hash_children || block.children || [],
+          unitIds: block.children || [],
           hash_key: block.hash_key,
         };
         break;
       case 'vertical':
-        models.units[(block.hash_key || block.id)] = {
+        models.units[block.id] = {
           graded: block.graded,
-          id: block.hash_key || block.id,
+          id: block.id,
           title: block.display_name,
           legacyWebUrl: block.legacy_web_url,
           hash_key: block.hash_key,
@@ -260,6 +260,7 @@ function normalizeSequenceMetadata(sequence) {
       saveUnitPosition: sequence.save_position,
       showCompletion: sequence.show_completion,
       allowProctoringOptOut: sequence.allow_proctoring_opt_out,
+      hash_key: sequence.hash_key,
       decoded_id: sequence.decoded_id,
     },
     units: sequence.items.map(unit => ({
@@ -272,6 +273,7 @@ function normalizeSequenceMetadata(sequence) {
       graded: unit.graded,
       containsContentTypeGatedContent: unit.contains_content_type_gated_content,
       decoded_id: unit.decoded_id,
+      hash_key: unit.hash_key,
     })),
   };
 }
