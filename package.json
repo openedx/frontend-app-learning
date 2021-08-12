@@ -16,14 +16,10 @@
     "is-es5": "es-check es5 ./dist/*.js",
     "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
     "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx .",
+    "prepare": "husky install",
     "snapshot": "fedx-scripts jest --updateSnapshot",
     "start": "fedx-scripts webpack-dev-server --progress",
     "test": "fedx-scripts jest --coverage --passWithNoTests"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
   },
   "author": "edX",
   "license": "AGPL-3.0",
@@ -76,7 +72,7 @@
     "codecov": "3.8.3",
     "es-check": "5.2.4",
     "glob": "7.1.7",
-    "husky": "3.1.0",
+    "husky": "7.0.1",
     "jest": "27.0.6",
     "jest-chain": "1.1.5",
     "reactifex": "1.1.1",
