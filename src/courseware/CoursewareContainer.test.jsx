@@ -192,8 +192,8 @@ describe('CoursewareContainer', () => {
 
       it('should use the resume block repsonse to pick a unit if it contains one', async () => {
         axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {
-          sectionId: sequenceBlock.id,
-          unitId: unitBlocks[1].id,
+          sectionId: sequenceBlock.hash_key,
+          unitId: unitBlocks[1].hash_key,
         });
 
         history.push(`/c/${courseId}`);
@@ -204,7 +204,7 @@ describe('CoursewareContainer', () => {
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
-        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[1].id);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[1].hash_key);
       });
 
       it('should use the first sequence ID and activeUnitIndex if the resume block response is empty', async () => {
@@ -255,11 +255,11 @@ describe('CoursewareContainer', () => {
       describe('when the URL contains a unit ID', () => {
         it('should ignore the section ID and redirect based on the unit ID', async () => {
           const urlUnit = unitTree[1][1][1];
-          setUrl(sectionTree[1].id, urlUnit.id);
+          setUrl(sectionTree[1].id, urlUnit.hash_key);
           const container = await loadContainer();
           assertLoadedHeader(container);
           assertSequenceNavigation(container, 2);
-          assertLocation(container, sequenceTree[1][1].id, urlUnit.id);
+          assertLocation(container, sequenceTree[1][1].hash_key, urlUnit.hash_key);
         });
       });
 
@@ -269,7 +269,7 @@ describe('CoursewareContainer', () => {
           const container = await loadContainer();
           assertLoadedHeader(container);
           assertSequenceNavigation(container, 2);
-          assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id);
+          assertLocation(container, sequenceTree[1][0].hash_key, unitTree[1][0][0].hash_key);
         });
       });
 
@@ -316,15 +316,15 @@ describe('CoursewareContainer', () => {
 
       it('should insert the sequence ID into the URL', async () => {
         const unit = unitTree[1][0][1];
-        history.push(`/c/${courseId}/${unit.id}`);
+        history.push(`/c/${courseId}/${unit.hash_key}`);
         const container = await loadContainer();
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container, 2);
-        const expectedSequenceId = sequenceTree[1][0].id;
-        const expectedUrl = `http://localhost/c/${courseId}/${expectedSequenceId}/${unit.id}`;
+        const expectedSequenceId = sequenceTree[1][0].hash_key;
+        const expectedUrl = `http://localhost/c/${courseId}/${expectedSequenceId}/${unit.hash_key}`;
         expect(global.location.href).toEqual(expectedUrl);
-        expect(container.querySelector('.fake-unit')).toHaveTextContent(unit.id);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unit.hash_key);
       });
     });
 
@@ -333,7 +333,7 @@ describe('CoursewareContainer', () => {
       const unitBlocks = defaultUnitBlocks;
 
       it('should pick the first unit if position was not defined (activeUnitIndex becomes 0)', async () => {
-        history.push(`/c/${courseId}/${sequenceBlock.id}`);
+        history.push(`/c/${courseId}/${sequenceBlock.hash_key}`);
         const container = await loadContainer();
 
         assertLoadedHeader(container);
@@ -341,7 +341,7 @@ describe('CoursewareContainer', () => {
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
-        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[0].id);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[0].hash_key);
       });
 
       it('should use activeUnitIndex to pick a unit from the sequence', async () => {
@@ -352,7 +352,7 @@ describe('CoursewareContainer', () => {
         );
         setUpMockRequests({ sequenceMetadatas: [sequenceMetadata] });
 
-        history.push(`/c/${courseId}/${sequenceBlock.id}`);
+        history.push(`/c/${courseId}/${sequenceBlock.hash_key}`);
         const container = await loadContainer();
 
         assertLoadedHeader(container);
@@ -360,7 +360,7 @@ describe('CoursewareContainer', () => {
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
-        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].hash_key);
       });
     });
 
@@ -369,7 +369,7 @@ describe('CoursewareContainer', () => {
       const unitBlocks = defaultUnitBlocks;
 
       it('should load the specified unit', async () => {
-        history.push(`/c/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
+        history.push(`/c/${courseId}/${sequenceBlock.hash_key}/${unitBlocks[2].hash_key}`);
         const container = await loadContainer();
 
         assertLoadedHeader(container);
@@ -377,15 +377,15 @@ describe('CoursewareContainer', () => {
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
-        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].hash_key);
       });
 
       it('should navigate between units and check block completion', async () => {
-        axiosMock.onPost(`${courseId}/xblock/${sequenceBlock.decoded_id}/handler/get_completion`).reply(200, {
+        axiosMock.onPost(`${courseId}/xblock/${sequenceBlock.id}/handler/get_completion`).reply(200, {
           complete: true,
         });
 
-        history.push(`/c/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
+        history.push(`/c/${courseId}/${sequenceBlock.hash_key}/${unitBlocks[0].id}`);
         const container = await loadContainer();
 
         const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
@@ -393,7 +393,7 @@ describe('CoursewareContainer', () => {
         expect(sequenceNextButton).toHaveTextContent('Next');
         fireEvent.click(sequenceNavButtons[4]);
 
-        expect(global.location.href).toEqual(`http://localhost/c/${courseId}/${sequenceBlock.id}/${unitBlocks[1].id}`);
+        expect(global.location.href).toEqual(`http://localhost/c/${courseId}/${sequenceBlock.hash_key}/${unitBlocks[1].id}`);
       });
     });
 
@@ -421,7 +421,7 @@ describe('CoursewareContainer', () => {
         );
         setUpMockRequests({ sequenceMetadatas: [sequenceMetadata] });
 
-        history.push(`/c/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
+        history.push(`/c/${courseId}/${sequenceBlock.hash_key}/${unitBlocks[2].hash_key}`);
         await loadContainer();
 
         expect(global.location.assign).toHaveBeenCalledWith(sequenceBlock.legacy_web_url);
@@ -442,7 +442,7 @@ describe('CoursewareContainer', () => {
 
       const { courseBlocks, sequenceBlocks, unitBlocks } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
       setUpMockRequests({ courseBlocks, courseMetadata });
-      history.push(`/c/${courseId}/${sequenceBlocks[0].id}/${unitBlocks[0].id}`);
+      history.push(`/c/${courseId}/${sequenceBlocks[0].hash_key}/${unitBlocks[0].hash_key}`);
       return { courseMetadata, unitBlocks };
     }
 
