@@ -268,21 +268,20 @@ export function fetchSequence(sequenceId) {
 export function checkBlockCompletion(courseId, sequenceId, unitId) {
   return async (dispatch, getState) => {
     const { models } = getState();
-    let modelsUnitId = models.units[unitId];
-    if (!modelsUnitId) {
+    let modelsUnitId = unitId;
+    let modelsSequenceId = sequenceId;
+    if (!models.units[unitId]) {
       modelsUnitId = models.unitIdToHashKeyMap[unitId];
     }
-    let modelSequenceId = models.sequences[sequenceId];
-    if (!modelSequenceId) {
-      modelSequenceId = models.sequenceIdToHashKeyMap[sequenceId];
+    if (!models.sequences[sequenceId]) {
+      modelsSequenceId = models.sequenceIdToHashKeyMap[sequenceId];
     }
-    if (modelsUnitId.complete) {
+    if (models.units[modelsUnitId].complete) {
       return; // do nothing. Things don't get uncompleted after they are completed.
     }
 
     try {
-      const isComplete = await getBlockCompletion(courseId, modelSequenceId,
-        modelsUnitId);
+      const isComplete = await getBlockCompletion(courseId, modelSequenceId, modelsUnitId);
       dispatch(updateModel({
         modelType: 'units',
         model: {
@@ -299,11 +298,11 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
 export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
   return async (dispatch, getState) => {
     const { models } = getState();
-    let modelSequenceId = models.sequences[sequenceId];
-    if (!modelSequenceId) {
+    let modelSequenceId = sequenceId;
+    if (!models.sequences[sequenceId]) {
       modelSequenceId = models.sequenceIdToHashKeyMap[sequenceId];
     }
-    const initialActiveUnitIndex = modelSequenceId.activeUnitIndex;
+    const initialActiveUnitIndex = models.sequences[modelSequenceId].activeUnitIndex;
     // Optimistically update the position.
     dispatch(updateModel({
       modelType: 'sequences',
