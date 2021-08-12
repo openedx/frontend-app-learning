@@ -17,9 +17,9 @@ import { TabPage } from '../tab-page';
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
 
-const checkUrlLength = memoize((shortLinkFeatureFlag, courseStatus, courseId, sequence) => {
-  if (shortLinkFeatureFlag && courseStatus === 'loaded' && sequence) {
-    history.replace(`/c/${courseId}/${sequence.hash_key}/${sequence.unitIds[sequence.activeUnitIndex]}`);
+const checkUrlLength = memoize((shortLinkFeatureFlag, courseStatus, courseId, sequence, unitHashKey) => {
+  if (shortLinkFeatureFlag && courseStatus === 'loaded' && sequence && unitHashKey) {
+    history.replace(`/c/${courseId}/${sequence.hash_key}/${unitHashKey}`);
   }
 });
 
@@ -133,6 +133,7 @@ class CoursewareContainer extends Component {
       firstSequenceId,
       unitViaSequenceId,
       sectionViaSequenceId,
+      unitIdHashKeyMap,
       shortLinkFeatureFlag,
       match: {
         params: {
@@ -142,13 +143,17 @@ class CoursewareContainer extends Component {
         },
       },
     } = this.props;
-
     // Load data whenever the course or sequence ID changes.
     this.checkFetchCourse(routeCourseId);
     this.checkFetchSequence(routeSequenceHash);
-
-    if (sequence && routeSequenceHash.includes('block')) {
-      checkUrlLength(shortLinkFeatureFlag, courseStatus, courseId, sequence);
+    if (sequence && routeSequenceHash.includes('block') && unitIdHashKeyMap) {
+      let unitHashKey;
+      Object.values(unitIdHashKeyMap).forEach(id => {
+        if (id === routeUnitId) {
+          unitHashKey = Object.keys(unitIdHashKeyMap).find(key => unitIdHashKeyMap[key] === id);
+        }
+      });
+      checkUrlLength(shortLinkFeatureFlag, courseStatus, courseId, sequence, unitHashKey);
     }
 
     // All courseware URLs should normalize to the format /course/:courseId/:sequenceId/:unitId
@@ -273,6 +278,7 @@ class CoursewareContainer extends Component {
       sequenceId,
       sequence,
       shortLinkFeatureFlag,
+      unitIdHashKeyMap,
       match: {
         params: {
           unitId: routeUnitId,
@@ -288,7 +294,7 @@ class CoursewareContainer extends Component {
         updatedSequenceId = sequence.id;
       }
       if (routeUnitId && !routeUnitId.includes('block')) {
-        updatedUnitId = sequence.unitIds[sequence.activeUnitIndex];
+        updatedUnitId = unitIdHashKeyMap[routeUnitId];
       }
     }
 
@@ -356,6 +362,7 @@ CoursewareContainer.propTypes = {
   previousSequence: sequenceShape,
   unitViaSequenceId: unitShape,
   sectionViaSequenceId: sectionShape,
+  unitIdHashKeyMap: unitShape,
   course: courseShape,
   sequence: sequenceShape,
   saveSequencePosition: PropTypes.func.isRequired,
@@ -377,6 +384,7 @@ CoursewareContainer.defaultProps = {
   sectionViaSequenceId: null,
   course: null,
   sequence: null,
+  unitIdHashKeyMap: null,
 };
 
 const currentCourseSelector = createSelector(
@@ -485,6 +493,11 @@ const unitViaSequenceIdSelector = createSelector(
   (unitsById, sequenceId) => (unitsById[sequenceId] ? unitsById[sequenceId] : null),
 );
 
+const unitIdHashKeyMapSelector = createSelector(
+  (state) => state.models.unitIdToHashKeyMap,
+  (unitIdToHashKeyMap) => (unitIdToHashKeyMap),
+);
+
 const mapStateToProps = (state) => {
   const {
     courseId,
@@ -511,6 +524,7 @@ const mapStateToProps = (state) => {
     firstSequenceId: firstSequenceIdSelector(state),
     sectionViaSequenceId: sectionViaSequenceIdSelector(state),
     unitViaSequenceId: unitViaSequenceIdSelector(state),
+    unitIdHashKeyMap: unitIdHashKeyMapSelector(state),
   };
 };
 
