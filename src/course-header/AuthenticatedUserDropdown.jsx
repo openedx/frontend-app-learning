@@ -18,9 +18,7 @@ function AuthenticatedUserDropdown({ enterpriseLearnerPortalLink, intl, username
   );
   if (enterpriseLearnerPortalLink && Object.keys(enterpriseLearnerPortalLink).length > 0) {
     dashboardMenuItem = (
-      <Dropdown.Item
-        href={enterpriseLearnerPortalLink.href}
-      >
+      <Dropdown.Item href={enterpriseLearnerPortalLink.href}>
         {enterpriseLearnerPortalLink.content}
       </Dropdown.Item>
     );
@@ -62,13 +60,17 @@ function AuthenticatedUserDropdown({ enterpriseLearnerPortalLink, intl, username
 }
 
 AuthenticatedUserDropdown.propTypes = {
-  enterpriseLearnerPortalLink: PropTypes.string,
   intl: intlShape.isRequired,
   username: PropTypes.string.isRequired,
+  enterpriseLearnerPortalLink: PropTypes.shape({
+    type: PropTypes.string,
+    href: PropTypes.string,
+    content: PropTypes.string,
+  }),
 };
 
 AuthenticatedUserDropdown.defaultProps = {
-  enterpriseLearnerPortalLink: '',
+  enterpriseLearnerPortalLink: undefined,
 };
 
 export default injectIntl(AuthenticatedUserDropdown);
