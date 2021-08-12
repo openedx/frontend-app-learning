@@ -268,17 +268,25 @@ export function fetchSequence(sequenceId) {
 export function checkBlockCompletion(courseId, sequenceId, unitId) {
   return async (dispatch, getState) => {
     const { models } = getState();
+    let modelsUnitId;
     if (models.units[unitId].complete) {
+      modelsUnitId = models.unitIdToHashKeyMap[unitId];
+    }
+    let modelSequenceId = models.sequences[sequenceId];
+    if (!modelSequenceId) {
+      modelSequenceId = models.sequenceIdToHashKeyMap[sequenceId];
+    }
+    if (modelsUnitId.complete) {
       return; // do nothing. Things don't get uncompleted after they are completed.
     }
 
     try {
-      const isComplete = await getBlockCompletion(courseId, models.sequences[sequenceId].decoded_id,
-        models.units[unitId].decoded_id);
+      const isComplete = await getBlockCompletion(courseId, modelSequenceId,
+        modelsUnitId);
       dispatch(updateModel({
         modelType: 'units',
         model: {
-          id: unitId,
+          id: modelsUnitId,
           complete: isComplete,
         },
       }));
@@ -291,23 +299,27 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
 export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
   return async (dispatch, getState) => {
     const { models } = getState();
-    const initialActiveUnitIndex = models.sequences[sequenceId].activeUnitIndex;
+    let modelSequenceId = models.sequences[sequenceId];
+    if (!modelSequenceId) {
+      modelSequenceId = models.sequenceIdToHashKeyMap[sequenceId];
+    }
+    const initialActiveUnitIndex = modelSequenceId.activeUnitIndex;
     // Optimistically update the position.
     dispatch(updateModel({
       modelType: 'sequences',
       model: {
-        id: sequenceId,
+        id: modelSequenceId,
         activeUnitIndex,
       },
     }));
     try {
-      await postSequencePosition(courseId, models.sequences[sequenceId].decoded_id, activeUnitIndex);
+      await postSequencePosition(courseId, modelSequenceId, activeUnitIndex);
       // Update again under the assumption that the above call succeeded, since it doesn't return a
       // meaningful response.
       dispatch(updateModel({
         modelType: 'sequences',
         model: {
-          id: sequenceId,
+          id: modelSequenceId,
           activeUnitIndex,
         },
       }));
@@ -316,7 +328,7 @@ export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
       dispatch(updateModel({
         modelType: 'sequences',
         model: {
-          id: sequenceId,
+          id: modelSequenceId,
           activeUnitIndex: initialActiveUnitIndex,
         },
       }));
