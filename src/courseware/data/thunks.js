@@ -281,7 +281,7 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
     }
 
     try {
-      const isComplete = await getBlockCompletion(courseId, modelSequenceId, modelsUnitId);
+      const isComplete = await getBlockCompletion(courseId, modelsSequenceId, modelsUnitId);
       dispatch(updateModel({
         modelType: 'units',
         model: {
@@ -298,27 +298,27 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
 export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
   return async (dispatch, getState) => {
     const { models } = getState();
-    let modelSequenceId = sequenceId;
+    let modelsSequenceId = sequenceId;
     if (!models.sequences[sequenceId]) {
-      modelSequenceId = models.sequenceIdToHashKeyMap[sequenceId];
+      modelsSequenceId = models.sequenceIdToHashKeyMap[sequenceId];
     }
-    const initialActiveUnitIndex = models.sequences[modelSequenceId].activeUnitIndex;
+    const initialActiveUnitIndex = models.sequences[modelsSequenceId].activeUnitIndex;
     // Optimistically update the position.
     dispatch(updateModel({
       modelType: 'sequences',
       model: {
-        id: modelSequenceId,
+        id: modelsSequenceId,
         activeUnitIndex,
       },
     }));
     try {
-      await postSequencePosition(courseId, modelSequenceId, activeUnitIndex);
+      await postSequencePosition(courseId, modelsSequenceId, activeUnitIndex);
       // Update again under the assumption that the above call succeeded, since it doesn't return a
       // meaningful response.
       dispatch(updateModel({
         modelType: 'sequences',
         model: {
-          id: modelSequenceId,
+          id: modelsSequenceId,
           activeUnitIndex,
         },
       }));
@@ -327,7 +327,7 @@ export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
       dispatch(updateModel({
         modelType: 'sequences',
         model: {
-          id: modelSequenceId,
+          id: modelsSequenceId,
           activeUnitIndex: initialActiveUnitIndex,
         },
       }));
