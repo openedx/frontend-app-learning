@@ -11,7 +11,7 @@ import enrollmentMessages from '../../../../alerts/enrollment-alert/messages';
 import genericMessages from '../../../../generic/messages';
 import messages from './messages';
 import outlineMessages from '../../messages';
-import { useEnrollClickHandler } from '../../../../alerts/enrollment-alert/hooks';
+import useEnrollClickHandler from '../../../../alerts/enrollment-alert/clickHook';
 import { useModel } from '../../../../generic/model-store';
 
 function PrivateCourseAlert({ intl, payload }) {
