@@ -32,7 +32,7 @@ Factory.define('sequenceMetadata')
   .attr('gated_content', ['sequenceBlock'], sequenceBlock => ({
     gated: false,
     prereq_url: null,
-    prereq_id: `${sequenceBlock.decode_id}-prereq`,
+    prereq_id: `${sequenceBlock.id}-prereq`,
     prereq_section_name: `${sequenceBlock.display_name}-prereq`,
     gated_section_name: sequenceBlock.display_name,
   }))
