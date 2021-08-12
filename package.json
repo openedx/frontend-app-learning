@@ -16,14 +16,10 @@
     "is-es5": "es-check es5 ./dist/*.js",
     "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
     "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx .",
+    "prepare": "husky install",
     "snapshot": "fedx-scripts jest --updateSnapshot",
     "start": "fedx-scripts webpack-dev-server --progress",
     "test": "fedx-scripts jest --coverage --passWithNoTests"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
   },
   "author": "edX",
   "license": "AGPL-3.0",
