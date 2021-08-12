@@ -490,7 +490,16 @@ const sectionViaSequenceIdSelector = createSelector(
 const unitViaSequenceIdSelector = createSelector(
   (state) => state.models.units || {},
   (state) => state.courseware.sequenceId,
-  (unitsById, sequenceId) => (unitsById[sequenceId] ? unitsById[sequenceId] : null),
+  (state) => state.models.unitIdHashKeyMap,
+  (unitsById, sequenceId, unitMap) => {
+    if (!unitsById[sequenceId] && Object.keys(unitsById).length > 0 && unitMap) {
+      if (sequenceId in unitMap) {
+        const updatedSequenceId = unitMap[sequenceId];
+        return unitsById[updatedSequenceId];
+      }
+    }
+    return unitsById[sequenceId] ? unitsById[sequenceId] : null;
+  },
 );
 
 const unitIdHashKeyMapSelector = createSelector(
