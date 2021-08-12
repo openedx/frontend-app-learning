@@ -255,7 +255,7 @@ describe('CoursewareContainer', () => {
       describe('when the URL contains a unit ID', () => {
         it('should ignore the section ID and redirect based on the unit ID', async () => {
           const urlUnit = unitTree[1][1][1];
-          setUrl(sectionTree[1].id, urlUnit.hash_key);
+          setUrl(sectionTree[1].id, urlUnit.id);
           const container = await loadContainer();
           assertLoadedHeader(container);
           assertSequenceNavigation(container, 2);
@@ -316,7 +316,7 @@ describe('CoursewareContainer', () => {
 
       it('should insert the sequence ID into the URL', async () => {
         const unit = unitTree[1][0][1];
-        history.push(`/c/${courseId}/${unit.hash_key}`);
+        history.push(`/c/${courseId}/${unit.id}`);
         const container = await loadContainer();
 
         assertLoadedHeader(container);
