@@ -283,7 +283,7 @@ export async function getSequenceMetadata(sequenceId) {
   return normalizeSequenceMetadata(data);
 }
 
-const getSequenceHandlerUrl = (courseId, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId.decoded_id}/handler`;
+const getSequenceHandlerUrl = (courseId, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler`;
 
 export async function getBlockCompletion(courseId, sequenceId, usageKey) {
   const { data } = await getAuthenticatedHttpClient().post(
