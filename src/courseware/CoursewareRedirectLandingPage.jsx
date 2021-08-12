@@ -28,7 +28,7 @@ export default () => {
         <PageRoute
           path={`${path}/:courseId/:sequenceId/:unitId`}
           render={({ match }) => {
-            global.location.assign(`/c/${match.params.courseId}/${match.params.sequenceId}/${match.params.unitId}`)
+            global.location.assign(`/c/${match.params.courseId}/${match.params.sequenceId}/${match.params.unitId}`);
           }}
         />
         <PageRoute
