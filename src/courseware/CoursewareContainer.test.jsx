@@ -128,8 +128,10 @@ describe('CoursewareContainer', () => {
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
 
     sequenceMetadatas.forEach(sequenceMetadata => {
-      const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
+      const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.hash_key}`;
       axiosMock.onGet(sequenceMetadataUrl).reply(200, sequenceMetadata);
+      const sequenceMetadataUrlFull = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
+      axiosMock.onGet(sequenceMetadataUrlFull).reply(200, sequenceMetadata);
       const proctoredExamApiUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${courseId}/content_id/${sequenceMetadata.item_id}?is_learning_mfe=true`;
       axiosMock.onGet(proctoredExamApiUrl).reply(200, { exam: {}, active_attempt: {} });
     });
