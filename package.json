@@ -60,7 +60,8 @@
     "redux": "4.1.1",
     "regenerator-runtime": "0.13.9",
     "reselect": "4.0.0",
-    "truncate-html": "1.0.4"
+    "truncate-html": "1.0.4",
+    "util": "0.12.4"
   },
   "devDependencies": {
     "@edx/frontend-build": "8.0.0",
