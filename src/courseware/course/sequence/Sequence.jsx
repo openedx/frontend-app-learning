@@ -244,7 +244,7 @@ function Sequence({
   if (sequenceStatus === 'loaded') {
     return (
       <div>
-        <SequenceExamWrapper sequence={sequence} courseId={courseId}>
+        <SequenceExamWrapper sequence={sequence} courseId={courseId} isStaff={course.isStaff}>
           {defaultContent}
         </SequenceExamWrapper>
         <CourseLicense license={course.license || undefined} />

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import { useEnterpriseConfig } from '@edx/frontend-enterprise';
+import { useEnterpriseConfig } from '@edx/frontend-enterprise-utils';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { AppContext } from '@edx/frontend-platform/react';

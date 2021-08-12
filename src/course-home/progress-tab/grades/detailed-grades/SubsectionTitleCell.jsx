@@ -64,7 +64,7 @@ function SubsectionTitleCell({ intl, subsection }) {
               {displayName}
             </a>
           ) : (
-            <span className="small">{displayName}</span>
+            <span className="greyed-out small">{displayName}</span>
           )}
         </span>
       </Row>
