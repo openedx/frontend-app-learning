@@ -48,7 +48,7 @@ function LoadedTabPage({
     <>
       <Helmet>
         <title>{`${activeTab ? `${activeTab.title} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
-        {courseWideJs && courseWideJs.map(js => <script key={js} src={js} />)}
+        {courseWideJs && courseWideJs.map(js => <script key={js} type="text/javascript" src={js} />)}
         {courseWideCss && courseWideCss.map(css => <link key={css} rel="stylesheet" href={css} />)}
       </Helmet>
       <Header
