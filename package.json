@@ -57,7 +57,7 @@
     "react-router": "5.2.0",
     "react-router-dom": "5.2.0",
     "react-share": "4.4.0",
-    "redux": "4.0.5",
+    "redux": "4.1.1",
     "regenerator-runtime": "0.13.9",
     "reselect": "4.0.0",
     "truncate-html": "1.0.3"
