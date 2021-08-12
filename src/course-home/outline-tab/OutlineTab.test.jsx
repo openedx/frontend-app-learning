@@ -383,12 +383,12 @@ describe('Outline Tab', () => {
       it('renders edit goal selector', () => {
         expect(screen.getByLabelText('Goal')).toBeInTheDocument();
         expect(screen.getByTestId('edit-goal-selector')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Earn a certificate' })).toBeInTheDocument();
+        expect(screen.getByText('Earn a certificate')).toBeInTheDocument();
       });
 
       it('updates goal on click', async () => {
         // Open dropdown
-        const dropdownButtonNode = screen.getByRole('button', { name: 'Earn a certificate' });
+        const dropdownButtonNode = screen.getByText('Earn a certificate');
         await waitFor(() => {
           expect(dropdownButtonNode).toBeInTheDocument();
         });
