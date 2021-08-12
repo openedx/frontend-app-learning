@@ -268,8 +268,8 @@ export function fetchSequence(sequenceId) {
 export function checkBlockCompletion(courseId, sequenceId, unitId) {
   return async (dispatch, getState) => {
     const { models } = getState();
-    let modelsUnitId;
-    if (models.units[unitId].complete) {
+    let modelsUnitId = models.units[unitId];
+    if (!modelsUnitId) {
       modelsUnitId = models.unitIdToHashKeyMap[unitId];
     }
     let modelSequenceId = models.sequences[sequenceId];
