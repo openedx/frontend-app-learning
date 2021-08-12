@@ -34,6 +34,7 @@ subscribe(APP_READY, () => {
       <UserMessagesProvider>
         <Switch>
           <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
+          <PageRoute path="/course" component={CoursewareRedirectLandingPage} />
           <PageRoute path="/c/:courseId/home">
             <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
               <OutlineTab />
