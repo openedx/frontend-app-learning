@@ -9,7 +9,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useModel } from '../../generic/model-store';
 
 import messages from './messages';
-import { useEnrollClickHandler } from './hooks';
+import useEnrollClickHandler from './clickHook';
 
 function EnrollmentAlert({ intl, payload }) {
   const {

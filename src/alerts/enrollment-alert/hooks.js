@@ -1,14 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import React, {
-  useContext, useState, useCallback, useMemo,
+  useContext, useMemo,
 } from 'react';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { AppContext } from '@edx/frontend-platform/react';
 
-import { UserMessagesContext, ALERT_TYPES, useAlert } from '../../generic/user-messages';
+import { useAlert } from '../../generic/user-messages';
 import { useModel } from '../../generic/model-store';
-
-import { postCourseEnrollment } from './data/api';
 
 const EnrollmentAlert = React.lazy(() => import('./EnrollmentAlert'));
 
@@ -39,29 +36,4 @@ export function useEnrollmentAlert(courseId) {
   });
 
   return { clientEnrollmentAlert: EnrollmentAlert };
-}
-
-export function useEnrollClickHandler(courseId, orgId, successText) {
-  const [loading, setLoading] = useState(false);
-  const { addFlash } = useContext(UserMessagesContext);
-  const enrollClickHandler = useCallback(() => {
-    setLoading(true);
-    postCourseEnrollment(courseId).then(() => {
-      addFlash({
-        dismissible: true,
-        flash: true,
-        text: successText,
-        type: ALERT_TYPES.SUCCESS,
-        topic: 'course',
-      });
-      setLoading(false);
-      sendTrackEvent('edx.bi.user.course-home.enrollment', {
-        org_key: orgId,
-        courserun_key: courseId,
-      });
-      global.location.reload();
-    });
-  }, [courseId]);
-
-  return { enrollClickHandler, loading };
 }
