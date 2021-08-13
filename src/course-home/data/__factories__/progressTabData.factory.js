@@ -4,6 +4,7 @@ import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dep
 // This set of data may not be realistic, but it is intended to demonstrate many UI results.
 Factory.define('progressTabData')
   .attrs({
+    access_expiration: null,
     end: '3027-03-31T00:00:00Z',
     certificate_data: {},
     completion_summary: {

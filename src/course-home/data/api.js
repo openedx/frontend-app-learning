@@ -98,6 +98,7 @@ function normalizeCourseHomeCourseMetadata(metadata) {
       title: tab.title,
       url: tab.url,
     })),
+    isMasquerading: data.originalUserIsStaff && !data.isStaff,
   };
 }
 

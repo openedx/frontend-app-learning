@@ -33,9 +33,7 @@ function SequenceLink({
     title,
   } = sequence;
   const {
-    datesWidget: {
-      userTimezone,
-    },
+    userTimezone,
   } = useModel('outline', courseId);
   const {
     canLoadCourseware,

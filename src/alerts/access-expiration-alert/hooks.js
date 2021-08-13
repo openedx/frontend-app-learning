@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import { useAlert } from '../../generic/user-messages';
+import { useModel } from '../../generic/model-store';
 
 const AccessExpirationAlert = React.lazy(() => import('./AccessExpirationAlert'));
-const AccessExpirationAlertMasquerade = React.lazy(() => import('./AccessExpirationAlertMasquerade'));
+const AccessExpirationMasqueradeBanner = React.lazy(() => import('./AccessExpirationMasqueradeBanner'));
 
 function useAccessExpirationAlert(accessExpiration, courseId, org, userTimezone, topic, analyticsPageName) {
-  const isVisible = !!accessExpiration; // If it exists, show it.
+  const isVisible = accessExpiration && !accessExpiration.masqueradingExpiredCourse; // If it exists, show it.
   const payload = {
     accessExpiration,
     courseId,
@@ -23,20 +24,28 @@ function useAccessExpirationAlert(accessExpiration, courseId, org, userTimezone,
   return { clientAccessExpirationAlert: AccessExpirationAlert };
 }
 
-export function useAccessExpirationAlertMasquerade(accessExpiration, userTimezone, topic) {
-  const isVisible = !!accessExpiration; // If it exists, show it.
-  const payload = {
+export function useAccessExpirationMasqueradeBanner(courseId, tab) {
+  const {
+    userTimezone,
+  } = useModel('courseHomeMeta', courseId);
+  const {
     accessExpiration,
+  } = useModel(tab, courseId);
+
+  const isVisible = accessExpiration && accessExpiration.masqueradingExpiredCourse;
+  const expirationDate = accessExpiration && accessExpiration.expirationDate;
+  const payload = {
+    expirationDate,
     userTimezone,
   };
 
   useAlert(isVisible, {
-    code: 'clientAccessExpirationAlertMasquerade',
+    code: 'clientAccessExpirationMasqueradeBanner',
     payload: useMemo(() => payload, Object.values(payload).sort()),
-    topic,
+    topic: 'instructor-toolbar-alerts',
   });
 
-  return { clientAccessExpirationAlertMasquerade: AccessExpirationAlertMasquerade };
+  return { clientAccessExpirationMasqueradeBanner: AccessExpirationMasqueradeBanner };
 }
 
 export default useAccessExpirationAlert;

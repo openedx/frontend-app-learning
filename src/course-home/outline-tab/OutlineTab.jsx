@@ -17,11 +17,10 @@ import Section from './Section';
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpdateGoalSelector from './widgets/UpdateGoalSelector';
 import UpgradeNotification from '../../generic/upgrade-notification/UpgradeNotification';
-import { useAccessExpirationAlertMasquerade } from '../../alerts/access-expiration-alert';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
 import useCertificateAvailableAlert from './alerts/certificate-status-alert';
 import useCourseEndAlert from './alerts/course-end-alert';
-import useCourseStartAlert from './alerts/course-start-alert';
+import useCourseStartAlert from '../../alerts/course-start-alert';
 import usePrivateCourseAlert from './alerts/private-course-alert';
 import useScheduledContentAlert from './alerts/scheduled-content-alert';
 import { useModel } from '../../generic/model-store';
@@ -42,6 +41,7 @@ function OutlineTab({ intl }) {
     org,
     title,
     username,
+    userTimezone,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -57,7 +57,6 @@ function OutlineTab({ intl }) {
     datesBannerInfo,
     datesWidget: {
       courseDateBlocks,
-      userTimezone,
     },
     resumeCourse: {
       hasVisitedCourse,
@@ -86,7 +85,6 @@ function OutlineTab({ intl }) {
   };
 
   // Below the course title alerts (appearing in the order listed here)
-  const accessExpirationAlertMasquerade = useAccessExpirationAlertMasquerade(accessExpiration, userTimezone, 'outline-course-alerts');
   const courseStartAlert = useCourseStartAlert(courseId);
   const courseEndAlert = useCourseEndAlert(courseId);
   const certificateAvailableAlert = useCertificateAvailableAlert(courseId);
@@ -150,7 +148,6 @@ function OutlineTab({ intl }) {
               topic="outline-course-alerts"
               className="mb-3"
               customAlerts={{
-                ...accessExpirationAlertMasquerade,
                 ...certificateAvailableAlert,
                 ...courseEndAlert,
                 ...courseStartAlert,

@@ -14,10 +14,12 @@ function CourseDates({
   mmp2p,
 }) {
   const {
+    userTimezone,
+  } = useModel('courseHomeMeta', courseId);
+  const {
     datesWidget: {
       courseDateBlocks,
       datesTabLink,
-      userTimezone,
     },
   } = useModel('outline', courseId);
 

@@ -9,13 +9,19 @@ import {
 import { Alert } from '@edx/paragon';
 import { Info } from '@edx/paragon/icons';
 
+import { useModel } from '../../generic/model-store';
+
 const DAY_MS = 24 * 60 * 60 * 1000; // in ms
 
 function CourseStartAlert({ payload }) {
   const {
-    startDate,
-    userTimezone,
+    courseId,
   } = payload;
+
+  const {
+    start: startDate,
+    userTimezone,
+  } = useModel('courseHomeMeta', courseId);
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
@@ -87,8 +93,7 @@ function CourseStartAlert({ payload }) {
 
 CourseStartAlert.propTypes = {
   payload: PropTypes.shape({
-    startDate: PropTypes.string,
-    userTimezone: PropTypes.string,
+    courseId: PropTypes.string,
   }).isRequired,
 };
 

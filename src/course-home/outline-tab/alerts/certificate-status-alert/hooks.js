@@ -39,11 +39,11 @@ function useCertificateStatusAlert(courseId) {
   const {
     datesWidget: {
       courseDateBlocks,
-      userTimezone,
     },
     certData,
     hasEnded,
     userHasPassingGrade,
+    userTimezone,
     enrollmentMode,
   } = useModel('outline', courseId);
 

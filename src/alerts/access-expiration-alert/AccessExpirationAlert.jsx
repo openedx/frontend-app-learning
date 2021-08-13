@@ -9,7 +9,6 @@ import { Info } from '@edx/paragon/icons';
 
 import messages from './messages';
 import AccessExpirationAlertMMP2P from './AccessExpirationAlertMMP2P';
-import AccessExpirationAlertMasquerade from './AccessExpirationAlertMasquerade';
 
 function AccessExpirationAlert({ intl, payload }) {
   /** [MM-P2P] Experiment */
@@ -36,16 +35,9 @@ function AccessExpirationAlert({ intl, payload }) {
 
   const {
     expirationDate,
-    masqueradingExpiredCourse,
     upgradeDeadline,
     upgradeUrl,
   } = accessExpiration;
-
-  if (masqueradingExpiredCourse) {
-    return (
-      <AccessExpirationAlertMasquerade payload={payload} />
-    );
-  }
 
   /** [MM-P2P] Experiment */
   if (showMMP2P) {

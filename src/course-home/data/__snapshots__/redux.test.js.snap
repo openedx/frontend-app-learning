@@ -32,6 +32,7 @@ Object {
         },
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
+        "isMasquerading": false,
         "isSelfPaced": false,
         "isStaff": false,
         "number": "DemoX",
@@ -71,6 +72,7 @@ Object {
           },
         ],
         "title": "Demonstration Course",
+        "userTimezone": "UTC",
         "verifiedMode": Object {
           "currencySymbol": "$",
           "price": 10,
@@ -295,7 +297,6 @@ Object {
         "hasEnded": false,
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "learnerIsFullAccess": true,
-        "userTimezone": "America/New_York",
       },
     },
   },
@@ -337,6 +338,7 @@ Object {
         },
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
+        "isMasquerading": false,
         "isSelfPaced": false,
         "isStaff": false,
         "number": "DemoX",
@@ -376,6 +378,7 @@ Object {
           },
         ],
         "title": "Demonstration Course",
+        "userTimezone": "UTC",
         "verifiedMode": Object {
           "currencySymbol": "$",
           "price": 10,
@@ -450,7 +453,6 @@ Object {
         },
         "datesWidget": Object {
           "courseDateBlocks": Array [],
-          "userTimezone": "UTC",
         },
         "enrollAlert": Object {
           "canEnroll": true,
@@ -518,6 +520,7 @@ Object {
         },
         "id": "course-v1:edX+DemoX+Demo_Course_1",
         "isEnrolled": false,
+        "isMasquerading": false,
         "isSelfPaced": false,
         "isStaff": false,
         "number": "DemoX",
@@ -557,6 +560,7 @@ Object {
           },
         ],
         "title": "Demonstration Course",
+        "userTimezone": "UTC",
         "verifiedMode": Object {
           "currencySymbol": "$",
           "price": 10,
@@ -566,6 +570,7 @@ Object {
     },
     "progress": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
+        "accessExpiration": null,
         "certificateData": Object {},
         "completionSummary": Object {
           "completeCount": 1,

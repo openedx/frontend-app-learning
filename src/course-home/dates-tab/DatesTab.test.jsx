@@ -43,7 +43,7 @@ describe('DatesTab', () => {
   });
 
   const datesTabData = Factory.build('datesTabData');
-  let courseMetadata = Factory.build('courseHomeMetadata');
+  let courseMetadata = Factory.build('courseHomeMetadata', { user_timezone: 'America/New_York' });
   const { id: courseId } = courseMetadata;
 
   const datesUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dates/${courseId}`;
