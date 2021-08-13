@@ -7,6 +7,180 @@
   },
   "interactions": [
     {
+      "description": "a request to fetch tab",
+      "providerState": "Tab data exists for course_id course-v1:edX+DemoX+Demo_Course",
+      "request": {
+        "method": "GET",
+        "path": "/api/course_home/v1/course_metadata/course-v1:edX+DemoX+Demo_Course"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "can_show_upgrade_sock": false,
+          "verified_mode": {
+            "access_expiration_date": null,
+            "currency": "USD",
+            "currency_symbol": "$",
+            "price": 149,
+            "sku": "8CF08E5",
+            "upgrade_url": "http://localhost:18130/basket/add/?sku=8CF08E5"
+          },
+          "can_load_courseware": true,
+          "celebrations": {
+            "first_section": false,
+            "streak_length_to_celebrate": null,
+            "streak_discount_experiment_enabled": false
+          },
+          "course_access": {
+            "has_access": true,
+            "error_code": null,
+            "developer_message": null,
+            "user_message": null,
+            "additional_context_user_message": null,
+            "user_fragment": null
+          },
+          "course_id": "course-v1:edX+DemoX+Demo_Course",
+          "is_enrolled": true,
+          "is_self_paced": false,
+          "is_staff": true,
+          "number": "DemoX",
+          "org": "edX",
+          "original_user_is_staff": true,
+          "start": "2013-02-05T05:00:00Z",
+          "tabs": [
+            {
+              "tab_id": "courseware",
+              "title": "Course",
+              "url": "http://localhost:2000/course/course-v1:edX+DemoX+Demo_Course/home"
+            }
+          ],
+          "title": "Demonstration Course",
+          "username": "edx"
+        },
+        "matchingRules": {
+          "$.body.can_show_upgrade_sock": {
+            "match": "type"
+          },
+          "$.body.verified_mode": {
+            "match": "type"
+          },
+          "$.body.can_load_courseware": {
+            "match": "type"
+          },
+          "$.body.celebrations": {
+            "match": "type"
+          },
+          "$.body.course_access.has_access": {
+            "match": "type"
+          },
+          "$.body.course_id": {
+            "match": "regex",
+            "regex": "[\\w\\-~.:]"
+          },
+          "$.body.is_enrolled": {
+            "match": "type"
+          },
+          "$.body.is_self_paced": {
+            "match": "type"
+          },
+          "$.body.is_staff": {
+            "match": "type"
+          },
+          "$.body.number": {
+            "match": "type"
+          },
+          "$.body.org": {
+            "match": "type"
+          },
+          "$.body.original_user_is_staff": {
+            "match": "type"
+          },
+          "$.body.start": {
+            "match": "regex",
+            "regex": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:Z|[+-][01]\\d:[0-5]\\d)$"
+          },
+          "$.body.tabs": {
+            "min": 1
+          },
+          "$.body.tabs[*].*": {
+            "match": "type"
+          },
+          "$.body.title": {
+            "match": "type"
+          },
+          "$.body.username": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request to fetch dates tab",
+      "providerState": "course date blocks exist for course_id course-v1:edX+DemoX+Demo_Course",
+      "request": {
+        "method": "GET",
+        "path": "/api/course_home/v1/dates/course-v1:edX+DemoX+Demo_Course"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "dates_banner_info": {
+            "missed_deadlines": false,
+            "content_type_gating_enabled": false,
+            "missed_gated_content": false,
+            "verified_upgrade_link": "http://localhost:18130/basket/add/?sku=8CF08E5"
+          },
+          "course_date_blocks": [
+            {
+              "assignment_type": null,
+              "complete": null,
+              "date": "2013-02-05T05:00:00Z",
+              "date_type": "verified-upgrade-deadline",
+              "description": "You are still eligible to upgrade to a Verified Certificate! Pursue it to highlight the knowledge and skills you gain in this course.",
+              "learner_has_access": true,
+              "link": "http://localhost:18130/basket/add/?sku=8CF08E5",
+              "link_text": "Upgrade to Verified Certificate",
+              "title": "Verification Upgrade Deadline",
+              "extra_info": null,
+              "first_component_block_id": ""
+            }
+          ],
+          "has_ended": false,
+          "learner_is_full_access": true,
+          "user_timezone": null
+        },
+        "matchingRules": {
+          "$.body.dates_banner_info": {
+            "match": "type"
+          },
+          "$.body.course_date_blocks": {
+            "min": 1
+          },
+          "$.body.course_date_blocks[*].*": {
+            "match": "type"
+          },
+          "$.body.course_date_blocks[*].date": {
+            "match": "regex",
+            "regex": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:Z|[+-][01]\\d:[0-5]\\d)$"
+          },
+          "$.body.course_date_blocks[*].date_type": {
+            "match": "regex",
+            "regex": "^(event|todays-date|course-start-date|course-end-date|assignment-due-date|course-expired-date|certificate-available-date|verified-upgrade-deadline|verification-deadline-date)$"
+          },
+          "$.body.has_ended": {
+            "match": "type"
+          },
+          "$.body.learner_is_full_access": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
       "description": "a request to get course blocks",
       "providerState": "Blocks data exists for course_id course-v1:edX+DemoX+Demo_Course",
       "request": {
@@ -97,7 +271,7 @@
           ],
           "user_timezone": null,
           "verified_mode": {
-            "access_expiration_date": null,
+            "access_expiration_date": "2013-02-05T05:00:00Z",
             "currency": "USD",
             "currency_symbol": "$",
             "price": 149,
@@ -122,7 +296,7 @@
           },
           "marketing_url": null,
           "celebrations": {
-            "irst_section": false,
+            "first_section": false,
             "streak_length_to_celebrate": null,
             "streak_discount_experiment_enabled": false
           },
@@ -232,6 +406,10 @@
           "$.body.verified_mode": {
             "match": "type"
           },
+          "$.body.verified_mode.access_expiration_date": {
+            "match": "regex",
+            "regex": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:Z|[+-][01]\\d:[0-5]\\d)$"
+          },
           "$.body.show_calculator": {
             "match": "type"
           },
@@ -247,16 +425,13 @@
           "$.body.course_access": {
             "match": "type"
           },
-          "$.body.course_access.has_access": {
-            "match": "type"
-          },
           "$.body.notes.enabled": {
             "match": "type"
           },
           "$.body.notes.visible": {
             "match": "type"
           },
-          "$.body.celebrations.irst_section": {
+          "$.body.celebrations.first_section": {
             "match": "type"
           },
           "$.body.celebrations.streak_discount_experiment_enabled": {
@@ -411,6 +586,48 @@
           "$.body.complete": {
             "match": "type"
           }
+        }
+      }
+    },
+    {
+      "description": "a request to get Resume block",
+      "providerState": "Resume block exists for course_id course-v1:edX+DemoX+Demo_Course",
+      "request": {
+        "method": "GET",
+        "path": "/api/courseware/resume/course-v1:edX+DemoX+Demo_Course"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "block_id": "642fadf46d074aabb637f20af320fb31",
+          "section_id": "642fadf46d074aabb637f20af320fb87",
+          "unit_id": "642fadf46d074aabb637f20af320fb99"
+        },
+        "matchingRules": {
+          "$.body.block_id": {
+            "match": "type"
+          },
+          "$.body.section_id": {
+            "match": "type"
+          },
+          "$.body.unit_id": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request to send activation email",
+      "providerState": "A logged-in user may or may not be active",
+      "request": {
+        "method": "POST",
+        "path": "/api/send_account_activation_email"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
         }
       }
     }

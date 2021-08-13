@@ -4,9 +4,19 @@ import { mergeConfig, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import {
-  getCourseBlocks, getCourseMetadata, getSequenceMetadata, postSequencePosition, getBlockCompletion,
+  getCourseBlocks,
+  getCourseMetadata,
+  getSequenceMetadata,
+  postSequencePosition,
+  getBlockCompletion,
+  getResumeBlock,
+  sendActivationEmail,
 } from '../api';
+
 import { initializeMockApp } from '../../../setupTest';
+import {
+  courseId, dateRegex, opaqueKeysRegex, sequenceId, usageId,
+} from '../../../pacts/constants';
 
 const {
   somethingLike: like, term, boolean, string, eachLike, integer,
@@ -15,17 +25,13 @@ const provider = new Pact({
   consumer: 'frontend-app-learning',
   provider: 'lms',
   log: path.resolve(process.cwd(), 'src/courseware/data/pact-tests/logs', 'pact.log'),
-  dir: path.resolve(process.cwd(), 'src/courseware/data/pact-tests'),
+  dir: path.resolve(process.cwd(), 'src/pacts'),
+  pactfileWriteMode: 'merge',
   logLevel: 'DEBUG',
   cors: true,
 });
 
 describe('Courseware Service', () => {
-  const courseId = 'course-v1:edX+DemoX+Demo_Course';
-  const sequenceId = 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions';
-  const usageId = 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@47dbd5f836544e61877a483c0b75606c';
-  const dateRegex = '^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:Z|[+-][01]\\d:[0-5]\\d)$';
-  const opaqueKeysRegex = '[\\w\\-~.:]';
   let authenticatedUser;
   beforeAll(async () => {
     initializeMockApp();
@@ -57,8 +63,7 @@ describe('Courseware Service', () => {
         },
         willRespondWith: {
           status: 200,
-          body:
-          {
+          body: {
             root: string('block-v1:edX+DemoX+Demo_Course+type@course+block@course'),
             blocks: like({
               'block-v1:edX+DemoX+Demo_Course+type@course+block@course': {
@@ -105,8 +110,7 @@ describe('Courseware Service', () => {
         },
         willRespondWith: {
           status: 200,
-          body:
-          {
+          body: {
             access_expiration: {
               expiration_date: term({
                 generate: '2013-02-05T05:00:00Z',
@@ -170,7 +174,10 @@ describe('Courseware Service', () => {
             }),
             user_timezone: null,
             verified_mode: like({
-              access_expiration_date: null,
+              access_expiration_date: term({
+                generate: '2013-02-05T05:00:00Z',
+                matcher: dateRegex,
+              }),
               currency: 'USD',
               currency_symbol: '$',
               price: 149,
@@ -182,7 +189,7 @@ describe('Courseware Service', () => {
             can_view_legacy_courseware: boolean(true),
             is_staff: boolean(true),
             course_access: like({
-              has_access: boolean(true),
+              has_access: true,
               error_code: null,
               developer_message: null,
               user_message: null,
@@ -192,7 +199,7 @@ describe('Courseware Service', () => {
             notes: { enabled: boolean(false), visible: boolean(true) },
             marketing_url: null,
             celebrations: {
-              irst_section: boolean(false),
+              first_section: boolean(false),
               streak_length_to_celebrate: null,
               streak_discount_experiment_enabled: boolean(false),
             },
@@ -251,28 +258,26 @@ describe('Courseware Service', () => {
         isStaff: true,
         license: 'all-rights-reserved',
         verifiedMode: {
-          accessExpirationDate: null,
+          accessExpirationDate: '2013-02-05T05:00:00Z',
           currency: 'USD',
           currencySymbol: '$',
           price: 149,
           sku: '8CF08E5',
           upgradeUrl: `${getConfig().ECOMMERCE_BASE_URL}/basket/add/?sku=8CF08E5`,
         },
-        tabs: [
-          {
-            title: 'Course',
-            slug: 'courseware',
-            priority: 0,
-            type: 'courseware',
-            url: `${getConfig().BASE_URL}/course/course-v1:edX+DemoX+Demo_Course/home`,
-          },
-        ],
+        tabs: [{
+          title: 'Course',
+          slug: 'courseware',
+          priority: 0,
+          type: 'courseware',
+          url: `${getConfig().BASE_URL}/course/course-v1:edX+DemoX+Demo_Course/home`,
+        }],
         userTimezone: null,
         showCalculator: false,
         notes: { enabled: false, visible: true },
         marketingUrl: null,
         celebrations: {
-          irstSection: false,
+          firstSection: false,
           streakLengthToCelebrate: null,
           streakDiscountExperimentEnabled: false,
         },
@@ -311,8 +316,7 @@ describe('Courseware Service', () => {
         },
         willRespondWith: {
           status: 200,
-          body:
-          {
+          body: {
             items: eachLike({
               content: '',
               page_title: 'Pointing on a Picture',
@@ -368,18 +372,16 @@ describe('Courseware Service', () => {
           showCompletion: false,
           allowProctoringOptOut: undefined,
         },
-        units: [
-          {
-            id: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@2152d4a4aadc4cb0af5256394a3d1fc7',
-            sequenceId: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions',
-            bookmarked: false,
-            complete: undefined,
-            title: 'Pointing on a Picture',
-            contentType: 'problem',
-            graded: true,
-            containsContentTypeGatedContent: false,
-          },
-        ],
+        units: [{
+          id: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@2152d4a4aadc4cb0af5256394a3d1fc7',
+          sequenceId: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions',
+          bookmarked: false,
+          complete: undefined,
+          title: 'Pointing on a Picture',
+          contentType: 'problem',
+          graded: true,
+          containsContentTypeGatedContent: false,
+        }],
       };
       const response = await getSequenceMetadata(sequenceId);
       expect(response).toBeTruthy();
@@ -399,8 +401,7 @@ describe('Courseware Service', () => {
         },
         willRespondWith: {
           status: 200,
-          body:
-          {
+          body: {
             success: boolean(true),
           },
         },
@@ -423,8 +424,7 @@ describe('Courseware Service', () => {
         },
         willRespondWith: {
           status: 200,
-          body:
-          {
+          body: {
             complete: boolean(true),
           },
         },
@@ -432,6 +432,53 @@ describe('Courseware Service', () => {
       const response = await getBlockCompletion(courseId, sequenceId, usageId);
       expect(response).toBeTruthy();
       expect(response).toEqual(true);
+    });
+  });
+
+  describe('When a request to get resume block is made', () => {
+    it('returns block id, section id and unit id of the resume block', async () => {
+      await provider.addInteraction({
+        state: `Resume block exists for course_id ${courseId}`,
+        uponReceiving: 'a request to get Resume block',
+        withRequest: {
+          method: 'GET',
+          path: `/api/courseware/resume/${courseId}`,
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            block_id: string('642fadf46d074aabb637f20af320fb31'),
+            section_id: string('642fadf46d074aabb637f20af320fb87'),
+            unit_id: string('642fadf46d074aabb637f20af320fb99'),
+          },
+        },
+      });
+      const camelCaseResponse = {
+        blockId: '642fadf46d074aabb637f20af320fb31',
+        sectionId: '642fadf46d074aabb637f20af320fb87',
+        unitId: '642fadf46d074aabb637f20af320fb99',
+      };
+      const response = await getResumeBlock(courseId);
+      expect(response).toBeTruthy();
+      expect(response).toEqual(camelCaseResponse);
+    });
+  });
+
+  describe('When a request to send activation email is made', () => {
+    it('returns status code 200', async () => {
+      await provider.addInteraction({
+        state: 'A logged-in user may or may not be active',
+        uponReceiving: 'a request to send activation email',
+        withRequest: {
+          method: 'POST',
+          path: '/api/send_account_activation_email',
+        },
+        willRespondWith: {
+          status: 200,
+        },
+      });
+      const response = await sendActivationEmail();
+      expect(response).toEqual('');
     });
   });
 });
