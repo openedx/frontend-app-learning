@@ -442,11 +442,6 @@ Object {
             "title": "Bookmarks",
             "url": "https://example.com/bookmarks",
           },
-          Object {
-            "analyticsId": "edx.tool.verified_upgrade",
-            "title": "Upgrade to Verified",
-            "url": "https://example.com/upgrade",
-          },
         ],
         "datesBannerInfo": Object {
           "contentTypeGatingEnabled": false,

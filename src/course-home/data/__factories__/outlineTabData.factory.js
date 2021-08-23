@@ -48,11 +48,6 @@ Factory.define('outlineTabData')
         title: 'Bookmarks',
         url: 'https://example.com/bookmarks',
       },
-      {
-        analytics_id: 'edx.tool.verified_upgrade',
-        title: 'Upgrade to Verified',
-        url: 'https://example.com/upgrade',
-      },
     ],
     dates_banner_info: {
       content_type_gating_enabled: false,
