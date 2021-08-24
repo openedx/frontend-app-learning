@@ -7,40 +7,24 @@ import NotificationTrigger from './NotificationTrigger';
 import { getLocalStorage } from '../../data/localStorage';
 
 describe('Notification Trigger', () => {
-  let mockDataBaseline;
-  let mockDataSameState;
-  let mockDataDifferentState;
+  let mockData;
+  // let mockDataSameState;
+  // let mockDataDifferentState;
   const courseMetadata = Factory.build('courseMetadata');
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await initializeTestStore({ courseMetadata, excludeFetchCourse: true, excludeFetchSequence: true });
-    mockDataBaseline = {
+    mockData = {
       toggleNotificationTray: () => {},
       isNotificationTrayVisible: () => {},
       notificationStatus: 'active',
       setNotificationStatus: () => {},
       upgradeNotificationCurrentState: 'FPDdaysLeft',
     };
-    mockDataSameState = {
-      toggleNotificationTray: () => {},
-      isNotificationTrayVisible: () => {},
-      notificationStatus: 'inactive',
-      setNotificationStatus: () => {},
-      upgradeNotificationCurrentState: 'sameState',
-      upgradeNotificationLastSeen: 'sameState',
-    };
-    mockDataDifferentState = {
-      toggleNotificationTray: () => {},
-      isNotificationTrayVisible: () => {},
-      notificationStatus: 'inactive',
-      setNotificationStatus: () => {},
-      upgradeNotificationCurrentState: 'after',
-      upgradeNotificationLastSeen: 'before',
-    };
   });
 
   it('renders notification trigger icon with red dot when notificationStatus is active', async () => {
-    const { container } = render(<NotificationTrigger {...mockDataBaseline} />);
+    const { container } = render(<NotificationTrigger {...mockData} />);
     expect(container).toBeInTheDocument();
     const buttonIcon = container.querySelectorAll('svg');
     expect(buttonIcon).toHaveLength(1);
@@ -48,7 +32,7 @@ describe('Notification Trigger', () => {
   });
 
   it('renders notification trigger icon WITHOUT red dot 3 seconds later', async () => {
-    const { container } = render(<NotificationTrigger {...mockDataBaseline} />);
+    const { container } = render(<NotificationTrigger {...mockData} />);
     expect(container).toBeInTheDocument();
     jest.useFakeTimers();
     setTimeout(() => {
@@ -58,7 +42,9 @@ describe('Notification Trigger', () => {
   });
 
   it('renders notification trigger icon WITHOUT red dot within the same phase', async () => {
-    const { container } = render(<NotificationTrigger {...mockDataSameState} />);
+    const { container } = render(
+      <NotificationTrigger {...mockData} upgradeNotificationCurrentState="sameState" upgradeNotificationLastSeen="sameState" />,
+    );
     expect(container).toBeInTheDocument();
     const buttonIcon = container.querySelectorAll('svg');
     expect(buttonIcon).toHaveLength(1);
@@ -68,7 +54,7 @@ describe('Notification Trigger', () => {
   it('handles onClick event toggling the notification tray', async () => {
     const toggleNotificationTray = jest.fn();
     const testData = {
-      ...mockDataBaseline,
+      ...mockData,
       toggleNotificationTray,
     };
     render(<NotificationTrigger {...testData} />);
@@ -82,7 +68,9 @@ describe('Notification Trigger', () => {
   // rendering NotificationTrigger has the effect of calling UpdateUpgradeNotificationLastSeen()
   // Verify that local storage was updated accordingly
   it('we make the right updates when rendering a new phase (before -> after)', async () => {
-    const { container } = render(<NotificationTrigger {...mockDataDifferentState} />);
+    const { container } = render(
+      <NotificationTrigger {...mockData} upgradeNotificationLastSeen="before" upgradeNotificationCurrentState="after" />,
+    );
     expect(container).toBeInTheDocument();
 
     expect(getLocalStorage('notificationStatus')).toBe('active');
