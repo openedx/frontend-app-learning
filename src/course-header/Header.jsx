@@ -29,7 +29,7 @@ LinkedLogo.propTypes = {
 };
 
 function Header({
-  courseOrg, courseNumber, courseTitle, intl,
+  courseOrg, courseNumber, courseTitle, intl, showUserDropdown,
 }) {
   const { authenticatedUser } = useContext(AppContext);
 
@@ -67,13 +67,13 @@ function Header({
           <span className="d-block small m-0">{courseOrg} {courseNumber}</span>
           <span className="d-block m-0 font-weight-bold course-title">{courseTitle}</span>
         </div>
-        {authenticatedUser && (
+        {showUserDropdown && authenticatedUser && (
           <AuthenticatedUserDropdown
             enterpriseLearnerPortalLink={enterpriseLearnerPortalLink}
             username={authenticatedUser.username}
           />
         )}
-        {!authenticatedUser && (
+        {showUserDropdown && !authenticatedUser && (
           <AnonymousUserMenu />
         )}
       </div>
@@ -86,12 +86,14 @@ Header.propTypes = {
   courseNumber: PropTypes.string,
   courseTitle: PropTypes.string,
   intl: intlShape.isRequired,
+  showUserDropdown: PropTypes.bool,
 };
 
 Header.defaultProps = {
   courseOrg: null,
   courseNumber: null,
   courseTitle: null,
+  showUserDropdown: true,
 };
 
 export default injectIntl(Header);

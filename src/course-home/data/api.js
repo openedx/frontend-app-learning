@@ -179,7 +179,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
 }
 
 export async function getCourseHomeCourseMetadata(courseId) {
-  let url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  let url = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   url = appendBrowserTimezoneToUrl(url);
   const { data } = await getAuthenticatedHttpClient().get(url);
   return normalizeCourseHomeCourseMetadata(data);
@@ -191,7 +191,7 @@ export async function getCourseHomeCourseMetadata(courseId) {
 // import './__factories__';
 export async function getDatesTabData(courseId) {
   // return camelCaseObject(Factory.build('datesTabData'));
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`;
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/dates/${courseId}`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return camelCaseObject(data);
@@ -211,7 +211,7 @@ export async function getDatesTabData(courseId) {
 }
 
 export async function getProgressTabData(courseId, targetUserId) {
-  let url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/${courseId}`;
+  let url = `${getConfig().LMS_BASE_URL}/api/course_home/progress/${courseId}`;
 
   // If targetUserId is passed in, we will get the progress page data
   // for the user with the provided id, rather than the requesting user.
@@ -312,7 +312,7 @@ export function getTimeOffsetMillis(headerDate, requestTime, responseTime) {
 }
 
 export async function getOutlineTabData(courseId) {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline/${courseId}`;
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   let { tabData } = {};
   let requestTime = Date.now();
   let responseTime = requestTime;
@@ -386,12 +386,12 @@ export async function postCourseDeadlines(courseId, model) {
 }
 
 export async function postCourseGoals(courseId, goalKey) {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`);
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`);
   return getAuthenticatedHttpClient().post(url.href, { course_id: courseId, goal_key: goalKey });
 }
 
 export async function postDismissWelcomeMessage(courseId) {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/v1/dismiss_welcome_message`);
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/dismiss_welcome_message`);
   await getAuthenticatedHttpClient().post(url.href, { course_id: courseId });
 }
 
@@ -406,4 +406,10 @@ export async function executePostFromPostEvent(postData, researchEventData) {
     course_key: postData.bodyParams.courseId,
     research_event_data: researchEventData,
   });
+}
+
+export async function unsubscribeFromCourseGoal(token) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/unsubscribe_from_course_goal/${token}`);
+  return getAuthenticatedHttpClient().post(url.href)
+    .then(res => camelCaseObject(res));
 }

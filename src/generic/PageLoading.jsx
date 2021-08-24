@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import { Spinner } from '@edx/paragon';
+
 export default class PageLoading extends Component {
   renderSrMessage() {
     if (!this.props.srMessage) {
@@ -23,9 +25,9 @@ export default class PageLoading extends Component {
             height: '50vh',
           }}
         >
-          <div className="spinner-border text-primary" role="status">
+          <Spinner animation="border" variant="primary" role="status">
             {this.renderSrMessage()}
-          </div>
+          </Spinner>
         </div>
       </div>
     );
