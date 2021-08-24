@@ -44,7 +44,7 @@ describe('Course Home Service', () => {
         uponReceiving: 'a request to fetch tab',
         withRequest: {
           method: 'GET',
-          path: `/api/course_home/v1/course_metadata/${courseId}`,
+          path: `/api/course_home/course_metadata/${courseId}`,
         },
         willRespondWith: {
           status: 200,
@@ -151,7 +151,7 @@ describe('Course Home Service', () => {
         uponReceiving: 'a request to fetch dates tab',
         withRequest: {
           method: 'GET',
-          path: `/api/course_home/v1/dates/${courseId}`,
+          path: `/api/course_home/dates/${courseId}`,
         },
         willRespondWith: {
           status: 200,

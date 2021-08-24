@@ -46,8 +46,8 @@ describe('DatesTab', () => {
   let courseMetadata = Factory.build('courseHomeMetadata');
   const { id: courseId } = courseMetadata;
 
-  const datesUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dates/${courseId}`;
-  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  const datesUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dates/${courseId}`;
+  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
   function setMetadata(attributes, options) {

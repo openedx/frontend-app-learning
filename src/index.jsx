@@ -10,7 +10,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Switch } from 'react-router-dom';
 
-import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
+import { messages as footerMessages } from '@edx/frontend-component-footer';
 
 import appMessages from './i18n';
 import { UserMessagesProvider } from './generic/user-messages';
@@ -21,6 +21,7 @@ import { CourseExit } from './courseware/course/course-exit';
 import CoursewareContainer from './courseware';
 import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandingPage';
 import DatesTab from './course-home/dates-tab';
+import GoalUnsubscribe from './course-home/goal-unsubscribe';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
 
@@ -33,6 +34,7 @@ subscribe(APP_READY, () => {
     <AppProvider store={initializeStore()}>
       <UserMessagesProvider>
         <Switch>
+          <PageRoute exact path="/goal-unsubscribe/:token" component={GoalUnsubscribe} />
           <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
           <PageRoute path="/course/:courseId/home">
             <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
@@ -73,7 +75,6 @@ subscribe(APP_READY, () => {
             component={CoursewareContainer}
           />
         </Switch>
-        <Footer />
       </UserMessagesProvider>
     </AppProvider>,
     document.getElementById('root'),
@@ -88,6 +89,7 @@ initialize({
   handlers: {
     config: () => {
       mergeConfig({
+        CONTACT_URL: process.env.CONTACT_URL || null,
         CREDENTIALS_BASE_URL: process.env.CREDENTIALS_BASE_URL || null,
         ENTERPRISE_LEARNER_PORTAL_HOSTNAME: process.env.ENTERPRISE_LEARNER_PORTAL_HOSTNAME || null,
         INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,

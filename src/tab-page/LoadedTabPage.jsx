@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import { getConfig } from '@edx/frontend-platform';
 import { useToggle } from '@edx/paragon';
 
-import { Header, CourseTabsNavigation } from '../course-header';
+import { CourseTabsNavigation } from '../course-header';
 import { useModel } from '../generic/model-store';
 import { AlertList } from '../generic/user-messages';
 import StreakModal from '../shared/streak-celebration';
@@ -22,8 +22,6 @@ function LoadedTabPage({
 }) {
   const {
     originalUserIsStaff,
-    number,
-    org,
     tabs,
     title,
     celebrations,
@@ -47,11 +45,6 @@ function LoadedTabPage({
       <Helmet>
         <title>{`${activeTab ? `${activeTab.title} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
-      <Header
-        courseOrg={org}
-        courseNumber={number}
-        courseTitle={title}
-      />
       {originalUserIsStaff && (
         <InstructorToolbar
           courseId={courseId}

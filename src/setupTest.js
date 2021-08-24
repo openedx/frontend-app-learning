@@ -73,6 +73,7 @@ export const authenticatedUser = {
 
 export function initializeMockApp() {
   mergeConfig({
+    CONTACT_URL: process.env.CONTACT_URL || null,
     INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
     STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,
     TWITTER_URL: process.env.TWITTER_URL || null,

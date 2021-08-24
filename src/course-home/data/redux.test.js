@@ -18,7 +18,7 @@ const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 describe('Data layer integration tests', () => {
   const courseHomeMetadata = Factory.build('courseHomeMetadata');
   const { id: courseId } = courseHomeMetadata;
-  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
   let store;
@@ -31,7 +31,7 @@ describe('Data layer integration tests', () => {
   });
 
   describe('Test fetchDatesTab', () => {
-    const datesBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dates`;
+    const datesBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dates`;
 
     it('Should fail to fetch if error occurs', async () => {
       axiosMock.onGet(courseMetadataUrl).networkError();
@@ -60,7 +60,7 @@ describe('Data layer integration tests', () => {
   });
 
   describe('Test fetchOutlineTab', () => {
-    const outlineBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/outline`;
+    const outlineBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline`;
 
     it('Should result in fetch failure if error occurs', async () => {
       axiosMock.onGet(courseMetadataUrl).networkError();
@@ -89,7 +89,7 @@ describe('Data layer integration tests', () => {
   });
 
   describe('Test fetchProgressTab', () => {
-    const progressBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/progress`;
+    const progressBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/progress`;
 
     it('Should result in fetch failure if error occurs', async () => {
       axiosMock.onGet(courseMetadataUrl).networkError();
@@ -133,7 +133,7 @@ describe('Data layer integration tests', () => {
 
   describe('Test saveCourseGoal', () => {
     it('Should save course goal', async () => {
-      const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/save_course_goal`;
+      const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
       axiosMock.onPost(goalUrl).reply(200, {});
 
       await thunks.saveCourseGoal(courseId, 'unsure');
@@ -164,7 +164,7 @@ describe('Data layer integration tests', () => {
 
   describe('Test dismissWelcomeMessage', () => {
     it('Should dismiss welcome message', async () => {
-      const dismissUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/dismiss_welcome_message`;
+      const dismissUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dismiss_welcome_message`;
       axiosMock.onPost(dismissUrl).reply(201);
 
       await executeThunk(thunks.dismissWelcomeMessage(courseId), store.dispatch);

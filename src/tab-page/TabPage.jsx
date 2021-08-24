@@ -4,6 +4,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect } from 'react-router';
 
+import Footer from '@edx/frontend-component-footer';
 import { Toast } from '@edx/paragon';
 import { Header } from '../course-header';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
@@ -31,7 +32,10 @@ function TabPage({ intl, ...props }) {
   const dispatch = useDispatch();
   const {
     courseAccess,
+    number,
+    org,
     start,
+    title,
   } = useModel(metadataModel, courseId);
 
   if (courseStatus === 'loading') {
@@ -41,6 +45,7 @@ function TabPage({ intl, ...props }) {
         <PageLoading
           srMessage={intl.formatMessage(messages.loading)}
         />
+        <Footer />
       </>
     );
   }
@@ -68,7 +73,13 @@ function TabPage({ intl, ...props }) {
         >
           {toastHeader}
         </Toast>
+        <Header
+          courseOrg={org}
+          courseNumber={number}
+          courseTitle={title}
+        />
         <LoadedTabPage {...props} />
+        <Footer />
       </>
     );
   }
@@ -80,6 +91,7 @@ function TabPage({ intl, ...props }) {
       <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
         {intl.formatMessage(messages.failure)}
       </p>
+      <Footer />
     </>
   );
 }

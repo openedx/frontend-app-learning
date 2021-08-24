@@ -20,9 +20,9 @@ describe('Progress Tab', () => {
   let axiosMock;
 
   const courseId = 'course-v1:edX+Test+run';
-  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/course_metadata/${courseId}`;
+  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-  const progressUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/v1/progress/*`);
+  const progressUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/progress/*`);
 
   const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
