@@ -5,7 +5,6 @@
 
 @import "~@edx/frontend-component-footer/dist/footer";
 
-
 #root {
   display: flex;
   flex-direction: column;
@@ -22,7 +21,7 @@
       display: block;
       box-sizing: content-box;
       position: relative;
-      top: .10em;
+      top: 0.1em;
       height: 1.75rem;
       margin-right: 1rem;
       img {
@@ -47,23 +46,24 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding-bottom: .1rem;
+      padding-bottom: 0.1rem;
     }
   }
 
   .user-dropdown {
     .btn {
       height: 3rem;
-      @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
-        padding: 0 .5rem;
+      @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+        padding: 0 0.5rem;
       }
     }
   }
 }
 .course-tabs-navigation {
-  border-bottom: solid 1px #EAEAEA;
+  border-bottom: solid 1px #eaeaea;
 
-  .nav a, .nav button {
+  .nav a,
+  .nav button {
     &:hover {
       background-color: $light-400;
     }
@@ -108,8 +108,7 @@
 
   // On mobile, the unit container will be responsible
   // for container padding.
-  @media (min-width: map-get($grid-breakpoints, 'sm')) {
-    max-width: 1440px;
+  @media (min-width: map-get($grid-breakpoints, "sm")) {
     width: 100%;
     margin-right: auto;
     margin-left: auto;
@@ -117,8 +116,8 @@
 }
 
 .sequence {
-  @media (min-width: map-get($grid-breakpoints, 'sm')) {
-    border: solid 1px #EAEAEA;
+  @media (min-width: map-get($grid-breakpoints, "sm")) {
+    border: solid 1px #eaeaea;
     border-radius: 4px;
   }
 }
@@ -126,7 +125,7 @@
 .sequence-navigation {
   display: flex;
 
-  @media (min-width: map-get($grid-breakpoints, 'sm')) {
+  @media (min-width: map-get($grid-breakpoints, "sm")) {
     margin: -1px -1px 0;
   }
 
@@ -134,11 +133,11 @@
     flex-grow: 1;
     display: inline-flex;
     border-radius: 0;
-    border: solid 1px #EAEAEA;
+    border: solid 1px #eaeaea;
     border-left-width: 0;
     position: relative;
     font-weight: 400;
-    padding: 0 .375rem;
+    padding: 0 0.375rem;
     height: 3rem;
     justify-content: center;
     align-items: center;
@@ -157,7 +156,7 @@
 
     &.active {
       &:after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: -1px;
         left: 0;
@@ -168,7 +167,7 @@
     }
 
     &.complete {
-      background-color: #EEF7E5;
+      background-color: #eef7e5;
       color: $success;
     }
 
@@ -229,7 +228,7 @@
         }
 
         &:after {
-          content: '';
+          content: "";
           position: absolute;
           bottom: 0px;
           left: 0px;
@@ -250,19 +249,20 @@
     }
   }
 
-  .previous-btn, .next-btn {
+  .previous-btn,
+  .next-btn {
     border: 1px solid $light-400 !important;
     color: $gray-700;
     display: inline-flex;
     justify-content: center;
     align-items: center;
 
-    @media (max-width: -1 + map-get($grid-breakpoints, 'sm')) {
+    @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
       padding-top: 1rem;
       padding-bottom: 1rem;
     }
 
-    @media (min-width: map-get($grid-breakpoints, 'sm')) {
+    @media (min-width: map-get($grid-breakpoints, "sm")) {
       min-width: fit-content;
       padding-left: 2rem;
       padding-right: 2rem;
@@ -273,7 +273,7 @@
     border-left-width: 0;
     margin-left: 0;
 
-    @media (min-width: map-get($grid-breakpoints, 'sm')) {
+    @media (min-width: map-get($grid-breakpoints, "sm")) {
       border-left-width: 1px;
       border-top-left-radius: 4px;
     }
@@ -283,7 +283,7 @@
     border-left-width: 1px;
     border-right-width: 0;
 
-    @media (min-width: map-get($grid-breakpoints, 'sm')) {
+    @media (min-width: map-get($grid-breakpoints, "sm")) {
       border-top-right-radius: 4px;
       border-right-width: 1px;
     }
@@ -351,7 +351,7 @@
   // I don't like this.  We need to set a height of 100% on a div created by react-focus-on, a
   // package we use in our Modal.  That div has no class name or ID, so instead we're uniquely
   // identifying it by based on a unique attribute it has which its siblings don't share.
-  > div[data-focus-lock-disabled=false] {
+  > div[data-focus-lock-disabled="false"] {
     height: 100%;
   }
 
@@ -363,11 +363,11 @@
 }
 
 .greyed-out {
-  opacity: .3;
+  opacity: 0.3;
 }
 
 .locked-overlay {
-  opacity: .3;
+  opacity: 0.3;
   pointer-events: none;
 
   &.grades {
@@ -380,20 +380,20 @@
 }
 
 // Import component-specific sass files
-@import 'courseware/course/celebration/CelebrationModal.scss';
-@import 'courseware/course/NotificationTray.scss';
-@import 'courseware/course/NotificationTrigger.scss';
-@import 'courseware/course/NotificationIcon.scss';
-@import 'courseware/course/sequence/lock-paywall/LockPaywall.scss';
-@import 'shared/streak-celebration/StreakCelebrationModal.scss';
-@import 'courseware/course/content-tools/calculator/calculator.scss';
-@import 'courseware/course/content-tools/contentTools.scss';
-@import 'course-home/dates-tab/timeline/Day.scss';
-@import 'generic/upgrade-notification/UpgradeNotification.scss';
-@import 'course-home/outline-tab/widgets/ProctoringInfoPanel.scss';
-@import 'course-home/progress-tab/course-completion/CompletionDonutChart.scss';
-@import 'course-home/progress-tab/grades/course-grade/GradeBar.scss';
-@import 'courseware/course/course-exit/CourseRecommendations';
+@import "courseware/course/celebration/CelebrationModal.scss";
+@import "courseware/course/NotificationTray.scss";
+@import "courseware/course/NotificationTrigger.scss";
+@import "courseware/course/NotificationIcon.scss";
+@import "courseware/course/sequence/lock-paywall/LockPaywall.scss";
+@import "shared/streak-celebration/StreakCelebrationModal.scss";
+@import "courseware/course/content-tools/calculator/calculator.scss";
+@import "courseware/course/content-tools/contentTools.scss";
+@import "course-home/dates-tab/timeline/Day.scss";
+@import "generic/upgrade-notification/UpgradeNotification.scss";
+@import "course-home/outline-tab/widgets/ProctoringInfoPanel.scss";
+@import "course-home/progress-tab/course-completion/CompletionDonutChart.scss";
+@import "course-home/progress-tab/grades/course-grade/GradeBar.scss";
+@import "courseware/course/course-exit/CourseRecommendations";
 
 /** [MM-P2P] Experiment */
-@import 'experiments/mm-p2p/index.scss';
+@import "experiments/mm-p2p/index.scss";
