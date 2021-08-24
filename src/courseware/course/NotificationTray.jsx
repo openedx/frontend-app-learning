@@ -12,7 +12,7 @@ import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWind
 import UpgradeNotification from '../../generic/upgrade-notification/UpgradeNotification';
 
 function NotificationTray({
-  intl, toggleNotificationTray, onNotificationSeen, currentState, setCurrentState,
+  intl, toggleNotificationTray, onNotificationSeen, upgradeNotificationCurrentState, setupgradeNotificationCurrentState,
 }) {
   const {
     courseId,
@@ -67,8 +67,8 @@ function NotificationTray({
             timeOffsetMillis={timeOffsetMillis}
             courseId={courseId}
             org={org}
-            currentState={currentState}
-            setCurrentState={setCurrentState}
+            upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+            setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
           />
         ) : <p className="notification-tray-content">{intl.formatMessage(messages.noNotificationsMessage)}</p>}
       </div>
@@ -80,8 +80,8 @@ NotificationTray.propTypes = {
   intl: intlShape.isRequired,
   toggleNotificationTray: PropTypes.func,
   onNotificationSeen: PropTypes.func,
-  currentState: PropTypes.string.isRequired,
-  setCurrentState: PropTypes.func.isRequired,
+  upgradeNotificationCurrentState: PropTypes.string.isRequired,
+  setupgradeNotificationCurrentState: PropTypes.func.isRequired,
 };
 
 NotificationTray.defaultProps = {

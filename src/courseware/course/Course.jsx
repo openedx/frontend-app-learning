@@ -65,12 +65,12 @@ function Course({
     setLocalStorage('notificationStatus', 'active'); // Show red dot on notificationTrigger until seen
   }
 
-  if (!getLocalStorage('currentState')) {
-    setLocalStorage('currentState', 'initialize');
+  if (!getLocalStorage('upgradeNotificationCurrentState')) {
+    setLocalStorage('upgradeNotificationCurrentState', 'initialize');
   }
 
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage('notificationStatus'));
-  const [currentState, setCurrentState] = useState(getLocalStorage('currentState'));
+  const [upgradeNotificationCurrentState, setupgradeNotificationCurrentState] = useState(getLocalStorage('upgradeNotificationCurrentState'));
 
   const onNotificationSeen = () => {
     setNotificationStatus('inactive');
@@ -100,7 +100,7 @@ function Course({
             isNotificationTrayVisible={isNotificationTrayVisible}
             notificationStatus={notificationStatus}
             setNotificationStatus={setNotificationStatus}
-            currentState={currentState}
+            upgradeNotificationCurrentState={upgradeNotificationCurrentState}
           />
         ) : null}
       </div>
@@ -119,8 +119,8 @@ function Course({
         notificationStatus={notificationStatus}
         setNotificationStatus={setNotificationStatus}
         onNotificationSeen={onNotificationSeen}
-        currentState={currentState}
-        setCurrentState={setCurrentState}
+        upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+        setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />

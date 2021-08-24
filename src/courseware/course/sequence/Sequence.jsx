@@ -43,8 +43,8 @@ function Sequence({
   notificationStatus,
   setNotificationStatus,
   onNotificationSeen,
-  currentState,
-  setCurrentState,
+  upgradeNotificationCurrentState,
+  setupgradeNotificationCurrentState,
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
@@ -201,7 +201,7 @@ function Sequence({
             isNotificationTrayVisible={isNotificationTrayVisible}
             notificationStatus={notificationStatus}
             setNotificationStatus={setNotificationStatus}
-            currentState={currentState}
+            upgradeNotificationCurrentState={upgradeNotificationCurrentState}
           />
         ) : null}
 
@@ -239,8 +239,8 @@ function Sequence({
           notificationTrayVisible={notificationTrayVisible}
           notificationStatus={notificationStatus}
           onNotificationSeen={onNotificationSeen}
-          currentState={currentState}
-          setCurrentState={setCurrentState}
+          upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+          setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
         />
       ) : null }
 
@@ -286,8 +286,8 @@ Sequence.propTypes = {
   notificationStatus: PropTypes.string.isRequired,
   setNotificationStatus: PropTypes.func.isRequired,
   onNotificationSeen: PropTypes.func,
-  currentState: PropTypes.string.isRequired,
-  setCurrentState: PropTypes.func.isRequired,
+  upgradeNotificationCurrentState: PropTypes.string.isRequired,
+  setupgradeNotificationCurrentState: PropTypes.func.isRequired,
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({

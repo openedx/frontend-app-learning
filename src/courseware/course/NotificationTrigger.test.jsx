@@ -19,23 +19,23 @@ describe('Notification Trigger', () => {
       isNotificationTrayVisible: () => {},
       notificationStatus: 'active',
       setNotificationStatus: () => {},
-      currentState: 'FPDdaysLeft',
+      upgradeNotificationCurrentState: 'FPDdaysLeft',
     };
     mockDataSameState = {
       toggleNotificationTray: () => {},
       isNotificationTrayVisible: () => {},
       notificationStatus: 'inactive',
       setNotificationStatus: () => {},
-      currentState: 'sameState',
-      lastSeen: 'sameState',
+      upgradeNotificationCurrentState: 'sameState',
+      upgradeNotificationLastSeen: 'sameState',
     };
     mockDataDifferentState = {
       toggleNotificationTray: () => {},
       isNotificationTrayVisible: () => {},
       notificationStatus: 'inactive',
       setNotificationStatus: () => {},
-      currentState: 'after',
-      lastSeen: 'before',
+      upgradeNotificationCurrentState: 'after',
+      upgradeNotificationLastSeen: 'before',
     };
   });
 
@@ -83,9 +83,9 @@ describe('Notification Trigger', () => {
     const { container } = render(<NotificationTrigger {...mockDataDifferentState} />);
     expect(container).toBeInTheDocument();
 
-    // rendering NotificationTrigger has the effect of calling updateLastSeen()
+    // rendering NotificationTrigger has the effect of calling UpdateUpgradeNotificationLastSeen()
     // Verify that local storage was updated accordingly
     expect(getLocalStorage('notificationStatus')).toBe('active');
-    expect(getLocalStorage('lastSeen')).toBe('after');
+    expect(getLocalStorage('upgradeNotificationLastSeen')).toBe('after');
   });
 });

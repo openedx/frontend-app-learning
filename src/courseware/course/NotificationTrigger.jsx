@@ -9,22 +9,22 @@ import messages from './messages';
 
 function NotificationTrigger({
   intl, toggleNotificationTray, isNotificationTrayVisible, notificationStatus, setNotificationStatus,
-  currentState,
+  upgradeNotificationCurrentState,
 }) {
   /* Re-show a red dot beside the notification trigger for each of the 7 UpgradeNotification stages
-   The currentState prop will be available after UpgradeNotification mounts. Once available,
+   The upgradeNotificationCurrentState prop will be available after UpgradeNotification mounts. Once available,
   compare with the last state they've seen, and if it's different then set dot back to red */
-  function updateLastSeen() {
-    if (currentState) {
-      if (getLocalStorage('lastSeen') !== currentState) {
+  function UpdateUpgradeNotificationLastSeen() {
+    if (upgradeNotificationCurrentState) {
+      if (getLocalStorage('upgradeNotificationLastSeen') !== upgradeNotificationCurrentState) {
         setNotificationStatus('active');
         setLocalStorage('notificationStatus', 'active');
-        setLocalStorage('lastSeen', currentState);
+        setLocalStorage('upgradeNotificationLastSeen', upgradeNotificationCurrentState);
       }
     }
   }
 
-  useEffect(() => { updateLastSeen(); });
+  useEffect(() => { UpdateUpgradeNotificationLastSeen(); });
 
   return (
     <button
@@ -44,7 +44,7 @@ NotificationTrigger.propTypes = {
   notificationStatus: PropTypes.string.isRequired,
   setNotificationStatus: PropTypes.func.isRequired,
   isNotificationTrayVisible: PropTypes.func.isRequired,
-  currentState: PropTypes.string.isRequired,
+  upgradeNotificationCurrentState: PropTypes.string.isRequired,
 };
 
 export default injectIntl(NotificationTrigger);
