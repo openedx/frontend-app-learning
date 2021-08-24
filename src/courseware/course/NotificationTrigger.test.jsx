@@ -39,7 +39,7 @@ describe('Notification Trigger', () => {
     };
   });
 
-  it('renders notification trigger with icon when notificationStatus is active', async () => {
+  it('renders notification trigger icon with red dot when notificationStatus is active', async () => {
     const { container } = render(<NotificationTrigger {...mockDataBaseline} />);
     expect(container).toBeInTheDocument();
     const buttonIcon = container.querySelectorAll('svg');
@@ -47,7 +47,7 @@ describe('Notification Trigger', () => {
     expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
   });
 
-  it('renders notification trigger WITHOUT icon 3 seconds later', async () => {
+  it('renders notification trigger icon WITHOUT red dot 3 seconds later', async () => {
     const { container } = render(<NotificationTrigger {...mockDataBaseline} />);
     expect(container).toBeInTheDocument();
     jest.useFakeTimers();
@@ -57,7 +57,7 @@ describe('Notification Trigger', () => {
     jest.runAllTimers();
   });
 
-  it('renders notification trigger WITHOUT icon within the same phase', async () => {
+  it('renders notification trigger icon WITHOUT red dot within the same phase', async () => {
     const { container } = render(<NotificationTrigger {...mockDataSameState} />);
     expect(container).toBeInTheDocument();
     const buttonIcon = container.querySelectorAll('svg');
@@ -79,12 +79,12 @@ describe('Notification Trigger', () => {
     expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
   });
 
+  // rendering NotificationTrigger has the effect of calling UpdateUpgradeNotificationLastSeen()
+  // Verify that local storage was updated accordingly
   it('we make the right updates when rendering a new phase (before -> after)', async () => {
     const { container } = render(<NotificationTrigger {...mockDataDifferentState} />);
     expect(container).toBeInTheDocument();
 
-    // rendering NotificationTrigger has the effect of calling UpdateUpgradeNotificationLastSeen()
-    // Verify that local storage was updated accordingly
     expect(getLocalStorage('notificationStatus')).toBe('active');
     expect(getLocalStorage('upgradeNotificationLastSeen')).toBe('after');
   });
