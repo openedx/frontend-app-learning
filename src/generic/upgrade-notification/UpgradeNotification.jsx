@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
 import { getConfig } from '@edx/frontend-platform';
+import { setLocalStorage } from '../../data/localStorage';
 
 import { UpgradeButton } from '../upgrade-button';
 
@@ -184,10 +185,20 @@ UpsellFBESoonCardContent.defaultProps = {
   timezoneFormatArgs: {},
 };
 
-function ExpirationCountdown({ hoursToExpiration }) {
+function ExpirationCountdown({ hoursToExpiration, setupgradeNotificationCurrentState, type }) {
   let expirationText;
-
   if (hoursToExpiration >= 24) {
+    // setupgradeNotificationCurrentState is available in NotificationTray (not course home)
+    if (setupgradeNotificationCurrentState) {
+      if (type === 'access') {
+        setupgradeNotificationCurrentState('accessDaysLeft');
+        setLocalStorage('upgradeNotificationCurrentState', 'accessDaysLeft');
+      }
+      if (type === 'offer') {
+        setupgradeNotificationCurrentState('FPDdaysLeft');
+        setLocalStorage('upgradeNotificationCurrentState', 'FPDdaysLeft');
+      }
+    }
     expirationText = (
       <FormattedMessage
         id="learning.generic.upgradeNotification.expirationDays"
@@ -200,6 +211,17 @@ function ExpirationCountdown({ hoursToExpiration }) {
       />
     );
   } else if (hoursToExpiration >= 1) {
+    // setupgradeNotificationCurrentState is available in NotificationTray (not course home)
+    if (setupgradeNotificationCurrentState) {
+      if (type === 'access') {
+        setupgradeNotificationCurrentState('accessHoursLeft');
+        setLocalStorage('upgradeNotificationCurrentState', 'accessHoursLeft');
+      }
+      if (type === 'offer') {
+        setupgradeNotificationCurrentState('FPDHoursLeft');
+        setLocalStorage('upgradeNotificationCurrentState', 'FPDHoursLeft');
+      }
+    }
     expirationText = (
       <FormattedMessage
         id="learning.generic.upgradeNotification.expirationHours"
@@ -212,6 +234,17 @@ function ExpirationCountdown({ hoursToExpiration }) {
       />
     );
   } else {
+    // setupgradeNotificationCurrentState is available in NotificationTray (not course home)
+    if (setupgradeNotificationCurrentState) {
+      if (type === 'access') {
+        setupgradeNotificationCurrentState('accessLastHour');
+        setLocalStorage('upgradeNotificationCurrentState', 'accessLastHour');
+      }
+      if (type === 'offer') {
+        setupgradeNotificationCurrentState('FPDLastHour');
+        setLocalStorage('upgradeNotificationCurrentState', 'FPDLastHour');
+      }
+    }
     expirationText = (
       <FormattedMessage
         id="learning.generic.upgradeNotification.expirationMinutes"
@@ -224,9 +257,19 @@ function ExpirationCountdown({ hoursToExpiration }) {
 
 ExpirationCountdown.propTypes = {
   hoursToExpiration: PropTypes.number.isRequired,
+  setupgradeNotificationCurrentState: PropTypes.func,
+  type: PropTypes.string,
+};
+ExpirationCountdown.defaultProps = {
+  setupgradeNotificationCurrentState: null,
+  type: null,
 };
 
-function AccessExpirationDateBanner({ accessExpirationDate, timezoneFormatArgs }) {
+function AccessExpirationDateBanner({ accessExpirationDate, timezoneFormatArgs, setupgradeNotificationCurrentState }) {
+  if (setupgradeNotificationCurrentState) {
+    setupgradeNotificationCurrentState('accessDateView');
+    setLocalStorage('upgradeNotificationCurrentState', 'accessDateView');
+  }
   return (
     <div className="upsell-warning-light">
       <FormattedMessage
@@ -253,10 +296,12 @@ AccessExpirationDateBanner.propTypes = {
   timezoneFormatArgs: PropTypes.shape({
     timeZone: PropTypes.string,
   }),
+  setupgradeNotificationCurrentState: PropTypes.func,
 };
 
 AccessExpirationDateBanner.defaultProps = {
   timezoneFormatArgs: {},
+  setupgradeNotificationCurrentState: null,
 };
 
 function UpgradeNotification({
@@ -265,6 +310,7 @@ function UpgradeNotification({
   courseId,
   offer,
   org,
+  setupgradeNotificationCurrentState,
   shouldDisplayBorder,
   timeOffsetMillis,
   upsellPageName,
@@ -340,7 +386,13 @@ function UpgradeNotification({
             }}
           />
         );
-        expirationBanner = <ExpirationCountdown hoursToExpiration={hoursToDiscountExpiration} />;
+        expirationBanner = (
+          <ExpirationCountdown
+            hoursToExpiration={hoursToDiscountExpiration}
+            setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
+            type="offer"
+          />
+        );
       } else {
         upgradeNotificationHeaderText = (
           <FormattedMessage
@@ -352,6 +404,7 @@ function UpgradeNotification({
           <AccessExpirationDateBanner
             accessExpirationDate={accessExpirationDate}
             timezoneFormatArgs={timezoneFormatArgs}
+            setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
           />
         );
       }
@@ -363,7 +416,13 @@ function UpgradeNotification({
           defaultMessage="Course Access Expiration"
         />
       );
-      expirationBanner = <ExpirationCountdown hoursToExpiration={hoursToAccessExpiration} />;
+      expirationBanner = (
+        <ExpirationCountdown
+          hoursToExpiration={hoursToAccessExpiration}
+          setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
+          type="access"
+        />
+      );
       upsellMessage = (
         <UpsellFBESoonCardContent
           accessExpirationDate={accessExpirationDate}
@@ -429,6 +488,7 @@ UpgradeNotification.propTypes = {
     code: PropTypes.string,
   }),
   shouldDisplayBorder: PropTypes.bool,
+  setupgradeNotificationCurrentState: PropTypes.func,
   timeOffsetMillis: PropTypes.number,
   upsellPageName: PropTypes.string.isRequired,
   userTimezone: PropTypes.string,
@@ -443,6 +503,7 @@ UpgradeNotification.defaultProps = {
   accessExpiration: null,
   contentTypeGatingEnabled: false,
   offer: null,
+  setupgradeNotificationCurrentState: null,
   shouldDisplayBorder: null,
   timeOffsetMillis: 0,
   userTimezone: null,

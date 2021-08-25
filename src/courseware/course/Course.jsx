@@ -15,6 +15,7 @@ import NotificationTrigger from './NotificationTrigger';
 
 import { useModel } from '../../generic/model-store';
 import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
+import { getLocalStorage, setLocalStorage } from '../../data/localStorage';
 
 /** [MM-P2P] Experiment */
 import { initCoursewareMMP2P, MMP2PBlockModal } from '../../experiments/mm-p2p';
@@ -60,6 +61,22 @@ function Course({
     if (notificationTrayVisible) { setNotificationTray(false); } else { setNotificationTray(true); }
   };
 
+  if (!getLocalStorage('notificationStatus')) {
+    setLocalStorage('notificationStatus', 'active'); // Show red dot on notificationTrigger until seen
+  }
+
+  if (!getLocalStorage('upgradeNotificationCurrentState')) {
+    setLocalStorage('upgradeNotificationCurrentState', 'initialize');
+  }
+
+  const [notificationStatus, setNotificationStatus] = useState(getLocalStorage('notificationStatus'));
+  const [upgradeNotificationCurrentState, setupgradeNotificationCurrentState] = useState(getLocalStorage('upgradeNotificationCurrentState'));
+
+  const onNotificationSeen = () => {
+    setNotificationStatus('inactive');
+    setLocalStorage('notificationStatus', 'inactive');
+  };
+
   /** [MM-P2P] Experiment */
   const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
 
@@ -81,6 +98,9 @@ function Course({
           <NotificationTrigger
             toggleNotificationTray={toggleNotificationTray}
             isNotificationTrayVisible={isNotificationTrayVisible}
+            notificationStatus={notificationStatus}
+            setNotificationStatus={setNotificationStatus}
+            upgradeNotificationCurrentState={upgradeNotificationCurrentState}
           />
         ) : null}
       </div>
@@ -96,6 +116,11 @@ function Course({
         toggleNotificationTray={toggleNotificationTray}
         isNotificationTrayVisible={isNotificationTrayVisible}
         notificationTrayVisible={notificationTrayVisible}
+        notificationStatus={notificationStatus}
+        setNotificationStatus={setNotificationStatus}
+        onNotificationSeen={onNotificationSeen}
+        upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+        setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />

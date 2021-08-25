@@ -40,6 +40,11 @@ function Sequence({
   toggleNotificationTray,
   notificationTrayVisible,
   isNotificationTrayVisible,
+  notificationStatus,
+  setNotificationStatus,
+  onNotificationSeen,
+  upgradeNotificationCurrentState,
+  setupgradeNotificationCurrentState,
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
@@ -194,6 +199,9 @@ function Sequence({
           <NotificationTrigger
             toggleNotificationTray={toggleNotificationTray}
             isNotificationTrayVisible={isNotificationTrayVisible}
+            notificationStatus={notificationStatus}
+            setNotificationStatus={setNotificationStatus}
+            upgradeNotificationCurrentState={upgradeNotificationCurrentState}
           />
         ) : null}
 
@@ -229,6 +237,10 @@ function Sequence({
         <NotificationTray
           toggleNotificationTray={toggleNotificationTray}
           notificationTrayVisible={notificationTrayVisible}
+          notificationStatus={notificationStatus}
+          onNotificationSeen={onNotificationSeen}
+          upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+          setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
         />
       ) : null }
 
@@ -276,6 +288,11 @@ Sequence.propTypes = {
   toggleNotificationTray: PropTypes.func,
   notificationTrayVisible: PropTypes.bool,
   isNotificationTrayVisible: PropTypes.func,
+  notificationStatus: PropTypes.string.isRequired,
+  setNotificationStatus: PropTypes.func.isRequired,
+  onNotificationSeen: PropTypes.func,
+  upgradeNotificationCurrentState: PropTypes.string.isRequired,
+  setupgradeNotificationCurrentState: PropTypes.func.isRequired,
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
@@ -297,6 +314,7 @@ Sequence.defaultProps = {
   toggleNotificationTray: null,
   notificationTrayVisible: null,
   isNotificationTrayVisible: null,
+  onNotificationSeen: null,
 
   /** [MM-P2P] Experiment */
   mmp2p: {
