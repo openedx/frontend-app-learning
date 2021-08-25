@@ -113,7 +113,7 @@ function LockPaywall({
                   <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
                   <FormattedMessage
                     id="gatedContent.paragraph.bulletOne"
-                    defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
+                    defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resumé"
                     values={{ verifiedCertLink }}
                     className="bullet-text"
                   />
