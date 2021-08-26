@@ -51,7 +51,7 @@ describe('Loaded Tab Page', () => {
     const courseMetadata = Factory.build('courseMetadata', { celebrations: { shouldCelebrateStreak: 3 } });
     mockData.courseId = courseMetadata.id;
     mockData.verifiedMode = courseMetadata.verifiedMode;
-    mockData.AA759ExperimentEnabled = true;
+    mockData.StreakCelebrationCouponEnabled = true;
     const testStore = await initializeTestStore({ courseMetadata }, false);
     render(<StreakModal {...mockData} courseId={courseMetadata.id} />, { store: testStore });
     expect(screen.getByText('You’ve unlocked a 15% off discount when you upgrade this course for a limited time only.')).toBeInTheDocument();
