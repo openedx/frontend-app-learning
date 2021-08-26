@@ -27,7 +27,7 @@ function UpsellNoFBECardContent() {
         <span className="fa-li upgrade-notification-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
           id="learning.generic.upgradeNotification.verifiedCertMessage"
-          defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
+          defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resumé"
           values={{ verifiedCertLink }}
         />
       </li>
@@ -90,7 +90,7 @@ function UpsellFBEFarAwayCardContent() {
         <span className="fa-li upgrade-notification-li"><FontAwesomeIcon icon={faCheck} /></span>
         <FormattedMessage
           id="learning.generic.upgradeNotification.verifiedCertMessage"
-          defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resume"
+          defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resumé"
           values={{ verifiedCertLink }}
         />
       </li>

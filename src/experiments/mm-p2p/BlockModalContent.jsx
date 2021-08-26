@@ -48,7 +48,7 @@ export const BlockModal = () => (
 
         <div>
           <BulletList>
-            Earn a verified certificate of completion to showcase on your resume
+            Earn a verified certificate of completion to showcase on your resumé
           </BulletList>
           <BulletList>
             Unlock unlimited access to all course content and activities,

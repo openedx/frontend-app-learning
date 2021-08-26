@@ -103,7 +103,7 @@ const Sidecard = ({
           &nbsp;<span style={{ fontWeight: 600 }}>graded assignments</span>
         </BulletList>
         <BulletList>
-          Earn a {certLink} of completion to showcase on your resume
+          Earn a {certLink} of completion to showcase on your resumé
         </BulletList>
         <BulletList>
           Support our <span style={{ fontWeight: 600 }}>non-profit mission</span> at edX
