@@ -31,7 +31,7 @@ describe('Loaded Tab Page', () => {
     });
   });
 
-  it('shows streak celebration modal AA-759 experiment', async () => {
+  it('shows streak celebration discount modal', async () => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: jest.fn().mockImplementation(query => {

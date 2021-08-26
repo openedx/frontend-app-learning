@@ -39,7 +39,7 @@ function LoadedTabPage({
   const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
-  const StreakCelebrationCouponEnabled = celebrations && celebrations.streakDiscountExperimentEnabled && verifiedMode;
+  const StreakCelebrationCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
   const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(streakLengthToCelebrate);
 
   return (
