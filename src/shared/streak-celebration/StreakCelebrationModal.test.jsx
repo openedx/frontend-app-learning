@@ -18,6 +18,7 @@ describe('Loaded Tab Page', () => {
     const courseMetadata = Factory.build('courseMetadata', { celebrations: { streakLengthToCelebrate: 3 } });
     mockData.courseId = courseMetadata.id;
     mockData.verifiedMode = courseMetadata.verifiedMode;
+    mockData.closeStreakCelebration = jest.fn();
     const testStore = await initializeTestStore({ courseMetadata }, false);
     render(<StreakModal {...mockData} courseId={courseMetadata.id} />, { store: testStore });
 
