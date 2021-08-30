@@ -141,10 +141,10 @@ function StreakModal({
                 <b>{intl.formatMessage(messages.congratulations)}</b>
                 &nbsp;{intl.formatMessage(messages.streakDiscountMessage)}&nbsp;
                 <FormattedMessage
-                  id="learning.streakCelebration.streakAA759EndDateMessage"
+                  id="learning.streakCelebration.streakCelebrationCouponEndDateMessage"
                   defaultMessage="Ends {date}."
                   values={{
-                    date: new Date('2021-7-20 00:00').toLocaleDateString({ timeZone: 'UTC' }),
+                    date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString({ timeZone: 'UTC' }),
                   }}
                 />
               </div>

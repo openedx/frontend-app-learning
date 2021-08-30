@@ -55,8 +55,9 @@ describe('Loaded Tab Page', () => {
     mockData.StreakCelebrationCouponEnabled = true;
     const testStore = await initializeTestStore({ courseMetadata }, false);
     render(<StreakModal {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+    const endDateText = `Ends ${new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString({ timeZone: 'UTC' })}.`;
     expect(screen.getByText('You’ve unlocked a 15% off discount when you upgrade this course for a limited time only.')).toBeInTheDocument();
-    expect(screen.getByText('Ends 7/20/2021.')).toBeInTheDocument();
+    expect(screen.getByText(endDateText)).toBeInTheDocument();
     expect(screen.getByText('Continue with course')).toBeInTheDocument();
   });
 });
