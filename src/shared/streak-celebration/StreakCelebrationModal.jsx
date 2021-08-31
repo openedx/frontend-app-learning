@@ -43,7 +43,7 @@ function getRandomFactoid(intl, streakLength) {
 
 function StreakModal({
   courseId, metadataModel, streakLengthToCelebrate, intl, isStreakCelebrationOpen,
-  closeStreakCelebration, StreakCelebrationCouponEnabled, verifiedMode, ...rest
+  closeStreakCelebration, StreakDiscountCouponEnabled, verifiedMode, ...rest
 }) {
   if (!isStreakCelebrationOpen) {
     return null;
@@ -82,7 +82,7 @@ function StreakModal({
   let offer;
 
   if (verifiedMode) {
-    upgradeUrl = `${verifiedMode.upgradeUrl}&code=3DayStreak`;
+    upgradeUrl = `${verifiedMode.upgradeUrl}&code=ZGY11119949`;
     mode = {
       currencySymbol: verifiedMode.currencySymbol,
       price: verifiedMode.price,
@@ -125,7 +125,7 @@ function StreakModal({
             <img src={StreakDesktopImage} alt="" className="img-fluid" />
           </OnDesktop>
         </p>
-        { !StreakCelebrationCouponEnabled && (
+        { !StreakDiscountCouponEnabled && (
           <div className="d-flex py-3 bg-light-300">
             <Icon className="col-small ml-3" src={Lightbulb} />
             <div className="col-11 factoid-wrapper">
@@ -133,7 +133,7 @@ function StreakModal({
             </div>
           </div>
         )}
-        { StreakCelebrationCouponEnabled && (
+        { StreakDiscountCouponEnabled && (
           <Alert variant="success" className="px-0">
             <div className="d-flex">
               <Icon className="col-small ml-3 text-success-500" src={MoneyFilled} />
@@ -153,7 +153,7 @@ function StreakModal({
         )}
       </ModalDialog.Body>
       <ModalDialog.Footer className="modal-footer d-block">
-        { StreakCelebrationCouponEnabled && (
+        { StreakDiscountCouponEnabled && (
           <>
             <OnMobile>
               <UpgradeNowButton
@@ -180,7 +180,7 @@ function StreakModal({
             </OnDesktop>
           </>
         )}
-        { !StreakCelebrationCouponEnabled && (
+        { !StreakDiscountCouponEnabled && (
           <ModalDialog.CloseButton className="px-5" variant="primary"><CloseText /></ModalDialog.CloseButton>
         )}
       </ModalDialog.Footer>
@@ -192,7 +192,7 @@ StreakModal.defaultProps = {
   isStreakCelebrationOpen: false,
   streakLengthToCelebrate: -1,
   verifiedMode: {},
-  StreakCelebrationCouponEnabled: false,
+  StreakDiscountCouponEnabled: false,
 };
 
 StreakModal.propTypes = {
@@ -202,7 +202,7 @@ StreakModal.propTypes = {
   intl: intlShape.isRequired,
   isStreakCelebrationOpen: PropTypes.bool,
   closeStreakCelebration: PropTypes.func.isRequired,
-  StreakCelebrationCouponEnabled: PropTypes.bool,
+  StreakDiscountCouponEnabled: PropTypes.bool,
   verifiedMode: PropTypes.shape({
     currencySymbol: PropTypes.string,
     price: PropTypes.number,
