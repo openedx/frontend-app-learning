@@ -216,6 +216,10 @@ const messages = defineMessages({
     id: 'learning.proctoringPanel.reviewRequirementsButton',
     defaultMessage: 'Review instructions and system requirements',
   },
+  proctoringOnboardingButtonPastDue: {
+    id: 'learning.proctoringPanel.onboardingButtonPastDue',
+    defaultMessage: 'Onboarding Past Due',
+  },
 });
 
 export default messages;
