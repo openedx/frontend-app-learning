@@ -37,7 +37,7 @@ function LoadedTabPage({
   const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
-  const AA759ExperimentEnabled = celebrations && celebrations.streakDiscountExperimentEnabled && verifiedMode;
+  const StreakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
   const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(streakLengthToCelebrate);
 
   return (
@@ -56,9 +56,9 @@ function LoadedTabPage({
         courseId={courseId}
         metadataModel={metadataModel}
         streakLengthToCelebrate={streakLengthToCelebrate}
-        isStreakCelebrationOpen={isStreakCelebrationOpen}
+        isStreakCelebrationOpen={!!isStreakCelebrationOpen}
         closeStreakCelebration={closeStreakCelebration}
-        AA759ExperimentEnabled={AA759ExperimentEnabled}
+        StreakDiscountCouponEnabled={StreakDiscountCouponEnabled}
         verifiedMode={verifiedMode}
       />
       <main id="main-content" className="d-flex flex-column flex-grow-1">

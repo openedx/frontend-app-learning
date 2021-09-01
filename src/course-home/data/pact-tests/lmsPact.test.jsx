@@ -62,7 +62,7 @@ describe('Course Home Service', () => {
             celebrations: like({
               first_section: false,
               streak_length_to_celebrate: null,
-              streak_discount_experiment_enabled: false,
+              streak_discount_enabled: false,
             }),
             course_access: {
               has_access: boolean(true),
@@ -110,7 +110,7 @@ describe('Course Home Service', () => {
         celebrations: {
           firstSection: false,
           streakLengthToCelebrate: null,
-          streakDiscountExperimentEnabled: false,
+          streakDiscountEnabled: false,
         },
         courseAccess: {
           hasAccess: true,

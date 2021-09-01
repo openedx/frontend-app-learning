@@ -201,7 +201,7 @@ describe('Courseware Service', () => {
             celebrations: {
               first_section: boolean(false),
               streak_length_to_celebrate: null,
-              streak_discount_experiment_enabled: boolean(false),
+              streak_discount_enabled: boolean(false),
             },
             user_has_passing_grade: boolean(false),
             course_exit_page_is_active: boolean(false),
@@ -279,7 +279,7 @@ describe('Courseware Service', () => {
         celebrations: {
           firstSection: false,
           streakLengthToCelebrate: null,
-          streakDiscountExperimentEnabled: false,
+          streakDiscountEnabled: false,
         },
         userHasPassingGrade: false,
         courseExitPageIsActive: false,
