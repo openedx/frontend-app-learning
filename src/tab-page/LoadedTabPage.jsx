@@ -63,7 +63,7 @@ function LoadedTabPage({
         courseId={courseId}
         metadataModel={metadataModel}
         streakLengthToCelebrate={streakLengthToCelebrate}
-        isStreakCelebrationOpen={isStreakCelebrationOpen}
+        isStreakCelebrationOpen={!!isStreakCelebrationOpen}
         closeStreakCelebration={closeStreakCelebration}
         StreakDiscountCouponEnabled={StreakDiscountCouponEnabled}
         verifiedMode={verifiedMode}
