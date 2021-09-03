@@ -219,5 +219,4 @@ Factory.define('datesTabData')
     ],
     has_ended: false,
     learner_is_full_access: true,
-    user_timezone: 'America/New_York',
   });

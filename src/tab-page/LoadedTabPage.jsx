@@ -50,6 +50,7 @@ function LoadedTabPage({
           courseId={courseId}
           unitId={unitId}
           canViewLegacyCourseware={canViewLegacyCourseware}
+          tab={activeTabSlug}
         />
       )}
       <StreakModal

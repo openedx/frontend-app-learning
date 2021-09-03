@@ -122,6 +122,7 @@ describe('Course Home Service', () => {
         },
         courseId: 'course-v1:edX+DemoX+Demo_Course',
         isEnrolled: true,
+        isMasquerading: false,
         isSelfPaced: false,
         isStaff: true,
         number: 'DemoX',

@@ -12,6 +12,7 @@ import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
 import initializeStore from '../../store';
 import ProgressTab from './ProgressTab';
+import LoadedTabPage from '../../tab-page/LoadedTabPage';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -23,6 +24,7 @@ describe('Progress Tab', () => {
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
   const progressUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/progress/*`);
+  const masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
 
   const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
@@ -49,6 +51,7 @@ describe('Progress Tab', () => {
     // Set defaults for network requests
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     axiosMock.onGet(progressUrl).reply(200, defaultTabData);
+    axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
 
     logUnhandledRequests(axiosMock);
   });
@@ -1183,6 +1186,64 @@ describe('Progress Tab', () => {
     it('Does not display the certificate component if the user is not enrolled', async () => {
       await fetchAndRender();
       expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Access expiration masquerade banner', () => {
+    it('renders banner when masquerading as a user', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      setTabData({
+        access_expiration: {
+          expiration_date: '2020-01-01T12:00:00Z',
+          masquerading_expired_course: true,
+        },
+      });
+      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
+      await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('1/1/2020')).toBeInTheDocument();
+    });
+    it('does not render banner when not masquerading', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      setTabData({
+        access_expiration: {
+          expiration_date: '2020-01-01T12:00:00Z',
+          masquerading_expired_course: false,
+        },
+      });
+      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
+      await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
+      expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
+      expect(screen.queryByText('1/1/2020')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Course start masquerade banner', () => {
+    it('renders banner when masquerading as a user', async () => {
+      setMetadata({
+        is_enrolled: true,
+        original_user_is_staff: true,
+        is_staff: false,
+        start: '2999-01-01T00:00:00Z',
+      });
+      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
+      await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(screen.getByText('This learner does not yet have access to this course. The course starts on', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('1/1/2999')).toBeInTheDocument();
+    });
+    it('does not render banner when not masquerading', async () => {
+      setMetadata({
+        is_enrolled: true,
+        original_user_is_staff: true,
+        is_staff: true,
+        start: '2999-01-01T00:00:00Z',
+      });
+      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
+      await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
+      expect(screen.queryByText('This learner does not yet have access to this course. The course starts on', { exact: false })).not.toBeInTheDocument();
+      expect(screen.queryByText('1/1/2999')).not.toBeInTheDocument();
     });
   });
 

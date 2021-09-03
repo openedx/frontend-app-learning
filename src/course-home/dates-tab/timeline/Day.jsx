@@ -29,10 +29,10 @@ function Day({
   const {
     courseId,
   } = useSelector(state => state.courseHome);
-
   const {
     userTimezone,
-  } = useModel('dates', courseId);
+  } = useModel('courseHomeMeta', courseId);
+
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
   const { color, badges } = getBadgeListAndColor(date, intl, null, items);

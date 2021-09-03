@@ -19,4 +19,5 @@ Factory.define('courseHomeMetadata')
       user_message: null,
     },
     start: '2013-02-05T05:00:00Z',
+    user_timezone: 'UTC',
   });

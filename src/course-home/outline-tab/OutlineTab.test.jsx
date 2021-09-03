@@ -16,6 +16,7 @@ import * as thunks from '../data/thunks';
 import initializeStore from '../../store';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 import OutlineTab from './OutlineTab';
+import LoadedTabPage from '../../tab-page/LoadedTabPage';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -28,6 +29,7 @@ describe('Outline Tab', () => {
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
   const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
   const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
+  const masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
 
@@ -57,6 +59,7 @@ describe('Outline Tab', () => {
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     axiosMock.onPost(enrollmentUrl).reply(200, {});
     axiosMock.onPost(goalUrl).reply(200, { header: 'Success' });
+    axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
     axiosMock.onGet(outlineUrl).reply(200, defaultTabData);
     axiosMock.onGet(proctoringInfoUrl).reply(200, {
       onboarding_status: 'created',
@@ -492,32 +495,35 @@ describe('Outline Tab', () => {
     });
 
     describe('Access Expiration Alert', () => {
-      it('has special masquerade text', async () => {
+      it('renders page banner on masquerade', async () => {
+        setMetadata({ is_enrolled: true, original_user_is_staff: true });
         setTabData({
           access_expiration: {
             expiration_date: '2020-01-01T12:00:00Z',
             masquerading_expired_course: true,
-            upgrade_deadline: null,
-            upgrade_url: null,
           },
         });
-        await fetchAndRender();
-        const check = await screen.queryByText('This learner does not have access to this course.', { exact: false });
-        expect(check).toBeInTheDocument();
+        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
+        await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="outline">...</LoadedTabPage>, { store }));
+        const instructorToolbar = await screen.getByTestId('instructor-toolbar');
+        expect(instructorToolbar).toBeInTheDocument();
+        expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
+        expect(screen.getByText('1/1/2020')).toBeInTheDocument();
       });
 
-      it('does not have special masquerade text', async () => {
+      it('does not render banner when not masquerading', async () => {
+        setMetadata({ is_enrolled: true, original_user_is_staff: true });
         setTabData({
           access_expiration: {
             expiration_date: '2020-01-01T12:00:00Z',
             masquerading_expired_course: false,
-            upgrade_deadline: null,
-            upgrade_url: null,
           },
         });
-        await fetchAndRender();
-        const check = await screen.queryByText('This learner does not have access to this course.', { exact: false });
-        expect(check).not.toBeInTheDocument();
+        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
+        await act(async () => render(<LoadedTabPage courseId={courseId} activeTabSlug="outline">...</LoadedTabPage>, { store }));
+        const instructorToolbar = await screen.getByTestId('instructor-toolbar');
+        expect(instructorToolbar).toBeInTheDocument();
+        expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
       });
     });
 
@@ -526,16 +532,7 @@ describe('Outline Tab', () => {
       it('appears several days out', async () => {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() + 100);
-        setMetadata({ is_enrolled: true });
-        setTabData({}, {
-          date_blocks: [
-            {
-              date_type: 'course-start-date',
-              date: startDate.toISOString(),
-              title: 'Start',
-            },
-          ],
-        });
+        setMetadata({ is_enrolled: true, start: '2999-01-01T00:00:00Z' });
         await fetchAndRender();
         const node = await screen.findByText('Course starts', { exact: false });
         expect(node.textContent).toMatch(/.* on .*/); // several days away uses "on" before date
@@ -544,16 +541,7 @@ describe('Outline Tab', () => {
       it('appears today', async () => {
         const startDate = new Date();
         startDate.setHours(startDate.getHours() + 1);
-        setMetadata({ is_enrolled: true });
-        setTabData({}, {
-          date_blocks: [
-            {
-              date_type: 'course-start-date',
-              date: startDate.toISOString(),
-              title: 'Start',
-            },
-          ],
-        });
+        setMetadata({ is_enrolled: true, start: startDate });
         await fetchAndRender();
         const node = await screen.findByText('Course starts', { exact: false });
         expect(node.textContent).toMatch(/.* at .*/); // same day uses "at" before date

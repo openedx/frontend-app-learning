@@ -14,7 +14,6 @@ Factory.define('outlineTabData')
   })
   .attr('dates_widget', ['date_blocks'], (dateBlocks) => ({
     course_date_blocks: dateBlocks,
-    user_timezone: 'UTC',
   }))
   .attr('resume_course', ['host', 'courseId'], (host, courseId) => ({
     has_visited_course: false,

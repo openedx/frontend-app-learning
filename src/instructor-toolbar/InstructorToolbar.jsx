@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 
-import { ALERT_TYPES } from '../generic/user-messages';
+import { ALERT_TYPES, AlertList } from '../generic/user-messages';
 import Alert from '../generic/user-messages/Alert';
 import MasqueradeWidget from './masquerade-widget';
+import { useAccessExpirationMasqueradeBanner } from '../alerts/access-expiration-alert';
+import { useCourseStartMasqueradeBanner } from '../alerts/course-start-alert';
 
 function getInsightsUrl(courseId) {
   const urlBase = getConfig().INSIGHTS_BASE_URL;
@@ -54,7 +56,9 @@ export default function InstructorToolbar(props) {
     courseId,
     unitId,
     canViewLegacyCourseware,
+    tab,
   } = props;
+
   const urlInsights = getInsightsUrl(courseId);
   const urlLegacy = useSelector((state) => {
     if (!canViewLegacyCourseware) {
@@ -71,8 +75,11 @@ export default function InstructorToolbar(props) {
   const urlStudio = getStudioUrl(courseId, unitId);
   const [masqueradeErrorMessage, showMasqueradeError] = useState(null);
 
+  const accessExpirationMasqueradeBanner = useAccessExpirationMasqueradeBanner(courseId, tab);
+  const courseStartDateMasqueradeBanner = useCourseStartMasqueradeBanner(courseId, tab);
+
   return (!didMount ? null : (
-    <div>
+    <div data-testid="instructor-toolbar">
       <div className="bg-primary text-white">
         <div className="container-xl py-3 d-md-flex justify-content-end align-items-start">
           <div className="align-items-center flex-grow-1 d-md-flex mx-1 my-1">
@@ -111,6 +118,13 @@ export default function InstructorToolbar(props) {
           </Alert>
         </div>
       )}
+      <AlertList
+        topic="instructor-toolbar-alerts"
+        customAlerts={{
+          ...accessExpirationMasqueradeBanner,
+          ...courseStartDateMasqueradeBanner,
+        }}
+      />
     </div>
   ));
 }
@@ -119,10 +133,12 @@ InstructorToolbar.propTypes = {
   courseId: PropTypes.string,
   unitId: PropTypes.string,
   canViewLegacyCourseware: PropTypes.bool,
+  tab: PropTypes.string,
 };
 
 InstructorToolbar.defaultProps = {
   courseId: undefined,
   unitId: undefined,
   canViewLegacyCourseware: undefined,
+  tab: '',
 };

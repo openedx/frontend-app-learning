@@ -15,8 +15,8 @@ export function useCourseEndAlert(courseId) {
   const {
     datesWidget: {
       courseDateBlocks,
-      userTimezone,
     },
+    userTimezone,
   } = useModel('outline', courseId);
 
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
