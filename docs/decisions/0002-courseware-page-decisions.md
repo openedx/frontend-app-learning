@@ -1,5 +1,7 @@
 # Courseware Page Decisions
 
+**See [0009-courseware-api-direction.md](0009-courseware-api-direction.md) for updates!**
+
 ## Courseware data loading
 
 Today we have strictly hierarchical courses - a course contains sections, which contain sequences, which contain units, which contain components.
