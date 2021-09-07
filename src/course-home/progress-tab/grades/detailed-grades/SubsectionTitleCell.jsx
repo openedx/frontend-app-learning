@@ -52,7 +52,17 @@ function SubsectionTitleCell({ intl, subsection }) {
           <Collapsible.Visible whenOpen><Icon src={ArrowDropUp} /></Collapsible.Visible>
         </Collapsible.Trigger>
         <span className="small d-inline ml-4 pl-1">
-          {gradesFeatureIsFullyLocked || subsection.learnerHasAccess ? '' : <Icon id={`detailedGradesBlockedIcon${subsection.blockKey}`} aria-label={intl.formatMessage(messages.noAcessToSubsection, { displayName })} className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" />}
+          {gradesFeatureIsFullyLocked || subsection.learnerHasAccess ? ''
+            : (
+              <Icon
+                id={`detailedGradesBlockedIcon${subsection.blockKey}`}
+                aria-label={intl.formatMessage(messages.noAccessToSubsection, { displayName })}
+                className="mr-1 mt-1 d-inline-flex"
+                style={{ height: '1rem', width: '1rem' }}
+                src={Blocked}
+                data-testid="blocked-icon"
+              />
+            )}
           {url ? (
             <a
               href={url}
@@ -68,7 +78,7 @@ function SubsectionTitleCell({ intl, subsection }) {
           )}
         </span>
       </Row>
-      <Collapsible.Body>
+      <Collapsible.Body className="d-flex w-100">
         <ProblemScoreDrawer problemScores={problemScores} subsection={subsection} />
       </Collapsible.Body>
     </Collapsible.Advanced>

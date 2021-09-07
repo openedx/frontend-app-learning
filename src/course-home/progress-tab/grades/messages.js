@@ -139,11 +139,11 @@ const messages = defineMessages({
     id: 'progress.weightedGradeSummary',
     defaultMessage: 'Your current weighted grade summary',
   },
-  noAcessToAssignmentType: {
+  noAccessToAssignmentType: {
     id: 'progress.noAcessToAssignmentType',
     defaultMessage: 'You do not have access to assignments of type {assignmentType}',
   },
-  noAcessToSubsection: {
+  noAccessToSubsection: {
     id: 'progress.noAcessToSubsection',
     defaultMessage: 'You do not have access to subsection {displayName}',
   },
