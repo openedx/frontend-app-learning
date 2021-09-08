@@ -51,7 +51,7 @@ function DetailedGradesTable({ intl }) {
                 Header: `${intl.formatMessage(messages.score)}`,
                 accessor: 'score',
                 headerClassName: 'justify-content-end h5 mb-0',
-                cellClassName: 'float-right small',
+                cellClassName: 'align-top text-right small',
               },
             ]}
           >
