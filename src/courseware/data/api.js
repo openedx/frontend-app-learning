@@ -253,6 +253,7 @@ function normalizeSequenceMetadata(sequence) {
       gatedContent: camelCaseObject(sequence.gated_content),
       isTimeLimited: sequence.is_time_limited,
       isProctored: sequence.is_proctored,
+      isHiddenAfterDue: sequence.is_hidden_after_due,
       // Position comes back from the server 1-indexed. Adjust here.
       activeUnitIndex: sequence.position ? sequence.position - 1 : 0,
       saveUnitPosition: sequence.save_position,
