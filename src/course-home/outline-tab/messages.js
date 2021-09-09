@@ -66,6 +66,14 @@ const messages = defineMessages({
     defaultMessage: 'Open',
     description: 'A button to open the given section of the course outline',
   },
+  startBlurb: {
+    id: 'learning.outline.startBlurb',
+    defaultMessage: 'Begin your course today',
+  },
+  resumeBlurb: {
+    id: 'learning.outline.resumeBlurb',
+    defaultMessage: 'Pick up where you left off',
+  },
   resume: {
     id: 'learning.outline.resume',
     defaultMessage: 'Resume course',
