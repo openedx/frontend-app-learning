@@ -9,6 +9,7 @@ import { AlertList } from '../../generic/user-messages';
 import CourseDates from './widgets/CourseDates';
 import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
+import StartResumeCard from './widgets/StartResumeCard';
 import CourseTools from './widgets/CourseTools';
 import { fetchOutlineTab } from '../data';
 import genericMessages from '../../generic/messages';
@@ -53,6 +54,7 @@ function OutlineTab({ intl }) {
     courseGoals: {
       goalOptions,
       selectedGoal,
+      numberOfDaysGoalsEnabled,
     } = {},
     datesBannerInfo,
     datesWidget: {
@@ -123,7 +125,7 @@ function OutlineTab({ intl }) {
         <div className="col-12 col-sm-auto p-0">
           <div role="heading" aria-level="1" className="h2">{title}</div>
         </div>
-        {resumeCourseUrl && (
+        {resumeCourseUrl && !numberOfDaysGoalsEnabled && (
           <div className="col-12 col-sm-auto p-0">
             <Button variant="brand" block href={resumeCourseUrl} onClick={() => logResumeCourseClick()}>
               {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
@@ -172,6 +174,13 @@ function OutlineTab({ intl }) {
               setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
               setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
             />
+          )}
+          {resumeCourseUrl && numberOfDaysGoalsEnabled && (
+          <StartResumeCard
+            hasVisitedCourse={hasVisitedCourse}
+            resumeCourseUrl={resumeCourseUrl}
+            logResumeCourseClick={logResumeCourseClick}
+          />
           )}
           <WelcomeMessage courseId={courseId} />
           {rootCourseId && (
