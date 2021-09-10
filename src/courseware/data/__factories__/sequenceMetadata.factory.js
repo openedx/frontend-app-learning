@@ -58,6 +58,7 @@ Factory.define('sequenceMetadata')
     save_position: true,
     prev_url: null,
     is_time_limited: false,
+    is_hidden_after_due: false,
     show_completion: true,
     banner_text: null,
     format: 'Homework',

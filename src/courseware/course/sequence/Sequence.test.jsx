@@ -81,6 +81,37 @@ describe('Sequence', () => {
     expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
   });
 
+  it('renders correctly for hidden after due content', async () => {
+    const sequenceBlocks = [Factory.build(
+      'block',
+      { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+      { courseId: courseMetadata.id },
+    )];
+    const sequenceMetadata = [Factory.build(
+      'sequenceMetadata',
+      { is_hidden_after_due: true },
+      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
+    )];
+    const testStore = await initializeTestStore(
+      {
+        courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
+      }, false,
+    );
+    render(
+      <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
+      { store: testStore },
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('The due date for this assignment has passed.')).toBeInTheDocument();
+    });
+    expect(screen.getByRole('link', { name: 'progress page' }))
+      .toHaveAttribute('href', 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/progress');
+
+    // No normal content or navigation should be rendered. Just the above alert.
+    expect(screen.queryAllByRole('button').length).toEqual(0);
+  });
+
   it('renders correctly for exam content', async () => {
     // Exams should NOT render in the Sequence.  They should permanently show a spinner until the
     // application redirects away from the page.  Note that this component is not responsible for

@@ -20,6 +20,7 @@ import { useModel } from '../../../generic/model-store';
 
 import CourseLicense from '../course-license';
 import messages from './messages';
+import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 import NotificationTray from '../NotificationTray';
@@ -142,6 +143,12 @@ function Sequence({
         srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
       />
     );
+  }
+
+  if (sequenceStatus === 'loaded' && sequence.isHiddenAfterDue) {
+    // Shouldn't even be here - these sequences are normally stripped out of the navigation.
+    // But we are here, so render a notice instead of the normal content.
+    return <HiddenAfterDue courseId={courseId} />;
   }
 
   /*
