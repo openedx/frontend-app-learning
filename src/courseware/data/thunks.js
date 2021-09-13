@@ -1,4 +1,4 @@
-import { logError } from '@edx/frontend-platform/logging';
+import { logError, logInfo } from '@edx/frontend-platform/logging';
 import {
   getBlockCompletion,
   postSequencePosition,
@@ -188,7 +188,14 @@ export function fetchCourse(courseId) {
       // Log errors for each request if needed. Course block failures may occur
       // even if the course metadata request is successful
       if (!fetchedBlocks) {
-        logError(courseBlocksResult.reason);
+        const { response } = courseBlocksResult.reason;
+        if (response && response.status === 403) {
+          // 403 responses are normal - they happen when the learner is logged out.
+          // We'll redirect them in a moment to the outline tab by calling fetchCourseDenied() below.
+          logInfo(courseBlocksResult.reason);
+        } else {
+          logError(courseBlocksResult.reason);
+        }
       }
       if (!fetchedMetadata) {
         logError(courseMetadataResult.reason);
