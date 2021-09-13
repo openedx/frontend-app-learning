@@ -65,12 +65,13 @@ export default function CourseBreadcrumbs({
   const course = useModel('coursewareMeta', courseId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
   const sections = Object.fromEntries(useModels('sections', course.sectionIds).map(section => [section.id, section]));
-  const possibleSequences = sections ? sections[sectionId].sequenceIds : [sequenceId];
+  const possibleSequences = sections && sectionId ? sections[sectionId].sequenceIds : [];
   const sequences = Object.fromEntries(useModels('sequences', possibleSequences).map(sequence => [sequence.id, sequence]));
+  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
 
   const links = useMemo(() => {
     const temp = [];
-    if (courseStatus === 'loaded') {
+    if (courseStatus === 'loaded' && sequenceStatus === 'loaded') {
       temp.push(course.sectionIds.map(id => ({
         id,
         label: sections[id].title,
