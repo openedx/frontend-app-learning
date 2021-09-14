@@ -5,9 +5,7 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
-import {
-  Hyperlink, MenuItem, SelectMenu,
-} from '@edx/paragon';
+import { Hyperlink, MenuItem, SelectMenu } from '@edx/paragon';
 import { useModel, useModels } from '../../generic/model-store';
 
 /** [MM-P2P] Experiment */
@@ -23,17 +21,24 @@ function CourseBreadcrumb({
         <li className="mx-2 text-primary-500" role="presentation" aria-hidden>/</li>
       )}
       <li>
-        <SelectMenu isLink defaultMessage={defaultMessage}>
-          {content.map(item => (
-            <MenuItem
-              as={Hyperlink}
-              defaultSelected={item.default}
-              href={item.url}
-            >
-              {item.label}
-            </MenuItem>
-          ))}
-        </SelectMenu>
+        {content.length < 2 ? (
+          <a className="text-primary-500" href={content[0].url}>{content[0].label}
+          </a>
+        )
+          : (
+            <SelectMenu isLink defaultMessage={defaultMessage}>
+              {content.map(item => (
+                <MenuItem
+                  as={Hyperlink}
+                  defaultSelected={item.default}
+                  href={item.url}
+                >
+                  {item.label}
+                </MenuItem>
+              ))}
+            </SelectMenu>
+          )}
+
       </li>
     </>
   );
@@ -45,7 +50,7 @@ CourseBreadcrumb.propTypes = {
       default: PropTypes.bool,
       url: PropTypes.string,
       id: PropTypes.string,
-      title: PropTypes.string,
+      label: PropTypes.string,
     }),
   ).isRequired,
   withSeparator: PropTypes.bool,
