@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { Hyperlink, MenuItem, SelectMenu } from '@edx/paragon';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useModel, useModels } from '../../generic/model-store';
 
 /** [MM-P2P] Experiment */
@@ -14,19 +15,22 @@ import { MMP2PFlyoverTrigger } from '../../experiments/mm-p2p';
 function CourseBreadcrumb({
   content, withSeparator,
 }) {
-  const defaultMessage = content.filter(destination => destination.default)[0].label;
+  const defaultContent = content.filter(destination => destination.default)[0];
+  const { administrator } = getAuthenticatedUser();
+
   return (
     <>
       {withSeparator && (
         <li className="mx-2 text-primary-500" role="presentation" aria-hidden>/</li>
       )}
       <li>
-        {content.length < 2 ? (
-          <a className="text-primary-500" href={content[0].url}>{content[0].label}
-          </a>
-        )
+        {content.length < 2 || !administrator
+          ? (
+            <a className="text-primary-500" href={defaultContent.url}>{defaultContent.label}
+            </a>
+          )
           : (
-            <SelectMenu isLink defaultMessage={defaultMessage}>
+            <SelectMenu isLink defaultMessage={defaultContent.label}>
               {content.map(item => (
                 <MenuItem
                   as={Hyperlink}
@@ -80,14 +84,14 @@ export default function CourseBreadcrumbs({
       temp.push(course.sectionIds.map(id => ({
         id,
         label: sections[id].title,
-        default: !!(id === sectionId),
+        default: (id === sectionId),
         // navigate to first sequence in section, (TODO: navigate to first incomplete sequence in section)
         url: `${getConfig().BASE_URL}/course/${courseId}/${sections[id].sequenceIds[0]}`,
       })));
       temp.push(sections[sectionId].sequenceIds.map(id => ({
         id,
         label: sequences[id].title,
-        default: !!(id === sequenceId),
+        default: id === sequenceId,
         // first unit it section (TODO: navigate to first incomplete  in sequence)
         url: `${getConfig().BASE_URL}/course/${courseId}/${sequences[id].id}/${sequences[id].unitIds[0]}`,
       })));
