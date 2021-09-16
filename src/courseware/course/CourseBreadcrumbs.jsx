@@ -7,10 +7,11 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { Hyperlink, MenuItem, SelectMenu } from '@edx/paragon';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useModel, useModels } from '../../generic/model-store';
-import {sendTrackingLogEvent,
+import {
+  sendTrackingLogEvent,
   sendTrackEvent,
 } from '@edx/frontend-platform/analytics';
+import { useModel, useModels } from '../../generic/model-store';
 /** [MM-P2P] Experiment */
 import { MMP2PFlyoverTrigger } from '../../experiments/mm-p2p';
 
@@ -26,7 +27,7 @@ function CourseBreadcrumb({
       target_name: target.label,
       id: target.id,
       current_id: defaultContent.id,
-      widget_placement: 'breadcrumb'
+      widget_placement: 'breadcrumb',
     };
     sendTrackEvent(eventName, payload);
     sendTrackingLogEvent(eventName, payload);
@@ -50,7 +51,7 @@ function CourseBreadcrumb({
                   as={Hyperlink}
                   defaultSelected={item.default}
                   href={item.url}
-                  onClick = {logEvent(item)}
+                  onClick={logEvent(item)}
                 >
                   {item.label}
                 </MenuItem>
