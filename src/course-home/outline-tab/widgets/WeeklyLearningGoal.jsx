@@ -31,29 +31,14 @@ function WeeklyLearningGoal({
 
   function handleSelect(days) {
     setDaysPerWeekGoal(days);
-    saveWeeklyCourseGoal(courseId, days, isGetReminderChecked).then((response) => {
-      const { data } = response;
-      const {
-        header,
-        message,
-      } = data;
-      // TODO: add Toast?, remove console.log
-      console.log(header, ':', message);
-    });
+    saveWeeklyCourseGoal(courseId, days, isGetReminderChecked);
+    // TODO: add Toast? Or is that just for the previous feature because the UI disappears?
   }
 
   function handleSubscribeToReminders(event) {
     const isGetReminders = event.target.checked;
     setGetReminderChecked(isGetReminders);
-    saveWeeklyCourseGoal(courseId, daysPerWeekGoal, isGetReminders).then((response) => {
-      const { data } = response;
-      const {
-        header,
-        message,
-      } = data;
-      // TODO: add Toast?, remove console.log
-      console.log(header, ':', message);
-    });
+    saveWeeklyCourseGoal(courseId, daysPerWeekGoal, isGetReminders);
   }
   const buttonRowStyle = 'row w-100 m-0 p-0 justify-content-around'; // 'row w-100 m-0 flex-grow-1 p-0 justify content-end';
   const flagButtonStyle = 'col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0'; // 'col-auto flex-grow-1 p-0';
