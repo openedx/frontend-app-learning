@@ -7,10 +7,6 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { Hyperlink, MenuItem, SelectMenu } from '@edx/paragon';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import {
-  sendTrackingLogEvent,
-  sendTrackEvent,
-} from '@edx/frontend-platform/analytics';
 import { useModel, useModels } from '../../generic/model-store';
 /** [MM-P2P] Experiment */
 import { MMP2PFlyoverTrigger } from '../../experiments/mm-p2p';
@@ -20,18 +16,6 @@ function CourseBreadcrumb({
 }) {
   const defaultContent = content.filter(destination => destination.default)[0];
   const { administrator } = getAuthenticatedUser();
-
-  const logEvent = (target) => {
-    const eventName = 'edx.ui.lms.jump_nav.selected';
-    const payload = {
-      target_name: target.label,
-      id: target.id,
-      current_id: defaultContent.id,
-      widget_placement: 'breadcrumb',
-    };
-    sendTrackEvent(eventName, payload);
-    sendTrackingLogEvent(eventName, payload);
-  };
 
   return (
     <>
