@@ -35,7 +35,6 @@ function CourseBreadcrumb({
                   as={Hyperlink}
                   defaultSelected={item.default}
                   href={item.url}
-                  onClick={logEvent(item)}
                 >
                   {item.label}
                 </MenuItem>
