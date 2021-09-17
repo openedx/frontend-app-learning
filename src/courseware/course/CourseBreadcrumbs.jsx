@@ -23,7 +23,7 @@ function CourseBreadcrumb({
         <li className="mx-2 text-primary-500" role="presentation" aria-hidden>/</li>
       )}
       <li>
-        {process.env.NODE_ENV !== 'test'|| content.length < 2 || !administrator
+        {process.env.NODE_ENV !== 'test' || content.length < 2 || !administrator
           ? (
             <a className="text-primary-500" href={defaultContent.url}>{defaultContent.label}
             </a>
