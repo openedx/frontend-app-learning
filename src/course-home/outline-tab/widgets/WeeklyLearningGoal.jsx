@@ -19,9 +19,9 @@ function WeeklyLearningGoal({
   intl,
 }) {
   // eslint-disable-next-line react/prop-types
-  const [daysPerWeekGoal, setDaysPerWeekGoal] = useState('daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : 0);
+  const [daysPerWeekGoal, setDaysPerWeekGoal] = useState(selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : 0);
   // eslint-disable-next-line react/prop-types
-  const [isGetReminderChecked, setGetReminderChecked] = useState('subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false);
+  const [isGetReminderChecked, setGetReminderChecked] = useState(selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false);
   const LevelToDays = {
     CASUAL: 3,
     REGULAR: 4,
