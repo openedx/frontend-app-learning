@@ -133,7 +133,7 @@ const messages = defineMessages({
     defaultMessage: 'Casual',
   },
   goalButtonTextCasual: {
-    id: 'learning.outline.goalButtonTitleCasual',
+    id: 'learning.outline.goalButtonTextCasual',
     defaultMessage: '1 day a week',
   },
   goalButtonTitleRegular: {
@@ -141,7 +141,7 @@ const messages = defineMessages({
     defaultMessage: 'Regular',
   },
   goalButtonTextRegular: {
-    id: 'learning.outline.goalButtonTitleRegular',
+    id: 'learning.outline.goalButtonTextRegular',
     defaultMessage: '3 days a week',
   },
   goalButtonTitleIntense: {
@@ -149,7 +149,7 @@ const messages = defineMessages({
     defaultMessage: 'Intense',
   },
   goalButtonTextIntense: {
-    id: 'learning.outline.goalButtonTitleIntense',
+    id: 'learning.outline.goalButtonTextIntense',
     defaultMessage: '5 days a week',
   },
   setGoalReminder: {
