@@ -32,6 +32,7 @@ import AccountActivationAlert from '../../alerts/logistration-alert/AccountActiv
 
 /** [MM-P2P] Experiment */
 import { initHomeMMP2P, MMP2PFlyover } from '../../experiments/mm-p2p';
+import WeeklyLearningGoal from './widgets/WeeklyLearningGoal';
 
 function OutlineTab({ intl }) {
   const {
@@ -227,6 +228,13 @@ function OutlineTab({ intl }) {
                 selectedGoal={courseGoalToDisplay}
                 setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
                 setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
+              />
+            )}
+            {numberOfDaysGoalsEnabled && (
+              <WeeklyLearningGoal
+                selectedGoal={selectedGoal}
+                daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : 0}
+                courseId={courseId}
               />
             )}
             <CourseTools

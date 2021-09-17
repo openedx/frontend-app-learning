@@ -4,6 +4,7 @@ export {
   fetchProgressTab,
   resetDeadlines,
   saveCourseGoal,
+  saveWeeklyCourseGoal,
 } from './thunks';
 
 export { reducer } from './slice';

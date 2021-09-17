@@ -82,6 +82,14 @@ const messages = defineMessages({
     id: 'learning.outline.setGoal',
     defaultMessage: 'To start, set a course goal by selecting the option below that best describes your learning plan.',
   },
+  setWeeklyGoal: {
+    id: 'learning.outline.setWeeklyGoal',
+    defaultMessage: 'Set a weekly learning goal',
+  },
+  setWeeklyGoalDetail: {
+    id: 'learning.outline.setWeeklyGoalDetail',
+    defaultMessage: 'Setting a goal motivates you to finish the course. You can always change it later',
+  },
   start: {
     id: 'learning.outline.start',
     defaultMessage: 'Start Course',
@@ -119,6 +127,38 @@ const messages = defineMessages({
     id: 'learning.outline.goalWelcome',
     defaultMessage: 'Welcome to',
     description: 'This precedes the title of the course',
+  },
+  goalButtonTitleCasual: {
+    id: 'learning.outline.goalButtonTitleCasual',
+    defaultMessage: 'Casual',
+  },
+  goalButtonTextCasual: {
+    id: 'learning.outline.goalButtonTitleCasual',
+    defaultMessage: '1 day a week',
+  },
+  goalButtonTitleRegular: {
+    id: 'learning.outline.goalButtonTitleRegular',
+    defaultMessage: 'Regular',
+  },
+  goalButtonTextRegular: {
+    id: 'learning.outline.goalButtonTitleRegular',
+    defaultMessage: '3 days a week',
+  },
+  goalButtonTitleIntense: {
+    id: 'learning.outline.goalButtonTitleIntense',
+    defaultMessage: 'Intense',
+  },
+  goalButtonTextIntense: {
+    id: 'learning.outline.goalButtonTitleIntense',
+    defaultMessage: '5 days a week',
+  },
+  setGoalReminder: {
+    id: 'learning.outline.setGoalReminder',
+    defaultMessage: 'Set a goal reminder',
+  },
+  goalReminderDetail: {
+    id: 'learning.outline.goalReminderDetail',
+    defaultMessage: 'If we notice you\'re not quite at your goal, we\'ll send you an email reminder.',
   },
   proctoringInfoPanel: {
     id: 'learning.proctoringPanel.header',
