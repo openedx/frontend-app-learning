@@ -111,7 +111,7 @@ TWITTER_URL
   Example: https://twitter.com/edXOnline
 
 ENABLE_JUMPNAV
-  Enables the new Jump Navigation feature in the course breadcrumbs, defaulted to 'true'.
-  Disable to have simple hyperlinks for breadcrumbs.
+  Enables the new Jump Navigation feature in the course breadcrumbs, defaulted to  the string 'true'.
+  Disable to have simple hyperlinks for breadcrumbs. Setting it to any other value but 'true' ('false','I love flags', 'etc' would disable the Jumpnav).
   This feature flag is slated to be removed as jumpnav becomes default. Follow the progress of this ticket here:
   https://openedx.atlassian.net/browse/TNL-8678
