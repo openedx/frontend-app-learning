@@ -37,6 +37,7 @@ function CourseBreadcrumb({
       {withSeparator && (
         <li className="mx-2 text-primary-500 text-truncate text-nowrap" role="presentation" aria-hidden>/</li>
       )}
+
       <li style={{
         overflow: 'hidden',
         textOverflow: 'ellipsis',
