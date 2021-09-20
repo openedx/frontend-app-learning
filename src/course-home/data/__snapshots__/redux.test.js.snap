@@ -432,8 +432,11 @@ Object {
           },
         },
         "courseGoals": Object {
+          "daysPerWeek": null,
           "goalOptions": Array [],
+          "numberOfDaysGoalsEnabled": false,
           "selectedGoal": null,
+          "subscribedToReminders": null,
         },
         "courseTools": Array [
           Object {
