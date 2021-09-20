@@ -268,6 +268,11 @@ const messages = defineMessages({
     id: 'learning.proctoringPanel.onboardingButtonPastDue',
     defaultMessage: 'Onboarding Past Due',
   },
+  accountActivationAlertTitle: {
+    id: 'account-activation.alert.title',
+    defaultMessage: 'Activate your account so you can log back in',
+    description: 'Title for account activation alert which is shown after the registration',
+  },
 });
 
 export default messages;
