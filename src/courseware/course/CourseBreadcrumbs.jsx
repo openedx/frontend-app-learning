@@ -7,13 +7,13 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { Hyperlink, MenuItem, SelectMenu } from '@edx/paragon';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useModel, useModels } from '../../generic/model-store';
-import {sendTrackingLogEvent,
+import {
+  sendTrackingLogEvent,
   sendTrackEvent,
 } from '@edx/frontend-platform/analytics';
+import { useModel, useModels } from '../../generic/model-store';
 /** [MM-P2P] Experiment */
 import { MMP2PFlyoverTrigger } from '../../experiments/mm-p2p';
-
 
 function CourseBreadcrumb({
   content, withSeparator,
@@ -26,7 +26,7 @@ function CourseBreadcrumb({
       target_name: target.label,
       id: target.id,
       current_id: defaultContent.id,
-      widget_placement: 'breadcrumb'
+      widget_placement: 'breadcrumb',
     };
     sendTrackEvent(eventName, payload);
     sendTrackingLogEvent(eventName, payload);
@@ -38,10 +38,11 @@ function CourseBreadcrumb({
         <li className="mx-2 text-primary-500 text-truncate text-nowrap" role="presentation" aria-hidden>/</li>
       )}
       <li style={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}>
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }}
+      >
         { getConfig().ENABLE_JUMPNAV !== 'true' || content.length < 2 || !administrator
           ? (
             <a className="text-primary-500" href={defaultContent.url}>{defaultContent.label}
@@ -54,7 +55,7 @@ function CourseBreadcrumb({
                   as={Hyperlink}
                   defaultSelected={item.default}
                   destination={item.url}
-                  onClick = {logEvent(item)}
+                  onClick={logEvent(item)}
                 >
                   {item.label}
                 </MenuItem>
