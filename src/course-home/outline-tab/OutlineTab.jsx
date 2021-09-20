@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { Button, Toast } from '@edx/paragon';
@@ -105,8 +106,18 @@ function OutlineTab({ intl }) {
     });
   };
 
+  const isEnterpriseUser = () => {
+    const authenticatedUser = getAuthenticatedUser();
+    const userRoleNames = authenticatedUser ? authenticatedUser.roles.map(role => role.split(':')[0]) : [];
+
+    return userRoleNames.includes('enterprise_learner');
+  };
+
   /** [[MM-P2P] Experiment */
   const MMP2P = initHomeMMP2P(courseId);
+
+  /** show post enrolment survey to only B2C learners */
+  const learnerType = isEnterpriseUser() ? 'enterprise_learner' : 'b2c_learner';
 
   return (
     <>
@@ -117,7 +128,7 @@ function OutlineTab({ intl }) {
       >
         {goalToastHeader}
       </Toast>
-      <div className="row w-100 mx-0 my-3 justify-content-between">
+      <div data-learner-type={learnerType} className="row w-100 mx-0 my-3 justify-content-between">
         <div className="col-12 col-sm-auto p-0">
           <div role="heading" aria-level="1" className="h2">{title}</div>
         </div>
