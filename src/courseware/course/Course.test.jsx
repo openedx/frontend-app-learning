@@ -91,7 +91,7 @@ describe('Course', () => {
     expect(notificationTrigger).not.toHaveClass('trigger-active');
   });
 
-  it('renders course breadcrumbs as expected', async ()=> {
+  it('renders course breadcrumbs as expected', async () => {
     const courseMetadata = Factory.build('courseMetadata');
     const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
       'block',
@@ -111,10 +111,10 @@ describe('Course', () => {
 
     loadUnit();
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
-    //expect the section and sequence "titles" to be loaded in as breadcrumb labels.
-    expect(screen.getByText("cdabcdabcdabcdabcdabcdabcdabcd13")).toBeInTheDocument()
-    expect(screen.getByText("cdabcdabcdabcdabcdabcdabcdabcd12")).toBeInTheDocument()
-  })
+    // expect the section and sequence "titles" to be loaded in as breadcrumb labels.
+    expect(screen.getByText('cdabcdabcdabcdabcdabcdabcdabcd13')).toBeInTheDocument();
+    expect(screen.getByText('cdabcdabcdabcdabcdabcdabcdabcd12')).toBeInTheDocument();
+  });
 
   it('passes handlers to the sequence', async () => {
     const nextSequenceHandler = jest.fn();
