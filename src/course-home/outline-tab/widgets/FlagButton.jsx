@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
+import classNames from 'classnames';
 
 import PropTypes from 'prop-types';
 
 function FlagButton({
   icon,
+  srText,
   title,
   text,
   isEnabled,
   handleSelect,
 }) {
-  const baseOutlineStyle = 'col flex-grow-1 p-3 border border-light rounded bg-white';
-  const selectedOutlineStyle = 'col flex-grow-1 p-3 border border-dark rounded bg-white';
   const [isHighlight, setHighlight] = useState(false);
-
-  function getOutlineStyle() {
-    return isEnabled || isHighlight ? selectedOutlineStyle : baseOutlineStyle;
-  }
 
   return (
     <button
       type="button"
-      className={getOutlineStyle()}
+      className={classNames('col flex-grow-1 p-3 border border-light rounded bg-white', { 'border-dark': isEnabled || isHighlight })}
       onMouseEnter={() => setHighlight(true)}
       onMouseLeave={() => setHighlight(false)}
       onClick={() => handleSelect()}
@@ -28,6 +24,7 @@ function FlagButton({
       <div className=" justify-content-center">
         {icon}
       </div>
+      <span className="sr-only sr-only-focusable">{srText}</span>
       <div className="text-center small">
         {title}
       </div>
@@ -40,6 +37,7 @@ function FlagButton({
 
 FlagButton.propTypes = {
   icon: PropTypes.node.isRequired,
+  srText: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   text: PropTypes.string,
   isEnabled: PropTypes.bool,

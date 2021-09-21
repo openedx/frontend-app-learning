@@ -14,14 +14,14 @@ import FlagButton from './FlagButton';
 import { saveWeeklyCourseGoal } from '../../data';
 
 function WeeklyLearningGoal({
-  selectedGoal,
+  daysPerWeek,
+  subscribedToReminders,
   courseId,
   intl,
 }) {
+  const [daysPerWeekGoal, setDaysPerWeekGoal] = useState(daysPerWeek);
   // eslint-disable-next-line react/prop-types
-  const [daysPerWeekGoal, setDaysPerWeekGoal] = useState(selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : 0);
-  // eslint-disable-next-line react/prop-types
-  const [isGetReminderChecked, setGetReminderChecked] = useState(selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false);
+  const [isGetReminderSelected, setGetReminderSelected] = useState(subscribedToReminders);
   const LevelToDays = {
     CASUAL: 3,
     REGULAR: 4,
@@ -31,17 +31,14 @@ function WeeklyLearningGoal({
 
   function handleSelect(days) {
     setDaysPerWeekGoal(days);
-    saveWeeklyCourseGoal(courseId, days, isGetReminderChecked);
-    // TODO: add Toast? Or is that just for the previous feature because the UI disappears?
+    saveWeeklyCourseGoal(courseId, days, isGetReminderSelected);
   }
 
   function handleSubscribeToReminders(event) {
-    const isGetReminders = event.target.checked;
-    setGetReminderChecked(isGetReminders);
-    saveWeeklyCourseGoal(courseId, daysPerWeekGoal, isGetReminders);
+    const isGetReminderChecked = event.target.checked;
+    setGetReminderSelected(isGetReminderChecked);
+    saveWeeklyCourseGoal(courseId, daysPerWeekGoal, isGetReminderChecked);
   }
-  const buttonRowStyle = 'row w-100 m-0 p-0 justify-content-around'; // 'row w-100 m-0 flex-grow-1 p-0 justify content-end';
-  const flagButtonStyle = 'col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0'; // 'col-auto flex-grow-1 p-0';
 
   return (
     <div className="row w-100 m-0 p-0">
@@ -53,46 +50,50 @@ function WeeklyLearningGoal({
           <Card.Text>
             {intl.formatMessage(messages.setWeeklyGoalDetail)}
           </Card.Text>
-          <div className={buttonRowStyle}>
-            <div className={flagButtonStyle}>
+          <div className="row w-100 m-0 p-0 justify-content-around">
+            <div className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0">
               <FlagButton
                 icon={<FlagCasualIcon />}
-                title={intl.formatMessage(messages.goalButtonTitleCasual)}
-                text={intl.formatMessage(messages.goalButtonTextCasual)}
-                isEnabled={daysPerWeekGoal === LevelToDays.CASUAL}
+                srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
+                title={intl.formatMessage(messages.casualGoalButtonTitle)}
+                text={intl.formatMessage(messages.casualGoalButtonText)}
+                isEnabled={LevelToDays.CASUAL === daysPerWeekGoal}
                 handleSelect={() => { handleSelect(LevelToDays.CASUAL); }}
               />
             </div>
-            <div className={flagButtonStyle}>
+            <div className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0">
               <FlagButton
                 icon={<FlagRegularIcon />}
-                title={intl.formatMessage(messages.goalButtonTitleRegular)}
-                text={intl.formatMessage(messages.goalButtonTextRegular)}
-                isEnabled={daysPerWeekGoal === LevelToDays.REGULAR}
+                srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
+                title={intl.formatMessage(messages.regularGoalButtonTitle)}
+                text={intl.formatMessage(messages.regularGoalButtonText)}
+                isEnabled={LevelToDays.REGULAR === daysPerWeekGoal}
                 handleSelect={() => { handleSelect(LevelToDays.REGULAR); }}
               />
             </div>
-            <div className={flagButtonStyle}>
+            <div className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0">
               <FlagButton
                 icon={<FlagIntenseIcon />}
-                title={intl.formatMessage(messages.goalButtonTitleIntense)}
-                text={intl.formatMessage(messages.goalButtonTextIntense)}
-                isEnabled={daysPerWeekGoal === LevelToDays.INTENSE}
+                srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
+                title={intl.formatMessage(messages.intenseGoalButtonTitle)}
+                text={intl.formatMessage(messages.intenseGoalButtonText)}
+                isEnabled={LevelToDays.INTENSE === daysPerWeekGoal}
                 handleSelect={() => { handleSelect(LevelToDays.INTENSE); }}
               />
             </div>
           </div>
           <div className="row p-3">
             <Form.Switch
-              checked={isGetReminderChecked}
+              checked={isGetReminderSelected}
               onChange={(event) => handleSubscribeToReminders(event)}
+              disabled={!daysPerWeekGoal}
             >
               {intl.formatMessage(messages.setGoalReminder)}
             </Form.Switch>
           </div>
         </Card.Body>
         {/* This is supposed to fill with gray in the bottom of the card */}
-        {isGetReminderChecked && (
+        {isGetReminderSelected && (
           <Card.Footer className="border-0 px-2.5">
             <div className="row w-100  m-0  small align-center">
               <div className="d-flex align-items-center pr-1.5">
@@ -111,9 +112,14 @@ function WeeklyLearningGoal({
 }
 
 WeeklyLearningGoal.propTypes = {
-  selectedGoal: PropTypes.shape({}).isRequired,
+  daysPerWeek: PropTypes.number,
+  subscribedToReminders: PropTypes.bool,
   courseId: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
 };
 
+WeeklyLearningGoal.defaultProps = {
+  daysPerWeek: null,
+  subscribedToReminders: false,
+};
 export default injectIntl(WeeklyLearningGoal);

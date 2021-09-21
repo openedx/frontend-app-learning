@@ -73,6 +73,7 @@ const messages = defineMessages({
   resumeBlurb: {
     id: 'learning.outline.resumeBlurb',
     defaultMessage: 'Pick up where you left off',
+    description: 'Text describing to the learner that they can return to the last section they visited within the course.',
   },
   resume: {
     id: 'learning.outline.resume',
@@ -88,7 +89,7 @@ const messages = defineMessages({
   },
   setWeeklyGoalDetail: {
     id: 'learning.outline.setWeeklyGoalDetail',
-    defaultMessage: 'Setting a goal motivates you to finish the course. You can always change it later',
+    defaultMessage: 'Setting a goal motivates you to finish the course. You can always change it later.',
   },
   start: {
     id: 'learning.outline.start',
@@ -128,28 +129,33 @@ const messages = defineMessages({
     defaultMessage: 'Welcome to',
     description: 'This precedes the title of the course',
   },
-  goalButtonTitleCasual: {
-    id: 'learning.outline.goalButtonTitleCasual',
+  setLearningGoalButtonScreenReaderText: {
+    id: 'learning.outline.goalButton.casual.title',
+    defaultMessage: 'Set a learning goal style.',
+    description: 'screen reader text informing learner they can select an intensity of learning goal',
+  },
+  casualGoalButtonTitle: {
+    id: 'learning.outline.goalButton.screenReader.text',
     defaultMessage: 'Casual',
   },
-  goalButtonTextCasual: {
-    id: 'learning.outline.goalButtonTextCasual',
+  casualGoalButtonText: {
+    id: 'learning.outline.goalButton.casual.text',
     defaultMessage: '1 day a week',
   },
-  goalButtonTitleRegular: {
-    id: 'learning.outline.goalButtonTitleRegular',
+  regularGoalButtonTitle: {
+    id: 'learning.outline.goalButton.regular.title',
     defaultMessage: 'Regular',
   },
-  goalButtonTextRegular: {
-    id: 'learning.outline.goalButtonTextRegular',
+  regularGoalButtonText: {
+    id: 'learning.outline.goalButton.regular.text',
     defaultMessage: '3 days a week',
   },
-  goalButtonTitleIntense: {
-    id: 'learning.outline.goalButtonTitleIntense',
+  intenseGoalButtonTitle: {
+    id: 'learning.outline.goalButton.intense.title',
     defaultMessage: 'Intense',
   },
-  goalButtonTextIntense: {
-    id: 'learning.outline.goalButtonTextIntense',
+  intenseGoalButtonText: {
+    id: 'learning.outline.goalButton.intense.text',
     defaultMessage: '5 days a week',
   },
   setGoalReminder: {
@@ -158,7 +164,7 @@ const messages = defineMessages({
   },
   goalReminderDetail: {
     id: 'learning.outline.goalReminderDetail',
-    defaultMessage: 'If we notice you\'re not quite at your goal, we\'ll send you an email reminder.',
+    defaultMessage: 'If we notice you’re not quite at your goal, we’ll send you an email reminder.',
   },
   proctoringInfoPanel: {
     id: 'learning.proctoringPanel.header',

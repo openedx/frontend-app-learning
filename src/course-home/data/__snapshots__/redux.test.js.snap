@@ -434,7 +434,7 @@ Object {
         "courseGoals": Object {
           "daysPerWeek": null,
           "goalOptions": Array [],
-          "numberOfDaysGoalsEnabled": false,
+          "weeklyLearningGoalEnabled": false,
           "selectedGoal": null,
           "subscribedToReminders": null,
         },
