@@ -20,7 +20,7 @@ function CourseBreadcrumb({
 }) {
   const defaultContent = content.filter(destination => destination.default)[0];
   const { administrator } = getAuthenticatedUser();
-  const logEvent = (target) => {
+  function logEvent(target) {
     const eventName = 'edx.ui.lms.jump_nav.selected';
     const payload = {
       target_name: target.label,
@@ -30,7 +30,7 @@ function CourseBreadcrumb({
     };
     sendTrackEvent(eventName, payload);
     sendTrackingLogEvent(eventName, payload);
-  };
+  }
 
   return (
     <>
@@ -68,7 +68,6 @@ function CourseBreadcrumb({
     </>
   );
 }
-
 CourseBreadcrumb.propTypes = {
   content: PropTypes.arrayOf(
     PropTypes.shape({
@@ -94,7 +93,7 @@ export default function CourseBreadcrumbs({
 }) {
   const course = useModel('coursewareMeta', courseId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
-  const sections = Object.fromEntries(useModels('sections', course.sectionIds).map(section => [section.id, section]));
+  const sections = course ? Object.fromEntries(useModels('sections', course.sectionIds).map(section => [section.id, section])) : null;
   const possibleSequences = sections && sectionId ? sections[sectionId].sequenceIds : [];
   const sequences = Object.fromEntries(useModels('sequences', possibleSequences).map(sequence => [sequence.id, sequence]));
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
@@ -119,13 +118,12 @@ export default function CourseBreadcrumbs({
     }
     return temp;
   }, [courseStatus, sections, sequences]);
-
   return (
     <nav aria-label="breadcrumb" className="my-1 d-inline-block col-sm-10">
       <ol className="list-unstyled d-flex align-items-center m-0">
         <li>
           <a
-            href={`${getConfig().LMS_BASE_URL}/courses/${course.id}/course/`}
+            href={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course/`}
             className="flex-shrink-0 text-primary"
           >
             <FontAwesomeIcon icon={faHome} className="mr-2" />
@@ -143,7 +141,7 @@ export default function CourseBreadcrumbs({
           />
         ))}
         {/** [MM-P2P] Experiment */}
-        {mmp2p.state.isEnabled && (
+        {mmp2p.state && mmp2p.state.isEnabled && (
           <MMP2PFlyoverTrigger options={mmp2p} />
         )}
       </ol>
@@ -166,7 +164,6 @@ CourseBreadcrumbs.propTypes = {
 CourseBreadcrumbs.defaultProps = {
   sectionId: null,
   sequenceId: null,
-
   /** [MM-P2P] Experiment */
   mmp2p: {},
 };
