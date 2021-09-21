@@ -13,7 +13,7 @@ import FlagButton from './FlagButton';
 
 import { saveWeeklyCourseGoal } from '../../data';
 
-function WeeklyLearningGoal({
+function WeeklyLearningGoalCard({
   daysPerWeek,
   subscribedToReminders,
   courseId,
@@ -22,12 +22,12 @@ function WeeklyLearningGoal({
   const [daysPerWeekGoal, setDaysPerWeekGoal] = useState(daysPerWeek);
   // eslint-disable-next-line react/prop-types
   const [isGetReminderSelected, setGetReminderSelected] = useState(subscribedToReminders);
-  const LevelToDays = {
+  const weeklyLearningGoalLevels = {
     CASUAL: 3,
     REGULAR: 4,
     INTENSE: 5,
   };
-  Object.freeze(LevelToDays);
+  Object.freeze(weeklyLearningGoalLevels);
 
   function handleSelect(days) {
     setDaysPerWeekGoal(days);
@@ -45,7 +45,7 @@ function WeeklyLearningGoal({
       <Card className="mb-3" data-testid="course-goal-card">
         <Card.Body>
           <Card.Title>
-            <div className="h4 m-0">{intl.formatMessage(messages.setWeeklyGoal)}</div>
+            <h4 className="m-0">{intl.formatMessage(messages.setWeeklyGoal)}</h4>
           </Card.Title>
           <Card.Text>
             {intl.formatMessage(messages.setWeeklyGoalDetail)}
@@ -57,8 +57,8 @@ function WeeklyLearningGoal({
                 srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
                 title={intl.formatMessage(messages.casualGoalButtonTitle)}
                 text={intl.formatMessage(messages.casualGoalButtonText)}
-                isEnabled={LevelToDays.CASUAL === daysPerWeekGoal}
-                handleSelect={() => { handleSelect(LevelToDays.CASUAL); }}
+                isEnabled={weeklyLearningGoalLevels.CASUAL === daysPerWeekGoal}
+                handleSelect={() => { handleSelect(weeklyLearningGoalLevels.CASUAL); }}
               />
             </div>
             <div className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0">
@@ -67,8 +67,8 @@ function WeeklyLearningGoal({
                 srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
                 title={intl.formatMessage(messages.regularGoalButtonTitle)}
                 text={intl.formatMessage(messages.regularGoalButtonText)}
-                isEnabled={LevelToDays.REGULAR === daysPerWeekGoal}
-                handleSelect={() => { handleSelect(LevelToDays.REGULAR); }}
+                isEnabled={weeklyLearningGoalLevels.REGULAR === daysPerWeekGoal}
+                handleSelect={() => { handleSelect(weeklyLearningGoalLevels.REGULAR); }}
               />
             </div>
             <div className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0">
@@ -77,8 +77,8 @@ function WeeklyLearningGoal({
                 srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
                 title={intl.formatMessage(messages.intenseGoalButtonTitle)}
                 text={intl.formatMessage(messages.intenseGoalButtonText)}
-                isEnabled={LevelToDays.INTENSE === daysPerWeekGoal}
-                handleSelect={() => { handleSelect(LevelToDays.INTENSE); }}
+                isEnabled={weeklyLearningGoalLevels.INTENSE === daysPerWeekGoal}
+                handleSelect={() => { handleSelect(weeklyLearningGoalLevels.INTENSE); }}
               />
             </div>
           </div>
@@ -111,15 +111,15 @@ function WeeklyLearningGoal({
   );
 }
 
-WeeklyLearningGoal.propTypes = {
+WeeklyLearningGoalCard.propTypes = {
   daysPerWeek: PropTypes.number,
   subscribedToReminders: PropTypes.bool,
   courseId: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
 };
 
-WeeklyLearningGoal.defaultProps = {
+WeeklyLearningGoalCard.defaultProps = {
   daysPerWeek: null,
   subscribedToReminders: false,
 };
-export default injectIntl(WeeklyLearningGoal);
+export default injectIntl(WeeklyLearningGoalCard);

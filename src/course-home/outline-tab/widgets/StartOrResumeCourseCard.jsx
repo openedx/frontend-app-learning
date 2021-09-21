@@ -1,17 +1,42 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-
 import { Button, Card } from '@edx/paragon';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
+import { useSelector } from 'react-redux';
+import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import messages from '../messages';
+import { useModel } from '../../../generic/model-store';
 
-function StartOrResumeCourseCard({
-  hasVisitedCourse,
-  resumeCourseUrl,
-  logResumeCourseClick,
-  intl,
-}) {
+function StartOrResumeCourseCard({ intl }) {
+  const {
+    courseId,
+  } = useSelector(state => state.courseHome);
+
+  const {
+    org,
+  } = useModel('courseHomeMeta', courseId);
+
+  const eventProperties = {
+    org_key: org,
+    courserun_key: courseId,
+  };
+
+  const {
+    resumeCourse: {
+      hasVisitedCourse,
+      url: resumeCourseUrl,
+    },
+
+  } = useModel('outline', courseId);
+
+  const logResumeCourseClick = () => {
+    sendTrackingLogEvent('edx.course.home.resume_course.clicked', {
+      ...eventProperties,
+      event_type: hasVisitedCourse ? 'resume' : 'start',
+      url: resumeCourseUrl,
+    });
+  };
+
   return (
     <Card className="mb-3" data-testid="start-resume-panel">
       <Card.Body>
@@ -34,9 +59,6 @@ function StartOrResumeCourseCard({
 }
 
 StartOrResumeCourseCard.propTypes = {
-  hasVisitedCourse: PropTypes.bool.isRequired,
-  resumeCourseUrl: PropTypes.string.isRequired,
-  logResumeCourseClick: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
 };
 
