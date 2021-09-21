@@ -211,8 +211,6 @@ describe('Courseware Service', () => {
             verify_identity_url: null,
             verification_status: string('none'),
             linkedin_add_to_profile_url: null,
-            is_mfe_special_exams_enabled: boolean(false),
-            is_mfe_proctored_exams_enabled: boolean(false),
             user_needs_integrity_signature: boolean(false),
           },
         },
@@ -295,8 +293,6 @@ describe('Courseware Service', () => {
         linkedinAddToProfileUrl: null,
         relatedPrograms: null,
         userNeedsIntegritySignature: false,
-        specialExamsEnabledWaffleFlag: false,
-        proctoredExamsEnabledWaffleFlag: false,
         isMasquerading: false,
       };
       const response = await getCourseMetadata(courseId);

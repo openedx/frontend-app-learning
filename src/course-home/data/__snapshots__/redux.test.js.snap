@@ -13,10 +13,8 @@ Object {
   "courseware": Object {
     "courseId": null,
     "courseStatus": "loading",
-    "proctoredExamsEnabledWaffleFlag": false,
     "sequenceId": null,
     "sequenceStatus": "loading",
-    "specialExamsEnabledWaffleFlag": false,
   },
   "models": Object {
     "courseHomeMeta": Object {
@@ -319,10 +317,8 @@ Object {
   "courseware": Object {
     "courseId": null,
     "courseStatus": "loading",
-    "proctoredExamsEnabledWaffleFlag": false,
     "sequenceId": null,
     "sequenceStatus": "loading",
-    "specialExamsEnabledWaffleFlag": false,
   },
   "models": Object {
     "courseHomeMeta": Object {
@@ -501,10 +497,8 @@ Object {
   "courseware": Object {
     "courseId": null,
     "courseStatus": "loading",
-    "proctoredExamsEnabledWaffleFlag": false,
     "sequenceId": null,
     "sequenceStatus": "loading",
-    "specialExamsEnabledWaffleFlag": false,
   },
   "models": Object {
     "courseHomeMeta": Object {

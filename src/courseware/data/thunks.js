@@ -12,8 +12,6 @@ import {
   updateModel, addModel, updateModelsMap, addModelsMap, updateModels,
 } from '../../generic/model-store';
 import {
-  setsSpecialExamsEnabled,
-  setsProctoredExamsEnabled,
   fetchCourseRequest,
   fetchCourseSuccess,
   fetchCourseFailure,
@@ -144,12 +142,6 @@ export function fetchCourse(courseId) {
         dispatch(addModel({
           modelType: 'coursewareMeta',
           model: courseMetadataResult.value,
-        }));
-        dispatch(setsSpecialExamsEnabled({
-          specialExamsEnabledWaffleFlag: courseMetadataResult.value.specialExamsEnabledWaffleFlag,
-        }));
-        dispatch(setsProctoredExamsEnabled({
-          proctoredExamsEnabledWaffleFlag: courseMetadataResult.value.proctoredExamsEnabledWaffleFlag,
         }));
       }
 

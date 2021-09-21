@@ -397,8 +397,6 @@ describe('CoursewareContainer', () => {
 
     describe('when the current sequence is an exam', () => {
       const { location } = window;
-      const sequenceBlock = defaultSequenceBlock;
-      const unitBlocks = defaultUnitBlocks;
 
       beforeEach(() => {
         delete window.location;
@@ -409,20 +407,6 @@ describe('CoursewareContainer', () => {
 
       afterEach(() => {
         window.location = location;
-      });
-
-      it('should redirect to the sequence legacyWebUrl', async () => {
-        const sequenceMetadata = Factory.build(
-          'sequenceMetadata',
-          { is_time_limited: true }, // position index is 1-based and is converted to 0-based for activeUnitIndex
-          { courseId, unitBlocks, sequenceBlock },
-        );
-        setUpMockRequests({ sequenceMetadatas: [sequenceMetadata] });
-
-        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
-        await loadContainer();
-
-        expect(global.location.assign).toHaveBeenCalledWith(sequenceBlock.legacy_web_url);
       });
     });
   });
