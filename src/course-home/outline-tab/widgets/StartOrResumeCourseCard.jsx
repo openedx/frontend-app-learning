@@ -6,7 +6,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from '../messages';
 
-function StartResumeCard({
+function StartOrResumeCourseCard({
   hasVisitedCourse,
   resumeCourseUrl,
   logResumeCourseClick,
@@ -33,11 +33,11 @@ function StartResumeCard({
   );
 }
 
-StartResumeCard.propTypes = {
+StartOrResumeCourseCard.propTypes = {
   hasVisitedCourse: PropTypes.bool.isRequired,
   resumeCourseUrl: PropTypes.string.isRequired,
   logResumeCourseClick: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
 };
 
-export default injectIntl(StartResumeCard);
+export default injectIntl(StartOrResumeCourseCard);

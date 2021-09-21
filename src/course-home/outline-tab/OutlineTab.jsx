@@ -9,7 +9,7 @@ import { AlertList } from '../../generic/user-messages';
 import CourseDates from './widgets/CourseDates';
 import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
-import StartResumeCard from './widgets/StartResumeCard';
+import StartOrResumeCourseCard from './widgets/StartOrResumeCourseCard';
 import CourseTools from './widgets/CourseTools';
 import { fetchOutlineTab } from '../data';
 import genericMessages from '../../generic/messages';
@@ -55,7 +55,7 @@ function OutlineTab({ intl }) {
     courseGoals: {
       goalOptions,
       selectedGoal,
-      numberOfDaysGoalsEnabled,
+      weeklyLearningGoalEnabled,
     } = {},
     datesBannerInfo,
     datesWidget: {
@@ -71,7 +71,7 @@ function OutlineTab({ intl }) {
     verifiedMode,
   } = useModel('outline', courseId);
 
-  const [courseGoalToDisplay, setCourseGoalToDisplay] = useState(selectedGoal);
+  const [deprecatedCourseGoalToDisplay, setDeprecatedCourseGoalToDisplay] = useState(selectedGoal);
   const [goalToastHeader, setGoalToastHeader] = useState('');
   const [expandAll, setExpandAll] = useState(false);
 
@@ -126,13 +126,6 @@ function OutlineTab({ intl }) {
         <div className="col-12 col-sm-auto p-0">
           <div role="heading" aria-level="1" className="h2">{title}</div>
         </div>
-        {resumeCourseUrl && !numberOfDaysGoalsEnabled && (
-          <div className="col-12 col-sm-auto p-0">
-            <Button variant="brand" block href={resumeCourseUrl} onClick={() => logResumeCourseClick()}>
-              {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
-            </Button>
-          </div>
-        )}
       </div>
       {/** [MM-P2P] Experiment (className for optimizely trigger) */}
       <div className="row course-outline-tab">
@@ -167,17 +160,17 @@ function OutlineTab({ intl }) {
               <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
             </>
           )}
-          {!courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
+          {!deprecatedCourseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
             <CourseGoalCard
               courseId={courseId}
               goalOptions={goalOptions}
               title={title}
-              setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
+              setGoalToDisplay={(newGoal) => { setDeprecatedCourseGoalToDisplay(newGoal); }}
               setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
             />
           )}
-          {resumeCourseUrl && numberOfDaysGoalsEnabled && (
-          <StartResumeCard
+          {resumeCourseUrl && (
+          <StartOrResumeCourseCard
             hasVisitedCourse={hasVisitedCourse}
             resumeCourseUrl={resumeCourseUrl}
             logResumeCourseClick={logResumeCourseClick}
@@ -213,19 +206,19 @@ function OutlineTab({ intl }) {
               courseId={courseId}
               username={username}
             />
-            {courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
+            {deprecatedCourseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
               <UpdateGoalSelector
                 courseId={courseId}
                 goalOptions={goalOptions}
-                selectedGoal={courseGoalToDisplay}
-                setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
+                selectedGoal={deprecatedCourseGoalToDisplay}
+                setGoalToDisplay={(newGoal) => { setDeprecatedCourseGoalToDisplay(newGoal); }}
                 setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
               />
             )}
-            {numberOfDaysGoalsEnabled && (
+            {weeklyLearningGoalEnabled && (
               <WeeklyLearningGoal
-                selectedGoal={selectedGoal}
-                daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : 0}
+                daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
+                subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}
                 courseId={courseId}
               />
             )}
