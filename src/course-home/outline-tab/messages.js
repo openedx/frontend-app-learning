@@ -137,6 +137,7 @@ const messages = defineMessages({
   casualGoalButtonTitle: {
     id: 'learning.outline.goalButton.screenReader.text',
     defaultMessage: 'Casual',
+    description: 'A very short description of the least intense of three learning goals',
   },
   casualGoalButtonText: {
     id: 'learning.outline.goalButton.casual.text',
@@ -145,6 +146,7 @@ const messages = defineMessages({
   regularGoalButtonTitle: {
     id: 'learning.outline.goalButton.regular.title',
     defaultMessage: 'Regular',
+    description: 'A very short description of the middle option of three learning goals, Casual, Regular and Intense',
   },
   regularGoalButtonText: {
     id: 'learning.outline.goalButton.regular.text',
@@ -153,6 +155,7 @@ const messages = defineMessages({
   intenseGoalButtonTitle: {
     id: 'learning.outline.goalButton.intense.title',
     defaultMessage: 'Intense',
+    description: 'A very short description of the most intensive option of three learning goals, Casual, Regular and Intense',
   },
   intenseGoalButtonText: {
     id: 'learning.outline.goalButton.intense.text',

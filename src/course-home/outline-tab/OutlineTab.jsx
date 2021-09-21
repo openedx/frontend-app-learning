@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -32,7 +32,7 @@ import AccountActivationAlert from '../../alerts/logistration-alert/AccountActiv
 
 /** [MM-P2P] Experiment */
 import { initHomeMMP2P, MMP2PFlyover } from '../../experiments/mm-p2p';
-import WeeklyLearningGoal from './widgets/WeeklyLearningGoal';
+import WeeklyLearningGoal from './widgets/WeeklyLearningGoalCard';
 
 function OutlineTab({ intl }) {
   const {
@@ -63,7 +63,6 @@ function OutlineTab({ intl }) {
       courseDateBlocks,
     },
     resumeCourse: {
-      hasVisitedCourse,
       url: resumeCourseUrl,
     },
     offer,
@@ -78,14 +77,6 @@ function OutlineTab({ intl }) {
   const eventProperties = {
     org_key: org,
     courserun_key: courseId,
-  };
-
-  const logResumeCourseClick = () => {
-    sendTrackingLogEvent('edx.course.home.resume_course.clicked', {
-      ...eventProperties,
-      event_type: hasVisitedCourse ? 'resume' : 'start',
-      url: resumeCourseUrl,
-    });
   };
 
   // Below the course title alerts (appearing in the order listed here)
@@ -178,11 +169,7 @@ function OutlineTab({ intl }) {
             />
           )}
           {resumeCourseUrl && (
-          <StartOrResumeCourseCard
-            hasVisitedCourse={hasVisitedCourse}
-            resumeCourseUrl={resumeCourseUrl}
-            logResumeCourseClick={logResumeCourseClick}
-          />
+          <StartOrResumeCourseCard />
           )}
           <WelcomeMessage courseId={courseId} />
           {rootCourseId && (
