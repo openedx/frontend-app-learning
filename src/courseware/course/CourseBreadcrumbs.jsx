@@ -7,6 +7,10 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { Hyperlink, MenuItem, SelectMenu } from '@edx/paragon';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import {
+  sendTrackingLogEvent,
+  sendTrackEvent,
+} from '@edx/frontend-platform/analytics';
 import { useModel, useModels } from '../../generic/model-store';
 /** [MM-P2P] Experiment */
 import { MMP2PFlyoverTrigger } from '../../experiments/mm-p2p';
@@ -16,14 +20,31 @@ function CourseBreadcrumb({
 }) {
   const defaultContent = content.filter(destination => destination.default)[0];
   const { administrator } = getAuthenticatedUser();
+  function logEvent(target) {
+    const eventName = 'edx.ui.lms.jump_nav.selected';
+    const payload = {
+      target_name: target.label,
+      id: target.id,
+      current_id: defaultContent.id,
+      widget_placement: 'breadcrumb',
+    };
+    sendTrackEvent(eventName, payload);
+    sendTrackingLogEvent(eventName, payload);
+  }
 
   return (
     <>
       {withSeparator && (
-        <li className="mx-2 text-primary-500" role="presentation" aria-hidden>/</li>
+        <li className="mx-2 text-primary-500 text-truncate text-nowrap" role="presentation" aria-hidden>/</li>
       )}
-      <li>
-        {process.env.NODE_ENV !== 'test' || content.length < 2 || !administrator
+
+      <li style={{
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }}
+      >
+        { getConfig().ENABLE_JUMPNAV !== 'true' || content.length < 2 || !administrator
           ? (
             <a className="text-primary-500" href={defaultContent.url}>{defaultContent.label}
             </a>
@@ -34,7 +55,8 @@ function CourseBreadcrumb({
                 <MenuItem
                   as={Hyperlink}
                   defaultSelected={item.default}
-                  href={item.url}
+                  destination={item.url}
+                  onClick={logEvent(item)}
                 >
                   {item.label}
                 </MenuItem>
@@ -46,7 +68,6 @@ function CourseBreadcrumb({
     </>
   );
 }
-
 CourseBreadcrumb.propTypes = {
   content: PropTypes.arrayOf(
     PropTypes.shape({
@@ -72,7 +93,7 @@ export default function CourseBreadcrumbs({
 }) {
   const course = useModel('coursewareMeta', courseId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
-  const sections = Object.fromEntries(useModels('sections', course.sectionIds).map(section => [section.id, section]));
+  const sections = course ? Object.fromEntries(useModels('sections', course.sectionIds).map(section => [section.id, section])) : null;
   const possibleSequences = sections && sectionId ? sections[sectionId].sequenceIds : [];
   const sequences = Object.fromEntries(useModels('sequences', possibleSequences).map(sequence => [sequence.id, sequence]));
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
@@ -97,13 +118,12 @@ export default function CourseBreadcrumbs({
     }
     return temp;
   }, [courseStatus, sections, sequences]);
-
   return (
     <nav aria-label="breadcrumb" className="my-1 d-inline-block col-sm-10">
       <ol className="list-unstyled d-flex align-items-center m-0">
         <li>
           <a
-            href={`${getConfig().LMS_BASE_URL}/courses/${course.id}/course/`}
+            href={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course/`}
             className="flex-shrink-0 text-primary"
           >
             <FontAwesomeIcon icon={faHome} className="mr-2" />
@@ -121,7 +141,7 @@ export default function CourseBreadcrumbs({
           />
         ))}
         {/** [MM-P2P] Experiment */}
-        {mmp2p.state.isEnabled && (
+        {mmp2p.state && mmp2p.state.isEnabled && (
           <MMP2PFlyoverTrigger options={mmp2p} />
         )}
       </ol>
@@ -144,7 +164,6 @@ CourseBreadcrumbs.propTypes = {
 CourseBreadcrumbs.defaultProps = {
   sectionId: null,
   sequenceId: null,
-
   /** [MM-P2P] Experiment */
   mmp2p: {},
 };

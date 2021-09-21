@@ -91,6 +91,31 @@ describe('Course', () => {
     expect(notificationTrigger).not.toHaveClass('trigger-active');
   });
 
+  it('renders course breadcrumbs as expected', async () => {
+    const courseMetadata = Factory.build('courseMetadata');
+    const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
+      'block',
+      { type: 'vertical' },
+      { courseId: courseMetadata.id },
+    ));
+    const testStore = await initializeTestStore({ courseMetadata, unitBlocks }, false);
+    const { courseware, models } = testStore.getState();
+    const { courseId, sequenceId } = courseware;
+    const testData = {
+      ...mockData,
+      courseId,
+      sequenceId,
+      unitId: Object.values(models.units)[1].id, // Corner cases are already covered in `Sequence` tests.
+    };
+    render(<Course {...testData} />, { store: testStore });
+
+    loadUnit();
+    await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
+    // expect the section and sequence "titles" to be loaded in as breadcrumb labels.
+    expect(screen.getByText('cdabcdabcdabcdabcdabcdabcdabcd13')).toBeInTheDocument();
+    expect(screen.getByText('cdabcdabcdabcdabcdabcdabcdabcd12')).toBeInTheDocument();
+  });
+
   it('passes handlers to the sequence', async () => {
     const nextSequenceHandler = jest.fn();
     const previousSequenceHandler = jest.fn();
