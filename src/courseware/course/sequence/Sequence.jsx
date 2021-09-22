@@ -52,8 +52,6 @@ function Sequence({
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
-  const specialExamsEnabledWaffleFlag = useSelector(state => state.courseware.specialExamsEnabledWaffleFlag);
-  const proctoredExamsEnabledWaffleFlag = useSelector(state => state.courseware.proctoredExamsEnabledWaffleFlag);
   const shouldDisplayNotificationTrigger = useWindowSize().width < responsiveBreakpoints.small.minWidth;
 
   const handleNext = () => {
@@ -149,26 +147,6 @@ function Sequence({
     // Shouldn't even be here - these sequences are normally stripped out of the navigation.
     // But we are here, so render a notice instead of the normal content.
     return <HiddenAfterDue courseId={courseId} />;
-  }
-
-  /*
-  TODO: When the micro-frontend supports viewing special exams without redirecting to the legacy
-  experience, we can remove this whole conditional. For now, though, we show the spinner here
-  because we expect CoursewareContainer to be performing a redirect to the legacy experience while
-  we're waiting. That redirect may take a few seconds, so we show the spinner in the meantime.
-  */
-  if (sequenceStatus === 'loaded') {
-    const shouldRedirectSpecialExams = sequence.isTimeLimited && !specialExamsEnabledWaffleFlag;
-    const shouldRedirectProctoredExams = sequence.isProctored && specialExamsEnabledWaffleFlag
-      && !proctoredExamsEnabledWaffleFlag;
-
-    if (shouldRedirectSpecialExams || shouldRedirectProctoredExams) {
-      return (
-        <PageLoading
-          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
-        />
-      );
-    }
   }
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;

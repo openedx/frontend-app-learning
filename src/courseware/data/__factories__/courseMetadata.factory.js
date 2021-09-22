@@ -55,7 +55,5 @@ Factory.define('courseMetadata')
     linkedin_add_to_profile_url: null,
     related_programs: null,
     user_needs_integrity_signature: false,
-    is_mfe_special_exams_enabled: false,
-    is_mfe_proctored_exams_enabled: false,
     recommendations: null,
   });
