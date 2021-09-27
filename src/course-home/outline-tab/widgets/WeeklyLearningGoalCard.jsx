@@ -42,7 +42,7 @@ function WeeklyLearningGoalCard({
 
   return (
     <div className="row w-100 m-0 p-0">
-      <Card className="mb-3" data-testid="course-goal-card">
+      <Card className="mb-3" data-testid="weekly-learning-goal-card">
         <Card.Body>
           <Card.Title>
             <h4 className="m-0">{intl.formatMessage(messages.setWeeklyGoal)}</h4>
@@ -53,7 +53,7 @@ function WeeklyLearningGoalCard({
           <div className="row w-100 m-0 p-0 justify-content-around">
             <div className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0">
               <FlagButton
-                icon={<FlagCasualIcon />}
+                ButtonIcon={<FlagCasualIcon />}
                 srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
                 title={intl.formatMessage(messages.casualGoalButtonTitle)}
                 text={intl.formatMessage(messages.casualGoalButtonText)}
@@ -63,7 +63,7 @@ function WeeklyLearningGoalCard({
             </div>
             <div className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0">
               <FlagButton
-                icon={<FlagRegularIcon />}
+                ButtonIcon={<FlagRegularIcon />}
                 srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
                 title={intl.formatMessage(messages.regularGoalButtonTitle)}
                 text={intl.formatMessage(messages.regularGoalButtonText)}
@@ -73,7 +73,7 @@ function WeeklyLearningGoalCard({
             </div>
             <div className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0">
               <FlagButton
-                icon={<FlagIntenseIcon />}
+                ButtonIcon={<FlagIntenseIcon />}
                 srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
                 title={intl.formatMessage(messages.intenseGoalButtonTitle)}
                 text={intl.formatMessage(messages.intenseGoalButtonText)}

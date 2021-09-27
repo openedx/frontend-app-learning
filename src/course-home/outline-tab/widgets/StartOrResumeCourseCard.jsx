@@ -38,7 +38,7 @@ function StartOrResumeCourseCard({ intl }) {
   };
 
   return (
-    <Card className="mb-3" data-testid="start-resume-panel">
+    <Card className="mb-3" data-testid="start-resume-card">
       <Card.Body>
         <div className="row w-100 m-0 ">
           <h2 className="h4 col-auto flex-grow-1">{intl.formatMessage(messages.startBlurb)}</h2>

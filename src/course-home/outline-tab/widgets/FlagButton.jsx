@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 function FlagButton({
-  icon,
+  ButtonIcon,
   srText,
   title,
   text,
@@ -22,7 +22,7 @@ function FlagButton({
       onClick={() => handleSelect()}
     >
       <div className=" justify-content-center">
-        {icon}
+        {ButtonIcon}
       </div>
       <span className="sr-only sr-only-focusable">{srText}</span>
       <div className="text-center small">
@@ -36,7 +36,7 @@ function FlagButton({
 }
 
 FlagButton.propTypes = {
-  icon: PropTypes.node.isRequired,
+  ButtonIcon: PropTypes.element.isRequired,
   srText: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   text: PropTypes.string,

@@ -6,6 +6,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import Cookies from 'js-cookie';
 import userEvent from '@testing-library/user-event';
+import messages from './messages';
 
 import { buildMinimalCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
 import {
@@ -409,6 +410,55 @@ describe('Outline Tab', () => {
           expect(axiosMock.history.post[0].url).toMatch(goalUrl);
           expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","goal_key":"unsure"}`);
         });
+      });
+    });
+  });
+
+  describe('Weekly Learning Goals', () => {
+    it('does not render weekly learning goal if weeklyLearningGoalEnabled is false', async () => {
+      await fetchAndRender();
+      expect(screen.queryByTestId('weekly-learning-goal-card')).not.toBeInTheDocument();
+    });
+
+    describe('weekly learning goal is not set', () => {
+      beforeEach(async () => {
+        setTabData({
+          course_goals: {
+            weekly_learning_goal_enabled: true,
+          },
+        });
+        await fetchAndRender();
+      });
+
+      it('renders weekly learning goal card', async () => {
+        expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
+      });
+
+      it('renders startOrResumeCourseCard', async () => {
+        expect(screen.queryByTestId('start-resume-card')).toBeInTheDocument();
+      });
+
+      it('disables the subscribe button if no goal is set', async () => {
+        expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeDisabled();
+      });
+
+      // Does this need more setup to test frontend backend mismatch?
+      it('does not show the previous goal setting card', async () => {
+        expect(screen.getByTestId('course-goal-card')).not.toBeInTheDocument();
+      });
+
+      it('calls the API when a button is clicked', async () => {
+        expect(screen.queryByText(messages.casualGoalButtonText.defaultMessage)).toBeInTheDocument();
+        expect(screen.getByText(messages.casualGoalButtonText.defaultMessage).closest('button')).toBeInTheDocument();
+
+        const button = await screen.getByText(messages.casualGoalButtonText.defaultMessage).closest('button');
+        fireEvent.click(button);
+        // Verify the request was made
+        await waitFor(() => {
+          expect(axiosMock.history.post[0].url).toMatch(goalUrl);
+          expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","days_per_week":3,"subscribed_to_reminders":false}`);
+        });
+        expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
       });
     });
   });
