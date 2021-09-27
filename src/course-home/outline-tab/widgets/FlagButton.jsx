@@ -11,14 +11,14 @@ function FlagButton({
   isEnabled,
   handleSelect,
 }) {
-  const [isHighlight, setHighlight] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
 
   return (
     <button
       type="button"
-      className={classNames('col flex-grow-1 p-3 border border-light rounded bg-white', { 'border-dark': isEnabled || isHighlight })}
-      onMouseEnter={() => setHighlight(true)}
-      onMouseLeave={() => setHighlight(false)}
+      className={classNames('col flex-grow-1 p-3 border border-light rounded bg-white', { 'border-dark': isEnabled || isSelected })}
+      onMouseEnter={() => setIsSelected(true)}
+      onMouseLeave={() => setIsSelected(false)}
       onClick={() => handleSelect()}
     >
       <div className=" justify-content-center">
