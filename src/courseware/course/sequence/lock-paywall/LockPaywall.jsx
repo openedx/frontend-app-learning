@@ -149,7 +149,7 @@ function LockPaywall({
 
         <div
           className={
-            classNames('p-md-0 d-md-flex align-items-md-center text-right', {
+            classNames('d-md-flex align-items-md-center text-right', {
               'col-md-5 mx-md-0': notificationTrayVisible, 'col-md-4 mx-md-3 justify-content-center': !notificationTrayVisible && !shouldDisplayGatedContentTwoColumnsHalf, 'col-md-11 justify-content-end': shouldDisplayGatedContentOneColumn && !shouldDisplayGatedContentTwoColumns, 'col-md-6 justify-content-center': shouldDisplayGatedContentTwoColumnsHalf,
             })
           }
