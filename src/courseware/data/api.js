@@ -221,6 +221,7 @@ function normalizeMetadata(metadata) {
     relatedPrograms: camelCaseObject(data.related_programs),
     userNeedsIntegritySignature: data.user_needs_integrity_signature,
     isMasquerading: data.original_user_is_staff && !data.is_staff,
+    username: data.username,
   };
 }
 

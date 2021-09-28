@@ -123,7 +123,7 @@ export function loadUnit(message = messageEvent) {
 export function logUnhandledRequests(axiosMock) {
   axiosMock.onAny().reply((config) => {
     // eslint-disable-next-line no-console
-    console.log(config.method, config.url.href);
+    console.log(config.method, config.url);
     return [200, {}];
   });
 }

@@ -39,7 +39,7 @@ const messages = defineMessages({
   },
   streakDiscountMessage: {
     id: 'learning.streakCelebration.streakDiscountMessage',
-    defaultMessage: 'You’ve unlocked a 15% off discount when you upgrade this course for a limited time only.',
+    defaultMessage: 'You’ve unlocked a {percent}% off discount when you upgrade this course for a limited time only.',
     description: 'This message describes a discount the user becomes eligible for when they hit their three day streak',
   },
 });
