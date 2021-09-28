@@ -19,7 +19,7 @@ function CourseBreadcrumb({
   content, withSeparator,
 }) {
   const defaultContent = content.filter(destination => destination.default)[0];
-  const { administrator } = getAuthenticatedUser();
+  const administrator = getAuthenticatedUser() ? getAuthenticatedUser().administrator : false;
   function logEvent(target) {
     const eventName = 'edx.ui.lms.jump_nav.selected';
     const payload = {
