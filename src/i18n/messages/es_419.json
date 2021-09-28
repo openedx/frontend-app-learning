@@ -351,7 +351,7 @@
   "learn.course.tabs.navigation.overflow.menu": "Más...",
   "learning.offer.screenReaderPrices": "Precio original: {originalPrice}; precio con descuento: {discountedPrice}",
   "learning.upgradeButton.screenReaderInlinePrices": "Precio original: {originalPrice}",
-  "learning.upgradeButton.buttonText": "Cambia a la opción verificada por {pricing}",
+  "learning.upgradeButton.buttonText": "Opción verificada {pricing}",
   "learning.upgradeNowButton.buttonText": "Cambia a la opción paga por {pricing}",
   "learning.generic.upgradeNotification.verifiedCertLink": "certificado verificado",
   "learning.generic.upgradeNotification.verifiedCertMessage": "Obtén un {verifiedCertLink} de finalización para compartirlo en tu currículum",
