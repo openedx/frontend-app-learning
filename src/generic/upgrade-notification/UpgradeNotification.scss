@@ -19,7 +19,9 @@
 }
 
 .upgrade-notification-ul {
-  padding: 0.875rem 1.25rem 0 1.25rem;
+  padding-left: 1.25rem !important;
+  padding-top: 0.875rem;
+  padding-right: 1.25rem;
 }
 
 .upgrade-notification-li {
