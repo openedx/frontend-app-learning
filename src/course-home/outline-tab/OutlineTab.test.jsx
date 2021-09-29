@@ -439,15 +439,11 @@ describe('Outline Tab', () => {
         expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeDisabled();
       });
 
-      // Does this need more setup to test frontend backend mismatch?
-      it('does not show the previous goal setting card', async () => {
-        expect(screen.getByTestId('course-goal-card')).not.toBeInTheDocument();
-      });
-
       it('calls the API when a button is clicked', async () => {
         expect(screen.queryByText(messages.casualGoalButtonText.defaultMessage)).toBeInTheDocument();
         expect(screen.getByText(messages.casualGoalButtonText.defaultMessage).closest('button')).toBeInTheDocument();
 
+        // click on Casual goal
         const button = await screen.getByText(messages.casualGoalButtonText.defaultMessage).closest('button');
         fireEvent.click(button);
         // Verify the request was made
@@ -456,6 +452,20 @@ describe('Outline Tab', () => {
           expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","days_per_week":3,"subscribed_to_reminders":false}`);
         });
         expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
+
+        // Click on subscribe to reminders
+        const subscriptionSwitch = await screen.getByRole('switch', { name: messages.setGoalReminder.defaultMessage });
+        expect(subscriptionSwitch).toBeInTheDocument();
+
+        fireEvent.click(subscriptionSwitch);
+        await waitFor(() => {
+          expect(axiosMock.history.post[1].url).toMatch(goalUrl);
+          expect(axiosMock.history.post[1].data)
+            .toMatch(`{"course_id":"${courseId}","days_per_week":3,"subscribed_to_reminders":true}`);
+        });
+
+        // verify that the additional info about subscriptions shows up
+        expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).toBeInTheDocument();
       });
     });
   });
