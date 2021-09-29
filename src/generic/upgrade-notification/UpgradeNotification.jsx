@@ -463,13 +463,14 @@ function UpgradeNotification({
       <div className="upgrade-notification-message">
         {upsellMessage}
       </div>
-      <UpgradeButton
-        offer={offer}
-        onClick={logClick}
-        verifiedMode={verifiedMode}
-        className="upgrade-notification-button"
-        block
-      />
+      <div className="upgrade-notification-button">
+        <UpgradeButton
+          offer={offer}
+          onClick={logClick}
+          verifiedMode={verifiedMode}
+          block
+        />
+      </div>
       {offerCode}
     </section>
   );
