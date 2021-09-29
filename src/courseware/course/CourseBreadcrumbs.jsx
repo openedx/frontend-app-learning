@@ -119,7 +119,7 @@ export default function CourseBreadcrumbs({
     return temp;
   }, [courseStatus, sections, sequences]);
   return (
-    <nav aria-label="breadcrumb" className="my-1 d-inline-block col-sm-10">
+    <nav aria-label="breadcrumb" className="my-4 d-inline-block col-sm-10">
       <ol className="list-unstyled d-flex align-items-center m-0">
         <li>
           <a
