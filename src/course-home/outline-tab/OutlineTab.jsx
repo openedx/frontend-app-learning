@@ -11,6 +11,7 @@ import CourseDates from './widgets/CourseDates';
 import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
 import StartOrResumeCourseCard from './widgets/StartOrResumeCourseCard';
+import WeeklyLearningGoalCard from './widgets/WeeklyLearningGoalCard';
 import CourseTools from './widgets/CourseTools';
 import { fetchOutlineTab } from '../data';
 import genericMessages from '../../generic/messages';
@@ -32,7 +33,6 @@ import AccountActivationAlert from '../../alerts/logistration-alert/AccountActiv
 
 /** [MM-P2P] Experiment */
 import { initHomeMMP2P, MMP2PFlyover } from '../../experiments/mm-p2p';
-import WeeklyLearningGoalCard from './widgets/WeeklyLearningGoalCard';
 
 function OutlineTab({ intl }) {
   const {
