@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Alert } from '@edx/paragon';
 import { Locked } from '@edx/paragon/icons';
 import messages from './messages';
+import genericMessages from '../../../../generic/messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
 import { useModel } from '../../../../generic/model-store';
 import useWindowSize, { responsiveBreakpoints } from '../../../../generic/tabs/useWindowSize';
@@ -56,29 +58,29 @@ function LockPaywall({
     });
   };
 
-  const verifiedCertLink = (
+  const verifiedCert = (
     <Alert.Link
-      href="https://www.edx.org/verified-certificate"
+      href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}
       target="_blank"
       rel="noopener noreferrer"
     >
-      {intl.formatMessage(messages['learn.lockPaywall.list.bullet1.linktext'])}
+      {intl.formatMessage(genericMessages['upsell.verifiedCertMessageBullet.verifiedCert'])}
     </Alert.Link>
   );
 
   const gradedAssignments = (
     <span className="font-weight-bold">
-      {intl.formatMessage(messages['learn.lockPaywall.list.bullet2.boldtext'])}
+      {intl.formatMessage(genericMessages['upsell.unlockGradedBullet.gradedAssignments'])}
     </span>
   );
   const fullAccess = (
     <span className="font-weight-bold">
-      {intl.formatMessage(messages['learn.lockPaywall.list.bullet3.boldtext'])}
+      {intl.formatMessage(genericMessages['upsell.fullAccessBullet.fullAccess'])}
     </span>
   );
-  const nonProfitMission = (
+  const mission = (
     <span className="font-weight-bold">
-      {intl.formatMessage(messages['learn.lockPaywall.list.bullet4.boldtext'])}
+      {intl.formatMessage(genericMessages['upsell.supportMissionBullet.mission'])}
     </span>
   );
 
@@ -111,36 +113,31 @@ function LockPaywall({
               <ul className="fa-ul ml-4 pl-2">
                 <li>
                   <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-                  <FormattedMessage
-                    id="gatedContent.paragraph.bulletOne"
-                    defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resumé"
-                    values={{ verifiedCertLink }}
-                    className="bullet-text"
-                  />
+                  {intl.formatMessage(
+                    genericMessages['upsell.verifiedCertMessageBullet'],
+                    { verifiedCert },
+                  )}
                 </li>
                 <li>
                   <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-                  <FormattedMessage
-                    id="gatedContent.paragraph.bulletTwo"
-                    defaultMessage="Unlock access to all course activities, including {gradedAssignments}"
-                    values={{ gradedAssignments }}
-                  />
+                  {intl.formatMessage(
+                    genericMessages['upsell.unlockGradedBullet'],
+                    { gradedAssignments },
+                  )}
                 </li>
                 <li>
                   <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-                  <FormattedMessage
-                    id="gatedContent.paragraph.bulletThree"
-                    defaultMessage="{fullAccess} to course content and materials, even after the course ends"
-                    values={{ fullAccess }}
-                  />
+                  {intl.formatMessage(
+                    genericMessages['upsell.fullAccessBullet'],
+                    { fullAccess },
+                  )}
                 </li>
                 <li>
                   <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-                  <FormattedMessage
-                    id="gatedContent.paragraph.bulletFour"
-                    defaultMessage="Support our {nonProfitMission} at edX"
-                    values={{ nonProfitMission }}
-                  />
+                  {intl.formatMessage(
+                    genericMessages['upsell.supportMissionBullet'],
+                    { mission },
+                  )}
                 </li>
               </ul>
             </div>
