@@ -255,7 +255,7 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
   return async (dispatch, getState) => {
     const { models } = getState();
     if (models.units[unitId].complete) {
-      return; // do nothing. Things don't get uncompleted after they are completed.
+      return {}; // do nothing. Things don't get uncompleted after they are completed.
     }
 
     try {
@@ -267,9 +267,11 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
           complete: isComplete,
         },
       }));
+      return isComplete;
     } catch (error) {
       logError(error);
     }
+    return {};
   };
 }
 
