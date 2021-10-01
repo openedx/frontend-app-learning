@@ -452,7 +452,10 @@ describe('Outline Tab', () => {
         // Verify the request was made
         await waitFor(() => {
           expect(axiosMock.history.post[0].url).toMatch(goalUrl);
-          expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","days_per_week":3,"subscribed_to_reminders":false}`);
+          // subscribe is turned on automatically
+          expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","days_per_week":3,"subscribed_to_reminders":true}`);
+          // verify that the additional info about subscriptions shows up
+          expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).toBeInTheDocument();
         });
         expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
 
@@ -464,11 +467,11 @@ describe('Outline Tab', () => {
         await waitFor(() => {
           expect(axiosMock.history.post[1].url).toMatch(goalUrl);
           expect(axiosMock.history.post[1].data)
-            .toMatch(`{"course_id":"${courseId}","days_per_week":3,"subscribed_to_reminders":true}`);
+            .toMatch(`{"course_id":"${courseId}","days_per_week":3,"subscribed_to_reminders":false}`);
         });
 
-        // verify that the additional info about subscriptions shows up
-        expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).toBeInTheDocument();
+        // verify that the additional info about subscriptions gets hidden
+        expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).not.toBeInTheDocument();
       });
     });
   });
