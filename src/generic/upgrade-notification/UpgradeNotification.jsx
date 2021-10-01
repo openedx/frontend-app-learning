@@ -3,76 +3,84 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import {
-  FormattedDate, FormattedMessage, injectIntl, intlShape,
-} from '@edx/frontend-platform/i18n';
+import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
 import { getConfig } from '@edx/frontend-platform';
 import { setLocalStorage } from '../../data/localStorage';
-import genericMessages from '../messages';
+
 import { UpgradeButton } from '../upgrade-button';
 
-function IntlUpsellNoFBECardContent({ intl }) {
-  const verifiedCert = (
+function UpsellNoFBECardContent() {
+  const verifiedCertLink = (
     <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>
-      {intl.formatMessage(genericMessages['upsell.verifiedCertMessageBullet.verifiedCert'])}
+      <FormattedMessage
+        id="learning.generic.upgradeNotification.verifiedCertLink"
+        defaultMessage="verified certificate"
+      />
     </a>
-  );
-
-  const mission = (
-    <span className="font-weight-bold">
-      {intl.formatMessage(genericMessages['upsell.supportMissionBullet.mission'])}
-    </span>
   );
 
   return (
     <ul className="fa-ul upgrade-notification-ul pt-0">
       <li>
         <span className="fa-li upgrade-notification-li"><FontAwesomeIcon icon={faCheck} /></span>
-        {intl.formatMessage(
-          genericMessages['upsell.verifiedCertMessageBullet'],
-          { verifiedCert },
-        )}
+        <FormattedMessage
+          id="learning.generic.upgradeNotification.verifiedCertMessage"
+          defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resumé"
+          values={{ verifiedCertLink }}
+        />
       </li>
       <li>
         <span className="fa-li upgrade-notification-li"><FontAwesomeIcon icon={faCheck} /></span>
-        {intl.formatMessage(
-          genericMessages['upsell.supportMissionBullet'],
-          { mission },
-        )}
+        <FormattedMessage
+          id="learning.generic.upgradeNotification.noFBE.nonProfitMission"
+          defaultMessage="Support our {nonProfitMission} at edX"
+          values={{
+            nonProfitMission: (
+              <span className="font-weight-bold">non-profit mission</span>
+            ),
+          }}
+        />
       </li>
     </ul>
   );
 }
 
-IntlUpsellNoFBECardContent.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-const UpsellNoFBECardContent = injectIntl(IntlUpsellNoFBECardContent);
-
-function IntlUpsellFBEFarAwayCardContent({ intl }) {
-  const verifiedCert = (
+function UpsellFBEFarAwayCardContent() {
+  const verifiedCertLink = (
     <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>
-      {intl.formatMessage(genericMessages['upsell.verifiedCertMessageBullet.verifiedCert'])}
+      <FormattedMessage
+        id="learning.generic.upgradeNotification.verifiedCertLink"
+        defaultMessage="verified certificate"
+      />
     </a>
   );
 
   const gradedAssignments = (
     <span className="font-weight-bold">
-      {intl.formatMessage(genericMessages['upsell.unlockGradedBullet.gradedAssignments'])}
+      <FormattedMessage
+        id="learning.generic.upgradeNotification.gradedAssignments"
+        defaultMessage="graded assignments"
+      />
     </span>
   );
 
   const fullAccess = (
     <span className="font-weight-bold">
-      {intl.formatMessage(genericMessages['upsell.fullAccessBullet.fullAccess'])}
+      <FormattedMessage
+        id="learning.generic.upgradeNotification.verifiedCertLink.fullAccess"
+        defaultMessage="Full access"
+      />
     </span>
   );
 
-  const mission = (
+  const nonProfitMission = (
     <span className="font-weight-bold">
-      {intl.formatMessage(genericMessages['upsell.supportMissionBullet.mission'])}
+      <FormattedMessage
+        id="learning.generic.upgradeNotification.FBE.nonProfitMission"
+        defaultMessage="non-profit mission"
+      />
     </span>
   );
 
@@ -80,41 +88,39 @@ function IntlUpsellFBEFarAwayCardContent({ intl }) {
     <ul className="fa-ul upgrade-notification-ul">
       <li>
         <span className="fa-li upgrade-notification-li"><FontAwesomeIcon icon={faCheck} /></span>
-        {intl.formatMessage(
-          genericMessages['upsell.verifiedCertMessageBullet'],
-          { verifiedCert },
-        )}
+        <FormattedMessage
+          id="learning.generic.upgradeNotification.verifiedCertMessage"
+          defaultMessage="Earn a {verifiedCertLink} of completion to showcase on your resumé"
+          values={{ verifiedCertLink }}
+        />
       </li>
       <li>
         <span className="fa-li upgrade-notification-li"><FontAwesomeIcon icon={faCheck} /></span>
-        {intl.formatMessage(
-          genericMessages['upsell.unlockGradedBullet'],
-          { gradedAssignments },
-        )}
+        <FormattedMessage
+          id="learning.generic.upgradeNotification.unlockGraded"
+          defaultMessage="Unlock your access to all course activities, including {gradedAssignments}"
+          values={{ gradedAssignments }}
+        />
       </li>
       <li>
         <span className="fa-li upgrade-notification-li"><FontAwesomeIcon icon={faCheck} /></span>
-        {intl.formatMessage(
-          genericMessages['upsell.fullAccessBullet'],
-          { fullAccess },
-        )}
+        <FormattedMessage
+          id="learning.generic.upgradeNotification.fullAccess"
+          defaultMessage="{fullAccess} to course content and materials, even after the course ends"
+          values={{ fullAccess }}
+        />
       </li>
       <li>
         <span className="fa-li upgrade-notification-li"><FontAwesomeIcon icon={faCheck} /></span>
-        {intl.formatMessage(
-          genericMessages['upsell.supportMissionBullet'],
-          { mission },
-        )}
+        <FormattedMessage
+          id="learning.generic.upgradeNotification.nonProfitMission"
+          defaultMessage="Support our {nonProfitMission} at edX"
+          values={{ nonProfitMission }}
+        />
       </li>
     </ul>
   );
 }
-
-IntlUpsellFBEFarAwayCardContent.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-const UpsellFBEFarAwayCardContent = injectIntl(IntlUpsellFBEFarAwayCardContent);
 
 function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) {
   const includingAnyProgress = (
