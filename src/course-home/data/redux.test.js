@@ -136,7 +136,7 @@ describe('Data layer integration tests', () => {
       const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
       axiosMock.onPost(goalUrl).reply(200, {});
 
-      await thunks.saveCourseGoal(courseId, 'unsure');
+      await thunks.deprecatedSaveCourseGoal(courseId, 'unsure');
 
       expect(axiosMock.history.post[0].url).toEqual(goalUrl);
       expect(axiosMock.history.post[0].data).toEqual(`{"course_id":"${courseId}","goal_key":"unsure"}`);

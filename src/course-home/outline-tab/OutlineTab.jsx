@@ -8,7 +8,7 @@ import { Button, Toast } from '@edx/paragon';
 import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
-import CourseGoalCard from './widgets/CourseGoalCard';
+import CourseGoalCard from './widgets/DeprecatedCourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
 import StartOrResumeCourseCard from './widgets/StartOrResumeCourseCard';
 import WeeklyLearningGoalCard from './widgets/WeeklyLearningGoalCard';

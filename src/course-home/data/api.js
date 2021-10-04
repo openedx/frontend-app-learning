@@ -386,12 +386,12 @@ export async function postCourseDeadlines(courseId, model) {
   });
 }
 
-export async function postCourseGoals(courseId, goalKey) {
+export async function deprecatedPostCourseGoals(courseId, goalKey) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`);
   return getAuthenticatedHttpClient().post(url.href, { course_id: courseId, goal_key: goalKey });
 }
 
-export async function postWeeklyCourseGoals(courseId, daysPerWeek, subscribedToReminders) {
+export async function postWeeklyLearningGoal(courseId, daysPerWeek, subscribedToReminders) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`);
   return getAuthenticatedHttpClient().post(url.href, {
     course_id: courseId,

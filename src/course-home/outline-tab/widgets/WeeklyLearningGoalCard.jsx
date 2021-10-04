@@ -11,7 +11,7 @@ import { ReactComponent as FlagRegularIcon } from './flag_gray.svg';
 import messages from '../messages';
 import FlagButton from './FlagButton';
 
-import { saveWeeklyCourseGoal } from '../../data';
+import { saveWeeklyLearningGoal } from '../../data';
 
 function WeeklyLearningGoalCard({
   daysPerWeek,
@@ -34,13 +34,13 @@ function WeeklyLearningGoalCard({
     const selectReminders = daysPerWeekGoal === null ? true : isGetReminderSelected;
     setGetReminderSelected(selectReminders);
     setDaysPerWeekGoal(days);
-    saveWeeklyCourseGoal(courseId, days, selectReminders);
+    saveWeeklyLearningGoal(courseId, days, selectReminders);
   }
 
   function handleSubscribeToReminders(event) {
     const isGetReminderChecked = event.target.checked;
     setGetReminderSelected(isGetReminderChecked);
-    saveWeeklyCourseGoal(courseId, daysPerWeekGoal, isGetReminderChecked);
+    saveWeeklyLearningGoal(courseId, daysPerWeekGoal, isGetReminderChecked);
   }
 
   return (
