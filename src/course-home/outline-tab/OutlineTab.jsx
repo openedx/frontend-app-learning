@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -10,6 +10,8 @@ import { AlertList } from '../../generic/user-messages';
 import CourseDates from './widgets/CourseDates';
 import CourseGoalCard from './widgets/CourseGoalCard';
 import CourseHandouts from './widgets/CourseHandouts';
+import StartOrResumeCourseCard from './widgets/StartOrResumeCourseCard';
+import WeeklyLearningGoalCard from './widgets/WeeklyLearningGoalCard';
 import CourseTools from './widgets/CourseTools';
 import { fetchOutlineTab } from '../data';
 import genericMessages from '../../generic/messages';
@@ -54,13 +56,13 @@ function OutlineTab({ intl }) {
     courseGoals: {
       goalOptions,
       selectedGoal,
+      weeklyLearningGoalEnabled,
     } = {},
     datesBannerInfo,
     datesWidget: {
       courseDateBlocks,
     },
     resumeCourse: {
-      hasVisitedCourse,
       url: resumeCourseUrl,
     },
     offer,
@@ -68,21 +70,13 @@ function OutlineTab({ intl }) {
     verifiedMode,
   } = useModel('outline', courseId);
 
-  const [courseGoalToDisplay, setCourseGoalToDisplay] = useState(selectedGoal);
+  const [deprecatedCourseGoalToDisplay, setDeprecatedCourseGoalToDisplay] = useState(selectedGoal);
   const [goalToastHeader, setGoalToastHeader] = useState('');
   const [expandAll, setExpandAll] = useState(false);
 
   const eventProperties = {
     org_key: org,
     courserun_key: courseId,
-  };
-
-  const logResumeCourseClick = () => {
-    sendTrackingLogEvent('edx.course.home.resume_course.clicked', {
-      ...eventProperties,
-      event_type: hasVisitedCourse ? 'resume' : 'start',
-      url: resumeCourseUrl,
-    });
   };
 
   // Below the course title alerts (appearing in the order listed here)
@@ -132,13 +126,6 @@ function OutlineTab({ intl }) {
         <div className="col-12 col-sm-auto p-0">
           <div role="heading" aria-level="1" className="h2">{title}</div>
         </div>
-        {resumeCourseUrl && (
-          <div className="col-12 col-sm-auto p-0">
-            <Button variant="brand" block href={resumeCourseUrl} onClick={() => logResumeCourseClick()}>
-              {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
-            </Button>
-          </div>
-        )}
       </div>
       {/** [MM-P2P] Experiment (className for optimizely trigger) */}
       <div className="row course-outline-tab">
@@ -172,14 +159,17 @@ function OutlineTab({ intl }) {
               <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
             </>
           )}
-          {!courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
+          {!deprecatedCourseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
             <CourseGoalCard
               courseId={courseId}
               goalOptions={goalOptions}
               title={title}
-              setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
+              setGoalToDisplay={(newGoal) => { setDeprecatedCourseGoalToDisplay(newGoal); }}
               setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
             />
+          )}
+          {resumeCourseUrl && (
+          <StartOrResumeCourseCard />
           )}
           <WelcomeMessage courseId={courseId} />
           {rootCourseId && (
@@ -211,13 +201,20 @@ function OutlineTab({ intl }) {
               courseId={courseId}
               username={username}
             />
-            {courseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
+            {deprecatedCourseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
               <UpdateGoalSelector
                 courseId={courseId}
                 goalOptions={goalOptions}
-                selectedGoal={courseGoalToDisplay}
-                setGoalToDisplay={(newGoal) => { setCourseGoalToDisplay(newGoal); }}
+                selectedGoal={deprecatedCourseGoalToDisplay}
+                setGoalToDisplay={(newGoal) => { setDeprecatedCourseGoalToDisplay(newGoal); }}
                 setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
+              />
+            )}
+            {weeklyLearningGoalEnabled && (
+              <WeeklyLearningGoalCard
+                daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
+                subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}
+                courseId={courseId}
               />
             )}
             <CourseTools
