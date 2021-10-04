@@ -5,19 +5,19 @@ import { getConfig, history } from '@edx/frontend-platform';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { ActionRow, Alert, Button } from '@edx/paragon';
 
+import { useModel } from '../../../../generic/model-store';
 import { saveIntegritySignature } from '../../../data';
 import messages from './messages';
 
 function HonorCode({ intl, courseId }) {
   const dispatch = useDispatch();
+  const { isMasquerading } = useModel('coursewareMeta', courseId);
   const siteName = getConfig().SITE_NAME;
-  const honorCodeUrl = `${process.env.TERMS_OF_SERVICE_URL}#honor-code`;
+  const honorCodeUrl = `${getConfig().TERMS_OF_SERVICE_URL}#honor-code`;
 
   const handleCancel = () => history.push(`/course/${courseId}/home`);
 
-  const handleAgree = () => {
-    dispatch(saveIntegritySignature(courseId));
-  };
+  const handleAgree = () => dispatch(saveIntegritySignature(courseId, isMasquerading));
 
   return (
     <Alert variant="light" aria-live="off">
