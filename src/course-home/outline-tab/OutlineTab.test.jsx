@@ -414,6 +414,13 @@ describe('Outline Tab', () => {
     });
   });
 
+  describe('Start or Resume Course Card', () => {
+    it('renders startOrResumeCourseCard', async () => {
+      await fetchAndRender();
+      expect(screen.queryByTestId('start-resume-card')).toBeInTheDocument();
+    });
+  });
+
   describe('Weekly Learning Goal', () => {
     it('does not render weekly learning goal if weeklyLearningGoalEnabled is false', async () => {
       await fetchAndRender();
@@ -434,18 +441,14 @@ describe('Outline Tab', () => {
         expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
       });
 
-      it('renders startOrResumeCourseCard', async () => {
-        expect(screen.queryByTestId('start-resume-card')).toBeInTheDocument();
-      });
-
       it('disables the subscribe button if no goal is set', async () => {
         expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeDisabled();
       });
 
       it.each`
       level     | days 
-      ${'casual'}  | ${3}
-      ${'regular'} | ${4}
+      ${'casual'}  | ${1}
+      ${'regular'} | ${3}
       ${'intense'} | ${5}
         `('calls the API with a goal of $days when $level goal is clicked', async ({ level, days }) => {
   // click on Casual goal
@@ -460,21 +463,34 @@ describe('Outline Tab', () => {
     expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).toBeInTheDocument();
   });
   expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
-
-  // Click on subscribe to reminders
-  const subscriptionSwitch = await screen.getByRole('switch', { name: messages.setGoalReminder.defaultMessage });
-  expect(subscriptionSwitch).toBeInTheDocument();
-
-  fireEvent.click(subscriptionSwitch);
-  await waitFor(() => {
-    expect(axiosMock.history.post[1].url).toMatch(goalUrl);
-    expect(axiosMock.history.post[1].data)
-      .toMatch(`{"course_id":"${courseId}","days_per_week":${days},"subscribed_to_reminders":false}`);
-  });
-
-  // verify that the additional info about subscriptions gets hidden
-  expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).not.toBeInTheDocument();
 });
+      it('shows and hides subscribe to reminders additional text', async () => {
+        const button = await screen.getByText(messages.regularGoalButtonText.defaultMessage).closest('button');
+        fireEvent.click(button);
+        // Verify the request was made
+        await waitFor(() => {
+          expect(axiosMock.history.post[0].url).toMatch(goalUrl);
+          // subscribe is turned on automatically
+          expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","days_per_week":3,"subscribed_to_reminders":true}`);
+          // verify that the additional info about subscriptions shows up
+          expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).toBeInTheDocument();
+        });
+        expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
+
+        // Click on subscribe to reminders toggle
+        const subscriptionSwitch = await screen.getByRole('switch', { name: messages.setGoalReminder.defaultMessage });
+        expect(subscriptionSwitch).toBeInTheDocument();
+
+        fireEvent.click(subscriptionSwitch);
+        await waitFor(() => {
+          expect(axiosMock.history.post[1].url).toMatch(goalUrl);
+          expect(axiosMock.history.post[1].data)
+            .toMatch(`{"course_id":"${courseId}","days_per_week":3,"subscribed_to_reminders":false}`);
+        });
+
+        // verify that the additional info about subscriptions gets hidden
+        expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).not.toBeInTheDocument();
+      });
     });
   });
 

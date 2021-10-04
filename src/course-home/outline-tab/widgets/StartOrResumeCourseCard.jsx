@@ -40,9 +40,9 @@ function StartOrResumeCourseCard({ intl }) {
   return (
     <Card className="mb-3" data-testid="start-resume-card">
       <Card.Body>
-        <div className="row w-100 m-0 ">
-          <h2 className="h4 col-auto flex-grow-1">{intl.formatMessage(messages.startBlurb)}</h2>
-          <div className="col col-auto p-0 justify-content-end">
+        <div className="row w-100 m-0 justify-content-between">
+          <h2 className="h4">{intl.formatMessage(messages.startBlurb)}</h2>
+          <div className="col-12 col-md-auto p-0">
             <Button
               variant="brand"
               block

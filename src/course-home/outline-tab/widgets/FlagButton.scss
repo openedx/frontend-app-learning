@@ -1,0 +1,22 @@
+@import "~@edx/brand/paragon/variables";
+@import "~@edx/paragon/scss/core/core";
+@import "~@edx/brand/paragon/overrides";
+
+.flag-button {
+  background-color: white;
+  border: 1px solid $gray-500;
+  border-radius:.5rem;
+  box-shadow: none;
+
+  &:focus {
+    border: 1px solid $dark-500;
+  }
+
+  &:hover {
+    border: 2px solid $dark-500;
+  }
+}
+
+ input[type=radio]:checked + .flag-button  {
+   border: 2px solid $primary-500;
+}
