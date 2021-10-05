@@ -122,7 +122,7 @@ export default function CourseBreadcrumbs({
       <ol className="list-unstyled d-flex  flex-nowrap align-items-center m-0">
         <li className="list-unstyled d-flex m-0">
           <a
-            href={`/courses/${courseId}/course/`}
+            href={`/courses/${courseId}/home`}
             className="flex-shrink-0 text-primary"
           >
             <FontAwesomeIcon icon={faHome} className="mr-2" />
