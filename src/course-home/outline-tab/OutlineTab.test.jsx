@@ -498,6 +498,25 @@ describe('Outline Tab', () => {
         expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).not.toBeInTheDocument();
       });
     });
+    describe('weekly learning goal is already set', () => {
+      beforeEach(async () => {
+        setTabData({
+          course_goals: {
+            weekly_learning_goal_enabled: true,
+            selected_goal: {
+              subscribed_to_reminders: true,
+              days_per_week: 3,
+            },
+          },
+        });
+        await fetchAndRender();
+      });
+
+      it('has button for weekly learning goal selected', async () => {
+        const radio = await screen.queryByTestId('weekly-learning-goal-radio-3');
+        expect(radio.checked).toEqual(true);
+      });
+    });
   });
 
   describe('Course Handouts', () => {

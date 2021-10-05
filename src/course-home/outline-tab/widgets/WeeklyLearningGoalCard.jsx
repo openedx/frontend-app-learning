@@ -62,6 +62,7 @@ function WeeklyLearningGoalCard({
             >
               <input
                 type="radio"
+                data-testid={`weekly-learning-goal-radio-${weeklyLearningGoalLevels.CASUAL}`}
                 id={weeklyLearningGoalLevels.CASUAL}
                 name="learningGoal"
                 radioGroup="learningGoal"
@@ -86,6 +87,7 @@ function WeeklyLearningGoalCard({
             >
               <input
                 type="radio"
+                data-testid={`weekly-learning-goal-radio-${weeklyLearningGoalLevels.REGULAR}`}
                 id={weeklyLearningGoalLevels.REGULAR}
                 name="learningGoal"
                 radioGroup="learningGoal"
@@ -109,6 +111,7 @@ function WeeklyLearningGoalCard({
             >
               <input
                 type="radio"
+                data-testid={`weekly-learning-goal-radio-${weeklyLearningGoalLevels.INTENSE}`}
                 id={weeklyLearningGoalLevels.INTENSE}
                 name="learningGoal"
                 radioGroup="learningGoal"
@@ -117,7 +120,8 @@ function WeeklyLearningGoalCard({
                 tabIndex="-1"
                 checked={weeklyLearningGoalLevels.INTENSE === daysPerWeekGoal}
                 className="position-absolute invisible"
-              />              <FlagButton
+              />
+              <FlagButton
                 buttonIcon={<FlagIntenseIcon />}
                 srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
                 title={intl.formatMessage(messages.intenseGoalButtonTitle)}
