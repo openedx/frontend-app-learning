@@ -3,6 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { waitFor } from '@testing-library/react';
 
 import { fetchCourse } from '../../data';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
@@ -375,6 +376,20 @@ describe('Course Exit Pages', () => {
       await fetchAndRender(<CourseInProgress />);
       expect(screen.getByText('More content is coming soon!')).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'View course schedule' })).toBeInTheDocument();
+    });
+  });
+
+  it('unsubscribes the user when loading the course exit page', async () => {
+    setMetadata({
+      enrollment: {
+        mode: 'audit',
+      },
+    });
+    await fetchAndRender(<CourseExit />);
+    const url = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
+    await waitFor(() => {
+      expect(axiosMock.history.post[0].url).toMatch(url);
+      expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${defaultMetadata.id}","subscribed_to_reminders":false}`);
     });
   });
 });
