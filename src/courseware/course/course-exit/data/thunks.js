@@ -5,10 +5,7 @@ import {
   fetchCourseRecommendationsRequest,
   fetchCourseRecommendationsSuccess,
 } from './slice';
-import {
-  getCourseRecommendations,
-  postUnsubscribeFromGoalReminders,
-} from './api';
+import getCourseRecommendations from './api';
 import { updateModel } from '../../../../generic/model-store';
 
 export default function fetchCourseRecommendations(courseKey, courseId) {
@@ -29,8 +26,4 @@ export default function fetchCourseRecommendations(courseKey, courseId) {
       dispatch(fetchCourseRecommendationsFailure({ courseId }));
     }
   };
-}
-
-export async function unsubscribeFromGoalReminders(courseId, daysPerWeek, subscribedToReminders) {
-  return postUnsubscribeFromGoalReminders(courseId, daysPerWeek, subscribedToReminders);
 }

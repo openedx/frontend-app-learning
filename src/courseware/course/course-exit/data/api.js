@@ -23,7 +23,7 @@ function filterRecommendationsList(
   ));
 }
 
-export async function getCourseRecommendations(courseKey) {
+export default async function getCourseRecommendations(courseKey) {
   const discoveryApiUrl = getConfig().DISCOVERY_API_BASE_URL;
   if (!discoveryApiUrl) {
     return [];
@@ -35,12 +35,4 @@ export async function getCourseRecommendations(courseKey) {
     getAuthenticatedHttpClient().get(enrollmentsUrl),
   ]);
   return filterRecommendationsList(camelCaseObject(recommendationsResponse), camelCaseObject(enrollmentsResponse));
-}
-
-export async function postUnsubscribeFromGoalReminders(courseId) {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`);
-  return getAuthenticatedHttpClient().post(url.href, {
-    course_id: courseId,
-    subscribed_to_reminders: false,
-  });
 }
