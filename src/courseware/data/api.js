@@ -187,6 +187,7 @@ function normalizeMetadata(metadata) {
     accessExpiration: camelCaseObject(data.access_expiration),
     canShowUpgradeSock: data.can_show_upgrade_sock,
     contentTypeGatingEnabled: data.content_type_gating_enabled,
+    courseGoals: data.course_goals,
     id: data.id,
     title: data.name,
     number: data.number,

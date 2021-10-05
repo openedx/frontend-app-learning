@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -11,6 +11,7 @@ import CourseInProgress from './CourseInProgress';
 import CourseNonPassing from './CourseNonPassing';
 import { COURSE_EXIT_MODES, getCourseExitMode } from './utils';
 import messages from './messages';
+import { unsubscribeFromGoalReminders } from './data/thunks';
 
 import { useModel } from '../../../generic/model-store';
 
@@ -18,10 +19,13 @@ function CourseExit({ intl }) {
   const { courseId } = useSelector(state => state.courseware);
   const {
     certificateData,
+    courseExitPageIsActive,
+    courseGoals,
+    enrollmentMode,
     hasScheduledContent,
     isEnrolled,
+    isMasquerading,
     userHasPassingGrade,
-    courseExitPageIsActive,
   } = useModel('coursewareMeta', courseId);
 
   const mode = getCourseExitMode(
@@ -31,6 +35,15 @@ function CourseExit({ intl }) {
     userHasPassingGrade,
     courseExitPageIsActive,
   );
+
+  // Audit users cannot fully complete a course, so we will
+  // unsubscribe them from goal reminders once they reach the course exit page
+  // to avoid spamming them with goal reminder emails
+  if (courseGoals && enrollmentMode === 'audit' && !isMasquerading) {
+    useEffect(() => {
+      unsubscribeFromGoalReminders(courseId);
+    }, []);
+  }
 
   let body = null;
   if (mode === COURSE_EXIT_MODES.nonPassing) {
