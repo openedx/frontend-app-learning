@@ -1,11 +1,13 @@
 import React from 'react';
-import { screen, render } from '@testing-library/react';
+import { screen, render, fireEvent } from '@testing-library/react';
+import { useSelector } from 'react-redux';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
 import { useModel, useModels } from '../../generic/model-store';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 
 jest.mock('@edx/frontend-platform');
+jest.mock('react-redux');
 jest.mock('@edx/frontend-platform/analytics');
 
 // Remove When Fully rolled out>>>
@@ -15,16 +17,7 @@ getConfig.mockImplementation(() => ({ ENABLE_JUMPNAV: 'true' }));
 getAuthenticatedUser.mockImplementation(() => ({ administrator: true }));
 // ^^^^Remove When Fully rolled out
 
-jest.mock('react-redux', () => ({
-  connect: (mapStateToProps, mapDispatchToProps) => (ReactComponent) => ({
-    mapStateToProps,
-    mapDispatchToProps,
-    ReactComponent,
-  }),
-  Provider: ({ children }) => children,
-  useSelector: () => 'loaded',
-}));
-
+useSelector.mockImplementation(() => 'loaded');
 useModels.mockImplementation((name) => {
   if (name === 'sections') {
     return [
@@ -111,11 +104,14 @@ describe('CourseBreadcrumbs', () => {
       sequenceId="block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions"
     />,
   );
-  it('renders course breadcrumbs as expected', async () => {
-    expect(screen.queryAllByRole('link')).toHaveLength(1);
-    const courseHomeButtonDestination = screen.getAllByRole('link')[0].href;
-    expect(courseHomeButtonDestination).toBe('http://localhost/courses/course-v1:edX+DemoX+Demo_Course/course/');
+  it('renders course breadcrumbs as expected, handles clicks', async () => {
     expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
     expect(screen.queryAllByRole('button')).toHaveLength(2);
+    const sectionButton = screen.getByText('Example Week 1: Getting Started');
+    expect(screen.queryAllByRole('link')).toHaveLength(1);
+    fireEvent.click(sectionButton);
+    expect(screen.queryAllByRole('link')).toHaveLength(2);
+    const menuItem = screen.queryAllByRole('link')[0];
+    fireEvent.click(menuItem);
   });
 });
