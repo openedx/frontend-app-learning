@@ -48,13 +48,13 @@ describe('NoticesProvider', () => {
     expect(window.location.replace).toHaveBeenCalledWith(`${redirectUrl}?next=${window.location.href}`);
   });
 
-  it('does not redirect on no data', () => {
+  it('does not redirect on no data', async () => {
     getNotices.mockImplementation(() => ({}));
     getConfig.mockImplementation(() => ({ ENABLE_NOTICES: true }));
     delete window.location;
     window.location = { replace: jest.fn() };
     process.env.ENABLE_NOTICES = true;
-    buildAndRender();
+    await act(() => buildAndRender());
     expect(window.location.replace).toHaveBeenCalledTimes(0);
     expect(window.location.toString() === 'http://localhost/');
   });
