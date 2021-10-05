@@ -175,7 +175,7 @@ function OutlineTab({ intl }) {
           {rootCourseId && (
             <>
               <div className="row w-100 m-0 mb-3 justify-content-end">
-                <div className="col-12 col-sm-auto p-0">
+                <div className="col-12 col-md-auto p-0">
                   <Button variant="outline-primary" block onClick={() => { setExpandAll(!expandAll); }}>
                     {expandAll ? intl.formatMessage(messages.collapseAll) : intl.formatMessage(messages.expandAll)}
                   </Button>

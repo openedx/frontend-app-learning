@@ -445,6 +445,12 @@ describe('Outline Tab', () => {
         expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeDisabled();
       });
 
+      it('does not show the deprecated goals feature if WeeklyLearningGoal is enabled', async () => {
+        expect(screen.queryByTestId('course-goal-card')).not.toBeInTheDocument();
+        expect(screen.queryByLabelText('Goal')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('edit-goal-selector')).not.toBeInTheDocument();
+      });
+
       it.each`
       level     | days 
       ${'casual'}  | ${1}
