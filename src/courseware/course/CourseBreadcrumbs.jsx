@@ -13,10 +13,9 @@ import { MMP2PFlyoverTrigger } from '../../experiments/mm-p2p';
 import ConnectedJumpNavMenuItem from './JumpNavMenuItem';
 
 function CourseBreadcrumb({
-  content, withSeparator, courseId, unitId,
+  content, withSeparator, courseId, unitId, isStaff,
 }) {
   const defaultContent = content.filter(destination => destination.default)[0] || { id: courseId, label: '' };
-  const { administrator } = getAuthenticatedUser();
 
   return (
     <>
@@ -30,7 +29,7 @@ function CourseBreadcrumb({
         whiteSpace: 'nowrap',
       }}
       >
-        { getConfig().ENABLE_JUMPNAV !== 'true' || content.length < 2 || !administrator
+        { getConfig().ENABLE_JUMPNAV !== 'true' || content.length < 2 || !isStaff
           ? (
             <a className="text-primary-500" href={`/course/${courseId}/${defaultContent.id}`}>
               {defaultContent.label}
@@ -65,12 +64,16 @@ CourseBreadcrumb.propTypes = {
   unitId: PropTypes.string,
   withSeparator: PropTypes.bool,
   courseId: PropTypes.string,
+   /* TNL-7107 Rollout */
+   isStaff: PropTypes.bool,
 };
 
 CourseBreadcrumb.defaultProps = {
   withSeparator: false,
   unitId: null,
   courseId: null,
+  /* TNL-7107 Rollout */
+  isStaff: null,
 };
 
 export default function CourseBreadcrumbs({
@@ -78,6 +81,7 @@ export default function CourseBreadcrumbs({
   sectionId,
   sequenceId,
   unitId,
+  isStaff,
   /** [MM-P2P] Experiment */
   mmp2p,
 }) {
@@ -140,6 +144,7 @@ export default function CourseBreadcrumbs({
             content={content}
             unitId={unitId}
             withSeparator
+            isStaff={isStaff}
           />
         ))}
         {/** [MM-P2P] Experiment */}
@@ -156,6 +161,8 @@ CourseBreadcrumbs.propTypes = {
   sectionId: PropTypes.string,
   sequenceId: PropTypes.string,
   unitId: PropTypes.string,
+  /* TNL-7107 Rollout */
+  isStaff: PropTypes.bool,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({
@@ -168,6 +175,8 @@ CourseBreadcrumbs.defaultProps = {
   sectionId: null,
   sequenceId: null,
   unitId: null,
+  /* TNL-7107 Rollout */
+  isStaff: null,
   /** [MM-P2P] Experiment */
   mmp2p: {},
 };
