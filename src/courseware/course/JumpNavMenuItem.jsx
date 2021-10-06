@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { history } from '@edx/frontend-platform';
-import {MenuItem } from '@edx/paragon';
+import { MenuItem } from '@edx/paragon';
 
 import {
   sendTrackingLogEvent,
@@ -19,9 +19,7 @@ export default function JumpNavMenuItem({
   isDefault,
 
 }) {
-
   const dispatch = useDispatch();
-
   function logEvent(targetUrl) {
     const eventName = 'edx.ui.lms.jump_nav.selected';
     const payload = {
@@ -33,7 +31,6 @@ export default function JumpNavMenuItem({
     sendTrackEvent(eventName, payload);
     sendTrackingLogEvent(eventName, payload);
   }
-
 
   function lazyloadUrl() {
     if (isDefault) {
@@ -81,4 +78,3 @@ JumpNavMenuItem.propTypes = {
   courseId: PropTypes.string.isRequired,
   currentUnit: PropTypes.string.isRequired,
 };
-
