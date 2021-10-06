@@ -2,25 +2,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { history } from '@edx/frontend-platform';
-import { Button, MenuItem } from '@edx/paragon';
+import {MenuItem } from '@edx/paragon';
 
 import {
   sendTrackingLogEvent,
   sendTrackEvent,
 } from '@edx/frontend-platform/analytics';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { checkBlockCompletion } from '../data';
 
-export function JumpNavMenuItem({
+export default function JumpNavMenuItem({
   title,
   courseId,
   currentUnit,
   sequences,
   isDefault,
-  actions,
 
 }) {
+
+  const dispatch = useDispatch();
+
   function logEvent(targetUrl) {
     const eventName = 'edx.ui.lms.jump_nav.selected';
     const payload = {
@@ -33,15 +34,16 @@ export function JumpNavMenuItem({
     sendTrackingLogEvent(eventName, payload);
   }
 
+
   function lazyloadUrl() {
     if (isDefault) {
       return `/course/${courseId}/${currentUnit}`;
     }
     const destinationString = sequences.forEach(sequence => sequence.unitIds.forEach(unitId => {
-      const complete = actions.checkBlockCompletion(
+      const complete = dispatch(checkBlockCompletion(
         courseId,
         sequence.id, unitId,
-      )
+      ))
         .then(value => value);
       if (!complete) { return `/course/${courseId}/${unitId}`; }
     }));
@@ -55,7 +57,6 @@ export function JumpNavMenuItem({
 
   return (
     <MenuItem
-      as={Button}
       defaultSelected={isDefault}
       onClick={() => handleClick()}
     >
@@ -79,16 +80,5 @@ JumpNavMenuItem.propTypes = {
   isDefault: PropTypes.bool.isRequired,
   courseId: PropTypes.string.isRequired,
   currentUnit: PropTypes.string.isRequired,
-  actions: PropTypes.shape({
-    checkBlockCompletion: PropTypes.func,
-  }).isRequired,
 };
 
-function mapDispatchToProps(dispatch) {
-  return {
-    actions: bindActionCreators({ checkBlockCompletion }, dispatch),
-  };
-}
-
-export default connect(null,
-  mapDispatchToProps)(JumpNavMenuItem);

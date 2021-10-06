@@ -10,7 +10,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useModel, useModels } from '../../generic/model-store';
 /** [MM-P2P] Experiment */
 import { MMP2PFlyoverTrigger } from '../../experiments/mm-p2p';
-import ConnectedJumpNavMenuItem from './JumpNavMenuItem';
+import JumpNavMenuItem from './JumpNavMenuItem';
 
 function CourseBreadcrumb({
   content, withSeparator, courseId, unitId,
@@ -39,7 +39,7 @@ function CourseBreadcrumb({
           : (
             <SelectMenu isLink defaultMessage={defaultContent.label}>
               {content.map(item => (
-                <ConnectedJumpNavMenuItem
+                <JumpNavMenuItem
                   isDefault={item.default}
                   sequences={item.sequences}
                   courseId={courseId}
@@ -122,7 +122,7 @@ export default function CourseBreadcrumbs({
       <ol className="list-unstyled d-flex  flex-nowrap align-items-center m-0">
         <li className="list-unstyled d-flex m-0">
           <a
-            href={`/courses/${courseId}/home`}
+            href={`/course/${courseId}/home`}
             className="flex-shrink-0 text-primary"
           >
             <FontAwesomeIcon icon={faHome} className="mr-2" />
