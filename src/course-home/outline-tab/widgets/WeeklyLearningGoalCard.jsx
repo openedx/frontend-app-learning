@@ -3,14 +3,9 @@ import PropTypes from 'prop-types';
 
 import { Form, Card, Icon } from '@edx/paragon';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-
 import { Email } from '@edx/paragon/icons';
-import { ReactComponent as FlagIntenseIcon } from '@edx/paragon/icons/svg/flag.svg';
-import { ReactComponent as FlagCasualIcon } from './flag_outline.svg';
-import { ReactComponent as FlagRegularIcon } from './flag_gray.svg';
 import messages from '../messages';
-import FlagButton from './FlagButton';
-
+import LearningGoalButton from './LearningGoalButton';
 import { saveWeeklyLearningGoal } from '../../data';
 
 function WeeklyLearningGoalCard({
@@ -56,79 +51,21 @@ function WeeklyLearningGoalCard({
           <div
             className="row w-100 m-0 p-0 justify-content-around"
           >
-            <label
-              htmlFor={weeklyLearningGoalLevels.CASUAL}
-              className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0 shadow-none"
-            >
-              <input
-                type="radio"
-                data-testid={`weekly-learning-goal-radio-${weeklyLearningGoalLevels.CASUAL}`}
-                id={weeklyLearningGoalLevels.CASUAL}
-                name="learningGoal"
-                radioGroup="learningGoal"
-                value={weeklyLearningGoalLevels.CASUAL}
-                onChange={() => handleSelect(weeklyLearningGoalLevels.CASUAL)}
-                tabIndex="0"
-                checked={weeklyLearningGoalLevels.CASUAL === daysPerWeekGoal}
-                className="position-absolute invisible"
-              />
-              <FlagButton
-                className="flag-button-input"
-                buttonIcon={<FlagCasualIcon />}
-                srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
-                title={intl.formatMessage(messages.casualGoalButtonTitle)}
-                text={intl.formatMessage(messages.casualGoalButtonText)}
-                handleSelect={() => { handleSelect(weeklyLearningGoalLevels.CASUAL); }}
-              />
-            </label>
-            <label
-              htmlFor={weeklyLearningGoalLevels.REGULAR}
-              className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0 shadow-none"
-            >
-              <input
-                type="radio"
-                data-testid={`weekly-learning-goal-radio-${weeklyLearningGoalLevels.REGULAR}`}
-                id={weeklyLearningGoalLevels.REGULAR}
-                name="learningGoal"
-                radioGroup="learningGoal"
-                value={weeklyLearningGoalLevels.REGULAR}
-                onChange={() => handleSelect(weeklyLearningGoalLevels.REGULAR)}
-                tabIndex="-1"
-                checked={weeklyLearningGoalLevels.REGULAR === daysPerWeekGoal}
-                className="position-absolute invisible"
-              />
-              <FlagButton
-                buttonIcon={<FlagRegularIcon />}
-                srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
-                title={intl.formatMessage(messages.regularGoalButtonTitle)}
-                text={intl.formatMessage(messages.regularGoalButtonText)}
-                handleSelect={() => { handleSelect(weeklyLearningGoalLevels.REGULAR); }}
-              />
-            </label>
-            <label
-              htmlFor={weeklyLearningGoalLevels.INTENSE}
-              className="col-auto col-md-12 col-xl-auto m-0 p-0 pb-md-3 pb-xl-0 shadow-none"
-            >
-              <input
-                type="radio"
-                data-testid={`weekly-learning-goal-radio-${weeklyLearningGoalLevels.INTENSE}`}
-                id={weeklyLearningGoalLevels.INTENSE}
-                name="learningGoal"
-                radioGroup="learningGoal"
-                value={weeklyLearningGoalLevels.INTENSE}
-                onChange={() => handleSelect(weeklyLearningGoalLevels.INTENSE)}
-                tabIndex="-1"
-                checked={weeklyLearningGoalLevels.INTENSE === daysPerWeekGoal}
-                className="position-absolute invisible"
-              />
-              <FlagButton
-                buttonIcon={<FlagIntenseIcon />}
-                srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
-                title={intl.formatMessage(messages.intenseGoalButtonTitle)}
-                text={intl.formatMessage(messages.intenseGoalButtonText)}
-                handleSelect={() => { handleSelect(weeklyLearningGoalLevels.INTENSE); }}
-              />
-            </label>
+            <LearningGoalButton
+              level="casual"
+              currentGoal={daysPerWeekGoal}
+              handleSelect={handleSelect}
+            />
+            <LearningGoalButton
+              level="regular"
+              currentGoal={daysPerWeekGoal}
+              handleSelect={handleSelect}
+            />
+            <LearningGoalButton
+              level="intense"
+              currentGoal={daysPerWeekGoal}
+              handleSelect={handleSelect}
+            />
           </div>
           <div className="row p-3">
             <Form.Switch
@@ -142,7 +79,7 @@ function WeeklyLearningGoalCard({
         </Card.Body>
         {isGetReminderSelected && (
           <Card.Footer className="border-0 px-2.5">
-            <div className="row w-100  m-0  small align-center">
+            <div className="row w-100 m-0 small align-center">
               <div className="d-flex align-items-center pr-1.5">
                 <Icon src={Email} />
               </div>

@@ -513,7 +513,7 @@ describe('Outline Tab', () => {
       });
 
       it('has button for weekly learning goal selected', async () => {
-        const radio = await screen.queryByTestId('weekly-learning-goal-radio-3');
+        const radio = await screen.queryByTestId('weekly-learning-goal-input-regular');
         expect(radio.checked).toEqual(true);
       });
     });
