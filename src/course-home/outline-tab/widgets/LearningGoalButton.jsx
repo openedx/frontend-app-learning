@@ -55,9 +55,7 @@ function LearningGoalButton({
         className="position-absolute invisible"
       />
       <FlagButton
-        className="flag-button-input"
         buttonIcon={values.icon}
-        srText={intl.formatMessage(messages.setLearningGoalButtonScreenReaderText)}
         title={intl.formatMessage(values.title)}
         text={intl.formatMessage(values.text)}
         handleSelect={() => { handleSelect(values.daysPerWeek); }}

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Form, Card, Icon } from '@edx/paragon';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Email } from '@edx/paragon/icons';
+import { useSelector } from 'react-redux';
 import messages from '../messages';
 import LearningGoalButton from './LearningGoalButton';
 import { saveWeeklyLearningGoal } from '../../data';
@@ -11,18 +12,15 @@ import { saveWeeklyLearningGoal } from '../../data';
 function WeeklyLearningGoalCard({
   daysPerWeek,
   subscribedToReminders,
-  courseId,
   intl,
 }) {
+  const {
+    courseId,
+  } = useSelector(state => state.courseHome);
+
   const [daysPerWeekGoal, setDaysPerWeekGoal] = useState(daysPerWeek);
   // eslint-disable-next-line react/prop-types
   const [isGetReminderSelected, setGetReminderSelected] = useState(subscribedToReminders);
-  const weeklyLearningGoalLevels = {
-    CASUAL: 1,
-    REGULAR: 3,
-    INTENSE: 5,
-  };
-  Object.freeze(weeklyLearningGoalLevels);
 
   function handleSelect(days) {
     // Set the subscription button if this is the first time selecting a goal
@@ -40,7 +38,7 @@ function WeeklyLearningGoalCard({
 
   return (
     <div className="row w-100 m-0 p-0">
-      <Card className="mb-3 shadow-sm border-0" data-testid="weekly-learning-goal-card">
+      <Card className="mb-3 shadow-sm border-0 p-3.5" data-testid="weekly-learning-goal-card">
         <Card.Body>
           <Card.Title>
             <h4 className="m-0 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h4>
@@ -49,7 +47,7 @@ function WeeklyLearningGoalCard({
             {intl.formatMessage(messages.setWeeklyGoalDetail)}
           </Card.Text>
           <div
-            className="row w-100 m-0 p-0 justify-content-around"
+            className="row w-100 m-0 p-0 justify-content-between"
           >
             <LearningGoalButton
               level="casual"
@@ -67,7 +65,7 @@ function WeeklyLearningGoalCard({
               handleSelect={handleSelect}
             />
           </div>
-          <div className="row pt-3 pb-1">
+          <div className="pt-3 pb-1">
             <Form.Switch
               checked={isGetReminderSelected}
               onChange={(event) => handleSubscribeToReminders(event)}
@@ -78,12 +76,15 @@ function WeeklyLearningGoalCard({
           </div>
         </Card.Body>
         {isGetReminderSelected && (
-          <Card.Footer className="border-0 px-2.5">
+          <Card.Footer className="border-0 px-2.5 bg-light-200 ">
             <div className="row w-100 m-0 small align-center">
-              <div className="d-flex align-items-center pr-1.">
-                <Icon src={Email} />
+              <div className="d-flex align-items-center pr-1">
+                <Icon
+                  className="text-primary-500"
+                  src={Email}
+                />
               </div>
-              <div className="col align-center">
+              <div className="col">
                 {intl.formatMessage(messages.goalReminderDetail)}
               </div>
             </div>
@@ -98,7 +99,6 @@ function WeeklyLearningGoalCard({
 WeeklyLearningGoalCard.propTypes = {
   daysPerWeek: PropTypes.number,
   subscribedToReminders: PropTypes.bool,
-  courseId: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
 };
 

@@ -214,7 +214,6 @@ function OutlineTab({ intl }) {
               <WeeklyLearningGoalCard
                 daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
                 subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}
-                courseId={courseId}
               />
             )}
             <CourseTools
