@@ -74,7 +74,7 @@ describe('Outline Tab', () => {
   describe('Course Outline', () => {
     it('displays link to start course', async () => {
       await fetchAndRender();
-      expect(screen.getByRole('link', { name: 'Start Course' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: messages.start.defaultMessage })).toBeInTheDocument();
     });
 
     it('displays link to resume course', async () => {
@@ -962,7 +962,7 @@ describe('Outline Tab', () => {
           ],
         });
         await fetchAndRender();
-        expect(screen.getByRole('link', { name: 'Start Course' })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: messages.start.defaultMessage })).toBeInTheDocument();
         expect(screen.queryByText('More content is coming soon!')).not.toBeInTheDocument();
       });
     });
