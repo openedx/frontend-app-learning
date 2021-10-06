@@ -28,54 +28,57 @@ import { TabContainer } from './tab-page';
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import initializeStore from './store';
+import NoticesProvider from './generic/notices';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider store={initializeStore()}>
-      <UserMessagesProvider>
-        <Switch>
-          <PageRoute exact path="/goal-unsubscribe/:token" component={GoalUnsubscribe} />
-          <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
-          <PageRoute path="/course/:courseId/home">
-            <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
-              <OutlineTab />
-            </TabContainer>
-          </PageRoute>
-          <PageRoute path="/course/:courseId/dates">
-            <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-              <DatesTab />
-            </TabContainer>
-          </PageRoute>
-          <PageRoute
-            path={[
-              '/course/:courseId/progress/:targetUserId/',
-              '/course/:courseId/progress',
-            ]}
-            render={({ match }) => (
-              <TabContainer
-                tab="progress"
-                fetch={(courseId) => fetchProgressTab(courseId, match.params.targetUserId)}
-                slice="courseHome"
-              >
-                <ProgressTab />
+      <NoticesProvider>
+        <UserMessagesProvider>
+          <Switch>
+            <PageRoute exact path="/goal-unsubscribe/:token" component={GoalUnsubscribe} />
+            <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
+            <PageRoute path="/course/:courseId/home">
+              <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
+                <OutlineTab />
               </TabContainer>
-            )}
-          />
-          <PageRoute path="/course/:courseId/course-end">
-            <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
-              <CourseExit />
-            </TabContainer>
-          </PageRoute>
-          <PageRoute
-            path={[
-              '/course/:courseId/:sequenceId/:unitId',
-              '/course/:courseId/:sequenceId',
-              '/course/:courseId',
-            ]}
-            component={CoursewareContainer}
-          />
-        </Switch>
-      </UserMessagesProvider>
+            </PageRoute>
+            <PageRoute path="/course/:courseId/dates">
+              <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
+                <DatesTab />
+              </TabContainer>
+            </PageRoute>
+            <PageRoute
+              path={[
+                '/course/:courseId/progress/:targetUserId/',
+                '/course/:courseId/progress',
+              ]}
+              render={({ match }) => (
+                <TabContainer
+                  tab="progress"
+                  fetch={(courseId) => fetchProgressTab(courseId, match.params.targetUserId)}
+                  slice="courseHome"
+                >
+                  <ProgressTab />
+                </TabContainer>
+              )}
+            />
+            <PageRoute path="/course/:courseId/course-end">
+              <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
+                <CourseExit />
+              </TabContainer>
+            </PageRoute>
+            <PageRoute
+              path={[
+                '/course/:courseId/:sequenceId/:unitId',
+                '/course/:courseId/:sequenceId',
+                '/course/:courseId',
+              ]}
+              component={CoursewareContainer}
+            />
+          </Switch>
+        </UserMessagesProvider>
+      </NoticesProvider>
     </AppProvider>,
     document.getElementById('root'),
   );
@@ -93,6 +96,7 @@ initialize({
         CREDENTIALS_BASE_URL: process.env.CREDENTIALS_BASE_URL || null,
         ENTERPRISE_LEARNER_PORTAL_HOSTNAME: process.env.ENTERPRISE_LEARNER_PORTAL_HOSTNAME || null,
         ENABLE_JUMPNAV: process.env.ENABLE_JUMPNAV || null,
+        ENABLE_NOTICES: process.env.ENABLE_NOTICES || null,
         INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
         SEARCH_CATALOG_URL: process.env.SEARCH_CATALOG_URL || null,
         SOCIAL_UTM_MILESTONE_CAMPAIGN: process.env.SOCIAL_UTM_MILESTONE_CAMPAIGN || null,
