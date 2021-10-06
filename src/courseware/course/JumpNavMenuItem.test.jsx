@@ -6,7 +6,6 @@ import { fireEvent } from '../../setupTest';
 jest.mock('@edx/frontend-platform');
 jest.mock('@edx/frontend-platform/analytics');
 
-
 const mockCheckBlock = jest.fn(() => Promise.resolve(true)); // check all units
 
 jest.mock('react-redux', () => ({
