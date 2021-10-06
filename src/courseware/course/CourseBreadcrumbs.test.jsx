@@ -109,6 +109,7 @@ describe('CourseBreadcrumbs', () => {
       courseId="course-v1:edX+DemoX+Demo_Course"
       sectionId="block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations"
       sequenceId="block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions"
+      isStaff
     />,
   );
   it('renders course breadcrumbs as expected', async () => {

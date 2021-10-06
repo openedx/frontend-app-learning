@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { SelectMenu } from '@edx/paragon';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useModel, useModels } from '../../generic/model-store';
 /** [MM-P2P] Experiment */
 import { MMP2PFlyoverTrigger } from '../../experiments/mm-p2p';
@@ -64,8 +63,8 @@ CourseBreadcrumb.propTypes = {
   unitId: PropTypes.string,
   withSeparator: PropTypes.bool,
   courseId: PropTypes.string,
-   /* TNL-7107 Rollout */
-   isStaff: PropTypes.bool,
+  /* TNL-7107 Rollout */
+  isStaff: PropTypes.bool,
 };
 
 CourseBreadcrumb.defaultProps = {
