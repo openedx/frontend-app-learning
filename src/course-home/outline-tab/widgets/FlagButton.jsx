@@ -18,10 +18,10 @@ function FlagButton({
     >
       {buttonIcon}
       <span className="sr-only sr-only-focusable">{srText}</span>
-      <div className="text-center small">
+      <div className="text-center small text-gray-700">
         {title}
       </div>
-      <div className="text-center micro">
+      <div className="text-center micro text-gray-500">
         {text}
       </div>
     </button>

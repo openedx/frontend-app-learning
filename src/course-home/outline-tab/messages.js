@@ -138,7 +138,7 @@ const messages = defineMessages({
   },
   start: {
     id: 'learning.outline.start',
-    defaultMessage: 'Start Course',
+    defaultMessage: 'Start course',
   },
   startBlurb: {
     id: 'learning.outline.startBlurb',

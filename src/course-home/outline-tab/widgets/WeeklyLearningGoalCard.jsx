@@ -40,12 +40,12 @@ function WeeklyLearningGoalCard({
 
   return (
     <div className="row w-100 m-0 p-0">
-      <Card className="mb-3" data-testid="weekly-learning-goal-card">
+      <Card className="mb-3 shadow-sm border-0" data-testid="weekly-learning-goal-card">
         <Card.Body>
           <Card.Title>
-            <h4 className="m-0">{intl.formatMessage(messages.setWeeklyGoal)}</h4>
+            <h4 className="m-0 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h4>
           </Card.Title>
-          <Card.Text>
+          <Card.Text className="text-gray-700">
             {intl.formatMessage(messages.setWeeklyGoalDetail)}
           </Card.Text>
           <div
@@ -67,7 +67,7 @@ function WeeklyLearningGoalCard({
               handleSelect={handleSelect}
             />
           </div>
-          <div className="row p-3">
+          <div className="row pt-3 pb-1">
             <Form.Switch
               checked={isGetReminderSelected}
               onChange={(event) => handleSubscribeToReminders(event)}
@@ -80,7 +80,7 @@ function WeeklyLearningGoalCard({
         {isGetReminderSelected && (
           <Card.Footer className="border-0 px-2.5">
             <div className="row w-100 m-0 small align-center">
-              <div className="d-flex align-items-center pr-1.5">
+              <div className="d-flex align-items-center pr-1.">
                 <Icon src={Email} />
               </div>
               <div className="col align-center">

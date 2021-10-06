@@ -4,19 +4,19 @@
 
 .flag-button {
   background-color: white;
-  border: 1px solid $gray-500;
-  border-radius:.5rem;
+  border: 2px solid $light-400;
+  border-radius:.2rem;
   box-shadow: none;
 
   &:focus {
-    border: 1px solid $dark-500;
+    border: 2px solid $primary-300;
   }
 
   &:hover {
-    border: 2px solid $dark-500;
+    border: 2px solid $primary-300;
   }
 }
 
  input[type=radio]:checked + .flag-button  {
-   border: 2px solid $primary-500;
+   border: 2px solid $primary-300;
 }
