@@ -1,22 +1,17 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
-import { JumpNavMenuItem } from './JumpNavMenuItem';
+import JumpNavMenuItem from './JumpNavMenuItem';
 import { fireEvent } from '../../setupTest';
 
 jest.mock('@edx/frontend-platform');
 jest.mock('@edx/frontend-platform/analytics');
 
-jest.mock('react-redux', () => ({
-  connect: (mapStateToProps, mapDispatchToProps) => (ReactComponent) => ({
-    mapStateToProps,
-    mapDispatchToProps,
-    ReactComponent,
-  }),
-  Provider: ({ children }) => children,
-  useSelector: () => 'loaded',
-}));
 
 const mockCheckBlock = jest.fn(() => Promise.resolve(true)); // check all units
+
+jest.mock('react-redux', () => ({
+  useDispatch: () => mockCheckBlock,
+}));
 
 const mockData = {
   sectionId: 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations',
@@ -58,9 +53,6 @@ const mockData = {
     },
   ],
   isDefault: false,
-  actions: {
-    checkBlockCompletion: mockCheckBlock,
-  },
 };
 describe('JumpNavMenuItem', () => {
   render(

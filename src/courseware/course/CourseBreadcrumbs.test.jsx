@@ -114,7 +114,7 @@ describe('CourseBreadcrumbs', () => {
   it('renders course breadcrumbs as expected', async () => {
     expect(screen.queryAllByRole('link')).toHaveLength(1);
     const courseHomeButtonDestination = screen.getAllByRole('link')[0].href;
-    expect(courseHomeButtonDestination).toBe('http://localhost/courses/course-v1:edX+DemoX+Demo_Course/course/');
+    expect(courseHomeButtonDestination).toBe('http://localhost/course/course-v1:edX+DemoX+Demo_Course/home');
     expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
     expect(screen.queryAllByRole('button')).toHaveLength(2);
   });
