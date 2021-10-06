@@ -303,10 +303,15 @@ export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
   };
 }
 
-export function saveIntegritySignature(courseId) {
+export function saveIntegritySignature(courseId, isMasquerading) {
   return async (dispatch) => {
     try {
-      await postIntegritySignature(courseId);
+      // If the request is made by a staff user masquerading as a learner,
+      // don't actually create a signature for them on the backend. Only
+      // frontend state will be updated.
+      if (!isMasquerading) {
+        await postIntegritySignature(courseId);
+      }
       dispatch(updateModel({
         modelType: 'coursewareMeta',
         model: {
