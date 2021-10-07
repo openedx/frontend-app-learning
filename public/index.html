@@ -1,11 +1,6 @@
 <!doctype html>
 <html lang="en-us">
   <head>
-    <title>Course | <%= process.env.SITE_NAME %></title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="<%=htmlWebpackPlugin.options.FAVICON_URL%>" type="image/x-icon" />
-
     <% if (process.env.NEW_RELIC_ACCOUNT_ID) { %>
       <!-- NewRelic agent 1209 -->
       <script>
@@ -15,6 +10,11 @@
         ;NREUM.info={beacon:"bam-cell.nr-data.net",errorBeacon:"bam-cell.nr-data.net",licenseKey:"<%=process.env.NEW_RELIC_LICENSE_KEY%>",applicationID:"<%=process.env.NEW_RELIC_APP_ID%>",sa:1}
       </script>
     <% } %>
+
+    <title>Course | <%= process.env.SITE_NAME %></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="<%=htmlWebpackPlugin.options.FAVICON_URL%>" type="image/x-icon" />
 
     <% if (htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID) { %>
       <script src="https://www.edx.org/optimizelyjs/<%= htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID %>.js"></script>
