@@ -8,6 +8,13 @@ Factory.define('courseMetadata')
   .attrs({
     content_type_gating_enabled: false,
     course_expired_message: null,
+    course_goals: {
+      goal_options: [],
+      selected_goal: {
+        days_per_week: 1,
+        subscribed_to_reminders: true,
+      },
+    },
     end: null,
     enrollment_start: null,
     enrollment_end: null,
