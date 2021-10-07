@@ -63,7 +63,6 @@ CourseBreadcrumb.propTypes = {
   unitId: PropTypes.string,
   withSeparator: PropTypes.bool,
   courseId: PropTypes.string,
-  /* TNL-7107 Rollout */
   isStaff: PropTypes.bool,
 };
 
@@ -71,7 +70,6 @@ CourseBreadcrumb.defaultProps = {
   withSeparator: false,
   unitId: null,
   courseId: null,
-  /* TNL-7107 Rollout */
   isStaff: null,
 };
 
@@ -160,7 +158,6 @@ CourseBreadcrumbs.propTypes = {
   sectionId: PropTypes.string,
   sequenceId: PropTypes.string,
   unitId: PropTypes.string,
-  /* TNL-7107 Rollout */
   isStaff: PropTypes.bool,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
@@ -174,7 +171,6 @@ CourseBreadcrumbs.defaultProps = {
   sectionId: null,
   sequenceId: null,
   unitId: null,
-  /* TNL-7107 Rollout */
   isStaff: null,
   /** [MM-P2P] Experiment */
   mmp2p: {},
