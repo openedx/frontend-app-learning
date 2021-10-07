@@ -13,7 +13,7 @@ const NoticesProvider = ({ children }) => {
   useEffect(async () => {
     if (getConfig().ENABLE_NOTICES) {
       const data = await getNotices();
-      if (data && data.results) {
+      if (data && data.results && data.results.length > 0) {
         const { results } = data;
         setIsRedirected(true);
         window.location.replace(`${results[0]}?next=${window.location.href}`);

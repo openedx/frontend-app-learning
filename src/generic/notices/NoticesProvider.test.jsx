@@ -44,7 +44,7 @@ describe('NoticesProvider', () => {
     delete window.location;
     window.location = { replace: jest.fn() };
     process.env.ENABLE_NOTICES = true;
-    await act(() => buildAndRender());
+    await act(async () => buildAndRender());
     expect(window.location.replace).toHaveBeenCalledWith(`${redirectUrl}?next=${window.location.href}`);
   });
 
@@ -54,7 +54,7 @@ describe('NoticesProvider', () => {
     delete window.location;
     window.location = { replace: jest.fn() };
     process.env.ENABLE_NOTICES = true;
-    await act(() => buildAndRender());
+    await act(async () => buildAndRender());
     expect(window.location.replace).toHaveBeenCalledTimes(0);
     expect(window.location.toString() === 'http://localhost/');
   });
