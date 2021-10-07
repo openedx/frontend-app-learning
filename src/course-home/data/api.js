@@ -280,6 +280,26 @@ export async function getProgressTabData(courseId, targetUserId) {
   }
 }
 
+export async function getGlossaryTabData(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/course_home/glossary/${courseId}`;
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(url);
+    return camelCaseObject(data);
+  } catch (error) {
+    const { httpErrorStatus } = error && error.customAttributes;
+    if (httpErrorStatus === 404) {
+      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/glossary`);
+      return {};
+    }
+    if (httpErrorStatus === 401) {
+      // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
+      // courseAccess in the metadata call, so just ignore this status for now.
+      return {};
+    }
+    throw error;
+  }
+}
+
 export async function getProctoringInfoData(courseId, username) {
   let url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
   if (username) {

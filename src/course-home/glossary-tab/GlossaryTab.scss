@@ -1,0 +1,105 @@
+
+  .dashboard-container {
+    min-height: 80vh;
+  }
+  
+  .key-term_list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #dropdown-basic-button {
+    margin-left: 10px;
+  }
+
+  .key-term_search {
+    padding-right: 10px;
+    width: 50%;
+  }
+
+  // .key-term-container {
+  //     display: flex;
+  //     flex-direction: column;
+  // }
+  
+  .key-term-info {
+    display: flex;
+    align-content: flex-start;
+    flex: 1;
+  }
+
+  .row {
+      width:100%;
+  }
+  
+  p {
+    font-size: 0.75em;
+    line-height: 1.5em;
+    /*  max-width: 35%; */
+  }
+  
+  .sidebar > p {
+    text-align: center;
+  }
+  
+  .textbook-container {
+    flex: 1;
+  }
+  
+  span {
+    float: right;
+  }
+  
+  .menu-bar {
+    padding-bottom: 10px;
+  }
+  
+  .bulk-insert-container {
+    text-align: center;
+  }
+  
+  .filter-container {
+    text-align: center;
+  }
+  
+  .create-key-term {
+    text-align: center;
+    margin-top: 1em;
+  }
+  
+  .drag-n-drop {
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-bottom: 10px;
+  }
+  
+  p.drag-n-drop {
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-bottom: 25px;
+    margin-top: 10px;
+  }
+  
+  br.drag-n-drop {
+    margin: 10px;
+  }
+  
+  .footer-container {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .modal-col-left {
+    width: 45%;
+    margin: 10px;
+  }
+  
+  .modal-col-right {
+    width: 45%;
+    margin: 10px;
+  }
+  
+  p.error-message {
+    color: red;
+  }
