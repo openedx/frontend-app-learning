@@ -458,7 +458,7 @@ describe('Outline Tab', () => {
       ${'intense'} | ${5}
         `('calls the API with a goal of $days when $level goal is clicked', async ({ level, days }) => {
   // click on Casual goal
-  const button = await screen.getByText(messages[`${level}GoalButtonText`].defaultMessage).closest('button');
+  const button = await screen.queryByTestId(`weekly-learning-goal-input-${level}`);
   fireEvent.click(button);
   // Verify the request was made
   await waitFor(() => {
@@ -471,7 +471,7 @@ describe('Outline Tab', () => {
   expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
 });
       it('shows and hides subscribe to reminders additional text', async () => {
-        const button = await screen.getByText(messages.regularGoalButtonText.defaultMessage).closest('button');
+        const button = await screen.getByTestId('weekly-learning-goal-input-regular');
         fireEvent.click(button);
         // Verify the request was made
         await waitFor(() => {
