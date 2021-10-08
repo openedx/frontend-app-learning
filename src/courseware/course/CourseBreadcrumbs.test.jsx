@@ -1,7 +1,6 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { getConfig } from '@edx/frontend-platform';
 import { useModel, useModels } from '../../generic/model-store';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 
@@ -11,7 +10,6 @@ jest.mock('@edx/frontend-platform/analytics');
 // Remove When Fully rolled out>>>
 jest.mock('../../generic/model-store');
 jest.mock('@edx/frontend-platform/auth');
-getConfig.mockImplementation(() => ({ ENABLE_JUMPNAV: 'true' }));
 getAuthenticatedUser.mockImplementation(() => ({ administrator: true }));
 // ^^^^Remove When Fully rolled out
 
