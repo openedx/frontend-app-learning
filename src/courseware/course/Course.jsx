@@ -90,6 +90,7 @@ function Course({
           courseId={courseId}
           sectionId={section ? section.id : null}
           sequenceId={sequenceId}
+          isStaff={course ? course.isStaff : null}
           unitId={unitId}
           //* * [MM-P2P] Experiment */
           mmp2p={MMP2P}
