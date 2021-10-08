@@ -38,10 +38,10 @@ function WeeklyLearningGoalCard({
 
   return (
     <div className="row w-100 m-0 p-0">
-      <Card className="mb-3 shadow-sm border-0 p-3.5" data-testid="weekly-learning-goal-card">
-        <Card.Body>
+      <Card className="mb-3 shadow-sm border-0" data-testid="weekly-learning-goal-card">
+        <Card.Body className="p-3.5">
           <Card.Title>
-            <h4 className="m-0 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h4>
+            <h2 className="h4 m-0 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h2>
           </Card.Title>
           <Card.Text className="text-gray-700">
             {intl.formatMessage(messages.setWeeklyGoalDetail)}
