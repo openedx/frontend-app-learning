@@ -683,8 +683,8 @@ describe('Outline Tab', () => {
           ],
         });
         await fetchAndRender();
-        screen.getAllByText('You are not eligible for a certificate');
-        expect(screen.queryByText('You are not eligible for a certificate')).toBeInTheDocument();
+        screen.getAllByText('You are not yet eligible for a certificate');
+        expect(screen.queryByText('You are not yet eligible for a certificate')).toBeInTheDocument();
       });
       it('tracks request cert button', async () => {
         sendTrackEvent.mockClear();
