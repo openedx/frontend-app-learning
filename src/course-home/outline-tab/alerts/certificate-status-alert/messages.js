@@ -13,7 +13,7 @@ const messages = defineMessages({
   },
   certStatusNotPassingHeader: {
     id: 'cert.alert.notPassing.header',
-    defaultMessage: 'You are not eligible for a certificate',
+    defaultMessage: 'You are not yet eligible for a certificate',
   },
   certStatusNotPassingButton: {
     id: 'cert.alert.notPassing.button',
