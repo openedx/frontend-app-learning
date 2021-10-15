@@ -6,13 +6,8 @@
     color: $primary-700;
 }
 
-.fa-li {
-    left: -31px;
-    padding-right: 22px;
-}
-
-    @media only screen and (min-width: 992px) and (max-width: 1100px) {
-        .list-div {
-            width: 62%;
+@media only screen and (min-width: 992px) and (max-width: 1100px) {
+    .list-div {
+        width: 62%;
     }
 }
