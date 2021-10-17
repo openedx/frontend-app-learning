@@ -43,7 +43,7 @@
   "learning.outline.alert.cert.when": "Ce cours se termine le {courseEndDateFormatted}. Les notes finales et les attestations\n        devraient être disponibles après {certificateAvailableDate}.",
   "cert.alert.earned.unavailable.header": "Votre note et votre attestation seront bientôt prêtes !",
   "cert.alert.earned.ready.header": "Félicitations ! Votre attestation est prête.",
-  "cert.alert.notPassing.header": "Vous n'êtes pas éligible pour une attestation",
+  "cert.alert.notPassing.header": "You are not yet eligible for a certificate",
   "cert.alert.notPassing.button": "Voir les notes",
   "learning.outline.alert.end.short": "Le cours termine dans {timeRemaining} à {courseEndTime}.",
   "alert.enroll": " pour accéder au cours complet.",
