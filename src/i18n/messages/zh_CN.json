@@ -43,7 +43,7 @@
   "learning.outline.alert.cert.when": "This course ends on {courseEndDateFormatted}. Final grades and certificates are\n            scheduled to be available after {certificateAvailableDate}.",
   "cert.alert.earned.unavailable.header": "Your grade and certificate will be ready soon!",
   "cert.alert.earned.ready.header": "Congratulations! Your certificate is ready.",
-  "cert.alert.notPassing.header": "You are not eligible for a certificate",
+  "cert.alert.notPassing.header": "You are not yet eligible for a certificate",
   "cert.alert.notPassing.button": "View grades",
   "learning.outline.alert.end.short": "This course is ending {timeRemaining} at {courseEndTime}.",
   "alert.enroll": " to access the full course.",
