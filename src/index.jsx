@@ -29,56 +29,59 @@ import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/
 import { fetchCourse } from './courseware/data';
 import initializeStore from './store';
 import NoticesProvider from './generic/notices';
+import PathFixesProvider from './generic/path-fixes';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider store={initializeStore()}>
-      <NoticesProvider>
-        <UserMessagesProvider>
-          <Switch>
-            <PageRoute exact path="/goal-unsubscribe/:token" component={GoalUnsubscribe} />
-            <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
-            <PageRoute path="/course/:courseId/home">
-              <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
-                <OutlineTab />
-              </TabContainer>
-            </PageRoute>
-            <PageRoute path="/course/:courseId/dates">
-              <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-                <DatesTab />
-              </TabContainer>
-            </PageRoute>
-            <PageRoute
-              path={[
-                '/course/:courseId/progress/:targetUserId/',
-                '/course/:courseId/progress',
-              ]}
-              render={({ match }) => (
-                <TabContainer
-                  tab="progress"
-                  fetch={(courseId) => fetchProgressTab(courseId, match.params.targetUserId)}
-                  slice="courseHome"
-                >
-                  <ProgressTab />
+      <PathFixesProvider>
+        <NoticesProvider>
+          <UserMessagesProvider>
+            <Switch>
+              <PageRoute exact path="/goal-unsubscribe/:token" component={GoalUnsubscribe} />
+              <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
+              <PageRoute path="/course/:courseId/home">
+                <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
+                  <OutlineTab />
                 </TabContainer>
-              )}
-            />
-            <PageRoute path="/course/:courseId/course-end">
-              <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
-                <CourseExit />
-              </TabContainer>
-            </PageRoute>
-            <PageRoute
-              path={[
-                '/course/:courseId/:sequenceId/:unitId',
-                '/course/:courseId/:sequenceId',
-                '/course/:courseId',
-              ]}
-              component={CoursewareContainer}
-            />
-          </Switch>
-        </UserMessagesProvider>
-      </NoticesProvider>
+              </PageRoute>
+              <PageRoute path="/course/:courseId/dates">
+                <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
+                  <DatesTab />
+                </TabContainer>
+              </PageRoute>
+              <PageRoute
+                path={[
+                  '/course/:courseId/progress/:targetUserId/',
+                  '/course/:courseId/progress',
+                ]}
+                render={({ match }) => (
+                  <TabContainer
+                    tab="progress"
+                    fetch={(courseId) => fetchProgressTab(courseId, match.params.targetUserId)}
+                    slice="courseHome"
+                  >
+                    <ProgressTab />
+                  </TabContainer>
+                )}
+              />
+              <PageRoute path="/course/:courseId/course-end">
+                <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
+                  <CourseExit />
+                </TabContainer>
+              </PageRoute>
+              <PageRoute
+                path={[
+                  '/course/:courseId/:sequenceId/:unitId',
+                  '/course/:courseId/:sequenceId',
+                  '/course/:courseId',
+                ]}
+                component={CoursewareContainer}
+              />
+            </Switch>
+          </UserMessagesProvider>
+        </NoticesProvider>
+      </PathFixesProvider>
     </AppProvider>,
     document.getElementById('root'),
   );
