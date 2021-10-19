@@ -5,7 +5,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Dropdown } from '@edx/paragon';
 
 import messages from '../messages';
-import { saveCourseGoal } from '../../data';
+import { deprecatedSaveCourseGoal } from '../../data';
 
 function UpdateGoalSelector({
   courseId,
@@ -24,7 +24,7 @@ function UpdateGoalSelector({
     };
 
     setGoalToDisplay(newGoal);
-    saveCourseGoal(courseId, key).then((response) => {
+    deprecatedSaveCourseGoal(courseId, key).then((response) => {
       const { data } = response;
       const {
         header,

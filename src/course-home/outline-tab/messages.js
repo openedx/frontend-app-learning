@@ -5,6 +5,20 @@ const messages = defineMessages({
     id: 'learning.outline.dates.all',
     defaultMessage: 'View all course dates',
   },
+  casualGoalButtonText: {
+    id: 'learning.outline.goalButton.casual.text',
+    defaultMessage: '1 day a week',
+  },
+  casualGoalButtonTitle: {
+    id: 'learning.outline.goalButton.screenReader.text',
+    defaultMessage: 'Casual',
+    description: 'A very short description of the least intense of three learning goals',
+  },
+  certAlt: {
+    id: 'learning.outline.certificateAlt',
+    defaultMessage: 'Example Certificate',
+    description: 'Alternate text displayed when the example certificate image cannot be displayed.',
+  },
   collapseAll: {
     id: 'learning.outline.collapseAll',
     defaultMessage: 'Collapse all',
@@ -39,6 +53,10 @@ const messages = defineMessages({
     defaultMessage: 'Goal',
     description: 'Label for the selected course goal',
   },
+  goalReminderDetail: {
+    id: 'learning.outline.goalReminderDetail',
+    defaultMessage: 'If we notice you’re not quite at your goal, we’ll send you an email reminder.',
+  },
   goalUnsure: {
     id: 'learning.outline.goalUnsure',
     defaultMessage: 'Not sure yet',
@@ -57,6 +75,15 @@ const messages = defineMessages({
     defaultMessage: 'Incomplete section',
     description: 'Text used to describe the gray checkmark icon in front of a section title',
   },
+  intenseGoalButtonText: {
+    id: 'learning.outline.goalButton.intense.text',
+    defaultMessage: '5 days a week',
+  },
+  intenseGoalButtonTitle: {
+    id: 'learning.outline.goalButton.intense.title',
+    defaultMessage: 'Intense',
+    description: 'A very short description of the most intensive option of three learning goals, Casual, Regular and Intense',
+  },
   learnMore: {
     id: 'learning.outline.learnMore',
     defaultMessage: 'Learn More',
@@ -66,6 +93,24 @@ const messages = defineMessages({
     defaultMessage: 'Open',
     description: 'A button to open the given section of the course outline',
   },
+  proctoringInfoPanel: {
+    id: 'learning.proctoringPanel.header',
+    defaultMessage: 'This course contains proctored exams',
+  },
+  regularGoalButtonText: {
+    id: 'learning.outline.goalButton.regular.text',
+    defaultMessage: '3 days a week',
+  },
+  regularGoalButtonTitle: {
+    id: 'learning.outline.goalButton.regular.title',
+    defaultMessage: 'Regular',
+    description: 'A very short description of the middle option of three learning goals, Casual, Regular and Intense',
+  },
+  resumeBlurb: {
+    id: 'learning.outline.resumeBlurb',
+    defaultMessage: 'Pick up where you left off',
+    description: 'Text describing to the learner that they can return to the last section they visited within the course.',
+  },
   resume: {
     id: 'learning.outline.resume',
     defaultMessage: 'Resume course',
@@ -74,9 +119,30 @@ const messages = defineMessages({
     id: 'learning.outline.setGoal',
     defaultMessage: 'To start, set a course goal by selecting the option below that best describes your learning plan.',
   },
+  setGoalReminder: {
+    id: 'learning.outline.setGoalReminder',
+    defaultMessage: 'Set a goal reminder',
+  },
+  setLearningGoalButtonScreenReaderText: {
+    id: 'learning.outline.goalButton.casual.title',
+    defaultMessage: 'Set a learning goal style.',
+    description: 'screen reader text informing learner they can select an intensity of learning goal',
+  },
+  setWeeklyGoal: {
+    id: 'learning.outline.setWeeklyGoal',
+    defaultMessage: 'Set a weekly learning goal',
+  },
+  setWeeklyGoalDetail: {
+    id: 'learning.outline.setWeeklyGoalDetail',
+    defaultMessage: 'Setting a goal motivates you to finish the course. You can always change it later.',
+  },
   start: {
     id: 'learning.outline.start',
-    defaultMessage: 'Start Course',
+    defaultMessage: 'Start course',
+  },
+  startBlurb: {
+    id: 'learning.outline.startBlurb',
+    defaultMessage: 'Begin your course today',
   },
   tools: {
     id: 'learning.outline.tools',
@@ -89,11 +155,6 @@ const messages = defineMessages({
   upgradeTitle: {
     id: 'learning.outline.upgradeTitle',
     defaultMessage: 'Pursue a verified certificate',
-  },
-  certAlt: {
-    id: 'learning.outline.certificateAlt',
-    defaultMessage: 'Example Certificate',
-    description: 'Alternate text displayed when the example certificate image cannot be displayed.',
   },
   welcomeMessage: {
     id: 'learning.outline.welcomeMessage',
@@ -111,10 +172,6 @@ const messages = defineMessages({
     id: 'learning.outline.goalWelcome',
     defaultMessage: 'Welcome to',
     description: 'This precedes the title of the course',
-  },
-  proctoringInfoPanel: {
-    id: 'learning.proctoringPanel.header',
-    defaultMessage: 'This course contains proctored exams',
   },
   notStartedProctoringStatus: {
     id: 'learning.proctoringPanel.status.notStarted',
