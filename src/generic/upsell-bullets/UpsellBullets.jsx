@@ -17,7 +17,7 @@ export function VerifiedCertBullet() {
       <FormattedMessage
         id="learning.generic.upsell.verifiedCertBullet.verifiedCert"
         defaultMessage="verified certificate"
-        description="Bolded name of credential the learner receieves."
+        description="Bolded name of credential the learner receives."
       />
     </a>
   );
