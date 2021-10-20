@@ -17,7 +17,7 @@ export function VerifiedCertBullet() {
       <FormattedMessage
         id="learning.generic.upsell.verifiedCertBullet.verifiedCert"
         defaultMessage="verified certificate"
-        description="Bolded name of credential the learner receives."
+        description="Bolded words 'verified certificate', which is the name of credential the learner receives."
       />
     </a>
   );
@@ -41,7 +41,7 @@ export function UnlockGradedBullet() {
       <FormattedMessage
         id="learning.generic.upsell.unlockGradedBullet.gradedAssignments"
         defaultMessage="graded assignments"
-        description="Bolded name of unlocked feature with upgrade."
+        description="Bolded words 'graded assignment', which is the name of unlocked feature with upgrade."
       />
     </span>
   );
