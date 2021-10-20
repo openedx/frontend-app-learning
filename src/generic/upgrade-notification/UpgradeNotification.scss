@@ -19,9 +19,14 @@
 }
 
 .upgrade-notification-ul {
-  padding-left: 1.25rem;
+  padding-left: 1.25rem !important;
   padding-top: 0.875rem;
   padding-right: 1.25rem;
+}
+
+.upgrade-notification-li {
+  left: -2.125rem;
+  top: 0 !important;
 }
 
 .upgrade-notification-text {
@@ -37,4 +42,12 @@
   border-top: 1px solid $light-400;
   padding-top: .75rem;
   padding-bottom: .75rem;
+}
+
+.inline-link-underline {
+  text-decoration: underline;
+}
+
+.upgrade-notification .upgrade-notification-message a {
+  color: $primary-500;
 }

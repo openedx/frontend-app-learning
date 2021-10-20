@@ -21,6 +21,26 @@ const messages = defineMessages({
     defaultMessage: 'When you upgrade, you:',
     description: 'Text displayed to introduce the list of benefits from upgrading.',
   },
+  'learn.lockPaywall.list.bullet1.linktext': {
+    id: 'learn.lockPaywall.list.bullet1.linktext',
+    defaultMessage: 'verified certificate',
+    description: 'Link text for verified certificate info page.',
+  },
+  'learn.lockPaywall.list.bullet2.boldtext': {
+    id: 'learn.lockPaywall.list.bullet2.boldtext',
+    defaultMessage: 'graded assignments',
+    description: 'Bolded text for graded assignments.',
+  },
+  'learn.lockPaywall.list.bullet3.boldtext': {
+    id: 'learn.lockPaywall.list.bullet3.boldtext',
+    defaultMessage: 'Full access',
+    description: 'Bolded text for full access.',
+  },
+  'learn.lockPaywall.list.bullet4.boldtext': {
+    id: 'learn.lockPaywall.list.bullet4.boldtext',
+    defaultMessage: 'non-profit mission',
+    description: 'Bolded text to highlight our non-profit status.',
+  },
 });
 
 export default messages;
