@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import messages from '../messages';
 import LearningGoalButton from './LearningGoalButton';
 import { saveWeeklyLearningGoal } from '../../data';
+import { useModel } from '../../../generic/model-store';
 
 function WeeklyLearningGoalCard({
   daysPerWeek,
@@ -18,6 +19,10 @@ function WeeklyLearningGoalCard({
     courseId,
   } = useSelector(state => state.courseHome);
 
+  const {
+    isMasquerading,
+  } = useModel('courseHomeMeta', courseId);
+
   const [daysPerWeekGoal, setDaysPerWeekGoal] = useState(daysPerWeek);
   // eslint-disable-next-line react/prop-types
   const [isGetReminderSelected, setGetReminderSelected] = useState(subscribedToReminders);
@@ -27,13 +32,17 @@ function WeeklyLearningGoalCard({
     const selectReminders = daysPerWeekGoal === null ? true : isGetReminderSelected;
     setGetReminderSelected(selectReminders);
     setDaysPerWeekGoal(days);
-    saveWeeklyLearningGoal(courseId, days, selectReminders);
+    if (!isMasquerading) { // don't save goal updates while masquerading
+      saveWeeklyLearningGoal(courseId, days, selectReminders);
+    }
   }
 
   function handleSubscribeToReminders(event) {
     const isGetReminderChecked = event.target.checked;
     setGetReminderSelected(isGetReminderChecked);
-    saveWeeklyLearningGoal(courseId, daysPerWeekGoal, isGetReminderChecked);
+    if (!isMasquerading) { // don't save goal updates while masquerading
+      saveWeeklyLearningGoal(courseId, daysPerWeekGoal, isGetReminderChecked);
+    }
   }
 
   return (

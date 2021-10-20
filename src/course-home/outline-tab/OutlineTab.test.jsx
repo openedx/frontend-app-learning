@@ -427,6 +427,21 @@ describe('Outline Tab', () => {
       expect(screen.queryByTestId('weekly-learning-goal-card')).not.toBeInTheDocument();
     });
 
+    it('does not post goals while masquerading', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+        },
+      });
+      const spy = jest.spyOn(thunks, 'saveWeeklyLearningGoal');
+
+      await fetchAndRender();
+      const button = await screen.getByTestId('weekly-learning-goal-input-regular');
+      fireEvent.click(button);
+      expect(spy).toHaveBeenCalledTimes(0);
+    });
+
     describe('weekly learning goal is not set', () => {
       beforeEach(async () => {
         setTabData({
