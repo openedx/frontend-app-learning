@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { camelCaseObject, getConfig } from '@edx/frontend-platform';
+// import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+// import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
   FormattedMessage, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
@@ -44,12 +44,14 @@ function getRandomFactoid(intl, streakLength) {
   return factoids[Math.floor(Math.random() * (factoids.length))];
 }
 
+/*
 async function calculateVoucherDiscount(voucher, sku, username) {
   const urlBase = `${getConfig().ECOMMERCE_BASE_URL}/api/v2/baskets/calculate`;
   const url = `${urlBase}/?code=${voucher}&sku=${sku}&username=${username}`;
   return getAuthenticatedHttpClient().get(url)
     .then(res => camelCaseObject(res));
 }
+*/
 
 function StreakModal({
   courseId, metadataModel, streakLengthToCelebrate, intl, isStreakCelebrationOpen,
@@ -86,6 +88,7 @@ function StreakModal({
 
   // Ask ecommerce to calculate discount savings
   useEffect(() => {
+    /*
     if (streakDiscountCouponEnabled && verifiedMode && getConfig().ECOMMERCE_BASE_URL) {
       calculateVoucherDiscount(discountCode, verifiedMode.sku, username)
         .then(
@@ -110,6 +113,14 @@ function StreakModal({
             setDiscountPercent(0);
           },
         );
+   */
+    // TEMPORARY code to bypass the above call-to-ecom feature since it didn't work as expected in prod
+    if (streakDiscountCouponEnabled && verifiedMode) {
+      setDiscountPercent(0.15);
+      sendTrackEvent('edx.bi.course.streak_discount_enabled', {
+        course_id: courseId,
+        sku: verifiedMode.sku,
+      });
     } else {
       setDiscountPercent(0);
     }
