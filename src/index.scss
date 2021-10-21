@@ -346,7 +346,7 @@
 // size like this.  Because of the hack below around react-focus-on's div, it would be better long-term to pull this into Paragon and perhaps call it "modal-full" or something like that.
 .modal-lti {
   height: 100%;
-  max-width: 100%;
+  max-width: 100% !important;
 
   // I don't like this.  We need to set a height of 100% on a div created by react-focus-on, a
   // package we use in our Modal.  That div has no class name or ID, so instead we're uniquely
