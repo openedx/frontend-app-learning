@@ -23,6 +23,18 @@ function AuthenticatedUserDropdown({ enterpriseLearnerPortalLink, intl, username
       </Dropdown.Item>
     );
   }
+  let orderHistoryMenuItem = null;
+  // Users should only see Order History if they do not have an available
+  // learner portal, because an available learner portal currently means
+  // that they access content via Subscriptions, in which context an "order"
+  // is not relevant.
+  if (getConfig().ORDER_HISTORY_URL && !enterpriseLearnerPortalLink) {
+    orderHistoryMenuItem = (
+      <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>
+        {intl.formatMessage(messages.orderHistory)}
+      </Dropdown.Item>
+    );
+  }
   return (
     <>
       <a className="text-gray-700 mr-3" href={`${getConfig().SUPPORT_URL}`}>{intl.formatMessage(messages.help)}</a>
@@ -41,15 +53,7 @@ function AuthenticatedUserDropdown({ enterpriseLearnerPortalLink, intl, username
           <Dropdown.Item href={`${getConfig().LMS_BASE_URL}/account/settings`}>
             {intl.formatMessage(messages.account)}
           </Dropdown.Item>
-          {!enterpriseLearnerPortalLink && (
-            // Users should only see Order History if they do not have an available
-            // learner portal, because an available learner portal currently means
-            // that they access content via Subscriptions, in which context an "order"
-            // is not relevant.
-            <Dropdown.Item href={getConfig().ORDER_HISTORY_URL}>
-              {intl.formatMessage(messages.orderHistory)}
-            </Dropdown.Item>
-          )}
+          {orderHistoryMenuItem}
           <Dropdown.Item href={getConfig().LOGOUT_URL}>
             {intl.formatMessage(messages.signOut)}
           </Dropdown.Item>
