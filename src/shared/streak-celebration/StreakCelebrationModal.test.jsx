@@ -32,12 +32,10 @@ describe('Loaded Tab Page', () => {
     });
   }
 
-  /*
   function setDiscountError() {
     mockData.streakDiscountCouponEnabled = true;
     axiosMock.onGet(calculateUrl).reply(500);
   }
-  */
 
   async function renderModal() {
     await act(async () => render(<StreakModal {...mockData} />, { store: testStore }));
@@ -70,8 +68,6 @@ describe('Loaded Tab Page', () => {
     });
   });
 
-  // TEMPORARY disable these tests until we can debug why this feature doesn't work
-  /*
   it('shows normal streak celebration modal when discount call fails', async () => {
     setDiscountError();
     await renderModal();
@@ -87,7 +83,6 @@ describe('Loaded Tab Page', () => {
     // This text is only for the non-discount case
     expect(screen.getByText('Keep it up')).toBeInTheDocument();
   });
-  */
 
   it('shows discount version of streak celebration modal when available', async () => {
     Object.defineProperty(window, 'matchMedia', {
@@ -110,8 +105,7 @@ describe('Loaded Tab Page', () => {
     await renderModal();
 
     const endDateText = `Ends ${new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString({ timeZone: 'UTC' })}.`;
-    // TEMPORARY set this discount back to 14 once we fix this feature
-    expect(screen.getByText('You’ve unlocked a 15% off discount when you upgrade this course for a limited time only.')).toBeInTheDocument();
+    expect(screen.getByText('You’ve unlocked a 14% off discount when you upgrade this course for a limited time only.')).toBeInTheDocument();
     expect(screen.getByText(endDateText)).toBeInTheDocument();
     expect(screen.getByText('Continue with course')).toBeInTheDocument();
     expect(screen.queryByText('Keep it up')).not.toBeInTheDocument();
