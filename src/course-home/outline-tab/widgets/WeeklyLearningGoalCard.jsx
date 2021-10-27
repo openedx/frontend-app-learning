@@ -9,6 +9,7 @@ import messages from '../messages';
 import LearningGoalButton from './LearningGoalButton';
 import { saveWeeklyLearningGoal } from '../../data';
 import { useModel } from '../../../generic/model-store';
+import './FlagButton.scss';
 
 function WeeklyLearningGoalCard({
   daysPerWeek,
@@ -47,16 +48,26 @@ function WeeklyLearningGoalCard({
 
   return (
     <div className="row w-100 m-0 p-0">
-      <Card className="mb-3 shadow-sm border-0" data-testid="weekly-learning-goal-card">
+      <Card
+        className="mb-3 shadow border-0"
+        data-testid="weekly-learning-goal-card"
+      >
         <Card.Body className="p-3.5">
           <Card.Title>
             <h2 className="h4 m-0 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h2>
           </Card.Title>
-          <Card.Text className="text-gray-700">
+          <Card.Text
+            className="text-gray-700"
+              // id="learning_goal_choices_label"
+          >
             {intl.formatMessage(messages.setWeeklyGoalDetail)}
           </Card.Text>
           <div
-            className="row w-100 m-0 p-0 justify-content-between"
+            className="flag-button-container m-0 p-0"
+              // making this work as a radio button for keyboard nav
+              // is not working
+              // role="radiogroup"
+              // aria-labelledby="learning_goal_choices_label"
           >
             <LearningGoalButton
               level="casual"

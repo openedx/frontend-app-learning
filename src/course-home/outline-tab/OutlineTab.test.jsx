@@ -437,7 +437,7 @@ describe('Outline Tab', () => {
       const spy = jest.spyOn(thunks, 'saveWeeklyLearningGoal');
 
       await fetchAndRender();
-      const button = await screen.getByTestId('weekly-learning-goal-input-regular');
+      const button = await screen.getByTestId('weekly-learning-goal-input-Regular');
       fireEvent.click(button);
       expect(spy).toHaveBeenCalledTimes(0);
     });
@@ -468,9 +468,9 @@ describe('Outline Tab', () => {
 
       it.each`
       level     | days 
-      ${'casual'}  | ${1}
-      ${'regular'} | ${3}
-      ${'intense'} | ${5}
+      ${'Casual'}  | ${1}
+      ${'Regular'} | ${3}
+      ${'Intense'} | ${5}
         `('calls the API with a goal of $days when $level goal is clicked', async ({ level, days }) => {
   // click on Casual goal
   const button = await screen.queryByTestId(`weekly-learning-goal-input-${level}`);
@@ -486,7 +486,7 @@ describe('Outline Tab', () => {
   expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
 });
       it('shows and hides subscribe to reminders additional text', async () => {
-        const button = await screen.getByTestId('weekly-learning-goal-input-regular');
+        const button = await screen.getByTestId('weekly-learning-goal-input-Regular');
         fireEvent.click(button);
         // Verify the request was made
         await waitFor(() => {
@@ -525,11 +525,6 @@ describe('Outline Tab', () => {
           },
         });
         await fetchAndRender();
-      });
-
-      it('has button for weekly learning goal selected', async () => {
-        const radio = await screen.queryByTestId('weekly-learning-goal-input-regular');
-        expect(radio.checked).toEqual(true);
       });
     });
   });
