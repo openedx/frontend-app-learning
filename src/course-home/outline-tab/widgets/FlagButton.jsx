@@ -19,7 +19,7 @@ function FlagButton({
       // tabIndex={isSelected ? '0' : '-1'}
       onClick={() => handleSelect()}
     >
-      <div className="row justify-content-center pb-1">
+      <div className="row justify-content-center pb-1 w-100 m-0">
         {buttonIcon}
       </div>
       <div className={classnames('text-center small text-gray-700 pb-1', isSelected ? 'font-weight-bold' : '')}>
