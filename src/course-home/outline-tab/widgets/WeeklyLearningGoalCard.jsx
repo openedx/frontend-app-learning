@@ -64,10 +64,6 @@ function WeeklyLearningGoalCard({
           </Card.Text>
           <div
             className="flag-button-container m-0 p-0"
-              // making this work as a radio button for keyboard nav
-              // is not working
-              // role="radiogroup"
-              // aria-labelledby="learning_goal_choices_label"
           >
             <LearningGoalButton
               level="casual"
