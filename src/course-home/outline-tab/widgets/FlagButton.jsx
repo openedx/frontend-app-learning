@@ -18,6 +18,7 @@ function FlagButton({
       // role="radio"
       // tabIndex={isSelected ? '0' : '-1'}
       onClick={() => handleSelect()}
+      data-testid={`weekly-learning-goal-input-${title}`}
     >
       <div className="row justify-content-center pb-1 w-100 m-0">
         {buttonIcon}
