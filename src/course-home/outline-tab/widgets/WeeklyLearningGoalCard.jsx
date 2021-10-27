@@ -56,10 +56,19 @@ function WeeklyLearningGoalCard({
           <Card.Title>
             <h2 className="h4 m-0 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h2>
           </Card.Title>
-          <Card.Text className="text-gray-700">
+          <Card.Text
+            className="text-gray-700"
+              // id="learning_goal_choices_label"
+          >
             {intl.formatMessage(messages.setWeeklyGoalDetail)}
           </Card.Text>
-          <div className="flag-button-container m-0 p-0">
+          <div
+            className="flag-button-container m-0 p-0"
+              // making this work as a radio button for keyboard nav
+              // is not working
+              // role="radiogroup"
+              // aria-labelledby="learning_goal_choices_label"
+          >
             <LearningGoalButton
               level="casual"
               currentGoal={daysPerWeekGoal}

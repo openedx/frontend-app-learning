@@ -14,6 +14,9 @@ function FlagButton({
       type="button"
       className={classnames('flag-button m-1.5 pt-3 pb-md-3 pb-xl-0',
         isSelected ? 'flag-button-selected' : '')}
+      // aria-checked={isSelected}
+      // role="radio"
+      // tabIndex={isSelected ? '0' : '-1'}
       onClick={() => handleSelect()}
     >
       <div className="row justify-content-center pb-1">
