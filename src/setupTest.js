@@ -25,6 +25,7 @@ import appMessages from './i18n';
 import { fetchCourse, fetchSequence } from './courseware/data';
 import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
+import { buildOutlineFromBlocks } from './courseware/data/__factories__/learningSequencesOutline.factory';
 
 class MockLoggingService {
   logInfo = jest.fn();
@@ -157,7 +158,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
 
   axiosMock.onGet(forbiddenCourseUrl).reply(200, courseMetadata);
   axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
-  axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+  axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
   sequenceMetadata.forEach(metadata => {
     const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${metadata.item_id}`;
     axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);

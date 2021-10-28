@@ -114,8 +114,9 @@ export function normalizeLearningSequencesData(learningSequencesData) {
   // Sections
   learningSequencesData.outline.sections.forEach(section => {
     // Skipping sections with only inaccessible sequences replicates the behavior of the legacy course blocks API
+    // (But keep it if it was already empty, again to replicate legacy blocks API.)
     const accessibleSequenceIds = section.sequence_ids.filter(seqId => seqId in models.sequences);
-    if (accessibleSequenceIds.length === 0) {
+    if (section.sequence_ids.length > 0 && accessibleSequenceIds.length === 0) {
       return;
     }
 
@@ -156,27 +157,11 @@ export async function getCourseBlocks(courseId) {
   return normalizeBlocks(courseId, data.blocks);
 }
 
-// Returns the output of the Learning Sequences API, or null if that API is not
-// currently available for this user in this course.
 export async function getLearningSequencesOutline(courseId) {
   const outlineUrl = new URL(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/${courseId}`);
 
-  try {
-    const { data } = await getAuthenticatedHttpClient().get(outlineUrl.href, {});
-    return normalizeLearningSequencesData(data);
-  } catch (error) {
-    // This is not a critical API to use at the moment. If it errors for any
-    // reason, just send back a null so the higher layers know to ignore it.
-    if (error.response) {
-      if (error.response.status === 403) {
-        logInfo('Learning Sequences API not enabled for this user.');
-      } else {
-        logInfo(`Unexpected error calling Learning Sequences API (${error.response.status}). Ignoring.`);
-      }
-      return null;
-    }
-    throw error;
-  }
+  const { data } = await getAuthenticatedHttpClient().get(outlineUrl.href, {});
+  return normalizeLearningSequencesData(data);
 }
 
 function normalizeTabUrls(id, tabs) {

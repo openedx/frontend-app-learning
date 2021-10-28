@@ -17,6 +17,7 @@ import CoursewareContainer from './CoursewareContainer';
 import { buildSimpleCourseBlocks, buildBinaryCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
 import initializeStore from '../store';
 import { appendBrowserTimezoneToUrl } from '../utils';
+import { buildOutlineFromBlocks } from './data/__factories__/learningSequencesOutline.factory';
 
 // NOTE: Because the unit creates an iframe, we choose to mock it out as its rendering isn't
 // pertinent to this test.  Instead, we render a simple div that displays the properties we expect
@@ -100,6 +101,7 @@ describe('CoursewareContainer', () => {
   function setUpMockRequests(options = {}) {
     // If we weren't given course blocks or metadata, use the defaults.
     const courseBlocks = options.courseBlocks || defaultCourseBlocks;
+    const courseOutline = buildOutlineFromBlocks(courseBlocks);
     const courseMetadata = options.courseMetadata || defaultCourseMetadata;
     const courseId = courseMetadata.id;
     // If we weren't given a list of sequence metadatas for URL mocking,
@@ -122,7 +124,7 @@ describe('CoursewareContainer', () => {
     axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
 
     const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
-    axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+    axiosMock.onGet(learningSequencesUrlRegExp).reply(200, courseOutline);
 
     const courseMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
@@ -188,7 +190,7 @@ describe('CoursewareContainer', () => {
       const sequenceBlock = defaultSequenceBlock;
       const unitBlocks = defaultUnitBlocks;
 
-      it('should use the resume block repsonse to pick a unit if it contains one', async () => {
+      it('should use the resume block response to pick a unit if it contains one', async () => {
         axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {
           sectionId: sequenceBlock.id,
           unitId: unitBlocks[1].id,

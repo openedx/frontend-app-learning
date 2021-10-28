@@ -79,7 +79,7 @@ describe('Data layer integration tests', () => {
 
       axiosMock.onGet(forbiddenCourseUrl).reply(200, forbiddenCourseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, forbiddenCourseBlocks);
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(forbiddenCourseBlocks));
 
       await executeThunk(thunks.fetchCourse(forbiddenCourseMetadata.id), store.dispatch);
 
@@ -94,7 +94,7 @@ describe('Data layer integration tests', () => {
     it('Should fetch, normalize, and save metadata', async () => {
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
@@ -189,7 +189,7 @@ describe('Data layer integration tests', () => {
     it('Should fetch and normalize metadata, and then update existing models with sequence metadata', async () => {
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
       axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
 
       // setting course with blocks before sequence to check that blocks receive

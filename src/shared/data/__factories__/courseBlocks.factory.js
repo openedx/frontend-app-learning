@@ -84,7 +84,7 @@ export function buildSimpleCourseBlocks(courseId, title, options = {}) {
       {
         courseId,
         hasScheduledContent: options.hasScheduledContent || false,
-        title: 'Demo Course',
+        title,
       },
       {
         units: unitBlocks,
@@ -225,7 +225,7 @@ export function buildBinaryCourseBlocks(courseId, title) {
     // work with.
     courseBlocks: Factory.build(
       'courseBlocks',
-      { courseId },
+      { courseId, title },
       {
         units: unitBlocks,
         sequences: sequenceBlocks,

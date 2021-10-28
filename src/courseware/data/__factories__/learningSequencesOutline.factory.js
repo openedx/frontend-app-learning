@@ -40,14 +40,14 @@ export function buildOutlineFromBlocks(courseBlocks) {
     } else if (block.type === 'chapter') {
       sections[block.id] = {
         id: block.id,
-        title: block.title,
+        title: block.display_name,
         start: null,
         sequence_ids: [...block.children],
       };
     } else if (block.type === 'sequential') {
       sequences[block.id] = {
         id: block.id,
-        title: block.title,
+        title: block.display_name,
         accessible: true,
         start: null,
       };

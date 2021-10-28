@@ -39,11 +39,6 @@ import {
  * @param {*} courseBlocksModels       Normalized model from normalizeBlocks
  */
 function mergeLearningSequencesWithCourseBlocks(learningSequencesModels, courseBlocksModels) {
-  // If there's no Learning Sequences API data yet (not active for this course),
-  // send back the course blocks model as-is.
-  if (learningSequencesModels === null) {
-    return courseBlocksModels;
-  }
   const mergedModels = {
     courses: {},
     sections: {},
@@ -123,6 +118,17 @@ function mergeLearningSequencesWithCourseBlocks(learningSequencesModels, courseB
   return mergedModels;
 }
 
+function logBlocksResultError(result) {
+  const { response } = result.reason;
+  if (response && response.status === 403) {
+    // 403 responses are normal - they happen when the learner is logged out.
+    // We'll redirect them in a moment to the outline tab by calling fetchCourseDenied().
+    logInfo(result.reason);
+  } else {
+    logError(result.reason);
+  }
+}
+
 export function fetchCourse(courseId) {
   return async (dispatch) => {
     dispatch(fetchCourseRequest({ courseId }));
@@ -131,14 +137,18 @@ export function fetchCourse(courseId) {
       getCourseBlocks(courseId),
       getLearningSequencesOutline(courseId),
     ]).then(([courseMetadataResult, courseBlocksResult, learningSequencesOutlineResult]) => {
-      if (courseMetadataResult.status === 'fulfilled') {
+      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
+      const fetchedBlocks = courseBlocksResult.status === 'fulfilled';
+      const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
+
+      if (fetchedMetadata) {
         dispatch(addModel({
           modelType: 'coursewareMeta',
           model: courseMetadataResult.value,
         }));
       }
 
-      if (courseBlocksResult.status === 'fulfilled') {
+      if (fetchedBlocks && fetchedOutline) {
         const {
           courses, sections, sequences, units,
         } = mergeLearningSequencesWithCourseBlocks(
@@ -166,20 +176,13 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
-      const fetchedBlocks = courseBlocksResult.status === 'fulfilled';
-
       // Log errors for each request if needed. Course block failures may occur
       // even if the course metadata request is successful
       if (!fetchedBlocks) {
-        const { response } = courseBlocksResult.reason;
-        if (response && response.status === 403) {
-          // 403 responses are normal - they happen when the learner is logged out.
-          // We'll redirect them in a moment to the outline tab by calling fetchCourseDenied() below.
-          logInfo(courseBlocksResult.reason);
-        } else {
-          logError(courseBlocksResult.reason);
-        }
+        logBlocksResultError(courseBlocksResult);
+      }
+      if (!fetchedOutline) {
+        logBlocksResultError(learningSequencesOutlineResult);
       }
       if (!fetchedMetadata) {
         logError(courseMetadataResult.reason);
