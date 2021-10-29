@@ -623,6 +623,135 @@
         "headers": {
         }
       }
+    },
+    {
+      "description": "a request to get a learning sequence outline",
+      "providerState": "Learning sequence outline exists for course_id course-v1:edX+DemoX+Demo_Course",
+      "request": {
+        "method": "GET",
+        "path": "/api/learning_sequences/v1/course_outline/course-v1:edX+DemoX+Demo_Course"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "course_key": "block-v1:edX+DemoX+Demo_Course",
+          "title": "Demo Course",
+          "outline": {
+            "sections": [
+
+            ],
+            "sequences": [
+
+            ]
+          }
+        },
+        "matchingRules": {
+          "$.body.course_key": {
+            "match": "type"
+          },
+          "$.body.title": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request to get an outline",
+      "providerState": "Outline exists for course_id course-v1:edX+DemoX+Demo_Course",
+      "request": {
+        "method": "GET",
+        "path": "/api/learning_sequences/v1/course_outline/course-v1:edX+DemoX+Demo_Course"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "course_key": "block-v1:edX+DemoX+Demo_Course",
+          "title": "Demo Course",
+          "outline": {
+            "sections": [
+
+            ],
+            "sequences": {
+            }
+          }
+        },
+        "matchingRules": {
+          "$.body.course_key": {
+            "match": "type"
+          },
+          "$.body.title": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request to get an outline",
+      "providerState": "Outline exists with inaccessible sequences for course_id course-v1:edX+DemoX+Demo_Course",
+      "request": {
+        "method": "GET",
+        "path": "/api/learning_sequences/v1/course_outline/course-v1:edX+DemoX+Demo_Course"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "course_key": "block-v1:edX+DemoX+Demo_Course",
+          "title": "Demo Course",
+          "outline": {
+            "sections": [
+              {
+                "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@partial",
+                "title": "Partially accessible",
+                "sequence_ids": [
+                  "block-v1:edX+DemoX+Demo_Course+type@sequential+block@accessible",
+                  "block-v1:edX+DemoX+Demo_Course+type@sequential+block@nope1"
+                ]
+              },
+              {
+                "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@nope",
+                "title": "Wholly inaccessible",
+                "sequence_ids": [
+                  "block-v1:edX+DemoX+Demo_Course+type@sequential+block@nope2"
+                ]
+              }
+            ],
+            "sequences": {
+              "block-v1:edX+DemoX+Demo_Course+type@sequential+block@accessible": {
+                "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@accessible",
+                "title": "Can access",
+                "accessible": true
+              },
+              "block-v1:edX+DemoX+Demo_Course+type@sequential+block@nope1": {
+                "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@nope1",
+                "title": "Cannot access",
+                "accessible": false
+              },
+              "block-v1:edX+DemoX+Demo_Course+type@sequential+block@nope2": {
+                "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@nope2",
+                "title": "Still cannot access",
+                "accessible": false
+              }
+            }
+          }
+        },
+        "matchingRules": {
+          "$.body.course_key": {
+            "match": "type"
+          },
+          "$.body.title": {
+            "match": "type"
+          },
+          "$.body.outline": {
+            "match": "type"
+          }
+        }
+      }
     }
   ],
   "metadata": {
