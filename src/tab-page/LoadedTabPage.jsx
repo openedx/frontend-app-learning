@@ -4,7 +4,8 @@ import { Helmet } from 'react-helmet';
 
 import { getConfig } from '@edx/frontend-platform';
 
-import { Header, CourseTabsNavigation } from '../course-header';
+import { CourseTabsNavigation } from '../course-tabs';
+import { LearningHeader as Header } from '@edx/frontend-component-header';
 import { useModel } from '../generic/model-store';
 import { AlertList } from '../generic/user-messages';
 import StreakModal from '../shared/streak-celebration';

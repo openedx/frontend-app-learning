@@ -4,7 +4,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Toast } from '@edx/paragon';
-import { Header } from '../course-header';
+import { LearningHeader as Header } from '@edx/frontend-component-header';
 import PageLoading from '../generic/PageLoading';
 
 import genericMessages from '../generic/messages';

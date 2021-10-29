@@ -1,0 +1,1 @@
+export { default as CourseTabsNavigation } from './CourseTabsNavigation';

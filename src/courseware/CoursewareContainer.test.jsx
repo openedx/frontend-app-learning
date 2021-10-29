@@ -154,7 +154,7 @@ describe('CoursewareContainer', () => {
     const courseId = defaultCourseId;
 
     function assertLoadedHeader(container) {
-      const courseHeader = container.querySelector('.course-header');
+      const courseHeader = container.querySelector('.learning-header');
       // Ensure the course number and org appear - this proves we loaded course metadata properly.
       expect(courseHeader).toHaveTextContent(courseMetadata.number);
       expect(courseHeader).toHaveTextContent(courseMetadata.org);
