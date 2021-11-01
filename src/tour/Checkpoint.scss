@@ -1,0 +1,62 @@
+.checkpoint-popover {
+  border-top: 8px solid $brand;
+  border-radius: $border-radius;
+  box-shadow: $popover-box-shadow;
+  z-index: 1060;
+  max-width: $popover-max-width;
+  @media (max-width: map-get($grid-breakpoints, 'md')) {
+    min-width: 90%;
+    max-width: 90%;
+  }
+
+  #checkpoint-arrow,
+  #checkpoint-arrow::before {
+    position: absolute;
+    width: .65em;
+    height: .65em;
+    background: inherit;
+  }
+
+  #checkpoint-arrow {
+    visibility: hidden;
+  }
+
+  #checkpoint-arrow::before {
+    visibility: visible;
+    content: '';
+    transform: rotate(45deg);
+  }
+
+  .checkpoint-popover_breadcrumb_active {
+    fill: $primary;
+  }
+
+  .checkpoint-popover_breadcrumb_inactive {
+    fill: transparent;
+    stroke: $primary;
+    stroke-width: 1px;
+  }
+
+  .checkpoint-popover_breadcrumb:not(:first-child) {
+    margin-left: 4px;
+  }
+}
+
+.checkpoint-popover[data-popper-placement^='top'] > #checkpoint-arrow {
+  bottom: -6px;
+}
+
+.checkpoint-popover[data-popper-placement^='bottom'] > #checkpoint-arrow {
+  top: -14px;
+  &::before {
+    background: $brand;
+  }
+}
+
+.checkpoint-popover[data-popper-placement^='left'] > #checkpoint-arrow {
+  right: -6px;
+}
+
+.checkpoint-popover[data-popper-placement^='right'] > #checkpoint-arrow {
+  left: -6px;
+}
