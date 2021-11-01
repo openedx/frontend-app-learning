@@ -1,0 +1,37 @@
+@import "~@edx/brand/paragon/variables";
+@import "~@edx/paragon/scss/core/core";
+@import "~@edx/brand/paragon/overrides";
+
+.flag-button {
+  background-color: $white;
+  border: 1px solid $light-400;
+  border-radius:.2rem;
+  box-shadow: 0 0 0 2px $light-400;
+
+  &:hover {
+    border: 1px solid $primary-300;
+    box-shadow: 0 0 0 2px $white;
+  }
+}
+
+.flag-button-selected {
+  border: 1px solid $primary-300;
+  box-shadow: 0 0 0 2px $primary-300;
+  pointer-events: none;
+}
+
+// @see https://heydonworks.com/article/the-flexbox-holy-albatross-reincarnated/
+// use the container size for layout instead of device media query
+.flag-button-container {
+  display: flex;
+  flex-wrap: wrap;
+  --margin: 1rem;
+  --modifier: calc(20rem - 100%);
+  margin: calc(var(--margin) * -1);
+}
+
+.flag-button-container > *  {
+  flex-grow: 1;
+  flex-basis: calc(var(--modifier) * 999);
+  margin: var(--margin);
+}

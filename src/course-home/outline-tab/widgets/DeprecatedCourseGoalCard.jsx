@@ -6,9 +6,9 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from '../messages';
 
-import { saveCourseGoal } from '../../data';
+import { deprecatedSaveCourseGoal } from '../../data';
 
-function CourseGoalCard({
+function DeprecatedCourseGoalCard({
   courseId,
   goalOptions,
   intl,
@@ -22,7 +22,7 @@ function CourseGoalCard({
       text: event.currentTarget.getAttribute('data-goal-text'),
     };
 
-    saveCourseGoal(courseId, selectedGoal.key).then((response) => {
+    deprecatedSaveCourseGoal(courseId, selectedGoal.key).then((response) => {
       const { data } = response;
       const {
         header,
@@ -80,7 +80,7 @@ function CourseGoalCard({
   );
 }
 
-CourseGoalCard.propTypes = {
+DeprecatedCourseGoalCard.propTypes = {
   courseId: PropTypes.string.isRequired,
   goalOptions: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.string),
@@ -91,4 +91,4 @@ CourseGoalCard.propTypes = {
   setGoalToastHeader: PropTypes.func.isRequired,
 };
 
-export default injectIntl(CourseGoalCard);
+export default injectIntl(DeprecatedCourseGoalCard);

@@ -3,7 +3,8 @@ export {
   fetchOutlineTab,
   fetchProgressTab,
   resetDeadlines,
-  saveCourseGoal,
+  deprecatedSaveCourseGoal,
+  saveWeeklyLearningGoal,
 } from './thunks';
 
 export { reducer } from './slice';

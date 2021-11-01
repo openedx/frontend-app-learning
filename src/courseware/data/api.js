@@ -98,12 +98,40 @@ export function normalizeLearningSequencesData(learningSequencesData) {
     sequences: {},
   };
 
+  // Sequences
+  Object.entries(learningSequencesData.outline.sequences).forEach(([seqId, sequence]) => {
+    if (!sequence.accessible) {
+      // Skipping inaccessible sequences replicates the behavior of the legacy course blocks API
+      return;
+    }
+
+    models.sequences[seqId] = {
+      id: seqId,
+      title: sequence.title,
+    };
+  });
+
+  // Sections
+  learningSequencesData.outline.sections.forEach(section => {
+    // Skipping sections with only inaccessible sequences replicates the behavior of the legacy course blocks API
+    const accessibleSequenceIds = section.sequence_ids.filter(seqId => seqId in models.sequences);
+    if (accessibleSequenceIds.length === 0) {
+      return;
+    }
+
+    models.sections[section.id] = {
+      id: section.id,
+      title: section.title,
+      sequenceIds: accessibleSequenceIds,
+    };
+  });
+
   // Course
   const now = new Date();
   models.courses[learningSequencesData.course_key] = {
     id: learningSequencesData.course_key,
     title: learningSequencesData.title,
-    sectionIds: learningSequencesData.outline.sections.map(section => section.id),
+    sectionIds: Object.entries(models.sections).map(([sectionId]) => sectionId),
 
     // Scan through all the sequences and look for ones that aren't accessible
     // to us yet because the start date has not yet passed. (Some may be
@@ -112,23 +140,6 @@ export function normalizeLearningSequencesData(learningSequencesData) {
       seq => !seq.accessible && now < Date.parse(seq.effective_start),
     ),
   };
-
-  // Sections
-  learningSequencesData.outline.sections.forEach(section => {
-    models.sections[section.id] = {
-      id: section.id,
-      title: section.title,
-      sequenceIds: section.sequence_ids,
-    };
-  });
-
-  // Sequences
-  Object.entries(learningSequencesData.outline.sequences).forEach(([seqId, sequence]) => {
-    models.sequences[seqId] = {
-      id: seqId,
-      title: sequence.title,
-    };
-  });
 
   return models;
 }
@@ -221,6 +232,7 @@ function normalizeMetadata(metadata) {
     relatedPrograms: camelCaseObject(data.related_programs),
     userNeedsIntegritySignature: data.user_needs_integrity_signature,
     isMasquerading: data.original_user_is_staff && !data.is_staff,
+    username: data.username,
   };
 }
 

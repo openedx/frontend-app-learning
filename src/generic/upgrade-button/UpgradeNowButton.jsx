@@ -15,7 +15,7 @@ function UpgradeNowButton(props) {
     ...rest
   } = props;
 
-  // Prefer offer's url in case it is ever different (though it is not at time of this writing)
+  // Prefer offer's url in case it is different (might hold a coupon code that the normal does not)
   const url = offer ? offer.upgradeUrl : verifiedMode.upgradeUrl;
 
   return (

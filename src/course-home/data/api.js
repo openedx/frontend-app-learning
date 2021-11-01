@@ -386,9 +386,18 @@ export async function postCourseDeadlines(courseId, model) {
   });
 }
 
-export async function postCourseGoals(courseId, goalKey) {
+export async function deprecatedPostCourseGoals(courseId, goalKey) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`);
   return getAuthenticatedHttpClient().post(url.href, { course_id: courseId, goal_key: goalKey });
+}
+
+export async function postWeeklyLearningGoal(courseId, daysPerWeek, subscribedToReminders) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`);
+  return getAuthenticatedHttpClient().post(url.href, {
+    course_id: courseId,
+    days_per_week: daysPerWeek,
+    subscribed_to_reminders: subscribedToReminders,
+  });
 }
 
 export async function postDismissWelcomeMessage(courseId) {

@@ -40,6 +40,9 @@ Factory.define('outlineTabData')
     course_goals: {
       goal_options: [],
       selected_goal: null,
+      weekly_learning_goal_enabled: false,
+      days_per_week: null,
+      subscribed_to_reminders: null,
     },
     course_tools: [
       {

@@ -7,7 +7,8 @@ import {
   getOutlineTabData,
   getProgressTabData,
   postCourseDeadlines,
-  postCourseGoals,
+  deprecatedPostCourseGoals,
+  postWeeklyLearningGoal,
   postDismissWelcomeMessage,
   postRequestCert,
 } from './api';
@@ -109,8 +110,12 @@ export function resetDeadlines(courseId, model, getTabData) {
   };
 }
 
-export async function saveCourseGoal(courseId, goalKey) {
-  return postCourseGoals(courseId, goalKey);
+export async function deprecatedSaveCourseGoal(courseId, goalKey) {
+  return deprecatedPostCourseGoals(courseId, goalKey);
+}
+
+export async function saveWeeklyLearningGoal(courseId, daysPerWeek, subscribedToReminders) {
+  return postWeeklyLearningGoal(courseId, daysPerWeek, subscribedToReminders);
 }
 
 export function processEvent(eventData, getTabData) {
