@@ -26,6 +26,12 @@ const messages = defineMessages({
     defaultMessage: 'There is no content here.',
     description: 'Message shown when there is no content to show a user inside a learning sequence.',
   },
+  'learn.header.h2.placeholder': {
+    id: 'learn.header.h2.placeholder',
+    defaultMessage: 'Level 2 headings may be created by course providers in the future.',
+    description: 'Message spoken by a screenreader indicating that the h2 tag is a placeholder.',
+
+  },
 });
 
 export default messages;
