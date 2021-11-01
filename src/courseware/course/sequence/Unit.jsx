@@ -159,7 +159,7 @@ function Unit({
   return (
     <div className="unit">
       <h1 className="mb-0 h3">{unit.title}</h1>
-      <h2 className="sr-only">Level 2 headings may be created by course providers in the future.</h2>
+      <h2 className="sr-only">{intl.formatMessage(messages['learn.header.h2.placeholder'])}</h2>
       <BookmarkButton
         unitId={unit.id}
         isBookmarked={unit.bookmarked}
