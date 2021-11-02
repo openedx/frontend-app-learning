@@ -18,15 +18,13 @@
   padding: 0.5rem 1.25rem;
 }
 
-.upgrade-notification-ul {
-  padding-left: 1.25rem !important;
+// .fa-ul added so specificity is higher than Font Awesome's .fa-ul.
+// An additional Font Awesome stylesheet is imported by Braze in
+// stage/production but not devstack.
+.upgrade-notification-ul.fa-ul {
+  padding-left: 1.25rem;
   padding-top: 0.875rem;
   padding-right: 1.25rem;
-}
-
-.upgrade-notification-li {
-  left: -2.125rem;
-  top: 0 !important;
 }
 
 .upgrade-notification-text {
@@ -42,12 +40,4 @@
   border-top: 1px solid $light-400;
   padding-top: .75rem;
   padding-bottom: .75rem;
-}
-
-.inline-link-underline {
-  text-decoration: underline;
-}
-
-.upgrade-notification .upgrade-notification-message a {
-  color: $primary-500;
 }
