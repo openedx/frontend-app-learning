@@ -89,7 +89,7 @@ export function SupportMissionBullet() {
       <FormattedMessage
         id="learning.generic.upsell.supportMissionBullet.mission"
         defaultMessage="mission"
-        description="Bolded word 'mission'."
+        description="Bolded word 'mission', which is the bolded portion of a bullet point encouraging the learner to support the goals of the website."
       />
     </span>
   );
