@@ -65,7 +65,7 @@ export function FullAccessBullet() {
       <FormattedMessage
         id="learning.generic.upsell.fullAccessBullet.fullAccess"
         defaultMessage="Full access"
-        description="Bolded phrase 'Full access'."
+        description="Bolded phrase 'Full access', which is the bolded portion of a bullet point highlighting that access to course content will not have time limits."
       />
     </span>
   );
