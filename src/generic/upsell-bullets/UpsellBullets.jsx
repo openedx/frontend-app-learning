@@ -99,7 +99,7 @@ export function SupportMissionBullet() {
       <FormattedMessage
         id="learning.generic.upsell.supportMissionBullet"
         defaultMessage="Support our {missionInBoldText} at edX"
-        description="Bullet encouraging user to support edX."
+        description="Bullet encouraging user to support edX's goals."
         values={{ missionInBoldText }}
       />
     </li>
