@@ -345,6 +345,7 @@ export async function getOutlineTabData(courseId) {
   const datesWidget = camelCaseObject(data.dates_widget);
   const enrollAlert = camelCaseObject(data.enroll_alert);
   const enrollmentMode = data.enrollment_mode;
+  const enableProctoredExams = data.enable_proctored_exams;
   const handoutsHtml = data.handouts_html;
   const hasScheduledContent = data.has_scheduled_content;
   const hasEnded = data.has_ended;
@@ -366,6 +367,7 @@ export async function getOutlineTabData(courseId) {
     datesWidget,
     enrollAlert,
     enrollmentMode,
+    enableProctoredExams,
     handoutsHtml,
     hasScheduledContent,
     hasEnded,

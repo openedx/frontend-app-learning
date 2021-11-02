@@ -8,7 +8,9 @@ import { Button } from '@edx/paragon';
 import messages from '../messages';
 import { getProctoringInfoData } from '../../data/api';
 
-function ProctoringInfoPanel({ courseId, username, intl }) {
+function ProctoringInfoPanel({
+  courseId, username, intl, isResolved,
+}) {
   const [link, setLink] = useState('');
   const [onboardingPastDue, setOnboardingPastDue] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
@@ -82,6 +84,7 @@ function ProctoringInfoPanel({ courseId, username, intl }) {
             if (Object.keys(response).length > 0) {
               setShowInfoPanel(true);
             }
+            isResolved();
 
             setStatus(response.onboarding_status);
             setLink(response.onboarding_link);
@@ -186,6 +189,7 @@ ProctoringInfoPanel.propTypes = {
   courseId: PropTypes.string.isRequired,
   username: PropTypes.string,
   intl: intlShape.isRequired,
+  isResolved: PropTypes.func.isRequired,
 };
 
 ProctoringInfoPanel.defaultProps = {

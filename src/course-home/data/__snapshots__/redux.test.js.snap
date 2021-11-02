@@ -453,6 +453,7 @@ Object {
         "datesWidget": Object {
           "courseDateBlocks": Array [],
         },
+        "enableProctoredExams": undefined,
         "enrollAlert": Object {
           "canEnroll": true,
           "extraText": "Contact the administrator.",

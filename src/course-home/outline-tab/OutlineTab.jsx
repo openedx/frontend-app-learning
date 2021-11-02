@@ -49,6 +49,7 @@ function OutlineTab({ intl }) {
 
   const {
     accessExpiration,
+    enableProctoredExams,
     courseBlocks: {
       courses,
       sections,
@@ -73,6 +74,7 @@ function OutlineTab({ intl }) {
   const [deprecatedCourseGoalToDisplay, setDeprecatedCourseGoalToDisplay] = useState(selectedGoal);
   const [goalToastHeader, setGoalToastHeader] = useState('');
   const [expandAll, setExpandAll] = useState(false);
+  const [proctorPanelResolved, setProctorPanelResolved] = useState(!enableProctoredExams);
 
   const eventProperties = {
     org_key: org,
@@ -200,6 +202,7 @@ function OutlineTab({ intl }) {
             <ProctoringInfoPanel
               courseId={courseId}
               username={username}
+              isResolved={() => setProctorPanelResolved(true)}
             />
             {deprecatedCourseGoalToDisplay && goalOptions && goalOptions.length > 0 && (
               <UpdateGoalSelector
@@ -210,7 +213,7 @@ function OutlineTab({ intl }) {
                 setGoalToastHeader={(newHeader) => { setGoalToastHeader(newHeader); }}
               />
             )}
-            {weeklyLearningGoalEnabled && (
+            {proctorPanelResolved && weeklyLearningGoalEnabled && (
               <WeeklyLearningGoalCard
                 daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
                 subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}
