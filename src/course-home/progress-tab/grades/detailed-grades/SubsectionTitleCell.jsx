@@ -87,7 +87,16 @@ function SubsectionTitleCell({ intl, subsection }) {
 
 SubsectionTitleCell.propTypes = {
   intl: intlShape.isRequired,
-  subsection: PropTypes.shape.isRequired,
+  subsection: PropTypes.shape({
+    blockKey: PropTypes.string.isRequired,
+    displayName: PropTypes.string.isRequired,
+    learnerHasAccess: PropTypes.bool.isRequired,
+    problemScores: PropTypes.arrayOf(PropTypes.shape({
+      earned: PropTypes.number.isRequired,
+      possible: PropTypes.number.isRequired,
+    })).isRequired,
+    url: PropTypes.string,
+  }).isRequired,
 };
 
 export default injectIntl(SubsectionTitleCell);

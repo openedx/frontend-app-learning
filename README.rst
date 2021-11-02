@@ -71,6 +71,15 @@ as documented in the Open edX Developer Guide under
 
 The learning micro-frontend also supports the following additional variables:
 
+CREDIT_HELP_LINK_URL
+  A link to resources to help explain what course credit is and how to earn it.
+
+ENABLE_JUMPNAV
+  Enables the new Jump Navigation feature in the course breadcrumbs, defaulted to  the string 'true'.
+  Disable to have simple hyperlinks for breadcrumbs. Setting it to any other value but 'true' ('false','I love flags', 'etc' would disable the Jumpnav).
+  This feature flag is slated to be removed as jumpnav becomes default. Follow the progress of this ticket here:
+  https://openedx.atlassian.net/browse/TNL-8678
+
 SOCIAL_UTM_MILESTONE_CAMPAIGN
   This value is passed as the ``utm_campaign`` parameter for social-share
   links when celebrating learning milestones in the course. Optional.
@@ -110,8 +119,3 @@ TWITTER_URL
 
   Example: https://twitter.com/edXOnline
 
-ENABLE_JUMPNAV
-  Enables the new Jump Navigation feature in the course breadcrumbs, defaulted to  the string 'true'.
-  Disable to have simple hyperlinks for breadcrumbs. Setting it to any other value but 'true' ('false','I love flags', 'etc' would disable the Jumpnav).
-  This feature flag is slated to be removed as jumpnav becomes default. Follow the progress of this ticket here:
-  https://openedx.atlassian.net/browse/TNL-8678
