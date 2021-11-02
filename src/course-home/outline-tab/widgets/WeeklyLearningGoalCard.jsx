@@ -47,68 +47,62 @@ function WeeklyLearningGoalCard({
   }
 
   return (
-    <div className="row w-100 m-0 p-0">
-      <Card
-        className="mb-3 shadow border-0"
-        data-testid="weekly-learning-goal-card"
-      >
-        <Card.Body className="p-3.5">
-          <Card.Title>
-            <h2 className="h4 m-0 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h2>
-          </Card.Title>
-          <Card.Text
-            className="text-gray-700"
-              // id="learning_goal_choices_label"
+    <Card
+      className="row w-100 m-0 mb-3 shadow-sm border-0"
+      data-testid="weekly-learning-goal-card"
+    >
+      <Card.Body className="p-3 p-lg-3.5">
+        <h2 className="h4 mb-1 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h2>
+        <Card.Text
+          className="text-gray-700 small mb-2.5"
+        >
+          {intl.formatMessage(messages.setWeeklyGoalDetail)}
+        </Card.Text>
+        <div
+          className="flag-button-container m-0 p-0"
+        >
+          <LearningGoalButton
+            level="casual"
+            currentGoal={daysPerWeekGoal}
+            handleSelect={handleSelect}
+          />
+          <LearningGoalButton
+            level="regular"
+            currentGoal={daysPerWeekGoal}
+            handleSelect={handleSelect}
+          />
+          <LearningGoalButton
+            level="intense"
+            currentGoal={daysPerWeekGoal}
+            handleSelect={handleSelect}
+          />
+        </div>
+        <div className="d-flex pt-3">
+          <Form.Switch
+            checked={isGetReminderSelected}
+            onChange={(event) => handleSubscribeToReminders(event)}
+            disabled={!daysPerWeekGoal}
           >
-            {intl.formatMessage(messages.setWeeklyGoalDetail)}
-          </Card.Text>
-          <div
-            className="flag-button-container m-0 p-0"
-          >
-            <LearningGoalButton
-              level="casual"
-              currentGoal={daysPerWeekGoal}
-              handleSelect={handleSelect}
-            />
-            <LearningGoalButton
-              level="regular"
-              currentGoal={daysPerWeekGoal}
-              handleSelect={handleSelect}
-            />
-            <LearningGoalButton
-              level="intense"
-              currentGoal={daysPerWeekGoal}
-              handleSelect={handleSelect}
-            />
-          </div>
-          <div className="pt-3 pb-1">
-            <Form.Switch
-              checked={isGetReminderSelected}
-              onChange={(event) => handleSubscribeToReminders(event)}
-              disabled={!daysPerWeekGoal}
-            >
-              {intl.formatMessage(messages.setGoalReminder)}
-            </Form.Switch>
-          </div>
-        </Card.Body>
-        {isGetReminderSelected && (
-          <Card.Footer className="border-0 px-2.5 bg-light-200 ">
-            <div className="row w-100 m-0 small align-center">
-              <div className="d-flex align-items-center pr-1">
-                <Icon
-                  className="text-primary-500"
-                  src={Email}
-                />
-              </div>
-              <div className="col">
-                {intl.formatMessage(messages.goalReminderDetail)}
-              </div>
+            <small>{intl.formatMessage(messages.setGoalReminder)}</small>
+          </Form.Switch>
+        </div>
+      </Card.Body>
+      {isGetReminderSelected && (
+        <Card.Footer className="border-0 px-2.5 bg-light-200">
+          <div className="row w-100 m-0 small align-center">
+            <div className="d-flex align-items-center pr-1">
+              <Icon
+                className="text-primary-500"
+                src={Email}
+              />
             </div>
-          </Card.Footer>
-        )}
-      </Card>
-
-    </div>
+            <div className="col">
+              {intl.formatMessage(messages.goalReminderDetail)}
+            </div>
+          </div>
+        </Card.Footer>
+      )}
+    </Card>
   );
 }
 
