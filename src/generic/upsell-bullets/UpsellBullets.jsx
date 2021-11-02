@@ -41,7 +41,7 @@ export function UnlockGradedBullet() {
       <FormattedMessage
         id="learning.generic.upsell.unlockGradedBullet.gradedAssignments"
         defaultMessage="graded assignments"
-        description="Bolded words 'graded assignment', which is the name of unlocked feature with upgrade."
+        description="Bolded words 'graded assignments', which are the bolded portion of a bullet point highlighting that course content is unlocked when purchasing an upgrade. Graded assignments are any course content that is graded and are unlocked by upgrading to verified certificates."
       />
     </span>
   );
