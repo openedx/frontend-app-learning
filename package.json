@@ -7,13 +7,11 @@
     "url": "git+https://github.com/edx/frontend-app-learning.git"
   },
   "browserslist": [
-    "last 2 versions",
-    "ie 11"
+    "extends @edx/browserslist-config"
   ],
   "scripts": {
     "build": "fedx-scripts webpack",
     "i18n_extract": "BABEL_ENV=i18n fedx-scripts babel src --quiet > /dev/null",
-    "is-es5": "es-check es5 ./dist/*.js",
     "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
     "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx .",
     "prepare": "husky install",
@@ -63,6 +61,7 @@
     "util": "0.12.4"
   },
   "devDependencies": {
+    "@edx/browserslist-config": "1.0.2",
     "@edx/frontend-build": "9.1.4",
     "@edx/reactifex": "1.1.0",
     "@pact-foundation/pact": "9.17.3",
@@ -71,7 +70,6 @@
     "@testing-library/user-event": "13.5.0",
     "axios-mock-adapter": "1.20.0",
     "codecov": "3.8.3",
-    "es-check": "6.2.1",
     "husky": "7.0.4",
     "jest": "27.5.1",
     "rosie": "2.1.0"
