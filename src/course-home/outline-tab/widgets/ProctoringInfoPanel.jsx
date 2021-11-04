@@ -98,7 +98,10 @@ function ProctoringInfoPanel({
             setOnboardingPastDue(response.onboarding_past_due);
           }
         },
-      );
+      )
+      .finally(() => {
+        isResolved();
+      });
   }, []);
 
   let onboardingExamButton = null;

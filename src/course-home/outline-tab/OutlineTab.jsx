@@ -49,7 +49,6 @@ function OutlineTab({ intl }) {
 
   const {
     accessExpiration,
-    enableProctoredExams,
     courseBlocks: {
       courses,
       sections,
@@ -63,10 +62,11 @@ function OutlineTab({ intl }) {
     datesWidget: {
       courseDateBlocks,
     },
+    enableProctoredExams,
+    offer,
     resumeCourse: {
       url: resumeCourseUrl,
     },
-    offer,
     timeOffsetMillis,
     verifiedMode,
   } = useModel('outline', courseId);
@@ -74,6 +74,8 @@ function OutlineTab({ intl }) {
   const [deprecatedCourseGoalToDisplay, setDeprecatedCourseGoalToDisplay] = useState(selectedGoal);
   const [goalToastHeader, setGoalToastHeader] = useState('');
   const [expandAll, setExpandAll] = useState(false);
+  // Defer showing the goal widget until the ProctoringInfoPanel is either shown or determined as not showing
+  // to avoid components bouncing around too much as screen is displayed
   const [proctorPanelResolved, setProctorPanelResolved] = useState(!enableProctoredExams);
 
   const eventProperties = {
