@@ -529,6 +529,47 @@ describe('Outline Tab', () => {
     });
   });
 
+  describe('weekly learning goal is displayed', () => {
+    const onboardingReleaseDate = new Date();
+    onboardingReleaseDate.setDate(new Date().getDate() - 7);
+
+    beforeEach(async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+        },
+      });
+    });
+
+    it('renders weekly learning goal card if ProctoringInfoPanel is not shown', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(404);
+      await fetchAndRender();
+      expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
+    });
+
+    it('renders weekly learning goal card if ProctoringInfoPanel is not enabled', async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+          enableProctoredExams: false,
+        },
+      });
+      await fetchAndRender();
+      expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
+    });
+
+    it('renders weekly learning goal card if ProctoringInfoPanel is enabled', async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+          enableProctoredExams: true,
+        },
+      });
+      await fetchAndRender();
+      expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
+    });
+  });
+
   describe('Course Handouts', () => {
     it('renders title when handouts are available', async () => {
       await fetchAndRender();
@@ -1172,6 +1213,7 @@ describe('Outline Tab', () => {
 
     it('does not appear for 404', async () => {
       axiosMock.onGet(proctoringInfoUrl).reply(404);
+      await fetchAndRender();
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).not.toBeInTheDocument();
     });
 

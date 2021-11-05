@@ -63,17 +63,17 @@ function WeeklyLearningGoalCard({
         >
           <LearningGoalButton
             level="casual"
-            currentGoal={daysPerWeekGoal}
+            isSelected={daysPerWeekGoal === 1}
             handleSelect={handleSelect}
           />
           <LearningGoalButton
             level="regular"
-            currentGoal={daysPerWeekGoal}
+            isSelected={daysPerWeekGoal === 3}
             handleSelect={handleSelect}
           />
           <LearningGoalButton
             level="intense"
-            currentGoal={daysPerWeekGoal}
+            isSelected={daysPerWeekGoal === 5}
             handleSelect={handleSelect}
           />
         </div>

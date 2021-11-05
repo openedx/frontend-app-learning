@@ -84,7 +84,6 @@ function ProctoringInfoPanel({
             if (Object.keys(response).length > 0) {
               setShowInfoPanel(true);
             }
-            isResolved();
 
             setStatus(response.onboarding_status);
             setLink(response.onboarding_link);
@@ -99,6 +98,9 @@ function ProctoringInfoPanel({
           }
         },
       )
+      .catch(() => {
+        /* Do nothing. API throws 404 when class does not have proctoring */
+      })
       .finally(() => {
         isResolved();
       });
