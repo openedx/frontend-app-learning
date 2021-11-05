@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
@@ -28,7 +27,7 @@ function CourseBreadcrumb({
         whiteSpace: 'nowrap',
       }}
       >
-        { getConfig().ENABLE_JUMPNAV !== 'true' || content.length < 2 || !isStaff
+        {content.length < 2 || !isStaff
           ? (
             <a className="text-primary-500" href={`/course/${courseId}/${defaultContent.id}`}>
               {defaultContent.label}
