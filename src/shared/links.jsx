@@ -9,8 +9,8 @@ import messages from '../courseware/course/course-exit/messages';
 function IntlDashboardLink({ intl }) {
   return (
     <Hyperlink
-      className="text-gray-700"
-      style={{ textDecoration: 'underline' }}
+      variant="muted"
+      isInline
       destination={`${getConfig().LMS_BASE_URL}/dashboard`}
     >
       {intl.formatMessage(messages.dashboardLink)}
@@ -28,8 +28,8 @@ function IntlIdVerificationSupportLink({ intl }) {
   }
   return (
     <Hyperlink
-      className="text-gray-700"
-      style={{ textDecoration: 'underline' }}
+      variant="muted"
+      isInline
       destination={getConfig().SUPPORT_URL_ID_VERIFICATION}
     >
       {intl.formatMessage(messages.idVerificationSupportLink)}
@@ -46,8 +46,8 @@ function IntlProfileLink({ intl }) {
 
   return (
     <Hyperlink
-      className="text-gray-700"
-      style={{ textDecoration: 'underline' }}
+      variant="muted"
+      isInline
       destination={`${getConfig().LMS_BASE_URL}/u/${username}`}
     >
       {intl.formatMessage(messages.profileLink)}

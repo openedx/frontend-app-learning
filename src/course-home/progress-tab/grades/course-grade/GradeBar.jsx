@@ -27,7 +27,7 @@ function GradeBar({ intl, passingGrade }) {
   const lockedTooltipClassName = gradesFeatureIsFullyLocked ? 'locked-overlay' : '';
 
   return (
-    <div className="col-12 col-sm-6 align-self-center">
+    <div className="col-12 col-sm-6 align-self-center p-0">
       <div className="sr-only">{intl.formatMessage(messages.courseGradeBarAltText, { currentGrade, passingGrade })}</div>
       <svg width="100%" height="100px" className="grade-bar" aria-hidden="true">
         <g style={{ transform: 'translateY(2.61em)' }}>

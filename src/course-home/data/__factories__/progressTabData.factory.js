@@ -17,6 +17,7 @@ Factory.define('progressTabData')
       percent: 1,
       is_passing: true,
     },
+    credit_course_requirements: null,
     section_scores: [
       {
         display_name: 'First section',

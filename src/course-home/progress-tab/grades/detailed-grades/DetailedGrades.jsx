@@ -39,7 +39,8 @@ function DetailedGrades({ intl }) {
 
   const outlineLink = (
     <Hyperlink
-      className="muted-link inline-link"
+      variant="muted"
+      isInline
       destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`}
       onClick={logOutlineLinkClick}
       tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}

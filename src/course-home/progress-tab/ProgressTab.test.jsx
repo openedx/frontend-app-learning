@@ -487,6 +487,29 @@ describe('Progress Tab', () => {
       // visible to them, which is non-passing
       expect(screen.getByText('A weighted grade of 75% is required to pass in this course')).toBeInTheDocument();
     });
+
+    it('renders correct title when credit information is available', async () => {
+      setTabData({
+        credit_course_requirements: {
+          eligibility_status: 'eligible',
+          requirements: [
+            {
+              namespace: 'proctored_exam',
+              name: 'i4x://edX/DemoX/proctoring-block/final_uuid',
+              display_name: 'Proctored Mid Term Exam',
+              criteria: {},
+              reason: {},
+              status: 'satisfied',
+              status_date: '2015-06-26 11:07:42',
+              order: 1,
+            },
+          ],
+        },
+      });
+
+      await fetchAndRender();
+      expect(screen.getByText('Grades & Credit')).toBeInTheDocument();
+    });
   });
 
   describe('Grade Summary', () => {
@@ -1186,6 +1209,54 @@ describe('Progress Tab', () => {
     it('Does not display the certificate component if the user is not enrolled', async () => {
       await fetchAndRender();
       expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Credit Information', () => {
+    it('renders credit information when provided', async () => {
+      setTabData({
+        credit_course_requirements: {
+          eligibility_status: 'eligible',
+          requirements: [
+            {
+              namespace: 'proctored_exam',
+              name: 'i4x://edX/DemoX/proctoring-block/final_uuid',
+              display_name: 'Proctored Mid Term Exam',
+              criteria: {},
+              reason: {},
+              status: null,
+              status_date: '2015-06-26 11:07:42',
+              order: 1,
+            },
+            {
+              namespace: 'grade',
+              name: 'i4x://edX/DemoX/proctoring-block/final_uuid',
+              display_name: 'Minimum Passing Grade',
+              criteria: { min_grade: 0.8 },
+              reason: { final_grade: 0.95 },
+              status: 'satisfied',
+              status_date: '2015-06-26 11:07:44',
+              order: 2,
+            },
+          ],
+        },
+      });
+
+      await fetchAndRender();
+      expect(screen.getByText('Grades & Credit')).toBeInTheDocument();
+      expect(screen.getByText('Requirements for course credit')).toBeInTheDocument();
+      expect(screen.getByText('You have met the requirements for credit in this course.', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('Proctored Mid Term Exam:')).toBeInTheDocument();
+      // 80% comes from the criteria.minGrade being 0.8
+      expect(screen.getByText('Minimum grade for credit (80%):')).toBeInTheDocument();
+      // Completed because the grade requirement has been satisfied
+      expect(screen.getByText('Completed')).toBeInTheDocument();
+    });
+
+    it('does not render credit information when it is not provided', async () => {
+      await fetchAndRender();
+      expect(screen.queryByText('Grades & Credit')).not.toBeInTheDocument();
+      expect(screen.queryByText('Requirements for course credit.')).not.toBeInTheDocument();
     });
   });
 
