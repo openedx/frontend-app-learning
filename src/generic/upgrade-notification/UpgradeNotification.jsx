@@ -185,18 +185,20 @@ UpsellFBESoonCardContent.defaultProps = {
   timezoneFormatArgs: {},
 };
 
-function ExpirationCountdown({ hoursToExpiration, setupgradeNotificationCurrentState, type }) {
+function ExpirationCountdown({
+  courseId, hoursToExpiration, setupgradeNotificationCurrentState, type,
+}) {
   let expirationText;
   if (hoursToExpiration >= 24) {
     // setupgradeNotificationCurrentState is available in NotificationTray (not course home)
     if (setupgradeNotificationCurrentState) {
       if (type === 'access') {
         setupgradeNotificationCurrentState('accessDaysLeft');
-        setLocalStorage('upgradeNotificationCurrentState', 'accessDaysLeft');
+        setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'accessDaysLeft');
       }
       if (type === 'offer') {
         setupgradeNotificationCurrentState('FPDdaysLeft');
-        setLocalStorage('upgradeNotificationCurrentState', 'FPDdaysLeft');
+        setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'FPDdaysLeft');
       }
     }
     expirationText = (
@@ -215,11 +217,11 @@ function ExpirationCountdown({ hoursToExpiration, setupgradeNotificationCurrentS
     if (setupgradeNotificationCurrentState) {
       if (type === 'access') {
         setupgradeNotificationCurrentState('accessHoursLeft');
-        setLocalStorage('upgradeNotificationCurrentState', 'accessHoursLeft');
+        setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'accessHoursLeft');
       }
       if (type === 'offer') {
         setupgradeNotificationCurrentState('FPDHoursLeft');
-        setLocalStorage('upgradeNotificationCurrentState', 'FPDHoursLeft');
+        setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'FPDHoursLeft');
       }
     }
     expirationText = (
@@ -238,11 +240,11 @@ function ExpirationCountdown({ hoursToExpiration, setupgradeNotificationCurrentS
     if (setupgradeNotificationCurrentState) {
       if (type === 'access') {
         setupgradeNotificationCurrentState('accessLastHour');
-        setLocalStorage('upgradeNotificationCurrentState', 'accessLastHour');
+        setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'accessLastHour');
       }
       if (type === 'offer') {
         setupgradeNotificationCurrentState('FPDLastHour');
-        setLocalStorage('upgradeNotificationCurrentState', 'FPDLastHour');
+        setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'FPDLastHour');
       }
     }
     expirationText = (
@@ -256,6 +258,7 @@ function ExpirationCountdown({ hoursToExpiration, setupgradeNotificationCurrentS
 }
 
 ExpirationCountdown.propTypes = {
+  courseId: PropTypes.string.isRequired,
   hoursToExpiration: PropTypes.number.isRequired,
   setupgradeNotificationCurrentState: PropTypes.func,
   type: PropTypes.string,
@@ -265,10 +268,12 @@ ExpirationCountdown.defaultProps = {
   type: null,
 };
 
-function AccessExpirationDateBanner({ accessExpirationDate, timezoneFormatArgs, setupgradeNotificationCurrentState }) {
+function AccessExpirationDateBanner({
+  courseId, accessExpirationDate, timezoneFormatArgs, setupgradeNotificationCurrentState,
+}) {
   if (setupgradeNotificationCurrentState) {
     setupgradeNotificationCurrentState('accessDateView');
-    setLocalStorage('upgradeNotificationCurrentState', 'accessDateView');
+    setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'accessDateView');
   }
   return (
     <div className="upsell-warning-light">
@@ -292,6 +297,7 @@ function AccessExpirationDateBanner({ accessExpirationDate, timezoneFormatArgs, 
 }
 
 AccessExpirationDateBanner.propTypes = {
+  courseId: PropTypes.string.isRequired,
   accessExpirationDate: PropTypes.PropTypes.instanceOf(Date).isRequired,
   timezoneFormatArgs: PropTypes.shape({
     timeZone: PropTypes.string,
@@ -388,6 +394,7 @@ function UpgradeNotification({
         );
         expirationBanner = (
           <ExpirationCountdown
+            courseId={courseId}
             hoursToExpiration={hoursToDiscountExpiration}
             setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
             type="offer"
@@ -402,6 +409,7 @@ function UpgradeNotification({
         );
         expirationBanner = (
           <AccessExpirationDateBanner
+            courseId={courseId}
             accessExpirationDate={accessExpirationDate}
             timezoneFormatArgs={timezoneFormatArgs}
             setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
@@ -418,6 +426,7 @@ function UpgradeNotification({
       );
       expirationBanner = (
         <ExpirationCountdown
+          courseId={courseId}
           hoursToExpiration={hoursToAccessExpiration}
           setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
           type="access"
