@@ -246,6 +246,7 @@ function Sequence({
           courseId={courseId}
           isStaff={course.isStaff}
           originalUserIsStaff={course.originalUserIsStaff}
+          isIntegritySignatureEnabled={course.isIntegritySignatureEnabled}
         >
           {defaultContent}
         </SequenceExamWrapper>

@@ -230,6 +230,7 @@ function normalizeMetadata(metadata) {
     verificationStatus: data.verification_status,
     linkedinAddToProfileUrl: data.linkedin_add_to_profile_url,
     relatedPrograms: camelCaseObject(data.related_programs),
+    isIntegritySignatureEnabled: data.is_integrity_signature_enabled,
     userNeedsIntegritySignature: data.user_needs_integrity_signature,
     isMasquerading: data.original_user_is_staff && !data.is_staff,
     username: data.username,
