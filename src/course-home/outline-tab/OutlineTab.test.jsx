@@ -513,35 +513,30 @@ describe('Outline Tab', () => {
         expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).not.toBeInTheDocument();
       });
     });
-    describe('weekly learning goal is already set', () => {
-      beforeEach(async () => {
-        setTabData({
-          course_goals: {
-            weekly_learning_goal_enabled: true,
-            selected_goal: {
-              subscribed_to_reminders: true,
-              days_per_week: 3,
-            },
+
+    it('has button for weekly learning goal selected', async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+          selected_goal: {
+            subscribed_to_reminders: true,
+            days_per_week: 3,
           },
-        });
-        await fetchAndRender();
+        },
       });
+      await fetchAndRender();
+
+      const button = await screen.queryByTestId('weekly-learning-goal-input-Regular');
+      expect(button).toBeInTheDocument();
+      expect(button).toHaveClass('flag-button-selected');
     });
-  });
 
-  describe('weekly learning goal is displayed', () => {
-    const onboardingReleaseDate = new Date();
-    onboardingReleaseDate.setDate(new Date().getDate() - 7);
-
-    beforeEach(async () => {
+    it('renders weekly learning goal card if ProctoringInfoPanel is not shown', async () => {
       setTabData({
         course_goals: {
           weekly_learning_goal_enabled: true,
         },
       });
-    });
-
-    it('renders weekly learning goal card if ProctoringInfoPanel is not shown', async () => {
       axiosMock.onGet(proctoringInfoUrl).reply(404);
       await fetchAndRender();
       expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
