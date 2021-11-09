@@ -10,7 +10,7 @@ import messages from '../messages';
 
 function LearningGoalButton({
   level,
-  currentGoal,
+  isSelected,
   handleSelect,
   intl,
 }) {
@@ -43,14 +43,14 @@ function LearningGoalButton({
       title={intl.formatMessage(values.title)}
       text={intl.formatMessage(values.text)}
       handleSelect={() => handleSelect(values.daysPerWeek)}
-      isSelected={currentGoal === values.daysPerWeek}
+      isSelected={isSelected}
     />
   );
 }
 
 LearningGoalButton.propTypes = {
   level: PropTypes.string.isRequired,
-  currentGoal: PropTypes.number.isRequired,
+  isSelected: PropTypes.bool.isRequired,
   handleSelect: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
 };

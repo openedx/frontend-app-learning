@@ -513,19 +513,55 @@ describe('Outline Tab', () => {
         expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).not.toBeInTheDocument();
       });
     });
-    describe('weekly learning goal is already set', () => {
-      beforeEach(async () => {
-        setTabData({
-          course_goals: {
-            weekly_learning_goal_enabled: true,
-            selected_goal: {
-              subscribed_to_reminders: true,
-              days_per_week: 3,
-            },
+
+    it('has button for weekly learning goal selected', async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+          selected_goal: {
+            subscribed_to_reminders: true,
+            days_per_week: 3,
           },
-        });
-        await fetchAndRender();
+        },
       });
+      await fetchAndRender();
+
+      const button = await screen.queryByTestId('weekly-learning-goal-input-Regular');
+      expect(button).toBeInTheDocument();
+      expect(button).toHaveClass('flag-button-selected');
+    });
+
+    it('renders weekly learning goal card if ProctoringInfoPanel is not shown', async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+        },
+      });
+      axiosMock.onGet(proctoringInfoUrl).reply(404);
+      await fetchAndRender();
+      expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
+    });
+
+    it('renders weekly learning goal card if ProctoringInfoPanel is not enabled', async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+          enableProctoredExams: false,
+        },
+      });
+      await fetchAndRender();
+      expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
+    });
+
+    it('renders weekly learning goal card if ProctoringInfoPanel is enabled', async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+          enableProctoredExams: true,
+        },
+      });
+      await fetchAndRender();
+      expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
     });
   });
 
@@ -1172,6 +1208,7 @@ describe('Outline Tab', () => {
 
     it('does not appear for 404', async () => {
       axiosMock.onGet(proctoringInfoUrl).reply(404);
+      await fetchAndRender();
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).not.toBeInTheDocument();
     });
 
