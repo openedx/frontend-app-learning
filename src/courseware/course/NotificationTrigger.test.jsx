@@ -9,8 +9,6 @@ describe('Notification Trigger', () => {
   let mockData;
   let getItemSpy;
   let setItemSpy;
-  // let mockDataSameState;
-  // let mockDataDifferentState;
   const courseMetadata = Factory.build('courseMetadata');
 
   beforeEach(async () => {
