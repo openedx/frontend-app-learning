@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import PropTypes from 'prop-types';
+import { createPopper } from '@popperjs/core';
 
 import CheckpointActionRow from './CheckpointActionRow';
 import CheckpointBody from './CheckpointBody';
@@ -8,12 +10,75 @@ import CheckpointTitle from './CheckpointTitle';
 
 function Checkpoint({
   body,
-  hideCheckpoint,
   index,
+  placement,
+  target,
   title,
   totalCheckpoints,
   ...props
 }) {
+  const [checkpointVisible, setCheckpointVisible] = useState(false);
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
+  useEffect(() => {
+    const targetElement = document.querySelector(target);
+    const checkpoint = document.querySelector('#checkpoint');
+    if (targetElement && checkpoint) {
+      // Translate the Checkpoint to its target's coordinates
+      const checkpointPopper = createPopper(targetElement, checkpoint, {
+        placement: isMobile ? 'top' : placement,
+        modifiers: [
+          {
+            name: 'arrow',
+            options: {
+              padding: 25,
+            },
+          },
+          {
+            name: 'offset',
+            options: {
+              offset: [0, 20],
+            },
+          },
+          {
+            name: 'preventOverflow',
+            options: {
+              padding: 20,
+              tetherOffset: 35,
+            },
+          },
+        ],
+      });
+      setCheckpointVisible(true);
+      if (checkpointPopper) {
+        checkpointPopper.forceUpdate();
+      }
+    }
+  }, [target, isMobile]);
+
+  useEffect(() => {
+    if (checkpointVisible) {
+      const targetElement = document.querySelector(target);
+      let targetOffset = targetElement.getBoundingClientRect().top;
+      if ((targetOffset < 0) || (targetElement.getBoundingClientRect().bottom > window.innerHeight)) {
+        if (placement.includes('top')) {
+          if (targetOffset < 0) {
+            targetOffset *= -1;
+          }
+          targetOffset -= 280;
+        } else {
+          targetOffset -= 80;
+        }
+
+        window.scrollTo({
+          top: targetOffset, behavior: 'smooth',
+        });
+      }
+
+      const button = document.querySelector('#checkpoint-primary-button');
+      button.focus();
+    }
+  }, [target, checkpointVisible]);
   const isLastCheckpoint = index + 1 === totalCheckpoints;
   const isOnlyCheckpoint = totalCheckpoints === 1;
   return (
@@ -22,7 +87,7 @@ function Checkpoint({
       className="checkpoint-popover p-4 bg-light-300"
       aria-labelledby="checkpoint-title"
       role="dialog"
-      style={{ display: hideCheckpoint ? 'none' : 'block' }}
+      style={{ visibility: checkpointVisible ? 'visible' : 'hidden', pointerEvents: checkpointVisible ? 'auto' : 'none' }}
     >
       {/* This text is not translated due to Paragon's lack of i18n support */}
       <span className="sr-only">Top of step {index + 1}</span>
@@ -49,20 +114,25 @@ Checkpoint.defaultProps = {
   body: null,
   dismissButtonText: null,
   endButtonText: null,
+  placement: 'top',
   title: null,
 };
 
 Checkpoint.propTypes = {
-  advanceButtonText: PropTypes.string,
-  body: PropTypes.string,
-  dismissButtonText: PropTypes.string,
-  endButtonText: PropTypes.string,
-  hideCheckpoint: PropTypes.bool.isRequired,
+  advanceButtonText: PropTypes.node,
+  body: PropTypes.node,
+  dismissButtonText: PropTypes.node,
+  endButtonText: PropTypes.node,
   index: PropTypes.number.isRequired,
   onAdvance: PropTypes.func.isRequired,
   onDismiss: PropTypes.func.isRequired,
   onEnd: PropTypes.func.isRequired,
-  title: PropTypes.string,
+  placement: PropTypes.oneOf([
+    'top', 'top-start', 'top-end', 'right-start', 'right', 'right-end',
+    'left-start', 'left', 'left-end', 'bottom', 'bottom-start', 'bottom-end',
+  ]),
+  target: PropTypes.string.isRequired,
+  title: PropTypes.node,
   totalCheckpoints: PropTypes.number.isRequired,
 };
 

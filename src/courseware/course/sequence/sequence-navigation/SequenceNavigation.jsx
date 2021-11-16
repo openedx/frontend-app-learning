@@ -84,7 +84,7 @@ function SequenceNavigation({
   const prevArrow = isRtl(getLocale()) ? ChevronRight : ChevronLeft;
 
   return sequenceStatus === LOADED && (
-    <nav className={classNames('sequence-navigation', className)} style={{ width: shouldDisplayNotificationTrigger ? '90%' : null }}>
+    <nav id="courseware-sequenceNavigation" className={classNames('sequence-navigation', className)} style={{ width: shouldDisplayNotificationTrigger ? '90%' : null }}>
       <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit} iconBefore={prevArrow}>
         {shouldDisplayNotificationTrigger ? null : intl.formatMessage(messages.previousButton)}
       </Button>

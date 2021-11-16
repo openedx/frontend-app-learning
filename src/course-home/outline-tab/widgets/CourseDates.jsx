@@ -29,21 +29,23 @@ function CourseDates({
 
   return (
     <section className="mb-4">
-      <h2 className="h4">{intl.formatMessage(messages.dates)}</h2>
-      <ol className="list-unstyled">
-        {courseDateBlocks.map((courseDateBlock) => (
-          <DateSummary
-            key={courseDateBlock.title + courseDateBlock.date}
-            dateBlock={courseDateBlock}
-            userTimezone={userTimezone}
-            /** [MM-P2P] Experiment */
-            mmp2p={mmp2p}
-          />
-        ))}
-      </ol>
-      <a className="font-weight-bold ml-4 pl-1 small" href={datesTabLink}>
-        {intl.formatMessage(messages.allDates)}
-      </a>
+      <div id="courseHome-dates">
+        <h2 className="h4">{intl.formatMessage(messages.dates)}</h2>
+        <ol className="list-unstyled">
+          {courseDateBlocks.map((courseDateBlock) => (
+            <DateSummary
+              key={courseDateBlock.title + courseDateBlock.date}
+              dateBlock={courseDateBlock}
+              userTimezone={userTimezone}
+              /** [MM-P2P] Experiment */
+              mmp2p={mmp2p}
+            />
+          ))}
+        </ol>
+        <a className="font-weight-bold ml-4 pl-1 small" href={datesTabLink}>
+          {intl.formatMessage(messages.allDates)}
+        </a>
+      </div>
     </section>
   );
 }

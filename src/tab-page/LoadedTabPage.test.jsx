@@ -6,6 +6,7 @@ import LoadedTabPage from './LoadedTabPage';
 jest.mock('../course-header/CourseTabsNavigation', () => () => <div data-testid="CourseTabsNavigation" />);
 jest.mock('../instructor-toolbar/InstructorToolbar', () => () => <div data-testid="InstructorToolbar" />);
 jest.mock('../shared/streak-celebration/StreakCelebrationModal', () => () => <div data-testid="StreakModal" />);
+jest.mock('../product-tours/ProductTours', () => () => <div data-testid="ProductTours" />);
 
 describe('Loaded Tab Page', () => {
   const mockData = { activeTabSlug: 'courseware', metadataModel: 'coursewareMeta' };

@@ -13,6 +13,8 @@ import InstructorToolbar from '../instructor-toolbar';
 import useEnrollmentAlert from '../alerts/enrollment-alert';
 import useLogistrationAlert from '../alerts/logistration-alert';
 
+import ProductTours from '../product-tours/ProductTours';
+
 function LoadedTabPage({
   activeTabSlug,
   children,
@@ -21,11 +23,12 @@ function LoadedTabPage({
   unitId,
 }) {
   const {
+    celebrations,
+    canViewLegacyCourseware,
+    org,
     originalUserIsStaff,
     tabs,
     title,
-    celebrations,
-    canViewLegacyCourseware,
     verifiedMode,
   } = useModel(metadataModel, courseId);
 
@@ -42,6 +45,13 @@ function LoadedTabPage({
 
   return (
     <>
+      <ProductTours
+        activeTab={activeTabSlug}
+        courseId={courseId}
+        isStreakCelebrationOpen={isStreakCelebrationOpen}
+        metadataModel={metadataModel}
+        org={org}
+      />
       <Helmet>
         <title>{`${activeTab ? `${activeTab.title} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>

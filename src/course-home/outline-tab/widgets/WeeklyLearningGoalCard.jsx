@@ -67,6 +67,7 @@ function WeeklyLearningGoalCard({
 
   return (
     <Card
+      id="courseHome-weeklyLearningGoal"
       className="row w-100 m-0 mb-3 shadow-sm border-0"
       data-testid="weekly-learning-goal-card"
     >

@@ -77,6 +77,8 @@ function TabPage({ intl, ...props }) {
           courseOrg={org}
           courseNumber={number}
           courseTitle={title}
+          metadataModel={metadataModel}
+          showLaunchTourLink
         />
         <LoadedTabPage {...props} />
         <Footer />

@@ -1,4 +1,10 @@
+$checkpoint-arrow-width: 15px;
+$checkpoint-arrow-brand: solid $checkpoint-arrow-width $brand;
+$checkpoint-arrow-light-300: solid $checkpoint-arrow-width $light-300;
+$checkpoint-arrow-transparent: solid $checkpoint-arrow-width transparent;
+
 .checkpoint-popover {
+  position: absolute;
   border-top: 8px solid $brand;
   border-radius: $border-radius;
   box-shadow: $popover-box-shadow;
@@ -10,21 +16,21 @@
   }
 
   #checkpoint-arrow,
-  #checkpoint-arrow::before {
+  #checkpoint-arrow::before,
+  #checkpoint-arrow::after {
     position: absolute;
-    width: .65em;
-    height: .65em;
-    background: inherit;
+    width: 0;
+    height: 0;
   }
 
   #checkpoint-arrow {
     visibility: hidden;
   }
 
-  #checkpoint-arrow::before {
+  #checkpoint-arrow::before,
+  #checkpoint-arrow::after {
     visibility: visible;
     content: '';
-    transform: rotate(45deg);
   }
 
   .checkpoint-popover_breadcrumb_active {
@@ -43,20 +49,55 @@
 }
 
 .checkpoint-popover[data-popper-placement^='top'] > #checkpoint-arrow {
-  bottom: -6px;
+  left: -$checkpoint-arrow-width !important;
+  bottom: 1px;
+
+  &::after {
+    border-bottom: $checkpoint-arrow-transparent;
+    border-top: $checkpoint-arrow-light-300;
+    border-left: $checkpoint-arrow-transparent;
+    border-right: $checkpoint-arrow-transparent;
+    -webkit-filter: drop-shadow(0px 4px 2px rgba(0,0,0,0.1));
+    filter: drop-shadow(0px 4px 2px rgba(0,0,0,0.1));
+  }
 }
 
 .checkpoint-popover[data-popper-placement^='bottom'] > #checkpoint-arrow {
-  top: -14px;
+  top: -36px;
+  left: -$checkpoint-arrow-width !important;
   &::before {
-    background: $brand;
+    border-bottom: $checkpoint-arrow-brand;
+    border-top: $checkpoint-arrow-transparent;
+    border-left: $checkpoint-arrow-transparent;
+    border-right: $checkpoint-arrow-transparent;
   }
 }
 
 .checkpoint-popover[data-popper-placement^='left'] > #checkpoint-arrow {
-  right: -6px;
+  top: -$checkpoint-arrow-width !important;
+  right: 1px;
+
+  &::after {
+    border-bottom: $checkpoint-arrow-transparent;
+    border-top: $checkpoint-arrow-transparent;
+    border-left: $checkpoint-arrow-light-300;
+    border-right: $checkpoint-arrow-transparent;
+    -webkit-filter: drop-shadow(3px 1px 2px rgba(0,0,0,0.1));
+    filter: drop-shadow(3px 1px 2px rgba(0,0,0,0.1));
+  }
 }
 
 .checkpoint-popover[data-popper-placement^='right'] > #checkpoint-arrow {
-  left: -6px;
+  top: $checkpoint-arrow-width !important;
+  left: 1px;
+
+  &::after {
+    left: -2 * $checkpoint-arrow-width;
+    border-bottom: $checkpoint-arrow-transparent;
+    border-top: $checkpoint-arrow-transparent;
+    border-left: $checkpoint-arrow-transparent;
+    border-right: $checkpoint-arrow-light-300;
+    -webkit-filter: drop-shadow(-3px 1px 2px rgba(0,0,0,0.1));
+    filter: drop-shadow(-3px 1px 2px rgba(0,0,0,0.1));
+  }
 }

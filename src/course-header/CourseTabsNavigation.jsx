@@ -10,7 +10,7 @@ function CourseTabsNavigation({
   activeTabSlug, className, tabs, intl,
 }) {
   return (
-    <div className={classNames('course-tabs-navigation', className)}>
+    <div id="courseTabsNavigation" className={classNames('course-tabs-navigation', className)}>
       <div className="container-xl">
         <Tabs
           className="nav-underline-tabs"

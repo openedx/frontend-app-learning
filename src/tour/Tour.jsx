@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useMediaQuery } from 'react-responsive';
-import { createPopper } from '@popperjs/core';
 
 import Checkpoint from './Checkpoint';
 
@@ -9,79 +7,49 @@ function Tour({
   tours,
 }) {
   const tourValue = tours.filter((tour) => tour.enabled)[0];
+
+  const [currentCheckpointData, setCurrentCheckpointData] = useState(null);
   const [index, setIndex] = useState(0);
-  const [checkpointData, setCheckpointData] = useState(null);
-  const [isEnabled, setIsEnabled] = useState(tourValue && tourValue.enabled);
-  const [hideCheckpoint, setHideCheckpoint] = useState(false);
+  const [isTourEnabled, setIsTourEnabled] = useState(!!tourValue);
+  const [prunedCheckpoints, setPrunedCheckpoints] = useState([]);
+
+  /**
+   * Takes a list of checkpoints and verifies that each target string provided is
+   * an element in the DOM.
+   */
+  const pruneCheckpoints = (checkpoints) => {
+    const checkpointsWithRenderedTargets = checkpoints.filter(
+      (checkpoint) => !!document.querySelector(checkpoint.target),
+    );
+    setPrunedCheckpoints(checkpointsWithRenderedTargets);
+  };
 
   useEffect(() => {
     if (tourValue) {
-      setCheckpointData(tourValue.checkpoints[index]);
+      if (!isTourEnabled) {
+        setIsTourEnabled(tourValue.enabled);
+      }
+      pruneCheckpoints(tourValue.checkpoints);
       setIndex(tourValue.startingIndex || 0);
     }
-  }, []);
-
-  useEffect(() => {
-    setIsEnabled(tourValue && tourValue.enabled);
   }, [tourValue]);
 
   useEffect(() => {
-    if (tourValue) {
-      setCheckpointData(tourValue.checkpoints[index]);
-    }
-  }, [index, isEnabled]);
-
-  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
-
-  useEffect(() => {
-    if (checkpointData && isEnabled) {
-      const targetElement = document.querySelector(checkpointData.target);
-      const checkpoint = document.querySelector('#checkpoint');
-      if (!targetElement) {
-        setHideCheckpoint(true);
+    if (isTourEnabled) {
+      if (prunedCheckpoints) {
+        setCurrentCheckpointData(prunedCheckpoints[index]);
       } else {
-        setHideCheckpoint(false);
-        createPopper(targetElement, checkpoint, {
-          placement: isMobile ? 'top' : checkpointData.placement,
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                offset: [0, 8],
-              },
-            },
-            {
-              name: 'arrow',
-              options: {
-                padding: 5,
-              },
-            },
-          ],
-        });
-
-        let targetOffset = targetElement.getBoundingClientRect().top;
-        if (checkpointData.placement && checkpointData.placement.includes('top')) {
-          if (targetOffset < 0) {
-            targetOffset *= -1;
-          }
-          targetOffset -= 280;
-        } else {
-          targetOffset -= 80;
-        }
-
-        window.scrollTo({
-          top: targetOffset, behavior: 'smooth',
-        });
+        pruneCheckpoints(tourValue.checkpoints);
       }
     }
-  }, [checkpointData, index, isMobile]);
+  }, [index, isTourEnabled, prunedCheckpoints]);
 
   useEffect(() => {
     const handleEsc = (event) => {
-      if (isEnabled && event.keyCode === 27) {
-        setIsEnabled(false);
-        if (tourValue.onEnd) {
-          tourValue.onEnd();
+      if (isTourEnabled && event.keyCode === 27) {
+        setIsTourEnabled(false);
+        if (tourValue.onEscape) {
+          tourValue.onEscape();
         }
       }
     };
@@ -90,50 +58,54 @@ function Tour({
     return () => {
       window.removeEventListener('keydown', handleEsc);
     };
-  }, [tourValue]);
+  }, [currentCheckpointData]);
 
-  if (!tourValue || !checkpointData || !isEnabled) {
+  if (!tourValue || !currentCheckpointData || !isTourEnabled) {
     return null;
   }
 
   const handleAdvance = () => {
     setIndex(index + 1);
-    if (checkpointData.onAdvance) {
-      checkpointData.onAdvance();
+    if (currentCheckpointData.onAdvance) {
+      currentCheckpointData.onAdvance();
     }
   };
 
   const handleDismiss = () => {
     setIndex(0);
-    setIsEnabled(false);
-    if (checkpointData.onDismiss) {
-      checkpointData.onDismiss();
+    setIsTourEnabled(false);
+    if (currentCheckpointData.onDismiss) {
+      currentCheckpointData.onDismiss();
     } else {
       tourValue.onDismiss();
     }
+    setCurrentCheckpointData(null);
   };
 
   const handleEnd = () => {
     setIndex(0);
-    setIsEnabled(false);
+    setIsTourEnabled(false);
     if (tourValue.onEnd) {
       tourValue.onEnd();
     }
+    setCurrentCheckpointData(null);
   };
 
   return (
     <Checkpoint
-      advanceButtonText={checkpointData.advanceButtonText || tourValue.advanceButtonText}
-      body={checkpointData.body}
-      dismissButtonText={checkpointData.dismissButtonText || tourValue.dismissButtonText}
-      endButtonText={checkpointData.endButtonText || tourValue.endButtonText}
-      hideCheckpoint={hideCheckpoint}
+      advanceButtonText={currentCheckpointData.advanceButtonText || tourValue.advanceButtonText}
+      body={currentCheckpointData.body}
+      currentCheckpointData={currentCheckpointData}
+      dismissButtonText={currentCheckpointData.dismissButtonText || tourValue.dismissButtonText}
+      endButtonText={currentCheckpointData.endButtonText || tourValue.endButtonText}
       index={index}
       onAdvance={handleAdvance}
       onDismiss={handleDismiss}
       onEnd={handleEnd}
-      title={checkpointData.title}
-      totalCheckpoints={tourValue.checkpoints.length}
+      placement={currentCheckpointData.placement}
+      target={currentCheckpointData.target}
+      title={currentCheckpointData.title}
+      totalCheckpoints={prunedCheckpoints.length}
     />
   );
 }
@@ -155,6 +127,7 @@ Tour.defaultProps = {
     endButtonText: '',
     onDismiss: () => {},
     onEnd: () => {},
+    onEscape: () => {},
     startingIndex: 0,
   },
 };
@@ -163,10 +136,10 @@ Tour.propTypes = {
   tours: PropTypes.arrayOf(PropTypes.shape({
     advanceButtonText: PropTypes.node,
     checkpoints: PropTypes.arrayOf(PropTypes.shape({
-      advanceButtonText: PropTypes.string,
-      body: PropTypes.string,
-      dismissButtonText: PropTypes.string,
-      endButtonText: PropTypes.string,
+      advanceButtonText: PropTypes.node,
+      body: PropTypes.node,
+      dismissButtonText: PropTypes.node,
+      endButtonText: PropTypes.node,
       onAdvance: PropTypes.func,
       onDismiss: PropTypes.func,
       placement: PropTypes.oneOf([
@@ -174,13 +147,14 @@ Tour.propTypes = {
         'left-start', 'left', 'left-end', 'bottom', 'bottom-start', 'bottom-end',
       ]),
       target: PropTypes.string.isRequired,
-      title: PropTypes.string,
+      title: PropTypes.node,
     })),
     dismissButtonText: PropTypes.node,
     enabled: PropTypes.bool.isRequired,
     endButtonText: PropTypes.node,
     onDismiss: PropTypes.func,
     onEnd: PropTypes.func,
+    onEscape: PropTypes.func,
     startingIndex: PropTypes.number,
     tourId: PropTypes.string.isRequired,
   })),
