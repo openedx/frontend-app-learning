@@ -103,4 +103,27 @@ describe('Notification Trigger', () => {
     expect(localStorage.getItem(`upgradeNotificationLastSeen.${mockData.courseId}`)).toBe('"after"');
     expect(localStorage.getItem(`notificationStatus.${mockData.courseId}`)).toBe('"active"');
   });
+
+  it('handles localStorage from a different course', async () => {
+    const courseMetadataSecondCourse = Factory.build('courseMetadata');
+    // set localStorage for a different course before rendering NotificationTrigger
+    localStorage.setItem(`upgradeNotificationLastSeen.${courseMetadataSecondCourse.id}`, '"accessDateView"');
+    localStorage.setItem(`notificationStatus.${courseMetadataSecondCourse.id}`, '"inactive"');
+
+    const { container } = render(
+      <NotificationTrigger
+        {...mockData}
+        upgradeNotificationLastSeen="before"
+        upgradeNotificationCurrentState="after"
+      />,
+    );
+    expect(container).toBeInTheDocument();
+    // Verify localStorage was updated for the original course
+    expect(localStorage.getItem(`upgradeNotificationLastSeen.${mockData.courseId}`)).toBe('"after"');
+    expect(localStorage.getItem(`notificationStatus.${mockData.courseId}`)).toBe('"active"');
+
+    // Verify the second course localStorage was not changed
+    expect(localStorage.getItem(`upgradeNotificationLastSeen.${courseMetadataSecondCourse.id}`)).toBe('"accessDateView"');
+    expect(localStorage.getItem(`notificationStatus.${courseMetadataSecondCourse.id}`)).toBe('"inactive"');
+  });
 });
