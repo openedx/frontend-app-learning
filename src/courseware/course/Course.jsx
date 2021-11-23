@@ -74,7 +74,7 @@ function Course({
 
   const onNotificationSeen = () => {
     setNotificationStatus('inactive');
-    setLocalStorage('notificationStatus', 'inactive');
+    setLocalStorage(`notificationStatus.${courseId}`, 'inactive');
   };
 
   /** [MM-P2P] Experiment */

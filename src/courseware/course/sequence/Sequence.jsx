@@ -182,6 +182,7 @@ function Sequence({
 
         {shouldDisplayNotificationTrigger ? (
           <NotificationTrigger
+            courseId={courseId}
             toggleNotificationTray={toggleNotificationTray}
             isNotificationTrayVisible={isNotificationTrayVisible}
             notificationStatus={notificationStatus}
