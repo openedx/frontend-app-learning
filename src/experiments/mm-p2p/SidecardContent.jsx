@@ -106,7 +106,7 @@ const Sidecard = ({
           Earn a {certLink} of completion to showcase on your resumé
         </BulletList>
         <BulletList>
-          Support our <span style={{ fontWeight: 600 }}>non-profit mission</span> at edX
+          Support our <span style={{ fontWeight: 600 }}>mission</span> at edX
         </BulletList>
       </div>
 
