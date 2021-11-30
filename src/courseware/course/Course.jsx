@@ -61,20 +61,20 @@ function Course({
     if (notificationTrayVisible) { setNotificationTray(false); } else { setNotificationTray(true); }
   };
 
-  if (!getLocalStorage('notificationStatus')) {
-    setLocalStorage('notificationStatus', 'active'); // Show red dot on notificationTrigger until seen
+  if (!getLocalStorage(`notificationStatus.${courseId}`)) {
+    setLocalStorage(`notificationStatus.${courseId}`, 'active'); // Show red dot on notificationTrigger until seen
   }
 
-  if (!getLocalStorage('upgradeNotificationCurrentState')) {
-    setLocalStorage('upgradeNotificationCurrentState', 'initialize');
+  if (!getLocalStorage(`upgradeNotificationCurrentState.${courseId}`)) {
+    setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'initialize');
   }
 
-  const [notificationStatus, setNotificationStatus] = useState(getLocalStorage('notificationStatus'));
-  const [upgradeNotificationCurrentState, setupgradeNotificationCurrentState] = useState(getLocalStorage('upgradeNotificationCurrentState'));
+  const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
+  const [upgradeNotificationCurrentState, setupgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
 
   const onNotificationSeen = () => {
     setNotificationStatus('inactive');
-    setLocalStorage('notificationStatus', 'inactive');
+    setLocalStorage(`notificationStatus.${courseId}`, 'inactive');
   };
 
   /** [MM-P2P] Experiment */
@@ -98,6 +98,7 @@ function Course({
 
         { shouldDisplayNotificationTrigger ? (
           <NotificationTrigger
+            courseId={courseId}
             toggleNotificationTray={toggleNotificationTray}
             isNotificationTrayVisible={isNotificationTrayVisible}
             notificationStatus={notificationStatus}
