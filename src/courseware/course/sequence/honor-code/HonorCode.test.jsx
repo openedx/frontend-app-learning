@@ -1,8 +1,11 @@
 import React from 'react';
-import { history } from '@edx/frontend-platform';
+import MockAdapter from 'axios-mock-adapter';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { getConfig, history } from '@edx/frontend-platform';
+import { Factory } from 'rosie';
 
 import {
-  fireEvent, initializeTestStore, render, screen,
+  authenticatedUser, fireEvent, initializeTestStore, render, screen, waitFor,
 } from '../../../../setupTest';
 import HonorCode from './HonorCode';
 
@@ -14,20 +17,80 @@ jest.mock('@edx/frontend-platform', () => ({
 }));
 
 describe('Honor Code', () => {
+  let axiosMock;
   let store;
+  let honorCodePostUrl;
   const mockData = {};
 
-  beforeAll(async () => {
-    store = await initializeTestStore();
-    const { courseware } = store.getState();
-    mockData.courseId = courseware.courseId;
-  });
+  async function setupStoreState(coursewareMetaOptions) {
+    if (coursewareMetaOptions) {
+      const courseMetadata = Factory.build(
+        'courseMetadata',
+        coursewareMetaOptions,
+      );
+      store = await initializeTestStore({ courseMetadata });
+    } else {
+      store = await initializeTestStore();
+    }
+    const storeState = store.getState();
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+    mockData.courseId = storeState.courseware.courseId;
+    honorCodePostUrl = `${getConfig().LMS_BASE_URL}/api/agreements/v1/integrity_signature/${mockData.courseId}`;
+  }
 
-  it('cancel button links to course home ', () => {
+  it('cancel button links to course home ', async () => {
+    await setupStoreState();
     render(<HonorCode {...mockData} />);
-
     const cancelButton = screen.getByText('Cancel');
     fireEvent.click(cancelButton);
     expect(history.push).toHaveBeenCalledWith(`/course/${mockData.courseId}/home`);
+  });
+
+  it('calls to save integrity_signature when agreeing', async () => {
+    await setupStoreState({ username: authenticatedUser.username });
+    render(<HonorCode {...mockData} />);
+    const agreeButton = screen.getByText('I agree');
+    fireEvent.click(agreeButton);
+    await waitFor(() => {
+      expect(axiosMock.history.post.length).toBe(1);
+      expect(axiosMock.history.post[0].url).toBe(honorCodePostUrl);
+    });
+  });
+
+  it('still calls to save integrity_signature if masquerading', async () => {
+    await setupStoreState(
+      {
+        is_staff: false,
+        original_user_is_staff: true,
+        username: authenticatedUser.username,
+      },
+    );
+    render(<HonorCode {...mockData} />);
+    const agreeButton = screen.getByText('I agree');
+    fireEvent.click(agreeButton);
+    await waitFor(() => {
+      expect(axiosMock.history.post.length).toBe(1);
+      expect(axiosMock.history.post[0].url).toBe(honorCodePostUrl);
+    });
+  });
+
+  it('will not call to save integrity_signature if masquerading a specific student', async () => {
+    await setupStoreState(
+      {
+        is_staff: false,
+        original_user_is_staff: true,
+        username: 'otheruser',
+      },
+    );
+    render(<HonorCode {...mockData} />);
+    const agreeButton = screen.getByText('I agree');
+    fireEvent.click(agreeButton);
+    await waitFor(() => {
+      expect(axiosMock.history.post.length).toBe(0);
+    });
+  });
+
+  afterEach(async () => {
+    axiosMock.resetHistory();
   });
 });
