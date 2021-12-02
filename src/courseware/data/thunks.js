@@ -306,9 +306,9 @@ export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
 export function saveIntegritySignature(courseId, isMasquerading) {
   return async (dispatch) => {
     try {
-      // If the request is made by a staff user masquerading as a learner,
-      // don't actually create a signature for them on the backend. Only
-      // frontend state will be updated.
+      // If the request is made by a staff user masquerading as a specific learner,
+      // don't actually create a signature for them on the backend,
+      // only the modal dialog will be dismissed
       if (!isMasquerading) {
         await postIntegritySignature(courseId);
       }

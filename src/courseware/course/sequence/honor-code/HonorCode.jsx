@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { getConfig, history } from '@edx/frontend-platform';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { ActionRow, Alert, Button } from '@edx/paragon';
 
@@ -11,13 +12,23 @@ import messages from './messages';
 
 function HonorCode({ intl, courseId }) {
   const dispatch = useDispatch();
-  const { isMasquerading } = useModel('coursewareMeta', courseId);
+  const coursewareMetaData = useModel('coursewareMeta', courseId);
+  const authUser = getAuthenticatedUser();
   const siteName = getConfig().SITE_NAME;
   const honorCodeUrl = `${getConfig().TERMS_OF_SERVICE_URL}#honor-code`;
 
   const handleCancel = () => history.push(`/course/${courseId}/home`);
 
-  const handleAgree = () => dispatch(saveIntegritySignature(courseId, isMasquerading));
+  const handleAgree = () => dispatch(
+    // If the request is made by a staff user masquerading as a specific learner,
+    // don't actually create a signature for them on the backend.
+    // Only the modal dialog will be dismissed.
+    // Otherwise, even for staff users, we want to record the signature.
+    saveIntegritySignature(
+      courseId,
+      coursewareMetaData.isMasquerading && coursewareMetaData.username !== authUser.username,
+    ),
+  );
 
   return (
     <Alert variant="light" aria-live="off">
