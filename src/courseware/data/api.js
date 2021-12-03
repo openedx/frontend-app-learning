@@ -1,4 +1,4 @@
-import { getConfig, camelCaseObject } from '@edx/frontend-platform';
+import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { getTimeOffsetMillis } from '../../course-home/data/api';
 import { appendBrowserTimezoneToUrl } from '../../utils';
@@ -71,7 +71,7 @@ export async function getSequenceForUnitDeprecated(courseId, unitId) {
   url.searchParams.append('course_id', courseId);
   url.searchParams.append('username', authenticatedUser ? authenticatedUser.username : '');
   url.searchParams.append('depth', 3);
-  url.searchParams.append('requested_fields', 'children');
+  url.searchParams.append('requested_fields', 'children,discussions_url');
 
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
   const parent = Object.values(data.blocks).find(block => block.type === 'sequential' && block.children.includes(unitId));
@@ -227,8 +227,21 @@ export async function postIntegritySignature(courseId) {
   );
   return camelCaseObject(data);
 }
+
 export async function sendActivationEmail() {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/send_account_activation_email`);
   const { data } = await getAuthenticatedHttpClient().post(url.href, {});
   return data;
+}
+
+export async function getCourseDiscussionConfig(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`;
+  const { data } = await getAuthenticatedHttpClient().get(url);
+  return data;
+}
+
+export async function getCourseTopics(courseId) {
+  const { data } = await getAuthenticatedHttpClient()
+    .get(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`);
+  return camelCaseObject(data);
 }

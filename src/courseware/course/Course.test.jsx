@@ -2,14 +2,13 @@ import React from 'react';
 import { Factory } from 'rosie';
 import { breakpoints } from '@edx/paragon';
 import {
-  loadUnit, render, screen, waitFor, getByRole, initializeTestStore, fireEvent,
+  fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
-import Course from './Course';
 import { handleNextSectionCelebration } from './celebration';
 import * as celebrationUtils from './celebration/utils';
+import Course from './Course';
 
 jest.mock('@edx/frontend-platform/analytics');
-jest.mock('./NotificationTray', () => () => <div data-testid="NotificationTray" />);
 
 const recordFirstSectionCelebration = jest.fn();
 celebrationUtils.recordFirstSectionCelebration = recordFirstSectionCelebration;
@@ -106,11 +105,10 @@ describe('Course', () => {
     render(<Course {...mockData} />);
 
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
-
     expect(notificationTrigger).toBeInTheDocument();
-    expect(notificationTrigger).toHaveClass('trigger-active');
+    expect(notificationTrigger.parentNode).toHaveClass('border-primary-700');
     fireEvent.click(notificationTrigger);
-    expect(notificationTrigger).not.toHaveClass('trigger-active');
+    expect(notificationTrigger.parentNode).not.toHaveClass('border-primary-700');
   });
 
   it('handles click to open/close notification tray', async () => {
@@ -118,10 +116,10 @@ describe('Course', () => {
     render(<Course {...mockData} />);
     expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"open"');
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
-    expect(screen.queryByTestId('NotificationTray')).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /notification tray/i })).toBeInTheDocument();
     fireEvent.click(notificationShowButton);
     expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
-    expect(screen.queryByTestId('NotificationTray')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
   });
 
   it('handles reload persisting notification tray status', async () => {

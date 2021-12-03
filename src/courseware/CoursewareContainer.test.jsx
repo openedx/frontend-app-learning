@@ -147,6 +147,9 @@ describe('CoursewareContainer', () => {
         const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${unitBlock.id}`;
         axiosMock.onGet(sequenceMetadataUrl).reply(422, {});
       });
+
+    const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
+    axiosMock.onGet(discussionConfigUrl).reply(200, { provider: 'legacy' });
   }
 
   async function loadContainer() {

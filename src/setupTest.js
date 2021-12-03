@@ -55,6 +55,7 @@ export const authenticatedUser = {
 export function initializeMockApp() {
   mergeConfig({
     CONTACT_URL: process.env.CONTACT_URL || null,
+    DISCUSSIONS_MFE_BASE_URL: process.env.DISCUSSIONS_MFE_BASE_URL || null,
     INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
     STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,
     TWITTER_URL: process.env.TWITTER_URL || null,
@@ -135,11 +136,13 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
 
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
   let courseHomeMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseMetadata.id}`;
+  const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
   courseHomeMetadataUrl = appendBrowserTimezoneToUrl(courseHomeMetadataUrl);
 
   axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
   axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
+  axiosMock.onGet(discussionConfigUrl).reply(200, { provider: 'legacy' });
   sequenceMetadata.forEach(metadata => {
     const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${metadata.item_id}`;
     axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);

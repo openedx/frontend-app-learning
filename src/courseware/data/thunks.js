@@ -1,24 +1,26 @@
 import { logError, logInfo } from '@edx/frontend-platform/logging';
+import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
+import {
+  addModel, addModelsMap, updateModel, updateModels, updateModelsMap,
+} from '../../generic/model-store';
 import {
   getBlockCompletion,
+  getCourseDiscussionConfig,
   getCourseMetadata,
+  getCourseTopics,
   getLearningSequencesOutline,
   getSequenceMetadata,
   postIntegritySignature,
   postSequencePosition,
 } from './api';
-import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
 import {
-  updateModel, addModel, updateModelsMap, addModelsMap, updateModels,
-} from '../../generic/model-store';
-import {
+  fetchCourseDenied,
+  fetchCourseFailure,
   fetchCourseRequest,
   fetchCourseSuccess,
-  fetchCourseFailure,
-  fetchCourseDenied,
+  fetchSequenceFailure,
   fetchSequenceRequest,
   fetchSequenceSuccess,
-  fetchSequenceFailure,
 } from './slice';
 
 export function fetchCourse(courseId) {
@@ -226,6 +228,26 @@ export function saveIntegritySignature(courseId, isMasquerading) {
           userNeedsIntegritySignature: false,
         },
       }));
+    } catch (error) {
+      logError(error);
+    }
+  };
+}
+
+export function getCourseDiscussionTopics(courseId) {
+  return async (dispatch) => {
+    try {
+      const config = await getCourseDiscussionConfig(courseId);
+      // Only load topics for the openedx provider, the legacy provider uses
+      // the xblock
+      if (config.provider === 'openedx') {
+        const topics = await getCourseTopics(courseId);
+        dispatch(updateModels({
+          modelType: 'discussionTopics',
+          models: topics,
+          idField: 'usageKey',
+        }));
+      }
     } catch (error) {
       logError(error);
     }

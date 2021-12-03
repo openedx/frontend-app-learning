@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Alert, breakpoints, useWindowSize } from '@edx/paragon';
 import { Locked } from '@edx/paragon/icons';
+import SidebarContext from '../../sidebar/SidebarContext';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
 import { useModel } from '../../../../generic/model-store';
@@ -19,8 +20,8 @@ import {
 function LockPaywall({
   intl,
   courseId,
-  notificationTrayVisible,
 }) {
+  const { notificationTrayVisible } = useContext(SidebarContext);
   const course = useModel('coursewareMeta', courseId);
   const {
     offer,
@@ -115,6 +116,5 @@ function LockPaywall({
 LockPaywall.propTypes = {
   intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
-  notificationTrayVisible: PropTypes.bool.isRequired,
 };
 export default injectIntl(LockPaywall);
