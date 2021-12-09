@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Form, Card, Icon } from '@edx/paragon';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Email } from '@edx/paragon/icons';
 import { useSelector } from 'react-redux';
@@ -22,7 +24,10 @@ function WeeklyLearningGoalCard({
 
   const {
     isMasquerading,
+    org,
   } = useModel('courseHomeMeta', courseId);
+
+  const { administrator } = getAuthenticatedUser();
 
   const [daysPerWeekGoal, setDaysPerWeekGoal] = useState(daysPerWeek);
   // eslint-disable-next-line react/prop-types
@@ -35,6 +40,13 @@ function WeeklyLearningGoalCard({
     setDaysPerWeekGoal(days);
     if (!isMasquerading) { // don't save goal updates while masquerading
       saveWeeklyLearningGoal(courseId, days, selectReminders);
+      sendTrackEvent('edx.ui.lms.goal.days-per-week.changed', {
+        org_key: org,
+        courserun_key: courseId,
+        is_staff: administrator,
+        num_days: days,
+        reminder_selected: selectReminders,
+      });
     }
   }
 
@@ -43,6 +55,13 @@ function WeeklyLearningGoalCard({
     setGetReminderSelected(isGetReminderChecked);
     if (!isMasquerading) { // don't save goal updates while masquerading
       saveWeeklyLearningGoal(courseId, daysPerWeekGoal, isGetReminderChecked);
+      sendTrackEvent('edx.ui.lms.goal.reminder-selected.changed', {
+        org_key: org,
+        courserun_key: courseId,
+        is_staff: administrator,
+        num_days: daysPerWeekGoal,
+        reminder_selected: isGetReminderChecked,
+      });
     }
   }
 
