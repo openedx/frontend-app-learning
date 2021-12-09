@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { Header } from '../../course-header';
@@ -28,6 +29,10 @@ function GoalUnsubscribe({ intl }) {
           setError(true);
         },
       );
+    // We unfortunately have no information about the user, course, org, or really anything
+    // as visiting this page is allowed to be done anonymously and without the context of the course.
+    // The token can be used to connect a user and course, it will just require some post-processing
+    sendTrackEvent('edx.ui.lms.goal.unsubscribe', { token });
   }, []); // deps=[] to only run once
 
   return (
