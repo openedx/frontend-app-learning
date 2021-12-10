@@ -16,6 +16,7 @@ import NotificationTrigger from './NotificationTrigger';
 import { useModel } from '../../generic/model-store';
 import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 import { getLocalStorage, setLocalStorage } from '../../data/localStorage';
+import { getSessionStorage, setSessionStorage } from '../../data/sessionStorage';
 
 /** [MM-P2P] Experiment */
 import { initCoursewareMMP2P, MMP2PBlockModal } from '../../experiments/mm-p2p';
@@ -50,15 +51,31 @@ function Course({
     courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
   );
 
-  const shouldDisplayNotificationTrigger = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
-
-  const shouldDisplayNotificationTrayOpen = useWindowSize().width > responsiveBreakpoints.medium.minWidth;
+  // Responsive breakpoints for showing the notificaiton button/tray
+  const shouldDisplayNotificationTriggerInCourse = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
+  const shouldDisplayNotificationTrayOpenOnLoad = useWindowSize().width > responsiveBreakpoints.medium.minWidth;
+  // Course specific notification tray open/closed persistance by browser session
+  if (!getSessionStorage(`notificationTrayStatus.${courseId}`)) {
+    if (shouldDisplayNotificationTrayOpenOnLoad) {
+      setSessionStorage(`notificationTrayStatus.${courseId}`, 'open');
+    } else {
+      // responsive version displays the tray closed on initial load, set the sessionStorage to closed
+      setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
+    }
+  }
 
   const [notificationTrayVisible, setNotificationTray] = verifiedMode
-    && shouldDisplayNotificationTrayOpen ? useState(true) : useState(false);
+    && shouldDisplayNotificationTrayOpenOnLoad && getSessionStorage(`notificationTrayStatus.${courseId}`) !== 'closed' ? useState(true) : useState(false);
+
   const isNotificationTrayVisible = () => notificationTrayVisible && setNotificationTray;
+
   const toggleNotificationTray = () => {
     if (notificationTrayVisible) { setNotificationTray(false); } else { setNotificationTray(true); }
+    if (getSessionStorage(`notificationTrayStatus.${courseId}`) === 'open') {
+      setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
+    } else {
+      setSessionStorage(`notificationTrayStatus.${courseId}`, 'open');
+    }
   };
 
   if (!getLocalStorage(`notificationStatus.${courseId}`)) {
@@ -96,7 +113,7 @@ function Course({
           mmp2p={MMP2P}
         />
 
-        { shouldDisplayNotificationTrigger ? (
+        { shouldDisplayNotificationTriggerInCourse ? (
           <NotificationTrigger
             courseId={courseId}
             toggleNotificationTray={toggleNotificationTray}
