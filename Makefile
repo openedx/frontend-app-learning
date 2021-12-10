@@ -60,7 +60,6 @@ validate:
 	npm run lint -- --max-warnings 0
 	npm run test
 	npm run build
-	npm run is-es5
 
 .PHONY: validate.ci
 validate.ci:

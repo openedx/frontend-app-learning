@@ -5,15 +5,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version:
-        - 12
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - run: echo "NODE_VER=`cat .nvmrc`" >> $GITHUB_ENV
+    - name: setup node
+      uses: dcodeIO/setup-node-nvm@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: "${{ env.NODE_VER }}"
     - run: make validate.ci
     - name: Upload coverage
       uses: codecov/codecov-action@v2
