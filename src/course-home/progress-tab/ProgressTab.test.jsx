@@ -13,6 +13,7 @@ import * as thunks from '../data/thunks';
 import initializeStore from '../../store';
 import ProgressTab from './ProgressTab';
 import LoadedTabPage from '../../tab-page/LoadedTabPage';
+import messages from './grades/messages';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -702,6 +703,92 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       expect(screen.getByTestId('gradeSummaryFooterTotalWeightedGrade').innerHTML).toEqual('50%');
     });
+
+    it('renders override notice', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 1,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 0.5,
+            },
+            {
+              num_droppable: 0,
+              num_total: 1,
+              short_label: 'Ex',
+              type: 'Exam',
+              weight: 0.5,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                has_graded_assignment: true,
+                learner_has_access: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                problem_scores: [{
+                  earned: 1,
+                  possible: 2,
+                }],
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+          {
+            display_name: 'Second section',
+            subsections: [
+              {
+                assignment_type: 'Exam',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@98765',
+                display_name: 'Second subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 0,
+                num_points_possible: 1,
+                override: {
+                  system: 'PROCTORING',
+                  reason: 'Suspicious activity',
+                },
+                percent_graded: 1.0,
+                problem_scores: [{
+                  earned: 0,
+                  possible: 1,
+                }],
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection',
+              },
+            ],
+          },
+        ],
+      });
+
+      await fetchAndRender();
+
+      const problemScoreDrawerToggle = screen.getByRole('button', { name: 'Toggle individual problem scores for Second subsection' });
+      expect(problemScoreDrawerToggle).toBeInTheDocument();
+
+      // Open the problem score drawer
+      fireEvent.click(problemScoreDrawerToggle);
+
+      expect(screen.getByText(messages.sectionGradeOverridden.defaultMessage)).toBeInTheDocument();
+    });
   });
 
   describe('Detailed Grades', () => {
@@ -775,7 +862,7 @@ describe('Progress Tab', () => {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
         value: jest.fn().mockImplementation(query => {
-          const matches = !!(query === 'screen and (min-width: 992px)');
+          const matches = (query === 'screen and (min-width: 992px)');
           return {
             matches,
             media: query,
