@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
@@ -32,7 +35,7 @@ describe('Outline Tab', () => {
   const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
   const masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
-  const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
+  const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}&username=testuser`;
 
   const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
@@ -1322,7 +1325,7 @@ describe('Outline Tab', () => {
     });
   });
 
-  describe('Accont Activation Alert', () => {
+  describe('Account Activation Alert', () => {
     beforeEach(() => {
       const intersectionObserverMock = () => ({
         observe: () => null,
@@ -1350,7 +1353,7 @@ describe('Outline Tab', () => {
       expect(screen.queryByRole('button', { name: 'resend the email' })).not.toBeInTheDocument();
     });
 
-    it('sends account activation email on clicking the resened email in account activation alert', async () => {
+    it('sends account activation email on clicking the re-send email in account activation alert', async () => {
       Cookies.set = jest.fn();
       Cookies.get = jest.fn().mockImplementation(() => 'true');
       Cookies.remove = jest.fn().mockImplementation(() => { Cookies.get = jest.fn(); });

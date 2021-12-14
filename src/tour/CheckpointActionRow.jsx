@@ -16,7 +16,6 @@ export default function CheckpointActionRow({
       {!isLastCheckpoint && (
         <Button
           variant="tertiary"
-          size="sm"
           className="mr-2"
           onClick={onDismiss}
         >
@@ -24,9 +23,9 @@ export default function CheckpointActionRow({
         </Button>
       )}
       <Button
+        id="checkpoint-primary-button"
         autoFocus
         variant="primary"
-        size="sm"
         onClick={isLastCheckpoint ? onEnd : onAdvance}
       >
         {isLastCheckpoint ? endButtonText : advanceButtonText}
@@ -46,9 +45,9 @@ CheckpointActionRow.defaultProps = {
 };
 
 CheckpointActionRow.propTypes = {
-  advanceButtonText: PropTypes.string,
-  dismissButtonText: PropTypes.string,
-  endButtonText: PropTypes.string,
+  advanceButtonText: PropTypes.node,
+  dismissButtonText: PropTypes.node,
+  endButtonText: PropTypes.node,
   isLastCheckpoint: PropTypes.bool,
   onAdvance: PropTypes.func,
   onDismiss: PropTypes.func,

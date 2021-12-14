@@ -71,6 +71,7 @@ Object {
         ],
         "title": "Demonstration Course",
         "userTimezone": "UTC",
+        "username": "testuser",
         "verifiedMode": Object {
           "currencySymbol": "$",
           "price": 10,
@@ -301,6 +302,13 @@ Object {
   "recommendations": Object {
     "recommendationsStatus": "loading",
   },
+  "tours": Object {
+    "showCoursewareTour": false,
+    "showExistingUserCourseHomeTour": false,
+    "showNewUserCourseHomeModal": false,
+    "showNewUserCourseHomeTour": false,
+    "toursEnabled": false,
+  },
 }
 `;
 
@@ -375,6 +383,7 @@ Object {
         ],
         "title": "Demonstration Course",
         "userTimezone": "UTC",
+        "username": "testuser",
         "verifiedMode": Object {
           "currencySymbol": "$",
           "price": 10,
@@ -485,6 +494,13 @@ Object {
   "recommendations": Object {
     "recommendationsStatus": "loading",
   },
+  "tours": Object {
+    "showCoursewareTour": false,
+    "showExistingUserCourseHomeTour": false,
+    "showNewUserCourseHomeModal": false,
+    "showNewUserCourseHomeTour": false,
+    "toursEnabled": false,
+  },
 }
 `;
 
@@ -559,6 +575,7 @@ Object {
         ],
         "title": "Demonstration Course",
         "userTimezone": "UTC",
+        "username": "testuser",
         "verifiedMode": Object {
           "currencySymbol": "$",
           "price": 10,
@@ -673,6 +690,13 @@ Object {
   },
   "recommendations": Object {
     "recommendationsStatus": "loading",
+  },
+  "tours": Object {
+    "showCoursewareTour": false,
+    "showExistingUserCourseHomeTour": false,
+    "showNewUserCourseHomeModal": false,
+    "showNewUserCourseHomeTour": false,
+    "toursEnabled": false,
   },
 }
 `;

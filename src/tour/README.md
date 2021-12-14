@@ -96,6 +96,8 @@ The text displayed on the button used to end the tour.
 A function that would be triggered when triggering the `onClick` event of the dismiss button.  
 - **onEnd** `func`:
 A function that would be triggered when triggering the `onClick` event of the end button.  
+- **onEscape** `func`:
+A function that would be triggered when pressing the Escape key.  
 - **startingIndex** `number`:
 The index of the desired `Checkpoint` to render when the tour starts.  
 - **tourId** `string` *required*

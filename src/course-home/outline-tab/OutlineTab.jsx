@@ -185,7 +185,7 @@ function OutlineTab({ intl }) {
                   </Button>
                 </div>
               </div>
-              <ol className="list-unstyled">
+              <ol id="courseHome-outline" className="list-unstyled">
                 {courses[rootCourseId].sectionIds.map((sectionId) => (
                   <Section
                     key={sectionId}

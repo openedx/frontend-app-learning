@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import Enzyme, { mount } from 'enzyme';
+import Enzyme from 'enzyme';
 import React from 'react';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { fireEvent, render, screen } from '@testing-library/react';
@@ -9,8 +9,9 @@ import * as popper from '@popperjs/core';
 
 import Tour from '../Tour';
 
-// This can be removed once the component is ported over to Paragon
-Enzyme.configure({ adapter: new Adapter() });
+Enzyme.configure({ adapter: new Adapter() }); // This can be removed once the component is ported over to Paragon
+
+const popperMock = jest.spyOn(popper, 'createPopper');
 
 describe('Tour', () => {
   const targets = (
@@ -77,6 +78,14 @@ describe('Tour', () => {
     ],
   };
 
+  beforeEach(() => {
+    popperMock.mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    popperMock.mockReset();
+  });
+
   describe('multiple enabled tours', () => {
     it('renders first enabled tour', () => {
       const secondEnabledTourData = {
@@ -96,7 +105,7 @@ describe('Tour', () => {
         ],
       };
 
-      const tourWrapper = mount(
+      render(
         <>
           <Tour
             tours={[disabledTourData, tourData, secondEnabledTourData]}
@@ -105,16 +114,15 @@ describe('Tour', () => {
         </>,
       );
 
-      const checkpointTitle = tourWrapper.find('h2');
-      expect(checkpointTitle.text()).toEqual('Checkpoint 1');
-      expect(checkpointTitle.text()).not.toEqual('Second enabled tour');
+      expect(screen.getByText('Checkpoint 1')).toBeInTheDocument();
+      expect(screen.queryByText('Second enabled tour')).not.toBeInTheDocument();
     });
   });
 
   describe('enabled tour', () => {
     describe('with default settings', () => {
       it('renders checkpoint with correct title, body, and breadcrumbs', () => {
-        const tourWrapper = mount(
+        render(
           <>
             <Tour
               tours={[tourData]}
@@ -122,14 +130,14 @@ describe('Tour', () => {
             {targets}
           </>,
         );
-        const checkpoint = tourWrapper.find('#checkpoint');
-        const checkpointTitle = checkpoint.find('h2');
-        expect(checkpointTitle.text()).toEqual('Checkpoint 1');
-        expect(checkpoint.find('svg').at(0).exists('.checkpoint-popover_breadcrumb_active')).toBe(true);
+
+        expect(screen.getByRole('dialog', { name: 'Checkpoint 1' })).toBeInTheDocument();
+        expect(screen.getByText('Checkpoint 1')).toBeInTheDocument();
+        expect(screen.getByTestId('checkpoint-popover_breadcrumb_active')).toBeInTheDocument();
       });
 
-      it('onClick of advance button advances to next checkpoint', () => {
-        const tourWrapper = mount(
+      it('onClick of advance button advances to next checkpoint', async () => {
+        render(
           <>
             <Tour
               tours={[tourData]}
@@ -139,24 +147,18 @@ describe('Tour', () => {
         );
 
         // Verify the first Checkpoint has rendered
-        const firstCheckpoint = tourWrapper.find('#checkpoint');
-        const firstCheckpointTitle = firstCheckpoint.find('h2');
-        expect(firstCheckpointTitle.text()).toEqual('Checkpoint 1');
+        expect(screen.getByRole('heading', { name: 'Checkpoint 1' })).toBeInTheDocument();
 
         // Click the advance button
-        const advanceButton = tourWrapper.find('button').at(1);
-        expect(advanceButton.text()).toEqual('Next');
-
-        advanceButton.simulate('click');
+        const advanceButton = screen.getByRole('button', { name: 'Next' });
+        fireEvent.click(advanceButton);
 
         // Verify the second Checkpoint has rendered
-        const secondCheckpoint = tourWrapper.find('#checkpoint');
-        const secondCheckpointTitle = secondCheckpoint.find('h2');
-        expect(secondCheckpointTitle.text()).toEqual('Checkpoint 2');
+        expect(screen.getByRole('heading', { name: 'Checkpoint 2' })).toBeInTheDocument();
       });
 
       it('onClick of dismiss button disables tour', () => {
-        const tourWrapper = mount(
+        render(
           <>
             <Tour
               tours={[tourData]}
@@ -166,20 +168,19 @@ describe('Tour', () => {
         );
 
         // Verify a Checkpoint has rendered
-        expect(tourWrapper.exists('#checkpoint')).toBe(true);
+        expect(screen.getByRole('dialog', { name: 'Checkpoint 1' })).toBeInTheDocument();
 
         // Click the dismiss button
-        const dismissButton = tourWrapper.find('button').at(0);
-        expect(dismissButton.text()).toEqual('Dismiss');
-
-        dismissButton.simulate('click');
+        const dismissButton = screen.getByRole('button', { name: 'Dismiss' });
+        expect(dismissButton).toBeInTheDocument();
+        fireEvent.click(dismissButton);
 
         // Verify no Checkpoints have rendered
-        expect(tourWrapper.exists('#checkpoint')).toBe(false);
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       });
 
       it('onClick of end button disables tour', () => {
-        const tourWrapper = mount(
+        render(
           <>
             <Tour
               tours={[tourData]}
@@ -189,44 +190,36 @@ describe('Tour', () => {
         );
 
         // Verify a Checkpoint has rendered
-        expect(tourWrapper.exists('#checkpoint')).toBe(true);
+        expect(screen.getByRole('dialog', { name: 'Checkpoint 1' })).toBeInTheDocument();
 
         // Advance the Tour to the last Checkpoint
-        const advanceButton = tourWrapper.find('button').at(1);
-        advanceButton.simulate('click');
-        const advanceButton1 = tourWrapper.find('button').at(1);
-        advanceButton1.simulate('click');
-        const advanceButton2 = tourWrapper.find('button').at(1);
-        advanceButton2.simulate('click');
+        const advanceButton1 = screen.getByRole('button', { name: 'Next' });
+        fireEvent.click(advanceButton1);
+        const advanceButton2 = screen.getByRole('button', { name: 'Next' });
+        fireEvent.click(advanceButton2);
+        const advanceButton3 = screen.getByRole('button', { name: 'Override advance' });
+        fireEvent.click(advanceButton3);
 
         // Click the end button
-        const endButton = tourWrapper.find('button');
-        expect(endButton.text()).toEqual('Override end');
-
-        endButton.simulate('click');
+        const endButton = screen.getByRole('button', { name: 'Override end' });
+        fireEvent.click(endButton);
 
         // Verify no Checkpoints have rendered
-        expect(tourWrapper.exists('#checkpoint')).toBe(false);
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       });
 
       it('onClick of escape key disables tour', () => {
-        // React Testing Library would not play nice with createPopper
-        // due to the order in which the Checkpoint renders. We'll mock
-        // out the function here so this test can proceed as expected.
-        const mock = jest.spyOn(popper, 'createPopper');
-        mock.mockImplementation(jest.fn());
-
         render(
-          <div>
+          <>
             <Tour
               tours={[tourData]}
             />
             {targets}
-          </div>,
+          </>,
         );
 
         // Verify a Checkpoint has rendered
-        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: 'Checkpoint 1' })).toBeInTheDocument();
 
         // Click Escape key
         fireEvent.keyDown(screen.getByRole('dialog'), {
@@ -238,91 +231,111 @@ describe('Tour', () => {
 
         // Verify no Checkpoints have been rendered
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-        mock.mockRestore();
       });
     });
 
     describe('with Checkpoint override settings', () => {
+      const overrideTourData = {
+        advanceButtonText: 'Next',
+        dismissButtonText: 'Dismiss',
+        enabled: true,
+        endButtonText: 'Okay',
+        onDismiss: handleDismiss,
+        onEnd: handleEnd,
+        tourId: 'enabledTour',
+        startingIndex: 2,
+        checkpoints: [
+          {
+            body: 'Lorem ipsum body',
+            target: '#target-1',
+            title: 'Checkpoint 1',
+          },
+          {
+            body: 'Lorem ipsum body',
+            target: '#target-2',
+            title: 'Checkpoint 2',
+          },
+          {
+            body: 'Lorem ipsum body',
+            target: '#target-3',
+            title: 'Checkpoint 3',
+            onDismiss: customOnDismiss,
+            advanceButtonText: 'Override advance',
+            dismissButtonText: 'Override dismiss',
+
+          },
+          {
+            target: '#target-3',
+            title: 'Checkpoint 4',
+            endButtonText: 'Override end',
+          },
+        ],
+      };
       it('renders correct checkpoint on index override', () => {
-        const overrideTourData = tourData;
-        overrideTourData.startingIndex = 2;
-        const tourWrapper = mount((
+        render(
           <>
             <Tour
               tours={[overrideTourData]}
             />
             {targets}
-          </>
-        ));
-        expect(tourWrapper.exists('#checkpoint')).toBe(true);
-        const checkpointTitle = tourWrapper.find('h2');
-        expect(checkpointTitle.text()).toEqual('Checkpoint 3');
-        expect(tourWrapper.find('svg').at(2).exists('.checkpoint-popover_breadcrumb_active'));
+          </>,
+        );
+        expect(screen.getByRole('dialog', { name: 'Checkpoint 3' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Checkpoint 3' })).toBeInTheDocument();
       });
 
       it('applies override for advanceButtonText', () => {
-        const overrideTourData = tourData;
-        overrideTourData.startingIndex = 2;
-        const tourWrapper = mount((
+        render(
           <>
             <Tour
               tours={[overrideTourData]}
             />
             {targets}
-          </>
-        ));
-        const advanceButton = tourWrapper.find('button').at(1);
-        expect(advanceButton.text()).toEqual('Override advance');
+          </>,
+        );
+        expect(screen.getByRole('button', { name: 'Override advance' })).toBeInTheDocument();
       });
 
       it('applies override for dismissButtonText', () => {
-        const overrideTourData = tourData;
-        overrideTourData.startingIndex = 2;
-        const tourWrapper = mount((
+        render(
           <>
             <Tour
               tours={[overrideTourData]}
             />
             {targets}
-          </>
-        ));
-        const dismissButton = tourWrapper.find('button').at(0);
-        expect(dismissButton.text()).toEqual('Override dismiss');
+          </>,
+        );
+        expect(screen.getByRole('button', { name: 'Override dismiss' })).toBeInTheDocument();
       });
 
       it('applies override for endButtonText', () => {
-        const overrideTourData = tourData;
-        overrideTourData.startingIndex = 3;
-        const tourWrapper = mount((
+        render(
           <>
             <Tour
               tours={[overrideTourData]}
             />
             {targets}
-          </>
-        ));
-
-        const endButton = tourWrapper.find('button');
-        expect(endButton.text()).toEqual('Override end');
+          </>,
+        );
+        const advanceButton = screen.getByRole('button', { name: 'Override advance' });
+        fireEvent.click(advanceButton);
+        expect(screen.getByRole('button', { name: 'Override end' })).toBeInTheDocument();
       });
 
       it('calls customHandleDismiss onClick of dismiss button', () => {
-        const overrideTourData = tourData;
-        overrideTourData.startingIndex = 2;
-        const tourWrapper = mount((
+        render(
           <>
             <Tour
               tours={[overrideTourData]}
             />
             {targets}
-          </>
-        ));
-        const dismissButton = tourWrapper.find('button').at(0);
-        expect(dismissButton.text()).toEqual('Override dismiss');
-        dismissButton.simulate('click');
+          </>,
+        );
+        const dismissButton = screen.getByRole('button', { name: 'Override dismiss' });
+        fireEvent.click(dismissButton);
 
         expect(customOnDismiss).toHaveBeenCalledTimes(1);
-        expect(tourWrapper.exists('#checkpoint')).toBe(false);
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       });
     });
 
@@ -345,34 +358,69 @@ describe('Tour', () => {
           ],
         };
 
-        const tourWrapper = mount((
+        render(
           <>
             <Tour
               tours={[badTourData]}
             />
             {targets}
-          </>
-        ));
+          </>,
+        );
 
-        const checkpoint = tourWrapper.find('#checkpoint');
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      });
 
-        expect(checkpoint.props().style.display).toEqual('none');
+      it('advances to next valid Checkpoint', () => {
+        const badTourData = {
+          advanceButtonText: 'Next',
+          dismissButtonText: 'Dismiss',
+          enabled: true,
+          endButtonText: 'Okay',
+          onDismiss: handleDismiss,
+          onEnd: handleEnd,
+          tourId: 'badTour',
+          checkpoints: [
+            {
+              body: 'Lorem ipsum body',
+              target: 'bad-target-data',
+              title: 'Checkpoint 1',
+            },
+            {
+              body: 'Lorem ipsum body',
+              target: '#target-1',
+              title: 'Checkpoint 2',
+            },
+          ],
+        };
+
+        render(
+          <>
+            <Tour
+              tours={[badTourData]}
+            />
+            {targets}
+          </>,
+        );
+
+        expect(screen.queryByRole('dialog', { name: 'Checkpoint 1' })).not.toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: 'Checkpoint 2' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Checkpoint 2' })).toBeInTheDocument();
       });
     });
   });
 
   describe('disabled tour', () => {
     it('does not render', () => {
-      const tourWrapper = mount((
+      render(
         <>
           <Tour
             tours={[disabledTourData]}
           />
           {targets}
-        </>
-      ));
+        </>,
+      );
 
-      expect(tourWrapper.exists('#checkpoint')).toBe(false);
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 });

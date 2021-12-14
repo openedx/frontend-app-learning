@@ -12,6 +12,7 @@ import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
 
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
+import LaunchCourseHomeTourButton from '../../../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 
 function CourseTools({ courseId, intl }) {
   const { org } = useModel('courseHomeMeta', courseId);
@@ -69,6 +70,9 @@ function CourseTools({ courseId, intl }) {
             </a>
           </li>
         ))}
+        <li className="small" id="courseHome-launchTourLink">
+          <LaunchCourseHomeTourButton />
+        </li>
       </ul>
     </section>
   );

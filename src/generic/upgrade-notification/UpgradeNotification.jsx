@@ -375,22 +375,24 @@ function UpgradeNotification({
 
   return (
     <section className={classNames('upgrade-notification small', { 'card mb-4': shouldDisplayBorder })}>
-      <h2 className="h5 upgrade-notification-header" id="outline-sidebar-upgrade-header">
-        {upgradeNotificationHeaderText}
-      </h2>
-      {expirationBanner}
-      <div className="upgrade-notification-message">
-        {upsellMessage}
+      <div id="courseHome-upgradeNotification">
+        <h2 className="h5 upgrade-notification-header" id="outline-sidebar-upgrade-header">
+          {upgradeNotificationHeaderText}
+        </h2>
+        {expirationBanner}
+        <div className="upgrade-notification-message">
+          {upsellMessage}
+        </div>
+        <div className="upgrade-notification-button">
+          <UpgradeButton
+            offer={offer}
+            onClick={logClick}
+            verifiedMode={verifiedMode}
+            block
+          />
+        </div>
+        {offerCode}
       </div>
-      <div className="upgrade-notification-button">
-        <UpgradeButton
-          offer={offer}
-          onClick={logClick}
-          verifiedMode={verifiedMode}
-          block
-        />
-      </div>
-      {offerCode}
     </section>
   );
 }
