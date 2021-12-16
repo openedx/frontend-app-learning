@@ -31,6 +31,8 @@ describe('Sequence', () => {
       unitNavigationHandler: () => {},
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},
+      toggleNotificationTray: () => {},
+      setNotificationStatus: () => {},
     };
   });
 
@@ -388,6 +390,19 @@ describe('Sequence', () => {
       };
       render(<Sequence {...testData} />);
       expect(await screen.findByText('Notifications')).toBeInTheDocument();
+    });
+
+    it('handles click on notification tray close button', async () => {
+      const toggleNotificationTray = jest.fn();
+      const testData = {
+        ...mockData,
+        toggleNotificationTray,
+        notificationTrayVisible: true,
+      };
+      render(<Sequence {...testData} />);
+      const notificationCloseIconButton = await screen.findByRole('button', { name: /Close notification tray/i });
+      fireEvent.click(notificationCloseIconButton);
+      expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
     });
 
     it('does not render notification tray in sequence by default if in responsive view', async () => {
