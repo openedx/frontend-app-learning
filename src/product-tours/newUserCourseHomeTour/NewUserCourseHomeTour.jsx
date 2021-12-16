@@ -1,5 +1,4 @@
 import React from 'react';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import {
   DismissButtonFormattedMessage,
@@ -12,7 +11,7 @@ const datesCheckpoint = {
     id="tours.datesCheckpoint.body"
     defaultMessage="Important dates can help you stay on track."
   />,
-  placement: 'left-start',
+  placement: 'left',
   target: '#courseHome-dates',
   title: <FormattedMessage
     id="tours.datesCheckpoint.title"
@@ -46,28 +45,18 @@ const tabNavigationCheckpoint = {
   />,
 };
 
-const upgradeCheckpoint = (logUpgradeClick, upgradeLink) => ({
+const upgradeCheckpoint = {
   body: <FormattedMessage
     id="tours.upgradeCheckpoint.body"
-    defaultMessage="Work towards a certificate and gain full access to course materials. {upgradeLink}"
-    values={{
-      upgradeLink: (
-        <a href={upgradeLink} onClick={logUpgradeClick}>
-          <FormattedMessage
-            id="tours.upgradeCheckpoint.upgradeLink"
-            defaultMessage="Upgrade now!"
-          />
-        </a>
-      ),
-    }}
+    defaultMessage="Work towards a certificate and gain full access to course materials. Upgrade now!"
   />,
-  placement: 'left-start',
+  placement: 'left',
   target: '#courseHome-upgradeNotification',
   title: <FormattedMessage
     id="tours.upgradeCheckpoint.title"
     defaultMessage="Unlock your course"
   />,
-});
+};
 
 const weeklyGoalsCheckpoint = {
   body: <FormattedMessage
@@ -86,35 +75,22 @@ const newUserCourseHomeTour = ({
   enabled,
   onDismiss,
   onEnd,
-  upgradeData,
-}) => {
-  const logUpgradeClick = () => {
-    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
-      org_key: upgradeData.org,
-      courserun_key: upgradeData.courseId,
-      linkCategory: '(none)',
-      linkName: 'course_home_upgrade_product_tour',
-      linkType: 'link',
-      pageName: 'course_home',
-    });
-  };
-  return ({
-    advanceButtonText: <NextButtonFormattedMessage />,
-    checkpoints: [
-      outlineCheckpoint,
-      datesCheckpoint,
-      tabNavigationCheckpoint,
-      upgradeCheckpoint(logUpgradeClick, upgradeData.upgradeUrl),
-      weeklyGoalsCheckpoint,
-    ],
-    dismissButtonText: <DismissButtonFormattedMessage />,
-    enabled,
-    endButtonText: <OkayButtonFormattedMessage />,
-    onDismiss,
-    onEnd,
-    onEscape: onDismiss,
-    tourId: 'newUserCourseHomeTour',
-  });
-};
+}) => ({
+  advanceButtonText: <NextButtonFormattedMessage />,
+  checkpoints: [
+    outlineCheckpoint,
+    datesCheckpoint,
+    tabNavigationCheckpoint,
+    upgradeCheckpoint,
+    weeklyGoalsCheckpoint,
+  ],
+  dismissButtonText: <DismissButtonFormattedMessage />,
+  enabled,
+  endButtonText: <OkayButtonFormattedMessage />,
+  onDismiss,
+  onEnd,
+  onEscape: onDismiss,
+  tourId: 'newUserCourseHomeTour',
+});
 
 export default newUserCourseHomeTour;

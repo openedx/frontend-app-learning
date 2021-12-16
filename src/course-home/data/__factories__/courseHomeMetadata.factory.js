@@ -20,5 +20,5 @@ Factory.define('courseHomeMetadata')
     },
     start: '2013-02-05T05:00:00Z',
     user_timezone: 'UTC',
-    username: 'testuser',
+    username: 'MockUser',
   });
