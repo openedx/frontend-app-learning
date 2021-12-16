@@ -15,6 +15,7 @@ import genericMessages from '../generic/messages';
 import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
 import { setCallToActionToast } from '../course-home/data/slice';
+import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 
 function TabPage({ intl, ...props }) {
   const {
@@ -73,12 +74,11 @@ function TabPage({ intl, ...props }) {
         >
           {toastHeader}
         </Toast>
+        {metadataModel === 'courseHomeMeta' && (<LaunchCourseHomeTourButton srOnly />)}
         <Header
           courseOrg={org}
           courseNumber={number}
           courseTitle={title}
-          metadataModel={metadataModel}
-          showLaunchTourLink
         />
         <LoadedTabPage {...props} />
         <Footer />
