@@ -706,27 +706,6 @@ describe('Progress Tab', () => {
 
     it('renders override notice', async () => {
       setTabData({
-        grading_policy: {
-          assignment_policies: [
-            {
-              num_droppable: 1,
-              num_total: 2,
-              short_label: 'HW',
-              type: 'Homework',
-              weight: 0.5,
-            },
-            {
-              num_droppable: 0,
-              num_total: 1,
-              short_label: 'Ex',
-              type: 'Exam',
-              weight: 0.5,
-            },
-          ],
-          grade_range: {
-            pass: 0.75,
-          },
-        },
         section_scores: [
           {
             display_name: 'First section',

@@ -7,10 +7,8 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Collapsible, Icon, Row } from '@edx/paragon';
 import {
-  ArrowDropDown, ArrowDropUp, Blocked,
+  ArrowDropDown, ArrowDropUp, Blocked, Info,
 } from '@edx/paragon/icons';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
@@ -83,14 +81,19 @@ function SubsectionTitleCell({ intl, subsection }) {
         </span>
       </Row>
       <Collapsible.Body className="d-flex w-100">
-        <div className="col w-100">
-          { subsection.override
-            && (
+        <div className="col">
+          { subsection.override && (
             <div className="row w-100 m-0 x-small ml-4 pt-2 pl-1 text-gray-700 flex-nowrap">
-              <div><FontAwesomeIcon icon={faInfoCircle} className="fa-lg mr-1 text-primary-500" /></div>
-              <div data-testid="override-message">{intl.formatMessage(messages.sectionGradeOverridden)}</div>
+              <div>
+                <Icon
+                  src={Info}
+                  className="x-small mr-1 text-primary-500"
+                  style={{ height: '16.67px', width: '16.67px' }}
+                />
+              </div>
+              <div>{intl.formatMessage(messages.sectionGradeOverridden)}</div>
             </div>
-            )}
+          )}
           <ProblemScoreDrawer problemScores={problemScores} subsection={subsection} />
         </div>
       </Collapsible.Body>
