@@ -12,14 +12,14 @@ import { useModel } from '../../generic/model-store';
 import { launchCourseHomeTour } from '../data/slice';
 import messages from '../messages';
 
-function LaunchCourseHomeTourButton({ intl, metadataModel, srOnly }) {
+function LaunchCourseHomeTourButton({ intl, srOnly }) {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
 
   const {
     org,
-  } = useModel(metadataModel, courseId);
+  } = useModel('courseHomeMeta', courseId);
 
   const {
     toursEnabled,
@@ -58,13 +58,11 @@ function LaunchCourseHomeTourButton({ intl, metadataModel, srOnly }) {
 }
 
 LaunchCourseHomeTourButton.defaultProps = {
-  metadataModel: 'courseHomeMeta',
   srOnly: false,
 };
 
 LaunchCourseHomeTourButton.propTypes = {
   intl: intlShape.isRequired,
-  metadataModel: PropTypes.string,
   srOnly: PropTypes.bool,
 };
 

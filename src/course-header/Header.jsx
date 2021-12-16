@@ -7,7 +7,6 @@ import { AppContext } from '@edx/frontend-platform/react';
 
 import AnonymousUserMenu from './AnonymousUserMenu';
 import AuthenticatedUserDropdown from './AuthenticatedUserDropdown';
-import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 
 import messages from './messages';
 
@@ -31,7 +30,7 @@ LinkedLogo.propTypes = {
 };
 
 function Header({
-  courseOrg, courseNumber, courseTitle, intl, metadataModel, showLaunchTourButton, showUserDropdown,
+  courseOrg, courseNumber, courseTitle, intl, showUserDropdown,
 }) {
   const { authenticatedUser } = useContext(AppContext);
 
@@ -62,7 +61,6 @@ function Header({
 
   return (
     <header className="course-header">
-      {showLaunchTourButton && (<LaunchCourseHomeTourButton metadataModel={metadataModel} srOnly />)}
       <a className="sr-only sr-only-focusable" href="#main-content">{intl.formatMessage(messages.skipNavLink)}</a>
       <div className="container-xl py-2 d-flex align-items-center">
         {headerLogo}
@@ -89,8 +87,6 @@ Header.propTypes = {
   courseNumber: PropTypes.string,
   courseTitle: PropTypes.string,
   intl: intlShape.isRequired,
-  metadataModel: PropTypes.string,
-  showLaunchTourButton: PropTypes.bool,
   showUserDropdown: PropTypes.bool,
 };
 
@@ -98,8 +94,6 @@ Header.defaultProps = {
   courseOrg: null,
   courseNumber: null,
   courseTitle: null,
-  metadataModel: 'courseHomeMeta',
-  showLaunchTourButton: false,
   showUserDropdown: true,
 };
 
