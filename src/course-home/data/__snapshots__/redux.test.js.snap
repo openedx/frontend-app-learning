@@ -607,7 +607,7 @@ Object {
         "gradingPolicy": Object {
           "assignmentPolicies": Array [
             Object {
-              "averageGrade": 1,
+              "averageGrade": "1.00",
               "numDroppable": 1,
               "shortLabel": "HW",
               "type": "Homework",
