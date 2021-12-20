@@ -3,7 +3,7 @@ import { Factory } from 'rosie';
 import { initializeTestStore, render, screen } from '../setupTest';
 import LoadedTabPage from './LoadedTabPage';
 
-jest.mock('../course-header/CourseTabsNavigation', () => () => <div data-testid="CourseTabsNavigation" />);
+jest.mock('../course-tabs/CourseTabsNavigation', () => () => <div data-testid="CourseTabsNavigation" />);
 jest.mock('../instructor-toolbar/InstructorToolbar', () => () => <div data-testid="InstructorToolbar" />);
 jest.mock('../shared/streak-celebration/StreakCelebrationModal', () => () => <div data-testid="StreakModal" />);
 
