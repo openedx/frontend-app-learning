@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { SelectMenu } from '@edx/paragon';
+import { Link } from 'react-router-dom';
 import { useModel, useModels } from '../../generic/model-store';
 /** [MM-P2P] Experiment */
 import { MMP2PFlyoverTrigger } from '../../experiments/mm-p2p';
@@ -30,9 +31,12 @@ function CourseBreadcrumb({
       >
         { getConfig().ENABLE_JUMPNAV !== 'true' || content.length < 2 || !isStaff
           ? (
-            <a className="text-primary-500" href={`/course/${courseId}/${defaultContent.id}`}>
+            <Link
+              className="text-primary-500"
+              to={`/course/${courseId}/${defaultContent.id}`}
+            >
               {defaultContent.label}
-            </a>
+            </Link>
           )
           : (
             <SelectMenu isLink defaultMessage={defaultContent.label}>
@@ -122,9 +126,9 @@ export default function CourseBreadcrumbs({
     <nav aria-label="breadcrumb" className="my-4 d-inline-block col-sm-10">
       <ol className="list-unstyled d-flex  flex-nowrap align-items-center m-0">
         <li className="list-unstyled d-flex m-0">
-          <a
-            href={`/course/${courseId}/home`}
+          <Link
             className="flex-shrink-0 text-primary"
+            to={`/course/${courseId}/home`}
           >
             <FontAwesomeIcon icon={faHome} className="mr-2" />
             <FormattedMessage
@@ -132,7 +136,7 @@ export default function CourseBreadcrumbs({
               description="The course home link in breadcrumbs nav"
               defaultMessage="Course"
             />
-          </a>
+          </Link>
         </li>
         {links.map(content => (
           <CourseBreadcrumb
