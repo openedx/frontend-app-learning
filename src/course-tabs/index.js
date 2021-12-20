@@ -1,2 +1,2 @@
-export { default as Header } from './Header';
+/* eslint-disable import/prefer-default-export */
 export { default as CourseTabsNavigation } from './CourseTabsNavigation';

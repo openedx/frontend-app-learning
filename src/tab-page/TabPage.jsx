@@ -6,9 +6,9 @@ import { Redirect } from 'react-router';
 
 import Footer from '@edx/frontend-component-footer';
 import { Toast } from '@edx/paragon';
-import { Header } from '../course-header';
-import { getAccessDeniedRedirectUrl } from '../shared/access';
+import { LearningHeader as Header } from '@edx/frontend-component-header';
 import PageLoading from '../generic/PageLoading';
+import { getAccessDeniedRedirectUrl } from '../shared/access';
 import { useModel } from '../generic/model-store';
 
 import genericMessages from '../generic/messages';
