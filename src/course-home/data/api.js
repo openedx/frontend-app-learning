@@ -15,7 +15,10 @@ const calculateAssignmentTypeGrades = (points, assignmentWeight, numDroppable) =
   let averageGrade = 0;
   let weightedGrade = 0;
   if (points.length) {
-    averageGrade = points.reduce((a, b) => a + b, 0) / points.length;
+    // Calculate the average grade for the assignment and round it. This rounding is not ideal and does not accurately
+    // reflect what a learner's grade would be, however, we must have parity with the current grading behavior that
+    // exists in edx-platform.
+    averageGrade = (points.reduce((a, b) => a + b, 0) / points.length).toFixed(2);
     weightedGrade = averageGrade * assignmentWeight;
   }
   return { averageGrade, weightedGrade };
