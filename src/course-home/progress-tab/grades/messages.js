@@ -115,6 +115,14 @@ const messages = defineMessages({
       + 'By multiplying your grade by the weight for that assignment type, your weighted grade is calculated. '
       + "Your weighted grade is what's used to determine if you pass the course.",
   },
+  noAccessToAssignmentType: {
+    id: 'progress.noAcessToAssignmentType',
+    defaultMessage: 'You do not have access to assignments of type {assignmentType}',
+  },
+  noAccessToSubsection: {
+    id: 'progress.noAcessToSubsection',
+    defaultMessage: 'You do not have access to subsection {displayName}',
+  },
   passingGradeLabel: {
     id: 'progress.courseGrade.label.passingGrade',
     defaultMessage: 'Passing grade',
@@ -126,6 +134,10 @@ const messages = defineMessages({
   problemScoreToggleAltText: {
     id: 'progress.detailedGrades.problemScore.toggleButton',
     defaultMessage: 'Toggle individual problem scores for {subsectionTitle}',
+  },
+  sectionGradeOverridden: {
+    id: 'progress.detailedGrades.overridden',
+    defaultMessage: 'Section grade has been overridden.',
   },
   score: {
     id: 'progress.score',
@@ -143,14 +155,7 @@ const messages = defineMessages({
     id: 'progress.weightedGradeSummary',
     defaultMessage: 'Your current weighted grade summary',
   },
-  noAccessToAssignmentType: {
-    id: 'progress.noAcessToAssignmentType',
-    defaultMessage: 'You do not have access to assignments of type {assignmentType}',
-  },
-  noAccessToSubsection: {
-    id: 'progress.noAcessToSubsection',
-    defaultMessage: 'You do not have access to subsection {displayName}',
-  },
+
 });
 
 export default messages;
