@@ -54,6 +54,7 @@ function Course({
   // Responsive breakpoints for showing the notification button/tray
   const shouldDisplayNotificationTriggerInCourse = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
   const shouldDisplayNotificationTrayOpenOnLoad = useWindowSize().width > responsiveBreakpoints.medium.minWidth;
+
   // Course specific notification tray open/closed persistance by browser session
   if (!getSessionStorage(`notificationTrayStatus.${courseId}`)) {
     if (shouldDisplayNotificationTrayOpenOnLoad) {
