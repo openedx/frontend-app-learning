@@ -52,7 +52,7 @@ function Sequence({
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
-  const shouldDisplayNotificationTrigger = useWindowSize().width < responsiveBreakpoints.small.minWidth;
+  const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < responsiveBreakpoints.small.minWidth;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -156,7 +156,7 @@ function Sequence({
 
   const defaultContent = (
     <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
-      <div className={classNames('sequence', { 'position-relative': shouldDisplayNotificationTrigger })} style={{ width: '100%' }}>
+      <div className={classNames('sequence', { 'position-relative': shouldDisplayNotificationTriggerInSequence })} style={{ width: '100%' }}>
         <SequenceNavigation
           sequenceId={sequenceId}
           unitId={unitId}
@@ -180,7 +180,7 @@ function Sequence({
           goToCourseExitPage={() => goToCourseExitPage()}
         />
 
-        {shouldDisplayNotificationTrigger ? (
+        {shouldDisplayNotificationTriggerInSequence ? (
           <NotificationTrigger
             courseId={courseId}
             toggleNotificationTray={toggleNotificationTray}
