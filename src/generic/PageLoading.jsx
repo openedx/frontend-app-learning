@@ -18,7 +18,7 @@ export default class PageLoading extends Component {
 
   render() {
     return (
-      <div>
+      <main>
         <div
           className="d-flex justify-content-center align-items-center flex-column"
           style={{
@@ -29,7 +29,7 @@ export default class PageLoading extends Component {
             {this.renderSrMessage()}
           </Spinner>
         </div>
-      </div>
+      </main>
     );
   }
 }
