@@ -11,6 +11,11 @@ const messages = defineMessages({
     defaultMessage: 'register',
     description: 'Text in a link, prompting the user to create an account.  Used in "learning.logistration.alert"',
   },
+  signInLowercase: {
+    id: 'learning.logistration.login', // ID left for historical purposes
+    defaultMessage: 'sign in',
+    description: 'Text in a link, prompting the user to log in.  Used in "learning.logistration.alert"',
+  },
   signInSentenceCase: {
     id: 'general.signIn.sentenceCase',
     defaultMessage: 'Sign in',
