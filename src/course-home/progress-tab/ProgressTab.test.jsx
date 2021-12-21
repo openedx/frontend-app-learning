@@ -725,7 +725,6 @@ describe('Progress Tab', () => {
                 }],
                 show_correctness: 'always',
                 show_grades: true,
-                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
               },
             ],
           },
