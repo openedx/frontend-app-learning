@@ -51,7 +51,7 @@ function Course({
     courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
   );
 
-  // Responsive breakpoints for showing the notificaiton button/tray
+  // Responsive breakpoints for showing the notification button/tray
   const shouldDisplayNotificationTriggerInCourse = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
   const shouldDisplayNotificationTrayOpenOnLoad = useWindowSize().width > responsiveBreakpoints.medium.minWidth;
   // Course specific notification tray open/closed persistance by browser session
