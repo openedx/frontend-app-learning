@@ -88,7 +88,7 @@ function SubsectionTitleCell({ intl, subsection }) {
                 <Icon
                   src={Info}
                   className="x-small mr-1 text-primary-500"
-                  style={{ height: '16.67px', width: '16.67px' }}
+                  style={{ height: '1.3em', width: '1.3em' }}
                 />
               </div>
               <div>{intl.formatMessage(messages.sectionGradeOverridden)}</div>
