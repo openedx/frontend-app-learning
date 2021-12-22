@@ -108,6 +108,7 @@ initialize({
         TERMS_OF_SERVICE_URL: process.env.TERMS_OF_SERVICE_URL || null,
         TWITTER_HASHTAG: process.env.TWITTER_HASHTAG || null,
         TWITTER_URL: process.env.TWITTER_URL || null,
+        LEGACY_THEME_NAME: process.env.LEGACY_THEME_NAME || null,
       }, 'LearnerAppConfig');
     },
   },
