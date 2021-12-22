@@ -13,7 +13,7 @@ export default function LmsHtmlFragment({
     <html>
       <head>
         <base href="${getConfig().LMS_BASE_URL}" target="_parent">
-        <link rel="stylesheet" href="/static/css/bootstrap/lms-main.css">
+        <link rel="stylesheet" href="/static/${getConfig().LEGACY_THEME_NAME ? `${getConfig().LEGACY_THEME_NAME}/` : ''}css/bootstrap/lms-main.css">
         <link rel="stylesheet" type="text/css" href="${getConfig().BASE_URL}/src/course-home/outline-tab/LmsHtmlFragment.css">
       </head>
       <body class="${className}">${html}</body>
