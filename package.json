@@ -34,7 +34,7 @@
     "@edx/brand": "npm:@edx/brand-openedx@1.1.0",
     "@edx/frontend-component-footer": "10.1.6",
     "@edx/frontend-enterprise-utils": "1.1.1",
-    "@edx/frontend-lib-special-exams": "1.14.1",
+    "@edx/frontend-lib-special-exams": "1.15.0",
     "@edx/frontend-platform": "1.14.3",
     "@edx/paragon": "16.19.0",
     "@edx/frontend-component-header": "^2.4.2",
