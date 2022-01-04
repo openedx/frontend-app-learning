@@ -229,7 +229,13 @@ export function fetchSequence(sequenceId) {
         dispatch(fetchSequenceSuccess({ sequenceId }));
       }
     } catch (error) {
-      logError(error);
+      // Some errors are expected - for example, CoursewareContainer may request sequence metadata for a unit and rely
+      // on the request failing to notice that it actually does have a unit (mostly so it doesn't have to know anything
+      // about the opaque key structure). In such cases, the backend gives us a 422.
+      const isExpected = error.response && error.response.status === 422;
+      if (!isExpected) {
+        logError(error);
+      }
       dispatch(fetchSequenceFailure({ sequenceId }));
     }
   };
