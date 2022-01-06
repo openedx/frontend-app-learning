@@ -52,6 +52,7 @@ function OutlineTab({ intl }) {
     },
     courseGoals: {
       selectedGoal,
+      learningGoalEnabled,
     } = {},
     datesBannerInfo,
     datesWidget: {
@@ -183,7 +184,7 @@ function OutlineTab({ intl }) {
               username={username}
               isResolved={() => setProctorPanelResolved(true)}
             />
-            {proctorPanelResolved && (
+            {learningGoalEnabled && proctorPanelResolved && (
               <WeeklyLearningGoalCard
                 daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
                 subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}
