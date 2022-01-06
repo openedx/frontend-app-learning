@@ -47,7 +47,7 @@ function LaunchCourseHomeTourButton({ intl, srOnly }) {
             <Icon
               src={Compass}
               className="mr-2"
-              style={{ height: '18px', width: '18px' }}
+              style={{ height: '12px', width: '12px' }}
             />
           )}
           {intl.formatMessage(messages.launchTour)}
