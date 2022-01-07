@@ -344,6 +344,7 @@ describe('Outline Tab', () => {
       setMetadata({ is_enrolled: true, original_user_is_staff: true });
       setTabData({
         course_goals: {
+          learning_goal_enabled: true,
         },
       });
       const spy = jest.spyOn(thunks, 'saveWeeklyLearningGoal');
@@ -356,6 +357,12 @@ describe('Outline Tab', () => {
 
     describe('weekly learning goal is not set', () => {
       beforeEach(async () => {
+        setTabData({
+          course_goals: {
+            learning_goal_enabled: true,
+          },
+        });
+
         await fetchAndRender();
       });
 
@@ -418,6 +425,7 @@ describe('Outline Tab', () => {
     it('has button for weekly learning goal selected', async () => {
       setTabData({
         course_goals: {
+          learning_goal_enabled: true,
           selected_goal: {
             subscribed_to_reminders: true,
             days_per_week: 3,
@@ -432,6 +440,11 @@ describe('Outline Tab', () => {
     });
 
     it('renders weekly learning goal card if ProctoringInfoPanel is not shown', async () => {
+      setTabData({
+        course_goals: {
+          learning_goal_enabled: true,
+        },
+      });
       axiosMock.onGet(proctoringInfoUrl).reply(404);
       await fetchAndRender();
       expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
@@ -440,6 +453,7 @@ describe('Outline Tab', () => {
     it('renders weekly learning goal card if ProctoringInfoPanel is not enabled', async () => {
       setTabData({
         course_goals: {
+          learning_goal_enabled: true,
           enableProctoredExams: false,
         },
       });
@@ -450,6 +464,7 @@ describe('Outline Tab', () => {
     it('renders weekly learning goal card if ProctoringInfoPanel is enabled', async () => {
       setTabData({
         course_goals: {
+          learning_goal_enabled: true,
           enableProctoredExams: true,
         },
       });
