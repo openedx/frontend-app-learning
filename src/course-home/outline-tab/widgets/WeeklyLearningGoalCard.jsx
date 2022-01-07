@@ -72,13 +72,15 @@ function WeeklyLearningGoalCard({
       data-testid="weekly-learning-goal-card"
     >
       <Card.Body className="p-3 p-lg-3.5">
-        <h2 className="h4 mb-1 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h2>
+        <h2 id="set-weekly-goal-h2" className="h4 mb-1 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h2>
         <Card.Text
           className="text-gray-700 small mb-2.5"
         >
           {intl.formatMessage(messages.setWeeklyGoalDetail)}
         </Card.Text>
         <div
+          role="radiogroup"
+          aria-labelledby="set-weekly-goal-h2"
           className="flag-button-container m-0 p-0"
         >
           <LearningGoalButton
