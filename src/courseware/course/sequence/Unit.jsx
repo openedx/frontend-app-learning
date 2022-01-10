@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { AppContext } from '@edx/frontend-platform/react';
+import { AppContext, ErrorPage } from '@edx/frontend-platform/react';
 import { Modal } from '@edx/paragon';
 import messages from './messages';
 import BookmarkButton from '../bookmark/BookmarkButton';
@@ -98,6 +98,7 @@ function Unit({
 
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
   const [shouldDisplayHonorCode, setShouldDisplayHonorCode] = useState(false);
 
@@ -192,10 +193,13 @@ function Unit({
         </Suspense>
       )}
       { /** [MM-P2P] Experiment (conditional) */ }
-      {!mmp2p.meta.blockContent && !shouldDisplayHonorCode && !hasLoaded && (
+      {!mmp2p.meta.blockContent && !shouldDisplayHonorCode && !hasLoaded && !showError && (
         <PageLoading
           srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
         />
+      )}
+      {!mmp2p.meta.blockContent && !shouldDisplayHonorCode && !hasLoaded && showError && (
+        <ErrorPage />
       )}
       {modalOptions.open && (
         <Modal
@@ -235,7 +239,15 @@ function Unit({
             scrolling="no"
             referrerPolicy="origin"
             onLoad={() => {
-              window.onmessage = function handleResetDates(e) {
+              // onLoad *should* only fire after everything in the iframe has finished its own load events.
+              // Which means that the plugin.resize message (which calls setHasLoaded above) will have fired already
+              // for a successful load. If it *has not fired*, we are in an error state. For example, the backend
+              // could have given us a 4xx or 5xx response.
+              if (!hasLoaded) {
+                setShowError(true);
+              }
+
+              window.onmessage = (e) => {
                 if (e.data.event_name) {
                   dispatch(processEvent(e.data, fetchCourse));
                 }
