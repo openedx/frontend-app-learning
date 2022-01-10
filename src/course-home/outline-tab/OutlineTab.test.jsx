@@ -332,91 +332,6 @@ describe('Outline Tab', () => {
     });
   });
 
-  describe('Course Goals', () => {
-    const goalOptions = [
-      ['certify', 'Earn a certificate'],
-      ['complete', 'Complete the course'],
-      ['explore', 'Explore the course'],
-      ['unsure', 'Not sure yet'],
-    ];
-
-    it('does not render goal widgets if no goals available', async () => {
-      await fetchAndRender();
-      expect(screen.queryByTestId('course-goal-card')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('Goal')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('edit-goal-selector')).not.toBeInTheDocument();
-    });
-
-    describe('goal is not set', () => {
-      beforeEach(async () => {
-        setTabData({
-          course_goals: {
-            goal_options: goalOptions,
-            selected_goal: null,
-          },
-        });
-        await fetchAndRender();
-      });
-
-      it('renders goal card', () => {
-        expect(screen.queryByLabelText('Goal')).not.toBeInTheDocument();
-        expect(screen.getByTestId('course-goal-card')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Earn a certificate' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Complete the course' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Explore the course' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Not sure yet' })).toBeInTheDocument();
-      });
-
-      it('renders goal selector on goal selection', async () => {
-        const certifyGoalButton = screen.getByRole('button', { name: 'Earn a certificate' });
-        fireEvent.click(certifyGoalButton);
-
-        const goalSelector = await screen.findByTestId('edit-goal-selector');
-        expect(goalSelector).toBeInTheDocument();
-      });
-    });
-
-    describe('goal is set', () => {
-      beforeEach(async () => {
-        setTabData({
-          course_goals: {
-            goal_options: goalOptions,
-            selected_goal: { text: 'Earn a certificate', key: 'certify' },
-          },
-        });
-        await fetchAndRender();
-      });
-
-      it('renders edit goal selector', () => {
-        expect(screen.getByLabelText('Goal')).toBeInTheDocument();
-        expect(screen.getByTestId('edit-goal-selector')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Earn a certificate' })).toBeInTheDocument();
-      });
-
-      it('updates goal on click', async () => {
-        // Open dropdown
-        const dropdownButtonNode = screen.getByRole('button', { name: 'Earn a certificate' });
-        await waitFor(() => {
-          expect(dropdownButtonNode).toBeInTheDocument();
-        });
-        fireEvent.click(dropdownButtonNode);
-
-        // Select a new goal
-        const unsureButtonNode = screen.getByRole('button', { name: 'Not sure yet' });
-        await waitFor(() => {
-          expect(unsureButtonNode).toBeInTheDocument();
-        });
-        fireEvent.click(unsureButtonNode);
-
-        // Verify the request was made
-        await waitFor(() => {
-          expect(axiosMock.history.post[0].url).toMatch(goalUrl);
-          expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","goal_key":"unsure"}`);
-        });
-      });
-    });
-  });
-
   describe('Start or Resume Course Card', () => {
     it('renders startOrResumeCourseCard', async () => {
       await fetchAndRender();
@@ -425,11 +340,6 @@ describe('Outline Tab', () => {
   });
 
   describe('Weekly Learning Goal', () => {
-    it('does not render weekly learning goal if weeklyLearningGoalEnabled is false', async () => {
-      await fetchAndRender();
-      expect(screen.queryByTestId('weekly-learning-goal-card')).not.toBeInTheDocument();
-    });
-
     it('does not post goals while masquerading', async () => {
       setMetadata({ is_enrolled: true, original_user_is_staff: true });
       setTabData({
@@ -452,6 +362,7 @@ describe('Outline Tab', () => {
             weekly_learning_goal_enabled: true,
           },
         });
+
         await fetchAndRender();
       });
 
@@ -461,12 +372,6 @@ describe('Outline Tab', () => {
 
       it('disables the subscribe button if no goal is set', async () => {
         expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeDisabled();
-      });
-
-      it('does not show the deprecated goals feature if WeeklyLearningGoal is enabled', async () => {
-        expect(screen.queryByTestId('course-goal-card')).not.toBeInTheDocument();
-        expect(screen.queryByLabelText('Goal')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('edit-goal-selector')).not.toBeInTheDocument();
       });
 
       it.each`
