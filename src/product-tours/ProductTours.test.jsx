@@ -36,7 +36,8 @@ describe('Course Home Tours', () => {
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
-  const tourDataUrl = `${getConfig().LMS_BASE_URL}/api/user_tours/v1/testuser`;
+  const tourDataUrl = `${getConfig().LMS_BASE_URL}/api/user_tours/v1/MockUser`;
+  const proctoringUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=course-v1%3AedX%2BTest%2Brun&username=MockUser`;
 
   const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
@@ -70,6 +71,7 @@ describe('Course Home Tours', () => {
     // Set defaults for network requests
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     axiosMock.onGet(outlineUrl).reply(200, defaultTabData);
+    axiosMock.onGet(proctoringUrl).reply(404, {});
     axiosMock.onGet(tourDataUrl).reply(200, {
       course_home_tour_status: 'no-tour',
       show_courseware_tour: false,
@@ -237,7 +239,7 @@ describe('Courseware Tour', () => {
   }
 
   describe('when receiving successful course data', () => {
-    const tourDataUrl = `${getConfig().LMS_BASE_URL}/api/user_tours/v1/testuser`;
+    const tourDataUrl = `${getConfig().LMS_BASE_URL}/api/user_tours/v1/MockUser`;
 
     beforeEach(async () => {
       // On page load, SequenceContext attempts to scroll to the top of the page.
@@ -272,7 +274,7 @@ describe('Courseware Tour', () => {
         const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
         axiosMock.onGet(sequenceMetadataUrl).reply(200, sequenceMetadata);
         const proctoredExamApiUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${courseId}/content_id/${sequenceMetadata.item_id}?is_learning_mfe=true`;
-        axiosMock.onGet(proctoredExamApiUrl).reply(200, { exam: {}, active_attempt: {} });
+        axiosMock.onGet(proctoredExamApiUrl).reply(404);
       });
 
       axiosMock.onPost(`${courseId}/xblock/${defaultSequenceBlock.id}/handler/get_completion`).reply(200, {

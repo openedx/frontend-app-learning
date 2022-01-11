@@ -34,13 +34,13 @@ import { initHomeMMP2P, MMP2PFlyover } from '../../experiments/mm-p2p';
 function OutlineTab({ intl }) {
   const {
     courseId,
+    proctoringPanelStatus,
   } = useSelector(state => state.courseHome);
 
   const {
     isSelfPaced,
     org,
     title,
-    username,
     userTimezone,
   } = useModel('courseHomeMeta', courseId);
 
@@ -60,17 +60,11 @@ function OutlineTab({ intl }) {
     },
     enableProctoredExams,
     offer,
-    resumeCourse: {
-      url: resumeCourseUrl,
-    },
     timeOffsetMillis,
     verifiedMode,
   } = useModel('outline', courseId);
 
   const [expandAll, setExpandAll] = useState(false);
-  // Defer showing the goal widget until the ProctoringInfoPanel is either shown or determined as not showing
-  // to avoid components bouncing around too much as screen is displayed
-  const [proctorPanelResolved, setProctorPanelResolved] = useState(!enableProctoredExams);
 
   const eventProperties = {
     org_key: org,
@@ -150,9 +144,7 @@ function OutlineTab({ intl }) {
               <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
             </>
           )}
-          {resumeCourseUrl && (
           <StartOrResumeCourseCard />
-          )}
           <WelcomeMessage courseId={courseId} />
           {rootCourseId && (
             <>
@@ -179,20 +171,16 @@ function OutlineTab({ intl }) {
         </div>
         {rootCourseId && (
           <div className="col col-12 col-md-4">
-            <ProctoringInfoPanel
-              courseId={courseId}
-              username={username}
-              isResolved={() => setProctorPanelResolved(true)}
-            />
-            {weeklyLearningGoalEnabled && proctorPanelResolved && (
+            <ProctoringInfoPanel />
+            { /** Defer showing the goal widget until the ProctoringInfoPanel has resolved or has been determined as
+             disabled to avoid components bouncing around too much as screen is rendered */ }
+            {(!enableProctoredExams || proctoringPanelStatus === 'loaded') && weeklyLearningGoalEnabled && (
               <WeeklyLearningGoalCard
                 daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
                 subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}
               />
             )}
-            <CourseTools
-              courseId={courseId}
-            />
+            <CourseTools />
             { /** [MM-P2P] Experiment (conditional) */ }
             { MMP2P.state.isEnabled
               ? <MMP2PFlyover isStatic options={MMP2P} />
@@ -211,13 +199,10 @@ function OutlineTab({ intl }) {
                 />
               )}
             <CourseDates
-              courseId={courseId}
               /** [MM-P2P] Experiment */
               mmp2p={MMP2P}
             />
-            <CourseHandouts
-              courseId={courseId}
-            />
+            <CourseHandouts />
           </div>
         )}
       </div>

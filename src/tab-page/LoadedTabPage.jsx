@@ -49,7 +49,6 @@ function LoadedTabPage({
         activeTab={activeTabSlug}
         courseId={courseId}
         isStreakCelebrationOpen={isStreakCelebrationOpen}
-        metadataModel={metadataModel}
         org={org}
       />
       <Helmet>

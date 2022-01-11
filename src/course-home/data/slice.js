@@ -11,11 +11,15 @@ const slice = createSlice({
   initialState: {
     courseStatus: 'loading',
     courseId: null,
+    proctoringPanelStatus: 'loading',
     toastBodyText: null,
     toastBodyLink: null,
     toastHeader: '',
   },
   reducers: {
+    fetchProctoringInfoResolved: (state) => {
+      state.proctoringPanelStatus = LOADED;
+    },
     fetchTabDenied: (state, { payload }) => {
       state.courseId = payload.courseId;
       state.courseStatus = DENIED;
@@ -47,6 +51,7 @@ const slice = createSlice({
 });
 
 export const {
+  fetchProctoringInfoResolved,
   fetchTabDenied,
   fetchTabFailure,
   fetchTabRequest,

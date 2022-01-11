@@ -6,8 +6,6 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import Tour from '../tour/Tour';
 
-import { useModel } from '../generic/model-store';
-
 import abandonTour from './AbandonTour';
 import coursewareTour from './CoursewareTour';
 import existingUserCourseHomeTour from './ExistingUserCourseHomeTour';
@@ -24,7 +22,6 @@ function ProductTours({
   activeTab,
   courseId,
   isStreakCelebrationOpen,
-  metadataModel,
   org,
 }) {
   if (isStreakCelebrationOpen) {
@@ -32,9 +29,8 @@ function ProductTours({
   }
 
   const {
-    username,
-    verifiedMode,
-  } = useModel(metadataModel, courseId);
+    proctoringPanelStatus,
+  } = useSelector(state => state.courseHome);
 
   const {
     showCoursewareTour,
@@ -49,40 +45,42 @@ function ProductTours({
   const [isNewUserCourseHomeTourEnabled, setIsNewUserCourseHomeTourEnabled] = useState(false);
 
   const dispatch = useDispatch();
-  const administrator = getAuthenticatedUser() && getAuthenticatedUser().administrator;
+  const {
+    administrator,
+    username,
+  } = getAuthenticatedUser() || {};
+  const isCoursewareTab = activeTab === 'courseware';
+  const isOutlineTab = activeTab === 'outline';
 
   useEffect(() => {
+    const isOutlineTabResolved = isOutlineTab && proctoringPanelStatus === 'loaded';
+    const userIsAuthenticated = !!username;
+
     // Tours currently only exist on the Outline Tab and within Courseware, so we'll avoid
     // calling the tour endpoint unnecessarily.
-    if (username && (activeTab === 'outline' || metadataModel === 'coursewareMeta')) {
+    if (userIsAuthenticated && (isCoursewareTab || isOutlineTabResolved)) {
       dispatch(fetchTourData(username));
     }
-  }, []);
+  }, [proctoringPanelStatus]);
 
   useEffect(() => {
-    if (metadataModel === 'coursewareMeta' && showCoursewareTour) {
+    if (isCoursewareTab && showCoursewareTour) {
       setIsCoursewareTourEnabled(true);
     }
   }, [showCoursewareTour]);
 
   useEffect(() => {
-    if (metadataModel === 'courseHomeMeta') {
+    if (isOutlineTab) {
       setIsExistingUserCourseHomeTourEnabled(!!showExistingUserCourseHomeTour);
     }
   }, [showExistingUserCourseHomeTour]);
 
   useEffect(() => {
-    if (metadataModel === 'courseHomeMeta' && showNewUserCourseHomeTour) {
+    if (isOutlineTab && showNewUserCourseHomeTour) {
       setIsAbandonTourEnabled(false);
       setIsNewUserCourseHomeTourEnabled(true);
     }
   }, [showNewUserCourseHomeTour]);
-
-  const upgradeData = {
-    courseId,
-    org,
-    upgradeUrl: verifiedMode && verifiedMode.upgradeUrl,
-  };
 
   // The <Tour /> component cannot handle rendering multiple enabled tours at once.
   // I.e. when adding new tours, beware that if multiple tours are enabled,
@@ -128,6 +126,7 @@ function ProductTours({
           is_staff: administrator,
         });
         dispatch(endCourseHomeTour(username));
+        dispatch(endCoursewareTour(username));
       },
       onEnd: () => {
         setIsNewUserCourseHomeTourEnabled(false);
@@ -138,7 +137,6 @@ function ProductTours({
         });
         dispatch(endCourseHomeTour(username));
       },
-      upgradeData,
     }),
   ];
 
@@ -148,7 +146,7 @@ function ProductTours({
         tours={tours}
       />
       <NewUserCourseHomeTourModal
-        isOpen={metadataModel === 'courseHomeMeta' && showNewUserCourseHomeModal}
+        isOpen={isOutlineTab && showNewUserCourseHomeModal}
         onDismiss={() => {
           sendTrackEvent('edx.ui.lms.new_user_modal.dismissed', {
             org_key: org,
@@ -177,7 +175,6 @@ ProductTours.propTypes = {
   activeTab: PropTypes.string.isRequired,
   courseId: PropTypes.string.isRequired,
   isStreakCelebrationOpen: PropTypes.bool.isRequired,
-  metadataModel: PropTypes.string.isRequired,
   org: PropTypes.string.isRequired,
 };
 

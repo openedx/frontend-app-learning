@@ -26,8 +26,11 @@ function StartOrResumeCourseCard({ intl }) {
       hasVisitedCourse,
       url: resumeCourseUrl,
     },
-
   } = useModel('outline', courseId);
+
+  if (!resumeCourseUrl) {
+    return null;
+  }
 
   const logResumeCourseClick = () => {
     sendTrackingLogEvent('edx.course.home.resume_course.clicked', {

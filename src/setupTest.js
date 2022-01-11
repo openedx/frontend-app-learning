@@ -66,7 +66,7 @@ Object.defineProperty(window, 'matchMedia', {
 
 export const authenticatedUser = {
   userId: 'abc123',
-  username: 'Mock User',
+  username: 'MockUser',
   roles: [],
   administrator: false,
 };
@@ -79,7 +79,7 @@ export function initializeMockApp() {
     TWITTER_URL: process.env.TWITTER_URL || null,
     authenticatedUser: {
       userId: 'abc123',
-      username: 'Mock User',
+      username: 'MockUser',
       roles: [],
       administrator: false,
     },

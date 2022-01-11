@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import camelCase from 'lodash.camelcase';
-import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@edx/paragon';
 
 import messages from '../messages';
 import { getProctoringInfoData } from '../../data/api';
+import { fetchProctoringInfoResolved } from '../../data/slice';
+import { useModel } from '../../../generic/model-store';
 
-function ProctoringInfoPanel({
-  courseId, username, intl, isResolved,
-}) {
+function ProctoringInfoPanel({ intl }) {
+  const {
+    courseId,
+  } = useSelector(state => state.courseHome);
+  const {
+    username,
+  } = useModel('courseHomeMeta', courseId);
+  const dispatch = useDispatch();
+
   const [link, setLink] = useState('');
   const [onboardingPastDue, setOnboardingPastDue] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
@@ -102,7 +110,7 @@ function ProctoringInfoPanel({
         /* Do nothing. API throws 404 when class does not have proctoring */
       })
       .finally(() => {
-        isResolved();
+        dispatch(fetchProctoringInfoResolved());
       });
   }, []);
 
@@ -191,14 +199,7 @@ function ProctoringInfoPanel({
 }
 
 ProctoringInfoPanel.propTypes = {
-  courseId: PropTypes.string.isRequired,
-  username: PropTypes.string,
   intl: intlShape.isRequired,
-  isResolved: PropTypes.func.isRequired,
-};
-
-ProctoringInfoPanel.defaultProps = {
-  username: null,
 };
 
 export default injectIntl(ProctoringInfoPanel);

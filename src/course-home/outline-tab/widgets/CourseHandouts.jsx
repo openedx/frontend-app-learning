@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -7,7 +7,10 @@ import LmsHtmlFragment from '../LmsHtmlFragment';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 
-function CourseHandouts({ courseId, intl }) {
+function CourseHandouts({ intl }) {
+  const {
+    courseId,
+  } = useSelector(state => state.courseHome);
   const {
     handoutsHtml,
   } = useModel('outline', courseId);
@@ -29,7 +32,6 @@ function CourseHandouts({ courseId, intl }) {
 }
 
 CourseHandouts.propTypes = {
-  courseId: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
 };
 
