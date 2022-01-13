@@ -52,6 +52,7 @@ function Sequence({
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
   const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < responsiveBreakpoints.small.minWidth;
 
   const handleNext = () => {
@@ -132,7 +133,10 @@ function Sequence({
     }
   }, [(unit || {}).id]);
 
-  if (sequenceStatus === 'loading') {
+  // If sequence might be a unit, we want to keep showing a spinner - the courseware container will redirect us when
+  // it knows which sequence to actually go to.
+  const loading = sequenceStatus === 'loading' || (sequenceStatus === 'failed' && sequenceMightBeUnit);
+  if (loading) {
     if (!sequenceId) {
       return (<div> {intl.formatMessage(messages['learn.sequence.no.content'])} </div>);
     }

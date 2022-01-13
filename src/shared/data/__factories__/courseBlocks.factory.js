@@ -1,6 +1,11 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
 import './block.factory';
 
+// Most of this file can be removed at some point, now that we rarely use course blocks
+// in favor of learning sequences. But for now, these are mostly used to then feed into
+// buildOutlineFromBlocks, which is an awkward flow if we don't really care about the
+// course blocks themselves. A future cleanup to do.
+
 // Generates an Array of block IDs, either from a single block or an array of blocks.
 const getIds = (attr) => {
   const blocks = Array.isArray(attr) ? attr : [attr];
@@ -84,7 +89,7 @@ export function buildSimpleCourseBlocks(courseId, title, options = {}) {
       {
         courseId,
         hasScheduledContent: options.hasScheduledContent || false,
-        title: 'Demo Course',
+        title,
       },
       {
         units: unitBlocks,
@@ -225,7 +230,7 @@ export function buildBinaryCourseBlocks(courseId, title) {
     // work with.
     courseBlocks: Factory.build(
       'courseBlocks',
-      { courseId },
+      { courseId, title },
       {
         units: unitBlocks,
         sequences: sequenceBlocks,

@@ -13,6 +13,7 @@ const slice = createSlice({
     courseId: null,
     sequenceStatus: 'loading',
     sequenceId: null,
+    sequenceMightBeUnit: false,
   },
   reducers: {
     fetchCourseRequest: (state, { payload }) => {
@@ -34,14 +35,17 @@ const slice = createSlice({
     fetchSequenceRequest: (state, { payload }) => {
       state.sequenceId = payload.sequenceId;
       state.sequenceStatus = LOADING;
+      state.sequenceMightBeUnit = false;
     },
     fetchSequenceSuccess: (state, { payload }) => {
       state.sequenceId = payload.sequenceId;
       state.sequenceStatus = LOADED;
+      state.sequenceMightBeUnit = false;
     },
     fetchSequenceFailure: (state, { payload }) => {
       state.sequenceId = payload.sequenceId;
       state.sequenceStatus = FAILED;
+      state.sequenceMightBeUnit = payload.sequenceMightBeUnit || false;
     },
   },
 });

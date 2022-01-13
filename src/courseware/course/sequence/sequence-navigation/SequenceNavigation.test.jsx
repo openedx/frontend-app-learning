@@ -15,7 +15,7 @@ describe('Sequence Navigation', () => {
   const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
     'block',
-    { type: 'problem' },
+    { type: 'vertical' },
     { courseId: courseMetadata.id },
   ));
 
@@ -48,7 +48,7 @@ describe('Sequence Navigation', () => {
   it('renders locked button for gated content', async () => {
     const sequenceBlocks = [Factory.build(
       'block',
-      { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+      { type: 'sequential', children: unitBlocks.map(block => block.id) },
       { courseId: courseMetadata.id },
     )];
     const sequenceMetadata = [Factory.build(
@@ -70,7 +70,7 @@ describe('Sequence Navigation', () => {
     expect(testData.onNavigate).not.toHaveBeenCalled();
     // TODO: Not sure if this is working as expected, because the `contentType="lock"` will be overridden by the value
     //  from Redux. To make this provide a `fa-icon` lock we could introduce something like `overriddenContentType`.
-    expect(unitButton.firstChild).toHaveClass('fa-edit');
+    expect(unitButton.firstChild).toHaveClass('fa-tasks');
   });
 
   it('renders correctly and handles unit button clicks', () => {

@@ -7,6 +7,7 @@ export {
 } from './thunks';
 export {
   getResumeBlock,
+  getSequenceForUnitDeprecated,
   sendActivationEmail,
 } from './api';
 export {

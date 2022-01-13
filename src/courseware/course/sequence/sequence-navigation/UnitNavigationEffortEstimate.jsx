@@ -12,6 +12,16 @@ import messages from './messages';
 // This component exists to peek ahead at the next sequence and grab its estimated effort.
 // If we should be showing the next sequence's effort, we display the title and effort instead of "Next".
 
+/**
+ * Note: this component is basically ignored and just acts as a pass-through to children components right now because
+ * effort estimation is no longer attached to the sequence model. It used to be attached, via the LMS blocks API and
+ * its block transformers. But as part of the effort to remove reliance on modulestore blocks on the LMS side, we
+ * stopped calling that API and we lost effort estimation in the deal.
+ *
+ * See https://openedx.atlassian.net/browse/AA-930 for the initiative to refactor Effort Estimation to avoid the
+ * modulestore, which would allow us to revive the usefulness of this component again.
+ */
+
 function UnitNavigationEffortEstimate({
   children,
   intl,

@@ -8,11 +8,10 @@ import { updateModel } from '../../../generic/model-store';
 const CELEBRATION_LOCAL_STORAGE_KEY = 'CelebrationModal.showOnSectionLoad';
 
 // Records clicks through the end of a section, so that we can know whether we should celebrate when we finish loading
-function handleNextSectionCelebration(sequenceId, nextSequenceId, nextUnitId) {
+function handleNextSectionCelebration(sequenceId, nextSequenceId) {
   setLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY, {
     prevSequenceId: sequenceId,
     nextSequenceId,
-    nextUnitId,
   });
 }
 
@@ -45,7 +44,7 @@ function recordWeeklyGoalCelebration(org, courseId) {
 
 // Looks at local storage to see whether we just came from the end of a section.
 // Note! This does have side effects (will clear some local storage and may start an api call).
-function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations) {
+function shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSection, dispatch, celebrations) {
   const celebrationIds = getLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY);
   if (!celebrationIds) {
     return false;
@@ -54,10 +53,9 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFir
   const {
     prevSequenceId,
     nextSequenceId,
-    nextUnitId,
   } = celebrationIds;
-  const onTargetUnit = sequenceId === nextSequenceId && (!nextUnitId || unitId === nextUnitId);
-  let shouldCelebrate = onTargetUnit && celebrateFirstSection;
+  const onTargetSequence = sequenceId === nextSequenceId;
+  let shouldCelebrate = onTargetSequence && celebrateFirstSection;
 
   if (shouldCelebrate && celebrations.streakLengthToCelebrate) {
     // We don't want two modals to show up on the same page.
@@ -67,7 +65,7 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFir
     postCelebrationComplete(courseId, { first_section: false });
   }
 
-  if (sequenceId !== prevSequenceId && !onTargetUnit) {
+  if (sequenceId !== prevSequenceId && !onTargetSequence) {
     // Don't clear until we move off of current/prev sequence
     clearLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY);
 

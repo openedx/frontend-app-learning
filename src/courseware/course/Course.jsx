@@ -49,7 +49,7 @@ function Course({
   const dispatch = useDispatch();
   const celebrateFirstSection = celebrations && celebrations.firstSection;
   const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(shouldCelebrateOnSectionLoad(
-    courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
+    courseId, sequenceId, celebrateFirstSection, dispatch, celebrations,
   ));
   // If streakLengthToCelebrate is populated, that modal takes precedence. Wait til the next load to display
   // the weekly goal celebration modal.

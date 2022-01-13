@@ -17,6 +17,7 @@ import CoursewareContainer from './CoursewareContainer';
 import { buildSimpleCourseBlocks, buildBinaryCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
 import initializeStore from '../store';
 import { appendBrowserTimezoneToUrl } from '../utils';
+import { buildOutlineFromBlocks } from './data/__factories__/learningSequencesOutline.factory';
 
 // NOTE: Because the unit creates an iframe, we choose to mock it out as its rendering isn't
 // pertinent to this test.  Instead, we render a simple div that displays the properties we expect
@@ -101,6 +102,7 @@ describe('CoursewareContainer', () => {
   function setUpMockRequests(options = {}) {
     // If we weren't given course blocks or metadata, use the defaults.
     const courseBlocks = options.courseBlocks || defaultCourseBlocks;
+    const courseOutline = buildOutlineFromBlocks(courseBlocks);
     const courseMetadata = options.courseMetadata || defaultCourseMetadata;
     const courseHomeMetadata = options.courseHomeMetadata || defaultCourseHomeMetadata;
     const courseId = courseMetadata.id;
@@ -120,11 +122,8 @@ describe('CoursewareContainer', () => {
         ))
     );
 
-    const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
-    axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
-
     const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
-    axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+    axiosMock.onGet(learningSequencesUrlRegExp).reply(200, courseOutline);
 
     const courseMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
@@ -138,6 +137,16 @@ describe('CoursewareContainer', () => {
       const proctoredExamApiUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${courseId}/content_id/${sequenceMetadata.item_id}?is_learning_mfe=true`;
       axiosMock.onGet(proctoredExamApiUrl).reply(200, { exam: {}, active_attempt: {} });
     });
+
+    // Set up handlers for noticing when units are in the sequence spot
+    const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
+    axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
+    Object.values(courseBlocks.blocks)
+      .filter(block => block.type === 'vertical')
+      .forEach(unitBlock => {
+        const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${unitBlock.id}`;
+        axiosMock.onGet(sequenceMetadataUrl).reply(422, {});
+      });
   }
 
   async function loadContainer() {
@@ -193,7 +202,7 @@ describe('CoursewareContainer', () => {
       const sequenceBlock = defaultSequenceBlock;
       const unitBlocks = defaultUnitBlocks;
 
-      it('should use the resume block repsonse to pick a unit if it contains one', async () => {
+      it('should use the resume block response to pick a unit if it contains one', async () => {
         axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {
           sectionId: sequenceBlock.id,
           unitId: unitBlocks[1].id,
@@ -264,6 +273,12 @@ describe('CoursewareContainer', () => {
           assertSequenceNavigation(container, 2);
           assertLocation(container, sequenceTree[1][1].id, urlUnit.id);
         });
+
+        it('should ignore invalid unit IDs and redirect to the course root', async () => {
+          setUrl(sectionTree[1].id, 'foobar');
+          await loadContainer();
+          expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+        });
       });
 
       describe('when the URL does not contain a unit ID', () => {
@@ -300,13 +315,20 @@ describe('CoursewareContainer', () => {
           await loadContainer();
           expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
         });
+      });
+    });
 
-        it('should ignore the section and unit IDs and instead to the course root', async () => {
-          // Specific unit ID used here shouldn't matter; is ignored due to empty section.
-          setUrl(sectionTree[1].id, unitTree[0][0][0]);
-          await loadContainer();
-          expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
-        });
+    describe('when the URL contains a unit marker', () => {
+      it('should redirect /first to the first unit', async () => {
+        history.push(`/course/${courseId}/${defaultSequenceBlock.id}/first`);
+        await loadContainer();
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`);
+      });
+
+      it('should redirect /last to the last unit', async () => {
+        history.push(`/course/${courseId}/${defaultSequenceBlock.id}/last`);
+        await loadContainer();
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[2].id}`);
       });
     });
 

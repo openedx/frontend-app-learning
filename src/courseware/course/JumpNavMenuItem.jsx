@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { history } from '@edx/frontend-platform';
@@ -8,8 +7,6 @@ import {
   sendTrackingLogEvent,
   sendTrackEvent,
 } from '@edx/frontend-platform/analytics';
-import { useDispatch } from 'react-redux';
-import { checkBlockCompletion } from '../data';
 
 export default function JumpNavMenuItem({
   title,
@@ -19,7 +16,6 @@ export default function JumpNavMenuItem({
   sequences,
   isDefault,
 }) {
-  const dispatch = useDispatch();
   function logEvent(targetUrl) {
     const eventName = 'edx.ui.lms.jump_nav.selected';
     const payload = {
@@ -32,22 +28,14 @@ export default function JumpNavMenuItem({
     sendTrackingLogEvent(eventName, payload);
   }
 
-  function lazyloadUrl() {
+  function destinationUrl() {
     if (isDefault) {
       return `/course/${courseId}/${currentSequence}/${currentUnit}`;
     }
-    const destinationString = sequences.forEach(sequence => sequence.unitIds.forEach(unitId => {
-      const complete = dispatch(checkBlockCompletion(
-        courseId,
-        sequence.id, unitId,
-      ))
-        .then(value => value);
-      if (!complete) { return `/course/${courseId}/${sequence.id}/${unitId}`; }
-    }));
-    return destinationString || `/course/${courseId}/${sequences[0].id}/${sequences[0].unitIds[0]}`;
+    return `/course/${courseId}/${sequences[0].id}`;
   }
   function handleClick() {
-    const url = lazyloadUrl();
+    const url = destinationUrl();
     logEvent(url);
     history.push(url);
   }
@@ -64,11 +52,6 @@ export default function JumpNavMenuItem({
 
 const sequenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
-  unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  sectionId: PropTypes.string.isRequired,
-  isTimeLimited: PropTypes.bool,
-  isProctored: PropTypes.bool,
-  legacyWebUrl: PropTypes.string,
 });
 
 JumpNavMenuItem.propTypes = {

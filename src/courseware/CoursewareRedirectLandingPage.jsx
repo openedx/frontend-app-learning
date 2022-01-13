@@ -5,7 +5,6 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { PageRoute } from '@edx/frontend-platform/react';
 
 import PageLoading from '../generic/PageLoading';
-import CoursewareRedirect from './CoursewareRedirect';
 
 export default () => {
   const { path } = useRouteMatch();
@@ -23,7 +22,9 @@ export default () => {
       <Switch>
         <PageRoute
           path={`${path}/courseware/:courseId/unit/:unitId`}
-          component={CoursewareRedirect}
+          render={({ match }) => {
+            global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${match.params.courseId}/jump_to/${match.params.unitId}?experience=legacy`);
+          }}
         />
         <PageRoute
           path={`${path}/course-home/:courseId`}

@@ -7,6 +7,7 @@ import { waitFor } from '@testing-library/react';
 
 import { fetchCourse } from '../../data';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
+import { buildOutlineFromBlocks } from '../../data/__factories__/learningSequencesOutline.factory';
 import {
   initializeMockApp, logUnhandledRequests, render, screen,
 } from '../../../setupTest';
@@ -27,11 +28,10 @@ describe('Course Exit Pages', () => {
     user_has_passing_grade: true,
     end: '2014-02-05T05:00:00Z',
   });
-  const defaultCourseBlocks = buildSimpleCourseBlocks(defaultMetadata.id, defaultMetadata.name);
+  const { courseBlocks: defaultCourseBlocks } = buildSimpleCourseBlocks(defaultMetadata.id, defaultMetadata.name);
 
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-  const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
   const discoveryRecommendationsUrl = new RegExp(`${getConfig().DISCOVERY_API_BASE_URL}/api/v1/course_recommendations/*`);
   const enrollmentsUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment*`);
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
@@ -50,11 +50,10 @@ describe('Course Exit Pages', () => {
     store = initializeStore();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
-    axiosMock.onGet(courseBlocksUrlRegExp).reply(200, defaultCourseBlocks);
     axiosMock.onGet(discoveryRecommendationsUrl).reply(200,
       Factory.build('courseRecommendations', {}, { numRecs: 2 }));
     axiosMock.onGet(enrollmentsUrl).reply(200, []);
-    axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+    axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(defaultCourseBlocks));
 
     logUnhandledRequests(axiosMock);
   });
@@ -368,10 +367,9 @@ describe('Course Exit Pages', () => {
   describe('Course in progress experience', () => {
     it('Displays link to dates tab', async () => {
       setMetadata({ user_has_passing_grade: false });
-      const courseBlocks = buildSimpleCourseBlocks(defaultMetadata.id, defaultMetadata.name,
+      const { courseBlocks } = buildSimpleCourseBlocks(defaultMetadata.id, defaultMetadata.name,
         { hasScheduledContent: true });
-      axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
 
       await fetchAndRender(<CourseInProgress />);
       expect(screen.getByText('More content is coming soon!')).toBeInTheDocument();
