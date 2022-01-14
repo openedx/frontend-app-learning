@@ -210,7 +210,6 @@ function normalizeMetadata(metadata) {
     start: data.start,
     enrollmentMode: data.enrollment.mode,
     isEnrolled: data.enrollment.is_active,
-    courseAccess: camelCaseObject(data.course_access),
     canViewLegacyCourseware: data.can_view_legacy_courseware,
     originalUserIsStaff: data.original_user_is_staff,
     isStaff: data.is_staff,
@@ -233,7 +232,6 @@ function normalizeMetadata(metadata) {
     isIntegritySignatureEnabled: data.is_integrity_signature_enabled,
     userNeedsIntegritySignature: data.user_needs_integrity_signature,
     isMasquerading: data.original_user_is_staff && !data.is_staff,
-    username: data.username,
   };
 }
 

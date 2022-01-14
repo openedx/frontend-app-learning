@@ -27,9 +27,11 @@ import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 
 class MockLoggingService {
-  logInfo = jest.fn();
+  // eslint-disable-next-line no-console
+  logInfo = jest.fn(infoString => console.log(infoString));
 
-  logError = jest.fn();
+  // eslint-disable-next-line no-console
+  logError = jest.fn(infoString => console.log(infoString));
 }
 
 window.getComputedStyle = jest.fn(() => ({
@@ -50,7 +52,7 @@ Object.defineProperty(window, 'matchMedia', {
     // Returns true given a mediaQuery for a screen size greater than 768px (this exact query is what react-break sends)
     // Without this, if we hardcode `matches` to either true or false, either all or none of the breakpoints match,
     // respectively.
-    const matches = !!(query === 'screen and (min-width: 768px)');
+    const matches = (query === 'screen and (min-width: 768px)');
     return {
       matches,
       media: query,
@@ -146,7 +148,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   axiosMock.reset();
 
   const {
-    courseBlocks, sequenceBlocks, courseMetadata, sequenceMetadata,
+    courseBlocks, sequenceBlocks, courseMetadata, sequenceMetadata, courseHomeMetadata,
   } = buildSimpleCourseAndSequenceMetadata(options);
 
   let forbiddenCourseUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseMetadata.id}`;
@@ -154,8 +156,11 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
 
   const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
+  let courseHomeMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseMetadata.id}`;
+  courseHomeMetadataUrl = appendBrowserTimezoneToUrl(courseHomeMetadataUrl);
 
   axiosMock.onGet(forbiddenCourseUrl).reply(200, courseMetadata);
+  axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
   axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
   axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
   sequenceMetadata.forEach(metadata => {

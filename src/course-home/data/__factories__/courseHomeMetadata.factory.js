@@ -10,6 +10,7 @@ Factory.define('courseHomeMetadata')
     is_self_paced: false,
     is_enrolled: false,
     can_load_courseware: false,
+    celebrations: null,
     course_access: {
       additional_context_user_message: null,
       developer_message: null,

@@ -1,13 +1,14 @@
 import { logError, logInfo } from '@edx/frontend-platform/logging';
 import {
   getBlockCompletion,
-  postSequencePosition,
-  getCourseMetadata,
   getCourseBlocks,
+  getCourseMetadata,
   getLearningSequencesOutline,
   getSequenceMetadata,
   postIntegritySignature,
+  postSequencePosition,
 } from './api';
+import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
 import {
   updateModel, addModel, updateModelsMap, addModelsMap, updateModels,
 } from '../../generic/model-store';
@@ -130,12 +131,32 @@ export function fetchCourse(courseId) {
       getCourseMetadata(courseId),
       getCourseBlocks(courseId),
       getLearningSequencesOutline(courseId),
-    ]).then(([courseMetadataResult, courseBlocksResult, learningSequencesOutlineResult]) => {
+      getCourseHomeCourseMetadata(courseId),
+    ]).then(([
+      courseMetadataResult,
+      courseBlocksResult,
+      learningSequencesOutlineResult,
+      courseHomeMetadataResult]) => {
       if (courseMetadataResult.status === 'fulfilled') {
         dispatch(addModel({
           modelType: 'coursewareMeta',
-          model: courseMetadataResult.value,
+          model: {
+            id: courseId,
+            ...courseMetadataResult.value,
+          },
         }));
+      }
+
+      if (courseHomeMetadataResult.status === 'fulfilled') {
+        dispatch(addModel({
+          modelType: 'courseHomeMeta',
+          model: {
+            id: courseId,
+            ...courseHomeMetadataResult.value,
+          },
+        }));
+      } else {
+        logError(courseHomeMetadataResult.reason);
       }
 
       if (courseBlocksResult.status === 'fulfilled') {
@@ -167,6 +188,7 @@ export function fetchCourse(courseId) {
       }
 
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
+      const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
       const fetchedBlocks = courseBlocksResult.status === 'fulfilled';
 
       // Log errors for each request if needed. Course block failures may occur
@@ -185,8 +207,8 @@ export function fetchCourse(courseId) {
         logError(courseMetadataResult.reason);
       }
 
-      if (fetchedMetadata) {
-        if (courseMetadataResult.value.courseAccess.hasAccess && fetchedBlocks) {
+      if (fetchedMetadata && fetchedCourseHomeMetadata) {
+        if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedBlocks) {
           // User has access
           dispatch(fetchCourseSuccess({ courseId }));
           return;

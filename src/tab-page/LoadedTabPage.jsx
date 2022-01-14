@@ -30,7 +30,7 @@ function LoadedTabPage({
     tabs,
     title,
     verifiedMode,
-  } = useModel(metadataModel, courseId);
+  } = useModel('courseHomeMeta', courseId);
 
   // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
   // breadcrumbs when they are visible.

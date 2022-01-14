@@ -5,9 +5,9 @@ import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dep
 import './tab.factory';
 
 export default new Factory()
-  .sequence('id', (i) => `course-v1:edX+DemoX+Demo_Course_${i}`)
   .option('host')
   .attrs({
+    id: 'course-v1:edX+DemoX+Demo_Course_1',
     is_staff: false,
     original_user_is_staff: false,
     number: 'DemoX',

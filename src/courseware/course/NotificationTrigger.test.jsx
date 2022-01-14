@@ -105,7 +105,7 @@ describe('Notification Trigger', () => {
   });
 
   it('handles localStorage from a different course', async () => {
-    const courseMetadataSecondCourse = Factory.build('courseMetadata');
+    const courseMetadataSecondCourse = Factory.build('courseMetadata', { id: 'second_id' });
     // set localStorage for a different course before rendering NotificationTrigger
     localStorage.setItem(`upgradeNotificationLastSeen.${courseMetadataSecondCourse.id}`, '"accessDateView"');
     localStorage.setItem(`notificationStatus.${courseMetadataSecondCourse.id}`, '"inactive"');

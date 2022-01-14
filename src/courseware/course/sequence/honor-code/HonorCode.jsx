@@ -12,7 +12,7 @@ import messages from './messages';
 
 function HonorCode({ intl, courseId }) {
   const dispatch = useDispatch();
-  const coursewareMetaData = useModel('coursewareMeta', courseId);
+  const coursewareMetaData = useModel('courseHomeMeta', courseId);
   const authUser = getAuthenticatedUser();
   const siteName = getConfig().SITE_NAME;
   const honorCodeUrl = `${getConfig().TERMS_OF_SERVICE_URL}#honor-code`;

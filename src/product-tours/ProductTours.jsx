@@ -16,7 +16,7 @@ import {
   endCourseHomeTour,
   endCoursewareTour,
   fetchTourData,
-} from './data/thunks';
+} from './data';
 
 function ProductTours({
   activeTab,

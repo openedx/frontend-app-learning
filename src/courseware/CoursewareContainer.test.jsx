@@ -47,6 +47,7 @@ describe('CoursewareContainer', () => {
   // By default, `setUpMockRequests()` will configure the mock LMS API to return use this data.
   // Certain test cases override these in order to test with special blocks/metadata.
   const defaultCourseMetadata = Factory.build('courseMetadata');
+  const defaultCourseHomeMetadata = Factory.build('courseHomeMetadata');
   const defaultCourseId = defaultCourseMetadata.id;
   const defaultUnitBlocks = [
     Factory.build(
@@ -101,6 +102,7 @@ describe('CoursewareContainer', () => {
     // If we weren't given course blocks or metadata, use the defaults.
     const courseBlocks = options.courseBlocks || defaultCourseBlocks;
     const courseMetadata = options.courseMetadata || defaultCourseMetadata;
+    const courseHomeMetadata = options.courseHomeMetadata || defaultCourseHomeMetadata;
     const courseId = courseMetadata.id;
     // If we weren't given a list of sequence metadatas for URL mocking,
     // then construct it ourselves by looking at courseBlocks.
@@ -126,6 +128,9 @@ describe('CoursewareContainer', () => {
 
     const courseMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+
+    const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`);
+    axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
 
     sequenceMetadatas.forEach(sequenceMetadata => {
       const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
@@ -413,17 +418,20 @@ describe('CoursewareContainer', () => {
 
   describe('when receiving a course_access error_code', () => {
     function setUpWithDeniedStatus(errorCode) {
-      const courseMetadata = Factory.build('courseMetadata', {
+      const courseMetadata = Factory.build('courseMetadata');
+      const courseHomeMetadata = Factory.build('courseHomeMetadata', {
         course_access: {
           has_access: false,
           error_code: errorCode,
           additional_context_user_message: 'uhoh oh no', // only used by audit_expired
         },
+        id: courseMetadata.id,
       });
+
       const courseId = courseMetadata.id;
 
       const { courseBlocks, sequenceBlocks, unitBlocks } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
-      setUpMockRequests({ courseBlocks, courseMetadata });
+      setUpMockRequests({ courseBlocks, courseMetadata, courseHomeMetadata });
       history.push(`/course/${courseId}/${sequenceBlocks[0].id}/${unitBlocks[0].id}`);
       return { courseMetadata, unitBlocks };
     }

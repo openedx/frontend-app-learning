@@ -147,7 +147,7 @@ describe('Course', () => {
 
   it('handles sessionStorage from a different course for the notification tray', async () => {
     sessionStorage.clear();
-    const courseMetadataSecondCourse = Factory.build('courseMetadata');
+    const courseMetadataSecondCourse = Factory.build('courseMetadata', { id: 'second_course' });
 
     // set sessionStorage for a different course before rendering Course
     sessionStorage.setItem(`notificationTrayStatus.${courseMetadataSecondCourse.id}`, '"open"');

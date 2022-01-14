@@ -8,7 +8,7 @@ import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
 import MockAdapter from 'axios-mock-adapter';
-import { waitForElementToBeRemoved } from '@testing-library/dom';
+import { prettyDOM, waitForElementToBeRemoved } from '@testing-library/dom';
 import * as popper from '@popperjs/core';
 
 import {
@@ -35,12 +35,13 @@ describe('Course Home Tours', () => {
   const courseId = 'course-v1:edX+Test+run';
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
+  const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
+
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   const tourDataUrl = `${getConfig().LMS_BASE_URL}/api/user_tours/v1/MockUser`;
   const proctoringUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=course-v1%3AedX%2BTest%2Brun&username=MockUser`;
 
   const store = initializeStore();
-  const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
   const defaultTabData = Factory.build('outlineTabData');
 
   function setMetadata(attributes, options) {
@@ -177,8 +178,9 @@ describe('Courseware Tour', () => {
   // This is a standard set of data that can be used in CoursewareContainer tests.
   // By default, `setUpMockRequests()` will configure the mock LMS API to return use this data.
   // Certain test cases override these in order to test with special blocks/metadata.
-  const courseMetadata = Factory.build('courseMetadata');
-  const courseId = courseMetadata.id;
+  const defaultCourseMetadata = Factory.build('courseMetadata');
+
+  const courseId = defaultCourseMetadata.id;
   const unitBlocks = [
     Factory.build(
       'block',
@@ -201,7 +203,7 @@ describe('Courseware Tour', () => {
     sequenceBlocks: [defaultSequenceBlock],
   } = buildSimpleCourseBlocks(
     courseId,
-    courseMetadata.name,
+    defaultCourseMetadata.name,
     { unitBlocks },
   );
 
@@ -268,7 +270,11 @@ describe('Courseware Tour', () => {
       axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
 
       const courseMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+      axiosMock.onGet(courseMetadataUrl).reply(200, defaultCourseMetadata);
+
+      const defaultCourseHomeMetadata = Factory.build('courseHomeMetadata', { id: courseId, courseId });
+      const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`);
+      axiosMock.onGet(courseHomeMetadataUrl).reply(200, defaultCourseHomeMetadata);
 
       sequenceMetadatas.forEach(sequenceMetadata => {
         const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
@@ -277,9 +283,8 @@ describe('Courseware Tour', () => {
         axiosMock.onGet(proctoredExamApiUrl).reply(404);
       });
 
-      axiosMock.onPost(`${courseId}/xblock/${defaultSequenceBlock.id}/handler/get_completion`).reply(200, {
-        complete: true,
-      });
+      const blockUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/*`);
+      axiosMock.onPost(blockUrlRegExp).reply(200, { complete: true });
 
       history.push(`/course/${courseId}/${defaultSequenceBlock.id}/${unitBlocks[0].id}`);
     });
@@ -302,6 +307,8 @@ describe('Courseware Tour', () => {
   fireEvent.click(sequenceNextButton);
 
   expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlocks[1].id}`);
+
+  console.log(prettyDOM(container, 999999));
 
   const checkpoint = container.querySelectorAll('#checkpoint');
   expect(checkpoint).toHaveLength(showCoursewareTour ? 1 : 0);

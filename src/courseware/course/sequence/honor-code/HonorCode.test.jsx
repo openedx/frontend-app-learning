@@ -1,14 +1,15 @@
 import React from 'react';
-import MockAdapter from 'axios-mock-adapter';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig, history } from '@edx/frontend-platform';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 
 import {
-  authenticatedUser, fireEvent, initializeTestStore, render, screen, waitFor,
+  authenticatedUser, fireEvent, initializeMockApp, initializeTestStore, render, screen, waitFor,
 } from '../../../../setupTest';
 import HonorCode from './HonorCode';
 
+initializeMockApp();
 jest.mock('@edx/frontend-platform', () => ({
   ...jest.requireActual('@edx/frontend-platform'),
   history: {
@@ -22,13 +23,10 @@ describe('Honor Code', () => {
   let honorCodePostUrl;
   const mockData = {};
 
-  async function setupStoreState(coursewareMetaOptions) {
-    if (coursewareMetaOptions) {
-      const courseMetadata = Factory.build(
-        'courseMetadata',
-        coursewareMetaOptions,
-      );
-      store = await initializeTestStore({ courseMetadata });
+  async function setupStoreState(courseHomeMetaOptions) {
+    if (courseHomeMetaOptions) {
+      const courseHomeMetadata = Factory.build('courseHomeMetadata', courseHomeMetaOptions);
+      store = await initializeTestStore({ courseHomeMetadata });
     } else {
       store = await initializeTestStore();
     }

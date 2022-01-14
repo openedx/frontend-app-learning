@@ -58,7 +58,7 @@ function StreakModal({
   if (!isStreakCelebrationOpen) {
     return null;
   }
-  const { org, celebrations, username } = useModel(metadataModel, courseId);
+  const { org, celebrations, username } = useModel('courseHomeMeta', courseId);
   const factoid = getRandomFactoid(intl, streakLengthToCelebrate);
   // eslint-disable-next-line no-unused-vars
   const [randomFactoid, setRandomFactoid] = useState(factoid); // Don't change factoid on re-render
@@ -155,7 +155,7 @@ function StreakModal({
       title={title}
       onClose={() => {
         closeStreakCelebration();
-        recordModalClosing(metadataModel, celebrations, org, courseId, dispatch);
+        recordModalClosing('courseHomeMeta', celebrations, org, courseId, dispatch);
       }}
       isOpen={isStreakCelebrationOpen}
       isFullscreenScroll

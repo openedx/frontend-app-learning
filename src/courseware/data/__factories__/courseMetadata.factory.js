@@ -63,5 +63,4 @@ Factory.define('courseMetadata')
     related_programs: null,
     user_needs_integrity_signature: false,
     recommendations: null,
-    username: 'MockUser',
   });

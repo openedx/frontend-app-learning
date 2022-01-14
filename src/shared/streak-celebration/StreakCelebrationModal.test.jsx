@@ -23,6 +23,7 @@ describe('Loaded Tab Page', () => {
   let axiosMock;
   const calculateUrl = `${getConfig().ECOMMERCE_BASE_URL}/api/v2/baskets/calculate/?code=ZGY11119949&sku=8CF08E5&username=MockUser`;
   const courseMetadata = Factory.build('courseMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
+  const courseHomeMetadata = Factory.build('courseHomeMetadata', { id: courseMetadata.id, courseId: courseMetadata.courseId });
 
   function setDiscount(percent) {
     mockData.streakDiscountCouponEnabled = true;
@@ -51,7 +52,7 @@ describe('Loaded Tab Page', () => {
       verifiedMode: camelCaseObject(courseMetadata.verified_mode),
     };
 
-    testStore = await initializeTestStore({ courseMetadata }, false);
+    testStore = await initializeTestStore({ courseMetadata, courseHomeMetadata }, false);
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
   });
 

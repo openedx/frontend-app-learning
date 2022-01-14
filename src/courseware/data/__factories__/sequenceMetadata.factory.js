@@ -83,9 +83,13 @@ export default function buildSimpleCourseAndSequenceMetadata(options = {}) {
       courseId, unitBlocks, sequenceBlock: block,
     },
   ));
+  // need to synchronize the id with the courseMetadata
+  const courseHomeMetadataOptions = (options.courseHomeMetadata ? options.courseHomeMetadata : {});
+  const courseHomeMetadata = Factory.build('courseHomeMetadata', courseHomeMetadataOptions);
   return {
     ...simpleCourseBlocks,
     courseMetadata,
     sequenceMetadata,
+    courseHomeMetadata,
   };
 }

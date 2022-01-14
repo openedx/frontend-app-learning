@@ -21,6 +21,7 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
+        "celebrations": null,
         "courseAccess": Object {
           "additionalContextUserMessage": null,
           "developerMessage": null,
@@ -334,6 +335,7 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
+        "celebrations": null,
         "courseAccess": Object {
           "additionalContextUserMessage": null,
           "developerMessage": null,
@@ -527,6 +529,7 @@ Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course_1": Object {
         "canLoadCourseware": false,
+        "celebrations": null,
         "courseAccess": Object {
           "additionalContextUserMessage": null,
           "developerMessage": null,

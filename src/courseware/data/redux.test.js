@@ -26,6 +26,7 @@ describe('Data layer integration tests', () => {
   // building minimum set of api responses to test all thunks
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
+  const courseHomeMetadata = Factory.build('courseHomeMetadata');
   const { courseBlocks, unitBlocks, sequenceBlocks } = buildSimpleCourseBlocks(courseId);
   const sequenceMetadata = Factory.build(
     'sequenceMetadata',
@@ -37,6 +38,9 @@ describe('Data layer integration tests', () => {
   let courseUrl = `${courseBaseUrl}/${courseId}`;
   courseUrl = appendBrowserTimezoneToUrl(courseUrl);
 
+  const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(
+    `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`,
+  );
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
   const sequenceId = sequenceBlocks[0].id;
   const unitId = unitBlocks[0].id;
@@ -66,17 +70,22 @@ describe('Data layer integration tests', () => {
     });
 
     it('Should fetch, normalize, and save metadata, but with denied status', async () => {
-      const forbiddenCourseMetadata = Factory.build('courseMetadata', {
+      const forbiddenCourseMetadata = Factory.build('courseMetadata');
+      const forbiddenCourseHomeMetadata = Factory.build('courseHomeMetadata', {
         course_access: {
           has_access: false,
         },
       });
+      const forbiddenCourseHomeUrl = appendBrowserTimezoneToUrl(
+        `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`,
+      );
       const forbiddenCourseBlocks = Factory.build('courseBlocks', {
         courseId: forbiddenCourseMetadata.id,
       });
       let forbiddenCourseUrl = `${courseBaseUrl}/${forbiddenCourseMetadata.id}`;
       forbiddenCourseUrl = appendBrowserTimezoneToUrl(forbiddenCourseUrl);
 
+      axiosMock.onGet(forbiddenCourseHomeUrl).reply(200, forbiddenCourseHomeMetadata);
       axiosMock.onGet(forbiddenCourseUrl).reply(200, forbiddenCourseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, forbiddenCourseBlocks);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
@@ -88,10 +97,11 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.courseStatus).toEqual('denied');
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[forbiddenCourseMetadata.id].courseAccess).not.toBeUndefined();
+      expect(state.models.courseHomeMeta[forbiddenCourseMetadata.id].courseAccess).not.toBeUndefined();
     });
 
     it('Should fetch, normalize, and save metadata', async () => {
+      axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
@@ -106,12 +116,13 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].courseAccess).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].verifiedMode).not.toBeUndefined();
     });
 
     it('Should fetch, normalize, and save metadata; filtering has no effect', async () => {
       // Very similar to previous test, but pass back an outline for filtering
       // (even though it won't actually filter down in this case).
+      axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, simpleOutline);
@@ -126,7 +137,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].courseAccess).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].verifiedMode).not.toBeUndefined();
       expect(state.models.sequences.length === 1);
 
       Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 1));
@@ -135,6 +146,7 @@ describe('Data layer integration tests', () => {
     it('Should fetch, normalize, and save metadata; filtering removes sequence', async () => {
       // Very similar to previous test, but pass back an outline for filtering
       // (even though it won't actually filter down in this case).
+      axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
 
@@ -153,7 +165,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].courseAccess).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].verifiedMode).not.toBeUndefined();
       expect(state.models.sequences === null);
 
       Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 0));
@@ -187,6 +199,7 @@ describe('Data layer integration tests', () => {
     });
 
     it('Should fetch and normalize metadata, and then update existing models with sequence metadata', async () => {
+      axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});

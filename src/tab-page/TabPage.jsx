@@ -37,7 +37,7 @@ function TabPage({ intl, ...props }) {
     org,
     start,
     title,
-  } = useModel(metadataModel, courseId);
+  } = useModel('courseHomeMeta', courseId);
 
   if (courseStatus === 'loading') {
     return (

@@ -11,7 +11,7 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Lock Paywall', () => {
   let store;
-  const mockData = { metadataModel: 'coursewareMeta' };
+  const mockData = { notificationTrayVisible: false };
 
   beforeAll(async () => {
     store = await initializeTestStore();
