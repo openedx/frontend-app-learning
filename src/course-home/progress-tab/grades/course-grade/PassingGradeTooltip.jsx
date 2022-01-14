@@ -1,15 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { injectIntl, intlShape, isRtl } from '@edx/frontend-platform/i18n';
+import {
+  getLocale, injectIntl, intlShape, isRtl,
+} from '@edx/frontend-platform/i18n';
 import { OverlayTrigger, Popover } from '@edx/paragon';
 
 import messages from '../messages';
 
 function PassingGradeTooltip({ intl, passingGrade, tooltipClassName }) {
+  const isLocaleRtl = isRtl(getLocale());
+
   let passingGradeDirection = passingGrade < 50 ? '' : '-';
 
-  if (isRtl) {
+  if (isLocaleRtl) {
     passingGradeDirection = passingGrade < 50 ? '-' : '';
   }
 
@@ -27,15 +31,15 @@ function PassingGradeTooltip({ intl, passingGrade, tooltipClassName }) {
         )}
       >
         <g>
-          <circle cx={`${isRtl ? 100 - passingGrade : passingGrade}%`} cy="50%" r="8.5" fill="transparent" />
-          <circle className="grade-bar--passing" cx={`${isRtl ? 100 - passingGrade : passingGrade}%`} cy="50%" r="4.5" />
+          <circle cx={`${isLocaleRtl ? 100 - passingGrade : passingGrade}%`} cy="50%" r="8.5" fill="transparent" />
+          <circle className="grade-bar--passing" cx={`${isLocaleRtl ? 100 - passingGrade : passingGrade}%`} cy="50%" r="4.5" />
         </g>
       </OverlayTrigger>
 
       <text
         className="x-small"
         textAnchor={passingGrade < 50 ? 'start' : 'end'}
-        x={`${isRtl ? 100 - passingGrade : passingGrade}%`}
+        x={`${isLocaleRtl ? 100 - passingGrade : passingGrade}%`}
         y="90px"
         style={{ transform: `translateX(${passingGradeDirection}3.4em)` }}
       >
