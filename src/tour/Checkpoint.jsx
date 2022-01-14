@@ -92,7 +92,7 @@ function Checkpoint({
       {/* This text is not translated due to Paragon's lack of i18n support */}
       <span className="sr-only">Top of step {index + 1}</span>
       {(title || !isOnlyCheckpoint) && (
-        <div className="d-flex justify-content-between mb-2.5" style={{ overflowX: 'scroll' }}>
+        <div className="d-flex justify-content-between mb-2.5">
           <CheckpointTitle>{title}</CheckpointTitle>
           <CheckpointBreadcrumbs currentIndex={index} totalCheckpoints={totalCheckpoints} />
         </div>
