@@ -1,7 +1,7 @@
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
-import { postFirstSectionCelebrationComplete } from './data/api';
+import { postCelebrationComplete } from './data/api';
 import { clearLocalStorage, getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 import { updateModel } from '../../../generic/model-store';
 
@@ -18,7 +18,7 @@ function handleNextSectionCelebration(sequenceId, nextSequenceId, nextUnitId) {
 
 function recordFirstSectionCelebration(org, courseId) {
   // Tell the LMS
-  postFirstSectionCelebrationComplete(courseId);
+  postCelebrationComplete(courseId, { first_section: false });
 
   // Tell our analytics
   const { administrator } = getAuthenticatedUser();
@@ -26,6 +26,19 @@ function recordFirstSectionCelebration(org, courseId) {
     org_key: org,
     courserun_key: courseId,
     course_id: courseId, // should only be courserun_key, but left as-is for historical reasons
+    is_staff: administrator,
+  });
+}
+
+function recordWeeklyGoalCelebration(org, courseId) {
+  // Tell the LMS
+  postCelebrationComplete(courseId, { weekly_goal: false });
+
+  // Tell our analytics
+  const { administrator } = getAuthenticatedUser();
+  sendTrackEvent('edx.ui.lms.celebration.weekly_goal.opened', {
+    org_key: org,
+    courserun_key: courseId,
     is_staff: administrator,
   });
 }
@@ -51,7 +64,7 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFir
     // If we are going to celebrate a streak then we will not also celebrate the first section.
     // We will still mark the first section as celebrated, so that we don't incorrectly celebrate the second section.
     shouldCelebrate = false;
-    postFirstSectionCelebrationComplete(courseId);
+    postCelebrationComplete(courseId, { first_section: false });
   }
 
   if (sequenceId !== prevSequenceId && !onTargetUnit) {
@@ -74,4 +87,9 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, unitId, celebrateFir
   return shouldCelebrate;
 }
 
-export { handleNextSectionCelebration, recordFirstSectionCelebration, shouldCelebrateOnSectionLoad };
+export {
+  handleNextSectionCelebration,
+  recordFirstSectionCelebration,
+  recordWeeklyGoalCelebration,
+  shouldCelebrateOnSectionLoad,
+};

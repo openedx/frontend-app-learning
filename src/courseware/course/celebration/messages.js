@@ -23,6 +23,15 @@ const messages = defineMessages({
     defaultMessage: 'Keep going',
     description: 'Button to close celebration dialog and get back to course',
   },
+  goalMet: {
+    id: 'learning.celebration.goalMet',
+    defaultMessage: 'You met your goal!',
+  },
+  keepItUp: {
+    id: 'learning.celebration.keepItUp',
+    defaultMessage: 'Keep it up',
+    description: 'Button to close celebration dialog and get back to course',
+  },
   share: {
     id: 'learning.celebration.share',
     defaultMessage: 'Take a moment to celebrate and share your progress.',

@@ -8,7 +8,7 @@ import { AlertList } from '../../generic/user-messages';
 
 import Sequence from './sequence';
 
-import { CelebrationModal, shouldCelebrateOnSectionLoad } from './celebration';
+import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
 import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import NotificationTrigger from './NotificationTrigger';
@@ -41,15 +41,22 @@ function Course({
 
   const {
     celebrations,
+    courseGoals,
     verifiedMode,
   } = course;
 
   // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
   const dispatch = useDispatch();
   const celebrateFirstSection = celebrations && celebrations.firstSection;
-  const celebrationOpen = shouldCelebrateOnSectionLoad(
+  const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(shouldCelebrateOnSectionLoad(
     courseId, sequenceId, unitId, celebrateFirstSection, dispatch, celebrations,
+  ));
+  // If streakLengthToCelebrate is populated, that modal takes precedence. Wait til the next load to display
+  // the weekly goal celebration modal.
+  const [weeklyGoalCelebrationOpen, setWeeklyGoalCelebrationOpen] = useState(
+    celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal,
   );
+  const daysPerWeek = courseGoals?.selectedGoal?.daysPerWeek;
 
   // Responsive breakpoints for showing the notification button/tray
   const shouldDisplayNotificationTriggerInCourse = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
@@ -145,12 +152,17 @@ function Course({
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />
-      {celebrationOpen && (
-        <CelebrationModal
-          courseId={courseId}
-          open
-        />
-      )}
+      <CelebrationModal
+        courseId={courseId}
+        isOpen={firstSectionCelebrationOpen}
+        onClose={() => setFirstSectionCelebrationOpen(false)}
+      />
+      <WeeklyGoalCelebrationModal
+        courseId={courseId}
+        daysPerWeek={daysPerWeek}
+        isOpen={weeklyGoalCelebrationOpen}
+        onClose={() => setWeeklyGoalCelebrationOpen(false)}
+      />
       <ContentTools course={course} />
       { /** [MM-P2P] Experiment */ }
       { MMP2P.meta.modalLock && <MMP2PBlockModal options={MMP2P} /> }
