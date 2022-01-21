@@ -155,8 +155,6 @@ export function fetchCourse(courseId) {
             ...courseHomeMetadataResult.value,
           },
         }));
-      } else {
-        logError(courseHomeMetadataResult.reason);
       }
 
       if (courseBlocksResult.status === 'fulfilled') {
