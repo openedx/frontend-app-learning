@@ -8,7 +8,7 @@ import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
 import MockAdapter from 'axios-mock-adapter';
-import { prettyDOM, waitForElementToBeRemoved } from '@testing-library/dom';
+import { waitForElementToBeRemoved } from '@testing-library/dom';
 import * as popper from '@popperjs/core';
 
 import {
@@ -307,8 +307,6 @@ describe('Courseware Tour', () => {
   fireEvent.click(sequenceNextButton);
 
   expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlocks[1].id}`);
-
-  console.log(prettyDOM(container, 999999));
 
   const checkpoint = container.querySelectorAll('#checkpoint');
   expect(checkpoint).toHaveLength(showCoursewareTour ? 1 : 0);
