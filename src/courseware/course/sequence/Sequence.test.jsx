@@ -108,7 +108,7 @@ describe('Sequence', () => {
       expect(screen.queryByText('The due date for this assignment has passed.')).toBeInTheDocument();
     });
     expect(screen.getByRole('link', { name: 'progress page' }))
-      .toHaveAttribute('href', 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/progress');
+      .toHaveAttribute('href', 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/progress');
 
     // No normal content or navigation should be rendered. Just the above alert.
     expect(screen.queryAllByRole('button').length).toEqual(0);

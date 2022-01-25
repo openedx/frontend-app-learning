@@ -204,7 +204,9 @@ export function fetchCourse(courseId) {
       if (!fetchedMetadata) {
         logError(courseMetadataResult.reason);
       }
-
+      if (!fetchedCourseHomeMetadata) {
+        logError(courseHomeMetadataResult.reason);
+      }
       if (fetchedMetadata && fetchedCourseHomeMetadata) {
         if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedBlocks) {
           // User has access

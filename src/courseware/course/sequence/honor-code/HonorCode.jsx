@@ -12,7 +12,10 @@ import messages from './messages';
 
 function HonorCode({ intl, courseId }) {
   const dispatch = useDispatch();
-  const coursewareMetaData = useModel('courseHomeMeta', courseId);
+  const {
+    isMasquerading,
+    username,
+  } = useModel('courseHomeMeta', courseId);
   const authUser = getAuthenticatedUser();
   const siteName = getConfig().SITE_NAME;
   const honorCodeUrl = `${getConfig().TERMS_OF_SERVICE_URL}#honor-code`;
@@ -26,7 +29,7 @@ function HonorCode({ intl, courseId }) {
     // Otherwise, even for staff users, we want to record the signature.
     saveIntegritySignature(
       courseId,
-      coursewareMetaData.isMasquerading && coursewareMetaData.username !== authUser.username,
+      isMasquerading && username !== authUser.username,
     ),
   );
 

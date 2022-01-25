@@ -28,7 +28,7 @@ jest.mock('@edx/frontend-platform/analytics');
 describe('Outline Tab', () => {
   let axiosMock;
 
-  const courseId = 'course-v1:edX+Test+run';
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
   const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
@@ -38,11 +38,11 @@ describe('Outline Tab', () => {
   const proctoringInfoUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}&username=MockUser`;
 
   const store = initializeStore();
-  const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
+  const defaultMetadata = Factory.build('courseHomeMetadata');
   const defaultTabData = Factory.build('outlineTabData');
 
   function setMetadata(attributes, options) {
-    const courseMetadata = Factory.build('courseHomeMetadata', { id: courseId, ...attributes }, options);
+    const courseMetadata = Factory.build('courseHomeMetadata', attributes, options);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   }
 
@@ -785,7 +785,7 @@ describe('Outline Tab', () => {
         expect(sendTrackEvent).toHaveBeenCalledTimes(1);
         expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_request_cert_button.clicked',
           {
-            courserun_key: 'course-v1:edX+Test+run',
+            courserun_key: courseId,
             is_staff: false,
             org_key: 'edX',
           });
@@ -829,7 +829,7 @@ describe('Outline Tab', () => {
         expect(sendTrackEvent).toHaveBeenCalledTimes(1);
         expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_downloadable_button.clicked',
           {
-            courserun_key: 'course-v1:edX+Test+run',
+            courserun_key: courseId,
             is_staff: false,
             org_key: 'edX',
           });
@@ -873,7 +873,7 @@ describe('Outline Tab', () => {
         expect(sendTrackEvent).toHaveBeenCalledTimes(1);
         expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_unverified_button.clicked',
           {
-            courserun_key: 'course-v1:edX+Test+run',
+            courserun_key: courseId,
             is_staff: false,
             org_key: 'edX',
           });

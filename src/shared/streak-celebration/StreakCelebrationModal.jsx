@@ -155,7 +155,7 @@ function StreakModal({
       title={title}
       onClose={() => {
         closeStreakCelebration();
-        recordModalClosing('courseHomeMeta', celebrations, org, courseId, dispatch);
+        recordModalClosing(celebrations, org, courseId, dispatch);
       }}
       isOpen={isStreakCelebrationOpen}
       isFullscreenScroll

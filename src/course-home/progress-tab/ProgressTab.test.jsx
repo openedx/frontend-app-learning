@@ -21,18 +21,18 @@ jest.mock('@edx/frontend-platform/analytics');
 describe('Progress Tab', () => {
   let axiosMock;
 
-  const courseId = 'course-v1:edX+Test+run';
+  const store = initializeStore();
+  const defaultMetadata = Factory.build('courseHomeMetadata');
+  const defaultTabData = Factory.build('progressTabData');
+
+  const courseId = defaultMetadata.id;
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
   const progressUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/progress/*`);
   const masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
 
-  const store = initializeStore();
-  const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
-  const defaultTabData = Factory.build('progressTabData');
-
   function setMetadata(attributes, options) {
-    const courseMetadata = Factory.build('courseHomeMetadata', { id: courseId, ...attributes }, options);
+    const courseMetadata = Factory.build('courseHomeMetadata', attributes, options);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   }
 

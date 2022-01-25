@@ -25,12 +25,7 @@ describe('Loaded Tab Page', () => {
 
   it('shows Instructor Toolbar if original user is staff', async () => {
     const courseMetadata = Factory.build('courseMetadata', { original_user_is_staff: true });
-    const courseHomeMetadata = Factory.build('courseHomeMetadata', {
-      courseId: courseMetadata.id,
-      // need to synchronize the id with the courseMetadata because it is autoincremented by courseMetadataBase
-      id: courseMetadata.id,
-      original_user_is_staff: true,
-    });
+    const courseHomeMetadata = Factory.build('courseHomeMetadata', { original_user_is_staff: true });
     const testStore = await initializeTestStore(
       {
         courseMetadata,

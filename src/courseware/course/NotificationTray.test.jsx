@@ -22,14 +22,12 @@ describe('NotificationTray', () => {
   let axiosMock;
   let store;
 
-  const courseId = 'course-v1:edX+DemoX+Demo_Course';
-
-  const defaultMetadata = Factory.build('courseMetadata', { id: courseId });
+  const defaultMetadata = Factory.build('courseMetadata');
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
   function setMetadata(attributes, options) {
-    const courseMetadata = Factory.build('courseMetadata', { id: courseId, ...attributes }, options);
+    const courseMetadata = Factory.build('courseMetadata', attributes, options);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   }
 

@@ -425,7 +425,6 @@ describe('CoursewareContainer', () => {
           error_code: errorCode,
           additional_context_user_message: 'uhoh oh no', // only used by audit_expired
         },
-        id: courseMetadata.id,
       });
 
       const courseId = courseMetadata.id;

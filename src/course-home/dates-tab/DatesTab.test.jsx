@@ -51,7 +51,7 @@ describe('DatesTab', () => {
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
   function setMetadata(attributes, options) {
-    courseMetadata = Factory.build('courseHomeMetadata', { id: courseId, ...attributes }, options);
+    courseMetadata = Factory.build('courseHomeMetadata', attributes, options);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   }
 

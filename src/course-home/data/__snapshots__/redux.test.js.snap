@@ -3,7 +3,7 @@
 exports[`Data layer integration tests Test fetchDatesTab Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseHome": Object {
-    "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+    "courseId": "course-v1:edX+DemoX+Demo_Course",
     "courseStatus": "loaded",
     "proctoringPanelStatus": "loading",
     "targetUserId": undefined,
@@ -19,7 +19,7 @@ Object {
   },
   "models": Object {
     "courseHomeMeta": Object {
-      "course-v1:edX+DemoX+Demo_Course_1": Object {
+      "course-v1:edX+DemoX+Demo_Course": Object {
         "canLoadCourseware": false,
         "celebrations": null,
         "courseAccess": Object {
@@ -30,7 +30,7 @@ Object {
           "userFragment": null,
           "userMessage": null,
         },
-        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "id": "course-v1:edX+DemoX+Demo_Course",
         "isEnrolled": false,
         "isMasquerading": false,
         "isSelfPaced": false,
@@ -43,32 +43,32 @@ Object {
           Object {
             "slug": "outline",
             "title": "Course",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course/",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course/",
           },
           Object {
             "slug": "discussion",
             "title": "Discussion",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/discussion/forum/",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/discussion/forum/",
           },
           Object {
             "slug": "wiki",
             "title": "Wiki",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course_wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course_wiki",
           },
           Object {
             "slug": "progress",
             "title": "Progress",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/progress",
           },
           Object {
             "slug": "instructor",
             "title": "Instructor",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/instructor",
           },
           Object {
             "slug": "dates",
             "title": "Dates",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/dates",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/dates",
           },
         ],
         "title": "Demonstration Course",
@@ -82,7 +82,7 @@ Object {
       },
     },
     "dates": Object {
-      "course-v1:edX+DemoX+Demo_Course_1": Object {
+      "course-v1:edX+DemoX+Demo_Course": Object {
         "courseDateBlocks": Array [
           Object {
             "date": "2020-05-01T17:59:41Z",
@@ -296,7 +296,7 @@ Object {
           "verifiedUpgradeLink": "http://localhost:18130/basket/add/?sku=8CF08E5",
         },
         "hasEnded": false,
-        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "id": "course-v1:edX+DemoX+Demo_Course",
         "learnerIsFullAccess": true,
       },
     },
@@ -317,7 +317,7 @@ Object {
 exports[`Data layer integration tests Test fetchOutlineTab Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseHome": Object {
-    "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+    "courseId": "course-v1:edX+DemoX+Demo_Course",
     "courseStatus": "loaded",
     "proctoringPanelStatus": "loading",
     "targetUserId": undefined,
@@ -333,7 +333,7 @@ Object {
   },
   "models": Object {
     "courseHomeMeta": Object {
-      "course-v1:edX+DemoX+Demo_Course_1": Object {
+      "course-v1:edX+DemoX+Demo_Course": Object {
         "canLoadCourseware": false,
         "celebrations": null,
         "courseAccess": Object {
@@ -344,7 +344,7 @@ Object {
           "userFragment": null,
           "userMessage": null,
         },
-        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "id": "course-v1:edX+DemoX+Demo_Course",
         "isEnrolled": false,
         "isMasquerading": false,
         "isSelfPaced": false,
@@ -357,32 +357,32 @@ Object {
           Object {
             "slug": "outline",
             "title": "Course",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course/",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course/",
           },
           Object {
             "slug": "discussion",
             "title": "Discussion",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/discussion/forum/",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/discussion/forum/",
           },
           Object {
             "slug": "wiki",
             "title": "Wiki",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course_wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course_wiki",
           },
           Object {
             "slug": "progress",
             "title": "Progress",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/progress",
           },
           Object {
             "slug": "instructor",
             "title": "Instructor",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/instructor",
           },
           Object {
             "slug": "dates",
             "title": "Dates",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/dates",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/dates",
           },
         ],
         "title": "Demonstration Course",
@@ -396,7 +396,7 @@ Object {
       },
     },
     "outline": Object {
-      "course-v1:edX+DemoX+Demo_Course_1": Object {
+      "course-v1:edX+DemoX+Demo_Course": Object {
         "accessExpiration": null,
         "canShowUpgradeSock": false,
         "certData": Object {
@@ -409,7 +409,7 @@ Object {
           "courses": Object {
             "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
               "hasScheduledContent": false,
-              "id": "course-v1:edX+DemoX+Demo_Course_1",
+              "id": "course-v1:edX+DemoX+Demo_Course",
               "sectionIds": Array [
                 "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               ],
@@ -419,7 +419,7 @@ Object {
           "sections": Object {
             "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2": Object {
               "complete": false,
-              "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+              "courseId": "course-v1:edX+DemoX+Demo_Course",
               "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               "resumeBlock": false,
               "sequenceIds": Array [
@@ -475,7 +475,7 @@ Object {
         "handoutsHtml": "<ul><li>Handout 1</li></ul>",
         "hasEnded": undefined,
         "hasScheduledContent": null,
-        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "id": "course-v1:edX+DemoX+Demo_Course",
         "offer": null,
         "resumeCourse": Object {
           "hasVisitedCourse": false,
@@ -511,7 +511,7 @@ Object {
 exports[`Data layer integration tests Test fetchProgressTab Should fetch, normalize, and save metadata 1`] = `
 Object {
   "courseHome": Object {
-    "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+    "courseId": "course-v1:edX+DemoX+Demo_Course",
     "courseStatus": "loaded",
     "proctoringPanelStatus": "loading",
     "targetUserId": undefined,
@@ -527,7 +527,7 @@ Object {
   },
   "models": Object {
     "courseHomeMeta": Object {
-      "course-v1:edX+DemoX+Demo_Course_1": Object {
+      "course-v1:edX+DemoX+Demo_Course": Object {
         "canLoadCourseware": false,
         "celebrations": null,
         "courseAccess": Object {
@@ -538,7 +538,7 @@ Object {
           "userFragment": null,
           "userMessage": null,
         },
-        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "id": "course-v1:edX+DemoX+Demo_Course",
         "isEnrolled": false,
         "isMasquerading": false,
         "isSelfPaced": false,
@@ -551,32 +551,32 @@ Object {
           Object {
             "slug": "outline",
             "title": "Course",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course/",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course/",
           },
           Object {
             "slug": "discussion",
             "title": "Discussion",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/discussion/forum/",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/discussion/forum/",
           },
           Object {
             "slug": "wiki",
             "title": "Wiki",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/course_wiki",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course_wiki",
           },
           Object {
             "slug": "progress",
             "title": "Progress",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/progress",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/progress",
           },
           Object {
             "slug": "instructor",
             "title": "Instructor",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/instructor",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/instructor",
           },
           Object {
             "slug": "dates",
             "title": "Dates",
-            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course_1/dates",
+            "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/dates",
           },
         ],
         "title": "Demonstration Course",
@@ -590,7 +590,7 @@ Object {
       },
     },
     "progress": Object {
-      "course-v1:edX+DemoX+Demo_Course_1": Object {
+      "course-v1:edX+DemoX+Demo_Course": Object {
         "accessExpiration": null,
         "certificateData": Object {},
         "completionSummary": Object {
@@ -604,7 +604,7 @@ Object {
           "percent": 1,
           "visiblePercent": 1,
         },
-        "courseId": "course-v1:edX+DemoX+Demo_Course_1",
+        "courseId": "course-v1:edX+DemoX+Demo_Course",
         "creditCourseRequirements": null,
         "end": "3027-03-31T00:00:00Z",
         "enrollmentMode": "audit",
@@ -626,7 +626,7 @@ Object {
           },
         },
         "hasScheduledContent": false,
-        "id": "course-v1:edX+DemoX+Demo_Course_1",
+        "id": "course-v1:edX+DemoX+Demo_Course",
         "sectionScores": Array [
           Object {
             "displayName": "First section",

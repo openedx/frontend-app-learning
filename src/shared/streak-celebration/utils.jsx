@@ -13,10 +13,10 @@ function recordStreakCelebration(org, courseId) {
   });
 }
 
-function recordModalClosing(metadataModel, celebrations, org, courseId, dispatch) {
+function recordModalClosing(celebrations, org, courseId, dispatch) {
   // Ensure we only celebrate each streak once
   dispatch(updateModel({
-    modelType: metadataModel,
+    modelType: 'courseHomeMeta',
     model: {
       id: courseId,
       celebrations: { ...celebrations, streakLengthToCelebrate: null },

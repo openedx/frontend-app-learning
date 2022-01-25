@@ -32,10 +32,10 @@ const popperMock = jest.spyOn(popper, 'createPopper');
 describe('Course Home Tours', () => {
   let axiosMock;
 
-  const courseId = 'course-v1:edX+Test+run';
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-  const defaultMetadata = Factory.build('courseHomeMetadata', { id: courseId });
+  const defaultMetadata = Factory.build('courseHomeMetadata');
 
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   const tourDataUrl = `${getConfig().LMS_BASE_URL}/api/user_tours/v1/MockUser`;
@@ -45,7 +45,7 @@ describe('Course Home Tours', () => {
   const defaultTabData = Factory.build('outlineTabData');
 
   function setMetadata(attributes, options) {
-    const courseMetadata = Factory.build('courseHomeMetadata', { id: courseId, ...attributes }, options);
+    const courseMetadata = Factory.build('courseHomeMetadata', attributes, options);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   }
 
@@ -272,7 +272,7 @@ describe('Courseware Tour', () => {
       const courseMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
       axiosMock.onGet(courseMetadataUrl).reply(200, defaultCourseMetadata);
 
-      const defaultCourseHomeMetadata = Factory.build('courseHomeMetadata', { id: courseId, courseId });
+      const defaultCourseHomeMetadata = Factory.build('courseHomeMetadata');
       const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`);
       axiosMock.onGet(courseHomeMetadataUrl).reply(200, defaultCourseHomeMetadata);
 

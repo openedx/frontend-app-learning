@@ -31,7 +31,7 @@ class MockLoggingService {
   logInfo = jest.fn(infoString => console.log(infoString));
 
   // eslint-disable-next-line no-console
-  logError = jest.fn(infoString => console.log(infoString));
+  logError = jest.fn(errorString => console.log(errorString));
 }
 
 window.getComputedStyle = jest.fn(() => ({
