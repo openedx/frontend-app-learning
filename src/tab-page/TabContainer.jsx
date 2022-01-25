@@ -10,7 +10,6 @@ export default function TabContainer(props) {
   const {
     children,
     fetch,
-    slice,
     tab,
   } = props;
 
@@ -26,14 +25,14 @@ export default function TabContainer(props) {
   const {
     courseId,
     courseStatus,
-  } = useSelector(state => state[slice]);
+  } = useSelector(state => state.courseHome);
 
   return (
     <TabPage
       activeTabSlug={tab}
       courseId={courseId}
       courseStatus={courseStatus}
-      metadataModel={`${slice}Meta`}
+      metadataModel="courseHomeMeta"
     >
       {courseId && <OuterExamTimer courseId={courseId} />}
       {children}
@@ -44,6 +43,5 @@ export default function TabContainer(props) {
 TabContainer.propTypes = {
   children: PropTypes.node.isRequired,
   fetch: PropTypes.func.isRequired,
-  slice: PropTypes.string.isRequired,
   tab: PropTypes.string.isRequired,
 };

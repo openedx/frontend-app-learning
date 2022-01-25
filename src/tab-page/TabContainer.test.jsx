@@ -20,10 +20,8 @@ describe('Tab Container', () => {
   beforeEach(async () => {
     mockFetch = jest.fn().mockImplementation((x) => x);
     mockData = {
-      children: [],
       fetch: mockFetch,
       tab: 'dummy',
-      slice: 'courseware',
     };
     const store = await initializeTestStore({ excludeFetchSequence: true });
     courseId = store.getState().courseware.courseId;
@@ -33,7 +31,9 @@ describe('Tab Container', () => {
     history.push(`/course/${courseId}`);
     render(
       <Route path="/course/:courseId">
-        <TabContainer {...mockData} />
+        <TabContainer {...mockData}>
+          children={[]}
+        </TabContainer>
       </Route>,
     );
 
@@ -56,8 +56,11 @@ describe('Tab Container', () => {
         render={({ match }) => (
           <TabContainer
             fetch={() => mockFetch(match.params.courseId, match.params.targetUserId)}
-            slice="courseHome"
-          />
+            tab="dummy"
+          >
+            children={[]}
+          </TabContainer>
+
         )}
       />,
     );
