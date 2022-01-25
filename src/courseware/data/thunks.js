@@ -140,10 +140,7 @@ export function fetchCourse(courseId) {
       if (courseMetadataResult.status === 'fulfilled') {
         dispatch(addModel({
           modelType: 'coursewareMeta',
-          model: {
-            id: courseId,
-            ...courseMetadataResult.value,
-          },
+          model: courseMetadataResult.value,
         }));
       }
 
