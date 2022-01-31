@@ -208,10 +208,6 @@ export async function getDatesTabData(courseId) {
     return camelCaseObject(data);
   } catch (error) {
     const { httpErrorStatus } = error && error.customAttributes;
-    if (httpErrorStatus === 404) {
-      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`);
-      return {};
-    }
     if (httpErrorStatus === 401) {
       // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
       // courseAccess in the metadata call, so just ignore this status for now.
@@ -314,21 +310,9 @@ export function getTimeOffsetMillis(headerDate, requestTime, responseTime) {
 
 export async function getOutlineTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
-  let { tabData } = {};
-  let requestTime = Date.now();
-  let responseTime = requestTime;
-  try {
-    requestTime = Date.now();
-    tabData = await getAuthenticatedHttpClient().get(url);
-    responseTime = Date.now();
-  } catch (error) {
-    const { httpErrorStatus } = error && error.customAttributes;
-    if (httpErrorStatus === 404) {
-      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/course/`);
-      return {};
-    }
-    throw error;
-  }
+  const requestTime = Date.now();
+  const tabData = await getAuthenticatedHttpClient().get(url);
+  const responseTime = Date.now();
 
   const {
     data,

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -41,7 +40,7 @@ function DetailedGrades({ intl }) {
     <Hyperlink
       variant="muted"
       isInline
-      destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`}
+      destination={`/course/${courseId}/home`}
       onClick={logOutlineLinkClick}
       tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
     >

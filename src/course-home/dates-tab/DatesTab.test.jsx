@@ -341,12 +341,12 @@ describe('DatesTab', () => {
 
     it('redirects to the home page when unauthenticated', async () => {
       await renderDenied('authentication_required');
-      expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);
+      expect(global.location.href).toEqual(`http://localhost/course/${courseMetadata.id}/home`);
     });
 
     it('redirects to the home page when unenrolled', async () => {
       await renderDenied('enrollment_required');
-      expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);
+      expect(global.location.href).toEqual(`http://localhost/course/${courseMetadata.id}/home`);
     });
   });
 });

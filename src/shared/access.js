@@ -29,7 +29,7 @@ export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, canLoadCours
       if (activeTabSlug === 'courseware' && canLoadCourseware === false && unitId) {
         url = `/redirect/courseware/${courseId}/unit/${unitId}`;
       } else if (activeTabSlug !== 'outline') {
-        url = `/redirect/course-home/${courseId}`;
+        url = `/course/${courseId}/home`;
       }
   }
   return url;
