@@ -465,7 +465,7 @@ describe('CoursewareContainer', () => {
       const { courseMetadata } = setUpWithDeniedStatus('enrollment_required');
       await loadContainer();
 
-      expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);
+      expect(global.location.href).toEqual(`http://localhost/course/${courseMetadata.id}/home`);
     });
 
     it('should go to course survey for a survey_required error code', async () => {
@@ -479,7 +479,7 @@ describe('CoursewareContainer', () => {
       const { courseMetadata } = setUpWithDeniedStatus('authentication_required');
       await loadContainer();
 
-      expect(global.location.href).toEqual(`http://localhost/redirect/course-home/${courseMetadata.id}`);
+      expect(global.location.href).toEqual(`http://localhost/course/${courseMetadata.id}/home`);
     });
 
     it('should go to dashboard for an unfulfilled_milestones error code', async () => {

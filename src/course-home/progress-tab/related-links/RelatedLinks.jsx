@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -33,13 +32,13 @@ function RelatedLinks({ intl }) {
       <h3 className="h4">{intl.formatMessage(messages.relatedLinks)}</h3>
       <ul className="pl-4">
         <li>
-          <Hyperlink destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/dates`} onClick={() => logLinkClicked('dates')}>
+          <Hyperlink destination={`/course/${courseId}/dates`} onClick={() => logLinkClicked('dates')}>
             {intl.formatMessage(messages.datesCardLink)}
           </Hyperlink>
           <p>{intl.formatMessage(messages.datesCardDescription)}</p>
         </li>
         <li>
-          <Hyperlink destination={`${getConfig().LMS_BASE_URL}/courses/${courseId}/course`} onClick={() => logLinkClicked('course_outline')}>
+          <Hyperlink destination={`/course/${courseId}/home`} onClick={() => logLinkClicked('course_outline')}>
             {intl.formatMessage(messages.outlineCardLink)}
           </Hyperlink>
           <p>{intl.formatMessage(messages.outlineCardDescription)}</p>
