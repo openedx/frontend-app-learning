@@ -24,7 +24,7 @@ describe('Loaded Tab Page', () => {
   });
 
   it('shows Instructor Toolbar if original user is staff', async () => {
-    const courseMetadata = Factory.build('courseMetadata', { original_user_is_staff: true });
+    const courseMetadata = Factory.build('courseMetadata');
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { original_user_is_staff: true });
     const testStore = await initializeTestStore(
       {

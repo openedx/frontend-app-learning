@@ -39,14 +39,6 @@ Factory.define('courseMetadata')
     },
     show_calculator: false,
     license: 'all-rights-reserved',
-    course_access: {
-      has_access: true,
-      user_fragment: null,
-      developer_message: null,
-      user_message: null,
-      error_code: null,
-      additional_context_user_message: null,
-    },
     notes: {
       visible: true,
       enabled: false,
