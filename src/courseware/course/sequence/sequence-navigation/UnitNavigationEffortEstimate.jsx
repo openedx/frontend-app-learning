@@ -24,7 +24,7 @@ function UnitNavigationEffortEstimate({
   const sequence = useModel('sequences', sequenceId);
   const nextSequence = useModel('sequences', nextSequenceId);
 
-  if (!sequence || !nextSequence) {
+  if (!sequence || Object.keys(sequence).length === 0 || !nextSequence || Object.keys(nextSequence).length === 0) {
     return children;
   }
 

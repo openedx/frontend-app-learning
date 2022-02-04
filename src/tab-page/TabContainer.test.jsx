@@ -22,6 +22,7 @@ describe('Tab Container', () => {
     mockData = {
       fetch: mockFetch,
       tab: 'dummy',
+      slice: 'courseware',
     };
     const store = await initializeTestStore({ excludeFetchSequence: true });
     courseId = store.getState().courseware.courseId;
@@ -57,6 +58,7 @@ describe('Tab Container', () => {
           <TabContainer
             fetch={() => mockFetch(match.params.courseId, match.params.targetUserId)}
             tab="dummy"
+            slice="courseHome"
           >
             children={[]}
           </TabContainer>
