@@ -68,6 +68,7 @@ function DetailedGrades({ intl }) {
         <FormattedMessage
           id="progress.ungradedAlert"
           defaultMessage="For progress on ungraded aspects of the course, view your {outlineLink}."
+          description="Text that precede link that redirect to course outline page"
           values={{ outlineLink }}
         />
       </p>

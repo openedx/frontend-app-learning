@@ -42,6 +42,7 @@ function WeeklyGoalCelebrationModal({
           <FormattedMessage
             id="learning.celebration.goalCongrats"
             defaultMessage="Congratulations, you met your learning goal of {nTimes} a week."
+            description="Greeting for learners for their weekly goal, it as well indicate their gaol, i.e. (1,3 or 5 time(s) a week)"
             values={{
               nTimes: (<strong>{daysPerWeek} {daysPerWeek === 1 ? 'time' : 'times'}</strong>),
             }}
@@ -59,6 +60,7 @@ function WeeklyGoalCelebrationModal({
           <FormattedMessage
             id="learning.celebration.setGoal"
             defaultMessage="Setting a goal can help you {strongText} in your course."
+            description="It explain the advantages of setting goal"
             values={{
               strongText: (<strong>achieve higher performance</strong>),
             }}

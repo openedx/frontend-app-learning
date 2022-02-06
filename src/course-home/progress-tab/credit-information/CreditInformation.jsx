@@ -40,6 +40,7 @@ function CreditInformation({ intl }) {
         <FormattedMessage
           id="progress.creditInformation.creditNotEligible"
           defaultMessage="You are no longer eligible for credit in this course. Learn more about {creditLink}."
+          description="Message to learner who are not eligible for course credit, it can because the a requirement deadline have passed"
           values={{ creditLink }}
         />
       );
@@ -51,6 +52,7 @@ function CreditInformation({ intl }) {
           defaultMessage="
           You have met the requirements for credit in this course. Go to your
           {dashboardLink} to purchase course credit. Or learn more about {creditLink}."
+          description="After the credit requirements are met, leaners can then do the last step which purchasing the credit. Note that is only doable for leaners after they met all the requirements"
           values={{ dashboardLink, creditLink }}
         />
       );
@@ -60,6 +62,7 @@ function CreditInformation({ intl }) {
         <FormattedMessage
           id="progress.creditInformation.creditPartialEligible"
           defaultMessage="You have not yet met the requirements for credit. Learn more about {creditLink}."
+          description="This means that one or more requirements is not satisfied yet"
           values={{ creditLink }}
         />
       );

@@ -50,6 +50,7 @@ function UpgradeFootnote({ deadline, href, intl }) {
             expirationDate,
             upgradeLink,
           }}
+          description="Message body to tell learner until when the materiel will be available, and to suggest to upgrade"
         />
       )}
     />

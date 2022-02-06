@@ -65,6 +65,7 @@ function AccessExpirationAlert({ intl, payload }) {
         <FormattedMessage
           id="learning.accessExpiration.deadline"
           defaultMessage="Upgrade by {date} to get unlimited access to the course as long as it exists on the site."
+          description="Warning shown to learner to upgrade while they are enrolled on the audit version and it's possible to upgrade"
           values={{
             date: (
               <FormattedDate
@@ -97,6 +98,7 @@ function AccessExpirationAlert({ intl, payload }) {
         <FormattedMessage
           id="learning.accessExpiration.header"
           defaultMessage="Audit Access Expires {date}"
+          description="Headline for auditing deadline"
           values={{
             date: (
               <FormattedDate
@@ -115,6 +117,7 @@ function AccessExpirationAlert({ intl, payload }) {
       <FormattedMessage
         id="learning.accessExpiration.body"
         defaultMessage="You lose all access to this course, including your progress, on {date}."
+        description="Message body to tell learner the consequences of course expiration."
         values={{
           date: (
             <FormattedDate

@@ -9,6 +9,7 @@ const messages = defineMessages({
   shareEmail: {
     id: 'learning.social.shareEmail',
     defaultMessage: 'Share your progress via email.',
+    description: 'Text email share button',
   },
   shareService: {
     id: 'learning.social.shareService',

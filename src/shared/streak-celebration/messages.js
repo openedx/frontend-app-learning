@@ -4,6 +4,7 @@ const messages = defineMessages({
   congratulations: {
     id: 'learning.streakCelebration.congratulations',
     defaultMessage: 'Congratulations!',
+    description: 'Shown to learners when are using the learning app for X days in a row',
   },
   streakBody: {
     id: 'learning.streakCelebration.body',
@@ -12,6 +13,7 @@ const messages = defineMessages({
   streakButton: {
     id: 'learning.streakCelebration.button',
     defaultMessage: 'Keep it up',
+    description: 'Text on the button which closes the celebration dialog',
   },
   streakButtonSrOnly: {
     id: 'learning.streakCelebration.buttonSrOnly',

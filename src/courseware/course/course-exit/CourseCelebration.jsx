@@ -93,6 +93,7 @@ function CourseCelebration({ intl }) {
               You can download your certificate now and access it any time from your
               {dashboardLink} and {profileLink}."
             values={{ dashboardLink, profileLink }}
+            description="Recommending an action for learner when course certificate is available"
           />
         </p>
       );
@@ -132,6 +133,7 @@ function CourseCelebration({ intl }) {
               defaultMessage="This course ended on {endDate} and final grades and certificates are scheduled to be
               available after {certAvailableDate}."
               values={{ endDate, certAvailableDate }}
+              description="This shown for leaner when they are eligible for certifcate but it't not available yet, it could because leaners just finished the course quickly!"
             />
           </p>
           <p>
@@ -181,6 +183,7 @@ function CourseCelebration({ intl }) {
               defaultMessage="In order to generate a certificate, you must complete ID verification.
                 {idVerificationSupportLink} now."
               values={{ idVerificationSupportLink }}
+              description="Its shown when learner are not verified thus it recommends going over the verification process"
             />
           </p>
         );
@@ -199,6 +202,7 @@ function CourseCelebration({ intl }) {
                 valuable credential to improve your job prospects and advance your career, or highlight your
                 certificate in school applications."
               values={{ price: <FormattedPricing inline offer={offer} verifiedMode={verifiedMode} /> }}
+              description="Body text when the learner needs to upgrade to earn a certifcate and they have passed the course"
             />
             <br />
             {getConfig().SUPPORT_URL_VERIFIED_CERTIFICATE && (
@@ -226,6 +230,7 @@ function CourseCelebration({ intl }) {
                   code: (<b>{offer.code}</b>),
                   percent: offer.percentage,
                 }}
+                description="Shown if learner can use a discount code when they upgrade the course"
               />
             </span>
           );

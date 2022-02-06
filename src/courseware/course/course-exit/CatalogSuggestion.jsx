@@ -40,6 +40,7 @@ function CatalogSuggestion({ intl, variant }) {
           id="courseExit.catalogSearchSuggestion"
           defaultMessage="Looking to learn more? {searchOurCatalogLink} to find more courses and programs to explore."
           values={{ searchOurCatalogLink }}
+          description="Suggesting to learner to explore other course. Shown when they finish the course"
         />
       </div>
     </div>
