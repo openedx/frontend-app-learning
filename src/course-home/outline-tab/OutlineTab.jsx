@@ -66,6 +66,8 @@ function OutlineTab({ intl }) {
 
   const [expandAll, setExpandAll] = useState(false);
 
+  const dillon = true;
+
   const eventProperties = {
     org_key: org,
     courserun_key: courseId,
@@ -78,7 +80,7 @@ function OutlineTab({ intl }) {
   const privateCourseAlert = usePrivateCourseAlert(courseId);
   const scheduledContentAlert = useScheduledContentAlert(courseId);
 
-  const rootCourseId = courses && Object.keys(courses)[0];
+  const rootCourseId = dillon && courses && Object.keys(courses)[0];
 
   const hasDeadlines = courseDateBlocks && courseDateBlocks.some(x => x.dateType === 'assignment-due-date');
 
