@@ -66,7 +66,7 @@ subscribe(APP_READY, () => {
                 )}
               />
               <PageRoute path="/course/:courseId/course-end">
-                <TabContainer tab="courseware" fetch={fetchCourse}>
+                <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
                   <CourseExit />
                 </TabContainer>
               </PageRoute>
