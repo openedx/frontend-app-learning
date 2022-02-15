@@ -259,11 +259,11 @@ class Calculator extends Component {
                         defaultMessage="Constants"
                       />
                     </th>
-                    <td dir="auto">c, e, g, i, j, k, pi, q, T</td>
+                    <td dir="auto">e, pi</td>
                     <td dir="auto">
                       <ul className="list-unstyled m-0">
-                        <li>20*c</li>
-                        <li>418*T</li>
+                        <li>20*e</li>
+                        <li>418*pi</li>
                       </ul>
                     </td>
                   </tr>
@@ -277,17 +277,12 @@ class Calculator extends Component {
                     <td dir="auto">
                       <FormattedMessage
                         id="calculator.instruction.table.to.use.affixes.type"
-                        defaultMessage="Percent sign (%) and metric affixes ({affixes})"
-                        values={{
-                          affixes: 'd, c, m, u, n, p, k, M, G, T',
-                        }}
+                        defaultMessage="Percent sign (%)"
                       />
                     </td>
                     <td dir="auto">
                       <ul className="list-unstyled m-0">
                         <li>20%</li>
-                        <li>20c</li>
-                        <li>418T</li>
                       </ul>
                     </td>
                   </tr>
