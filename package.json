@@ -67,7 +67,7 @@
     "util": "0.12.4"
   },
   "devDependencies": {
-    "@edx/frontend-build": "8.1.6",
+    "@edx/frontend-build": "8.2.0",
     "@testing-library/dom": "7.16.3",
     "@testing-library/jest-dom": "5.15.1",
     "@testing-library/react": "10.3.0",
