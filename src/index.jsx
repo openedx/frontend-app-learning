@@ -119,4 +119,5 @@ initialize({
     appMessages,
     footerMessages,
   ],
+  requireAuthenticatedUser: process.env.REQUIRE_AUTHENTICATED_USER || false,
 });
