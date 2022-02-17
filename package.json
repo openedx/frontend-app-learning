@@ -79,7 +79,7 @@
     "es-check": "6.2.1",
     "glob": "7.2.0",
     "husky": "7.0.4",
-    "jest": "27.3.1",
+    "jest": "27.5.1",
     "jest-chain": "1.1.5",
     "reactifex": "1.1.1",
     "rosie": "2.1.0"
