@@ -252,6 +252,7 @@ function Sequence({
           isStaff={course.isStaff}
           originalUserIsStaff={course.originalUserIsStaff}
           isIntegritySignatureEnabled={course.isIntegritySignatureEnabled}
+          canAccessProctoredExams={course.canAccessProctoredExams}
         >
           {defaultContent}
         </SequenceExamWrapper>
