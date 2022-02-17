@@ -2,7 +2,6 @@ import React from 'react';
 import { screen, render } from '@testing-library/react';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
-import { BrowserRouter } from 'react-router-dom';
 import { useModel, useModels } from '../../generic/model-store';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 
@@ -106,14 +105,12 @@ describe('CourseBreadcrumbs', () => {
     ],
   ]);
   render(
-    <BrowserRouter>
-      <CourseBreadcrumbs
-        courseId="course-v1:edX+DemoX+Demo_Course"
-        sectionId="block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations"
-        sequenceId="block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions"
-        isStaff
-      />
-    </BrowserRouter>,
+    <CourseBreadcrumbs
+      courseId="course-v1:edX+DemoX+Demo_Course"
+      sectionId="block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations"
+      sequenceId="block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions"
+      isStaff
+    />,
   );
   it('renders course breadcrumbs as expected', async () => {
     expect(screen.queryAllByRole('link')).toHaveLength(1);
