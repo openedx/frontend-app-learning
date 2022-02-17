@@ -15,8 +15,7 @@ import JumpNavMenuItem from './JumpNavMenuItem';
 function CourseBreadcrumb({
   content, withSeparator, courseId, sequenceId, unitId, isStaff,
 }) {
-  const defaultContent = content.filter(destination => destination.default)[0] || { id: courseId, label: '' };
-
+  const defaultContent = content.filter(destination => destination.default)[0] || { id: courseId, label: '', sequences: [] };
   return (
     <>
       {withSeparator && (
@@ -33,7 +32,9 @@ function CourseBreadcrumb({
           ? (
             <Link
               className="text-primary-500"
-              to={`/course/${courseId}/${defaultContent.id}`}
+              to={defaultContent.sequences.length
+                ? `/course/${courseId}/${defaultContent.sequences[0].id}`
+                : `/course/${courseId}/${defaultContent.id}`}
             >
               {defaultContent.label}
             </Link>
