@@ -137,7 +137,6 @@ function normalizeMetadata(metadata) {
     isIntegritySignatureEnabled: data.is_integrity_signature_enabled,
     userNeedsIntegritySignature: data.user_needs_integrity_signature,
     isMasquerading: data.original_user_is_staff && !data.is_staff,
-    canAccessProctoredExams: data.can_access_proctored_exams,
   };
 }
 
