@@ -22,6 +22,7 @@ import LoadedTabPage from '../tab-page/LoadedTabPage';
 import OutlineTab from '../course-home/outline-tab/OutlineTab';
 import * as courseHomeThunks from '../course-home/data/thunks';
 import { buildSimpleCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
+import { buildOutlineFromBlocks } from '../courseware/data/__factories__/learningSequencesOutline.factory';
 
 import { UserMessagesProvider } from '../generic/user-messages';
 
@@ -263,11 +264,8 @@ describe('Courseware Tour', () => {
           ))
       );
 
-      const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
-      axiosMock.onGet(courseBlocksUrlRegExp).reply(200, courseBlocks);
-
       const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(403, {});
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
 
       const courseMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
       axiosMock.onGet(courseMetadataUrl).reply(200, defaultCourseMetadata);

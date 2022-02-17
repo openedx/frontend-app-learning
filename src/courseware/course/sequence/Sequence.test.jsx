@@ -47,7 +47,7 @@ describe('Sequence', () => {
   it('renders correctly for gated content', async () => {
     const sequenceBlocks = [Factory.build(
       'block',
-      { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+      { type: 'sequential', children: unitBlocks.map(block => block.id) },
       { courseId: courseMetadata.id },
     )];
     const gatedContent = {
@@ -86,7 +86,7 @@ describe('Sequence', () => {
   it('renders correctly for hidden after due content', async () => {
     const sequenceBlocks = [Factory.build(
       'block',
-      { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+      { type: 'sequential', children: unitBlocks.map(block => block.id) },
       { courseId: courseMetadata.id },
     )];
     const sequenceMetadata = [Factory.build(
@@ -138,11 +138,11 @@ describe('Sequence', () => {
     let testStore;
     const sequenceBlocks = [Factory.build(
       'block',
-      { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+      { type: 'sequential', children: unitBlocks.map(block => block.id) },
       { courseId: courseMetadata.id },
     ), Factory.build(
       'block',
-      { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+      { type: 'sequential', children: unitBlocks.map(block => block.id) },
       { courseId: courseMetadata.id },
     )];
 
@@ -291,7 +291,7 @@ describe('Sequence', () => {
     it('handles the navigation buttons for empty sequence', async () => {
       const testSequenceBlocks = [Factory.build(
         'block',
-        { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+        { type: 'sequential', children: unitBlocks.map(block => block.id) },
         { courseId: courseMetadata.id },
       ), Factory.build(
         'block',
@@ -299,7 +299,7 @@ describe('Sequence', () => {
         { courseId: courseMetadata.id },
       ), Factory.build(
         'block',
-        { type: 'sequential', children: [unitBlocks.map(block => block.id)] },
+        { type: 'sequential', children: unitBlocks.map(block => block.id) },
         { courseId: courseMetadata.id },
       )];
       const testSequenceMetadata = testSequenceBlocks.map(block => Factory.build(

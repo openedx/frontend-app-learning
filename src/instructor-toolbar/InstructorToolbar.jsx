@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 
 import { ALERT_TYPES, AlertList } from '../generic/user-messages';
@@ -37,6 +36,14 @@ function getStudioUrl(courseId, unitId) {
   return urlFull;
 }
 
+function getLegacyWebUrl(canViewLegacyCourseware, courseId, unitId) {
+  if (!canViewLegacyCourseware || !unitId) {
+    return undefined;
+  }
+
+  return `${getConfig().LMS_BASE_URL}/courses/${courseId}/jump_to/${unitId}?experience=legacy`;
+}
+
 export default function InstructorToolbar(props) {
   // This didMount logic became necessary once we had a page that does a redirect on a quick exit.
   // As a result, it unmounts the InstructorToolbar (which will be remounted by the new component),
@@ -60,18 +67,7 @@ export default function InstructorToolbar(props) {
   } = props;
 
   const urlInsights = getInsightsUrl(courseId);
-  const urlLegacy = useSelector((state) => {
-    if (!canViewLegacyCourseware) {
-      return undefined;
-    }
-
-    if (!unitId) {
-      return undefined;
-    }
-
-    const activeUnit = state.models.units[props.unitId];
-    return activeUnit ? activeUnit.legacyWebUrl : undefined;
-  });
+  const urlLegacy = getLegacyWebUrl(canViewLegacyCourseware, courseId, unitId);
   const urlStudio = getStudioUrl(courseId, unitId);
   const [masqueradeErrorMessage, showMasqueradeError] = useState(null);
 

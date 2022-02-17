@@ -1,10 +1,8 @@
 import { Pact, Matchers } from '@pact-foundation/pact';
 import path from 'path';
 import { mergeConfig, getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import {
-  getCourseBlocks,
   getCourseMetadata,
   getLearningSequencesOutline,
   getSequenceMetadata,
@@ -33,7 +31,6 @@ const provider = new Pact({
 });
 
 describe('Courseware Service', () => {
-  let authenticatedUser;
   beforeAll(async () => {
     initializeMockApp();
     await provider
@@ -41,61 +38,10 @@ describe('Courseware Service', () => {
       .then((options) => mergeConfig({
         LMS_BASE_URL: `http://localhost:${options.port}`,
       }, 'Custom app config for pact tests'));
-    authenticatedUser = getAuthenticatedUser();
   });
 
   afterEach(() => provider.verify());
   afterAll(() => provider.finalize());
-
-  describe('When a request to get course blocks is made', () => {
-    it('returns normalized course blocks', async () => {
-      await provider.addInteraction({
-        state: `Blocks data exists for course_id ${courseId}`,
-        uponReceiving: 'a request to get course blocks',
-        withRequest: {
-          method: 'GET',
-          path: '/api/courses/v2/blocks/',
-          query: {
-            course_id: courseId,
-            username: authenticatedUser ? authenticatedUser.username : '',
-            depth: '3',
-            requested_fields: 'children,effort_activities,effort_time,show_gated_sections,graded,special_exam_info,has_scheduled_content',
-          },
-        },
-        willRespondWith: {
-          status: 200,
-          body: {
-            root: string('block-v1:edX+DemoX+Demo_Course+type@course+block@course'),
-            blocks: like({
-              'block-v1:edX+DemoX+Demo_Course+type@course+block@course': {
-                id: 'block-v1:edX+DemoX+Demo_Course+type@course+block@course',
-                block_id: 'course',
-                lms_web_url: '/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@course+block@course',
-                legacy_web_url: '/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@course+block@course?experience=legacy',
-                student_view_url: '/xblock/block-v1:edX+DemoX+Demo_Course+type@course+block@course',
-                type: 'course',
-                display_name: 'Demonstration Course',
-              },
-            }),
-          },
-        },
-      });
-      const normalizedCourseBlock = {
-        'block-v1:edX+DemoX+Demo_Course+type@course+block@course': {
-          id: 'course-v1:edX+DemoX+Demo_Course',
-          title: 'Demonstration Course',
-          sectionIds: [],
-          hasScheduledContent: false,
-        },
-      };
-      const response = await getCourseBlocks(courseId);
-      expect(response).toBeTruthy();
-      expect(response.courses).toEqual(normalizedCourseBlock);
-      expect(response.sections).toEqual({});
-      expect(response.sequences).toEqual({});
-      expect(response.units).toEqual({});
-    });
-  });
 
   describe('When a request to get a learning sequence outline is made', () => {
     it('returns a normalized outline', async () => {
@@ -109,7 +55,7 @@ describe('Courseware Service', () => {
         willRespondWith: {
           status: 200,
           body: {
-            course_key: string('block-v1:edX+DemoX+Demo_Course'),
+            course_key: string('course-v1:edX+DemoX+Demo_Course'),
             title: string('Demo Course'),
             outline: {
               sections: [],
@@ -120,8 +66,8 @@ describe('Courseware Service', () => {
       });
       const normalizedOutline = {
         courses: {
-          'block-v1:edX+DemoX+Demo_Course': {
-            id: 'block-v1:edX+DemoX+Demo_Course',
+          'course-v1:edX+DemoX+Demo_Course': {
+            id: 'course-v1:edX+DemoX+Demo_Course',
             title: 'Demo Course',
             sectionIds: [],
             hasScheduledContent: false,
@@ -145,7 +91,7 @@ describe('Courseware Service', () => {
         willRespondWith: {
           status: 200,
           body: {
-            course_key: string('block-v1:edX+DemoX+Demo_Course'),
+            course_key: string('course-v1:edX+DemoX+Demo_Course'),
             title: string('Demo Course'),
             outline: like({
               sections: [
@@ -191,8 +137,8 @@ describe('Courseware Service', () => {
       });
       const normalizedOutline = {
         courses: {
-          'block-v1:edX+DemoX+Demo_Course': {
-            id: 'block-v1:edX+DemoX+Demo_Course',
+          'course-v1:edX+DemoX+Demo_Course': {
+            id: 'course-v1:edX+DemoX+Demo_Course',
             title: 'Demo Course',
             sectionIds: [
               'block-v1:edX+DemoX+Demo_Course+type@chapter+block@partial',
@@ -204,6 +150,7 @@ describe('Courseware Service', () => {
           'block-v1:edX+DemoX+Demo_Course+type@chapter+block@partial': {
             id: 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@partial',
             title: 'Partially accessible',
+            courseId: 'course-v1:edX+DemoX+Demo_Course',
             sequenceIds: [
               'block-v1:edX+DemoX+Demo_Course+type@sequential+block@accessible',
             ],
@@ -213,6 +160,8 @@ describe('Courseware Service', () => {
           'block-v1:edX+DemoX+Demo_Course+type@sequential+block@accessible': {
             id: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@accessible',
             title: 'Can access',
+            sectionId: 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@partial',
+            legacyWebUrl: `${getConfig().LMS_BASE_URL}/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@accessible?experience=legacy`,
           },
         },
       };

@@ -10,6 +10,7 @@ import {
   fetchCourse,
   fetchSequence,
   getResumeBlock,
+  getSequenceForUnitDeprecated,
   saveSequencePosition,
 } from './data';
 import { TabPage } from '../tab-page';
@@ -17,6 +18,7 @@ import { TabPage } from '../tab-page';
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
 
+// Look at where this is called in componentDidUpdate for more info about its usage
 const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSequenceId) => {
   if (courseStatus === 'loaded' && !sequenceId) {
     // Note that getResumeBlock is just an API call, not a redux thunk.
@@ -31,12 +33,14 @@ const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSe
   }
 });
 
+// Look at where this is called in componentDidUpdate for more info about its usage
 const checkSectionUnitToUnitRedirect = memoize((courseStatus, courseId, sequenceStatus, section, unitId) => {
   if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && unitId) {
     history.replace(`/course/${courseId}/${unitId}`);
   }
 });
 
+// Look at where this is called in componentDidUpdate for more info about its usage
 const checkSectionToSequenceRedirect = memoize((courseStatus, courseId, sequenceStatus, section, unitId) => {
   if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && !unitId) {
     // If the section is non-empty, redirect to its first sequence.
@@ -49,20 +53,68 @@ const checkSectionToSequenceRedirect = memoize((courseStatus, courseId, sequence
   }
 });
 
-const checkUnitToSequenceUnitRedirect = memoize((courseStatus, courseId, sequenceStatus, unit) => {
-  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && unit) {
-    // If the sequence failed to load as a sequence, but it *did* load as a unit, then
-    // insert the unit's parent sequenceId into the URL.
-    history.replace(`/course/${courseId}/${unit.sequenceId}/${unit.id}`);
+// Look at where this is called in componentDidUpdate for more info about its usage
+const checkUnitToSequenceUnitRedirect = memoize((
+  courseStatus, courseId, sequenceStatus, sequenceMightBeUnit, sequenceId, section, routeUnitId,
+) => {
+  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && !section && !routeUnitId) {
+    if (sequenceMightBeUnit) {
+      // If the sequence failed to load as a sequence, but it is marked as a possible unit, then we need to look up the
+      // correct parent sequence for it, and redirect there.
+      const unitId = sequenceId; // just for clarity during the rest of this method
+      getSequenceForUnitDeprecated(courseId, unitId).then(
+        parentId => {
+          if (parentId) {
+            history.replace(`/course/${courseId}/${parentId}/${unitId}`);
+          } else {
+            history.replace(`/course/${courseId}`);
+          }
+        },
+        () => { // error case
+          history.replace(`/course/${courseId}`);
+        },
+      );
+    } else {
+      // Invalid sequence that isn't a unit either. Redirect up to main course.
+      history.replace(`/course/${courseId}`);
+    }
   }
 });
 
+// Look at where this is called in componentDidUpdate for more info about its usage
 const checkSequenceToSequenceUnitRedirect = memoize((courseId, sequenceStatus, sequence, unitId) => {
   if (sequenceStatus === 'loaded' && sequence.id && !unitId) {
     if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
       const nextUnitId = sequence.unitIds[sequence.activeUnitIndex];
       // This is a replace because we don't want this change saved in the browser's history.
       history.replace(`/course/${courseId}/${sequence.id}/${nextUnitId}`);
+    }
+  }
+});
+
+// Look at where this is called in componentDidUpdate for more info about its usage
+const checkSequenceUnitMarkerToSequenceUnitRedirect = memoize((courseId, sequenceStatus, sequence, unitId) => {
+  if (sequenceStatus !== 'loaded' || !sequence.id) {
+    return;
+  }
+
+  const hasUnits = sequence.unitIds?.length > 0;
+
+  if (unitId === 'first') {
+    if (hasUnits) {
+      const firstUnitId = sequence.unitIds[0];
+      history.replace(`/course/${courseId}/${sequence.id}/${firstUnitId}`);
+    } else {
+      // No units... go to general sequence page
+      history.replace(`/course/${courseId}/${sequence.id}`);
+    }
+  } else if (unitId === 'last') {
+    if (hasUnits) {
+      const lastUnitId = sequence.unitIds[sequence.unitIds.length - 1];
+      history.replace(`/course/${courseId}/${sequence.id}/${lastUnitId}`);
+    } else {
+      // No units... go to general sequence page
+      history.replace(`/course/${courseId}/${sequence.id}`);
     }
   }
 });
@@ -111,9 +163,9 @@ class CoursewareContainer extends Component {
       sequenceId,
       courseStatus,
       sequenceStatus,
+      sequenceMightBeUnit,
       sequence,
       firstSequenceId,
-      unitViaSequenceId,
       sectionViaSequenceId,
       match: {
         params: {
@@ -128,12 +180,24 @@ class CoursewareContainer extends Component {
     this.checkFetchCourse(routeCourseId);
     this.checkFetchSequence(routeSequenceId);
 
+    // Check if we should save our sequence position.  Only do this when the route unit ID changes.
+    this.checkSaveSequencePosition(routeUnitId);
+
+    // Coerce the route ids into null here because they can be undefined, but the redux ids would be null instead.
+    if (courseId !== (routeCourseId || null) || sequenceId !== (routeSequenceId || null)) {
+      // The non-route ids are pulled from redux state - they are changed at the same time as the status variables.
+      // But the route ids are pulled directly from the route. So if the route changes, and we start a fetch above,
+      // there's a race condition where the route ids are for one course, but the status and the other ids are for a
+      // different course. Since all the logic below depends on the status variables and the route unit id, we'll wait
+      // until the ids match and thus the redux states got updated. So just bail for now.
+      return;
+    }
+
     // All courseware URLs should normalize to the format /course/:courseId/:sequenceId/:unitId
     // via the series of redirection rules below.
     // See docs/decisions/0008-liberal-courseware-path-handling.md for more context.
     // (It would be ideal to move this logic into the thunks layer and perform
-    //  all URL-changing checks at once. This should be done once the MFE is moved
-    //  to the new Outlines API. See TNL-8182.)
+    //  all URL-changing checks at once. See TNL-8182.)
 
     // Check resume redirect:
     //   /course/:courseId -> /course/:courseId/:sequenceId/:unitId
@@ -161,16 +225,22 @@ class CoursewareContainer extends Component {
     // Check unit to sequence-unit redirect:
     //    /course/:courseId/:unitId -> /course/:courseId/:sequenceId/:unitId
     // by filling in the ID of the parent sequence of :unitId.
-    checkUnitToSequenceUnitRedirect(courseStatus, courseId, sequenceStatus, unitViaSequenceId);
+    checkUnitToSequenceUnitRedirect(
+      courseStatus, courseId, sequenceStatus, sequenceMightBeUnit, sequenceId, sectionViaSequenceId, routeUnitId,
+    );
 
-    // Check to sequence to sequence-unit redirect:
+    // Check sequence to sequence-unit redirect:
     //    /course/:courseId/:sequenceId -> /course/:courseId/:sequenceId/:unitId
     // by filling in the ID the most-recently-active unit in the sequence, OR
     // the ID of the first unit the sequence if none is active.
     checkSequenceToSequenceUnitRedirect(courseId, sequenceStatus, sequence, routeUnitId);
 
-    // Check if we should save our sequence position.  Only do this when the route unit ID changes.
-    this.checkSaveSequencePosition(routeUnitId);
+    // Check sequence-unit marker to sequence-unit redirect:
+    //    /course/:courseId/:sequenceId/first -> /course/:courseId/:sequenceId/:unitId
+    //    /course/:courseId/:sequenceId/last -> /course/:courseId/:sequenceId/:unitId
+    // by filling in the ID the first or last unit in the sequence.
+    // "Sequence unit marker" is an invented term used only in this component.
+    checkSequenceUnitMarkerToSequenceUnitRedirect(courseId, sequenceStatus, sequence, routeUnitId);
   }
 
   handleUnitNavigationClick = (nextUnitId) => {
@@ -197,18 +267,11 @@ class CoursewareContainer extends Component {
     } = this.props;
 
     if (nextSequence !== null) {
-      let nextUnitId = null;
-      if (nextSequence.unitIds.length > 0) {
-        [nextUnitId] = nextSequence.unitIds;
-        history.push(`/course/${courseId}/${nextSequence.id}/${nextUnitId}`);
-      } else {
-        // Some sequences have no units.  This will show a blank page with prev/next buttons.
-        history.push(`/course/${courseId}/${nextSequence.id}`);
-      }
+      history.push(`/course/${courseId}/${nextSequence.id}/first`);
 
       const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
       if (celebrateFirstSection && sequence.sectionId !== nextSequence.sectionId) {
-        handleNextSectionCelebration(sequenceId, nextSequence.id, nextUnitId);
+        handleNextSectionCelebration(sequenceId, nextSequence.id);
       }
     }
   }
@@ -216,13 +279,7 @@ class CoursewareContainer extends Component {
   handlePreviousSequenceClick = () => {
     const { previousSequence, courseId } = this.props;
     if (previousSequence !== null) {
-      if (previousSequence.unitIds.length > 0) {
-        const previousUnitId = previousSequence.unitIds[previousSequence.unitIds.length - 1];
-        history.push(`/course/${courseId}/${previousSequence.id}/${previousUnitId}`);
-      } else {
-        // Some sequences have no units.  This will show a blank page with prev/next buttons.
-        history.push(`/course/${courseId}/${previousSequence.id}`);
-      }
+      history.push(`/course/${courseId}/${previousSequence.id}/last`);
     }
   }
 
@@ -259,18 +316,10 @@ class CoursewareContainer extends Component {
   }
 }
 
-const unitShape = PropTypes.shape({
-  id: PropTypes.string.isRequired,
-  sequenceId: PropTypes.string.isRequired,
-});
-
 const sequenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
-  unitIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  unitIds: PropTypes.arrayOf(PropTypes.string),
   sectionId: PropTypes.string.isRequired,
-  isTimeLimited: PropTypes.bool,
-  isProctored: PropTypes.bool,
-  legacyWebUrl: PropTypes.string,
 });
 
 const sectionShape = PropTypes.shape({
@@ -297,9 +346,9 @@ CoursewareContainer.propTypes = {
   firstSequenceId: PropTypes.string,
   courseStatus: PropTypes.oneOf(['loaded', 'loading', 'failed', 'denied']).isRequired,
   sequenceStatus: PropTypes.oneOf(['loaded', 'loading', 'failed']).isRequired,
+  sequenceMightBeUnit: PropTypes.bool.isRequired,
   nextSequence: sequenceShape,
   previousSequence: sequenceShape,
-  unitViaSequenceId: unitShape,
   sectionViaSequenceId: sectionShape,
   course: courseShape,
   sequence: sequenceShape,
@@ -315,7 +364,6 @@ CoursewareContainer.defaultProps = {
   firstSequenceId: null,
   nextSequence: null,
   previousSequence: null,
-  unitViaSequenceId: null,
   sectionViaSequenceId: null,
   course: null,
   sequence: null,
@@ -398,18 +446,13 @@ const sectionViaSequenceIdSelector = createSelector(
   (sectionsById, sequenceId) => (sectionsById[sequenceId] ? sectionsById[sequenceId] : null),
 );
 
-const unitViaSequenceIdSelector = createSelector(
-  (state) => state.models.units || {},
-  (state) => state.courseware.sequenceId,
-  (unitsById, sequenceId) => (unitsById[sequenceId] ? unitsById[sequenceId] : null),
-);
-
 const mapStateToProps = (state) => {
   const {
     courseId,
     sequenceId,
     courseStatus,
     sequenceStatus,
+    sequenceMightBeUnit,
   } = state.courseware;
 
   return {
@@ -417,13 +460,13 @@ const mapStateToProps = (state) => {
     sequenceId,
     courseStatus,
     sequenceStatus,
+    sequenceMightBeUnit,
     course: currentCourseSelector(state),
     sequence: currentSequenceSelector(state),
     previousSequence: previousSequenceSelector(state),
     nextSequence: nextSequenceSelector(state),
     firstSequenceId: firstSequenceIdSelector(state),
     sectionViaSequenceId: sectionViaSequenceIdSelector(state),
-    unitViaSequenceId: unitViaSequenceIdSelector(state),
   };
 };
 

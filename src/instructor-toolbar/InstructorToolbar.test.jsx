@@ -15,24 +15,27 @@ jest.mock('@edx/frontend-platform', () => ({
 getConfig.mockImplementation(() => originalConfig);
 
 describe('Instructor Toolbar', () => {
+  let courseware;
+  let models;
   let mockData;
   let axiosMock;
   let masqueradeUrl;
 
   beforeAll(async () => {
-    const store = await initializeTestStore({ excludeFetchSequence: true });
-    const { courseware, models } = store.getState();
-    mockData = {
-      courseId: courseware.courseId,
-      unitId: Object.values(models.units)[0].id,
-      canViewLegacyCourseware: true,
-    };
+    const store = await initializeTestStore();
+    courseware = store.getState().courseware;
+    models = store.getState().models;
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseware.courseId}/masquerade`;
   });
 
   beforeEach(() => {
+    mockData = {
+      courseId: courseware.courseId,
+      unitId: Object.values(models.units)[0].id,
+      canViewLegacyCourseware: true,
+    };
     axiosMock.reset();
     axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
     logUnhandledRequests(axiosMock);

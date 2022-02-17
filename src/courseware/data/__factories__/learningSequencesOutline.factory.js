@@ -29,6 +29,10 @@ export function buildEmptyOutline(courseId) {
 
 // Given courseBlocks (output from buildSimpleCourseBlocks), create a matching
 // Learning Sequences API outline (what the REST API would return to us).
+// Ideally this method would go away at some point, and we'd use a learning
+// sequence factory directly. But this method exists as a bridge-gap from
+// when course blocks were always used anyway. Now that they are rarely used,
+// this can probably go away.
 export function buildOutlineFromBlocks(courseBlocks) {
   const sections = {};
   const sequences = {};
@@ -40,14 +44,14 @@ export function buildOutlineFromBlocks(courseBlocks) {
     } else if (block.type === 'chapter') {
       sections[block.id] = {
         id: block.id,
-        title: block.title,
+        title: block.display_name,
         start: null,
         sequence_ids: [...block.children],
       };
     } else if (block.type === 'sequential') {
       sequences[block.id] = {
         id: block.id,
-        title: block.title,
+        title: block.display_name,
         accessible: true,
         start: null,
       };

@@ -1,95 +1,7 @@
 import { getConfig, camelCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { logInfo } from '@edx/frontend-platform/logging';
 import { getTimeOffsetMillis } from '../../course-home/data/api';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-
-export function normalizeBlocks(courseId, blocks) {
-  const models = {
-    courses: {},
-    sections: {},
-    sequences: {},
-    units: {},
-  };
-
-  Object.values(blocks).forEach(block => {
-    switch (block.type) {
-      case 'course':
-        models.courses[block.id] = {
-          id: courseId,
-          title: block.display_name,
-          sectionIds: block.children || [],
-          hasScheduledContent: block.has_scheduled_content || false,
-        };
-        break;
-      case 'chapter':
-        models.sections[block.id] = {
-          id: block.id,
-          title: block.display_name,
-          sequenceIds: block.children || [],
-        };
-        break;
-
-      case 'sequential':
-        models.sequences[block.id] = {
-          effortActivities: block.effort_activities,
-          effortTime: block.effort_time,
-          id: block.id,
-          title: block.display_name,
-          legacyWebUrl: block.legacy_web_url,
-          unitIds: block.children || [],
-        };
-        break;
-      case 'vertical':
-        models.units[block.id] = {
-          graded: block.graded,
-          id: block.id,
-          title: block.display_name,
-          legacyWebUrl: block.legacy_web_url,
-        };
-        break;
-      default:
-        logInfo(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, sequential, and vertical.`);
-    }
-  });
-
-  // Next go through each list and use their child lists to decorate those children with a
-  // reference back to their parent.
-  Object.values(models.courses).forEach(course => {
-    if (Array.isArray(course.sectionIds)) {
-      course.sectionIds.forEach(sectionId => {
-        const section = models.sections[sectionId];
-        section.courseId = course.id;
-      });
-    }
-  });
-
-  Object.values(models.sections).forEach(section => {
-    if (Array.isArray(section.sequenceIds)) {
-      section.sequenceIds.forEach(sequenceId => {
-        if (sequenceId in models.sequences) {
-          models.sequences[sequenceId].sectionId = section.id;
-        } else {
-          logInfo(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
-        }
-      });
-    }
-  });
-
-  Object.values(models.sequences).forEach(sequence => {
-    if (Array.isArray(sequence.unitIds)) {
-      sequence.unitIds.forEach(unitId => {
-        if (unitId in models.units) {
-          models.units[unitId].sequenceId = sequence.id;
-        } else {
-          logInfo(`Sequence ${sequence.id} has child block ${unitId}, but that block is not in the list of units.`);
-        }
-      });
-    }
-  });
-
-  return models;
-}
 
 export function normalizeLearningSequencesData(learningSequencesData) {
   const models = {
@@ -108,14 +20,16 @@ export function normalizeLearningSequencesData(learningSequencesData) {
     models.sequences[seqId] = {
       id: seqId,
       title: sequence.title,
+      legacyWebUrl: `${getConfig().LMS_BASE_URL}/courses/${learningSequencesData.course_key}/jump_to/${seqId}?experience=legacy`,
     };
   });
 
   // Sections
   learningSequencesData.outline.sections.forEach(section => {
     // Skipping sections with only inaccessible sequences replicates the behavior of the legacy course blocks API
+    // (But keep it if it was already empty, again to replicate legacy blocks API.)
     const accessibleSequenceIds = section.sequence_ids.filter(seqId => seqId in models.sequences);
-    if (accessibleSequenceIds.length === 0) {
+    if (section.sequence_ids.length > 0 && accessibleSequenceIds.length === 0) {
       return;
     }
 
@@ -123,7 +37,13 @@ export function normalizeLearningSequencesData(learningSequencesData) {
       id: section.id,
       title: section.title,
       sequenceIds: accessibleSequenceIds,
+      courseId: learningSequencesData.course_key,
     };
+
+    // Add back-references to this section for all child sequences.
+    accessibleSequenceIds.forEach(childSeqId => {
+      models.sequences[childSeqId].sectionId = section.id;
+    });
   });
 
   // Course
@@ -144,39 +64,24 @@ export function normalizeLearningSequencesData(learningSequencesData) {
   return models;
 }
 
-export async function getCourseBlocks(courseId) {
+// Do not add further calls to this API - we don't like making use of the modulestore if we can help it
+export async function getSequenceForUnitDeprecated(courseId, unitId) {
   const authenticatedUser = getAuthenticatedUser();
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/`);
   url.searchParams.append('course_id', courseId);
   url.searchParams.append('username', authenticatedUser ? authenticatedUser.username : '');
   url.searchParams.append('depth', 3);
-  url.searchParams.append('requested_fields', 'children,effort_activities,effort_time,show_gated_sections,graded,special_exam_info,has_scheduled_content');
+  url.searchParams.append('requested_fields', 'children');
 
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
-  return normalizeBlocks(courseId, data.blocks);
+  const parent = Object.values(data.blocks).find(block => block.type === 'sequential' && block.children.includes(unitId));
+  return parent?.id;
 }
 
-// Returns the output of the Learning Sequences API, or null if that API is not
-// currently available for this user in this course.
 export async function getLearningSequencesOutline(courseId) {
   const outlineUrl = new URL(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/${courseId}`);
-
-  try {
-    const { data } = await getAuthenticatedHttpClient().get(outlineUrl.href, {});
-    return normalizeLearningSequencesData(data);
-  } catch (error) {
-    // This is not a critical API to use at the moment. If it errors for any
-    // reason, just send back a null so the higher layers know to ignore it.
-    if (error.response) {
-      if (error.response.status === 403) {
-        logInfo('Learning Sequences API not enabled for this user.');
-      } else {
-        logInfo(`Unexpected error calling Learning Sequences API (${error.response.status}). Ignoring.`);
-      }
-      return null;
-    }
-    throw error;
-  }
+  const { data } = await getAuthenticatedHttpClient().get(outlineUrl.href, {});
+  return normalizeLearningSequencesData(data);
 }
 
 function normalizeTabUrls(id, tabs) {

@@ -18,7 +18,7 @@ describe('Unit', () => {
   const unitBlocks = [
     Factory.build(
       'block',
-      { type: 'problem', graded: 'true' },
+      { type: 'vertical', graded: 'true' },
       { courseId: courseMetadata.id },
     ), Factory.build(
       'block',
@@ -32,7 +32,7 @@ describe('Unit', () => {
     ),
     Factory.build(
       'block',
-      { type: 'problem', graded: false },
+      { type: 'vertical', graded: false },
       { courseId: courseMetadata.id },
     ),
   ];
