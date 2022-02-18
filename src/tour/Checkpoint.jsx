@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useMediaQuery } from 'react-responsive';
 import PropTypes from 'prop-types';
+import { useMediaQuery } from '@edx/paragon';
 import { createPopper } from '@popperjs/core';
 
 import CheckpointActionRow from './CheckpointActionRow';

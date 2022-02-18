@@ -3,12 +3,16 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Icon, IconButton } from '@edx/paragon';
+import {
+  breakpoints,
+  Icon,
+  IconButton,
+  useWindowSize,
+} from '@edx/paragon';
 import { ArrowBackIos, Close } from '@edx/paragon/icons';
 
 import messages from './messages';
 import { useModel } from '../../generic/model-store';
-import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 import UpgradeNotification from '../../generic/upgrade-notification/UpgradeNotification';
 
 function NotificationTray({
@@ -30,7 +34,7 @@ function NotificationTray({
     verifiedMode,
   } = course;
 
-  const shouldDisplayFullScreen = useWindowSize().width < responsiveBreakpoints.large.minWidth;
+  const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
 
   // After three seconds, update notificationSeen (to hide red dot)
   useEffect(() => { setTimeout(onNotificationSeen, 3000); }, []);

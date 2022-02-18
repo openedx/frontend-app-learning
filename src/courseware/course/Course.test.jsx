@@ -1,17 +1,15 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import { breakpoints } from '@edx/paragon';
 import {
   loadUnit, render, screen, waitFor, getByRole, initializeTestStore, fireEvent,
 } from '../../setupTest';
 import Course from './Course';
 import { handleNextSectionCelebration } from './celebration';
 import * as celebrationUtils from './celebration/utils';
-import useWindowSize from '../../generic/tabs/useWindowSize';
 
 jest.mock('@edx/frontend-platform/analytics');
 jest.mock('./NotificationTray', () => () => <div data-testid="NotificationTray" />);
-jest.mock('../../generic/tabs/useWindowSize');
-useWindowSize.mockReturnValue({ width: 1200 });
 
 const recordFirstSectionCelebration = jest.fn();
 celebrationUtils.recordFirstSectionCelebration = recordFirstSectionCelebration;
@@ -37,6 +35,7 @@ describe('Course', () => {
     });
     getItemSpy = jest.spyOn(Object.getPrototypeOf(window.sessionStorage), 'getItem');
     setItemSpy = jest.spyOn(Object.getPrototypeOf(window.sessionStorage), 'setItem');
+    global.innerWidth = breakpoints.extraLarge.minWidth;
   });
 
   afterAll(() => {
@@ -104,7 +103,6 @@ describe('Course', () => {
   });
 
   it('displays notification trigger and toggles active class on click', async () => {
-    useWindowSize.mockReturnValue({ width: 1200 });
     render(<Course {...mockData} />);
 
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });

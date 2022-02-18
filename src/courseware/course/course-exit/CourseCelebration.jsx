@@ -5,10 +5,15 @@ import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import {
   FormattedDate, FormattedMessage, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
-import { layoutGenerator } from 'react-break';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
-import { Alert, Button, Hyperlink } from '@edx/paragon';
+import {
+  Alert,
+  breakpoints,
+  Button,
+  Hyperlink,
+  useWindowSize,
+} from '@edx/paragon';
 import { CheckCircle } from '@edx/paragon/icons';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -32,14 +37,7 @@ import CourseRecommendations from './CourseRecommendations';
 const LINKEDIN_BLUE = '#2867B2';
 
 function CourseCelebration({ intl }) {
-  const layout = layoutGenerator({
-    mobile: 0,
-    tablet: 768,
-  });
-
-  const OnMobile = layout.is('mobile');
-  const OnAtLeastTablet = layout.isAtLeast('tablet');
-
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
   const { courseId } = useSelector(state => state.courseware);
   const dispatch = useDispatch();
   const {
@@ -273,21 +271,21 @@ function CourseCelebration({ intl }) {
           />
         </div>
         <div className="col-12 mt-3 mb-4 px-0 px-md-5 text-center">
-          <OnMobile>
+          {!wideScreen && (
             <img
               src={CelebrationMobile}
               alt={`${intl.formatMessage(messages.congratulationsImage)}`}
               className="img-fluid"
             />
-          </OnMobile>
-          <OnAtLeastTablet>
+          )}
+          {wideScreen && (
             <img
               src={CelebrationDesktop}
               alt={`${intl.formatMessage(messages.congratulationsImage)}`}
               className="img-fluid"
               style={{ width: '36rem' }}
             />
-          </OnAtLeastTablet>
+          )}
         </div>
         <div className="col-12 px-0 px-md-5">
           {certHeader && (

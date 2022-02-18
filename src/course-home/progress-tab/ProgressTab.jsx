@@ -1,6 +1,6 @@
 import React from 'react';
-import { layoutGenerator } from 'react-break';
 import { useSelector } from 'react-redux';
+import { breakpoints, useWindowSize } from '@edx/paragon';
 
 import CertificateStatus from './certificate-status/CertificateStatus';
 import CourseCompletion from './course-completion/CourseCompletion';
@@ -23,13 +23,15 @@ function ProgressTab() {
 
   const applyLockedOverlay = gradesFeatureIsFullyLocked ? 'locked-overlay' : '';
 
-  const layout = layoutGenerator({
-    mobile: 0,
-    desktop: 992,
-  });
+  const windowWidth = useWindowSize().width;
+  if (windowWidth === undefined) {
+    // Bail because we don't want to load <CertificateStatus/> twice, emitting 'visited' events both times.
+    // This is a hacky solution, since the user can resize the screen and still get two visited events.
+    // But I'm leaving a larger refactor as an exercise to a future reader.
+    return null;
+  }
 
-  const OnMobile = layout.is('mobile');
-  const OnDesktop = layout.isAtLeast('desktop');
+  const wideScreen = windowWidth >= breakpoints.large.minWidth;
   return (
     <>
       <ProgressHeader />
@@ -37,9 +39,7 @@ function ProgressTab() {
         {/* Main body */}
         <div className="col-12 col-md-8 p-0">
           <CourseCompletion />
-          <OnMobile>
-            <CertificateStatus />
-          </OnMobile>
+          {!wideScreen && <CertificateStatus />}
           <CourseGrade />
           <div className={`grades my-4 p-4 rounded shadow-sm ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
             <GradeSummary />
@@ -49,9 +49,7 @@ function ProgressTab() {
 
         {/* Side panel */}
         <div className="col-12 col-md-4 p-0 px-md-4">
-          <OnDesktop>
-            <CertificateStatus />
-          </OnDesktop>
+          {wideScreen && <CertificateStatus />}
           <RelatedLinks />
         </div>
       </div>

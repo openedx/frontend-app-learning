@@ -2,11 +2,9 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { layoutGenerator } from 'react-break';
-
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { CheckCircle, WarningFilled } from '@edx/paragon/icons';
-import { Icon } from '@edx/paragon';
+import { breakpoints, Icon, useWindowSize } from '@edx/paragon';
 import { useModel } from '../../../../generic/model-store';
 
 import GradeRangeTooltip from './GradeRangeTooltip';
@@ -27,13 +25,7 @@ function CourseGradeFooter({ intl, passingGrade }) {
     },
   } = useModel('progress', courseId);
 
-  const layout = layoutGenerator({
-    mobile: 0,
-    tablet: 768,
-  });
-
-  const OnMobile = layout.is('mobile');
-  const OnAtLeastTablet = layout.isAtLeast('tablet');
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const hasLetterGrades = Object.keys(gradeRange).length > 1; // A pass/fail course will only have one key
   let footerText = intl.formatMessage(messages.courseGradeFooterNonPassing, { passingGrade });
@@ -66,7 +58,7 @@ function CourseGradeFooter({ intl, passingGrade }) {
         {icon}
       </div>
       <div className="col-11 pl-2 px-0">
-        <OnMobile>
+        {!wideScreen && (
           <span className="h5 align-bottom">
             {footerText}
             {hasLetterGrades && (
@@ -76,8 +68,8 @@ function CourseGradeFooter({ intl, passingGrade }) {
               </span>
             )}
           </span>
-        </OnMobile>
-        <OnAtLeastTablet>
+        )}
+        {wideScreen && (
           <span className="h4 m-0 align-bottom">
             {footerText}
             {hasLetterGrades && (
@@ -87,7 +79,7 @@ function CourseGradeFooter({ intl, passingGrade }) {
               </span>
             )}
           </span>
-        </OnAtLeastTablet>
+        )}
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { Factory } from 'rosie';
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { breakpoints } from '@edx/paragon';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
@@ -56,6 +57,10 @@ describe('Loaded Tab Page', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
   });
 
+  beforeEach(() => {
+    global.innerWidth = breakpoints.medium.minWidth;
+  });
+
   it('shows streak celebration modal', async () => {
     await renderModal();
 
@@ -86,22 +91,7 @@ describe('Loaded Tab Page', () => {
   });
 
   it('shows discount version of streak celebration modal when available', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => {
-        const matches = !!(query === 'screen and (min-width: 575px)');
-        return {
-          matches,
-          media: query,
-          onchange: null,
-          addListener: jest.fn(), // deprecated
-          removeListener: jest.fn(), // deprecated
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
-          dispatchEvent: jest.fn(),
-        };
-      }),
-    });
+    global.innerWidth = breakpoints.extraSmall.maxWidth;
     setDiscount(14);
     await renderModal();
 
