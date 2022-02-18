@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
+import { breakpoints, useWindowSize } from '@edx/paragon';
 
 import { AlertList } from '../../generic/user-messages';
 
@@ -14,7 +15,6 @@ import CourseBreadcrumbs from './CourseBreadcrumbs';
 import NotificationTrigger from './NotificationTrigger';
 
 import { useModel } from '../../generic/model-store';
-import useWindowSize, { responsiveBreakpoints } from '../../generic/tabs/useWindowSize';
 import { getLocalStorage, setLocalStorage } from '../../data/localStorage';
 import { getSessionStorage, setSessionStorage } from '../../data/sessionStorage';
 
@@ -28,6 +28,7 @@ function Course({
   nextSequenceHandler,
   previousSequenceHandler,
   unitNavigationHandler,
+  windowWidth,
 }) {
   const course = useModel('coursewareMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
@@ -59,8 +60,8 @@ function Course({
   const daysPerWeek = courseGoals?.selectedGoal?.daysPerWeek;
 
   // Responsive breakpoints for showing the notification button/tray
-  const shouldDisplayNotificationTriggerInCourse = useWindowSize().width >= responsiveBreakpoints.small.minWidth;
-  const shouldDisplayNotificationTrayOpenOnLoad = useWindowSize().width > responsiveBreakpoints.medium.minWidth;
+  const shouldDisplayNotificationTriggerInCourse = windowWidth >= breakpoints.small.minWidth;
+  const shouldDisplayNotificationTrayOpenOnLoad = windowWidth > breakpoints.medium.minWidth;
 
   // Course specific notification tray open/closed persistance by browser session
   if (!getSessionStorage(`notificationTrayStatus.${courseId}`)) {
@@ -177,6 +178,7 @@ Course.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   unitNavigationHandler: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
 Course.defaultProps = {
@@ -185,4 +187,18 @@ Course.defaultProps = {
   unitId: null,
 };
 
-export default Course;
+function CourseWrapper(props) {
+  // useWindowSize initially returns an undefined width intentionally at first.
+  // See https://www.joshwcomeau.com/react/the-perils-of-rehydration/ for why.
+  // But <Course> has some tricky window-size-dependent, session-storage-setting logic and React would yell at us if
+  // we exited that component early, before hitting all the useState() calls.
+  // So just skip all that until we have a window size available.
+  const windowWidth = useWindowSize().width;
+  if (windowWidth === undefined) {
+    return null;
+  }
+
+  return <Course {...props} windowWidth={windowWidth} />;
+}
+
+export default CourseWrapper;

@@ -3,6 +3,7 @@ import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { breakpoints } from '@edx/paragon';
 
 import { fetchCourse } from '../data';
 import {
@@ -11,10 +12,8 @@ import {
 import initializeStore from '../../store';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 import NotificationTray from './NotificationTray';
-import useWindowSize from '../../generic/tabs/useWindowSize';
 
 initializeMockApp();
-jest.mock('../../generic/tabs/useWindowSize');
 jest.mock('@edx/frontend-platform/analytics');
 
 describe('NotificationTray', () => {
@@ -37,6 +36,7 @@ describe('NotificationTray', () => {
   }
 
   beforeEach(async () => {
+    global.innerWidth = breakpoints.large.minWidth;
     store = initializeStore();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
@@ -46,7 +46,7 @@ describe('NotificationTray', () => {
   });
 
   it('renders notification tray and close tray button', async () => {
-    useWindowSize.mockReturnValue({ width: 1200 });
+    global.innerWidth = breakpoints.extraLarge.minWidth;
     const toggleNotificationTray = jest.fn();
     const testData = {
       ...mockData,
@@ -81,7 +81,7 @@ describe('NotificationTray', () => {
   });
 
   it('renders notification tray with full screen "Back to course" at responsive view', async () => {
-    useWindowSize.mockReturnValue({ width: 991 });
+    global.innerWidth = breakpoints.medium.maxWidth;
     const toggleNotificationTray = jest.fn();
     const testData = {
       ...mockData,

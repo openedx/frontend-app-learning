@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from '@edx/paragon';
+import { breakpoints, Button, useWindowSize } from '@edx/paragon';
 import { ChevronLeft, ChevronRight } from '@edx/paragon/icons';
 import classNames from 'classnames';
 import {
@@ -17,7 +17,6 @@ import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
-import useWindowSize, { responsiveBreakpoints } from '../../../../generic/tabs/useWindowSize';
 
 import messages from './messages';
 /** [MM-P2P] Experiment */
@@ -44,7 +43,7 @@ function SequenceNavigation({
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
 
-  const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < responsiveBreakpoints.small.minWidth;
+  const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
 
   const renderUnitButtons = () => {
     if (isLocked) {

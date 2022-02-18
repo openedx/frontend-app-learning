@@ -45,28 +45,6 @@ global.IntersectionObserver = jest.fn(function mockIntersectionObserver() {
   this.disconnect = jest.fn();
 });
 
-// Mock media queries because any component that uses `react-break` for responsive breakpoints will
-// run into `TypeError: window.matchMedia is not a function`. This avoids that for all of our tests now.
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => {
-    // Returns true given a mediaQuery for a screen size greater than 768px (this exact query is what react-break sends)
-    // Without this, if we hardcode `matches` to either true or false, either all or none of the breakpoints match,
-    // respectively.
-    const matches = (query === 'screen and (min-width: 768px)');
-    return {
-      matches,
-      media: query,
-      onchange: null,
-      addListener: jest.fn(), // deprecated
-      removeListener: jest.fn(), // deprecated
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-    };
-  }),
-});
-
 export const authenticatedUser = {
   userId: 'abc123',
   username: 'MockUser',

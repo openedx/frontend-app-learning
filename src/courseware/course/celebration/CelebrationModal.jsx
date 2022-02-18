@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { ActionRow, Button, StandardModal } from '@edx/paragon';
-import { layoutGenerator } from 'react-break';
+import {
+  ActionRow,
+  breakpoints,
+  Button,
+  StandardModal,
+  useWindowSize,
+} from '@edx/paragon';
 
 import ClapsMobile from './assets/claps_280x201.gif';
 import ClapsTablet from './assets/claps_456x328.gif';
@@ -15,14 +20,7 @@ function CelebrationModal({
   courseId, intl, isOpen, onClose, ...rest
 }) {
   const { org } = useModel('coursewareMeta', courseId);
-
-  const layout = layoutGenerator({
-    mobile: 0,
-    tablet: 400,
-  });
-
-  const OnMobile = layout.is('mobile');
-  const OnAtLeastTablet = layout.isAtLeast('tablet');
+  const wideScreen = useWindowSize().width >= breakpoints.small.minWidth;
 
   useEffect(() => {
     if (isOpen) {
@@ -47,12 +45,8 @@ function CelebrationModal({
     >
       <>
         <p className="text-center">{intl.formatMessage(messages.completed)}</p>
-        <OnMobile>
-          <img src={ClapsMobile} alt="" className="img-fluid" />
-        </OnMobile>
-        <OnAtLeastTablet>
-          <img src={ClapsTablet} alt="" className="img-fluid w-100" />
-        </OnAtLeastTablet>
+        {!wideScreen && <img src={ClapsMobile} alt="" className="img-fluid" />}
+        {wideScreen && <img src={ClapsTablet} alt="" className="img-fluid w-100" />}
         <p className="mt-3 text-center">
           <strong>{intl.formatMessage(messages.earned)}</strong> {intl.formatMessage(messages.share)}
         </p>

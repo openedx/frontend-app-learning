@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Alert } from '@edx/paragon';
+import { Alert, breakpoints, useWindowSize } from '@edx/paragon';
 import { Locked } from '@edx/paragon/icons';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
 import { useModel } from '../../../../generic/model-store';
-import useWindowSize, { responsiveBreakpoints } from '../../../../generic/tabs/useWindowSize';
 import { UpgradeButton } from '../../../../generic/upgrade-button';
 import {
   VerifiedCertBullet,
@@ -31,15 +30,14 @@ function LockPaywall({
 
   // the following variables are set and used for resposive layout to work with
   // whether the NotificationTray is open or not and if there's an offer with longer text
-  const shouldDisplayBulletPointsBelowCertificate = useWindowSize().width
-    <= responsiveBreakpoints.large.minWidth;
-  const shouldDisplayGatedContentOneColumn = useWindowSize().width <= responsiveBreakpoints.extraLarge.minWidth
+  const shouldDisplayBulletPointsBelowCertificate = useWindowSize().width <= breakpoints.large.minWidth;
+  const shouldDisplayGatedContentOneColumn = useWindowSize().width <= breakpoints.extraLarge.minWidth
     && notificationTrayVisible;
-  const shouldDisplayGatedContentTwoColumns = useWindowSize().width < responsiveBreakpoints.large.minWidth
+  const shouldDisplayGatedContentTwoColumns = useWindowSize().width < breakpoints.large.minWidth
     && notificationTrayVisible;
-  const shouldDisplayGatedContentTwoColumnsHalf = useWindowSize().width <= responsiveBreakpoints.large.minWidth
+  const shouldDisplayGatedContentTwoColumnsHalf = useWindowSize().width <= breakpoints.large.minWidth
     && !notificationTrayVisible;
-  const shouldWrapTextOnButton = useWindowSize().width > responsiveBreakpoints.extraSmall.minWidth;
+  const shouldWrapTextOnButton = useWindowSize().width > breakpoints.extraSmall.minWidth;
 
   if (!verifiedMode) {
     return null;

@@ -3,6 +3,7 @@ import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { breakpoints } from '@edx/paragon';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
@@ -64,6 +65,7 @@ describe('Progress Tab', () => {
 
     it('sends event on click of dates tab link', async () => {
       await fetchAndRender();
+      sendTrackEvent.mockClear();
 
       const datesTabLink = screen.getByRole('link', { name: 'Dates' });
       fireEvent.click(datesTabLink);
@@ -79,6 +81,7 @@ describe('Progress Tab', () => {
 
     it('sends event on click of outline tab link', async () => {
       await fetchAndRender();
+      sendTrackEvent.mockClear();
 
       const outlineTabLink = screen.getAllByRole('link', { name: 'Course Outline' });
       fireEvent.click(outlineTabLink[1]); // outlineTabLink[0] corresponds to the link in the DetailedGrades component
@@ -286,7 +289,6 @@ describe('Progress Tab', () => {
     });
 
     it('sends events on click of upgrade button in locked content header (CourseGradeHeader)', async () => {
-      sendTrackEvent.mockClear();
       setTabData({
         completion_summary: {
           complete_count: 1,
@@ -323,6 +325,7 @@ describe('Progress Tab', () => {
         ],
       });
       await fetchAndRender();
+      sendTrackEvent.mockClear();
       expect(screen.getByText('locked feature')).toBeInTheDocument();
       expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
 
@@ -779,8 +782,8 @@ describe('Progress Tab', () => {
     });
 
     it('sends event on click of subsection link', async () => {
-      sendTrackEvent.mockClear();
       await fetchAndRender();
+      sendTrackEvent.mockClear();
       expect(screen.getByText('Detailed grades')).toBeInTheDocument();
 
       const subsectionLink = screen.getByRole('link', { name: 'First subsection' });
@@ -796,8 +799,8 @@ describe('Progress Tab', () => {
     });
 
     it('sends event on click of course outline link', async () => {
-      sendTrackEvent.mockClear();
       await fetchAndRender();
+      sendTrackEvent.mockClear();
       expect(screen.getByText('Detailed grades')).toBeInTheDocument();
 
       const outlineLink = screen.getAllByRole('link', { name: 'Course Outline' })[0];
@@ -837,22 +840,7 @@ describe('Progress Tab', () => {
 
   describe('Certificate Status', () => {
     beforeAll(() => {
-      Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        value: jest.fn().mockImplementation(query => {
-          const matches = (query === 'screen and (min-width: 992px)');
-          return {
-            matches,
-            media: query,
-            onchange: null,
-            addListener: jest.fn(), // deprecated
-            removeListener: jest.fn(), // deprecated
-            addEventListener: jest.fn(),
-            removeEventListener: jest.fn(),
-            dispatchEvent: jest.fn(),
-          };
-        }),
-      });
+      global.innerWidth = breakpoints.large.minWidth;
     });
 
     describe('enrolled user', () => {

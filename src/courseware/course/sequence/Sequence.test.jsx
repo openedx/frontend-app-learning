@@ -1,16 +1,14 @@
 import React from 'react';
 import { Factory } from 'rosie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { breakpoints } from '@edx/paragon';
 import {
   loadUnit, render, screen, fireEvent, waitFor, initializeTestStore,
 } from '../../../setupTest';
 import Sequence from './Sequence';
 import { fetchSequenceFailure } from '../../data/slice';
-import useWindowSize from '../../../generic/tabs/useWindowSize';
 
 jest.mock('@edx/frontend-platform/analytics');
-jest.mock('../../../generic/tabs/useWindowSize');
-useWindowSize.mockReturnValue({ width: 1200 });
 
 describe('Sequence', () => {
   let mockData;
@@ -34,6 +32,10 @@ describe('Sequence', () => {
       toggleNotificationTray: () => {},
       setNotificationStatus: () => {},
     };
+  });
+
+  beforeEach(() => {
+    global.innerWidth = breakpoints.extraLarge.minWidth;
   });
 
   it('renders correctly without data', async () => {
@@ -406,7 +408,7 @@ describe('Sequence', () => {
     });
 
     it('does not render notification tray in sequence by default if in responsive view', async () => {
-      useWindowSize.mockReturnValue({ width: 991 });
+      global.innerWidth = breakpoints.medium.maxWidth;
       const { container } = render(<Sequence {...mockData} />);
       // unable to test the absence of 'Notifications' by finding it by text, using the class of the tray instead:
       expect(container).not.toHaveClass('notification-tray-container');

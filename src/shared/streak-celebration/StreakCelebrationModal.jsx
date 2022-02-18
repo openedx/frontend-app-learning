@@ -8,9 +8,8 @@ import {
 } from '@edx/frontend-platform/i18n';
 import { Lightbulb, MoneyFilled } from '@edx/paragon/icons';
 import {
-  Alert, Icon, ModalDialog, Spinner,
+  Alert, breakpoints, Icon, ModalDialog, Spinner, useWindowSize,
 } from '@edx/paragon';
-import { layoutGenerator } from 'react-break';
 import { useDispatch } from 'react-redux';
 import { UpgradeNowButton } from '../../generic/upgrade-button';
 
@@ -69,13 +68,7 @@ function StreakModal({
   const [discountPercent, setDiscountPercent] = useState(-1);
   const queryingDiscount = discountPercent < 0;
 
-  const layout = layoutGenerator({
-    mobile: 0,
-    desktop: 575,
-  });
-
-  const OnMobile = layout.is('mobile');
-  const OnDesktop = layout.isAtLeast('desktop');
+  const wideScreen = useWindowSize().width >= breakpoints.small.minWidth;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -169,12 +162,8 @@ function StreakModal({
       <ModalDialog.Body className="modal-body">
         <p>{intl.formatMessage(messages.streakBody)}</p>
         <p className="modal-image">
-          <OnMobile>
-            <img src={StreakMobileImage} alt="" className="img-fluid" />
-          </OnMobile>
-          <OnDesktop>
-            <img src={StreakDesktopImage} alt="" className="img-fluid" />
-          </OnDesktop>
+          {!wideScreen && <img src={StreakMobileImage} alt="" className="img-fluid" />}
+          {wideScreen && <img src={StreakDesktopImage} alt="" className="img-fluid" />}
         </p>
         { queryingDiscount && (
           <Spinner animation="border" variant="primary" role="status" />
@@ -211,29 +200,33 @@ function StreakModal({
       <ModalDialog.Footer className="modal-footer d-block">
         { !queryingDiscount && showOffer && (
           <>
-            <OnMobile>
-              <UpgradeNowButton
-                className="upgrade mb-3"
-                size="sm"
-                offer={offer}
-                variant="brand"
-                verifiedMode={mode}
-              />
-              <ModalDialog.CloseButton variant="outline-brand" className="btn-sm">
-                {intl.formatMessage(messages.streakButtonAA759)}
-              </ModalDialog.CloseButton>
-            </OnMobile>
-            <OnDesktop>
-              <UpgradeNowButton
-                className="upgrade mb-3"
-                offer={offer}
-                variant="brand"
-                verifiedMode={mode}
-              />
-              <ModalDialog.CloseButton variant="outline-brand">
-                {intl.formatMessage(messages.streakButtonAA759)}
-              </ModalDialog.CloseButton>
-            </OnDesktop>
+            {!wideScreen && (
+              <>
+                <UpgradeNowButton
+                  className="upgrade mb-3"
+                  size="sm"
+                  offer={offer}
+                  variant="brand"
+                  verifiedMode={mode}
+                />
+                <ModalDialog.CloseButton variant="outline-brand" className="btn-sm">
+                  {intl.formatMessage(messages.streakButtonAA759)}
+                </ModalDialog.CloseButton>
+              </>
+            )}
+            {wideScreen && (
+              <>
+                <UpgradeNowButton
+                  className="upgrade mb-3"
+                  offer={offer}
+                  variant="brand"
+                  verifiedMode={mode}
+                />
+                <ModalDialog.CloseButton variant="outline-brand">
+                  {intl.formatMessage(messages.streakButtonAA759)}
+                </ModalDialog.CloseButton>
+              </>
+            )}
           </>
         )}
         { !queryingDiscount && !showOffer && (
