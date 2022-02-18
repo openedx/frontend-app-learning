@@ -25,9 +25,7 @@ export default class PageLoading extends Component {
             height: '50vh',
           }}
         >
-          <Spinner animation="border" variant="primary" role="status">
-            {this.renderSrMessage()}
-          </Spinner>
+          <Spinner animation="border" variant="primary" screenReaderText={this.renderSrMessage()} />
         </div>
       </div>
     );

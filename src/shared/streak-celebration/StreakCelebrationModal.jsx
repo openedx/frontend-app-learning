@@ -166,7 +166,7 @@ function StreakModal({
           {wideScreen && <img src={StreakDesktopImage} alt="" className="img-fluid" />}
         </p>
         { queryingDiscount && (
-          <Spinner animation="border" variant="primary" role="status" />
+          <Spinner animation="border" variant="primary" />
         )}
         { !queryingDiscount && !showOffer && (
           <div className="d-flex py-3 bg-light-300">
