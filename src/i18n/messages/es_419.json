@@ -244,7 +244,7 @@
   "calculator.instruction.table.to.use.operators.type3": "(resistencias en paralelo)",
   "calculator.instruction.table.to.use.constants": "Constantes",
   "calculator.instruction.table.to.use.affixes": "Añadidos",
-  "calculator.instruction.table.to.use.affixes.type": "Signo de porcentaje (%) y afijos de medición ({affixes})",
+  "calculator.instruction.table.to.use.affixes.type": "Percent sign (%)",
   "calculator.instruction.table.to.use.basic.functions": "Funciones basicas",
   "calculator.instruction.table.to.use.trig.functions": "Funciones trigonometricas",
   "calculator.instruction.table.to.use.scientific.notation": "Notación Científica",
