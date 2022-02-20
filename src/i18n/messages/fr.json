@@ -244,7 +244,7 @@
   "calculator.instruction.table.to.use.operators.type3": "(résistances parallèles)",
   "calculator.instruction.table.to.use.constants": "Constantes",
   "calculator.instruction.table.to.use.affixes": "Affixes",
-  "calculator.instruction.table.to.use.affixes.type": "Pourcentage (%) et suffixes métriques ({affixes})",
+  "calculator.instruction.table.to.use.affixes.type": "Signe pourcentage (%)",
   "calculator.instruction.table.to.use.basic.functions": "Fonctions de base",
   "calculator.instruction.table.to.use.trig.functions": "Fonctions trigonométriques",
   "calculator.instruction.table.to.use.scientific.notation": "Notation scientifique",
