@@ -22,6 +22,7 @@ function NotificationTray({ intl }) {
   const {
     accessExpiration,
     contentTypeGatingEnabled,
+    marketingUrl,
     offer,
     org,
     timeOffsetMillis,
@@ -45,6 +46,7 @@ function NotificationTray({ intl }) {
             verifiedMode={verifiedMode}
             accessExpiration={accessExpiration}
             contentTypeGatingEnabled={contentTypeGatingEnabled}
+            marketingUrl={marketingUrl}
             upsellPageName="in_course"
             userTimezone={userTimezone}
             shouldDisplayBorder={false}

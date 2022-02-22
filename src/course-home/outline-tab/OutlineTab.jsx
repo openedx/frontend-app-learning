@@ -64,6 +64,10 @@ function OutlineTab({ intl }) {
     verifiedMode,
   } = useModel('outline', courseId);
 
+  const {
+    marketingUrl,
+  } = useModel('coursewareMeta', courseId);
+
   const [expandAll, setExpandAll] = useState(false);
 
   const eventProperties = {
@@ -190,6 +194,7 @@ function OutlineTab({ intl }) {
                   verifiedMode={verifiedMode}
                   accessExpiration={accessExpiration}
                   contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
+                  marketingUrl={marketingUrl}
                   upsellPageName="course_home"
                   userTimezone={userTimezone}
                   shouldDisplayBorder
