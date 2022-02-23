@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Alert, breakpoints, useWindowSize } from '@edx/paragon';
+import {
+  Alert, Hyperlink, breakpoints, useWindowSize,
+} from '@edx/paragon';
 import { Locked } from '@edx/paragon/icons';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
@@ -23,6 +25,8 @@ function LockPaywall({
 }) {
   const course = useModel('coursewareMeta', courseId);
   const {
+    accessExpiration,
+    marketingUrl,
     offer,
     org,
     verifiedMode,
@@ -38,6 +42,9 @@ function LockPaywall({
   const shouldDisplayGatedContentTwoColumnsHalf = useWindowSize().width <= breakpoints.large.minWidth
     && !notificationTrayVisible;
   const shouldWrapTextOnButton = useWindowSize().width > breakpoints.extraSmall.minWidth;
+
+  const accessExpirationDate = accessExpiration ? new Date(accessExpiration.expirationDate) : null;
+  const pastExpirationDeadline = accessExpiration ? new Date(Date.now()) > accessExpirationDate : false;
 
   if (!verifiedMode) {
     return null;
@@ -65,12 +72,18 @@ function LockPaywall({
           <h4 aria-level="3">
             <span>{intl.formatMessage(messages['learn.lockPaywall.title'])}</span>
           </h4>
+          {pastExpirationDeadline ? (
+            <div className="mb-2 upgrade-intro">
+              {intl.formatMessage(messages['learn.lockPaywall.content.pastExpiration'])}
+              <Hyperlink destination={marketingUrl} target="_blank">{intl.formatMessage(messages['learn.lockPaywall.courseDetails'])}</Hyperlink>
+            </div>
+          ) : (
+            <div className="mb-2 upgrade-intro">
+              {intl.formatMessage(messages['learn.lockPaywall.content'])}
+            </div>
+          )}
 
-          <div className="mb-2 upgrade-intro">
-            {intl.formatMessage(messages['learn.lockPaywall.content'])}
-          </div>
-
-          <div className={classNames('d-flex flex-row', { 'flex-wrap': notificationTrayVisible || shouldDisplayBulletPointsBelowCertificate })}>
+          <div className={classNames('d-inline-flex flex-row', { 'flex-wrap': notificationTrayVisible || shouldDisplayBulletPointsBelowCertificate })}>
             <div style={{ float: 'left' }} className="mr-3 mb-2">
               <img
                 alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
@@ -94,20 +107,24 @@ function LockPaywall({
           </div>
         </div>
 
-        <div
-          className={
-            classNames('d-md-flex align-items-md-center text-right', {
-              'col-md-5 mx-md-0': notificationTrayVisible, 'col-md-4 mx-md-3 justify-content-center': !notificationTrayVisible && !shouldDisplayGatedContentTwoColumnsHalf, 'col-md-11 justify-content-end': shouldDisplayGatedContentOneColumn && !shouldDisplayGatedContentTwoColumns, 'col-md-6 justify-content-center': shouldDisplayGatedContentTwoColumnsHalf,
-            })
-          }
-        >
-          <UpgradeButton
-            offer={offer}
-            onClick={logClick}
-            verifiedMode={verifiedMode}
-            style={{ whiteSpace: shouldWrapTextOnButton ? 'nowrap' : null }}
-          />
-        </div>
+        {pastExpirationDeadline
+          ? null
+          : (
+            <div
+              className={
+                classNames('d-md-flex align-items-md-center text-right', {
+                  'col-md-5 mx-md-0': notificationTrayVisible, 'col-md-4 mx-md-3 justify-content-center': !notificationTrayVisible && !shouldDisplayGatedContentTwoColumnsHalf, 'col-md-11 justify-content-end': shouldDisplayGatedContentOneColumn && !shouldDisplayGatedContentTwoColumns, 'col-md-6 justify-content-center': shouldDisplayGatedContentTwoColumnsHalf,
+                })
+              }
+            >
+              <UpgradeButton
+                offer={offer}
+                onClick={logClick}
+                verifiedMode={verifiedMode}
+                style={{ whiteSpace: shouldWrapTextOnButton ? 'nowrap' : null }}
+              />
+            </div>
+          )}
       </div>
     </Alert>
   );
