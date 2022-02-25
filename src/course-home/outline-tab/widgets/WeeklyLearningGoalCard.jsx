@@ -68,19 +68,18 @@ function WeeklyLearningGoalCard({
   return (
     <Card
       id="courseHome-weeklyLearningGoal"
-      className="row w-100 m-0 mb-3 shadow-sm border-0"
+      className="row w-100 m-0 mb-3 raised-card"
       data-testid="weekly-learning-goal-card"
     >
-      <Card.Body className="p-3 p-lg-3.5">
-        <h2 id="set-weekly-goal-h2" className="h4 mb-1 text-primary-500">{intl.formatMessage(messages.setWeeklyGoal)}</h2>
-        <Card.Text
-          className="text-gray-700 small mb-2.5"
-        >
-          {intl.formatMessage(messages.setWeeklyGoalDetail)}
-        </Card.Text>
+      <Card.Header
+        size="sm"
+        title={(<div id="set-weekly-goal-header">{intl.formatMessage(messages.setWeeklyGoal)}</div>)}
+        subtitle={intl.formatMessage(messages.setWeeklyGoalDetail)}
+      />
+      <Card.Section className="text-gray-700 small">
         <div
           role="radiogroup"
-          aria-labelledby="set-weekly-goal-h2"
+          aria-labelledby="set-weekly-goal-header"
           className="flag-button-container m-0 p-0"
         >
           <LearningGoalButton
@@ -108,9 +107,9 @@ function WeeklyLearningGoalCard({
             <small>{intl.formatMessage(messages.setGoalReminder)}</small>
           </Form.Switch>
         </div>
-      </Card.Body>
+      </Card.Section>
       {isGetReminderSelected && (
-        <Card.Footer className="border-0 px-2.5 bg-light-200">
+        <Card.Section muted>
           <div className="row w-100 m-0 small align-center">
             <div className="d-flex align-items-center pr-1">
               <Icon
@@ -122,7 +121,7 @@ function WeeklyLearningGoalCard({
               {intl.formatMessage(messages.goalReminderDetail)}
             </div>
           </div>
-        </Card.Footer>
+        </Card.Section>
       )}
     </Card>
   );

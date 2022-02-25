@@ -24,6 +24,11 @@ const messages = defineMessages({
     description: 'Header for recommendations section of course celebration',
     defaultMessage: 'Keep building your skills with these courses!',
   },
+  recommendationsCourseFooter: {
+    id: 'courseCelebration.recommendations.label', // not very descriptive, but is historical
+    description: 'Label on a discovery-card that lets a user know that it is a course card',
+    defaultMessage: 'Course',
+  },
   listJoin: {
     id: 'courseCelebration.recommendations.formatting.list_join',
     description: 'Joining mark or word for a list of items, use the {sp} placeholder to include space before the joining word',
@@ -73,6 +78,20 @@ function CourseCard({
     intl,
   );
 
+  const subtitle = (
+    <FormattedMessage
+      id="courseCelebration.recommendations.card.schools.label"
+      description="Screenreader label for the Schools and Partners running the course."
+      defaultMessage="Schools and Partners"
+    >{text => (
+      <>
+        <span className="sr-only">{text}: </span>
+        {truncate(formattedOwners, 40, { reserveLastWord: -1 })}
+      </>
+    )}
+    </FormattedMessage>
+  );
+
   return (
     <div
       role="group"
@@ -83,36 +102,12 @@ function CourseCard({
         className="text-decoration-none"
         onClick={onClick}
       >
-        <Card style={{ width: '270px', height: '270px' }} className="discovery-card">
-          <Card.Img variant="top" src={image.src} bsPrefix="d-card-hero" />
-          <Card.Body>
-            <Card.Title>
-              <h3 className="h4 text-gray-700 font-weight-normal">
-                {truncate(title, 70, { reserveLastWord: -1 })}
-              </h3>
-            </Card.Title>
-            <div className="text-gray-500 small">
-              <FormattedMessage
-                id="courseCelebration.recommendations.card.schools.label"
-                description="Screenreader label for the Schools and Partners running the course."
-                defaultMessage="Schools and Partners"
-              >{text => (
-                <>
-                  <span className="sr-only">{text}: </span>
-                  {truncate(formattedOwners, 40, { reserveLastWord: -1 })}
-                </>
-              )}
-              </FormattedMessage>
-            </div>
-          </Card.Body>
-          <footer className="pl-4 pb-2 x-small text-gray-500">
-            <FormattedMessage
-              id="courseCelebration.recommendations.label"
-              description="Label on a discovery-card that lets a user know that it is a course card"
-              defaultMessage="Course"
-            />
-          </footer>
-
+        <Card isClickable style={{ width: '21rem', height: '100%' }}>
+          <Card.ImageCap src={image.src} />
+          <Card.Header title={truncate(title, 70, { reserveLastWord: -1 })} subtitle={subtitle} size="sm" />
+          {/* Section is needed for internal vertical spacing to work out. If you can remove, be my guest */}
+          <Card.Section />
+          <Card.Footer textElement={intl.formatMessage(messages.recommendationsCourseFooter)} />
         </Card>
       </Hyperlink>
     </div>
@@ -161,7 +156,7 @@ function CourseRecommendations({ intl, variant }) {
   }
 
   if (recommendationsStatus === LOADING) {
-    return <PageLoading srMessage={`${intl.formatMessage(messages.loadingRecommendations)}`} />;
+    return <PageLoading srMessage={intl.formatMessage(messages.loadingRecommendations)} />;
   }
 
   const onCardClick = (url) => (e) => {
