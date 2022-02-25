@@ -80,4 +80,18 @@ describe('Lock Paywall', () => {
 
     expect(container).toBeEmptyDOMElement();
   });
+
+  it('displays past expiration message if expiration date has expired', async () => {
+    const courseMetadata = Factory.build('courseMetadata', {
+      access_expiration: {
+        expiration_date: '1995-02-22T05:00:00Z',
+      },
+      marketing_url: 'https://example.com/course-details',
+    });
+    const testStore = await initializeTestStore({ courseMetadata }, false);
+    render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+    expect(screen.getByText('The upgrade deadline for this course passed. To upgrade, enroll in the next available session.')).toBeInTheDocument();
+    expect(screen.getByText('View Course Details'))
+      .toHaveAttribute('href', 'https://example.com/course-details');
+  });
 });

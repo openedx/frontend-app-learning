@@ -6,6 +6,9 @@ Factory.define('courseMetadata')
   .extend(courseMetadataBase)
   .option('host', '')
   .attrs({
+    access_expiration: {
+      expiration_date: '2032-02-22T05:00:00Z',
+    },
     content_type_gating_enabled: false,
     course_expired_message: null,
     course_goals: {
