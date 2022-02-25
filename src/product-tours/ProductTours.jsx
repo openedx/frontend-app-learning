@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-
-import Tour from '../tour/Tour';
+import { ProductTour } from '@edx/paragon';
 
 import abandonTour from './AbandonTour';
 import coursewareTour from './CoursewareTour';
@@ -82,7 +81,7 @@ function ProductTours({
     }
   }, [showNewUserCourseHomeTour]);
 
-  // The <Tour /> component cannot handle rendering multiple enabled tours at once.
+  // The <ProductTour /> component cannot handle rendering multiple enabled tours at once.
   // I.e. when adding new tours, beware that if multiple tours are enabled,
   // the first enabled tour in the following array will be the only one that renders.
   // The suggestion for populating these tour objects is to ensure only one tour is enabled at a time.
@@ -142,7 +141,7 @@ function ProductTours({
 
   return (
     <>
-      <Tour
+      <ProductTour
         tours={tours}
       />
       <NewUserCourseHomeTourModal
