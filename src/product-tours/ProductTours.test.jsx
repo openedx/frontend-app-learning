@@ -306,7 +306,7 @@ describe('Courseware Tour', () => {
 
   expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlocks[1].id}`);
 
-  const checkpoint = container.querySelectorAll('#checkpoint');
+  const checkpoint = container.querySelectorAll('#pgn__checkpoint');
   expect(checkpoint).toHaveLength(showCoursewareTour ? 1 : 0);
 });
   });
