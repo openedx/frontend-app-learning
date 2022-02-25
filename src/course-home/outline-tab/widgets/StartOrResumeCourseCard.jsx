@@ -41,24 +41,22 @@ function StartOrResumeCourseCard({ intl }) {
   };
 
   return (
-    <Card className="mb-3 shadow-sm border-0" data-testid="start-resume-card">
-      <Card.Body>
-        <div className="row w-100 m-0 justify-content-between align-items-center">
-          <div className="col-12 col-md-7 p-0 mb-3 mb-md-0">
-            <h2 className="h3 m-0">{hasVisitedCourse ? intl.formatMessage(messages.resumeBlurb) : intl.formatMessage(messages.startBlurb)}</h2>
-          </div>
-          <div className="col-12 col-md-auto p-0">
-            <Button
-              variant="brand"
-              block
-              href={resumeCourseUrl}
-              onClick={() => logResumeCourseClick()}
-            >
-              {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
-            </Button>
-          </div>
-        </div>
-      </Card.Body>
+    <Card className="mb-3 raised-card" data-testid="start-resume-card">
+      <Card.Header
+        title={hasVisitedCourse ? intl.formatMessage(messages.resumeBlurb) : intl.formatMessage(messages.startBlurb)}
+        actions={(
+          <Button
+            variant="brand"
+            block
+            href={resumeCourseUrl}
+            onClick={() => logResumeCourseClick()}
+          >
+            {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
+          </Button>
+        )}
+      />
+      {/* Footer is needed for internal vertical spacing to work out. If you can remove, be my guest */}
+      <Card.Footer />
     </Card>
   );
 }

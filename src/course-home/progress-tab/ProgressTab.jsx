@@ -41,7 +41,7 @@ function ProgressTab() {
           <CourseCompletion />
           {!wideScreen && <CertificateStatus />}
           <CourseGrade />
-          <div className={`grades my-4 p-4 rounded shadow-sm ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
+          <div className={`grades my-4 p-4 rounded raised-card ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
             <GradeSummary />
             <DetailedGrades />
           </div>

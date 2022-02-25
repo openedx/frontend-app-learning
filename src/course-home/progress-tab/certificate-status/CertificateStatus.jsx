@@ -224,14 +224,12 @@ function CertificateStatus({ intl }) {
 
   return (
     <section data-testid="certificate-status-component" className="text-dark-700 mb-4">
-      <Card className="bg-light-200 shadow-sm border-0">
-        <Card.Body>
-          <Card.Title>
-            <h3>{header}</h3>
-          </Card.Title>
-          <Card.Text className="small text-gray-700">
-            {body}
-          </Card.Text>
+      <Card className="bg-light-200 raised-card">
+        <Card.Header title={header} />
+        <Card.Section className="small text-gray-700">
+          {body}
+        </Card.Section>
+        <Card.Footer>
           {buttonText && (buttonLocation || buttonAction) && (
             <Button
               variant="outline-brand"
@@ -245,7 +243,7 @@ function CertificateStatus({ intl }) {
               {buttonText}
             </Button>
           )}
-        </Card.Body>
+        </Card.Footer>
       </Card>
     </section>
   );

@@ -356,6 +356,11 @@
   }
 }
 
+.raised-card {
+  border: 0 !important;
+  box-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .2) !important;
+}
+
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
 @import "courseware/course/NotificationTray.scss";
