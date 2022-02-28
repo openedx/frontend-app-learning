@@ -4,7 +4,7 @@ import { getLocale } from '@edx/frontend-platform/i18n';
 // This function inspects an access denied error and provides a redirect url (looks like a /redirect/... path),
 // which then renders a nice little message while the browser loads the next page.
 // This is basically a frontend version of check_course_access_with_redirect in the backend.
-export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start, unitId) {
+export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, canLoadCourseware, courseAccess, start, unitId) {
   let url = null;
   switch (courseAccess.errorCode) {
     case 'audit_expired':
@@ -33,7 +33,13 @@ export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess
     case 'authentication_required':
     case 'enrollment_required':
     default:
-      if (activeTabSlug !== 'outline') {
+      // if the learner has access to the course, but it is not enabled in the mfe, there is no
+      // error message, but canLoadCourseware will be false
+      if (canLoadCourseware === false) {
+        if (unitId) {
+          url = `/redirect/courseware/${courseId}/unit/${unitId}`;
+        }
+      } else if (activeTabSlug !== 'outline') {
         url = `/redirect/course-home/${courseId}`;
       }
   }

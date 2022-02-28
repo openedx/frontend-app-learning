@@ -9,7 +9,7 @@ Factory.define('courseHomeMetadata')
     title: 'Demonstration Course',
     is_self_paced: false,
     is_enrolled: false,
-    can_load_courseware: false,
+    can_load_courseware: true,
     celebrations: null,
     course_access: {
       additional_context_user_message: null,
