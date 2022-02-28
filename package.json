@@ -65,6 +65,7 @@
   },
   "devDependencies": {
     "@edx/frontend-build": "9.0.6",
+    "@edx/reactifex": "1.0.3",
     "@pact-foundation/pact": "9.17.0",
     "@testing-library/dom": "7.16.3",
     "@testing-library/jest-dom": "5.16.2",
@@ -79,7 +80,6 @@
     "husky": "7.0.4",
     "jest": "27.5.1",
     "jest-chain": "1.1.5",
-    "reactifex": "1.1.1",
     "rosie": "2.1.0"
   }
 }
