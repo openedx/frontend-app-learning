@@ -86,6 +86,7 @@ function CourseStartAlert({ payload }) {
       <FormattedMessage
         id="learning.outline.alert.end.calendar"
         defaultMessage="Don’t forget to add a calendar reminder!"
+        description="It's just a recommendation for learners to set a reminder for the course starting date and is shown when the course starting date is more than a day. "
       />
     </Alert>
   );

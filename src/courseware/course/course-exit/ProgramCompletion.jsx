@@ -50,6 +50,7 @@ function ProgramCompletion({
               id="courseExit.programCompletion.dashboardMessage"
               defaultMessage="To view your certificate status, check the Programs section of your {programLink}."
               values={{ programLink }}
+              description="Text that precedes link to program page"
             />
           </p>
           {type === 'microbachelors' && (

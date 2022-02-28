@@ -115,6 +115,7 @@ function CertificateStatus({ intl }) {
             <FormattedMessage
               id="progress.certificateStatus.unverifiedBody"
               defaultMessage="In order to generate a certificate, you must complete ID verification. {idVerificationSupportLink}."
+              description="Its shown when learner are not verified thus it recommends going over the verification process"
               values={{ idVerificationSupportLink }}
             />
           );
@@ -133,6 +134,7 @@ function CertificateStatus({ intl }) {
               Showcase your accomplishment on LinkedIn or your resumé today.
               You can download your certificate now and access it any time from your
               {dashboardLink} and {profileLink}."
+            description="Recommending an action for learner when course certificate is available"
             values={{ dashboardLink, profileLink }}
           />
         );
@@ -157,6 +159,7 @@ function CertificateStatus({ intl }) {
             id="courseCelebration.certificateBody.notAvailable.endDate"
             defaultMessage="This course ends on {endDate}. Final grades and certificates are
             scheduled to be available after {certAvailabilityDate}."
+            description="This shown for leaner when they are eligible for certifcate but it't not available yet, it could because leaners just finished the course quickly!"
             values={{ endDate, certAvailabilityDate }}
           />
         );

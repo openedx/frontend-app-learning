@@ -48,6 +48,7 @@ function HonorCode({ intl, courseId }) {
             siteName,
             link: <a href={honorCodeUrl}>{intl.formatMessage(messages['learn.honorCode.name'])}</a>,
           }}
+          description="This is shown to learner, when course author wants to learners to explicity agree on their (Term of use or conduct), hence it links honor code page. "
         />
       </p>
 

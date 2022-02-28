@@ -39,6 +39,7 @@ function DashboardFootnote({ intl, variant }) {
         <FormattedMessage
           id="courseCelebration.dashboardInfo" // for historical reasons
           defaultMessage="You can access this course and its materials on your {dashboardLink}."
+          description="Text that precedes link to learner's dashboard"
           values={{ dashboardLink }}
         />
       )}

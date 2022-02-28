@@ -34,6 +34,7 @@ const messages = defineMessages({
   certificateHeaderUpgradable: {
     id: 'courseCelebration.certificateHeader.upgradable',
     defaultMessage: 'Upgrade to pursue a verified certificate',
+    description: 'Header when learner finished or pass the course but need to upgrade to get a certificate',
   },
   certificateImage: {
     id: 'courseCelebration.certificateImage',
@@ -43,10 +44,12 @@ const messages = defineMessages({
   completedCourseHeader: {
     id: 'courseCelebration.completedCourseHeader',
     defaultMessage: 'You have completed your course.',
+    description: 'Header text for course exit section',
   },
   congratulationsHeader: {
     id: 'courseCelebration.congratulationsHeader',
     defaultMessage: 'Congratulations!',
+    description: 'Greeting learner for finishing the course',
   },
   congratulationsImage: {
     id: 'courseCelebration.congratulationsImage',
@@ -56,10 +59,12 @@ const messages = defineMessages({
   courseInProgressDescription: {
     id: 'courseExit.courseInProgressDescription',
     defaultMessage: 'It looks like there is more content in this course that will be released in the future. Look out for email updates or check back on your course for when this content will be available.',
+    description: 'Shown to learner when they finish all available assignments, but not the whole course',
   },
   courseInProgressHeader: {
     id: 'courseExit.courseInProgressHeader',
     defaultMessage: 'More content is coming soon!',
+    description: 'Header when the status of the course not all of (contents or assignments) available yet',
   },
   dashboardLink: {
     id: 'courseExit.dashboardLink',
@@ -74,6 +79,7 @@ const messages = defineMessages({
   endOfCourseDescription: {
     id: 'courseExit.endOfCourseDescription',
     defaultMessage: 'Unfortunately, you are not currently eligible for a certificate. You need to receive a passing grade to be eligible for a certificate.',
+    description: 'Shown to learner when they did not pass the course',
   },
   endOfCourseHeader: {
     id: 'courseExit.endOfCourseHeader',
@@ -108,10 +114,12 @@ const messages = defineMessages({
   nextButtonComplete: {
     id: 'learn.sequence.navigation.complete.button', // for historical reasons
     defaultMessage: 'Complete the course',
+    description: 'This text is shown on the button which usually links to the next unit or assignment in course sequence, however when it is the last unit. The button will link to course exit page',
   },
   nextButtonEnd: {
     id: 'courseExit.nextButton.endOfCourse',
     defaultMessage: 'Next (end of course)',
+    description: 'This shown for the button which links to the next unit, when learner did not pass the course',
   },
   profileLink: {
     id: 'courseExit.profileLink',
@@ -121,10 +129,12 @@ const messages = defineMessages({
   programsLastCourseHeader: {
     id: 'courseExit.programs.lastCourse',
     defaultMessage: 'You have completed the last course in {title}!',
+    description: 'This shown to learner when the course they completed is the last one of a program, the program might be mircomaster, or microbachelors...etc',
   },
   requestCertificateBodyText: {
     id: 'courseCelebration.requestCertificateBodyText',
     defaultMessage: 'In order to access your certificate, request it below.',
+    description: 'Shown when learner need to request the certifcate',
   },
   requestCertificateButton: {
     id: 'courseCelebration.requestCertificateButton',
@@ -139,6 +149,7 @@ const messages = defineMessages({
   shareMessage: {
     id: 'courseCelebration.shareMessage',
     defaultMessage: 'Share your success on social media or email.',
+    description: 'Recommending an action when learner pass the course',
   },
   socialMessage: {
     id: 'courseExit.social.shareCompletionMessage',
@@ -156,10 +167,12 @@ const messages = defineMessages({
   verificationPending: {
     id: 'courseCelebration.verificationPending',
     defaultMessage: 'Your ID verification is pending and your certificate will be available once approved.',
+    description: 'Shown when the status of verification is pending',
   },
   verifiedCertificateSupportLink: {
     id: 'courseExit.verifiedCertificateSupportLink',
     defaultMessage: 'Learn more about verified certificates',
+    description: 'Anchor text for link that redirect to external help page about verified certificates',
   },
   verifyIdentityButton: {
     id: 'courseCelebration.verifyIdentityButton',
