@@ -21,21 +21,13 @@ export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, canLoadCours
     case 'unfulfilled_milestones':
       url = '/redirect/dashboard';
       break;
-    case 'microfrontend_disabled':
-      // This code path is only used by the courseware right now. The course home tabs each have their own check for
-      // this in the tab-specific API calls. In those cases, the API will return an http status code if the MFE version
-      // of those tabs are disabled, rather than an access error like this. We could try to unify these approaches, but
-      // hopefully the legacy code isn't around long enough for that to be worth it.
-      if (unitId) {
-        url = `/redirect/courseware/${courseId}/unit/${unitId}`;
-      }
-      break;
     case 'authentication_required':
     case 'enrollment_required':
     default:
       // if the learner has access to the course, but it is not enabled in the mfe, there is no
-      // error message, but canLoadCourseware will be false
-      if (canLoadCourseware === false) {
+      // error message, canLoadCourseware will be false.
+      // This is only used for courseware
+      if (activeTabSlug === 'courseware' && canLoadCourseware === false) {
         if (unitId) {
           url = `/redirect/courseware/${courseId}/unit/${unitId}`;
         }

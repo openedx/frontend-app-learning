@@ -471,13 +471,6 @@ describe('CoursewareContainer', () => {
       expect(global.location.href).toEqual(`http://localhost/redirect/survey/${courseMetadata.id}`);
     });
 
-    it('should go to legacy courseware for a microfrontend_disabled error code', async () => {
-      const { courseMetadata, unitBlocks } = setUpWithDeniedStatus('microfrontend_disabled');
-      await loadContainer();
-
-      expect(global.location.href).toEqual(`http://localhost/redirect/courseware/${courseMetadata.id}/unit/${unitBlocks[0].id}`);
-    });
-
     it('should go to course home for an authentication_required error code', async () => {
       const { courseMetadata } = setUpWithDeniedStatus('authentication_required');
       await loadContainer();
