@@ -26,11 +26,8 @@ export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, canLoadCours
     default:
       // if the learner has access to the course, but it is not enabled in the mfe, there is no
       // error message, canLoadCourseware will be false.
-      // This is only used for courseware
-      if (activeTabSlug === 'courseware' && canLoadCourseware === false) {
-        if (unitId) {
-          url = `/redirect/courseware/${courseId}/unit/${unitId}`;
-        }
+      if (activeTabSlug === 'courseware' && canLoadCourseware === false && unitId) {
+        url = `/redirect/courseware/${courseId}/unit/${unitId}`;
       } else if (activeTabSlug !== 'outline') {
         url = `/redirect/course-home/${courseId}`;
       }
