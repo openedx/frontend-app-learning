@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { getConfig } from '@edx/frontend-platform';
@@ -17,18 +17,34 @@ export default function LmsHtmlFragment({
         <link rel="stylesheet" type="text/css" href="${getConfig().BASE_URL}/src/course-home/outline-tab/LmsHtmlFragment.css">
       </head>
       <body class="${className}">${html}</body>
+      <script>
+        const resizer = new ResizeObserver(() => {
+          window.parent.postMessage({type: 'lmshtmlfragment.resize'}, '*');
+        });
+        resizer.observe(document.body);
+      </script>
     </html>
   `;
 
   const iframe = useRef(null);
-  function handleLoad() {
+  function resetIframeHeight() {
     iframe.current.height = iframe.current.contentWindow.document.body.scrollHeight;
   }
+
+  useEffect(() => {
+    function receiveMessage(event) {
+      const { type } = event.data;
+      if (type === 'lmshtmlfragment.resize') {
+        resetIframeHeight();
+      }
+    }
+    global.addEventListener('message', receiveMessage);
+  }, []);
 
   return (
     <iframe
       className="w-100 border-0"
-      onLoad={handleLoad}
+      onLoad={resetIframeHeight}
       ref={iframe}
       referrerPolicy="origin"
       scrolling="no"
