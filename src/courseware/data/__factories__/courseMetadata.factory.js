@@ -49,6 +49,13 @@ Factory.define('courseMetadata')
     course_exit_page_is_active: true,
     user_has_passing_grade: false,
     certificate_data: null,
+    entrance_exam_data: {
+      entrance_exam_current_score: 0.0,
+      entrance_exam_enabled: false,
+      entrance_exam_id: '',
+      entrance_exam_minimum_score_pct: 0.65,
+      entrance_exam_passed: true,
+    },
     verify_identity_url: null,
     verification_status: 'none',
     linkedin_add_to_profile_url: null,

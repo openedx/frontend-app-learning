@@ -160,7 +160,7 @@ function Unit({
   return (
     <div className="unit">
       <h1 className="mb-0 h3">{unit.title}</h1>
-      <h2 className="sr-only">{intl.formatMessage(messages['learn.header.h2.placeholder'])}</h2>
+      <h2 className="sr-only">{intl.formatMessage(messages.headerPlaceholder)}</h2>
       <BookmarkButton
         unitId={unit.id}
         isBookmarked={unit.bookmarked}
@@ -170,7 +170,7 @@ function Unit({
         <Suspense
           fallback={(
             <PageLoading
-              srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
+              srMessage={intl.formatMessage(messages.loadingLockedContent)}
             />
           )}
         >
@@ -185,7 +185,7 @@ function Unit({
         <Suspense
           fallback={(
             <PageLoading
-              srMessage={intl.formatMessage(messages['learn.loading.honor.code'])}
+              srMessage={intl.formatMessage(messages.loadingHonorCode)}
             />
           )}
         >
@@ -195,7 +195,7 @@ function Unit({
       { /** [MM-P2P] Experiment (conditional) */ }
       {!mmp2p.meta.blockContent && !shouldDisplayHonorCode && !hasLoaded && !showError && (
         <PageLoading
-          srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+          srMessage={intl.formatMessage(messages.loadingSequence)}
         />
       )}
       {!mmp2p.meta.blockContent && !shouldDisplayHonorCode && !hasLoaded && showError && (

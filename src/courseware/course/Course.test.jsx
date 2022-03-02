@@ -222,4 +222,94 @@ describe('Course', () => {
     expect(nextSequenceHandler).not.toHaveBeenCalled();
     expect(unitNavigationHandler).toHaveBeenCalledTimes(4);
   });
+
+  describe('Sequence alerts display', () => {
+    it('renders banner text alert', async () => {
+      const courseMetadata = Factory.build('courseMetadata');
+      const sequenceBlocks = [Factory.build(
+        'block', { type: 'sequential', banner_text: 'Some random banner text to display.' },
+      )];
+      const sequenceMetadata = [Factory.build(
+        'sequenceMetadata', { banner_text: sequenceBlocks[0].banner_text },
+        { courseId: courseMetadata.id, sequenceBlock: sequenceBlocks[0] },
+      )];
+
+      const testStore = await initializeTestStore({ courseMetadata, sequenceBlocks, sequenceMetadata });
+      const testData = {
+        ...mockData,
+        courseId: courseMetadata.id,
+        sequenceId: sequenceBlocks[0].id,
+      };
+      render(<Course {...testData} />, { store: testStore });
+      await waitFor(() => expect(screen.getByText('Some random banner text to display.')).toBeInTheDocument());
+    });
+
+    it('renders Entrance Exam alert with passing score', async () => {
+      const sectionId = 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@entrance_exam';
+      const testCourseMetadata = Factory.build('courseMetadata', {
+        entrance_exam_data: {
+          entrance_exam_current_score: 1.0,
+          entrance_exam_enabled: true,
+          entrance_exam_id: sectionId,
+          entrance_exam_minimum_score_pct: 0.7,
+          entrance_exam_passed: true,
+        },
+      });
+      const sequenceBlocks = [Factory.build(
+        'block',
+        { type: 'sequential', sectionId },
+        { courseId: testCourseMetadata.id },
+      )];
+      const sectionBlocks = [Factory.build(
+        'block',
+        { type: 'chapter', children: sequenceBlocks.map(block => block.id), id: sectionId },
+        { courseId: testCourseMetadata.id },
+      )];
+
+      const testStore = await initializeTestStore({
+        courseMetadata: testCourseMetadata, sequenceBlocks, sectionBlocks,
+      });
+      const testData = {
+        ...mockData,
+        courseId: testCourseMetadata.id,
+        sequenceId: sequenceBlocks[0].id,
+      };
+      render(<Course {...testData} />, { store: testStore });
+      await waitFor(() => expect(screen.getByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument());
+    });
+
+    it('renders Entrance Exam alert with non-passing score', async () => {
+      const sectionId = 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@entrance_exam';
+      const testCourseMetadata = Factory.build('courseMetadata', {
+        entrance_exam_data: {
+          entrance_exam_current_score: 0.3,
+          entrance_exam_enabled: true,
+          entrance_exam_id: sectionId,
+          entrance_exam_minimum_score_pct: 0.7,
+          entrance_exam_passed: false,
+        },
+      });
+      const sequenceBlocks = [Factory.build(
+        'block',
+        { type: 'sequential', sectionId },
+        { courseId: testCourseMetadata.id },
+      )];
+      const sectionBlocks = [Factory.build(
+        'block',
+        { type: 'chapter', children: sequenceBlocks.map(block => block.id), id: sectionId },
+        { courseId: testCourseMetadata.id },
+      )];
+
+      const testStore = await initializeTestStore({
+        courseMetadata: testCourseMetadata, sequenceBlocks, sectionBlocks,
+      });
+      const testData = {
+        ...mockData,
+        courseId: testCourseMetadata.id,
+        sequenceId: sequenceBlocks[0].id,
+      };
+      render(<Course {...testData} />, { store: testStore });
+      await waitFor(() => expect(screen.getByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument());
+    });
+  });
 });

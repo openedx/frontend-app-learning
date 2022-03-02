@@ -32,7 +32,7 @@ function SequenceContent({
       <Suspense
         fallback={(
           <PageLoading
-            srMessage={intl.formatMessage(messages['learn.loading.content.lock'])}
+            srMessage={intl.formatMessage(messages.loadingLockedContent)}
           />
         )}
       >
@@ -50,7 +50,7 @@ function SequenceContent({
   if (!unitId || !unit) {
     return (
       <div>
-        {intl.formatMessage(messages['learn.sequence.no.content'])}
+        {intl.formatMessage(messages.noContent)}
       </div>
     );
   }
