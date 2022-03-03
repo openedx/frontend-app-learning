@@ -64,7 +64,7 @@
     "util": "0.12.4"
   },
   "devDependencies": {
-    "@edx/frontend-build": "9.0.6",
+    "@edx/frontend-build": "9.1.2",
     "@edx/reactifex": "1.0.3",
     "@pact-foundation/pact": "9.17.0",
     "@testing-library/dom": "7.16.3",
