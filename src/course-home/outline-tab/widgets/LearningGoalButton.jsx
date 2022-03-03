@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { ReactComponent as FlagIntenseIcon } from '@edx/paragon/icons/svg/flag.svg';
+// These flag svgs are derivatives of the Flag icon from paragon
+import { ReactComponent as FlagIntenseIcon } from './flag_black.svg';
 import { ReactComponent as FlagCasualIcon } from './flag_outline.svg';
 import { ReactComponent as FlagRegularIcon } from './flag_gray.svg';
 import FlagButton from './FlagButton';
