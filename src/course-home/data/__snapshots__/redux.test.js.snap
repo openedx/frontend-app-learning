@@ -21,7 +21,7 @@ Object {
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course": Object {
-        "canLoadCourseware": false,
+        "canLoadCourseware": true,
         "celebrations": null,
         "courseAccess": Object {
           "additionalContextUserMessage": null,
@@ -336,7 +336,7 @@ Object {
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course": Object {
-        "canLoadCourseware": false,
+        "canLoadCourseware": true,
         "celebrations": null,
         "courseAccess": Object {
           "additionalContextUserMessage": null,
@@ -531,7 +531,7 @@ Object {
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course": Object {
-        "canLoadCourseware": false,
+        "canLoadCourseware": true,
         "celebrations": null,
         "courseAccess": Object {
           "additionalContextUserMessage": null,

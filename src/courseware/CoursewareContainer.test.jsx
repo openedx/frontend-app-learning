@@ -471,13 +471,6 @@ describe('CoursewareContainer', () => {
       expect(global.location.href).toEqual(`http://localhost/redirect/survey/${courseMetadata.id}`);
     });
 
-    it('should go to legacy courseware for a microfrontend_disabled error code', async () => {
-      const { courseMetadata, unitBlocks } = setUpWithDeniedStatus('microfrontend_disabled');
-      await loadContainer();
-
-      expect(global.location.href).toEqual(`http://localhost/redirect/courseware/${courseMetadata.id}/unit/${unitBlocks[0].id}`);
-    });
-
     it('should go to course home for an authentication_required error code', async () => {
       const { courseMetadata } = setUpWithDeniedStatus('authentication_required');
       await loadContainer();
@@ -505,6 +498,23 @@ describe('CoursewareContainer', () => {
 
       const startDate = '2/5/2013'; // This date is based on our courseMetadata factory's sample data.
       expect(global.location.href).toEqual(`http://localhost/redirect/dashboard?notlive=${startDate}`);
+    });
+  });
+
+  describe('redirects when canLoadCourseware is false', () => {
+    it('should go to legacy courseware for disabled frontend', async () => {
+      const courseMetadata = Factory.build('courseMetadata');
+      const courseHomeMetadata = Factory.build('courseHomeMetadata', {
+        can_load_courseware: false,
+      });
+      const courseId = courseMetadata.id;
+      const { courseBlocks, sequenceBlocks, unitBlocks } = buildSimpleCourseBlocks(courseId, courseMetadata.name);
+      setUpMockRequests({ courseBlocks, courseMetadata, courseHomeMetadata });
+      history.push(`/course/${courseId}/${sequenceBlocks[0].id}/${unitBlocks[0].id}`);
+
+      await loadContainer();
+
+      expect(global.location.href).toEqual(`http://localhost/redirect/courseware/${courseMetadata.id}/unit/${unitBlocks[0].id}`);
     });
   });
 });
