@@ -65,6 +65,16 @@ function LockPaywall({
     });
   };
 
+  const logClickPastExpiration = () => {
+    sendTrackEvent('edx.bi.ecommerce.gated_content.past_expiration.link_clicked', {
+      ...eventProperties,
+      linkCategory: 'gated_content',
+      linkName: 'course_details',
+      linkType: 'link',
+      pageName: 'in_course',
+    });
+  };
+
   return (
     <Alert variant="light" aria-live="off" icon={Locked} className="lock-paywall-container">
       <div className="row">
@@ -75,7 +85,7 @@ function LockPaywall({
           {pastExpirationDeadline ? (
             <div className="mb-2 upgrade-intro">
               {intl.formatMessage(messages['learn.lockPaywall.content.pastExpiration'])}
-              <Hyperlink destination={marketingUrl} target="_blank">{intl.formatMessage(messages['learn.lockPaywall.courseDetails'])}</Hyperlink>
+              <Hyperlink destination={marketingUrl} onClick={logClickPastExpiration} target="_blank">{intl.formatMessage(messages['learn.lockPaywall.courseDetails'])}</Hyperlink>
             </div>
           ) : (
             <div className="mb-2 upgrade-intro">
