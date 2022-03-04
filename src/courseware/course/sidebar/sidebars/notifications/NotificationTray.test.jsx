@@ -112,6 +112,24 @@ describe('NotificationTray', () => {
       .toBeInTheDocument();
   });
 
+  it('marks notification as seen 3 seconds later', async () => {
+    jest.useFakeTimers();
+    const onNotificationSeen = jest.fn();
+    await fetchAndRender(
+      <SidebarContext.Provider value={{
+        currentSidebar: ID,
+        courseId,
+        onNotificationSeen,
+      }}
+      >
+        <NotificationTray />
+      </SidebarContext.Provider>,
+    );
+    expect(onNotificationSeen).toHaveBeenCalledTimes(0);
+    jest.advanceTimersByTime(3000);
+    expect(onNotificationSeen).toHaveBeenCalledTimes(1);
+  });
+
   it('renders notification tray with full screen "Back to course" at responsive view', async () => {
     global.innerWidth = breakpoints.medium.maxWidth;
     const toggleNotificationTray = jest.fn();

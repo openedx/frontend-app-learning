@@ -68,18 +68,6 @@ describe('Notification Trigger', () => {
     expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
   });
 
-  it('renders notification trigger icon WITHOUT red dot 3 seconds later', async () => {
-    const container = renderWithProvider({ notificationStatus: 'active' });
-    expect(container).toBeInTheDocument();
-    expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
-    jest.useFakeTimers();
-    setTimeout(() => {
-      expect(localStorage.setItem).toHaveBeenCalledTimes(5);
-      expect(screen.queryByRole('notification-dot')).not.toBeInTheDocument();
-    }, 3000);
-    jest.runAllTimers();
-  });
-
   it('renders notification trigger icon WITHOUT red dot within the same phase', async () => {
     const container = renderWithProvider({
       upgradeNotificationLastSeen: 'sameState',
