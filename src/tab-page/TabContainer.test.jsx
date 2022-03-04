@@ -38,12 +38,10 @@ describe('Tab Container', () => {
       </Route>,
     );
 
-    expect(mockFetch)
-      .toHaveBeenCalledTimes(1)
-      .toHaveBeenCalledWith(courseId);
-    expect(mockDispatch)
-      .toHaveBeenCalledTimes(1)
-      .toHaveBeenCalledWith(courseId);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(courseId);
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    expect(mockDispatch).toHaveBeenCalledWith(courseId);
     expect(screen.getByTestId('TabPage')).toBeInTheDocument();
   });
 
@@ -67,9 +65,8 @@ describe('Tab Container', () => {
       />,
     );
 
-    expect(mockFetch)
-      .toHaveBeenCalledTimes(1)
-      .toHaveBeenCalledWith(courseId, targetUserId);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(courseId, targetUserId);
     expect(screen.getByTestId('TabPage')).toBeInTheDocument();
   });
 });

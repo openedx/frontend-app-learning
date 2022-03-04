@@ -24,32 +24,36 @@ jest.mock('@edx/frontend-platform/analytics');
 describe('Course Exit Pages', () => {
   let axiosMock;
   let store;
-  const defaultMetadata = Factory.build('courseMetadata', {
+  const coursewareMetadata = Factory.build('courseMetadata', {
     user_has_passing_grade: true,
     end: '2014-02-05T05:00:00Z',
   });
-  const { courseBlocks: defaultCourseBlocks } = buildSimpleCourseBlocks(defaultMetadata.id, defaultMetadata.name);
+  const courseId = coursewareMetadata.id;
+  const courseHomeMetadata = Factory.build('courseHomeMetadata');
+  const { courseBlocks: defaultCourseBlocks } = buildSimpleCourseBlocks(courseId, coursewareMetadata.name);
 
-  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
-  courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
+  let coursewareMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
+  coursewareMetadataUrl = appendBrowserTimezoneToUrl(coursewareMetadataUrl);
+  const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`);
   const discoveryRecommendationsUrl = new RegExp(`${getConfig().DISCOVERY_API_BASE_URL}/api/v1/course_recommendations/*`);
   const enrollmentsUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment*`);
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
 
   function setMetadata(attributes) {
-    const courseMetadata = { ...defaultMetadata, ...attributes };
-    axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+    const courseMetadata = { ...coursewareMetadata, ...attributes };
+    axiosMock.onGet(coursewareMetadataUrl).reply(200, courseMetadata);
   }
 
   async function fetchAndRender(component) {
-    await executeThunk(fetchCourse(defaultMetadata.id), store.dispatch);
+    await executeThunk(fetchCourse(courseId), store.dispatch);
     render(component, { store });
   }
 
   beforeEach(() => {
     store = initializeStore();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
+    axiosMock.onGet(coursewareMetadataUrl).reply(200, coursewareMetadata);
+    axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
     axiosMock.onGet(discoveryRecommendationsUrl).reply(200,
       Factory.build('courseRecommendations', {}, { numRecs: 2 }));
     axiosMock.onGet(enrollmentsUrl).reply(200, []);
@@ -94,7 +98,7 @@ describe('Course Exit Pages', () => {
         },
       });
       await fetchAndRender(<CourseExit />);
-      expect(global.location.href).toEqual(`http://localhost/course/${defaultMetadata.id}`);
+      expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
     });
   });
 
@@ -160,7 +164,7 @@ describe('Course Exit Pages', () => {
     it('Displays verify identity link', async () => {
       setMetadata({
         certificate_data: { cert_status: 'unverified' },
-        verify_identity_url: `${getConfig().LMS_BASE_URL}/verify_student/verify-now/${defaultMetadata.id}/`,
+        verify_identity_url: `${getConfig().LMS_BASE_URL}/verify_student/verify-now/${courseId}/`,
       });
       await fetchAndRender(<CourseCelebration />);
       expect(screen.getByRole('link', { name: 'Verify ID now' })).toBeInTheDocument();
@@ -171,7 +175,7 @@ describe('Course Exit Pages', () => {
       setMetadata({
         certificate_data: { cert_status: 'unverified' },
         verification_status: 'pending',
-        verify_identity_url: `${getConfig().LMS_BASE_URL}/verify_student/verify-now/${defaultMetadata.id}/`,
+        verify_identity_url: `${getConfig().LMS_BASE_URL}/verify_student/verify-now/${courseId}/`,
       });
       await fetchAndRender(<CourseCelebration />);
       expect(screen.getByText('Your ID verification is pending and your certificate will be available once approved.')).toBeInTheDocument();
@@ -367,7 +371,7 @@ describe('Course Exit Pages', () => {
   describe('Course in progress experience', () => {
     it('Displays link to dates tab', async () => {
       setMetadata({ user_has_passing_grade: false });
-      const { courseBlocks } = buildSimpleCourseBlocks(defaultMetadata.id, defaultMetadata.name,
+      const { courseBlocks } = buildSimpleCourseBlocks(courseId, coursewareMetadata.name,
         { hasScheduledContent: true });
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
 
@@ -394,7 +398,7 @@ describe('Course Exit Pages', () => {
     const url = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
     await waitFor(() => {
       expect(axiosMock.history.post[0].url).toMatch(url);
-      expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${defaultMetadata.id}","subscribed_to_reminders":false}`);
+      expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","subscribed_to_reminders":false}`);
     });
   });
 });

@@ -28,6 +28,9 @@ describe('NotificationTray', () => {
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
+  const courseHomeMetadata = Factory.build('courseHomeMetadata');
+  const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`);
+
   function setMetadata(attributes, options) {
     const courseMetadata = Factory.build('courseMetadata', attributes, options);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
@@ -43,6 +46,7 @@ describe('NotificationTray', () => {
     store = initializeStore();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
+    axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
   });
 
   it('renders notification tray and close tray button', async () => {

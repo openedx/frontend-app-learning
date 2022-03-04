@@ -139,7 +139,7 @@ describe('Course Home Service', () => {
         title: 'Demonstration Course',
         username: 'edx',
       };
-      const response = await getCourseHomeCourseMetadata(courseId);
+      const response = await getCourseHomeCourseMetadata(courseId, 'outline');
       expect(response).toBeTruthy();
       expect(response).toEqual(normalizedTabData);
     });
