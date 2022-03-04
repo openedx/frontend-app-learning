@@ -94,4 +94,28 @@ describe('Lock Paywall', () => {
     expect(screen.getByText('View Course Details'))
       .toHaveAttribute('href', 'https://example.com/course-details');
   });
+
+  it('sends analytics event onClick of past expiration course details link', async () => {
+    sendTrackEvent.mockClear();
+    const courseMetadata = Factory.build('courseMetadata', {
+      access_expiration: {
+        expiration_date: '1995-02-22T05:00:00Z',
+      },
+      marketing_url: 'https://example.com/course-details',
+    });
+    const testStore = await initializeTestStore({ courseMetadata }, false);
+    render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+    const courseDetailsLink = await screen.getByText('View Course Details');
+    fireEvent.click(courseDetailsLink);
+
+    expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+    expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.gated_content.past_expiration.link_clicked', {
+      org_key: 'edX',
+      courserun_key: mockData.courseId,
+      linkCategory: 'gated_content',
+      linkName: 'course_details',
+      linkType: 'link',
+      pageName: 'in_course',
+    });
+  });
 });
