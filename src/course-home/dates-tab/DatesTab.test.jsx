@@ -140,7 +140,7 @@ describe('DatesTab', () => {
       userEvent.hover(tipIcon);
       const tooltip = screen.getByText(tipText); // now it's there
       userEvent.unhover(tipIcon);
-      waitForElementToBeRemoved(tooltip); // and it's gone again
+      await waitForElementToBeRemoved(tooltip); // and it's gone again
     });
   });
 
