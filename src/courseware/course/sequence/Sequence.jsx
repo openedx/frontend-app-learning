@@ -19,12 +19,12 @@ import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages
 import { useModel } from '../../../generic/model-store';
 
 import CourseLicense from '../course-license';
+import Sidebar from '../sidebar/Sidebar';
+import SidebarTriggers from '../sidebar/SidebarTriggers';
 import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
-import NotificationTray from '../NotificationTray';
-import NotificationTrigger from '../NotificationTrigger';
 
 /** [MM-P2P] Experiment */
 import { isMobile } from '../../../experiments/mm-p2p/utils';
@@ -38,14 +38,6 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
-  toggleNotificationTray,
-  notificationTrayVisible,
-  isNotificationTrayVisible,
-  notificationStatus,
-  setNotificationStatus,
-  onNotificationSeen,
-  upgradeNotificationCurrentState,
-  setupgradeNotificationCurrentState,
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
@@ -159,8 +151,8 @@ function Sequence({
   };
 
   const defaultContent = (
-    <div className="sequence-container" style={{ display: 'inline-flex', flexDirection: 'row' }}>
-      <div className={classNames('sequence', { 'position-relative': shouldDisplayNotificationTriggerInSequence })} style={{ width: '100%' }}>
+    <div className="sequence-container d-inline-flex flex-row">
+      <div className={classNames('sequence w-100', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
         <SequenceNavigation
           sequenceId={sequenceId}
           unitId={unitId}
@@ -183,17 +175,7 @@ function Sequence({
           }}
           goToCourseExitPage={() => goToCourseExitPage()}
         />
-
-        {shouldDisplayNotificationTriggerInSequence ? (
-          <NotificationTrigger
-            courseId={courseId}
-            toggleNotificationTray={toggleNotificationTray}
-            isNotificationTrayVisible={isNotificationTrayVisible}
-            notificationStatus={notificationStatus}
-            setNotificationStatus={setNotificationStatus}
-            upgradeNotificationCurrentState={upgradeNotificationCurrentState}
-          />
-        ) : null}
+        {shouldDisplayNotificationTriggerInSequence && <SidebarTriggers />}
 
         <div className="unit-container flex-grow-1">
           <SequenceContent
@@ -202,7 +184,6 @@ function Sequence({
             sequenceId={sequenceId}
             unitId={unitId}
             unitLoadedHandler={handleUnitLoaded}
-            notificationTrayVisible={notificationTrayVisible}
             /** [MM-P2P] Experiment */
             mmp2p={mmp2p}
           />
@@ -223,16 +204,7 @@ function Sequence({
           )}
         </div>
       </div>
-      {notificationTrayVisible ? (
-        <NotificationTray
-          toggleNotificationTray={toggleNotificationTray}
-          notificationTrayVisible={notificationTrayVisible}
-          notificationStatus={notificationStatus}
-          onNotificationSeen={onNotificationSeen}
-          upgradeNotificationCurrentState={upgradeNotificationCurrentState}
-          setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
-        />
-      ) : null }
+      <Sidebar />
 
       {/** [MM-P2P] Experiment */}
       {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
@@ -277,14 +249,6 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
-  toggleNotificationTray: PropTypes.func,
-  notificationTrayVisible: PropTypes.bool,
-  isNotificationTrayVisible: PropTypes.func,
-  notificationStatus: PropTypes.string.isRequired,
-  setNotificationStatus: PropTypes.func.isRequired,
-  onNotificationSeen: PropTypes.func,
-  upgradeNotificationCurrentState: PropTypes.string.isRequired,
-  setupgradeNotificationCurrentState: PropTypes.func.isRequired,
 
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
@@ -303,11 +267,6 @@ Sequence.propTypes = {
 Sequence.defaultProps = {
   sequenceId: null,
   unitId: null,
-  toggleNotificationTray: null,
-  notificationTrayVisible: null,
-  isNotificationTrayVisible: null,
-  onNotificationSeen: null,
-
   /** [MM-P2P] Experiment */
   mmp2p: {
     flyover: { isVisible: false },

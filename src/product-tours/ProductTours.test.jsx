@@ -283,6 +283,8 @@ describe('Courseware Tour', () => {
 
       const blockUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/*`);
       axiosMock.onPost(blockUrlRegExp).reply(200, { complete: true });
+      const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
+      axiosMock.onGet(discussionConfigUrl).reply(200, { provider: 'legacy' });
 
       history.push(`/course/${courseId}/${defaultSequenceBlock.id}/${unitBlocks[0].id}`);
     });

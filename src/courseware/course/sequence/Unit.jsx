@@ -1,25 +1,21 @@
-import React, {
-  Suspense,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useLayoutEffect,
-} from 'react';
-import { useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { AppContext, ErrorPage } from '@edx/frontend-platform/react';
 import { Modal } from '@edx/paragon';
-import messages from './messages';
-import BookmarkButton from '../bookmark/BookmarkButton';
-import { useModel } from '../../../generic/model-store';
-import PageLoading from '../../../generic/PageLoading';
+import PropTypes from 'prop-types';
+import React, {
+  Suspense, useCallback, useContext, useEffect, useLayoutEffect, useState,
+} from 'react';
+import { useDispatch } from 'react-redux';
 import { processEvent } from '../../../course-home/data/thunks';
-import { fetchCourse } from '../../data';
 /** [MM-P2P] Experiment */
 import { MMP2PLockPaywall } from '../../../experiments/mm-p2p';
+import { useEventListener } from '../../../generic/hooks';
+import { useModel } from '../../../generic/model-store';
+import PageLoading from '../../../generic/PageLoading';
+import { fetchCourse } from '../../data';
+import BookmarkButton from '../bookmark/BookmarkButton';
+import messages from './messages';
 
 const HonorCode = React.lazy(() => import('./honor-code'));
 const LockPaywall = React.lazy(() => import('./lock-paywall'));
@@ -85,7 +81,6 @@ function Unit({
   onLoaded,
   id,
   intl,
-  notificationTrayVisible,
   /** [MM-P2P] Experiment */
   mmp2p,
 }) {
@@ -121,40 +116,31 @@ function Unit({
     }
   }, [userNeedsIntegritySignature]);
 
-  // We use this ref so that we can hold a reference to the currently active event listener.
-  const messageEventListenerRef = useRef(null);
+  const receiveMessage = useCallback(({ data }) => {
+    const {
+      type,
+      payload,
+    } = data;
+    if (type === 'plugin.resize') {
+      setIframeHeight(payload.height);
+      if (!hasLoaded && iframeHeight === 0 && payload.height > 0) {
+        setHasLoaded(true);
+        if (onLoaded) {
+          onLoaded();
+        }
+      }
+    } else if (type === 'plugin.modal') {
+      payload.open = true;
+      setModalOptions(payload);
+    } else if (data.offset) {
+      // We listen for this message from LMS to know when the page needs to
+      // be scrolled to another location on the page.
+      window.scrollTo(0, data.offset + document.getElementById('unit-iframe').offsetTop);
+    }
+  }, [id, setIframeHeight, hasLoaded, iframeHeight, setHasLoaded, onLoaded]);
+  useEventListener('message', receiveMessage);
   useEffect(() => {
     sendUrlHashToFrame(document.getElementById('unit-iframe'));
-    function receiveMessage(event) {
-      const { type, payload } = event.data;
-      if (type === 'plugin.resize') {
-        setIframeHeight(payload.height);
-        if (!hasLoaded && iframeHeight === 0 && payload.height > 0) {
-          setHasLoaded(true);
-          if (onLoaded) {
-            onLoaded();
-          }
-        }
-      } else if (type === 'plugin.modal') {
-        payload.open = true;
-        setModalOptions(payload);
-      } else if (event.data.offset) {
-        // We listen for this message from LMS to know when the page needs to
-        // be scrolled to another location on the page.
-        window.scrollTo(0, event.data.offset + document.getElementById('unit-iframe').offsetTop);
-      }
-    }
-    // If we currently have an event listener, remove it.
-    if (messageEventListenerRef.current !== null) {
-      global.removeEventListener('message', messageEventListenerRef.current);
-      messageEventListenerRef.current = null;
-    }
-    // Now add our new receiveMessage handler as the event listener.
-    global.addEventListener('message', receiveMessage);
-    // And then save it to our ref for next time.
-    messageEventListenerRef.current = receiveMessage;
-    // When the component finally unmounts, use the ref to remove the correct handler.
-    return () => global.removeEventListener('message', messageEventListenerRef.current);
   }, [id, setIframeHeight, hasLoaded, iframeHeight, setHasLoaded, onLoaded]);
 
   return (
@@ -174,7 +160,7 @@ function Unit({
             />
           )}
         >
-          <LockPaywall courseId={courseId} notificationTrayVisible={notificationTrayVisible} />
+          <LockPaywall courseId={courseId} />
         </Suspense>
       )}
       { /** [MM-P2P] Experiment */ }
@@ -266,7 +252,6 @@ Unit.propTypes = {
   id: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   onLoaded: PropTypes.func,
-  notificationTrayVisible: PropTypes.bool.isRequired,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({
     state: PropTypes.shape({

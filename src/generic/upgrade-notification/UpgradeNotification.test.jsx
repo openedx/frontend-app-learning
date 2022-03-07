@@ -126,7 +126,7 @@ describe('Upgrade Notification', () => {
     });
     expect(screen.getByRole('heading', { name: 'Course Access Expiration' })).toBeInTheDocument();
     expect(screen.getByText('12 hours left')).toBeInTheDocument();
-    expect(screen.getByText(/You will lose all access to this course.*?on/s).textContent).toMatch('You will lose all access to this course, including any progress, on April 13.');
+    expect(screen.getByText(/You will lose all access to this course.*?on/s)).toHaveTextContent('You will lose all access to this course, including any progress, on April 13.');
     expect(screen.getByText(/Upgrading your course enables you/s).textContent).toMatch('Upgrading your course enables you to pursue a verified certificate and unlocks numerous features. Learn more about the benefits of upgrading.');
     expect(screen.getByRole('link', { name: 'Upgrade for $149' })).toBeInTheDocument();
   });

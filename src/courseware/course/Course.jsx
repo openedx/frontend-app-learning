@@ -12,10 +12,10 @@ import Sequence from './sequence';
 import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
 import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
-import NotificationTrigger from './NotificationTrigger';
+import SidebarProvider from './sidebar/SidebarContextProvider';
+import SidebarTriggers from './sidebar/SidebarTriggers';
 
 import { useModel } from '../../generic/model-store';
-import { getLocalStorage, setLocalStorage } from '../../data/localStorage';
 import { getSessionStorage, setSessionStorage } from '../../data/sessionStorage';
 
 /** [MM-P2P] Experiment */
@@ -43,7 +43,6 @@ function Course({
   const {
     celebrations,
     courseGoals,
-    verifiedMode,
   } = course;
 
   // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
@@ -57,10 +56,10 @@ function Course({
   const [weeklyGoalCelebrationOpen, setWeeklyGoalCelebrationOpen] = useState(
     celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal,
   );
+  const shouldDisplayTriggers = windowWidth >= breakpoints.small.minWidth;
   const daysPerWeek = courseGoals?.selectedGoal?.daysPerWeek;
 
   // Responsive breakpoints for showing the notification button/tray
-  const shouldDisplayNotificationTriggerInCourse = windowWidth >= breakpoints.small.minWidth;
   const shouldDisplayNotificationTrayOpenOnLoad = windowWidth > breakpoints.medium.minWidth;
 
   // Course specific notification tray open/closed persistance by browser session
@@ -73,45 +72,15 @@ function Course({
     }
   }
 
-  const [notificationTrayVisible, setNotificationTray] = verifiedMode
-    && shouldDisplayNotificationTrayOpenOnLoad && getSessionStorage(`notificationTrayStatus.${courseId}`) !== 'closed' ? useState(true) : useState(false);
-
-  const isNotificationTrayVisible = () => notificationTrayVisible && setNotificationTray;
-
-  const toggleNotificationTray = () => {
-    if (notificationTrayVisible) { setNotificationTray(false); } else { setNotificationTray(true); }
-    if (getSessionStorage(`notificationTrayStatus.${courseId}`) === 'open') {
-      setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
-    } else {
-      setSessionStorage(`notificationTrayStatus.${courseId}`, 'open');
-    }
-  };
-
-  if (!getLocalStorage(`notificationStatus.${courseId}`)) {
-    setLocalStorage(`notificationStatus.${courseId}`, 'active'); // Show red dot on notificationTrigger until seen
-  }
-
-  if (!getLocalStorage(`upgradeNotificationCurrentState.${courseId}`)) {
-    setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'initialize');
-  }
-
-  const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
-  const [upgradeNotificationCurrentState, setupgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
-
-  const onNotificationSeen = () => {
-    setNotificationStatus('inactive');
-    setLocalStorage(`notificationStatus.${courseId}`, 'inactive');
-  };
-
   /** [MM-P2P] Experiment */
   const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
 
   return (
-    <>
+    <SidebarProvider courseId={courseId} unitId={unitId}>
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
-      <div className="position-relative">
+      <div className="position-relative d-flex align-items-start">
         <CourseBreadcrumbs
           courseId={courseId}
           sectionId={section ? section.id : null}
@@ -121,17 +90,9 @@ function Course({
           //* * [MM-P2P] Experiment */
           mmp2p={MMP2P}
         />
-
-        { shouldDisplayNotificationTriggerInCourse ? (
-          <NotificationTrigger
-            courseId={courseId}
-            toggleNotificationTray={toggleNotificationTray}
-            isNotificationTrayVisible={isNotificationTrayVisible}
-            notificationStatus={notificationStatus}
-            setNotificationStatus={setNotificationStatus}
-            upgradeNotificationCurrentState={upgradeNotificationCurrentState}
-          />
-        ) : null}
+        {shouldDisplayTriggers && (
+          <SidebarTriggers />
+        )}
       </div>
 
       <AlertList topic="sequence" />
@@ -142,14 +103,6 @@ function Course({
         unitNavigationHandler={unitNavigationHandler}
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
-        toggleNotificationTray={toggleNotificationTray}
-        isNotificationTrayVisible={isNotificationTrayVisible}
-        notificationTrayVisible={notificationTrayVisible}
-        notificationStatus={notificationStatus}
-        setNotificationStatus={setNotificationStatus}
-        onNotificationSeen={onNotificationSeen}
-        upgradeNotificationCurrentState={upgradeNotificationCurrentState}
-        setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
         //* * [MM-P2P] Experiment */
         mmp2p={MMP2P}
       />
@@ -167,7 +120,7 @@ function Course({
       <ContentTools course={course} />
       { /** [MM-P2P] Experiment */ }
       { MMP2P.meta.modalLock && <MMP2PBlockModal options={MMP2P} /> }
-    </>
+    </SidebarProvider>
   );
 }
 

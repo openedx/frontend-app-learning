@@ -1,8 +1,9 @@
 import React from 'react';
 import { Factory } from 'rosie';
 import {
-  render, initializeTestStore, screen, fireEvent,
-} from '../../setupTest';
+  fireEvent, initializeTestStore, render, screen,
+} from '../../../../../setupTest';
+import SidebarContext from '../../SidebarContext';
 import NotificationTrigger from './NotificationTrigger';
 
 describe('Notification Trigger', () => {
@@ -12,7 +13,11 @@ describe('Notification Trigger', () => {
   const courseMetadata = Factory.build('courseMetadata');
 
   beforeEach(async () => {
-    await initializeTestStore({ courseMetadata, excludeFetchCourse: true, excludeFetchSequence: true });
+    await initializeTestStore({
+      courseMetadata,
+      excludeFetchCourse: true,
+      excludeFetchSequence: true,
+    });
     mockData = {
       courseId: courseMetadata.id,
       toggleNotificationTray: () => {},
@@ -31,13 +36,23 @@ describe('Notification Trigger', () => {
     setItemSpy.mockRestore();
   });
 
+  function renderWithProvider(data, onClick = () => {
+  }) {
+    const { container } = render(
+      <SidebarContext.Provider value={{ ...mockData, ...data }}>
+        <NotificationTrigger onClick={onClick} />
+      </SidebarContext.Provider>,
+    );
+    return container;
+  }
+
   it('handles onClick event toggling the notification tray', async () => {
     const toggleNotificationTray = jest.fn();
     const testData = {
       ...mockData,
       toggleNotificationTray,
     };
-    render(<NotificationTrigger {...testData} />);
+    renderWithProvider(testData, toggleNotificationTray);
 
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
     expect(notificationTrigger).toBeInTheDocument();
@@ -46,7 +61,7 @@ describe('Notification Trigger', () => {
   });
 
   it('renders notification trigger icon with red dot when notificationStatus is active', async () => {
-    const { container } = render(<NotificationTrigger {...mockData} notificationStatus="active" />);
+    const container = renderWithProvider({ notificationStatus: 'active' });
     expect(container).toBeInTheDocument();
     const buttonIcon = container.querySelectorAll('svg');
     expect(buttonIcon).toHaveLength(1);
@@ -54,44 +69,44 @@ describe('Notification Trigger', () => {
   });
 
   it('renders notification trigger icon WITHOUT red dot 3 seconds later', async () => {
-    const { container } = render(<NotificationTrigger {...mockData} notificationStatus="active" />);
+    const container = renderWithProvider({ notificationStatus: 'active' });
     expect(container).toBeInTheDocument();
     expect(screen.getByTestId('notification-dot')).toBeInTheDocument();
     jest.useFakeTimers();
     setTimeout(() => {
-      expect(localStorage.setItem).toHaveBeenCalledTimes(2);
+      expect(localStorage.setItem).toHaveBeenCalledTimes(5);
       expect(screen.queryByRole('notification-dot')).not.toBeInTheDocument();
     }, 3000);
     jest.runAllTimers();
   });
 
   it('renders notification trigger icon WITHOUT red dot within the same phase', async () => {
-    const { container } = render(
-      <NotificationTrigger
-        {...mockData}
-        upgradeNotificationCurrentState="sameState"
-        upgradeNotificationLastSeen="sameState"
-      />,
-    );
-    expect(container).toBeInTheDocument();
-    expect(localStorage.getItem).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`);
-    expect(localStorage.getItem(`upgradeNotificationLastSeen.${mockData.courseId}`)).toBe('"sameState"');
+    const container = renderWithProvider({
+      upgradeNotificationLastSeen: 'sameState',
+      upgradeNotificationCurrentState: 'sameState',
+    });
+    expect(container)
+      .toBeInTheDocument();
+    expect(localStorage.getItem)
+      .toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`);
+    expect(localStorage.getItem(`upgradeNotificationLastSeen.${mockData.courseId}`))
+      .toBe('"sameState"');
     const buttonIcon = container.querySelectorAll('svg');
-    expect(buttonIcon).toHaveLength(1);
-    expect(screen.queryByRole('notification-dot')).not.toBeInTheDocument();
+    expect(buttonIcon)
+      .toHaveLength(1);
+    expect(screen.queryByRole('notification-dot'))
+      .not
+      .toBeInTheDocument();
   });
 
   // Rendering NotificationTrigger has the effect of calling UpdateUpgradeNotificationLastSeen(),
   // if upgradeNotificationLastSeen is different than upgradeNotificationCurrentState
   // it should update localStorage accordingly
   it('makes the right updates when rendering a new phase from an UpgradeNotification change (before -> after)', async () => {
-    const { container } = render(
-      <NotificationTrigger
-        {...mockData}
-        upgradeNotificationLastSeen="before"
-        upgradeNotificationCurrentState="after"
-      />,
-    );
+    const container = renderWithProvider({
+      upgradeNotificationLastSeen: 'before',
+      upgradeNotificationCurrentState: 'after',
+    });
     expect(container).toBeInTheDocument();
 
     // verify localStorage get/set are called with correct arguments
@@ -110,13 +125,10 @@ describe('Notification Trigger', () => {
     localStorage.setItem(`upgradeNotificationLastSeen.${courseMetadataSecondCourse.id}`, '"accessDateView"');
     localStorage.setItem(`notificationStatus.${courseMetadataSecondCourse.id}`, '"inactive"');
 
-    const { container } = render(
-      <NotificationTrigger
-        {...mockData}
-        upgradeNotificationLastSeen="before"
-        upgradeNotificationCurrentState="after"
-      />,
-    );
+    const container = renderWithProvider({
+      upgradeNotificationLastSeen: 'before',
+      upgradeNotificationCurrentState: 'after',
+    });
     expect(container).toBeInTheDocument();
     // Verify localStorage was updated for the original course
     expect(localStorage.getItem(`upgradeNotificationLastSeen.${mockData.courseId}`)).toBe('"after"');

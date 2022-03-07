@@ -16,7 +16,6 @@ function SequenceContent({
   sequenceId,
   unitId,
   unitLoadedHandler,
-  notificationTrayVisible,
   /** [MM-P2P] Experiment */
   mmp2p,
 }) {
@@ -62,7 +61,6 @@ function SequenceContent({
       key={unitId}
       id={unitId}
       onLoaded={unitLoadedHandler}
-      notificationTrayVisible={notificationTrayVisible}
       /** [MM-P2P] Experiment */
       mmp2p={mmp2p}
     />
@@ -75,7 +73,6 @@ SequenceContent.propTypes = {
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   unitLoadedHandler: PropTypes.func.isRequired,
-  notificationTrayVisible: PropTypes.bool.isRequired,
   intl: intlShape.isRequired,
   /** [MM-P2P] Experiment */
   mmp2p: PropTypes.shape({

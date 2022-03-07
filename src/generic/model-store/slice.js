@@ -1,19 +1,22 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
-function add(state, modelType, model) {
-  const { id } = model;
+function add(state, modelType, model, idField) {
+  idField = idField ?? 'id';
+  const id = model[idField];
   if (state[modelType] === undefined) {
     state[modelType] = {};
   }
   state[modelType][id] = model;
 }
 
-function update(state, modelType, model) {
+function update(state, modelType, model, idField) {
+  idField = idField ?? 'id';
+  const id = model[idField];
   if (state[modelType] === undefined) {
     state[modelType] = {};
   }
-  state[modelType][model.id] = { ...state[modelType][model.id], ...model };
+  state[modelType][id] = { ...state[modelType][id], ...model };
 }
 
 function remove(state, modelType, id) {
@@ -29,28 +32,28 @@ const slice = createSlice({
   initialState: {},
   reducers: {
     addModel: (state, { payload }) => {
-      const { modelType, model } = payload;
-      add(state, modelType, model);
+      const { modelType, model, idField } = payload;
+      add(state, modelType, model, idField);
     },
     addModels: (state, { payload }) => {
-      const { modelType, models } = payload;
-      models.forEach(model => add(state, modelType, model));
+      const { modelType, models, idField } = payload;
+      models.forEach(model => add(state, modelType, model, idField));
     },
     addModelsMap: (state, { payload }) => {
-      const { modelType, modelsMap } = payload;
-      Object.values(modelsMap).forEach(model => add(state, modelType, model));
+      const { modelType, modelsMap, idField } = payload;
+      Object.values(modelsMap).forEach(model => add(state, modelType, model, idField));
     },
     updateModel: (state, { payload }) => {
-      const { modelType, model } = payload;
-      update(state, modelType, model);
+      const { modelType, model, idField } = payload;
+      update(state, modelType, model, idField);
     },
     updateModels: (state, { payload }) => {
-      const { modelType, models } = payload;
-      models.forEach(model => update(state, modelType, model));
+      const { modelType, models, idField } = payload;
+      models.forEach(model => update(state, modelType, model, idField));
     },
     updateModelsMap: (state, { payload }) => {
-      const { modelType, modelsMap } = payload;
-      Object.values(modelsMap).forEach(model => update(state, modelType, model));
+      const { modelType, modelsMap, idField } = payload;
+      Object.values(modelsMap).forEach(model => update(state, modelType, model, idField));
     },
     removeModel: (state, { payload }) => {
       const { modelType, id } = payload;

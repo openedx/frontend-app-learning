@@ -363,9 +363,7 @@
 
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
-@import "courseware/course/NotificationTray.scss";
-@import "courseware/course/NotificationTrigger.scss";
-@import "courseware/course/NotificationIcon.scss";
+@import "courseware/course/sidebar/sidebars/notifications/NotificationIcon.scss";
 @import "courseware/course/sequence/lock-paywall/LockPaywall.scss";
 @import "shared/streak-celebration/StreakCelebrationModal.scss";
 @import "courseware/course/content-tools/calculator/calculator.scss";
