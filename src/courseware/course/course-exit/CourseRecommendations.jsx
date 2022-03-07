@@ -143,15 +143,17 @@ function CourseRecommendations({ intl, variant }) {
     dispatch(fetchCourseRecommendations(courseKey, courseId));
   }, [dispatch]);
 
+  const recommendationsLength = recommendations ? recommendations.length : 0;
+
   if (recommendationsStatus && recommendationsStatus !== LOADING) {
     sendTrackEvent('edx.ui.lms.course_exit.recommendations.viewed', {
       course_key: courseKey,
       recommendations_status: recommendationsStatus,
-      recommendations_length: recommendations ? recommendations.length : 0,
+      recommendations_length: recommendationsLength,
     });
   }
 
-  if (recommendationsStatus === FAILED || (recommendationsStatus === LOADED && recommendations.length < 2)) {
+  if (recommendationsStatus === FAILED || (recommendationsStatus === LOADED && recommendationsLength < 2)) {
     return (<CatalogSuggestion variant={variant} />);
   }
 
@@ -177,7 +179,7 @@ function CourseRecommendations({ intl, variant }) {
       <div className="mb-2 mt-3">
         <DataTable
           isPaginated
-          itemCount={recommendations.length}
+          itemCount={recommendationsLength}
           data={recommendationData}
           columns={[{ Header: 'Title', accessor: 'title' }]}
           initialState={{
