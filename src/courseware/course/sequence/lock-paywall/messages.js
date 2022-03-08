@@ -16,10 +16,10 @@ const messages = defineMessages({
     defaultMessage: 'The upgrade deadline for this course passed. To upgrade, enroll in the next available session. ',
     description: 'Message shown to indicate that a piece of content is unavailable to audit track users in a course where the expiration deadline has passed.',
   },
-  'learn.lockPaywall.courseDetails': {
-    id: 'learn.lockPaywall.courseDetails',
-    defaultMessage: 'View Course Details',
-    description: 'Link to the course details page for this course with a past expiration date.',
+  'learn.lockPaywall.exploreAll': {
+    id: 'learn.lockPaywall.exploreAll',
+    defaultMessage: 'Explore all courses',
+    description: 'Link to the search page if past access expiration date',
   },
   'learn.lockPaywall.example.alt': {
     id: 'learn.lockPaywall.example.alt',

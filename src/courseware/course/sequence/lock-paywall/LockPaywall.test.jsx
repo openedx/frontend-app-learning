@@ -86,13 +86,11 @@ describe('Lock Paywall', () => {
       access_expiration: {
         expiration_date: '1995-02-22T05:00:00Z',
       },
-      marketing_url: 'https://example.com/course-details',
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
     render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
     expect(screen.getByText('The upgrade deadline for this course passed. To upgrade, enroll in the next available session.')).toBeInTheDocument();
-    expect(screen.getByText('View Course Details'))
-      .toHaveAttribute('href', 'https://example.com/course-details');
+    expect(screen.getByText('Explore all courses'));
   });
 
   it('sends analytics event onClick of past expiration course details link', async () => {
@@ -101,11 +99,10 @@ describe('Lock Paywall', () => {
       access_expiration: {
         expiration_date: '1995-02-22T05:00:00Z',
       },
-      marketing_url: 'https://example.com/course-details',
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
     render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-    const courseDetailsLink = await screen.getByText('View Course Details');
+    const courseDetailsLink = await screen.getByText('Explore all courses');
     fireEvent.click(courseDetailsLink);
 
     expect(sendTrackEvent).toHaveBeenCalledTimes(1);

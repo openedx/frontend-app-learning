@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
@@ -26,7 +27,6 @@ function LockPaywall({
   const course = useModel('coursewareMeta', courseId);
   const {
     accessExpiration,
-    marketingUrl,
     offer,
     org,
     verifiedMode,
@@ -85,7 +85,7 @@ function LockPaywall({
           {pastExpirationDeadline ? (
             <div className="mb-2 upgrade-intro">
               {intl.formatMessage(messages['learn.lockPaywall.content.pastExpiration'])}
-              <Hyperlink destination={marketingUrl} onClick={logClickPastExpiration} target="_blank">{intl.formatMessage(messages['learn.lockPaywall.courseDetails'])}</Hyperlink>
+              <Hyperlink destination={`${getConfig().MARKETING_SITE_BASE_URL}/search?tab=course`} onClick={logClickPastExpiration} target="_blank">{intl.formatMessage(messages['learn.lockPaywall.exploreAll'])}</Hyperlink>
             </div>
           ) : (
             <div className="mb-2 upgrade-intro">
