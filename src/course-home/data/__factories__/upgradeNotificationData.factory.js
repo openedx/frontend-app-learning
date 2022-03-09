@@ -5,7 +5,6 @@ Factory.define('upgradeNotificationData')
   .option('dateBlocks', [])
   .option('offer', null)
   .option('userTimezone', null)
-  .option('accessExpiration', null)
   .option('contentTypeGatingEnabled', false)
   .attr('courseId', 'course-v1:edX+DemoX+Demo_Course')
   .attr('upsellPageName', 'test')
@@ -18,4 +17,9 @@ Factory.define('upgradeNotificationData')
     upgradeUrl: `${host}/dashboard`,
   }))
   .attr('org', 'edX')
+  .attrs({
+    accessExpiration: {
+      expiration_date: '1950-07-13T02:04:49.040006Z',
+    },
+  })
   .attr('timeOffsetMillis', 0);
