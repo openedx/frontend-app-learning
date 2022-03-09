@@ -334,6 +334,16 @@ function UpgradeNotification({
     });
   };
 
+  const logClickPastExpiration = () => {
+    sendTrackEvent('edx.bi.ecommerce.upgrade_notification.past_expiration.button_clicked', {
+      ...eventProperties,
+      linkCategory: 'upgrade_notification',
+      linkName: `${upsellPageName}_course_details`,
+      linkType: 'button',
+      pageName: upsellPageName,
+    });
+  };
+
   /*
   There are 5 parts that change in the upgrade card:
     upgradeNotificationHeaderText
@@ -443,6 +453,7 @@ function UpgradeNotification({
     callToActionButton = (
       <Button
         variant="primary"
+        onClick={logClickPastExpiration}
         href={marketingUrl}
         block
       >
