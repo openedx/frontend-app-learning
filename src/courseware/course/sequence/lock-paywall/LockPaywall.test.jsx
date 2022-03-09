@@ -110,7 +110,7 @@ describe('Lock Paywall', () => {
       org_key: 'edX',
       courserun_key: mockData.courseId,
       linkCategory: 'gated_content',
-      linkName: 'course_details',
+      linkName: 'search_courses',
       linkType: 'link',
       pageName: 'in_course',
     });

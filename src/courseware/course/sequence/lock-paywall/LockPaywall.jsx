@@ -69,7 +69,7 @@ function LockPaywall({
     sendTrackEvent('edx.bi.ecommerce.gated_content.past_expiration.link_clicked', {
       ...eventProperties,
       linkCategory: 'gated_content',
-      linkName: 'course_details',
+      linkName: 'search_courses',
       linkType: 'link',
       pageName: 'in_course',
     });
