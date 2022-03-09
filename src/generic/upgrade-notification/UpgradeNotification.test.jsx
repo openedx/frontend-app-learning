@@ -294,4 +294,29 @@ describe('Upgrade Notification', () => {
     expect(screen.getByText(/To upgrade/s).textContent).toMatch('To upgrade, enroll in the next available session');
     expect(screen.getByRole('button', { name: 'View Course Details' })).toBeInTheDocument();
   });
+
+  it('sends course details click info to segment if past access expiration', async () => {
+    const expirationDate = new Date(dateNow);
+    expirationDate.setDate(expirationDate.getDate() - 1);
+    sendTrackEvent.mockClear();
+    buildAndRender({
+      pageName: 'test',
+      contentTypeGatingEnabled: true,
+      accessExpiration: {
+        expirationDate: expirationDate.toString(),
+      },
+    });
+
+    const courseDetailsLink = await waitFor(() => screen.queryByRole('button', { name: 'View Course Details' }));
+    fireEvent.click(courseDetailsLink);
+    expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+    expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.bi.ecommerce.upgrade_notification.past_expiration.button_clicked', {
+      org_key: 'edX',
+      courserun_key: 'course-v1:edX+DemoX+Demo_Course',
+      linkCategory: 'upgrade_notification',
+      linkName: 'test_course_details',
+      linkType: 'button',
+      pageName: 'test',
+    });
+  });
 });
