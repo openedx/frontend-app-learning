@@ -84,17 +84,6 @@ export async function getLearningSequencesOutline(courseId) {
   return normalizeLearningSequencesData(data);
 }
 
-function normalizeTabUrls(id, tabs) {
-  // If api doesn't return the mfe base url, change tab url to point back to LMS
-  return tabs.map((tab) => {
-    let { url } = tab;
-    if (url[0] === '/') {
-      url = `${getConfig().LMS_BASE_URL}${tab.url}`;
-    }
-    return { ...tab, url };
-  });
-}
-
 function normalizeMetadata(metadata) {
   const requestTime = Date.now();
   const responseTime = requestTime;
@@ -120,7 +109,6 @@ function normalizeMetadata(metadata) {
     isStaff: data.is_staff,
     license: data.license,
     verifiedMode: camelCaseObject(data.verified_mode),
-    tabs: normalizeTabUrls(data.id, camelCaseObject(data.tabs)),
     userTimezone: data.user_timezone,
     showCalculator: data.show_calculator,
     notes: camelCaseObject(data.notes),

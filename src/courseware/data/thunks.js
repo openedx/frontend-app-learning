@@ -29,7 +29,7 @@ export function fetchCourse(courseId) {
     Promise.allSettled([
       getCourseMetadata(courseId),
       getLearningSequencesOutline(courseId),
-      getCourseHomeCourseMetadata(courseId),
+      getCourseHomeCourseMetadata(courseId, 'courseware'),
     ]).then(([
       courseMetadataResult,
       learningSequencesOutlineResult,

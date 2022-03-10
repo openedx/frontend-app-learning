@@ -9,7 +9,7 @@ import { useModel } from '../../../../generic/model-store';
 import messages from './messages';
 
 function HiddenAfterDue({ courseId, intl }) {
-  const { tabs } = useModel('coursewareMeta', courseId);
+  const { tabs } = useModel('courseHomeMeta', courseId);
 
   const progressTab = tabs.find(tab => tab.slug === 'progress');
   const progressLink = progressTab && progressTab.url && (

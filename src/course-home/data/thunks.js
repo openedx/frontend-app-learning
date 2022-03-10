@@ -33,7 +33,7 @@ export function fetchTab(courseId, tab, getTabData, targetUserId) {
   return async (dispatch) => {
     dispatch(fetchTabRequest({ courseId }));
     Promise.allSettled([
-      getCourseHomeCourseMetadata(courseId),
+      getCourseHomeCourseMetadata(courseId, 'outline'),
       getTabData(courseId, targetUserId),
     ]).then(([courseHomeCourseMetadataResult, tabDataResult]) => {
       const fetchedCourseHomeCourseMetadata = courseHomeCourseMetadataResult.status === 'fulfilled';

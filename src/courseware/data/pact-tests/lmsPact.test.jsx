@@ -243,9 +243,6 @@ describe('Courseware Service', () => {
               generate: '2013-02-05T05:00:00Z',
               matcher: dateRegex,
             }),
-            tabs: eachLike({
-              title: 'Course', slug: 'courseware', priority: 0, type: 'courseware', url: `${getConfig().BASE_URL}/course/course-v1:edX+DemoX+Demo_Course/home`,
-            }),
             user_timezone: null,
             verified_mode: like({
               access_expiration_date: term({
@@ -329,13 +326,6 @@ describe('Courseware Service', () => {
           sku: '8CF08E5',
           upgradeUrl: `${getConfig().ECOMMERCE_BASE_URL}/basket/add/?sku=8CF08E5`,
         },
-        tabs: [{
-          title: 'Course',
-          slug: 'courseware',
-          priority: 0,
-          type: 'courseware',
-          url: `${getConfig().BASE_URL}/course/course-v1:edX+DemoX+Demo_Course/home`,
-        }],
         userTimezone: null,
         showCalculator: false,
         notes: { enabled: false, visible: true },

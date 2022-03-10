@@ -16,7 +16,8 @@ import { logClick, logVisit } from './utils';
 
 function CourseInProgress({ intl }) {
   const { courseId } = useSelector(state => state.courseware);
-  const { org, tabs, title } = useModel('coursewareMeta', courseId);
+  const { org, title } = useModel('coursewareMeta', courseId);
+  const { tabs } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
 
   // Get dates tab link for 'view course schedule' button

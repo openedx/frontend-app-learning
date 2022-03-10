@@ -56,7 +56,7 @@ function StartOrResumeCourseCard({ intl }) {
         )}
       />
       {/* Footer is needed for internal vertical spacing to work out. If you can remove, be my guest */}
-      <Card.Footer />
+      <Card.Footer><></></Card.Footer>
     </Card>
   );
 }

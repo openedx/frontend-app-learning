@@ -1,5 +1,4 @@
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
-
 import courseMetadataBase from '../../../shared/data/__factories__/courseMetadataBase.factory';
 
 Factory.define('courseHomeMetadata')
@@ -22,4 +21,92 @@ Factory.define('courseHomeMetadata')
     start: '2013-02-05T05:00:00Z',
     user_timezone: 'UTC',
     username: 'MockUser',
-  });
+  })
+  .attr(
+    'tabs', ['id', 'host'], (id, host) => [
+      Factory.build(
+        'tab',
+        {
+          title: 'Course',
+          priority: 0,
+          slug: 'courseware',
+          type: 'courseware',
+        },
+        {
+          courseId: id,
+          host,
+          path: 'course/',
+        },
+      ),
+      Factory.build(
+        'tab',
+        {
+          title: 'Discussion',
+          priority: 1,
+          slug: 'discussion',
+          type: 'discussion',
+        },
+        {
+          courseId: id,
+          host,
+          path: 'discussion/forum/',
+        },
+      ),
+      Factory.build(
+        'tab',
+        {
+          title: 'Wiki',
+          priority: 2,
+          slug: 'wiki',
+          type: 'wiki',
+        },
+        {
+          courseId: id,
+          host,
+          path: 'course_wiki',
+        },
+      ),
+      Factory.build(
+        'tab',
+        {
+          title: 'Progress',
+          priority: 3,
+          slug: 'progress',
+          type: 'progress',
+        },
+        {
+          courseId: id,
+          host,
+          path: 'progress',
+        },
+      ),
+      Factory.build(
+        'tab',
+        {
+          title: 'Instructor',
+          priority: 4,
+          slug: 'instructor',
+          type: 'instructor',
+        },
+        {
+          courseId: id,
+          host,
+          path: 'instructor',
+        },
+      ),
+      Factory.build(
+        'tab',
+        {
+          title: 'Dates',
+          priority: 5,
+          slug: 'dates',
+          type: 'dates',
+        },
+        {
+          courseId: id,
+          host,
+          path: 'dates',
+        },
+      ),
+    ],
+  );

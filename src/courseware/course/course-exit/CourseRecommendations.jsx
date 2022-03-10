@@ -11,7 +11,7 @@ import {
 } from '@edx/paragon';
 import PropTypes from 'prop-types';
 import truncate from 'truncate-html';
-import { useModel } from '../../../generic/model-store/hooks';
+import { useModel } from '../../../generic/model-store';
 import fetchCourseRecommendations from './data/thunks';
 import { FAILED, LOADED, LOADING } from './data/slice';
 import CatalogSuggestion from './CatalogSuggestion';
@@ -106,8 +106,8 @@ function CourseCard({
           <Card.ImageCap src={image.src} />
           <Card.Header title={truncate(title, 70, { reserveLastWord: -1 })} subtitle={subtitle} size="sm" />
           {/* Section is needed for internal vertical spacing to work out. If you can remove, be my guest */}
-          <Card.Section />
-          <Card.Footer textElement={intl.formatMessage(messages.recommendationsCourseFooter)} />
+          <Card.Section> <></> </Card.Section>
+          <Card.Footer textElement={intl.formatMessage(messages.recommendationsCourseFooter)}><></></Card.Footer>
         </Card>
       </Hyperlink>
     </div>

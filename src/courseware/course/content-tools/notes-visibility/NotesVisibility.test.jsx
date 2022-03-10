@@ -49,12 +49,10 @@ describe('Notes Visibility', () => {
     render(<NotesVisibility {...mockData} />);
 
     const button = screen.getByRole('switch', { name: 'Show Notes' });
-    expect(button)
-      .not.toBeChecked()
-      .toHaveClass('text-success');
-    expect(button.querySelector('svg'))
-      .toHaveClass('fa-pencil-alt')
-      .toHaveAttribute('aria-hidden', 'true');
+    expect(button).not.toBeChecked();
+    expect(button).toHaveClass('text-success');
+    expect(button.querySelector('svg')).toHaveClass('fa-pencil-alt');
+    expect(button.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('shows notes', () => {
@@ -63,12 +61,10 @@ describe('Notes Visibility', () => {
     render(<NotesVisibility {...testData} />);
 
     const button = screen.getByRole('switch', { name: 'Hide Notes' });
-    expect(button)
-      .toBeChecked()
-      .toHaveClass('text-secondary');
-    expect(button.querySelector('svg'))
-      .toHaveClass('fa-pencil-alt')
-      .toHaveAttribute('aria-hidden', 'true');
+    expect(button).toBeChecked();
+    expect(button).toHaveClass('text-secondary');
+    expect(button.querySelector('svg')).toHaveClass('fa-pencil-alt');
+    expect(button.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('handles click', async () => {
@@ -84,9 +80,8 @@ describe('Notes Visibility', () => {
 
     fireEvent.click(screen.getByRole('switch', { name: 'Show Notes' }));
     await waitFor(() => expect(mockFn).toHaveBeenCalled());
-    expect(mockFn)
-      .toHaveBeenCalledTimes(1)
-      .toHaveBeenCalledWith('tools.toggleNotes');
+    expect(mockFn).toHaveBeenCalledTimes(1);
+    expect(mockFn).toHaveBeenCalledWith('tools.toggleNotes');
 
     expect(axiosMock.history.put).toHaveLength(1);
     expect(axiosMock.history.put[0].url).toEqual(visibilityUrl);

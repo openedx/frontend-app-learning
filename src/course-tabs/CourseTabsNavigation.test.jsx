@@ -23,12 +23,10 @@ describe('Course Tabs Navigation', () => {
     };
     render(<CourseTabsNavigation {...mockData} />);
 
-    expect(screen.getByRole('link', { name: tabs[0].title }))
-      .toHaveAttribute('href', tabs[0].url)
-      .toHaveClass('active');
+    expect(screen.getByRole('link', { name: tabs[0].title })).toHaveAttribute('href', tabs[0].url);
+    expect(screen.getByRole('link', { name: tabs[0].title })).toHaveClass('active');
 
-    expect(screen.getByRole('link', { name: tabs[1].title }))
-      .toHaveAttribute('href', tabs[1].url)
-      .not.toHaveClass('active');
+    expect(screen.getByRole('link', { name: tabs[1].title })).toHaveAttribute('href', tabs[1].url);
+    expect(screen.getByRole('link', { name: tabs[1].title })).not.toHaveClass('active');
   });
 });
