@@ -72,6 +72,7 @@ describe('Upgrade Notification', () => {
   it('renders non-FBE when there is a verified mode and content gating, but no access expiration', async () => {
     buildAndRender({
       contentTypeGatingEnabled: true,
+      accessExpiration: null,
     });
     expect(screen.getByRole('heading', { name: 'Pursue a verified certificate' })).toBeInTheDocument();
     expect(screen.getByText(/Earn a.*?of completion to showcase on your resumé/s).textContent).toMatch('Earn a verified certificate of completion to showcase on your resumé');
@@ -277,5 +278,45 @@ describe('Upgrade Notification', () => {
     expect(screen.getByText(/Upgrading your course enables you/s).textContent).toMatch('Upgrading your course enables you to pursue a verified certificate and unlocks numerous features. Learn more about the benefits of upgrading.');
     expect(screen.getByText(/Upgrade for/).textContent).toMatch('$126.65 ($149)');
     expect(screen.getByText(/Use code.*?at checkout/s).textContent).toMatch('Use code Welcome15 at checkout');
+  });
+
+  it('renders past access expiration message properly', async () => {
+    const expirationDate = new Date(dateNow);
+    expirationDate.setDate(expirationDate.getDate() - 1);
+    buildAndRender({
+      contentTypeGatingEnabled: true,
+      accessExpiration: {
+        expirationDate: expirationDate.toString(),
+      },
+    });
+    expect(screen.getByRole('heading', { name: 'Course Access Expiration' })).toBeInTheDocument();
+    expect(screen.getByText(/The upgrade deadline/s).textContent).toMatch('The upgrade deadline for this course passed');
+    expect(screen.getByText(/To upgrade/s).textContent).toMatch('To upgrade, enroll in the next available session');
+    expect(screen.getByRole('button', { name: 'View Course Details' })).toBeInTheDocument();
+  });
+
+  it('sends course details click info to segment if past access expiration', async () => {
+    const expirationDate = new Date(dateNow);
+    expirationDate.setDate(expirationDate.getDate() - 1);
+    sendTrackEvent.mockClear();
+    buildAndRender({
+      pageName: 'test',
+      contentTypeGatingEnabled: true,
+      accessExpiration: {
+        expirationDate: expirationDate.toString(),
+      },
+    });
+
+    const courseDetailsLink = await waitFor(() => screen.queryByRole('button', { name: 'View Course Details' }));
+    fireEvent.click(courseDetailsLink);
+    expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+    expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.bi.ecommerce.upgrade_notification.past_expiration.button_clicked', {
+      org_key: 'edX',
+      courserun_key: 'course-v1:edX+DemoX+Demo_Course',
+      linkCategory: 'upgrade_notification',
+      linkName: 'test_course_details',
+      linkType: 'button',
+      pageName: 'test',
+    });
   });
 });

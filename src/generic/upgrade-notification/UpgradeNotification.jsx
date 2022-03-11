@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
+import { Button } from '@edx/paragon';
 import { setLocalStorage } from '../../data/localStorage';
 import { UpgradeButton } from '../upgrade-button';
 import {
@@ -95,11 +96,24 @@ UpsellFBESoonCardContent.defaultProps = {
   timezoneFormatArgs: {},
 };
 
+function PastExpirationCardContent() {
+  return (
+    <div className="upgrade-notification-text">
+      <p>
+        <FormattedMessage
+          id="learning.generic.upgradeNotification.pastExpiration.content"
+          defaultMessage="The upgrade deadline for this course passed. To upgrade, enroll in the next available session."
+        />
+      </p>
+    </div>
+  );
+}
+
 function ExpirationCountdown({
   courseId, hoursToExpiration, setupgradeNotificationCurrentState, type,
 }) {
   let expirationText;
-  if (hoursToExpiration >= 24) {
+  if (hoursToExpiration >= 24) { // More than 1 day left
     // setupgradeNotificationCurrentState is available in NotificationTray (not course home)
     if (setupgradeNotificationCurrentState) {
       if (type === 'access') {
@@ -122,7 +136,7 @@ function ExpirationCountdown({
         }}
       />
     );
-  } else if (hoursToExpiration >= 1) {
+  } else if (hoursToExpiration >= 1) { // More than 1 hour left
     // setupgradeNotificationCurrentState is available in NotificationTray (not course home)
     if (setupgradeNotificationCurrentState) {
       if (type === 'access') {
@@ -145,7 +159,7 @@ function ExpirationCountdown({
         }}
       />
     );
-  } else {
+  } else { // Less than 1 hour
     // setupgradeNotificationCurrentState is available in NotificationTray (not course home)
     if (setupgradeNotificationCurrentState) {
       if (type === 'access') {
@@ -220,9 +234,52 @@ AccessExpirationDateBanner.defaultProps = {
   setupgradeNotificationCurrentState: null,
 };
 
+function PastExpirationDateBanner({
+  courseId, accessExpirationDate, timezoneFormatArgs, setupgradeNotificationCurrentState,
+}) {
+  if (setupgradeNotificationCurrentState) {
+    setupgradeNotificationCurrentState('PastExpirationDate');
+    setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'PastExpirationDate');
+  }
+  return (
+    <div className="upsell-warning">
+      <FormattedMessage
+        id="learning.generic.upgradeNotification.pastExpiration.banner"
+        defaultMessage="Upgrade deadline passed on {date}"
+        values={{
+          date: (
+            <FormattedDate
+              key="accessExpireDate"
+              day="numeric"
+              month="long"
+              value={accessExpirationDate}
+              {...timezoneFormatArgs}
+            />
+          ),
+        }}
+      />
+    </div>
+  );
+}
+
+PastExpirationDateBanner.propTypes = {
+  courseId: PropTypes.string.isRequired,
+  accessExpirationDate: PropTypes.PropTypes.instanceOf(Date).isRequired,
+  timezoneFormatArgs: PropTypes.shape({
+    timeZone: PropTypes.string,
+  }),
+  setupgradeNotificationCurrentState: PropTypes.func,
+};
+
+PastExpirationDateBanner.defaultProps = {
+  timezoneFormatArgs: {},
+  setupgradeNotificationCurrentState: null,
+};
+
 function UpgradeNotification({
   accessExpiration,
   contentTypeGatingEnabled,
+  marketingUrl,
   courseId,
   offer,
   org,
@@ -233,8 +290,11 @@ function UpgradeNotification({
   userTimezone,
   verifiedMode,
 }) {
+  const dateNow = Date.now();
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
-  const correctedTime = new Date(Date.now() + timeOffsetMillis);
+  const correctedTime = new Date(dateNow + timeOffsetMillis);
+  const accessExpirationDate = accessExpiration ? new Date(accessExpiration.expirationDate) : null;
+  const pastExpirationDeadline = accessExpiration ? new Date(dateNow) > accessExpirationDate : false;
 
   if (!verifiedMode) {
     return null;
@@ -274,20 +334,31 @@ function UpgradeNotification({
     });
   };
 
+  const logClickPastExpiration = () => {
+    sendTrackEvent('edx.bi.ecommerce.upgrade_notification.past_expiration.button_clicked', {
+      ...eventProperties,
+      linkCategory: 'upgrade_notification',
+      linkName: `${upsellPageName}_course_details`,
+      linkType: 'button',
+      pageName: upsellPageName,
+    });
+  };
+
   /*
-  There are 4 parts that change in the upgrade card:
+  There are 5 parts that change in the upgrade card:
     upgradeNotificationHeaderText
     expirationBanner
     upsellMessage
+    callToActionButton
     offerCode
   */
   let upgradeNotificationHeaderText;
   let expirationBanner;
   let upsellMessage;
+  let callToActionButton;
   let offerCode;
 
   if (!!accessExpiration && !!contentTypeGatingEnabled) {
-    const accessExpirationDate = new Date(accessExpiration.expirationDate);
     const hoursToAccessExpiration = Math.floor((accessExpirationDate - correctedTime) / 1000 / 60 / 60);
 
     if (hoursToAccessExpiration >= (7 * 24)) {
@@ -327,7 +398,8 @@ function UpgradeNotification({
         );
       }
       upsellMessage = <UpsellFBEFarAwayCardContent />;
-    } else { // more urgent messaging if there's less than 7 days left to access expiration
+    } else if (hoursToAccessExpiration < (7 * 24) && hoursToAccessExpiration >= 0) {
+      // more urgent messaging if there's less than 7 days left to access expiration
       upgradeNotificationHeaderText = (
         <FormattedMessage
           id="learning.generic.upgradeNotification.accessExpirationUrgent"
@@ -348,6 +420,24 @@ function UpgradeNotification({
           timezoneFormatArgs={timezoneFormatArgs}
         />
       );
+    } else { // access expiration deadline has passed
+      upgradeNotificationHeaderText = (
+        <FormattedMessage
+          id="learning.generic.upgradeNotification.accessExpirationPast"
+          defaultMessage="Course Access Expiration"
+        />
+      );
+      expirationBanner = (
+        <PastExpirationDateBanner
+          courseId={courseId}
+          accessExpirationDate={accessExpirationDate}
+          timezoneFormatArgs={timezoneFormatArgs}
+          setupgradeNotificationCurrentState={setupgradeNotificationCurrentState}
+        />
+      );
+      upsellMessage = (
+        <PastExpirationCardContent />
+      );
     }
   } else { // FBE is turned off
     upgradeNotificationHeaderText = (
@@ -357,6 +447,28 @@ function UpgradeNotification({
       />
     );
     upsellMessage = (<UpsellNoFBECardContent />);
+  }
+
+  if (pastExpirationDeadline) {
+    callToActionButton = (
+      <Button
+        variant="primary"
+        onClick={logClickPastExpiration}
+        href={marketingUrl}
+        block
+      >
+        View Course Details
+      </Button>
+    );
+  } else {
+    callToActionButton = (
+      <UpgradeButton
+        offer={offer}
+        onClick={logClick}
+        verifiedMode={verifiedMode}
+        block
+      />
+    );
   }
 
   if (offer) { // if there's a first purchase discount, message the code at the bottom
@@ -384,12 +496,7 @@ function UpgradeNotification({
           {upsellMessage}
         </div>
         <div className="upgrade-notification-button">
-          <UpgradeButton
-            offer={offer}
-            onClick={logClick}
-            verifiedMode={verifiedMode}
-            block
-          />
+          {callToActionButton}
         </div>
         {offerCode}
       </div>
@@ -404,6 +511,7 @@ UpgradeNotification.propTypes = {
     expirationDate: PropTypes.string,
   }),
   contentTypeGatingEnabled: PropTypes.bool,
+  marketingUrl: PropTypes.string,
   offer: PropTypes.shape({
     expirationDate: PropTypes.string,
     percentage: PropTypes.number,
@@ -424,6 +532,7 @@ UpgradeNotification.propTypes = {
 UpgradeNotification.defaultProps = {
   accessExpiration: null,
   contentTypeGatingEnabled: false,
+  marketingUrl: null,
   offer: null,
   setupgradeNotificationCurrentState: null,
   shouldDisplayBorder: null,
