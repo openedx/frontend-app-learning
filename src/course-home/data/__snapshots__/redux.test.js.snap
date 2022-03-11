@@ -605,7 +605,6 @@ Object {
           "isPassing": true,
           "letterGrade": "pass",
           "percent": 1,
-          "visiblePercent": 1,
         },
         "courseId": "course-v1:edX+DemoX+Demo_Course",
         "creditCourseRequirements": null,

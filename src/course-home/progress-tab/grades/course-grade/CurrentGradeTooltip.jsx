@@ -19,11 +19,11 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
   const {
     courseGrade: {
       isPassing,
-      visiblePercent,
+      percent,
     },
   } = useModel('progress', courseId);
 
-  const currentGrade = Number((visiblePercent * 100).toFixed(0));
+  const currentGrade = Number((percent * 100).toFixed(0));
 
   let currentGradeDirection = currentGrade < 50 ? '' : '-';
 

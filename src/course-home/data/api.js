@@ -239,16 +239,6 @@ export async function getProgressTabData(courseId, targetUserId) {
       camelCasedData.sectionScores,
     );
 
-    // Accumulate the weighted grades by assignment type to calculate the learner facing grade. The grades within
-    // assignmentPolicies have been filtered by what's visible to the learner.
-    camelCasedData.courseGrade.visiblePercent = camelCasedData.gradingPolicy.assignmentPolicies
-      ? camelCasedData.gradingPolicy.assignmentPolicies.reduce(
-        (accumulator, assignment) => accumulator + assignment.weightedGrade, 0,
-      ) : camelCasedData.courseGrade.percent;
-
-    camelCasedData.courseGrade.isPassing = camelCasedData.courseGrade.visiblePercent
-      >= Math.min(...Object.values(data.grading_policy.grade_range));
-
     // We replace gradingPolicy.gradeRange with the original data to preserve the intended casing for the grade.
     // For example, if a grade range key is "A", we do not want it to be camel cased (i.e. "A" would become "a")
     // in order to preserve a course team's desired grade formatting.
