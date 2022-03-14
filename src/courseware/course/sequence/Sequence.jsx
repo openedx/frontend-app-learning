@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 import React, {
-  useEffect, useContext, useState,
+  useEffect, useState,
 } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -15,8 +15,8 @@ import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 import { breakpoints, useWindowSize } from '@edx/paragon';
 
 import PageLoading from '../../../generic/PageLoading';
-import { UserMessagesContext, ALERT_TYPES } from '../../../generic/user-messages';
 import { useModel } from '../../../generic/model-store';
+import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '../../../alerts/sequence-alerts/hooks';
 
 import CourseLicense from '../course-license';
 import Sidebar from '../sidebar/Sidebar';
@@ -89,26 +89,20 @@ function Sequence({
     sendTrackingLogEvent(eventName, payload);
   };
 
-  const { add, remove } = useContext(UserMessagesContext);
+  useSequenceBannerTextAlert(sequenceId);
+  useSequenceEntranceExamAlert(courseId, sequenceId, intl);
+
   useEffect(() => {
-    let id = null;
-    if (sequenceStatus === 'loaded') {
-      if (sequence.bannerText) {
-        id = add({
-          code: null,
-          dismissible: false,
-          text: sequence.bannerText,
-          type: ALERT_TYPES.INFO,
-          topic: 'sequence',
-        });
+    function receiveMessage(event) {
+      const { type } = event.data;
+      if (type === 'entranceExam.passed') {
+        // I know this seems (is) intense. It is implemented this way since we need to refetch the underlying
+        // course blocks that were originally hidden because the Entrance Exam was not passed.
+        global.location.reload();
       }
     }
-    return () => {
-      if (id) {
-        remove(id);
-      }
-    };
-  }, [sequenceStatus, sequence]);
+    global.addEventListener('message', receiveMessage);
+  }, []);
 
   const [unitHasLoaded, setUnitHasLoaded] = useState(false);
   const handleUnitLoaded = () => {
@@ -130,11 +124,11 @@ function Sequence({
   const loading = sequenceStatus === 'loading' || (sequenceStatus === 'failed' && sequenceMightBeUnit);
   if (loading) {
     if (!sequenceId) {
-      return (<div> {intl.formatMessage(messages['learn.sequence.no.content'])} </div>);
+      return (<div> {intl.formatMessage(messages.noContent)} </div>);
     }
     return (
       <PageLoading
-        srMessage={intl.formatMessage(messages['learn.loading.learning.sequence'])}
+        srMessage={intl.formatMessage(messages.loadingSequence)}
       />
     );
   }
@@ -236,7 +230,7 @@ function Sequence({
   // sequence status 'failed' and any other unexpected sequence status.
   return (
     <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
-      {intl.formatMessage(messages['learn.course.load.failure'])}
+      {intl.formatMessage(messages.loadFailure)}
     </p>
   );
 }

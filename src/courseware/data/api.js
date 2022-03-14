@@ -117,6 +117,7 @@ function normalizeMetadata(metadata) {
     userHasPassingGrade: data.user_has_passing_grade,
     courseExitPageIsActive: data.course_exit_page_is_active,
     certificateData: camelCaseObject(data.certificate_data),
+    entranceExamData: camelCaseObject(data.entrance_exam_data),
     timeOffsetMillis: getTimeOffsetMillis(headers && headers.date, requestTime, responseTime),
     verifyIdentityUrl: data.verify_identity_url,
     verificationStatus: data.verification_status,
