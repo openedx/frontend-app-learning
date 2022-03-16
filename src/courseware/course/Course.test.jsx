@@ -64,8 +64,8 @@ describe('Course', () => {
   });
 
   it('displays first section celebration modal', async () => {
-    const courseMetadata = Factory.build('courseMetadata', { celebrations: { firstSection: true } });
-    const testStore = await initializeTestStore({ courseMetadata }, false);
+    const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { firstSection: true } });
+    const testStore = await initializeTestStore({ courseHomeMetadata }, false);
     const { courseware, models } = testStore.getState();
     const { courseId, sequenceId } = courseware;
     const testData = {
@@ -84,8 +84,8 @@ describe('Course', () => {
   });
 
   it('displays weekly goal celebration modal', async () => {
-    const courseMetadata = Factory.build('courseMetadata', { celebrations: { weeklyGoal: true } });
-    const testStore = await initializeTestStore({ courseMetadata }, false);
+    const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { weeklyGoal: true } });
+    const testStore = await initializeTestStore({ courseHomeMetadata }, false);
     const { courseware, models } = testStore.getState();
     const { courseId, sequenceId } = courseware;
     const testData = {

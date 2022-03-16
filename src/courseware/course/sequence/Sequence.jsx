@@ -41,6 +41,10 @@ function Sequence({
   mmp2p,
 }) {
   const course = useModel('coursewareMeta', courseId);
+  const {
+    isStaff,
+    originalUserIsStaff,
+  } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
@@ -221,8 +225,8 @@ function Sequence({
         <SequenceExamWrapper
           sequence={sequence}
           courseId={courseId}
-          isStaff={course.isStaff}
-          originalUserIsStaff={course.originalUserIsStaff}
+          isStaff={isStaff}
+          originalUserIsStaff={originalUserIsStaff}
           isIntegritySignatureEnabled={course.isIntegritySignatureEnabled}
           canAccessProctoredExams={course.canAccessProctoredExams}
         >

@@ -8,6 +8,7 @@ Factory.define('courseHomeMetadata')
     title: 'Demonstration Course',
     is_self_paced: false,
     is_enrolled: false,
+    is_staff: false,
     can_load_courseware: true,
     celebrations: null,
     course_access: {
@@ -18,9 +19,20 @@ Factory.define('courseHomeMetadata')
       user_fragment: null,
       user_message: null,
     },
+    number: 'DemoX',
+    original_user_is_staff: false,
+    org: 'edX',
     start: '2013-02-05T05:00:00Z',
     user_timezone: 'UTC',
     username: 'MockUser',
+    verified_mode: {
+      access_expiration_date: null,
+      currency: 'USD',
+      upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+      sku: '8CF08E5',
+      price: 149,
+      currency_symbol: '$',
+    },
   })
   .attr(
     'tabs', ['id', 'host'], (id, host) => [

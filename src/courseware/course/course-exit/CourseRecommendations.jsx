@@ -133,7 +133,8 @@ const IntlCard = injectIntl(CourseCard);
 
 function CourseRecommendations({ intl, variant }) {
   const { courseId, recommendationsStatus } = useSelector(state => ({ ...state.recommendations, ...state.courseware }));
-  const { org, number, recommendations } = useModel('coursewareMeta', courseId);
+  const { recommendations } = useModel('coursewareMeta', courseId);
+  const { org, number } = useModel('courseHomeMeta', courseId);
   const dispatch = useDispatch();
 
   const courseKey = `${org}+${number}`;

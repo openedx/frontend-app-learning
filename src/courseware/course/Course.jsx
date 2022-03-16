@@ -31,6 +31,10 @@ function Course({
   windowWidth,
 }) {
   const course = useModel('coursewareMeta', courseId);
+  const {
+    celebrations,
+    isStaff,
+  } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
 
@@ -39,11 +43,6 @@ function Course({
     section,
     course,
   ].filter(element => element != null).map(element => element.title);
-
-  const {
-    celebrations,
-    courseGoals,
-  } = course;
 
   // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
   const dispatch = useDispatch();
@@ -57,7 +56,7 @@ function Course({
     celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal,
   );
   const shouldDisplayTriggers = windowWidth >= breakpoints.small.minWidth;
-  const daysPerWeek = courseGoals?.selectedGoal?.daysPerWeek;
+  const daysPerWeek = course?.courseGoals?.selectedGoal?.daysPerWeek;
 
   // Responsive breakpoints for showing the notification button/tray
   const shouldDisplayNotificationTrayOpenOnLoad = windowWidth > breakpoints.medium.minWidth;
@@ -85,7 +84,7 @@ function Course({
           courseId={courseId}
           sectionId={section ? section.id : null}
           sequenceId={sequenceId}
-          isStaff={course ? course.isStaff : null}
+          isStaff={isStaff}
           unitId={unitId}
           //* * [MM-P2P] Experiment */
           mmp2p={MMP2P}

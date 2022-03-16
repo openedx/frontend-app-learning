@@ -16,8 +16,11 @@ import { logClick, logVisit } from './utils';
 
 function CourseNonPassing({ intl }) {
   const { courseId } = useSelector(state => state.courseware);
-  const { org, title } = useModel('coursewareMeta', courseId);
-  const { tabs } = useModel('courseHomeMeta', courseId);
+  const {
+    org,
+    tabs,
+    title,
+  } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
 
   // Get progress tab link for 'view grades' button

@@ -202,9 +202,11 @@ const initCoursewareMMP2P = (courseId, sequenceId, unitId) => {
 
     const models = {
       coursewareMeta: state.models.coursewareMeta[courseId],
+      courseHomeMeta: state.models.courseHomeMeta[courseId],
       units: state.models.units[unitId],
     };
-    const { accessExpiration, verifiedMode } = models.coursewareMeta;
+    const { accessExpiration } = models.coursewareMeta;
+    const { verifiedMode } = models.courseHomeMeta;
     const graded = models.units !== undefined ? models.units.graded : false;
 
     let access = {};

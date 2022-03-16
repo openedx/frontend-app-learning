@@ -24,11 +24,15 @@ function NotificationTray({ intl }) {
     contentTypeGatingEnabled,
     marketingUrl,
     offer,
-    org,
     timeOffsetMillis,
     userTimezone,
-    verifiedMode,
   } = course;
+
+  const {
+    org,
+    verifiedMode,
+  } = useModel('courseHomeMeta', courseId);
+
   // After three seconds, update notificationSeen (to hide red dot)
   useEffect(() => { setTimeout(onNotificationSeen, 3000); }, []);
 

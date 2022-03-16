@@ -14,7 +14,7 @@ import { useModel } from '../../../generic/model-store';
 function WeeklyGoalCelebrationModal({
   courseId, daysPerWeek, intl, isOpen, onClose, ...rest
 }) {
-  const { org } = useModel('coursewareMeta', courseId);
+  const { org } = useModel('courseHomeMeta', courseId);
 
   useEffect(() => {
     if (isOpen) {

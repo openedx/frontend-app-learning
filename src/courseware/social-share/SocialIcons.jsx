@@ -29,11 +29,12 @@ function SocialIcons({
   intl,
   socialMessage,
 }) {
+  const { marketingUrl } = useModel('coursewareMeta', courseId);
+
   const {
-    marketingUrl,
     org,
     title,
-  } = useModel('coursewareMeta', courseId);
+  } = useModel('courseHomeMeta', courseId);
 
   if (!marketingUrl) {
     return null;

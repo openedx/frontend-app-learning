@@ -19,7 +19,7 @@ import { useModel } from '../../../generic/model-store';
 function CelebrationModal({
   courseId, intl, isOpen, onClose, ...rest
 }) {
-  const { org } = useModel('coursewareMeta', courseId);
+  const { org } = useModel('courseHomeMeta', courseId);
   const wideScreen = useWindowSize().width >= breakpoints.small.minWidth;
 
   useEffect(() => {

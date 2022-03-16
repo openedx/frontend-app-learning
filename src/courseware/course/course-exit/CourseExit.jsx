@@ -24,9 +24,10 @@ function CourseExit({ intl }) {
     enrollmentMode,
     hasScheduledContent,
     isEnrolled,
-    isMasquerading,
     userHasPassingGrade,
   } = useModel('coursewareMeta', courseId);
+
+  const { isMasquerading } = useModel('courseHomeMeta', courseId);
 
   const mode = getCourseExitMode(
     certificateData,
