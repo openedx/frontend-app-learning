@@ -28,7 +28,7 @@ export default function LmsHtmlFragment({
 
   const iframe = useRef(null);
   function resetIframeHeight() {
-    if (iframe.current) {
+    if (iframe?.current?.contentWindow?.document?.body) {
       iframe.current.height = iframe.current.contentWindow.document.body.scrollHeight;
     }
   }
