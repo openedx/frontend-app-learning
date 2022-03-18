@@ -95,9 +95,7 @@ function normalizeMetadata(metadata) {
     courseGoals: camelCaseObject(data.course_goals),
     id: data.id,
     title: data.name,
-    number: data.number,
     offer: camelCaseObject(data.offer),
-    org: data.org,
     enrollmentStart: data.enrollment_start,
     enrollmentEnd: data.enrollment_end,
     end: data.end,
@@ -105,10 +103,7 @@ function normalizeMetadata(metadata) {
     enrollmentMode: data.enrollment.mode,
     isEnrolled: data.enrollment.is_active,
     canViewLegacyCourseware: data.can_view_legacy_courseware,
-    originalUserIsStaff: data.original_user_is_staff,
-    isStaff: data.is_staff,
     license: data.license,
-    verifiedMode: camelCaseObject(data.verified_mode),
     userTimezone: data.user_timezone,
     showCalculator: data.show_calculator,
     notes: camelCaseObject(data.notes),
@@ -125,7 +120,6 @@ function normalizeMetadata(metadata) {
     relatedPrograms: camelCaseObject(data.related_programs),
     isIntegritySignatureEnabled: data.is_integrity_signature_enabled,
     userNeedsIntegritySignature: data.user_needs_integrity_signature,
-    isMasquerading: data.original_user_is_staff && !data.is_staff,
     canAccessProctoredExams: data.can_access_proctored_exams,
   };
 }

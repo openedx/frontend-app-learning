@@ -29,9 +29,11 @@ function LockPaywall({
     accessExpiration,
     marketingUrl,
     offer,
-    org,
-    verifiedMode,
   } = course;
+
+  const {
+    org, verifiedMode,
+  } = useModel('courseHomeMeta', courseId);
 
   // the following variables are set and used for resposive layout to work with
   // whether the NotificationTray is open or not and if there's an offer with longer text

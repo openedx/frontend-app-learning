@@ -112,7 +112,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].verifiedMode).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
     });
 
     it('Should fetch, normalize, and save metadata; filtering has no effect', async () => {
@@ -132,7 +132,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].verifiedMode).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
       expect(state.models.sequences.length === 1);
 
       Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 1));
@@ -159,7 +159,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceId).toEqual(null);
 
       // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].verifiedMode).not.toBeUndefined();
+      expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
       expect(state.models.sequences === null);
 
       Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 0));

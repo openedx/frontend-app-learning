@@ -13,7 +13,7 @@ export default function SidebarProvider({
   unitId,
   children,
 }) {
-  const { verifiedMode } = useModel('coursewareMeta', courseId);
+  const { verifiedMode } = useModel('courseHomeMeta', courseId);
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const showNotificationsOnLoad = getSessionStorage(`notificationTrayStatus.${courseId}`) !== 'closed';

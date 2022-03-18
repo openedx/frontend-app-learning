@@ -224,7 +224,6 @@ describe('Courseware Service', () => {
             }),
             license: string('all-rights-reserved'),
             name: like('Demonstration Course'),
-            number: like('DemoX'),
             offer: {
               code: string('code'),
               expiration_date: term({
@@ -236,7 +235,6 @@ describe('Courseware Service', () => {
               percentage: integer(50),
               upgrade_url: string('url'),
             },
-            org: like('edX'),
             related_programs: null,
             short_description: like(''),
             start: term({
@@ -269,11 +267,6 @@ describe('Courseware Service', () => {
             }),
             notes: { enabled: boolean(false), visible: boolean(true) },
             marketing_url: null,
-            celebrations: {
-              first_section: boolean(false),
-              streak_length_to_celebrate: null,
-              streak_discount_enabled: boolean(false),
-            },
             user_has_passing_grade: boolean(false),
             course_exit_page_is_active: boolean(false),
             certificate_data: {
@@ -298,7 +291,6 @@ describe('Courseware Service', () => {
         contentTypeGatingEnabled: false,
         id: 'course-v1:edX+DemoX+Demo_Course',
         title: 'Demonstration Course',
-        number: 'DemoX',
         offer: {
           code: 'code',
           discountedPrice: '$99',
@@ -307,7 +299,6 @@ describe('Courseware Service', () => {
           percentage: 50,
           upgradeUrl: 'url',
         },
-        org: 'edX',
         enrollmentStart: '2013-02-05T05:00:00Z',
         enrollmentEnd: '2013-02-05T05:00:00Z',
         end: '2013-02-05T05:00:00Z',
@@ -315,26 +306,11 @@ describe('Courseware Service', () => {
         enrollmentMode: 'audit',
         isEnrolled: true,
         canViewLegacyCourseware: true,
-        originalUserIsStaff: true,
-        isStaff: true,
         license: 'all-rights-reserved',
-        verifiedMode: {
-          accessExpirationDate: '2013-02-05T05:00:00Z',
-          currency: 'USD',
-          currencySymbol: '$',
-          price: 149,
-          sku: '8CF08E5',
-          upgradeUrl: `${getConfig().ECOMMERCE_BASE_URL}/basket/add/?sku=8CF08E5`,
-        },
         userTimezone: null,
         showCalculator: false,
         notes: { enabled: false, visible: true },
         marketingUrl: null,
-        celebrations: {
-          firstSection: false,
-          streakLengthToCelebrate: null,
-          streakDiscountEnabled: false,
-        },
         userHasPassingGrade: false,
         courseExitPageIsActive: false,
         certificateData: {
@@ -349,7 +325,6 @@ describe('Courseware Service', () => {
         linkedinAddToProfileUrl: null,
         relatedPrograms: null,
         userNeedsIntegritySignature: false,
-        isMasquerading: false,
       };
       const response = await getCourseMetadata(courseId);
       expect(response).toBeTruthy();

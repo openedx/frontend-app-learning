@@ -46,13 +46,16 @@ function CourseCelebration({ intl }) {
     linkedinAddToProfileUrl,
     marketingUrl,
     offer,
-    org,
     relatedPrograms,
     title,
-    verifiedMode,
     verifyIdentityUrl,
     verificationStatus,
   } = useModel('coursewareMeta', courseId);
+
+  const {
+    org,
+    verifiedMode,
+  } = useModel('courseHomeMeta', courseId);
 
   const {
     certStatus,

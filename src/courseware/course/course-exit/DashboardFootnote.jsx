@@ -18,7 +18,7 @@ import { logClick } from './utils';
 
 function DashboardFootnote({ intl, variant }) {
   const { courseId } = useSelector(state => state.courseware);
-  const { org } = useModel('coursewareMeta', courseId);
+  const { org } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
 
   const dashboardLink = (

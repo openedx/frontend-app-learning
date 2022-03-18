@@ -32,8 +32,8 @@ describe('NotificationTray', () => {
   const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`);
 
   function setMetadata(attributes, options) {
-    const courseMetadata = Factory.build('courseMetadata', attributes, options);
-    axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+    const updatedCourseHomeMetadata = Factory.build('courseHomeMetadata', attributes, options);
+    axiosMock.onGet(courseHomeMetadataUrl).reply(200, updatedCourseHomeMetadata);
   }
 
   async function fetchAndRender(component) {

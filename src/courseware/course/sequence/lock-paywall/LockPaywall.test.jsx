@@ -26,7 +26,7 @@ describe('Lock Paywall', () => {
       currencySymbol,
       price,
       upgradeUrl,
-    } = store.getState().models.coursewareMeta[mockData.courseId].verifiedMode;
+    } = store.getState().models.courseHomeMeta[mockData.courseId].verifiedMode;
     render(<LockPaywall {...mockData} />);
 
     const upgradeLink = screen.getByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
@@ -56,7 +56,7 @@ describe('Lock Paywall', () => {
     const {
       currencySymbol,
       price,
-    } = store.getState().models.coursewareMeta[mockData.courseId].verifiedMode;
+    } = store.getState().models.courseHomeMeta[mockData.courseId].verifiedMode;
     render(<LockPaywall {...mockData} />);
 
     const upgradeLink = screen.getByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
@@ -74,9 +74,9 @@ describe('Lock Paywall', () => {
   });
 
   it('does not display anything if course does not have verified mode', async () => {
-    const courseMetadata = Factory.build('courseMetadata', { verified_mode: null });
-    const testStore = await initializeTestStore({ courseMetadata, excludeFetchSequence: true }, false);
-    const { container } = render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+    const courseHomeMetadata = Factory.build('courseHomeMetadata', { verified_mode: null });
+    const testStore = await initializeTestStore({ courseHomeMetadata, excludeFetchSequence: true }, false);
+    const { container } = render(<LockPaywall {...mockData} courseId={courseHomeMetadata.id} />, { store: testStore });
 
     expect(container).toBeEmptyDOMElement();
   });

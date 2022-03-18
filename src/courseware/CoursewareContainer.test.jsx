@@ -72,7 +72,7 @@ describe('CoursewareContainer', () => {
     sequenceBlocks: [defaultSequenceBlock],
   } = buildSimpleCourseBlocks(
     defaultCourseId,
-    defaultCourseMetadata.name,
+    defaultCourseHomeMetadata.title,
     { unitBlocks: defaultUnitBlocks },
   );
 
@@ -173,15 +173,16 @@ describe('CoursewareContainer', () => {
 
   describe('when receiving successful course data', () => {
     const courseMetadata = defaultCourseMetadata;
+    const courseHomeMetadata = defaultCourseHomeMetadata;
     const courseId = defaultCourseId;
 
     function assertLoadedHeader(container) {
       const courseHeader = container.querySelector('.learning-header');
       // Ensure the course number and org appear - this proves we loaded course metadata properly.
-      expect(courseHeader).toHaveTextContent(courseMetadata.number);
-      expect(courseHeader).toHaveTextContent(courseMetadata.org);
+      expect(courseHeader).toHaveTextContent(courseHomeMetadata.number);
+      expect(courseHeader).toHaveTextContent(courseHomeMetadata.org);
       // Ensure the course title is showing up in the header.  This means we loaded course blocks properly.
-      expect(courseHeader.querySelector('.course-title')).toHaveTextContent(courseMetadata.name);
+      expect(courseHeader.querySelector('.course-title')).toHaveTextContent(courseHomeMetadata.title);
     }
 
     function assertSequenceNavigation(container, expectedUnitCount = 3) {
@@ -250,7 +251,7 @@ describe('CoursewareContainer', () => {
       const {
         courseBlocks, unitTree, sequenceTree, sectionTree,
       } = buildBinaryCourseBlocks(
-        courseId, courseMetadata.name,
+        courseId, courseHomeMetadata.title,
       );
 
       function setUrl(urlSequenceId, urlUnitId = null) {

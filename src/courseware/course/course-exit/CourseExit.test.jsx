@@ -30,7 +30,7 @@ describe('Course Exit Pages', () => {
   });
   const courseId = coursewareMetadata.id;
   const courseHomeMetadata = Factory.build('courseHomeMetadata');
-  const { courseBlocks: defaultCourseBlocks } = buildSimpleCourseBlocks(courseId, coursewareMetadata.name);
+  const { courseBlocks: defaultCourseBlocks } = buildSimpleCourseBlocks(courseId, courseHomeMetadata.title);
 
   let coursewareMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
   coursewareMetadataUrl = appendBrowserTimezoneToUrl(coursewareMetadataUrl);
@@ -39,9 +39,11 @@ describe('Course Exit Pages', () => {
   const enrollmentsUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment*`);
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
 
-  function setMetadata(attributes) {
-    const courseMetadata = { ...coursewareMetadata, ...attributes };
-    axiosMock.onGet(coursewareMetadataUrl).reply(200, courseMetadata);
+  function setMetadata(coursewareAttributes, courseHomeAttributes = {}) {
+    const extendedCourseMetadata = { ...coursewareMetadata, ...coursewareAttributes };
+    axiosMock.onGet(coursewareMetadataUrl).reply(200, extendedCourseMetadata);
+    const extendedCourseHomeMetadata = { ...courseHomeMetadata, ...courseHomeAttributes };
+    axiosMock.onGet(courseHomeMetadataUrl).reply(200, extendedCourseHomeMetadata);
   }
 
   async function fetchAndRender(component) {
@@ -186,6 +188,8 @@ describe('Course Exit Pages', () => {
     it('Displays upgrade link when available', async () => {
       setMetadata({
         certificate_data: { cert_status: 'audit_passing' },
+      },
+      {
         verified_mode: {
           access_expiration_date: '9999-08-06T12:00:00Z',
           upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
@@ -206,6 +210,8 @@ describe('Course Exit Pages', () => {
     it('Displays nothing if audit only', async () => {
       setMetadata({
         certificate_data: { cert_status: 'audit_passing' },
+      },
+      {
         verified_mode: null,
       });
       await fetchAndRender(<CourseCelebration />);
@@ -371,7 +377,7 @@ describe('Course Exit Pages', () => {
   describe('Course in progress experience', () => {
     it('Displays link to dates tab', async () => {
       setMetadata({ user_has_passing_grade: false });
-      const { courseBlocks } = buildSimpleCourseBlocks(courseId, coursewareMetadata.name,
+      const { courseBlocks } = buildSimpleCourseBlocks(courseId, courseHomeMetadata.title,
         { hasScheduledContent: true });
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
 

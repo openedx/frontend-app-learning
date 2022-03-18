@@ -23,8 +23,8 @@ describe('Loaded Tab Page', () => {
   let testStore;
   let axiosMock;
   const calculateUrl = `${getConfig().ECOMMERCE_BASE_URL}/api/v2/baskets/calculate/?code=ZGY11119949&sku=8CF08E5&username=MockUser`;
-  const courseMetadata = Factory.build('courseMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
-  const courseHomeMetadata = Factory.build('courseHomeMetadata');
+  const courseMetadata = Factory.build('courseMetadata');
+  const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
 
   function setDiscount(percent) {
     mockData.streakDiscountCouponEnabled = true;
@@ -50,7 +50,7 @@ describe('Loaded Tab Page', () => {
       isStreakCelebrationOpen: true,
       metadataModel: 'coursewareMeta',
       streakLengthToCelebrate: 3,
-      verifiedMode: camelCaseObject(courseMetadata.verified_mode),
+      verifiedMode: camelCaseObject(courseHomeMetadata.verified_mode),
     };
 
     testStore = await initializeTestStore({ courseMetadata, courseHomeMetadata }, false);
@@ -68,7 +68,7 @@ describe('Loaded Tab Page', () => {
     expect(screen.getByText('Keep it up, you’re on a roll!')).toBeInTheDocument();
     expect(sendTrackEvent).toHaveBeenCalledTimes(1);
     expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.celebration.streak.opened', {
-      org_key: courseMetadata.org,
+      org_key: courseHomeMetadata.org,
       courserun_key: mockData.courseId,
       is_staff: false,
     });
