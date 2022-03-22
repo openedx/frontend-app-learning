@@ -12,6 +12,8 @@ import { Switch } from 'react-router-dom';
 
 import { messages as footerMessages } from '@edx/frontend-component-footer';
 import { messages as headerMessages } from '@edx/frontend-component-header';
+import { fetchDiscussionTab } from './course-home/data/thunks';
+import DiscussionTab from './course-home/discussion-tab/DiscussionTab';
 
 import appMessages from './i18n';
 import { UserMessagesProvider } from './generic/user-messages';
@@ -49,6 +51,11 @@ subscribe(APP_READY, () => {
               <PageRoute path="/course/:courseId/dates">
                 <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
                   <DatesTab />
+                </TabContainer>
+              </PageRoute>
+              <PageRoute path="/course/:courseId/discussion">
+                <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
+                  <DiscussionTab />
                 </TabContainer>
               </PageRoute>
               <PageRoute
