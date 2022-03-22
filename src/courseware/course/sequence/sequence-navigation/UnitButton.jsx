@@ -69,8 +69,13 @@ UnitButton.defaultProps = {
   showCompletion: true,
 };
 
-const mapStateToProps = (state, props) => ({
-  ...state.models.units[props.unitId],
-});
+const mapStateToProps = (state, props) => {
+  if (props.unitId) {
+    return {
+      ...state.models.units[props.unitId],
+    };
+  }
+  return {};
+};
 
 export default connect(mapStateToProps)(UnitButton);
