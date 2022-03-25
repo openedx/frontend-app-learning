@@ -46,6 +46,7 @@ export function buildOutlineFromBlocks(courseBlocks) {
         id: block.id,
         title: block.display_name,
         start: null,
+        effective_start: null,
         sequence_ids: [...block.children],
       };
     } else if (block.type === 'sequential') {
@@ -54,6 +55,7 @@ export function buildOutlineFromBlocks(courseBlocks) {
         title: block.display_name,
         accessible: true,
         start: null,
+        effective_start: null,
       };
     }
   });
