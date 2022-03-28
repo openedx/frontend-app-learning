@@ -11,6 +11,7 @@ import ReactDOM from 'react-dom';
 import { Switch } from 'react-router-dom';
 
 import { messages as footerMessages } from '@edx/frontend-component-footer';
+import { messages as headerMessages } from '@edx/frontend-component-header';
 
 import appMessages from './i18n';
 import { UserMessagesProvider } from './generic/user-messages';
@@ -120,5 +121,6 @@ initialize({
   messages: [
     appMessages,
     footerMessages,
+    headerMessages,
   ],
 });
