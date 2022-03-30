@@ -24,7 +24,7 @@ export function useEventListener(type, handler) {
 
 /**
  * Hooks up post messages to callbacks
- * @param {string:function} events A mapping of message type to callback
+ * @param {Object.<string, function>} events A mapping of message type to callback
  */
 export function useIFramePluginEvents(events) {
   const receiveMessage = useCallback(({ data }) => {
@@ -44,7 +44,7 @@ export function useIFramePluginEvents(events) {
  * @param onIframeLoaded A callback for when the frame is loaded
  * @returns {[boolean, number]}
  */
-export function useIFrameHeight(onIframeLoaded) {
+export function useIFrameHeight(onIframeLoaded = null) {
   const [iframeHeight, setIframeHeight] = useState(null);
   const [hasLoaded, setHasLoaded] = useState(false);
   const receiveResizeMessage = useCallback(({ height }) => {

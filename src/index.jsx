@@ -53,7 +53,7 @@ subscribe(APP_READY, () => {
                   <DatesTab />
                 </TabContainer>
               </PageRoute>
-              <PageRoute path="/course/:courseId/discussion">
+              <PageRoute path="/course/:courseId/discussion/:path*">
                 <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
                   <DiscussionTab />
                 </TabContainer>
