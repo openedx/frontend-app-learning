@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@edx/frontend-build": "9.1.4",
-    "@edx/reactifex": "1.0.3",
+    "@edx/reactifex": "1.1.0",
     "@pact-foundation/pact": "9.17.3",
     "@testing-library/jest-dom": "5.16.3",
     "@testing-library/react": "12.1.4",
