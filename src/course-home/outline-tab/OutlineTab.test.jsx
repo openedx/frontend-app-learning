@@ -676,7 +676,7 @@ describe('Outline Tab', () => {
           ],
         });
         await fetchAndRender();
-        expect(screen.queryByText('Your grade and certificate will be ready soon!')).toBeInTheDocument();
+        expect(screen.queryByText('Your grade and certificate status will be available soon.')).toBeInTheDocument();
       });
       it('renders verification alert', async () => {
         const now = new Date();
@@ -710,7 +710,7 @@ describe('Outline Tab', () => {
           ],
         });
         await fetchAndRender();
-        expect(screen.queryByText('Verify your identity to earn a certificate!')).toBeInTheDocument();
+        expect(screen.queryByText('Verify your identity to qualify for a certificate.')).toBeInTheDocument();
       });
       it('renders non passing grade', async () => {
         const now = new Date();

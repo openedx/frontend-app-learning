@@ -157,7 +157,7 @@ function CertificateStatus({ intl }) {
         body = (
           <FormattedMessage
             id="courseCelebration.certificateBody.notAvailable.endDate"
-            defaultMessage="This course ends on {endDate}. Final grades and certificates are
+            defaultMessage="This course ends on {endDate}. Final grades and any earned certificates are
             scheduled to be available after {certAvailabilityDate}."
             description="This shown for leaner when they are eligible for certifcate but it't not available yet, it could because leaners just finished the course quickly!"
             values={{ endDate, certAvailabilityDate }}

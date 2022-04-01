@@ -130,9 +130,9 @@ function CourseCelebration({ intl }) {
         <>
           <p>
             <FormattedMessage
-              id="courseCelebration.certificateBody.notAvailable.endDate"
-              defaultMessage="This course ended on {endDate} and final grades and certificates are scheduled to be
-              available after {certAvailableDate}."
+              id="courseCelebration.certificateBody.notAvailable.endDate.v2"
+              defaultMessage="This course ends on {endDate}. Final grades and any earned certificates are
+              scheduled to be available after {certAvailableDate}."
               values={{ endDate, certAvailableDate }}
               description="This shown for leaner when they are eligible for certifcate but it't not available yet, it could because leaners just finished the course quickly!"
             />

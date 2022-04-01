@@ -136,7 +136,7 @@ describe('Course Exit Pages', () => {
         },
       });
       await fetchAndRender(<CourseCelebration />);
-      expect(screen.getByText('Your grade and certificate will be ready soon!')).toBeInTheDocument();
+      expect(screen.getByText('Your grade and certificate status will be available soon.')).toBeInTheDocument();
     });
 
     it('Displays request certificate link', async () => {
