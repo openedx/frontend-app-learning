@@ -66,8 +66,8 @@ function CertificateStatusAlert({ intl, payload }) {
       alertProps.body = (
         <p>
           <FormattedMessage
-            id="learning.outline.alert.cert.when"
-            defaultMessage="This course ends on {courseEndDateFormatted}. Final grades and certificates are
+            id="learning.outline.alert.cert.earnedNotAvailable"
+            defaultMessage="This course ends on {courseEndDateFormatted}. Final grades and any earned certificates are
             scheduled to be available after {certificateAvailableDate}."
             values={{
               courseEndDateFormatted,
