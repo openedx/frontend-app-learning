@@ -13,7 +13,7 @@ const messages = defineMessages({
   },
   certificateHeaderNotAvailable: {
     id: 'courseCelebration.certificateHeader.notAvailable',
-    defaultMessage: 'Your grade and certificate will be ready soon!',
+    defaultMessage: 'Your grade and certificate status will be available soon.',
     description: 'Header displayed when course certificate is not yet available to be viewed',
   },
   certificateNotAvailableBodyAccessCert: {

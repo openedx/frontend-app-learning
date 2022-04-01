@@ -92,8 +92,8 @@ const messages = defineMessages({
     description: 'Button text which leaner needs to upgrade to get the certifcate',
   },
   unverifiedHomeHeader: {
-    id: 'progress.certificateStatus.unverifiedHomeHeader',
-    defaultMessage: 'Verify your identity to earn a certificate!',
+    id: 'progress.certificateStatus.unverifiedHomeHeader.v2',
+    defaultMessage: 'Verify your identity to qualify for a certificate.',
     description: 'Header text when the learner needs to do verification to earn a certifcate ',
   },
   unverifiedHomeButton: {
