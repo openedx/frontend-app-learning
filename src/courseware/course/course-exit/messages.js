@@ -66,6 +66,16 @@ const messages = defineMessages({
     defaultMessage: 'More content is coming soon!',
     description: 'Header when the status of the course not all of (contents or assignments) available yet',
   },
+  courseFinishedEarlyHeading: {
+    id: 'courseExit.courseFinishedEarlyHeading',
+    defaultMessage: 'Your grade and certificate status will be available soon.',
+    description: 'Heading to a message that appears at the end of a course for a user who has finished a course early and has not passed or grades are not final',
+  },
+  courseFinishedEarlyBody: {
+    id: 'courseExit.courseFinishedEarlyBody',
+    defaultMessage: 'This course ends on {courseEndDate}, final grades and any earned certificates are scheduled to be available after {certificateAvailableDate}.',
+    description: 'message that appears at the end of a course for a user who has finished a course early and has not passed or grades are not final',
+  },
   dashboardLink: {
     id: 'courseExit.dashboardLink',
     defaultMessage: 'Dashboard',

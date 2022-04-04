@@ -124,6 +124,7 @@ function normalizeMetadata(metadata) {
     relatedPrograms: camelCaseObject(data.related_programs),
     userNeedsIntegritySignature: data.user_needs_integrity_signature,
     canAccessProctoredExams: data.can_access_proctored_exams,
+    canViewCertificate: data.can_view_certificate,
   };
 }
 

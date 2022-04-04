@@ -106,6 +106,16 @@ const messages = defineMessages({
     defaultMessage: 'In order to generate a certificate for this course, you must complete the ID verification process.',
     description: 'Body text when the learner needs to do verification to earn a certifcate',
   },
+  notAvailableNotPassingHeader: {
+    id: 'progress.certificateStatus.notAvailableNotPassingHeader',
+    defaultMessage: 'Certificate status',
+    description: 'Header text when the certifcate is not available',
+  },
+  notAvailableNotPassingBody: {
+    id: 'progress.certificateStatus.notAvailableNotPassingBody',
+    defaultMessage: 'This course ends on {endDate}, final grades and any earned certificates are scheduled to be available after {certAvailabilityDate}.',
+    description: 'message that appears at the end of a course for a user who has finished a course early and has not passed or grades are not final',
+  },
 });
 
 export default messages;

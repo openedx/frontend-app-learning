@@ -22,6 +22,8 @@ function CertificateStatus({ intl }) {
   const {
     isEnrolled,
     org,
+    isSelfPaced,
+    canViewCertificate,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -90,9 +92,25 @@ function CertificateStatus({ intl }) {
   if (mode === COURSE_EXIT_MODES.disabled) {
     certEventName = 'certificate_status_disabled';
   } else if (mode === COURSE_EXIT_MODES.nonPassing && !certIsDownloadable) {
-    certCase = 'notPassing';
     certEventName = 'not_passing';
-    body = intl.formatMessage(messages[`${certCase}Body`]);
+    //  If the learner is not supposed to be able to view a certificate because
+    //  of the certificate display behavior, we also don't want to show them a
+    //  "not passing" message early.
+    certCase = canViewCertificate && !isSelfPaced ? 'notPassing' : 'notAvailableNotPassing';
+    if (!canViewCertificate) {
+      endDate = intl.formatDate(end, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+      certAvailabilityDate = intl.formatDate(certificateAvailableDate || end, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+    //  These values just pass through if they are not needed by the message
+    body = intl.formatMessage(messages[`${certCase}Body`], { endDate, certAvailabilityDate });
   } else if (mode === COURSE_EXIT_MODES.inProgress && !certIsDownloadable) {
     certCase = 'inProgress';
     certEventName = 'has_scheduled_content';

@@ -38,6 +38,9 @@ describe('Course Exit Pages', () => {
   const discoveryRecommendationsUrl = new RegExp(`${getConfig().DISCOVERY_API_BASE_URL}/api/v1/course_recommendations/*`);
   const enrollmentsUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment*`);
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
+  const now = new Date();
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const overmorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
 
   function setMetadata(coursewareAttributes, courseHomeAttributes = {}) {
     const extendedCourseMetadata = { ...coursewareMetadata, ...coursewareAttributes };
@@ -367,10 +370,56 @@ describe('Course Exit Pages', () => {
 
   describe('Course Non-passing Experience', () => {
     it('Displays link to progress tab', async () => {
-      setMetadata({ user_has_passing_grade: false });
+      setMetadata({
+        user_has_passing_grade: false,
+        can_view_certificate: true,
+      }, {
+        can_view_certificate: false,
+      });
       await fetchAndRender(<CourseNonPassing />);
       expect(screen.getByText('You’ve reached the end of the course!')).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'View grades' })).toBeInTheDocument();
+    });
+
+    it('Displays text for notAvailableNonPassing case when a learner does not have a passing grade and certificates are not viewable', async () => {
+      setMetadata({
+        user_has_passing_grade: false,
+        end: tomorrow.toISOString(),
+      }, {
+        can_view_certificate: false,
+      });
+      await fetchAndRender(<CourseNonPassing />);
+      expect(screen.getByText(`This course ends on ${tomorrow.toLocaleDateString('en-us', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}, final grades and any earned certificates are scheduled to be available after ${tomorrow.toLocaleDateString('en-us', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}.`)).toBeInTheDocument();
+    });
+
+    it('Handles certificate available dates for notAvailableNotPassing', async () => {
+      setMetadata({
+        user_has_passing_grade: false,
+        end: tomorrow.toISOString(),
+        certificate_data: {
+          certificate_available_date: overmorrow.toISOString(),
+        },
+      }, {
+        can_view_certificate: false,
+      });
+      await fetchAndRender(<CourseNonPassing />);
+      expect(screen.getByText(`This course ends on ${tomorrow.toLocaleDateString('en-us', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}, final grades and any earned certificates are scheduled to be available after ${overmorrow.toLocaleDateString('en-us', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}.`)).toBeInTheDocument();
     });
   });
 

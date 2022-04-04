@@ -55,6 +55,7 @@ function CourseCelebration({ intl }) {
   const {
     org,
     verifiedMode,
+    canViewCertificate,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -248,6 +249,29 @@ function CourseCelebration({ intl }) {
       }
       break;
     default:
+      // To properly handle messaging in the case where a course has not ended yet
+      // and certificateData is null, we want to make sure we serve a generic message
+      // whether they are in a nonpassing or earned state.
+      if (!canViewCertificate) {
+        const endDate = <FormattedDate value={end} day="numeric" month="long" year="numeric" />;
+        const certAvailableDate = <FormattedDate value={certificateAvailableDate || end} day="numeric" month="long" year="numeric" />;
+        certHeader = intl.formatMessage(messages.certificateHeaderNotAvailable);
+        message = (
+          <>
+            <p>
+              <FormattedMessage
+                id="courseCelebration.certificateBody.notAvailable.endDate.v2"
+                defaultMessage="This course ends on {endDate}. Final grades and any earned certificates are
+                scheduled to be available after {certAvailableDate}."
+                values={{ endDate, certAvailableDate }}
+                description="This shown for leaner when they are eligible for certifcate but it't not available yet, it could because leaners just finished the course quickly!"
+              />
+            </p>
+          </>
+        );
+        visitEvent = 'celebration_with_unavailable_cert';
+        footnote = <DashboardFootnote variant={visitEvent} />;
+      }
       break;
   }
 

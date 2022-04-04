@@ -31,7 +31,9 @@ describe('Progress Tab', () => {
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
   const progressUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/progress/*`);
   const masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
-
+  const now = new Date();
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const overmorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
   function setMetadata(attributes, options) {
     const courseMetadata = Factory.build('courseHomeMetadata', attributes, options);
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
@@ -806,9 +808,52 @@ describe('Progress Tab', () => {
         sendTrackEvent.mockClear();
       });
 
-      it('Displays text for nonPassing case when learner does not have a passing grade', async () => {
+      it('Displays text for nonPassing case when learner does not have a passing grade and certificates are viewable', async () => {
         await fetchAndRender();
         expect(screen.getByText('In order to qualify for a certificate, you must have a passing grade.')).toBeInTheDocument();
+      });
+
+      it('Displays text for notAvailableNonPassing case when a learner does not have a passing grade and certificates are not viewable', async () => {
+        setMetadata({
+          can_view_certificate: false,
+          is_enrolled: true,
+        });
+        setTabData({
+          end: tomorrow.toISOString(),
+        });
+        await fetchAndRender();
+        expect(screen.getByText(`This course ends on ${tomorrow.toLocaleDateString('en-us', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}, final grades and any earned certificates are scheduled to be available after ${tomorrow.toLocaleDateString('en-us', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}.`)).toBeInTheDocument();
+      });
+
+      it('Handles certificate available dates for notAvailableNotPassing', async () => {
+        setMetadata({
+          can_view_certificate: false,
+          is_enrolled: true,
+        });
+        setTabData({
+          end: tomorrow.toISOString(),
+          certificate_data: {
+            certificate_available_date: overmorrow.toISOString(),
+          },
+        });
+        await fetchAndRender();
+        expect(screen.getByText(`This course ends on ${tomorrow.toLocaleDateString('en-us', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}, final grades and any earned certificates are scheduled to be available after ${overmorrow.toLocaleDateString('en-us', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}.`)).toBeInTheDocument();
       });
 
       it('sends event when visiting progress tab when learner is not passing', async () => {
