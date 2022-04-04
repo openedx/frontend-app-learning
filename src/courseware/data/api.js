@@ -122,7 +122,6 @@ function normalizeMetadata(metadata) {
     verificationStatus: data.verification_status,
     linkedinAddToProfileUrl: data.linkedin_add_to_profile_url,
     relatedPrograms: camelCaseObject(data.related_programs),
-    isIntegritySignatureEnabled: data.is_integrity_signature_enabled,
     userNeedsIntegritySignature: data.user_needs_integrity_signature,
     canAccessProctoredExams: data.can_access_proctored_exams,
   };
