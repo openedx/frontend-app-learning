@@ -19,6 +19,6 @@ jobs:
         node-version: ${{ matrix.node }}
     - run: make validate.ci
     - name: Upload coverage
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
         fail_ci_if_error: true
