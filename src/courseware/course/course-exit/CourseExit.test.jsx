@@ -372,9 +372,6 @@ describe('Course Exit Pages', () => {
     it('Displays link to progress tab', async () => {
       setMetadata({
         user_has_passing_grade: false,
-        can_view_certificate: true,
-      }, {
-        can_view_certificate: false,
       });
       await fetchAndRender(<CourseNonPassing />);
       expect(screen.getByText('You’ve reached the end of the course!')).toBeInTheDocument();
