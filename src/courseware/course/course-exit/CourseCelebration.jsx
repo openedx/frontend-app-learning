@@ -55,6 +55,8 @@ function CourseCelebration({ intl }) {
   const {
     org,
     verifiedMode,
+    canViewCertificate,
+    isSelfPaced,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -130,7 +132,7 @@ function CourseCelebration({ intl }) {
         <>
           <p>
             <FormattedMessage
-              id="courseCelebration.certificateBody.notAvailable.endDate.v2"
+              id="courseCelebration.certificateBody.notAvailable.certificateAvailableDate"
               defaultMessage="This course ends on {endDate}. Final grades and any earned certificates are
               scheduled to be available after {certAvailableDate}."
               values={{ endDate, certAvailableDate }}
@@ -248,6 +250,28 @@ function CourseCelebration({ intl }) {
       }
       break;
     default:
+      if (!canViewCertificate && !isSelfPaced) {
+        //  We reuse the cert event here. Since this default state is so
+        //  Similar to the earned_not_available state, this event name should be fine
+        //  to cover the same cases.
+        visitEvent = 'celebration_with_unavailable_cert';
+        certHeader = intl.formatMessage(messages.certificateHeaderNotAvailable);
+        const endDate = intl.formatDate(end, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        message = (
+          <>
+            <p>
+              {intl.formatMessage(messages.certificateNotAvailableEndDateBody, { endDate })}
+            </p>
+            <p>
+              {intl.formatMessage(messages.certificateNotAvailableBodyAccessCert)}
+            </p>
+          </>
+        );
+      }
       break;
   }
 

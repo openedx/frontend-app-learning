@@ -22,6 +22,8 @@ function CertificateStatus({ intl }) {
   const {
     isEnrolled,
     org,
+    canViewCertificate,
+    isSelfPaced,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -45,6 +47,8 @@ function CertificateStatus({ intl }) {
     hasScheduledContent,
     isEnrolled,
     userHasPassingGrade,
+    null, // CourseExitPageIsActive
+    canViewCertificate || isSelfPaced,
   );
 
   const eventProperties = {
@@ -156,7 +160,7 @@ function CertificateStatus({ intl }) {
         certAvailabilityDate = <FormattedDate value={certificateAvailableDate} day="numeric" month="long" year="numeric" />;
         body = (
           <FormattedMessage
-            id="courseCelebration.certificateBody.notAvailable.endDate"
+            id="courseCelebration.certificateBody.notAvailable.certificateAvailableDate"
             defaultMessage="This course ends on {endDate}. Final grades and any earned certificates are
             scheduled to be available after {certAvailabilityDate}."
             description="This shown for leaner when they are eligible for certifcate but it't not available yet, it could because leaners just finished the course quickly!"
@@ -178,10 +182,22 @@ function CertificateStatus({ intl }) {
         }
         break;
 
-      // This code shouldn't be hit but coding defensively since switch expects a default statement
       default:
-        certCase = null;
-        certEventName = 'no_certificate_status';
+        // if user completes a course before certificates are available, treat it as notAvailable
+        // regardless of passing or nonpassing status
+        if (!canViewCertificate && !isSelfPaced) {
+          certCase = 'notAvailable';
+          endDate = intl.formatDate(end, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+          body = intl.formatMessage(messages.notAvailableEndDateBody, { endDate });
+        } else {
+          // This code shouldn't be hit but coding defensively since switch expects a default statement
+          certCase = null;
+          certEventName = 'no_certificate_status';
+        }
         break;
     }
   }
