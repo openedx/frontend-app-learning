@@ -30,7 +30,6 @@ function CourseExit({ intl }) {
   const {
     isMasquerading,
     canViewCertificate,
-    isSelfPaced,
   } = useModel('courseHomeMeta', courseId);
 
   const mode = getCourseExitMode(
@@ -39,7 +38,7 @@ function CourseExit({ intl }) {
     isEnrolled,
     userHasPassingGrade,
     courseExitPageIsActive,
-    canViewCertificate || isSelfPaced,
+    canViewCertificate,
   );
 
   // Audit users cannot fully complete a course, so we will

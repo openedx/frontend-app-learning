@@ -74,14 +74,14 @@ function getCourseExitNavigation(courseId, intl) {
     userHasPassingGrade,
     courseExitPageIsActive,
   } = useModel('coursewareMeta', courseId);
-  const { canViewCertificate, isSelfPaced } = useModel('courseHomeMeta', courseId);
+  const { canViewCertificate } = useModel('courseHomeMeta', courseId);
   const exitMode = getCourseExitMode(
     certificateData,
     hasScheduledContent,
     isEnrolled,
     userHasPassingGrade,
     courseExitPageIsActive,
-    canViewCertificate || !isSelfPaced,
+    canViewCertificate,
   );
   const exitActive = exitMode !== COURSE_EXIT_MODES.disabled;
 

@@ -56,7 +56,7 @@ function CourseCelebration({ intl }) {
     org,
     verifiedMode,
     canViewCertificate,
-    isSelfPaced,
+    userTimezone,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -71,6 +71,7 @@ function CourseCelebration({ intl }) {
   const dashboardLink = <DashboardLink />;
   const idVerificationSupportLink = <IdVerificationSupportLink />;
   const profileLink = <ProfileLink />;
+  const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
   let buttonPrefix = null;
   let buttonLocation;
@@ -250,7 +251,7 @@ function CourseCelebration({ intl }) {
       }
       break;
     default:
-      if (!canViewCertificate && !isSelfPaced) {
+      if (!canViewCertificate) {
         //  We reuse the cert event here. Since this default state is so
         //  Similar to the earned_not_available state, this event name should be fine
         //  to cover the same cases.
@@ -260,6 +261,8 @@ function CourseCelebration({ intl }) {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
+        }, {
+          ...timezoneFormatArgs,
         });
         message = (
           <>
