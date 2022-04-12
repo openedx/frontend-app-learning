@@ -192,7 +192,6 @@ function CertificateStatus({ intl }) {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
-          }, {
             ...timezoneFormatArgs,
           });
           body = intl.formatMessage(messages.notAvailableEndDateBody, { endDate });

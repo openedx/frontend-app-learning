@@ -133,7 +133,7 @@ function CourseCelebration({ intl }) {
         <>
           <p>
             <FormattedMessage
-              id="courseCelebration.certificateBody.notAvailable.certificateAvailableDate"
+              id="courseCelebration.certificateBody.notAvailable.endDate.v2"
               defaultMessage="This course ends on {endDate}. Final grades and any earned certificates are
               scheduled to be available after {certAvailableDate}."
               values={{ endDate, certAvailableDate }}
@@ -261,7 +261,6 @@ function CourseCelebration({ intl }) {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
-        }, {
           ...timezoneFormatArgs,
         });
         message = (
