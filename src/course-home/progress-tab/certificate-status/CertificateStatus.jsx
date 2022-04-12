@@ -195,6 +195,9 @@ function CertificateStatus({ intl }) {
             ...timezoneFormatArgs,
           });
           body = intl.formatMessage(messages.notAvailableEndDateBody, { endDate });
+        } else {
+          certCase = null;
+          certEventName = 'no_certificate_status';
         }
         break;
     }
