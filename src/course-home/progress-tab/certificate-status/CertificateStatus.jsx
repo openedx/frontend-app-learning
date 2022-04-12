@@ -23,6 +23,7 @@ function CertificateStatus({ intl }) {
     isEnrolled,
     org,
     canViewCertificate,
+    userTimezone,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -61,6 +62,7 @@ function CertificateStatus({ intl }) {
   let certStatus;
   let certWebViewUrl;
   let downloadUrl;
+  const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
   if (certificateData) {
     certStatus = certificateData.certStatus;
@@ -190,6 +192,8 @@ function CertificateStatus({ intl }) {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
+          }, {
+            ...timezoneFormatArgs,
           });
           body = intl.formatMessage(messages.notAvailableEndDateBody, { endDate });
         }
