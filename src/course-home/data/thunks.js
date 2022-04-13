@@ -32,46 +32,38 @@ const eventTypes = {
 export function fetchTab(courseId, tab, getTabData, targetUserId) {
   return async (dispatch) => {
     dispatch(fetchTabRequest({ courseId }));
-    Promise.allSettled([
-      getCourseHomeCourseMetadata(courseId, 'outline'),
-      getTabData(courseId, targetUserId),
-    ]).then(([courseHomeCourseMetadataResult, tabDataResult]) => {
-      const fetchedCourseHomeCourseMetadata = courseHomeCourseMetadataResult.status === 'fulfilled';
-      const fetchedTabData = tabDataResult.status === 'fulfilled';
-
-      if (fetchedCourseHomeCourseMetadata) {
-        dispatch(addModel({
-          modelType: 'courseHomeMeta',
-          model: {
-            id: courseId,
-            ...courseHomeCourseMetadataResult.value,
-          },
-        }));
-      } else {
-        logError(courseHomeCourseMetadataResult.reason);
-      }
-
-      if (fetchedTabData) {
+    try {
+      const courseHomeCourseMetadata = await getCourseHomeCourseMetadata(courseId, 'outline');
+      dispatch(addModel({
+        modelType: 'courseHomeMeta',
+        model: {
+          id: courseId,
+          ...courseHomeCourseMetadata,
+        },
+      }));
+      const tabDataResult = getTabData && await getTabData(courseId, targetUserId);
+      if (tabDataResult) {
         dispatch(addModel({
           modelType: tab,
           model: {
             id: courseId,
-            ...tabDataResult.value,
+            ...tabDataResult,
           },
         }));
-      } else {
-        logError(tabDataResult.reason);
       }
-
       // Disable the access-denied path for now - it caused a regression
-      if (fetchedCourseHomeCourseMetadata && !courseHomeCourseMetadataResult.value.courseAccess.hasAccess) {
+      if (!courseHomeCourseMetadata.courseAccess.hasAccess) {
         dispatch(fetchTabDenied({ courseId }));
-      } else if (fetchedCourseHomeCourseMetadata && fetchedTabData) {
-        dispatch(fetchTabSuccess({ courseId, targetUserId }));
-      } else {
-        dispatch(fetchTabFailure({ courseId }));
+      } else if (tabDataResult || !getTabData) {
+        dispatch(fetchTabSuccess({
+          courseId,
+          targetUserId,
+        }));
       }
-    });
+    } catch (e) {
+      dispatch(fetchTabFailure({ courseId }));
+      logError(e);
+    }
   };
 }
 
@@ -85,6 +77,10 @@ export function fetchProgressTab(courseId, targetUserId) {
 
 export function fetchOutlineTab(courseId) {
   return fetchTab(courseId, 'outline', getOutlineTabData);
+}
+
+export function fetchDiscussionTab(courseId) {
+  return fetchTab(courseId, 'discussion');
 }
 
 export function dismissWelcomeMessage(courseId) {
