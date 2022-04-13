@@ -55,6 +55,8 @@ function CourseCelebration({ intl }) {
   const {
     org,
     verifiedMode,
+    canViewCertificate,
+    userTimezone,
   } = useModel('courseHomeMeta', courseId);
 
   const {
@@ -69,6 +71,7 @@ function CourseCelebration({ intl }) {
   const dashboardLink = <DashboardLink />;
   const idVerificationSupportLink = <IdVerificationSupportLink />;
   const profileLink = <ProfileLink />;
+  const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
   let buttonPrefix = null;
   let buttonLocation;
@@ -248,6 +251,29 @@ function CourseCelebration({ intl }) {
       }
       break;
     default:
+      if (!canViewCertificate) {
+        //  We reuse the cert event here. Since this default state is so
+        //  Similar to the earned_not_available state, this event name should be fine
+        //  to cover the same cases.
+        visitEvent = 'celebration_with_unavailable_cert';
+        certHeader = intl.formatMessage(messages.certificateHeaderNotAvailable);
+        const endDate = intl.formatDate(end, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          ...timezoneFormatArgs,
+        });
+        message = (
+          <>
+            <p>
+              {intl.formatMessage(messages.certificateNotAvailableEndDateBody, { endDate })}
+            </p>
+            <p>
+              {intl.formatMessage(messages.certificateNotAvailableBodyAccessCert)}
+            </p>
+          </>
+        );
+      }
       break;
   }
 

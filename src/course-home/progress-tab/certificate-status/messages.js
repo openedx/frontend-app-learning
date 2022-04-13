@@ -76,6 +76,11 @@ const messages = defineMessages({
     defaultMessage: 'Certificate status',
     description: 'Header text when the certifcate is not available',
   },
+  notAvailableEndDateBody: {
+    id: 'progress.certificateBody.notAvailable.endDate',
+    defaultMessage: 'Final grades and any earned certificates are scheduled to be available after {endDate}.',
+    description: 'Shown for learners who have finished a course before grades and certificates are available.',
+  },
   upgradeHeader: {
     id: 'progress.certificateStatus.upgradeHeader',
     defaultMessage: 'Earn a certificate',

@@ -31,6 +31,7 @@ function getCourseExitMode(
   isEnrolled,
   userHasPassingGrade,
   courseExitPageIsActive = null,
+  canImmediatelyViewCertificate = false,
 ) {
   const authenticatedUser = getAuthenticatedUser();
 
@@ -55,7 +56,7 @@ function getCourseExitMode(
   if (hasScheduledContent && !userHasPassingGrade) {
     return COURSE_EXIT_MODES.inProgress;
   }
-  if (isEligibleForCertificate && !userHasPassingGrade) {
+  if (isEligibleForCertificate && !userHasPassingGrade && canImmediatelyViewCertificate) {
     return COURSE_EXIT_MODES.nonPassing;
   }
   if (isCelebratoryStatus) {
@@ -73,12 +74,14 @@ function getCourseExitNavigation(courseId, intl) {
     userHasPassingGrade,
     courseExitPageIsActive,
   } = useModel('coursewareMeta', courseId);
+  const { canViewCertificate } = useModel('courseHomeMeta', courseId);
   const exitMode = getCourseExitMode(
     certificateData,
     hasScheduledContent,
     isEnrolled,
     userHasPassingGrade,
     courseExitPageIsActive,
+    canViewCertificate,
   );
   const exitActive = exitMode !== COURSE_EXIT_MODES.disabled;
 
