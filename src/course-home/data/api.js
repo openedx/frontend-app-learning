@@ -297,6 +297,20 @@ export async function getProctoringInfoData(courseId, username) {
   }
 }
 
+export async function getLiveTabIframe(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/api/course_live/iframe/${courseId}/`;
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(url);
+    return data;
+  } catch (error) {
+    const { httpErrorStatus } = error && error.customAttributes;
+    if (httpErrorStatus === 404) {
+      return {};
+    }
+    throw error;
+  }
+}
+
 export function getTimeOffsetMillis(headerDate, requestTime, responseTime) {
   // Time offset computation should move down into the HttpClient wrapper to maintain a global time correction reference
   // Requires 'Access-Control-Expose-Headers: Date' on the server response per https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#access-control-expose-headers
