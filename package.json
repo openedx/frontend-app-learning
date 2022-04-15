@@ -34,7 +34,7 @@
     "@edx/frontend-component-header": "2.4.6",
     "@edx/frontend-lib-special-exams": "1.16.3",
     "@edx/frontend-platform": "1.15.6",
-    "@edx/paragon": "19.15.1",
+    "@edx/paragon": "19.18.0",
     "@fortawesome/fontawesome-svg-core": "1.3.0",
     "@fortawesome/free-brands-svg-icons": "5.15.4",
     "@fortawesome/free-regular-svg-icons": "5.15.4",
