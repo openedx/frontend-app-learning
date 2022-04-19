@@ -26,7 +26,6 @@ export function normalizeLearningSequencesData(learningSequencesData) {
     models.sequences[seqId] = {
       id: seqId,
       title: sequence.title,
-      legacyWebUrl: `${getConfig().LMS_BASE_URL}/courses/${learningSequencesData.course_key}/jump_to/${seqId}?experience=legacy`,
     };
   });
 
@@ -106,7 +105,6 @@ function normalizeMetadata(metadata) {
     start: data.start,
     enrollmentMode: data.enrollment.mode,
     isEnrolled: data.enrollment.is_active,
-    canViewLegacyCourseware: data.can_view_legacy_courseware,
     license: data.license,
     userTimezone: data.user_timezone,
     showCalculator: data.show_calculator,

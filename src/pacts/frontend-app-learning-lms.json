@@ -27,7 +27,6 @@
             "sku": "8CF08E5",
             "upgrade_url": "http://localhost:18130/basket/add/?sku=8CF08E5"
           },
-          "can_load_courseware": true,
           "celebrations": {
             "first_section": false,
             "streak_length_to_celebrate": null,
@@ -64,9 +63,6 @@
             "match": "type"
           },
           "$.body.verified_mode": {
-            "match": "type"
-          },
-          "$.body.can_load_courseware": {
             "match": "type"
           },
           "$.body.celebrations": {
@@ -280,7 +276,6 @@
           },
           "show_calculator": false,
           "original_user_is_staff": true,
-          "can_view_legacy_courseware": true,
           "is_staff": true,
           "course_access": {
             "has_access": true,
@@ -412,9 +407,6 @@
             "match": "type"
           },
           "$.body.original_user_is_staff": {
-            "match": "type"
-          },
-          "$.body.can_view_legacy_courseware": {
             "match": "type"
           },
           "$.body.is_staff": {

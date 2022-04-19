@@ -148,12 +148,9 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           effortTime: block.effort_time,
           icon: block.icon,
           id: block.id,
-          legacyWebUrl: block.legacy_web_url,
-          // The presence of an legacy URL for the sequence indicates that we want this
-          // sequence to be a clickable link in the outline (even though, if the new
-          // courseware experience is active, we will ignore `legacyWebUrl` and build a
-          // link to the MFE ourselves).
-          showLink: !!block.legacy_web_url,
+          // The presence of a URL for the sequence indicates that we want this sequence to be a clickable
+          // link in the outline (even though we ignore the given url and use an internal <Link> to ourselves).
+          showLink: !!block.lms_web_url,
           title: block.display_name,
         };
         break;

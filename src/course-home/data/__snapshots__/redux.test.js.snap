@@ -21,7 +21,6 @@ Object {
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course": Object {
-        "canLoadCourseware": true,
         "canViewCertificate": true,
         "celebrations": null,
         "courseAccess": Object {
@@ -340,7 +339,6 @@ Object {
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course": Object {
-        "canLoadCourseware": true,
         "canViewCertificate": true,
         "celebrations": null,
         "courseAccess": Object {
@@ -447,7 +445,6 @@ Object {
               "effortTime": 15,
               "icon": null,
               "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
-              "legacyWebUrl": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1?experience=legacy",
               "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               "showLink": true,
               "title": "Title of Sequence",
@@ -539,7 +536,6 @@ Object {
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course": Object {
-        "canLoadCourseware": true,
         "canViewCertificate": true,
         "celebrations": null,
         "courseAccess": Object {

@@ -47,13 +47,13 @@ Factory.define('block')
     },
   )
   .attr(
-    'legacy_web_url',
-    ['legacy_web_url', 'host', 'courseId', 'id'],
+    'lms_web_url',
+    ['lms_web_url', 'host', 'courseId', 'id'],
     (url, host, courseId, id) => {
       if (url) {
         return url;
       }
 
-      return `${host}/courses/${courseId}/jump_to/${id}?experience=legacy`;
+      return `${host}/courses/${courseId}/jump_to/${id}`;
     },
   );
