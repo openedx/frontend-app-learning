@@ -36,14 +36,6 @@ function getStudioUrl(courseId, unitId) {
   return urlFull;
 }
 
-function getLegacyWebUrl(canViewLegacyCourseware, courseId, unitId) {
-  if (!canViewLegacyCourseware || !unitId) {
-    return undefined;
-  }
-
-  return `${getConfig().LMS_BASE_URL}/courses/${courseId}/jump_to/${unitId}?experience=legacy`;
-}
-
 export default function InstructorToolbar(props) {
   // This didMount logic became necessary once we had a page that does a redirect on a quick exit.
   // As a result, it unmounts the InstructorToolbar (which will be remounted by the new component),
@@ -62,12 +54,10 @@ export default function InstructorToolbar(props) {
   const {
     courseId,
     unitId,
-    canViewLegacyCourseware,
     tab,
   } = props;
 
   const urlInsights = getInsightsUrl(courseId);
-  const urlLegacy = getLegacyWebUrl(canViewLegacyCourseware, courseId, unitId);
   const urlStudio = getStudioUrl(courseId, unitId);
   const [masqueradeErrorMessage, showMasqueradeError] = useState(null);
 
@@ -81,16 +71,11 @@ export default function InstructorToolbar(props) {
           <div className="align-items-center flex-grow-1 d-md-flex mx-1 my-1">
             <MasqueradeWidget courseId={courseId} onError={showMasqueradeError} />
           </div>
-          {(urlLegacy || urlStudio || urlInsights) && (
+          {(urlStudio || urlInsights) && (
             <>
               <hr className="border-light" />
               <span className="mr-2 mt-1 col-form-label">View course in:</span>
             </>
-          )}
-          {urlLegacy && (
-            <span className="mx-1 my-1">
-              <a className="btn btn-inverse-outline-primary" href={urlLegacy}>Legacy experience</a>
-            </span>
           )}
           {urlStudio && (
             <span className="mx-1 my-1">
@@ -128,13 +113,11 @@ export default function InstructorToolbar(props) {
 InstructorToolbar.propTypes = {
   courseId: PropTypes.string,
   unitId: PropTypes.string,
-  canViewLegacyCourseware: PropTypes.bool,
   tab: PropTypes.string,
 };
 
 InstructorToolbar.defaultProps = {
   courseId: undefined,
   unitId: undefined,
-  canViewLegacyCourseware: undefined,
   tab: '',
 };

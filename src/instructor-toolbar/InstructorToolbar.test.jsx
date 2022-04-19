@@ -34,7 +34,6 @@ describe('Instructor Toolbar', () => {
     mockData = {
       courseId: courseware.courseId,
       unitId: Object.values(models.units)[0].id,
-      canViewLegacyCourseware: true,
     };
     axiosMock.reset();
     axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
@@ -61,32 +60,6 @@ describe('Instructor Toolbar', () => {
     const config = { ...originalConfig };
     config.INSIGHTS_BASE_URL = 'http://localhost:18100';
     getConfig.mockImplementation(() => config);
-    render(<InstructorToolbar {...mockData} />);
-
-    const linksContainer = screen.getByText('View course in:').parentElement;
-    ['Legacy experience', 'Studio', 'Insights'].forEach(service => {
-      expect(getByText(linksContainer, service).getAttribute('href')).toMatch(/http.*/);
-    });
-  });
-
-  it('displays links to view course in available services - false legacy courseware flag', () => {
-    const config = { ...originalConfig };
-    config.INSIGHTS_BASE_URL = 'http://localhost:18100';
-    getConfig.mockImplementation(() => config);
-    mockData.canViewLegacyCourseware = false;
-    render(<InstructorToolbar {...mockData} />);
-
-    const linksContainer = screen.getByText('View course in:').parentElement;
-    ['Studio', 'Insights'].forEach(service => {
-      expect(getByText(linksContainer, service).getAttribute('href')).toMatch(/http.*/);
-    });
-  });
-
-  it('displays links to view course in available services - empty unit', () => {
-    const config = { ...originalConfig };
-    config.INSIGHTS_BASE_URL = 'http://localhost:18100';
-    getConfig.mockImplementation(() => config);
-    mockData.unitId = undefined;
     render(<InstructorToolbar {...mockData} />);
 
     const linksContainer = screen.getByText('View course in:').parentElement;

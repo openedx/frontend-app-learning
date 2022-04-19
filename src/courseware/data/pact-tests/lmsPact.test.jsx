@@ -171,13 +171,11 @@ describe('Courseware Service', () => {
             id: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@accessible',
             title: 'Can access',
             sectionId: 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@partial',
-            legacyWebUrl: `${getConfig().LMS_BASE_URL}/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@accessible?experience=legacy`,
           },
           'block-v1:edX+DemoX+Demo_Course+type@sequential+block@released': {
             id: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@released',
             title: 'Released and inaccessible',
             sectionId: 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@partial',
-            legacyWebUrl: `${getConfig().LMS_BASE_URL}/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@released?experience=legacy`,
           },
         },
       };
@@ -271,7 +269,6 @@ describe('Courseware Service', () => {
             }),
             show_calculator: boolean(false),
             original_user_is_staff: boolean(true),
-            can_view_legacy_courseware: boolean(true),
             is_staff: boolean(true),
             course_access: like({
               has_access: true,
@@ -321,7 +318,6 @@ describe('Courseware Service', () => {
         start: '2013-02-05T05:00:00Z',
         enrollmentMode: 'audit',
         isEnrolled: true,
-        canViewLegacyCourseware: true,
         license: 'all-rights-reserved',
         userTimezone: null,
         showCalculator: false,

@@ -95,9 +95,7 @@ export function fetchCourse(courseId) {
         logError(courseHomeMetadataResult.reason);
       }
       if (fetchedMetadata && fetchedCourseHomeMetadata) {
-        if (courseHomeMetadataResult.value.courseAccess.hasAccess
-          && courseHomeMetadataResult.value.canLoadCourseware
-          && fetchedOutline) {
+        if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedOutline) {
           // User has access
           dispatch(fetchCourseSuccess({ courseId }));
           return;

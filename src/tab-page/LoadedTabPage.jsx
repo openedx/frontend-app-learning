@@ -24,7 +24,6 @@ function LoadedTabPage({
 }) {
   const {
     celebrations,
-    canViewLegacyCourseware,
     org,
     originalUserIsStaff,
     tabs,
@@ -58,7 +57,6 @@ function LoadedTabPage({
         <InstructorToolbar
           courseId={courseId}
           unitId={unitId}
-          canViewLegacyCourseware={canViewLegacyCourseware}
           tab={activeTabSlug}
         />
       )}
