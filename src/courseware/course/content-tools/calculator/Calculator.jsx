@@ -1,14 +1,12 @@
-import React, { Component } from 'react';
-import { Collapsible } from '@edx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { Collapsible } from '@edx/paragon';
 import {
-  FormattedMessage, injectIntl, intlShape,
-} from '@edx/frontend-platform/i18n';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCalculator, faQuestionCircle, faTimesCircle, faEquals,
+  faCalculator, faEquals, faQuestionCircle, faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { Component } from 'react';
 import messages from './messages';
 
 class Calculator extends Component {
@@ -39,9 +37,12 @@ class Calculator extends Component {
 
   render() {
     return (
-      <Collapsible.Advanced className="calculator">
+      <Collapsible.Advanced className="calculator flex-grow-1">
         <div className="text-right">
-          <Collapsible.Trigger tag="a" className="trigger btn">
+          <Collapsible.Trigger
+            tag="a"
+            className="trigger btn d-inline-block position-relative bg-light-200 z-index-1 border-black pl-2.5 text-truncate border-top border-left"
+          >
             <Collapsible.Visible whenOpen>
               <FontAwesomeIcon icon={faTimesCircle} aria-hidden="true" className="mr-2" />
             </Collapsible.Visible>
@@ -51,7 +52,7 @@ class Calculator extends Component {
             {this.props.intl.formatMessage(messages['calculator.button.label'])}
           </Collapsible.Trigger>
         </div>
-        <Collapsible.Body className="calculator-content pt-4">
+        <Collapsible.Body className="pt-4 bg-light-200">
           <form onSubmit={this.handleSubmit} className="container-xl form-inline flex-nowrap">
             <input
               type="text"

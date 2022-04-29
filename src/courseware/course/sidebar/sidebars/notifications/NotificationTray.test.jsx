@@ -90,7 +90,7 @@ describe('NotificationTray', () => {
         <NotificationTray />
       </SidebarContext.Provider>,
     );
-    const UpgradeNotification = document.querySelector('.upgrade-notification');
+    const UpgradeNotification = document.querySelector('#courseHome-upgradeNotification');
 
     expect(UpgradeNotification)
       .toBeInTheDocument();

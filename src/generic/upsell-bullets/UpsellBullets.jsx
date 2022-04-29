@@ -1,19 +1,22 @@
-import React from 'react';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { getConfig } from '@edx/frontend-platform';
+import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { Icon } from '@edx/paragon';
+import { Check } from '@edx/paragon/icons';
+import React from 'react';
 
 function CheckmarkBullet() {
   return (
-    <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-  );
+    <Icon src={Check} className="d-inline-block mr-2 ml-1 p-0" />);
 }
 
-// Must be child of a <ul className="fa-ul">
 export function VerifiedCertBullet() {
   const verifiedCertLink = (
-    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>
+    <a
+      className="btn-link focus font-weight-bold text-primary-500"
+      rel="noopener noreferrer"
+      target="_blank"
+      href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}
+    >
       <FormattedMessage
         id="learning.generic.upsell.verifiedCertBullet.verifiedCert"
         defaultMessage="verified certificate"
@@ -22,7 +25,7 @@ export function VerifiedCertBullet() {
     </a>
   );
   return (
-    <li className="upsell-bullet">
+    <li className="d-flex">
       <CheckmarkBullet />
       <FormattedMessage
         id="learning.generic.upsell.verifiedCertBullet"
@@ -34,7 +37,6 @@ export function VerifiedCertBullet() {
   );
 }
 
-// Must be child of a <ul className="fa-ul">
 export function UnlockGradedBullet() {
   const gradedAssignmentsInBoldText = (
     <span className="font-weight-bold">
@@ -46,7 +48,7 @@ export function UnlockGradedBullet() {
     </span>
   );
   return (
-    <li className="upsell-bullet">
+    <li className="d-flex">
       <CheckmarkBullet />
       <FormattedMessage
         id="learning.generic.upsell.unlockGradedBullet"
@@ -58,7 +60,6 @@ export function UnlockGradedBullet() {
   );
 }
 
-// Must be child of a <ul className="fa-ul">
 export function FullAccessBullet() {
   const fullAccessInBoldText = (
     <span className="font-weight-bold">
@@ -70,7 +71,7 @@ export function FullAccessBullet() {
     </span>
   );
   return (
-    <li className="upsell-bullet">
+    <li className="d-flex">
       <CheckmarkBullet />
       <FormattedMessage
         id="learning.generic.upsell.fullAccessBullet"
@@ -82,7 +83,6 @@ export function FullAccessBullet() {
   );
 }
 
-// Must be child of a <ul className="fa-ul">
 export function SupportMissionBullet() {
   const missionInBoldText = (
     <span className="font-weight-bold">
@@ -94,7 +94,7 @@ export function SupportMissionBullet() {
     </span>
   );
   return (
-    <li className="upsell-bullet">
+    <li className="d-flex">
       <CheckmarkBullet />
       <FormattedMessage
         id="learning.generic.upsell.supportMissionBullet"

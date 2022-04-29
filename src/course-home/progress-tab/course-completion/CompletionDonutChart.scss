@@ -7,19 +7,14 @@
 
 .donut-chart-label {
   font: {
-    family: $font-family-sans-serif;
+    family: var(--font-family-sans-serif);
     size: .2rem;
-    weight: $font-weight-normal;
   }
   text-anchor: middle;
 }
 
 .donut-chart-number {
-  font: {
-    family: $font-family-monospace;
-    size: .5rem;
-    weight: $font-weight-bold;
-  }
+  font-size: .5rem;
   line-height: 1rem;
   text-anchor: middle;
   -moz-transform: translateY(-0.6em);

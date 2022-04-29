@@ -18,7 +18,7 @@ const Flyover = ({
     return null;
   }
   return (
-    <div className={classNames('mmp2p-flyover', { static: isStatic })}>
+    <div className={classNames('mmp2p-flyover border border-light', { static: isStatic })}>
       { !isStatic && (
         <div className="mmp2p-notification-div">
           <span>Notifications</span>

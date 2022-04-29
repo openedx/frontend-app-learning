@@ -12,8 +12,8 @@ function FlagButton({
   return (
     <button
       type="button"
-      className={classnames('flag-button row w-100 align-content-between m-1.5 py-3.5',
-        isSelected ? 'flag-button-selected' : '')}
+      className={classnames('flag-button bg-white border border-light-400 rounded-sm row w-100 align-content-between m-1.5 py-3.5',
+        isSelected ? 'flag-button-selected border border-primary-300' : '')}
       aria-checked={isSelected}
       role="radio"
       onClick={() => handleSelect()}

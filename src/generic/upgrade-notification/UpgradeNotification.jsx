@@ -15,7 +15,7 @@ import {
 
 function UpsellNoFBECardContent() {
   return (
-    <ul className="fa-ul upgrade-notification-ul pt-0">
+    <ul className="list-unstyled pt-0 ml-4">
       <VerifiedCertBullet />
       <SupportMissionBullet />
     </ul>
@@ -24,7 +24,7 @@ function UpsellNoFBECardContent() {
 
 function UpsellFBEFarAwayCardContent() {
   return (
-    <ul className="fa-ul upgrade-notification-ul">
+    <ul className="list-unstyled">
       <VerifiedCertBullet />
       <UnlockGradedBullet />
       <FullAccessBullet />
@@ -54,7 +54,7 @@ function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) 
   );
 
   const benefitsOfUpgrading = (
-    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-">
+    <a className="btn-link focus font-weight-bold" rel="noopener noreferrer" target="_blank" href="https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses-">
       <FormattedMessage
         id="learning.generic.upgradeNotification.expirationVerifiedCert.benefits"
         defaultMessage="benefits of upgrading"
@@ -63,7 +63,7 @@ function UpsellFBESoonCardContent({ accessExpirationDate, timezoneFormatArgs }) 
   );
 
   return (
-    <div className="upgrade-notification-text">
+    <div className="pt-2.5 px-3.5">
       <p>
         <FormattedMessage
           id="learning.generic.upgradeNotification.expirationAccessLoss"
@@ -98,7 +98,7 @@ UpsellFBESoonCardContent.defaultProps = {
 
 function PastExpirationCardContent() {
   return (
-    <div className="upgrade-notification-text">
+    <div className="pt-2.5 px-3.5">
       <p>
         <FormattedMessage
           id="learning.generic.upgradeNotification.pastExpiration.content"
@@ -178,7 +178,7 @@ function ExpirationCountdown({
       />
     );
   }
-  return (<div className="upsell-warning">{expirationText}</div>);
+  return (<div className="py-2 px-3.5 bg-danger-100">{expirationText}</div>);
 }
 
 ExpirationCountdown.propTypes = {
@@ -200,7 +200,7 @@ function AccessExpirationDateBanner({
     setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'accessDateView');
   }
   return (
-    <div className="upsell-warning-light">
+    <div className="py-2 px-3.5 bg-warning-100">
       <FormattedMessage
         id="learning.generic.upgradeNotification.expiration"
         defaultMessage="Course access will expire {date}"
@@ -242,7 +242,7 @@ function PastExpirationDateBanner({
     setLocalStorage(`upgradeNotificationCurrentState.${courseId}`, 'PastExpirationDate');
   }
   return (
-    <div className="upsell-warning">
+    <div className="py-2 px-3.5 bg-danger-100">
       <FormattedMessage
         id="learning.generic.upgradeNotification.pastExpiration.banner"
         defaultMessage="Upgrade deadline passed on {date}"
@@ -473,7 +473,7 @@ function UpgradeNotification({
 
   if (offer) { // if there's a first purchase discount, message the code at the bottom
     offerCode = (
-      <div className="text-center discount-info">
+      <div className="text-center border-top border-light-400 py-2.5">
         <FormattedMessage
           id="learning.generic.upgradeNotification.code"
           defaultMessage="Use code {code} at checkout"
@@ -486,16 +486,16 @@ function UpgradeNotification({
   }
 
   return (
-    <section className={classNames('upgrade-notification small', { 'card mb-4': shouldDisplayBorder })}>
+    <section className={classNames('rounded-0 small', { 'card mb-4': shouldDisplayBorder })}>
       <div id="courseHome-upgradeNotification">
-        <h2 className="h5 upgrade-notification-header" id="outline-sidebar-upgrade-header">
+        <h2 className="h5 m-3.5" id="outline-sidebar-upgrade-header">
           {upgradeNotificationHeaderText}
         </h2>
         {expirationBanner}
         <div className="upgrade-notification-message">
           {upsellMessage}
         </div>
-        <div className="upgrade-notification-button">
+        <div className="px-3.5 pb-3.5">
           {callToActionButton}
         </div>
         {offerCode}
