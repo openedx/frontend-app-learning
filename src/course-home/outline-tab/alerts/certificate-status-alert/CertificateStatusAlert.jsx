@@ -79,6 +79,7 @@ function CertificateStatusAlert({ intl, payload }) {
       );
     } else if (certStatus === CERT_STATUS_TYPE.DOWNLOADABLE) {
       alertProps.header = intl.formatMessage(certMessages.certStatusDownloadableHeader);
+      // TODO:
       if (isWebCert) {
         alertProps.buttonMessage = intl.formatMessage(certStatusMessages.viewableButton);
       } else {

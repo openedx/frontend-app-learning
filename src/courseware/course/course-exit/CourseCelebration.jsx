@@ -62,7 +62,6 @@ function CourseCelebration({ intl }) {
   const {
     certStatus,
     certWebViewUrl,
-    downloadUrl,
     certificateAvailableDate,
   } = certificateData || {};
 
@@ -104,9 +103,6 @@ function CourseCelebration({ intl }) {
       if (certWebViewUrl) {
         buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
         buttonText = intl.formatMessage(messages.viewCertificateButton);
-      } else if (downloadUrl) {
-        buttonLocation = downloadUrl;
-        buttonText = intl.formatMessage(messages.downloadButton);
       }
       if (linkedinAddToProfileUrl) {
         buttonPrefix = (
