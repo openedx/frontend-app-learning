@@ -13,7 +13,7 @@ const messages = defineMessages({
   },
   newUserModalBody: {
     id: 'tours.newUserModal.body',
-    defaultMessage: 'Let’s take a quick tour of edX so you can get the most out of your course.',
+    defaultMessage: 'Let’s take a quick tour of {siteName} so you can get the most out of your course.',
   },
   newUserModalTitleWelcome: {
     id: 'tours.newUserModal.title.welcome',
