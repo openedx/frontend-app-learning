@@ -76,11 +76,6 @@ const messages = defineMessages({
     defaultMessage: 'Dashboard',
     description: 'Link to user’s dashboard',
   },
-  downloadButton: {
-    id: 'courseCelebration.downloadButton',
-    defaultMessage: 'Download my certificate',
-    description: 'Button to download the course certificate',
-  },
   endOfCourseDescription: {
     id: 'courseExit.endOfCourseDescription',
     defaultMessage: 'Unfortunately, you are not currently eligible for a certificate. You need to receive a passing grade to be eligible for a certificate.',

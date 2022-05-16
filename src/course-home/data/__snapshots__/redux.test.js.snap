@@ -411,7 +411,6 @@ Object {
           "certStatus": null,
           "certWebViewUrl": null,
           "certificateAvailableDate": null,
-          "downloadUrl": null,
         },
         "courseBlocks": Object {
           "courses": Object {

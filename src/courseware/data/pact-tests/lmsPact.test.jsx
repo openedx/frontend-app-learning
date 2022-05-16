@@ -283,7 +283,7 @@ describe('Courseware Service', () => {
             user_has_passing_grade: boolean(false),
             course_exit_page_is_active: boolean(false),
             certificate_data: {
-              cert_status: string('audit_passing'), cert_web_view_url: null, download_url: null, certificate_available_date: null,
+              cert_status: string('audit_passing'), cert_web_view_url: null, certificate_available_date: null,
             },
             verify_identity_url: null,
             verification_status: string('none'),
@@ -328,7 +328,6 @@ describe('Courseware Service', () => {
         certificateData: {
           certStatus: 'audit_passing',
           certWebViewUrl: null,
-          downloadUrl: null,
           certificateAvailableDate: null,
         },
         timeOffsetMillis: 0,

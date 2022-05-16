@@ -61,13 +61,11 @@ function CertificateStatus({ intl }) {
 
   let certStatus;
   let certWebViewUrl;
-  let downloadUrl;
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
   if (certificateData) {
     certStatus = certificateData.certStatus;
     certWebViewUrl = certificateData.certWebViewUrl;
-    downloadUrl = certificateData.downloadUrl;
   }
 
   let certCase;
@@ -143,15 +141,10 @@ function CertificateStatus({ intl }) {
             values={{ dashboardLink, profileLink }}
           />
         );
-
         if (certWebViewUrl) {
           certEventName = 'earned_viewable';
           buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
           buttonText = intl.formatMessage(messages.viewableButton);
-        } else if (downloadUrl) {
-          certEventName = 'earned_downloadable';
-          buttonLocation = downloadUrl;
-          buttonText = intl.formatMessage(messages.downloadableButton);
         }
         break;
 

@@ -61,11 +61,6 @@ const messages = defineMessages({
     defaultMessage: 'Showcase your accomplishment on LinkedIn or your resumé today. You can download your certificate now and access it any time from your Dashboard and Profile.',
     description: 'Recommending an action for learner when course certificate is available',
   },
-  downloadableButton: {
-    id: 'progress.certificateStatus.downloadableButton',
-    defaultMessage: 'Download my certificate',
-    description: 'Button text when learner certifcate status is downloadable',
-  },
   viewableButton: {
     id: 'progress.certificateStatus.viewableButton',
     defaultMessage: 'View my certificate',
