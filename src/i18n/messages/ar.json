@@ -398,7 +398,7 @@
   "learning.generic.upsell.fullAccessBullet.fullAccess": "Full access",
   "learning.generic.upsell.fullAccessBullet": "{fullAccessInBoldText} to course content and materials, even after the course ends",
   "learning.generic.upsell.supportMissionBullet.mission": "mission",
-  "learning.generic.upsell.supportMissionBullet": "ادعم {missionInBoldText} في {siteName}",
+  "learning.generic.upsell.supportMissionBullet": "Support our {missionInBoldText} at {siteName}",
   "masquerade-widget.userName.error.generic": "حدث خطأ؛ يرجى المحاولة مرة أخرى.",
   "masquerade-widget.userName.input.placeholder": "اسم المستخدم أو البريد الإلكتروني",
   "masquerade-widget.userName.input.label": "عرف كهذا المستخدم",
