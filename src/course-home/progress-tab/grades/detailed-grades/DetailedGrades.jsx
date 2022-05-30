@@ -40,7 +40,7 @@ function DetailedGrades({ intl }) {
     <Hyperlink
       variant="muted"
       isInline
-      destination={`/course/${courseId}/home`}
+      destination={`/learning/course/${courseId}/home`}
       onClick={logOutlineLinkClick}
       tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
     >
