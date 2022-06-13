@@ -642,7 +642,6 @@ describe('Outline Tab', () => {
             cert_status: CERT_STATUS_TYPE.EARNED_NOT_AVAILABLE,
             cert_web_view_url: null,
             certificate_available_date: tomorrow.toISOString(),
-            download_url: null,
           },
         }, {
           date_blocks: [
@@ -670,7 +669,6 @@ describe('Outline Tab', () => {
           cert_data: {
             cert_status: CERT_STATUS_TYPE.UNVERIFIED,
             cert_web_view_url: null,
-            download_url: null,
           },
         }, {
           date_blocks: [
@@ -739,7 +737,6 @@ describe('Outline Tab', () => {
           cert_data: {
             cert_status: CERT_STATUS_TYPE.REQUESTING,
             cert_web_view_url: null,
-            download_url: null,
           },
         }, {
           date_blocks: [
@@ -773,50 +770,7 @@ describe('Outline Tab', () => {
             org_key: 'edX',
           });
       });
-      it('tracks download cert button', async () => {
-        sendTrackEvent.mockClear();
-        const now = new Date();
-        const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-        setMetadata({ is_enrolled: true });
-        setTabData({
-          cert_data: {
-            cert_status: CERT_STATUS_TYPE.DOWNLOADABLE,
-            cert_web_view_url: null,
-            download_url: null,
-          },
-        }, {
-          date_blocks: [
-            {
-              date_type: 'course-end-date',
-              date: yesterday.toISOString(),
-              title: 'End',
-            },
-            {
-              date_type: 'certificate-available-date',
-              date: tomorrow.toISOString(),
-              title: 'Cert Available',
-            },
-            {
-              date_type: 'verification-deadline-date',
-              date: tomorrow.toISOString(),
-              link_text: 'Verify',
-              title: 'Verification Upgrade Deadline',
-            },
-          ],
-        });
-        await fetchAndRender();
-        sendTrackEvent.mockClear();
-        const requestingButton = screen.getByRole('button', { name: 'View my certificate' });
-        fireEvent.click(requestingButton);
-        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_downloadable_button.clicked',
-          {
-            courserun_key: courseId,
-            is_staff: false,
-            org_key: 'edX',
-          });
-      });
+
       it('tracks unverified cert button', async () => {
         sendTrackEvent.mockClear();
         const now = new Date();
@@ -827,7 +781,6 @@ describe('Outline Tab', () => {
           cert_data: {
             cert_status: CERT_STATUS_TYPE.UNVERIFIED,
             cert_web_view_url: null,
-            download_url: null,
           },
         }, {
           date_blocks: [
@@ -915,7 +868,6 @@ describe('Outline Tab', () => {
           cert_status: CERT_STATUS_TYPE.DOWNLOADABLE,
           cert_web_view_url: 'certificate/testuuid',
           certificate_available_date: null,
-          download_url: null,
         },
       }, {
         date_blocks: [
@@ -941,7 +893,6 @@ describe('Outline Tab', () => {
           cert_status: CERT_STATUS_TYPE.REQUESTING,
           cert_web_view_url: null,
           certificate_available_date: null,
-          download_url: null,
         },
       }, {
         date_blocks: [
@@ -955,33 +906,6 @@ describe('Outline Tab', () => {
       await fetchAndRender();
       expect(screen.queryByText('Congratulations! Your certificate is ready.')).toBeInTheDocument();
       expect(screen.queryByText('Request certificate')).toBeInTheDocument();
-    });
-  });
-
-  describe('Certificate (pdf) Complete Alert', () => {
-    it('appears', async () => {
-      const now = new Date();
-      const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-      setMetadata({ is_enrolled: true });
-      setTabData({
-        cert_data: {
-          cert_status: CERT_STATUS_TYPE.DOWNLOADABLE,
-          cert_web_view_url: null,
-          certificate_available_date: null,
-          download_url: 'download/url',
-        },
-      }, {
-        date_blocks: [
-          {
-            date_type: 'course-end-date',
-            date: yesterday.toISOString(),
-            title: 'End',
-          },
-        ],
-      });
-      await fetchAndRender();
-      expect(screen.queryByText('Congratulations! Your certificate is ready.')).toBeInTheDocument();
-      expect(screen.queryByRole('link', { name: 'Download my certificate' })).toBeInTheDocument();
     });
   });
 

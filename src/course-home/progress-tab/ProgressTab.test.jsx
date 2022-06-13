@@ -959,49 +959,6 @@ describe('Progress Tab', () => {
         });
       });
 
-      it('Displays download link', async () => {
-        setTabData({
-          certificate_data: {
-            cert_status: 'downloadable',
-            download_url: 'fake.download.url',
-          },
-          user_has_passing_grade: true,
-        });
-        await fetchAndRender();
-        expect(screen.getByRole('link', { name: 'Download my certificate' })).toBeInTheDocument();
-      });
-
-      it('sends events on view of progress tab and on click of downloadable certificate link', async () => {
-        setTabData({
-          certificate_data: {
-            cert_status: 'downloadable',
-            download_url: 'fake.download.url',
-          },
-          user_has_passing_grade: true,
-        });
-        await fetchAndRender();
-        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
-          org_key: 'edX',
-          courserun_key: courseId,
-          is_staff: false,
-          track_variant: 'audit',
-          grade_variant: 'passing',
-          certificate_status_variant: 'earned_downloadable',
-        });
-
-        const downloadCertificateLink = screen.getByRole('link', { name: 'Download my certificate' });
-        fireEvent.click(downloadCertificateLink);
-
-        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
-        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
-          org_key: 'edX',
-          courserun_key: courseId,
-          is_staff: false,
-          certificate_status_variant: 'earned_downloadable',
-        });
-      });
-
       it('Displays webview link', async () => {
         setTabData({
           certificate_data: {

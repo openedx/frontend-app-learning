@@ -108,17 +108,6 @@ describe('Course Exit Pages', () => {
   });
 
   describe('Course Celebration Experience', () => {
-    it('Displays download link', async () => {
-      setMetadata({
-        certificate_data: {
-          cert_status: 'downloadable',
-          download_url: 'fake.download.url',
-        },
-      });
-      await fetchAndRender(<CourseCelebration />);
-      expect(screen.getByRole('link', { name: 'Download my certificate' })).toBeInTheDocument();
-    });
-
     it('Displays webview link', async () => {
       setMetadata({
         certificate_data: {
