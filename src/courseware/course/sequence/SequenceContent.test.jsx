@@ -14,7 +14,7 @@ describe('Sequence Content', () => {
       courseId: courseware.courseId,
       sequenceId: courseware.sequenceId,
       unitId: models.sequences[courseware.sequenceId].unitIds[0],
-      unitLoadedHandler: () => {},
+      unitLoadedHandler: () => { },
     };
   });
 
@@ -32,7 +32,7 @@ describe('Sequence Content', () => {
     expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
     expect(container.querySelector('svg')).toHaveClass('fa-lock');
     expect(screen.getByText(
-      `You must complete the prerequisite: '${gatedContent.prereqSectionName}' to access this content.`,
+      `You must complete the prerequisite: ' ${gatedContent.prereqSectionName} ' to access this content.`,
     )).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
   });

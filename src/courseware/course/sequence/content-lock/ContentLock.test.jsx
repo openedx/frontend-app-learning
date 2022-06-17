@@ -27,7 +27,7 @@ describe('Content Lock', () => {
   });
 
   it('displays prerequisite name', () => {
-    const prereqText = `You must complete the prerequisite: '${mockData.prereqSectionName}' to access this content.`;
+    const prereqText = `You must complete the prerequisite: ' ${mockData.prereqSectionName} ' to access this content.`;
     render(<ContentLock {...mockData} />);
 
     expect(screen.getByText(prereqText)).toBeInTheDocument();
