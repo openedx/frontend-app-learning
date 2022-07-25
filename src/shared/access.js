@@ -18,6 +18,9 @@ export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess
     case 'survey_required':
       url = `/redirect/survey/${courseId}`;
       break;
+    case 'data_sharing_access_required':
+      url = `/redirect/consent?consentPath=${encodeURIComponent(courseAccess.developerMessage)}`;
+      break;
     case 'unfulfilled_milestones':
       url = '/redirect/dashboard';
       break;

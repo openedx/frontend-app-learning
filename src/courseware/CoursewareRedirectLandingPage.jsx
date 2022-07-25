@@ -4,6 +4,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { PageRoute } from '@edx/frontend-platform/react';
 
+import queryString from 'query-string';
 import PageLoading from '../generic/PageLoading';
 
 export default () => {
@@ -30,6 +31,13 @@ export default () => {
           path={`${path}/dashboard`}
           render={({ location }) => {
             global.location.assign(`${getConfig().LMS_BASE_URL}/dashboard${location.search}`);
+          }}
+        />
+        <PageRoute
+          path={`${path}/consent/`}
+          render={({ location }) => {
+            const { consentPath } = queryString.parse(location.search);
+            global.location.assign(`${getConfig().LMS_BASE_URL}${consentPath}`);
           }}
         />
       </Switch>

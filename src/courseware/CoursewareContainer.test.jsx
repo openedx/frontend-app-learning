@@ -450,6 +450,7 @@ describe('CoursewareContainer', () => {
           has_access: false,
           error_code: errorCode,
           additional_context_user_message: 'uhoh oh no', // only used by audit_expired
+          developer_message: 'data_sharing_consent_url', // only used by data_sharing_access_required
         },
       });
 
@@ -473,6 +474,13 @@ describe('CoursewareContainer', () => {
       await loadContainer();
 
       expect(global.location.href).toEqual(`http://localhost/redirect/survey/${courseMetadata.id}`);
+    });
+
+    it('should go to consent page for a data_sharing_access_required error code', async () => {
+      setUpWithDeniedStatus('data_sharing_access_required');
+      await loadContainer();
+
+      expect(global.location.href).toEqual('http://localhost/redirect/consent?consentPath=data_sharing_consent_url');
     });
 
     it('should go to course home for an authentication_required error code', async () => {
