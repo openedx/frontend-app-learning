@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
@@ -51,9 +52,14 @@ describe('Outline Tab', () => {
     axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
   }
 
-  async function fetchAndRender() {
+  async function fetchAndRender(path = '') {
     await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-    await act(async () => render(<OutlineTab />, { store }));
+    await act(async () => render(
+      <MemoryRouter initialEntries={[path]}>
+        <OutlineTab />
+      </MemoryRouter>,
+      { store },
+    ));
   }
 
   beforeEach(async () => {
@@ -336,6 +342,27 @@ describe('Outline Tab', () => {
       const button = await screen.getByTestId('weekly-learning-goal-input-Regular');
       fireEvent.click(button);
       expect(spy).toHaveBeenCalledTimes(0);
+    });
+
+    it('post goal via query param', async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+        },
+      });
+      const spy = jest.spyOn(thunks, 'saveWeeklyLearningGoal');
+      sendTrackEvent.mockClear();
+
+      await fetchAndRender('http://localhost/?weekly_goal=3');
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.goal.days-per-week.changed', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+        num_days: 3,
+        reminder_selected: true,
+        triggeredFromEmail: true,
+      });
     });
 
     describe('weekly learning goal is not set', () => {
