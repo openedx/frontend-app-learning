@@ -117,10 +117,11 @@ class MasqueradeWidget extends Component {
       masqueradeUsername,
     } = this.state;
     const specificLearnerInputText = this.props.intl.formatMessage(messages.placeholder);
+    const viewCourseAsTextLabel = this.props.intl.formatMessage(messages.viewCourseAs);
     return (
       <div className="flex-grow-1">
         <div className="row">
-          <span className="col-auto col-form-label pl-3">View this course as:</span>
+          <span className="col-auto col-form-label pl-3">{viewCourseAsTextLabel}</span>
           <Dropdown className="flex-shrink-1 mx-1">
             <Dropdown.Toggle variant="inverse-outline-primary">
               {masquerade}
