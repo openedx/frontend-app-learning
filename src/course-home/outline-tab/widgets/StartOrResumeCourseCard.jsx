@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { history } from '@edx/frontend-platform';
 import { Button, Card } from '@edx/paragon';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -15,6 +17,9 @@ function StartOrResumeCourseCard({ intl }) {
   const {
     org,
   } = useModel('courseHomeMeta', courseId);
+
+  const [fromEmail, setFromEmail] = useState(false);
+  const location = useLocation();
 
   const eventProperties = {
     org_key: org,
@@ -37,8 +42,24 @@ function StartOrResumeCourseCard({ intl }) {
       ...eventProperties,
       event_type: hasVisitedCourse ? 'resume' : 'start',
       url: resumeCourseUrl,
+      from_email: fromEmail,
     });
   };
+
+  useEffect(() => {
+    const currentParams = new URLSearchParams(location.search);
+    const fromEmail = Boolean(currentParams.get('from_email'));
+    if (fromEmail) {
+      setFromEmail(true);
+
+      // Deleting the from_email query param as it only needs to be set once
+      // whenever passed in query params.
+      currentParams.delete('from_email');
+      history.replace({
+        search: currentParams.toString(),
+      });
+    }
+  }, [location.search]);
 
   return (
     <Card className="mb-3 raised-card" data-testid="start-resume-card">
