@@ -154,6 +154,21 @@ describe('Outline Tab', () => {
       const sequenceLink = screen.getByText('Title of Sequence');
       expect(sequenceLink.getAttribute('href')).toContain(`/course/${courseId}`);
     });
+
+    it('set event property fromEmail true in case of from_email query param', async () => {
+      await fetchAndRender('http://localhost/?from_email=true');
+
+      const startCourseButton = screen.getByRole('link', { name: messages.start.defaultMessage });
+      fireEvent.click(startCourseButton);
+
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.course.home.resume_course.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        event_type: 'start',
+        from_email: true,
+        url: `${getConfig().LMS_BASE_URL}/courses/${courseId}/jump_to/block-v1:edX+Test+Block@12345abcde`,
+      });
+    });
   });
 
   describe('Suggested schedule alerts', () => {
