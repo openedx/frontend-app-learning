@@ -483,6 +483,13 @@ describe('CoursewareContainer', () => {
       expect(global.location.href).toEqual('http://localhost/redirect/consent?consentPath=data_sharing_consent_url');
     });
 
+    it('should go to access denied page for a incorrect_active_enterprise error code', async () => {
+      const { courseMetadata } = setUpWithDeniedStatus('incorrect_active_enterprise');
+      await loadContainer();
+
+      expect(global.location.href).toEqual(`http://localhost/course/${courseMetadata.id}/access-denied`);
+    });
+
     it('should go to course home for an authentication_required error code', async () => {
       const { courseMetadata } = setUpWithDeniedStatus('authentication_required');
       await loadContainer();

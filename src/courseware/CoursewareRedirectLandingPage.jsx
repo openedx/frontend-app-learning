@@ -40,6 +40,12 @@ export default () => {
             global.location.assign(`${getConfig().LMS_BASE_URL}${consentPath}`);
           }}
         />
+        <PageRoute
+          path={`${path}/home/:courseId`}
+          render={({ match }) => {
+            global.location.assign(`/course/${match.params.courseId}/home`);
+          }}
+        />
       </Switch>
     </div>
   );
