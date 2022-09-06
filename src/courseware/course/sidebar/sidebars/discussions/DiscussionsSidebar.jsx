@@ -19,7 +19,7 @@ function DiscussionsSidebar({ intl }) {
   if (!topic?.id) {
     return null;
   }
-  const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/topics/${topic.id}`;
+  const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/category/${unitId}`;
   return (
     <SidebarBase
       title={intl.formatMessage(messages.discussionsTitle)}
