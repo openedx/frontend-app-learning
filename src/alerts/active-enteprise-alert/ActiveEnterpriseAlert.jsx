@@ -8,12 +8,14 @@ import { getConfig } from '@edx/frontend-platform';
 import genericMessages from './messages';
 
 function ActiveEnterpriseAlert({ intl, payload }) {
-  const { text } = payload;
+  const { text, courseId } = payload;
   const changeActiveEnterprise = (
     <Hyperlink
       style={{ textDecoration: 'underline' }}
       destination={
-        `${getConfig().LMS_BASE_URL}/enterprise/select/active/?success_url=${encodeURIComponent(global.location.href)}`
+        `${getConfig().LMS_BASE_URL}/enterprise/select/active/?success_url=${encodeURIComponent(
+          `${global.location.origin}/course/${courseId}/home`,
+        )}`
     }
     >
       {intl.formatMessage(genericMessages.changeActiveEnterpriseLowercase)}
@@ -39,6 +41,7 @@ ActiveEnterpriseAlert.propTypes = {
   intl: intlShape.isRequired,
   payload: PropTypes.shape({
     text: PropTypes.string,
+    courseId: PropTypes.string,
   }).isRequired,
 };
 
