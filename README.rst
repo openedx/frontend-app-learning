@@ -15,7 +15,7 @@ Please tag **@edx/engage-squad** on any PRs or issues.  Thanks.
 .. |codecov| image:: https://codecov.io/gh/edx/frontend-app-learning/branch/master/graph/badge.svg?token=3z7XvuzTq3
    :target: https://codecov.io/gh/edx/frontend-app-learning
 .. |license| image:: https://img.shields.io/badge/license-AGPL-informational
-   :target: https://github.com/edx/frontend-app-account/blob/master/LICENSE
+   :target: https://github.com/openedx/frontend-app-account/blob/master/LICENSE
 
 Development
 -----------
@@ -23,7 +23,7 @@ Development
 Start Devstack
 ^^^^^^^^^^^^^^
 
-To use this application, `devstack <https://github.com/edx/devstack>`__ must be running and you must be logged into it.
+To use this application, `devstack <https://github.com/openedx/devstack>`__ must be running and you must be logged into it.
 
 - Run ``make dev.up.lms``
 - Visit http://localhost:2000/course/course-v1:edX+DemoX+Demo_Course to view the demo course.  You can replace ``course-v1:edX+DemoX+Demo_Course`` with a different course key.
@@ -52,7 +52,7 @@ file (which is git-ignored) that defines where to find your local modules, for i
      ],
    };
 
-See https://github.com/edx/frontend-build#local-module-configuration-for-webpack for more details.
+See https://github.com/openedx/frontend-build#local-module-configuration-for-webpack for more details.
 
 Deployment
 ----------
