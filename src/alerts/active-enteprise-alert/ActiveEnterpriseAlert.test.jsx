@@ -9,6 +9,7 @@ describe('ActiveEnterpriseAlert', () => {
   const mockData = {
     payload: {
       text: 'test message',
+      courseId: 'test-course-id',
     },
   };
   beforeAll(async () => {
@@ -20,7 +21,7 @@ describe('ActiveEnterpriseAlert', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
     expect(screen.getByText('test message')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'change enterprise now' })).toHaveAttribute(
-      'href', `${getConfig().LMS_BASE_URL}/enterprise/select/active/?success_url=http%3A%2F%2Flocalhost%2F`,
+      'href', `${getConfig().LMS_BASE_URL}/enterprise/select/active/?success_url=http%3A%2F%2Flocalhost%2Fcourse%2Ftest-course-id%2Fhome`,
     );
   });
 });
