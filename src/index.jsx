@@ -34,6 +34,7 @@ import initializeStore from './store';
 import NoticesProvider from './generic/notices';
 import PathFixesProvider from './generic/path-fixes';
 import LiveTab from './course-home/live-tab/LiveTab';
+import CourseAccessErrorPage from './generic/CourseAccessErrorPage';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
@@ -44,6 +45,7 @@ subscribe(APP_READY, () => {
             <Switch>
               <PageRoute exact path="/goal-unsubscribe/:token" component={GoalUnsubscribe} />
               <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
+              <PageRoute path="/course/:courseId/access-denied" component={CourseAccessErrorPage} />
               <PageRoute path="/course/:courseId/home">
                 <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
                   <OutlineTab />

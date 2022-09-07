@@ -34,4 +34,18 @@ describe('CoursewareRedirectLandingPage', () => {
 
     expect(redirectUrl).toHaveBeenCalledWith('http://localhost:18000/grant_data_sharing_consent');
   });
+
+  it('Redirects to correct consent URL', () => {
+    const history = createMemoryHistory({
+      initialEntries: ['/redirect/home/course-v1:edX+DemoX+Demo_Course'],
+    });
+
+    render(
+      <Router history={history}>
+        <CoursewareRedirectLandingPage />
+      </Router>,
+    );
+
+    expect(redirectUrl).toHaveBeenCalledWith('/course/course-v1:edX+DemoX+Demo_Course/home');
+  });
 });
