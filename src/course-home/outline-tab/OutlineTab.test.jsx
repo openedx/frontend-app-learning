@@ -355,14 +355,13 @@ describe('Outline Tab', () => {
 
       await fetchAndRender('http://localhost/?weekly_goal=3');
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.goal.days-per-week.changed', {
-        org_key: 'edX',
-        courserun_key: courseId,
-        is_staff: false,
-        num_days: 3,
-        reminder_selected: true,
-        triggeredFromEmail: true,
-      });
+      expect(sendTrackEvent).toHaveBeenCalledWith('welcome.email.clicked.setgoal', {});
+    });
+
+    it('emit start course event via query param', async () => {
+      sendTrackEvent.mockClear();
+      await fetchAndRender('http://localhost/?start_course=1');
+      expect(sendTrackEvent).toHaveBeenCalledWith('welcome.email.clicked.startcourse', {});
     });
 
     describe('weekly learning goal is not set', () => {

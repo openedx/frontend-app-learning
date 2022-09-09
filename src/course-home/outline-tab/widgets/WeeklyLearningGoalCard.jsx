@@ -49,8 +49,10 @@ function WeeklyLearningGoalCard({
         is_staff: administrator,
         num_days: days,
         reminder_selected: selectReminders,
-        triggeredFromEmail,
       });
+      if (triggeredFromEmail) {
+        sendTrackEvent('welcome.email.clicked.setgoal', {});
+      }
     }
   }
 
