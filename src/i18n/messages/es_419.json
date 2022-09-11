@@ -4,6 +4,8 @@
   "learning.accessExpiration.body": "Pierdes todo acceso a este curso, incluyendo tu progreso, el {fecha}.",
   "instructorToolbar.pageBanner.courseHasExpired": "El estudiante ya no cuenta con acceso para este curso. Su acceso expiró en {fecha}.",
   "learning.accessExpiration.upgradeNow": "Actualizar Ahora",
+  "learning.activeEnterprise.alert": "{changeActiveEnterprise}.",
+  "learning.activeEnterprise.change.alert": "cambiar de empresa ahora",
   "learning.outline.alert.start.short": "El curso comienza en {timeRemaining} a la/s {courseStartTime}.",
   "learning.outline.alert.end.long": "Este curso terminará en {timeRemaining} el {courseEndDate}.",
   "learning.outline.alert.end.calendar": "No olvides añadir un recordatorio en el calendario.",
