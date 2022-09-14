@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
@@ -46,10 +46,8 @@ function Course({
 
   // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
   const dispatch = useDispatch();
-  const celebrateFirstSection = celebrations && celebrations.firstSection;
-  const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(shouldCelebrateOnSectionLoad(
-    courseId, sequenceId, celebrateFirstSection, dispatch, celebrations,
-  ));
+
+  const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(false);
   // If streakLengthToCelebrate is populated, that modal takes precedence. Wait til the next load to display
   // the weekly goal celebration modal.
   const [weeklyGoalCelebrationOpen, setWeeklyGoalCelebrationOpen] = useState(
@@ -73,6 +71,17 @@ function Course({
 
   /** [MM-P2P] Experiment */
   const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
+
+  useEffect(() => {
+    const celebrateFirstSection = celebrations && celebrations.firstSection;
+    setFirstSectionCelebrationOpen(shouldCelebrateOnSectionLoad(
+      courseId,
+      sequenceId,
+      celebrateFirstSection,
+      dispatch,
+      celebrations,
+    ));
+  }, [sequenceId]);
 
   return (
     <SidebarProvider courseId={courseId} unitId={unitId}>
