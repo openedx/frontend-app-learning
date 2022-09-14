@@ -4,7 +4,7 @@
   "description": "Frontend learning application.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/edx/frontend-app-learning.git"
+    "url": "git+https://github.com/openedx/frontend-app-learning.git"
   },
   "browserslist": [
     "extends @edx/browserslist-config"
@@ -21,12 +21,12 @@
   },
   "author": "edX",
   "license": "AGPL-3.0",
-  "homepage": "https://github.com/edx/frontend-app-learning#readme",
+  "homepage": "https://github.com/openedx/frontend-app-learning#readme",
   "publishConfig": {
     "access": "public"
   },
   "bugs": {
-    "url": "https://github.com/edx/frontend-app-learning/issues"
+    "url": "https://github.com/openedx/frontend-app-learning/issues"
   },
   "dependencies": {
     "@edx/brand": "npm:@edx/brand-openedx@1.1.0",
