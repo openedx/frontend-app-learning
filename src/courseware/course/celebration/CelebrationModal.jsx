@@ -9,6 +9,7 @@ import {
   useWindowSize,
 } from '@edx/paragon';
 
+import { useDispatch } from 'react-redux';
 import ClapsMobile from './assets/claps_280x201.gif';
 import ClapsTablet from './assets/claps_456x328.gif';
 import messages from './messages';
@@ -19,12 +20,13 @@ import { useModel } from '../../../generic/model-store';
 const CelebrationModal = ({
   courseId, intl, isOpen, onClose, ...rest
 }) => {
-  const { org } = useModel('courseHomeMeta', courseId);
+  const { org, celebrations } = useModel('courseHomeMeta', courseId);
+  const dispatch = useDispatch();
   const wideScreen = useWindowSize().width >= breakpoints.small.minWidth;
 
   useEffect(() => {
     if (isOpen) {
-      recordFirstSectionCelebration(org, courseId);
+      recordFirstSectionCelebration(org, courseId, celebrations, dispatch);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
