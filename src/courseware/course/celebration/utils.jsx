@@ -15,9 +15,20 @@ function handleNextSectionCelebration(sequenceId, nextSequenceId) {
   });
 }
 
-function recordFirstSectionCelebration(org, courseId) {
+function recordFirstSectionCelebration(org, courseId, celebrations, dispatch) {
   // Tell the LMS
   postCelebrationComplete(courseId, { first_section: false });
+  // Update our local copy of course data from LMS
+  dispatch(updateModel({
+    modelType: 'courseHomeMeta',
+    model: {
+      id: courseId,
+      celebrations: {
+        ...celebrations,
+        firstSection: false,
+      },
+    },
+  }));
 
   // Tell our analytics
   const { administrator } = getAuthenticatedUser();
