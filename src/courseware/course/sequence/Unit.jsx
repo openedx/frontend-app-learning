@@ -108,6 +108,7 @@ const Unit = ({
   const [shouldDisplayHonorCode, setShouldDisplayHonorCode] = useState(false);
   const [examAccessToken, setExamAccessToken] = useState('');
   const [blockExamAccess, setBlockExamAccess] = useState(isExam());
+  const [windowTopOffset, setWindowTopOffset] = useState(null);
 
   const unit = useModel('units', id);
   const course = useModel('coursewareMeta', courseId);
@@ -135,6 +136,13 @@ const Unit = ({
     } = data;
     if (type === 'plugin.resize') {
       setIframeHeight(payload.height);
+
+      // We observe exit from the video xblock full screen mode
+      // and do page scroll to the previously saved scroll position
+      if (windowTopOffset !== null) {
+        window.scrollTo(0, Number(windowTopOffset));
+      }
+
       if (!hasLoaded && iframeHeight === 0 && payload.height > 0) {
         setHasLoaded(true);
         if (onLoaded) {
@@ -144,12 +152,16 @@ const Unit = ({
     } else if (type === 'plugin.modal') {
       payload.open = true;
       setModalOptions(payload);
+    } else if (type === 'plugin.videoFullScreen') {
+      // We listen for this message from LMS to know when we need to
+      // save or reset scroll position on toggle video xblock full screen mode.
+      setWindowTopOffset(payload.open ? window.scrollY : null);
     } else if (data.offset) {
       // We listen for this message from LMS to know when the page needs to
       // be scrolled to another location on the page.
       window.scrollTo(0, data.offset + document.getElementById('unit-iframe').offsetTop);
     }
-  }, [id, setIframeHeight, hasLoaded, iframeHeight, setHasLoaded, onLoaded]);
+  }, [id, setIframeHeight, hasLoaded, iframeHeight, setHasLoaded, onLoaded, setWindowTopOffset, windowTopOffset]);
   useEventListener('message', receiveMessage);
   useEffect(() => {
     sendUrlHashToFrame(document.getElementById('unit-iframe'));
