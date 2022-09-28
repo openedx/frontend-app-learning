@@ -131,6 +131,21 @@ describe('Unit', () => {
     expect(window.scrollY === testMessageWithOffset.offset);
   });
 
+  it('scrolls page on MessagaeEvent when receiving videoFullScreen state', async () => {
+    // Set message to constain video full screen data.
+    const defaultTopOffset = 800;
+    const testMessageWithOtherHeight = { ...messageEvent, payload: { height: 500 } };
+    const testMessageWithFullscreenState = (isShow) => ({ type: 'plugin.videoFullScreen', payload: { show: isShow } });
+    render(<Unit {...mockData} />);
+    Object.defineProperty(window, 'scrollY', { value: defaultTopOffset, writable: true });
+    window.postMessage(testMessageWithFullscreenState(true), '*');
+    window.postMessage(testMessageWithFullscreenState(false), '*');
+    window.postMessage(testMessageWithOtherHeight, '*');
+
+    await expect(waitFor(() => expect(window.scrollTo()).toHaveBeenCalledTimes(1)));
+    expect(window.scrollY === defaultTopOffset);
+  });
+
   it('ignores MessageEvent with unhandled type', async () => {
     // Clone message and set different type.
     const testMessageWithUnhandledType = { ...messageEvent, type: 'wrong type' };
