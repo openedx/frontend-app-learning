@@ -143,7 +143,7 @@ function Unit({
     } else if (type === 'plugin.videoFullScreen') {
       // We listen for this message from LMS to know when we need to
       // save or reset scroll position on toggle video xblock full screen mode.
-      setWindowTopOffset(payload.open ? window.scrollY : 0);
+      setWindowTopOffset(payload.open ? window.scrollY : null);
     } else if (data.offset) {
       // We listen for this message from LMS to know when the page needs to
       // be scrolled to another location on the page.
