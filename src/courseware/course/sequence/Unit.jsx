@@ -94,7 +94,7 @@ function Unit({
   const [iframeHeight, setIframeHeight] = useState(0);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [modalOptions, setModalOptions] = useState({ open: true });
+  const [modalOptions, setModalOptions] = useState({ open: false });
   const [shouldDisplayHonorCode, setShouldDisplayHonorCode] = useState(false);
   const unit = useModel('units', id);
   const course = useModel('coursewareMeta', courseId);
@@ -219,7 +219,7 @@ function Unit({
 
           <ModalDialog.Footer>
             <ActionRow>
-              <ModalDialog.CloseButton>
+              <ModalDialog.CloseButton variant="primary">
                 Close
               </ModalDialog.CloseButton>
             </ActionRow>
