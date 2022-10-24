@@ -19,6 +19,7 @@ function NewUserCourseHomeTourModal({
     <MarketingModal
       isOpen={isOpen}
       title="New user course home prompt"
+      className="new-user-tour-dialog"
       heroIsDark
       hasCloseButton={false}
       heroNode={(
