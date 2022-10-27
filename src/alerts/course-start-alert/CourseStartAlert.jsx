@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   FormattedDate,
   FormattedMessage,
-  FormattedRelative,
+  FormattedRelativeTime,
   FormattedTime,
 } from '@edx/frontend-platform/i18n';
 import { Alert } from '@edx/paragon';
@@ -26,7 +26,7 @@ function CourseStartAlert({ payload }) {
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
   const timeRemaining = (
-    <FormattedRelative
+    <FormattedRelativeTime
       key="timeRemaining"
       value={startDate}
       {...timezoneFormatArgs}
