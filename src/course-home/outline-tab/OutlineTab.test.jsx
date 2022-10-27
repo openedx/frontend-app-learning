@@ -577,7 +577,7 @@ describe('Outline Tab', () => {
         const instructorToolbar = await screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
-        expect(screen.getByText('1/1/2020')).toBeInTheDocument();
+        expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
       });
 
       it('does not render banner when not masquerading', async () => {

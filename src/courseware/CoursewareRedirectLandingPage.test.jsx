@@ -1,7 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { Router } from 'react-router';
 import { createMemoryHistory } from 'history';
+import { render, initializeMockApp } from '../setupTest';
 import CoursewareRedirectLandingPage from './CoursewareRedirectLandingPage';
 
 const redirectUrl = jest.fn();
@@ -17,6 +17,7 @@ jest.mock('react-router', () => ({
 
 describe('CoursewareRedirectLandingPage', () => {
   beforeEach(async () => {
+    await initializeMockApp();
     delete global.location;
     global.location = { assign: redirectUrl };
   });
