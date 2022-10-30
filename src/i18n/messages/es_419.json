@@ -333,7 +333,7 @@
   "notification.tray.title": "Notificaciones",
   "notification.tray.no.message": "No tienes notificaciones nuevas en este momento.",
   "learn.contentLock.content.locked": "Contenido Bloqueado",
-  "learn.contentLock.complete.prerequisite": "Debe completar el prerrequisito: '{prereqSectionName}'para acceder a este contenido.",
+  "learn.contentLock.complete.prerequisite": "You must complete the prerequisite: ''{prereqSectionName}'' to access this content.",
   "learn.contentLock.goToSection": "Ir a la Sección de Prerrequisitos",
   "learn.hiddenAfterDue.gradeAvailable": "Si has completado esta tarea, tu calificación estará disponible en {progressPage}.",
   "learn.hiddenAfterDue.header": "La fecha límite para esta tarea ha pasado.",

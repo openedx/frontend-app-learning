@@ -333,7 +333,7 @@
   "notification.tray.title": "الإشعارات",
   "notification.tray.no.message": "ليست لديك إشعارات جديدة في الوقت الراهن.",
   "learn.contentLock.content.locked": "المحتوى مقفل",
-  "learn.contentLock.complete.prerequisite": "عليك أولا إكمال المتطلّب: '{prereqSectionName}' للوصول إلى هذا المحتوى.",
+  "learn.contentLock.complete.prerequisite": "You must complete the prerequisite: ''{prereqSectionName}'' to access this content.",
   "learn.contentLock.goToSection": "انتقل إلى القسم المتطلّب.",
   "learn.hiddenAfterDue.gradeAvailable": "إن كنت قد أكملت هذا الواجب، فإن درجتك ستظهر في {progressPage}.",
   "learn.hiddenAfterDue.header": "انقضى أجَل هذا الواجب.",
