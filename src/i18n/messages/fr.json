@@ -333,7 +333,7 @@
   "notification.tray.title": "Notifications",
   "notification.tray.no.message": "Vous n'avez aucune nouvelle notification pour le moment.",
   "learn.contentLock.content.locked": "Contenu vérouillé",
-  "learn.contentLock.complete.prerequisite": "Vous devez compléter le prérequis: '{prereqSectionName}' pour accéder à ce contenu.",
+  "learn.contentLock.complete.prerequisite": "You must complete the prerequisite: ''{prereqSectionName}'' to access this content.",
   "learn.contentLock.goToSection": "Aller à la section des prérequis",
   "learn.hiddenAfterDue.gradeAvailable": "Si vous avez complété ce travail, votre note est disponible sur {progressPage}.",
   "learn.hiddenAfterDue.header": "La date d'échéance de ce devoir est passée.",
