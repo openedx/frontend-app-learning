@@ -333,7 +333,7 @@
   "notification.tray.title": "Notifications",
   "notification.tray.no.message": "You have no new notifications at this time.",
   "learn.contentLock.content.locked": "Content Locked",
-  "learn.contentLock.complete.prerequisite": "You must complete the prerequisite: '{prereqSectionName}' to access this content.",
+  "learn.contentLock.complete.prerequisite": "You must complete the prerequisite: ''{prereqSectionName}'' to access this content.",
   "learn.contentLock.goToSection": "Go To Prerequisite Section",
   "learn.hiddenAfterDue.gradeAvailable": "If you have completed this assignment, your grade is available on the {progressPage}.",
   "learn.hiddenAfterDue.header": "The due date for this assignment has passed.",
