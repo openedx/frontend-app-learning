@@ -231,6 +231,11 @@ const messages = defineMessages({
     defaultMessage: 'Expiring Soon',
     description: 'A label to indicate that proctortrack onboarding exam will expire soon',
   },
+  expiredProctoringStatus: {
+    id: 'learning.proctoringPanel.status.expired',
+    defaultMessage: 'Expired',
+    description: 'A label to indicate that proctortrack onboarding exam has expired',
+  },
   proctoringCurrentStatus: {
     id: 'learning.proctoringPanel.status',
     defaultMessage: 'Current Onboarding Status:',
@@ -278,8 +283,13 @@ const messages = defineMessages({
   },
   expiringSoonProctoringMessage: {
     id: 'learning.proctoringPanel.message.expiringSoon',
-    defaultMessage: 'Your onboarding profile has been approved in another course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.',
+    defaultMessage: 'Your onboarding profile has been approved. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.',
     description: 'The text that recommend an action when the status of the proctortrack onboarding exam is (expiring soon)',
+  },
+  expiredProctoringMessage: {
+    id: 'learning.proctoringPanel.message.expired',
+    defaultMessage: 'Your onboarding status has expired. Please complete onboarding again to continue taking proctored exams.',
+    description: 'The text that recommend an action when the status of the proctortrack onboarding exam is (expired)',
   },
   proctoringPanelGeneralInfo: {
     id: 'learning.proctoringPanel.generalInfo',
