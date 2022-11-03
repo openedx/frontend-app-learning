@@ -1021,6 +1021,22 @@ describe('Outline Tab', () => {
       // This message will render if the expiration date is within 28 days; set the date 10 days in future
       expirationDate.setTime(expirationDate.getTime() + 864800000);
       axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'verified',
+        onboarding_link: 'test',
+        expiration_date: expirationDate.toString(),
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Your onboarding profile has been approved. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
+    });
+
+    it('displays expiration warning for other course', async () => {
+      const expirationDate = new Date();
+      // This message will render if the expiration date is within 28 days; set the date 10 days in future
+      expirationDate.setTime(expirationDate.getTime() + 864800000);
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
         onboarding_status: 'other_course_approved',
         onboarding_link: 'test',
         expiration_date: expirationDate.toString(),
@@ -1028,7 +1044,23 @@ describe('Outline Tab', () => {
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
-      expect(screen.queryByText('Your onboarding profile has been approved in another course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
+      expect(screen.queryByText('Your onboarding profile has been approved. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
+    });
+
+    it('displays expired', async () => {
+      const expirationDate = new Date();
+      // This message appears after expiration, set the date 10 days in the past
+      expirationDate.setTime(expirationDate.getTime() - 864800000);
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'verified',
+        onboarding_link: 'test',
+        expiration_date: expirationDate.toString(),
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Your onboarding status has expired. Please complete onboarding again to continue taking proctored exams.')).toBeInTheDocument();
       expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
     });
 
