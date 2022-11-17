@@ -30,8 +30,7 @@ function DiscussionsSidebar({ intl }) {
     >
       <iframe
         src={`${discussionsUrl}?inContext`}
-        className="d-flex w-100 border-0"
-        style={{ minHeight: '60rem' }}
+        className="d-flex w-100 h-100 border-0"
         title={intl.formatMessage(messages.discussionsTitle)}
       />
     </SidebarBase>
