@@ -355,13 +355,13 @@ describe('Outline Tab', () => {
 
       await fetchAndRender('http://localhost/?weekly_goal=3');
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(sendTrackEvent).toHaveBeenCalledWith('welcome.email.clicked.setgoal', {});
+      expect(sendTrackEvent).toHaveBeenCalledWith('enrollment.email.clicked.setgoal', {});
     });
 
     it('emit start course event via query param', async () => {
       sendTrackEvent.mockClear();
       await fetchAndRender('http://localhost/?start_course=1');
-      expect(sendTrackEvent).toHaveBeenCalledWith('welcome.email.clicked.startcourse', {});
+      expect(sendTrackEvent).toHaveBeenCalledWith('enrollment.email.clicked.startcourse', {});
     });
 
     describe('weekly learning goal is not set', () => {
