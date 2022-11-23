@@ -116,7 +116,7 @@ function OutlineTab({ intl }) {
     const currentParams = new URLSearchParams(location.search);
     const startCourse = currentParams.get('start_course');
     if (startCourse === '1') {
-      sendTrackEvent('welcome.email.clicked.startcourse', {});
+      sendTrackEvent('enrollment.email.clicked.startcourse', {});
 
       // Deleting the course_start query param as it only needs to be set once
       // whenever passed in query params.
