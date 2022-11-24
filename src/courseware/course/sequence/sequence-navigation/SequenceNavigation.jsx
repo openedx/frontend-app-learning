@@ -74,7 +74,7 @@ function SequenceNavigation({
     const nextArrow = isRtl(getLocale()) ? ChevronLeft : ChevronRight;
 
     return (
-      <Button variant="link" className="next-btn" onClick={buttonOnClick} disabled={disabled} iconAfter={nextArrow}>
+      <Button variant="link" className="next-btn text-gray-700 border border-light-400 d-inline-flex justify-content-center align-items-center br-0" onClick={buttonOnClick} disabled={disabled} iconAfter={nextArrow}>
         {shouldDisplayNotificationTriggerInSequence ? null : buttonText}
       </Button>
     );
@@ -84,7 +84,7 @@ function SequenceNavigation({
 
   return sequenceStatus === LOADED && (
     <nav id="courseware-sequenceNavigation" className={classNames('sequence-navigation', className)} style={{ width: shouldDisplayNotificationTriggerInSequence ? '90%' : null }}>
-      <Button variant="link" className="previous-btn" onClick={previousSequenceHandler} disabled={isFirstUnit} iconBefore={prevArrow}>
+      <Button variant="link" className="previous-btn border-left-0 ml-0" onClick={previousSequenceHandler} disabled={isFirstUnit} iconBefore={prevArrow}>
         {shouldDisplayNotificationTriggerInSequence ? null : intl.formatMessage(messages.previousButton)}
       </Button>
       {renderUnitButtons()}

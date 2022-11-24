@@ -3,18 +3,15 @@
 @import "~@edx/brand/paragon/overrides";
 
 .flag-button {
-  box-shadow: 0 0 0 2px color-mix(in srgb, white 25%, var(--light));
   box-shadow: 0 0 0 2px $light-400;
 
   &:hover {
-    border: 1px solid color-mix(in srgb, white 50%, var(--primary));
     border: 1px solid $primary-300;
     box-shadow: 0 0 0 2px var(--white);
   }
 }
 
 .flag-button-selected {
-  box-shadow: 0 0 0 2px color-mix(in srgb, white 50%, var(--primary));
   box-shadow: 0 0 0 2px $primary-300;
   pointer-events: none;
 }
