@@ -160,8 +160,8 @@ function StreakModal({
         </ModalDialog.Title>
       </ModalDialog.Header>
       <ModalDialog.Body className="modal-body">
-        <p>{intl.formatMessage(messages.streakBody)}</p>
-        <p className="modal-image">
+        <p className="text-center">{intl.formatMessage(messages.streakBody)}</p>
+        <p className="modal-image text-center">
           {!wideScreen && <img src={StreakMobileImage} alt="" className="img-fluid" />}
           {wideScreen && <img src={StreakDesktopImage} alt="" className="img-fluid" />}
         </p>
