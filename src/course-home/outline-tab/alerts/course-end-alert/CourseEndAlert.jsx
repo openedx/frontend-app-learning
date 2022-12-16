@@ -9,7 +9,9 @@ import {
 import { Alert } from '@edx/paragon';
 import { Info } from '@edx/paragon/icons';
 
-const DAY_MS = 24 * 60 * 60 * 1000; // in ms
+const DAY_SEC = 24 * 60 * 60; // in seconds
+const DAY_MS = DAY_SEC * 1000; // in ms
+const YEAR_SEC = 365 * DAY_SEC; // in seconds
 
 function CourseEndAlert({ payload }) {
   const {
@@ -20,16 +22,19 @@ function CourseEndAlert({ payload }) {
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
+  let msg;
+  const delta = new Date(endDate) - new Date();
   const timeRemaining = (
     <FormattedRelativeTime
       key="timeRemaining"
-      value={endDate}
+      value={delta / 1000}
+      numeric="auto"
+      // 1 year interval to help auto format. It won't format without updateIntervalInSeconds.
+      updateIntervalInSeconds={YEAR_SEC}
       {...timezoneFormatArgs}
     />
   );
 
-  let msg;
-  const delta = new Date(endDate) - new Date();
   if (delta < DAY_MS) {
     const courseEndTime = (
       <FormattedTime

@@ -11,7 +11,9 @@ import { Info } from '@edx/paragon/icons';
 
 import { useModel } from '../../generic/model-store';
 
-const DAY_MS = 24 * 60 * 60 * 1000; // in ms
+const DAY_SEC = 24 * 60 * 60; // in seconds
+const DAY_MS = DAY_SEC * 1000; // in ms
+const YEAR_SEC = 365 * DAY_SEC; // in seconds
 
 function CourseStartAlert({ payload }) {
   const {
@@ -25,15 +27,17 @@ function CourseStartAlert({ payload }) {
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
+  const delta = new Date(startDate) - new Date();
   const timeRemaining = (
     <FormattedRelativeTime
       key="timeRemaining"
-      value={startDate}
+      value={delta / 1000}
+      numeric="auto"
+      // 1 year interval to help auto format. It won't format without updateIntervalInSeconds.
+      updateIntervalInSeconds={YEAR_SEC}
       {...timezoneFormatArgs}
     />
   );
-
-  const delta = new Date(startDate) - new Date();
   if (delta < DAY_MS) {
     return (
       <Alert variant="info" icon={Info}>
