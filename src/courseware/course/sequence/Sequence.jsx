@@ -155,10 +155,8 @@ function Sequence({
           sequenceId={sequenceId}
           unitId={unitId}
           className="mb-4"
-
           /** [MM-P2P] Experiment */
           mmp2p={mmp2p}
-
           nextSequenceHandler={() => {
             logEvent('edx.ui.lms.sequence.next_selected', 'top');
             handleNext();

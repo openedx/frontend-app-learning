@@ -47,9 +47,9 @@ function Course({
   // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
   const dispatch = useDispatch();
   const celebrateFirstSection = celebrations && celebrations.firstSection;
-  const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(shouldCelebrateOnSectionLoad(
-    courseId, sequenceId, celebrateFirstSection, dispatch, celebrations,
-  ));
+  const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(
+    shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSection, dispatch, celebrations),
+  );
   // If streakLengthToCelebrate is populated, that modal takes precedence. Wait til the next load to display
   // the weekly goal celebration modal.
   const [weeklyGoalCelebrationOpen, setWeeklyGoalCelebrationOpen] = useState(

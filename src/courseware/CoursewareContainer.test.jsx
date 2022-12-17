@@ -250,9 +250,7 @@ describe('CoursewareContainer', () => {
     describe('when the URL contains a section ID instead of a sequence ID', () => {
       const {
         courseBlocks, unitTree, sequenceTree, sectionTree,
-      } = buildBinaryCourseBlocks(
-        courseId, courseHomeMetadata.title,
-      );
+      } = buildBinaryCourseBlocks(courseId, courseHomeMetadata.title);
 
       function setUrl(urlSequenceId, urlUnitId = null) {
         history.push(`/course/${courseId}/${urlSequenceId}/${urlUnitId || ''}`);

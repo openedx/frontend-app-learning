@@ -54,32 +54,32 @@ const checkSectionToSequenceRedirect = memoize((courseStatus, courseId, sequence
 });
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkUnitToSequenceUnitRedirect = memoize((
-  courseStatus, courseId, sequenceStatus, sequenceMightBeUnit, sequenceId, section, routeUnitId,
-) => {
-  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && !section && !routeUnitId) {
-    if (sequenceMightBeUnit) {
-      // If the sequence failed to load as a sequence, but it is marked as a possible unit, then we need to look up the
-      // correct parent sequence for it, and redirect there.
-      const unitId = sequenceId; // just for clarity during the rest of this method
-      getSequenceForUnitDeprecated(courseId, unitId).then(
-        parentId => {
-          if (parentId) {
-            history.replace(`/course/${courseId}/${parentId}/${unitId}`);
-          } else {
+const checkUnitToSequenceUnitRedirect = memoize(
+  (courseStatus, courseId, sequenceStatus, sequenceMightBeUnit, sequenceId, section, routeUnitId) => {
+    if (courseStatus === 'loaded' && sequenceStatus === 'failed' && !section && !routeUnitId) {
+      if (sequenceMightBeUnit) {
+        // If the sequence failed to load as a sequence, but it is marked as a possible unit, then
+        // we need to look up the correct parent sequence for it, and redirect there.
+        const unitId = sequenceId; // just for clarity during the rest of this method
+        getSequenceForUnitDeprecated(courseId, unitId).then(
+          parentId => {
+            if (parentId) {
+              history.replace(`/course/${courseId}/${parentId}/${unitId}`);
+            } else {
+              history.replace(`/course/${courseId}`);
+            }
+          },
+          () => { // error case
             history.replace(`/course/${courseId}`);
-          }
-        },
-        () => { // error case
-          history.replace(`/course/${courseId}`);
-        },
-      );
-    } else {
-      // Invalid sequence that isn't a unit either. Redirect up to main course.
-      history.replace(`/course/${courseId}`);
+          },
+        );
+      } else {
+        // Invalid sequence that isn't a unit either. Redirect up to main course.
+        history.replace(`/course/${courseId}`);
+      }
     }
-  }
-});
+  },
+);
 
 // Look at where this is called in componentDidUpdate for more info about its usage
 const checkSequenceToSequenceUnitRedirect = memoize((courseId, sequenceStatus, sequence, unitId) => {
@@ -225,9 +225,9 @@ class CoursewareContainer extends Component {
     // Check unit to sequence-unit redirect:
     //    /course/:courseId/:unitId -> /course/:courseId/:sequenceId/:unitId
     // by filling in the ID of the parent sequence of :unitId.
-    checkUnitToSequenceUnitRedirect(
-      courseStatus, courseId, sequenceStatus, sequenceMightBeUnit, sequenceId, sectionViaSequenceId, routeUnitId,
-    );
+    checkUnitToSequenceUnitRedirect((
+      courseStatus, courseId, sequenceStatus, sequenceMightBeUnit, sequenceId, sectionViaSequenceId, routeUnitId
+    ));
 
     // Check sequence to sequence-unit redirect:
     //    /course/:courseId/:sequenceId -> /course/:courseId/:sequenceId/:unitId
@@ -255,7 +255,7 @@ class CoursewareContainer extends Component {
 
     this.props.checkBlockCompletion(courseId, sequenceId, routeUnitId);
     history.push(`/course/${courseId}/${sequenceId}/${nextUnitId}`);
-  }
+  };
 
   handleNextSequenceClick = () => {
     const {
@@ -274,14 +274,14 @@ class CoursewareContainer extends Component {
         handleNextSectionCelebration(sequenceId, nextSequence.id);
       }
     }
-  }
+  };
 
   handlePreviousSequenceClick = () => {
     const { previousSequence, courseId } = this.props;
     if (previousSequence !== null) {
       history.push(`/course/${courseId}/${previousSequence.id}/last`);
     }
-  }
+  };
 
   render() {
     const {
@@ -320,6 +320,7 @@ const sequenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
   unitIds: PropTypes.arrayOf(PropTypes.string),
   sectionId: PropTypes.string.isRequired,
+  saveUnitPosition: PropTypes.any, // eslint-disable-line
 });
 
 const sectionShape = PropTypes.shape({

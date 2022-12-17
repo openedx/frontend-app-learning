@@ -59,8 +59,10 @@ describe('Course Exit Pages', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(coursewareMetadataUrl).reply(200, coursewareMetadata);
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
-    axiosMock.onGet(discoveryRecommendationsUrl).reply(200,
-      Factory.build('courseRecommendations', {}, { numRecs: 2 }));
+    axiosMock.onGet(discoveryRecommendationsUrl).reply(
+      200,
+      Factory.build('courseRecommendations', {}, { numRecs: 2 }),
+    );
     axiosMock.onGet(enrollmentsUrl).reply(200, []);
     axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(defaultCourseBlocks));
 
@@ -178,17 +180,19 @@ describe('Course Exit Pages', () => {
     });
 
     it('Displays upgrade link when available', async () => {
-      setMetadata({
-        certificate_data: { cert_status: 'audit_passing' },
-      },
-      {
-        verified_mode: {
-          access_expiration_date: '9999-08-06T12:00:00Z',
-          upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
-          price: 600,
-          currency_symbol: '€',
+      setMetadata(
+        {
+          certificate_data: { cert_status: 'audit_passing' },
         },
-      });
+        {
+          verified_mode: {
+            access_expiration_date: '9999-08-06T12:00:00Z',
+            upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+            price: 600,
+            currency_symbol: '€',
+          },
+        },
+      );
       await fetchAndRender(<CourseCelebration />);
       // Keep these text checks in sync with "audit only" test below, so it doesn't end up checking for text that is
       // never actually there, when/if the text changes.
@@ -200,12 +204,14 @@ describe('Course Exit Pages', () => {
     });
 
     it('Displays nothing if audit only', async () => {
-      setMetadata({
-        certificate_data: { cert_status: 'audit_passing' },
-      },
-      {
-        verified_mode: null,
-      });
+      setMetadata(
+        {
+          certificate_data: { cert_status: 'audit_passing' },
+        },
+        {
+          verified_mode: null,
+        },
+      );
       await fetchAndRender(<CourseCelebration />);
       // Keep these queries in sync with "upgrade link" test above, so we don't end up checking for text that is
       // never actually there, when/if the text changes.
@@ -310,8 +316,10 @@ describe('Course Exit Pages', () => {
       });
 
       it('Displays the generic catalog suggestion if fewer than two recommendations are available', async () => {
-        axiosMock.onGet(discoveryRecommendationsUrl).reply(200,
-          Factory.build('courseRecommendations', {}, { numRecs: 1 }));
+        axiosMock.onGet(discoveryRecommendationsUrl).reply(
+          200,
+          Factory.build('courseRecommendations', {}, { numRecs: 1 }),
+        );
         await fetchAndRender(<CourseCelebration />);
         const catalogSuggestion = await screen.findByTestId('catalog-suggestion');
         expect(catalogSuggestion).toBeInTheDocument();
@@ -328,10 +336,13 @@ describe('Course Exit Pages', () => {
         );
         axiosMock.onGet(discoveryRecommendationsUrl).reply(200, initialRecommendations);
         axiosMock.onGet(enrollmentsUrl).reply(200, [
-          Factory.build('userEnrollment', '',
+          Factory.build(
+            'userEnrollment',
+            '',
             {
               runKey: 'edX+EnrolledX+1T2021',
-            }),
+            },
+          ),
         ]);
         await fetchAndRender(<CourseCelebration />);
         const recommendationsTable = await screen.findByTestId('course-recommendations');
@@ -342,9 +353,11 @@ describe('Course Exit Pages', () => {
 
       it('Will not recommend the same course that the user just finished', async () => {
         // the uuid returned from the call to discovery is the uuid of the current course
-        const initialRecommendations = Factory.build('courseRecommendations',
+        const initialRecommendations = Factory.build(
+          'courseRecommendations',
           { uuid: 'my_uuid' },
-          { numRecs: 2 });
+          { numRecs: 2 },
+        );
         initialRecommendations.recommendations.push(
           Factory.build('courseRecommendation', { uuid: 'my_uuid', title: 'Same Course' }),
         );
@@ -428,8 +441,11 @@ describe('Course Exit Pages', () => {
   describe('Course in progress experience', () => {
     it('Displays link to dates tab', async () => {
       setMetadata({ user_has_passing_grade: false });
-      const { courseBlocks } = buildSimpleCourseBlocks(courseId, courseHomeMetadata.title,
-        { hasScheduledContent: true });
+      const { courseBlocks } = buildSimpleCourseBlocks(
+        courseId,
+        courseHomeMetadata.title,
+        { hasScheduledContent: true },
+      );
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
 
       await fetchAndRender(<CourseInProgress />);

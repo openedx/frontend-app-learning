@@ -389,19 +389,19 @@ describe('Outline Tab', () => {
       ${'Regular'} | ${3}
       ${'Intense'} | ${5}
         `('calls the API with a goal of $days when $level goal is clicked', async ({ level, days }) => {
-  // click on Casual goal
-  const button = await screen.queryByTestId(`weekly-learning-goal-input-${level}`);
-  fireEvent.click(button);
-  // Verify the request was made
-  await waitFor(() => {
-    expect(axiosMock.history.post[0].url).toMatch(goalUrl);
-    // subscribe is turned on automatically
-    expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","days_per_week":${days},"subscribed_to_reminders":true}`);
-    // verify that the additional info about subscriptions shows up
-    expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).toBeInTheDocument();
-  });
-  expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
-});
+        // click on Casual goal
+        const button = await screen.queryByTestId(`weekly-learning-goal-input-${level}`);
+        fireEvent.click(button);
+        // Verify the request was made
+        await waitFor(() => {
+          expect(axiosMock.history.post[0].url).toMatch(goalUrl);
+          // subscribe is turned on automatically
+          expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","days_per_week":${days},"subscribed_to_reminders":true}`);
+          // verify that the additional info about subscriptions shows up
+          expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).toBeInTheDocument();
+        });
+        expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
+      });
       it('shows and hides subscribe to reminders additional text', async () => {
         const button = await screen.getByTestId('weekly-learning-goal-input-Regular');
         fireEvent.click(button);
@@ -789,12 +789,14 @@ describe('Outline Tab', () => {
         const requestingButton = screen.getByRole('button', { name: 'Request certificate' });
         fireEvent.click(requestingButton);
         expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_request_cert_button.clicked',
+        expect(sendTrackEvent).toHaveBeenCalledWith(
+          'edx.ui.lms.course_outline.certificate_alert_request_cert_button.clicked',
           {
             courserun_key: courseId,
             is_staff: false,
             org_key: 'edX',
-          });
+          },
+        );
       });
 
       it('tracks unverified cert button', async () => {
@@ -833,12 +835,14 @@ describe('Outline Tab', () => {
         const requestingButton = screen.getByRole('link', { name: 'Verify my ID' });
         fireEvent.click(requestingButton);
         expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_unverified_button.clicked',
+        expect(sendTrackEvent).toHaveBeenCalledWith(
+          'edx.ui.lms.course_outline.certificate_alert_unverified_button.clicked',
           {
             courserun_key: courseId,
             is_staff: false,
             org_key: 'edX',
-          });
+          },
+        );
       });
     });
 
