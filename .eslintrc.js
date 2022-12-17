@@ -2,6 +2,7 @@ const { createConfig } = require('@edx/frontend-build');
 
 const config = createConfig('eslint', {
   rules: {
+    // TODO: all these rules should be renabled/addressed. temporarily turned off to unblock a release.
     'react-hooks/rules-of-hooks': 'off',
     'react-hooks/exhaustive-deps': 'off',
     'react/function-component-definition': 'off',
