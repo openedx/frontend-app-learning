@@ -9,7 +9,7 @@
   "learning.outline.alert.start.short": "يبدأ المساق في {timeRemaining} بتاريخ {courseStartDate}.",
   "learning.outline.alert.end.long": "ينتهي المساق في {timeRemaining} في {courseEndDate}.",
   "learning.outline.alert.end.calendar": "لا تنسَ إضافة تذكير في التقويم!",
-  "instructorToolbar.pageBanner.courseHasNotStarted": "لا يمكن للطالب بعدُ الدخول للمساق. يبدأ المساق في {date}.",
+  "instructorToolbar.pageBanner.courseHasNotStarted": "لا يمكن للطالب بعدُ دخول المساق. يبدأ المساق في {date}.",
   "learning.enrollment.alert": "يجب أن تكون مسجلا في المساق لمشاهدة محتواه.",
   "learning.staff.enrollment.alert": "أنت تستعرض هذا المساق كعضو في الطاقم، و لست مسجلا فيه.",
   "learning.enrollment.enrollNow.Inline": "سجل الآن",
