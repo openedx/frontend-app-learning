@@ -25,18 +25,20 @@ function UpgradeButton(props) {
       onClick={onClick}
       {...rest}
     >
-      <FormattedMessage
-        id="learning.upgradeButton.buttonText"
-        defaultMessage="Upgrade for {pricing}"
-        values={{
-          pricing: (
-            <FormattedPricing
-              offer={offer}
-              verifiedMode={verifiedMode}
-            />
-          ),
-        }}
-      />
+      <div>
+        <FormattedMessage
+          id="learning.upgradeButton.buttonText"
+          defaultMessage="Upgrade for {pricing}"
+          values={{
+            pricing: (
+              <FormattedPricing
+                offer={offer}
+                verifiedMode={verifiedMode}
+              />
+            ),
+          }}
+        />
+      </div>
     </Button>
   );
 }
