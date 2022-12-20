@@ -41,7 +41,7 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
         overlay={(
           <Popover id={`${isPassing ? 'passing' : 'non-passing'}-grade-tooltip`} aria-hidden="true" className={tooltipClassName}>
             <Popover.Content data-testid="currentGradeTooltipContent" className={isPassing ? 'text-white' : 'text-dark-700'}>
-              {currentGrade.toFixed(0)}%
+              {currentGrade.toFixed(0)}{isLocaleRtl ? '\u200f' : ''}%
             </Popover.Content>
           </Popover>
         )}

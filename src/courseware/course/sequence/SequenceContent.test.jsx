@@ -14,7 +14,7 @@ describe('Sequence Content', () => {
       courseId: courseware.courseId,
       sequenceId: courseware.sequenceId,
       unitId: models.sequences[courseware.sequenceId].unitIds[0],
-      unitLoadedHandler: () => {},
+      unitLoadedHandler: () => { },
     };
   });
 

@@ -96,8 +96,8 @@ describe('Loaded Tab Page', () => {
     await renderModal();
 
     const endDateText = `Ends ${new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString({ timeZone: 'UTC' })}.`;
-    expect(screen.getByText('You’ve unlocked a 14% off discount when you upgrade this course for a limited time only.')).toBeInTheDocument();
-    expect(screen.getByText(endDateText)).toBeInTheDocument();
+    expect(screen.getByText('You’ve unlocked a 14% off discount when you upgrade this course for a limited time only.', { exact: false })).toBeInTheDocument();
+    expect(screen.getByText(endDateText, { exact: false })).toBeInTheDocument();
     expect(screen.getByText('Continue with course')).toBeInTheDocument();
     expect(screen.queryByText('Keep it up')).not.toBeInTheDocument();
     expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.course.streak_discount_enabled', {

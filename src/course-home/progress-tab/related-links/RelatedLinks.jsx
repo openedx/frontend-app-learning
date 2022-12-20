@@ -15,6 +15,7 @@ function RelatedLinks({ intl }) {
   } = useSelector(state => state.courseHome);
   const {
     org,
+    tabs,
   } = useModel('courseHomeMeta', courseId);
 
   const { administrator } = getAuthenticatedUser();
@@ -27,22 +28,31 @@ function RelatedLinks({ intl }) {
     });
   };
 
+  const overviewTab = tabs.find(tab => tab.slug === 'outline');
+  const overviewTabUrl = overviewTab && overviewTab.url;
+  const datesTab = tabs.find(tab => tab.slug === 'dates');
+  const datesTabUrl = datesTab && datesTab.url;
+
   return (
     <section className="mb-4 x-small">
       <h3 className="h4">{intl.formatMessage(messages.relatedLinks)}</h3>
       <ul className="pl-4">
+        {datesTabUrl && (
         <li>
-          <Hyperlink destination={`/course/${courseId}/dates`} onClick={() => logLinkClicked('dates')}>
+          <Hyperlink destination={datesTabUrl} onClick={() => logLinkClicked('dates')}>
             {intl.formatMessage(messages.datesCardLink)}
           </Hyperlink>
           <p>{intl.formatMessage(messages.datesCardDescription)}</p>
         </li>
+        )}
+        {overviewTabUrl && (
         <li>
-          <Hyperlink destination={`/course/${courseId}/home`} onClick={() => logLinkClicked('course_outline')}>
+          <Hyperlink destination={overviewTabUrl} onClick={() => logLinkClicked('course_outline')}>
             {intl.formatMessage(messages.outlineCardLink)}
           </Hyperlink>
           <p>{intl.formatMessage(messages.outlineCardDescription)}</p>
         </li>
+        )}
       </ul>
     </section>
   );

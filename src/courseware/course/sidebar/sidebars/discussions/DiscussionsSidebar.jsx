@@ -19,7 +19,7 @@ function DiscussionsSidebar({ intl }) {
   if (!topic?.id) {
     return null;
   }
-  const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/topics/${topic.id}`;
+  const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/category/${unitId}`;
   return (
     <SidebarBase
       title={intl.formatMessage(messages.discussionsTitle)}
@@ -30,8 +30,7 @@ function DiscussionsSidebar({ intl }) {
     >
       <iframe
         src={`${discussionsUrl}?inContext`}
-        className="d-flex w-100 border-0"
-        style={{ minHeight: '60rem' }}
+        className="d-flex w-100 h-100 border-0"
         title={intl.formatMessage(messages.discussionsTitle)}
       />
     </SidebarBase>
