@@ -59,7 +59,7 @@ describe('Discussions Trigger', () => {
     renderWithProvider();
     expect(screen.queryByTitle('Discussions')).toBeInTheDocument();
     expect(screen.queryByTitle('Discussions'))
-      .toHaveAttribute('src', `http://localhost:2002/${courseId}/category/${unitId}?inContext`);
+      .toHaveAttribute('src', `http://localhost:2002/${courseId}/category/${unitId}?inContextSidebar`);
   });
 
   it('should show nothing if unit has no discussions associated with it', async () => {
