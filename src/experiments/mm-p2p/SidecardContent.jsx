@@ -18,12 +18,16 @@ AlertBanner.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-const localizeTime = (date) => date.toLocaleTimeString('en-US',
+const localizeTime = (date) => date.toLocaleTimeString(
+  'en-US',
   {
     hour: '2-digit', minute: 'numeric', hour12: true, timeZoneName: 'short',
-  });
-const localizeDate = (date) => date.toLocaleDateString('en-US',
-  { month: 'long', day: 'numeric' });
+  },
+);
+const localizeDate = (date) => date.toLocaleDateString(
+  'en-US',
+  { month: 'long', day: 'numeric' },
+);
 
 const BulletList = ({ children }) => (
   <div style={{ marginBottom: '3px' }} className="mmp2p-bullet-list-item">

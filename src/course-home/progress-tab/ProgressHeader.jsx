@@ -26,16 +26,14 @@ function ProgressHeader({ intl }) {
     : intl.formatMessage(messages.progressHeader);
 
   return (
-    <>
-      <div className="row w-100 m-0 mt-3 mb-4 justify-content-between">
-        <h1>{pageTitle}</h1>
-        {administrator && studioUrl && (
-          <Button variant="outline-primary" size="sm" className="align-self-center" href={studioUrl}>
-            {intl.formatMessage(messages.studioLink)}
-          </Button>
-        )}
-      </div>
-    </>
+    <div className="row w-100 m-0 mt-3 mb-4 justify-content-between">
+      <h1>{pageTitle}</h1>
+      {administrator && studioUrl && (
+      <Button variant="outline-primary" size="sm" className="align-self-center" href={studioUrl}>
+        {intl.formatMessage(messages.studioLink)}
+      </Button>
+      )}
+    </div>
   );
 }
 

@@ -52,9 +52,7 @@ describe('Unit', () => {
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     const renderedUnit = screen.getByTitle(unit.display_name);
     expect(renderedUnit).toHaveAttribute('height', String(0));
-    expect(renderedUnit).toHaveAttribute(
-      'src', `http://localhost:18000/xblock/${mockData.id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=student_view&format=${mockData.format}`,
-    );
+    expect(renderedUnit).toHaveAttribute('src', `http://localhost:18000/xblock/${mockData.id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=student_view&format=${mockData.format}`);
   });
 
   it('renders proper message for gated content', () => {

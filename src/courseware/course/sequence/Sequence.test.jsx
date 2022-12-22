@@ -64,11 +64,9 @@ describe('Sequence', () => {
       { gated_content: gatedContent },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore(
-      {
-        courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
-      }, false,
-    );
+    const testStore = await initializeTestStore({
+      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
+    }, false);
     const { container } = render(
       <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
       { store: testStore },
@@ -97,11 +95,9 @@ describe('Sequence', () => {
       { is_hidden_after_due: true },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore(
-      {
-        courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
-      }, false,
-    );
+    const testStore = await initializeTestStore({
+      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
+    }, false);
     render(
       <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
       { store: testStore },

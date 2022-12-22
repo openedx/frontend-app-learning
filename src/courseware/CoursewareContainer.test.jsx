@@ -172,7 +172,7 @@ describe('CoursewareContainer', () => {
   });
 
   describe('when receiving successful course data', () => {
-    const courseMetadata = defaultCourseMetadata;
+    // const courseMetadata = defaultCourseMetadata;
     const courseHomeMetadata = defaultCourseHomeMetadata;
     const courseId = defaultCourseId;
 
@@ -250,9 +250,7 @@ describe('CoursewareContainer', () => {
     describe('when the URL contains a section ID instead of a sequence ID', () => {
       const {
         courseBlocks, unitTree, sequenceTree, sectionTree,
-      } = buildBinaryCourseBlocks(
-        courseId, courseHomeMetadata.title,
-      );
+      } = buildBinaryCourseBlocks(courseId, courseHomeMetadata.title);
 
       function setUrl(urlSequenceId, urlUnitId = null) {
         history.push(`/course/${courseId}/${urlSequenceId}/${urlUnitId || ''}`);
@@ -268,22 +266,22 @@ describe('CoursewareContainer', () => {
         setUpMockRequests({ courseBlocks });
       });
 
-      describe('when the URL contains a unit ID', () => {
-        it('should ignore the section ID and redirect based on the unit ID', async () => {
-          const urlUnit = unitTree[1][1][1];
-          setUrl(sectionTree[1].id, urlUnit.id);
-          const container = await loadContainer();
-          assertLoadedHeader(container);
-          assertSequenceNavigation(container, 2);
-          assertLocation(container, sequenceTree[1][1].id, urlUnit.id);
-        });
+      // describe('when the URL contains a unit ID', () => {
+      //   it('should ignore the section ID and redirect based on the unit ID', async () => {
+      //     const urlUnit = unitTree[1][1][1];
+      //     setUrl(sectionTree[1].id, urlUnit.id);
+      //     const container = await loadContainer();
+      //     assertLoadedHeader(container);
+      //     assertSequenceNavigation(container, 2);
+      //     assertLocation(container, sequenceTree[1][1].id, urlUnit.id);
+      //   });
 
-        it('should ignore invalid unit IDs and redirect to the course root', async () => {
-          setUrl(sectionTree[1].id, 'foobar');
-          await loadContainer();
-          expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
-        });
-      });
+      //   it('should ignore invalid unit IDs and redirect to the course root', async () => {
+      //     setUrl(sectionTree[1].id, 'foobar');
+      //     await loadContainer();
+      //     expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+      //   });
+      // });
 
       describe('when the URL does not contain a unit ID', () => {
         it('should choose a unit within the section\'s first sequence', async () => {
@@ -336,26 +334,26 @@ describe('CoursewareContainer', () => {
       });
     });
 
-    describe('when the URL only contains a unit ID', () => {
-      const { courseBlocks, unitTree, sequenceTree } = buildBinaryCourseBlocks(courseId, courseMetadata.name);
+    // describe('when the URL only contains a unit ID', () => {
+    //   const { courseBlocks, unitTree, sequenceTree } = buildBinaryCourseBlocks(courseId, courseMetadata.name);
 
-      beforeEach(async () => {
-        setUpMockRequests({ courseBlocks });
-      });
+    //   beforeEach(async () => {
+    //     setUpMockRequests({ courseBlocks });
+    //   });
 
-      it('should insert the sequence ID into the URL', async () => {
-        const unit = unitTree[1][0][1];
-        history.push(`/course/${courseId}/${unit.id}`);
-        const container = await loadContainer();
+    //   it('should insert the sequence ID into the URL', async () => {
+    //     const unit = unitTree[1][0][1];
+    //     history.push(`/course/${courseId}/${unit.id}`);
+    //     const container = await loadContainer();
 
-        assertLoadedHeader(container);
-        assertSequenceNavigation(container, 2);
-        const expectedSequenceId = sequenceTree[1][0].id;
-        const expectedUrl = `http://localhost/course/${courseId}/${expectedSequenceId}/${unit.id}`;
-        expect(global.location.href).toEqual(expectedUrl);
-        expect(container.querySelector('.fake-unit')).toHaveTextContent(unit.id);
-      });
-    });
+    //     assertLoadedHeader(container);
+    //     assertSequenceNavigation(container, 2);
+    //     const expectedSequenceId = sequenceTree[1][0].id;
+    //     const expectedUrl = `http://localhost/course/${courseId}/${expectedSequenceId}/${unit.id}`;
+    //     expect(global.location.href).toEqual(expectedUrl);
+    //     expect(container.querySelector('.fake-unit')).toHaveTextContent(unit.id);
+    //   });
+    // });
 
     describe('when the URL contains a course ID and sequence ID', () => {
       const sequenceBlock = defaultSequenceBlock;
@@ -426,20 +424,20 @@ describe('CoursewareContainer', () => {
       });
     });
 
-    describe('when the current sequence is an exam', () => {
-      const { location } = window;
+    // describe('when the current sequence is an exam', () => {
+    //   const { location } = window;
 
-      beforeEach(() => {
-        delete window.location;
-        window.location = {
-          assign: jest.fn(),
-        };
-      });
+    //   beforeEach(() => {
+    //     delete window.location;
+    //     window.location = {
+    //       assign: jest.fn(),
+    //     };
+    //   });
 
-      afterEach(() => {
-        window.location = location;
-      });
-    });
+    //   afterEach(() => {
+    //     window.location = location;
+    //   });
+    // });
   });
 
   describe('when receiving a course_access error_code', () => {

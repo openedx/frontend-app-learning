@@ -33,7 +33,7 @@ class NotesVisibility extends Component {
       this.setState((state) => ({ visible: !state.visible }));
       toggleNotes();
     });
-  }
+  };
 
   render() {
     const message = this.state.visible ? 'notes.button.hide' : 'notes.button.show';
