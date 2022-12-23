@@ -60,7 +60,7 @@
     "regenerator-runtime": "0.13.11",
     "reselect": "4.1.7",
     "truncate-html": "1.0.4",
-    "util": "0.12.4"
+    "util": "0.12.5"
   },
   "devDependencies": {
     "@edx/browserslist-config": "1.0.2",
