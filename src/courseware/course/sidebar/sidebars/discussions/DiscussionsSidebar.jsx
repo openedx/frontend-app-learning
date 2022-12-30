@@ -29,7 +29,7 @@ function DiscussionsSidebar({ intl }) {
       showTitleBar={false}
     >
       <iframe
-        src={`${discussionsUrl}?inContext`}
+        src={`${discussionsUrl}?inContextSidebar`}
         className="d-flex w-100 h-100 border-0"
         title={intl.formatMessage(messages.discussionsTitle)}
       />
