@@ -16,10 +16,12 @@ function DiscussionsSidebar({ intl }) {
     courseId,
   } = useContext(SidebarContext);
   const topic = useModel('discussionTopics', unitId);
-  if (!topic?.id) {
+  const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/category/${unitId}`;
+
+  if (!topic?.id || !topic?.enabledInContext) {
     return null;
   }
-  const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/category/${unitId}`;
+
   return (
     <SidebarBase
       title={intl.formatMessage(messages.discussionsTitle)}
