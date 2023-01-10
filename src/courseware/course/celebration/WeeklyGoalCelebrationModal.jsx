@@ -57,14 +57,16 @@ function WeeklyGoalCelebrationModal({
             className="mr-2"
             style={{ height: '21px', width: '22px' }}
           />
-          <FormattedMessage
-            id="learning.celebration.setGoal"
-            defaultMessage="Setting a goal can help you {strongText} in your course."
-            description="It explain the advantages of setting goal"
-            values={{
-              strongText: (<strong>achieve higher performance</strong>),
-            }}
-          />
+          <div>
+            <FormattedMessage
+              id="learning.celebration.setGoal"
+              defaultMessage="Setting a goal can help you {strongText} in your course."
+              description="It explain the advantages of setting goal"
+              values={{
+                strongText: (<strong>achieve higher performance</strong>),
+              }}
+            />
+          </div>
         </div>
       </>
     </StandardModal>
