@@ -383,12 +383,11 @@ describe('Outline Tab', () => {
         expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeDisabled();
       });
 
-      it.each`
-      level     | days 
-      ${'Casual'}  | ${1}
-      ${'Regular'} | ${3}
-      ${'Intense'} | ${5}
-        `('calls the API with a goal of $days when $level goal is clicked', async ({ level, days }) => {
+      it.each([
+        { level: 'Casual', days: 1 },
+        { level: 'Regular', days: 3 },
+        { level: 'Intense', days: 5 },
+      ])('calls the API with a goal of $days when $level goal is clicked', async ({ level, days }) => {
         // click on Casual goal
         const button = await screen.queryByTestId(`weekly-learning-goal-input-${level}`);
         fireEvent.click(button);
@@ -402,6 +401,7 @@ describe('Outline Tab', () => {
         });
         expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
       });
+
       it('shows and hides subscribe to reminders additional text', async () => {
         const button = await screen.getByTestId('weekly-learning-goal-input-Regular');
         fireEvent.click(button);
