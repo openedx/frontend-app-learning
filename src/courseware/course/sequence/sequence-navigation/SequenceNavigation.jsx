@@ -19,8 +19,6 @@ import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
 
 import messages from './messages';
-/** [MM-P2P] Experiment */
-import { MMP2PFlyoverTriggerMobile } from '../../../../experiments/mm-p2p';
 
 function SequenceNavigation({
   intl,
@@ -31,7 +29,6 @@ function SequenceNavigation({
   nextSequenceHandler,
   previousSequenceHandler,
   goToCourseExitPage,
-  mmp2p,
 }) {
   const sequence = useModel('sequences', sequenceId);
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
@@ -90,8 +87,6 @@ function SequenceNavigation({
       {renderUnitButtons()}
       {renderNextButton()}
 
-      {/** [MM-P2P] Experiment */}
-      { mmp2p.state.isEnabled && <MMP2PFlyoverTriggerMobile options={mmp2p} /> }
     </nav>
   );
 }
@@ -105,22 +100,11 @@ SequenceNavigation.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   goToCourseExitPage: PropTypes.func.isRequired,
-  /** [MM-P2P] Experiment */
-  mmp2p: PropTypes.shape({
-    state: PropTypes.shape({
-      isEnabled: PropTypes.bool.isRequired,
-    }),
-  }),
 };
 
 SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
-
-  /** [MM-P2P] Experiment */
-  mmp2p: {
-    state: { isEnabled: false },
-  },
 };
 
 export default injectIntl(SequenceNavigation);

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -10,8 +9,6 @@ import { useModel } from '../../../generic/model-store';
 
 function CourseDates({
   intl,
-  /** [MM-P2P] Experiment */
-  mmp2p,
 }) {
   const {
     courseId,
@@ -40,8 +37,6 @@ function CourseDates({
               key={courseDateBlock.title + courseDateBlock.date}
               dateBlock={courseDateBlock}
               userTimezone={userTimezone}
-              /** [MM-P2P] Experiment */
-              mmp2p={mmp2p}
             />
           ))}
         </ol>
@@ -55,13 +50,6 @@ function CourseDates({
 
 CourseDates.propTypes = {
   intl: intlShape.isRequired,
-  /** [MM-P2P] Experiment */
-  mmp2p: PropTypes.shape({}),
-};
-
-CourseDates.defaultProps = {
-  /** [MM-P2P] Experiment */
-  mmp2p: {},
 };
 
 export default injectIntl(CourseDates);
