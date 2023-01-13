@@ -15,6 +15,7 @@ import { useModel } from '../../../generic/model-store';
 import PageLoading from '../../../generic/PageLoading';
 import { fetchCourse } from '../../data';
 import BookmarkButton from '../bookmark/BookmarkButton';
+import ShareButton from '../share/ShareButton';
 import messages from './messages';
 
 const HonorCode = React.lazy(() => import('./honor-code'));
@@ -152,6 +153,8 @@ function Unit({
         isBookmarked={unit.bookmarked}
         isProcessing={unit.bookmarkedUpdateState === 'loading'}
       />
+      {/* TODO: social share exp. Need to remove later */}
+      {window.expSocialShareEnabled && <ShareButton url={window.expSocialShareAboutUrl} />}
       { !mmp2p.state.isEnabled && contentTypeGatingEnabled && unit.containsContentTypeGatedContent && (
         <Suspense
           fallback={(
