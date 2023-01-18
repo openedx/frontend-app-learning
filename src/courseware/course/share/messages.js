@@ -16,6 +16,11 @@ const messages = defineMessages({
     defaultMessage: 'Copy the link below to share this content.',
     description: 'share message modal body',
   },
+  shareQuote: {
+    id: 'learn.sequence.share.quote',
+    defaultMessage: 'Here\'s a fun clip from a class I\'m taking on @edXonline.\n',
+    description: 'share message quote',
+  },
 });
 
 export default messages;

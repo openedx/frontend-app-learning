@@ -1,12 +1,20 @@
 import { PropTypes } from 'prop-types';
-import { Icon } from '@edx/paragon';
-import { Share } from '@edx/paragon/icons';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { TwitterShareButton } from 'react-share';
-
+import { TwitterShareButton, TwitterIcon } from 'react-share';
 import { stringifyUrl } from 'query-string';
 
+import { Icon } from '@edx/paragon';
 import messages from './messages';
+
+const ShareTwitterIcon = () => (
+  <TwitterIcon
+    round
+    iconFillColor="#0A3055"
+    bgStyle={{
+      fill: '#fff',
+    }}
+  />
+);
 
 function ShareButton({ url }) {
   const { formatMessage } = useIntl();
@@ -23,10 +31,11 @@ function ShareButton({ url }) {
   return (
     <TwitterShareButton
       url={twitterUrl}
+      title={formatMessage(messages.shareQuote)}
       resetButtonStyle={false}
       className="px-1 ml-n1 btn-sm text-primary-500 btn btn-link"
     >
-      <Icon src={Share} />
+      <Icon src={ShareTwitterIcon} />
       {formatMessage(messages.shareButton)}
     </TwitterShareButton>
   );
