@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@edx/browserslist-config": "1.0.2",
-    "@edx/frontend-build": "git+http://github.com/ghassanmas/frontend-build.git#reduce-css-file-size",
+    "@edx/frontend-build": "git+http://github.com/ghassanmas/frontend-build.git#96474a6789c02efb5b2b8c31d49b085e48a39e2a",
     "@edx/reactifex": "2.0.1",
     "@pact-foundation/pact": "9.17.3",
     "@testing-library/jest-dom": "5.16.4",
