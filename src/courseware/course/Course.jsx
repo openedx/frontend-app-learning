@@ -18,9 +18,6 @@ import SidebarTriggers from './sidebar/SidebarTriggers';
 import { useModel } from '../../generic/model-store';
 import { getSessionStorage, setSessionStorage } from '../../data/sessionStorage';
 
-/** [MM-P2P] Experiment */
-import { initCoursewareMMP2P, MMP2PBlockModal } from '../../experiments/mm-p2p';
-
 function Course({
   courseId,
   sequenceId,
@@ -71,9 +68,6 @@ function Course({
     }
   }
 
-  /** [MM-P2P] Experiment */
-  const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
-
   return (
     <SidebarProvider courseId={courseId} unitId={unitId}>
       <Helmet>
@@ -86,8 +80,6 @@ function Course({
           sequenceId={sequenceId}
           isStaff={isStaff}
           unitId={unitId}
-          //* * [MM-P2P] Experiment */
-          mmp2p={MMP2P}
         />
         {shouldDisplayTriggers && (
           <SidebarTriggers />
@@ -102,8 +94,6 @@ function Course({
         unitNavigationHandler={unitNavigationHandler}
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
-        //* * [MM-P2P] Experiment */
-        mmp2p={MMP2P}
       />
       <CelebrationModal
         courseId={courseId}
@@ -117,8 +107,6 @@ function Course({
         onClose={() => setWeeklyGoalCelebrationOpen(false)}
       />
       <ContentTools course={course} />
-      { /** [MM-P2P] Experiment */ }
-      { MMP2P.meta.modalLock && <MMP2PBlockModal options={MMP2P} /> }
     </SidebarProvider>
   );
 }

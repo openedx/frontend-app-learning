@@ -8,8 +8,6 @@ import React, {
 } from 'react';
 import { useDispatch } from 'react-redux';
 import { processEvent } from '../../../course-home/data/thunks';
-/** [MM-P2P] Experiment */
-import { MMP2PLockPaywall } from '../../../experiments/mm-p2p';
 import { useEventListener } from '../../../generic/hooks';
 import { useModel } from '../../../generic/model-store';
 import PageLoading from '../../../generic/PageLoading';
@@ -82,8 +80,6 @@ function Unit({
   onLoaded,
   id,
   intl,
-  /** [MM-P2P] Experiment */
-  mmp2p,
 }) {
   const { authenticatedUser } = useContext(AppContext);
   const view = authenticatedUser ? 'student_view' : 'public_view';
@@ -155,7 +151,7 @@ function Unit({
       />
       {/* TODO: social share exp. Need to remove later */}
       {window.expSocialShareEnabled && <ShareButton url={window.expSocialShareAboutUrl} />}
-      { !mmp2p.state.isEnabled && contentTypeGatingEnabled && unit.containsContentTypeGatedContent && (
+      {contentTypeGatingEnabled && unit.containsContentTypeGatedContent && (
         <Suspense
           fallback={(
             <PageLoading
@@ -166,11 +162,7 @@ function Unit({
           <LockPaywall courseId={courseId} />
         </Suspense>
       )}
-      { /** [MM-P2P] Experiment */ }
-      { mmp2p.meta.showLock && (
-        <MMP2PLockPaywall options={mmp2p} />
-      )}
-      {!mmp2p.meta.blockContent && shouldDisplayHonorCode && (
+      {shouldDisplayHonorCode && (
         <Suspense
           fallback={(
             <PageLoading
@@ -181,13 +173,12 @@ function Unit({
           <HonorCode courseId={courseId} />
         </Suspense>
       )}
-      { /** [MM-P2P] Experiment (conditional) */ }
-      {!mmp2p.meta.blockContent && !shouldDisplayHonorCode && !hasLoaded && !showError && (
+      {!shouldDisplayHonorCode && !hasLoaded && !showError && (
         <PageLoading
           srMessage={intl.formatMessage(messages.loadingSequence)}
         />
       )}
-      {!mmp2p.meta.blockContent && !shouldDisplayHonorCode && !hasLoaded && showError && (
+      {!shouldDisplayHonorCode && !hasLoaded && showError && (
         <ErrorPage />
       )}
       {modalOptions.open && (
@@ -215,8 +206,7 @@ function Unit({
           dialogClassName="modal-lti"
         />
       )}
-      { /** [MM-P2P] Experiment (conditional) */ }
-      { !mmp2p.meta.blockContent && !shouldDisplayHonorCode && (
+      {!shouldDisplayHonorCode && (
         <div className="unit-iframe-wrapper">
           <iframe
             id="unit-iframe"
@@ -255,31 +245,11 @@ Unit.propTypes = {
   id: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
   onLoaded: PropTypes.func,
-  /** [MM-P2P] Experiment */
-  mmp2p: PropTypes.shape({
-    state: PropTypes.shape({
-      isEnabled: PropTypes.bool.isRequired,
-    }),
-    meta: PropTypes.shape({
-      showLock: PropTypes.bool,
-      blockContent: PropTypes.bool,
-    }),
-  }),
 };
 
 Unit.defaultProps = {
   format: null,
   onLoaded: undefined,
-  /** [MM-P2P] Experiment */
-  mmp2p: {
-    state: {
-      isEnabled: false,
-    },
-    meta: {
-      showLock: false,
-      blockContent: false,
-    },
-  },
 };
 
 export default injectIntl(Unit);
