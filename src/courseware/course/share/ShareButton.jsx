@@ -20,10 +20,6 @@ const ShareTwitterIcon = () => (
 function ShareButton({ url }) {
   const { formatMessage } = useIntl();
 
-  React.useEffect(() => () => {
-    window.expSocialShareEnabled = false;
-  }, []);
-
   const twitterUrl = stringifyUrl({
     url,
     query: {
