@@ -22,7 +22,7 @@ function ShareButton({ url }) {
 
   React.useEffect(() => () => {
     window.expSocialShareEnabled = false;
-  });
+  }, []);
 
   const twitterUrl = stringifyUrl({
     url,
