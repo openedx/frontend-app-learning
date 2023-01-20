@@ -150,7 +150,7 @@ function Unit({
         isProcessing={unit.bookmarkedUpdateState === 'loading'}
       />
       {/* TODO: social share exp. Need to remove later */}
-      {(window.expSocialShareAboutUrls && window.expSocialShareUrls[unit.id] !== undefined) && (
+      {(window.expSocialShareAboutUrls && window.expSocialShareAboutUrls[unit.id] !== undefined) && (
         <ShareButton url={window.expSocialShareAboutUrls[unit.id]} />
       )}
       {contentTypeGatingEnabled && unit.containsContentTypeGatedContent && (
