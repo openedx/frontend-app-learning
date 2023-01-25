@@ -8,7 +8,6 @@ config.plugins.push(
   new CopyPlugin({
     patterns: [
       {
-
         from: path.resolve(__dirname, './public/static'),
         to: path.resolve(__dirname, './dist/static'),
       },
