@@ -29,7 +29,7 @@ import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
 
-function OutlineTab({ intl }) {
+const OutlineTab = ({ intl }) => {
   const {
     courseId,
     proctoringPanelStatus,
@@ -212,7 +212,7 @@ function OutlineTab({ intl }) {
       </div>
     </>
   );
-}
+};
 
 OutlineTab.propTypes = {
   intl: intlShape.isRequired,

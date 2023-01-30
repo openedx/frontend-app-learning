@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -17,16 +18,12 @@ import {
   fetchTourData,
 } from './data';
 
-function ProductTours({
+const ProductTours = ({
   activeTab,
   courseId,
   isStreakCelebrationOpen,
   org,
-}) {
-  if (isStreakCelebrationOpen) {
-    return null;
-  }
-
+}) => {
   const {
     proctoringPanelStatus,
   } = useSelector(state => state.courseHome);
@@ -80,6 +77,10 @@ function ProductTours({
       setIsNewUserCourseHomeTourEnabled(true);
     }
   }, [showNewUserCourseHomeTour]);
+
+  if (isStreakCelebrationOpen) {
+    return null;
+  }
 
   // The <ProductTour /> component cannot handle rendering multiple enabled tours at once.
   // I.e. when adding new tours, beware that if multiple tours are enabled,
@@ -168,7 +169,7 @@ function ProductTours({
       />
     </>
   );
-}
+};
 
 ProductTours.propTypes = {
   activeTab: PropTypes.string.isRequired,

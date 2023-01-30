@@ -9,7 +9,7 @@ import { useModel } from '../../generic/model-store';
 
 import messages from './messages';
 
-function ProgressHeader({ intl }) {
+const ProgressHeader = ({ intl }) => {
   const {
     courseId,
     targetUserId,
@@ -35,7 +35,7 @@ function ProgressHeader({ intl }) {
       )}
     </div>
   );
-}
+};
 
 ProgressHeader.propTypes = {
   intl: intlShape.isRequired,

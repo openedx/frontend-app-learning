@@ -10,7 +10,7 @@ import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
 import SubsectionTitleCell from './SubsectionTitleCell';
 
-function DetailedGradesTable({ intl }) {
+const DetailedGradesTable = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -64,7 +64,7 @@ function DetailedGradesTable({ intl }) {
       );
     })
   );
-}
+};
 
 DetailedGradesTable.propTypes = {
   intl: intlShape.isRequired,

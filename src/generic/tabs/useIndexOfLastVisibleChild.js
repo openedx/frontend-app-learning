@@ -70,6 +70,7 @@ export default function useIndexOfLastVisibleChild() {
       });
 
     setIndexOfLastVisibleChild(nextIndexOfLastVisibleChild);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windowSize, containerElementRef.current]);
 
   return [indexOfLastVisibleChild, containerElementRef, invisibleStyle, overflowElementRef];

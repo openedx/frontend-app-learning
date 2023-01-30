@@ -3,10 +3,18 @@ import { Factory } from 'rosie';
 import { initializeTestStore, render, screen } from '../setupTest';
 import LoadedTabPage from './LoadedTabPage';
 
-jest.mock('../course-tabs/CourseTabsNavigation', () => () => <div data-testid="CourseTabsNavigation" />);
-jest.mock('../instructor-toolbar/InstructorToolbar', () => () => <div data-testid="InstructorToolbar" />);
-jest.mock('../shared/streak-celebration/StreakCelebrationModal', () => () => <div data-testid="StreakModal" />);
-jest.mock('../product-tours/ProductTours', () => () => <div data-testid="ProductTours" />);
+jest.mock('../course-tabs/CourseTabsNavigation', () => function () {
+  return <div data-testid="CourseTabsNavigation" />;
+});
+jest.mock('../instructor-toolbar/InstructorToolbar', () => function () {
+  return <div data-testid="InstructorToolbar" />;
+});
+jest.mock('../shared/streak-celebration/StreakCelebrationModal', () => function () {
+  return <div data-testid="StreakModal" />;
+});
+jest.mock('../product-tours/ProductTours', () => function () {
+  return <div data-testid="ProductTours" />;
+});
 
 describe('Loaded Tab Page', () => {
   const mockData = { activeTabSlug: 'courseware', metadataModel: 'coursewareMeta' };

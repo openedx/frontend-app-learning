@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
 import {
   fireEvent, initializeTestStore, render, screen,
@@ -36,13 +37,20 @@ describe('Notification Trigger', () => {
     setItemSpy.mockRestore();
   });
 
+  const SidebarWrapper = ({ contextValue, onClick }) => (
+    <SidebarContext.Provider value={contextValue}>
+      <NotificationTrigger onClick={onClick} />
+    </SidebarContext.Provider>
+  );
+
+  SidebarWrapper.propTypes = {
+    contextValue: PropTypes.shape({}).isRequired,
+    onClick: PropTypes.func.isRequired,
+  };
+
   function renderWithProvider(data, onClick = () => {
   }) {
-    const { container } = render(
-      <SidebarContext.Provider value={{ ...mockData, ...data }}>
-        <NotificationTrigger onClick={onClick} />
-      </SidebarContext.Provider>,
-    );
+    const { container } = render(<SidebarWrapper contextValue={{ ...mockData, ...data }} onClick={onClick} />);
     return container;
   }
 

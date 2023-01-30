@@ -14,7 +14,7 @@ import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 import LaunchCourseHomeTourButton from '../../../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 
-function CourseTools({ intl }) {
+const CourseTools = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -79,7 +79,7 @@ function CourseTools({ intl }) {
       </ul>
     </section>
   );
-}
+};
 
 CourseTools.propTypes = {
   intl: intlShape.isRequired,

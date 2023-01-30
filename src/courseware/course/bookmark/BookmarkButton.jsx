@@ -23,9 +23,9 @@ const hasBookmarkLabel = (
   />
 );
 
-export default function BookmarkButton({
+const BookmarkButton = ({
   isBookmarked, isProcessing, unitId,
-}) {
+}) => {
   const bookmarkState = isBookmarked ? 'bookmarked' : 'default';
   const state = isProcessing ? `${bookmarkState}Processing` : bookmarkState;
 
@@ -36,6 +36,7 @@ export default function BookmarkButton({
     } else {
       dispatch(addBookmark(unitId));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBookmarked, unitId]);
 
   return (
@@ -59,7 +60,7 @@ export default function BookmarkButton({
       }}
     />
   );
-}
+};
 
 BookmarkButton.propTypes = {
   unitId: PropTypes.string.isRequired,
@@ -70,3 +71,5 @@ BookmarkButton.propTypes = {
 BookmarkButton.defaultProps = {
   isBookmarked: false,
 };
+
+export default BookmarkButton;

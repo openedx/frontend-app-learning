@@ -18,7 +18,7 @@ import SidebarTriggers from './sidebar/SidebarTriggers';
 import { useModel } from '../../generic/model-store';
 import { getSessionStorage, setSessionStorage } from '../../data/sessionStorage';
 
-function Course({
+const Course = ({
   courseId,
   sequenceId,
   unitId,
@@ -26,7 +26,7 @@ function Course({
   previousSequenceHandler,
   unitNavigationHandler,
   windowWidth,
-}) {
+}) => {
   const course = useModel('coursewareMeta', courseId);
   const {
     celebrations,
@@ -109,7 +109,7 @@ function Course({
       <ContentTools course={course} />
     </SidebarProvider>
   );
-}
+};
 
 Course.propTypes = {
   courseId: PropTypes.string,
@@ -127,7 +127,7 @@ Course.defaultProps = {
   unitId: null,
 };
 
-function CourseWrapper(props) {
+const CourseWrapper = (props) => {
   // useWindowSize initially returns an undefined width intentionally at first.
   // See https://www.joshwcomeau.com/react/the-perils-of-rehydration/ for why.
   // But <Course> has some tricky window-size-dependent, session-storage-setting logic and React would yell at us if
@@ -139,6 +139,6 @@ function CourseWrapper(props) {
   }
 
   return <Course {...props} windowWidth={windowWidth} />;
-}
+};
 
 export default CourseWrapper;

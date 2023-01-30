@@ -10,7 +10,9 @@ import { executeThunk } from '../utils';
 import * as thunks from '../course-home/data/thunks';
 
 // We should not test `LoadedTabPage` page here, as `TabPage` is used only for passing `passthroughProps`.
-jest.mock('./LoadedTabPage', () => () => <div data-testid="LoadedTabPage" />);
+jest.mock('./LoadedTabPage', () => function () {
+  return <div data-testid="LoadedTabPage" />;
+});
 
 describe('Tab Page', () => {
   const mockData = {

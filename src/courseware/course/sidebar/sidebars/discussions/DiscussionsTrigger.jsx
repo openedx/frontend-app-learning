@@ -14,10 +14,10 @@ import messages from './messages';
 ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);
 export const ID = 'DISCUSSIONS';
 
-function DiscussionsTrigger({
+const DiscussionsTrigger = ({
   intl,
   onClick,
-}) {
+}) => {
   const {
     unitId,
     courseId,
@@ -31,6 +31,7 @@ function DiscussionsTrigger({
     if (baseUrl) {
       dispatch(getCourseDiscussionTopics(courseId));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, baseUrl]);
 
   if (!topic?.id || !topic?.enabledInContext) {
@@ -42,7 +43,7 @@ function DiscussionsTrigger({
       <Icon src={QuestionAnswer} className="m-0 m-auto" />
     </SidebarTriggerBase>
   );
-}
+};
 
 DiscussionsTrigger.propTypes = {
   intl: intlShape.isRequired,

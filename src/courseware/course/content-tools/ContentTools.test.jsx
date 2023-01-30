@@ -2,8 +2,12 @@ import React from 'react';
 import { initializeTestStore, render, screen } from '../../../setupTest';
 import ContentTools from './ContentTools';
 
-jest.mock('./calculator/Calculator', () => () => <div data-testid="Calculator" />);
-jest.mock('./notes-visibility/NotesVisibility', () => () => <div data-testid="NotesVisibility" />);
+jest.mock('./calculator/Calculator', () => function () {
+  return <div data-testid="Calculator" />;
+});
+jest.mock('./notes-visibility/NotesVisibility', () => function () {
+  return <div data-testid="NotesVisibility" />;
+});
 
 describe('Content Tools', () => {
   const mockData = {

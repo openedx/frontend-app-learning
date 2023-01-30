@@ -11,14 +11,10 @@ import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 import { dismissWelcomeMessage } from '../../data/thunks';
 
-function WelcomeMessage({ courseId, intl }) {
+const WelcomeMessage = ({ courseId, intl }) => {
   const {
     welcomeMessageHtml,
   } = useModel('outline', courseId);
-
-  if (!welcomeMessageHtml) {
-    return null;
-  }
 
   const [display, setDisplay] = useState(true);
 
@@ -26,6 +22,11 @@ function WelcomeMessage({ courseId, intl }) {
   const messageCanBeShortened = shortWelcomeMessageHtml.length < welcomeMessageHtml.length;
   const [showShortMessage, setShowShortMessage] = useState(messageCanBeShortened);
   const dispatch = useDispatch();
+
+  if (!welcomeMessageHtml) {
+    return null;
+  }
+
   return (
     <Alert
       data-testid="alert-container-welcome"
@@ -69,7 +70,7 @@ function WelcomeMessage({ courseId, intl }) {
       </TransitionReplace>
     </Alert>
   );
-}
+};
 
 WelcomeMessage.propTypes = {
   courseId: PropTypes.string.isRequired,

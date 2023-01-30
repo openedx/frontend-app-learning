@@ -15,7 +15,7 @@ const DAY_SEC = 24 * 60 * 60; // in seconds
 const DAY_MS = DAY_SEC * 1000; // in ms
 const YEAR_SEC = 365 * DAY_SEC; // in seconds
 
-function CourseStartAlert({ payload }) {
+const CourseStartAlert = ({ payload }) => {
   const {
     courseId,
   } = payload;
@@ -94,7 +94,7 @@ function CourseStartAlert({ payload }) {
       />
     </Alert>
   );
-}
+};
 
 CourseStartAlert.propTypes = {
   payload: PropTypes.shape({

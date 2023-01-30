@@ -2,6 +2,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   fireEvent, initializeMockApp, initializeTestStore, render, screen,
 } from '../../../../../setupTest';
@@ -42,12 +43,19 @@ describe('Discussions Trigger', () => {
       .reply(200, buildTopicsFromUnits(state.models.units));
   });
 
+  const SidebarWrapper = ({ contextValue, onClick }) => (
+    <SidebarContext.Provider value={contextValue}>
+      <DiscussionsTrigger onClick={onClick} />
+    </SidebarContext.Provider>
+  );
+
+  SidebarWrapper.propTypes = {
+    contextValue: PropTypes.shape({}).isRequired,
+    onClick: PropTypes.func.isRequired,
+  };
+
   function renderWithProvider(testData = {}, onClick = () => null) {
-    const { container } = render(
-      <SidebarContext.Provider value={{ ...mockData, ...testData }}>
-        <DiscussionsTrigger onClick={onClick} />
-      </SidebarContext.Provider>,
-    );
+    const { container } = render(<SidebarWrapper contextValue={{ ...mockData, ...testData }} onClick={onClick} />);
     return container;
   }
 

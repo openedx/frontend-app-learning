@@ -5,7 +5,7 @@ import { useModel } from '../../generic/model-store';
 const CourseStartAlert = React.lazy(() => import('./CourseStartAlert'));
 const CourseStartMasqueradeBanner = React.lazy(() => import('./CourseStartMasqueradeBanner'));
 
-function isStartDateInFuture(courseId) {
+function IsStartDateInFuture(courseId) {
   const {
     start,
   } = useModel('courseHomeMeta', courseId);
@@ -20,15 +20,15 @@ function useCourseStartAlert(courseId) {
     isEnrolled,
   } = useModel('courseHomeMeta', courseId);
 
-  const isVisible = isEnrolled && isStartDateInFuture(courseId);
+  const isVisible = isEnrolled && IsStartDateInFuture(courseId);
 
-  const payload = {
+  const payload = useMemo(() => ({
     courseId,
-  };
+  }), [courseId]);
 
   useAlert(isVisible, {
     code: 'clientCourseStartAlert',
-    payload: useMemo(() => payload, Object.values(payload).sort()),
+    payload,
     topic: 'outline-course-alerts',
   });
 
@@ -42,15 +42,15 @@ export function useCourseStartMasqueradeBanner(courseId, tab) {
     isMasquerading,
   } = useModel('courseHomeMeta', courseId);
 
-  const isVisible = isMasquerading && tab === 'progress' && isStartDateInFuture(courseId);
+  const isVisible = isMasquerading && tab === 'progress' && IsStartDateInFuture(courseId);
 
-  const payload = {
+  const payload = useMemo(() => ({
     courseId,
-  };
+  }), [courseId]);
 
   useAlert(isVisible, {
     code: 'clientCourseStartMasqueradeBanner',
-    payload: useMemo(() => payload, Object.values(payload).sort()),
+    payload,
     topic: 'instructor-toolbar-alerts',
   });
 
