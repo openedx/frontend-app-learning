@@ -10,6 +10,7 @@ import { getNotices } from './api';
  */
 const NoticesProvider = ({ children }) => {
   const [isRedirected, setIsRedirected] = useState();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
     if (getConfig().ENABLE_NOTICES) {
       const data = await getNotices();

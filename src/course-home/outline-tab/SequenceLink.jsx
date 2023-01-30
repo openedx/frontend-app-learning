@@ -16,13 +16,13 @@ import EffortEstimate from '../../shared/effort-estimate';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
-function SequenceLink({
+const SequenceLink = ({
   id,
   intl,
   courseId,
   first,
   sequence,
-}) {
+}) => {
   const {
     complete,
     description,
@@ -98,7 +98,7 @@ function SequenceLink({
       </div>
     </li>
   );
-}
+};
 
 SequenceLink.propTypes = {
   id: PropTypes.string.isRequired,

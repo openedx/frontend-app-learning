@@ -8,14 +8,14 @@ import {
   sendTrackEvent,
 } from '@edx/frontend-platform/analytics';
 
-export default function JumpNavMenuItem({
+const JumpNavMenuItem = ({
   title,
   courseId,
   currentSequence,
   currentUnit,
   sequences,
   isDefault,
-}) {
+}) => {
   function logEvent(targetUrl) {
     const eventName = 'edx.ui.lms.jump_nav.selected';
     const payload = {
@@ -48,7 +48,7 @@ export default function JumpNavMenuItem({
       {title}
     </MenuItem>
   );
-}
+};
 
 const sequenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
@@ -62,3 +62,5 @@ JumpNavMenuItem.propTypes = {
   currentSequence: PropTypes.string.isRequired,
   currentUnit: PropTypes.string.isRequired,
 };
+
+export default JumpNavMenuItem;

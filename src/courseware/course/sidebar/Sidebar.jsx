@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 
-function Sidebar() {
+const Sidebar = () => {
   const {
     currentSidebar,
   } = useContext(SidebarContext);
@@ -13,6 +13,6 @@ function Sidebar() {
   return (
     <CurrentSidebar />
   );
-}
+};
 
 export default Sidebar;

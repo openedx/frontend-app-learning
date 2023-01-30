@@ -19,13 +19,13 @@ import messages from './messages';
 
 const programTypes = ['microbachelors', 'micromasters', 'professional-certificate', 'xseries'];
 
-function ProgramCompletion({
+const ProgramCompletion = ({
   intl,
   progress,
   title,
   type,
   url,
-}) {
+}) => {
   if (!programTypes.includes(type) || progress.notStarted !== 0 || progress.inProgress !== 0) {
     return null;
   }
@@ -95,7 +95,7 @@ function ProgramCompletion({
       </div>
     </Alert>
   );
-}
+};
 
 ProgramCompletion.propTypes = {
   intl: intlShape.isRequired,

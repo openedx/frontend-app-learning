@@ -7,9 +7,9 @@ import { Icon } from '@edx/paragon';
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
 
-function AssignmentTypeCell({
+const AssignmentTypeCell = ({
   intl, assignmentType, footnoteMarker, footnoteId, locked,
-}) {
+}) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -42,7 +42,7 @@ function AssignmentTypeCell({
       </div>
     </div>
   );
-}
+};
 
 AssignmentTypeCell.propTypes = {
   intl: intlShape.isRequired,

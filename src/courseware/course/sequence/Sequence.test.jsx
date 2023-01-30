@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { breakpoints } from '@edx/paragon';
@@ -381,27 +382,25 @@ describe('Sequence', () => {
     });
   });
 
+  const SidebarWrapper = ({ contextValue }) => (
+    <SidebarContext.Provider value={contextValue}>
+      <Sequence {...mockData} />
+    </SidebarContext.Provider>
+  );
+
+  SidebarWrapper.propTypes = {
+    contextValue: PropTypes.shape({}).isRequired,
+  };
+
   describe('notification feature', () => {
     it('renders notification tray in sequence', async () => {
-      render(
-        <SidebarContext.Provider
-          value={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: () => null }}
-        >
-          <Sequence {...mockData} />
-        </SidebarContext.Provider>,
-      );
+      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: () => null }} />);
       expect(await screen.findByText('Notifications')).toBeInTheDocument();
     });
 
     it('handles click on notification tray close button', async () => {
       const toggleNotificationTray = jest.fn();
-      render(
-        <SidebarContext.Provider
-          value={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: toggleNotificationTray }}
-        >
-          <Sequence {...mockData} />
-        </SidebarContext.Provider>,
-      );
+      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: toggleNotificationTray }} />);
       const notificationCloseIconButton = await screen.findByRole('button', { name: /Close notification tray/i });
       fireEvent.click(notificationCloseIconButton);
       expect(toggleNotificationTray).toHaveBeenCalledTimes(1);

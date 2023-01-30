@@ -10,9 +10,9 @@ import { Link } from 'react-router-dom';
 import { useModel, useModels } from '../../generic/model-store';
 import JumpNavMenuItem from './JumpNavMenuItem';
 
-function CourseBreadcrumb({
+const CourseBreadcrumb = ({
   content, withSeparator, courseId, sequenceId, unitId, isStaff,
-}) {
+}) => {
   const defaultContent = content.filter(destination => destination.default)[0] || { id: courseId, label: '', sequences: [] };
   return (
     <>
@@ -55,7 +55,7 @@ function CourseBreadcrumb({
       </li>
     </>
   );
-}
+};
 CourseBreadcrumb.propTypes = {
   content: PropTypes.arrayOf(
     PropTypes.shape({
@@ -79,13 +79,13 @@ CourseBreadcrumb.defaultProps = {
   isStaff: null,
 };
 
-export default function CourseBreadcrumbs({
+const CourseBreadcrumbs = ({
   courseId,
   sectionId,
   sequenceId,
   unitId,
   isStaff,
-}) {
+}) => {
   const course = useModel('coursewareMeta', courseId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
@@ -151,7 +151,7 @@ export default function CourseBreadcrumbs({
       </ol>
     </nav>
   );
-}
+};
 
 CourseBreadcrumbs.propTypes = {
   courseId: PropTypes.string.isRequired,
@@ -167,3 +167,5 @@ CourseBreadcrumbs.defaultProps = {
   unitId: null,
   isStaff: null,
 };
+
+export default CourseBreadcrumbs;

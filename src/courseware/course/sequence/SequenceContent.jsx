@@ -9,14 +9,14 @@ import Unit from './Unit';
 
 const ContentLock = React.lazy(() => import('./content-lock'));
 
-function SequenceContent({
+const SequenceContent = ({
   gated,
   intl,
   courseId,
   sequenceId,
   unitId,
   unitLoadedHandler,
-}) {
+}) => {
   const sequence = useModel('sequences', sequenceId);
 
   // Go back to the top of the page whenever the unit or sequence changes.
@@ -61,7 +61,7 @@ function SequenceContent({
       onLoaded={unitLoadedHandler}
     />
   );
-}
+};
 
 SequenceContent.propTypes = {
   gated: PropTypes.bool.isRequired,

@@ -11,7 +11,7 @@ import { useModel } from '../../../../generic/model-store';
 
 import messages from '../messages';
 
-function CurrentGradeTooltip({ intl, tooltipClassName }) {
+const CurrentGradeTooltip = ({ intl, tooltipClassName }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -62,7 +62,7 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
       </text>
     </>
   );
-}
+};
 
 CurrentGradeTooltip.defaultProps = {
   tooltipClassName: '',

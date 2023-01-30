@@ -13,9 +13,9 @@ import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/
 import { sendActivationEmail } from '../../courseware/data';
 import messages from './messages';
 
-function AccountActivationAlert({
+const AccountActivationAlert = ({
   intl,
-}) {
+}) => {
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showCheck, setShowCheck] = useState(false);
@@ -123,7 +123,7 @@ function AccountActivationAlert({
       {children()}
     </AlertModal>
   );
-}
+};
 
 AccountActivationAlert.propTypes = {
   intl: intlShape.isRequired,

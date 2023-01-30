@@ -13,7 +13,7 @@ const DAY_SEC = 24 * 60 * 60; // in seconds
 const DAY_MS = DAY_SEC * 1000; // in ms
 const YEAR_SEC = 365 * DAY_SEC; // in seconds
 
-function CourseEndAlert({ payload }) {
+const CourseEndAlert = ({ payload }) => {
   const {
     description,
     endDate,
@@ -88,7 +88,7 @@ function CourseEndAlert({ payload }) {
       {description}
     </Alert>
   );
-}
+};
 
 CourseEndAlert.propTypes = {
   payload: PropTypes.shape({

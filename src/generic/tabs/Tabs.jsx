@@ -6,7 +6,7 @@ import classNames from 'classnames';
 
 import useIndexOfLastVisibleChild from './useIndexOfLastVisibleChild';
 
-export default function Tabs({ children, className, ...attrs }) {
+const Tabs = ({ children, className, ...attrs }) => {
   const [
     indexOfLastVisibleChild,
     containerElementRef,
@@ -52,7 +52,7 @@ export default function Tabs({ children, className, ...attrs }) {
       ),
     );
     return wrappedChildren;
-  }, [children, indexOfLastVisibleChild]);
+  }, [children, indexOfLastVisibleChild, invisibleStyle, overflowElementRef]);
 
   return (
     <nav
@@ -63,7 +63,7 @@ export default function Tabs({ children, className, ...attrs }) {
       {tabChildren}
     </nav>
   );
-}
+};
 
 Tabs.propTypes = {
   children: PropTypes.node,
@@ -74,3 +74,5 @@ Tabs.defaultProps = {
   children: null,
   className: undefined,
 };
+
+export default Tabs;

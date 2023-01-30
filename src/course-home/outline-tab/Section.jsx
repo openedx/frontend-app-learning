@@ -12,13 +12,13 @@ import { useModel } from '../../generic/model-store';
 import genericMessages from '../../generic/messages';
 import messages from './messages';
 
-function Section({
+const Section = ({
   courseId,
   defaultOpen,
   expand,
   intl,
   section,
-}) {
+}) => {
   const {
     complete,
     sequenceIds,
@@ -38,6 +38,7 @@ function Section({
 
   useEffect(() => {
     setOpen(defaultOpen);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const sectionTitle = (
@@ -109,7 +110,7 @@ function Section({
       </Collapsible>
     </li>
   );
-}
+};
 
 Section.propTypes = {
   courseId: PropTypes.string.isRequired,

@@ -11,15 +11,16 @@ import messages from './messages';
 import { recordWeeklyGoalCelebration } from './utils';
 import { useModel } from '../../../generic/model-store';
 
-function WeeklyGoalCelebrationModal({
+const WeeklyGoalCelebrationModal = ({
   courseId, daysPerWeek, intl, isOpen, onClose, ...rest
-}) {
+}) => {
   const { org } = useModel('courseHomeMeta', courseId);
 
   useEffect(() => {
     if (isOpen) {
       recordWeeklyGoalCelebration(org, courseId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   return (
@@ -71,7 +72,7 @@ function WeeklyGoalCelebrationModal({
       </>
     </StandardModal>
   );
-}
+};
 
 WeeklyGoalCelebrationModal.propTypes = {
   courseId: PropTypes.string.isRequired,

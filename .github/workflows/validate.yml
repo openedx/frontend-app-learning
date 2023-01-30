@@ -12,11 +12,13 @@ jobs:
     strategy:
       matrix:
         node: [16]
+        npm: [8.5.x]
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node }}
+    - run: npm install -g npm@${{ matrix.npm }}
     - run: make validate.ci
     - name: Upload coverage
       uses: codecov/codecov-action@v3

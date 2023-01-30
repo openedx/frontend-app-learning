@@ -4,14 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { getConfig } from '@edx/frontend-platform';
 
-function CheckmarkBullet() {
-  return (
-    <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
-  );
-}
+const CheckmarkBullet = () => (
+  <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
+);
 
 // Must be child of a <ul className="fa-ul">
-export function VerifiedCertBullet() {
+export const VerifiedCertBullet = () => {
   const verifiedCertLink = (
     <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>
       <FormattedMessage
@@ -32,10 +30,10 @@ export function VerifiedCertBullet() {
       />
     </li>
   );
-}
+};
 
 // Must be child of a <ul className="fa-ul">
-export function UnlockGradedBullet() {
+export const UnlockGradedBullet = () => {
   const gradedAssignmentsInBoldText = (
     <span className="font-weight-bold">
       <FormattedMessage
@@ -56,10 +54,10 @@ export function UnlockGradedBullet() {
       />
     </li>
   );
-}
+};
 
 // Must be child of a <ul className="fa-ul">
-export function FullAccessBullet() {
+export const FullAccessBullet = () => {
   const fullAccessInBoldText = (
     <span className="font-weight-bold">
       <FormattedMessage
@@ -80,10 +78,10 @@ export function FullAccessBullet() {
       />
     </li>
   );
-}
+};
 
 // Must be child of a <ul className="fa-ul">
-export function SupportMissionBullet() {
+export const SupportMissionBullet = () => {
   const missionInBoldText = (
     <span className="font-weight-bold">
       <FormattedMessage
@@ -104,4 +102,4 @@ export function SupportMissionBullet() {
       />
     </li>
   );
-}
+};

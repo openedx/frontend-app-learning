@@ -10,7 +10,7 @@ import IncompleteDonutSegment from './IncompleteDonutSegment';
 import LockedDonutSegment from './LockedDonutSegment';
 import messages from './messages';
 
-function CompletionDonutChart({ intl }) {
+const CompletionDonutChart = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -60,7 +60,7 @@ function CompletionDonutChart({ intl }) {
       </div>
     </>
   );
-}
+};
 
 CompletionDonutChart.propTypes = {
   intl: intlShape.isRequired,

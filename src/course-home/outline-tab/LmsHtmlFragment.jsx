@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 
 import { getConfig } from '@edx/frontend-platform';
 
-export default function LmsHtmlFragment({
+const LmsHtmlFragment = ({
   className,
   html,
   title,
   ...rest
-}) {
+}) => {
   const wholePage = `
     <html>
       <head>
@@ -55,7 +55,7 @@ export default function LmsHtmlFragment({
       {...rest}
     />
   );
-}
+};
 
 LmsHtmlFragment.defaultProps = {
   className: '',
@@ -66,3 +66,5 @@ LmsHtmlFragment.propTypes = {
   html: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
 };
+
+export default LmsHtmlFragment;

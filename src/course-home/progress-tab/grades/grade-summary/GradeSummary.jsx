@@ -5,7 +5,7 @@ import { useModel } from '../../../../generic/model-store';
 import GradeSummaryHeader from './GradeSummaryHeader';
 import GradeSummaryTable from './GradeSummaryTable';
 
-function GradeSummary() {
+const GradeSummary = () => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -28,6 +28,6 @@ function GradeSummary() {
       <GradeSummaryTable setAllOfSomeAssignmentTypeIsLocked={setAllOfSomeAssignmentTypeIsLocked} />
     </section>
   );
-}
+};
 
 export default GradeSummary;

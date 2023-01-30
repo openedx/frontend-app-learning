@@ -6,23 +6,21 @@ import { Hyperlink } from '@edx/paragon';
 
 import messages from '../courseware/course/course-exit/messages';
 
-function IntlDashboardLink({ intl }) {
-  return (
-    <Hyperlink
-      variant="muted"
-      isInline
-      destination={`${getConfig().LMS_BASE_URL}/dashboard`}
-    >
-      {intl.formatMessage(messages.dashboardLink)}
-    </Hyperlink>
-  );
-}
+const IntlDashboardLink = ({ intl }) => (
+  <Hyperlink
+    variant="muted"
+    isInline
+    destination={`${getConfig().LMS_BASE_URL}/dashboard`}
+  >
+    {intl.formatMessage(messages.dashboardLink)}
+  </Hyperlink>
+);
 
 IntlDashboardLink.propTypes = {
   intl: intlShape.isRequired,
 };
 
-function IntlIdVerificationSupportLink({ intl }) {
+const IntlIdVerificationSupportLink = ({ intl }) => {
   if (!getConfig().SUPPORT_URL_ID_VERIFICATION) {
     return null;
   }
@@ -35,13 +33,13 @@ function IntlIdVerificationSupportLink({ intl }) {
       {intl.formatMessage(messages.idVerificationSupportLink)}
     </Hyperlink>
   );
-}
+};
 
 IntlIdVerificationSupportLink.propTypes = {
   intl: intlShape.isRequired,
 };
 
-function IntlProfileLink({ intl }) {
+const IntlProfileLink = ({ intl }) => {
   const { username } = getAuthenticatedUser();
 
   return (
@@ -53,7 +51,7 @@ function IntlProfileLink({ intl }) {
       {intl.formatMessage(messages.profileLink)}
     </Hyperlink>
   );
-}
+};
 
 IntlProfileLink.propTypes = {
   intl: intlShape.isRequired,

@@ -14,7 +14,7 @@ import { resetDeadlines } from '../data';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
-function ShiftDatesAlert({ fetch, intl, model }) {
+const ShiftDatesAlert = ({ fetch, intl, model }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -29,11 +29,11 @@ function ShiftDatesAlert({ fetch, intl, model }) {
     missedGatedContent,
   } = datesBannerInfo;
 
+  const dispatch = useDispatch();
+
   if (!missedDeadlines || missedGatedContent || hasEnded) {
     return null;
   }
-
-  const dispatch = useDispatch();
 
   return (
     <Alert variant="warning">
@@ -55,7 +55,7 @@ function ShiftDatesAlert({ fetch, intl, model }) {
       </Row>
     </Alert>
   );
-}
+};
 
 ShiftDatesAlert.propTypes = {
   fetch: PropTypes.func.isRequired,

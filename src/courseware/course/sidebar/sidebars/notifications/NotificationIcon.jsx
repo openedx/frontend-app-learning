@@ -7,29 +7,27 @@ import React from 'react';
 
 import messages from '../../../messages';
 
-function NotificationIcon({
+const NotificationIcon = ({
   intl,
   status,
   notificationColor,
-}) {
-  return (
-    <>
-      <Icon src={WatchOutline} className="m-0 m-auto" alt={intl.formatMessage(messages.openNotificationTrigger)} />
-      {status === 'active'
-        ? (
-          <span
-            className={classNames(notificationColor, 'rounded-circle p-1 position-absolute')}
-            data-testid="notification-dot"
-            style={{
-              top: '0.3rem',
-              right: '0.55rem',
-            }}
-          />
-        )
-        : null}
-    </>
-  );
-}
+}) => (
+  <>
+    <Icon src={WatchOutline} className="m-0 m-auto" alt={intl.formatMessage(messages.openNotificationTrigger)} />
+    {status === 'active'
+      ? (
+        <span
+          className={classNames(notificationColor, 'rounded-circle p-1 position-absolute')}
+          data-testid="notification-dot"
+          style={{
+            top: '0.3rem',
+            right: '0.55rem',
+          }}
+        />
+      )
+      : null}
+  </>
+);
 
 NotificationIcon.propTypes = {
   intl: intlShape.isRequired,

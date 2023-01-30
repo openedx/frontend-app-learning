@@ -12,7 +12,7 @@ import { useModel } from '../../generic/model-store';
 import { launchCourseHomeTour } from '../data/slice';
 import messages from '../messages';
 
-function LaunchCourseHomeTourButton({ intl, srOnly }) {
+const LaunchCourseHomeTourButton = ({ intl, srOnly }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -40,6 +40,7 @@ function LaunchCourseHomeTourButton({ intl, srOnly }) {
   };
 
   return (
+    // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {toursEnabled && (
         <Button variant="link" size="inline" className={`p-0 ${srOnly && 'sr-only sr-only-focusable'}`} onClick={handleClick}>
@@ -55,7 +56,7 @@ function LaunchCourseHomeTourButton({ intl, srOnly }) {
       )}
     </>
   );
-}
+};
 
 LaunchCourseHomeTourButton.defaultProps = {
   srOnly: false,

@@ -6,7 +6,7 @@ import { generatePath, useHistory } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useIFrameHeight, useIFramePluginEvents } from '../../generic/hooks';
 
-function DiscussionTab() {
+const DiscussionTab = () => {
   const { courseId } = useSelector(state => state.courseHome);
   const { path } = useParams();
   const [originalPath] = useState(path);
@@ -29,7 +29,7 @@ function DiscussionTab() {
       title="discussion"
     />
   );
-}
+};
 
 DiscussionTab.propTypes = {};
 

@@ -103,10 +103,10 @@ function parseLicense(license) {
   return [licenseType, options, version];
 }
 
-function CourseLicense({
+const CourseLicense = ({
   license,
   intl,
-}) {
+}) => {
   const renderAllRightsReservedLicense = () => (
     <div className="text-gray-500">
       <FontAwesomeIcon aria-hidden="true" className="mr-1" icon={faCopyright} />
@@ -148,7 +148,7 @@ function CourseLicense({
       )}
     </div>
   );
-}
+};
 
 CourseLicense.propTypes = {
   license: PropTypes.string,
