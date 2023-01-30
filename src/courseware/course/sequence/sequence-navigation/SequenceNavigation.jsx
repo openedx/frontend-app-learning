@@ -11,7 +11,7 @@ import {
 } from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';
-import { getCourseExitNavigation } from '../../course-exit';
+import { GetCourseExitNavigation } from '../../course-exit';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
@@ -20,7 +20,7 @@ import { LOADED } from '../../../data/slice';
 
 import messages from './messages';
 
-function SequenceNavigation({
+const SequenceNavigation = ({
   intl,
   unitId,
   sequenceId,
@@ -29,7 +29,7 @@ function SequenceNavigation({
   nextSequenceHandler,
   previousSequenceHandler,
   goToCourseExitPage,
-}) {
+}) => {
   const sequence = useModel('sequences', sequenceId);
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
   const {
@@ -64,7 +64,7 @@ function SequenceNavigation({
   };
 
   const renderNextButton = () => {
-    const { exitActive, exitText } = getCourseExitNavigation(courseId, intl);
+    const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
     const buttonOnClick = isLastUnit ? goToCourseExitPage : nextSequenceHandler;
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
@@ -89,7 +89,7 @@ function SequenceNavigation({
 
     </nav>
   );
-}
+};
 
 SequenceNavigation.propTypes = {
   intl: intlShape.isRequired,

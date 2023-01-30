@@ -8,7 +8,7 @@ import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
 import BookmarkFilledIcon from '../../bookmark/BookmarkFilledIcon';
 
-function UnitButton({
+const UnitButton = ({
   onClick,
   title,
   contentType,
@@ -19,10 +19,10 @@ function UnitButton({
   unitId,
   className,
   showTitle,
-}) {
+}) => {
   const handleClick = useCallback(() => {
     onClick(unitId);
-  });
+  }, [onClick, unitId]);
 
   return (
     <Button
@@ -45,7 +45,7 @@ function UnitButton({
       ) : null}
     </Button>
   );
-}
+};
 
 UnitButton.propTypes = {
   bookmarked: PropTypes.bool,

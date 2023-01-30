@@ -10,7 +10,7 @@ import messages from './messages';
 
 ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);
 
-function DiscussionsSidebar({ intl }) {
+const DiscussionsSidebar = ({ intl }) => {
   const {
     unitId,
     courseId,
@@ -37,7 +37,7 @@ function DiscussionsSidebar({ intl }) {
       />
     </SidebarBase>
   );
-}
+};
 
 DiscussionsSidebar.propTypes = {
   intl: intlShape.isRequired,

@@ -8,7 +8,7 @@ import { Info } from '@edx/paragon/icons';
 
 import messages from './messages';
 
-function AccessExpirationAlert({ intl, payload }) {
+const AccessExpirationAlert = ({ intl, payload }) => {
   const {
     accessExpiration,
     courseId,
@@ -116,7 +116,7 @@ function AccessExpirationAlert({ intl, payload }) {
       {deadlineMessage}
     </Alert>
   );
-}
+};
 
 AccessExpirationAlert.propTypes = {
   intl: intlShape.isRequired,

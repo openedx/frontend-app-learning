@@ -6,7 +6,7 @@ import { useModel } from '../../../generic/model-store';
 import Day from './Day';
 import { daycmp, isLearnerAssignment } from '../utils';
 
-export default function Timeline() {
+const Timeline = () => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -67,4 +67,6 @@ export default function Timeline() {
       ))}
     </ul>
   );
-}
+};
+
+export default Timeline;

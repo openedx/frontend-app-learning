@@ -12,7 +12,7 @@ import {
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
-function UpgradeToCompleteAlert({ intl, logUpgradeLinkClick }) {
+const UpgradeToCompleteAlert = ({ intl, logUpgradeLinkClick }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -55,7 +55,7 @@ function UpgradeToCompleteAlert({ intl, logUpgradeLinkClick }) {
       </Row>
     </Alert>
   );
-}
+};
 
 UpgradeToCompleteAlert.propTypes = {
   intl: intlShape.isRequired,

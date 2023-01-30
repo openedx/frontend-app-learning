@@ -17,7 +17,7 @@ import LoadedTabPage from './LoadedTabPage';
 import { setCallToActionToast } from '../course-home/data/slice';
 import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 
-function TabPage({ intl, ...props }) {
+const TabPage = ({ intl, ...props }) => {
   const {
     activeTabSlug,
     courseId,
@@ -95,7 +95,7 @@ function TabPage({ intl, ...props }) {
       <Footer />
     </>
   );
-}
+};
 
 TabPage.defaultProps = {
   courseId: null,

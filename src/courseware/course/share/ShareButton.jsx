@@ -17,7 +17,7 @@ const ShareTwitterIcon = () => (
   />
 );
 
-function ShareButton({ url }) {
+const ShareButton = ({ url }) => {
   const { formatMessage } = useIntl();
 
   const twitterUrl = stringifyUrl({
@@ -40,7 +40,7 @@ function ShareButton({ url }) {
       {formatMessage(messages.shareButton)}
     </TwitterShareButton>
   );
-}
+};
 
 ShareButton.propTypes = {
   url: PropTypes.string.isRequired,

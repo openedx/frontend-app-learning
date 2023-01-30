@@ -14,7 +14,7 @@ import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../
 import { requestCert } from '../../data/thunks';
 import messages from './messages';
 
-function CertificateStatus({ intl }) {
+const CertificateStatus = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -206,6 +206,7 @@ function CertificateStatus({ intl }) {
       grade_variant: gradeEventName,
       certificate_status_variant: certEventName,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!certCase) {
@@ -257,7 +258,7 @@ function CertificateStatus({ intl }) {
       </Card>
     </section>
   );
-}
+};
 
 CertificateStatus.propTypes = {
   intl: intlShape.isRequired,

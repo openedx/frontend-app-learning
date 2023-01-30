@@ -19,7 +19,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import messages from './messages';
 import { useModel } from '../../generic/model-store';
 
-function SocialIcons({
+const SocialIcons = ({
   analyticsId,
   className,
   courseId,
@@ -28,7 +28,7 @@ function SocialIcons({
   hashtags,
   intl,
   socialMessage,
-}) {
+}) => {
   const { marketingUrl } = useModel('coursewareMeta', courseId);
 
   const {
@@ -104,7 +104,7 @@ function SocialIcons({
       </EmailShareButton>
     </div>
   );
-}
+};
 
 SocialIcons.defaultProps = {
   analyticsId: '',

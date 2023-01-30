@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /**
  * @jest-environment jsdom
  */
@@ -158,15 +159,11 @@ describe('Course Home Tours', () => {
   );
 });
 
-function MockUnit({ courseId, id }) { // eslint-disable-line react/prop-types
-  return (
-    <div id="courseware-sequenceNavigation" className="fake-unit">Unit Contents {courseId} {id}</div>
-  );
-}
-
 jest.mock(
   '../courseware/course/sequence/Unit',
-  () => MockUnit,
+  () => function ({ courseId, id }) {
+    return <div id="courseware-sequenceNavigation" className="fake-unit">Unit Contents {courseId} {id}</div>;
+  },
 );
 
 describe('Courseware Tour', () => {

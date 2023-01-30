@@ -7,7 +7,7 @@ import messages from './messages';
 
 // This component shows an effort estimate provided by the backend block data. Either time, activities, or both.
 
-function EffortEstimate(props) {
+const EffortEstimate = (props) => {
   const {
     block: {
       effortActivities,
@@ -54,7 +54,7 @@ function EffortEstimate(props) {
       {content}
     </span>
   );
-}
+};
 
 EffortEstimate.defaultProps = {
   className: null,

@@ -14,7 +14,7 @@ import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpgradeToCompleteAlert from '../suggested-schedule-messaging/UpgradeToCompleteAlert';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
 
-function DatesTab({ intl }) {
+const DatesTab = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -57,7 +57,7 @@ function DatesTab({ intl }) {
       <Timeline />
     </>
   );
-}
+};
 
 DatesTab.propTypes = {
   intl: intlShape.isRequired,

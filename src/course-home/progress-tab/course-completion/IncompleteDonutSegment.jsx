@@ -6,12 +6,12 @@ import { OverlayTrigger, Popover } from '@edx/paragon';
 
 import messages from './messages';
 
-function IncompleteDonutSegment({ incompletePercentage, intl }) {
+const IncompleteDonutSegment = ({ incompletePercentage, intl }) => {
+  const [showIncompletePopover, setShowIncompletePopover] = useState(false);
+
   if (!incompletePercentage) {
     return null;
   }
-
-  const [showIncompletePopover, setShowIncompletePopover] = useState(false);
 
   const incompleteSegmentOffset = (3.6 * incompletePercentage) / 16;
   const incompleteTooltipDegree = incompletePercentage < 100 ? incompleteSegmentOffset : 0;
@@ -49,7 +49,7 @@ function IncompleteDonutSegment({ incompletePercentage, intl }) {
       </OverlayTrigger>
     </g>
   );
-}
+};
 
 IncompleteDonutSegment.propTypes = {
   incompletePercentage: PropTypes.number.isRequired,

@@ -26,7 +26,7 @@ import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 
-function Sequence({
+const Sequence = ({
   unitId,
   sequenceId,
   courseId,
@@ -34,7 +34,7 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
-}) {
+}) => {
   const course = useModel('coursewareMeta', courseId);
   const {
     isStaff,
@@ -218,7 +218,7 @@ function Sequence({
       {intl.formatMessage(messages.loadFailure)}
     </p>
   );
-}
+};
 
 Sequence.propTypes = {
   unitId: PropTypes.string,

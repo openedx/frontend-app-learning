@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import UserMessagesContext from './UserMessagesContext';
 import Alert from './Alert';
 
-export default function AlertList({
+const AlertList = ({
   topic, className, customAlerts, customProps,
-}) {
+}) => {
   const { remove, messages } = useContext(UserMessagesContext);
   const getAlertComponent = useCallback(
     (code) => (customAlerts[code] !== undefined ? customAlerts[code] : Alert),
@@ -38,7 +38,7 @@ export default function AlertList({
       })}
     </div>
   );
-}
+};
 
 AlertList.propTypes = {
   className: PropTypes.string,
@@ -60,3 +60,5 @@ AlertList.defaultProps = {
   customAlerts: {},
   customProps: {},
 };
+
+export default AlertList;

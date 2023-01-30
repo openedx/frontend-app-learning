@@ -11,7 +11,7 @@ import CreditInformation from '../../credit-information/CreditInformation';
 
 import messages from '../messages';
 
-function CourseGrade({ intl }) {
+const CourseGrade = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -52,7 +52,7 @@ function CourseGrade({ intl }) {
       </div>
     </section>
   );
-}
+};
 
 CourseGrade.propTypes = {
   intl: intlShape.isRequired,

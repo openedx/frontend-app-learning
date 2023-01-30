@@ -11,7 +11,7 @@ import { useModel } from '../../../../generic/model-store';
 
 import messages from '../messages';
 
-function GradeRangeTooltip({ intl, iconButtonClassName, passingGrade }) {
+const GradeRangeTooltip = ({ intl, iconButtonClassName, passingGrade }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -72,7 +72,7 @@ function GradeRangeTooltip({ intl, iconButtonClassName, passingGrade }) {
       />
     </OverlayTrigger>
   );
-}
+};
 
 GradeRangeTooltip.defaultProps = {
   iconButtonClassName: '',

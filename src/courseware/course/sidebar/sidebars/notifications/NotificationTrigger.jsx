@@ -11,10 +11,10 @@ import NotificationIcon from './NotificationIcon';
 
 export const ID = 'NOTIFICATIONS';
 
-function NotificationTrigger({
+const NotificationTrigger = ({
   intl,
   onClick,
-}) {
+}) => {
   const {
     courseId,
     notificationStatus,
@@ -61,7 +61,7 @@ function NotificationTrigger({
       <NotificationIcon status={notificationStatus} notificationColor="bg-danger-500" />
     </SidebarTriggerBase>
   );
-}
+};
 
 NotificationTrigger.propTypes = {
   intl: intlShape.isRequired,
