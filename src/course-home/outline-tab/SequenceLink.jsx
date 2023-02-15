@@ -39,6 +39,8 @@ const SequenceLink = ({
   const coursewareUrl = <Link to={`/course/${courseId}/${id}`}>{title}</Link>;
   const displayTitle = showLink ? coursewareUrl : title;
 
+  const dueDateString = due ? '{description} due {assignmentDue}' : '{description} (no due date)';
+
   return (
     <li>
       <div className={classNames('', { 'mt-2 pt-2 border-top border-light': !first })}>
@@ -70,31 +72,29 @@ const SequenceLink = ({
             <EffortEstimate className="ml-3 align-middle" block={sequence} />
           </div>
         </div>
-        {due && (
-          <div className="row w-100 m-0 ml-3 pl-3">
-            <small className="text-body pl-2">
-              <FormattedMessage
-                id="learning.outline.sequence-due"
-                defaultMessage="{description} due {assignmentDue}"
-                description="Used below an assignment title"
-                values={{
-                  assignmentDue: (
-                    <FormattedTime
-                      key={`${id}-due`}
-                      day="numeric"
-                      month="short"
-                      year="numeric"
-                      timeZoneName="short"
-                      value={due}
-                      {...timezoneFormatArgs}
-                    />
-                  ),
-                  description: description || '',
-                }}
-              />
-            </small>
-          </div>
-        )}
+        <div className="row w-100 m-0 ml-3 pl-3">
+          <small className="text-body pl-2">
+            <FormattedMessage
+              id="learning.outline.sequence-due"
+              defaultMessage={dueDateString}
+              description="Used below an assignment title"
+              values={{
+                assignmentDue: (
+                  <FormattedTime
+                    key={`${id}-due`}
+                    day="numeric"
+                    month="short"
+                    year="numeric"
+                    timeZoneName="short"
+                    value={due}
+                    {...timezoneFormatArgs}
+                  />
+                ),
+                description: description || '',
+              }}
+            />
+          </small>
+        </div>
       </div>
     </li>
   );
