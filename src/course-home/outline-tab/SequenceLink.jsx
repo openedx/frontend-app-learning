@@ -39,7 +39,49 @@ const SequenceLink = ({
   const coursewareUrl = <Link to={`/course/${courseId}/${id}`}>{title}</Link>;
   const displayTitle = showLink ? coursewareUrl : title;
 
-  const dueDateString = due ? '{description} due {assignmentDue}' : '{description}';
+  const dueDateMessage = (
+    <FormattedMessage
+      id="learning.outline.sequence-due"
+      defaultMessage="{description} due {assignmentDue}"
+      description="Used below an assignment title"
+      values={{
+        assignmentDue: (
+          <FormattedTime
+            key={`${id}-due`}
+            day="numeric"
+            month="short"
+            year="numeric"
+            timeZoneName="short"
+            value={due}
+            {...timezoneFormatArgs}
+          />
+        ),
+        description: description || '',
+      }}
+    />
+  );
+
+  const noDueDateMessage = (
+    <FormattedMessage
+      id="learning.outline.sequence-not-due"
+      defaultMessage="{description}"
+      description="Used below an assignment title"
+      values={{
+        assignmentDue: (
+          <FormattedTime
+            key={`${id}-due`}
+            day="numeric"
+            month="short"
+            year="numeric"
+            timeZoneName="short"
+            value={due}
+            {...timezoneFormatArgs}
+          />
+        ),
+        description: description || '',
+      }}
+    />
+  );
 
   return (
     <li>
@@ -74,25 +116,7 @@ const SequenceLink = ({
         </div>
         <div className="row w-100 m-0 ml-3 pl-3">
           <small className="text-body pl-2">
-            <FormattedMessage
-              id="learning.outline.sequence-due"
-              defaultMessage={dueDateString}
-              description="Used below an assignment title"
-              values={{
-                assignmentDue: (
-                  <FormattedTime
-                    key={`${id}-due`}
-                    day="numeric"
-                    month="short"
-                    year="numeric"
-                    timeZoneName="short"
-                    value={due}
-                    {...timezoneFormatArgs}
-                  />
-                ),
-                description: description || '',
-              }}
-            />
+            {due ? dueDateMessage : noDueDateMessage}
           </small>
         </div>
       </div>
