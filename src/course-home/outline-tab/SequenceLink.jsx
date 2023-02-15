@@ -39,7 +39,7 @@ const SequenceLink = ({
   const coursewareUrl = <Link to={`/course/${courseId}/${id}`}>{title}</Link>;
   const displayTitle = showLink ? coursewareUrl : title;
 
-  const dueDateString = due ? '{description} due {assignmentDue}' : '{description} (no due date)';
+  const dueDateString = due ? '{description} due {assignmentDue}' : '{description}';
 
   return (
     <li>
