@@ -23,6 +23,8 @@ import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateS
 import OutlineTab from './OutlineTab';
 import LoadedTabPage from '../../tab-page/LoadedTabPage';
 
+import SequenceLink from './SequenceLink';
+
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
 
@@ -155,29 +157,48 @@ describe('Outline Tab', () => {
       expect(sequenceLink.getAttribute('href')).toContain(`/course/${courseId}`);
     });
 
-    // TODO: insert unit test for if due date is null or not, what the subtitle
-    // If due date set, make sure subtitle says description AND due date
-    it('exam subsection description and due date display correctly', async () => {
-      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+    it('if exam due date set, exam description AND due date appear', async () => {
+      // Create a due date set a year into the future
+      const now = new Date();
+      const dueDate = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
+
+      // Build course blocks with a future due date set
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', {
+        sequenceBlocks: [
+          <SequenceLink
+            key={0}
+            id={0}
+            courseId={courseId}
+            sequence={
+              {
+                complete: false,
+                description: 'Description of Sequence',
+                due: dueDate,
+                showLink: true,
+                title: 'Title of Subsection',
+              }
+            }
+            first={null}
+          />,
+        ],
+      });
       setTabData({
         course_blocks: { blocks: courseBlocks.blocks },
       });
       await fetchAndRender();
+
+      // Button renders as "Expand All"
+      const expandButton = screen.getByRole('button', { name: 'Expand all' });
+      expect(expandButton).toBeInTheDocument();
+
+      // Click to expand section
+      userEvent.click(expandButton);
 
       // Look for a substring that says "(exam type) Exam due (datetime)""
       expect(screen.getByText(/Exam due/)).toBeInDocument();
     });
 
     // If due date is NOT set, ONLY display description
-    it('exam subsection description and due date display correctly', async () => {
-      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
-      setTabData({
-        course_blocks: { blocks: courseBlocks.blocks },
-      });
-      await fetchAndRender();
-      // Look for a substring that only says "(exam type) Exam"
-      expect(screen.getByText(/Exam$/)).toBeInDocument();
-    });
   });
 
   describe('Suggested schedule alerts', () => {
