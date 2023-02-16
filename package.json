@@ -17,8 +17,7 @@
     "prepare": "husky install",
     "snapshot": "fedx-scripts jest --updateSnapshot",
     "start": "fedx-scripts webpack-dev-server --progress",
-    "test": "fedx-scripts jest --coverage --passWithNoTests",
-    "testx": "fedx-scripts jest -t 'Outline Tab' --coverage --passWithNoTests"
+    "test": "fedx-scripts jest --coverage --passWithNoTests"
   },
   "author": "edX",
   "license": "AGPL-3.0",
