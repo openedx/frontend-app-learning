@@ -41,7 +41,7 @@ const SequenceLink = ({
 
   const dueDateMessage = (
     <FormattedMessage
-      id="learning.outline.sequence-due"
+      id="learning.outline.sequence-due-date-set"
       defaultMessage="{description} due {assignmentDue}"
       description="Used below an assignment title"
       values={{
@@ -63,7 +63,7 @@ const SequenceLink = ({
 
   const noDueDateMessage = (
     <FormattedMessage
-      id="learning.outline.sequence-not-due"
+      id="learning.outline.sequence-due-date-not-set"
       defaultMessage="{description}"
       description="Used below an assignment title"
       values={{

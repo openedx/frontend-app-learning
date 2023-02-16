@@ -154,6 +154,30 @@ describe('Outline Tab', () => {
       const sequenceLink = screen.getByText('Title of Sequence');
       expect(sequenceLink.getAttribute('href')).toContain(`/course/${courseId}`);
     });
+
+    // TODO: insert unit test for if due date is null or not, what the subtitle
+    // If due date set, make sure subtitle says description AND due date
+    it('exam subsection description and due date display correctly', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      setTabData({
+        course_blocks: { blocks: courseBlocks.blocks },
+      });
+      await fetchAndRender();
+
+      // Look for a substring that says "(exam type) Exam due (datetime)""
+      expect(screen.getByText(/Exam due/)).toBeInDocument();
+    });
+
+    // If due date is NOT set, ONLY display description
+    it('exam subsection description and due date display correctly', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      setTabData({
+        course_blocks: { blocks: courseBlocks.blocks },
+      });
+      await fetchAndRender();
+      // Look for a substring that only says "(exam type) Exam"
+      expect(screen.getByText(/Exam$/)).toBeInDocument();
+    });
   });
 
   describe('Suggested schedule alerts', () => {

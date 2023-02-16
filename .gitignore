@@ -23,6 +23,3 @@ module.config.js
 
 # Local environment overrides
 .env.private
-
-# Installed Packages
-packages
