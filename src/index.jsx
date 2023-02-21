@@ -37,6 +37,7 @@ import NoticesProvider from './generic/notices';
 import PathFixesProvider from './generic/path-fixes';
 import LiveTab from './course-home/live-tab/LiveTab';
 import CourseAccessErrorPage from './generic/CourseAccessErrorPage';
+import DecodePageRoute from './decode-page-route';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
@@ -50,28 +51,28 @@ subscribe(APP_READY, () => {
             <Switch>
               <PageRoute exact path="/goal-unsubscribe/:token" component={GoalUnsubscribe} />
               <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
-              <PageRoute path="/course/:courseId/access-denied" component={CourseAccessErrorPage} />
-              <PageRoute path="/course/:courseId/home">
+              <DecodePageRoute path="/course/:courseId/access-denied" component={CourseAccessErrorPage} />
+              <DecodePageRoute path="/course/:courseId/home">
                 <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
                   <OutlineTab />
                 </TabContainer>
-              </PageRoute>
-              <PageRoute path="/course/:courseId/live">
+              </DecodePageRoute>
+              <DecodePageRoute path="/course/:courseId/live">
                 <TabContainer tab="lti_live" fetch={fetchLiveTab} slice="courseHome">
                   <LiveTab />
                 </TabContainer>
-              </PageRoute>
-              <PageRoute path="/course/:courseId/dates">
+              </DecodePageRoute>
+              <DecodePageRoute path="/course/:courseId/dates">
                 <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
                   <DatesTab />
                 </TabContainer>
-              </PageRoute>
-              <PageRoute path="/course/:courseId/discussion/:path*">
+              </DecodePageRoute>
+              <DecodePageRoute path="/course/:courseId/discussion/:path*">
                 <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
                   <DiscussionTab />
                 </TabContainer>
-              </PageRoute>
-              <PageRoute
+              </DecodePageRoute>
+              <DecodePageRoute
                 path={[
                   '/course/:courseId/progress/:targetUserId/',
                   '/course/:courseId/progress',
@@ -86,12 +87,12 @@ subscribe(APP_READY, () => {
                   </TabContainer>
                 )}
               />
-              <PageRoute path="/course/:courseId/course-end">
+              <DecodePageRoute path="/course/:courseId/course-end">
                 <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
                   <CourseExit />
                 </TabContainer>
-              </PageRoute>
-              <PageRoute
+              </DecodePageRoute>
+              <DecodePageRoute
                 path={[
                   '/course/:courseId/:sequenceId/:unitId',
                   '/course/:courseId/:sequenceId',

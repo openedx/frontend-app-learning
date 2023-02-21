@@ -7,6 +7,8 @@ import { PageRoute } from '@edx/frontend-platform/react';
 import queryString from 'query-string';
 import PageLoading from '../generic/PageLoading';
 
+import DecodePageRoute from '../decode-page-route';
+
 const CoursewareRedirectLandingPage = () => {
   const { path } = useRouteMatch();
   return (
@@ -21,7 +23,7 @@ const CoursewareRedirectLandingPage = () => {
       />
 
       <Switch>
-        <PageRoute
+        <DecodePageRoute
           path={`${path}/survey/:courseId`}
           render={({ match }) => {
             global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${match.params.courseId}/survey`);
@@ -40,7 +42,7 @@ const CoursewareRedirectLandingPage = () => {
             global.location.assign(`${getConfig().LMS_BASE_URL}${consentPath}`);
           }}
         />
-        <PageRoute
+        <DecodePageRoute
           path={`${path}/home/:courseId`}
           render={({ match }) => {
             global.location.assign(`/course/${match.params.courseId}/home`);
