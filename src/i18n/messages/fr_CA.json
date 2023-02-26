@@ -114,7 +114,7 @@
   "learning.proctoringPanel.onboardingButtonNotOpen": "Ouverture de l'intégration : {releaseDate}",
   "learning.proctoringPanel.reviewRequirementsButton": "Examiner les instructions et la configuration système requise",
   "learning.proctoringPanel.onboardingButtonPastDue": "Intégration en retard",
-  "learning.outline.sequence-due-date-set": "{description} due {assignmentDue}",
+  "learning.outline.sequence-due-date-set": "{description} échéance {assignmentDue}",
   "learning.outline.sequence-due-date-not-set": "{description}",
   "progress.certificateStatus.unverifiedBody": "Afin de générer une attestation, vous devez effectuer une vérification d'identité. {idVerificationSupportLink}.",
   "progress.certificateStatus.downloadableBody": "Présentez vos réalisations sur LinkedIn ou votre curriculum vitae aujourd'hui. Vous pouvez télécharger votre certificat maintenant et y accéder à tout moment depuis votre tableau de bord et votre profil.",
