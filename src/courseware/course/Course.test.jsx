@@ -117,10 +117,10 @@ describe('Course', () => {
     render(<Course {...mockData} />);
     expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"open"');
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
-    expect(screen.queryByRole('region', { name: /notification tray/i })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
     fireEvent.click(notificationShowButton);
     expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
-    expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /notification tray/i })).toHaveClass('d-none');
   });
 
   it('handles reload persisting notification tray status', async () => {
