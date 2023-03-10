@@ -34,6 +34,7 @@ const DiscussionsSidebar = ({ intl }) => {
         src={`${discussionsUrl}?inContextSidebar`}
         className="d-flex w-100 h-100 border-0"
         title={intl.formatMessage(messages.discussionsTitle)}
+        allow="clipboard-write"
       />
     </SidebarBase>
   );
