@@ -114,7 +114,7 @@
   "learning.proctoringPanel.onboardingButtonNotOpen": "Apertura de la integración: {releaseDate}",
   "learning.proctoringPanel.reviewRequirementsButton": "Revisar las instrucciones y los requisitos del sistema",
   "learning.proctoringPanel.onboardingButtonPastDue": "Inducción vencida",
-  "learning.outline.sequence-due-date-set": "{description} due {assignmentDue}",
+  "learning.outline.sequence-due-date-set": "Fecha límite para {description}: {assignmentDue}",
   "learning.outline.sequence-due-date-not-set": "{description}",
   "progress.certificateStatus.unverifiedBody": "Para generar un certificado, debes completar la verificación de identidad. {idVerificationSupportLink}.",
   "progress.certificateStatus.downloadableBody": "Muestra tu logro en LinkedIn o en tu currículum. Puedes descargar tu certificado ahora y acceder a él en cualquier momento desde tu panel de estudiante y tu perfil.",
