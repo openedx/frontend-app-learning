@@ -74,8 +74,8 @@ describe('Sequence', () => {
     );
 
     await waitFor(() => expect(screen.queryByText('Loading locked content messaging...')).toBeInTheDocument());
-    // `Previous`, `Active`, `Next` and `Prerequisite` buttons.
-    expect(screen.getAllByRole('button').length).toEqual(4);
+    // `Previous`, `Active`, `Next`, `Prerequisite` and `Close Tray` buttons.
+    expect(screen.getAllByRole('button').length).toEqual(5);
 
     expect(screen.getByText('Content Locked')).toBeInTheDocument();
     const unitContainer = container.querySelector('.unit-container');
@@ -126,7 +126,7 @@ describe('Sequence', () => {
     render(<Sequence {...mockData} />);
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
     // Renders navigation buttons plus one button for each unit.
-    expect(screen.getAllByRole('button')).toHaveLength(3 + unitBlocks.length);
+    expect(screen.getAllByRole('button')).toHaveLength(4 + unitBlocks.length);
 
     loadUnit();
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());

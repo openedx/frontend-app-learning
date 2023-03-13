@@ -35,6 +35,7 @@ const DiscussionsSidebar = ({ intl }) => {
         className="d-flex w-100 h-100 border-0"
         title={intl.formatMessage(messages.discussionsTitle)}
         allow="clipboard-write"
+        loading="lazy"
       />
     </SidebarBase>
   );
