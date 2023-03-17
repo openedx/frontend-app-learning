@@ -19,9 +19,13 @@ const SidebarProvider = ({
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const showNotificationsOnLoad = getSessionStorage(`notificationTrayStatus.${courseId}`) !== 'closed';
-  const initialSidebar = (verifiedMode && shouldDisplaySidebarOpen && showNotificationsOnLoad)
+  const showDiscussionSidebar = localStorage.getItem('showDiscussionSidebar') !== 'false';
+  const showNotificationSidebar = (verifiedMode && shouldDisplaySidebarOpen && showNotificationsOnLoad)
     ? SIDEBARS.NOTIFICATIONS.ID
     : null;
+  const initialSidebar = showDiscussionSidebar
+    ? SIDEBARS.DISCUSSIONS.ID
+    : showNotificationSidebar;
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
@@ -41,6 +45,11 @@ const SidebarProvider = ({
 
   const toggleSidebar = useCallback((sidebarId) => {
     // Switch to new sidebar or hide the current sidebar
+    if (currentSidebar === SIDEBARS.DISCUSSIONS.ID) {
+      localStorage.setItem('showDiscussionSidebar', false);
+    } else if (sidebarId === SIDEBARS.DISCUSSIONS.ID) {
+      localStorage.setItem('showDiscussionSidebar', true);
+    }
     setCurrentSidebar(sidebarId === currentSidebar ? null : sidebarId);
   }, [currentSidebar]);
 

@@ -41,6 +41,7 @@ const SidebarBase = ({
         'min-vh-100': !shouldDisplayFullScreen,
         'd-none': currentSidebar !== sidebarId,
       }, className)}
+      data-testid={`sidebar-${sidebarId}`}
       style={{ width: shouldDisplayFullScreen ? '100%' : width }}
       aria-label={ariaLabel}
     >
