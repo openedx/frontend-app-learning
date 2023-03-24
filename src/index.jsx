@@ -137,6 +137,8 @@ initialize({
         TWITTER_URL: process.env.TWITTER_URL || null,
         LEGACY_THEME_NAME: process.env.LEGACY_THEME_NAME || null,
         EXAMS_BASE_URL: process.env.EXAMS_BASE_URL || null,
+        PROCTORED_EXAM_FAQ_URL: process.env.PROCTORED_EXAM_FAQ_URL || null,
+        PROCTORED_EXAM_RULES_URL: process.env.PROCTORED_EXAM_RULES_URL || null,
       }, 'LearnerAppConfig');
     },
   },

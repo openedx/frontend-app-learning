@@ -1,6 +1,8 @@
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { logError } from '@edx/frontend-platform/logging';
 import { AppContext, ErrorPage } from '@edx/frontend-platform/react';
+import { getExamAccess, fetchExamAccess, isExam } from '@edx/frontend-lib-special-exams';
 import { Modal } from '@edx/paragon';
 import PropTypes from 'prop-types';
 import React, {
@@ -65,6 +67,16 @@ function useLoadBearingHook(id) {
   }, [id]);
 }
 
+function addExamAccessToIframeUrl(accessToken, iframeUrl) {
+  let url = iframeUrl;
+  if (isExam()) {
+    if (accessToken) {
+      url += `&exam_access=${accessToken}`;
+    }
+  }
+  return url;
+}
+
 export function sendUrlHashToFrame(frame) {
   const { hash } = window.location;
   if (hash) {
@@ -83,6 +95,7 @@ const Unit = ({
 }) => {
   const { authenticatedUser } = useContext(AppContext);
   const view = authenticatedUser ? 'student_view' : 'public_view';
+
   let iframeUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=${view}`;
   if (format) {
     iframeUrl += `&format=${format}`;
@@ -93,6 +106,8 @@ const Unit = ({
   const [showError, setShowError] = useState(false);
   const [modalOptions, setModalOptions] = useState({ open: false });
   const [shouldDisplayHonorCode, setShouldDisplayHonorCode] = useState(false);
+  const [examAccessToken, setExamAccessToken] = useState('');
+  const [blockExamAccess, setBlockExamAccess] = useState(isExam());
 
   const unit = useModel('units', id);
   const course = useModel('coursewareMeta', courseId);
@@ -140,6 +155,16 @@ const Unit = ({
     sendUrlHashToFrame(document.getElementById('unit-iframe'));
   }, [id, setIframeHeight, hasLoaded, iframeHeight, setHasLoaded, onLoaded]);
 
+  useEffect(() => {
+    if (isExam()) {
+      fetchExamAccess().finally(() => {
+        const examAccess = getExamAccess();
+        setExamAccessToken(examAccess);
+        setBlockExamAccess(false);
+      }).catch((error) => logError(error));
+    }
+  }, [id]);
+
   return (
     <div className="unit">
       <h1 className="mb-0 h3">{unit.title}</h1>
@@ -175,7 +200,7 @@ const Unit = ({
           <HonorCode courseId={courseId} />
         </Suspense>
       )}
-      {!shouldDisplayHonorCode && !hasLoaded && !showError && (
+      {(!shouldDisplayHonorCode || blockExamAccess) && !hasLoaded && !showError && (
         <PageLoading
           srMessage={intl.formatMessage(messages.loadingSequence)}
         />
@@ -208,12 +233,12 @@ const Unit = ({
           dialogClassName="modal-lti"
         />
       )}
-      {!shouldDisplayHonorCode && (
+      {!shouldDisplayHonorCode && !blockExamAccess && (
         <div className="unit-iframe-wrapper">
           <iframe
             id="unit-iframe"
             title={unit.title}
-            src={iframeUrl}
+            src={addExamAccessToIframeUrl(examAccessToken, iframeUrl)}
             allow={IFRAME_FEATURE_POLICY}
             allowFullScreen
             height={iframeHeight}
