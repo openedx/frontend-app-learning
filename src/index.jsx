@@ -57,7 +57,7 @@ subscribe(APP_READY, () => {
                 </TabContainer>
               </PageRoute>
               <PageRoute path="/course/:courseId/live">
-                <TabContainer tab="live" fetch={fetchLiveTab} slice="courseHome">
+                <TabContainer tab="lti_live" fetch={fetchLiveTab} slice="courseHome">
                   <LiveTab />
                 </TabContainer>
               </PageRoute>
