@@ -1,12 +1,18 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import { getConfig } from '@edx/frontend-platform';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import MockAdapter from 'axios-mock-adapter';
 import { breakpoints } from '@edx/paragon';
 import {
-  fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
+  act, fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
+import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
 import { handleNextSectionCelebration } from './celebration';
 import * as celebrationUtils from './celebration/utils';
 import Course from './Course';
+import { executeThunk } from '../../utils';
+import * as thunks from '../data/thunks';
 
 jest.mock('@edx/frontend-platform/analytics');
 
@@ -42,6 +48,28 @@ describe('Course', () => {
     getItemSpy.mockRestore();
     setItemSpy.mockRestore();
   });
+
+  const setupDiscussionSidebar = async (storageValue = false) => {
+    localStorage.clear();
+    const testStore = await initializeTestStore({ provider: 'openedx' });
+    const state = testStore.getState();
+    const { courseware: { courseId } } = state;
+    const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(200, { provider: 'openedx' });
+    const topicsResponse = buildTopicsFromUnits(state.models.units);
+    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
+      .reply(200, topicsResponse);
+
+    await executeThunk(thunks.getCourseDiscussionTopics(courseId), testStore.dispatch);
+    const [firstUnitId] = Object.keys(state.models.units);
+    mockData.unitId = firstUnitId;
+    const [firstSequenceId] = Object.keys(state.models.sequences);
+    mockData.sequenceId = firstSequenceId;
+    if (storageValue !== null) {
+      localStorage.setItem('showDiscussionSidebar', storageValue);
+    }
+    await render(<Course {...mockData} />, { store: testStore });
+  };
 
   it('loads learning sequence', async () => {
     render(<Course {...mockData} />);
@@ -103,6 +131,7 @@ describe('Course', () => {
   });
 
   it('displays notification trigger and toggles active class on click', async () => {
+    localStorage.setItem('showDiscussionSidebar', false);
     render(<Course {...mockData} />);
 
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
@@ -114,6 +143,7 @@ describe('Course', () => {
 
   it('handles click to open/close notification tray', async () => {
     sessionStorage.clear();
+    localStorage.setItem('showDiscussionSidebar', false);
     render(<Course {...mockData} />);
     expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"open"');
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
@@ -144,6 +174,7 @@ describe('Course', () => {
 
   it('handles sessionStorage from a different course for the notification tray', async () => {
     sessionStorage.clear();
+    localStorage.setItem('showDiscussionSidebar', false);
     const courseMetadataSecondCourse = Factory.build('courseMetadata', { id: 'second_course' });
 
     // set sessionStorage for a different course before rendering Course
@@ -185,6 +216,34 @@ describe('Course', () => {
     expect(screen.getByText(Object.values(models.sections)[0].title)).toBeInTheDocument();
     expect(screen.getByText(Object.values(models.sequences)[0].title)).toBeInTheDocument();
   });
+
+  [
+    { value: true, visible: true },
+    { value: false, visible: false },
+    { value: null, visible: true },
+  ].forEach(async ({ value, visible }) => (
+    it(`discussion sidebar is ${visible ? 'shown' : 'hidden'} when localstorage value is ${value}`, async () => {
+      await setupDiscussionSidebar(value);
+      const element = await waitFor(() => screen.findByTestId('sidebar-DISCUSSIONS'));
+      if (visible) {
+        expect(element).not.toHaveClass('d-none');
+      } else {
+        expect(element).toHaveClass('d-none');
+      }
+    })));
+
+  [
+    { value: true, result: 'false' },
+    { value: false, result: 'true' },
+  ].forEach(async ({ value, result }) => (
+    it(`Discussion sidebar storage value is ${!value} when sidebar is ${value ? 'closed' : 'open'}`, async () => {
+      await setupDiscussionSidebar(value);
+      await act(async () => {
+        const button = await screen.queryByRole('button', { name: /Show discussions tray/i });
+        button.click();
+      });
+      expect(localStorage.getItem('showDiscussionSidebar')).toBe(result);
+    })));
 
   it('passes handlers to the sequence', async () => {
     const nextSequenceHandler = jest.fn();
