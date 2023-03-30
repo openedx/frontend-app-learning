@@ -19,7 +19,7 @@ import { reducer as coursewareReducer } from './courseware/data/slice';
 import { reducer as modelsReducer } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
 
-import appMessages from './i18n';
+import messages from './i18n';
 import { fetchCourse, fetchSequence } from './courseware/data';
 import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
@@ -78,7 +78,7 @@ export function initializeMockApp() {
   configureI18n({
     config: getConfig(),
     loggingService,
-    messages: [appMessages],
+    messages,
   });
 
   return { loggingService, authService };
