@@ -19,6 +19,10 @@ const SidebarProvider = ({
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const showNotificationsOnLoad = getSessionStorage(`notificationTrayStatus.${courseId}`) !== 'closed';
+  const query = new URLSearchParams(window.location.search);
+  if (query.get('sidebar') === 'true') {
+    localStorage.setItem('showDiscussionSidebar', true);
+  }
   const showDiscussionSidebar = localStorage.getItem('showDiscussionSidebar') !== 'false';
   const showNotificationSidebar = (verifiedMode && shouldDisplaySidebarOpen && showNotificationsOnLoad)
     ? SIDEBARS.NOTIFICATIONS.ID
