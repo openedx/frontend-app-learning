@@ -220,6 +220,7 @@ const Unit = ({
             scrolling="no"
             referrerPolicy="origin"
             onLoad={() => {
+              console.log({ unit });
               // onLoad *should* only fire after everything in the iframe has finished its own load events.
               // Which means that the plugin.resize message (which calls setHasLoaded above) will have fired already
               // for a successful load. If it *has not fired*, we are in an error state. For example, the backend
