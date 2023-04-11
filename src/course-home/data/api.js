@@ -420,3 +420,10 @@ export async function unsubscribeFromCourseGoal(token) {
   return getAuthenticatedHttpClient().post(url.href)
     .then(res => camelCaseObject(res));
 }
+
+export async function searchCourseContentFromAPI(courseId, searchKeyword) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/search/${courseId}`);
+  const formData = `search_string=${searchKeyword}&page_size=20&page_index=0`;
+  return getAuthenticatedHttpClient().post(url.href, formData)
+    .then(res => camelCaseObject(res));
+}

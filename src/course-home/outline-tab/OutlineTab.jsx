@@ -28,6 +28,7 @@ import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
+import CoursewareSearch from './widgets/CoursewareSearch';
 
 const OutlineTab = ({ intl }) => {
   const {
@@ -157,6 +158,7 @@ const OutlineTab = ({ intl }) => {
           )}
           <StartOrResumeCourseCard />
           <WelcomeMessage courseId={courseId} />
+          <CoursewareSearch courseId={courseId} />
           {rootCourseId && (
             <>
               <div className="row w-100 m-0 mb-3 justify-content-end">
