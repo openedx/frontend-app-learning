@@ -135,7 +135,7 @@ describe('Unit', () => {
     // Set message to contain video full screen data.
     const defaultTopOffset = 800;
     const testMessageWithOtherHeight = { ...messageEvent, payload: { height: 500 } };
-    const testMessageWithFullscreenState = (isShow) => ({ type: 'plugin.videoFullScreen', payload: { show: isShow } });
+    const testMessageWithFullscreenState = (isOpen) => ({ type: 'plugin.videoFullScreen', payload: { open: isOpen } });
     render(<Unit {...mockData} />);
     Object.defineProperty(window, 'scrollY', { value: defaultTopOffset, writable: true });
     window.postMessage(testMessageWithFullscreenState(true), '*');
