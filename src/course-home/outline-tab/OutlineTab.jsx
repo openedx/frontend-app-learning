@@ -29,10 +29,7 @@ import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
 
-/** [MM-P2P] Experiment */
-import { initHomeMMP2P, MMP2PFlyover } from '../../experiments/mm-p2p';
-
-function OutlineTab({ intl }) {
+const OutlineTab = ({ intl }) => {
   const {
     courseId,
     proctoringPanelStatus,
@@ -104,9 +101,6 @@ function OutlineTab({ intl }) {
     return userRoleNames.includes('enterprise_learner');
   };
 
-  /** [[MM-P2P] Experiment */
-  const MMP2P = initHomeMMP2P(courseId);
-
   /** show post enrolment survey to only B2C learners */
   const learnerType = isEnterpriseUser() ? 'enterprise_learner' : 'b2c_learner';
 
@@ -116,7 +110,7 @@ function OutlineTab({ intl }) {
     const currentParams = new URLSearchParams(location.search);
     const startCourse = currentParams.get('start_course');
     if (startCourse === '1') {
-      sendTrackEvent('welcome.email.clicked.startcourse', {});
+      sendTrackEvent('enrollment.email.clicked.startcourse', {});
 
       // Deleting the course_start query param as it only needs to be set once
       // whenever passed in query params.
@@ -134,7 +128,6 @@ function OutlineTab({ intl }) {
           <div role="heading" aria-level="1" className="h2">{title}</div>
         </div>
       </div>
-      {/** [MM-P2P] Experiment (className for optimizely trigger) */}
       <div className="row course-outline-tab">
         <AccountActivationAlert />
         <div className="col-12">
@@ -146,21 +139,17 @@ function OutlineTab({ intl }) {
           />
         </div>
         <div className="col col-12 col-md-8">
-          { /** [MM-P2P] Experiment (the conditional) */ }
-          { !MMP2P.state.isEnabled
-            && (
-            <AlertList
-              topic="outline-course-alerts"
-              className="mb-3"
-              customAlerts={{
-                ...certificateAvailableAlert,
-                ...courseEndAlert,
-                ...courseStartAlert,
-                ...scheduledContentAlert,
-              }}
-            />
-            )}
-          {isSelfPaced && hasDeadlines && !MMP2P.state.isEnabled && (
+          <AlertList
+            topic="outline-course-alerts"
+            className="mb-3"
+            customAlerts={{
+              ...certificateAvailableAlert,
+              ...courseEndAlert,
+              ...courseStartAlert,
+              ...scheduledContentAlert,
+            }}
+          />
+          {isSelfPaced && hasDeadlines && (
             <>
               <ShiftDatesAlert model="outline" fetch={fetchOutlineTab} />
               <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
@@ -203,35 +192,27 @@ function OutlineTab({ intl }) {
               />
             )}
             <CourseTools />
-            { /** [MM-P2P] Experiment (conditional) */ }
-            { MMP2P.state.isEnabled
-              ? <MMP2PFlyover isStatic options={MMP2P} />
-              : (
-                <UpgradeNotification
-                  offer={offer}
-                  verifiedMode={verifiedMode}
-                  accessExpiration={accessExpiration}
-                  contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
-                  marketingUrl={marketingUrl}
-                  upsellPageName="course_home"
-                  userTimezone={userTimezone}
-                  shouldDisplayBorder
-                  timeOffsetMillis={timeOffsetMillis}
-                  courseId={courseId}
-                  org={org}
-                />
-              )}
-            <CourseDates
-              /** [MM-P2P] Experiment */
-              mmp2p={MMP2P}
+            <UpgradeNotification
+              offer={offer}
+              verifiedMode={verifiedMode}
+              accessExpiration={accessExpiration}
+              contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
+              marketingUrl={marketingUrl}
+              upsellPageName="course_home"
+              userTimezone={userTimezone}
+              shouldDisplayBorder
+              timeOffsetMillis={timeOffsetMillis}
+              courseId={courseId}
+              org={org}
             />
+            <CourseDates />
             <CourseHandouts />
           </div>
         )}
       </div>
     </>
   );
-}
+};
 
 OutlineTab.propTypes = {
   intl: intlShape.isRequired,

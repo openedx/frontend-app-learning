@@ -355,13 +355,13 @@ describe('Outline Tab', () => {
 
       await fetchAndRender('http://localhost/?weekly_goal=3');
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(sendTrackEvent).toHaveBeenCalledWith('welcome.email.clicked.setgoal', {});
+      expect(sendTrackEvent).toHaveBeenCalledWith('enrollment.email.clicked.setgoal', {});
     });
 
     it('emit start course event via query param', async () => {
       sendTrackEvent.mockClear();
       await fetchAndRender('http://localhost/?start_course=1');
-      expect(sendTrackEvent).toHaveBeenCalledWith('welcome.email.clicked.startcourse', {});
+      expect(sendTrackEvent).toHaveBeenCalledWith('enrollment.email.clicked.startcourse', {});
     });
 
     describe('weekly learning goal is not set', () => {
@@ -383,25 +383,25 @@ describe('Outline Tab', () => {
         expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeDisabled();
       });
 
-      it.each`
-      level     | days 
-      ${'Casual'}  | ${1}
-      ${'Regular'} | ${3}
-      ${'Intense'} | ${5}
-        `('calls the API with a goal of $days when $level goal is clicked', async ({ level, days }) => {
-  // click on Casual goal
-  const button = await screen.queryByTestId(`weekly-learning-goal-input-${level}`);
-  fireEvent.click(button);
-  // Verify the request was made
-  await waitFor(() => {
-    expect(axiosMock.history.post[0].url).toMatch(goalUrl);
-    // subscribe is turned on automatically
-    expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","days_per_week":${days},"subscribed_to_reminders":true}`);
-    // verify that the additional info about subscriptions shows up
-    expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).toBeInTheDocument();
-  });
-  expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
-});
+      it.each([
+        { level: 'Casual', days: 1 },
+        { level: 'Regular', days: 3 },
+        { level: 'Intense', days: 5 },
+      ])('calls the API with a goal of $days when $level goal is clicked', async ({ level, days }) => {
+        // click on Casual goal
+        const button = await screen.queryByTestId(`weekly-learning-goal-input-${level}`);
+        fireEvent.click(button);
+        // Verify the request was made
+        await waitFor(() => {
+          expect(axiosMock.history.post[0].url).toMatch(goalUrl);
+          // subscribe is turned on automatically
+          expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","days_per_week":${days},"subscribed_to_reminders":true}`);
+          // verify that the additional info about subscriptions shows up
+          expect(screen.queryByText(messages.goalReminderDetail.defaultMessage)).toBeInTheDocument();
+        });
+        expect(screen.getByLabelText(messages.setGoalReminder.defaultMessage)).toBeEnabled();
+      });
+
       it('shows and hides subscribe to reminders additional text', async () => {
         const button = await screen.getByTestId('weekly-learning-goal-input-Regular');
         fireEvent.click(button);
@@ -577,7 +577,7 @@ describe('Outline Tab', () => {
         const instructorToolbar = await screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
-        expect(screen.getByText('1/1/2020')).toBeInTheDocument();
+        expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
       });
 
       it('does not render banner when not masquerading', async () => {
@@ -789,12 +789,14 @@ describe('Outline Tab', () => {
         const requestingButton = screen.getByRole('button', { name: 'Request certificate' });
         fireEvent.click(requestingButton);
         expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_request_cert_button.clicked',
+        expect(sendTrackEvent).toHaveBeenCalledWith(
+          'edx.ui.lms.course_outline.certificate_alert_request_cert_button.clicked',
           {
             courserun_key: courseId,
             is_staff: false,
             org_key: 'edX',
-          });
+          },
+        );
       });
 
       it('tracks unverified cert button', async () => {
@@ -833,12 +835,14 @@ describe('Outline Tab', () => {
         const requestingButton = screen.getByRole('link', { name: 'Verify my ID' });
         fireEvent.click(requestingButton);
         expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_outline.certificate_alert_unverified_button.clicked',
+        expect(sendTrackEvent).toHaveBeenCalledWith(
+          'edx.ui.lms.course_outline.certificate_alert_unverified_button.clicked',
           {
             courserun_key: courseId,
             is_staff: false,
             org_key: 'edX',
-          });
+          },
+        );
       });
     });
 
@@ -1021,6 +1025,22 @@ describe('Outline Tab', () => {
       // This message will render if the expiration date is within 28 days; set the date 10 days in future
       expirationDate.setTime(expirationDate.getTime() + 864800000);
       axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'verified',
+        onboarding_link: 'test',
+        expiration_date: expirationDate.toString(),
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Your onboarding profile has been approved. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
+    });
+
+    it('displays expiration warning for other course', async () => {
+      const expirationDate = new Date();
+      // This message will render if the expiration date is within 28 days; set the date 10 days in future
+      expirationDate.setTime(expirationDate.getTime() + 864800000);
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
         onboarding_status: 'other_course_approved',
         onboarding_link: 'test',
         expiration_date: expirationDate.toString(),
@@ -1028,7 +1048,23 @@ describe('Outline Tab', () => {
       });
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
-      expect(screen.queryByText('Your onboarding profile has been approved in another course. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
+      expect(screen.queryByText('Your onboarding profile has been approved. However, your onboarding status is expiring soon. Please complete onboarding again to ensure that you will be able to continue taking proctored exams.')).toBeInTheDocument();
+      expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
+    });
+
+    it('displays expired', async () => {
+      const expirationDate = new Date();
+      // This message appears after expiration, set the date 10 days in the past
+      expirationDate.setTime(expirationDate.getTime() - 864800000);
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'verified',
+        onboarding_link: 'test',
+        expiration_date: expirationDate.toString(),
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Your onboarding status has expired. Please complete onboarding again to continue taking proctored exams.')).toBeInTheDocument();
       expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
     });
 

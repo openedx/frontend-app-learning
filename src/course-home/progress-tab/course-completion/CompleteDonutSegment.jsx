@@ -6,12 +6,12 @@ import { OverlayTrigger, Popover } from '@edx/paragon';
 
 import messages from './messages';
 
-function CompleteDonutSegment({ completePercentage, intl, lockedPercentage }) {
+const CompleteDonutSegment = ({ completePercentage, intl, lockedPercentage }) => {
+  const [showCompletePopover, setShowCompletePopover] = useState(false);
+
   if (!completePercentage) {
     return null;
   }
-
-  const [showCompletePopover, setShowCompletePopover] = useState(false);
 
   const completeSegmentOffset = (3.6 * completePercentage) / 8;
   let completeTooltipDegree = completePercentage < 100 ? -completeSegmentOffset : 0;
@@ -78,7 +78,7 @@ function CompleteDonutSegment({ completePercentage, intl, lockedPercentage }) {
       )}
     </g>
   );
-}
+};
 
 CompleteDonutSegment.propTypes = {
   completePercentage: PropTypes.number.isRequired,

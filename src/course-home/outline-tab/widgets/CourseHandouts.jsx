@@ -7,7 +7,7 @@ import LmsHtmlFragment from '../LmsHtmlFragment';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 
-function CourseHandouts({ intl }) {
+const CourseHandouts = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -29,7 +29,7 @@ function CourseHandouts({ intl }) {
       />
     </section>
   );
-}
+};
 
 CourseHandouts.propTypes = {
   intl: intlShape.isRequired,

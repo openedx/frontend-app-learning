@@ -349,7 +349,7 @@ export async function getOutlineTabData(courseId) {
   const timeOffsetMillis = getTimeOffsetMillis(headers && headers.date, requestTime, responseTime);
   const userHasPassingGrade = data.user_has_passing_grade;
   const verifiedMode = camelCaseObject(data.verified_mode);
-  const welcomeMessageHtml = data.welcome_message_html;
+  const welcomeMessageHtml = data.welcome_message_html || '';
 
   return {
     accessExpiration,

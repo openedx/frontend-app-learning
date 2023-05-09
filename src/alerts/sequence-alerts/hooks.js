@@ -35,7 +35,8 @@ function useSequenceEntranceExamAlert(courseId, sequenceId, intl) {
 
   if (entranceExamPassed) {
     entranceExamText = intl.formatMessage(
-      messages.entranceExamTextPassed, { entranceExamCurrentScore: entranceExamCurrentScore * 100 },
+      messages.entranceExamTextPassed,
+      { entranceExamCurrentScore: entranceExamCurrentScore * 100 },
     );
   } else {
     entranceExamText = intl.formatMessage(messages.entranceExamTextNotPassing, {

@@ -242,7 +242,7 @@ export function getCourseDiscussionTopics(courseId) {
         const topics = await getCourseTopics(courseId);
         dispatch(updateModels({
           modelType: 'discussionTopics',
-          models: topics,
+          models: topics.filter(topic => topic.usageKey),
           idField: 'usageKey',
         }));
       }

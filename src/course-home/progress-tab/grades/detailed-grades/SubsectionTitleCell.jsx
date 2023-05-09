@@ -14,7 +14,7 @@ import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 import ProblemScoreDrawer from './ProblemScoreDrawer';
 
-function SubsectionTitleCell({ intl, subsection }) {
+const SubsectionTitleCell = ({ intl, subsection }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -99,7 +99,7 @@ function SubsectionTitleCell({ intl, subsection }) {
       </Collapsible.Body>
     </Collapsible.Advanced>
   );
-}
+};
 
 SubsectionTitleCell.propTypes = {
   intl: intlShape.isRequired,

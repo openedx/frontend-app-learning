@@ -26,11 +26,7 @@ import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 
-/** [MM-P2P] Experiment */
-import { isMobile } from '../../../experiments/mm-p2p/utils';
-import { MMP2PFlyover, MMP2PFlyoverMobile } from '../../../experiments/mm-p2p';
-
-function Sequence({
+const Sequence = ({
   unitId,
   sequenceId,
   courseId,
@@ -38,8 +34,7 @@ function Sequence({
   nextSequenceHandler,
   previousSequenceHandler,
   intl,
-  mmp2p,
-}) {
+}) => {
   const course = useModel('coursewareMeta', courseId);
   const {
     isStaff,
@@ -155,10 +150,6 @@ function Sequence({
           sequenceId={sequenceId}
           unitId={unitId}
           className="mb-4"
-
-          /** [MM-P2P] Experiment */
-          mmp2p={mmp2p}
-
           nextSequenceHandler={() => {
             logEvent('edx.ui.lms.sequence.next_selected', 'top');
             handleNext();
@@ -182,8 +173,6 @@ function Sequence({
             sequenceId={sequenceId}
             unitId={unitId}
             unitLoadedHandler={handleUnitLoaded}
-            /** [MM-P2P] Experiment */
-            mmp2p={mmp2p}
           />
           {unitHasLoaded && (
           <UnitNavigation
@@ -203,13 +192,6 @@ function Sequence({
         </div>
       </div>
       <Sidebar />
-
-      {/** [MM-P2P] Experiment */}
-      {(mmp2p.state.isEnabled && mmp2p.flyover.isVisible) && (
-        isMobile()
-          ? <MMP2PFlyoverMobile options={mmp2p} />
-          : <MMP2PFlyover options={mmp2p} />
-      )}
     </div>
   );
 
@@ -236,7 +218,7 @@ function Sequence({
       {intl.formatMessage(messages.loadFailure)}
     </p>
   );
-}
+};
 
 Sequence.propTypes = {
   unitId: PropTypes.string,
@@ -246,30 +228,11 @@ Sequence.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
-
-  /** [MM-P2P] Experiment */
-  mmp2p: PropTypes.shape({
-    flyover: PropTypes.shape({
-      isVisible: PropTypes.bool.isRequired,
-    }),
-    meta: PropTypes.shape({
-      showLock: PropTypes.bool,
-    }),
-    state: PropTypes.shape({
-      isEnabled: PropTypes.bool.isRequired,
-    }),
-  }),
 };
 
 Sequence.defaultProps = {
   sequenceId: null,
   unitId: null,
-  /** [MM-P2P] Experiment */
-  mmp2p: {
-    flyover: { isVisible: false },
-    meta: { showLock: false },
-    state: { isEnabled: false },
-  },
 };
 
 export default injectIntl(Sequence);

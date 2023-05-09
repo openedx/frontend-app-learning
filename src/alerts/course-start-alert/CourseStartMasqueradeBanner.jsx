@@ -5,7 +5,7 @@ import { PageBanner } from '@edx/paragon';
 
 import { useModel } from '../../generic/model-store';
 
-function CourseStartMasqueradeBanner({ payload }) {
+const CourseStartMasqueradeBanner = ({ payload }) => {
   const {
     courseId,
   } = payload;
@@ -33,7 +33,7 @@ function CourseStartMasqueradeBanner({ payload }) {
       />
     </PageBanner>
   );
-}
+};
 
 CourseStartMasqueradeBanner.propTypes = {
   payload: PropTypes.shape({

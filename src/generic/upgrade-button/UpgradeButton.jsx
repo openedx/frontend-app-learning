@@ -5,7 +5,7 @@ import { Button } from '@edx/paragon';
 
 import FormattedPricing from './FormattedPricing';
 
-function UpgradeButton(props) {
+const UpgradeButton = (props) => {
   const {
     intl,
     offer,
@@ -25,21 +25,23 @@ function UpgradeButton(props) {
       onClick={onClick}
       {...rest}
     >
-      <FormattedMessage
-        id="learning.upgradeButton.buttonText"
-        defaultMessage="Upgrade for {pricing}"
-        values={{
-          pricing: (
-            <FormattedPricing
-              offer={offer}
-              verifiedMode={verifiedMode}
-            />
-          ),
-        }}
-      />
+      <div>
+        <FormattedMessage
+          id="learning.upgradeButton.buttonText"
+          defaultMessage="Upgrade for {pricing}"
+          values={{
+            pricing: (
+              <FormattedPricing
+                offer={offer}
+                verifiedMode={verifiedMode}
+              />
+            ),
+          }}
+        />
+      </div>
     </Button>
   );
-}
+};
 
 UpgradeButton.defaultProps = {
   offer: null,

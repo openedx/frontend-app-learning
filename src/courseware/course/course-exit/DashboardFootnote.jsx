@@ -16,7 +16,7 @@ import Footnote from './Footnote';
 import messages from './messages';
 import { logClick } from './utils';
 
-function DashboardFootnote({ intl, variant }) {
+const DashboardFootnote = ({ intl, variant }) => {
   const { courseId } = useSelector(state => state.courseware);
   const { org } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
@@ -45,7 +45,7 @@ function DashboardFootnote({ intl, variant }) {
       )}
     />
   );
-}
+};
 
 DashboardFootnote.propTypes = {
   intl: intlShape.isRequired,

@@ -27,7 +27,7 @@ function useEnrollClickHandler(courseId, orgId, successText) {
       });
       global.location.reload();
     });
-  }, [courseId]);
+  }, [addFlash, courseId, orgId, successText]);
 
   return { enrollClickHandler, loading };
 }

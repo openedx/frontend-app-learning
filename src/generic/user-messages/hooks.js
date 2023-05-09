@@ -31,5 +31,6 @@ export function useAlert(isVisible, {
     return () => {
       remove(cleanupId);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVisible, code, text, topic, type, payload, dismissible]);
 }

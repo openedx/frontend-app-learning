@@ -9,7 +9,7 @@ import SidebarBase from '../../common/SidebarBase';
 import SidebarContext from '../../SidebarContext';
 import NotificationTrigger, { ID } from './NotificationTrigger';
 
-function NotificationTray({ intl }) {
+const NotificationTray = ({ intl }) => {
   const {
     courseId,
     onNotificationSeen,
@@ -34,6 +34,7 @@ function NotificationTray({ intl }) {
   } = useModel('courseHomeMeta', courseId);
 
   // After three seconds, update notificationSeen (to hide red dot)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { setTimeout(onNotificationSeen, 3000); }, []);
 
   return (
@@ -66,7 +67,7 @@ function NotificationTray({ intl }) {
       </div>
     </SidebarBase>
   );
-}
+};
 
 NotificationTray.propTypes = {
   intl: intlShape.isRequired,

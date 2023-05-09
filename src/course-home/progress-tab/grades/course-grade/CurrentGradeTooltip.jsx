@@ -11,7 +11,7 @@ import { useModel } from '../../../../generic/model-store';
 
 import messages from '../messages';
 
-function CurrentGradeTooltip({ intl, tooltipClassName }) {
+const CurrentGradeTooltip = ({ intl, tooltipClassName }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -41,7 +41,7 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
         overlay={(
           <Popover id={`${isPassing ? 'passing' : 'non-passing'}-grade-tooltip`} aria-hidden="true" className={tooltipClassName}>
             <Popover.Content data-testid="currentGradeTooltipContent" className={isPassing ? 'text-white' : 'text-dark-700'}>
-              {currentGrade.toFixed(0)}%
+              {currentGrade.toFixed(0)}{isLocaleRtl ? '\u200f' : ''}%
             </Popover.Content>
           </Popover>
         )}
@@ -62,7 +62,7 @@ function CurrentGradeTooltip({ intl, tooltipClassName }) {
       </text>
     </>
   );
-}
+};
 
 CurrentGradeTooltip.defaultProps = {
   tooltipClassName: '',

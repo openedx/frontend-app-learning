@@ -10,16 +10,18 @@ import messages from './messages';
 
 ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);
 
-function DiscussionsSidebar({ intl }) {
+const DiscussionsSidebar = ({ intl }) => {
   const {
     unitId,
     courseId,
   } = useContext(SidebarContext);
   const topic = useModel('discussionTopics', unitId);
-  if (!topic?.id) {
+  const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/category/${unitId}`;
+
+  if (!topic?.id || !topic?.enabledInContext) {
     return null;
   }
-  const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/topics/${topic.id}`;
+
   return (
     <SidebarBase
       title={intl.formatMessage(messages.discussionsTitle)}
@@ -29,14 +31,15 @@ function DiscussionsSidebar({ intl }) {
       showTitleBar={false}
     >
       <iframe
-        src={`${discussionsUrl}?inContext`}
-        className="d-flex w-100 border-0"
-        style={{ minHeight: '60rem' }}
+        src={`${discussionsUrl}?inContextSidebar`}
+        className="d-flex w-100 h-100 border-0"
         title={intl.formatMessage(messages.discussionsTitle)}
+        allow="clipboard-write"
+        loading="lazy"
       />
     </SidebarBase>
   );
-}
+};
 
 DiscussionsSidebar.propTypes = {
   intl: intlShape.isRequired,

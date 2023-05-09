@@ -10,7 +10,7 @@ import { Button, Icon } from '@edx/paragon';
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
 
-function CourseGradeHeader({ intl }) {
+const CourseGradeHeader = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -81,7 +81,7 @@ function CourseGradeHeader({ intl }) {
       )}
     </div>
   );
-}
+};
 
 CourseGradeHeader.propTypes = {
   intl: intlShape.isRequired,

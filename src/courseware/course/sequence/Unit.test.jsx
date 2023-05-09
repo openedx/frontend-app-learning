@@ -1,9 +1,24 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import { fetchExamAccess, getExamAccess, isExam } from '@edx/frontend-lib-special-exams';
 import {
   initializeTestStore, loadUnit, messageEvent, render, screen, waitFor,
 } from '../../../setupTest';
 import Unit, { sendUrlHashToFrame } from './Unit';
+
+const originalIsExam = jest.requireActual('@edx/frontend-lib-special-exams').isExam();
+const originalFetchExamAccess = jest.requireActual('@edx/frontend-lib-special-exams').fetchExamAccess();
+const originalGetExamAccess = jest.requireActual('@edx/frontend-lib-special-exams').getExamAccess();
+jest.mock('@edx/frontend-lib-special-exams', () => ({
+  ...jest.requireActual('@edx/frontend-lib-special-exams'),
+  isExam: jest.fn(),
+  fetchExamAccess: jest.fn(),
+  getExamAccess: jest.fn(),
+}));
+isExam.mockImplementation(() => originalIsExam).mockReturnValue(false);
+fetchExamAccess.mockImplementation(() => originalFetchExamAccess).mockResolvedValue();
+const examAccessToken = 'EXAMACCESSTOKEN';
+getExamAccess.mockImplementation(() => originalGetExamAccess).mockReturnValue(examAccessToken);
 
 describe('Unit', () => {
   let mockData;
@@ -52,9 +67,7 @@ describe('Unit', () => {
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
     const renderedUnit = screen.getByTitle(unit.display_name);
     expect(renderedUnit).toHaveAttribute('height', String(0));
-    expect(renderedUnit).toHaveAttribute(
-      'src', `http://localhost:18000/xblock/${mockData.id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=student_view&format=${mockData.format}`,
-    );
+    expect(renderedUnit).toHaveAttribute('src', `http://localhost:18000/xblock/${mockData.id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=student_view&format=${mockData.format}`);
   });
 
   it('renders proper message for gated content', () => {
@@ -175,5 +188,32 @@ describe('Unit', () => {
     render(<Unit {...mockData} />);
     expect(React.useEffect).toHaveBeenCalled();
     expect(mockHashCheck).toHaveBeenCalled();
+  });
+
+  it('updates url if exam and exam access granted', async () => {
+    isExam.mockReturnValue(true);
+
+    render(<Unit {...mockData} />);
+    expect(isExam).toHaveBeenCalled();
+    await waitFor(() => expect(screen.getByTitle(unit.display_name)).toHaveAttribute('src', `http://localhost:18000/xblock/${mockData.id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=student_view&format=${mockData.format}&exam_access=${examAccessToken}`));
+  });
+
+  it('does not update url if exam and exam access not granted', async () => {
+    isExam.mockReturnValue(true);
+    fetchExamAccess.mockRejectedValue();
+    getExamAccess.mockReturnValue('');
+
+    render(<Unit {...mockData} />);
+    expect(isExam).toHaveBeenCalled();
+    await waitFor(() => expect(screen.getByTitle(unit.display_name)).toHaveAttribute('src', `http://localhost:18000/xblock/${mockData.id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=student_view&format=${mockData.format}`));
+  });
+
+  it('does not update url if not exam', async () => {
+    isExam.mockReturnValue(false);
+
+    render(<Unit {...mockData} />);
+    expect(isExam).toHaveBeenCalled();
+    const renderedUnit = screen.getByTitle(unit.display_name);
+    expect(renderedUnit).toHaveAttribute('src', `http://localhost:18000/xblock/${mockData.id}?show_title=0&show_bookmark_button=0&recheck_access=1&view=student_view&format=${mockData.format}`);
   });
 });

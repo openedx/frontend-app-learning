@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-constructed-context-values */
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
@@ -59,7 +60,7 @@ describe('Discussions Trigger', () => {
     renderWithProvider();
     expect(screen.queryByTitle('Discussions')).toBeInTheDocument();
     expect(screen.queryByTitle('Discussions'))
-      .toHaveAttribute('src', `http://localhost:2002/${courseId}/topics/topic-1?inContext`);
+      .toHaveAttribute('src', `http://localhost:2002/${courseId}/category/${unitId}?inContextSidebar`);
   });
 
   it('should show nothing if unit has no discussions associated with it', async () => {

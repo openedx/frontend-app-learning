@@ -8,7 +8,7 @@ const messages = defineMessages({
   },
   'learn.contentLock.complete.prerequisite': {
     id: 'learn.contentLock.complete.prerequisite',
-    defaultMessage: "You must complete the prerequisite: '{prereqSectionName}' to access this content.",
+    defaultMessage: "You must complete the prerequisite: ''{prereqSectionName}'' to access this content.",
     description: 'Message shown to indicate which prerequisite the student must complete prior to accessing the locked content.  {prereqSectionName} is the name of the prerequisite.',
   },
   'learn.contentLock.goToSection': {

@@ -17,15 +17,13 @@ Factory.define('sequenceMetadata')
       { courseId },
     ),
   ]))
-  .option(
-    'sequenceBlock', ['courseId', 'unitBlocks'], (courseId, unitBlocks) => (
-      Factory.build(
-        'block',
-        { type: 'sequential', children: unitBlocks.map(unitBlock => unitBlock.id) },
-        { courseId },
-      )
-    ),
-  )
+  .option('sequenceBlock', ['courseId', 'unitBlocks'], (courseId, unitBlocks) => (
+    Factory.build(
+      'block',
+      { type: 'sequential', children: unitBlocks.map(unitBlock => unitBlock.id) },
+      { courseId },
+    )
+  ))
   .attr('element_id', ['sequenceBlock'], sequenceBlock => sequenceBlock.block_id)
   .attr('item_id', ['sequenceBlock'], sequenceBlock => sequenceBlock.id)
   .attr('display_name', ['sequenceBlock'], sequenceBlock => sequenceBlock.display_name)

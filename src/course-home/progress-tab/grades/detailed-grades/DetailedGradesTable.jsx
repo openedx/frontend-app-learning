@@ -1,14 +1,16 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import {
+  getLocale, injectIntl, intlShape, isRtl,
+} from '@edx/frontend-platform/i18n';
 import { DataTable } from '@edx/paragon';
 
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
 import SubsectionTitleCell from './SubsectionTitleCell';
 
-function DetailedGradesTable({ intl }) {
+const DetailedGradesTable = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -17,6 +19,7 @@ function DetailedGradesTable({ intl }) {
     sectionScores,
   } = useModel('progress', courseId);
 
+  const isLocaleRtl = isRtl(getLocale());
   return (
     sectionScores.map((chapter) => {
       const subsectionScores = chapter.subsections.filter(
@@ -32,7 +35,7 @@ function DetailedGradesTable({ intl }) {
 
       const detailedGradesData = subsectionScores.map((subsection) => ({
         subsectionTitle: <SubsectionTitleCell subsection={subsection} />,
-        score: <span className={subsection.learnerHasAccess ? '' : 'greyed-out'}>{subsection.numPointsEarned}/{subsection.numPointsPossible}</span>,
+        score: <span className={subsection.learnerHasAccess ? '' : 'greyed-out'}>{subsection.numPointsEarned}{isLocaleRtl ? '\\' : '/'}{subsection.numPointsPossible}</span>,
       }));
 
       return (
@@ -61,7 +64,7 @@ function DetailedGradesTable({ intl }) {
       );
     })
   );
-}
+};
 
 DetailedGradesTable.propTypes = {
   intl: intlShape.isRequired,

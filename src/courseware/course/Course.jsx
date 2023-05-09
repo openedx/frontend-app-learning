@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
@@ -18,10 +18,7 @@ import SidebarTriggers from './sidebar/SidebarTriggers';
 import { useModel } from '../../generic/model-store';
 import { getSessionStorage, setSessionStorage } from '../../data/sessionStorage';
 
-/** [MM-P2P] Experiment */
-import { initCoursewareMMP2P, MMP2PBlockModal } from '../../experiments/mm-p2p';
-
-function Course({
+const Course = ({
   courseId,
   sequenceId,
   unitId,
@@ -29,7 +26,7 @@ function Course({
   previousSequenceHandler,
   unitNavigationHandler,
   windowWidth,
-}) {
+}) => {
   const course = useModel('coursewareMeta', courseId);
   const {
     celebrations,
@@ -46,10 +43,8 @@ function Course({
 
   // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
   const dispatch = useDispatch();
-  const celebrateFirstSection = celebrations && celebrations.firstSection;
-  const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(shouldCelebrateOnSectionLoad(
-    courseId, sequenceId, celebrateFirstSection, dispatch, celebrations,
-  ));
+
+  const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(false);
   // If streakLengthToCelebrate is populated, that modal takes precedence. Wait til the next load to display
   // the weekly goal celebration modal.
   const [weeklyGoalCelebrationOpen, setWeeklyGoalCelebrationOpen] = useState(
@@ -71,8 +66,16 @@ function Course({
     }
   }
 
-  /** [MM-P2P] Experiment */
-  const MMP2P = initCoursewareMMP2P(courseId, sequenceId, unitId);
+  useEffect(() => {
+    const celebrateFirstSection = celebrations && celebrations.firstSection;
+    setFirstSectionCelebrationOpen(shouldCelebrateOnSectionLoad(
+      courseId,
+      sequenceId,
+      celebrateFirstSection,
+      dispatch,
+      celebrations,
+    ));
+  }, [sequenceId]);
 
   return (
     <SidebarProvider courseId={courseId} unitId={unitId}>
@@ -86,8 +89,6 @@ function Course({
           sequenceId={sequenceId}
           isStaff={isStaff}
           unitId={unitId}
-          //* * [MM-P2P] Experiment */
-          mmp2p={MMP2P}
         />
         {shouldDisplayTriggers && (
           <SidebarTriggers />
@@ -102,8 +103,6 @@ function Course({
         unitNavigationHandler={unitNavigationHandler}
         nextSequenceHandler={nextSequenceHandler}
         previousSequenceHandler={previousSequenceHandler}
-        //* * [MM-P2P] Experiment */
-        mmp2p={MMP2P}
       />
       <CelebrationModal
         courseId={courseId}
@@ -117,11 +116,9 @@ function Course({
         onClose={() => setWeeklyGoalCelebrationOpen(false)}
       />
       <ContentTools course={course} />
-      { /** [MM-P2P] Experiment */ }
-      { MMP2P.meta.modalLock && <MMP2PBlockModal options={MMP2P} /> }
     </SidebarProvider>
   );
-}
+};
 
 Course.propTypes = {
   courseId: PropTypes.string,
@@ -139,7 +136,7 @@ Course.defaultProps = {
   unitId: null,
 };
 
-function CourseWrapper(props) {
+const CourseWrapper = (props) => {
   // useWindowSize initially returns an undefined width intentionally at first.
   // See https://www.joshwcomeau.com/react/the-perils-of-rehydration/ for why.
   // But <Course> has some tricky window-size-dependent, session-storage-setting logic and React would yell at us if
@@ -151,6 +148,6 @@ function CourseWrapper(props) {
   }
 
   return <Course {...props} windowWidth={windowWidth} />;
-}
+};
 
 export default CourseWrapper;

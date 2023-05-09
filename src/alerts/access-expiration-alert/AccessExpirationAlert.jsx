@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
@@ -8,18 +7,8 @@ import { Alert, Hyperlink } from '@edx/paragon';
 import { Info } from '@edx/paragon/icons';
 
 import messages from './messages';
-import AccessExpirationAlertMMP2P from './AccessExpirationAlertMMP2P';
 
-function AccessExpirationAlert({ intl, payload }) {
-  /** [MM-P2P] Experiment */
-  const [showMMP2P, setShowMMP2P] = useState(!!window.experiment__home_alert_bShowMMP2P);
-  if (window.experiment__home_alert_showMMP2P === undefined) {
-    window.experiment__home_alert_showMMP2P = (val) => {
-      window.experiment__home_alert_bShowMMP2P = !!val;
-      setShowMMP2P(!!val);
-    };
-  }
-
+const AccessExpirationAlert = ({ intl, payload }) => {
   const {
     accessExpiration,
     courseId,
@@ -38,13 +27,6 @@ function AccessExpirationAlert({ intl, payload }) {
     upgradeDeadline,
     upgradeUrl,
   } = accessExpiration;
-
-  /** [MM-P2P] Experiment */
-  if (showMMP2P) {
-    return (
-      <AccessExpirationAlertMMP2P payload={payload} />
-    );
-  }
 
   const logClick = () => {
     sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
@@ -134,7 +116,7 @@ function AccessExpirationAlert({ intl, payload }) {
       {deadlineMessage}
     </Alert>
   );
-}
+};
 
 AccessExpirationAlert.propTypes = {
   intl: intlShape.isRequired,

@@ -8,7 +8,7 @@ import { OverlayTrigger, Popover } from '@edx/paragon';
 
 import messages from '../messages';
 
-function PassingGradeTooltip({ intl, passingGrade, tooltipClassName }) {
+const PassingGradeTooltip = ({ intl, passingGrade, tooltipClassName }) => {
   const isLocaleRtl = isRtl(getLocale());
 
   let passingGradeDirection = passingGrade < 50 ? '' : '-';
@@ -25,7 +25,7 @@ function PassingGradeTooltip({ intl, passingGrade, tooltipClassName }) {
         overlay={(
           <Popover id="minimum-grade-tooltip" className={`bg-primary-500 ${tooltipClassName}`} aria-hidden="true">
             <Popover.Content className="text-white">
-              {passingGrade}%
+              {passingGrade}{isLocaleRtl && '\u200f'}%
             </Popover.Content>
           </Popover>
         )}
@@ -47,7 +47,7 @@ function PassingGradeTooltip({ intl, passingGrade, tooltipClassName }) {
       </text>
     </>
   );
-}
+};
 
 PassingGradeTooltip.defaultProps = {
   tooltipClassName: '',

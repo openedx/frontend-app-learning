@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 
 import { getConfig } from '@edx/frontend-platform';
 
-export default function LmsHtmlFragment({
+const LmsHtmlFragment = ({
   className,
   html,
   title,
   ...rest
-}) {
+}) => {
   const wholePage = `
     <html>
       <head>
         <base href="${getConfig().LMS_BASE_URL}" target="_parent">
         <link rel="stylesheet" href="/static/${getConfig().LEGACY_THEME_NAME ? `${getConfig().LEGACY_THEME_NAME}/` : ''}css/bootstrap/lms-main.css">
-        <link rel="stylesheet" type="text/css" href="${getConfig().BASE_URL}/src/course-home/outline-tab/LmsHtmlFragment.css">
+        <link rel="stylesheet" type="text/css" href="${getConfig().BASE_URL}/static/LmsHtmlFragment.css">
       </head>
       <body class="${className}">${html}</body>
       <script>
@@ -55,7 +55,7 @@ export default function LmsHtmlFragment({
       {...rest}
     />
   );
-}
+};
 
 LmsHtmlFragment.defaultProps = {
   className: '',
@@ -66,3 +66,5 @@ LmsHtmlFragment.propTypes = {
   html: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
 };
+
+export default LmsHtmlFragment;

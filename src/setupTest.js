@@ -137,10 +137,12 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
   courseHomeMetadataUrl = appendBrowserTimezoneToUrl(courseHomeMetadataUrl);
 
+  const provider = options?.provider || 'legacy';
+
   axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
   axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
-  axiosMock.onGet(discussionConfigUrl).reply(200, { provider: 'legacy' });
+  axiosMock.onGet(discussionConfigUrl).reply(200, { provider });
   sequenceMetadata.forEach(metadata => {
     const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${metadata.item_id}`;
     axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);
@@ -168,18 +170,16 @@ function render(
     ...renderOptions
   } = {},
 ) {
-  function Wrapper({ children }) {
-    return (
-      // eslint-disable-next-line react/jsx-filename-extension
-      <IntlProvider locale="en">
-        <AppProvider store={store || globalStore}>
-          <UserMessagesProvider>
-            {children}
-          </UserMessagesProvider>
-        </AppProvider>
-      </IntlProvider>
-    );
-  }
+  const Wrapper = ({ children }) => (
+    // eslint-disable-next-line react/jsx-filename-extension
+    <IntlProvider locale="en">
+      <AppProvider store={store || globalStore}>
+        <UserMessagesProvider>
+          {children}
+        </UserMessagesProvider>
+      </AppProvider>
+    </IntlProvider>
+  );
 
   Wrapper.propTypes = {
     children: PropTypes.node.isRequired,

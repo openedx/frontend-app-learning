@@ -22,12 +22,12 @@ import messages from './messages';
  * modulestore, which would allow us to revive the usefulness of this component again.
  */
 
-function UnitNavigationEffortEstimate({
+const UnitNavigationEffortEstimate = ({
   children,
   intl,
   sequenceId,
   unitId,
-}) {
+}) => {
   const sequenceIds = useSelector(sequenceIdsSelector);
   const sequenceIndex = sequenceIds.indexOf(sequenceId);
   const nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
@@ -55,7 +55,7 @@ function UnitNavigationEffortEstimate({
       <EffortEstimate className="d-block mt-1" block={nextSequence} />
     </div>
   );
-}
+};
 
 UnitNavigationEffortEstimate.propTypes = {
   children: PropTypes.node,

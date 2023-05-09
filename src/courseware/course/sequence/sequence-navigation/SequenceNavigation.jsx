@@ -11,7 +11,7 @@ import {
 } from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';
-import { getCourseExitNavigation } from '../../course-exit';
+import { GetCourseExitNavigation } from '../../course-exit';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
@@ -19,10 +19,8 @@ import { useModel } from '../../../../generic/model-store';
 import { LOADED } from '../../../data/slice';
 
 import messages from './messages';
-/** [MM-P2P] Experiment */
-import { MMP2PFlyoverTriggerMobile } from '../../../../experiments/mm-p2p';
 
-function SequenceNavigation({
+const SequenceNavigation = ({
   intl,
   unitId,
   sequenceId,
@@ -31,8 +29,7 @@ function SequenceNavigation({
   nextSequenceHandler,
   previousSequenceHandler,
   goToCourseExitPage,
-  mmp2p,
-}) {
+}) => {
   const sequence = useModel('sequences', sequenceId);
   const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
   const {
@@ -67,7 +64,7 @@ function SequenceNavigation({
   };
 
   const renderNextButton = () => {
-    const { exitActive, exitText } = getCourseExitNavigation(courseId, intl);
+    const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
     const buttonOnClick = isLastUnit ? goToCourseExitPage : nextSequenceHandler;
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
@@ -90,11 +87,9 @@ function SequenceNavigation({
       {renderUnitButtons()}
       {renderNextButton()}
 
-      {/** [MM-P2P] Experiment */}
-      { mmp2p.state.isEnabled && <MMP2PFlyoverTriggerMobile options={mmp2p} /> }
     </nav>
   );
-}
+};
 
 SequenceNavigation.propTypes = {
   intl: intlShape.isRequired,
@@ -105,22 +100,11 @@ SequenceNavigation.propTypes = {
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   goToCourseExitPage: PropTypes.func.isRequired,
-  /** [MM-P2P] Experiment */
-  mmp2p: PropTypes.shape({
-    state: PropTypes.shape({
-      isEnabled: PropTypes.bool.isRequired,
-    }),
-  }),
 };
 
 SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
-
-  /** [MM-P2P] Experiment */
-  mmp2p: {
-    state: { isEnabled: false },
-  },
 };
 
 export default injectIntl(SequenceNavigation);

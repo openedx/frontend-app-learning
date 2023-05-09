@@ -10,7 +10,7 @@ import { getProctoringInfoData } from '../../data/api';
 import { fetchProctoringInfoResolved } from '../../data/slice';
 import { useModel } from '../../../generic/model-store';
 
-function ProctoringInfoPanel({ intl }) {
+const ProctoringInfoPanel = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -35,6 +35,7 @@ function ProctoringInfoPanel({ intl }) {
     error: 'error',
     otherCourseApproved: 'otherCourseApproved',
     expiringSoon: 'expiringSoon',
+    expired: 'expired',
   };
 
   function getReadableStatusClass(examStatus) {
@@ -54,9 +55,14 @@ function ProctoringInfoPanel({ intl }) {
     return readableClass;
   }
 
-  function isNotYetSubmitted(examStatus) {
-    const NO_SHOW_STATES = ['submitted', 'second_review_required', 'verified'];
-    return !NO_SHOW_STATES.includes(examStatus);
+  function isCurrentlySubmitted(examStatus) {
+    const SUBMITTED_STATES = ['submitted', 'second_review_required'];
+    return SUBMITTED_STATES.includes(examStatus);
+  }
+
+  function isSubmissionRequired(examStatus) {
+    const OK_STATES = [readableStatuses.submitted, readableStatuses.verified];
+    return !OK_STATES.includes(examStatus);
   }
 
   function isNotYetReleased(examReleaseDate) {
@@ -77,11 +83,19 @@ function ProctoringInfoPanel({ intl }) {
     return borderClass;
   }
 
-  function isExpiringSoon(dateString) {
-    // Returns true if the expiration date is within 28 days
+  function isExpired(dateString) {
+    // Returns true if the expiration date has passed
     const today = new Date();
     const expirationDateObject = new Date(dateString);
-    return today > expirationDateObject.getTime() - 2419200000;
+    return today >= expirationDateObject.getTime();
+  }
+
+  function isExpiringSoon(dateString) {
+    // Returns true if the expiration date is within 28 days
+    const twentyeightDays = 28 * 24 * 60 * 60 * 1000;
+    const today = new Date();
+    const expirationDateObject = new Date(dateString);
+    return today > expirationDateObject.getTime() - twentyeightDays;
   }
 
   useEffect(() => {
@@ -96,7 +110,9 @@ function ProctoringInfoPanel({ intl }) {
             setStatus(response.onboarding_status);
             setLink(response.onboarding_link);
             const expirationDate = response.expiration_date;
-            if (expirationDate && isExpiringSoon(expirationDate)) {
+            if (expirationDate && isExpired(expirationDate)) {
+              setReadableStatus(getReadableStatusClass('expired'));
+            } else if (expirationDate && isExpiringSoon(expirationDate)) {
               setReadableStatus(getReadableStatusClass('expiringSoon'));
             } else {
               setReadableStatus(getReadableStatusClass(response.onboarding_status));
@@ -112,6 +128,7 @@ function ProctoringInfoPanel({ intl }) {
       .finally(() => {
         dispatch(fetchProctoringInfoResolved());
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   let onboardingExamButton = null;
@@ -154,6 +171,7 @@ function ProctoringInfoPanel({ intl }) {
   }
 
   return (
+    // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       { showInfoPanel && (
         <section className={`mb-4 p-3 outline-sidebar-proctoring-panel ${getBorderClass()}`}>
@@ -175,17 +193,17 @@ function ProctoringInfoPanel({ intl }) {
             {![readableStatuses.verified, readableStatuses.otherCourseApproved].includes(readableStatus) && (
               <>
                 <p>
-                  {isNotYetSubmitted(status) && (
+                  {!isCurrentlySubmitted(status) && (
                     intl.formatMessage(messages.proctoringPanelGeneralInfo)
                   )}
-                  {!isNotYetSubmitted(status) && (
+                  {isCurrentlySubmitted(status) && (
                     intl.formatMessage(messages.proctoringPanelGeneralInfoSubmitted)
                   )}
                 </p>
                 <p>{intl.formatMessage(messages.proctoringPanelGeneralTime)}</p>
               </>
             )}
-            {isNotYetSubmitted(status) && (
+            {isSubmissionRequired(readableStatus) && (
               onboardingExamButton
             )}
             <Button variant="outline-primary" block href="https://support.edx.org/hc/en-us/sections/115004169247-Taking-Timed-and-Proctored-Exams">
@@ -196,7 +214,7 @@ function ProctoringInfoPanel({ intl }) {
       )}
     </>
   );
-}
+};
 
 ProctoringInfoPanel.propTypes = {
   intl: intlShape.isRequired,

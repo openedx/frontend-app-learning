@@ -14,7 +14,7 @@ import { logClick } from './utils';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 
-function UpgradeFootnote({ deadline, href, intl }) {
+const UpgradeFootnote = ({ deadline, href, intl }) => {
   const { courseId } = useSelector(state => state.courseware);
   const { org } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
@@ -55,7 +55,7 @@ function UpgradeFootnote({ deadline, href, intl }) {
       )}
     />
   );
-}
+};
 
 UpgradeFootnote.propTypes = {
   deadline: PropTypes.instanceOf(Date).isRequired,

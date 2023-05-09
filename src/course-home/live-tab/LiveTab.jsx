@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-function LiveTab() {
+const LiveTab = () => {
   const { courseId } = useSelector(state => state.courseHome);
   const liveModel = useSelector(state => state.models.live);
   useEffect(() => {
@@ -17,6 +17,6 @@ function LiveTab() {
       dangerouslySetInnerHTML={{ __html: liveModel[courseId]?.iframe }}
     />
   );
-}
+};
 
 export default LiveTab;

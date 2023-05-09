@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { breakpoints } from '@edx/paragon';
@@ -64,19 +65,17 @@ describe('Sequence', () => {
       { gated_content: gatedContent },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore(
-      {
-        courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
-      }, false,
-    );
+    const testStore = await initializeTestStore({
+      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
+    }, false);
     const { container } = render(
       <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
       { store: testStore },
     );
 
     await waitFor(() => expect(screen.queryByText('Loading locked content messaging...')).toBeInTheDocument());
-    // `Previous`, `Active`, `Next` and `Prerequisite` buttons.
-    expect(screen.getAllByRole('button').length).toEqual(4);
+    // `Previous`, `Active`, `Next`, `Prerequisite` and `Close Tray` buttons.
+    expect(screen.getAllByRole('button').length).toEqual(5);
 
     expect(screen.getByText('Content Locked')).toBeInTheDocument();
     const unitContainer = container.querySelector('.unit-container');
@@ -97,11 +96,9 @@ describe('Sequence', () => {
       { is_hidden_after_due: true },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore(
-      {
-        courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
-      }, false,
-    );
+    const testStore = await initializeTestStore({
+      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
+    }, false);
     render(
       <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
       { store: testStore },
@@ -129,7 +126,7 @@ describe('Sequence', () => {
     render(<Sequence {...mockData} />);
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
     // Renders navigation buttons plus one button for each unit.
-    expect(screen.getAllByRole('button')).toHaveLength(3 + unitBlocks.length);
+    expect(screen.getAllByRole('button')).toHaveLength(4 + unitBlocks.length);
 
     loadUnit();
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
@@ -385,27 +382,25 @@ describe('Sequence', () => {
     });
   });
 
+  const SidebarWrapper = ({ contextValue }) => (
+    <SidebarContext.Provider value={contextValue}>
+      <Sequence {...mockData} />
+    </SidebarContext.Provider>
+  );
+
+  SidebarWrapper.propTypes = {
+    contextValue: PropTypes.shape({}).isRequired,
+  };
+
   describe('notification feature', () => {
     it('renders notification tray in sequence', async () => {
-      render(
-        <SidebarContext.Provider
-          value={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: () => null }}
-        >
-          <Sequence {...mockData} />
-        </SidebarContext.Provider>,
-      );
+      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: () => null }} />);
       expect(await screen.findByText('Notifications')).toBeInTheDocument();
     });
 
     it('handles click on notification tray close button', async () => {
       const toggleNotificationTray = jest.fn();
-      render(
-        <SidebarContext.Provider
-          value={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: toggleNotificationTray }}
-        >
-          <Sequence {...mockData} />
-        </SidebarContext.Provider>,
-      );
+      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: toggleNotificationTray }} />);
       const notificationCloseIconButton = await screen.findByRole('button', { name: /Close notification tray/i });
       fireEvent.click(notificationCloseIconButton);
       expect(toggleNotificationTray).toHaveBeenCalledTimes(1);

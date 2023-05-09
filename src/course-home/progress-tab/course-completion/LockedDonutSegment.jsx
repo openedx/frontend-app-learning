@@ -6,7 +6,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 
-function LockedDonutSegment({ intl, lockedPercentage }) {
+const LockedDonutSegment = ({ intl, lockedPercentage }) => {
   const [showLockedPopover, setShowLockedPopover] = useState(false);
 
   if (!lockedPercentage) {
@@ -62,7 +62,7 @@ function LockedDonutSegment({ intl, lockedPercentage }) {
       </OverlayTrigger>
     </g>
   );
-}
+};
 
 LockedDonutSegment.propTypes = {
   intl: intlShape.isRequired,
