@@ -107,6 +107,7 @@ const Unit = ({
   const [modalOptions, setModalOptions] = useState({ open: false });
   const [shouldDisplayHonorCode, setShouldDisplayHonorCode] = useState(false);
   const [examAccessToken, setExamAccessToken] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [blockExamAccess, setBlockExamAccess] = useState(isExam());
 
   const unit = useModel('units', id);
