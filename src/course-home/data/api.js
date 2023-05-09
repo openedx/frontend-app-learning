@@ -204,10 +204,16 @@ export async function getDatesTabData(courseId) {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return camelCaseObject(data);
   } catch (error) {
-    const { httpErrorStatus } = error && error.customAttributes;
+    const httpErrorStatus = error?.response?.status;
     if (httpErrorStatus === 401) {
       // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
       // courseAccess in the metadata call, so just ignore this status for now.
+      return {};
+    }
+    if (httpErrorStatus === 403) {
+      // The backend sends this if there is a course access error and the user should be redirected. The redirect
+      // info is included in the course metadata request and will be handled there as long as this call returns
+      // without an error
       return {};
     }
     throw error;
@@ -259,7 +265,7 @@ export async function getProgressTabData(courseId, targetUserId) {
 
     return camelCasedData;
   } catch (error) {
-    const { httpErrorStatus } = error && error.customAttributes;
+    const httpErrorStatus = error?.response?.status;
     if (httpErrorStatus === 404) {
       global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
       return {};
@@ -267,6 +273,12 @@ export async function getProgressTabData(courseId, targetUserId) {
     if (httpErrorStatus === 401) {
       // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
       // courseAccess in the metadata call, so just ignore this status for now.
+      return {};
+    }
+    if (httpErrorStatus === 403) {
+      // The backend sends this if there is a course access error and the user should be redirected. The redirect
+      // info is included in the course metadata request and will be handled there as long as this call returns
+      // without an error
       return {};
     }
     throw error;
@@ -322,7 +334,20 @@ export function getTimeOffsetMillis(headerDate, requestTime, responseTime) {
 export async function getOutlineTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   const requestTime = Date.now();
-  const tabData = await getAuthenticatedHttpClient().get(url);
+  let tabData;
+  try {
+    tabData = await getAuthenticatedHttpClient().get(url);
+  } catch (error) {
+    const httpErrorStatus = error?.response?.status;
+    if (httpErrorStatus === 403) {
+      // The backend sends this if there is a course access error and the user should be redirected. The redirect
+      // info is included in the course metadata request and will be handled there as long as this call returns
+      // without an error
+      return {};
+    }
+    throw error;
+  }
+
   const responseTime = Date.now();
 
   const {

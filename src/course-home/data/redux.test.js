@@ -21,6 +21,18 @@ describe('Data layer integration tests', () => {
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
 
+  const courseHomeAccessDeniedMetadata = Factory.build(
+    'courseHomeMetadata',
+    {
+      id: courseId,
+      course_access: {
+        has_access: false,
+        error_code: 'bad codes',
+        additional_context_user_message: 'your Codes Are BAD',
+      },
+    },
+  );
+
   let store;
 
   beforeEach(() => {
@@ -57,14 +69,31 @@ describe('Data layer integration tests', () => {
       expect(state.courseHome.courseStatus).toEqual('loaded');
       expect(state).toMatchSnapshot();
     });
+
+    it.each([401, 403, 404])(
+      'should result in fetch denied for expected errors and failed for all others',
+      async (errorStatus) => {
+        axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeAccessDeniedMetadata);
+        axiosMock.onGet(`${datesBaseUrl}/${courseId}`).reply(errorStatus, {});
+
+        await executeThunk(thunks.fetchDatesTab(courseId), store.dispatch);
+
+        let expectedState = 'failed';
+        if (errorStatus === 401 || errorStatus === 403) {
+          expectedState = 'denied';
+        }
+        expect(store.getState().courseHome.courseStatus).toEqual(expectedState);
+      },
+    );
   });
 
   describe('Test fetchOutlineTab', () => {
     const outlineBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline`;
+    const outlineUrl = `${outlineBaseUrl}/${courseId}`;
 
     it('Should result in fetch failure if error occurs', async () => {
       axiosMock.onGet(courseMetadataUrl).networkError();
-      axiosMock.onGet(`${outlineBaseUrl}/${courseId}`).networkError();
+      axiosMock.onGet(outlineUrl).networkError();
 
       await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
 
@@ -75,8 +104,6 @@ describe('Data layer integration tests', () => {
     it('Should fetch, normalize, and save metadata', async () => {
       const outlineTabData = Factory.build('outlineTabData', { courseId });
 
-      const outlineUrl = `${outlineBaseUrl}/${courseId}`;
-
       axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
 
@@ -86,6 +113,22 @@ describe('Data layer integration tests', () => {
       expect(state.courseHome.courseStatus).toEqual('loaded');
       expect(state).toMatchSnapshot();
     });
+
+    it.each([401, 403, 404])(
+      'should result in fetch denied for expected errors and failed for all others',
+      async (errorStatus) => {
+        axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeAccessDeniedMetadata);
+        axiosMock.onGet(outlineUrl).reply(errorStatus, {});
+
+        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
+
+        let expectedState = 'failed';
+        if (errorStatus === 403) {
+          expectedState = 'denied';
+        }
+        expect(store.getState().courseHome.courseStatus).toEqual(expectedState);
+      },
+    );
   });
 
   describe('Test fetchProgressTab', () => {
@@ -129,6 +172,19 @@ describe('Data layer integration tests', () => {
       const state = store.getState();
       expect(state.courseHome.targetUserId).toEqual(2);
     });
+
+    it.each([401, 403, 404])(
+      'should result in fetch denied for expected errors and failed for all others',
+      async (errorStatus) => {
+        const progressUrl = `${progressBaseUrl}/${courseId}`;
+        axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeAccessDeniedMetadata);
+        axiosMock.onGet(progressUrl).reply(errorStatus, {});
+
+        await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
+
+        expect(store.getState().courseHome.courseStatus).toEqual('denied');
+      },
+    );
   });
 
   describe('Test saveCourseGoal', () => {
