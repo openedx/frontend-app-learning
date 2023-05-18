@@ -251,6 +251,9 @@ const Unit = ({
               // could have given us a 4xx or 5xx response.
               if (!hasLoaded) {
                 setShowError(true);
+                logError('Unit iframe failed to load. Server possibly returned 4xx or 5xx response.', {
+                  iframeUrl,
+                });
               }
 
               window.onmessage = (e) => {
