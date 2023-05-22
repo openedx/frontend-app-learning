@@ -12,6 +12,7 @@ function CourseTabsNavigation({
   return (
     <div id="courseTabsNavigation" className={classNames('course-tabs-navigation', className)}>
       <div className="container-xl">
+        <h1>Funix-education</h1>
         <Tabs
           className="nav-underline-tabs"
           aria-label={intl.formatMessage(messages.courseMaterial)}
