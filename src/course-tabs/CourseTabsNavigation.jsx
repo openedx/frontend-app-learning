@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 
 import messages from './messages';
@@ -11,20 +10,21 @@ const CourseTabsNavigation = ({
 }) => (
   <div id="courseTabsNavigation" className={classNames('course-tabs-navigation', className)}>
     <div className="container-xl">
-      <Tabs
-        className="nav-underline-tabs"
-        aria-label={intl.formatMessage(messages.courseMaterial)}
-      >
-        {tabs.map(({ url, title, slug }) => (
-          <a
-            key={slug}
-            className={classNames('nav-item flex-shrink-0 nav-link', { active: slug === activeTabSlug })}
-            href={url}
-          >
-            {title}
-          </a>
-        ))}
-      </Tabs>
+      <nav className="nav flex-column nav-pills">
+        <div aria-label={intl.formatMessage(messages.courseMaterial)}>
+        <div className="nav-items-container">
+            {tabs.map(({ url, title, slug }) => (
+              <a
+                key={slug}
+                className={classNames('nav-link', { active: slug === activeTabSlug })}
+                href={url}
+              >
+                {title}
+              </a>
+            ))}
+          </div>
+        </div>
+      </nav>
     </div>
   </div>
 );
