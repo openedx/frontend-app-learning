@@ -70,6 +70,7 @@ function LoadedTabPage({
         verifiedMode={verifiedMode}
       />
       <main id="main-content" className="d-flex flex-column flex-grow-1">
+        <h1>Funix-education</h1>
         <AlertList
           topic="outline"
           className="mx-5 mt-3"
