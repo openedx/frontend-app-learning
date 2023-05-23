@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@edx/browserslist-config": "1.1.1",
-    "@edx/frontend-build": "^12.4.15",
+    "@edx/frontend-build": "^12.8.27",
     "@edx/reactifex": "2.1.1",
     "@pact-foundation/pact": "9.17.3",
     "@testing-library/jest-dom": "5.16.5",
@@ -74,7 +74,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "es-check": "6.2.1",
     "husky": "7.0.4",
-    "jest": "27.5.1",
+    "jest": "29.5.0",
     "rosie": "2.1.0"
   }
 }

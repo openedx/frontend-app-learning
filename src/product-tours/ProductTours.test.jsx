@@ -233,7 +233,7 @@ describe('Courseware Tour', () => {
     // Wait for the page spinner to be removed, such that we can wait for our main
     // content to load before making any assertions.
     await waitForElementToBeRemoved(screen.getByRole('status'));
-    return container;
+    return Promise.resolve(container);
   }
 
   describe('when receiving successful course data', () => {
