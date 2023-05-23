@@ -119,11 +119,11 @@ describe('Outline Tab', () => {
 
       // Click to expand section
       userEvent.click(expandButton);
-      expect(collapsedSectionNode).toHaveAttribute('aria-expanded', 'true');
+      await waitFor(() => expect(collapsedSectionNode).toHaveAttribute('aria-expanded', 'true'));
 
       // Click to collapse section
       userEvent.click(expandButton);
-      expect(collapsedSectionNode).toHaveAttribute('aria-expanded', 'false');
+      await waitFor(() => expect(collapsedSectionNode).toHaveAttribute('aria-expanded', 'false'));
     });
 
     it('displays correct icon for complete assignment', async () => {
