@@ -11,7 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 
 import { UserMessagesProvider } from '../generic/user-messages';
 import tabMessages from '../tab-page/messages';
-import { initializeMockApp } from '../setupTest';
+import { initializeMockApp, waitFor } from '../setupTest';
 
 import CoursewareContainer from './CoursewareContainer';
 import { buildSimpleCourseBlocks, buildBinaryCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
@@ -211,7 +211,7 @@ describe('CoursewareContainer', () => {
         });
 
         history.push(`/course/${courseId}`);
-        const container = await loadContainer();
+        const container = await waitFor(() => loadContainer());
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -234,7 +234,7 @@ describe('CoursewareContainer', () => {
         axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {});
 
         history.push(`/course/${courseId}`);
-        const container = await loadContainer();
+        const container = await waitFor(() => loadContainer());
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -284,7 +284,7 @@ describe('CoursewareContainer', () => {
       describe('when the URL does not contain a unit ID', () => {
         it('should choose a unit within the section\'s first sequence', async () => {
           setUrl(sectionTree[1].id);
-          const container = await loadContainer();
+          const container = await waitFor(() => loadContainer());
           assertLoadedHeader(container);
           assertSequenceNavigation(container, 2);
           assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id);
@@ -359,7 +359,7 @@ describe('CoursewareContainer', () => {
 
       it('should pick the first unit if position was not defined (activeUnitIndex becomes 0)', async () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}`);
-        const container = await loadContainer();
+        const container = await waitFor(() => loadContainer());
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -378,7 +378,7 @@ describe('CoursewareContainer', () => {
         setUpMockRequests({ sequenceMetadatas: [sequenceMetadata] });
 
         history.push(`/course/${courseId}/${sequenceBlock.id}`);
-        const container = await loadContainer();
+        const container = await waitFor(() => loadContainer());
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -395,7 +395,7 @@ describe('CoursewareContainer', () => {
 
       it('should load the specified unit', async () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
-        const container = await loadContainer();
+        const container = await waitFor(() => loadContainer());
 
         assertLoadedHeader(container);
         assertSequenceNavigation(container);
@@ -411,7 +411,7 @@ describe('CoursewareContainer', () => {
         });
 
         history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
-        const container = await loadContainer();
+        const container = await waitFor(() => loadContainer());
 
         const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
         const sequenceNextButton = sequenceNavButtons[4];
