@@ -28,6 +28,7 @@ Factory.define('outlineTabData')
     upgrade_url: `${host}/dashboard`,
   }))
   .attrs({
+    course_access_redirect: false,
     has_scheduled_content: null,
     access_expiration: null,
     can_show_upgrade_sock: false,
