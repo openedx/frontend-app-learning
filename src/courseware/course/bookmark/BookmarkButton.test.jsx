@@ -1,12 +1,12 @@
 import React from 'react';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { getConfig } from '@edx/frontend-platform';
 import { Factory } from 'rosie';
 import {
   render, screen, fireEvent, initializeTestStore, waitFor, authenticatedUser, logUnhandledRequests,
 } from '../../../setupTest';
 import { BookmarkButton } from './index';
+import { getBookmarksBaseUrl } from './data/api';
 
 describe('Bookmark Button', () => {
   let axiosMock;
@@ -32,7 +32,8 @@ describe('Bookmark Button', () => {
     mockData.unitId = nonBookmarkedUnitBlock.id;
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    const bookmarkUrl = `${getConfig().LMS_BASE_URL}/api/bookmarks/v1/bookmarks/`;
+    const bookmarkUrl = getBookmarksBaseUrl();
+
     axiosMock.onPost(bookmarkUrl).reply(200, { });
 
     const bookmarkDeleteUrlRegExp = new RegExp(`${bookmarkUrl}*,*`);
