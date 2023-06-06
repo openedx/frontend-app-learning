@@ -32,7 +32,7 @@ const LockPaywall = React.lazy(() => import('./lock-paywall'));
  * Changes to it should be vetted by them (security@edx.org).
  */
 const IFRAME_FEATURE_POLICY = (
-  'microphone *; camera *; midi *; geolocation *; encrypted-media *'
+  'microphone *; camera *; midi *; geolocation *; encrypted-media *; clipboard-write *'
 );
 
 /**
