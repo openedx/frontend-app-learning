@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useDispatch, useSelector } from 'react-redux';
-import { Redirect } from 'react-router';
+import { Navigate } from 'react-router-dom';
 
 import Footer from '@edx/frontend-component-footer';
 import { Toast } from '@edx/paragon';
@@ -53,7 +53,7 @@ const TabPage = ({ intl, ...props }) => {
   if (courseStatus === 'denied') {
     const redirectUrl = getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start);
     if (redirectUrl) {
-      return (<Redirect to={redirectUrl} />);
+      return (<Navigate to={redirectUrl} />);
     }
   }
 
