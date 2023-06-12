@@ -19,10 +19,10 @@ const PathFixesProvider = ({ children }) => {
   useEffect(() => {
     // We only check for spaces. That's not the only kind of character that is escaped in URLs, but it would always be
     // present for our cases, and I believe it's the only one we use normally.
-    if (location.pathname.includes('%20')) {
+    if (location.pathname.includes(' ') || location.pathname.includes('%20')) {
       const newLocation = {
         ...location,
-        pathname: location.pathname.replaceAll('%20', '+'),
+        pathname: (location.pathname.replaceAll(' ', '+')).replaceAll('%20', '+'),
       };
 
       sendTrackEvent('edx.ui.lms.path_fixed', {

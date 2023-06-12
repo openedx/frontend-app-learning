@@ -1,16 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-import { getConfig, history } from '@edx/frontend-platform';
+import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { ActionRow, Alert, Button } from '@edx/paragon';
 
+import { useNavigate } from 'react-router-dom';
 import { useModel } from '../../../../generic/model-store';
 import { saveIntegritySignature } from '../../../data';
 import messages from './messages';
 
 const HonorCode = ({ intl, courseId }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
     isMasquerading,
@@ -20,7 +22,7 @@ const HonorCode = ({ intl, courseId }) => {
   const siteName = getConfig().SITE_NAME;
   const honorCodeUrl = `${getConfig().TERMS_OF_SERVICE_URL}#honor-code`;
 
-  const handleCancel = () => history.push(`/course/${courseId}/home`);
+  const handleCancel = () => navigate(`/course/${courseId}/home`);
 
   const handleAgree = () => dispatch(
     // If the request is made by a staff user masquerading as a specific learner,

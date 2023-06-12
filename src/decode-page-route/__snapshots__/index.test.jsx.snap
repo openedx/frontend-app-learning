@@ -2,15 +2,16 @@
 
 exports[`DecodePageRoute should not modify the url if it does not need to be decoded 1`] = `
 <div>
-  PageRoute: {
-  "computedMatch": {
-    "path": "/course/:courseId/home",
-    "url": "/course/course-v1:edX+DemoX+Demo_Course/home",
-    "isExact": true,
-    "params": {
-      "courseId": "course-v1:edX+DemoX+Demo_Course"
-    }
-  }
+  PageWrap: {
+  "children": [
+    " ",
+    [
+      " ",
+      [],
+      " "
+    ],
+    " "
+  ]
 }
 </div>
 `;

@@ -26,6 +26,12 @@ jest.mock('react-redux', () => ({
   Provider: ({ children }) => children,
   useSelector: () => 'loaded',
 }));
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  Link: jest.fn().mockImplementation(({ to, children }) => (
+    <a href={to}>{children}</a>
+  )),
+}));
 
 useModels.mockImplementation((name) => {
   if (name === 'sections') {
@@ -115,7 +121,7 @@ describe('CourseBreadcrumbs', () => {
           sequenceId="block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions"
           isStaff
         />
-      </BrowserRouter>,
+      </BrowserRouter>
     </IntlProvider>,
   );
   it('renders course breadcrumbs as expected', async () => {

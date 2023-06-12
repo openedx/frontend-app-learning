@@ -3,16 +3,17 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { history } from '@edx/frontend-platform';
 import { Button } from '@edx/paragon';
 
+import { useNavigate } from 'react-router-dom';
 import messages from './messages';
 
 const ContentLock = ({
   intl, courseId, prereqSectionName, prereqId, sequenceTitle,
 }) => {
+  const navigate = useNavigate();
   const handleClick = useCallback(() => {
-    history.push(`/course/${courseId}/${prereqId}`);
+    navigate(`/course/${courseId}/${prereqId}`);
   }, [courseId, prereqId]);
 
   return (

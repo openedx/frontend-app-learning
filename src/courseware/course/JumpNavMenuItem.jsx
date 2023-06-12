@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { history } from '@edx/frontend-platform';
 import { MenuItem } from '@edx/paragon';
 
 import {
   sendTrackingLogEvent,
   sendTrackEvent,
 } from '@edx/frontend-platform/analytics';
+import { useNavigate } from 'react-router-dom';
 
 const JumpNavMenuItem = ({
   title,
@@ -16,6 +16,8 @@ const JumpNavMenuItem = ({
   sequences,
   isDefault,
 }) => {
+  const navigate = useNavigate();
+
   function logEvent(targetUrl) {
     const eventName = 'edx.ui.lms.jump_nav.selected';
     const payload = {
@@ -37,7 +39,7 @@ const JumpNavMenuItem = ({
   function handleClick() {
     const url = destinationUrl();
     logEvent(url);
-    history.push(url);
+    navigate(url);
   }
 
   return (

@@ -1,11 +1,13 @@
 import React from 'react';
 import { history } from '@edx/frontend-platform';
-import { Route } from 'react-router';
+import { Routes, Route } from 'react-router-dom';
 import { initializeTestStore, render, screen } from '../setupTest';
 import CourseAccessErrorPage from './CourseAccessErrorPage';
 
 const mockDispatch = jest.fn();
+const mockedNavigator = jest.fn();
 let mockCourseStatus;
+
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
@@ -14,6 +16,10 @@ jest.mock('react-redux', () => ({
 jest.mock('./PageLoading', () => function () {
   return <div data-testid="page-loading" />;
 });
+jest.mock('react-router-dom', () => ({
+  ...(jest.requireActual('react-router-dom')),
+  useNavigate: () => mockedNavigator,
+}));
 
 describe('CourseAccessErrorPage', () => {
   let courseId;
@@ -28,9 +34,10 @@ describe('CourseAccessErrorPage', () => {
   it('Displays loading in start on page rendering', () => {
     mockCourseStatus = 'loading';
     render(
-      <Route path="/course/:courseId/access-denied">
-        <CourseAccessErrorPage />
-      </Route>,
+      <Routes>
+        <Route path="/course/:courseId/access-denied" element={<CourseAccessErrorPage />} />
+      </Routes>,
+      { wrapWithRouter: true },
     );
     expect(screen.getByTestId('page-loading')).toBeInTheDocument();
     expect(history.location.pathname).toBe(accessDeniedUrl);
@@ -39,20 +46,22 @@ describe('CourseAccessErrorPage', () => {
   it('Redirect user to homepage if user has access', () => {
     mockCourseStatus = 'loaded';
     render(
-      <Route path="/course/:courseId/access-denied">
-        <CourseAccessErrorPage />
-      </Route>,
+      <Routes>
+        <Route path="/course/:courseId/access-denied" element={<CourseAccessErrorPage />} />
+      </Routes>,
+      { wrapWithRouter: true },
     );
-    expect(history.location.pathname).toBe('/redirect/home/course-v1:edX+DemoX+Demo_Course');
+    expect(mockedNavigator).toHaveBeenCalledWith('/redirect/home/course-v1:edX+DemoX+Demo_Course');
   });
 
   it('For access denied it should render access denied page', () => {
     mockCourseStatus = 'denied';
 
     render(
-      <Route path="/course/:courseId/access-denied">
-        <CourseAccessErrorPage />
-      </Route>,
+      <Routes>
+        <Route path="/course/:courseId/access-denied" element={<CourseAccessErrorPage />} />
+      </Routes>,
+      { wrapWithRouter: true },
     );
     expect(screen.getByTestId('access-denied-main')).toBeInTheDocument();
     expect(history.location.pathname).toBe(accessDeniedUrl);

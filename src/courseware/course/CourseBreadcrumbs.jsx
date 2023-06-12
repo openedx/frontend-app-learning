@@ -129,6 +129,7 @@ const CourseBreadcrumbs = ({
           <Link
             className="flex-shrink-0 text-primary"
             to={`/course/${courseId}/home`}
+            replace
           >
             <FontAwesomeIcon icon={faHome} className="mr-2" />
             <FormattedMessage

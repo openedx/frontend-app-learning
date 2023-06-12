@@ -4,7 +4,7 @@ import { AppProvider } from '@edx/frontend-platform/react';
 import { render } from '@testing-library/react';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
-import { Route } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { UserMessagesProvider } from '../../generic/user-messages';
 import {
@@ -30,11 +30,16 @@ describe('DiscussionTab', () => {
     component = (
       <AppProvider store={store}>
         <UserMessagesProvider>
-          <Route path="/course/:courseId/discussion">
-            <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
-              <DiscussionTab />
-            </TabContainer>
-          </Route>
+          <Routes>
+            <Route
+              path="/course/:courseId/discussion"
+              element={(
+                <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
+                  <DiscussionTab />
+                </TabContainer>
+              )}
+            />
+          </Routes>
         </UserMessagesProvider>
       </AppProvider>
     );

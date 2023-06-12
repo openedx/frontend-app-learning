@@ -51,7 +51,7 @@ describe('Course Exit Pages', () => {
 
   async function fetchAndRender(component) {
     await executeThunk(fetchCourse(courseId), store.dispatch);
-    render(component, { store });
+    render(component, { store, wrapWithRouter: true });
   }
 
   beforeEach(() => {
