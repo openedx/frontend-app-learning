@@ -22,6 +22,7 @@ const mockData = {
     },
   ],
   isDefault: false,
+  onClick: jest.fn().mockName('onClick'),
 };
 describe('JumpNavMenuItem', () => {
   render(
