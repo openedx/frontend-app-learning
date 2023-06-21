@@ -40,7 +40,7 @@ const SidebarProvider = ({
       setCurrentSidebar(initialSidebar);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialSidebar, verifiedMode]);
+  }, [initialSidebar, verifiedMode, unitId]);
 
   const onNotificationSeen = useCallback(() => {
     setNotificationStatus('inactive');
@@ -49,11 +49,6 @@ const SidebarProvider = ({
 
   const toggleSidebar = useCallback((sidebarId) => {
     // Switch to new sidebar or hide the current sidebar
-    if (currentSidebar === SIDEBARS.DISCUSSIONS.ID) {
-      localStorage.setItem('showDiscussionSidebar', false);
-    } else if (sidebarId === SIDEBARS.DISCUSSIONS.ID) {
-      localStorage.setItem('showDiscussionSidebar', true);
-    }
     setCurrentSidebar(sidebarId === currentSidebar ? null : sidebarId);
   }, [currentSidebar]);
 
