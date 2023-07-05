@@ -299,13 +299,14 @@
           "course_exit_page_is_active": false,
           "certificate_data": {
             "cert_status": "audit_passing",
-            "cert_web_view_url": null,            
+            "cert_web_view_url": null,
             "certificate_available_date": null
           },
           "verify_identity_url": null,
           "verification_status": "none",
           "linkedin_add_to_profile_url": null,
-          "user_needs_integrity_signature": false
+          "user_needs_integrity_signature": false,
+          "learning_assistant_launch_url": null
         },
         "matchingRules": {
           "$.body.access_expiration.expiration_date": {
@@ -439,6 +440,9 @@
             "match": "type"
           },
           "$.body.user_needs_integrity_signature": {
+            "match": "type"
+          },
+          "$.body.learning_assistant_launch_url": {
             "match": "type"
           }
         }
