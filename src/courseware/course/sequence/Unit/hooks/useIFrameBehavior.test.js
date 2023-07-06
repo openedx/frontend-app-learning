@@ -69,12 +69,14 @@ const defaultStateVals = {
   iframeHeight: 0,
   hasLoaded: false,
   showError: false,
+  windowTopOffset: null,
 };
 
 const stateVals = {
   iframeHeight: testIFrameHeight,
   hasLoaded: true,
   showError: true,
+  windowTopOffset: 32,
 };
 
 describe('useIFrameBehavior hook', () => {
@@ -92,6 +94,7 @@ describe('useIFrameBehavior hook', () => {
       state.expectInitializedWith(stateKeys.iframeHeight, 0);
       state.expectInitializedWith(stateKeys.hasLoaded, false);
       state.expectInitializedWith(stateKeys.showError, false);
+      state.expectInitializedWith(stateKeys.windowTopOffset, null);
     });
     describe('effects - on frame change', () => {
       let oldGetElement;
@@ -132,6 +135,7 @@ describe('useIFrameBehavior hook', () => {
     });
     describe('event listener', () => {
       it('calls eventListener with prepared callback', () => {
+        state.mockVals(stateVals);
         hook = useIFrameBehavior(props);
         const [call] = useEventListener.mock.calls;
         expect(call[0]).toEqual('message');
@@ -142,6 +146,8 @@ describe('useIFrameBehavior hook', () => {
           state.setState.hasLoaded,
           state.values.iframeHeight,
           state.setState.iframeHeight,
+          state.values.windowTopOffset,
+          state.setState.windowTopOffset,
         ]);
       });
       describe('resize message', () => {
@@ -197,6 +203,40 @@ describe('useIFrameBehavior hook', () => {
             cb(resizeMessage());
             expect(state.setState.hasLoaded).toHaveBeenCalledWith(true);
           });
+        });
+        it('scrolls to current window vertical offset if one is set', () => {
+          const windowTopOffset = 32;
+          state.mockVals({ ...defaultStateVals, windowTopOffset });
+          hook = useIFrameBehavior(props);
+          const { cb } = useEventListener.mock.calls[0][1];
+          cb(resizeMessage());
+          expect(window.scrollTo).toHaveBeenCalledWith(0, windowTopOffset);
+        });
+        it('does not scroll if towverticalp offset is not set', () => {
+          hook = useIFrameBehavior(props);
+          const { cb } = useEventListener.mock.calls[0][1];
+          cb(resizeMessage());
+          expect(window.scrollTo).not.toHaveBeenCalled();
+        });
+      });
+      describe('video fullscreen message', () => {
+        let cb;
+        const scrollY = 23;
+        const fullScreenMessage = (open) => ({
+          data: { type: messageTypes.videoFullScreen, payload: { open } },
+        });
+        beforeEach(() => {
+          window.scrollY = scrollY;
+          hook = useIFrameBehavior(props);
+          [[, { cb }]] = useEventListener.mock.calls;
+        });
+        it('sets window top offset based on window.scrollY if opening the video', () => {
+          cb(fullScreenMessage(true));
+          expect(state.setState.windowTopOffset).toHaveBeenCalledWith(scrollY);
+        });
+        it('sets window top offset to null if closing the video', () => {
+          cb(fullScreenMessage(false));
+          expect(state.setState.windowTopOffset).toHaveBeenCalledWith(null);
         });
       });
       describe('offset message', () => {

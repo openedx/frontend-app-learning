@@ -15,6 +15,7 @@ export const loadingState = 'loading';
 export const messageTypes = StrictDict({
   modal: 'plugin.modal',
   resize: 'plugin.resize',
+  videoFullScreen: 'plugin.videoFullScreen',
 });
 
 export default StrictDict({

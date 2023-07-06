@@ -2,12 +2,13 @@ import { getConfig } from '@edx/frontend-platform';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils/dist';
+import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils';
 import { logError } from '@edx/frontend-platform/logging';
 
 import { fetchCourse } from '../../../../data';
 import { processEvent } from '../../../../../course-home/data/thunks';
 import { useEventListener } from '../../../../../generic/hooks';
+import { messageTypes } from '../constants';
 
 import useLoadBearingHook from './useLoadBearingHook';
 
@@ -15,6 +16,7 @@ export const stateKeys = StrictDict({
   iframeHeight: 'iframeHeight',
   hasLoaded: 'hasLoaded',
   showError: 'showError',
+  windowTopOffset: 'windowTopOffset',
 });
 
 const useIFrameBehavior = ({
@@ -31,6 +33,7 @@ const useIFrameBehavior = ({
   const [iframeHeight, setIframeHeight] = useKeyedState(stateKeys.iframeHeight, 0);
   const [hasLoaded, setHasLoaded] = useKeyedState(stateKeys.hasLoaded, false);
   const [showError, setShowError] = useKeyedState(stateKeys.showError, false);
+  const [windowTopOffset, setWindowTopOffset] = useKeyedState(stateKeys.windowTopOffset, null);
 
   React.useEffect(() => {
     const frame = document.getElementById(elementId);
@@ -44,14 +47,25 @@ const useIFrameBehavior = ({
 
   const receiveMessage = React.useCallback(({ data }) => {
     const { type, payload } = data;
-    if (type === 'plugin.resize') {
+    if (type === messageTypes.resize) {
       setIframeHeight(payload.height);
+
+      // We observe exit from the video xblock fullscreen mode
+      // and scroll to the previously saved scroll position
+      if (windowTopOffset !== null) {
+        window.scrollTo(0, Number(windowTopOffset));
+      }
+
       if (!hasLoaded && iframeHeight === 0 && payload.height > 0) {
         setHasLoaded(true);
         if (onLoaded) {
           onLoaded();
         }
       }
+    } else if (type === messageTypes.videoFullScreen) {
+      // We listen for this message from LMS to know when we need to
+      // save or reset scroll position on toggle video xblock fullscreen mode
+      setWindowTopOffset(payload.open ? window.scrollY : null);
     } else if (data.offset) {
       // We listen for this message from LMS to know when the page needs to
       // be scrolled to another location on the page.
@@ -64,6 +78,8 @@ const useIFrameBehavior = ({
     setHasLoaded,
     iframeHeight,
     setIframeHeight,
+    windowTopOffset,
+    setWindowTopOffset,
   ]);
 
   useEventListener('message', receiveMessage);
