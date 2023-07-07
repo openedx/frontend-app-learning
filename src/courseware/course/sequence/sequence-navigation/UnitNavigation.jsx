@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from '@edx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,14 +21,32 @@ const UnitNavigation = ({
   unitId,
   onClickPrevious,
   onClickNext,
-  goToCourseExitPage,
 }) => {
-  const { isFirstUnit, isLastUnit } = useSequenceNavigationMetadata(sequenceId, unitId);
+  const {
+    isFirstUnit, isLastUnit, nextLink, previousLink,
+  } = useSequenceNavigationMetadata(sequenceId, unitId);
   const { courseId } = useSelector(state => state.courseware);
+
+  const renderPreviousButton = () => {
+    const disabled = isFirstUnit;
+    const prevArrow = isRtl(getLocale()) ? faChevronRight : faChevronLeft;
+    return (
+      <Button
+        variant="outline-secondary"
+        className="previous-button mr-2 d-flex align-items-center justify-content-center"
+        disabled={disabled}
+        onClick={onClickPrevious}
+        as={disabled ? undefined : Link}
+        to={disabled ? undefined : previousLink}
+      >
+        <FontAwesomeIcon icon={prevArrow} className="mr-2" size="sm" />
+        {intl.formatMessage(messages.previousButton)}
+      </Button>
+    );
+  };
 
   const renderNextButton = () => {
     const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
-    const buttonOnClick = isLastUnit ? goToCourseExitPage : onClickNext;
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
     const nextArrow = isRtl(getLocale()) ? faChevronLeft : faChevronRight;
@@ -35,8 +54,10 @@ const UnitNavigation = ({
       <Button
         variant="outline-primary"
         className="next-button d-flex align-items-center justify-content-center"
-        onClick={buttonOnClick}
+        onClick={onClickNext}
         disabled={disabled}
+        as={disabled ? undefined : Link}
+        to={disabled ? undefined : nextLink}
       >
         <UnitNavigationEffortEstimate sequenceId={sequenceId} unitId={unitId}>
           {buttonText}
@@ -46,18 +67,9 @@ const UnitNavigation = ({
     );
   };
 
-  const prevArrow = isRtl(getLocale()) ? faChevronRight : faChevronLeft;
   return (
     <div className="unit-navigation d-flex">
-      <Button
-        variant="outline-secondary"
-        className="previous-button mr-2 d-flex align-items-center justify-content-center"
-        disabled={isFirstUnit}
-        onClick={onClickPrevious}
-      >
-        <FontAwesomeIcon icon={prevArrow} className="mr-2" size="sm" />
-        {intl.formatMessage(messages.previousButton)}
-      </Button>
+      {renderPreviousButton()}
       {renderNextButton()}
     </div>
   );
@@ -69,7 +81,6 @@ UnitNavigation.propTypes = {
   unitId: PropTypes.string,
   onClickPrevious: PropTypes.func.isRequired,
   onClickNext: PropTypes.func.isRequired,
-  goToCourseExitPage: PropTypes.func.isRequired,
 };
 
 UnitNavigation.defaultProps = {
