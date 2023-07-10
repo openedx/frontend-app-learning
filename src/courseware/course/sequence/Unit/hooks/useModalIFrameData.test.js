@@ -37,8 +37,8 @@ describe('useModalIFrameBehavior', () => {
     });
   });
   describe('output', () => {
-    test('handleCloseModal sets modal options to closed', () => {
-      useModalIFrameBehavior().handleCloseModal();
+    test('handleModalClose sets modal options to closed', () => {
+      useModalIFrameBehavior().handleModalClose();
       state.expectSetStateCalledWith(stateKeys.modalOptions, { open: false });
     });
     it('forwards modalOptions from state value', () => {
