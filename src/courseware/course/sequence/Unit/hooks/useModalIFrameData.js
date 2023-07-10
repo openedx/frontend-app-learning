@@ -20,12 +20,12 @@ const useModalIFrameBehavior = () => {
   }, []);
   useEventListener('message', receiveMessage);
 
-  const handleCloseModal = () => {
+  const handleModalClose = () => {
     setModalOptions({ open: false });
   };
 
   return {
-    handleCloseModal,
+    handleModalClose,
     modalOptions,
   };
 };
