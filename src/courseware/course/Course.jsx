@@ -97,6 +97,7 @@ const Course = ({
               enrollmentMode={course.enrollmentMode}
               isStaff={isStaff}
               launchUrl={course.learningAssistantLaunchUrl}
+              courseId={courseId}
             />
             <SidebarTriggers />
           </>
