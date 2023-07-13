@@ -5,7 +5,6 @@ import React, {
 } from 'react';
 
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
-import { useModel } from '../../../generic/model-store';
 import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 
@@ -14,24 +13,18 @@ const SidebarProvider = ({
   unitId,
   children,
 }) => {
-  const { verifiedMode } = useModel('courseHomeMeta', courseId);
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const query = new URLSearchParams(window.location.search);
-  const initialSidebar = ((verifiedMode && shouldDisplaySidebarOpen) || query.get('sidebar') === 'true')
-    ? SIDEBARS.DISCUSSIONS.ID
-    : null;
+  const initialSidebar = (shouldDisplaySidebarOpen || query.get('sidebar') === 'true') ? SIDEBARS.DISCUSSIONS.ID : null;
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
 
   useEffect(() => {
-    // As a one-off set initial sidebar if the verified mode data has just loaded
-    if (verifiedMode) {
-      setCurrentSidebar(SIDEBARS.DISCUSSIONS.ID);
-    }
+    setCurrentSidebar(SIDEBARS.DISCUSSIONS.ID);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [verifiedMode, unitId]);
+  }, [unitId]);
 
   const onNotificationSeen = useCallback(() => {
     setNotificationStatus('inactive');
