@@ -1,12 +1,19 @@
 import { render } from '@testing-library/react';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 import ChatTrigger from './ChatTrigger';
 import { act, fireEvent, screen } from '../../../setupTest';
 
+jest.mock('@edx/frontend-platform/auth', () => ({
+  getAuthenticatedUser: jest.fn(() => ({ userId: 1 })),
+}));
+jest.mock('@edx/frontend-platform/analytics');
+
 describe('ChatTrigger', () => {
   it('handles click to open/close chat modal', async () => {
+    sendTrackEvent.mockClear();
     render(
       <IntlProvider>
         <BrowserRouter>
@@ -14,6 +21,7 @@ describe('ChatTrigger', () => {
             enrollmentMode={null}
             isStaff
             launchUrl="https://testurl.org"
+            courseId="course-edX"
           />
         </BrowserRouter>,
       </IntlProvider>,
@@ -28,12 +36,18 @@ describe('ChatTrigger', () => {
     });
     const modalCloseButton = screen.getByRole('button', { name: /Close/i });
     await expect(modalCloseButton).toBeInTheDocument();
+    expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+    expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.lti_modal.opened', {
+      course_id: 'course-edX',
+      user_id: 1,
+      is_staff: true,
+    });
 
     await act(async () => {
       fireEvent.click(modalCloseButton);
     });
     await expect(modalCloseButton).not.toBeInTheDocument();
-    expect(screen.queryByText('Holy guacamole!')).not.toBeInTheDocument();
+    expect(screen.queryByText('Need help understanding course content?')).not.toBeInTheDocument();
   });
 
   const testCases = [

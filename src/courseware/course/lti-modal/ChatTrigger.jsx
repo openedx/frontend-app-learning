@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
   ModalDialog,
@@ -17,9 +19,11 @@ const ChatTrigger = ({
   enrollmentMode,
   isStaff,
   launchUrl,
+  courseId,
 }) => {
   const [isOpen, open, close] = useToggle(false);
   const [hasOpenedChat, setHasOpenedChat] = useState(false);
+  const { userId } = getAuthenticatedUser();
 
   const VERIFIED_MODES = [
     'professional',
@@ -46,6 +50,11 @@ const ChatTrigger = ({
       setHasOpenedChat(true);
     }
     open();
+    sendTrackEvent('edx.ui.lms.lti_modal.opened', {
+      course_id: courseId,
+      user_id: userId,
+      is_staff: isStaff,
+    });
   };
 
   return (
@@ -111,12 +120,14 @@ const ChatTrigger = ({
 ChatTrigger.propTypes = {
   intl: intlShape.isRequired,
   isStaff: PropTypes.bool.isRequired,
-  enrollmentMode: PropTypes.string.isRequired,
+  enrollmentMode: PropTypes.string,
   launchUrl: PropTypes.string,
+  courseId: PropTypes.string.isRequired,
 };
 
 ChatTrigger.defaultProps = {
   launchUrl: null,
+  enrollmentMode: null,
 };
 
 export default injectIntl(ChatTrigger);
