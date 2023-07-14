@@ -1,4 +1,4 @@
-import { Pact, Matchers } from '@pact-foundation/pact';
+import { PactV3, MatchersV3 } from '@pact-foundation/pact';
 import path from 'path';
 import { mergeConfig, getConfig } from '@edx/frontend-platform';
 
@@ -19,8 +19,8 @@ import {
 
 const {
   somethingLike: like, term, boolean, string, eachLike, integer,
-} = Matchers;
-const provider = new Pact({
+} = MatchersV3;
+const provider = new PactV3({
   consumer: 'frontend-app-learning',
   provider: 'lms',
   log: path.resolve(process.cwd(), 'src/courseware/data/pact-tests/logs', 'pact.log'),
