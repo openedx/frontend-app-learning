@@ -67,7 +67,7 @@
     "@edx/browserslist-config": "1.1.1",
     "@edx/frontend-build": "^12.8.27",
     "@edx/reactifex": "2.1.1",
-    "@pact-foundation/pact": "^12.0.0",
+    "@pact-foundation/pact": "^11.0.2",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "13.5.0",

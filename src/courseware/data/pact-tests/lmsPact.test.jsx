@@ -1,6 +1,6 @@
-import { PactV3, MatchersV3 } from '@pact-foundation/pact';
 import path from 'path';
 import { mergeConfig, getConfig } from '@edx/frontend-platform';
+import { PactV3, MatchersV3 } from '@pact-foundation/pact';
 
 import {
   getCourseMetadata,
@@ -33,15 +33,10 @@ const provider = new PactV3({
 describe('Courseware Service', () => {
   beforeAll(async () => {
     initializeMockApp();
-    await provider
-      .setup()
-      .then((options) => mergeConfig({
-        LMS_BASE_URL: `http://localhost:${options.port}`,
-      }, 'Custom app config for pact tests'));
+    mergeConfig({
+      LMS_BASE_URL: 'http://localhost:8081',
+    }, 'Custom app config for pact tests');
   });
-
-  afterEach(() => provider.verify());
-  afterAll(() => provider.finalize());
 
   describe('When a request to get a learning sequence outline is made', () => {
     it('returns a normalized outline', async () => {
