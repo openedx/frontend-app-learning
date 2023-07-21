@@ -24,6 +24,7 @@ import { CourseExit } from './courseware/course/course-exit';
 import CoursewareContainer from './courseware';
 import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandingPage';
 import DatesTab from './course-home/dates-tab';
+import AthenaTab from './course-home/athena-tab/AthenaTab';
 import GoalUnsubscribe from './course-home/goal-unsubscribe';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
@@ -50,6 +51,11 @@ subscribe(APP_READY, () => {
               <PageRoute exact path="/goal-unsubscribe/:token" component={GoalUnsubscribe} />
               <PageRoute path="/redirect" component={CoursewareRedirectLandingPage} />
               <DecodePageRoute path="/course/:courseId/access-denied" component={CourseAccessErrorPage} />
+              <DecodePageRoute path="/course/:courseId/newtab">
+                <TabContainer tab="newtab" fetch={fetchOutlineTab} slice="courseHome">
+                  <AthenaTab />
+                </TabContainer>
+              </DecodePageRoute>
               <DecodePageRoute path="/course/:courseId/home">
                 <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
                   <OutlineTab />

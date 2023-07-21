@@ -1,5 +1,6 @@
 import { logError } from '@edx/frontend-platform/logging';
 import { camelCaseObject } from '@edx/frontend-platform';
+import { cloneDeep } from 'lodash';
 import {
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
@@ -35,11 +36,23 @@ export function fetchTab(courseId, tab, getTabData, targetUserId) {
     dispatch(fetchTabRequest({ courseId }));
     try {
       const courseHomeCourseMetadata = await getCourseHomeCourseMetadata(courseId, 'outline');
+      const formatCourseHomeCourseMetadata = cloneDeep(courseHomeCourseMetadata);
+      const { tabs: [homeTab] } = formatCourseHomeCourseMetadata;
+      const { url } = homeTab;
+      const newTab = {
+        slug: 'newtab',
+        title: 'New Tab',
+        url: url.replace('/home', '/newtab'),
+      };
+
+      const { tabs: currentTabs } = formatCourseHomeCourseMetadata;
+
+      formatCourseHomeCourseMetadata.tabs = [...currentTabs, newTab];
       dispatch(addModel({
         modelType: 'courseHomeMeta',
         model: {
           id: courseId,
-          ...courseHomeCourseMetadata,
+          ...formatCourseHomeCourseMetadata,
         },
       }));
       const tabDataResult = getTabData && await getTabData(courseId, targetUserId);

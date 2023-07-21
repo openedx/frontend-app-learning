@@ -1,4 +1,5 @@
 import { logError, logInfo } from '@edx/frontend-platform/logging';
+import { cloneDeep } from 'lodash';
 import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
 import {
   addModel, addModelsMap, updateModel, updateModels, updateModelsMap,
@@ -42,11 +43,23 @@ export function fetchCourse(courseId) {
       }
 
       if (courseHomeMetadataResult.status === 'fulfilled') {
+        const formatCourseHomeCourseMetadata = cloneDeep(courseHomeMetadataResult.value);
+        const { tabs: [homeTab] } = formatCourseHomeCourseMetadata;
+        const { url } = homeTab;
+        const newTab = {
+          slug: 'newtab',
+          title: 'New Tab',
+          url: url.replace('/home', '/newtab'),
+        };
+
+        const { tabs: currentTabs } = formatCourseHomeCourseMetadata;
+        formatCourseHomeCourseMetadata.tabs = [...currentTabs, newTab];
+
         dispatch(addModel({
           modelType: 'courseHomeMeta',
           model: {
             id: courseId,
-            ...courseHomeMetadataResult.value,
+            ...formatCourseHomeCourseMetadata,
           },
         }));
       }
