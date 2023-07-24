@@ -6,10 +6,12 @@ import { Info, WarningFilled } from '@edx/paragon/icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+
 import { useModel } from '../../generic/model-store';
 
 import messages from './messages';
 import useEnrollClickHandler from './clickHook';
+import useUserData from './useUserData';
 
 function EnrollmentAlert({ intl, payload }) {
   const {
@@ -28,6 +30,7 @@ function EnrollmentAlert({ intl, payload }) {
     org,
     intl.formatMessage(messages.success),
   );
+  const { userData } = useUserData();
 
   let text = intl.formatMessage(messages.alert);
   let type = 'warning';
@@ -46,12 +49,19 @@ function EnrollmentAlert({ intl, payload }) {
     </Button>
   );
 
-  return (
-    <Alert variant={type} icon={icon}>
-      <div className="d-flex">
+  const alertContent = userData?.is_active
+    ? (
+      <>
         {text}
         {button}
         {loading && <FontAwesomeIcon icon={faSpinner} spin />}
+      </>
+    )
+    : intl.formatMessage(messages.deActive);
+  return (
+    <Alert variant={type} icon={icon}>
+      <div className="d-flex">
+        {alertContent}
       </div>
     </Alert>
   );
