@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-import { LearningHeader as Header } from '@edx/frontend-component-header';
+import Header from '@edx/frontend-component-header';
 import PageLoading from '../../generic/PageLoading';
 import { unsubscribeFromCourseGoal } from '../data/api';
 
