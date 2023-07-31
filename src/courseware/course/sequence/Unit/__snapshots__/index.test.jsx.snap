@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unit component output BookmarkButton props bookmarked, bookmark update pending snapshot 1`] = `
+<BookmarkButton
+  isBookmarked={true}
+  isProcessing={false}
+  unitId="unit-id"
+/>
+`;
+
+exports[`Unit component output BookmarkButton props not bookmarked, bookmark update loading snapshot 1`] = `
+<BookmarkButton
+  isBookmarked={false}
+  isProcessing={true}
+  unitId="unit-id"
+/>
+`;
+
+exports[`Unit component output snapshot: not bookmarked, do not show content 1`] = `
+<div
+  className="unit"
+>
+  <h1
+    className="mb-0 h3"
+  >
+    unit-title
+  </h1>
+  <h2
+    className="sr-only"
+  >
+    Level 2 headings may be created by course providers in the future.
+  </h2>
+  <BookmarkButton
+    isBookmarked={false}
+    isProcessing={false}
+    unitId="unit-id"
+  />
+  <UnitSuspense
+    courseId="test-course-id"
+    id="test-props-id"
+  />
+  <ContentIFrame
+    elementId="unit-iframe"
+    id="test-props-id"
+    loadingMessage="Loading learning sequence..."
+    onLoaded={[MockFunction props.onLoaded]}
+    shouldShowContent={true}
+    title="unit-title"
+  />
+</div>
+`;

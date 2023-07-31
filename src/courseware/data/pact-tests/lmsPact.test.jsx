@@ -1,6 +1,6 @@
-import { Pact, Matchers } from '@pact-foundation/pact';
 import path from 'path';
 import { mergeConfig, getConfig } from '@edx/frontend-platform';
+import { PactV3, MatchersV3 } from '@pact-foundation/pact';
 
 import {
   getCourseMetadata,
@@ -19,8 +19,8 @@ import {
 
 const {
   somethingLike: like, term, boolean, string, eachLike, integer,
-} = Matchers;
-const provider = new Pact({
+} = MatchersV3;
+const provider = new PactV3({
   consumer: 'frontend-app-learning',
   provider: 'lms',
   log: path.resolve(process.cwd(), 'src/courseware/data/pact-tests/logs', 'pact.log'),
@@ -33,15 +33,10 @@ const provider = new Pact({
 describe('Courseware Service', () => {
   beforeAll(async () => {
     initializeMockApp();
-    await provider
-      .setup()
-      .then((options) => mergeConfig({
-        LMS_BASE_URL: `http://localhost:${options.port}`,
-      }, 'Custom app config for pact tests'));
+    mergeConfig({
+      LMS_BASE_URL: 'http://localhost:8081',
+    }, 'Custom app config for pact tests');
   });
-
-  afterEach(() => provider.verify());
-  afterAll(() => provider.finalize());
 
   describe('When a request to get a learning sequence outline is made', () => {
     it('returns a normalized outline', async () => {
@@ -233,6 +228,7 @@ describe('Courseware Service', () => {
         linkedinAddToProfileUrl: null,
         relatedPrograms: null,
         userNeedsIntegritySignature: false,
+        learningAssistantLaunchUrl: null,
       };
       setTimeout(() => {
         provider.addInteraction({
@@ -338,6 +334,7 @@ describe('Courseware Service', () => {
               verification_status: string('none'),
               linkedin_add_to_profile_url: null,
               user_needs_integrity_signature: boolean(false),
+              learning_assistant_launch_url: null,
             },
           },
         });

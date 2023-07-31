@@ -14,6 +14,7 @@ import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import SidebarTriggers from './sidebar/SidebarTriggers';
+import ChatTrigger from './lti-modal/ChatTrigger';
 
 import { useModel } from '../../generic/model-store';
 import { getSessionStorage, setSessionStorage } from '../../data/sessionStorage';
@@ -91,7 +92,15 @@ const Course = ({
           unitId={unitId}
         />
         {shouldDisplayTriggers && (
-          <SidebarTriggers />
+          <>
+            <ChatTrigger
+              enrollmentMode={course.enrollmentMode}
+              isStaff={isStaff}
+              launchUrl={course.learningAssistantLaunchUrl}
+              courseId={courseId}
+            />
+            <SidebarTriggers />
+          </>
         )}
       </div>
 
