@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { ALERT_TYPES, AlertList } from '../generic/user-messages';
 import Alert from '../generic/user-messages/Alert';
 import MasqueradeWidget from './masquerade-widget';
 import { useAccessExpirationMasqueradeBanner } from '../alerts/access-expiration-alert';
 import { useCourseStartMasqueradeBanner } from '../alerts/course-start-alert';
+import messages from './messages';
 
 function getInsightsUrl(courseId) {
   const urlBase = getConfig().INSIGHTS_BASE_URL;
@@ -36,7 +38,7 @@ function getStudioUrl(courseId, unitId) {
   return urlFull;
 }
 
-export default function InstructorToolbar(props) {
+function InstructorToolbar(props) {
   // This didMount logic became necessary once we had a page that does a redirect on a quick exit.
   // As a result, it unmounts the InstructorToolbar (which will be remounted by the new component),
   // but the InstructorToolbar's MasqueradeWidget has an outgoing request. Since it is unmounted
@@ -55,6 +57,7 @@ export default function InstructorToolbar(props) {
     courseId,
     unitId,
     tab,
+    intl,
   } = props;
 
   const urlInsights = getInsightsUrl(courseId);
@@ -74,7 +77,7 @@ export default function InstructorToolbar(props) {
           {(urlStudio || urlInsights) && (
             <>
               <hr className="border-light" />
-              <span className="mr-2 mt-1 col-form-label">View course in:</span>
+              <span className="mr-2 mt-1 col-form-label">{intl.formatMessage(messages.view_course_in)}</span>
             </>
           )}
           {urlStudio && (
@@ -114,6 +117,7 @@ InstructorToolbar.propTypes = {
   courseId: PropTypes.string,
   unitId: PropTypes.string,
   tab: PropTypes.string,
+  intl: intlShape.isRequired,
 };
 
 InstructorToolbar.defaultProps = {
@@ -121,3 +125,4 @@ InstructorToolbar.defaultProps = {
   unitId: undefined,
   tab: '',
 };
+export default injectIntl(InstructorToolbar);
