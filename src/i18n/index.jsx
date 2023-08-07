@@ -1,5 +1,5 @@
 import arMessages from './messages/ar.json';
-import faIRMessages from './messages/fa.json';
+import faIRMessages from './messages/fa_IR.json';
 import caMessages from './messages/ca.json';
 // no need to import en messages-- they are in the defaultMessage field
 import es419Messages from './messages/es_419.json';
