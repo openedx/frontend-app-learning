@@ -46,7 +46,7 @@
     "classnames": "2.3.2",
     "core-js": "3.22.2",
     "history": "5.3.0",
-    "js-cookie": "3.0.1",
+    "js-cookie": "3.0.5",
     "lodash.camelcase": "4.3.0",
     "prop-types": "15.8.1",
     "query-string": "^7.1.3",
