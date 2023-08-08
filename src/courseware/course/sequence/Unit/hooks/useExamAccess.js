@@ -16,7 +16,7 @@ const useExamAccess = ({
   const [blockAccess, setBlockAccess] = useKeyedState(stateKeys.blockAccess, isExam());
   React.useEffect(() => {
     if (isExam()) {
-      return fetchExamAccess()
+      fetchExamAccess()
         .finally(() => {
           const examAccess = getExamAccess();
           setAccessToken(examAccess);
@@ -26,7 +26,6 @@ const useExamAccess = ({
           logError(error);
         });
     }
-    return undefined;
   }, [id]);
 
   return {
