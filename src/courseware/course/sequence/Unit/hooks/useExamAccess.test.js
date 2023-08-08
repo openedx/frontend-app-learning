@@ -4,6 +4,7 @@ import { mockUseKeyedState } from '@edx/react-unit-test-utils';
 import { getExamAccess, fetchExamAccess, isExam } from '@edx/frontend-lib-special-exams';
 import { isEqual } from 'lodash';
 
+import { waitFor } from '../../../../../setupTest';
 import useExamAccess, { stateKeys } from './useExamAccess';
 
 const getEffect = (prereqs) => {
@@ -54,19 +55,20 @@ describe('useExamAccess hook', () => {
       useExamAccess({ id });
       state.expectInitializedWith(stateKeys.blockAccess, true);
     });
-    describe('effects - on id change', () => {
-      let cb;
+    describe.only('effects - on id change', () => {
+      let useEffectCb;
       beforeEach(() => {
         useExamAccess({ id });
-        cb = getEffect([id], React);
+        useEffectCb = getEffect([id], React);
       });
       it('does not call fetchExamAccess if not an exam', () => {
-        cb();
+        useEffectCb();
         expect(fetchExamAccess).not.toHaveBeenCalled();
       });
       it('fetches and sets exam access if isExam', async () => {
         isExam.mockReturnValueOnce(true);
-        await cb();
+        useEffectCb();
+        await waitFor(() => expect(fetchExamAccess).toHaveBeenCalled());
         state.expectSetStateCalledWith(stateKeys.accessToken, testAccessToken);
         state.expectSetStateCalledWith(stateKeys.blockAccess, false);
       });
@@ -74,7 +76,8 @@ describe('useExamAccess hook', () => {
       it('logs error if fetchExamAccess fails', async () => {
         isExam.mockReturnValueOnce(true);
         fetchExamAccess.mockReturnValueOnce(Promise.reject(testError));
-        await cb();
+        useEffectCb();
+        await waitFor(() => expect(fetchExamAccess).toHaveBeenCalled());
         expect(logError).toHaveBeenCalledWith(testError);
       });
     });
