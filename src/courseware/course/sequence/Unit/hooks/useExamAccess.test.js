@@ -55,7 +55,7 @@ describe('useExamAccess hook', () => {
       useExamAccess({ id });
       state.expectInitializedWith(stateKeys.blockAccess, true);
     });
-    describe.only('effects - on id change', () => {
+    describe('effects - on id change', () => {
       let useEffectCb;
       beforeEach(() => {
         useExamAccess({ id });
