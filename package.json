@@ -59,7 +59,7 @@
     "react-share": "4.4.1",
     "redux": "4.1.2",
     "regenerator-runtime": "0.13.11",
-    "reselect": "4.1.7",
+    "reselect": "4.1.8",
     "truncate-html": "1.0.4",
     "util": "0.12.5"
   },
