@@ -4,12 +4,29 @@
 @import "~@edx/brand/paragon/overrides";
 
 @import "~@edx/frontend-component-footer/dist/footer";
+@import "~@edx/frontend-component-header/dist/index";
+
+.lang_fa {
+  * {
+    font-family: IRANSans, FontAwesome, sans-serif !important ;
+  }
+}
+.lang_ar {
+  * {
+    font-family: NotoSansArabic, FontAwesome, sans-serif !important ;
+  }
+}
 
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 
+  > div:first-child {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
   main {
     flex-grow: 1;
   }

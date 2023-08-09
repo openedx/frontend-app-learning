@@ -6,7 +6,7 @@ import { Redirect } from 'react-router';
 
 import Footer from '@edx/frontend-component-footer';
 import { Toast } from '@edx/paragon';
-import { LearningHeader as Header } from '@edx/frontend-component-header';
+import Header from '@edx/frontend-component-header';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
 import { useModel } from '../generic/model-store';
@@ -32,10 +32,7 @@ function TabPage({ intl, ...props }) {
   const dispatch = useDispatch();
   const {
     courseAccess,
-    number,
-    org,
     start,
-    title,
   } = useModel('courseHomeMeta', courseId);
 
   if (courseStatus === 'loading') {
@@ -74,11 +71,7 @@ function TabPage({ intl, ...props }) {
           {toastHeader}
         </Toast>
         {metadataModel === 'courseHomeMeta' && (<LaunchCourseHomeTourButton srOnly />)}
-        <Header
-          courseOrg={org}
-          courseNumber={number}
-          courseTitle={title}
-        />
+        <Header />
         <LoadedTabPage {...props} />
         <Footer />
       </>

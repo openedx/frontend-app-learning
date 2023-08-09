@@ -27,6 +27,13 @@ const messages = defineMessages({
     defaultMessage: "You've successfully enrolled in this course!",
     description: 'A message telling the user that their course enrollment was successful.',
   },
+  deActive: {
+    id: 'learning.enrollment.deActive',
+    defaultMessage:
+      'You must active your account with the link sent to your email address!',
+    description:
+      'A message telling the user for activating account by email address.',
+  },
 });
 
 export default messages;
