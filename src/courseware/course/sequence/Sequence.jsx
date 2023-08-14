@@ -10,7 +10,6 @@ import {
 } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
-import { history } from '@edx/frontend-platform';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 import { breakpoints, useWindowSize } from '@edx/paragon';
 
@@ -139,9 +138,6 @@ const Sequence = ({
   }
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
-  const goToCourseExitPage = () => {
-    history.push(`/course/${courseId}/course-end`);
-  };
 
   const defaultContent = (
     <div className="sequence-container d-inline-flex flex-row">
@@ -150,7 +146,7 @@ const Sequence = ({
           sequenceId={sequenceId}
           unitId={unitId}
           className="mb-4"
-          nextSequenceHandler={() => {
+          nextHandler={() => {
             logEvent('edx.ui.lms.sequence.next_selected', 'top');
             handleNext();
           }}
@@ -158,11 +154,10 @@ const Sequence = ({
             logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
             handleNavigate(destinationUnitId);
           }}
-          previousSequenceHandler={() => {
+          previousHandler={() => {
             logEvent('edx.ui.lms.sequence.previous_selected', 'top');
             handlePrevious();
           }}
-          goToCourseExitPage={() => goToCourseExitPage()}
         />
         {shouldDisplayNotificationTriggerInSequence && <SidebarTriggers />}
 
@@ -186,7 +181,6 @@ const Sequence = ({
               logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
               handleNext();
             }}
-            goToCourseExitPage={() => goToCourseExitPage()}
           />
           )}
         </div>

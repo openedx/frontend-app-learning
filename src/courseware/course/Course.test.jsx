@@ -280,8 +280,8 @@ describe('Course', () => {
 
     loadUnit();
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
-    screen.getAllByRole('button', { name: /previous/i }).forEach(button => fireEvent.click(button));
-    screen.getAllByRole('button', { name: /next/i }).forEach(button => fireEvent.click(button));
+    screen.getAllByRole('link', { name: /previous/i }).forEach(link => fireEvent.click(link));
+    screen.getAllByRole('link', { name: /next/i }).forEach(link => fireEvent.click(link));
 
     // We are in the middle of the sequence, so no
     expect(previousSequenceHandler).not.toHaveBeenCalled();
