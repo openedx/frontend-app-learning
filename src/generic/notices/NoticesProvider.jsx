@@ -26,7 +26,7 @@ const NoticesProvider = ({ children }) => {
     const locale = getLocale();
     let className = '';
 
-    if (locale === 'fa') {
+    if (locale === 'fa' || locale === 'fa-ir') {
       className = 'lang_fa';
     } else if (locale === 'ar') {
       className = 'lang_ar';
