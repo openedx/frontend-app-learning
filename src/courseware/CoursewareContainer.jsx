@@ -243,7 +243,7 @@ class CoursewareContainer extends Component {
     checkSequenceUnitMarkerToSequenceUnitRedirect(courseId, sequenceStatus, sequence, routeUnitId);
   }
 
-  handleUnitNavigationClick = (nextUnitId) => {
+  handleUnitNavigationClick = () => {
     const {
       courseId, sequenceId,
       match: {
@@ -254,21 +254,17 @@ class CoursewareContainer extends Component {
     } = this.props;
 
     this.props.checkBlockCompletion(courseId, sequenceId, routeUnitId);
-    history.push(`/course/${courseId}/${sequenceId}/${nextUnitId}`);
   };
 
   handleNextSequenceClick = () => {
     const {
       course,
-      courseId,
       nextSequence,
       sequence,
       sequenceId,
     } = this.props;
 
     if (nextSequence !== null) {
-      history.push(`/course/${courseId}/${nextSequence.id}/first`);
-
       const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
       if (celebrateFirstSection && sequence.sectionId !== nextSequence.sectionId) {
         handleNextSectionCelebration(sequenceId, nextSequence.id);
@@ -276,12 +272,7 @@ class CoursewareContainer extends Component {
     }
   };
 
-  handlePreviousSequenceClick = () => {
-    const { previousSequence, courseId } = this.props;
-    if (previousSequence !== null) {
-      history.push(`/course/${courseId}/${previousSequence.id}/last`);
-    }
-  };
+  handlePreviousSequenceClick = () => {};
 
   render() {
     const {

@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { Button } from '@edx/paragon';
 
@@ -20,6 +21,8 @@ const UnitButton = ({
   className,
   showTitle,
 }) => {
+  const { courseId, sequenceId } = useSelector(state => state.courseware);
+
   const handleClick = useCallback(() => {
     onClick(unitId);
   }, [onClick, unitId]);
@@ -33,6 +36,8 @@ const UnitButton = ({
       variant="link"
       onClick={handleClick}
       title={title}
+      as={Link}
+      to={`/course/${courseId}/${sequenceId}/${unitId}`}
     >
       <UnitIcon type={contentType} />
       {showTitle && <span className="unit-title">{title}</span>}

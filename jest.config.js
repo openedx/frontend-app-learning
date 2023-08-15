@@ -9,6 +9,10 @@ module.exports = createConfig('jest', {
     'src/i18n',
     'src/.*\\.exp\\..*',
   ],
+  // see https://github.com/axios/axios/issues/5026
+  moduleNameMapper: {
+    "^axios$": "axios/dist/axios.js"
+  },
   testTimeout: 30000,
   testEnvironment: 'jsdom'
 });
