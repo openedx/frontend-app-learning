@@ -1,0 +1,14 @@
+diff --git a/node_modules/@edx/frontend-lib-special-exams/package.json b/node_modules/@edx/frontend-lib-special-exams/package.json
+index 6e33cc3..ef4119b 100644
+--- a/node_modules/@edx/frontend-lib-special-exams/package.json
++++ b/node_modules/@edx/frontend-lib-special-exams/package.json
+@@ -8,9 +8,6 @@
+       "main"
+     ]
+   },
+-  "exports": {
+-    "import": "./dist/index.js"
+-  },
+   "repository": {
+     "type": "git",
+     "url": "git+https://github.com/edx/frontend-lib-special-exams.git"

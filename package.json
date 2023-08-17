@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "fedx-scripts webpack",
+    "postinstall": "patch-package",
     "i18n_extract": "BABEL_ENV=i18n fedx-scripts babel src --quiet > /dev/null",
     "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
     "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx .",
@@ -51,6 +52,7 @@
     "history": "^5.3.0",
     "js-cookie": "3.0.1",
     "lodash.camelcase": "4.3.0",
+    "patch-package": "^8.0.0",
     "prop-types": "15.8.1",
     "query-string": "^7.1.1",
     "react": "16.14.0",
