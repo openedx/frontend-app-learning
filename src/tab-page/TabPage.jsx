@@ -38,18 +38,6 @@ const TabPage = ({ intl, ...props }) => {
     title,
   } = useModel('courseHomeMeta', courseId);
 
-  if (courseStatus === 'loading') {
-    return (
-      <>
-        <Header />
-        <PageLoading
-          srMessage={intl.formatMessage(messages.loading)}
-        />
-        <Footer />
-      </>
-    );
-  }
-
   if (courseStatus === 'denied') {
     const redirectUrl = getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start);
     if (redirectUrl) {
@@ -57,41 +45,41 @@ const TabPage = ({ intl, ...props }) => {
     }
   }
 
-  // Either a success state or a denied state that wasn't redirected above (some tabs handle denied states themselves,
-  // like the outline tab handling unenrolled learners)
-  if (courseStatus === 'loaded' || courseStatus === 'denied') {
-    return (
-      <>
-        <Toast
-          action={toastBodyText ? {
-            label: toastBodyText,
-            href: toastBodyLink,
-          } : null}
-          closeLabel={intl.formatMessage(genericMessages.close)}
-          onClose={() => dispatch(setCallToActionToast({ header: '', link: null, link_text: null }))}
-          show={!!(toastHeader)}
-        >
-          {toastHeader}
-        </Toast>
-        {metadataModel === 'courseHomeMeta' && (<LaunchCourseHomeTourButton srOnly />)}
-        <Header
-          courseOrg={org}
-          courseNumber={number}
-          courseTitle={title}
-        />
-        <LoadedTabPage {...props} />
-        <Footer />
-      </>
-    );
-  }
-
-  // courseStatus 'failed' and any other unexpected course status.
   return (
     <>
-      <Header />
-      <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
-        {intl.formatMessage(messages.failure)}
-      </p>
+      {(courseStatus === 'loaded' || courseStatus === 'denied') && (
+        <>
+          <Toast
+            action={toastBodyText ? {
+              label: toastBodyText,
+              href: toastBodyLink,
+            } : null}
+            closeLabel={intl.formatMessage(genericMessages.close)}
+            onClose={() => dispatch(setCallToActionToast({ header: '', link: null, link_text: null }))}
+            show={!!(toastHeader)}
+          >
+            {toastHeader}
+          </Toast>
+          {metadataModel === 'courseHomeMeta' && (<LaunchCourseHomeTourButton srOnly />)}
+        </>
+      )}
+
+      <Header courseOrg={org} courseNumber={number} courseTitle={title} />
+
+      {courseStatus === 'loading' && (
+        <PageLoading srMessage={intl.formatMessage(messages.loading)} />
+      )}
+
+      {(courseStatus === 'loaded' || courseStatus === 'denied') && (
+        <LoadedTabPage {...props} />
+      )}
+
+      {/* courseStatus 'failed' and any other unexpected course status. */}
+      {(courseStatus !== 'loading' && courseStatus !== 'loaded' && courseStatus !== 'denied') && (
+        <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
+          {intl.formatMessage(messages.failure)}
+        </p>
+      )}
       <Footer />
     </>
   );
