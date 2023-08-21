@@ -47,7 +47,7 @@ const TabPage = ({ intl, ...props }) => {
 
   return (
     <>
-      {(courseStatus === 'loaded' || courseStatus === 'denied') && (
+      {['loaded', 'denied'].includes(courseStatus) && (
         <>
           <Toast
             action={toastBodyText ? {
@@ -70,12 +70,12 @@ const TabPage = ({ intl, ...props }) => {
         <PageLoading srMessage={intl.formatMessage(messages.loading)} />
       )}
 
-      {(courseStatus === 'loaded' || courseStatus === 'denied') && (
+      {['loaded', 'denied'].includes(courseStatus) && (
         <LoadedTabPage {...props} />
       )}
 
       {/* courseStatus 'failed' and any other unexpected course status. */}
-      {(courseStatus !== 'loading' && courseStatus !== 'loaded' && courseStatus !== 'denied') && (
+      {(!['loading', 'loaded', 'denied'].includes(courseStatus)) && (
         <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
           {intl.formatMessage(messages.failure)}
         </p>
