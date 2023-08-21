@@ -3,7 +3,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Icon } from '@edx/paragon';
 import { QuestionAnswer } from '@edx/paragon/icons';
 import PropTypes from 'prop-types';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useModel } from '../../../../../generic/model-store';
 import { getCourseDiscussionTopics } from '../../../../data/thunks';
@@ -23,12 +23,17 @@ const DiscussionsTrigger = ({
     courseId,
   } = useContext(SidebarContext);
   const dispatch = useDispatch();
+  const { tabs } = useModel('courseHomeMeta', courseId);
   const topic = useModel('discussionTopics', unitId);
   const baseUrl = getConfig().DISCUSSIONS_MFE_BASE_URL;
+  const ltiProvider = useMemo(
+    () => tabs?.find(tab => tab.slug === 'lti_discussion'),
+    [tabs],
+  );
 
   useEffect(() => {
     // Only fetch the topic data if the MFE is configured.
-    if (baseUrl) {
+    if (baseUrl && !ltiProvider) {
       dispatch(getCourseDiscussionTopics(courseId));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
