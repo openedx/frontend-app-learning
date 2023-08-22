@@ -26,14 +26,13 @@ const DiscussionsTrigger = ({
   const { tabs } = useModel('courseHomeMeta', courseId);
   const topic = useModel('discussionTopics', unitId);
   const baseUrl = getConfig().DISCUSSIONS_MFE_BASE_URL;
-  const ltiProvider = useMemo(
-    () => tabs?.find(tab => tab.slug === 'lti_discussion'),
+  const edxProvider = useMemo(
+    () => tabs?.find(tab => tab.slug === 'discussion'),
     [tabs],
   );
 
   useEffect(() => {
-    // Only fetch the topic data if the MFE is configured.
-    if (baseUrl && !ltiProvider) {
+    if (baseUrl && edxProvider) {
       dispatch(getCourseDiscussionTopics(courseId));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
