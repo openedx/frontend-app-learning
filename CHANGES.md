@@ -2,6 +2,10 @@
 
 The purpose of this file is to document any changes done over upstream (https://github.com/openedx/frontend-app-learning).
 
+## 2023-08-31
+
+- Added `.github/pull_request_template.md`.
+
 ## 2023-08-17
 
 - Added `src/exports.js` to export individual components and use this repo as a library.
