@@ -18,6 +18,9 @@ Object {
     "sequenceMightBeUnit": false,
     "sequenceStatus": "loading",
   },
+  "learningAssistant": ObjectContaining {
+    "conversationId": Any<String>,
+  },
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course": Object {
@@ -336,6 +339,9 @@ Object {
     "sequenceMightBeUnit": false,
     "sequenceStatus": "loading",
   },
+  "learningAssistant": ObjectContaining {
+    "conversationId": Any<String>,
+  },
   "models": Object {
     "courseHomeMeta": Object {
       "course-v1:edX+DemoX+Demo_Course": Object {
@@ -531,6 +537,9 @@ Object {
     "sequenceId": null,
     "sequenceMightBeUnit": false,
     "sequenceStatus": "loading",
+  },
+  "learningAssistant": ObjectContaining {
+    "conversationId": Any<String>,
   },
   "models": Object {
     "courseHomeMeta": Object {
