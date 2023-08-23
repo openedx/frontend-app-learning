@@ -10,11 +10,11 @@ import { AlertList } from '../../generic/user-messages';
 import Sequence from './sequence';
 
 import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
+import Chat from './chat/Chat';
 import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import SidebarTriggers from './sidebar/SidebarTriggers';
-import ChatTrigger from './lti-modal/ChatTrigger';
 
 import { useModel } from '../../generic/model-store';
 import { getSessionStorage, setSessionStorage } from '../../data/sessionStorage';
@@ -93,10 +93,10 @@ const Course = ({
         />
         {shouldDisplayTriggers && (
           <>
-            <ChatTrigger
+            <Chat
+              enabled={course.learningAssistantEnabled}
               enrollmentMode={course.enrollmentMode}
               isStaff={isStaff}
-              launchUrl={course.learningAssistantLaunchUrl}
               courseId={courseId}
             />
             <SidebarTriggers />

@@ -306,7 +306,7 @@
           "verification_status": "none",
           "linkedin_add_to_profile_url": null,
           "user_needs_integrity_signature": false,
-          "learning_assistant_launch_url": null
+          "learning_assistant_enabled": false
         },
         "matchingRules": {
           "$.body.access_expiration.expiration_date": {
@@ -442,7 +442,7 @@
           "$.body.user_needs_integrity_signature": {
             "match": "type"
           },
-          "$.body.learning_assistant_launch_url": {
+          "$.body.learning_assistant_enabled": {
             "match": "type"
           }
         }
