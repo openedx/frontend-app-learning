@@ -2,7 +2,19 @@
 
 The purpose of this file is to document any changes done over upstream (https://github.com/openedx/frontend-app-learning).
 
-## 2023-08-31
+## 2023-08-28
+
+- Exported components required for using Sequence.
+- Moved the following dependencies in package.json to peerDependencies and devDependencies in order to avoid conflicts when used as a library:
+  - @edx/paragon
+  - prop-types
+  - react
+  - react-dom
+  - react-redux
+  - react-router-dom
+  - redux
+
+## 2023-08-21
 
 - Added `.github/pull_request_template.md`.
 
