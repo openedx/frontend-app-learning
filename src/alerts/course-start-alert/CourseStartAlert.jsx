@@ -88,7 +88,7 @@ const CourseStartAlert = ({ payload }) => {
       </strong>
       <br />
       <FormattedMessage
-        id="learning.outline.alert.end.calendar"
+        id="learning.outline.alert.start.calendar"
         defaultMessage="Don’t forget to add a calendar reminder!"
         description="It's just a recommendation for learners to set a reminder for the course starting date and is shown when the course starting date is more than a day. "
       />
