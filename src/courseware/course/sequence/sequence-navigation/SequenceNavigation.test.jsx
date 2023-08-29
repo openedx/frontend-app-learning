@@ -25,10 +25,9 @@ describe('Sequence Navigation', () => {
     mockData = {
       unitId: unitBlocks[1].id,
       sequenceId: courseware.sequenceId,
-      previousSequenceHandler: () => {},
+      previousHandler: () => {},
       onNavigate: () => {},
-      nextSequenceHandler: () => {},
-      goToCourseExitPage: () => {},
+      nextHandler: () => {},
     };
   });
 
@@ -77,7 +76,7 @@ describe('Sequence Navigation', () => {
     const onNavigate = jest.fn();
     render(<SequenceNavigation {...mockData} {...{ onNavigate }} />);
 
-    const unitButtons = screen.getAllByRole('button', { name: /\d+/ });
+    const unitButtons = screen.getAllByRole('link', { name: /\d+/ });
     expect(unitButtons).toHaveLength(unitButtons.length);
     unitButtons.forEach(button => fireEvent.click(button));
     expect(onNavigate).toHaveBeenCalledTimes(unitButtons.length);
@@ -86,7 +85,7 @@ describe('Sequence Navigation', () => {
   it('has both navigation buttons enabled for a non-corner unit of the sequence', () => {
     render(<SequenceNavigation {...mockData} />);
 
-    screen.getAllByRole('button', { name: /previous|next/i }).forEach(button => {
+    screen.getAllByRole('link', { name: /previous|next/i }).forEach(button => {
       expect(button).toBeEnabled();
     });
   });
@@ -95,7 +94,7 @@ describe('Sequence Navigation', () => {
     render(<SequenceNavigation {...mockData} unitId={unitBlocks[0].id} />);
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /next/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
   });
 
   it('has the "Next" button disabled for the last unit of the sequence if there is no Exit page', async () => {
@@ -110,7 +109,7 @@ describe('Sequence Navigation', () => {
       { store: testStore },
     );
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });
 
@@ -126,8 +125,8 @@ describe('Sequence Navigation', () => {
       { store: testStore },
     );
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('button', { name: /next \(end of course\)/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /next \(end of course\)/i })).toBeEnabled();
   });
 
   it('displays complete course message instead of the "Next" button as needed', async () => {
@@ -147,19 +146,19 @@ describe('Sequence Navigation', () => {
       { store: testStore },
     );
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('button', { name: /Complete the course/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /Complete the course/i })).toBeEnabled();
   });
 
   it('handles "Previous" and "Next" click', () => {
-    const previousSequenceHandler = jest.fn();
-    const nextSequenceHandler = jest.fn();
-    render(<SequenceNavigation {...mockData} {...{ previousSequenceHandler, nextSequenceHandler }} />);
+    const previousHandler = jest.fn();
+    const nextHandler = jest.fn();
+    render(<SequenceNavigation {...mockData} {...{ previousHandler, nextHandler }} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /previous/i }));
-    expect(previousSequenceHandler).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('link', { name: /previous/i }));
+    expect(previousHandler).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
-    expect(nextSequenceHandler).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('link', { name: /next/i }));
+    expect(nextHandler).toHaveBeenCalledTimes(1);
   });
 });

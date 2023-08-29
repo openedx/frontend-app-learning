@@ -293,7 +293,7 @@ describe('Courseware Tour', () => {
         });
 
         const container = await loadContainer();
-        const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
+        const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation a, nav.sequence-navigation button');
         const sequenceNextButton = sequenceNavButtons[4];
         expect(sequenceNextButton).toHaveTextContent('Next');
         fireEvent.click(sequenceNextButton);

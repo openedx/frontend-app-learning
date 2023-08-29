@@ -4,6 +4,8 @@
 @import "~@edx/brand/paragon/overrides";
 
 @import "~@edx/frontend-component-footer/dist/footer";
+@import "~@edx/frontend-component-header/dist/index";
+
 
 #root {
   display: flex;
@@ -82,14 +84,9 @@
   flex-direction: column;
   flex-grow: 1;
   margin-bottom: 4rem;
-
-  // On mobile, the unit container will be responsible
-  // for container padding.
-  @media (min-width: map-get($grid-breakpoints, "sm")) {
-    width: 100%;
-    margin-right: auto;
-    margin-left: auto;
-  }
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .sequence {
@@ -268,10 +265,16 @@
 }
 
 .unit-container {
-  padding: 0 $grid-gutter-width 2rem;
+  padding-top: 0;
+  padding-bottom: 2rem;
   max-width: 1024px;
   margin-left: auto;
   margin-right: auto;
+
+  @media (min-width: map-get($grid-breakpoints, "sm")) {
+    padding-left: $grid-gutter-width;
+    padding-right: $grid-gutter-width;
+  }
 
   @media (min-width: 830px) {
     padding-left: 40px;
@@ -280,7 +283,18 @@
 }
 
 .unit-iframe-wrapper {
-  margin: 0 -20px 2rem;
+  margin-top: 0;
+
+  // Some XBlocks (such as xblock-drag-and-drop-v2) rely on the viewport width
+  // to determine their layout on mobile. This is problematic because the
+  // viewport width may not be the same as the width of the iframe. To fix this,
+  // here we compensate for the padding of the parent div with "container-xl"
+  // class to ensure that the viewport width is the same as the width of the
+  // iframe.
+  margin-left: -$grid-gutter-width * .5;
+  margin-right: -$grid-gutter-width * .5;
+
+  margin-bottom: 2rem;
 
   @media (min-width: 830px) {
     margin: 0 -40px 2rem;

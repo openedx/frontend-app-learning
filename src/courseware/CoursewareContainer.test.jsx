@@ -185,7 +185,7 @@ describe('CoursewareContainer', () => {
 
     function assertSequenceNavigation(container, expectedUnitCount = 3) {
       // Ensure we had appropriate sequence navigation buttons.  We should only have one unit.
-      const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
+      const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation a, nav.sequence-navigation button');
       expect(sequenceNavButtons).toHaveLength(expectedUnitCount + 2);
 
       expect(sequenceNavButtons[0]).toHaveTextContent('Previous');
@@ -413,10 +413,10 @@ describe('CoursewareContainer', () => {
         history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
         const container = await waitFor(() => loadContainer());
 
-        const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation button');
+        const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation a, nav.sequence-navigation button');
         const sequenceNextButton = sequenceNavButtons[4];
         expect(sequenceNextButton).toHaveTextContent('Next');
-        fireEvent.click(sequenceNavButtons[4]);
+        fireEvent.click(sequenceNextButton);
 
         expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${sequenceBlock.id}/${unitBlocks[1].id}`);
       });
