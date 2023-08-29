@@ -47,7 +47,7 @@ describe('Chat', () => {
           { store },
         );
 
-        const chat = screen.queryByRole('button');
+        const chat = screen.queryByTestId('toggle-button');
         if (test.isVisible) {
           expect(chat).toBeInTheDocument();
         } else {
@@ -79,7 +79,7 @@ describe('Chat', () => {
         { store },
       );
 
-      const chat = screen.queryByRole('button');
+      const chat = screen.queryByTestId('toggle-button');
       if (test.isVisible) {
         expect(chat).toBeInTheDocument();
       } else {
@@ -139,7 +139,7 @@ describe('Chat', () => {
           { store },
         );
 
-        const chat = screen.queryByRole('button');
+        const chat = screen.queryByTestId('toggle-button');
         if (test.isVisible) {
           expect(chat).toBeInTheDocument();
         } else {
