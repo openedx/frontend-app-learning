@@ -42,6 +42,7 @@ describe('Chat', () => {
               isStaff={false}
               enabled
               courseId={courseId}
+              contentToolsEnabled={false}
             />
           </BrowserRouter>,
           { store },
@@ -74,6 +75,7 @@ describe('Chat', () => {
             isStaff
             enabled
             courseId={courseId}
+            contentToolsEnabled={false}
           />
         </BrowserRouter>,
         { store },
@@ -134,6 +136,7 @@ describe('Chat', () => {
               isStaff={test.isStaff}
               enabled={test.enabled}
               courseId={courseId}
+              contentToolsEnabled={false}
             />
           </BrowserRouter>,
           { store },
