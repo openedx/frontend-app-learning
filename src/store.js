@@ -1,3 +1,4 @@
+import { reducer as learningAssistantReducer } from '@edx/frontend-lib-learning-assistant';
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
@@ -11,6 +12,7 @@ export default function initializeStore() {
       models: modelsReducer,
       courseware: coursewareReducer,
       courseHome: courseHomeReducer,
+      learningAssistant: learningAssistantReducer,
       recommendations: recommendationsReducer,
       tours: toursReducer,
     },
