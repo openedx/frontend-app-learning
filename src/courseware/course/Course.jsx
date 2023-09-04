@@ -98,6 +98,7 @@ const Course = ({
               enrollmentMode={course.enrollmentMode}
               isStaff={isStaff}
               courseId={courseId}
+              contentToolsEnabled={course.showCalculator || course.notes.enabled}
             />
             <SidebarTriggers />
           </>

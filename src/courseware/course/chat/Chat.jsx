@@ -9,6 +9,7 @@ const Chat = ({
   enrollmentMode,
   isStaff,
   courseId,
+  contentToolsEnabled,
 }) => {
   const VERIFIED_MODES = [
     'professional',
@@ -34,7 +35,7 @@ const Chat = ({
     <>
       {/* Use a portal to ensure that component overlay does not compete with learning MFE styles. */}
       {shouldDisplayChat && (createPortal(
-        <Xpert courseId={courseId} />,
+        <Xpert courseId={courseId} contentToolsEnabled={contentToolsEnabled} />,
         document.body,
       ))}
     </>
@@ -46,6 +47,7 @@ Chat.propTypes = {
   enabled: PropTypes.bool.isRequired,
   enrollmentMode: PropTypes.string,
   courseId: PropTypes.string.isRequired,
+  contentToolsEnabled: PropTypes.bool.isRequired,
 };
 
 Chat.defaultProps = {

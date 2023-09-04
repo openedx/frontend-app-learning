@@ -42,12 +42,13 @@ describe('Chat', () => {
               isStaff={false}
               enabled
               courseId={courseId}
+              contentToolsEnabled={false}
             />
           </BrowserRouter>,
           { store },
         );
 
-        const chat = screen.queryByRole('button');
+        const chat = screen.queryByTestId('toggle-button');
         if (test.isVisible) {
           expect(chat).toBeInTheDocument();
         } else {
@@ -74,12 +75,13 @@ describe('Chat', () => {
             isStaff
             enabled
             courseId={courseId}
+            contentToolsEnabled={false}
           />
         </BrowserRouter>,
         { store },
       );
 
-      const chat = screen.queryByRole('button');
+      const chat = screen.queryByTestId('toggle-button');
       if (test.isVisible) {
         expect(chat).toBeInTheDocument();
       } else {
@@ -134,12 +136,13 @@ describe('Chat', () => {
               isStaff={test.isStaff}
               enabled={test.enabled}
               courseId={courseId}
+              contentToolsEnabled={false}
             />
           </BrowserRouter>,
           { store },
         );
 
-        const chat = screen.queryByRole('button');
+        const chat = screen.queryByTestId('toggle-button');
         if (test.isVisible) {
           expect(chat).toBeInTheDocument();
         } else {

@@ -85,7 +85,7 @@ describe('Notes Visibility', () => {
 
     expect(axiosMock.history.put).toHaveLength(1);
     expect(axiosMock.history.put[0].url).toEqual(visibilityUrl);
-    expect(axiosMock.history.put[0].data).toEqual(`{"visibility":${mockData.course.notes.visible}}`);
+    expect(axiosMock.history.put[0].data).toEqual(`{"visibility":${!mockData.course.notes.visible}}`);
 
     expect(screen.getByRole('switch', { name: 'Hide Notes' })).toBeInTheDocument();
   });
