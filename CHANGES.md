@@ -2,6 +2,12 @@
 
 The purpose of this file is to document any changes done over upstream (https://github.com/openedx/frontend-app-learning).
 
+## 2023-09-06
+
+- Added `src/testExports.js` to export anything that needs to be reused for testing but we don't want to be on production builds.
+- Added "exports" entry to package.json to expose test exports.
+- Exported testing utils.
+
 ## 2023-08-28
 
 - Exported components required for using Sequence.

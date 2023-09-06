@@ -3,6 +3,10 @@
   "version": "1.0.0-semantically-released",
   "description": "Frontend learning application.",
   "main": "dist/exports.js",
+  "exports": {
+    ".": "./dist/exports.js",
+    "./tests": "./dist/testExports.js"
+  },
   "files": [
     "/dist"
   ],
