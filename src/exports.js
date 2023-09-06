@@ -11,6 +11,7 @@ import {
   getSequenceForUnitDeprecated,
 } from './courseware/data';
 import { executeThunk, appendBrowserTimezoneToUrl } from './utils';
+import messages from './i18n';
 
 export {
   Sequence,
@@ -25,4 +26,5 @@ export {
   getSequenceForUnitDeprecated,
   executeThunk,
   appendBrowserTimezoneToUrl,
+  messages,
 };
