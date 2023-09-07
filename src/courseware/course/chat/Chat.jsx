@@ -18,17 +18,26 @@ const Chat = ({
     'credit',
     'masters',
     'executive-education',
+    'paid-executive-education',
+    'paid-bootcamp',
   ];
 
-  const isVerifiedEnrollmentMode = (
+  const AUDIT_MODES = [
+    'audit',
+    'honor',
+    'unpaid-executive-education',
+    'unpaid-bootcamp',
+  ];
+
+  const isEnrolled = (
     enrollmentMode !== null
     && enrollmentMode !== undefined
-    && VERIFIED_MODES.some(mode => mode === enrollmentMode)
+    && [...VERIFIED_MODES, ...AUDIT_MODES].some(mode => mode === enrollmentMode)
   );
 
   const shouldDisplayChat = (
     enabled
-    && (isVerifiedEnrollmentMode || isStaff) // display only to non-audit or staff
+    && (isEnrolled || isStaff) // display only to enrolled or staff
   );
 
   return (
