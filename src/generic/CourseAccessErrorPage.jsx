@@ -38,7 +38,7 @@ const CourseAccessErrorPage = ({ intl }) => {
     );
   }
   if (courseStatus === LOADED) {
-    navigate(`/redirect/home/${courseId}`);
+    navigate(`/redirect/home/${courseId}`, { replace: true });
   }
   return (
     <>

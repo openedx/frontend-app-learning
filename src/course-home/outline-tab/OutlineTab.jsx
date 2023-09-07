@@ -115,7 +115,11 @@ const OutlineTab = ({ intl }) => {
       // Deleting the course_start query param as it only needs to be set once
       // whenever passed in query params.
       currentParams.delete('start_course');
-      navigate(`?${currentParams.toString()}`, { replace: true });
+      navigate({
+        pathname: location.pathname,
+        search: `?${currentParams.toString()}`,
+        replace: true,
+      });
     }
   }, [location.search]);
 
