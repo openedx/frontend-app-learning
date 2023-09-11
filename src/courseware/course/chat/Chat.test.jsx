@@ -16,8 +16,11 @@ const courseId = 'course-v1:edX+DemoX+Demo_Course';
 let testCases = [];
 let enabledTestCases = [];
 let disabledTestCases = [];
-const enabledModes = ['professional', 'verified', 'no-id-professional', 'credit', 'masters', 'executive-education'];
-const disabledModes = [null, undefined, 'xyz', 'audit'];
+const enabledModes = [
+  'professional', 'verified', 'no-id-professional', 'credit', 'masters', 'executive-education',
+  'paid-executive-education', 'paid-bootcamp', 'audit', 'honor', 'unpaid-executive-education', 'unpaid-bootcamp',
+];
+const disabledModes = [null, undefined, 'xyz'];
 
 describe('Chat', () => {
   // Generate test cases.

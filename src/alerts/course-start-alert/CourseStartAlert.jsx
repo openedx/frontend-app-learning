@@ -68,7 +68,7 @@ const CourseStartAlert = ({ payload }) => {
     <Alert variant="info" icon={Info}>
       <strong>
         <FormattedMessage
-          id="learning.outline.alert.end.long"
+          id="learning.outline.alert.start.long"
           defaultMessage="Course starts {timeRemaining} on {courseStartDate}."
           description="Used when the time remaining is more than a day away."
           values={{
@@ -88,7 +88,7 @@ const CourseStartAlert = ({ payload }) => {
       </strong>
       <br />
       <FormattedMessage
-        id="learning.outline.alert.end.calendar"
+        id="learning.outline.alert.start.calendar"
         defaultMessage="Don’t forget to add a calendar reminder!"
         description="It's just a recommendation for learners to set a reminder for the course starting date and is shown when the course starting date is more than a day. "
       />

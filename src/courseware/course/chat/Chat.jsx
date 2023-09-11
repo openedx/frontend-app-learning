@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { Xpert } from '@edx/frontend-lib-learning-assistant';
 import { injectIntl } from '@edx/frontend-platform/i18n';
 
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+
 const Chat = ({
   enabled,
   enrollmentMode,
@@ -18,18 +20,35 @@ const Chat = ({
     'credit',
     'masters',
     'executive-education',
+    'paid-executive-education',
+    'paid-bootcamp',
   ];
 
-  const isVerifiedEnrollmentMode = (
+  const AUDIT_MODES = [
+    'audit',
+    'honor',
+    'unpaid-executive-education',
+    'unpaid-bootcamp',
+  ];
+
+  const isEnrolled = (
     enrollmentMode !== null
     && enrollmentMode !== undefined
-    && VERIFIED_MODES.some(mode => mode === enrollmentMode)
+    && [...VERIFIED_MODES, ...AUDIT_MODES].some(mode => mode === enrollmentMode)
   );
 
   const shouldDisplayChat = (
     enabled
-    && (isVerifiedEnrollmentMode || isStaff) // display only to non-audit or staff
+    && (isEnrolled || isStaff) // display only to enrolled or staff
   );
+
+  // TODO: Remove this Segment alert. This has been added purely to diagnose whether
+  //       usage issues are as a result of the Xpert toggle button not appearing.
+  if (shouldDisplayChat) {
+    sendTrackEvent('edx.ui.lms.learning_assistant.render', {
+      course_id: courseId,
+    });
+  }
 
   return (
     <>
