@@ -49,17 +49,17 @@ const TabPage = ({ intl, ...props }) => {
     <>
       {['loaded', 'denied'].includes(courseStatus) && (
         <>
-          <Toast
-            action={toastBodyText ? {
-              label: toastBodyText,
-              href: toastBodyLink,
-            } : null}
-            closeLabel={intl.formatMessage(genericMessages.close)}
-            onClose={() => dispatch(setCallToActionToast({ header: '', link: null, link_text: null }))}
-            show={!!(toastHeader)}
-          >
-            {toastHeader}
-          </Toast>
+          {/* <Toast */}
+          {/*  action={toastBodyText ? { */}
+          {/*    label: toastBodyText, */}
+          {/*    href: toastBodyLink, */}
+          {/*  } : null} */}
+          {/*  closeLabel={intl.formatMessage(genericMessages.close)} */}
+          {/*  onClose={() => dispatch(setCallToActionToast({ header: '', link: null, link_text: null }))} */}
+          {/*  show={!!(toastHeader)} */}
+          {/* > */}
+          {/*  {toastHeader} */}
+          {/* </Toast> */}
           {metadataModel === 'courseHomeMeta' && (<LaunchCourseHomeTourButton srOnly />)}
         </>
       )}

@@ -3,7 +3,7 @@ import React from 'react';
 
 import { ErrorPage } from '@edx/frontend-platform/react';
 import { StrictDict } from '@edx/react-unit-test-utils';
-import { Modal } from '@edx/paragon';
+import { ModalDialog } from '@edx/paragon';
 
 import PageLoading from '../../../../generic/PageLoading';
 import * as hooks from './hooks';
@@ -75,22 +75,21 @@ const ContentIFrame = ({
         </div>
       )}
       {modalOptions.open && (
-        <Modal
-          body={modalOptions.body
-            ? <div className="unit-modal">{ modalOptions.body }</div>
-            : (
-              <iframe
-                title={modalOptions.title}
-                allow={IFRAME_FEATURE_POLICY}
-                frameBorder="0"
-                src={modalOptions.url}
-                style={{ width: '100%', height: '100vh' }}
-              />
-            )}
-          dialogClassName="modal-lti"
-          onClose={handleModalClose}
-          open
-        />
+        <ModalDialog className="modal-lti" onClose={handleModalClose} isOpen={open}>
+          <ModalDialog.Body className="modal-lti">
+            {modalOptions.body
+              ? <div className="unit-modal">{ modalOptions.body }</div>
+              : (
+                <iframe
+                  title={modalOptions.title}
+                  allow={IFRAME_FEATURE_POLICY}
+                  frameBorder="0"
+                  src={modalOptions.url}
+                  style={{ width: '100%', height: '100vh' }}
+                />
+              )}
+          </ModalDialog.Body>
+        </ModalDialog>
       )}
     </>
   );

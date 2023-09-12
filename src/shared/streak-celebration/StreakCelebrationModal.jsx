@@ -204,13 +204,13 @@ const StreakModal = ({
             {!wideScreen && (
               <>
                 <UpgradeNowButton
-                  className="upgrade mb-3"
+                  className="upgrade mb-3 btn-primary"
                   size="sm"
                   offer={offer}
                   variant="brand"
                   verifiedMode={mode}
                 />
-                <ModalDialog.CloseButton variant="outline-brand" className="btn-sm">
+                <ModalDialog.CloseButton variant="outline-brand" className="btn-sm btn-primary">
                   {intl.formatMessage(messages.streakButtonAA759)}
                 </ModalDialog.CloseButton>
               </>
@@ -218,12 +218,12 @@ const StreakModal = ({
             {wideScreen && (
               <>
                 <UpgradeNowButton
-                  className="upgrade mb-3"
+                  className="upgrade mb-3 btn-primary"
                   offer={offer}
                   variant="brand"
                   verifiedMode={mode}
                 />
-                <ModalDialog.CloseButton variant="outline-brand">
+                <ModalDialog.CloseButton variant="outline-brand" className="btn-primary">
                   {intl.formatMessage(messages.streakButtonAA759)}
                 </ModalDialog.CloseButton>
               </>
@@ -231,7 +231,7 @@ const StreakModal = ({
           </>
         )}
         { !queryingDiscount && !showOffer && (
-          <ModalDialog.CloseButton className="px-5" variant="primary"><CloseText intl={intl} /></ModalDialog.CloseButton>
+          <ModalDialog.CloseButton className="px-5 btn-primary" variant="primary"><CloseText intl={intl} /></ModalDialog.CloseButton>
         )}
       </ModalDialog.Footer>
     </ModalDialog>
