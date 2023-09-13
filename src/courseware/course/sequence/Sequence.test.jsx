@@ -11,6 +11,10 @@ import Sequence from './Sequence';
 import { fetchSequenceFailure } from '../../data/slice';
 
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
+  ...jest.requireActual('@edx/frontend-lib-special-exams/dist/data/thunks.js'),
+  checkExamEntry: () => jest.fn(),
+}));
 
 describe('Sequence', () => {
   let mockData;

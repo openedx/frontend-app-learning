@@ -4,11 +4,11 @@ import {
 } from '../../../../setupTest';
 import ContentLock from './ContentLock';
 
-const mockedNavigator = jest.fn();
+const mockNavigate = jest.fn();
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedNavigator,
+  useNavigate: () => mockNavigate,
 }));
 
 describe('Content Lock', () => {
@@ -43,6 +43,6 @@ describe('Content Lock', () => {
     render(<ContentLock {...mockData} />, { wrapWithRouter: true });
     fireEvent.click(screen.getByRole('button'));
 
-    expect(mockedNavigator).toHaveBeenCalledWith(`/course/${mockData.courseId}/${mockData.prereqId}`);
+    expect(mockNavigate).toHaveBeenCalledWith(`/course/${mockData.courseId}/${mockData.prereqId}`);
   });
 });

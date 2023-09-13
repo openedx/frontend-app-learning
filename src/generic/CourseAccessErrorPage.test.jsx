@@ -5,7 +5,7 @@ import { initializeTestStore, render, screen } from '../setupTest';
 import CourseAccessErrorPage from './CourseAccessErrorPage';
 
 const mockDispatch = jest.fn();
-const mockedNavigator = jest.fn();
+const mockNavigate = jest.fn();
 let mockCourseStatus;
 
 jest.mock('react-redux', () => ({
@@ -18,7 +18,7 @@ jest.mock('./PageLoading', () => function () {
 });
 jest.mock('react-router-dom', () => ({
   ...(jest.requireActual('react-router-dom')),
-  useNavigate: () => mockedNavigator,
+  useNavigate: () => mockNavigate,
 }));
 
 describe('CourseAccessErrorPage', () => {
@@ -40,7 +40,7 @@ describe('CourseAccessErrorPage', () => {
       { wrapWithRouter: true },
     );
     expect(screen.getByTestId('page-loading')).toBeInTheDocument();
-    expect(history.location.pathname).toBe(accessDeniedUrl);
+    expect(window.location.pathname).toBe(accessDeniedUrl);
   });
 
   it('Redirect user to homepage if user has access', () => {
@@ -51,7 +51,7 @@ describe('CourseAccessErrorPage', () => {
       </Routes>,
       { wrapWithRouter: true },
     );
-    expect(mockedNavigator).toHaveBeenCalledWith('/redirect/home/course-v1:edX+DemoX+Demo_Course', { replace: true });
+    expect(window.location.pathname).toBe('/redirect/home/course-v1:edX+DemoX+Demo_Course');
   });
 
   it('For access denied it should render access denied page', () => {
@@ -64,6 +64,6 @@ describe('CourseAccessErrorPage', () => {
       { wrapWithRouter: true },
     );
     expect(screen.getByTestId('access-denied-main')).toBeInTheDocument();
-    expect(history.location.pathname).toBe(accessDeniedUrl);
+    expect(window.location.pathname).toBe(accessDeniedUrl);
   });
 });

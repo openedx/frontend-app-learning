@@ -15,6 +15,10 @@ import { executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
 
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
+  ...jest.requireActual('@edx/frontend-lib-special-exams/dist/data/thunks.js'),
+  checkExamEntry: () => jest.fn(),
+}));
 
 const recordFirstSectionCelebration = jest.fn();
 // eslint-disable-next-line no-import-assign

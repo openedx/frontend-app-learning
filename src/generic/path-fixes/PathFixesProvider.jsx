@@ -1,8 +1,7 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { useEffect } from 'react';
 
 /**
  * We have seen evidence of learners hitting MFE pages with spaces instead of plus signs (which are used commonly
@@ -14,27 +13,24 @@ import { useEffect } from 'react';
  */
 const PathFixesProvider = ({ children }) => {
   const location = useLocation();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    // We only check for spaces. That's not the only kind of character that is escaped in URLs, but it would always be
-    // present for our cases, and I believe it's the only one we use normally.
-    if (location.pathname.includes(' ') || location.pathname.includes('%20')) {
-      const newLocation = {
-        ...location,
-        pathname: (location.pathname.replaceAll(' ', '+')).replaceAll('%20', '+'),
-      };
+  // We only check for spaces. That's not the only kind of character that is escaped in URLs, but it would always be
+  // present for our cases, and I believe it's the only one we use normally.
+  if (location.pathname.includes(' ') || location.pathname.includes('%20')) {
+    const newLocation = {
+      ...location,
+      pathname: (location.pathname.replaceAll(' ', '+')).replaceAll('%20', '+'),
+    };
 
-      sendTrackEvent('edx.ui.lms.path_fixed', {
-        new_path: newLocation.pathname,
-        old_path: location.pathname,
-        referrer: document.referrer,
-        search: location.search,
-      });
+    sendTrackEvent('edx.ui.lms.path_fixed', {
+      new_path: newLocation.pathname,
+      old_path: location.pathname,
+      referrer: document.referrer,
+      search: location.search,
+    });
 
-      navigate(newLocation);
-    }
-  }, [location.pathname]);
+    return (<Navigate to={newLocation} replace />);
+  }
 
   return children; // pass through
 };

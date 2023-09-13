@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { LearningHeader as Header } from '@edx/frontend-component-header';
 import Footer from '@edx/frontend-component-footer';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import useActiveEnterpriseAlert from '../alerts/active-enteprise-alert';
@@ -13,7 +13,6 @@ import messages from '../tab-page/messages';
 
 const CourseAccessErrorPage = ({ intl }) => {
   const { courseId } = useParams();
-  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const activeEnterpriseAlert = useActiveEnterpriseAlert(courseId);
@@ -38,7 +37,7 @@ const CourseAccessErrorPage = ({ intl }) => {
     );
   }
   if (courseStatus === LOADED) {
-    navigate(`/redirect/home/${courseId}`, { replace: true });
+    return <Navigate to={`/redirect/home/${courseId}`} replace />;
   }
   return (
     <>

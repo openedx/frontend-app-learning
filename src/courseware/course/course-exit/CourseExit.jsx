@@ -4,7 +4,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@edx/paragon';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import CourseCelebration from './CourseCelebration';
 import CourseInProgress from './CourseInProgress';
@@ -16,7 +16,6 @@ import { unsubscribeFromGoalReminders } from './data/thunks';
 import { useModel } from '../../../generic/model-store';
 
 const CourseExit = ({ intl }) => {
-  const navigate = useNavigate();
   const { courseId } = useSelector(state => state.courseware);
   const {
     certificateData,
@@ -58,13 +57,9 @@ const CourseExit = ({ intl }) => {
     body = (<CourseInProgress />);
   } else if (mode === COURSE_EXIT_MODES.celebration) {
     body = (<CourseCelebration />);
+  } else {
+    return (<Navigate to={`/course/${courseId}`} replace />);
   }
-
-  useEffect(() => {
-    if ((mode === COURSE_EXIT_MODES.disabled) || (!(mode in COURSE_EXIT_MODES))) {
-      navigate(`/course/${courseId}`);
-    }
-  }, []);
 
   return (
     <>

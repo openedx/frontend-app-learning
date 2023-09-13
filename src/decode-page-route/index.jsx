@@ -4,6 +4,7 @@ import React from 'react';
 import {
   generatePath, useMatch, Navigate,
 } from 'react-router-dom';
+
 import { DECODE_ROUTES } from '../constants';
 
 const ROUTES = [].concat(

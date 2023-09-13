@@ -121,7 +121,7 @@ describe('CourseBreadcrumbs', () => {
           sequenceId="block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions"
           isStaff
         />
-      </BrowserRouter>
+      </BrowserRouter>,
     </IntlProvider>,
   );
   it('renders course breadcrumbs as expected', async () => {

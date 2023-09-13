@@ -9,12 +9,12 @@ import {
 } from '../../../../setupTest';
 import HonorCode from './HonorCode';
 
-const mockedNavigator = jest.fn();
+const mockNavigate = jest.fn();
 
 initializeMockApp();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedNavigator,
+  useNavigate: () => mockNavigate,
 }));
 
 describe('Honor Code', () => {
@@ -41,7 +41,7 @@ describe('Honor Code', () => {
     render(<HonorCode {...mockData} />, { wrapWithRouter: true });
     const cancelButton = screen.getByText('Cancel');
     fireEvent.click(cancelButton);
-    expect(mockedNavigator).toHaveBeenCalledWith(`/course/${mockData.courseId}/home`);
+    expect(mockNavigate).toHaveBeenCalledWith(`/course/${mockData.courseId}/home`);
   });
 
   it('calls to save integrity_signature when agreeing', async () => {
