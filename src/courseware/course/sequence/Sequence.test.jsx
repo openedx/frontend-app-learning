@@ -49,6 +49,7 @@ describe('Sequence', () => {
 
     expect(screen.getByText('There is no content here.')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   it('renders correctly for gated content', async () => {
@@ -77,8 +78,10 @@ describe('Sequence', () => {
     );
 
     await waitFor(() => expect(screen.queryByText('Loading locked content messaging...')).toBeInTheDocument());
-    // `Previous`, `Active`, `Next`, `Prerequisite` and `Close Tray` buttons.
-    expect(screen.getAllByRole('button').length).toEqual(5);
+    // `Previous`, `Prerequisite` and `Close Tray` buttons.
+    expect(screen.getAllByRole('button').length).toEqual(3);
+    // `Active` and `Next` buttons.
+    expect(screen.getAllByRole('link').length).toEqual(2);
 
     expect(screen.getByText('Content Locked')).toBeInTheDocument();
     const unitContainer = container.querySelector('.unit-container');
@@ -115,6 +118,7 @@ describe('Sequence', () => {
 
     // No normal content or navigation should be rendered. Just the above alert.
     expect(screen.queryAllByRole('button').length).toEqual(0);
+    expect(screen.queryAllByRole('link').length).toEqual(1);
   });
 
   it('displays error message on sequence load failure', async () => {
@@ -128,13 +132,16 @@ describe('Sequence', () => {
   it('handles loading unit', async () => {
     render(<Sequence {...mockData} />, { wrapWithRouter: true });
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
-    // Renders navigation buttons plus one button for each unit.
-    expect(screen.getAllByRole('button')).toHaveLength(4 + unitBlocks.length);
+    // `Previous`, `Bookmark` and `Close Tray` buttons
+    expect(screen.getAllByRole('button')).toHaveLength(3);
+    // Renders `Next` button plus one button for each unit.
+    expect(screen.getAllByRole('link')).toHaveLength(1 + unitBlocks.length);
 
     loadUnit();
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
     // At this point there will be 2 `Previous` and 2 `Next` buttons.
-    expect(screen.getAllByRole('button', { name: /previous|next/i }).length).toEqual(4);
+    expect(screen.getAllByRole('button', { name: /previous/i }).length).toEqual(2);
+    expect(screen.getAllByRole('link', { name: /next/i }).length).toEqual(2);
   });
 
   describe('sequence and unit navigation buttons', () => {
@@ -166,7 +173,7 @@ describe('Sequence', () => {
       render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
-      const sequencePreviousButton = screen.getByRole('button', { name: /previous/i });
+      const sequencePreviousButton = screen.getByRole('link', { name: /previous/i });
       fireEvent.click(sequencePreviousButton);
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(1);
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -179,7 +186,7 @@ describe('Sequence', () => {
 
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
-      const unitPreviousButton = screen.getAllByRole('button', { name: /previous/i })
+      const unitPreviousButton = screen.getAllByRole('link', { name: /previous/i })
         .filter(button => button !== sequencePreviousButton)[0];
       fireEvent.click(unitPreviousButton);
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
@@ -202,7 +209,7 @@ describe('Sequence', () => {
       render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
-      const sequenceNextButton = screen.getByRole('button', { name: /next/i });
+      const sequenceNextButton = screen.getByRole('link', { name: /next/i });
       fireEvent.click(sequenceNextButton);
       expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(1);
       expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.next_selected', {
@@ -214,7 +221,7 @@ describe('Sequence', () => {
 
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
-      const unitNextButton = screen.getAllByRole('button', { name: /next/i })
+      const unitNextButton = screen.getAllByRole('link', { name: /next/i })
         .filter(button => button !== sequenceNextButton)[0];
       fireEvent.click(unitNextButton);
       expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
@@ -240,11 +247,11 @@ describe('Sequence', () => {
       render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).toBeInTheDocument());
 
-      fireEvent.click(screen.getByRole('button', { name: /previous/i }));
+      fireEvent.click(screen.getByRole('link', { name: /previous/i }));
       expect(testData.previousSequenceHandler).not.toHaveBeenCalled();
       expect(testData.unitNavigationHandler).toHaveBeenCalledWith(unitBlocks[unitNumber - 1].id);
 
-      fireEvent.click(screen.getByRole('button', { name: /next/i }));
+      fireEvent.click(screen.getByRole('link', { name: /next/i }));
       expect(testData.nextSequenceHandler).not.toHaveBeenCalled();
       // As `previousSequenceHandler` and `nextSequenceHandler` are mocked, we aren't really changing the position here.
       // Therefore the next unit will still be `the initial one + 1`.
@@ -326,11 +333,11 @@ describe('Sequence', () => {
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
-      screen.getAllByRole('button', { name: /previous/i }).forEach(button => fireEvent.click(button));
+      screen.getAllByRole('link', { name: /previous/i }).forEach(button => fireEvent.click(button));
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
       expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
 
-      screen.getAllByRole('button', { name: /next/i }).forEach(button => fireEvent.click(button));
+      screen.getAllByRole('link', { name: /next/i }).forEach(button => fireEvent.click(button));
       expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
       expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
 
@@ -373,7 +380,7 @@ describe('Sequence', () => {
       render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).toBeInTheDocument());
 
-      fireEvent.click(screen.getByRole('button', { name: targetUnit.display_name }));
+      fireEvent.click(screen.getByRole('link', { name: targetUnit.display_name }));
       expect(testData.unitNavigationHandler).toHaveBeenCalledWith(targetUnit.id);
       expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', {
         current_tab: currentTabNumber,

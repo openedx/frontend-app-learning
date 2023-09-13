@@ -10,6 +10,7 @@ import { AlertList } from '../../generic/user-messages';
 import Sequence from './sequence';
 
 import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
+import Chat from './chat/Chat';
 import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SidebarProvider from './sidebar/SidebarContextProvider';
@@ -91,7 +92,16 @@ const Course = ({
           unitId={unitId}
         />
         {shouldDisplayTriggers && (
-          <SidebarTriggers />
+          <>
+            <Chat
+              enabled={course.learningAssistantEnabled}
+              enrollmentMode={course.enrollmentMode}
+              isStaff={isStaff}
+              courseId={courseId}
+              contentToolsEnabled={course.showCalculator || course.notes.enabled}
+            />
+            <SidebarTriggers />
+          </>
         )}
       </div>
 

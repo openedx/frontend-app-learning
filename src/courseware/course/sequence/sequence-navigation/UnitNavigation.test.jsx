@@ -22,7 +22,6 @@ describe('Unit Navigation', () => {
       sequenceId: courseware.sequenceId,
       onClickPrevious: () => {},
       onClickNext: () => {},
-      goToCourseExitPage: () => {},
     };
   });
 
@@ -33,10 +32,10 @@ describe('Unit Navigation', () => {
       unitId=""
       onClickPrevious={() => {}}
       onClickNext={() => {}}
-    />);
+    />, { wrapWithRouter: true });
 
     // Only "Previous" and "Next" buttons should be rendered.
-    expect(screen.getAllByRole('button')).toHaveLength(2);
+    expect(screen.getAllByRole('link')).toHaveLength(2);
   });
 
   it('handles the clicks', () => {
@@ -45,32 +44,30 @@ describe('Unit Navigation', () => {
 
     render(<UnitNavigation
       {...mockData}
-      sequenceId=""
-      unitId=""
       onClickPrevious={onClickPrevious}
       onClickNext={onClickNext}
-    />);
+    />, { wrapWithRouter: true });
 
-    fireEvent.click(screen.getByRole('button', { name: /previous/i }));
+    fireEvent.click(screen.getByRole('link', { name: /previous/i }));
     expect(onClickPrevious).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    fireEvent.click(screen.getByRole('link', { name: /next/i }));
     expect(onClickNext).toHaveBeenCalledTimes(1);
   });
 
   it('has the navigation buttons enabled for the non-corner unit in the sequence', () => {
-    render(<UnitNavigation {...mockData} />);
+    render(<UnitNavigation {...mockData} />, { wrapWithRouter: true });
 
-    screen.getAllByRole('button').forEach(button => {
+    screen.getAllByRole('link').forEach(button => {
       expect(button).toBeEnabled();
     });
   });
 
   it('has the "Previous" button disabled for the first unit in the sequence', () => {
-    render(<UnitNavigation {...mockData} unitId={unitBlocks[0].id} />);
+    render(<UnitNavigation {...mockData} unitId={unitBlocks[0].id} />, { wrapWithRouter: true });
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /next/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
   });
 
   it('has the "Next" button disabled for the last unit in the sequence if there is no Exit Page', async () => {
@@ -82,10 +79,10 @@ describe('Unit Navigation', () => {
 
     render(
       <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });
 
@@ -98,11 +95,11 @@ describe('Unit Navigation', () => {
 
     render(
       <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('button', { name: /next \(end of course\)/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /next \(end of course\)/i })).toBeEnabled();
   });
 
   it('displays complete course message instead of the "Next" button as needed', async () => {
@@ -119,10 +116,10 @@ describe('Unit Navigation', () => {
 
     render(
       <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('button', { name: /Complete the course/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /Complete the course/i })).toBeEnabled();
   });
 });

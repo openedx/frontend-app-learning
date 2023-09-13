@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { MenuItem } from '@edx/paragon';
+import { Dropdown } from '@edx/paragon';
 
 import {
   sendTrackingLogEvent,
@@ -15,6 +15,7 @@ const JumpNavMenuItem = ({
   currentUnit,
   sequences,
   isDefault,
+  onClick,
 }) => {
   const navigate = useNavigate();
 
@@ -36,25 +37,30 @@ const JumpNavMenuItem = ({
     }
     return `/course/${courseId}/${sequences[0].id}`;
   }
-  function handleClick() {
+  function handleClick(e) {
     const url = destinationUrl();
     logEvent(url);
     navigate(url);
+    if (onClick) { onClick(e); }
   }
 
   return (
-    <MenuItem
-      defaultSelected={isDefault}
-      onClick={() => handleClick()}
+    <Dropdown.Item
+      active={isDefault}
+      onClick={e => handleClick(e)}
     >
       {title}
-    </MenuItem>
+    </Dropdown.Item>
   );
 };
 
 const sequenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
 });
+
+JumpNavMenuItem.defaultProps = {
+  onClick: null,
+};
 
 JumpNavMenuItem.propTypes = {
   title: PropTypes.string.isRequired,
@@ -63,6 +69,7 @@ JumpNavMenuItem.propTypes = {
   courseId: PropTypes.string.isRequired,
   currentSequence: PropTypes.string.isRequired,
   currentUnit: PropTypes.string.isRequired,
+  onClick: PropTypes.func,
 };
 
 export default JumpNavMenuItem;

@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import { render as rtlRender } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import MockAdapter from 'axios-mock-adapter';
+import { reducer as learningAssistantReducer } from '@edx/frontend-lib-learning-assistant';
 import AppProvider from '@edx/frontend-platform/react/AppProvider';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
@@ -116,6 +117,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
       models: modelsReducer,
       courseware: coursewareReducer,
       courseHome: courseHomeReducer,
+      learningAssistant: learningAssistantReducer,
     },
   });
   if (overrideStore) {

@@ -1,6 +1,8 @@
 .DS_Store
 .eslintcache
 .idea
+*.swp
+*.swo
 node_modules
 npm-debug.log
 coverage

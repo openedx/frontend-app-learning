@@ -40,14 +40,17 @@ describe('Sequence Navigation Dropdown', () => {
 
   unitBlocks.forEach((unit, index) => {
     it(`marks unit ${index + 1} as active`, async () => {
-      const { container } = render(<SequenceNavigationDropdown {...mockData} unitId={unit.id} />);
+      const { container } = render(
+        <SequenceNavigationDropdown {...mockData} unitId={unit.id} />,
+        { wrapWithRouter: true },
+      );
       const dropdownToggle = container.querySelector('.dropdown-toggle');
       await act(async () => {
         await fireEvent.click(dropdownToggle);
       });
       const dropdownMenu = container.querySelector('.dropdown-menu');
       // Only the current unit should be marked as active.
-      getAllByRole(dropdownMenu, 'button', { hidden: true }).forEach(button => {
+      getAllByRole(dropdownMenu, 'link', { hidden: true }).forEach(button => {
         if (button.textContent === unit.display_name) {
           expect(button).toHaveClass('active');
         } else {
@@ -59,14 +62,17 @@ describe('Sequence Navigation Dropdown', () => {
 
   it('handles the clicks', () => {
     const onNavigate = jest.fn();
-    const { container } = render(<SequenceNavigationDropdown {...mockData} onNavigate={onNavigate} />);
+    const { container } = render(
+      <SequenceNavigationDropdown {...mockData} onNavigate={onNavigate} />,
+      { wrapWithRouter: true },
+    );
 
     const dropdownToggle = container.querySelector('.dropdown-toggle');
     act(() => {
       fireEvent.click(dropdownToggle);
     });
     const dropdownMenu = container.querySelector('.dropdown-menu');
-    getAllByRole(dropdownMenu, 'button', { hidden: true }).forEach(button => fireEvent.click(button));
+    getAllByRole(dropdownMenu, 'link', { hidden: true }).forEach(button => fireEvent.click(button));
     expect(onNavigate).toHaveBeenCalledTimes(unitBlocks.length);
     unitBlocks.forEach((unit, index) => {
       expect(onNavigate).toHaveBeenNthCalledWith(index + 1, unit.id);

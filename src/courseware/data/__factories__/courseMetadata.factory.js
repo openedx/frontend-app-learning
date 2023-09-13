@@ -57,4 +57,5 @@ Factory.define('courseMetadata')
     related_programs: null,
     user_needs_integrity_signature: false,
     recommendations: null,
+    learning_assistant_enabled: null,
   });

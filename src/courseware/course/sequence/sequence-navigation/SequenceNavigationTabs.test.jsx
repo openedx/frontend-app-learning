@@ -41,16 +41,16 @@ describe('Sequence Navigation Tabs', () => {
 
   it('renders unit buttons', () => {
     useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
-    render(<SequenceNavigationTabs {...mockData} />);
+    render(<SequenceNavigationTabs {...mockData} />, { wrapWithRouter: true });
 
-    expect(screen.getAllByRole('button')).toHaveLength(unitBlocks.length);
+    expect(screen.getAllByRole('link')).toHaveLength(unitBlocks.length);
   });
 
   it('renders unit buttons and dropdown button', async () => {
     let container = null;
     await act(async () => {
       useIndexOfLastVisibleChild.mockReturnValue([-1, null, null]);
-      const booyah = render(<SequenceNavigationTabs {...mockData} />);
+      const booyah = render(<SequenceNavigationTabs {...mockData} />, { wrapWithRouter: true });
       container = booyah.container;
 
       const dropdownToggle = container.querySelector('.dropdown-toggle');
@@ -60,8 +60,8 @@ describe('Sequence Navigation Tabs', () => {
       await fireEvent.click(dropdownToggle);
     });
     const dropdownMenu = container.querySelector('.dropdown');
-    const dropdownButtons = getAllByRole(dropdownMenu, 'button');
-    expect(dropdownButtons).toHaveLength(unitBlocks.length + 1);
+    const dropdownButtons = getAllByRole(dropdownMenu, 'link');
+    expect(dropdownButtons).toHaveLength(unitBlocks.length);
     expect(screen.getByRole('button', { name: `${activeBlockNumber} of ${unitBlocks.length}` }))
       .toHaveClass('dropdown-toggle');
   });

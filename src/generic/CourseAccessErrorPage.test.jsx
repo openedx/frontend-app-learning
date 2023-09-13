@@ -51,7 +51,7 @@ describe('CourseAccessErrorPage', () => {
       </Routes>,
       { wrapWithRouter: true },
     );
-    expect(mockedNavigator).toHaveBeenCalledWith('/redirect/home/course-v1:edX+DemoX+Demo_Course');
+    expect(mockedNavigator).toHaveBeenCalledWith('/redirect/home/course-v1:edX+DemoX+Demo_Course', { replace: true });
   });
 
   it('For access denied it should render access denied page', () => {

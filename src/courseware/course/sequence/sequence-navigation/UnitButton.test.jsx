@@ -32,13 +32,13 @@ describe('Unit Button', () => {
   });
 
   it('hides title by default', () => {
-    render(<UnitButton {...mockData} />);
-    expect(screen.getByRole('button')).not.toHaveTextContent(unit.display_name);
+    render(<UnitButton {...mockData} />, { wrapWithRouter: true });
+    expect(screen.getByRole('link')).not.toHaveTextContent(unit.display_name);
   });
 
   it('shows title', () => {
-    render(<UnitButton {...mockData} showTitle />);
-    expect(screen.getByRole('button')).toHaveTextContent(unit.display_name);
+    render(<UnitButton {...mockData} showTitle />, { wrapWithRouter: true });
+    expect(screen.getByRole('link')).toHaveTextContent(unit.display_name);
   });
 
   it('does not show completion for non-completed unit', () => {
@@ -49,7 +49,7 @@ describe('Unit Button', () => {
   });
 
   it('shows completion for completed unit', () => {
-    const { container } = render(<UnitButton {...mockData} unitId={completedUnit.id} />);
+    const { container } = render(<UnitButton {...mockData} unitId={completedUnit.id} />, { wrapWithRouter: true });
     const buttonIcons = container.querySelectorAll('svg');
     expect(buttonIcons).toHaveLength(2);
     expect(buttonIcons[1]).toHaveClass('fa-check');
@@ -70,7 +70,7 @@ describe('Unit Button', () => {
   });
 
   it('shows bookmark', () => {
-    const { container } = render(<UnitButton {...mockData} unitId={bookmarkedUnit.id} />);
+    const { container } = render(<UnitButton {...mockData} unitId={bookmarkedUnit.id} />, { wrapWithRouter: true });
     const buttonIcons = container.querySelectorAll('svg');
     expect(buttonIcons).toHaveLength(3);
     expect(buttonIcons[2]).toHaveClass('fa-bookmark');
@@ -78,8 +78,8 @@ describe('Unit Button', () => {
 
   it('handles the click', () => {
     const onClick = jest.fn();
-    render(<UnitButton {...mockData} onClick={onClick} />);
-    fireEvent.click(screen.getByRole('button'));
+    render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
+    fireEvent.click(screen.getByRole('link'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 });

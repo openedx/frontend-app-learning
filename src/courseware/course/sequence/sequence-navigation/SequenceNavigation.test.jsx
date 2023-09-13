@@ -25,22 +25,21 @@ describe('Sequence Navigation', () => {
     mockData = {
       unitId: unitBlocks[1].id,
       sequenceId: courseware.sequenceId,
-      previousSequenceHandler: () => {},
+      previousHandler: () => {},
       onNavigate: () => {},
-      nextSequenceHandler: () => {},
-      goToCourseExitPage: () => {},
+      nextHandler: () => {},
     };
   });
 
   it('is empty while loading', async () => {
     const testStore = await initializeTestStore({ excludeFetchSequence: true }, false);
-    const { container } = render(<SequenceNavigation {...mockData} />, { store: testStore });
+    const { container } = render(<SequenceNavigation {...mockData} />, { store: testStore, wrapWithRouter: true });
 
     expect(container).toBeEmptyDOMElement();
   });
 
   it('renders empty div without unitId', () => {
-    const { container } = render(<SequenceNavigation {...mockData} unitId={undefined} />);
+    const { container } = render(<SequenceNavigation {...mockData} unitId={undefined} />, { wrapWithRouter: true });
     expect(getByText(container, (content, element) => (
       element.tagName.toLowerCase() === 'div' && element.getAttribute('style')))).toBeEmptyDOMElement();
   });
@@ -62,7 +61,7 @@ describe('Sequence Navigation', () => {
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    render(<SequenceNavigation {...testData} />, { store: testStore });
+    render(<SequenceNavigation {...testData} />, { store: testStore, wrapWithRouter: true });
 
     const unitButton = screen.getByTitle(unitBlocks[1].display_name);
     fireEvent.click(unitButton);
@@ -75,27 +74,27 @@ describe('Sequence Navigation', () => {
 
   it('renders correctly and handles unit button clicks', () => {
     const onNavigate = jest.fn();
-    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />);
+    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />, { wrapWithRouter: true });
 
-    const unitButtons = screen.getAllByRole('button', { name: /\d+/ });
+    const unitButtons = screen.getAllByRole('link', { name: /\d+/ });
     expect(unitButtons).toHaveLength(unitButtons.length);
     unitButtons.forEach(button => fireEvent.click(button));
     expect(onNavigate).toHaveBeenCalledTimes(unitButtons.length);
   });
 
   it('has both navigation buttons enabled for a non-corner unit of the sequence', () => {
-    render(<SequenceNavigation {...mockData} />);
+    render(<SequenceNavigation {...mockData} />, { wrapWithRouter: true });
 
-    screen.getAllByRole('button', { name: /previous|next/i }).forEach(button => {
+    screen.getAllByRole('link', { name: /previous|next/i }).forEach(button => {
       expect(button).toBeEnabled();
     });
   });
 
   it('has the "Previous" button disabled for the first unit of the sequence', () => {
-    render(<SequenceNavigation {...mockData} unitId={unitBlocks[0].id} />);
+    render(<SequenceNavigation {...mockData} unitId={unitBlocks[0].id} />, { wrapWithRouter: true });
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /next/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
   });
 
   it('has the "Next" button disabled for the last unit of the sequence if there is no Exit page', async () => {
@@ -107,10 +106,10 @@ describe('Sequence Navigation', () => {
 
     render(
       <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });
 
@@ -123,11 +122,11 @@ describe('Sequence Navigation', () => {
 
     render(
       <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('button', { name: /next \(end of course\)/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /next \(end of course\)/i })).toBeEnabled();
   });
 
   it('displays complete course message instead of the "Next" button as needed', async () => {
@@ -144,22 +143,22 @@ describe('Sequence Navigation', () => {
 
     render(
       <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('button', { name: /Complete the course/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
+    expect(screen.getByRole('link', { name: /Complete the course/i })).toBeEnabled();
   });
 
   it('handles "Previous" and "Next" click', () => {
-    const previousSequenceHandler = jest.fn();
-    const nextSequenceHandler = jest.fn();
-    render(<SequenceNavigation {...mockData} {...{ previousSequenceHandler, nextSequenceHandler }} />);
+    const previousHandler = jest.fn();
+    const nextHandler = jest.fn();
+    render(<SequenceNavigation {...mockData} {...{ previousHandler, nextHandler }} />, { wrapWithRouter: true });
 
-    fireEvent.click(screen.getByRole('button', { name: /previous/i }));
-    expect(previousSequenceHandler).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('link', { name: /previous/i }));
+    expect(previousHandler).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
-    expect(nextSequenceHandler).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('link', { name: /next/i }));
+    expect(nextHandler).toHaveBeenCalledTimes(1);
   });
 });

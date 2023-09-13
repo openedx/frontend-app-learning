@@ -13,7 +13,6 @@ import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 import { breakpoints, useWindowSize } from '@edx/paragon';
 
-import { useNavigate } from 'react-router-dom';
 import PageLoading from '../../../generic/PageLoading';
 import { useModel } from '../../../generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '../../../alerts/sequence-alerts/hooks';
@@ -45,7 +44,6 @@ const Sequence = ({
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
   const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
-  const navigate = useNavigate();
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -140,9 +138,6 @@ const Sequence = ({
   }
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
-  const goToCourseExitPage = () => {
-    navigate(`/course/${courseId}/course-end`);
-  };
 
   const defaultContent = (
     <div className="sequence-container d-inline-flex flex-row">
@@ -151,7 +146,7 @@ const Sequence = ({
           sequenceId={sequenceId}
           unitId={unitId}
           className="mb-4"
-          nextSequenceHandler={() => {
+          nextHandler={() => {
             logEvent('edx.ui.lms.sequence.next_selected', 'top');
             handleNext();
           }}
@@ -159,11 +154,10 @@ const Sequence = ({
             logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
             handleNavigate(destinationUnitId);
           }}
-          previousSequenceHandler={() => {
+          previousHandler={() => {
             logEvent('edx.ui.lms.sequence.previous_selected', 'top');
             handlePrevious();
           }}
-          goToCourseExitPage={() => goToCourseExitPage()}
         />
         {shouldDisplayNotificationTriggerInSequence && <SidebarTriggers />}
 
@@ -187,7 +181,6 @@ const Sequence = ({
               logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
               handleNext();
             }}
-            goToCourseExitPage={() => goToCourseExitPage()}
           />
           )}
         </div>
