@@ -9,6 +9,10 @@ import {
   saveSequencePosition,
   getResumeBlock,
   getSequenceForUnitDeprecated,
+  fetchUnits,
+  toggleOpenCollapseSidebarItem,
+  collapseAllSidebarItems,
+  expandAllSidebarItems,
 } from './courseware/data';
 import { executeThunk, appendBrowserTimezoneToUrl } from './utils';
 import messages from './i18n';
@@ -27,4 +31,8 @@ export {
   executeThunk,
   appendBrowserTimezoneToUrl,
   messages,
+  fetchUnits,
+  toggleOpenCollapseSidebarItem,
+  collapseAllSidebarItems,
+  expandAllSidebarItems,
 };

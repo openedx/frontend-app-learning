@@ -21,6 +21,7 @@ import {
   fetchSequenceFailure,
   fetchSequenceRequest,
   fetchSequenceSuccess,
+  updateCollapsibleMenuState,
 } from './slice';
 
 export function fetchCourse(courseId) {
@@ -70,6 +71,7 @@ export function fetchCourse(courseId) {
           modelType: 'sequences',
           modelsMap: sequences,
         }));
+        dispatch(updateCollapsibleMenuState([...Object.keys(sections), ...Object.keys(sequences)]));
       }
 
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
@@ -249,5 +251,16 @@ export function getCourseDiscussionTopics(courseId) {
     } catch (error) {
       logError(error);
     }
+  };
+}
+
+export function fetchUnits(sequenceIds) {
+  return async (dispatch) => {
+    const sequenceMetadataPromises = sequenceIds.map(sequenceId => getSequenceMetadata(sequenceId));
+    const sequenceMetadatas = await Promise.allSettled(sequenceMetadataPromises);
+    sequenceMetadatas.forEach(({ value: { units } }) => dispatch(updateModels({
+      modelType: 'units',
+      models: units,
+    })));
   };
 }

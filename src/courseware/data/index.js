@@ -1,6 +1,7 @@
 export {
   fetchCourse,
   fetchSequence,
+  fetchUnits,
   checkBlockCompletion,
   saveIntegritySignature,
   saveSequencePosition,
@@ -14,3 +15,9 @@ export {
   sequenceIdsSelector,
 } from './selectors';
 export { reducer } from './slice';
+
+export {
+  toggleOpenCollapseSidebarItem,
+  collapseAllSidebarItems,
+  expandAllSidebarItems,
+} from './slice';
