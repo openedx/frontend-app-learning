@@ -11,11 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Setup Nodejs Env
-      run: echo "NODE_VER=`cat .nvmrc`" >> $GITHUB_ENV
     - uses: actions/setup-node@v3
       with:
-        node-version: ${{ env.NODE_VER }}
+        node-version-file: '.nvmrc'
     - run: make validate.ci
     - name: Upload coverage
       uses: codecov/codecov-action@v3
