@@ -1,7 +1,6 @@
 export {
   fetchCourse,
   fetchSequence,
-  fetchUnits,
   checkBlockCompletion,
   saveIntegritySignature,
   saveSequencePosition,
@@ -10,14 +9,9 @@ export {
   getResumeBlock,
   getSequenceForUnitDeprecated,
   sendActivationEmail,
+  getSequenceMetadata,
 } from './api';
 export {
   sequenceIdsSelector,
 } from './selectors';
 export { reducer } from './slice';
-
-export {
-  toggleOpenCollapseSidebarItem,
-  collapseAllSidebarItems,
-  expandAllSidebarItems,
-} from './slice';
