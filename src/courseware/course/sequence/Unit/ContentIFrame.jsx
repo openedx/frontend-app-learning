@@ -74,7 +74,7 @@ const ContentIFrame = ({
           <iframe title={title} {...contentIFrameProps} data-testid={testIDs.contentIFrame} />
         </div>
       )}
-      {modalOptions.open && (
+      {modalOptions.isOpen && (
         <Modal
           body={modalOptions.body
             ? <div className="unit-modal">{ modalOptions.body }</div>
@@ -84,7 +84,7 @@ const ContentIFrame = ({
                 allow={IFRAME_FEATURE_POLICY}
                 frameBorder="0"
                 src={modalOptions.url}
-                style={{ width: '100%', height: '100vh' }}
+                style={{ width: '100%', height: modalOptions.height }}
               />
             )}
           dialogClassName="modal-lti"
