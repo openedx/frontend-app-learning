@@ -1,7 +1,7 @@
 import Sequence from './courseware/course/sequence';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
-import { reducer as modelsReducer } from './generic/model-store';
+import { reducer as modelsReducer, updateModels, updateModel } from './generic/model-store';
 import {
   fetchCourse,
   fetchSequence,
@@ -10,6 +10,7 @@ import {
   getResumeBlock,
   getSequenceForUnitDeprecated,
 } from './courseware/data';
+import { getSequenceMetadata } from './courseware/data/api';
 import { executeThunk, appendBrowserTimezoneToUrl } from './utils';
 import messages from './i18n';
 
@@ -27,4 +28,7 @@ export {
   executeThunk,
   appendBrowserTimezoneToUrl,
   messages,
+  updateModel,
+  updateModels,
+  getSequenceMetadata,
 };

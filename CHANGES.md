@@ -2,6 +2,12 @@
 
 The purpose of this file is to document any changes done over upstream (https://github.com/openedx/frontend-app-learning).
 
+## 2023-09-15
+
+- Exported getSequenceMetadata
+- Exported  updateModels
+- Exported updateModel
+
 ## 2023-09-06
 
 - Added `src/testExports.js` to export anything that needs to be reused for testing but we don't want to be on production builds.
