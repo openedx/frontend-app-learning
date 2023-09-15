@@ -9,7 +9,6 @@ export {
   getResumeBlock,
   getSequenceForUnitDeprecated,
   sendActivationEmail,
-  getSequenceMetadata,
 } from './api';
 export {
   sequenceIdsSelector,

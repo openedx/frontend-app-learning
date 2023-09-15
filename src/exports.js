@@ -9,8 +9,8 @@ import {
   saveSequencePosition,
   getResumeBlock,
   getSequenceForUnitDeprecated,
-  getSequenceMetadata,
 } from './courseware/data';
+import { getSequenceMetadata } from './courseware/data/api';
 import { executeThunk, appendBrowserTimezoneToUrl } from './utils';
 import messages from './i18n';
 
