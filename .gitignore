@@ -12,6 +12,8 @@ src/i18n/transifex_input.json
 temp/babel-plugin-react-intl
 logs
 
+src/i18n/messages/
+
 ### pyenv ###
 .python-version
 
