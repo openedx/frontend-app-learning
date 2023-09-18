@@ -29,7 +29,7 @@
     "url": "https://github.com/openedx/frontend-app-learning/issues"
   },
   "dependencies": {
-    "@edx/brand": "npm:@edly-io/sdaia-brand-openedx@1.0.0",
+    "@edx/brand": "npm:@edly-io/sdaia-brand-openedx@^1.0.0",
     "@edx/frontend-component-footer": "^12.0.0",
     "@edx/frontend-component-header": "^4.0.0",
     "@edx/frontend-lib-special-exams": "^2.16.1",
