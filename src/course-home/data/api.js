@@ -193,6 +193,13 @@ export async function getCourseHomeCourseMetadata(courseId, rootSlug) {
   return normalizeCourseHomeCourseMetadata(data, rootSlug);
 }
 
+export async function getCourseAdvancedSettings(courseId) {
+  let url = `${getConfig().STUDIO_BASE_URL}/api/contentstore/v0/advanced_settings/${courseId}`;
+  url = appendBrowserTimezoneToUrl(url);
+  const { data } = await getAuthenticatedHttpClient().get(url);
+  return data;
+}
+
 // For debugging purposes, you might like to see a fully loaded dates tab.
 // Just uncomment the next few lines and the immediate 'return' in the function below
 // import { Factory } from 'rosie';

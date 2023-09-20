@@ -3,6 +3,7 @@ import { camelCaseObject } from '@edx/frontend-platform';
 import {
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
+  getCourseAdvancedSettings,
   getDatesTabData,
   getOutlineTabData,
   getProgressTabData,
@@ -42,6 +43,18 @@ export function fetchTab(courseId, tab, getTabData, targetUserId) {
           ...courseHomeCourseMetadata,
         },
       }));
+
+      if (tab === 'progress') {
+        const courseAdvancedSettings = await getCourseAdvancedSettings(courseId);
+        dispatch(addModel({
+          modelType: 'courseAdvancedSettings',
+          model: {
+            id: courseId,
+            ...courseAdvancedSettings,
+          },
+        }));
+      }
+
       const tabDataResult = getTabData && await getTabData(courseId, targetUserId);
       if (tabDataResult) {
         dispatch(addModel({
