@@ -79,6 +79,10 @@
   }
 }
 
+.pgn__menu-select .pgn__menu-select-popup {
+  position: static;
+}
+
 .sequence-container {
   display: flex;
   flex-direction: column;
