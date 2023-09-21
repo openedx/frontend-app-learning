@@ -32,7 +32,7 @@
     "@edx/brand": "npm:@edx/brand-openedx@1.2.0",
     "@edx/frontend-component-footer": "12.1.2",
     "@edx/frontend-component-header": "4.4.4",
-    "@edx/frontend-lib-learning-assistant": "^1.13.0",
+    "@edx/frontend-lib-learning-assistant": "^1.14.0",
     "@edx/frontend-lib-special-exams": "2.20.1",
     "@edx/frontend-platform": "4.6.0",
     "@edx/paragon": "20.46.0",
