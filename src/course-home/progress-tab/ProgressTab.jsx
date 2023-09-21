@@ -18,7 +18,7 @@ const ProgressTab = () => {
   } = useSelector(state => state.courseHome);
 
   const {
-    gradesFeatureIsFullyLocked,
+    gradesFeatureIsFullyLocked, disableProgressGraph,
   } = useModel('progress', courseId);
 
   const applyLockedOverlay = gradesFeatureIsFullyLocked ? 'locked-overlay' : '';
@@ -38,7 +38,7 @@ const ProgressTab = () => {
       <div className="row w-100 m-0">
         {/* Main body */}
         <div className="col-12 col-md-8 p-0">
-          <CourseCompletion />
+          {!disableProgressGraph && <CourseCompletion />}
           {!wideScreen && <CertificateStatus />}
           <CourseGrade />
           <div className={`grades my-4 p-4 rounded raised-card ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
