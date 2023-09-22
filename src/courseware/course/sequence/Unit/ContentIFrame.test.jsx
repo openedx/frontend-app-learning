@@ -29,16 +29,17 @@ const iframeBehavior = {
 
 const modalOptions = {
   closed: {
-    open: false,
+    isOpen: false,
   },
   withBody: {
     body: 'test-body',
-    open: true,
+    isOpen: true,
   },
   withUrl: {
-    open: true,
+    isOpen: true,
     title: 'test-modal-title',
     url: 'test-modal-url',
+    height: 'test-height',
   },
 };
 
@@ -83,7 +84,7 @@ describe('ContentIFrame Component', () => {
   });
   describe('output', () => {
     let component;
-    describe('shouldShowContent', () => {
+    describe('if shouldShowContent', () => {
       describe('if not hasLoaded', () => {
         it('displays errorPage if showError', () => {
           hooks.useIFrameBehavior.mockReturnValueOnce({ ...iframeBehavior, showError: true });
@@ -121,7 +122,7 @@ describe('ContentIFrame Component', () => {
         });
       });
     });
-    describe('not shouldShowContent', () => {
+    describe('if not shouldShowContent', () => {
       it('does not show PageLoading, ErrorPage, or unit-iframe-wrapper', () => {
         el = shallow(<ContentIFrame {...{ ...props, shouldShowContent: false }} />);
         expect(el.instance.findByType(PageLoading).length).toEqual(0);
@@ -129,13 +130,13 @@ describe('ContentIFrame Component', () => {
         expect(el.instance.findByTestId(testIDs.contentIFrame).length).toEqual(0);
       });
     });
-    it('does not display modal if modalOptions returns open: false', () => {
+    it('does not display modal if modalOptions returns isOpen: false', () => {
       el = shallow(<ContentIFrame {...props} />);
       expect(el.instance.findByType(Modal).length).toEqual(0);
     });
-    describe('if modalOptions.open', () => {
+    describe('if modalOptions.isOpen', () => {
       const testModalOpenAndHandleClose = () => {
-        test('Modal component is open, with handleModalClose from hook', () => {
+        test('Modal component isOpen, with handleModalClose from hook', () => {
           expect(component.props.onClose).toEqual(modalIFrameData.handleModalClose);
         });
       };
@@ -164,7 +165,7 @@ describe('ContentIFrame Component', () => {
               allow={IFRAME_FEATURE_POLICY}
               frameBorder="0"
               src={modalOptions.withUrl.url}
-              style={{ width: '100%', height: '100vh' }}
+              style={{ width: '100%', height: modalOptions.withUrl.height }}
             />,
           );
         });
