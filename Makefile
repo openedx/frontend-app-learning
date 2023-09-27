@@ -77,5 +77,5 @@ validate:
 
 .PHONY: validate.ci
 validate.ci:
-	npm ci
+	npm ci --legacy-peer-deps
 	make validate
