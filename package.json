@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "fedx-scripts webpack",
-    "i18n_extract": "BABEL_ENV=i18n fedx-scripts babel src --quiet > /dev/null",
+    "i18n_extract": "fedx-scripts formatjs extract",
     "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
     "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx .",
     "prepare": "husky install",
@@ -66,7 +66,7 @@
   },
   "devDependencies": {
     "@edx/browserslist-config": "1.2.0",
-    "@edx/frontend-build": "^12.9.10",
+    "@edx/frontend-build": "13.0.0",
     "@edx/reactifex": "2.2.0",
     "@pact-foundation/pact": "^11.0.2",
     "@testing-library/jest-dom": "5.16.5",
