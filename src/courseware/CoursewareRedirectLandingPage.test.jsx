@@ -1,19 +1,12 @@
 import React from 'react';
-import { Router } from 'react-router';
-import { createMemoryHistory } from 'history';
+import { MemoryRouter as Router } from 'react-router-dom';
 import { render, initializeMockApp } from '../setupTest';
 import CoursewareRedirectLandingPage from './CoursewareRedirectLandingPage';
 
 const redirectUrl = jest.fn();
 
 jest.mock('@edx/frontend-platform/analytics');
-
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
-  useRouteMatch: () => ({
-    path: '/redirect',
-  }),
-}));
+jest.mock('../decode-page-route', () => jest.fn(({ children }) => <div>{children}</div>));
 
 describe('CoursewareRedirectLandingPage', () => {
   beforeEach(async () => {
@@ -23,12 +16,8 @@ describe('CoursewareRedirectLandingPage', () => {
   });
 
   it('Redirects to correct consent URL', () => {
-    const history = createMemoryHistory({
-      initialEntries: ['/redirect/consent/?consentPath=%2Fgrant_data_sharing_consent'],
-    });
-
     render(
-      <Router history={history}>
+      <Router initialEntries={['/consent/?consentPath=%2Fgrant_data_sharing_consent']}>
         <CoursewareRedirectLandingPage />
       </Router>,
     );
@@ -37,12 +26,8 @@ describe('CoursewareRedirectLandingPage', () => {
   });
 
   it('Redirects to correct consent URL', () => {
-    const history = createMemoryHistory({
-      initialEntries: ['/redirect/home/course-v1:edX+DemoX+Demo_Course'],
-    });
-
     render(
-      <Router history={history}>
+      <Router initialEntries={['/home/course-v1:edX+DemoX+Demo_Course']}>
         <CoursewareRedirectLandingPage />
       </Router>,
     );

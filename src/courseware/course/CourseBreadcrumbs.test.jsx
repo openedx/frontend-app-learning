@@ -26,6 +26,12 @@ jest.mock('react-redux', () => ({
   Provider: ({ children }) => children,
   useSelector: () => 'loaded',
 }));
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  Link: jest.fn().mockImplementation(({ to, children }) => (
+    <a href={to}>{children}</a>
+  )),
+}));
 
 useModels.mockImplementation((name) => {
   if (name === 'sections') {

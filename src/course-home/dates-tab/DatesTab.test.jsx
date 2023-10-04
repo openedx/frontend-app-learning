@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router';
+import { Routes, Route } from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 import { getConfig, history } from '@edx/frontend-platform';
@@ -32,11 +32,16 @@ describe('DatesTab', () => {
     component = (
       <AppProvider store={store}>
         <UserMessagesProvider>
-          <Route path="/course/:courseId/dates">
-            <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-              <DatesTab />
-            </TabContainer>
-          </Route>
+          <Routes>
+            <Route
+              path="/course/:courseId/dates"
+              element={(
+                <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
+                  <DatesTab />
+                </TabContainer>
+              )}
+            />
+          </Routes>
         </UserMessagesProvider>
       </AppProvider>
     );

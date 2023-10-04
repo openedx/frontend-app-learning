@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { LearningHeader as Header } from '@edx/frontend-component-header';
 import Footer from '@edx/frontend-component-footer';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Redirect } from 'react-router';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import useActiveEnterpriseAlert from '../alerts/active-enteprise-alert';
 import { AlertList } from './user-messages';
@@ -38,7 +37,7 @@ const CourseAccessErrorPage = ({ intl }) => {
     );
   }
   if (courseStatus === LOADED) {
-    return (<Redirect to={`/redirect/home/${courseId}`} />);
+    return <Navigate to={`/redirect/home/${courseId}`} replace />;
   }
   return (
     <>

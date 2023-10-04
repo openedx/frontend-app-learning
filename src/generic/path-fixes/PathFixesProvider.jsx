@@ -1,4 +1,4 @@
-import { Redirect, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
@@ -16,10 +16,10 @@ const PathFixesProvider = ({ children }) => {
 
   // We only check for spaces. That's not the only kind of character that is escaped in URLs, but it would always be
   // present for our cases, and I believe it's the only one we use normally.
-  if (location.pathname.includes(' ')) {
+  if (location.pathname.includes(' ') || location.pathname.includes('%20')) {
     const newLocation = {
       ...location,
-      pathname: location.pathname.replaceAll(' ', '+'),
+      pathname: (location.pathname.replaceAll(' ', '+')).replaceAll('%20', '+'),
     };
 
     sendTrackEvent('edx.ui.lms.path_fixed', {
@@ -29,7 +29,7 @@ const PathFixesProvider = ({ children }) => {
       search: location.search,
     });
 
-    return (<Redirect to={newLocation} />);
+    return (<Navigate to={newLocation} replace />);
   }
 
   return children; // pass through

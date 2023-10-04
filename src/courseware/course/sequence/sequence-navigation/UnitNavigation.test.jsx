@@ -32,7 +32,7 @@ describe('Unit Navigation', () => {
       unitId=""
       onClickPrevious={() => {}}
       onClickNext={() => {}}
-    />);
+    />, { wrapWithRouter: true });
 
     // Only "Previous" and "Next" buttons should be rendered.
     expect(screen.getAllByRole('link')).toHaveLength(2);
@@ -46,7 +46,7 @@ describe('Unit Navigation', () => {
       {...mockData}
       onClickPrevious={onClickPrevious}
       onClickNext={onClickNext}
-    />);
+    />, { wrapWithRouter: true });
 
     fireEvent.click(screen.getByRole('link', { name: /previous/i }));
     expect(onClickPrevious).toHaveBeenCalledTimes(1);
@@ -56,7 +56,7 @@ describe('Unit Navigation', () => {
   });
 
   it('has the navigation buttons enabled for the non-corner unit in the sequence', () => {
-    render(<UnitNavigation {...mockData} />);
+    render(<UnitNavigation {...mockData} />, { wrapWithRouter: true });
 
     screen.getAllByRole('link').forEach(button => {
       expect(button).toBeEnabled();
@@ -64,7 +64,7 @@ describe('Unit Navigation', () => {
   });
 
   it('has the "Previous" button disabled for the first unit in the sequence', () => {
-    render(<UnitNavigation {...mockData} unitId={unitBlocks[0].id} />);
+    render(<UnitNavigation {...mockData} unitId={unitBlocks[0].id} />, { wrapWithRouter: true });
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
     expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
@@ -79,7 +79,7 @@ describe('Unit Navigation', () => {
 
     render(
       <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -95,7 +95,7 @@ describe('Unit Navigation', () => {
 
     render(
       <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -116,7 +116,7 @@ describe('Unit Navigation', () => {
 
     render(
       <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();

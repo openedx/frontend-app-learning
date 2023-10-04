@@ -40,7 +40,10 @@ describe('Sequence Navigation Dropdown', () => {
 
   unitBlocks.forEach((unit, index) => {
     it(`marks unit ${index + 1} as active`, async () => {
-      const { container } = render(<SequenceNavigationDropdown {...mockData} unitId={unit.id} />);
+      const { container } = render(
+        <SequenceNavigationDropdown {...mockData} unitId={unit.id} />,
+        { wrapWithRouter: true },
+      );
       const dropdownToggle = container.querySelector('.dropdown-toggle');
       await act(async () => {
         await fireEvent.click(dropdownToggle);
@@ -59,7 +62,10 @@ describe('Sequence Navigation Dropdown', () => {
 
   it('handles the clicks', () => {
     const onNavigate = jest.fn();
-    const { container } = render(<SequenceNavigationDropdown {...mockData} onNavigate={onNavigate} />);
+    const { container } = render(
+      <SequenceNavigationDropdown {...mockData} onNavigate={onNavigate} />,
+      { wrapWithRouter: true },
+    );
 
     const dropdownToggle = container.querySelector('.dropdown-toggle');
     act(() => {

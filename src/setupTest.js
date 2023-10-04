@@ -169,13 +169,14 @@ function render(
   ui,
   {
     store = null,
+    wrapWithRouter = false,
     ...renderOptions
   } = {},
 ) {
   const Wrapper = ({ children }) => (
     // eslint-disable-next-line react/jsx-filename-extension
     <IntlProvider locale="en">
-      <AppProvider store={store || globalStore}>
+      <AppProvider store={store || globalStore} wrapWithRouter={wrapWithRouter}>
         <UserMessagesProvider>
           {children}
         </UserMessagesProvider>

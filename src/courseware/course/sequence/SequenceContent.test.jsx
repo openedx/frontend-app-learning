@@ -19,13 +19,13 @@ describe('Sequence Content', () => {
   });
 
   it('displays loading message', () => {
-    render(<SequenceContent {...mockData} />);
+    render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
     expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
   });
 
   it('displays messages for the locked content', async () => {
     const { gatedContent } = store.getState().models.sequences[mockData.sequenceId];
-    const { container } = render(<SequenceContent {...mockData} gated />);
+    const { container } = render(<SequenceContent {...mockData} gated />, { wrapWithRouter: true });
 
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
     expect(await screen.findByText('Content Locked')).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe('Sequence Content', () => {
   });
 
   it('displays message for no content', () => {
-    render(<SequenceContent {...mockData} unitId={null} />);
+    render(<SequenceContent {...mockData} unitId={null} />, { wrapWithRouter: true });
     expect(screen.getByText('There is no content here.')).toBeInTheDocument();
   });
 });

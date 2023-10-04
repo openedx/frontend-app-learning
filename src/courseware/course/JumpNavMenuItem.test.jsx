@@ -1,5 +1,6 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import JumpNavMenuItem from './JumpNavMenuItem';
 import { fireEvent } from '../../setupTest';
 
@@ -26,9 +27,11 @@ const mockData = {
 };
 describe('JumpNavMenuItem', () => {
   render(
-    <JumpNavMenuItem
-      {...mockData}
-    />,
+    <BrowserRouter>
+      <JumpNavMenuItem
+        {...mockData}
+      />
+    </BrowserRouter>,
   );
   it('renders menu Item as expected with button and Text and handles clicks', () => {
     expect(screen.queryAllByRole('button')).toHaveLength(1);
