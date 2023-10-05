@@ -30,8 +30,8 @@
   },
   "dependencies": {
     "@edx/brand": "npm:@edly-io/sdaia-brand-openedx@^1.0.0",
-    "@edx/frontend-component-footer": "^12.0.0",
-    "@edx/frontend-component-header": "^4.0.0",
+    "@edx/frontend-component-footer": "npm:@edly-io/sdaia-frontend-footer@^1.0.0",
+    "@edx/frontend-component-header": "npm:@edly-io/sdaia-frontend-header@^1.0.0",
     "@edx/frontend-lib-special-exams": "^2.16.1",
     "@edx/frontend-platform": "^4.2.0",
     "@edx/paragon": "20.28.4",
