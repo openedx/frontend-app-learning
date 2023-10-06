@@ -22,7 +22,7 @@
     justify-content: center;
 
     button {
-      @extend .btn-primary;
+    // @extend .btn-primary; I am not sure how to replace it!
       font-size: 1.2rem;
       width: 50%;
     }

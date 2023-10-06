@@ -1,12 +1,14 @@
+// Things done here are based on this PR: https://github.com/openedx/frontend-app-profile/pull/764
+/*
 @import "~@edx/brand/paragon/fonts";
 @import "~@edx/brand/paragon/variables";
 @import "~@edx/paragon/scss/core/core";
 @import "~@edx/brand/paragon/overrides";
 
-@import "~@edx/frontend-component-footer/dist/footer";
-@import "~@edx/frontend-component-header/dist/index";
 
-
+*/
+@use "@edx/paragon/styles/css/core/custom-media-breakpoints.css" as paragonCustomMediaBreakpoints;
+@use "@edx/brand/paragon/css/core/custom-media-breakpoints.css" as brandCustomMediaBreakpoints;
 #root {
   display: flex;
   flex-direction: column;
@@ -44,13 +46,13 @@
   .nav a,
   .nav button {
     &:hover {
-      background-color: $light-400;
+      background-color: var(--pgn-color-light-400);
     }
   }
 
   .nav a {
     &:not(.active):hover {
-      background-color: $light-400;
+      background-color: var(--pgn-color-light-400);
       border-bottom: none;
     }
   }
@@ -62,7 +64,7 @@
   .nav-link {
     border-bottom: 4px solid transparent;
     border-top: 4px solid transparent;
-    color: $gray-700;
+    color: var(--pgn-color-gray-700);
 
     // temporary until we can remove .btn class from dropdowns
     border-left: 0;
@@ -72,9 +74,9 @@
     &:hover,
     &:focus,
     &.active {
-      font-weight: $font-weight-normal;
-      color: $primary-500;
-      border-bottom-color: $primary-500;
+      font-weight: 500; // I am not sure what is the correct variable
+      color: var(--pgn-color-primary-500);
+      border-bottom-color: var(--pgn-color-primary-500);
     }
   }
 }
@@ -90,7 +92,7 @@
 }
 
 .sequence {
-  @media (min-width: map-get($grid-breakpoints, "sm")) {
+  @media (--max-pgn-size-breakpoint-xs) {
     border: solid 1px #eaeaea;
     border-radius: 4px;
   }
@@ -99,8 +101,8 @@
 .sequence-navigation {
   display: flex;
 
-  @media (min-width: map-get($grid-breakpoints, "sm")) {
-    margin: -1px -1px 0;
+  @media (--max-pgn-size-breakpoint-xs) {
+        margin: -1px -1px 0;
   }
 
   .btn {
@@ -115,13 +117,13 @@
     height: 3rem;
     justify-content: center;
     align-items: center;
-    color: $gray-500;
+    color: var(--pgn-color-grey-500);
     white-space: nowrap;
 
     &:hover,
     &:focus,
     &.active {
-      color: $gray-700;
+      color: var(--pgn-color-gray-700);
     }
 
     &:focus {
@@ -136,13 +138,13 @@
         left: 0;
         right: 0;
         height: 2px;
-        background: $primary;
+        background: var(--pgn-color-primary-500); // I hope this the correct one!.
       }
     }
 
     &.complete {
       background-color: #eef7e5;
-      color: $success;
+      color: green; // I am really not sure what shold replace $success
     }
 
     &:first-child {
@@ -193,12 +195,12 @@
         min-width: 0;
         margin: 0 1rem;
         text-overflow: ellipsis;
-        color: $gray-700;
+        color: var(--pgn-color-gray-700);
       }
 
       &.active {
         .unit-icon {
-          color: $primary-500;
+          color: var(--pgn-color-primary-500);
         }
 
         &:after {
@@ -210,7 +212,7 @@
           right: auto;
           width: 2px;
           height: auto;
-          background: $primary;
+          background: var(--pgn-color-primary-500);
         }
       }
     }
@@ -225,19 +227,19 @@
 
   .previous-btn,
   .next-btn {
-    border: 1px solid $light-400 !important;
-    color: $gray-700;
+    border: 1px solid var(--pgn-color-light-400) !important;
+    color: var(--pgn-color-gray-700);
     display: inline-flex;
     justify-content: center;
     align-items: center;
 
-    @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
-      padding-top: 1rem;
+    @media (--max-pgn-size-breakpoint-xs) {
+        padding-top: 1rem;
       padding-bottom: 1rem;
     }
 
-    @media (min-width: map-get($grid-breakpoints, "sm")) {
-      min-width: fit-content;
+    @media (--max-pgn-size-breakpoint-xs) {
+        min-width: fit-content;
       padding-left: 2rem;
       padding-right: 2rem;
     }
@@ -247,8 +249,8 @@
     border-left-width: 0;
     margin-left: 0;
 
-    @media (min-width: map-get($grid-breakpoints, "sm")) {
-      border-left-width: 1px;
+    @media (--max-pgn-size-breakpoint-xs) {
+            border-left-width: 1px;
       border-top-left-radius: 4px;
     }
   }
@@ -257,8 +259,8 @@
     border-left-width: 1px;
     border-right-width: 0;
 
-    @media (min-width: map-get($grid-breakpoints, "sm")) {
-      border-top-right-radius: 4px;
+    @media (--max-pgn-size-breakpoint-xs) {
+            border-top-right-radius: 4px;
       border-right-width: 1px;
     }
   }
@@ -271,9 +273,9 @@
   margin-left: auto;
   margin-right: auto;
 
-  @media (min-width: map-get($grid-breakpoints, "sm")) {
-    padding-left: $grid-gutter-width;
-    padding-right: $grid-gutter-width;
+  @media (--max-pgn-size-breakpoint-xs) {
+    padding-left: 24px ; 
+    padding-right: 24px;
   }
 
   @media (min-width: 830px) {
@@ -291,8 +293,8 @@
   // here we compensate for the padding of the parent div with "container-xl"
   // class to ensure that the viewport width is the same as the width of the
   // iframe.
-  margin-left: -$grid-gutter-width * .5;
-  margin-right: -$grid-gutter-width * .5;
+  margin-left: - 24 * .5;
+  margin-right: - 24 * .5;
 
   margin-bottom: 2rem;
 
@@ -391,3 +393,6 @@
 @import "course-home/progress-tab/grades/course-grade/GradeBar.scss";
 @import "courseware/course/course-exit/CourseRecommendations";
 @import "product-tours/newUserCourseHomeTour/NewUserCourseHomeTourModal.scss";
+
+@import "~@edx/frontend-component-footer/dist/footer";
+@import "~@edx/frontend-component-header/dist/index";
