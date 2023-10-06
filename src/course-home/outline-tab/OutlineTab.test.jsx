@@ -257,6 +257,22 @@ describe('Outline Tab', () => {
       });
     });
 
+    it('ignores comments and misformatted HTML', async () => {
+      setTabData({
+        welcome_message_html: '<p class="additional-spaces-in-tag"   >'
+      + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
+      + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
+      + 'Test welcome message that happens to be longer than one hundred words because of comments but displayed content is less.'
+      + 'It should not be shortened.'
+      + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
+      + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
+      + '</p>',
+      });
+      await fetchAndRender();
+      const showMoreButton = screen.queryByRole('button', { name: 'Show More' });
+      expect(showMoreButton).not.toBeInTheDocument();
+    });
+
     it('does not display if no update available', async () => {
       setTabData({ welcome_message_html: null });
       await fetchAndRender();
