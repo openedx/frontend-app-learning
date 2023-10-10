@@ -331,6 +331,16 @@ const messages = defineMessages({
     defaultMessage: 'Onboarding Past Due',
     description: 'Text that show when the deadline of proctortrack onboarding exam has passed, it appears on button that start the onboarding exam however for this case the button is disabled for obvious reason',
   },
+  coursewareSearchInputLabel: {
+    id: 'learning.coursewareSearch.inputLabel',
+    defaultMessage: 'Course Content Search',
+    description: 'Search input label',
+  },
+  coursewareSearchButtonLabel: {
+    id: 'learning.coursewareSearch.buttonLabel',
+    defaultMessage: 'Search',
+    description: 'Search button label',
+  },
 });
 
 export default messages;

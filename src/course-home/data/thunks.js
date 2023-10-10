@@ -12,6 +12,7 @@ import {
   postDismissWelcomeMessage,
   postRequestCert,
   getLiveTabIframe,
+  searchCourseContentFromAPI,
 } from './api';
 
 import {
@@ -137,5 +138,20 @@ export function processEvent(eventData, getTabData) {
         dispatch(setCallToActionToast({ header, link, linkText }));
       });
     }
+  };
+}
+
+export function searchCourseContent(courseId, searchKeyword) {
+  return async (dispatch) => {
+    searchCourseContentFromAPI(courseId, searchKeyword).then(response => {
+      const { data } = response;
+      dispatch(addModel({
+        modelType: 'contentSearchResults',
+        model: {
+          id: courseId,
+          ...data,
+        },
+      }));
+    });
   };
 }
