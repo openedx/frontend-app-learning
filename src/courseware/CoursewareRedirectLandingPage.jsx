@@ -1,56 +1,44 @@
 import React from 'react';
-import { Switch, useRouteMatch } from 'react-router';
-import { getConfig } from '@edx/frontend-platform';
+import { Routes, Route } from 'react-router-dom';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
-import { PageRoute } from '@edx/frontend-platform/react';
+import { PageWrap } from '@edx/frontend-platform/react';
 
-import queryString from 'query-string';
 import PageLoading from '../generic/PageLoading';
 
 import DecodePageRoute from '../decode-page-route';
+import { DECODE_ROUTES, REDIRECT_MODES, ROUTES } from '../constants';
+import RedirectPage from './RedirectPage';
 
-const CoursewareRedirectLandingPage = () => {
-  const { path } = useRouteMatch();
-  return (
-    <div className="flex-grow-1">
-      <PageLoading srMessage={(
-        <FormattedMessage
-          id="learn.redirect.interstitial.message"
-          description="The screen-reader message when a page is about to redirect"
-          defaultMessage="Redirecting..."
-        />
-      )}
+const CoursewareRedirectLandingPage = () => (
+  <div className="flex-grow-1">
+    <PageLoading srMessage={(
+      <FormattedMessage
+        id="learn.redirect.interstitial.message"
+        description="The screen-reader message when a page is about to redirect"
+        defaultMessage="Redirecting..."
       />
+      )}
+    />
 
-      <Switch>
-        <DecodePageRoute
-          path={`${path}/survey/:courseId`}
-          render={({ match }) => {
-            global.location.assign(`${getConfig().LMS_BASE_URL}/courses/${match.params.courseId}/survey`);
-          }}
-        />
-        <PageRoute
-          path={`${path}/dashboard`}
-          render={({ location }) => {
-            global.location.assign(`${getConfig().LMS_BASE_URL}/dashboard${location.search}`);
-          }}
-        />
-        <PageRoute
-          path={`${path}/consent/`}
-          render={({ location }) => {
-            const { consentPath } = queryString.parse(location.search);
-            global.location.assign(`${getConfig().LMS_BASE_URL}${consentPath}`);
-          }}
-        />
-        <DecodePageRoute
-          path={`${path}/home/:courseId`}
-          render={({ match }) => {
-            global.location.assign(`/course/${match.params.courseId}/home`);
-          }}
-        />
-      </Switch>
-    </div>
-  );
-};
+    <Routes>
+      <Route
+        path={DECODE_ROUTES.REDIRECT_SURVEY}
+        element={<DecodePageRoute><RedirectPage pattern="/courses/:courseId/survey" mode={REDIRECT_MODES.SURVEY_REDIRECT} /></DecodePageRoute>}
+      />
+      <Route
+        path={ROUTES.DASHBOARD}
+        element={<PageWrap><RedirectPage pattern="/dashboard" mode={REDIRECT_MODES.DASHBOARD_REDIRECT} /></PageWrap>}
+      />
+      <Route
+        path={ROUTES.CONSENT}
+        element={<PageWrap><RedirectPage mode={REDIRECT_MODES.CONSENT_REDIRECT} /></PageWrap>}
+      />
+      <Route
+        path={DECODE_ROUTES.REDIRECT_HOME}
+        element={<DecodePageRoute><RedirectPage pattern="/course/:courseId/home" mode={REDIRECT_MODES.HOME_REDIRECT} /></DecodePageRoute>}
+      />
+    </Routes>
+  </div>
+);
 
 export default CoursewareRedirectLandingPage;

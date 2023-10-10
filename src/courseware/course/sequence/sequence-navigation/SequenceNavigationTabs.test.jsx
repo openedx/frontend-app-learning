@@ -41,7 +41,7 @@ describe('Sequence Navigation Tabs', () => {
 
   it('renders unit buttons', () => {
     useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
-    render(<SequenceNavigationTabs {...mockData} />);
+    render(<SequenceNavigationTabs {...mockData} />, { wrapWithRouter: true });
 
     expect(screen.getAllByRole('link')).toHaveLength(unitBlocks.length);
   });
@@ -50,7 +50,7 @@ describe('Sequence Navigation Tabs', () => {
     let container = null;
     await act(async () => {
       useIndexOfLastVisibleChild.mockReturnValue([-1, null, null]);
-      const booyah = render(<SequenceNavigationTabs {...mockData} />);
+      const booyah = render(<SequenceNavigationTabs {...mockData} />, { wrapWithRouter: true });
       container = booyah.container;
 
       const dropdownToggle = container.querySelector('.dropdown-toggle');

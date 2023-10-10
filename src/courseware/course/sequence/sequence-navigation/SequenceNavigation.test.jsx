@@ -33,13 +33,13 @@ describe('Sequence Navigation', () => {
 
   it('is empty while loading', async () => {
     const testStore = await initializeTestStore({ excludeFetchSequence: true }, false);
-    const { container } = render(<SequenceNavigation {...mockData} />, { store: testStore });
+    const { container } = render(<SequenceNavigation {...mockData} />, { store: testStore, wrapWithRouter: true });
 
     expect(container).toBeEmptyDOMElement();
   });
 
   it('renders empty div without unitId', () => {
-    const { container } = render(<SequenceNavigation {...mockData} unitId={undefined} />);
+    const { container } = render(<SequenceNavigation {...mockData} unitId={undefined} />, { wrapWithRouter: true });
     expect(getByText(container, (content, element) => (
       element.tagName.toLowerCase() === 'div' && element.getAttribute('style')))).toBeEmptyDOMElement();
   });
@@ -61,7 +61,7 @@ describe('Sequence Navigation', () => {
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    render(<SequenceNavigation {...testData} />, { store: testStore });
+    render(<SequenceNavigation {...testData} />, { store: testStore, wrapWithRouter: true });
 
     const unitButton = screen.getByTitle(unitBlocks[1].display_name);
     fireEvent.click(unitButton);
@@ -74,7 +74,7 @@ describe('Sequence Navigation', () => {
 
   it('renders correctly and handles unit button clicks', () => {
     const onNavigate = jest.fn();
-    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />);
+    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />, { wrapWithRouter: true });
 
     const unitButtons = screen.getAllByRole('link', { name: /\d+/ });
     expect(unitButtons).toHaveLength(unitButtons.length);
@@ -83,7 +83,7 @@ describe('Sequence Navigation', () => {
   });
 
   it('has both navigation buttons enabled for a non-corner unit of the sequence', () => {
-    render(<SequenceNavigation {...mockData} />);
+    render(<SequenceNavigation {...mockData} />, { wrapWithRouter: true });
 
     screen.getAllByRole('link', { name: /previous|next/i }).forEach(button => {
       expect(button).toBeEnabled();
@@ -91,7 +91,7 @@ describe('Sequence Navigation', () => {
   });
 
   it('has the "Previous" button disabled for the first unit of the sequence', () => {
-    render(<SequenceNavigation {...mockData} unitId={unitBlocks[0].id} />);
+    render(<SequenceNavigation {...mockData} unitId={unitBlocks[0].id} />, { wrapWithRouter: true });
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
     expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
@@ -106,7 +106,7 @@ describe('Sequence Navigation', () => {
 
     render(
       <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -122,7 +122,7 @@ describe('Sequence Navigation', () => {
 
     render(
       <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -143,7 +143,7 @@ describe('Sequence Navigation', () => {
 
     render(
       <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore },
+      { store: testStore, wrapWithRouter: true },
     );
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -153,7 +153,7 @@ describe('Sequence Navigation', () => {
   it('handles "Previous" and "Next" click', () => {
     const previousHandler = jest.fn();
     const nextHandler = jest.fn();
-    render(<SequenceNavigation {...mockData} {...{ previousHandler, nextHandler }} />);
+    render(<SequenceNavigation {...mockData} {...{ previousHandler, nextHandler }} />, { wrapWithRouter: true });
 
     fireEvent.click(screen.getByRole('link', { name: /previous/i }));
     expect(previousHandler).toHaveBeenCalledTimes(1);

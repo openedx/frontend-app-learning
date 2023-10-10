@@ -1,5 +1,5 @@
 import React from 'react';
-import { getConfig, history } from '@edx/frontend-platform';
+import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
@@ -9,12 +9,12 @@ import {
 } from '../../../../setupTest';
 import HonorCode from './HonorCode';
 
+const mockNavigate = jest.fn();
+
 initializeMockApp();
-jest.mock('@edx/frontend-platform', () => ({
-  ...jest.requireActual('@edx/frontend-platform'),
-  history: {
-    push: jest.fn(),
-  },
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
 }));
 
 describe('Honor Code', () => {
@@ -38,15 +38,15 @@ describe('Honor Code', () => {
 
   it('cancel button links to course home ', async () => {
     await setupStoreState();
-    render(<HonorCode {...mockData} />);
+    render(<HonorCode {...mockData} />, { wrapWithRouter: true });
     const cancelButton = screen.getByText('Cancel');
     fireEvent.click(cancelButton);
-    expect(history.push).toHaveBeenCalledWith(`/course/${mockData.courseId}/home`);
+    expect(mockNavigate).toHaveBeenCalledWith(`/course/${mockData.courseId}/home`);
   });
 
   it('calls to save integrity_signature when agreeing', async () => {
     await setupStoreState({ username: authenticatedUser.username });
-    render(<HonorCode {...mockData} />);
+    render(<HonorCode {...mockData} />, { wrapWithRouter: true });
     const agreeButton = screen.getByText('I agree');
     fireEvent.click(agreeButton);
     await waitFor(() => {
@@ -63,7 +63,7 @@ describe('Honor Code', () => {
         username: authenticatedUser.username,
       },
     );
-    render(<HonorCode {...mockData} />);
+    render(<HonorCode {...mockData} />, { wrapWithRouter: true });
     const agreeButton = screen.getByText('I agree');
     fireEvent.click(agreeButton);
     await waitFor(() => {
@@ -80,7 +80,7 @@ describe('Honor Code', () => {
         username: 'otheruser',
       },
     );
-    render(<HonorCode {...mockData} />);
+    render(<HonorCode {...mockData} />, { wrapWithRouter: true });
     const agreeButton = screen.getByText('I agree');
     fireEvent.click(agreeButton);
     await waitFor(() => {

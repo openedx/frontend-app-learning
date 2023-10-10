@@ -1,5 +1,7 @@
 import React from 'react';
-import { MemoryRouter, Route } from 'react-router-dom';
+import {
+  MemoryRouter, Route, Routes, useLocation,
+} from 'react-router-dom';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 
@@ -19,16 +21,20 @@ describe('PathFixesProvider', () => {
   });
 
   function buildAndRender(path) {
+    const LocationComponent = () => {
+      testLocation = useLocation();
+      return null;
+    };
+
     render(
       <MemoryRouter initialEntries={[path]}>
         <PathFixesProvider>
-          <Route
-            path="*"
-            render={routeProps => {
-              testLocation = routeProps.location;
-              return null;
-            }}
-          />
+          <Routes>
+            <Route
+              path="*"
+              element={<LocationComponent />}
+            />
+          </Routes>
         </PathFixesProvider>
       </MemoryRouter>,
     );

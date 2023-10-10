@@ -15,6 +15,10 @@ import { executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
 
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
+  ...jest.requireActual('@edx/frontend-lib-special-exams/dist/data/thunks.js'),
+  checkExamEntry: () => jest.fn(),
+}));
 
 const recordFirstSectionCelebration = jest.fn();
 // eslint-disable-next-line no-import-assign
@@ -65,11 +69,11 @@ describe('Course', () => {
     const [firstSequenceId] = Object.keys(state.models.sequences);
     mockData.sequenceId = firstSequenceId;
 
-    await render(<Course {...mockData} />, { store: testStore });
+    await render(<Course {...mockData} />, { store: testStore, wrapWithRouter: true });
   };
 
   it('loads learning sequence', async () => {
-    render(<Course {...mockData} />);
+    render(<Course {...mockData} />, { wrapWithRouter: true });
     expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
@@ -102,7 +106,7 @@ describe('Course', () => {
     };
     // Set up LocalStorage for testing.
     handleNextSectionCelebration(sequenceId, sequenceId, testData.unitId);
-    render(<Course {...testData} />, { store: testStore });
+    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
     const firstSectionCelebrationModal = screen.getByRole('dialog');
     expect(firstSectionCelebrationModal).toBeInTheDocument();
@@ -120,7 +124,7 @@ describe('Course', () => {
       sequenceId,
       unitId: Object.values(models.units)[0].id,
     };
-    render(<Course {...testData} />, { store: testStore });
+    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
     const weeklyGoalCelebrationModal = screen.getByRole('dialog');
     expect(weeklyGoalCelebrationModal).toBeInTheDocument();
@@ -128,7 +132,7 @@ describe('Course', () => {
   });
 
   it('displays notification trigger and toggles active class on click', async () => {
-    render(<Course {...mockData} />);
+    render(<Course {...mockData} />, { wrapWithRouter: true });
 
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
     expect(notificationTrigger).toBeInTheDocument();
@@ -181,7 +185,7 @@ describe('Course', () => {
 
   it('handles click to open/close notification tray', async () => {
     sessionStorage.clear();
-    render(<Course {...mockData} />);
+    render(<Course {...mockData} />, { wrapWithRouter: true });
     expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"open"');
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
     expect(screen.queryByRole('region', { name: /notification tray/i })).toHaveClass('d-none');
@@ -192,7 +196,7 @@ describe('Course', () => {
 
   it('handles reload persisting notification tray status', async () => {
     sessionStorage.clear();
-    render(<Course {...mockData} />);
+    render(<Course {...mockData} />, { wrapWithRouter: true });
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
     fireEvent.click(notificationShowButton);
     expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
@@ -216,7 +220,7 @@ describe('Course', () => {
     // set sessionStorage for a different course before rendering Course
     sessionStorage.setItem(`notificationTrayStatus.${courseMetadataSecondCourse.id}`, '"open"');
 
-    render(<Course {...mockData} />);
+    render(<Course {...mockData} />, { wrapWithRouter: true });
     expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"open"');
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
     fireEvent.click(notificationShowButton);
@@ -244,7 +248,7 @@ describe('Course', () => {
       sequenceId,
       unitId: Object.values(models.units)[1].id, // Corner cases are already covered in `Sequence` tests.
     };
-    render(<Course {...testData} />, { store: testStore });
+    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
     loadUnit();
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
@@ -276,7 +280,7 @@ describe('Course', () => {
       previousSequenceHandler,
       unitNavigationHandler,
     };
-    render(<Course {...testData} />, { store: testStore });
+    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
     loadUnit();
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
@@ -305,7 +309,7 @@ describe('Course', () => {
         courseId: courseMetadata.id,
         sequenceId: sequenceBlocks[0].id,
       };
-      render(<Course {...testData} />, { store: testStore });
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
       await waitFor(() => expect(screen.getByText('Some random banner text to display.')).toBeInTheDocument());
     });
 
@@ -339,7 +343,7 @@ describe('Course', () => {
         courseId: testCourseMetadata.id,
         sequenceId: sequenceBlocks[0].id,
       };
-      render(<Course {...testData} />, { store: testStore });
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
       await waitFor(() => expect(screen.getByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument());
     });
 
@@ -373,7 +377,7 @@ describe('Course', () => {
         courseId: testCourseMetadata.id,
         sequenceId: sequenceBlocks[0].id,
       };
-      render(<Course {...testData} />, { store: testStore });
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
       await waitFor(() => expect(screen.getByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument());
     });
   });

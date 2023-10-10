@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
-import { Router, matchPath } from 'react-router';
+import {
+  MemoryRouter as Router, matchPath, Routes, Route, mockNavigate,
+} from 'react-router-dom';
 import DecodePageRoute, { decodeUrl } from '.';
 
 const decodedCourseId = 'course-v1:edX+DemoX+Demo_Course';
@@ -15,84 +16,90 @@ const deepEncodedCourseId = (() => {
 })();
 
 jest.mock('@edx/frontend-platform/react', () => ({
-  PageRoute: (props) => `PageRoute: ${JSON.stringify(props, null, 2)}`,
+  PageWrap: (props) => `PageWrap: ${JSON.stringify(props, null, 2)}`,
+}));
+jest.mock('../constants', () => ({
+  DECODE_ROUTES: {
+    MOCK_ROUTE_1: '/course/:courseId/home',
+    MOCK_ROUTE_2: `/course/:courseId/${encodeURIComponent('some+thing')}/:unitId`,
+  },
 }));
 
-const renderPage = (props) => {
-  const memHistory = createMemoryHistory({
-    initialEntries: [props?.path],
-  });
+jest.mock('react-router-dom', () => {
+  const mockNavigation = jest.fn();
 
-  const history = {
-    ...memHistory,
-    replace: jest.fn(),
+  // eslint-disable-next-line react/prop-types
+  const Navigate = ({ to }) => {
+    mockNavigation(to);
+    return <div />;
   };
 
+  return {
+    ...jest.requireActual('react-router-dom'),
+    Navigate,
+    mockNavigate: mockNavigation,
+  };
+});
+
+const renderPage = (props) => {
   const { container } = render(
-    <Router history={history}>
-      <DecodePageRoute computedMatch={props} />
+    <Router initialEntries={[props?.pathname]}>
+      <Routes>
+        <Route path={props?.pattern?.path} element={<DecodePageRoute> {[]} </DecodePageRoute>} />
+      </Routes>
     </Router>,
   );
 
-  return {
-    container,
-    history,
-    props,
-  };
+  return { container };
 };
 
 describe('DecodePageRoute', () => {
-  it('should not modify the url if it does not need to be decoded', () => {
-    const props = matchPath(`/course/${decodedCourseId}/home`, {
-      path: '/course/:courseId/home',
-    });
-    const { container, history } = renderPage(props);
+  afterEach(() => {
+    mockNavigate.mockClear();
+  });
 
-    expect(props.url).toContain(decodedCourseId);
-    expect(history.replace).not.toHaveBeenCalled();
+  it('should not modify the url if it does not need to be decoded', () => {
+    const props = matchPath({
+      path: '/course/:courseId/home',
+    }, `/course/${decodedCourseId}/home`);
+    const { container } = renderPage(props);
+
+    expect(props.pathname).toContain(decodedCourseId);
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(container).toMatchSnapshot();
   });
 
   it('should decode the url and replace the history if necessary', () => {
-    const props = matchPath(`/course/${encodedCourseId}/home`, {
+    const props = matchPath({
       path: '/course/:courseId/home',
-    });
-    const { history } = renderPage(props);
+    }, `/course/${encodedCourseId}/home`);
+    renderPage(props);
 
-    expect(props.url).not.toContain(decodedCourseId);
-    expect(props.url).toContain(encodedCourseId);
-    expect(history.replace.mock.calls[0][0]).toContain(decodedCourseId);
+    expect(props.pathname).not.toContain(decodedCourseId);
+    expect(props.pathname).toContain(encodedCourseId);
+    expect(mockNavigate).toHaveBeenCalledWith(`/course/${decodedCourseId}/home`);
   });
 
   it('should decode the url multiple times if necessary', () => {
-    const props = matchPath(`/course/${deepEncodedCourseId}/home`, {
+    const props = matchPath({
       path: '/course/:courseId/home',
-    });
-    const { history } = renderPage(props);
+    }, `/course/${deepEncodedCourseId}/home`);
+    renderPage(props);
 
-    expect(props.url).not.toContain(decodedCourseId);
-    expect(props.url).toContain(deepEncodedCourseId);
-    expect(history.replace.mock.calls[0][0]).toContain(decodedCourseId);
+    expect(props.pathname).not.toContain(decodedCourseId);
+    expect(props.pathname).toContain(deepEncodedCourseId);
+    expect(mockNavigate).toHaveBeenCalledWith(`/course/${decodedCourseId}/home`);
   });
 
   it('should only decode the url params and not the entire url', () => {
     const decodedUnitId = 'some+thing';
     const encodedUnitId = encodeURIComponent(decodedUnitId);
-    const props = matchPath(`/course/${deepEncodedCourseId}/${encodedUnitId}/${encodedUnitId}`, {
+    const props = matchPath({
       path: `/course/:courseId/${encodedUnitId}/:unitId`,
-    });
-    const { history } = renderPage(props);
+    }, `/course/${deepEncodedCourseId}/${encodedUnitId}/${encodedUnitId}`);
+    renderPage(props);
 
-    const decodedUrls = history.replace.mock.calls[0][0].split('/');
-
-    // unitId get decoded
-    expect(decodedUrls.pop()).toContain(decodedUnitId);
-
-    // path remain encoded
-    expect(decodedUrls.pop()).toContain(encodedUnitId);
-
-    // courseId get decoded
-    expect(decodedUrls.pop()).toContain(decodedCourseId);
+    expect(mockNavigate).toHaveBeenCalledWith(`/course/${decodedCourseId}/${encodedUnitId}/${decodedUnitId}`);
   });
 });
 

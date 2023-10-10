@@ -1,7 +1,9 @@
 import React from 'react';
-import { Route } from 'react-router';
+import {
+  MemoryRouter, Route, Routes,
+} from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
-import { getConfig, history } from '@edx/frontend-platform';
+import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { render, screen } from '@testing-library/react';
@@ -24,13 +26,16 @@ describe('GoalUnsubscribe', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     store = initializeStore();
     component = (
-      <AppProvider store={store}>
+      <AppProvider store={store} wrapWithRouter={false}>
         <UserMessagesProvider>
-          <Route path="/goal-unsubscribe/:token" component={GoalUnsubscribe} />
+          <MemoryRouter initialEntries={['/goal-unsubscribe/TOKEN']}>
+            <Routes>
+              <Route path="/goal-unsubscribe/:token" element={<GoalUnsubscribe />} />
+            </Routes>
+          </MemoryRouter>
         </UserMessagesProvider>
       </AppProvider>
     );
-    history.push('/goal-unsubscribe/TOKEN'); // so we can pull token from url
   });
 
   it('starts with a spinner', () => {

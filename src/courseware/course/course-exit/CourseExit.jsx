@@ -4,7 +4,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@edx/paragon';
 import { useSelector } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import CourseCelebration from './CourseCelebration';
 import CourseInProgress from './CourseInProgress';
@@ -58,7 +58,7 @@ const CourseExit = ({ intl }) => {
   } else if (mode === COURSE_EXIT_MODES.celebration) {
     body = (<CourseCelebration />);
   } else {
-    return (<Redirect to={`/course/${courseId}`} />);
+    return (<Navigate to={`/course/${courseId}`} replace />);
   }
 
   return (

@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { Route, Switch } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
@@ -26,6 +26,7 @@ import { buildSimpleCourseBlocks } from '../shared/data/__factories__/courseBloc
 import { buildOutlineFromBlocks } from '../courseware/data/__factories__/learningSequencesOutline.factory';
 
 import { UserMessagesProvider } from '../generic/user-messages';
+import { DECODE_ROUTES } from '../constants';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -62,7 +63,7 @@ describe('Course Home Tours', () => {
       <LoadedTabPage courseId={courseId} activeTabSlug="outline">
         <OutlineTab />
       </LoadedTabPage>,
-      { store },
+      { store, wrapWithRouter: true },
     );
   }
 
@@ -213,16 +214,14 @@ describe('Courseware Tour', () => {
     component = (
       <AppProvider store={store}>
         <UserMessagesProvider>
-          <Switch>
-            <Route
-              path={[
-                '/course/:courseId/:sequenceId/:unitId',
-                '/course/:courseId/:sequenceId',
-                '/course/:courseId',
-              ]}
-              component={CoursewareContainer}
-            />
-          </Switch>
+          <Routes>
+            {DECODE_ROUTES.COURSEWARE.map((route) => (
+              <Route
+                path={route}
+                element={<CoursewareContainer />}
+              />
+            ))}
+          </Routes>
         </UserMessagesProvider>
       </AppProvider>
     );

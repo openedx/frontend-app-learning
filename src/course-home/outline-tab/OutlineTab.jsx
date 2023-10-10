@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { history } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@edx/paragon';
 import { AlertList } from '../../generic/user-messages';
@@ -67,6 +66,7 @@ const OutlineTab = ({ intl }) => {
   } = useModel('coursewareMeta', courseId);
 
   const [expandAll, setExpandAll] = useState(false);
+  const navigate = useNavigate();
 
   const eventProperties = {
     org_key: org,
@@ -115,8 +115,10 @@ const OutlineTab = ({ intl }) => {
       // Deleting the course_start query param as it only needs to be set once
       // whenever passed in query params.
       currentParams.delete('start_course');
-      history.replace({
-        search: currentParams.toString(),
+      navigate({
+        pathname: location.pathname,
+        search: `?${currentParams.toString()}`,
+        replace: true,
       });
     }
   }, [location.search]);
