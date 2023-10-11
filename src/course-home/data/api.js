@@ -445,3 +445,9 @@ export async function unsubscribeFromCourseGoal(token) {
   return getAuthenticatedHttpClient().post(url.href)
     .then(res => camelCaseObject(res));
 }
+
+export async function getCoursewareSearchEnabledFlag(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-search/enabled/`);
+  const { data } = await getAuthenticatedHttpClient().get(url.href);
+  return { enabled: data.enabled || false };
+}

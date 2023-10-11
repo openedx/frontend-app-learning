@@ -12,6 +12,7 @@ import {
   postDismissWelcomeMessage,
   postRequestCert,
   getLiveTabIframe,
+  getCoursewareSearchEnabledFlag,
 } from './api';
 
 import {
@@ -138,4 +139,13 @@ export function processEvent(eventData, getTabData) {
       });
     }
   };
+}
+
+export async function fetchCoursewareSearchSettings(courseId) {
+  try {
+    const { enabled } = await getCoursewareSearchEnabledFlag(courseId);
+    return { enabled };
+  } catch (e) {
+    return { enabled: false };
+  }
 }
