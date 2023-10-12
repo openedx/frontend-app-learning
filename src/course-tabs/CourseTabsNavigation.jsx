@@ -5,11 +5,15 @@ import classNames from 'classnames';
 
 import messages from './messages';
 import Tabs from '../generic/tabs/Tabs';
+import { CoursewareSearch } from '../course-home/courseware-search';
 
 const CourseTabsNavigation = ({
   activeTabSlug, className, tabs, intl,
 }) => (
   <div id="courseTabsNavigation" className={classNames('course-tabs-navigation', className)}>
+    <div className="float-right">
+      <CoursewareSearch />
+    </div>
     <div className="container-xl">
       <Tabs
         className="nav-underline-tabs"
