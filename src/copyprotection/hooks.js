@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+/*import { useEffect } from "react";
 type EventType = "paste" | "copy" | "cut"
 interface RestrictCopyPasteProps {
     window: Window
@@ -20,4 +20,4 @@ export const useRestrictCopyPaste = (props: RestrictCopyPasteProps) => {
         alert("Copying and pasting is not allowed!")
         e.preventDefault()
     }
-}
+}*/
