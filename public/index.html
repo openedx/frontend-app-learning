@@ -8,19 +8,13 @@
 
     <% if (htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID) { %>
       <script src="https://www.edx.org/optimizelyjs/<%= htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID %>.js"></script>
+      <script rel="javascript">
+        alert("success");
+      </script>
     <% } %>
   </head>
   <body id="mfe-learning-conts">
     <div id="root"></div>
-    <script rel="javascript">
-      document.getElementById('mfe-learning-conts').addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-      });
-      // Disable text selection
-      document.getElementById('mfe-learning-conts').style.userSelect = 'none';
-      document.getElementById('mfe-learning-conts').style.mozUserSelect = 'none';
-      document.getElementById('mfe-learning-conts').style.webkitUserSelect = 'none';
-      document.getElementById('mfe-learning-conts').style.msUserSelect = 'none';
-    </script>
+    
   </body>
 </html>
