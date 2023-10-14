@@ -10,17 +10,17 @@
       <script src="https://www.edx.org/optimizelyjs/<%= htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID %>.js"></script>
     <% } %>
   </head>
-  <body id="mfe-learning-cont">
+  <body id="mfe-learning-conts">
     <div id="root"></div>
-    <script>
-      document.getElementById('mfe-learning-cont').addEventListener('contextmenu', function (e) {
+    <script rel="javascript">
+      document.getElementById('mfe-learning-conts').addEventListener('contextmenu', function (e) {
     e.preventDefault();
       });
       // Disable text selection
-      document.getElementById('mfe-learning-cont').style.userSelect = 'none';
-      document.getElementById('mfe-learning-cont').style.mozUserSelect = 'none';
-      document.getElementById('mfe-learning-cont').style.webkitUserSelect = 'none';
-      document.getElementById('mfe-learning-cont').style.msUserSelect = 'none';
+      document.getElementById('mfe-learning-conts').style.userSelect = 'none';
+      document.getElementById('mfe-learning-conts').style.mozUserSelect = 'none';
+      document.getElementById('mfe-learning-conts').style.webkitUserSelect = 'none';
+      document.getElementById('mfe-learning-conts').style.msUserSelect = 'none';
     </script>
   </body>
 </html>
