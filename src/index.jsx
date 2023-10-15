@@ -37,9 +37,6 @@ import LiveTab from './course-home/live-tab/LiveTab';
 import CourseAccessErrorPage from './generic/CourseAccessErrorPage';
 import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
-/*import { useRestrictCopyPaste } from "./useRestrictCopyPaste"
-const SignupForm = () =>{
-useRestrictCopyPaste({window, actions:["copy","cut","paste"]})*/
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider store={initializeStore()}>
