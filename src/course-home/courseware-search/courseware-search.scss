@@ -1,0 +1,45 @@
+.courseware-search {
+  background: white;
+  position: fixed;
+  top: var(--modal-top-position, 0);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-top: 1px solid $light-300;
+  z-index: 200;
+
+  &__close {
+    position: absolute !important; // For some reason it gets overridden
+    top: 0.5rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  &__outer-content {
+    overflow-y: auto;
+    height: 100%;
+  }
+
+  &__content {
+    padding-top: 2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 42rem;
+    margin: auto;
+
+    h2 {
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+@media (min-width: map-get($grid-breakpoints, 'md')) {
+  .courseware-search__content {
+    padding-top: 8rem;
+  }
+}
+
+body._search-no-scroll {
+  overflow-y: hidden;
+}

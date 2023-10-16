@@ -7,16 +7,16 @@ import {
   waitFor,
 } from '../../setupTest';
 import { fetchCoursewareSearchSettings } from '../data/thunks';
-import { CoursewareSearch } from './index';
+import { CoursewareSearchToggle } from './index';
 
 jest.mock('../data/thunks');
 
 function renderComponent() {
-  const { container } = render(<CoursewareSearch />);
+  const { container } = render(<CoursewareSearchToggle />);
   return container;
 }
 
-describe('CoursewareSearch', () => {
+describe('CoursewareSearchToggle', () => {
   beforeAll(async () => {
     initializeMockApp();
   });
