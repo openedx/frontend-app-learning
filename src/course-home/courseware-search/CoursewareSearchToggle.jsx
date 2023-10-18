@@ -22,8 +22,8 @@ const CoursewareSearchToggle = ({
         size="sm"
         className="p-1 mt-2 mr-2 rounded-lg"
         aria-label={intl.formatMessage(messages.searchOpenAction)}
-        data-testid="courseware-search-button"
         onClick={() => dispatch(setShowSearch(true))}
+        data-testid="courseware-search-open-button"
       >
         <Icon src={Search} />
       </Button>

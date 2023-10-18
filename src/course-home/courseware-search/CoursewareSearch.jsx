@@ -15,13 +15,19 @@ const CoursewareSearch = ({ intl }) => {
   useLockScroll();
 
   const info = useElementBoundingBox('courseTabsNavigation');
-
   const top = info ? `${Math.floor(info.top)}px` : 0;
 
   return (
-    <section className="courseware-search" style={{ '--modal-top-position': top }}>
+    <section className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-section">
       <div className="courseware-search__close">
-        <Button variant="tertiary" className="p-1" aria-label={intl.formatMessage(messages.searchCloseAction)} onClick={() => dispatch(setShowSearch(false))}><Icon src={Close} /></Button>
+        <Button
+          variant="tertiary"
+          className="p-1"
+          aria-label={intl.formatMessage(messages.searchCloseAction)}
+          onClick={() => dispatch(setShowSearch(false))}
+          data-testid="courseware-search-close-button"
+        ><Icon src={Close} />
+        </Button>
       </div>
       <div className="courseware-search__outer-content">
         <div className="courseware-search__content" style={{ height: '999px' }}>

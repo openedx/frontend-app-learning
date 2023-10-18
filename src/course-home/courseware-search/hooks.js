@@ -24,13 +24,16 @@ export function useCoursewareSearchState() {
 export function useElementBoundingBox(elementId) {
   const [elementInfo, setElementInfo] = useState(undefined);
 
+  const element = document.getElementById(elementId);
+
+  if (!element) {
+    console.warn(`useElementBoundingBox(): Unable to find element with id='${elementId}' in the document.'`); // eslint-disable-line no-console
+    return undefined;
+  }
+
   useLayoutEffect(() => {
     // Handler to call on window resize and scroll
     function recalculate() {
-      const element = document.getElementById(elementId);
-      if (!element) {
-        throw new Error(`Unable to find element with id="${elementId}" in the document.`);
-      }
       const info = element.getBoundingClientRect();
       setElementInfo(info);
     }
