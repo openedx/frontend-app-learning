@@ -47,6 +47,7 @@ describe('CoursewareSearchToggle', () => {
   it('Should render when the waffle flag is enabled', async () => {
     fetchCoursewareSearchSettings.mockImplementation(() => Promise.resolve({ enabled: true }));
     await act(async () => renderComponent());
+
     await waitFor(() => {
       expect(fetchCoursewareSearchSettings).toHaveBeenCalledTimes(1);
       expect(screen.queryByTestId('courseware-search-open-button')).toBeInTheDocument();
@@ -58,6 +59,7 @@ describe('CoursewareSearchToggle', () => {
     await act(async () => renderComponent());
     const button = await screen.findByTestId('courseware-search-open-button');
     fireEvent.click(button);
+
     expect(mockDispatch).toHaveBeenCalledTimes(1);
     expect(setShowSearch).toHaveBeenCalledTimes(1);
     expect(setShowSearch).toHaveBeenCalledWith(true);

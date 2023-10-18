@@ -35,8 +35,8 @@ const CourseTabsNavigation = ({
         </Tabs>
       </div>
       {show ? (
-        <CoursewareSearch />
-      ) : undefined}
+        <CoursewareSearch data-testid="courseware-search" />
+      ) : null}
     </div>
   );
 };

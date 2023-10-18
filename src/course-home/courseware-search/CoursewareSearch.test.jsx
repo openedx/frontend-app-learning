@@ -20,8 +20,8 @@ jest.mock('react-redux', () => ({
 
 const tabsTopPosition = 128;
 
-function renderComponent() {
-  const { container } = render(<CoursewareSearch />);
+function renderComponent(props = {}) {
+  const { container } = render(<CoursewareSearch {...props} />);
   return container;
 }
 
@@ -45,7 +45,7 @@ describe('CoursewareSearch', () => {
       expect(useLockScroll).toBeCalledTimes(1);
     });
 
-    it('Should have a "--modal-top-position" CSS variable matching the elementBoundingBox top position', () => {
+    it('Should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
       renderComponent();
 
       const section = screen.getByTestId('courseware-search-section');
@@ -54,9 +54,9 @@ describe('CoursewareSearch', () => {
 
     it('Should dispatch setShowSearch(true) when clicking the close button', () => {
       renderComponent();
-
       const button = screen.getByTestId('courseware-search-close-button');
       fireEvent.click(button);
+
       expect(mockDispatch).toHaveBeenCalledTimes(1);
       expect(setShowSearch).toHaveBeenCalledTimes(1);
       expect(setShowSearch).toHaveBeenCalledWith(false);
@@ -64,12 +64,21 @@ describe('CoursewareSearch', () => {
   });
 
   describe('when CourseTabsNavigation is not present', () => {
-    it('Should use "--modal-top-position: 0" if the elementBoundingBox returns undefined', () => {
+    it('Should use "--modal-top-position: 0" if  nce element is not present', () => {
       useElementBoundingBox.mockImplementation(() => undefined);
       renderComponent();
 
       const section = screen.getByTestId('courseware-search-section');
       expect(section.style.getPropertyValue('--modal-top-position')).toBe('0');
+    });
+  });
+
+  describe('when passing extra props', () => {
+    it('Should pass on extra props to section element', () => {
+      renderComponent({ foo: 'bar' });
+
+      const section = screen.getByTestId('courseware-search-section');
+      expect(section).toHaveAttribute('foo', 'bar');
     });
   });
 });

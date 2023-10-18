@@ -9,7 +9,7 @@ import { setShowSearch } from '../data/slice';
 import { useElementBoundingBox, useLockScroll } from './hooks';
 import messages from './messages';
 
-const CoursewareSearch = ({ intl }) => {
+const CoursewareSearch = ({ intl, ...sectionProps }) => {
   const dispatch = useDispatch();
 
   useLockScroll();
@@ -18,7 +18,7 @@ const CoursewareSearch = ({ intl }) => {
   const top = info ? `${Math.floor(info.top)}px` : 0;
 
   return (
-    <section className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-section">
+    <section className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-section" {...sectionProps}>
       <div className="courseware-search__close">
         <Button
           variant="tertiary"
