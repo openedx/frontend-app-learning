@@ -1,7 +1,10 @@
-import { useState, useLayoutEffect, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { debounce } from 'lodash';
 import { fetchCoursewareSearchSettings } from '../data/thunks';
+
+const DEBOUNCE_WAIT = 300; // ms
 
 export function useCoursewareSearchFeatureFlag() {
   const { courseId } = useParams();
@@ -16,43 +19,47 @@ export function useCoursewareSearchFeatureFlag() {
 
 export function useCoursewareSearchState() {
   const enabled = useCoursewareSearchFeatureFlag();
+
+  if (!enabled) { return { show: false }; }
+
   const show = useSelector(state => state.courseHome.showSearch);
 
-  return { show: enabled && show };
+  return { show };
 }
 
 export function useElementBoundingBox(elementId) {
-  const [elementInfo, setElementInfo] = useState(undefined);
+  const [info, setInfo] = useState(undefined);
 
   const element = document.getElementById(elementId);
 
   if (!element) {
-    console.warn(`useElementBoundingBox(): Unable to find element with id='${elementId}' in the document.'`); // eslint-disable-line no-console
+    console.warn(`useElementBoundingBox(): Unable to find element with id='${elementId}' in the document.`); // eslint-disable-line no-console
     return undefined;
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     // Handler to call on window resize and scroll
     function recalculate() {
-      const info = element.getBoundingClientRect();
-      setElementInfo(info);
+      const bounds = element.getBoundingClientRect();
+      setInfo(bounds);
     }
+    const debouncedRecalculate = debounce(recalculate, DEBOUNCE_WAIT, { leading: true });
 
     // Add event listener
-    global.addEventListener('resize', recalculate);
-    global.addEventListener('scroll', recalculate);
+    global.addEventListener('resize', debouncedRecalculate);
+    global.addEventListener('scroll', debouncedRecalculate);
 
     // Call handler right away so state gets updated with initial window size
-    recalculate();
+    debouncedRecalculate();
 
     // Remove event listener on cleanup
     return () => {
-      global.removeEventListener('resize', recalculate);
-      global.removeEventListener('scroll', recalculate);
+      global.removeEventListener('resize', debouncedRecalculate);
+      global.removeEventListener('scroll', debouncedRecalculate);
     };
-  }, []); // Empty array ensures that effect is only run on mount
+  }, []);
 
-  return elementInfo;
+  return info;
 }
 
 export function useLockScroll() {
