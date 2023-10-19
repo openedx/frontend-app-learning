@@ -2,7 +2,9 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { fetchCoursewareSearchSettings } from '../data/thunks';
-import { useCoursewareSearchFeatureFlag, useCoursewareSearchState, useElementBoundingBox } from './hooks';
+import {
+  useCoursewareSearchFeatureFlag, useCoursewareSearchState, useElementBoundingBox, useLockScroll,
+} from './hooks';
 
 jest.mock('react-redux');
 jest.mock('react-router-dom');
@@ -25,21 +27,21 @@ describe('CoursewareSearch Hooks', () => {
   describe('useCoursewareSearchFeatureFlag', () => {
     const renderTestHook = async (enabled = true) => {
       useParams.mockImplementation(() => ({ courseId: enabled ? 123 : 456 }));
-      let state;
-      await act(async () => { (state = renderHook(() => useCoursewareSearchFeatureFlag())); });
-      return state;
+      let hook;
+      await act(async () => { (hook = renderHook(() => useCoursewareSearchFeatureFlag())); });
+      return hook;
     };
 
     test('should return true if feature is enabled', async () => {
-      const state = await renderTestHook();
-      await state.waitFor(() => expect(fetchCoursewareSearchSettings).toBeCalledTimes(1));
-      expect(state.result.current).toBe(true);
+      const hook = await renderTestHook();
+      await hook.waitFor(() => expect(fetchCoursewareSearchSettings).toBeCalledTimes(1));
+      expect(hook.result.current).toBe(true);
     });
 
     test('should return false if feature is disabled', async () => {
-      const state = await renderTestHook(false);
-      await state.waitFor(() => expect(fetchCoursewareSearchSettings).toBeCalledTimes(1));
-      expect(state.result.current).toBe(false);
+      const hook = await renderTestHook(false);
+      await hook.waitFor(() => expect(fetchCoursewareSearchSettings).toBeCalledTimes(1));
+      expect(hook.result.current).toBe(false);
     });
   });
 
@@ -49,36 +51,33 @@ describe('CoursewareSearch Hooks', () => {
       const mockedStoreState = { courseHome: { showSearch } };
       useSelector.mockImplementation(selector => selector(mockedStoreState));
 
-      let state;
-      await act(async () => { (state = renderHook(() => useCoursewareSearchState())); });
-      return state;
+      let hook;
+      await act(async () => { (hook = renderHook(() => useCoursewareSearchState())); });
+      return hook;
     };
 
     test('should return show: true if feature is enabled and showSearch is true', async () => {
-      const state = await renderTestHook({ enabled: true, showSearch: true });
+      const hook = await renderTestHook({ enabled: true, showSearch: true });
 
-      expect(state.result.current).toEqual({ show: true });
+      expect(hook.result.current).toEqual({ show: true });
     });
 
     test('should return show: false in any other case', async () => {
-      let state;
+      let hook;
 
-      state = await renderTestHook({ enabled: true, showSearch: false });
-      expect(state.result.current).toEqual({ show: false });
+      hook = await renderTestHook({ enabled: true, showSearch: false });
+      expect(hook.result.current).toEqual({ show: false });
 
-      state = await renderTestHook({ enabled: false, showSearch: true });
-      expect(state.result.current).toEqual({ show: false });
+      hook = await renderTestHook({ enabled: false, showSearch: true });
+      expect(hook.result.current).toEqual({ show: false });
 
-      state = await renderTestHook({ enabled: false, showSearch: false });
-      expect(state.result.current).toEqual({ show: false });
+      hook = await renderTestHook({ enabled: false, showSearch: false });
+      expect(hook.result.current).toEqual({ show: false });
     });
   });
 
   describe('useElementBoundingBox', () => {
     let getBoundingClientRectSpy;
-    let addEventListenerSpy;
-    let removeEventListenerSpy;
-
     const renderTestHook = async ({ elementId, mockedInfo }) => {
       getBoundingClientRectSpy = jest.spyOn(document, 'getElementById').mockImplementation(() => (
         mockedInfo
@@ -94,6 +93,8 @@ describe('CoursewareSearch Hooks', () => {
       return hook;
     };
 
+    let addEventListenerSpy;
+    let removeEventListenerSpy;
     beforeEach(() => {
       addEventListenerSpy = jest.spyOn(global, 'addEventListener');
       removeEventListenerSpy = jest.spyOn(global, 'removeEventListener');
@@ -110,25 +111,23 @@ describe('CoursewareSearch Hooks', () => {
       });
 
       test('should unbindbind resize and scroll events when unmounted', async () => {
-        const state = await renderTestHook({ elementId: 'test', mockedInfo });
-        state.unmount();
+        const hook = await renderTestHook({ elementId: 'test', mockedInfo });
+        hook.unmount();
 
         expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.anything());
         expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.anything());
       });
 
-      // This test is failing, the hook state is not being updated.
-      xtest('should return the element bounding box', async () => {
-        const state = await renderTestHook({ elementId: 'test', mockedInfo });
+      test('should return the element bounding box', async () => {
+        const hook = await renderTestHook({ elementId: 'test', mockedInfo });
 
-        state.waitFor(() => expect(getBoundingClientRectSpy).toHaveBeenCalled());
+        hook.waitFor(() => expect(getBoundingClientRectSpy).toHaveBeenCalled());
 
-        expect(state.result.current).toEqual(mockedInfo);
+        expect(hook.result.current).toEqual(mockedInfo);
       });
 
-      // This test is failing, the hook state is not being updated.
-      xtest('should call getBoundingClientRect on window resize', async () => {
-        const state = await renderTestHook({ elementId: 'test', mockedInfo });
+      test('should call getBoundingClientRect on window resize', async () => {
+        const hook = await renderTestHook({ elementId: 'test', mockedInfo });
 
         act(() => {
           // Trigger the window resize event.
@@ -136,8 +135,53 @@ describe('CoursewareSearch Hooks', () => {
           global.dispatchEvent(new Event('resize'));
         });
 
-        expect(state.result.current).toEqual(mockedInfo);
+        expect(hook.result.current).toEqual(mockedInfo);
       });
+    });
+
+    describe('when element is NOT present', () => {
+      let consoleWarnSpy;
+      beforeEach(() => {
+        consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      });
+
+      it('should log a warning and return undefined', async () => {
+        await renderTestHook({ elementId: 'happiness' });
+
+        expect(consoleWarnSpy).toHaveBeenCalledWith("useElementBoundingBox(): Unable to find element with id='happiness' in the document.");
+      });
+    });
+  });
+
+  describe('useLockScroll', () => {
+    const renderTestHook = () => (
+      renderHook(() => useLockScroll())
+    );
+
+    let windowScrollSpy;
+    let addBodyClassSpy;
+    let removeBodyClassSpy;
+    let hook;
+
+    beforeEach(() => {
+      windowScrollSpy = jest.spyOn(window, 'scrollTo');
+      addBodyClassSpy = jest.spyOn(document.body.classList, 'add');
+      removeBodyClassSpy = jest.spyOn(document.body.classList, 'remove');
+      hook = renderTestHook();
+    });
+
+    it('should perform a scrollTo(0, 0) on mount', () => {
+      expect(windowScrollSpy).toHaveBeenCalledWith(0, 0);
+    });
+
+    it('should append a _search-no-scroll on mount to the document body', () => {
+      expect(addBodyClassSpy).toHaveBeenCalledWith('_search-no-scroll');
+    });
+
+    it('should remove the _search-no-scroll on unmount', () => {
+      hook.unmount();
+
+      expect(removeBodyClassSpy).toHaveBeenCalledWith('_search-no-scroll');
     });
   });
 });
