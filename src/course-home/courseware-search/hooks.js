@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { debounce } from 'lodash';
@@ -34,7 +34,7 @@ export function useElementBoundingBox(elementId) {
     return undefined;
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Handler to call on window resize and scroll
     function recalculate() {
       const bounds = element.getBoundingClientRect();
@@ -60,7 +60,7 @@ export function useElementBoundingBox(elementId) {
 }
 
 export function useLockScroll() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.scrollTo(0, 0);
     document.body.classList.add('_search-no-scroll');
 
