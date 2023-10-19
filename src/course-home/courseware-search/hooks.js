@@ -19,12 +19,9 @@ export function useCoursewareSearchFeatureFlag() {
 
 export function useCoursewareSearchState() {
   const enabled = useCoursewareSearchFeatureFlag();
-
-  if (!enabled) { return { show: false }; }
-
   const show = useSelector(state => state.courseHome.showSearch);
 
-  return { show };
+  return { show: enabled && show };
 }
 
 export function useElementBoundingBox(elementId) {
