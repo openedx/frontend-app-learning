@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { debounce } from 'lodash';
 import { fetchCoursewareSearchSettings } from '../data/thunks';
 
-const DEBOUNCE_WAIT = 300; // ms
+const DEBOUNCE_WAIT = 100; // ms
 
 export function useCoursewareSearchFeatureFlag() {
   const { courseId } = useParams();
