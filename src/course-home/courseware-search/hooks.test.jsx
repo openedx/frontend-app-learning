@@ -32,13 +32,13 @@ describe('CoursewareSearch Hooks', () => {
       return hook;
     };
 
-    test('should return true if feature is enabled', async () => {
+    it('should return true if feature is enabled', async () => {
       const hook = await renderTestHook();
       await hook.waitFor(() => expect(fetchCoursewareSearchSettings).toBeCalledTimes(1));
       expect(hook.result.current).toBe(true);
     });
 
-    test('should return false if feature is disabled', async () => {
+    it('should return false if feature is disabled', async () => {
       const hook = await renderTestHook(false);
       await hook.waitFor(() => expect(fetchCoursewareSearchSettings).toBeCalledTimes(1));
       expect(hook.result.current).toBe(false);
@@ -56,13 +56,13 @@ describe('CoursewareSearch Hooks', () => {
       return hook;
     };
 
-    test('should return show: true if feature is enabled and showSearch is true', async () => {
+    it('should return show: true if feature is enabled and showSearch is true', async () => {
       const hook = await renderTestHook({ enabled: true, showSearch: true });
 
       expect(hook.result.current).toEqual({ show: true });
     });
 
-    test('should return show: false in any other case', async () => {
+    it('should return show: false in any other case', async () => {
       let hook;
 
       hook = await renderTestHook({ enabled: true, showSearch: false });
@@ -103,14 +103,14 @@ describe('CoursewareSearch Hooks', () => {
     describe('when element is present', () => {
       const mockedInfo = { top: 128 };
 
-      test('should bind resize and scroll events on mount', async () => {
+      it('should bind resize and scroll events on mount', async () => {
         await renderTestHook({ elementId: 'test', mockedInfo });
 
         expect(addEventListenerSpy).toHaveBeenCalledWith('resize', expect.anything());
         expect(addEventListenerSpy).toHaveBeenCalledWith('scroll', expect.anything());
       });
 
-      test('should unbindbind resize and scroll events when unmounted', async () => {
+      it('should unbindbind resize and scroll events when unmounted', async () => {
         const hook = await renderTestHook({ elementId: 'test', mockedInfo });
         hook.unmount();
 
@@ -118,7 +118,7 @@ describe('CoursewareSearch Hooks', () => {
         expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.anything());
       });
 
-      test('should return the element bounding box', async () => {
+      it('should return the element bounding box', async () => {
         const hook = await renderTestHook({ elementId: 'test', mockedInfo });
 
         hook.waitFor(() => expect(getBoundingClientRectSpy).toHaveBeenCalled());
@@ -126,7 +126,7 @@ describe('CoursewareSearch Hooks', () => {
         expect(hook.result.current).toEqual(mockedInfo);
       });
 
-      test('should call getBoundingClientRect on window resize', async () => {
+      it('should call getBoundingClientRect on window resize', async () => {
         const hook = await renderTestHook({ elementId: 'test', mockedInfo });
 
         act(() => {

@@ -46,14 +46,11 @@ describe('CoursewareSearch', () => {
     });
 
     it('Should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
-      renderComponent();
-
       const section = screen.getByTestId('courseware-search-section');
       expect(section.style.getPropertyValue('--modal-top-position')).toBe(`${tabsTopPosition}px`);
     });
 
     it('Should dispatch setShowSearch(true) when clicking the close button', () => {
-      renderComponent();
       const button = screen.getByTestId('courseware-search-close-button');
       fireEvent.click(button);
 
