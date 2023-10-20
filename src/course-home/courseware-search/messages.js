@@ -16,6 +16,11 @@ const messages = defineMessages({
     defaultMessage: 'Search this course',
     description: 'Title for the Courseware Search module.',
   },
+  searchBarPlaceholderText: {
+    id: 'learn.coursewareSerch.searchBarPlaceholderText',
+    defaultMessage: 'Search',
+    description: 'Placeholder text courseware for the search bar.',
+  },
 });
 
 export default messages;
