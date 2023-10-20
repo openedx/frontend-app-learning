@@ -37,6 +37,9 @@ describe('CoursewareSearch', () => {
   describe('when rendering normally', () => {
     beforeAll(() => {
       useElementBoundingBox.mockImplementation(() => ({ top: tabsTopPosition }));
+    });
+
+    beforeEach(() => {
       renderComponent();
     });
 
