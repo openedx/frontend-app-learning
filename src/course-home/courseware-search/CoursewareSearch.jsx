@@ -34,10 +34,11 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
       <div className="courseware-search__outer-content">
         <div className="courseware-search__content" style={{ height: '999px' }}>
           <h2>{intl.formatMessage(messages.searchModuleTitle)}</h2>
-          <CoursewareSearchBar 
-              onChange={() => {}}
-              onSubmit={() => {}}
-              placeholder={intl.formatMessage(messages.searchBarPlaceholderText)} /> 
+          <CoursewareSearchBar
+            onChange={() => {}}
+            onSubmit={() => {}}
+            placeholder={intl.formatMessage(messages.searchBarPlaceholderText)}
+          />
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis semper rutrum odio quis congue.
             Duis sodales nibh et sapien elementum fermentum. Quisque magna urna, gravida at gravida et,
