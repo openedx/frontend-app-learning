@@ -1,18 +1,27 @@
 import React from 'react';
 import {
-  act,
+  fireEvent,
   initializeMockApp,
   render,
   screen,
-  waitFor,
 } from '../../setupTest';
-import { fetchCoursewareSearchSettings } from '../data/thunks';
 import { CoursewareSearch } from './index';
+import { setShowSearch } from '../data/slice';
+import { useElementBoundingBox, useLockScroll } from './hooks';
 
-jest.mock('../data/thunks');
+const mockDispatch = jest.fn();
 
-function renderComponent() {
-  const { container } = render(<CoursewareSearch />);
+jest.mock('./hooks');
+jest.mock('../data/slice');
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: () => mockDispatch,
+}));
+
+const tabsTopPosition = 128;
+
+function renderComponent(props = {}) {
+  const { container } = render(<CoursewareSearch {...props} />);
   return container;
 }
 
@@ -21,26 +30,55 @@ describe('CoursewareSearch', () => {
     initializeMockApp();
   });
 
-  beforeEach(() => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('Should not render when the waffle flag is disabled', async () => {
-    fetchCoursewareSearchSettings.mockImplementation(() => Promise.resolve({ enabled: false }));
+  describe('when rendering normally', () => {
+    beforeAll(() => {
+      useElementBoundingBox.mockImplementation(() => ({ top: tabsTopPosition }));
+    });
 
-    await act(async () => renderComponent());
-    await waitFor(() => {
-      expect(fetchCoursewareSearchSettings).toHaveBeenCalledTimes(1);
-      expect(screen.queryByTestId('courseware-search-button')).not.toBeInTheDocument();
+    beforeEach(() => {
+      renderComponent();
+    });
+
+    it('Should use useElementBoundingBox() and useLockScroll() hooks', () => {
+      expect(useElementBoundingBox).toBeCalledTimes(1);
+      expect(useLockScroll).toBeCalledTimes(1);
+    });
+
+    it('Should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
+      const section = screen.getByTestId('courseware-search-section');
+      expect(section.style.getPropertyValue('--modal-top-position')).toBe(`${tabsTopPosition}px`);
+    });
+
+    it('Should dispatch setShowSearch(true) when clicking the close button', () => {
+      const button = screen.getByTestId('courseware-search-close-button');
+      fireEvent.click(button);
+
+      expect(mockDispatch).toHaveBeenCalledTimes(1);
+      expect(setShowSearch).toHaveBeenCalledTimes(1);
+      expect(setShowSearch).toHaveBeenCalledWith(false);
     });
   });
 
-  it('Should render when the waffle flag is enabled', async () => {
-    fetchCoursewareSearchSettings.mockImplementation(() => Promise.resolve({ enabled: true }));
-    await act(async () => renderComponent());
-    await waitFor(() => {
-      expect(fetchCoursewareSearchSettings).toHaveBeenCalledTimes(1);
-      expect(screen.queryByTestId('courseware-search-button')).toBeInTheDocument();
+  describe('when CourseTabsNavigation is not present', () => {
+    it('Should use "--modal-top-position: 0" if  nce element is not present', () => {
+      useElementBoundingBox.mockImplementation(() => undefined);
+      renderComponent();
+
+      const section = screen.getByTestId('courseware-search-section');
+      expect(section.style.getPropertyValue('--modal-top-position')).toBe('0');
+    });
+  });
+
+  describe('when passing extra props', () => {
+    it('Should pass on extra props to section element', () => {
+      renderComponent({ foo: 'bar' });
+
+      const section = screen.getByTestId('courseware-search-section');
+      expect(section).toHaveAttribute('foo', 'bar');
     });
   });
 });
