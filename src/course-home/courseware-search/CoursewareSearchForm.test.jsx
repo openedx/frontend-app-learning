@@ -6,10 +6,10 @@ import {
   screen,
   waitFor,
 } from '../../setupTest';
-import CoursewareSearchBar from './CoursewareSearchBar';
+import CoursewareSearchForm from './CoursewareSearchForm';
 
 function renderComponent() {
-  const { container } = render(<CoursewareSearchBar />);
+  const { container } = render(<CoursewareSearchForm />);
   return container;
 }
 

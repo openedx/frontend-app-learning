@@ -2,7 +2,7 @@ import React from 'react';
 import { SearchField } from '@edx/paragon';
 import PropTypes from 'prop-types';
 
-const CoursewareSearchBar = ({
+const CoursewareSearchForm = ({
   onSubmit,
   onChange,
   placeholder,
@@ -23,10 +23,10 @@ const CoursewareSearchBar = ({
   </SearchField.Advanced>
 );
 
-CoursewareSearchBar.propTypes = {
+CoursewareSearchForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string.isRequired,
 };
 
-export default CoursewareSearchBar;
+export default CoursewareSearchForm;

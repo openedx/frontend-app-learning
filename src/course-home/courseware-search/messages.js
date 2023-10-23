@@ -19,7 +19,7 @@ const messages = defineMessages({
   searchBarPlaceholderText: {
     id: 'learn.coursewareSerch.searchBarPlaceholderText',
     defaultMessage: 'Search',
-    description: 'Placeholder text courseware for the search bar.',
+    description: 'Placeholder text for the Courseware Search input control',
   },
 });
 
