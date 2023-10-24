@@ -23,9 +23,15 @@ const CoursewareSearchForm = ({
 );
 
 CoursewareSearchForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  placeholder: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func,
+  onChange: PropTypes.func,
+  placeholder: PropTypes.string,
+};
+
+CoursewareSearchForm.defaultProps = {
+  onSubmit: undefined,
+  onChange: undefined,
+  placeholder: undefined,
 };
 
 export default CoursewareSearchForm;

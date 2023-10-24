@@ -35,10 +35,6 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
         <div className="courseware-search__content" style={{ height: '999px' }}>
           <CoursewareSearchForm
             placeholder={intl.formatMessage(messages.searchBarPlaceholderText)}
-            onSubmit={() => {
-            }}
-            onChange={() => {
-            }}
           />
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis semper rutrum odio quis congue.
