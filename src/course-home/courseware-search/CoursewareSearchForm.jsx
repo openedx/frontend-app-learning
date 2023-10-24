@@ -11,10 +11,9 @@ const CoursewareSearchForm = ({
     onSubmit={onSubmit}
     onChange={onChange}
     submitButtonLocation="external"
-    className="courseware-search-bar"
-    data-testid="courseware-search-bar"
+    className="courseware-search-form"
   >
-    <div className="pgn__searchfield_wrapper">
+    <div className="pgn__searchfield_wrapper" data-testid="courseware-search-form">
       <SearchField.Label />
       <SearchField.Input placeholder={placeholder} />
       <SearchField.ClearButton />
