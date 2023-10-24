@@ -20,8 +20,8 @@ function renderComponent(placeholder, onSubmit, onChange) {
 
 describe('CoursewareSearchToggle', () => {
   const placeholderText = 'Search for courseware';
-  let onSubmitHandlerMock; let
-    onChangeHandlerMock;
+  let onSubmitHandlerMock;
+  let onChangeHandlerMock;
 
   beforeAll(async () => {
     onChangeHandlerMock = jest.fn();
