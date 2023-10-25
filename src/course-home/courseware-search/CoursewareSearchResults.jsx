@@ -15,7 +15,7 @@ const iconTypeMapping = {
 const defaultIcon = Article;
 
 const CoursewareSearchResults = ({ intl, results }) => {
-  if (!results.length) {
+  if (!results?.length) {
     return (
       <div className="courseware-search-results">
         <p className="courseware-search-results__empty" data-testid="no-results">{intl.formatMessage(messages.searchResultsNone)}</p>
