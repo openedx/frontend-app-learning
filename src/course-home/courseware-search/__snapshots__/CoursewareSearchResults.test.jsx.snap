@@ -1,0 +1,513 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CoursewareSearchResults when list of results is provided should match the snapshot 1`] = `
+<div
+  class="courseware-search-results"
+  data-testid="search-results"
+>
+  <a
+    class="courseware-search-results__item"
+    href="https://www.edx.org/"
+    rel="nofollow"
+    target="_blank"
+  >
+    <div
+      class="courseware-search-results__icon"
+    >
+      <span
+        class="pgn__icon"
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          height="24"
+          role="img"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 4H2v16h20V6H12l-2-2z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="courseware-search-results__info"
+    >
+      <div
+        class="courseware-search-results__title"
+      >
+        <span>
+          A Comprehensive Introduction to Supply Chain Analytics
+        </span>
+      </div>
+    </div>
+  </a>
+  <a
+    class="courseware-search-results__item"
+    href="https://www.edx.org/"
+    rel="nofollow"
+    target="_blank"
+  >
+    <div
+      class="courseware-search-results__icon"
+    >
+      <span
+        class="pgn__icon"
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          height="24"
+          role="img"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 4H2v16h20V6H12l-2-2z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="courseware-search-results__info"
+    >
+      <div
+        class="courseware-search-results__title"
+      >
+        <span>
+          Basics of Data Collection for Supply Chain Analytics: Exploring Methods and Techniques for Optimal Data Gathering
+        </span>
+      </div>
+      <ul
+        class="courseware-search-results__breadcrumbs"
+      >
+        <li>
+          <div>
+            A Comprehensive Introduction to Supply Chain Analytics
+          </div>
+        </li>
+      </ul>
+    </div>
+  </a>
+  <a
+    class="courseware-search-results__item"
+    href="/"
+  >
+    <div
+      class="courseware-search-results__icon"
+    >
+      <span
+        class="pgn__icon"
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          height="24"
+          role="img"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 4H2v16h20V6H12l-2-2z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="courseware-search-results__info"
+    >
+      <div
+        class="courseware-search-results__title"
+      >
+        <span>
+          Zero-Waste Strategies in Supply Chain Management
+        </span>
+      </div>
+      <ul
+        class="courseware-search-results__breadcrumbs"
+      >
+        <li>
+          <div>
+            A Comprehensive Introduction to Supply Chain Analytics
+          </div>
+        </li>
+        <li>
+          <div>
+            Basics of Data Collection for Supply Chain Analytics: Exploring Methods and Techniques for Optimal Data Gathering
+          </div>
+        </li>
+      </ul>
+    </div>
+  </a>
+  <a
+    class="courseware-search-results__item"
+    href="/"
+  >
+    <div
+      class="courseware-search-results__icon"
+    >
+      <span
+        class="pgn__icon"
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          height="24"
+          role="img"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="courseware-search-results__info"
+    >
+      <div
+        class="courseware-search-results__title"
+      >
+        <span>
+          Addressing Overproduction and Excess Inventory in Supply Chains
+        </span>
+      </div>
+      <ul
+        class="courseware-search-results__breadcrumbs"
+      >
+        <li>
+          <div>
+            A Comprehensive Introduction to Supply Chain Analytics
+          </div>
+        </li>
+        <li>
+          <div>
+            Basics of Data Collection for Supply Chain Analytics: Exploring Methods and Techniques for Optimal Data Gathering
+          </div>
+        </li>
+        <li>
+          <div>
+            Zero-Waste Strategies in Supply Chain Management
+          </div>
+        </li>
+      </ul>
+    </div>
+  </a>
+  <a
+    class="courseware-search-results__item"
+    href="/"
+  >
+    <div
+      class="courseware-search-results__icon"
+    >
+      <span
+        class="pgn__icon"
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          height="24"
+          role="img"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="courseware-search-results__info"
+    >
+      <div
+        class="courseware-search-results__title"
+      >
+        <span>
+          Balancing Supply and Demand
+        </span>
+        <em>
+          9
+        </em>
+      </div>
+      <ul
+        class="courseware-search-results__breadcrumbs"
+      >
+        <li>
+          <div>
+            Strategic Sourcing and Its Impact on Supply-Demand Balance
+          </div>
+        </li>
+        <li>
+          <div>
+            Dealing with Over-supply and Under-supply Situations
+          </div>
+        </li>
+        <li>
+          <div>
+            Scenario Planning for Uncertain Supply-Demand Conditions
+          </div>
+        </li>
+      </ul>
+    </div>
+  </a>
+  <a
+    class="courseware-search-results__item"
+    href="/"
+  >
+    <div
+      class="courseware-search-results__icon"
+    >
+      <span
+        class="pgn__icon"
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          height="24"
+          role="img"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="courseware-search-results__info"
+    >
+      <div
+        class="courseware-search-results__title"
+      >
+        <span>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare porttitor purus, eget vehicula lorem ullamcorper in. In pellentesque vehicula diam, eget efficitur nisl aliquet id. Donec tincidunt dictum odio quis placerat.
+        </span>
+        <em>
+          6
+        </em>
+      </div>
+      <ul
+        class="courseware-search-results__breadcrumbs"
+      >
+        <li>
+          <div>
+            Section name
+          </div>
+        </li>
+        <li>
+          <div>
+            Subsection name
+          </div>
+        </li>
+        <li>
+          <div>
+            Unit name
+          </div>
+        </li>
+      </ul>
+    </div>
+  </a>
+  <a
+    class="courseware-search-results__item"
+    href="/"
+  >
+    <div
+      class="courseware-search-results__icon"
+    >
+      <span
+        class="pgn__icon"
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          height="24"
+          role="img"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M17 10.5V6H3v12h14v-4.5l4 4v-11l-4 4Z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="courseware-search-results__info"
+    >
+      <div
+        class="courseware-search-results__title"
+      >
+        <span>
+          TextSupply chain toolbox
+        </span>
+      </div>
+      <ul
+        class="courseware-search-results__breadcrumbs"
+      >
+        <li>
+          <div>
+            Section name
+          </div>
+        </li>
+        <li>
+          <div>
+            Subsection name
+          </div>
+        </li>
+        <li>
+          <div>
+            Unit name
+          </div>
+        </li>
+      </ul>
+    </div>
+  </a>
+  <a
+    class="courseware-search-results__item"
+    href="/"
+  >
+    <div
+      class="courseware-search-results__icon"
+    >
+      <span
+        class="pgn__icon"
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          height="24"
+          role="img"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M17 10.5V6H3v12h14v-4.5l4 4v-11l-4 4Z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="courseware-search-results__info"
+    >
+      <div
+        class="courseware-search-results__title"
+      >
+        <span>
+          Utilizing Demand-Driven Strategies
+        </span>
+        <em>
+          20
+        </em>
+      </div>
+      <ul
+        class="courseware-search-results__breadcrumbs"
+      >
+        <li>
+          <div>
+            Section name
+          </div>
+        </li>
+        <li>
+          <div>
+            Subsection name
+          </div>
+        </li>
+        <li>
+          <div>
+            Unit name
+          </div>
+        </li>
+      </ul>
+    </div>
+  </a>
+  <a
+    class="courseware-search-results__item"
+    href="/"
+  >
+    <div
+      class="courseware-search-results__icon"
+    >
+      <span
+        class="pgn__icon"
+      >
+        <svg
+          aria-hidden="true"
+          fill="none"
+          focusable="false"
+          height="24"
+          role="img"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M17 10.5V6H3v12h14v-4.5l4 4v-11l-4 4Z"
+            fill="currentColor"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      class="courseware-search-results__info"
+    >
+      <div
+        class="courseware-search-results__title"
+      >
+        <span>
+          Video
+        </span>
+        <em>
+          1
+        </em>
+      </div>
+      <ul
+        class="courseware-search-results__breadcrumbs"
+      >
+        <li>
+          <div>
+            Section name
+          </div>
+        </li>
+        <li>
+          <div>
+            Subsection name
+          </div>
+        </li>
+        <li>
+          <div>
+            Unit name
+          </div>
+        </li>
+      </ul>
+    </div>
+  </a>
+</div>
+`;
