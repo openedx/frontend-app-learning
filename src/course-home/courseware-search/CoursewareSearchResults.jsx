@@ -31,12 +31,11 @@ const CoursewareSearchResults = ({ intl, results }) => {
         const key = type.toLowerCase();
         const icon = iconTypeMapping[key] || defaultIcon;
 
-        const linkProps = { href };
-
-        if (isExternal) {
-          linkProps.target = '_blank';
-          linkProps.rel = 'nofollow';
-        }
+        const linkProps = isExternal ? {
+          href,
+          target: '_blank',
+          rel: 'nofollow',
+        } : { href };
 
         return (
           <a className="courseware-search-results__item" {...linkProps}>
