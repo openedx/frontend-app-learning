@@ -10,6 +10,7 @@ import { useElementBoundingBox, useLockScroll } from './hooks';
 import messages from './messages';
 
 import CoursewareSearchForm from './CoursewareSearchForm';
+import CoursewareSearchResultsFilterContainer from './CoursewareResultsFilter';
 
 const CoursewareSearch = ({ intl, ...sectionProps }) => {
   const dispatch = useDispatch();
@@ -36,6 +37,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
           <CoursewareSearchForm
             placeholder={intl.formatMessage(messages.searchBarPlaceholderText)}
           />
+          <CoursewareSearchResultsFilterContainer results={[/* results set goes here */]} />
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis semper rutrum odio quis congue.
             Duis sodales nibh et sapien elementum fermentum. Quisque magna urna, gravida at gravida et,
