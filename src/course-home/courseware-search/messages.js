@@ -21,6 +21,11 @@ const messages = defineMessages({
     defaultMessage: 'Search',
     description: 'Placeholder text for the Courseware Search input control',
   },
+  searchResultsNone: {
+    id: 'learn.coursewareSerch.searchResultsNone',
+    defaultMessage: 'No results found.',
+    description: 'Text to show when the Courseware Search found no results matching the criteria.',
+  },
 });
 
 export default messages;
