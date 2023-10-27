@@ -10,7 +10,7 @@ import { useElementBoundingBox, useLockScroll } from './hooks';
 import messages from './messages';
 
 import CoursewareSearchForm from './CoursewareSearchForm';
-import CoursewareSearchResults from './CoursewareSearchResults';
+import CoursewareSearchResultsFilterContainer from './CoursewareResultsFilter';
 import mockedData from './test-data/mockedResults';
 
 const CoursewareSearch = ({ intl, ...sectionProps }) => {
@@ -50,9 +50,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
             onSubmit={handleSubmit}
             placeholder={intl.formatMessage(messages.searchBarPlaceholderText)}
           />
-          {results !== undefined ? (
-            <CoursewareSearchResults results={results} />
-          ) : null}
+          <CoursewareSearchResultsFilterContainer results={results} />
         </div>
       </div>
     </section>
