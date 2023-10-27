@@ -19,9 +19,9 @@ Please tag **@edx/engage-squad** on any PRs or issues.  Thanks.
 .. |license| image:: https://img.shields.io/badge/license-AGPL-informational
    :target: https://github.com/openedx/frontend-app-account/blob/master/LICENSE
 
-************
+***************
 Getting Started
-************
+***************
 
 Prerequisites
 =============
