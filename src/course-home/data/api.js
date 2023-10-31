@@ -451,3 +451,14 @@ export async function getCoursewareSearchEnabledFlag(courseId) {
   const { data } = await getAuthenticatedHttpClient().get(url.href);
   return { enabled: data.enabled || false };
 }
+
+export async function searchCourseContentFromAPI(courseId, searchKeyword, options = {}) {
+  const defaults = { page: 0, limit: 20 };
+  const { page, limit } = { ...defaults, ...options };
+
+  const url = new URL(`${getConfig().LMS_BASE_URL}/search/${courseId}`);
+  const formData = `search_string=${searchKeyword}&page_size=${limit}&page_index=${page}`;
+  const response = await getAuthenticatedHttpClient().post(url.href, formData);
+
+  return camelCaseObject(response);
+}
