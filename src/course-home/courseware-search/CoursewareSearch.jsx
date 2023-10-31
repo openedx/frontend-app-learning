@@ -31,6 +31,10 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
     setResults(search.toLowerCase() !== 'lorem ipsum' ? mockedData : []);
   };
 
+  const handleChange = (value) => {
+    if (!value?.length) { setResults(undefined); }
+  };
+
   return (
     <section className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-section" {...sectionProps}>
       <div className="courseware-search__close">
@@ -48,6 +52,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
           <h2>{intl.formatMessage(messages.searchModuleTitle)}</h2>
           <CoursewareSearchForm
             onSubmit={handleSubmit}
+            onChange={handleChange}
             placeholder={intl.formatMessage(messages.searchBarPlaceholderText)}
           />
           <CoursewareSearchResultsFilterContainer results={results} />
