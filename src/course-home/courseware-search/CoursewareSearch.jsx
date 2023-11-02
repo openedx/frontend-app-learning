@@ -3,7 +3,9 @@ import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Button, Icon, Spinner } from '@edx/paragon';
+import {
+  Alert, Button, Icon, Spinner,
+} from '@edx/paragon';
 import {
   Close,
 } from '@edx/paragon/icons';
@@ -23,6 +25,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
   const {
     loading,
     searchKeyword: lastSearchKeyword,
+    errors,
     total,
   } = useModel('contentSearchResults', courseId);
   const [searchKeyword, setSearchKeyword] = useState(lastSearchKeyword);
@@ -39,6 +42,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
         id: courseId,
         searchKeyword: '',
         results: [],
+        errors: undefined,
         loading: false,
       },
     }));
@@ -74,6 +78,15 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
     }
   };
 
+  let status = 'idle';
+  if (loading) {
+    status = 'loading';
+  } else if (errors) {
+    status = 'error';
+  } else if (lastSearchKeyword) {
+    status = 'results';
+  }
+
   return (
     <section className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-section" {...sectionProps}>
       <div className="courseware-search__close">
@@ -95,12 +108,17 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
             onChange={handleOnChange}
             placeholder={intl.formatMessage(messages.searchBarPlaceholderText)}
           />
-          {loading ? (
+          {status === 'loading' ? (
             <div className="courseware-search__spinner">
               <Spinner animation="border" variant="light" screenReaderText={intl.formatMessage(messages.loading)} />
             </div>
           ) : null}
-          {!loading && lastSearchKeyword ? (
+          {status === 'error' && (
+            <Alert className="mt-4" variant="danger">
+              {intl.formatMessage(messages.searchResultsError)}
+            </Alert>
+          )}
+          {status === 'results' ? (
             <>
               <div className="courseware-search__results-summary">{total > 0
                 ? (

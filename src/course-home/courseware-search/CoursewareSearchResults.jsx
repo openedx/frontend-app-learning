@@ -24,6 +24,7 @@ const CoursewareSearchResults = ({ results }) => {
   return (
     <div className="courseware-search-results" data-testid="search-results">
       {results.map(({
+        id,
         title,
         type,
         location,
@@ -42,7 +43,7 @@ const CoursewareSearchResults = ({ results }) => {
         } : { href: `${baseUrl}${url}` };
 
         return (
-          <a className="courseware-search-results__item" {...linkProps}>
+          <a key={id} className="courseware-search-results__item" {...linkProps}>
             <div className="courseware-search-results__icon"><Icon src={icon} /></div>
             <div className="courseware-search-results__info">
               <div className="courseware-search-results__title">
@@ -51,7 +52,12 @@ const CoursewareSearchResults = ({ results }) => {
               </div>
               {location?.length ? (
                 <ul className="courseware-search-results__breadcrumbs">
-                  {location.map(bc => (<li><div>{bc}</div></li>))}
+                  {
+                  // This ignore is necessary because the breadcrumb texts might have duplicates.
+                  // The breadcrumbs are not expected to change.
+                  // eslint-disable-next-line react/no-array-index-key
+                  location.map((bc, i) => (<li key={`${i}:${bc}`}><div>{bc}</div></li>))
+}
                 </ul>
               ) : null}
             </div>

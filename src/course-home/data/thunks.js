@@ -156,42 +156,57 @@ export async function fetchCoursewareSearchSettings(courseId) {
 export function searchCourseContent(courseId, searchKeyword) {
   return async (dispatch) => {
     const start = new Date();
+
     dispatch(addModel({
       modelType: 'contentSearchResults',
       model: {
         id: courseId,
         searchKeyword,
         results: [],
+        errors: undefined,
         loading: true,
       },
     }));
-    searchCourseContentFromAPI(courseId, searchKeyword).then(response => {
-      const { data } = response;
-      dispatch(updateModel({
-        modelType: 'contentSearchResults',
-        model: {
-          id: courseId,
-          searchKeyword,
-          ...mapSearchResponse(data, searchKeyword),
-          loading: false,
-        },
-      }));
-      const end = new Date();
-      const clientMs = (end - start);
-      const {
-        took, total, maxScore, accessDeniedCount,
-      } = data;
 
+    let data;
+    let curatedResponse;
+    let errors;
+    try {
+      ({ data } = await searchCourseContentFromAPI(courseId, searchKeyword));
+      curatedResponse = mapSearchResponse(data, searchKeyword);
+    } catch (e) {
       // TODO: Remove when publishing to prod. Just temporary for performance debugging.
       // eslint-disable-next-line no-console
-      console.table({
-        'Search Keyword': searchKeyword,
-        'Client time (ms)': clientMs,
-        'Server time (ms)': took,
-        'Total matches': total,
-        'Max score': maxScore,
-        'Access denied count': accessDeniedCount,
-      });
+      console.error('Error on Courseware Search: ', e.message);
+      errors = e.message;
+    }
+
+    dispatch(updateModel({
+      modelType: 'contentSearchResults',
+      model: {
+        ...curatedResponse,
+        id: courseId,
+        searchKeyword,
+        errors,
+        loading: false,
+      },
+    }));
+
+    const end = new Date();
+    const clientMs = (end - start);
+    const {
+      took, total, maxScore, accessDeniedCount,
+    } = data;
+
+    // TODO: Remove when publishing to prod. Just temporary for performance debugging.
+    // eslint-disable-next-line no-console
+    console.table({
+      'Search Keyword': searchKeyword,
+      'Client time (ms)': clientMs,
+      'Server time (ms)': took,
+      'Total matches': total,
+      'Max score': maxScore,
+      'Access denied count': accessDeniedCount,
     });
   };
 }

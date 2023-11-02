@@ -41,6 +41,11 @@ const messages = defineMessages({
     defaultMessage: '{total} matches found for "{keyword}":',
     description: 'Text to show when the Courseware Search found multiple results matching the criteria.',
   },
+  searchResultsError: {
+    id: 'learn.coursewareSerch.searchResultsError',
+    defaultMessage: 'There was an error on the search process. Please try again in a few minutes. If the problem persists, please contact the support team.',
+    description: 'Error message to show to the users when there\'s an error with the endpoint or the returned payload format.',
+  },
 
   // These are translations for labeling the filters
   'filter:none': {

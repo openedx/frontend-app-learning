@@ -1,15 +1,40 @@
+const Joi = require('joi');
+
+const endpointSchema = Joi.object({
+  took: Joi.number(),
+  total: Joi.number(),
+  maxScore: Joi.number(),
+  results: Joi.array().items(Joi.object({
+    id: Joi.string(),
+    contentType: Joi.string(),
+    location: Joi.array().items(Joi.string()),
+    url: Joi.string(),
+    content: Joi.object({
+      displayName: Joi.string(),
+      htmlContent: Joi.string(),
+      transcriptEn: Joi.string(),
+    }),
+  }).unknown(true)).strict(),
+}).unknown(true).strict();
+
 const defaultType = 'text';
 
 // Parses the search results in a convenient way.
-export default function mapSearchResponse(response, searchKeyword) {
-  const keywords = searchKeyword.split(' ');
+export default function mapSearchResponse(response, searchKeywords = '') {
+  const { error, value: data } = endpointSchema.validate(response);
+
+  if (error) {
+    throw new Error('Error in server response:', error);
+  }
+
+  const keywords = searchKeywords ? searchKeywords.toLowerCase().split(' ') : [];
 
   const {
     took: ms,
     total,
-    max_score: maxScore,
+    maxScore,
     results: rawResults,
-  } = response;
+  } = data;
 
   const results = rawResults.map(result => {
     const {
@@ -28,10 +53,15 @@ export default function mapSearchResponse(response, searchKeyword) {
     } = result;
 
     const type = contentType?.toLowerCase() || defaultType;
-    let contentHits = 0;
 
     const content = htmlContent || transcriptEn || '';
-    keywords.forEach(word => { contentHits += content.split(word).length - 1; });
+    const searchContent = content.toLowerCase();
+    let contentHits = 0;
+    if (keywords.length) {
+      keywords.forEach(word => {
+        contentHits += searchContent ? searchContent.toLowerCase().split(word).length - 1 : 0;
+      });
+    }
 
     const title = displayName || contentType;
 

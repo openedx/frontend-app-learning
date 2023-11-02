@@ -22,6 +22,8 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
 
   const { total, results } = lastSearch;
 
+  console.log({ results });
+
   const filters = [
     {
       key: noFilterKey,
@@ -45,7 +47,7 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
       defaultActiveKey={noFilterKey}
     >
       {filters.map(({ key, label }) => (
-        <Tab eventKey={key} title={getFilterTitle(key, label)}>
+        <Tab key={key} eventKey={key} title={getFilterTitle(key, label)}>
           <CoursewareSearchResults
             intl={intl}
             results={filteredResultsBySelection({ key, results })}
