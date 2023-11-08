@@ -21,7 +21,7 @@ function getSessionStorage(key) {
 function setSessionStorage(key, value) {
   try {
     if (global.sessionStorage) {
-      global.sessionStorage.setItem(key, JSON.stringify(value));
+      global.sessionStorage.setItem(key, value);
     }
   } catch (e) {
     // If this fails, just bail.
