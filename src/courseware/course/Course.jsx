@@ -32,6 +32,7 @@ const Course = ({
   const {
     celebrations,
     isStaff,
+    verifiedMode,
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
@@ -54,17 +55,14 @@ const Course = ({
   const shouldDisplayTriggers = windowWidth >= breakpoints.small.minWidth;
   const daysPerWeek = course?.courseGoals?.selectedGoal?.daysPerWeek;
 
-  // Responsive breakpoints for showing the notification button/tray
-  const shouldDisplayNotificationTrayOpenOnLoad = windowWidth > breakpoints.medium.minWidth;
-
-  // Course specific notification tray open/closed persistance by browser session
-  if (!getSessionStorage(`notificationTrayStatus.${courseId}`)) {
-    if (shouldDisplayNotificationTrayOpenOnLoad) {
-      setSessionStorage(`notificationTrayStatus.${courseId}`, 'open');
-    } else {
-      // responsive version displays the tray closed on initial load, set the sessionStorage to closed
-      setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
-    }
+  // 1. open the notification tray if the user has not purchased the course and is on a desktop
+  // 2. default to close on the first time access
+  // 3. use the last state if the user has access the course before
+  const shouldDisplayNotificationTrayOpenOnLoad = windowWidth > breakpoints.medium.minWidth && !!verifiedMode;
+  if (shouldDisplayNotificationTrayOpenOnLoad) {
+    setSessionStorage(`notificationTrayStatus.${courseId}`, 'open');
+  } else if (!getSessionStorage(`notificationTrayStatus.${courseId}`)) {
+    setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
   }
 
   useEffect(() => {
