@@ -22,8 +22,6 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
 
   const { total, results } = lastSearch;
 
-  console.log({ results });
-
   const filters = [
     {
       key: noFilterKey,
