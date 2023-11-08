@@ -18,7 +18,7 @@ import CoursewareSearchResultsFilterContainer from './CoursewareResultsFilter';
 import { updateModel, useModel } from '../../generic/model-store';
 import { searchCourseContent } from '../data/thunks';
 
-const CoursewareSearch = ({ intl, ...sectionProps }) => {
+const CoursewareSearch = ({ intl }) => {
   const { courseId } = useParams();
   const dispatch = useDispatch();
   const { org } = useModel('courseHomeMeta', courseId);
@@ -88,7 +88,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
   }
 
   return (
-    <section className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-section" {...sectionProps}>
+    <section className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-section">
       <div className="courseware-search__close">
         <Button
           variant="tertiary"
@@ -138,6 +138,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
     </section>
   );
 };
+
 CoursewareSearch.propTypes = {
   intl: intlShape.isRequired,
 };

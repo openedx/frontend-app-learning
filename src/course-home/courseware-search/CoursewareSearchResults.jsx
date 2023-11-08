@@ -12,6 +12,7 @@ const iconTypeMapping = {
   text: TextFields,
   video: VideoCamera,
 };
+
 const defaultIcon = Article;
 
 const CoursewareSearchResults = ({ results }) => {
@@ -57,7 +58,7 @@ const CoursewareSearchResults = ({ results }) => {
                   // The breadcrumbs are not expected to change.
                   // eslint-disable-next-line react/no-array-index-key
                   location.map((bc, i) => (<li key={`${i}:${bc}`}><div>{bc}</div></li>))
-}
+                  }
                 </ul>
               ) : null}
             </div>

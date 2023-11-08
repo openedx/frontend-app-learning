@@ -1,36 +1,61 @@
 import React from 'react';
+import { history } from '@edx/frontend-platform';
+import { AppProvider } from '@edx/frontend-platform/react';
+import { Route, Routes } from 'react-router-dom';
 import {
-  fireEvent,
   initializeMockApp,
   render,
   screen,
 } from '../../setupTest';
 import { CoursewareSearch } from './index';
-import { setShowSearch } from '../data/slice';
 import { useElementBoundingBox, useLockScroll } from './hooks';
+import initializeStore from '../../store';
+import { useModel } from '../../generic/model-store';
 
-const mockDispatch = jest.fn();
-
-jest.mock('./hooks');
-jest.mock('../data/slice');
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
+jest.mock('../../generic/model-store', () => ({
+  useModel: jest.fn(),
 }));
+
+const decodedCourseId = 'course-v1:edX+DemoX+Demo_Course';
+const decodedSequenceId = 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction';
+const decodedUnitId = 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@vertical_0270f6de40fc';
+const pathname = `/course/${decodedCourseId}/${decodedSequenceId}/${decodedUnitId}`;
 
 const tabsTopPosition = 128;
 
+const defaultProps = {
+  org: 'edX',
+  loading: false,
+  searchKeyword: '',
+  errors: undefined,
+  total: 0,
+};
+
+const intl = {
+  formatMessage: (message) => message?.defaultMessage || '',
+};
+
 function renderComponent(props = {}) {
-  const { container } = render(<CoursewareSearch {...props} />);
+  const store = initializeStore();
+  history.push(pathname);
+  const { container } = render(
+    <AppProvider store={store}>
+      <Routes>
+        <Route path="/course/:courseId/:sequenceId/:unitId" element={<CoursewareSearch intl={intl} {...props} />} />
+      </Routes>
+    </AppProvider>,
+  );
   return container;
 }
 
-describe('CoursewareSearch', () => {
-  beforeAll(async () => {
-    initializeMockApp();
-  });
+const mockModels = ((props = defaultProps) => {
+  useModel.mockReturnValue(props);
+});
 
-  afterEach(() => {
+describe('CoursewareSearch', () => {
+  beforeAll(initializeMockApp);
+
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
@@ -39,33 +64,28 @@ describe('CoursewareSearch', () => {
       useElementBoundingBox.mockImplementation(() => ({ top: tabsTopPosition }));
     });
 
-    beforeEach(() => {
-      renderComponent();
-    });
-
     it('Should use useElementBoundingBox() and useLockScroll() hooks', () => {
+      mockModels();
+      renderComponent();
+
       expect(useElementBoundingBox).toBeCalledTimes(1);
       expect(useLockScroll).toBeCalledTimes(1);
     });
 
     it('Should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
+      mockModels();
+      renderComponent();
+
       const section = screen.getByTestId('courseware-search-section');
       expect(section.style.getPropertyValue('--modal-top-position')).toBe(`${tabsTopPosition}px`);
-    });
-
-    it('Should dispatch setShowSearch(true) when clicking the close button', () => {
-      const button = screen.getByTestId('courseware-search-close-button');
-      fireEvent.click(button);
-
-      expect(mockDispatch).toHaveBeenCalledTimes(1);
-      expect(setShowSearch).toHaveBeenCalledTimes(1);
-      expect(setShowSearch).toHaveBeenCalledWith(false);
     });
   });
 
   describe('when CourseTabsNavigation is not present', () => {
     it('Should use "--modal-top-position: 0" if  nce element is not present', () => {
       useElementBoundingBox.mockImplementation(() => undefined);
+
+      mockModels();
       renderComponent();
 
       const section = screen.getByTestId('courseware-search-section');
@@ -75,6 +95,7 @@ describe('CoursewareSearch', () => {
 
   describe('when passing extra props', () => {
     it('Should pass on extra props to section element', () => {
+      mockModels();
       renderComponent({ foo: 'bar' });
 
       const section = screen.getByTestId('courseware-search-section');

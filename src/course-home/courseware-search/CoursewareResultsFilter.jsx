@@ -18,7 +18,7 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
   const { courseId } = useParams();
   const lastSearch = useModel('contentSearchResults', courseId);
 
-  if (!lastSearch || !lastSearch.results.length) { return null; }
+  if (!lastSearch || !lastSearch?.results?.length) { return null; }
 
   const { total, results } = lastSearch;
 
@@ -47,7 +47,6 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
       {filters.map(({ key, label }) => (
         <Tab key={key} eventKey={key} title={getFilterTitle(key, label)}>
           <CoursewareSearchResults
-            intl={intl}
             results={filteredResultsBySelection({ key, results })}
           />
         </Tab>
