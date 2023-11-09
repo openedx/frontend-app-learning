@@ -57,7 +57,7 @@ const CoursewareSearchResults = ({ results }) => {
                   // This ignore is necessary because the breadcrumb texts might have duplicates.
                   // The breadcrumbs are not expected to change.
                   // eslint-disable-next-line react/no-array-index-key
-                  location.map((bc, i) => (<li key={`${i}:${bc}`}><div>{bc}</div></li>))
+                  location.map((breadcrumb, i) => (<li key={`${i}:${breadcrumb}`}><div>{breadcrumb}</div></li>))
                   }
                 </ul>
               ) : null}

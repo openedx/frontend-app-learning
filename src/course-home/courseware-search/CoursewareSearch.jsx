@@ -103,7 +103,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
         <div className="courseware-search__content">
           <h2>{intl.formatMessage(messages.searchModuleTitle)}</h2>
           <CoursewareSearchForm
-            value={searchKeyword}
+            searchTerm={searchKeyword}
             onSubmit={handleSubmit}
             onChange={handleOnChange}
             placeholder={intl.formatMessage(messages.searchBarPlaceholderText)}

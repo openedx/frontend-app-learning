@@ -3,13 +3,13 @@ import { SearchField } from '@edx/paragon';
 import PropTypes from 'prop-types';
 
 const CoursewareSearchForm = ({
-  value,
+  searchTerm,
   onSubmit,
   onChange,
   placeholder,
 }) => (
   <SearchField.Advanced
-    value={value}
+    value={searchTerm}
     onSubmit={onSubmit}
     onChange={onChange}
     submitButtonLocation="external"
@@ -25,14 +25,14 @@ const CoursewareSearchForm = ({
 );
 
 CoursewareSearchForm.propTypes = {
-  value: PropTypes.string,
+  searchTerm: PropTypes.string,
   onSubmit: PropTypes.func,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
 };
 
 CoursewareSearchForm.defaultProps = {
-  value: undefined,
+  searchTerm: undefined,
   onSubmit: undefined,
   onChange: undefined,
   placeholder: undefined,
