@@ -3,7 +3,7 @@ const Joi = require('joi');
 const endpointSchema = Joi.object({
   took: Joi.number(),
   total: Joi.number(),
-  maxScore: Joi.number(),
+  maxScore: Joi.number().allow(null),
   results: Joi.array().items(Joi.object({
     id: Joi.string(),
     contentType: Joi.string(),
