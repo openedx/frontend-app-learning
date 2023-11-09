@@ -12,6 +12,7 @@ import { useElementBoundingBox, useLockScroll } from './hooks';
 import initializeStore from '../../store';
 import { useModel } from '../../generic/model-store';
 
+jest.mock('./hooks');
 jest.mock('../../generic/model-store', () => ({
   useModel: jest.fn(),
 }));
