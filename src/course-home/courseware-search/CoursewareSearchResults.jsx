@@ -1,53 +1,64 @@
 import React from 'react';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
   Folder, TextFields, VideoCamera, Article,
 } from '@edx/paragon/icons';
+import { getConfig } from '@edx/frontend-platform';
 import { Icon } from '@edx/paragon';
 import PropTypes from 'prop-types';
-import messages from './messages';
+import CoursewareSearchEmpty from './CoursewareSearchEmpty';
 
 const iconTypeMapping = {
   document: Folder,
   text: TextFields,
   video: VideoCamera,
 };
+
 const defaultIcon = Article;
 
-const CoursewareSearchResults = ({ intl, results }) => {
+const CoursewareSearchResults = ({ results }) => {
   if (!results?.length) {
-    return (
-      <div className="courseware-search-results">
-        <p className="courseware-search-results__empty" data-testid="no-results">{intl.formatMessage(messages.searchResultsNone)}</p>
-      </div>
-    );
+    return <CoursewareSearchEmpty />;
   }
+
+  const baseUrl = `${getConfig().LMS_BASE_URL}`;
 
   return (
     <div className="courseware-search-results" data-testid="search-results">
       {results.map(({
-        title, href, type, breadcrumbs, contentMatches, isExternal,
+        id,
+        title,
+        type,
+        location,
+        url,
+        contentHits,
       }) => {
         const key = type.toLowerCase();
         const icon = iconTypeMapping[key] || defaultIcon;
 
+        const isExternal = !url.startsWith('/');
+
         const linkProps = isExternal ? {
-          href,
+          href: url,
           target: '_blank',
           rel: 'nofollow',
-        } : { href };
+        } : { href: `${baseUrl}${url}` };
 
         return (
-          <a className="courseware-search-results__item" {...linkProps}>
+          <a key={id} className="courseware-search-results__item" {...linkProps}>
             <div className="courseware-search-results__icon"><Icon src={icon} /></div>
             <div className="courseware-search-results__info">
               <div className="courseware-search-results__title">
                 <span>{title}</span>
-                {contentMatches ? (<em>{contentMatches}</em>) : null }
+                {contentHits ? (<em>{contentHits}</em>) : null }
               </div>
-              {breadcrumbs?.length ? (
+              {location?.length ? (
                 <ul className="courseware-search-results__breadcrumbs">
-                  {breadcrumbs.map(bc => (<li><div>{bc}</div></li>))}
+                  {
+                  // This ignore is necessary because the breadcrumb texts might have duplicates.
+                  // The breadcrumbs are not expected to change.
+                  // eslint-disable-next-line react/no-array-index-key
+                  location.map((breadcrumb, i) => (<li key={`${i}:${breadcrumb}`}><div>{breadcrumb}</div></li>))
+                  }
                 </ul>
               ) : null}
             </div>
@@ -59,14 +70,14 @@ const CoursewareSearchResults = ({ intl, results }) => {
 };
 
 CoursewareSearchResults.propTypes = {
-  intl: intlShape.isRequired,
   results: PropTypes.arrayOf(PropTypes.objectOf({
-    title: PropTypes.string.isRequired,
-    href: PropTypes.string.isRequired,
+    id: PropTypes.string,
+    title: PropTypes.string,
     type: PropTypes.string,
-    breadcrumbs: PropTypes.arrayOf(PropTypes.string),
-    contentMatches: PropTypes.number,
-    isExternal: PropTypes.bool,
+    location: PropTypes.arrayOf(PropTypes.string),
+    url: PropTypes.string,
+    contentHits: PropTypes.number,
+    score: PropTypes.number,
   })),
 };
 
@@ -74,4 +85,4 @@ CoursewareSearchResults.defaultProps = {
   results: [],
 };
 
-export default injectIntl(CoursewareSearchResults);
+export default CoursewareSearchResults;
