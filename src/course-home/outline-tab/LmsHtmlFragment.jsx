@@ -9,8 +9,9 @@ const LmsHtmlFragment = ({
   title,
   ...rest
 }) => {
+  const direction = document.documentElement?.getAttribute('dir') || 'ltr';
   const wholePage = `
-    <html>
+    <html dir="${direction}">
       <head>
         <base href="${getConfig().LMS_BASE_URL}" target="_parent">
         <link rel="stylesheet" href="/static/${getConfig().LEGACY_THEME_NAME ? `${getConfig().LEGACY_THEME_NAME}/` : ''}css/bootstrap/lms-main.css">
