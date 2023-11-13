@@ -2,9 +2,11 @@ import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 
 import { Xpert } from '@edx/frontend-lib-learning-assistant';
+import { hasActiveExamAttempt } from '@edx/frontend-lib-special-exams';
 import { injectIntl } from '@edx/frontend-platform/i18n';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { useEffect, useState } from 'react';
 
 const Chat = ({
   enabled,
@@ -31,6 +33,13 @@ const Chat = ({
     'unpaid-bootcamp',
   ];
 
+  const [hasActiveAttempt, setHasActiveAttempt] = useState(true);
+
+  useEffect(() => {
+    setHasActiveAttempt(hasActiveExamAttempt());
+    console.log(hasActiveExamAttempt());
+  }, [hasActiveExamAttempt, setHasActiveAttempt]);
+
   const isEnrolled = (
     enrollmentMode !== null
     && enrollmentMode !== undefined
@@ -39,6 +48,7 @@ const Chat = ({
 
   const shouldDisplayChat = (
     enabled
+    && !hasActiveAttempt
     && (isEnrolled || isStaff) // display only to enrolled or staff
   );
 
