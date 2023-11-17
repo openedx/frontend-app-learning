@@ -4,10 +4,7 @@ import React, {
   useEffect, useState, useMemo, useCallback,
 } from 'react';
 
-import { useModel } from '../../../generic/model-store';
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
-import { getSessionStorage } from '../../../data/sessionStorage';
-
 import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 
@@ -16,8 +13,6 @@ const SidebarProvider = ({
   unitId,
   children,
 }) => {
-  const { verifiedMode } = useModel('courseHomeMeta', courseId);
-
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const query = new URLSearchParams(window.location.search);
@@ -27,11 +22,7 @@ const SidebarProvider = ({
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
 
   useEffect(() => {
-    // if the user has not purchased the course or previously opened the notification tray, show the notification tray
-    const showNotificationsOnLoad = !!verifiedMode || getSessionStorage(`notificationTrayStatus.${courseId}`) !== 'closed';
-    if (showNotificationsOnLoad) {
-      setCurrentSidebar(SIDEBARS.NOTIFICATIONS.ID);
-    }
+    setCurrentSidebar(SIDEBARS.DISCUSSIONS.ID);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unitId]);
 
