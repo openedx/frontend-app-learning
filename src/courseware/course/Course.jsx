@@ -17,7 +17,6 @@ import SidebarProvider from './sidebar/SidebarContextProvider';
 import SidebarTriggers from './sidebar/SidebarTriggers';
 
 import { useModel } from '../../generic/model-store';
-import { getSessionStorage, setSessionStorage } from '../../data/sessionStorage';
 
 const Course = ({
   courseId,
@@ -32,7 +31,6 @@ const Course = ({
   const {
     celebrations,
     isStaff,
-    verifiedMode,
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
@@ -54,16 +52,6 @@ const Course = ({
   );
   const shouldDisplayTriggers = windowWidth >= breakpoints.small.minWidth;
   const daysPerWeek = course?.courseGoals?.selectedGoal?.daysPerWeek;
-
-  // 1. open the notification tray if the user has not purchased the course and is on a desktop
-  // 2. default to close on the first time access
-  // 3. use the last state if the user has access the course before
-  const shouldDisplayNotificationTrayOpenOnLoad = windowWidth > breakpoints.medium.minWidth && !!verifiedMode;
-  if (shouldDisplayNotificationTrayOpenOnLoad) {
-    setSessionStorage(`notificationTrayStatus.${courseId}`, 'open');
-  } else if (!getSessionStorage(`notificationTrayStatus.${courseId}`)) {
-    setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
-  }
 
   useEffect(() => {
     const celebrateFirstSection = celebrations && celebrations.firstSection;
