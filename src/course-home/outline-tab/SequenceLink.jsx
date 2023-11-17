@@ -14,14 +14,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import EffortEstimate from '../../shared/effort-estimate';
 import { useModel } from '../../generic/model-store';
+import { useScrollTo } from './hooks';
 import messages from './messages';
+import './SequenceLink.scss';
 
 const SequenceLink = ({
   id,
   intl,
   courseId,
   first,
+  last,
   sequence,
+  selected,
 }) => {
   const {
     complete,
@@ -38,6 +42,8 @@ const SequenceLink = ({
 
   const coursewareUrl = <Link to={`/course/${courseId}/${id}`}>{title}</Link>;
   const displayTitle = showLink ? coursewareUrl : title;
+
+  const sequenceLinkRef = useScrollTo(selected);
 
   const dueDateMessage = (
     <FormattedMessage
@@ -84,8 +90,18 @@ const SequenceLink = ({
   );
 
   return (
-    <li>
-      <div className={classNames('', { 'mt-2 pt-2 border-top border-light': !first })}>
+    <li
+      ref={sequenceLinkRef}
+      className={classNames('', { 'sequence-link-selected': selected })}
+    >
+      <div
+        className={classNames('', {
+          'pt-2 border-top border-light': !first,
+          'pt-2.5': first,
+          'pb-2': !last,
+          'pb-2.5': last,
+        })}
+      >
         <div className="row w-100 m-0">
           <div className="col-auto p-0">
             {complete ? (
@@ -129,7 +145,9 @@ SequenceLink.propTypes = {
   intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
   first: PropTypes.bool.isRequired,
+  last: PropTypes.bool.isRequired,
   sequence: PropTypes.shape().isRequired,
+  selected: PropTypes.bool.isRequired,
 };
 
 export default injectIntl(SequenceLink);

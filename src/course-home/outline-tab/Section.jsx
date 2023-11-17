@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import { useLocation } from 'react-router-dom';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Collapsible, IconButton } from '@edx/paragon';
 import { faCheckCircle as fasCheckCircle, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +12,9 @@ import SequenceLink from './SequenceLink';
 import { useModel } from '../../generic/model-store';
 
 import genericMessages from '../../generic/messages';
+import { useScrollTo } from './hooks';
 import messages from './messages';
+import './Section.scss';
 
 const Section = ({
   courseId,
@@ -29,6 +33,10 @@ const Section = ({
       sequences,
     },
   } = useModel('outline', courseId);
+  // A section or subsection is selected by its id being the location hash part.
+  // location.hash will contain an initial # sign, so remove it here.
+  const hashValue = useLocation().hash.substring(1);
+  const selected = hashValue === section.id;
 
   const [open, setOpen] = useState(defaultOpen);
 
@@ -40,6 +48,8 @@ const Section = ({
     setOpen(defaultOpen);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const sectionRef = useScrollTo(selected);
 
   const sectionTitle = (
     <div className="row w-100 m-0">
@@ -72,9 +82,9 @@ const Section = ({
   );
 
   return (
-    <li>
+    <li ref={sectionRef}>
       <Collapsible
-        className="mb-2"
+        className={classNames('mb-2 section', { 'section-selected': selected })}
         styling="card-lg"
         title={sectionTitle}
         open={open}
@@ -104,6 +114,8 @@ const Section = ({
               courseId={courseId}
               sequence={sequences[sequenceId]}
               first={index === 0}
+              last={index === (sequenceIds.length - 1)}
+              selected={hashValue === sequenceId}
             />
           ))}
         </ol>

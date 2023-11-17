@@ -81,6 +81,16 @@ describe('Outline Tab', () => {
   });
 
   describe('Course Outline', () => {
+    const { scrollIntoView } = window.HTMLElement.prototype;
+
+    beforeEach(() => {
+      window.HTMLElement.prototype.scrollIntoView = jest.fn();
+    });
+
+    afterEach(() => {
+      window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    });
+
     it('displays link to start course', async () => {
       await fetchAndRender();
       expect(screen.getByRole('link', { name: messages.start.defaultMessage })).toBeInTheDocument();
@@ -105,6 +115,28 @@ describe('Outline Tab', () => {
       await fetchAndRender();
       const expandedSectionNode = screen.getByRole('button', { name: /Title of Section/ });
       expect(expandedSectionNode).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('expands and scrolls to selected section', async () => {
+      const { courseBlocks, sectionBlocks } = await buildMinimalCourseBlocks(courseId, 'Title');
+      setTabData({
+        course_blocks: { blocks: courseBlocks.blocks },
+      });
+      await fetchAndRender(`http://localhost/#${sectionBlocks[0].id}`);
+      const expandedSectionNode = screen.getByRole('button', { name: /Title of Section/ });
+      expect(expandedSectionNode).toHaveAttribute('aria-expanded', 'true');
+      expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
+    });
+
+    it('expands and scrolls to section that contains selected subsection', async () => {
+      const { courseBlocks, sequenceBlocks } = await buildMinimalCourseBlocks(courseId, 'Title');
+      setTabData({
+        course_blocks: { blocks: courseBlocks.blocks },
+      });
+      await fetchAndRender(`http://localhost/#${sequenceBlocks[0].id}`);
+      const expandedSectionNode = screen.getByRole('button', { name: /Title of Section/ });
+      expect(expandedSectionNode).toHaveAttribute('aria-expanded', 'true');
+      expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
     });
 
     it('handles expand/collapse all button click', async () => {

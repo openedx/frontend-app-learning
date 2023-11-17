@@ -119,6 +119,10 @@ ENABLE_JUMPNAV
   This feature flag is slated to be removed as jumpnav becomes default. Follow the progress of this ticket here:
   https://openedx.atlassian.net/browse/TNL-8678
 
+ENABLE_LEGACY_NAV
+  Enables the legacy behaviour in the course breadcrumbs, where links lead to
+  the course index highlighting the selected course section or subsection.
+
 SOCIAL_UTM_MILESTONE_CAMPAIGN
   This value is passed as the ``utm_campaign`` parameter for social-share
   links when celebrating learning milestones in the course. Optional.
