@@ -15,18 +15,26 @@ const useModalIFrameBehavior = () => {
   const [isOpen, setIsOpen] = useKeyedState(stateKeys.isOpen, false);
   const [options, setOptions] = useKeyedState(stateKeys.options, { height: DEFAULT_HEIGHT });
 
-  const receiveMessage = React.useCallback(({ data }) => {
-    const { type, payload } = data;
+  const handleModalClose = () => {
+    const rootFrame = document.querySelector('iframe');
+    setIsOpen(false);
+    rootFrame.contentWindow.postMessage({ type: 'plugin.modal-close' }, '*');
+  };
+
+  const receiveMessage = React.useCallback((event) => {
+    const { type, payload } = event.data;
+    if (!type) {
+      return;
+    }
     if (type === 'plugin.modal') {
       setOptions((current) => ({ ...current, ...payload }));
       setIsOpen(true);
     }
+    if (type === 'plugin.modal-close') {
+      handleModalClose();
+    }
   }, []);
   useEventListener('message', receiveMessage);
-
-  const handleModalClose = () => {
-    setIsOpen(false);
-  };
 
   return {
     handleModalClose,

@@ -50,8 +50,11 @@ describe('useModalIFrameBehavior', () => {
   });
   describe('output', () => {
     test('handleModalClose sets modal options to closed', () => {
+      const postMessage = jest.fn();
+      document.querySelector = jest.fn().mockReturnValue({ contentWindow: { postMessage } });
       useModalIFrameBehavior().handleModalClose();
       state.expectSetStateCalledWith(stateKeys.isOpen, false);
+      expect(postMessage).toHaveBeenCalledWith({ type: 'plugin.modal-close' }, '*');
     });
     it('forwards modalOptions from state values', () => {
       const modalOptions = { test: 'options' };
