@@ -26,7 +26,7 @@ const SidebarProvider = ({
 
   useEffect(() => {
     // if the user hasn't purchased the course, show the notifications sidebar
-    setCurrentSidebar(!!verifiedMode ? SIDEBARS.NOTIFICATIONS.ID : SIDEBARS.DISCUSSIONS.ID);
+    setCurrentSidebar(verifiedMode ? SIDEBARS.NOTIFICATIONS.ID : SIDEBARS.DISCUSSIONS.ID);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unitId]);
 
