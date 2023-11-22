@@ -6,9 +6,10 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faBookmark, faCertificate, faInfo, faCalendar, faStar,
+  faCertificate, faInfo, faStar,
 } from '@fortawesome/free-solid-svg-icons';
 import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
+import { BookmarkIcon, NotificationIcon } from '../../../Icons';
 
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
@@ -45,17 +46,17 @@ const CourseTools = ({ intl }) => {
   const renderIcon = (iconClasses) => {
     switch (iconClasses) {
       case 'edx.bookmarks':
-        return faBookmark;
+        return <BookmarkIcon className="mr-2 text-primary" />;
       case 'edx.tool.verified_upgrade':
-        return faCertificate;
+        return <FontAwesomeIcon icon={faCertificate} className="mr-2 text-primary" fixedWidth />;
       case 'edx.tool.financial_assistance':
-        return faInfo;
+        return <FontAwesomeIcon icon={faInfo} className="mr-2 text-primary" fixedWidth />;
       case 'edx.calendar-sync':
-        return faCalendar;
+        return <NotificationIcon className="mr-2 text-primary" />;
       case 'edx.updates':
-        return faNewspaper;
+        return <FontAwesomeIcon icon={faNewspaper} className="mr-2 text-primary" fixedWidth />;
       case 'edx.reviews':
-        return faStar;
+        return <FontAwesomeIcon icon={faStar} className="mr-2 text-primary" fixedWidth />;
       default:
         return null;
     }
@@ -68,7 +69,7 @@ const CourseTools = ({ intl }) => {
         {courseTools.map((courseTool) => (
           <li key={courseTool.analyticsId} className="small">
             <a href={courseTool.url} onClick={() => logClick(courseTool.analyticsId)}>
-              <FontAwesomeIcon icon={renderIcon(courseTool.analyticsId)} className="mr-2" fixedWidth />
+              {renderIcon(courseTool.analyticsId)}
               {courseTool.title}
             </a>
           </li>

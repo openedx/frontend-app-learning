@@ -1,13 +1,17 @@
 import React from 'react';
-import { Button, Card } from '@edx/paragon';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { Button, Icon } from '@edx/paragon';
+import { ArrowForwardIos, ArrowBackIos } from '@edx/paragon/icons';
+import PropTypes from 'prop-types';
+import {
+  getLocale, injectIntl, intlShape, isRtl,
+} from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 
-const StartOrResumeCourseCard = ({ intl }) => {
+const StartOrResumeCourseCard = ({ intl, title }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -28,6 +32,8 @@ const StartOrResumeCourseCard = ({ intl }) => {
     },
   } = useModel('outline', courseId);
 
+  const isLocaleRtl = isRtl(getLocale());
+
   if (!resumeCourseUrl) {
     return null;
   }
@@ -41,28 +47,25 @@ const StartOrResumeCourseCard = ({ intl }) => {
   };
 
   return (
-    <Card className="mb-3 raised-card" data-testid="start-resume-card">
-      <Card.Header
-        title={hasVisitedCourse ? intl.formatMessage(messages.resumeBlurb) : intl.formatMessage(messages.startBlurb)}
-        actions={(
-          <Button
-            variant="brand"
-            block
-            href={resumeCourseUrl}
-            onClick={() => logResumeCourseClick()}
-          >
-            {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
-          </Button>
-        )}
-      />
-      {/* Footer is needed for internal vertical spacing to work out. If you can remove, be my guest */}
-      {/* eslint-disable-next-line react/jsx-no-useless-fragment */}
-      <Card.Footer><></></Card.Footer>
-    </Card>
+    <div className="start-resume-card mb-4" data-testid="start-resume-card">
+      <div className="title">
+        <h2 className="h3">{title}</h2>
+      </div>
+      <Button
+        variant="default"
+        size="lg"
+        href={resumeCourseUrl}
+        onClick={() => logResumeCourseClick()}
+      >
+        {hasVisitedCourse ? intl.formatMessage(messages.resumeBlurb) : intl.formatMessage(messages.startBlurb)}
+        <Icon src={isLocaleRtl ? ArrowBackIos : ArrowForwardIos} className="text-secondary ml-1" style={{ height: '16px', width: '16px' }} />
+      </Button>
+    </div>
   );
 };
 
 StartOrResumeCourseCard.propTypes = {
+  title: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
 };
 

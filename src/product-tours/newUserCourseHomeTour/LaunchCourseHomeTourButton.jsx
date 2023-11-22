@@ -43,11 +43,11 @@ const LaunchCourseHomeTourButton = ({ intl, srOnly }) => {
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {toursEnabled && (
-        <Button variant="link" size="inline" className={`p-0 ${srOnly && 'sr-only sr-only-focusable'}`} onClick={handleClick}>
+        <Button variant="link" size="inline" className={`p-0 fw-500 ${srOnly && 'sr-only sr-only-focusable'}`} onClick={handleClick}>
           {!srOnly && (
             <Icon
               src={Compass}
-              className="mr-2"
+              className="mr-2 text-primary"
               style={{ height: '18px', width: '18px' }}
             />
           )}

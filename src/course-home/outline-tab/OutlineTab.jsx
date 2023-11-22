@@ -123,9 +123,10 @@ const OutlineTab = ({ intl }) => {
 
   return (
     <>
-      <div data-learner-type={learnerType} className="row w-100 mx-0 my-3 justify-content-between">
-        <div className="col-12 col-sm-auto p-0">
-          <div role="heading" aria-level="1" className="h2">{title}</div>
+      <div data-learner-type={learnerType} className="row">
+        <div className="col col-12 col-md-8">
+          <StartOrResumeCourseCard title={title} />
+          <WelcomeMessage courseId={courseId} />
         </div>
       </div>
       <div className="row course-outline-tab">
@@ -155,18 +156,16 @@ const OutlineTab = ({ intl }) => {
               <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
             </>
           )}
-          <StartOrResumeCourseCard />
-          <WelcomeMessage courseId={courseId} />
           {rootCourseId && (
             <>
-              <div className="row w-100 m-0 mb-3 justify-content-end">
+              <div className="row w-100 m-0 mb-4 justify-content-end">
                 <div className="col-12 col-md-auto p-0">
-                  <Button variant="outline-primary" block onClick={() => { setExpandAll(!expandAll); }}>
+                  <Button variant="resume" block onClick={() => { setExpandAll(!expandAll); }}>
                     {expandAll ? intl.formatMessage(messages.collapseAll) : intl.formatMessage(messages.expandAll)}
                   </Button>
                 </div>
               </div>
-              <ol id="courseHome-outline" className="list-unstyled">
+              <ol id="courseHome-outline" className="list-unstyled courseHome-outline">
                 {courses[rootCourseId].sectionIds.map((sectionId) => (
                   <Section
                     key={sectionId}
@@ -182,31 +181,33 @@ const OutlineTab = ({ intl }) => {
         </div>
         {rootCourseId && (
           <div className="col col-12 col-md-4">
-            <ProctoringInfoPanel />
-            { /** Defer showing the goal widget until the ProctoringInfoPanel has resolved or has been determined as
-             disabled to avoid components bouncing around too much as screen is rendered */ }
-            {(!enableProctoredExams || proctoringPanelStatus === 'loaded') && weeklyLearningGoalEnabled && (
-              <WeeklyLearningGoalCard
-                daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
-                subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}
+            <div className="course-outline-sidebar">
+              <ProctoringInfoPanel />
+              { /** Defer showing the goal widget until the ProctoringInfoPanel has resolved or has been determined as
+               disabled to avoid components bouncing around too much as screen is rendered */ }
+              {(!enableProctoredExams || proctoringPanelStatus === 'loaded') && weeklyLearningGoalEnabled && (
+                <WeeklyLearningGoalCard
+                  daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
+                  subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}
+                />
+              )}
+              <CourseTools />
+              <UpgradeNotification
+                offer={offer}
+                verifiedMode={verifiedMode}
+                accessExpiration={accessExpiration}
+                contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
+                marketingUrl={marketingUrl}
+                upsellPageName="course_home"
+                userTimezone={userTimezone}
+                shouldDisplayBorder
+                timeOffsetMillis={timeOffsetMillis}
+                courseId={courseId}
+                org={org}
               />
-            )}
-            <CourseTools />
-            <UpgradeNotification
-              offer={offer}
-              verifiedMode={verifiedMode}
-              accessExpiration={accessExpiration}
-              contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
-              marketingUrl={marketingUrl}
-              upsellPageName="course_home"
-              userTimezone={userTimezone}
-              shouldDisplayBorder
-              timeOffsetMillis={timeOffsetMillis}
-              courseId={courseId}
-              org={org}
-            />
-            <CourseDates />
-            <CourseHandouts />
+              <CourseDates />
+              <CourseHandouts />
+            </div>
           </div>
         )}
       </div>

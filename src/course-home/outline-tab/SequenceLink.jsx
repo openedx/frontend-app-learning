@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import {
   FormattedMessage,
@@ -8,19 +7,16 @@ import {
   injectIntl,
   intlShape,
 } from '@edx/frontend-platform/i18n';
-import { faCheckCircle as fasCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { faCheckCircle as farCheckCircle } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import EffortEstimate from '../../shared/effort-estimate';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
+import { CheckSquareIcon } from '../../Icons';
 
 const SequenceLink = ({
   id,
   intl,
   courseId,
-  first,
   sequence,
 }) => {
   const {
@@ -85,26 +81,13 @@ const SequenceLink = ({
 
   return (
     <li>
-      <div className={classNames('', { 'mt-2 pt-2 border-top border-light': !first })}>
+      <div className="sequence-link">
         <div className="row w-100 m-0">
           <div className="col-auto p-0">
-            {complete ? (
-              <FontAwesomeIcon
-                icon={fasCheckCircle}
-                fixedWidth
-                className="float-left text-success mt-1"
-                aria-hidden="true"
-                title={intl.formatMessage(messages.completedAssignment)}
-              />
-            ) : (
-              <FontAwesomeIcon
-                icon={farCheckCircle}
-                fixedWidth
-                className="float-left text-gray-400 mt-1"
-                aria-hidden="true"
-                title={intl.formatMessage(messages.incompleteAssignment)}
-              />
-            )}
+            <span className={`float-left text-${complete ? 'success' : 'gray-200'}`}>
+              <span className="sr-only">{intl.formatMessage(complete ? messages.completedAssignment : messages.incompleteAssignment)}</span>
+              <CheckSquareIcon />
+            </span>
           </div>
           <div className="col-10 p-0 ml-3 text-break">
             <span className="align-middle">{displayTitle}</span>

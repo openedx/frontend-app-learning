@@ -22,8 +22,9 @@
       box-sizing: content-box;
       position: relative;
       top: 0.1em;
-      height: 1.75rem;
+      height: 2.5rem;
       margin-right: 1rem;
+
       img {
         display: block;
         height: 100%;
@@ -36,31 +37,32 @@
   }
 }
 
-.course-tabs-navigation {
-  border-bottom: solid 1px #eaeaea;
+.course-outline-tab {
 
-  .nav a,
-  .nav button {
-    &:hover {
-      background-color: $light-400;
-    }
-  }
+  .pgn_collapsible {
 
-  .nav a {
-    &:not(.active):hover {
-      background-color: $light-400;
-      border-bottom: none;
+    .collapsible-trigger {
+      border-bottom: 0;
     }
   }
 }
 
 .nav-underline-tabs {
-  margin: 0 0 -1px;
+  border: solid 1px $default-border-color;
+  border-radius: 0 0 $default-radius $default-radius;
+  background: $gray-light-400;
+  position: relative;
+
+  &.nav {
+    margin: -1px 0;
+  }
 
   .nav-link {
-    border-bottom: 4px solid transparent;
-    border-top: 4px solid transparent;
-    color: $gray-700;
+    color: $primary;
+    font-weight: $font-weight-semi-bold;
+    padding: 1.2rem 1rem;
+    min-width: 100px;
+    text-align: center;
 
     // temporary until we can remove .btn class from dropdowns
     border-left: 0;
@@ -70,9 +72,11 @@
     &:hover,
     &:focus,
     &.active {
-      font-weight: $font-weight-normal;
-      color: $primary-500;
-      border-bottom-color: $primary-500;
+      color: $secondary;
+    }
+
+    &.active {
+      font-weight: $font-weight-bold;
     }
   }
 }
@@ -94,8 +98,87 @@
 
 .sequence {
   @media (min-width: map-get($grid-breakpoints, "sm")) {
-    border: solid 1px #eaeaea;
+    border: solid 1px $default-border-color;
     border-radius: 4px;
+  }
+}
+
+.course-tabs-navigation {
+  .container-xl {
+    max-width: 1660px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.btn {
+
+  &.btn-default {
+    background: $gray-light-400;
+
+    &:focus,
+    &.focus {
+      box-shadow: 0 0 0 $btn-focus-width rgba($primary, .5);
+    }
+
+    &:hover,
+    &.hover {
+      color: $white;
+      background: $primary;
+    }
+  }
+
+  &.btn-resume {
+    background: $white;
+    font-weight: $font-weight-bold;
+    border: solid 1px $default-border-color;
+    padding: 1rem 1.8rem;
+
+    &:hover,
+    &.hover {
+      background: $gray-light-400;
+    }
+  }
+}
+
+.course-outline-sidebar {
+  @media (min-width: map-get($grid-breakpoints, "md")) {
+    padding-left: 1rem;
+    padding-top: 5.1rem;
+  }
+
+  section {
+    background: $white;
+    overflow: hidden;
+    border: solid 1px $default-border-color;
+    border-radius: $default-radius;
+
+    h2 {
+      background: $gray-light-400;
+      padding: 1rem;
+      font-size: 1.25rem;
+      border-bottom: solid 1px $default-border-color;
+    }
+
+    ul {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      margin: 0;
+
+      li {
+        font-size: 1.125rem;
+        font-weight: $font-weight-semi-bold;
+        padding: 0.8rem 1.3rem 0;
+
+        &:first-child {
+          padding-top: 0;
+        }
+      }
+    }
+  }
+
+  .course-handout-body {
+    padding: 1rem 1.3rem;
   }
 }
 
@@ -110,7 +193,7 @@
     flex-grow: 1;
     display: inline-flex;
     border-radius: 0;
-    border: solid 1px #eaeaea;
+    border: solid 1px $default-border-color;
     border-left-width: 0;
     position: relative;
     font-weight: 400;
@@ -228,13 +311,13 @@
 
   .previous-btn,
   .next-btn {
-    border: 1px solid $light-400 !important;
+    border: 1px solid $default-border-color;
     color: $gray-700;
     display: inline-flex;
     justify-content: center;
     align-items: center;
 
-    @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+    @media (max-width: (-1 + map-get($grid-breakpoints, "sm"))) {
       padding-top: 1rem;
       padding-bottom: 1rem;
     }
@@ -357,8 +440,72 @@
 }
 
 .raised-card {
-  border: 0 !important;
-  box-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .2) !important;
+  border: solid 1px $default-border-color;
+  border-radius: $default-radius;
+  background: $white;
+}
+
+.start-resume-card {
+  display: flex;
+  margin: 0 3rem;
+  overflow: hidden;
+  border: 1px solid $default-border-color;
+  border-radius: 0 0 $default-radius $default-radius;
+
+  @media (min-width: map-get($grid-breakpoints, "md")) {
+    margin-right: 0;
+  }
+
+
+  .title {
+    flex-grow: 1;
+    background: $white;
+    display: flex;
+    align-items: center;
+    padding: 1.2rem 1rem;
+    border-right: 1px solid $default-border-color;
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+  }
+
+  .btn {
+    border-radius: 0;
+    font-size: 1.5rem;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.courseHome-outline {
+  font-size: 1.25rem;
+
+  .collapsible-trigger {
+
+    span.align-middle {
+      color: $primary;
+    }
+
+    &:hover {
+      span.align-middle {
+        color: $secondary;
+      }
+    }
+  }
+
+  .sequence-link {
+    padding-left: 2rem;
+  }
+
+  .collapsible-card,
+  .collapsible-card-lg {
+    border-radius: $default-radius;
+
+    .collapsible-body {
+      padding-top: 0;
+    }
+  }
 }
 
 // Import component-specific sass files
