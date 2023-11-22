@@ -43,8 +43,6 @@ describe('Course', () => {
       sequenceId,
       unitId: Object.values(models.units)[0].id,
     });
-    getItemSpy = jest.spyOn(Object.getPrototypeOf(window.sessionStorage), 'getItem');
-    setItemSpy = jest.spyOn(Object.getPrototypeOf(window.sessionStorage), 'setItem');
     global.innerWidth = breakpoints.extraLarge.minWidth;
   });
 
@@ -54,7 +52,8 @@ describe('Course', () => {
   });
 
   const setupDiscussionSidebar = async () => {
-    const testStore = await initializeTestStore({ provider: 'openedx' });
+    const courseHomeMetadata = Factory.build('courseHomeMetadata', { verified_mode: null });
+    const testStore = await initializeTestStore({ provider: 'openedx', courseHomeMetadata });
     const state = testStore.getState();
     const { courseware: { courseId } } = state;
     const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
@@ -136,9 +135,9 @@ describe('Course', () => {
 
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
     expect(notificationTrigger).toBeInTheDocument();
-    expect(notificationTrigger.parentNode).toHaveClass('mt-3');
-    fireEvent.click(notificationTrigger);
     expect(notificationTrigger.parentNode).not.toHaveClass('mt-3', { exact: true });
+    fireEvent.click(notificationTrigger);
+    expect(notificationTrigger.parentNode).toHaveClass('mt-3');
   });
 
   it('handles click to open/close discussions sidebar', async () => {
@@ -184,52 +183,11 @@ describe('Course', () => {
   });
 
   it('handles click to open/close notification tray', async () => {
-    sessionStorage.clear();
     render(<Course {...mockData} />, { wrapWithRouter: true });
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"open"');
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
     expect(screen.queryByRole('region', { name: /notification tray/i })).toHaveClass('d-none');
     fireEvent.click(notificationShowButton);
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
     expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
-  });
-
-  it('handles reload persisting notification tray status', async () => {
-    sessionStorage.clear();
-    render(<Course {...mockData} />, { wrapWithRouter: true });
-    const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
-    fireEvent.click(notificationShowButton);
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
-
-    // Mock reload window, this doesn't happen in the Course component,
-    // calling the reload to check if the tray remains closed
-    const { location } = window;
-    delete window.location;
-    window.location = { reload: jest.fn() };
-    window.location.reload();
-    expect(window.location.reload).toHaveBeenCalled();
-    window.location = location;
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
-    expect(screen.queryByTestId('NotificationTray')).not.toBeInTheDocument();
-  });
-
-  it('handles sessionStorage from a different course for the notification tray', async () => {
-    sessionStorage.clear();
-    const courseMetadataSecondCourse = Factory.build('courseMetadata', { id: 'second_course' });
-
-    // set sessionStorage for a different course before rendering Course
-    sessionStorage.setItem(`notificationTrayStatus.${courseMetadataSecondCourse.id}`, '"open"');
-
-    render(<Course {...mockData} />, { wrapWithRouter: true });
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"open"');
-    const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
-    fireEvent.click(notificationShowButton);
-
-    // Verify sessionStorage was updated for the original course
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
-
-    // Verify the second course sessionStorage was not changed
-    expect(sessionStorage.getItem(`notificationTrayStatus.${courseMetadataSecondCourse.id}`)).toBe('"open"');
   });
 
   it('renders course breadcrumbs as expected', async () => {

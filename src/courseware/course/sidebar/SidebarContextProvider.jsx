@@ -4,7 +4,9 @@ import React, {
   useEffect, useState, useMemo, useCallback,
 } from 'react';
 
+import { useModel } from '../../../generic/model-store';
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
+
 import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 
@@ -13,6 +15,7 @@ const SidebarProvider = ({
   unitId,
   children,
 }) => {
+  const { verifiedMode } = useModel('courseHomeMeta', courseId);
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const query = new URLSearchParams(window.location.search);
@@ -22,8 +25,8 @@ const SidebarProvider = ({
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
 
   useEffect(() => {
-    setCurrentSidebar(SIDEBARS.DISCUSSIONS.ID);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // if the user hasn't purchased the course, show the notifications sidebar
+    setCurrentSidebar(verifiedMode ? SIDEBARS.NOTIFICATIONS.ID : SIDEBARS.DISCUSSIONS.ID);
   }, [unitId]);
 
   const onNotificationSeen = useCallback(() => {
