@@ -2,7 +2,7 @@ import { mockUseKeyedState } from '@edx/react-unit-test-utils';
 import { useEventListener } from '../../../../../generic/hooks';
 import { messageTypes } from '../constants';
 
-import useModalIFrameBehavior, { stateKeys, DEFAULT_HEIGHT } from './useModalIFrameData';
+import useModalIFrameData, { stateKeys, DEFAULT_HEIGHT } from './useModalIFrameData';
 
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
@@ -14,7 +14,7 @@ jest.mock('../../../../../generic/hooks', () => ({
 
 const state = mockUseKeyedState(stateKeys);
 
-describe('useModalIFrameBehavior', () => {
+describe('useModalIFrameData', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     state.mock();
@@ -28,17 +28,17 @@ describe('useModalIFrameBehavior', () => {
   };
   describe('behavior', () => {
     it('initializes isOpen to false', () => {
-      useModalIFrameBehavior();
+      useModalIFrameData();
       state.expectInitializedWith(stateKeys.isOpen, false);
     });
     it('initializes options with default height', () => {
-      useModalIFrameBehavior();
+      useModalIFrameData();
       state.expectInitializedWith(stateKeys.options, { height: DEFAULT_HEIGHT });
     });
     describe('eventListener', () => {
       const oldOptions = { some: 'old', options: 'yeah' };
       const prepareListener = () => {
-        useModalIFrameBehavior();
+        useModalIFrameData();
         expect(useEventListener).toHaveBeenCalled();
         const call = useEventListener.mock.calls[0][1];
         expect(call.prereqs).toEqual([]);
@@ -80,7 +80,7 @@ describe('useModalIFrameBehavior', () => {
   });
   describe('output', () => {
     test('returns handleModalClose callback', () => {
-      testHandleModalClose({ trigger: useModalIFrameBehavior().handleModalClose });
+      testHandleModalClose({ trigger: useModalIFrameData().handleModalClose });
     });
     it('forwards modalOptions from state values', () => {
       const modalOptions = { test: 'options' };
@@ -88,7 +88,7 @@ describe('useModalIFrameBehavior', () => {
         [stateKeys.options]: modalOptions,
         [stateKeys.isOpen]: true,
       });
-      expect(useModalIFrameBehavior().modalOptions).toEqual({
+      expect(useModalIFrameData().modalOptions).toEqual({
         ...modalOptions,
         isOpen: true,
       });
