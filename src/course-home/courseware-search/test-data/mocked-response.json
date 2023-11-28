@@ -542,6 +542,28 @@
         "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@9d5104b502f24ee89c3d2f4ce9d347cf"
       },
       "score": 0.82610154
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "some-external-reference",
+      "data": {
+        "course": "External Course",
+        "org": "edX",
+        "content": {
+          "display_name": "External Course Link Test",
+          "html_content": "This should open a new tab when following the link."
+        },
+        "content_type": "Text",
+        "id": "random-element-id",
+        "start_date": "2013-02-05T05:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": null,
+        "excerpt": "Just testing external links",
+        "url": "https://www.edx.org"
+      },
+      "score": 0.82610154
     }
   ],
   "access_denied_count": 0
