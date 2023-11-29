@@ -123,12 +123,14 @@ const Sequence = ({
   const loading = sequenceStatus === 'loading' || (sequenceStatus === 'failed' && sequenceMightBeUnit);
   if (loading) {
     if (!sequenceId) {
-      return (<div> {intl.formatMessage(messages.noContent)} </div>);
+      return (<div className="course-content sequence"> {intl.formatMessage(messages.noContent)} </div>);
     }
     return (
-      <PageLoading
-        srMessage={intl.formatMessage(messages.loadingSequence)}
-      />
+      <div className="course-content sequence">
+        <PageLoading
+          srMessage={intl.formatMessage(messages.loadingSequence)}
+        />
+      </div>
     );
   }
 
@@ -145,7 +147,7 @@ const Sequence = ({
 
   const defaultContent = (
     <div className="sequence-container d-inline-flex flex-row">
-      <div className={classNames('sequence w-100', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
+      <div className={classNames('sequence w-100 course-content', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
         <SequenceNavigation
           sequenceId={sequenceId}
           unitId={unitId}
@@ -174,22 +176,22 @@ const Sequence = ({
             unitId={unitId}
             unitLoadedHandler={handleUnitLoaded}
           />
-          {unitHasLoaded && (
-          <UnitNavigation
-            sequenceId={sequenceId}
-            unitId={unitId}
-            onClickPrevious={() => {
-              logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-              handlePrevious();
-            }}
-            onClickNext={() => {
-              logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-              handleNext();
-            }}
-            goToCourseExitPage={() => goToCourseExitPage()}
-          />
-          )}
         </div>
+        {unitHasLoaded && (
+        <UnitNavigation
+          sequenceId={sequenceId}
+          unitId={unitId}
+          onClickPrevious={() => {
+            logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
+            handlePrevious();
+          }}
+          onClickNext={() => {
+            logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+            handleNext();
+          }}
+          goToCourseExitPage={() => goToCourseExitPage()}
+        />
+        )}
       </div>
       <Sidebar />
     </div>

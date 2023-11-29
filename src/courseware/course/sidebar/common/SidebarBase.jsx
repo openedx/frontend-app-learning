@@ -36,7 +36,7 @@ const SidebarBase = ({
 
   return (
     <section
-      className={classNames('ml-0 ml-lg-4 border border-light-400 rounded-sm h-auto align-top', {
+      className={classNames('ml-0 ml-lg-4 border border-light-400 h-auto align-top course-content-sidebar', {
         'bg-white m-0 border-0 fixed-top vh-100 rounded-0': shouldDisplayFullScreen,
         'min-vh-100': !shouldDisplayFullScreen,
         'd-none': currentSidebar !== sidebarId,

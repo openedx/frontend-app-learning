@@ -35,14 +35,9 @@ const GradeBar = ({ intl, passingGrade }) => {
       <div className="sr-only">{intl.formatMessage(messages.courseGradeBarAltText, { currentGrade, passingGrade })}</div>
       <svg width="100%" height="100px" className="grade-bar" aria-hidden="true">
         <g style={{ transform: 'translateY(2.61em)' }}>
-          <rect className="grade-bar__base" width="100%" />
-          <rect className="grade-bar--passing" width={`${passingGrade}%`} style={adjustedRtlStyle(passingGrade)} />
-          <rect className={`grade-bar--current-${isPassing ? 'passing' : 'non-passing'}`} width={`${currentGrade}%`} style={adjustedRtlStyle(currentGrade)} />
-
-          {/* Start divider */}
-          <rect className="grade-bar__divider" />
-          {/* End divider */}
-          <rect className="grade-bar__divider" x="99.7%" />
+          <rect rx="4" ry="4" className="grade-bar__base" width="100%" />
+          <rect rx="4" ry="4" className="grade-bar--passing" width={`${passingGrade}%`} style={adjustedRtlStyle(passingGrade)} />
+          <rect rx="4" ry="4" className={`grade-bar--current-${isPassing ? 'passing' : 'non-passing'}`} width={`${currentGrade}%`} style={adjustedRtlStyle(currentGrade)} />
         </g>
         <PassingGradeTooltip passingGrade={passingGrade} tooltipClassName={lockedTooltipClassName} />
         <CurrentGradeTooltip tooltipClassName={lockedTooltipClassName} />

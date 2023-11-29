@@ -36,19 +36,19 @@ const Day = ({
   const { color, badges } = getBadgeListAndColor(date, intl, null, items);
 
   return (
-    <li className="dates-day pb-4" data-testid="dates-day">
+    <li className="dates-day pb-5" data-testid="dates-day">
       {/* Top Line */}
-      {!first && <div className="dates-line-top border-1 border-left border-gray-900 bg-gray-900" />}
+      {!first && <div className="dates-line-top border-1 border-left" />}
 
       {/* Dot */}
-      <div className={classNames(color, 'dates-dot border border-gray-900')} />
+      <div className={classNames(color, 'dates-dot border')} />
 
       {/* Bottom Line */}
       {!last && <div className="dates-line-bottom border-1 border-left border-gray-900 bg-gray-900" />}
 
       {/* Content */}
-      <div className="d-inline-block ml-3 pl-2">
-        <div className="row w-100 m-0 mb-1 align-items-center text-primary-700" data-testid="dates-header">
+      <div className="d-inline-block ml-3 pl-4">
+        <div className="row w-100 m-0 align-items-center" data-testid="dates-header">
           <FormattedDate
             value={date}
             day="numeric"
@@ -66,12 +66,12 @@ const Day = ({
           const showLink = item.link && isLearnerAssignment(item);
           const title = showLink ? (<u><a href={item.link} className="text-reset">{item.title}</a></u>) : item.title;
           const available = item.learnerHasAccess && (item.link || !isLearnerAssignment(item));
-          const textColor = available ? 'text-primary-700' : 'text-gray-500';
+          const textColor = available ? '' : 'text-gray-500';
 
           return (
-            <div key={item.title + item.date} className={classNames(textColor, 'small pb-1')} data-testid="dates-item">
+            <div key={item.title + item.date} className={classNames(textColor, 'pb-1')} data-testid="dates-item">
               <div>
-                <span className="small">
+                <span>
                   <span className="font-weight-bold">{item.assignmentType && `${item.assignmentType}: `}{title}</span>
                   {showDueDateTime && (
                     <span>

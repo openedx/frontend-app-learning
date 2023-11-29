@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from '@edx/paragon';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { Button, Icon } from '@edx/paragon';
+import { ArrowForwardIos, ArrowBackIos } from '@edx/paragon/icons';
+
 import {
   injectIntl, intlShape, isRtl, getLocale,
 } from '@edx/frontend-platform/i18n';
@@ -30,10 +30,10 @@ const UnitNavigation = ({
     const buttonOnClick = isLastUnit ? goToCourseExitPage : onClickNext;
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
-    const nextArrow = isRtl(getLocale()) ? faChevronLeft : faChevronRight;
+    const nextArrow = isRtl(getLocale()) ? ArrowBackIos : ArrowForwardIos;
     return (
       <Button
-        variant="outline-primary"
+        variant="outline-default"
         className="next-button d-flex align-items-center justify-content-center"
         onClick={buttonOnClick}
         disabled={disabled}
@@ -41,21 +41,21 @@ const UnitNavigation = ({
         <UnitNavigationEffortEstimate sequenceId={sequenceId} unitId={unitId}>
           {buttonText}
         </UnitNavigationEffortEstimate>
-        <FontAwesomeIcon icon={nextArrow} className="ml-2" size="sm" />
+        <Icon src={nextArrow} className="ml-3" style={{ height: '18px', width: '18px' }} />
       </Button>
     );
   };
 
-  const prevArrow = isRtl(getLocale()) ? faChevronRight : faChevronLeft;
+  const prevArrow = isRtl(getLocale()) ? ArrowForwardIos : ArrowBackIos;
   return (
     <div className="unit-navigation d-flex">
       <Button
-        variant="outline-secondary"
+        variant="outline-default"
         className="previous-button mr-2 d-flex align-items-center justify-content-center"
         disabled={isFirstUnit}
         onClick={onClickPrevious}
       >
-        <FontAwesomeIcon icon={prevArrow} className="mr-2" size="sm" />
+        <Icon src={prevArrow} className="mr-3" style={{ height: '18px', width: '18px' }} />
         {intl.formatMessage(messages.previousButton)}
       </Button>
       {renderNextButton()}

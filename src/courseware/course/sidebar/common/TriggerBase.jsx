@@ -8,7 +8,7 @@ const SidebarTriggerBase = ({
   children,
 }) => (
   <button
-    className="border border-light-400 bg-transparent align-items-center align-content-center d-flex"
+    className="bg-transparent align-items-center align-content-center d-flex sidebar-trigger-button"
     type="button"
     onClick={onClick}
     aria-label={ariaLabel}

@@ -11,7 +11,7 @@ import messages from '../messages';
 const ProblemScoreDrawer = ({ intl, problemScores, subsection }) => {
   const isLocaleRtl = isRtl(getLocale());
   return (
-    <span className="row w-100 m-0 x-small ml-4 pt-2 pl-1 text-gray-700 flex-nowrap">
+    <span className="row w-100 m-0 ml-4 pt-2 pl-1 text-gray-700 flex-nowrap">
       <span id="problem-score-label" className="col-auto p-0">{intl.formatMessage(messages.problemScoreLabel)}</span>
       <div className={classNames('col', 'p-0', { 'greyed-out': !subsection.learnerHasAccess })}>
         <ul className="list-unstyled row w-100 m-0" aria-labelledby="problem-score-label">

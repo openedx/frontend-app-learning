@@ -42,8 +42,8 @@ const DatesTab = ({ intl }) => {
   };
 
   return (
-    <>
-      <div role="heading" aria-level="1" className="h2 my-3">
+    <div className="raised-card dates-tab">
+      <div role="heading" aria-level="1" className="heading mb-3">
         {intl.formatMessage(messages.title)}
       </div>
       {isSelfPaced && hasDeadlines && (
@@ -55,7 +55,7 @@ const DatesTab = ({ intl }) => {
         </>
       )}
       <Timeline />
-    </>
+    </div>
   );
 };
 

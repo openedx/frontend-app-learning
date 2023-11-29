@@ -97,13 +97,33 @@
 }
 
 .sequence {
-  @media (min-width: map-get($grid-breakpoints, "sm")) {
-    border: solid 1px $default-border-color;
-    border-radius: 4px;
+  border: solid 1px $default-border-color;
+}
+
+.breadcrumb {
+  font-weight: $font-weight-semi-bold;
+
+  li {
+
+    &:last-of-type {
+
+      a {
+        color: $secondary;
+      }
+    }
   }
 }
 
+.course-breadcrumbs {
+  border: solid 1px $default-border-color;
+  border-radius: $default-radius $default-radius 0 0;
+  margin-bottom: -1px;
+  background: $gray-light-400;
+}
+
 .course-tabs-navigation {
+  margin-bottom: 3rem;
+
   .container-xl {
     max-width: 1660px;
     padding-left: 2rem;
@@ -128,7 +148,8 @@
     }
   }
 
-  &.btn-resume {
+  &.btn-resume,
+  &.btn-outline-default {
     background: $white;
     font-weight: $font-weight-bold;
     border: solid 1px $default-border-color;
@@ -141,10 +162,9 @@
   }
 }
 
-.course-outline-sidebar {
+.course-sidebar {
   @media (min-width: map-get($grid-breakpoints, "md")) {
     padding-left: 1rem;
-    padding-top: 5.1rem;
   }
 
   section {
@@ -153,14 +173,15 @@
     border: solid 1px $default-border-color;
     border-radius: $default-radius;
 
-    h2 {
+    h2,
+    .h2 {
       background: $gray-light-400;
       padding: 1rem;
       font-size: 1.25rem;
       border-bottom: solid 1px $default-border-color;
     }
 
-    ul {
+    .list-unstyled {
       padding-top: 1rem;
       padding-bottom: 1rem;
       margin: 0;
@@ -175,6 +196,34 @@
         }
       }
     }
+
+    &.related-links {
+
+      a {
+        color: $secondary;
+        font-size: 1.25rem;
+        font-weight: $font-weight-semi-bold;
+
+        &:hover {
+          color: $primary;
+        }
+      }
+
+      p {
+        color: $black;
+        margin-bottom: 2rem;
+      }
+
+      ul {
+        color: $secondary;
+
+        li {
+          font-weight: $font-weight-normal;
+          font-size: 1rem;
+          padding: 0;
+        }
+      }
+    }
   }
 
   .course-handout-body {
@@ -182,11 +231,15 @@
   }
 }
 
+.progress-content {
+  color: $black;
+}
+
 .sequence-navigation {
   display: flex;
 
   @media (min-width: map-get($grid-breakpoints, "sm")) {
-    margin: -1px -1px 0;
+    margin: -1px 0 0;
   }
 
   .btn {
@@ -196,18 +249,20 @@
     border: solid 1px $default-border-color;
     border-left-width: 0;
     position: relative;
-    font-weight: 400;
+    font-size: 1.125rem;
+    font-weight: $font-weight-semi-bold;
     padding: 0 0.375rem;
-    height: 3rem;
+    height: 4.2rem;
     justify-content: center;
     align-items: center;
-    color: $gray-500;
+    color: $primary;
     white-space: nowrap;
 
     &:hover,
     &:focus,
     &.active {
-      color: $gray-700;
+      color: $secondary;
+      background: $gray-light-400;
     }
 
     &:focus {
@@ -221,8 +276,8 @@
         bottom: -1px;
         left: 0;
         right: 0;
-        height: 2px;
-        background: $primary;
+        height: 3px;
+        background: $secondary;
       }
     }
 
@@ -251,6 +306,7 @@
   }
 
   .sequence-navigation-tabs {
+
     .btn {
       flex-basis: 100%;
       min-width: 2rem;
@@ -267,6 +323,7 @@
       align-items: center;
       justify-content: flex-start;
       border-right: 0;
+      color: $primary;
 
       & + .btn {
         border-top: 0;
@@ -279,12 +336,14 @@
         min-width: 0;
         margin: 0 1rem;
         text-overflow: ellipsis;
-        color: $gray-700;
+        color: $primary;
       }
 
       &.active {
-        .unit-icon {
-          color: $primary-500;
+
+        .unit-icon,
+        .unit-title {
+          color: $secondary;
         }
 
         &:after {
@@ -296,15 +355,15 @@
           right: auto;
           width: 2px;
           height: auto;
-          background: $primary;
+          background: $secondary;
         }
       }
     }
 
     .dropdown-item {
       &.active {
-        // This is un-doing the default react-bootstrap styling for active dropdown-item elements.
-        background-color: transparent;
+        color: $secondary;
+        background: $gray-light-400;
       }
     }
   }
@@ -312,10 +371,16 @@
   .previous-btn,
   .next-btn {
     border: 1px solid $default-border-color;
-    color: $gray-700;
+    color: $primary;
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    font-weight: $font-weight-semi-bold;
+    font-size: 1.25rem;
+
+    .pgn__icon {
+      color: $secondary;
+    }
 
     @media (max-width: (-1 + map-get($grid-breakpoints, "sm"))) {
       padding-top: 1rem;
@@ -335,7 +400,6 @@
 
     @media (min-width: map-get($grid-breakpoints, "sm")) {
       border-left-width: 1px;
-      border-top-left-radius: 4px;
     }
   }
 
@@ -344,15 +408,13 @@
     border-right-width: 0;
 
     @media (min-width: map-get($grid-breakpoints, "sm")) {
-      border-top-right-radius: 4px;
       border-right-width: 1px;
     }
   }
 }
 
 .unit-container {
-  padding: 0 $grid-gutter-width 2rem;
-  max-width: 1024px;
+  padding: 2rem $grid-gutter-width;
   margin-left: auto;
   margin-right: auto;
 
@@ -376,16 +438,46 @@
   display: block;
 }
 
+.course-content,
+.course-content-sidebar {
+  background: $white;
+  border-radius: 0 0 $default-radius $default-radius;
+}
+
+.sidebar-trigger-button {
+  border: 0;
+  padding: 1rem .75rem;
+  border-left: 1px solid $default-border-color;
+  color: $primary;
+
+  .is-active & {
+    color: $secondary;
+  }
+}
+
 .unit-navigation {
   display: flex;
-  justify-content: center;
-  max-width: 640px;
-  margin: 0 auto;
+  justify-content: space-between;
+  overflow: hidden;
+  border-top: 1px solid $default-border-color;
+  border-radius: 0 0 $default-radius $default-radius;
 
   .previous-button,
   .next-button {
     white-space: nowrap;
-    border-radius: 4px;
+    border-radius: 0;
+    border: 0;
+    font-weight: $font-weight-semi-bold;
+    height: 4rem;
+    font-size: 1.25rem;
+
+    &:disabled {
+      background: transparent;
+    }
+
+    .pgn__icon {
+      color: $secondary;
+    }
 
     &:focus:before {
       border-radius: 6px;
@@ -393,11 +485,10 @@
   }
 
   .next-button {
-    flex-basis: 75%;
+    border-left: 1px solid $default-border-color;
   }
-
   .previous-button {
-    flex-basis: 25%;
+    border-right: 1px solid $default-border-color;
   }
 }
 
@@ -445,6 +536,70 @@
   background: $white;
 }
 
+.progress-tab {
+
+  h1, h2, h3, h4,
+  .h1, .h2, .h3, .h4 {
+    color: $black;
+    font-weight: $font-weight-semi-bold;
+  }
+
+  .raised-card {
+    overflow: hidden;
+  }
+
+  p {
+    > a[href] {
+
+      &.pgn__hyperlink {
+        color: $secondary;
+        text-decoration: none;
+
+        &:hover {
+          color: $primary;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  .pgn__data-table-wrapper {
+    font-size: 1.125rem;
+    box-shadow: none;
+    background: none;
+
+    .pgn__data-table {
+      border-color: $border-color;
+
+      th {
+        background: $body-bg;
+      }
+
+      &.is-striped {
+
+        tr {
+          border: solid 1px $default-border-color;
+
+          &:nth-child(even) {
+            background: none;
+          }
+        }
+      }
+    }
+  }
+
+  .course-grade-footer {
+    background: $body-bg;
+    border-top: solid 1px $default-border-color;
+  }
+
+  .pgn__data-table-footer {
+    background: $body-bg;
+    border: solid 1px $default-border-color;
+    border-top: 0;
+  }
+}
+
 .start-resume-card {
   display: flex;
   margin: 0 3rem;
@@ -455,7 +610,6 @@
   @media (min-width: map-get($grid-breakpoints, "md")) {
     margin-right: 0;
   }
-
 
   .title {
     flex-grow: 1;

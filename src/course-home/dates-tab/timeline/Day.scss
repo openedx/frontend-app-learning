@@ -1,9 +1,20 @@
-$dot-radius: 0.3rem;
+$dot-radius: 0.45rem;
 $dot-size: $dot-radius * 2;
 $offset: $dot-radius * 1.5;
 
 .dates-day {
   position: relative;
+  font-size: 1.125rem;
+}
+
+.dates-tab {
+  color: $black;
+  padding: 1.7rem 2.2rem;
+
+  .heading {
+    font-size: 1.5rem;
+    font-weight: $font-weight-bold;
+  }
 }
 
 .dates-line-top {

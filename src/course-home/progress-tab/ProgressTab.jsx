@@ -35,13 +35,13 @@ const ProgressTab = () => {
   return (
     <>
       <ProgressHeader />
-      <div className="row w-100 m-0">
+      <div className="row w-100 m-0 progress-tab">
         {/* Main body */}
-        <div className="col-12 col-md-8 p-0">
+        <div className="col-12 col-md-8 p-0 progress-content">
           <CourseCompletion />
           {!wideScreen && <CertificateStatus />}
           <CourseGrade />
-          <div className={`grades my-4 p-4 rounded raised-card ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
+          <div className={`grades my-4 p-4 px-md-5 raised-card ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
             <GradeSummary />
             <DetailedGrades />
           </div>
@@ -49,8 +49,10 @@ const ProgressTab = () => {
 
         {/* Side panel */}
         <div className="col-12 col-md-4 p-0 px-md-4">
-          {wideScreen && <CertificateStatus />}
-          <RelatedLinks />
+          <div className="course-sidebar">
+            {wideScreen && <CertificateStatus />}
+            <RelatedLinks />
+          </div>
         </div>
       </div>
     </>

@@ -34,9 +34,9 @@ const RelatedLinks = ({ intl }) => {
   const datesTabUrl = datesTab && datesTab.url;
 
   return (
-    <section className="mb-4 x-small">
-      <h3 className="h4">{intl.formatMessage(messages.relatedLinks)}</h3>
-      <ul className="pl-4">
+    <section className="mb-4 x-small related-links">
+      <h3 className="h2">{intl.formatMessage(messages.relatedLinks)}</h3>
+      <ul className="pl-5 pr-2">
         {datesTabUrl && (
         <li>
           <Hyperlink destination={datesTabUrl} onClick={() => logLinkClicked('dates')}>

@@ -6,7 +6,7 @@ import { Button } from '@edx/paragon';
 
 import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
-import BookmarkFilledIcon from '../../bookmark/BookmarkFilledIcon';
+import { BookmarkIcon } from '../../../../Icons';
 
 const UnitButton = ({
   onClick,
@@ -36,11 +36,13 @@ const UnitButton = ({
     >
       <UnitIcon type={contentType} />
       {showTitle && <span className="unit-title">{title}</span>}
-      {showCompletion && complete ? <CompleteIcon size="sm" className="text-success ml-2" /> : null}
+      {showCompletion && complete ? <CompleteIcon size="sm" className="text-success ml-2 d-none" /> : null}
       {bookmarked ? (
-        <BookmarkFilledIcon
+        <BookmarkIcon
           className="text-primary small position-absolute"
-          style={{ top: '-3px', right: '5px' }}
+          style={{
+            top: '-6px', right: '5px', height: '17px', width: '17px',
+          }}
         />
       ) : null}
     </Button>

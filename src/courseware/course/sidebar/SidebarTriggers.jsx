@@ -15,8 +15,7 @@ const SidebarTriggers = () => {
         const isActive = sidebarId === currentSidebar;
         return (
           <div
-            className={classNames('mt-3', { 'border-primary-700': isActive })}
-            style={{ borderBottom: isActive ? '2px solid' : null }}
+            className={classNames('sidebar-trigger-container', { 'is-active': isActive })}
             key={sidebarId}
           >
             <Trigger onClick={() => toggleSidebar(sidebarId)} key={sidebarId} />

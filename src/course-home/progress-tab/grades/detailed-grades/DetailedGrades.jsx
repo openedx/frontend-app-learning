@@ -9,6 +9,7 @@ import { Icon, Hyperlink } from '@edx/paragon';
 import { useModel } from '../../../../generic/model-store';
 
 import DetailedGradesTable from './DetailedGradesTable';
+import { InfoIcon } from '../../../../Icons';
 
 import messages from '../messages';
 
@@ -42,7 +43,7 @@ const DetailedGrades = ({ intl }) => {
 
   const outlineLink = overviewTabUrl && (
     <Hyperlink
-      variant="muted"
+      variant="secondary"
       isInline
       destination={overviewTabUrl}
       onClick={logOutlineLinkClick}
@@ -54,9 +55,9 @@ const DetailedGrades = ({ intl }) => {
 
   return (
     <section className="text-dark-700">
-      <h3 className="h4 mb-3">{intl.formatMessage(messages.detailedGrades)}</h3>
+      <h3 className="h2 mb-3">{intl.formatMessage(messages.detailedGrades)}</h3>
       {gradesFeatureIsPartiallyLocked && (
-        <div className="mb-3 small ml-0 d-inline">
+        <div className="mb-3 ml-0 d-inline">
           <Icon className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" />
           {intl.formatMessage(messages.gradeSummaryLimitedAccessExplanation)}
         </div>
@@ -65,10 +66,11 @@ const DetailedGrades = ({ intl }) => {
         <DetailedGradesTable />
       )}
       {!hasSectionScores && (
-        <p className="small">{intl.formatMessage(messages.detailedGradesEmpty)}</p>
+        <p>{intl.formatMessage(messages.detailedGradesEmpty)}</p>
       )}
       {overviewTabUrl && (
-        <p className="x-small m-0">
+        <p className="m-0 small">
+          <InfoIcon className="mr-2 text-secondary" />
           <FormattedMessage
             id="progress.ungradedAlert"
             defaultMessage="For progress on ungraded aspects of the course, view your {outlineLink}."

@@ -2,34 +2,34 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { SelectMenu } from '@edx/paragon';
 import { Link } from 'react-router-dom';
 import { useModel, useModels } from '../../generic/model-store';
 import JumpNavMenuItem from './JumpNavMenuItem';
+import { HomeIcon } from '../../Icons';
 
 const CourseBreadcrumb = ({
   content, withSeparator, courseId, sequenceId, unitId, isStaff,
 }) => {
   const defaultContent = content.filter(destination => destination.default)[0] || { id: courseId, label: '', sequences: [] };
+  const ellipsis = {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  };
   return (
     <>
       {withSeparator && (
         <li className="col-auto p-0 mx-2 text-primary-500 text-truncate text-nowrap" role="presentation" aria-hidden>/</li>
       )}
 
-      <li style={{
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-      }}
+      <li
+        style={(getConfig().ENABLE_JUMPNAV !== 'true' || content.length < 2 || !isStaff) ? ellipsis : null}
       >
         { getConfig().ENABLE_JUMPNAV !== 'true' || content.length < 2 || !isStaff
           ? (
             <Link
-              className="text-primary-500"
               to={defaultContent.sequences.length
                 ? `/course/${courseId}/${defaultContent.sequences[0].id}`
                 : `/course/${courseId}/${defaultContent.id}`}
@@ -51,7 +51,6 @@ const CourseBreadcrumb = ({
               ))}
             </SelectMenu>
           )}
-
       </li>
     </>
   );
@@ -123,14 +122,14 @@ const CourseBreadcrumbs = ({
   }, [courseStatus, sequenceStatus, allSequencesInSections]);
 
   return (
-    <nav aria-label="breadcrumb" className="my-4 d-inline-block col-sm-10">
-      <ol className="list-unstyled d-flex  flex-nowrap align-items-center m-0">
+    <nav aria-label="breadcrumb" className="d-inline-block col-sm-10 breadcrumb">
+      <ol className="list-unstyled d-flex flex-nowrap align-items-center m-0 px-4 py-3">
         <li className="list-unstyled col-auto m-0 p-0">
           <Link
-            className="flex-shrink-0 text-primary"
+            className="flex-shrink-0"
             to={`/course/${courseId}/home`}
           >
-            <FontAwesomeIcon icon={faHome} className="mr-2" />
+            <HomeIcon className="mr-3 align-top" />
             <FormattedMessage
               id="learn.breadcrumb.navigation.course.home"
               description="The course home link in breadcrumbs nav"

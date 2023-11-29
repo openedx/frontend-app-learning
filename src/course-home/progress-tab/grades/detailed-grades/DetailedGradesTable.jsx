@@ -47,14 +47,14 @@ const DetailedGradesTable = ({ intl }) => {
               {
                 Header: chapter.displayName,
                 accessor: 'subsectionTitle',
-                headerClassName: 'h5 mb-0',
+                headerClassName: 'mb-0',
                 cellClassName: 'mw-100',
               },
               {
                 Header: `${intl.formatMessage(messages.score)}`,
                 accessor: 'score',
-                headerClassName: 'justify-content-end h5 mb-0',
-                cellClassName: 'align-top text-right small',
+                headerClassName: 'justify-content-end mb-0',
+                cellClassName: 'align-top text-right font-weight-semi-bold text-secondary',
               },
             ]}
           >

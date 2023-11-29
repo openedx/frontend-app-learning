@@ -74,9 +74,9 @@ const GradeSummaryTable = ({ intl, setAllOfSomeAssignmentTypeIsLocked }) => {
       type: {
         footnoteId, footnoteMarker, type: assignment.type, locked,
       },
-      weight: { weight: `${(assignment.weight * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
-      grade: { grade: `${(assignment.averageGrade * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
-      weightedGrade: { weightedGrade: `${(assignment.weightedGrade * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
+      weight: { weight: `${(assignment.weight * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''} %`, locked },
+      grade: { grade: `${(assignment.averageGrade * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''} %`, locked },
+      weightedGrade: { weightedGrade: `${(assignment.weightedGrade * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''} %`, locked },
     };
   });
   const getAssignmentTypeCell = (value) => (
@@ -100,28 +100,29 @@ const GradeSummaryTable = ({ intl, setAllOfSomeAssignmentTypeIsLocked }) => {
             Header: `${intl.formatMessage(messages.assignmentType)}`,
             accessor: 'type',
             Cell: ({ value }) => getAssignmentTypeCell(value),
-            headerClassName: 'h5 mb-0',
+            headerClassName: 'mb-0',
           },
           {
             Header: `${intl.formatMessage(messages.weight)}`,
             accessor: 'weight',
-            headerClassName: 'justify-content-end h5 mb-0',
+            headerClassName: 'justify-content-end mb-0',
             Cell: ({ value }) => getCell(value.locked, value.weight),
-            cellClassName: 'text-right small',
+            cellClassName: 'text-right',
           },
           {
             Header: `${intl.formatMessage(messages.grade)}`,
             accessor: 'grade',
-            headerClassName: 'justify-content-end h5 mb-0',
+            headerClassName: 'justify-content-end mb-0',
             Cell: ({ value }) => getCell(value.locked, value.grade),
-            cellClassName: 'text-right small',
+            cellClassName: 'text-right',
           },
           {
             Header: `${intl.formatMessage(messages.weightedGrade)}`,
             accessor: 'weightedGrade',
-            headerClassName: 'justify-content-end h5 mb-0 text-right',
+            headerClassName: 'justify-content-end mb-0 text-right',
             Cell: ({ value }) => getCell(value.locked, value.weightedGrade),
-            cellClassName: 'text-right font-weight-bold small',
+            cellClassName: 'text-right font-weight-semi-bold text-secondary',
+            footerClassName: 'text-secondary',
           },
         ]}
       >

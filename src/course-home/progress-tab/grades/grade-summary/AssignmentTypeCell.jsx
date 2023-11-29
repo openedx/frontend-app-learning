@@ -21,7 +21,7 @@ const AssignmentTypeCell = ({
   const lockedIcon = locked ? <Icon id={`assignmentTypeBlockedIcon${assignmentType}`} aria-label={intl.formatMessage(messages.noAccessToAssignmentType, { assignmentType })} className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" /> : '';
 
   return (
-    <div className="d-flex small">
+    <div className="d-flex">
       <div className="d-flex">{lockedIcon}</div>
       <div>
         {assignmentType}&nbsp;
@@ -29,7 +29,7 @@ const AssignmentTypeCell = ({
           <sup>
             <a
               id={`${footnoteId}-ref`}
-              className="muted-link"
+              className="link"
               href={`#${footnoteId}-footnote`}
               aria-describedby="grade-summary-footnote-label"
               tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}

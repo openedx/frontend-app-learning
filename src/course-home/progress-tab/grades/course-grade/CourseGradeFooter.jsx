@@ -3,11 +3,11 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { CheckCircle, WarningFilled } from '@edx/paragon/icons';
-import { breakpoints, Icon, useWindowSize } from '@edx/paragon';
+import { breakpoints, useWindowSize } from '@edx/paragon';
 import { useModel } from '../../../../generic/model-store';
 
 import GradeRangeTooltip from './GradeRangeTooltip';
+import { CheckSquareIcon, InfoIcon } from '../../../../Icons';
 import messages from '../messages';
 
 const CourseGradeFooter = ({ intl, passingGrade }) => {
@@ -49,17 +49,17 @@ const CourseGradeFooter = ({ intl, passingGrade }) => {
     }
   }
 
-  const icon = isPassing ? <Icon src={CheckCircle} className="text-success-300 d-inline-flex align-bottom" />
-    : <Icon src={WarningFilled} className="d-inline-flex align-bottom" />;
+  const icon = isPassing ? <CheckSquareIcon className="text-success-500 d-inline-flex" />
+    : <InfoIcon className="text-secondary d-inline-flex" />;
 
   return (
-    <div className={`row w-100 m-0 px-4 py-3 py-md-4 rounded-bottom ${isPassing ? 'bg-success-100' : 'bg-warning-100'}`}>
+    <div className={`row w-100 m-0 py-3 px-md-5 rounded-bottom course-grade-footer ${isPassing ? 'bg-suces-100' : 'bg-warnings-100'}`}>
       <div className="col-auto p-0">
         {icon}
       </div>
       <div className="col-11 pl-2 px-0">
         {!wideScreen && (
-          <span className="h5 align-bottom">
+          <span className="h5 font-weight-normal">
             {footerText}
             {hasLetterGrades && (
               <span style={{ whiteSpace: 'nowrap' }}>
@@ -70,7 +70,7 @@ const CourseGradeFooter = ({ intl, passingGrade }) => {
           </span>
         )}
         {wideScreen && (
-          <span className="h4 m-0 align-bottom">
+          <span className="h4 font-weight-normal m-0">
             {footerText}
             {hasLetterGrades && (
               <span style={{ whiteSpace: 'nowrap' }}>

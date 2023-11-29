@@ -29,7 +29,7 @@ const CourseDates = ({
 
   return (
     <section className="mb-4">
-      <div id="courseHome-dates">
+      <div id="courseHome-dates" className="pb-3">
         <h2 className="h4">{intl.formatMessage(messages.dates)}</h2>
         <ol className="list-unstyled">
           {courseDateBlocks.map((courseDateBlock) => (
@@ -40,7 +40,7 @@ const CourseDates = ({
             />
           ))}
         </ol>
-        <a className="font-weight-bold ml-4 pl-1 small" href={datesTabLink}>
+        <a className="font-weight-semi-bold ml-4 pl-1 small" href={datesTabLink}>
           {intl.formatMessage(messages.allDates)}
         </a>
       </div>

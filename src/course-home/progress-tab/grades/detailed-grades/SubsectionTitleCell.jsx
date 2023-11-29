@@ -7,12 +7,13 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Collapsible, Icon, Row } from '@edx/paragon';
 import {
-  ArrowDropDown, ArrowDropUp, Blocked, Info,
+  Blocked, Info,
 } from '@edx/paragon/icons';
 
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 import ProblemScoreDrawer from './ProblemScoreDrawer';
+import { PolygonDownIcon, PolygonUpIcon } from '../../../../Icons';
 
 const SubsectionTitleCell = ({ intl, subsection }) => {
   const {
@@ -44,16 +45,16 @@ const SubsectionTitleCell = ({ intl, subsection }) => {
 
   return (
     <Collapsible.Advanced>
-      <Row className="w-100 m-0">
+      <Row className="w-100 m-0 pl-md-4">
         <Collapsible.Trigger
           className="mr-1 position-absolute"
           aria-label={intl.formatMessage(messages.problemScoreToggleAltText, { subsectionTitle: displayName })}
           tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
         >
-          <Collapsible.Visible whenClosed><Icon src={ArrowDropDown} /></Collapsible.Visible>
-          <Collapsible.Visible whenOpen><Icon src={ArrowDropUp} /></Collapsible.Visible>
+          <Collapsible.Visible whenClosed><PolygonDownIcon /></Collapsible.Visible>
+          <Collapsible.Visible whenOpen><PolygonUpIcon /></Collapsible.Visible>
         </Collapsible.Trigger>
-        <span className="small d-inline ml-4 pl-1">
+        <span className="d-inline ml-4 pl-1">
           {gradesFeatureIsFullyLocked || subsection.learnerHasAccess ? ''
             : (
               <Icon
@@ -68,7 +69,7 @@ const SubsectionTitleCell = ({ intl, subsection }) => {
           {url ? (
             <a
               href={url}
-              className="muted-link small"
+              className="link"
               onClick={logSubsectionClicked}
               tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
               aria-labelledby={`detailedGradesBlockedIcon${subsection.blockKey}`}
@@ -76,7 +77,7 @@ const SubsectionTitleCell = ({ intl, subsection }) => {
               {displayName}
             </a>
           ) : (
-            <span className="greyed-out small">{displayName}</span>
+            <span className="greyed-out">{displayName}</span>
           )}
         </span>
       </Row>

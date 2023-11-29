@@ -1,14 +1,14 @@
 .grade-bar {
   rect {
-    height: 6px;
+    height: 8px;
   }
 
   .grade-bar__base {
-    fill: $light-300;
+    fill: $border-color;
   }
 
   .grade-bar__divider {
-    fill: $primary-500;
+    fill: none;
     width: 1px;
   }
 
@@ -21,12 +21,19 @@
   }
 
   .grade-bar--current-non-passing {
-    fill: $accent-b;
+    fill: $secondary;
   }
 }
 
 .arrow {
   margin: 0 !important;
+}
+
+.grade-popover {
+
+  .popover-body {
+    font-size: 1.125rem;
+  }
 }
 
 #minimum-grade-tooltip {
@@ -45,8 +52,8 @@
 
 #non-passing-grade-tooltip {
   .arrow::after {
-    border-top-color: $accent-b;
+    border-top-color: $secondary;
   }
 
-  background: $accent-b;
+  background: $secondary;
 }

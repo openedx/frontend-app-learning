@@ -32,7 +32,7 @@ const CompletionDonutChart = ({ intl }) => {
 
   return (
     <>
-      <svg role="img" width="50%" height="100%" viewBox="0 0 42 42" className="donut" style={{ maxWidth: '178px' }} aria-hidden="true">
+      <svg role="img" width="80%" height="100%" viewBox="0 0 42 42" className="donut" style={{ maxWidth: '178px' }} aria-hidden="true">
         {/* The radius (or "r" attribute) is based off of a circumference of 100 in order to simplify percentage
             calculations. The subsequent stroke-dasharray values found in each segment should add up to equal 100
             in order to wrap around the circle once. */}

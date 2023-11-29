@@ -111,3 +111,35 @@ export const InfoIcon = (props) => (
     />
   </svg>
 );
+
+export const PolygonDownIcon = (props) => (
+  <svg
+    width="13"
+    height="11"
+    viewBox="0 0 13 11"
+    fill="none"
+    version="1.1"
+    {...props}
+  >
+    <path
+      d="M8.232 10C7.4622 11.3333 5.5377 11.3333 4.7679 10L0.870786 3.25C0.100986 1.91666 1.06324 0.25 2.60284 0.25L10.3971 0.250001C11.9367 0.250001 12.899 1.91667 12.1292 3.25L8.232 10Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+export const PolygonUpIcon = (props) => (
+  <svg
+    width="13"
+    height="11"
+    viewBox="0 0 13 11"
+    fill="none"
+    version="1.1"
+    {...props}
+  >
+    <path
+      d="M4.16815 0.999998C4.93795 -0.333302 6.86245 -0.333301 7.63225 0.999999L11.5294 7.75C12.2992 9.08334 11.3369 10.75 9.79731 10.75L2.0031 10.75C0.463496 10.75 -0.498804 9.08333 0.270996 7.75L4.16815 0.999998Z"
+      fill="currentColor"
+    />
+  </svg>
+);

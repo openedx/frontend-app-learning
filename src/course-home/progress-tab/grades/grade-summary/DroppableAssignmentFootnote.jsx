@@ -17,9 +17,9 @@ const DroppableAssignmentFootnote = ({ footnotes, intl }) => {
   return (
     <>
       <span id="grade-summary-footnote-label" className="sr-only">{intl.formatMessage(messages.footnotesTitle)}</span>
-      <ul className="list-unstyled mt-2">
+      <ul className="list-unstyled small mt-2">
         {footnotes.map((footnote, index) => (
-          <li id={`${footnote.id}-footnote`} key={footnote.id} className="x-small mt-1">
+          <li id={`${footnote.id}-footnote`} key={footnote.id} className="mt-1">
             <sup>{index + 1}</sup>
             <FormattedMessage
               id="progress.footnotes.droppableAssignments"
