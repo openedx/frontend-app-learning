@@ -14,9 +14,14 @@ Object {
       "label": "Sequence",
     },
     Object {
-      "count": 10,
+      "count": 9,
       "key": "text",
       "label": "Text",
+    },
+    Object {
+      "count": 1,
+      "key": "unknown",
+      "label": "Unknown",
     },
     Object {
       "count": 2,
@@ -292,7 +297,7 @@ Object {
       "location": null,
       "score": 0.82610154,
       "title": "External Course Link Test",
-      "type": "text",
+      "type": "unknown",
       "url": "https://www.edx.org",
     },
   ],

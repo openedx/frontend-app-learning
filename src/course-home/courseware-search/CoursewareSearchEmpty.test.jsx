@@ -19,6 +19,6 @@ describe('CoursewareSearchEmpty', () => {
   it('should match the snapshot', () => {
     renderComponent();
 
-    expect(screen.getByTestId('search-results')).toMatchSnapshot();
+    expect(screen.getByTestId('no-results')).toMatchSnapshot();
   });
 });

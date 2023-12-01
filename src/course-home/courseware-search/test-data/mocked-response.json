@@ -554,7 +554,7 @@
           "display_name": "External Course Link Test",
           "html_content": "This should open a new tab when following the link."
         },
-        "content_type": "Text",
+        "content_type": "Unknown",
         "id": "random-element-id",
         "start_date": "2013-02-05T05:00:00+00:00",
         "content_groups": null,

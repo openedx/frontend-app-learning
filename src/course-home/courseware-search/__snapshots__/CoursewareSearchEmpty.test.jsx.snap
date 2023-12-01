@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CoursewareSearchEmpty should match the snapshot 1`] = `
+<p
+  class="courseware-search-results__empty"
+  data-testid="no-results"
+>
+  No results found.
+</p>
+`;

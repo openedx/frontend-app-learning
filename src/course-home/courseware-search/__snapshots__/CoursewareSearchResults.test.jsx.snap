@@ -1216,7 +1216,7 @@ exports[`CoursewareSearchResults when list of results is provided should match t
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"
+            d="M3 3v18h18V3H3Zm11 14H7v-2h7v2Zm3-4H7v-2h10v2Zm0-4H7V7h10v2Z"
             fill="currentColor"
           />
         </svg>
