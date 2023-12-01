@@ -54,13 +54,9 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
       return;
     }
 
-    const eventProperties = {
+    sendTrackingLogEvent('edx.course.home.courseware_search.submit', {
       org_key: org,
       courserun_key: courseId,
-    };
-
-    sendTrackingLogEvent('edx.course.home.courseware_search.submit', {
-      ...eventProperties,
       event_type: 'searchKeyword',
       keyword: searchKeyword,
     });
@@ -109,18 +105,18 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
             placeholder={intl.formatMessage(messages.searchBarPlaceholderText)}
           />
           {status === 'loading' ? (
-            <div className="courseware-search__spinner">
+            <div className="courseware-search__spinner" data-testid="courseware-search-spinner">
               <Spinner animation="border" variant="light" screenReaderText={intl.formatMessage(messages.loading)} />
             </div>
           ) : null}
           {status === 'error' && (
-            <Alert className="mt-4" variant="danger">
+            <Alert className="mt-4" variant="danger" data-testid="courseware-search-error">
               {intl.formatMessage(messages.searchResultsError)}
             </Alert>
           )}
           {status === 'results' ? (
             <>
-              <div className="courseware-search__results-summary">{total > 0
+              <div className="courseware-search__results-summary" data-testid="courseware-search-summary">{total > 0
                 ? (
                   intl.formatMessage(
                     total === 1

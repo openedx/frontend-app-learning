@@ -2,19 +2,43 @@ import React from 'react';
 import { history } from '@edx/frontend-platform';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { Route, Routes } from 'react-router-dom';
+import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import {
   initializeMockApp,
   render,
   screen,
+  waitFor,
+  fireEvent,
 } from '../../setupTest';
 import { CoursewareSearch } from './index';
 import { useElementBoundingBox, useLockScroll } from './hooks';
 import initializeStore from '../../store';
-import { useModel } from '../../generic/model-store';
+import { useModel, updateModel } from '../../generic/model-store';
+import { searchCourseContent } from '../data/thunks';
+import { setShowSearch } from '../data/slice';
 
 jest.mock('./hooks');
 jest.mock('../../generic/model-store', () => ({
+  updateModel: jest.fn(),
   useModel: jest.fn(),
+}));
+
+jest.mock('@edx/frontend-platform/analytics', () => ({
+  sendTrackingLogEvent: jest.fn(),
+}));
+
+jest.mock('../data/thunks', () => ({
+  searchCourseContent: jest.fn(),
+}));
+
+jest.mock('../data/slice', () => ({
+  setShowSearch: jest.fn(),
+}));
+
+const mockDispatch = jest.fn();
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: () => mockDispatch,
 }));
 
 const decodedCourseId = 'course-v1:edX+DemoX+Demo_Course';
@@ -49,8 +73,11 @@ function renderComponent(props = {}) {
   return container;
 }
 
-const mockModels = ((props = defaultProps) => {
-  useModel.mockReturnValue(props);
+const mockModels = ((props) => {
+  useModel.mockReturnValue({
+    ...defaultProps,
+    ...props,
+  });
 });
 
 describe('CoursewareSearch', () => {
@@ -65,7 +92,7 @@ describe('CoursewareSearch', () => {
       useElementBoundingBox.mockImplementation(() => ({ top: tabsTopPosition }));
     });
 
-    it('Should use useElementBoundingBox() and useLockScroll() hooks', () => {
+    it('should use useElementBoundingBox() and useLockScroll() hooks', () => {
       mockModels();
       renderComponent();
 
@@ -73,7 +100,7 @@ describe('CoursewareSearch', () => {
       expect(useLockScroll).toBeCalledTimes(1);
     });
 
-    it('Should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
+    it('should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
       mockModels();
       renderComponent();
 
@@ -82,8 +109,22 @@ describe('CoursewareSearch', () => {
     });
   });
 
+  describe('when clicking on the "Close" button', () => {
+    it('should dispatch setShowSearch(false)', async () => {
+      mockModels();
+      renderComponent();
+
+      await waitFor(() => {
+        const close = screen.queryByTestId('courseware-search-close-button');
+        fireEvent.click(close);
+      });
+
+      expect(setShowSearch).toBeCalledWith(false);
+    });
+  });
+
   describe('when CourseTabsNavigation is not present', () => {
-    it('Should use "--modal-top-position: 0" if  nce element is not present', () => {
+    it('should use "--modal-top-position: 0" if  nce element is not present', () => {
       useElementBoundingBox.mockImplementation(() => undefined);
 
       mockModels();
@@ -95,12 +136,136 @@ describe('CoursewareSearch', () => {
   });
 
   describe('when passing extra props', () => {
-    it('Should pass on extra props to section element', () => {
+    it('should pass on extra props to section element', () => {
       mockModels();
       renderComponent({ foo: 'bar' });
 
       const section = screen.getByTestId('courseware-search-section');
       expect(section).toHaveAttribute('foo', 'bar');
+    });
+  });
+
+  describe('when submitting an empty search', () => {
+    it('should clear the search by dispatch updateModel', async () => {
+      mockModels();
+      renderComponent();
+
+      await waitFor(() => {
+        const submit = screen.queryByTestId('courseware-search-form-submit');
+        fireEvent.click(submit);
+      });
+
+      expect(updateModel).toHaveBeenCalledWith({
+        modelType: 'contentSearchResults',
+        model: {
+          id: decodedCourseId,
+          searchKeyword: '',
+          results: [],
+          errors: undefined,
+          loading: false,
+        },
+      });
+    });
+  });
+
+  describe('when submitting a search', () => {
+    it('should show a loading state', () => {
+      mockModels({
+        loading: true,
+      });
+      renderComponent();
+
+      expect(screen.queryByTestId('courseware-search-spinner')).toBeInTheDocument();
+    });
+
+    it('should call searchCourseContent', async () => {
+      mockModels();
+      renderComponent();
+
+      const searchKeyword = 'course';
+
+      await waitFor(() => {
+        const input = screen.queryByTestId('courseware-search-form').querySelector('input');
+        fireEvent.change(input, { target: { value: searchKeyword } });
+      });
+
+      await waitFor(() => {
+        const submit = screen.queryByTestId('courseware-search-form-submit');
+        fireEvent.click(submit);
+      });
+
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.course.home.courseware_search.submit', {
+        org_key: defaultProps.org,
+        courserun_key: decodedCourseId,
+        event_type: 'searchKeyword',
+        keyword: searchKeyword,
+      });
+      expect(searchCourseContent).toHaveBeenCalledWith(decodedCourseId, searchKeyword);
+    });
+
+    it('should show an error state if any', () => {
+      mockModels({
+        errors: ['foo'],
+      });
+      renderComponent();
+
+      expect(screen.queryByTestId('courseware-search-error')).toBeInTheDocument();
+    });
+
+    it('should show "No results found." if results is empty', () => {
+      mockModels({
+        searchKeyword: 'test',
+        total: 0,
+      });
+      renderComponent();
+
+      expect(screen.queryByTestId('courseware-search-summary').textContent).toBe('No results found.');
+    });
+
+    it('should show a summary for a single result', () => {
+      mockModels({
+        searchKeyword: 'fubar',
+        total: 1,
+      });
+      renderComponent();
+
+      expect(screen.queryByTestId('courseware-search-summary').textContent).toBe('1 match found for "fubar":');
+    });
+
+    it('should show a summary for multiple results', () => {
+      mockModels({
+        searchKeyword: 'fubar',
+        total: 2,
+      });
+      renderComponent();
+
+      expect(screen.queryByTestId('courseware-search-summary').textContent).toBe('2 matches found for "fubar":');
+    });
+  });
+
+  describe('when clearing the search input', () => {
+    it('should clear the search by dispatch updateModel', async () => {
+      mockModels({
+        searchKeyword: 'fubar',
+        total: 2,
+      });
+      renderComponent();
+
+      await waitFor(() => {
+        const input = screen.queryByTestId('courseware-search-form').querySelector('input');
+        fireEvent.change(input, { target: { value: '' } });
+      });
+
+      expect(updateModel).toHaveBeenCalledWith({
+        modelType: 'contentSearchResults',
+        model: {
+          id: decodedCourseId,
+          searchKeyword: '',
+          results: [],
+          errors: undefined,
+          loading: false,
+        },
+      });
     });
   });
 });
