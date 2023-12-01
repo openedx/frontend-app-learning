@@ -42,7 +42,7 @@ const DatesTab = ({ intl }) => {
   };
 
   return (
-    <div className="raised-card dates-tab">
+    <div className="raised-card dates-tab mt-5">
       <div role="heading" aria-level="1" className="heading mb-3">
         {intl.formatMessage(messages.title)}
       </div>
