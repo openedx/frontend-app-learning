@@ -6,7 +6,7 @@ import {
 } from '../../setupTest';
 import CoursewareSearchResults from './CoursewareSearchResults';
 import messages from './messages';
-// import mockedData from './test-data/mockedResults'; // TODO: Update this test.
+import searchResultsFactory from './test-data/search-results-factory';
 
 jest.mock('react-redux');
 
@@ -28,11 +28,14 @@ describe('CoursewareSearchResults', () => {
     });
   });
 
-  /* describe('when list of results is provided', () => {
-    beforeEach(() => { renderComponent({ results: mockedData }); });
+  describe('when list of results is provided', () => {
+    beforeEach(() => {
+      const { results } = searchResultsFactory('course');
+      renderComponent({ results });
+    });
 
     it('should match the snapshot', () => {
       expect(screen.getByTestId('search-results')).toMatchSnapshot();
     });
-  }); */
+  });
 });

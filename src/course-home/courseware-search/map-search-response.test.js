@@ -19,6 +19,7 @@ describe('mapSearchResponse', () => {
         { key: 'capa', label: 'CAPA', count: 7 },
         { key: 'sequence', label: 'Sequence', count: 2 },
         { key: 'text', label: 'Text', count: 9 },
+        { key: 'unknown', label: 'Unknown', count: 1 },
         { key: 'video', label: 'Video', count: 2 },
       ];
       expect(response.filters).toEqual(expectedFilters);

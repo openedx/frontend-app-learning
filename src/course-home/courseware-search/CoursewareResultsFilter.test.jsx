@@ -11,6 +11,7 @@ import {
 import { CoursewareSearchResultsFilter, filteredResultsBySelection } from './CoursewareResultsFilter';
 import initializeStore from '../../store';
 import { useModel } from '../../generic/model-store';
+import searchResultsFactory from './test-data/search-results-factory';
 
 jest.mock('../../generic/model-store', () => ({
   useModel: jest.fn(),
@@ -64,7 +65,7 @@ describe('CoursewareSearchResultsFilter', () => {
 
   describe('filteredResultsBySelection', () => {
     it('returns a no values array when no results are provided', () => {
-      const results = filteredResultsBySelection({ results: [] });
+      const results = filteredResultsBySelection({});
 
       expect(results.length).toEqual(0);
     });
@@ -100,11 +101,7 @@ describe('CoursewareSearchResultsFilter', () => {
     });
 
     it('should render', async () => {
-      useModel.mockReturnValue({
-        total: 6,
-        results: mockResults,
-        filters: [],
-      });
+      useModel.mockReturnValue(searchResultsFactory());
 
       await renderComponent();
 

@@ -19,6 +19,11 @@ Object {
       "label": "Text",
     },
     Object {
+      "count": 1,
+      "key": "unknown",
+      "label": "Unknown",
+    },
+    Object {
       "count": 2,
       "key": "video",
       "label": "Video",
@@ -285,6 +290,15 @@ Object {
       "title": "When Are Your Exams? ",
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@9d5104b502f24ee89c3d2f4ce9d347cf",
+    },
+    Object {
+      "contentHits": 0,
+      "id": "random-element-id",
+      "location": null,
+      "score": 0.82610154,
+      "title": "External Course Link Test",
+      "type": "unknown",
+      "url": "https://www.edx.org",
     },
   ],
   "total": 29,

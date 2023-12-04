@@ -1,8 +1,8 @@
 const Joi = require('joi');
 
 const endpointSchema = Joi.object({
-  took: Joi.number(),
-  total: Joi.number(),
+  took: Joi.number().required(),
+  total: Joi.number().required(),
   maxScore: Joi.number().allow(null),
   results: Joi.array().items(Joi.object({
     id: Joi.string(),
@@ -14,7 +14,7 @@ const endpointSchema = Joi.object({
       htmlContent: Joi.string(),
       transcriptEn: Joi.string(),
     }),
-  }).unknown(true)).strict(),
+  }).required().unknown(true)).strict(),
 }).unknown(true).strict();
 
 const defaultType = 'text';

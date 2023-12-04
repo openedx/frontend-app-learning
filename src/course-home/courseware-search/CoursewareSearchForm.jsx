@@ -20,7 +20,7 @@ const CoursewareSearchForm = ({
       <SearchField.Input placeholder={placeholder} autoFocus />
       <SearchField.ClearButton />
     </div>
-    <SearchField.SubmitButton submitButtonLocation="external" />
+    <SearchField.SubmitButton submitButtonLocation="external" data-testid="courseware-search-form-submit" />
   </SearchField.Advanced>
 );
 
