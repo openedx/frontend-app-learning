@@ -8,8 +8,6 @@ import { initializeMockApp, render, screen } from '../../../setupTest';
 
 import Chat from './Chat';
 
-jest.mock('@edx/frontend-platform/analytics');
-
 initializeMockApp();
 
 const courseId = 'course-v1:edX+DemoX+Demo_Course';
