@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
@@ -10,7 +10,7 @@ import {
   Close,
 } from '@edx/paragon/icons';
 import { setShowSearch } from '../data/slice';
-import { useElementBoundingBox, useLockScroll } from './hooks';
+import { useCoursewareSearchParams, useElementBoundingBox, useLockScroll } from './hooks';
 import messages from './messages';
 
 import CoursewareSearchForm from './CoursewareSearchForm';
@@ -20,6 +20,7 @@ import { searchCourseContent } from '../data/thunks';
 
 const CoursewareSearch = ({ intl, ...sectionProps }) => {
   const { courseId } = useParams();
+  const { query: searchKeyword, setQuery, clearSearchParams } = useCoursewareSearchParams();
   const dispatch = useDispatch();
   const { org } = useModel('courseHomeMeta', courseId);
   const {
@@ -28,7 +29,6 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
     errors,
     total,
   } = useModel('contentSearchResults', courseId);
-  const [searchKeyword, setSearchKeyword] = useState(lastSearchKeyword);
 
   useLockScroll();
 
@@ -36,6 +36,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
   const top = info ? `${Math.floor(info.top)}px` : 0;
 
   const clearSearch = () => {
+    clearSearchParams();
     dispatch(updateModel({
       modelType: 'contentSearchResults',
       model: {
@@ -64,14 +65,23 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
     dispatch(searchCourseContent(courseId, searchKeyword));
   };
 
+  useEffect(() => {
+    handleSubmit();
+  }, []);
+
   const handleOnChange = (value) => {
     if (value === searchKeyword) { return; }
-
-    setSearchKeyword(value);
-
     if (!value) {
       clearSearch();
+      return;
     }
+
+    setQuery(value);
+  };
+
+  const close = () => {
+    clearSearch();
+    dispatch(setShowSearch(false));
   };
 
   let status = 'idle';
@@ -90,7 +100,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
           variant="tertiary"
           className="p-1"
           aria-label={intl.formatMessage(messages.searchCloseAction)}
-          onClick={() => dispatch(setShowSearch(false))}
+          onClick={close}
           data-testid="courseware-search-close-button"
         ><Icon src={Close} />
         </Button>
