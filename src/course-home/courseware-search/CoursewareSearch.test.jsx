@@ -11,11 +11,11 @@ import {
   fireEvent,
 } from '../../setupTest';
 import { CoursewareSearch } from './index';
-import { useElementBoundingBox, useLockScroll } from './hooks';
+import { useElementBoundingBox, useLockScroll, useCoursewareSearchParams } from './hooks';
 import initializeStore from '../../store';
-import { useModel, updateModel } from '../../generic/model-store';
 import { searchCourseContent } from '../data/thunks';
 import { setShowSearch } from '../data/slice';
+import { updateModel, useModel } from '../../generic/model-store';
 
 jest.mock('./hooks');
 jest.mock('../../generic/model-store', () => ({
@@ -56,6 +56,14 @@ const defaultProps = {
   total: 0,
 };
 
+const coursewareSearch = {
+  query: '',
+  filter: '',
+  setQuery: jest.fn(),
+  setFilter: jest.fn(),
+  clearSearchParams: jest.fn(),
+};
+
 const intl = {
   formatMessage: (message) => message?.defaultMessage || '',
 };
@@ -73,11 +81,23 @@ function renderComponent(props = {}) {
   return container;
 }
 
-const mockModels = ((props) => {
+const mockModels = ((props = defaultProps) => {
   useModel.mockReturnValue({
     ...defaultProps,
     ...props,
   });
+
+  updateModel.mockReturnValue({
+    type: 'MOCK_ACTION',
+    payload: {
+      modelType: 'contentSearchResults',
+      model: defaultProps,
+    },
+  });
+});
+
+const mockSearchParams = ((props = coursewareSearch) => {
+  useCoursewareSearchParams.mockReturnValue(props);
 });
 
 describe('CoursewareSearch', () => {
@@ -94,6 +114,7 @@ describe('CoursewareSearch', () => {
 
     it('should use useElementBoundingBox() and useLockScroll() hooks', () => {
       mockModels();
+      mockSearchParams();
       renderComponent();
 
       expect(useElementBoundingBox).toBeCalledTimes(1);
@@ -102,6 +123,7 @@ describe('CoursewareSearch', () => {
 
     it('should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
       mockModels();
+      mockSearchParams();
       renderComponent();
 
       const section = screen.getByTestId('courseware-search-section');
@@ -128,6 +150,7 @@ describe('CoursewareSearch', () => {
       useElementBoundingBox.mockImplementation(() => undefined);
 
       mockModels();
+      mockSearchParams();
       renderComponent();
 
       const section = screen.getByTestId('courseware-search-section');
@@ -138,6 +161,7 @@ describe('CoursewareSearch', () => {
   describe('when passing extra props', () => {
     it('should pass on extra props to section element', () => {
       mockModels();
+      mockSearchParams();
       renderComponent({ foo: 'bar' });
 
       const section = screen.getByTestId('courseware-search-section');
