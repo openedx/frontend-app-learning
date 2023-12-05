@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import { Xpert } from '@edx/frontend-lib-learning-assistant';
 import { injectIntl } from '@edx/frontend-platform/i18n';
 
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-
 const Chat = ({
   enabled,
   enrollmentMode,
@@ -41,14 +39,6 @@ const Chat = ({
     enabled
     && (isEnrolled || isStaff) // display only to enrolled or staff
   );
-
-  // TODO: Remove this Segment alert. This has been added purely to diagnose whether
-  //       usage issues are as a result of the Xpert toggle button not appearing.
-  if (shouldDisplayChat) {
-    sendTrackEvent('edx.ui.lms.learning_assistant.render', {
-      course_id: courseId,
-    });
-  }
 
   return (
     <>
