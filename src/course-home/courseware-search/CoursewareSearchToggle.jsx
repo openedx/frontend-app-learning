@@ -14,12 +14,12 @@ const CoursewareSearchToggle = ({
   const enabled = useCoursewareSearchFeatureFlag();
   const { query } = useCoursewareSearchParams();
 
-  const show = () => {
+  const handleSearchOpenClick = () => {
     dispatch(setShowSearch(true));
   };
 
   useEffect(() => {
-    if (enabled && !!query) { show(); }
+    if (enabled && !!query) { handleSearchOpenClick(); }
   }, [enabled]);
 
   if (!enabled) { return null; }
@@ -31,7 +31,7 @@ const CoursewareSearchToggle = ({
         size="sm"
         className="p-1 mt-2 mr-2 rounded-lg"
         aria-label={intl.formatMessage(messages.searchOpenAction)}
-        onClick={show}
+        onClick={handleSearchOpenClick}
         data-testid="courseware-search-open-button"
       >
         <Icon src={Search} />

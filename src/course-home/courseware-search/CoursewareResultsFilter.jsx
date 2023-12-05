@@ -47,7 +47,6 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
       data-testid="courseware-search-results-tabs"
       variant="tabs"
       activeKey={activeKey}
-      defaultActiveKey={noFilterKey}
       onSelect={setFilter}
     >
       {filters.map(({ key, label }) => (

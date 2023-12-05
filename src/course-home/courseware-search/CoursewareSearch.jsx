@@ -79,7 +79,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
     setQuery(value);
   };
 
-  const close = () => {
+  const handleSearchCloseClick = () => {
     clearSearch();
     dispatch(setShowSearch(false));
   };
@@ -100,7 +100,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
           variant="tertiary"
           className="p-1"
           aria-label={intl.formatMessage(messages.searchCloseAction)}
-          onClick={close}
+          onClick={handleSearchCloseClick}
           data-testid="courseware-search-close-button"
         ><Icon src={Close} />
         </Button>
