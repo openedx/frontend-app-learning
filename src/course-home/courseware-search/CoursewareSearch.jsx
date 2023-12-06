@@ -49,8 +49,8 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
     }));
   };
 
-  const handleSubmit = () => {
-    if (!searchKeyword) {
+  const handleSubmit = (value) => {
+    if (!value) {
       clearSearch();
       return;
     }
@@ -59,24 +59,20 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
       org_key: org,
       courserun_key: courseId,
       event_type: 'searchKeyword',
-      keyword: searchKeyword,
+      keyword: value,
     });
 
-    dispatch(searchCourseContent(courseId, searchKeyword));
+    dispatch(searchCourseContent(courseId, value));
+    setQuery(value);
   };
 
   useEffect(() => {
-    handleSubmit();
+    handleSubmit(searchKeyword);
   }, []);
 
   const handleOnChange = (value) => {
     if (value === searchKeyword) { return; }
-    if (!value) {
-      clearSearch();
-      return;
-    }
-
-    setQuery(value);
+    if (!value) { clearSearch(); }
   };
 
   const handleSearchCloseClick = () => {
