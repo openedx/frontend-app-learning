@@ -30,6 +30,10 @@ const CoursewareRedirectLandingPage = () => (
         element={<PageWrap><RedirectPage pattern="/dashboard" mode={REDIRECT_MODES.DASHBOARD_REDIRECT} /></PageWrap>}
       />
       <Route
+        path={ROUTES.ENTERPRISE_LEARNER_DASHBOARD}
+        element={<PageWrap><RedirectPage mode={REDIRECT_MODES.ENTERPRISE_LEARNER_DASHBOARD_REDIRECT} /></PageWrap>}
+      />
+      <Route
         path={ROUTES.CONSENT}
         element={<PageWrap><RedirectPage mode={REDIRECT_MODES.CONSENT_REDIRECT} /></PageWrap>}
       />

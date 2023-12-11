@@ -16,5 +16,6 @@ module.exports = createConfig('jest', {
     'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
   },
   testTimeout: 30000,
-  testEnvironment: 'jsdom'
+  testEnvironment: 'jsdom',
+  globalSetup: "./global-setup.js"
 });
