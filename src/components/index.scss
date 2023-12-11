@@ -1,0 +1,178 @@
+.ai-container {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  z-index: 9;
+
+  .ai-widget {
+    font-weight: $font-weight-semi-bold;
+  }
+
+  h4 {
+    font-weight: $font-weight-semi-bold;
+  }
+
+  .chat-wrapper {
+    flex-grow: 1;
+    font-size: 1rem;
+    height: 100%;
+    overflow: auto;
+
+    .chat-row {
+      display: flex;
+      padding-top: 0.8rem;
+      align-items: center;
+
+      &.qestion {
+        flex-direction: row-reverse;
+
+        .icon {
+          margin-left: 1rem;
+        }
+      }
+
+      &.response {
+
+        .text {
+          background: $primary;
+          color: white;
+        }
+      }
+
+      .text {
+        border: 1px solid $border-color;
+        border-radius: $border-radius;
+        padding: 0.3rem 1rem;
+        max-width: 65%;
+      }
+
+      p {
+        margin-bottom: 0;
+      }
+
+      .icon {
+        margin-right: 1rem;
+      }
+    }
+  }
+
+
+  .ai-header {
+    display: flex;
+    align-items: center;
+    background: $gray-light-400;
+    border-bottom: 1px solid $border-color;
+    padding: 0.5rem 1rem;
+
+    h4 {
+      margin: 0 auto 0 1rem;
+      color: $secondary;
+      font-weight: $font-weight-semi-bold;
+    }
+  }
+
+  .ai-body {
+    height: 350px;
+    display: flex;
+    padding: 1rem;
+    align-items: flex-end;
+
+    .no-data {
+      flex-grow: 1;
+      align-self: center;
+      text-align: center;
+
+      img {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+
+  .ai-footer {
+    padding: 1rem;
+    font-size: 14px;
+    color: $gray-light-500;
+
+    .form-wrapper {
+      position: relative;
+    }
+
+
+    .form-info {
+      margin-bottom: 5px;
+      padding: 0 .6rem;
+    }
+
+    .ai-form {
+      border: 1px solid $border-color;
+      border-radius: $border-radius;
+      overflow: hidden;
+      display: flex;
+
+      .word-count {
+        align-self: center;
+        margin-right: 10px;
+      }
+
+      .ai-submit-button {
+        border: 0;
+        background: none;
+        color: $secondary;
+
+        &:hover {
+          color: $primary;
+        }
+      }
+
+      .form-control {
+        font-size: 14px;
+        border: 0;
+        box-shadow: none;
+        font-weight: $font-weight-semi-bold;
+
+        &::placeholder {
+          color: $gray-light-500;
+        }
+      }
+
+      &.is-focused {
+        border-color: $primary;
+      }
+    }
+  }
+
+  .btn-ai {
+    padding: 0;
+    background: white;
+    color: $primary;
+    border-radius: $border-radius*10;
+
+    &.focus,
+    &:focus {
+      &:before {
+        border-radius: $border-radius*10;
+      }
+    }
+
+    svg {
+      height: 60px;
+      width: 60px;
+    }
+
+    &:hover,
+    &.btn-active {
+      border-color: $secondary;
+      color: $secondary;
+      background: white;
+    }
+  }
+
+  .pgn__modal-popup__tooltip {
+    width: 420px;
+    background: white;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    box-shadow: 0 4px 50px 0 rgba(0, 0, 0, .4);
+    overflow: hidden;
+  }
+}

@@ -606,8 +606,10 @@
   overflow: hidden;
   border: 1px solid $default-border-color;
   border-radius: 0 0 $default-radius $default-radius;
+  flex-direction: column;
 
   @media (min-width: map-get($grid-breakpoints, "md")) {
+    flex-direction: row;
     margin-right: 0;
   }
 
@@ -617,7 +619,13 @@
     display: flex;
     align-items: center;
     padding: 1.2rem 1rem;
-    border-right: 1px solid $default-border-color;
+    justify-content: center;
+    border-bottom: 1px solid $default-border-color;
+    @media (min-width: map-get($grid-breakpoints, "md")) {
+      justify-content: flex-start;
+      border-right: 1px solid $default-border-color;
+      border-bottom: 0;
+    }
 
     h2 {
       margin: 0;
@@ -663,6 +671,7 @@
 }
 
 // Import component-specific sass files
+@import "components/index.scss";
 @import "courseware/course/celebration/CelebrationModal.scss";
 @import "courseware/course/sidebar/sidebars/notifications/NotificationIcon.scss";
 @import "courseware/course/sequence/lock-paywall/LockPaywall.scss";

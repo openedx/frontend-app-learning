@@ -448,5 +448,8 @@
   "learning.streakcelebration.factoidb": "إن المستخدمين الذين يتعلمون ل{streak_length, plural,\n  two {يومين}\n  few {# أيام}\n  many {# يومًا}\n  other {# يوم}\n} على التوالي {bolded_section} من لا يفعلون مثلهم.",
   "learning.streakCelebration.streakCelebrationCouponEndDateMessage": "ينتهي في {date}.",
   "learning.loading.failure": "حدث خطأ ما أثناء تحميل هذا المساق.",
-  "learning.loading": "جارٍ تحميل صفحة المساق..."
+  "learning.loading": "جارٍ تحميل صفحة المساق...",
+  "aiwidget.header": "المرشد الذكي",
+  "aiwidget.label": "اسألني عن الدورة",
+  "aiwidget.prompts": "لديك : {prompts} أوامر"
 }

@@ -16,6 +16,7 @@ import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
 import { setCallToActionToast } from '../course-home/data/slice';
 import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
+import AIWidget from '../components/index';
 
 const TabPage = ({ intl, ...props }) => {
   const {
@@ -82,6 +83,7 @@ const TabPage = ({ intl, ...props }) => {
           userProfileImage={profileImageUrl}
         />
         <LoadedTabPage {...props} />
+        <AIWidget />
         <Footer />
       </>
     );

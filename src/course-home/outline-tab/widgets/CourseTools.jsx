@@ -9,7 +9,7 @@ import {
   faCertificate, faInfo, faStar,
 } from '@fortawesome/free-solid-svg-icons';
 import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
-import { BookmarkIcon, NotificationIcon } from '../../../Icons';
+import { BookmarkIcon, NotificationIcon, AIIcon } from '../../../Icons';
 
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
@@ -76,6 +76,10 @@ const CourseTools = ({ intl }) => {
         ))}
         <li className="small" id="courseHome-launchTourLink">
           <LaunchCourseHomeTourButton />
+        </li>
+        <li className="small" hidden id="aiMentor">
+          <AIIcon className="mr-2 text-primary" />
+          AI Mentor
         </li>
       </ul>
     </section>
