@@ -5,6 +5,7 @@ import { Tabs, Tab } from '@edx/paragon';
 import { useParams } from 'react-router';
 import CoursewareSearchResults from './CoursewareSearchResults';
 import messages from './messages';
+import { useCoursewareSearchParams } from './hooks';
 import { useModel } from '../../generic/model-store';
 
 const noFilterKey = 'none';
@@ -17,6 +18,7 @@ export const filteredResultsBySelection = ({ key = noFilterKey, results = [] }) 
 export const CoursewareSearchResultsFilter = ({ intl }) => {
   const { courseId } = useParams();
   const lastSearch = useModel('contentSearchResults', courseId);
+  const { filter: filterKeyword, setFilter } = useCoursewareSearchParams();
 
   if (!lastSearch || !lastSearch?.results?.length) { return null; }
 
@@ -31,6 +33,8 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
     ...lastSearch.filters,
   ];
 
+  const activeKey = filters.find(({ key }) => key === filterKeyword)?.key || noFilterKey;
+
   const getFilterTitle = (key, fallback) => {
     const msg = messages[`filter:${key}`];
     if (!msg) { return fallback; }
@@ -42,7 +46,8 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
       id="courseware-search-results-tabs"
       data-testid="courseware-search-results-tabs"
       variant="tabs"
-      defaultActiveKey={noFilterKey}
+      activeKey={activeKey}
+      onSelect={setFilter}
     >
       {filters.map(({ key, label }) => (
         <Tab key={key} eventKey={key} title={getFilterTitle(key, label)}>

@@ -9,10 +9,12 @@ import {
   waitFor,
 } from '../../setupTest';
 import { CoursewareSearchResultsFilter, filteredResultsBySelection } from './CoursewareResultsFilter';
+import { useCoursewareSearchParams } from './hooks';
 import initializeStore from '../../store';
 import { useModel } from '../../generic/model-store';
 import searchResultsFactory from './test-data/search-results-factory';
 
+jest.mock('./hooks');
 jest.mock('../../generic/model-store', () => ({
   useModel: jest.fn(),
 }));
@@ -45,6 +47,14 @@ const pathname = `/course/${decodedCourseId}/${decodedSequenceId}/${decodedUnitI
 
 const intl = {
   formatMessage: (message) => message?.defaultMessage || '',
+};
+
+const coursewareSearch = {
+  query: '',
+  filter: '',
+  setQuery: jest.fn(),
+  setFilter: jest.fn(),
+  clearSearchParams: jest.fn(),
 };
 
 function renderComponent(props = {}) {
@@ -101,6 +111,7 @@ describe('CoursewareSearchResultsFilter', () => {
     });
 
     it('should render', async () => {
+      useCoursewareSearchParams.mockReturnValue(coursewareSearch);
       useModel.mockReturnValue(searchResultsFactory());
 
       await renderComponent();

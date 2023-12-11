@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button, Icon } from '@edx/paragon';
 import { Search } from '@edx/paragon/icons';
 import { useDispatch } from 'react-redux';
-import { setShowSearch } from '../data/slice';
 import messages from './messages';
-import { useCoursewareSearchFeatureFlag } from './hooks';
+import { useCoursewareSearchFeatureFlag, useCoursewareSearchParams } from './hooks';
+import { setShowSearch } from '../data/slice';
 
 const CoursewareSearchToggle = ({
   intl,
 }) => {
   const dispatch = useDispatch();
   const enabled = useCoursewareSearchFeatureFlag();
+  const { query } = useCoursewareSearchParams();
+
+  const handleSearchOpenClick = () => {
+    dispatch(setShowSearch(true));
+  };
+
+  useEffect(() => {
+    if (enabled && !!query) { handleSearchOpenClick(); }
+  }, [enabled]);
 
   if (!enabled) { return null; }
 
@@ -22,7 +31,7 @@ const CoursewareSearchToggle = ({
         size="sm"
         className="p-1 mt-2 mr-2 rounded-lg"
         aria-label={intl.formatMessage(messages.searchOpenAction)}
-        onClick={() => dispatch(setShowSearch(true))}
+        onClick={handleSearchOpenClick}
         data-testid="courseware-search-open-button"
       >
         <Icon src={Search} />
