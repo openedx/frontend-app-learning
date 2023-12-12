@@ -14,7 +14,7 @@ const endpointSchema = Joi.object({
       htmlContent: Joi.string(),
       transcriptEn: Joi.string(),
     }),
-  }).required().unknown(true)).strict(),
+  }).unknown(true)).strict(),
 }).unknown(true).strict();
 
 const defaultType = 'text';
