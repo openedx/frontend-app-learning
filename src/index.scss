@@ -38,24 +38,6 @@
   }
 }
 
-.course-tabs-navigation {
-  border-bottom: solid 1px #eaeaea;
-
-  .nav a,
-  .nav button {
-    &:hover {
-      background-color: $light-400;
-    }
-  }
-
-  .nav a {
-    &:not(.active):hover {
-      background-color: $light-400;
-      border-bottom: none;
-    }
-  }
-}
-
 .nav-underline-tabs {
   margin: 0 0 -1px;
 
@@ -396,3 +378,4 @@
 @import "courseware/course/course-exit/CourseRecommendations";
 @import "product-tours/newUserCourseHomeTour/NewUserCourseHomeTourModal.scss";
 @import "course-home/courseware-search/courseware-search.scss";
+@import "course-tabs/course-tabs-navigation.scss";

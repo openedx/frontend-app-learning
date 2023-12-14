@@ -1,0 +1,24 @@
+.course-tabs-navigation {
+  position: relative;
+  border-bottom: solid 1px #eaeaea;
+
+  .nav a,
+  .nav button {
+    &:hover {
+      background-color: $light-400;
+    }
+  }
+
+  .nav a {
+    &:not(.active):hover {
+      background-color: $light-400;
+      border-bottom: none;
+    }
+  }
+
+  &__search-toggle {
+    position: absolute;
+    top: .05rem;
+    right: 0;
+  }
+}

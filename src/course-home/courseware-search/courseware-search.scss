@@ -35,7 +35,7 @@
 
   &__results-summary {
     font-size: .9rem;
-    color: $gray-400;
+    color: $gray-500;
     padding: 1rem 0 .5rem;
   }
 
@@ -111,7 +111,7 @@
   &__breadcrumbs {
     display: flex;
     gap: 1.25rem;
-    color: $gray-400;
+    color: $gray-500;
     overflow: hidden;
     list-style: none;
     padding: 0;
@@ -138,6 +138,14 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+}
+
+.courseware-search-results-tabs {
+  border-bottom-color: $gray-400 !important;
+
+  &.nav-tabs .nav-link.active {
+    border-bottom-width: 4px !important;
   }
 }
 

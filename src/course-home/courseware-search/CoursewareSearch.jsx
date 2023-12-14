@@ -103,7 +103,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
       </div>
       <div className="courseware-search__outer-content">
         <div className="courseware-search__content">
-          <h2>{intl.formatMessage(messages.searchModuleTitle)}</h2>
+          <h1 class="h2">{intl.formatMessage(messages.searchModuleTitle)}</h1>
           <CoursewareSearchForm
             searchTerm={searchKeyword}
             onSubmit={handleSubmit}
@@ -122,7 +122,13 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
           )}
           {status === 'results' ? (
             <>
-              <div className="courseware-search__results-summary" data-testid="courseware-search-summary">{total > 0
+              <div
+                className="courseware-search__results-summary"
+                aria-live="polite"
+                aria-relevant="all"
+                aria-atomic="true"
+                data-testid="courseware-search-summary"
+              >{total > 0
                 ? (
                   intl.formatMessage(
                     total === 1

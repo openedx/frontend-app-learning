@@ -6,6 +6,16 @@ const messages = defineMessages({
     defaultMessage: 'Search within this course',
     description: 'Aria-label for a button that will pop up Courseware Search.',
   },
+  searchSubmitLabel: {
+    id: 'learn.coursewareSerch.submitLabel',
+    defaultMessage: 'Search',
+    description: 'Button label that will submit Courseware Search.',
+  },
+  searchClearAction: {
+    id: 'learn.coursewareSerch.clearAction',
+    defaultMessage: 'Clear search',
+    description: 'Button label that will the current Courseware Search input.',
+  },
   searchCloseAction: {
     id: 'learn.coursewareSerch.closeAction',
     defaultMessage: 'Close the search form',
