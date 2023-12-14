@@ -41,15 +41,10 @@ const messages = defineMessages({
     defaultMessage: 'No results found.',
     description: 'Text to show when the Courseware Search found no results matching the criteria.',
   },
-  searchResultsSingular: {
-    id: 'learn.coursewareSerch.searchResultsSingular',
-    defaultMessage: '1 match found for "{keyword}":',
-    description: 'Text to show when the Courseware Search found only one result matching the criteria.',
-  },
-  searchResultsPlural: {
-    id: 'learn.coursewareSerch.searchResultsPlural',
-    defaultMessage: '{total} matches found for "{keyword}":',
-    description: 'Text to show when the Courseware Search found multiple results matching the criteria.',
+  searchResultsLabel: {
+    id: 'learn.coursewareSerch.searchResultsLabel',
+    defaultMessage: 'Results for "{keyword}":',
+    description: 'Text to show above the search results response list.',
   },
   searchResultsError: {
     id: 'learn.coursewareSerch.searchResultsError',

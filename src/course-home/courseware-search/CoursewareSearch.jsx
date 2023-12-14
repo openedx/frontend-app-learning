@@ -129,14 +129,8 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
                 aria-atomic="true"
                 data-testid="courseware-search-summary"
               >{total > 0
-                ? (
-                  intl.formatMessage(
-                    total === 1
-                      ? messages.searchResultsSingular
-                      : messages.searchResultsPlural,
-                    { total, keyword: lastSearchKeyword },
-                  )
-                ) : intl.formatMessage(messages.searchResultsNone)}
+                ? intl.formatMessage(messages.searchResultsLabel, { total, keyword: lastSearchKeyword })
+                : intl.formatMessage(messages.searchResultsNone)}
               </div>
               <CoursewareSearchResultsFilterContainer />
             </>
