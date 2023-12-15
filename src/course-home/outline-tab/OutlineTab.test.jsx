@@ -1269,5 +1269,97 @@ describe('Outline Tab', () => {
       await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
       expect(axiosMock.history.post[0].url).toEqual(resendEmailUrl);
     });
+
+    it('section should show hidden from toc message when hide_from_toc is true', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      const courseBlocksIds = Object.keys(courseBlocks.blocks);
+      const newCourseBlocks = courseBlocksIds.reduce((blocks, blockId) => ({
+        ...blocks,
+        [blockId]: {
+          ...courseBlocks.blocks[blockId],
+          hide_from_toc: true,
+        },
+      }), {});
+
+      setTabData({
+        course_blocks: { blocks: newCourseBlocks },
+      });
+      await fetchAndRender();
+
+      const iconHiddenFromTocSectionNode = screen.getByTestId('hide-from-toc-section-icon');
+      const textHiddenFromTocSectionNode = screen.getByTestId('hide-from-toc-section-text');
+      expect(iconHiddenFromTocSectionNode).toBeInTheDocument();
+      expect(textHiddenFromTocSectionNode).toBeInTheDocument();
+      expect(textHiddenFromTocSectionNode.textContent).toBe('Hidden in Course Outline, accessible via link');
+    });
+
+    it('section should not show hidden from toc message when hide_from_toc is false', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      const courseBlocksIds = Object.keys(courseBlocks.blocks);
+      const newCourseBlocks = courseBlocksIds.reduce((blocks, blockId) => ({
+        ...blocks,
+        [blockId]: {
+          ...courseBlocks.blocks[blockId],
+          hide_from_toc: false,
+        },
+      }), {});
+
+      setTabData({
+        course_blocks: { blocks: newCourseBlocks },
+      });
+      await fetchAndRender();
+
+      const iconHiddenFromTocSectionNode = screen.queryByTestId('hide-from-toc-section-icon');
+      const textHiddenFromTocSectionNode = screen.queryByTestId('hide-from-toc-section-text');
+
+      expect(iconHiddenFromTocSectionNode).not.toBeInTheDocument();
+      expect(textHiddenFromTocSectionNode).not.toBeInTheDocument();
+    });
+
+    it('sequence link should show hidden from toc message when hide_from_toc is true', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      const courseBlocksIds = Object.keys(courseBlocks.blocks);
+      const newCourseBlocks = courseBlocksIds.reduce((blocks, blockId) => ({
+        ...blocks,
+        [blockId]: {
+          ...courseBlocks.blocks[blockId],
+          hide_from_toc: true,
+        },
+      }), {});
+
+      setTabData({
+        course_blocks: { blocks: newCourseBlocks },
+      });
+      await fetchAndRender();
+
+      const iconHiddenFromTocSequenceLinkNode = screen.getByTestId('hide-from-toc-sequence-link-icon');
+      const textHiddenFromTocSequenceLink = screen.getByTestId('hide-from-toc-sequence-link-text');
+      expect(iconHiddenFromTocSequenceLinkNode).toBeInTheDocument();
+      expect(textHiddenFromTocSequenceLink).toBeInTheDocument();
+      expect(textHiddenFromTocSequenceLink.textContent).toBe('Subsections are not navigable between each other, they can only be accessed through their link.');
+    });
+
+    it('sequence link not show hidden from toc message when hide_from_toc is false', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      const courseBlocksIds = Object.keys(courseBlocks.blocks);
+      const newCourseBlocks = courseBlocksIds.reduce((blocks, blockId) => ({
+        ...blocks,
+        [blockId]: {
+          ...courseBlocks.blocks[blockId],
+          hide_from_toc: false,
+        },
+      }), {});
+
+      setTabData({
+        course_blocks: { blocks: newCourseBlocks },
+      });
+      await fetchAndRender();
+
+      const iconHiddenFromTocSequenceLink = screen.queryByTestId('hide-from-toc-sequence-link-icon');
+      const textHiddenFromTocSequenceLink = screen.queryByTestId('hide-from-toc-sequence-link-text');
+
+      expect(iconHiddenFromTocSequenceLink).not.toBeInTheDocument();
+      expect(textHiddenFromTocSequenceLink).not.toBeInTheDocument();
+    });
   });
 });

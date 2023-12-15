@@ -36,6 +36,16 @@ const messages = defineMessages({
     defaultMessage: 'Completed section',
     description: 'Text used to describe the green checkmark icon in front of a section title',
   },
+  hiddenSection: {
+    id: 'learning.outline.hiddenSection',
+    defaultMessage: 'Hidden in Course Outline, accessible via link',
+    description: 'Label for hidden section in course outline',
+  },
+  hiddenSequenceLink: {
+    id: 'learning.outline.hiddenSequenceLink',
+    defaultMessage: 'Subsections are not navigable between each other, they can only be accessed through their link.',
+    description: 'Label for hidden sequence in course outline',
+  },
   dates: {
     id: 'learning.outline.dates',
     defaultMessage: 'Important dates',
