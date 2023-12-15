@@ -12,6 +12,8 @@ import { faCheckCircle as fasCheckCircle } from '@fortawesome/free-solid-svg-ico
 import { faCheckCircle as farCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import { Icon } from '@openedx/paragon';
+import { Block } from '@openedx/paragon/icons';
 import EffortEstimate from '../../shared/effort-estimate';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
@@ -29,6 +31,7 @@ const SequenceLink = ({
     due,
     showLink,
     title,
+    hideFromTOC,
   } = sequence;
   const {
     userTimezone,
@@ -114,6 +117,16 @@ const SequenceLink = ({
             <EffortEstimate className="ml-3 align-middle" block={sequence} />
           </div>
         </div>
+        {hideFromTOC && (
+        <div className="row w-100 my-2 mx-4 pl-3">
+          <span className="small d-flex">
+            <Icon className="mr-2" src={Block} data-testid="hide-from-toc-sequence-link-icon" />
+            <span data-testid="hide-from-toc-sequence-link-text">
+              {intl.formatMessage(messages.hiddenSequenceLink)}
+            </span>
+          </span>
+        </div>
+        )}
         <div className="row w-100 m-0 ml-3 pl-3">
           <small className="text-body pl-2">
             {due ? dueDateMessage : noDueDateMessage}

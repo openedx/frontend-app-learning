@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Collapsible, IconButton } from '@openedx/paragon';
+import { Collapsible, IconButton, Icon } from '@openedx/paragon';
 import { faCheckCircle as fasCheckCircle, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faCheckCircle as farCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import { DisabledVisible } from '@openedx/paragon/icons';
 import SequenceLink from './SequenceLink';
 import { useModel } from '../../generic/model-store';
 
@@ -23,6 +24,7 @@ const Section = ({
     complete,
     sequenceIds,
     title,
+    hideFromTOC,
   } = section;
   const {
     courseBlocks: {
@@ -42,7 +44,7 @@ const Section = ({
   }, []);
 
   const sectionTitle = (
-    <div className="row w-100 m-0">
+    <div className="d-flex row w-100 m-0">
       <div className="col-auto p-0">
         {complete ? (
           <FontAwesomeIcon
@@ -62,12 +64,24 @@ const Section = ({
           />
         )}
       </div>
-      <div className="col-10 ml-3 p-0 font-weight-bold text-dark-500">
-        <span className="align-middle">{title}</span>
+      <div className="col-7 ml-3 p-0 font-weight-bold text-dark-500">
+        <span className="align-middle col-6">{title}</span>
         <span className="sr-only">
           , {intl.formatMessage(complete ? messages.completedSection : messages.incompleteSection)}
         </span>
       </div>
+      {hideFromTOC && (
+      <div className="row">
+        {hideFromTOC && (
+          <span className="small d-flex align-content-end">
+            <Icon className="mr-2" src={DisabledVisible} data-testid="hide-from-toc-section-icon" />
+            <span data-testid="hide-from-toc-section-text">
+              {intl.formatMessage(messages.hiddenSection)}
+            </span>
+          </span>
+        )}
+      </div>
+      )}
     </div>
   );
 

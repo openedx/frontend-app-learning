@@ -499,6 +499,7 @@ Object {
             "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2": Object {
               "complete": false,
               "courseId": "course-v1:edX+DemoX+Demo_Course",
+              "hideFromTOC": undefined,
               "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               "resumeBlock": false,
               "sequenceIds": Array [
@@ -514,6 +515,7 @@ Object {
               "due": null,
               "effortActivities": 2,
               "effortTime": 15,
+              "hideFromTOC": undefined,
               "icon": null,
               "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
               "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
