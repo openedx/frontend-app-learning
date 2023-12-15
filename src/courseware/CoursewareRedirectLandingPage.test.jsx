@@ -1,5 +1,6 @@
 import React from 'react';
 import { MemoryRouter as Router } from 'react-router-dom';
+import { mergeConfig } from '@edx/frontend-platform';
 import { render, initializeMockApp } from '../setupTest';
 import CoursewareRedirectLandingPage from './CoursewareRedirectLandingPage';
 
@@ -11,6 +12,9 @@ jest.mock('../decode-page-route', () => jest.fn(({ children }) => <div>{children
 describe('CoursewareRedirectLandingPage', () => {
   beforeEach(async () => {
     await initializeMockApp();
+    mergeConfig({
+      ENTERPRISE_LEARNER_PORTAL_URL: 'http://localhost:8734',
+    }, 'Add configs for URLs');
     delete global.location;
     global.location = { assign: redirectUrl };
   });
@@ -33,5 +37,15 @@ describe('CoursewareRedirectLandingPage', () => {
     );
 
     expect(redirectUrl).toHaveBeenCalledWith('/course/course-v1:edX+DemoX+Demo_Course/home');
+  });
+
+  it('Redirects to correct enterprise dashboard URL', () => {
+    render(
+      <Router initialEntries={['/enterprise-learner-dashboard']}>
+        <CoursewareRedirectLandingPage />
+      </Router>,
+    );
+
+    expect(redirectUrl).toHaveBeenCalledWith('http://localhost:8734');
   });
 });
