@@ -44,6 +44,7 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
   return (
     <Tabs
       id="courseware-search-results-tabs"
+      className="courseware-search-results-tabs"
       data-testid="courseware-search-results-tabs"
       variant="tabs"
       activeKey={activeKey}

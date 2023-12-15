@@ -47,8 +47,8 @@ describe('CoursewareSearchToggle', () => {
 
   it('should call onSubmit handler when submit is clicked', async () => {
     await act(async () => renderComponent(placeholderText, onSubmitHandlerMock, onChangeHandlerMock));
-    await waitFor(() => {
-      const element = screen.queryAllByText('Search')[0];
+    await waitFor(async () => {
+      const element = await screen.findByTestId('courseware-search-form-submit');
       fireEvent.click(element);
       expect(onSubmitHandlerMock).toHaveBeenCalledTimes(1);
     });

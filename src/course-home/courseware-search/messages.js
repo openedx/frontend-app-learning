@@ -6,6 +6,16 @@ const messages = defineMessages({
     defaultMessage: 'Search within this course',
     description: 'Aria-label for a button that will pop up Courseware Search.',
   },
+  searchSubmitLabel: {
+    id: 'learn.coursewareSerch.submitLabel',
+    defaultMessage: 'Search',
+    description: 'Button label that will submit Courseware Search.',
+  },
+  searchClearAction: {
+    id: 'learn.coursewareSerch.clearAction',
+    defaultMessage: 'Clear search',
+    description: 'Button label that will the current Courseware Search input.',
+  },
   searchCloseAction: {
     id: 'learn.coursewareSerch.closeAction',
     defaultMessage: 'Close the search form',
@@ -31,15 +41,10 @@ const messages = defineMessages({
     defaultMessage: 'No results found.',
     description: 'Text to show when the Courseware Search found no results matching the criteria.',
   },
-  searchResultsSingular: {
-    id: 'learn.coursewareSerch.searchResultsSingular',
-    defaultMessage: '1 match found for "{keyword}":',
-    description: 'Text to show when the Courseware Search found only one result matching the criteria.',
-  },
-  searchResultsPlural: {
-    id: 'learn.coursewareSerch.searchResultsPlural',
-    defaultMessage: '{total} matches found for "{keyword}":',
-    description: 'Text to show when the Courseware Search found multiple results matching the criteria.',
+  searchResultsLabel: {
+    id: 'learn.coursewareSerch.searchResultsLabel',
+    defaultMessage: 'Results for "{keyword}":',
+    description: 'Text to show above the search results response list.',
   },
   searchResultsError: {
     id: 'learn.coursewareSerch.searchResultsError',

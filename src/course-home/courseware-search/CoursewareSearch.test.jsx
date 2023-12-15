@@ -246,24 +246,14 @@ describe('CoursewareSearch', () => {
       expect(screen.queryByTestId('courseware-search-summary').textContent).toBe('No results found.');
     });
 
-    it('should show a summary for a single result', () => {
+    it('should show a summary for the results', () => {
       mockModels({
         searchKeyword: 'fubar',
         total: 1,
       });
       renderComponent();
 
-      expect(screen.queryByTestId('courseware-search-summary').textContent).toBe('1 match found for "fubar":');
-    });
-
-    it('should show a summary for multiple results', () => {
-      mockModels({
-        searchKeyword: 'fubar',
-        total: 2,
-      });
-      renderComponent();
-
-      expect(screen.queryByTestId('courseware-search-summary').textContent).toBe('2 matches found for "fubar":');
+      expect(screen.queryByTestId('courseware-search-summary').textContent).toBe('Results for "fubar":');
     });
   });
 
