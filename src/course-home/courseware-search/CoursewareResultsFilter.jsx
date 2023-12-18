@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Tabs, Tab } from '@edx/paragon';
 
@@ -8,12 +8,15 @@ import messages from './messages';
 import { useCoursewareSearchParams } from './hooks';
 import { useModel } from '../../generic/model-store';
 
-const noFilterKey = 'none';
-const noFilterLabel = 'All content';
-
-export const filteredResultsBySelection = ({ key = noFilterKey, results = [] }) => (
-  key === noFilterKey ? results : results.filter(({ type }) => type === key)
-);
+const allFilterKey = 'all';
+const otherFilterKey = 'other';
+const allowedFilterKeys = {
+  [allFilterKey]: true,
+  text: true,
+  video: true,
+  sequence: true,
+  [otherFilterKey]: true,
+};
 
 export const CoursewareSearchResultsFilter = ({ intl }) => {
   const { courseId } = useParams();
@@ -22,24 +25,25 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
 
   if (!lastSearch || !lastSearch?.results?.length) { return null; }
 
-  const { total, results } = lastSearch;
+  const { results: data = [] } = lastSearch;
 
-  const filters = [
-    {
-      key: noFilterKey,
-      label: noFilterLabel,
-      count: total,
-    },
-    ...lastSearch.filters,
-  ];
+  const results = useMemo(() => data.reduce((acc, { type, ...rest }) => {
+    acc[allFilterKey] = [...(acc[allFilterKey] || []), { type: allFilterKey, ...rest }];
+    if (type === allFilterKey) { return acc; }
 
-  const activeKey = filters.find(({ key }) => key === filterKeyword)?.key || noFilterKey;
+    let targetKey = otherFilterKey;
+    if (allowedFilterKeys[type]) { targetKey = type; }
+    acc[targetKey] = [...(acc[targetKey] || []), { type: targetKey, ...rest }];
+    return acc;
+  }, {}), [data]);
 
-  const getFilterTitle = (key, fallback) => {
-    const msg = messages[`filter:${key}`];
-    if (!msg) { return fallback; }
-    return intl.formatMessage(msg);
-  };
+  const filters = useMemo(() => Object.keys(allowedFilterKeys).map((key) => ({
+    key,
+    label: intl.formatMessage(messages[`filter:${key}`]),
+    count: results[key].length,
+  })), [results]);
+
+  const activeKey = allowedFilterKeys[filterKeyword] ? filterKeyword : allFilterKey;
 
   return (
     <Tabs
@@ -51,10 +55,8 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
       onSelect={setFilter}
     >
       {filters.map(({ key, label }) => (
-        <Tab key={key} eventKey={key} title={getFilterTitle(key, label)}>
-          <CoursewareSearchResults
-            results={filteredResultsBySelection({ key, results })}
-          />
+        <Tab key={key} eventKey={key} title={label} data-testid={`courseware-search-results-tabs-${key}`}>
+          <CoursewareSearchResults results={results[key]} />
         </Tab>
       ))}
     </Tabs>
