@@ -53,8 +53,8 @@ const messages = defineMessages({
   },
 
   // These are translations for labeling the filters
-  'filter:none': {
-    id: 'learn.coursewareSerch.filter:none',
+  'filter:all': {
+    id: 'learn.coursewareSerch.filter:all',
     defaultMessage: 'All content',
     description: 'Label for the search results filter that shows all content (no filter).',
   },
@@ -67,6 +67,16 @@ const messages = defineMessages({
     id: 'learn.coursewareSerch.filter:video',
     defaultMessage: 'Video',
     description: 'Label for the search results filter that shows results with video content.',
+  },
+  'filter:sequence': {
+    id: 'learn.coursewareSerch.filter:sequence',
+    defaultMessage: 'Section',
+    description: 'Label for the search results filter that shows results with section content.',
+  },
+  'filter:other': {
+    id: 'learn.coursewareSerch.filter:other',
+    defaultMessage: 'Other',
+    description: 'Label for the search results filter that shows results with other content.',
   },
 });
 

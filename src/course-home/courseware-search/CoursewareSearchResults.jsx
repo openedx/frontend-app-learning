@@ -70,14 +70,13 @@ const CoursewareSearchResults = ({ results }) => {
 };
 
 CoursewareSearchResults.propTypes = {
-  results: PropTypes.arrayOf(PropTypes.objectOf({
+  results: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     title: PropTypes.string,
     type: PropTypes.string,
     location: PropTypes.arrayOf(PropTypes.string),
     url: PropTypes.string,
     contentHits: PropTypes.number,
-    score: PropTypes.number,
   })),
 };
 
