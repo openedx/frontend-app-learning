@@ -15,7 +15,7 @@ const iconTypeMapping = {
 
 const defaultIcon = Article;
 
-const CoursewareSearchResults = ({ results }) => {
+const CoursewareSearchResults = ({ results = [] }) => {
   if (!results?.length) {
     return <CoursewareSearchEmpty />;
   }

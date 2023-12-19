@@ -54,11 +54,14 @@ describe('CoursewareSearchResultsFilter', () => {
 
   describe('</CoursewareSearchResultsFilter />', () => {
     beforeEach(() => {
+      useCoursewareSearchParams.mockReturnValue(coursewareSearch);
+    });
+
+    afterEach(() => {
       jest.clearAllMocks();
     });
 
-    it('should render', async () => {
-      useCoursewareSearchParams.mockReturnValue(coursewareSearch);
+    it('should render without errors', async () => {
       useModel.mockReturnValue(searchResultsFactory());
 
       await renderComponent();
@@ -69,6 +72,28 @@ describe('CoursewareSearchResultsFilter', () => {
         expect(screen.queryByTestId('courseware-search-results-tabs-video')).toBeInTheDocument();
         expect(screen.queryByTestId('courseware-search-results-tabs-sequence')).toBeInTheDocument();
         expect(screen.queryByTestId('courseware-search-results-tabs-other')).toBeInTheDocument();
+      });
+    });
+
+    describe('when there are not results', () => {
+      it('should render without errors', async () => {
+        useModel.mockReturnValue(searchResultsFactory('blah', {
+          results: [],
+          filters: [],
+          total: 0,
+          maxScore: null,
+          ms: 5,
+        }));
+
+        await renderComponent();
+
+        await waitFor(() => {
+          expect(screen.queryByTestId('courseware-search-results-tabs-all')).toBeInTheDocument();
+          expect(screen.queryByTestId('courseware-search-results-tabs-text')).toBeInTheDocument();
+          expect(screen.queryByTestId('courseware-search-results-tabs-video')).toBeInTheDocument();
+          expect(screen.queryByTestId('courseware-search-results-tabs-sequence')).toBeInTheDocument();
+          expect(screen.queryByTestId('courseware-search-results-tabs-other')).toBeInTheDocument();
+        });
       });
     });
   });

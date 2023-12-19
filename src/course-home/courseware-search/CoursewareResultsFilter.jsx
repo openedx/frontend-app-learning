@@ -23,7 +23,7 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
   const lastSearch = useModel('contentSearchResults', courseId);
   const { filter: filterKeyword, setFilter } = useCoursewareSearchParams();
 
-  if (!lastSearch || !lastSearch?.results?.length) { return null; }
+  if (!lastSearch) { return null; }
 
   const { results: data = [] } = lastSearch;
 
@@ -40,7 +40,7 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
   const filters = useMemo(() => Object.keys(allowedFilterKeys).map((key) => ({
     key,
     label: intl.formatMessage(messages[`filter:${key}`]),
-    count: results[key].length,
+    count: results[key]?.length || 0,
   })), [results]);
 
   const activeKey = allowedFilterKeys[filterKeyword] ? filterKeyword : allFilterKey;
