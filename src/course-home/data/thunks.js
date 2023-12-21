@@ -38,28 +38,41 @@ export function fetchTab(courseId, tab, getTabData, targetUserId) {
   return async (dispatch) => {
     dispatch(fetchTabRequest({ courseId }));
     try {
-      const courseHomeCourseMetadata = await getCourseHomeCourseMetadata(courseId, 'outline');
-      dispatch(addModel({
-        modelType: 'courseHomeMeta',
-        model: {
-          id: courseId,
-          ...courseHomeCourseMetadata,
-        },
-      }));
-      const tabDataResult = getTabData && await getTabData(courseId, targetUserId);
-      if (tabDataResult) {
+      const promisesToFulfill = [getCourseHomeCourseMetadata(courseId, 'outline')];
+      if (getTabData) {
+        promisesToFulfill.push(getTabData(courseId, targetUserId));
+      }
+      const [
+        courseHomeCourseMetadataResult,
+        tabDataResult,
+      ] = await Promise.allSettled(promisesToFulfill);
+      if (courseHomeCourseMetadataResult.status === 'fulfilled') {
+        dispatch(addModel({
+          modelType: 'courseHomeMeta',
+          model: {
+            id: courseId,
+            ...courseHomeCourseMetadataResult.value,
+          },
+        }));
+      }
+      if (tabDataResult?.status === 'fulfilled') {
         dispatch(addModel({
           modelType: tab,
           model: {
             id: courseId,
-            ...tabDataResult,
+            ...tabDataResult.value,
           },
         }));
       }
-      // Disable the access-denied path for now - it caused a regression
-      if (!courseHomeCourseMetadata.courseAccess.hasAccess) {
+      if (courseHomeCourseMetadataResult.status === 'rejected') {
+        throw courseHomeCourseMetadataResult.reason;
+      } else if (!courseHomeCourseMetadataResult.value.courseAccess.hasAccess) {
+        // If the learner does not have access to the course, short cut to dispatch to a denied response regardless of
+        // the tabDataResult.
         dispatch(fetchTabDenied({ courseId }));
-      } else if (tabDataResult || !getTabData) {
+      } else if (tabDataResult?.status === 'rejected') {
+        throw tabDataResult.reason;
+      } else {
         dispatch(fetchTabSuccess({
           courseId,
           targetUserId,
