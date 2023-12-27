@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { useContext } from 'react';
 import SidebarContext from './SidebarContext';
-import NewSidebarTrigger from './NewSidebarTrigger';
+import SidebarTrigger from './SidebarTrigger';
 import { SidebarID } from './constants';
 
 const SidebarTriggers = () => {
@@ -17,7 +17,7 @@ const SidebarTriggers = () => {
         style={{ borderBottom: isActive ? '2px solid' : null }}
         key={SidebarID}
       >
-        <NewSidebarTrigger onClick={() => toggleSidebar(SidebarID)} key={SidebarID} />
+        <SidebarTrigger onClick={() => toggleSidebar(SidebarID)} key={SidebarID} />
       </div>
     </div>
   );

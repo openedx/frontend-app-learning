@@ -1,4 +1,4 @@
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
@@ -10,12 +10,9 @@ import SidebarTriggerBase from './common/TriggerBase';
 import SidebarContext from './SidebarContext';
 import { useModel } from '../../../generic/model-store';
 import { getCourseDiscussionTopics } from '../../data/thunks';
-import NewSidebarIcon from './NewSidebarIcon';
+import SidebarIcon from './SidebarIcon';
 
-const NewSideBarTrigger = ({
-  intl,
-  onClick,
-}) => {
+const SideBarTrigger = ({ onClick }) => {
   const {
     courseId,
     notificationStatus,
@@ -26,6 +23,7 @@ const NewSideBarTrigger = ({
   } = useContext(SidebarContext);
 
   const dispatch = useDispatch();
+  const intl = useIntl();
   const { tabs } = useModel('courseHomeMeta', courseId);
   const baseUrl = getConfig().DISCUSSIONS_MFE_BASE_URL;
   const edxProvider = useMemo(
@@ -78,14 +76,13 @@ const NewSideBarTrigger = ({
 
   return (
     <SidebarTriggerBase onClick={handleClick} ariaLabel={intl.formatMessage(messages.openSidebarTrigger)}>
-      <NewSidebarIcon status={notificationStatus} sidebarColor="bg-danger-500" />
+      <SidebarIcon status={notificationStatus} />
     </SidebarTriggerBase>
   );
 };
 
-NewSideBarTrigger.propTypes = {
-  intl: intlShape.isRequired,
+SideBarTrigger.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-export default injectIntl(NewSideBarTrigger);
+export default SideBarTrigger;

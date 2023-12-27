@@ -1,2 +1,2 @@
-export { default as RightSidebarFilled } from './SvgRightSidebarFilled';
-export { default as RightSidebarOutlined } from './SvgRightSidebarOutlined';
+export { default as RightSidebarFilled } from './RightSidebarFilled';
+export { default as RightSidebarOutlined } from './RightSidebarOutlined';

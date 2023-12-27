@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const SvgRightSidebarOutlined = (props) => (
+const RightSidebarOutlined = (props) => (
   <svg
     width={24}
     height={24}
@@ -17,4 +17,4 @@ const SvgRightSidebarOutlined = (props) => (
     />
   </svg>
 );
-export default SvgRightSidebarOutlined;
+export default RightSidebarOutlined;

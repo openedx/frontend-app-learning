@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import {
+  useIntl, FormattedDate, FormattedMessage, injectIntl,
+} from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
 import { Button, Icon, IconButton } from '@edx/paragon';
 import { Close } from '@edx/paragon/icons';
 import { setLocalStorage } from '../../data/localStorage';
@@ -13,6 +15,7 @@ import {
   FullAccessBullet,
   SupportMissionBullet,
 } from '../upsell-bullets/UpsellBullets';
+import messages from '../messages';
 
 const UpsellNoFBECardContent = () => (
   <ul className="fa-ul upgrade-notification-ul pt-0">
@@ -289,6 +292,7 @@ const UpgradeNotification = ({
   sidebarId,
   tabId,
 }) => {
+  const intl = useIntl();
   const dateNow = Date.now();
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
   const correctedTime = new Date(dateNow + timeOffsetMillis);
@@ -503,7 +507,8 @@ const UpgradeNotification = ({
               iconAs={Icon}
               onClick={() => toggleSidebar(sidebarId, tabId)}
               variant="light"
-              className="text-black"
+              className="text-primary-500"
+              alt={intl.formatMessage(messages.close)}
             />
           </div>
           )}

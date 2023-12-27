@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const SvgRightSidebarFilled = (props) => (
+const RightSidebarFilled = (props) => (
   <svg
     width={24}
     height={24}
@@ -17,4 +17,4 @@ const SvgRightSidebarFilled = (props) => (
     />
   </svg>
 );
-export default SvgRightSidebarFilled;
+export default RightSidebarFilled;

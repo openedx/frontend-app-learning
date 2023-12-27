@@ -47,7 +47,7 @@ const Sequence = ({
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
   const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
-  const showSidebarNewView = getConfig().ENABLE_SIDEBAR_NEW_VIEW;
+  const showSidebarNewView = getConfig().ENABLE_NEW_SIDEBAR;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;

@@ -37,10 +37,7 @@ const SidebarProvider = ({
       setIsDiscussionbarAvailable(true);
       setHideDiscussionbar(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topic]);
 
-  useEffect(() => {
     if (isEmpty(verifiedMode)) {
       setIsNotificationbarAvailable(false);
       setHideNotificationbar(true);
@@ -48,15 +45,9 @@ const SidebarProvider = ({
       setIsNotificationbarAvailable(true);
       setHideNotificationbar(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [verifiedMode]);
 
-  useEffect(() => {
     setCurrentSidebar(SidebarID);
-    if (isDiscussionbarAvailable) { setHideDiscussionbar(false); } else { setHideDiscussionbar(true); }
-    if (isNotificationbarAvailable) { setHideNotificationbar(false); } else { setHideNotificationbar(true); }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unitId, isDiscussionbarAvailable, isNotificationbarAvailable]);
+  }, [unitId, topic, verifiedMode, isDiscussionbarAvailable, isNotificationbarAvailable]);
 
   const onNotificationSeen = useCallback(() => {
     setNotificationStatus('inactive');

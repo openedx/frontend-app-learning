@@ -36,7 +36,7 @@ const Course = ({
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const showSidebarNewView = getConfig().ENABLE_SIDEBAR_NEW_VIEW;
+  const showNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
 
   const pageTitleBreadCrumbs = [
     sequence,
@@ -67,7 +67,7 @@ const Course = ({
     ));
   }, [sequenceId]);
 
-  const SidebarProviderComponent = showSidebarNewView === 'true' ? NewSidebarProvider : SidebarProvider;
+  const SidebarProviderComponent = showNewSidebar === 'true' ? NewSidebarProvider : SidebarProvider;
 
   return (
     <SidebarProviderComponent courseId={courseId} unitId={unitId}>
@@ -91,7 +91,7 @@ const Course = ({
               courseId={courseId}
               contentToolsEnabled={course.showCalculator || course.notes.enabled}
             />
-            { showSidebarNewView === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
+            { showNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
           </>
         )}
       </div>
