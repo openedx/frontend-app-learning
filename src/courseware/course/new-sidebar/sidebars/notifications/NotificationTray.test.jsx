@@ -6,9 +6,7 @@ import { breakpoints } from '@edx/paragon';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import { Factory } from 'rosie';
-import {
-  fireEvent, initializeMockApp, render, screen, waitFor,
-} from '../../../../../setupTest';
+import { initializeMockApp, render, screen } from '../../../../../setupTest';
 import initializeStore from '../../../../../store';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../../../../utils';
 
@@ -50,42 +48,13 @@ describe('NotificationTray', () => {
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
   });
 
-  it('renders notification tray and close tray button', async () => {
-    global.innerWidth = breakpoints.extraLarge.minWidth;
-    const toggleNotificationTray = jest.fn();
-    await fetchAndRender(
-      <SidebarContext.Provider value={{
-        currentSidebar: ID,
-        courseId,
-        toggleSidebar: toggleNotificationTray,
-        shouldDisplayFullScreen: false,
-      }}
-      >
-        <NotificationTray />
-      </SidebarContext.Provider>,
-    );
-    expect(screen.getByText('Notifications'))
-      .toBeInTheDocument();
-    const notificationCloseIconButton = screen.getByRole('button', { name: /Close notification tray/i });
-    expect(notificationCloseIconButton)
-      .toBeInTheDocument();
-    expect(notificationCloseIconButton)
-      .toHaveClass('btn-icon-primary');
-    fireEvent.click(notificationCloseIconButton);
-    expect(toggleNotificationTray)
-      .toHaveBeenCalledTimes(1);
-
-    // should not render responsive "Back to course" to close the tray
-    expect(screen.queryByText('Back to course'))
-      .not
-      .toBeInTheDocument();
-  });
-
   it('renders upgrade card', async () => {
     await fetchAndRender(
       <SidebarContext.Provider value={{
         currentSidebar: ID,
         courseId,
+        hideNotificationbar: false,
+        isNotificationbarAvailable: true,
       }}
       >
         <NotificationTray />
@@ -102,18 +71,21 @@ describe('NotificationTray', () => {
       .toBeInTheDocument();
   });
 
-  it('renders no notifications message if no verified mode', async () => {
+  it('renders no notifications bar if no verified mode', async () => {
     setMetadata({ verified_mode: null });
     await fetchAndRender(
       <SidebarContext.Provider value={{
         currentSidebar: ID,
         courseId,
+        hideNotificationbar: true,
+        isNotificationbarAvailable: false,
       }}
       >
         <NotificationTray />
       </SidebarContext.Provider>,
     );
-    expect(screen.queryByText('You have no new notifications at this time.'))
+    expect(screen.queryByText('Notifications'))
+      .not
       .toBeInTheDocument();
   });
 
@@ -125,6 +97,8 @@ describe('NotificationTray', () => {
         currentSidebar: ID,
         courseId,
         onNotificationSeen,
+        hideNotificationbar: false,
+        isNotificationbarAvailable: true,
       }}
       >
         <NotificationTray />
@@ -133,29 +107,5 @@ describe('NotificationTray', () => {
     expect(onNotificationSeen).toHaveBeenCalledTimes(0);
     jest.advanceTimersByTime(3000);
     expect(onNotificationSeen).toHaveBeenCalledTimes(1);
-  });
-
-  it('renders notification tray with full screen "Back to course" at responsive view', async () => {
-    global.innerWidth = breakpoints.medium.maxWidth;
-    const toggleNotificationTray = jest.fn();
-    await fetchAndRender(
-      <SidebarContext.Provider value={{
-        currentSidebar: ID,
-        courseId,
-        shouldDisplayFullScreen: true,
-        toggleSidebar: toggleNotificationTray,
-      }}
-      >
-        <NotificationTray />
-      </SidebarContext.Provider>,
-    );
-
-    const responsiveCloseButton = screen.getByRole('button', { name: 'Back to course' });
-    await waitFor(() => expect(responsiveCloseButton)
-      .toBeInTheDocument());
-
-    fireEvent.click(responsiveCloseButton);
-    expect(toggleNotificationTray)
-      .toHaveBeenCalledTimes(1);
   });
 });

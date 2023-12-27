@@ -33,7 +33,9 @@ describe('Discussions Trigger', () => {
     mockData = {
       courseId,
       unitId,
-      currentSidebar: 'DISCUSSIONS',
+      currentSidebar: 'NEWSIDEBAR',
+      hideDiscussionbar: false,
+      isDiscussionbarAvailable: true,
     };
 
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(
@@ -64,7 +66,7 @@ describe('Discussions Trigger', () => {
   });
 
   it('should show nothing if unit has no discussions associated with it', async () => {
-    renderWithProvider({ unitId: 'no-discussion' });
+    renderWithProvider({ isDiscussionbarAvailable: false });
     expect(screen.queryByTitle('Discussions')).not.toBeInTheDocument();
   });
 });
