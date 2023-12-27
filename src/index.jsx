@@ -172,6 +172,7 @@ initialize({
         PROCTORED_EXAM_RULES_URL: process.env.PROCTORED_EXAM_RULES_URL || null,
         CHAT_RESPONSE_URL: process.env.CHAT_RESPONSE_URL || null,
         PRIVACY_POLICY_URL: process.env.PRIVACY_POLICY_URL || null,
+        ENABLE_SIDEBAR_NEW_VIEW: process.env.ENABLE_SIDEBAR_NEW_VIEW || false,
       }, 'LearnerAppConfig');
     },
   },

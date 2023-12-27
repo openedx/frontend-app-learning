@@ -15,6 +15,8 @@ import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import SidebarTriggers from './sidebar/SidebarTriggers';
+import NewSidebarProvider from './new-sidebar/SidebarContextProvider';
+import NewSidebarTriggers from './new-sidebar/SidebarTriggers';
 
 import { useModel } from '../../generic/model-store';
 
@@ -34,6 +36,7 @@ const Course = ({
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
+  const showSidebarNewView = getConfig().ENABLE_SIDEBAR_NEW_VIEW;
 
   const pageTitleBreadCrumbs = [
     sequence,
@@ -64,8 +67,10 @@ const Course = ({
     ));
   }, [sequenceId]);
 
+  const SidebarProviderComponent = showSidebarNewView === 'true' ? NewSidebarProvider : SidebarProvider;
+
   return (
-    <SidebarProvider courseId={courseId} unitId={unitId}>
+    <SidebarProviderComponent courseId={courseId} unitId={unitId}>
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
@@ -86,7 +91,7 @@ const Course = ({
               courseId={courseId}
               contentToolsEnabled={course.showCalculator || course.notes.enabled}
             />
-            <SidebarTriggers />
+            { showSidebarNewView === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
           </>
         )}
       </div>
@@ -112,7 +117,7 @@ const Course = ({
         onClose={() => setWeeklyGoalCelebrationOpen(false)}
       />
       <ContentTools course={course} />
-    </SidebarProvider>
+    </SidebarProviderComponent>
   );
 };
 

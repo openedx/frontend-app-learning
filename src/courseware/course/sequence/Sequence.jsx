@@ -2,6 +2,7 @@
 import React, {
   useEffect, useState,
 } from 'react';
+import { getConfig } from '@edx/frontend-platform';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {
@@ -19,7 +20,9 @@ import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '../../
 
 import CourseLicense from '../course-license';
 import Sidebar from '../sidebar/Sidebar';
+import NewSidebar from '../new-sidebar/Sidebar';
 import SidebarTriggers from '../sidebar/SidebarTriggers';
+import NewSidebarTriggers from '../new-sidebar/SidebarTriggers';
 import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
@@ -44,6 +47,7 @@ const Sequence = ({
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
   const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
+  const showSidebarNewView = getConfig().ENABLE_SIDEBAR_NEW_VIEW;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -159,7 +163,8 @@ const Sequence = ({
             handlePrevious();
           }}
         />
-        {shouldDisplayNotificationTriggerInSequence && <SidebarTriggers />}
+        {shouldDisplayNotificationTriggerInSequence && (showSidebarNewView === 'true'
+          ? <NewSidebarTriggers /> : <SidebarTriggers />)}
 
         <div className="unit-container flex-grow-1">
           <SequenceContent
@@ -185,7 +190,7 @@ const Sequence = ({
           )}
         </div>
       </div>
-      <Sidebar />
+      {showSidebarNewView === 'true' ? <NewSidebar /> : <Sidebar />}
     </div>
   );
 
