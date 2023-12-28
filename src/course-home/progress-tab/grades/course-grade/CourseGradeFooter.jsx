@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { CheckCircle, WarningFilled } from '@edx/paragon/icons';
-import { breakpoints, Icon, useWindowSize } from '@edx/paragon';
+import { CheckCircle, WarningFilled } from '@openedx/paragon/icons';
+import { breakpoints, Icon, useWindowSize } from '@openedx/paragon';
 import { useModel } from '../../../../generic/model-store';
 
 import GradeRangeTooltip from './GradeRangeTooltip';

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown } from '@edx/paragon';
+import { Dropdown } from '@openedx/paragon';
 
 import {
   sendTrackingLogEvent,

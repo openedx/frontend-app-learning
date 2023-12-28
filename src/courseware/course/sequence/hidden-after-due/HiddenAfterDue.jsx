@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
-import { Alert, Hyperlink } from '@edx/paragon';
-import { Info } from '@edx/paragon/icons';
+import { Alert, Hyperlink } from '@openedx/paragon';
+import { Info } from '@openedx/paragon/icons';
 
 import { useModel } from '../../../../generic/model-store';
 

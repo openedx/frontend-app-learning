@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Tabs, Tab } from '@edx/paragon';
+import { Tabs, Tab } from '@openedx/paragon';
 
 import { useParams } from 'react-router';
 import CoursewareSearchResults from './CoursewareSearchResults';

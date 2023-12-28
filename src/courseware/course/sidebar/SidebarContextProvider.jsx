@@ -1,4 +1,4 @@
-import { breakpoints, useWindowSize } from '@edx/paragon';
+import { breakpoints, useWindowSize } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import React, {
   useEffect, useState, useMemo, useCallback,

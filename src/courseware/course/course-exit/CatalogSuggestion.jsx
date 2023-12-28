@@ -7,7 +7,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
   FormattedMessage, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
-import { Hyperlink } from '@edx/paragon';
+import { Hyperlink } from '@openedx/paragon';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 

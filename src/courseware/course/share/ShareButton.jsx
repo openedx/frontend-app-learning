@@ -4,7 +4,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { TwitterShareButton, TwitterIcon } from 'react-share';
 import { stringifyUrl } from 'query-string';
 
-import { Icon } from '@edx/paragon';
+import { Icon } from '@openedx/paragon';
 import messages from './messages';
 
 const ShareTwitterIcon = () => (

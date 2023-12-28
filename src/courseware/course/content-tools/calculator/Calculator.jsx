@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Collapsible } from '@edx/paragon';
+import { Collapsible } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {

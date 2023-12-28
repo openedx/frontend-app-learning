@@ -7,8 +7,8 @@ import {
   Button,
   Spinner,
   Icon,
-} from '@edx/paragon';
-import { Check, ArrowForward } from '@edx/paragon/icons';
+} from '@openedx/paragon';
+import { Check, ArrowForward } from '@openedx/paragon/icons';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { sendActivationEmail } from '../../courseware/data';
 import messages from './messages';

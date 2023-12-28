@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { Form, Card, Icon } from '@edx/paragon';
+import { Form, Card, Icon } from '@openedx/paragon';
 import { history } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Email } from '@edx/paragon/icons';
+import { Email } from '@openedx/paragon/icons';
 import { useSelector } from 'react-redux';
 import messages from '../messages';
 import LearningGoalButton from './LearningGoalButton';

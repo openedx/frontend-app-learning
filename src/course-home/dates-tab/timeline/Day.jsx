@@ -8,7 +8,7 @@ import {
   injectIntl,
   intlShape,
 } from '@edx/frontend-platform/i18n';
-import { Tooltip, OverlayTrigger } from '@edx/paragon';
+import { Tooltip, OverlayTrigger } from '@openedx/paragon';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 

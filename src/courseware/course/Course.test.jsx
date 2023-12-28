@@ -3,7 +3,7 @@ import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
-import { breakpoints } from '@edx/paragon';
+import { breakpoints } from '@openedx/paragon';
 import {
   act, fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';

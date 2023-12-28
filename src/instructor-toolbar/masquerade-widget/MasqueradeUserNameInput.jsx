@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Input } from '@edx/paragon';
+import { Input } from '@openedx/paragon';
 
 import messages from './messages';
 

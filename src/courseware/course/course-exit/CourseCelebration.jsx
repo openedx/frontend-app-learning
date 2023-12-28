@@ -13,8 +13,8 @@ import {
   Button,
   Hyperlink,
   useWindowSize,
-} from '@edx/paragon';
-import { CheckCircle } from '@edx/paragon/icons';
+} from '@openedx/paragon';
+import { CheckCircle } from '@openedx/paragon/icons';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 

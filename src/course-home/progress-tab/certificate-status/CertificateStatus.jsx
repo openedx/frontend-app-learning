@@ -6,7 +6,7 @@ import {
   FormattedDate, FormattedMessage, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
 
-import { Button, Card } from '@edx/paragon';
+import { Button, Card } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';

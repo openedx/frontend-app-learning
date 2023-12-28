@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {
   getLocale, injectIntl, intlShape, isRtl,
 } from '@edx/frontend-platform/i18n';
-import { OverlayTrigger, Popover } from '@edx/paragon';
+import { OverlayTrigger, Popover } from '@openedx/paragon';
 
 import messages from '../messages';
 

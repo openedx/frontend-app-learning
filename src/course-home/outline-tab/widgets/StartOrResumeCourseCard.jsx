@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card } from '@edx/paragon';
+import { Button, Card } from '@openedx/paragon';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { useSelector } from 'react-redux';

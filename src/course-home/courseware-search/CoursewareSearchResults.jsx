@@ -1,9 +1,9 @@
 import React from 'react';
 import {
   Folder, TextFields, VideoCamera, Article,
-} from '@edx/paragon/icons';
+} from '@openedx/paragon/icons';
 import { getConfig } from '@edx/frontend-platform';
-import { Icon } from '@edx/paragon';
+import { Icon } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import CoursewareSearchEmpty from './CoursewareSearchEmpty';
 

@@ -84,10 +84,10 @@ file (which is git-ignored) that defines where to find your local modules, for i
        may want to use "src" if the module installs React as a peer/dev dependency.
      */
      localModules: [
-        { moduleName: '@edx/paragon/scss', dir: '../paragon', dist: 'scss' },
-        { moduleName: '@edx/paragon', dir: '../paragon', dist: 'dist' },
-        { moduleName: '@edx/frontend-enterprise', dir: '../frontend-enterprise', dist: 'src' },
-        { moduleName: '@edx/frontend-platform', dir: '../frontend-platform', dist: 'dist' },
+        { moduleName: '@openedx/paragon/scss', dir: '../paragon', dist: 'scss' },
+        { moduleName: '@openedx/paragon', dir: '../paragon', dist: 'dist' },
+        { moduleName: '@openedx/frontend-enterprise', dir: '../frontend-enterprise', dist: 'src' },
+        { moduleName: '@openedx/frontend-platform', dir: '../frontend-platform', dist: 'dist' },
      ],
    };
 

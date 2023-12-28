@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ErrorPage } from '@edx/frontend-platform/react';
-import { ModalDialog, Modal } from '@edx/paragon';
+import { ModalDialog, Modal } from '@openedx/paragon';
 import { shallow } from '@edx/react-unit-test-utils';
 
 import PageLoading from '../../../../generic/PageLoading';
@@ -11,7 +11,7 @@ import ContentIFrame, { IFRAME_FEATURE_POLICY, testIDs } from './ContentIFrame';
 
 jest.mock('@edx/frontend-platform/react', () => ({ ErrorPage: 'ErrorPage' }));
 
-jest.mock('@edx/paragon', () => jest.requireActual('@edx/react-unit-test-utils')
+jest.mock('@openedx/paragon', () => jest.requireActual('@edx/react-unit-test-utils')
   .mockComponents({
     Modal: 'Modal',
     ModalDialog: {

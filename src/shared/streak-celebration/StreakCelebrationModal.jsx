@@ -7,10 +7,10 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
   FormattedMessage, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
-import { Lightbulb, MoneyFilled } from '@edx/paragon/icons';
+import { Lightbulb, MoneyFilled } from '@openedx/paragon/icons';
 import {
   Alert, breakpoints, Icon, ModalDialog, Spinner, useWindowSize,
-} from '@edx/paragon';
+} from '@openedx/paragon';
 import { useDispatch } from 'react-redux';
 import { UpgradeNowButton } from '../../generic/upgrade-button';
 

@@ -9,7 +9,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Hyperlink, DataTable, CardView, Card,
-} from '@edx/paragon';
+} from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import truncate from 'truncate-html';
 import { useModel } from '../../../generic/model-store';

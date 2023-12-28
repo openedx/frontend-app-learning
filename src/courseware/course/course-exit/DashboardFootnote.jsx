@@ -6,7 +6,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
   FormattedMessage, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
-import { Hyperlink } from '@edx/paragon';
+import { Hyperlink } from '@openedx/paragon';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { getConfig } from '@edx/frontend-platform';
 

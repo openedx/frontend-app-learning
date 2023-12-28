@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import {
   getLocale, injectIntl, intlShape, isRtl,
 } from '@edx/frontend-platform/i18n';
-import { OverlayTrigger, Popover } from '@edx/paragon';
+import { OverlayTrigger, Popover } from '@openedx/paragon';
 
 import { useModel } from '../../../../generic/model-store';
 

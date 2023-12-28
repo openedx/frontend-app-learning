@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import { Button } from '@edx/paragon';
+import { Button } from '@openedx/paragon';
 
 import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';

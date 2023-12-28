@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Button } from '@edx/paragon';
+import { Button } from '@openedx/paragon';
 
 import { useModel } from '../../generic/model-store';
 

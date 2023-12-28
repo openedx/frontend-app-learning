@@ -6,7 +6,7 @@ import {
   injectIntl,
   intlShape,
 } from '@edx/frontend-platform/i18n';
-import { Alert, Button } from '@edx/paragon';
+import { Alert, Button } from '@openedx/paragon';
 import { useDispatch } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

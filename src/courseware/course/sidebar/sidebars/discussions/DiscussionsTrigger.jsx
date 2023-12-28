@@ -1,7 +1,7 @@
 import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Icon } from '@edx/paragon';
-import { QuestionAnswer } from '@edx/paragon/icons';
+import { Icon } from '@openedx/paragon';
+import { QuestionAnswer } from '@openedx/paragon/icons';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';

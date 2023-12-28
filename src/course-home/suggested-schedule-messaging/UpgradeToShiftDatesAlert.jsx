@@ -8,7 +8,7 @@ import {
   Button,
   Row,
   Col,
-} from '@edx/paragon';
+} from '@openedx/paragon';
 
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
