@@ -18,7 +18,7 @@ export default class PageLoading extends Component {
 
   render() {
     return (
-      <div>
+      <div className="page-loading">
         <div
           className="d-flex justify-content-center align-items-center flex-column"
           style={{
