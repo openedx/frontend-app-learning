@@ -126,7 +126,7 @@ const ExpirationCountdown = ({
     expirationText = (
       <FormattedMessage
         id="learning.generic.upgradeNotification.expirationDays"
-        defaultMessage={`{dayCount, number} {dayCount, plural, 
+        defaultMessage={`{dayCount, number} {dayCount, plural,
           one {day}
           other {days}} left`}
         values={{
@@ -500,17 +500,16 @@ const UpgradeNotification = ({
         >
           {upgradeNotificationHeaderText}
           {showRemoveIcon && (
-          <div className="d-inline-flex ml-auto">
-            <IconButton
-              src={Close}
-              size="sm"
-              iconAs={Icon}
-              onClick={() => toggleSidebar(sidebarId, tabId)}
-              variant="light"
-              className="text-primary-500"
-              alt={intl.formatMessage(messages.close)}
-            />
-          </div>
+            <div className="d-inline-flex ml-auto">
+              <IconButton
+                src={Close}
+                size="sm"
+                iconAs={Icon}
+                onClick={() => toggleSidebar(sidebarId, tabId)}
+                className="icon-hover"
+                alt={intl.formatMessage(messages.close)}
+              />
+            </div>
           )}
         </h2>
         {expirationBanner}

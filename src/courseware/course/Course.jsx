@@ -36,7 +36,7 @@ const Course = ({
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const showNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
+  const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
 
   const pageTitleBreadCrumbs = [
     sequence,
@@ -67,14 +67,14 @@ const Course = ({
     ));
   }, [sequenceId]);
 
-  const SidebarProviderComponent = showNewSidebar === 'true' ? NewSidebarProvider : SidebarProvider;
+  const SidebarProviderComponent = enableNewSidebar === 'true' ? NewSidebarProvider : SidebarProvider;
 
   return (
     <SidebarProviderComponent courseId={courseId} unitId={unitId}>
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
-      <div className="position-relative d-flex align-items-start">
+      <div className="position-relative d-flex align-items-center mb-4 mt-1">
         <CourseBreadcrumbs
           courseId={courseId}
           sectionId={section ? section.id : null}
@@ -91,7 +91,7 @@ const Course = ({
               courseId={courseId}
               contentToolsEnabled={course.showCalculator || course.notes.enabled}
             />
-            { showNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
+            {enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
           </>
         )}
       </div>

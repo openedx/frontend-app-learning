@@ -55,8 +55,8 @@ const SidebarBase = ({
                 size="sm"
                 iconAs={Icon}
                 onClick={() => toggleSidebar(sidebarId, title)}
-                variant="primary"
                 alt={intl.formatMessage(messages.closeNotificationTrigger)}
+                className="icon-hover"
               />
             </div>
           </div>

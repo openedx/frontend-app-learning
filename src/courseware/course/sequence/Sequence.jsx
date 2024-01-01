@@ -47,7 +47,7 @@ const Sequence = ({
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
   const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
-  const showSidebarNewView = getConfig().ENABLE_NEW_SIDEBAR;
+  const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -163,8 +163,9 @@ const Sequence = ({
             handlePrevious();
           }}
         />
-        {shouldDisplayNotificationTriggerInSequence && (showSidebarNewView === 'true'
-          ? <NewSidebarTriggers /> : <SidebarTriggers />)}
+        {shouldDisplayNotificationTriggerInSequence && (
+          enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers />
+        )}
 
         <div className="unit-container flex-grow-1">
           <SequenceContent
@@ -190,7 +191,7 @@ const Sequence = ({
           )}
         </div>
       </div>
-      {showSidebarNewView === 'true' ? <NewSidebar /> : <Sidebar />}
+      {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
     </div>
   );
 

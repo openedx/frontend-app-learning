@@ -3,19 +3,19 @@ import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
+import { Icon, IconButton } from '@edx/paragon';
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 import { getSessionStorage, setSessionStorage } from '../../../data/sessionStorage';
 import messages from './messages';
-import SidebarTriggerBase from './common/TriggerBase';
 import SidebarContext from './SidebarContext';
 import { useModel } from '../../../generic/model-store';
 import { getCourseDiscussionTopics } from '../../data/thunks';
-import SidebarIcon from './SidebarIcon';
+import { RightSidebarFilled, RightSidebarOutlined } from './icons';
 
 const SideBarTrigger = ({ onClick }) => {
   const {
     courseId,
-    notificationStatus,
+    currentSidebar,
     setNotificationStatus,
     upgradeNotificationCurrentState,
     isNotificationbarAvailable,
@@ -75,9 +75,13 @@ const SideBarTrigger = ({ onClick }) => {
   if (!isDiscussionbarAvailable && !isNotificationbarAvailable) { return null; }
 
   return (
-    <SidebarTriggerBase onClick={handleClick} ariaLabel={intl.formatMessage(messages.openSidebarTrigger)}>
-      <SidebarIcon status={notificationStatus} />
-    </SidebarTriggerBase>
+    <IconButton
+      src={currentSidebar ? RightSidebarFilled : RightSidebarOutlined}
+      iconAs={Icon}
+      onClick={handleClick}
+      alt={intl.formatMessage(messages.openSidebarTrigger)}
+      className="icon-hover"
+    />
   );
 };
 
