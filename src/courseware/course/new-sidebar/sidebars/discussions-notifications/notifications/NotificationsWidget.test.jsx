@@ -12,12 +12,12 @@ import { appendBrowserTimezoneToUrl, executeThunk } from '../../../../../utils';
 
 import { fetchCourse } from '../../../../data';
 import SidebarContext from '../../SidebarContext';
-import NotificationTray from './NotificationTray';
+import NotificationTray from './NotificationsSidebar';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
 
-describe('NotificationTray', () => {
+describe('NotificationsSidebar', () => {
   let axiosMock;
   let store;
   const ID = 'NEWSIDEBAR';

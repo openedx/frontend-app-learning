@@ -3,8 +3,7 @@ import { ArrowBackIos } from '@edx/paragon/icons';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon } from '@edx/paragon';
 import classNames from 'classnames';
-import NotificationTray from './sidebars/notifications/NotificationTray';
-import DiscussionsSidebar from './sidebars/discussions/DiscussionsSidebar';
+import { SIDEBARS } from './sidebars';
 import SidebarContext from './SidebarContext';
 import messages from './messages';
 
@@ -18,11 +17,11 @@ const Sidebar = () => {
   } = useContext(SidebarContext);
 
   if (currentSidebar === null) { return null; }
+  const SidebarToRender = SIDEBARS[currentSidebar].Sidebar;
 
   return (
     <div className={classNames('vh-100 d-flex flex-column', { 'bg-white fixed-top': shouldDisplayFullScreen })}>
-      {shouldDisplayFullScreen
-        && (
+      {shouldDisplayFullScreen && (
         <div
           className="pt-2 pb-2.5 border-bottom border-light-400 d-flex align-items-center ml-2"
           onClick={() => toggleSidebar(null)}
@@ -36,9 +35,8 @@ const Sidebar = () => {
             {intl.formatMessage(messages.responsiveCloseSidebarTray)}
           </span>
         </div>
-        )}
-      <NotificationTray />
-      <DiscussionsSidebar />
+      )}
+      <SidebarToRender />
     </div>
   );
 };

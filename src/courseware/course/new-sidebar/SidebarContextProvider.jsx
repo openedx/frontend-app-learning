@@ -4,7 +4,7 @@ import React, {
   useEffect, useState, useMemo, useCallback,
 } from 'react';
 import isEmpty from 'lodash/isEmpty';
-import { SidebarID, Notifications, Discussions } from './constants';
+import { SIDEBARS } from './sidebars';
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 import SidebarContext from './SidebarContext';
 import { useModel } from '../../../generic/model-store';
@@ -17,37 +17,23 @@ const SidebarProvider = ({
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const query = new URLSearchParams(window.location.search);
-  const initialSidebar = (shouldDisplaySidebarOpen || query.get('sidebar') === 'true') ? SidebarID : null;
+  const initialSidebar = (shouldDisplaySidebarOpen || query.get('sidebar') === 'true')
+    ? SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID : null;
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
-  const [hideDiscussionbar, setHideDiscussionbar] = useState(false);
-  const [isDiscussionbarAvailable, setIsDiscussionbarAvailable] = useState(true);
-  const [hideNotificationbar, setHideNotificationbar] = useState(false);
-  const [isNotificationbarAvailable, setIsNotificationbarAvailable] = useState(true);
-
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
-  const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
+  const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(
+    getLocalStorage(`upgradeNotificationCurrentState.${courseId}`),
+  );
   const topic = useModel('discussionTopics', unitId);
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
+  const isDiscussionbarAvailable = !topic?.id || !topic?.enabledInContext;
+  const isNotificationbarAvailable = !isEmpty(verifiedMode);
+  const [hideDiscussionbar, setHideDiscussionbar] = useState(isDiscussionbarAvailable);
+  const [hideNotificationbar, setHideNotificationbar] = useState(isNotificationbarAvailable);
 
   useEffect(() => {
-    if (!topic?.id || !topic?.enabledInContext) {
-      setIsDiscussionbarAvailable(false);
-      setHideDiscussionbar(true);
-    } else {
-      setIsDiscussionbarAvailable(true);
-      setHideDiscussionbar(false);
-    }
-
-    if (isEmpty(verifiedMode)) {
-      setIsNotificationbarAvailable(false);
-      setHideNotificationbar(true);
-    } else {
-      setIsNotificationbarAvailable(true);
-      setHideNotificationbar(false);
-    }
-
-    setCurrentSidebar(SidebarID);
-  }, [unitId, topic, verifiedMode, isDiscussionbarAvailable, isNotificationbarAvailable]);
+    setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
+  }, [unitId]);
 
   const onNotificationSeen = useCallback(() => {
     setNotificationStatus('inactive');

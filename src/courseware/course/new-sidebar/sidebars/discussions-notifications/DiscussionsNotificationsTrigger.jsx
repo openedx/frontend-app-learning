@@ -4,15 +4,17 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { Icon, IconButton } from '@edx/paragon';
-import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
-import { getSessionStorage, setSessionStorage } from '../../../data/sessionStorage';
-import messages from './messages';
-import SidebarContext from './SidebarContext';
-import { useModel } from '../../../generic/model-store';
-import { getCourseDiscussionTopics } from '../../data/thunks';
-import { RightSidebarFilled, RightSidebarOutlined } from './icons';
+import { getLocalStorage, setLocalStorage } from '../../../../../data/localStorage';
+import { getSessionStorage, setSessionStorage } from '../../../../../data/sessionStorage';
+import messages from '../../messages';
+import SidebarContext from '../../SidebarContext';
+import { useModel } from '../../../../../generic/model-store';
+import { getCourseDiscussionTopics } from '../../../../data/thunks';
+import { RightSidebarFilled, RightSidebarOutlined } from '../../icons';
 
-const SideBarTrigger = ({ onClick }) => {
+export const ID = 'DISCUSSIONS_NOTIFICATIONS';
+
+const DiscussionsNotificationsTrigger = ({ onClick }) => {
   const {
     courseId,
     currentSidebar,
@@ -85,8 +87,8 @@ const SideBarTrigger = ({ onClick }) => {
   );
 };
 
-SideBarTrigger.propTypes = {
+DiscussionsNotificationsTrigger.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-export default SideBarTrigger;
+export default DiscussionsNotificationsTrigger;

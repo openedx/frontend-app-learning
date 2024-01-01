@@ -1,4 +1,4 @@
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon, IconButton } from '@edx/paragon';
 import { Close } from '@edx/paragon/icons';
 import classNames from 'classnames';
@@ -9,7 +9,6 @@ import messages from '../messages';
 import SidebarContext from '../SidebarContext';
 
 const SidebarBase = ({
-  intl,
   title,
   ariaLabel,
   sidebarId,
@@ -19,6 +18,7 @@ const SidebarBase = ({
   width,
   allowFullHeight,
 }) => {
+  const intl = useIntl();
   const {
     toggleSidebar,
     shouldDisplayFullScreen,
@@ -55,7 +55,7 @@ const SidebarBase = ({
                 size="sm"
                 iconAs={Icon}
                 onClick={() => toggleSidebar(sidebarId, title)}
-                alt={intl.formatMessage(messages.closeNotificationTrigger)}
+                alt={intl.formatMessage(messages.closeTrigger)}
                 className="icon-hover"
               />
             </div>
@@ -69,7 +69,6 @@ const SidebarBase = ({
 };
 
 SidebarBase.propTypes = {
-  intl: intlShape.isRequired,
   title: PropTypes.string.isRequired,
   ariaLabel: PropTypes.string.isRequired,
   sidebarId: PropTypes.string.isRequired,
@@ -87,4 +86,4 @@ SidebarBase.defaultProps = {
   className: '',
 };
 
-export default injectIntl(SidebarBase);
+export default SidebarBase;
