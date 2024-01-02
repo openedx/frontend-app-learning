@@ -39,25 +39,26 @@ const NotificationsWidget = () => {
   if (hideNotificationbar || !isNotificationbarAvailable) { return null; }
 
   return (
-    <UpgradeNotification
-      offer={offer}
-      verifiedMode={verifiedMode}
-      accessExpiration={accessExpiration}
-      contentTypeGatingEnabled={contentTypeGatingEnabled}
-      marketingUrl={marketingUrl}
-      upsellPageName="in_course"
-      userTimezone={userTimezone}
-      shouldDisplayBorder={false}
-      timeOffsetMillis={timeOffsetMillis}
-      courseId={courseId}
-      org={org}
-      upgradeNotificationCurrentState={upgradeNotificationCurrentState}
-      setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
-      showRemoveIcon
-      sidebarId="qqw"
-      toggleSidebar={toggleSidebar}
-      tabId={intl.formatMessage(messages.notificationTitle)}
-    />
+    <div className="border border-light-400 rounded-sm">
+      <UpgradeNotification
+        offer={offer}
+        verifiedMode={verifiedMode}
+        accessExpiration={accessExpiration}
+        contentTypeGatingEnabled={contentTypeGatingEnabled}
+        marketingUrl={marketingUrl}
+        upsellPageName="in_course"
+        userTimezone={userTimezone}
+        shouldDisplayBorder={false}
+        timeOffsetMillis={timeOffsetMillis}
+        courseId={courseId}
+        org={org}
+        upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+        setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
+        showRemoveIcon
+        toggleSidebar={toggleSidebar}
+        widgetId={intl.formatMessage(messages.notificationTitle)}
+      />
+    </div>
   );
 };
 

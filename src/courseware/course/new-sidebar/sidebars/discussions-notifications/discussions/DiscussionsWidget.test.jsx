@@ -5,16 +5,16 @@ import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import {
   initializeMockApp, initializeTestStore, render, screen,
-} from '../../../../../setupTest';
-import { executeThunk } from '../../../../../utils';
-import { buildTopicsFromUnits } from '../../../../data/__factories__/discussionTopics.factory';
-import { getCourseDiscussionTopics } from '../../../../data/thunks';
-import SidebarContext from '../../SidebarContext';
-import DiscussionsSidebar from './DiscussionsSidebar';
+} from '../../../../../../setupTest';
+import { executeThunk } from '../../../../../../utils';
+import { buildTopicsFromUnits } from '../../../../../data/__factories__/discussionTopics.factory';
+import { getCourseDiscussionTopics } from '../../../../../data/thunks';
+import SidebarContext from '../../../SidebarContext';
+import DiscussionsWidget from './DiscussionsWidget';
 
 initializeMockApp();
 
-describe('Discussions Trigger', () => {
+describe('DiscussionsWidget', () => {
   let axiosMock;
   let mockData;
   let courseId;
@@ -52,7 +52,7 @@ describe('Discussions Trigger', () => {
   function renderWithProvider(testData = {}) {
     const { container } = render(
       <SidebarContext.Provider value={{ ...mockData, ...testData }}>
-        <DiscussionsSidebar />
+        <DiscussionsWidget />
       </SidebarContext.Provider>,
     );
     return container;

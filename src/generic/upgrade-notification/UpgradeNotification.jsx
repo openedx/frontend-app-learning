@@ -16,6 +16,7 @@ import {
   SupportMissionBullet,
 } from '../upsell-bullets/UpsellBullets';
 import messages from '../messages';
+import { ID } from '../../courseware/course/new-sidebar/sidebars/discussions-notifications/DiscussionsNotificationsTrigger';
 
 const UpsellNoFBECardContent = () => (
   <ul className="fa-ul upgrade-notification-ul pt-0">
@@ -289,8 +290,7 @@ const UpgradeNotification = ({
   verifiedMode,
   showRemoveIcon,
   toggleSidebar,
-  sidebarId,
-  tabId,
+  widgetId,
 }) => {
   const intl = useIntl();
   const dateNow = Date.now();
@@ -505,7 +505,7 @@ const UpgradeNotification = ({
                 src={Close}
                 size="sm"
                 iconAs={Icon}
-                onClick={() => toggleSidebar(sidebarId, tabId)}
+                onClick={() => toggleSidebar(ID, widgetId)}
                 className="icon-hover"
                 alt={intl.formatMessage(messages.close)}
               />
@@ -553,8 +553,7 @@ UpgradeNotification.propTypes = {
     upgradeUrl: PropTypes.string.isRequired,
   }),
   showRemoveIcon: PropTypes.bool,
-  sidebarId: PropTypes.string,
-  tabId: PropTypes.string,
+  widgetId: PropTypes.string,
 };
 
 UpgradeNotification.defaultProps = {
@@ -569,8 +568,7 @@ UpgradeNotification.defaultProps = {
   verifiedMode: null,
   showRemoveIcon: false,
   toggleSidebar: null,
-  sidebarId: null,
-  tabId: null,
+  widgetId: null,
 };
 
 export default injectIntl(UpgradeNotification);

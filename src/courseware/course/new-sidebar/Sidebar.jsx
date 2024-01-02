@@ -20,7 +20,7 @@ const Sidebar = () => {
   const SidebarToRender = SIDEBARS[currentSidebar].Sidebar;
 
   return (
-    <div className={classNames('vh-100 d-flex flex-column', { 'bg-white fixed-top': shouldDisplayFullScreen })}>
+    <div className={classNames('d-flex flex-column', { 'bg-white fixed-top': shouldDisplayFullScreen })}>
       {shouldDisplayFullScreen && (
         <div
           className="pt-2 pb-2.5 border-bottom border-light-400 d-flex align-items-center ml-2"

@@ -21,7 +21,7 @@ const DiscussionsWidget = () => {
   return (
     <iframe
       src={`${discussionsUrl}?inContextSidebar`}
-      className="d-flex w-100 h-100 border-0 flex-fill"
+      className="d-flex w-100 vh-100 flex-fill border border-light-400 rounded-sm"
       title={intl.formatMessage(messages.discussionsTitle)}
       allow="clipboard-write"
       loading="lazy"

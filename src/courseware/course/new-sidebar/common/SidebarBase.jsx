@@ -17,6 +17,7 @@ const SidebarBase = ({
   showTitleBar,
   width,
   allowFullHeight,
+  showBorder,
 }) => {
   const intl = useIntl();
   const {
@@ -28,7 +29,7 @@ const SidebarBase = ({
   const receiveMessage = useCallback(({ data }) => {
     const { type } = data;
     if (type === 'learning.events.sidebar.close') {
-      toggleSidebar(sidebarId, 'Discussions');
+      toggleSidebar(sidebarId, intl.formatMessage(messages.discussionsTitle));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toggleSidebar]);
@@ -37,9 +38,10 @@ const SidebarBase = ({
 
   return (
     <section
-      className={classNames('ml-0 ml-lg-4 border border-light-400 rounded-sm h-auto align-top', {
+      className={classNames('ml-0 ml-lg-4 h-auto align-top', {
         'min-vh-100': !shouldDisplayFullScreen && allowFullHeight,
         'd-none': currentSidebar !== sidebarId,
+        'border border-light-400 rounded-sm': showBorder,
       }, className)}
       data-testid={`sidebar-${sidebarId}`}
       style={{ width: shouldDisplayFullScreen ? '100%' : width }}
@@ -77,6 +79,7 @@ SidebarBase.propTypes = {
   showTitleBar: PropTypes.bool,
   width: PropTypes.string,
   allowFullHeight: PropTypes.bool,
+  showBorder: PropTypes.bool,
 };
 
 SidebarBase.defaultProps = {
@@ -84,6 +87,7 @@ SidebarBase.defaultProps = {
   allowFullHeight: false,
   showTitleBar: true,
   className: '',
+  showBorder: true,
 };
 
 export default SidebarBase;

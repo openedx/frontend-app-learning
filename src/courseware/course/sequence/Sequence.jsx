@@ -9,7 +9,7 @@ import {
   sendTrackEvent,
   sendTrackingLogEvent,
 } from '@edx/frontend-platform/analytics';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 import { breakpoints, useWindowSize } from '@edx/paragon';
@@ -35,8 +35,8 @@ const Sequence = ({
   unitNavigationHandler,
   nextSequenceHandler,
   previousSequenceHandler,
-  intl,
 }) => {
+  const intl = useIntl();
   const course = useModel('coursewareMeta', courseId);
   const {
     isStaff,
@@ -227,7 +227,6 @@ Sequence.propTypes = {
   unitNavigationHandler: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
-  intl: intlShape.isRequired,
 };
 
 Sequence.defaultProps = {
@@ -235,4 +234,4 @@ Sequence.defaultProps = {
   unitId: null,
 };
 
-export default injectIntl(Sequence);
+export default Sequence;

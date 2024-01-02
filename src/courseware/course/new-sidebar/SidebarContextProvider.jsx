@@ -3,17 +3,20 @@ import PropTypes from 'prop-types';
 import React, {
   useEffect, useState, useMemo, useCallback,
 } from 'react';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import isEmpty from 'lodash/isEmpty';
 import { SIDEBARS } from './sidebars';
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 import SidebarContext from './SidebarContext';
 import { useModel } from '../../../generic/model-store';
+import messages from './messages';
 
 const SidebarProvider = ({
   courseId,
   unitId,
   children,
 }) => {
+  const intl = useIntl();
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const query = new URLSearchParams(window.location.search);
@@ -21,19 +24,21 @@ const SidebarProvider = ({
     ? SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID : null;
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
+  const [hideDiscussionbar, setHideDiscussionbar] = useState(false);
+  const [hideNotificationbar, setHideNotificationbar] = useState(false);
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(
     getLocalStorage(`upgradeNotificationCurrentState.${courseId}`),
   );
   const topic = useModel('discussionTopics', unitId);
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
-  const isDiscussionbarAvailable = !topic?.id || !topic?.enabledInContext;
+  const isDiscussionbarAvailable = !(!topic?.id || !topic?.enabledInContext);
   const isNotificationbarAvailable = !isEmpty(verifiedMode);
-  const [hideDiscussionbar, setHideDiscussionbar] = useState(isDiscussionbarAvailable);
-  const [hideNotificationbar, setHideNotificationbar] = useState(isNotificationbarAvailable);
 
   useEffect(() => {
+    setHideDiscussionbar(!isDiscussionbarAvailable);
+    setHideNotificationbar(!isNotificationbarAvailable);
     setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
-  }, [unitId]);
+  }, [unitId, topic]);
 
   const onNotificationSeen = useCallback(() => {
     setNotificationStatus('inactive');
@@ -46,17 +51,19 @@ const SidebarProvider = ({
     }
   }, [hideDiscussionbar, hideNotificationbar]);
 
-  const toggleSidebar = useCallback((sidebarId, tabId) => {
-    if (tabId === Discussions) {
-      setHideDiscussionbar(true);
-    } else if (tabId === Notifications) {
-      setHideNotificationbar(true);
+  const toggleSidebar = useCallback((sidebarId, widgetId) => {
+    if (widgetId) {
+      if (widgetId === intl.formatMessage(messages.discussionsTitle)) {
+        setHideDiscussionbar(true);
+      } else if (widgetId === intl.formatMessage(messages.notificationTitle)) {
+        setHideNotificationbar(true);
+      }
     } else {
       setCurrentSidebar(prevSidebar => (sidebarId === prevSidebar ? null : sidebarId));
-      if (isDiscussionbarAvailable) { setHideDiscussionbar(false); }
-      if (isNotificationbarAvailable) { setHideNotificationbar(false); }
+      setHideDiscussionbar(!isDiscussionbarAvailable);
+      setHideNotificationbar(!isNotificationbarAvailable);
     }
-  }, [isNotificationbarAvailable, isDiscussionbarAvailable]);
+  }, [isDiscussionbarAvailable, isNotificationbarAvailable]);
 
   const contextValue = useMemo(() => ({
     toggleSidebar,

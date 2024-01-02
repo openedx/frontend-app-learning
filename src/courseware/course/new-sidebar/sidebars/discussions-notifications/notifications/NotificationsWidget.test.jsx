@@ -6,18 +6,18 @@ import { breakpoints } from '@edx/paragon';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import { Factory } from 'rosie';
-import { initializeMockApp, render, screen } from '../../../../../setupTest';
-import initializeStore from '../../../../../store';
-import { appendBrowserTimezoneToUrl, executeThunk } from '../../../../../utils';
+import { initializeMockApp, render, screen } from '../../../../../../setupTest';
+import initializeStore from '../../../../../../store';
+import { appendBrowserTimezoneToUrl, executeThunk } from '../../../../../../utils';
 
-import { fetchCourse } from '../../../../data';
-import SidebarContext from '../../SidebarContext';
-import NotificationTray from './NotificationsSidebar';
+import { fetchCourse } from '../../../../../data';
+import SidebarContext from '../../../SidebarContext';
+import NotificationsWidget from './NotificationsWidget';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
 
-describe('NotificationsSidebar', () => {
+describe('NotificationsWidget', () => {
   let axiosMock;
   let store;
   const ID = 'NEWSIDEBAR';
@@ -57,7 +57,7 @@ describe('NotificationsSidebar', () => {
         isNotificationbarAvailable: true,
       }}
       >
-        <NotificationTray />
+        <NotificationsWidget />
       </SidebarContext.Provider>,
     );
     const UpgradeNotification = document.querySelector('.upgrade-notification');
@@ -81,7 +81,7 @@ describe('NotificationsSidebar', () => {
         isNotificationbarAvailable: false,
       }}
       >
-        <NotificationTray />
+        <NotificationsWidget />
       </SidebarContext.Provider>,
     );
     expect(screen.queryByText('Notifications'))
@@ -101,7 +101,7 @@ describe('NotificationsSidebar', () => {
         isNotificationbarAvailable: true,
       }}
       >
-        <NotificationTray />
+        <NotificationsWidget />
       </SidebarContext.Provider>,
     );
     expect(onNotificationSeen).toHaveBeenCalledTimes(0);
