@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+
 import SidebarContext from './SidebarContext';
 import { SIDEBAR_ORDER, SIDEBARS } from './sidebars';
 

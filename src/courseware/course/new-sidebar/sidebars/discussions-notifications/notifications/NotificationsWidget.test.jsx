@@ -1,15 +1,16 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
+import React from 'react';
+
+import MockAdapter from 'axios-mock-adapter';
+import { Factory } from 'rosie';
+
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@edx/paragon';
 
-import MockAdapter from 'axios-mock-adapter';
-import React from 'react';
-import { Factory } from 'rosie';
 import { initializeMockApp, render, screen } from '../../../../../../setupTest';
 import initializeStore from '../../../../../../store';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../../../../../utils';
-
 import { fetchCourse } from '../../../../../data';
 import SidebarContext from '../../../SidebarContext';
 import NotificationsWidget from './NotificationsWidget';

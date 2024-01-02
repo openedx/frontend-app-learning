@@ -1,10 +1,14 @@
+import React, { useCallback, useContext } from 'react';
+import PropTypes from 'prop-types';
+
+import classNames from 'classnames';
+
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon, IconButton } from '@edx/paragon';
 import { Close } from '@edx/paragon/icons';
-import classNames from 'classnames';
-import PropTypes from 'prop-types';
-import React, { useCallback, useContext } from 'react';
+
 import { useEventListener } from '../../../../generic/hooks';
+import WIDGETS from '../constants';
 import messages from '../messages';
 import SidebarContext from '../SidebarContext';
 
@@ -29,9 +33,8 @@ const SidebarBase = ({
   const receiveMessage = useCallback(({ data }) => {
     const { type } = data;
     if (type === 'learning.events.sidebar.close') {
-      toggleSidebar(sidebarId, intl.formatMessage(messages.discussionsTitle));
+      toggleSidebar(WIDGETS.DISCUSSIONS);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toggleSidebar]);
 
   useEventListener('message', receiveMessage);

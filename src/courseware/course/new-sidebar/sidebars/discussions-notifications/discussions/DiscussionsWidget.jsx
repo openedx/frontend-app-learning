@@ -1,8 +1,10 @@
+import React, { useContext } from 'react';
+
 import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import React, { useContext } from 'react';
-import SidebarContext from '../../../SidebarContext';
+
 import messages from '../../../messages';
+import SidebarContext from '../../../SidebarContext';
 
 ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);
 

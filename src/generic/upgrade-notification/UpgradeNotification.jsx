@@ -16,7 +16,6 @@ import {
   SupportMissionBullet,
 } from '../upsell-bullets/UpsellBullets';
 import messages from '../messages';
-import { ID } from '../../courseware/course/new-sidebar/sidebars/discussions-notifications/DiscussionsNotificationsTrigger';
 
 const UpsellNoFBECardContent = () => (
   <ul className="fa-ul upgrade-notification-ul pt-0">
@@ -288,9 +287,7 @@ const UpgradeNotification = ({
   upsellPageName,
   userTimezone,
   verifiedMode,
-  showRemoveIcon,
   toggleSidebar,
-  widgetId,
 }) => {
   const intl = useIntl();
   const dateNow = Date.now();
@@ -494,18 +491,18 @@ const UpgradeNotification = ({
       <div id="courseHome-upgradeNotification">
         <h2
           className={classNames('h5 upgrade-notification-header', {
-            'd-flex align-items-center mr-2 ml-4 my-1.5 font-size-18': showRemoveIcon,
+            'd-flex align-items-center mr-2 ml-4 my-1.5 font-size-18': !!toggleSidebar,
           })}
           id="outline-sidebar-upgrade-header"
         >
           {upgradeNotificationHeaderText}
-          {showRemoveIcon && (
+          {!!toggleSidebar && (
             <div className="d-inline-flex ml-auto">
               <IconButton
                 src={Close}
                 size="sm"
                 iconAs={Icon}
-                onClick={() => toggleSidebar(ID, widgetId)}
+                onClick={toggleSidebar}
                 className="icon-hover"
                 alt={intl.formatMessage(messages.close)}
               />
@@ -538,10 +535,7 @@ UpgradeNotification.propTypes = {
     percentage: PropTypes.number,
     code: PropTypes.string,
   }),
-  toggleSidebar: PropTypes.shape({
-    sidebarId: PropTypes.string,
-    tabId: PropTypes.string,
-  }),
+  toggleSidebar: PropTypes.func,
   shouldDisplayBorder: PropTypes.bool,
   setupgradeNotificationCurrentState: PropTypes.func,
   timeOffsetMillis: PropTypes.number,
@@ -552,8 +546,6 @@ UpgradeNotification.propTypes = {
     price: PropTypes.number.isRequired,
     upgradeUrl: PropTypes.string.isRequired,
   }),
-  showRemoveIcon: PropTypes.bool,
-  widgetId: PropTypes.string,
 };
 
 UpgradeNotification.defaultProps = {
@@ -566,9 +558,7 @@ UpgradeNotification.defaultProps = {
   timeOffsetMillis: 0,
   userTimezone: null,
   verifiedMode: null,
-  showRemoveIcon: false,
   toggleSidebar: null,
-  widgetId: null,
 };
 
 export default injectIntl(UpgradeNotification);

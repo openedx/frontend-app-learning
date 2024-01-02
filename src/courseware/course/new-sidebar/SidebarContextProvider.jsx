@@ -1,22 +1,23 @@
-import { breakpoints, useWindowSize } from '@edx/paragon';
-import PropTypes from 'prop-types';
 import React, {
-  useEffect, useState, useMemo, useCallback,
+  useCallback, useEffect, useMemo, useState,
 } from 'react';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import PropTypes from 'prop-types';
+
 import isEmpty from 'lodash/isEmpty';
-import { SIDEBARS } from './sidebars';
+
+import { breakpoints, useWindowSize } from '@edx/paragon';
+
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
-import SidebarContext from './SidebarContext';
 import { useModel } from '../../../generic/model-store';
-import messages from './messages';
+import WIDGETS from './constants';
+import SidebarContext from './SidebarContext';
+import { SIDEBARS } from './sidebars';
 
 const SidebarProvider = ({
   courseId,
   unitId,
   children,
 }) => {
-  const intl = useIntl();
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const query = new URLSearchParams(window.location.search);
@@ -51,13 +52,10 @@ const SidebarProvider = ({
     }
   }, [hideDiscussionbar, hideNotificationbar]);
 
-  const toggleSidebar = useCallback((sidebarId, widgetId) => {
+  const toggleSidebar = useCallback(({ sidebarId = null, widgetId = null }) => {
     if (widgetId) {
-      if (widgetId === intl.formatMessage(messages.discussionsTitle)) {
-        setHideDiscussionbar(true);
-      } else if (widgetId === intl.formatMessage(messages.notificationTitle)) {
-        setHideNotificationbar(true);
-      }
+      setHideDiscussionbar(widgetId === WIDGETS.DISCUSSIONS);
+      setHideNotificationbar(widgetId === WIDGETS.NOTIFICATIONS);
     } else {
       setCurrentSidebar(prevSidebar => (sidebarId === prevSidebar ? null : sidebarId));
       setHideDiscussionbar(!isDiscussionbarAvailable);

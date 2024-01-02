@@ -1,16 +1,19 @@
-import { useIntl } from '@edx/frontend-platform/i18n';
-import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
+
 import { useDispatch } from 'react-redux';
+
 import { getConfig } from '@edx/frontend-platform';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon, IconButton } from '@edx/paragon';
+
 import { getLocalStorage, setLocalStorage } from '../../../../../data/localStorage';
 import { getSessionStorage, setSessionStorage } from '../../../../../data/sessionStorage';
-import messages from '../../messages';
-import SidebarContext from '../../SidebarContext';
 import { useModel } from '../../../../../generic/model-store';
 import { getCourseDiscussionTopics } from '../../../../data/thunks';
 import { RightSidebarFilled, RightSidebarOutlined } from '../../icons';
+import messages from '../../messages';
+import SidebarContext from '../../SidebarContext';
 
 export const ID = 'DISCUSSIONS_NOTIFICATIONS';
 

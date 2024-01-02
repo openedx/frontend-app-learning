@@ -1,12 +1,11 @@
-import { useIntl } from '@edx/frontend-platform/i18n';
 import React, { useContext, useEffect } from 'react';
+
 import { useModel } from '../../../../../../generic/model-store';
 import UpgradeNotification from '../../../../../../generic/upgrade-notification/UpgradeNotification';
-import messages from '../../../messages';
+import WIDGETS from '../../../constants';
 import SidebarContext from '../../../SidebarContext';
 
 const NotificationsWidget = () => {
-  const intl = useIntl();
   const {
     courseId,
     onNotificationSeen,
@@ -33,7 +32,6 @@ const NotificationsWidget = () => {
   } = useModel('courseHomeMeta', courseId);
 
   // After three seconds, update notificationSeen (to hide red dot)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { setTimeout(onNotificationSeen, 3000); }, []);
 
   if (hideNotificationbar || !isNotificationbarAvailable) { return null; }
@@ -54,9 +52,7 @@ const NotificationsWidget = () => {
         org={org}
         upgradeNotificationCurrentState={upgradeNotificationCurrentState}
         setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
-        showRemoveIcon
-        toggleSidebar={toggleSidebar}
-        widgetId={intl.formatMessage(messages.notificationTitle)}
+        toggleSidebar={() => toggleSidebar(WIDGETS.NOTIFICATIONS)}
       />
     </div>
   );

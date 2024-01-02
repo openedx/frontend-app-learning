@@ -1,11 +1,14 @@
 import React, { useContext } from 'react';
-import { ArrowBackIos } from '@edx/paragon/icons';
+
+import classNames from 'classnames';
+
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon } from '@edx/paragon';
-import classNames from 'classnames';
-import { SIDEBARS } from './sidebars';
-import SidebarContext from './SidebarContext';
+import { ArrowBackIos } from '@edx/paragon/icons';
+
 import messages from './messages';
+import SidebarContext from './SidebarContext';
+import { SIDEBARS } from './sidebars';
 
 const Sidebar = () => {
   const intl = useIntl();
@@ -24,8 +27,8 @@ const Sidebar = () => {
       {shouldDisplayFullScreen && (
         <div
           className="pt-2 pb-2.5 border-bottom border-light-400 d-flex align-items-center ml-2"
-          onClick={() => toggleSidebar(null)}
-          onKeyDown={() => toggleSidebar(null)}
+          onClick={() => toggleSidebar()}
+          onKeyDown={() => toggleSidebar()}
           role="button"
           tabIndex="0"
           alt={intl.formatMessage(messages.responsiveCloseSidebarTray)}

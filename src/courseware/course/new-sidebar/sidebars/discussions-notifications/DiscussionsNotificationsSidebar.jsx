@@ -1,11 +1,13 @@
 import React, { useContext } from 'react';
+
 import { useIntl } from '@edx/frontend-platform/i18n';
+
 import SidebarBase from '../../common/SidebarBase';
-import NotificationTray from './notifications/NotificationsWidget';
-import DiscussionsSidebar from './discussions/DiscussionsWidget';
 import messages from '../../messages';
-import { ID } from './DiscussionsNotificationsTrigger';
 import SidebarContext from '../../SidebarContext';
+import DiscussionsSidebar from './discussions/DiscussionsWidget';
+import NotificationTray from './notifications/NotificationsWidget';
+import { ID } from './DiscussionsNotificationsTrigger';
 
 const DiscussionsNotificationsSidebar = () => {
   const intl = useIntl();
