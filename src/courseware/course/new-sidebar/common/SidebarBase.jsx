@@ -51,7 +51,8 @@ const SidebarBase = ({
       style={{ width: shouldDisplayFullScreen ? '100%' : width }}
       aria-label={ariaLabel}
     >
-      {shouldDisplayFullScreen ? (
+      {shouldDisplayFullScreen
+        && (
         <div
           className="pt-2 pb-2.5 border-bottom border-light-400 d-flex align-items-center ml-2"
           onClick={() => toggleSidebar(null)}
@@ -65,7 +66,7 @@ const SidebarBase = ({
             {intl.formatMessage(messages.responsiveCloseSidebarTray)}
           </span>
         </div>
-      ) : null}
+        )}
       {showTitleBar && (
         <>
           <div className="d-flex align-items-center">
