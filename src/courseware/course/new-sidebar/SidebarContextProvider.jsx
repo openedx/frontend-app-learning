@@ -35,16 +35,16 @@ const SidebarProvider = ({
   const isDiscussionbarAvailable = topic?.id && topic?.enabledInContext;
   const isNotificationbarAvailable = !isEmpty(verifiedMode);
 
+  const onNotificationSeen = useCallback(() => {
+    setNotificationStatus('inactive');
+    setLocalStorage(`notificationStatus.${courseId}`, 'inactive');
+  }, [courseId]);
+
   useEffect(() => {
     setHideDiscussionbar(!isDiscussionbarAvailable);
     setHideNotificationbar(!isNotificationbarAvailable);
     setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
   }, [unitId, topic]);
-
-  const onNotificationSeen = useCallback(() => {
-    setNotificationStatus('inactive');
-    setLocalStorage(`notificationStatus.${courseId}`, 'inactive');
-  }, [courseId]);
 
   useEffect(() => {
     if (hideDiscussionbar && hideNotificationbar) {
