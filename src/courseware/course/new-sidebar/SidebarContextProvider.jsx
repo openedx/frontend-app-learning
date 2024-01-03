@@ -52,10 +52,10 @@ const SidebarProvider = ({
     }
   }, [hideDiscussionbar, hideNotificationbar]);
 
-  const toggleSidebar = useCallback(({ sidebarId = null, widgetId = null }) => {
+  const toggleSidebar = useCallback((sidebarId = null, widgetId = null) => {
     if (widgetId) {
-      setHideDiscussionbar(widgetId === WIDGETS.DISCUSSIONS);
-      setHideNotificationbar(widgetId === WIDGETS.NOTIFICATIONS);
+      setHideDiscussionbar(prevWidgetId => (widgetId === WIDGETS.DISCUSSIONS ? true : prevWidgetId));
+      setHideNotificationbar(prevWidgetId => (widgetId === WIDGETS.NOTIFICATIONS ? true : prevWidgetId));
     } else {
       setCurrentSidebar(prevSidebar => (sidebarId === prevSidebar ? null : sidebarId));
       setHideDiscussionbar(!isDiscussionbarAvailable);

@@ -14,6 +14,7 @@ const NotificationsWidget = () => {
     hideNotificationbar,
     toggleSidebar,
     isNotificationbarAvailable,
+    currentSidebar,
   } = useContext(SidebarContext);
   const course = useModel('coursewareMeta', courseId);
 
@@ -52,7 +53,7 @@ const NotificationsWidget = () => {
         org={org}
         upgradeNotificationCurrentState={upgradeNotificationCurrentState}
         setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
-        toggleSidebar={() => toggleSidebar(WIDGETS.NOTIFICATIONS)}
+        toggleSidebar={() => toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS)}
       />
     </div>
   );

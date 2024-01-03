@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon, IconButton } from '@edx/paragon';
-import { Close } from '@edx/paragon/icons';
+import { ArrowBackIos, Close } from '@edx/paragon/icons';
 
 import { useEventListener } from '../../../../generic/hooks';
 import WIDGETS from '../constants';
@@ -33,7 +33,7 @@ const SidebarBase = ({
   const receiveMessage = useCallback(({ data }) => {
     const { type } = data;
     if (type === 'learning.events.sidebar.close') {
-      toggleSidebar(WIDGETS.DISCUSSIONS);
+      toggleSidebar(currentSidebar, WIDGETS.DISCUSSIONS);
     }
   }, [toggleSidebar]);
 
@@ -43,6 +43,7 @@ const SidebarBase = ({
     <section
       className={classNames('ml-0 ml-lg-4 h-auto align-top', {
         'min-vh-100': !shouldDisplayFullScreen && allowFullHeight,
+        'bg-white m-0 border-0 fixed-top vh-100 rounded-0': shouldDisplayFullScreen,
         'd-none': currentSidebar !== sidebarId,
         'border border-light-400 rounded-sm': showBorder,
       }, className)}
@@ -50,6 +51,21 @@ const SidebarBase = ({
       style={{ width: shouldDisplayFullScreen ? '100%' : width }}
       aria-label={ariaLabel}
     >
+      {shouldDisplayFullScreen ? (
+        <div
+          className="pt-2 pb-2.5 border-bottom border-light-400 d-flex align-items-center ml-2"
+          onClick={() => toggleSidebar(null)}
+          onKeyDown={() => toggleSidebar(null)}
+          role="button"
+          tabIndex="0"
+          alt={intl.formatMessage(messages.responsiveCloseSidebarTray)}
+        >
+          <Icon src={ArrowBackIos} />
+          <span className="font-weight-bold m-2 d-inline-block">
+            {intl.formatMessage(messages.responsiveCloseSidebarTray)}
+          </span>
+        </div>
+      ) : null}
       {showTitleBar && (
         <>
           <div className="d-flex align-items-center">
@@ -59,7 +75,7 @@ const SidebarBase = ({
                 src={Close}
                 size="sm"
                 iconAs={Icon}
-                onClick={() => toggleSidebar(sidebarId, title)}
+                onClick={() => toggleSidebar(sidebarId)}
                 alt={intl.formatMessage(messages.closeTrigger)}
                 className="icon-hover"
               />
@@ -86,7 +102,7 @@ SidebarBase.propTypes = {
 };
 
 SidebarBase.defaultProps = {
-  width: '31rem',
+  width: '50rem',
   allowFullHeight: false,
   showTitleBar: true,
   className: '',
