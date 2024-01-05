@@ -85,6 +85,7 @@ const Course = ({
               isStaff={isStaff}
               courseId={courseId}
               contentToolsEnabled={course.showCalculator || course.notes.enabled}
+              unitId={unitId}
             />
             <SidebarTriggers />
           </>
