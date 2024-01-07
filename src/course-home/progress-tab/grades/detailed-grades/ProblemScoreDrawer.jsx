@@ -16,7 +16,7 @@ const ProblemScoreDrawer = ({ intl, problemScores, subsection }) => {
       <div className={classNames('col', 'p-0', { 'greyed-out': !subsection.learnerHasAccess })}>
         <ul className="list-unstyled row w-100 m-0" aria-labelledby="problem-score-label">
           {problemScores.map(problemScore => (
-            <li className="ml-3">{problemScore.earned}{isLocaleRtl ? '\\' : '/'}{problemScore.possible}</li>
+            <li className="ml-3">{problemScore.earned}<span className="sr-only">{isLocaleRtl ? '\\' : '/'}</span>/{problemScore.possible}</li>
           ))}
         </ul>
       </div>

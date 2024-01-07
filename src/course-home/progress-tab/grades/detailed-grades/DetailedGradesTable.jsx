@@ -35,7 +35,7 @@ const DetailedGradesTable = ({ intl }) => {
 
       const detailedGradesData = subsectionScores.map((subsection) => ({
         subsectionTitle: <SubsectionTitleCell subsection={subsection} />,
-        score: <span className={subsection.learnerHasAccess ? '' : 'greyed-out'}>{subsection.numPointsEarned}{isLocaleRtl ? '\\' : '/'}{subsection.numPointsPossible}</span>,
+        score: <span className={subsection.learnerHasAccess ? '' : 'greyed-out'}>{subsection.numPointsEarned}<span className="sr-only">{isLocaleRtl ? '\\' : '/'}</span>/{subsection.numPointsPossible}</span>,
       }));
 
       return (

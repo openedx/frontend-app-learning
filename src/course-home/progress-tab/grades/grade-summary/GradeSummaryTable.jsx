@@ -74,9 +74,9 @@ const GradeSummaryTable = ({ intl, setAllOfSomeAssignmentTypeIsLocked }) => {
       type: {
         footnoteId, footnoteMarker, type: assignment.type, locked,
       },
-      weight: { weight: `${(assignment.weight * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''} %`, locked },
-      grade: { grade: `${(assignment.averageGrade * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''} %`, locked },
-      weightedGrade: { weightedGrade: `${(assignment.weightedGrade * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''} %`, locked },
+      weight: { weight: `${(assignment.weight * 100).toFixed(0)}%${isLocaleRtl ? '\u200f' : ''}`, locked },
+      grade: { grade: `${(assignment.averageGrade * 100).toFixed(0)}%${isLocaleRtl ? '\u200f' : ''}`, locked },
+      weightedGrade: { weightedGrade: `${(assignment.weightedGrade * 100).toFixed(0)}%${isLocaleRtl ? '\u200f' : ''}`, locked },
     };
   });
   const getAssignmentTypeCell = (value) => (

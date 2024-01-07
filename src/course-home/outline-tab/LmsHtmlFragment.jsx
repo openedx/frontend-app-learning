@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { getConfig } from '@edx/frontend-platform';
+import {
+  getLocale, isRtl,
+} from '@edx/frontend-platform/i18n';
 
 const LmsHtmlFragment = ({
   className,
@@ -9,8 +12,9 @@ const LmsHtmlFragment = ({
   title,
   ...rest
 }) => {
+  const isLocaleRtl = isRtl(getLocale());
   const wholePage = `
-    <html>
+    <html dir=${isLocaleRtl ? 'rtl' : 'ltr'}>
       <head>
         <base href="${getConfig().LMS_BASE_URL}" target="_parent">
         <link rel="stylesheet" href="/static/${getConfig().LEGACY_THEME_NAME ? `${getConfig().LEGACY_THEME_NAME}/` : ''}css/bootstrap/lms-main.css">

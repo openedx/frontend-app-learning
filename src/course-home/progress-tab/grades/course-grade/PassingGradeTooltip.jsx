@@ -25,7 +25,7 @@ const PassingGradeTooltip = ({ intl, passingGrade, tooltipClassName }) => {
         overlay={(
           <Popover id="minimum-grade-tooltip" className={`grade-popover bg-primary-500 ${tooltipClassName}`} aria-hidden="true">
             <Popover.Content className="text-white font-weight-bold">
-              {passingGrade} {isLocaleRtl && '\u200f'}%
+              {passingGrade}% {isLocaleRtl && '\u200f'}
             </Popover.Content>
           </Popover>
         )}
