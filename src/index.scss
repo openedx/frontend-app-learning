@@ -361,6 +361,13 @@
   box-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .2) !important;
 }
 
+.icon-hover {
+  &:hover {
+    color: $primary-500 !important;
+    background-color: $light-300 !important;
+  }
+}
+
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
 @import "courseware/course/sidebar/sidebars/notifications/NotificationIcon.scss";
