@@ -10,7 +10,7 @@ import {
 import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
 import Course from './Course';
-import { setupDiscussionSidebar } from './test-utils';
+import setupDiscussionSidebar from './test-utils';
 
 jest.mock('@edx/frontend-platform/analytics');
 jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({

@@ -16,7 +16,7 @@ import { appendBrowserTimezoneToUrl, executeThunk } from '../../../../../../util
 import { fetchCourse } from '../../../../../data';
 import SidebarContext from '../../../SidebarContext';
 import NotificationsWidget from './NotificationsWidget';
-import { setupDiscussionSidebar, userVerifiedMode } from '../../../../test-utils';
+import setupDiscussionSidebar from '../../../../test-utils';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -53,6 +53,8 @@ describe('NotificationsWidget', () => {
   });
 
   it('successfully Open/Hide sidebar tray.', async () => {
+    const userVerifiedMode = Factory.build('verifiedMode');
+
     await setupDiscussionSidebar(userVerifiedMode);
 
     const sidebarButton = await screen.getByRole('button', { name: /Show sidebar tray/i });
@@ -121,17 +123,19 @@ describe('NotificationsWidget', () => {
 
   it.each([
     {
-      description: 'successfully close the notification widget.',
+      description: 'close the notification widget.',
       enabledInContext: true,
       testId:
     'notification-widget',
     },
     {
-      description: 'successfully close the sidebar when we have no discussion widget and close the notification widget.',
+      description: 'close the sidebar when we have no discussion widget and close the notification widget.',
       enabledInContext: false,
       testId: 'sidebar-DISCUSSIONS_NOTIFICATIONS',
     },
-  ])('case: %s', async ({ enabledInContext, testId }) => {
+  ])('successfully %s', async ({ enabledInContext, testId }) => {
+    const userVerifiedMode = Factory.build('verifiedMode');
+
     await setupDiscussionSidebar(userVerifiedMode, enabledInContext);
 
     const sidebarButton = screen.getByRole('button', { name: /Show sidebar tray/i });

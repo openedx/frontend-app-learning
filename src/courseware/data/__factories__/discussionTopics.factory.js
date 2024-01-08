@@ -1,6 +1,13 @@
 /* eslint-disable import/prefer-default-export */
 import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
 
+Factory.define('verifiedMode')
+  .attr('currency', 'USD')
+  .attr('currencySymbol', '$')
+  .attr('price', '$149')
+  .attr('sku', '8CF08E5')
+  .attr('upgradeUrl', 'http://localhost:18130/basket/add/?sku=8CF08E5');
+
 Factory.define('discussionTopic')
   .option('topicPrefix', null, '')
   .option('courseId', null, 'course-v1:edX+DemoX+Demo_Course')

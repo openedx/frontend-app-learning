@@ -10,22 +10,13 @@ import { executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
 import Course from './Course';
 
-export const userVerifiedMode = {
-  accessExpirationDate: null,
-  currency: 'USD',
-  currencySymbol: '$',
-  price: 149,
-  sku: '8CF08E5',
-  upgradeUrl: 'http://localhost:18130/basket/add/?sku=8CF08E5',
-};
-
 const mockData = {
   nextSequenceHandler: () => {},
   previousSequenceHandler: () => {},
   unitNavigationHandler: () => {},
 };
 
-export const setupDiscussionSidebar = async (verifiedMode = null, enabledInContext = true) => {
+const setupDiscussionSidebar = async (verifiedMode = null, enabledInContext = true) => {
   const store = await initializeTestStore();
   const { courseware, models } = store.getState();
   const { courseId, sequenceId } = courseware;
@@ -54,3 +45,5 @@ export const setupDiscussionSidebar = async (verifiedMode = null, enabledInConte
   const wrapper = await render(<Course {...mockData} />, { store: testStore, wrapWithRouter: true });
   return wrapper;
 };
+
+export default setupDiscussionSidebar;
