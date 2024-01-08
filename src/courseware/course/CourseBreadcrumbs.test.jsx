@@ -112,23 +112,46 @@ describe('CourseBreadcrumbs', () => {
       },
     ],
   ]);
-  render(
-    <IntlProvider>
-      <BrowserRouter>
-        <CourseBreadcrumbs
-          courseId="course-v1:edX+DemoX+Demo_Course"
-          sectionId="block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations"
-          sequenceId="block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions"
-          isStaff
-        />
-      </BrowserRouter>,
-    </IntlProvider>,
-  );
   it('renders course breadcrumbs as expected', async () => {
+    await render(
+      <IntlProvider>
+        <BrowserRouter>
+          <CourseBreadcrumbs
+            courseId="course-v1:edX+DemoX+Demo_Course"
+            sectionId="block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations"
+            sequenceId="block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions"
+            isStaff
+          />
+        </BrowserRouter>,
+      </IntlProvider>,
+    );
     expect(screen.queryAllByRole('link')).toHaveLength(1);
     const courseHomeButtonDestination = screen.getAllByRole('link')[0].href;
     expect(courseHomeButtonDestination).toBe('http://localhost/course/course-v1:edX+DemoX+Demo_Course/home');
     expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
     expect(screen.queryAllByTestId('breadcrumb-item')).toHaveLength(2);
+  });
+  it('renders legacy navigation links as expected', async () => {
+    getConfig.mockImplementation(() => ({
+      ENABLE_JUMPNAV: 'false',
+      ENABLE_LEGACY_NAV: 'true',
+    }));
+    await render(
+      <IntlProvider>
+        <BrowserRouter>
+          <CourseBreadcrumbs
+            courseId="course-v1:edX+DemoX+Demo_Course"
+            sectionId="block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations"
+            sequenceId="block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions"
+          />
+        </BrowserRouter>,
+      </IntlProvider>,
+    );
+    expect(screen.queryAllByRole('link')).toHaveLength(3);
+    const sectionButtonDestination = screen.getAllByRole('link')[1].href;
+    expect(sectionButtonDestination).toBe('http://localhost/course/course-v1:edX+DemoX+Demo_Course/home#block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations');
+    const sequenceButtonDestination = screen.getAllByRole('link')[2].href;
+    expect(sequenceButtonDestination).toBe('http://localhost/course/course-v1:edX+DemoX+Demo_Course/home#block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions');
+    expect(screen.queryAllByRole('button')).toHaveLength(0);
   });
 });

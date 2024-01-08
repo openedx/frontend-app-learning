@@ -1,0 +1,15 @@
+@import "~@edx/brand/paragon/variables";
+@import "~@edx/paragon/scss/core/core";
+@import "~@edx/brand/paragon/overrides";
+
+.section .collapsible-body {
+  /* Internal SequenceLink components will have padding instead so when
+   * highlighted the highlighting reaches the top and/or bottom of the
+   * collapsible body. */
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.section-selected > .collapsible-trigger {
+  background-color: $light-300;
+}

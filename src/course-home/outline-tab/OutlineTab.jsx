@@ -123,6 +123,15 @@ const OutlineTab = ({ intl }) => {
     }
   }, [location.search]);
 
+  // A section or subsection is selected by its id being the location hash part.
+  // location.hash will contain an initial # sign, so remove it here.
+  const hashValue = location.hash.substring(1);
+  // Represents whether section is either selected or contains selected
+  // subsection and thus should be expanded by default.
+  const selectedSectionId = rootCourseId && courses[rootCourseId].sectionIds.find((sectionId) => (
+    (hashValue === sectionId) || sections[sectionId].sequenceIds.includes(hashValue)
+  ));
+
   return (
     <>
       <div data-learner-type={learnerType} className="row w-100 mx-0 my-3 justify-content-between">
@@ -173,7 +182,11 @@ const OutlineTab = ({ intl }) => {
                   <Section
                     key={sectionId}
                     courseId={courseId}
-                    defaultOpen={sections[sectionId].resumeBlock}
+                    defaultOpen={
+                      (selectedSectionId)
+                        ? sectionId === selectedSectionId
+                        : sections[sectionId].resumeBlock
+                    }
                     expand={expandAll}
                     section={sections[sectionId]}
                   />
