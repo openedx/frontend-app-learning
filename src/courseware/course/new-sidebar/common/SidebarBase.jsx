@@ -91,7 +91,7 @@ const SidebarBase = ({
 };
 
 SidebarBase.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   ariaLabel: PropTypes.string.isRequired,
   sidebarId: PropTypes.string.isRequired,
   className: PropTypes.string,
@@ -103,6 +103,7 @@ SidebarBase.propTypes = {
 };
 
 SidebarBase.defaultProps = {
+  title: '',
   width: '50rem',
   allowFullHeight: false,
   showTitleBar: true,

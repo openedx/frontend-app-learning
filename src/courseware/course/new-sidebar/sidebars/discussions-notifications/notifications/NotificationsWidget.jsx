@@ -38,7 +38,7 @@ const NotificationsWidget = () => {
   if (hideNotificationbar || !isNotificationbarAvailable) { return null; }
 
   return (
-    <div className="border border-light-400 rounded-sm">
+    <div className="border border-light-400 rounded-sm" data-testid="notification-widget">
       <UpgradeNotification
         offer={offer}
         verifiedMode={verifiedMode}

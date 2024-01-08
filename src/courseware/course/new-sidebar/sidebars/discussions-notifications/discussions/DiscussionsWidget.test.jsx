@@ -12,6 +12,7 @@ import { executeThunk } from '../../../../../../utils';
 import { buildTopicsFromUnits } from '../../../../../data/__factories__/discussionTopics.factory';
 import { getCourseDiscussionTopics } from '../../../../../data/thunks';
 import SidebarContext from '../../../SidebarContext';
+import DiscussionsNotificationsSidebar from '../DiscussionsNotificationsSidebar';
 import DiscussionsWidget from './DiscussionsWidget';
 
 initializeMockApp();
@@ -51,24 +52,29 @@ describe('DiscussionsWidget', () => {
     await executeThunk(getCourseDiscussionTopics(courseId), store.dispatch);
   });
 
-  function renderWithProvider(testData = {}) {
+  function renderWithProvider(Component, testData = {}) {
     const { container } = render(
       <SidebarContext.Provider value={{ ...mockData, ...testData }}>
-        <DiscussionsWidget />
+        <Component />
       </SidebarContext.Provider>,
     );
     return container;
   }
 
   it('should show up if unit discussions associated with it', async () => {
-    renderWithProvider();
+    renderWithProvider(DiscussionsWidget);
     expect(screen.queryByTitle('Discussions')).toBeInTheDocument();
     expect(screen.queryByTitle('Discussions'))
       .toHaveAttribute('src', `http://localhost:2002/${courseId}/category/${unitId}?inContextSidebar`);
   });
 
   it('should show nothing if unit has no discussions associated with it', async () => {
-    renderWithProvider({ isDiscussionbarAvailable: false });
+    renderWithProvider(DiscussionsWidget, { isDiscussionbarAvailable: false });
     expect(screen.queryByTitle('Discussions')).not.toBeInTheDocument();
+  });
+
+  it('should display the Back to course button on small screens.', async () => {
+    renderWithProvider(DiscussionsNotificationsSidebar, { shouldDisplayFullScreen: true });
+    expect(screen.queryByText('Back to course')).toBeInTheDocument();
   });
 });

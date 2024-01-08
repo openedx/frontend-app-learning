@@ -11,13 +11,14 @@ Factory.define('discussionTopic')
     ['id', 'courseId'],
     (idx, id, courseId) => `block-v1:${courseId.replace('course-v1:', '')}+type@vertical+block@${id}`,
   )
-  .attr('enabled_in_context', null, true)
+  .attr('enabled_in_context', ['enabled_in_context'], (enabledInContext) => Boolean(enabledInContext))
+
   .attr('thread_counts', [], {
     discussion: 0,
     question: 0,
   });
 
 // Given a pre-build units state, build topics from it.
-export function buildTopicsFromUnits(units) {
-  return Object.values(units).map(unit => Factory.build('discussionTopic', { usage_key: unit.id }));
+export function buildTopicsFromUnits(units, enabledInContext = true) {
+  return Object.values(units).map(unit => Factory.build('discussionTopic', { usage_key: unit.id, enabled_in_context: enabledInContext }));
 }
