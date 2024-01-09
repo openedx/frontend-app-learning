@@ -91,6 +91,7 @@ const Course = ({
               courseId={courseId}
               contentToolsEnabled={course.showCalculator || course.notes.enabled}
               unitId={unitId}
+              endDate={course.end ? course.end : ''}
             />
             {enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
           </>
