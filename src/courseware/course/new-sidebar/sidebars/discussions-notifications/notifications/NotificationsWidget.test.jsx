@@ -126,10 +126,10 @@ describe('NotificationsWidget', () => {
       description: 'close the notification widget.',
       enabledInContext: true,
       testId:
-    'notification-widget',
+      'notification-widget',
     },
     {
-      description: 'close the sidebar when we have no discussion widget and close the notification widget.',
+      description: 'close the sidebar when the notification widget is closed, and the discussion widget is unavailable.',
       enabledInContext: false,
       testId: 'sidebar-DISCUSSIONS_NOTIFICATIONS',
     },
