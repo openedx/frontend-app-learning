@@ -11,6 +11,7 @@ const Chat = ({
   courseId,
   contentToolsEnabled,
   unitId,
+  endDate,
 }) => {
   const VERIFIED_MODES = [
     'professional',
@@ -36,9 +37,17 @@ const Chat = ({
     && [...VERIFIED_MODES, ...AUDIT_MODES].some(mode => mode === enrollmentMode)
   );
 
+  const endDatePassed = () => {
+    const date = new Date();
+    const utcDate = date.toISOString();
+
+    return endDate ? utcDate > endDate : false; // evaluate if end date has passed only if course has end date
+  };
+
   const shouldDisplayChat = (
     enabled
     && (isEnrolled || isStaff) // display only to enrolled or staff
+    && !endDatePassed()
   );
 
   return (
@@ -59,6 +68,7 @@ Chat.propTypes = {
   courseId: PropTypes.string.isRequired,
   contentToolsEnabled: PropTypes.bool.isRequired,
   unitId: PropTypes.string.isRequired,
+  endDate: PropTypes.string.isRequired,
 };
 
 Chat.defaultProps = {
