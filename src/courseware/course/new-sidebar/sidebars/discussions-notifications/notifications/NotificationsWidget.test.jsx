@@ -4,16 +4,19 @@ import React from 'react';
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 
-import { getConfig } from '@edx/frontend-platform';
+import { mergeConfig, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@edx/paragon';
 
-import { initializeMockApp, render, screen } from '../../../../../../setupTest';
+import {
+  initializeMockApp, render, screen, within, act, fireEvent, waitFor,
+} from '../../../../../../setupTest';
 import initializeStore from '../../../../../../store';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../../../../../utils';
 import { fetchCourse } from '../../../../../data';
 import SidebarContext from '../../../SidebarContext';
 import NotificationsWidget from './NotificationsWidget';
+import setupDiscussionSidebar from '../../../../test-utils';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -22,7 +25,6 @@ describe('NotificationsWidget', () => {
   let axiosMock;
   let store;
   const ID = 'NEWSIDEBAR';
-
   const defaultMetadata = Factory.build('courseMetadata');
   const courseId = defaultMetadata.id;
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
@@ -47,6 +49,35 @@ describe('NotificationsWidget', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
+    mergeConfig({ ENABLE_NEW_SIDEBAR: 'true' }, 'Custom app config');
+  });
+
+  it('successfully Open/Hide sidebar tray.', async () => {
+    const userVerifiedMode = Factory.build('verifiedMode');
+
+    await setupDiscussionSidebar(userVerifiedMode);
+
+    const sidebarButton = await screen.getByRole('button', { name: /Show sidebar tray/i });
+
+    await act(async () => {
+      fireEvent.click(sidebarButton);
+    });
+
+    await waitFor(async () => {
+      expect(screen.queryByTestId('sidebar-DISCUSSIONS_NOTIFICATIONS')).toBeInTheDocument();
+      expect(screen.queryByTestId('notification-widget')).toBeInTheDocument();
+      expect(screen.queryByTitle('Discussions')).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      fireEvent.click(sidebarButton);
+    });
+
+    await waitFor(async () => {
+      expect(screen.queryByTestId('sidebar-DISCUSSIONS_NOTIFICATIONS')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('notification-widget')).not.toBeInTheDocument();
+      expect(screen.queryByTitle('Discussions')).not.toBeInTheDocument();
+    });
   });
 
   it('renders upgrade card', async () => {
@@ -88,6 +119,41 @@ describe('NotificationsWidget', () => {
     expect(screen.queryByText('Notifications'))
       .not
       .toBeInTheDocument();
+  });
+
+  it.each([
+    {
+      description: 'close the notification widget.',
+      enabledInContext: true,
+      testId:
+      'notification-widget',
+    },
+    {
+      description: 'close the sidebar when the notification widget is closed, and the discussion widget is unavailable.',
+      enabledInContext: false,
+      testId: 'sidebar-DISCUSSIONS_NOTIFICATIONS',
+    },
+  ])('successfully %s', async ({ enabledInContext, testId }) => {
+    const userVerifiedMode = Factory.build('verifiedMode');
+
+    await setupDiscussionSidebar(userVerifiedMode, enabledInContext);
+
+    const sidebarButton = screen.getByRole('button', { name: /Show sidebar tray/i });
+
+    await act(async () => {
+      fireEvent.click(sidebarButton);
+    });
+
+    const notificationWidget = await waitFor(() => screen.getByTestId('notification-widget'));
+    const closeNotificationButton = within(notificationWidget).getByRole('button', { name: /Close/i });
+
+    await act(async () => {
+      fireEvent.click(closeNotificationButton);
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId(testId)).not.toBeInTheDocument();
+    });
   });
 
   it('marks notification as seen 3 seconds later', async () => {
