@@ -154,6 +154,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           showLink: !!block.lms_web_url,
           title: block.display_name,
           hideFromTOC: block.hide_from_toc,
+          navigationDisabled: block.navigation_disabled,
         };
         break;
 

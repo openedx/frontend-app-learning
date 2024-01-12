@@ -32,7 +32,12 @@ const SequenceNavigation = ({
 }) => {
   const sequence = useModel('sequences', sequenceId);
   const {
-    isFirstUnit, isLastUnit, nextLink, previousLink,
+    isFirstUnit,
+    isLastUnit,
+    nextLink,
+    previousLink,
+    navigationDisabledPrevSequence,
+    navigationDisabledNextSequence,
   } = useSequenceNavigationMetadata(sequenceId, unitId);
   const {
     courseId,
@@ -68,8 +73,7 @@ const SequenceNavigation = ({
   const renderPreviousButton = () => {
     const disabled = isFirstUnit;
     const prevArrow = isRtl(getLocale()) ? ChevronRight : ChevronLeft;
-
-    return (
+    return !navigationDisabledPrevSequence && (
       <Button
         variant="link"
         className="previous-btn"
@@ -90,7 +94,7 @@ const SequenceNavigation = ({
     const disabled = isLastUnit && !exitActive;
     const nextArrow = isRtl(getLocale()) ? ChevronLeft : ChevronRight;
 
-    return (
+    return !navigationDisabledNextSequence && (
       <Button
         variant="link"
         className="next-btn"
