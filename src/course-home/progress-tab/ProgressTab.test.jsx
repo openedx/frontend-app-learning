@@ -16,8 +16,26 @@ import ProgressTab from './ProgressTab';
 import LoadedTabPage from '../../tab-page/LoadedTabPage';
 import messages from './grades/messages';
 
+const mockCoursewareSearchParams = jest.fn();
+
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('../courseware-search/hooks', () => ({
+  ...jest.requireActual('../courseware-search/hooks'),
+  useCoursewareSearchParams: () => mockCoursewareSearchParams,
+}));
+
+const coursewareSearch = {
+  query: '',
+  filter: '',
+  setQuery: jest.fn(),
+  setFilter: jest.fn(),
+  clearSearchParams: jest.fn(),
+};
+
+const mockSearchParams = ((props = coursewareSearch) => {
+  mockCoursewareSearchParams.mockReturnValue(props);
+});
 
 describe('Progress Tab', () => {
   let axiosMock;
@@ -58,7 +76,14 @@ describe('Progress Tab', () => {
     axiosMock.onGet(progressUrl).reply(200, defaultTabData);
     axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
 
+    // Mock courseware search params
+    mockSearchParams();
+
     logUnhandledRequests(axiosMock);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('Related links', () => {

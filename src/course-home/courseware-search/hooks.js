@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { debounce } from 'lodash';
 import { fetchCoursewareSearchSettings } from '../data/thunks';
@@ -68,4 +68,19 @@ export function useLockScroll() {
       document.body.classList.remove('_search-no-scroll');
     };
   }, []);
+}
+
+export function useCoursewareSearchParams() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const clearSearchParams = () => setSearchParams({ q: '', f: '' });
+
+  const query = searchParams.get('q');
+  const filter = searchParams.get('f');
+
+  const setQuery = (q) => setSearchParams((params) => ({ q, f: params.get('f') }));
+  const setFilter = (f) => setSearchParams((params) => ({ q: params.get('q'), f }));
+
+  return {
+    query, filter, setQuery, setFilter, clearSearchParams,
+  };
 }

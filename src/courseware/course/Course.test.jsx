@@ -1,18 +1,16 @@
 import React from 'react';
+
 import { Factory } from 'rosie';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import MockAdapter from 'axios-mock-adapter';
+
 import { breakpoints } from '@edx/paragon';
+
 import {
   act, fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
-import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
-import { handleNextSectionCelebration } from './celebration';
 import * as celebrationUtils from './celebration/utils';
+import { handleNextSectionCelebration } from './celebration';
 import Course from './Course';
-import { executeThunk } from '../../utils';
-import * as thunks from '../data/thunks';
+import setupDiscussionSidebar from './test-utils';
 
 jest.mock('@edx/frontend-platform/analytics');
 jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
@@ -43,8 +41,6 @@ describe('Course', () => {
       sequenceId,
       unitId: Object.values(models.units)[0].id,
     });
-    getItemSpy = jest.spyOn(Object.getPrototypeOf(window.sessionStorage), 'getItem');
-    setItemSpy = jest.spyOn(Object.getPrototypeOf(window.sessionStorage), 'setItem');
     global.innerWidth = breakpoints.extraLarge.minWidth;
   });
 
@@ -52,25 +48,6 @@ describe('Course', () => {
     getItemSpy.mockRestore();
     setItemSpy.mockRestore();
   });
-
-  const setupDiscussionSidebar = async () => {
-    const testStore = await initializeTestStore({ provider: 'openedx' });
-    const state = testStore.getState();
-    const { courseware: { courseId } } = state;
-    const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(200, { provider: 'openedx' });
-    const topicsResponse = buildTopicsFromUnits(state.models.units);
-    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
-      .reply(200, topicsResponse);
-
-    await executeThunk(thunks.getCourseDiscussionTopics(courseId), testStore.dispatch);
-    const [firstUnitId] = Object.keys(state.models.units);
-    mockData.unitId = firstUnitId;
-    const [firstSequenceId] = Object.keys(state.models.sequences);
-    mockData.sequenceId = firstSequenceId;
-
-    await render(<Course {...mockData} />, { store: testStore, wrapWithRouter: true });
-  };
 
   it('loads learning sequence', async () => {
     render(<Course {...mockData} />, { wrapWithRouter: true });
@@ -136,9 +113,9 @@ describe('Course', () => {
 
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
     expect(notificationTrigger).toBeInTheDocument();
-    expect(notificationTrigger.parentNode).toHaveClass('mt-3');
-    fireEvent.click(notificationTrigger);
     expect(notificationTrigger.parentNode).not.toHaveClass('mt-3', { exact: true });
+    fireEvent.click(notificationTrigger);
+    expect(notificationTrigger.parentNode).toHaveClass('mt-3');
   });
 
   it('handles click to open/close discussions sidebar', async () => {
@@ -184,52 +161,11 @@ describe('Course', () => {
   });
 
   it('handles click to open/close notification tray', async () => {
-    sessionStorage.clear();
-    render(<Course {...mockData} />, { wrapWithRouter: true });
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"open"');
+    await setupDiscussionSidebar();
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
     expect(screen.queryByRole('region', { name: /notification tray/i })).toHaveClass('d-none');
     fireEvent.click(notificationShowButton);
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
     expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
-  });
-
-  it('handles reload persisting notification tray status', async () => {
-    sessionStorage.clear();
-    render(<Course {...mockData} />, { wrapWithRouter: true });
-    const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
-    fireEvent.click(notificationShowButton);
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
-
-    // Mock reload window, this doesn't happen in the Course component,
-    // calling the reload to check if the tray remains closed
-    const { location } = window;
-    delete window.location;
-    window.location = { reload: jest.fn() };
-    window.location.reload();
-    expect(window.location.reload).toHaveBeenCalled();
-    window.location = location;
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
-    expect(screen.queryByTestId('NotificationTray')).not.toBeInTheDocument();
-  });
-
-  it('handles sessionStorage from a different course for the notification tray', async () => {
-    sessionStorage.clear();
-    const courseMetadataSecondCourse = Factory.build('courseMetadata', { id: 'second_course' });
-
-    // set sessionStorage for a different course before rendering Course
-    sessionStorage.setItem(`notificationTrayStatus.${courseMetadataSecondCourse.id}`, '"open"');
-
-    render(<Course {...mockData} />, { wrapWithRouter: true });
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"open"');
-    const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
-    fireEvent.click(notificationShowButton);
-
-    // Verify sessionStorage was updated for the original course
-    expect(sessionStorage.getItem(`notificationTrayStatus.${mockData.courseId}`)).toBe('"closed"');
-
-    // Verify the second course sessionStorage was not changed
-    expect(sessionStorage.getItem(`notificationTrayStatus.${courseMetadataSecondCourse.id}`)).toBe('"open"');
   });
 
   it('renders course breadcrumbs as expected', async () => {

@@ -23,8 +23,26 @@ import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateS
 import OutlineTab from './OutlineTab';
 import LoadedTabPage from '../../tab-page/LoadedTabPage';
 
+const mockCoursewareSearchParams = jest.fn();
+
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
+jest.mock('../courseware-search/hooks', () => ({
+  ...jest.requireActual('../courseware-search/hooks'),
+  useCoursewareSearchParams: () => mockCoursewareSearchParams,
+}));
+
+const coursewareSearch = {
+  query: '',
+  filter: '',
+  setQuery: jest.fn(),
+  setFilter: jest.fn(),
+  clearSearchParams: jest.fn(),
+};
+
+const mockSearchParams = ((props = coursewareSearch) => {
+  mockCoursewareSearchParams.mockReturnValue(props);
+});
 
 describe('Outline Tab', () => {
   let axiosMock;
@@ -77,7 +95,14 @@ describe('Outline Tab', () => {
       expiration_date: null,
     });
 
+    // Mock courseware search params
+    mockSearchParams();
+
     logUnhandledRequests(axiosMock);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('Course Outline', () => {

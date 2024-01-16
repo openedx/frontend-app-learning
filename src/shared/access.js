@@ -15,6 +15,9 @@ export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess
       const startDate = (new Intl.DateTimeFormat(getLocale())).format(new Date(start));
       url = `/redirect/dashboard?notlive=${startDate}`;
       break;
+    case 'course_not_started_enterprise_learner':
+      url = '/redirect/enterprise-learner-dashboard';
+      break;
     case 'survey_required':
       url = `/redirect/survey/${courseId}`;
       break;

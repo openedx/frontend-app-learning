@@ -7,10 +7,7 @@
 function getSessionStorage(key) {
   try {
     if (global.sessionStorage) {
-      const rawItem = global.sessionStorage.getItem(key);
-      if (rawItem) {
-        return JSON.parse(rawItem);
-      }
+      return global.sessionStorage.getItem(key);
     }
   } catch (e) {
     // If this fails for some reason, just return null.
@@ -21,7 +18,7 @@ function getSessionStorage(key) {
 function setSessionStorage(key, value) {
   try {
     if (global.sessionStorage) {
-      global.sessionStorage.setItem(key, JSON.stringify(value));
+      global.sessionStorage.setItem(key, value);
     }
   } catch (e) {
     // If this fails, just bail.

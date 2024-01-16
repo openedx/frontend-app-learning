@@ -8,8 +8,6 @@ import { initializeMockApp, render, screen } from '../../../setupTest';
 
 import Chat from './Chat';
 
-jest.mock('@edx/frontend-platform/analytics');
-
 initializeMockApp();
 
 const courseId = 'course-v1:edX+DemoX+Demo_Course';
@@ -21,6 +19,7 @@ const enabledModes = [
   'paid-executive-education', 'paid-bootcamp', 'audit', 'honor', 'unpaid-executive-education', 'unpaid-bootcamp',
 ];
 const disabledModes = [null, undefined, 'xyz'];
+const currentTime = new Date();
 
 describe('Chat', () => {
   // Generate test cases.
@@ -46,6 +45,7 @@ describe('Chat', () => {
               enabled
               courseId={courseId}
               contentToolsEnabled={false}
+              endDate={new Date(currentTime.getTime() + 10 * 60000).toISOString()}
             />
           </BrowserRouter>,
           { store },
@@ -79,6 +79,7 @@ describe('Chat', () => {
             enabled
             courseId={courseId}
             contentToolsEnabled={false}
+            endDate={new Date(currentTime.getTime() + 10 * 60000).toISOString()}
           />
         </BrowserRouter>,
         { store },
@@ -140,6 +141,7 @@ describe('Chat', () => {
               enabled={test.enabled}
               courseId={courseId}
               contentToolsEnabled={false}
+              endDate={new Date(currentTime.getTime() + 10 * 60000).toISOString()}
             />
           </BrowserRouter>,
           { store },
@@ -153,5 +155,55 @@ describe('Chat', () => {
         }
       },
     );
+  });
+
+  it('if course end date has passed, component should not be visible', async () => {
+    const store = configureStore({
+      reducer: {
+        learningAssistant: learningAssistantReducer,
+      },
+    });
+
+    render(
+      <BrowserRouter>
+        <Chat
+          enrollmentMode="verified"
+          isStaff
+          enabled
+          courseId={courseId}
+          contentToolsEnabled={false}
+          endDate={new Date(currentTime.getTime() - 10 * 60000).toISOString()}
+        />
+      </BrowserRouter>,
+      { store },
+    );
+
+    const chat = screen.queryByTestId('toggle-button');
+    expect(chat).not.toBeInTheDocument();
+  });
+
+  it('if course has no end date, component should be visible', async () => {
+    const store = configureStore({
+      reducer: {
+        learningAssistant: learningAssistantReducer,
+      },
+    });
+
+    render(
+      <BrowserRouter>
+        <Chat
+          enrollmentMode="verified"
+          isStaff
+          enabled
+          courseId={courseId}
+          contentToolsEnabled={false}
+          endDate={null}
+        />
+      </BrowserRouter>,
+      { store },
+    );
+
+    const chat = screen.queryByTestId('toggle-button');
+    expect(chat).toBeInTheDocument();
   });
 });

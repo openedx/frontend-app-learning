@@ -3,13 +3,20 @@ import { AppProvider } from '@edx/frontend-platform/react';
 import {
   initializeMockApp, render, screen,
 } from '../setupTest';
-import { useCoursewareSearchState } from '../course-home/courseware-search/hooks';
+import { useCoursewareSearchState, useCoursewareSearchParams } from '../course-home/courseware-search/hooks';
 import { CourseTabsNavigation } from './index';
 import initializeStore from '../store';
 
 jest.mock('../course-home/courseware-search/hooks');
 
 const mockDispatch = jest.fn();
+const coursewareSearch = {
+  query: '',
+  filter: '',
+  setQuery: jest.fn(),
+  setFilter: jest.fn(),
+  clearSearchParams: jest.fn(),
+};
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -33,6 +40,7 @@ describe('Course Tabs Navigation', () => {
 
   beforeEach(() => {
     useCoursewareSearchState.mockImplementation(() => ({ show: false }));
+    useCoursewareSearchParams.mockReturnValue(coursewareSearch);
   });
 
   afterEach(() => {
@@ -65,13 +73,13 @@ describe('Course Tabs Navigation', () => {
   it('should NOT render CoursewareSearch if the flag is off', () => {
     renderComponent();
 
-    expect(screen.queryByTestId('courseware-search')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('courseware-search-section')).not.toBeInTheDocument();
   });
 
   it('should render CoursewareSearch if the flag is on', () => {
     useCoursewareSearchState.mockImplementation(() => ({ show: true }));
     renderComponent();
 
-    expect(screen.queryByTestId('courseware-search')).toBeInTheDocument();
+    expect(screen.queryByTestId('courseware-search-section')).toBeInTheDocument();
   });
 });

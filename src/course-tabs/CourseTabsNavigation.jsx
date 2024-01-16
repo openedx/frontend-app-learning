@@ -15,9 +15,6 @@ const CourseTabsNavigation = ({
 
   return (
     <div id="courseTabsNavigation" className={classNames('course-tabs-navigation', className)}>
-      <div className="float-right">
-        <CoursewareSearchToggle />
-      </div>
       <div className="container-xl">
         <Tabs
           className="nav-underline-tabs"
@@ -34,9 +31,10 @@ const CourseTabsNavigation = ({
           ))}
         </Tabs>
       </div>
-      {show ? (
-        <CoursewareSearch data-testid="courseware-search" />
-      ) : null}
+      <div className="course-tabs-navigation__search-toggle">
+        <CoursewareSearchToggle />
+      </div>
+      {show && <CoursewareSearch />}
     </div>
   );
 };

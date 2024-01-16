@@ -38,24 +38,6 @@
   }
 }
 
-.course-tabs-navigation {
-  border-bottom: solid 1px #eaeaea;
-
-  .nav a,
-  .nav button {
-    &:hover {
-      background-color: $light-400;
-    }
-  }
-
-  .nav a {
-    &:not(.active):hover {
-      background-color: $light-400;
-      border-bottom: none;
-    }
-  }
-}
-
 .nav-underline-tabs {
   margin: 0 0 -1px;
 
@@ -77,6 +59,10 @@
       border-bottom-color: $primary-500;
     }
   }
+}
+
+.pgn__menu-select .pgn__menu-select-popup {
+  position: static;
 }
 
 .sequence-container {
@@ -391,6 +377,13 @@
   box-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .2) !important;
 }
 
+.icon-hover {
+  &:hover {
+    color: $primary-500 !important;
+    background-color: $light-300 !important;
+  }
+}
+
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
 @import "courseware/course/sidebar/sidebars/notifications/NotificationIcon.scss";
@@ -408,3 +401,4 @@
 @import "courseware/course/course-exit/CourseRecommendations";
 @import "product-tours/newUserCourseHomeTour/NewUserCourseHomeTourModal.scss";
 @import "course-home/courseware-search/courseware-search.scss";
+@import "course-tabs/course-tabs-navigation.scss";

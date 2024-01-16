@@ -1,0 +1,570 @@
+{
+  "took": 5,
+  "total": 29,
+  "max_score": 3.4545178,
+  "results": [
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Demo Course Overview"
+        },
+        "content_type": "Sequence",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction",
+        "start_date": "1970-01-01T05:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Introduction",
+          "Demo Course Overview"
+        ],
+        "excerpt": "Demo <b>Course</b> Overview",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction"
+      },
+      "score": 3.4545178
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@html+block@5e009378f0b64585baa0a14b155974b9",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Passing a Course",
+          "html_content": "Passing a COurse After the last assignment in a class has been due, you will see the entry in your student profile change to show progress toward generating your certificate. After the certificate generation process has completed, you will be able to download it from your profile page. "
+        },
+        "content_type": "Text",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@5e009378f0b64585baa0a14b155974b9",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "About Exams and Certificates",
+          "edX Exams",
+          "Passing a Course"
+        ],
+        "excerpt": "Passing a <b>Course</b><span class=\"search-results-ellipsis\"></span>Passing a <b>COurse</b> After the last assignment in a class has been due,",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@5e009378f0b64585baa0a14b155974b9"
+      },
+      "score": 3.4545178
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@vertical+block@c7e98fd39a6944edb6b286c32e1150ff",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Passing a Course"
+        },
+        "content_type": "Sequence",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@vertical+block@c7e98fd39a6944edb6b286c32e1150ff",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "About Exams and Certificates",
+          "edX Exams",
+          "Passing a Course"
+        ],
+        "excerpt": "Passing a <b>Course</b>",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@vertical+block@c7e98fd39a6944edb6b286c32e1150ff"
+      },
+      "score": 3.4545178
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@0d759dee4f9d459c8956136dbde55f02",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Text Input",
+          "capa_content": " Here's a very simple example of a text input question. Depending on the course you may have to observe special text requirements for dates, case sensitivity, etc. Which country contains Paris as its capital? "
+        },
+        "content_type": "CAPA",
+        "problem_types": [
+          "stringresponse"
+        ],
+        "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@0d759dee4f9d459c8956136dbde55f02",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 1: Getting Started",
+          "Homework - Question Styles",
+          "Text input"
+        ],
+        "excerpt": "the <b>course</b> you may have to observe special text requirements for",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@0d759dee4f9d459c8956136dbde55f02"
+      },
+      "score": 1.5874016
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@c554538a57664fac80783b99d9d6da7c",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Pointing on a Picture",
+          "capa_content": " Some course questions may show you an image and ask that you click on it to answer a question. Try this example. (If you are correct you will see our famous green check mark.) Which animal is a kitten? "
+        },
+        "content_type": "CAPA",
+        "problem_types": [
+          "imageresponse"
+        ],
+        "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@c554538a57664fac80783b99d9d6da7c",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 1: Getting Started",
+          "Homework - Question Styles",
+          "Pointing on a Picture"
+        ],
+        "excerpt": " Some <b>course</b> questions may show you an image and ask that you click on",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@c554538a57664fac80783b99d9d6da7c"
+      },
+      "score": 1.5499392
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@45d46192272c4f6db6b63586520bbdf4",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Getting Answers",
+          "capa_content": " In some courses a \"show answer\" button might appear below a question. When you click on this button, you can see the correct answer (with an explanation) that would receive full credit. How much does it cost to take an edX course? Enter the number of dollars. "
+        },
+        "content_type": "CAPA",
+        "problem_types": [
+          "numericalresponse"
+        ],
+        "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@45d46192272c4f6db6b63586520bbdf4",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "About Exams and Certificates",
+          "edX Exams",
+          "Getting Answers"
+        ],
+        "excerpt": " In some <b>course</b>s a \"show answer\" button might appear below a question.",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@45d46192272c4f6db6b63586520bbdf4"
+      },
+      "score": 1.5003732
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@video+block@0b9e39477cf34507a7a48f74be381fdd",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Welcome!",
+          "transcript_en": " ERIC: Hi, and welcome to the edX demonstration course. I'm Eric, and I'm here to help you get a better understanding of how fun and easy it is to take an edX course. So, let's get started. Let me show you how all the parts work together. If at any time you want to skip this video and get a firsthand experience of the demonstration course, all you have to do is click week one to the left. Don't worry, I won't be offended. Let's first look along the top of the page. This area's called the navigation bar. Click on Courseware to interact with your course. Course Info contains course announcements and updates from the course staff. If your course has digital textbooks, this is where you'll find them. Discussion is where you can communicate with the fellow students on topics and projects, and even occasionally with the course staff. When available, the course Wiki acts as a knowledge base for your course. It's a helpful resource. Clicking on Progress will reveal how well you're doing in your studies and exams. When you take the demo course, we'll provide you with a simple progress report matching your results. Let's look at the left column now. The left side of the Courseware screen contains a course navigation bar starting from the top down. Many courses start with an overview of edX and an introduction to the course. Below the overview are segments of the course, which are released as the course progresses. Typically, an edX course is delivered in week by week segments, and have lessons and homeworks you need to complete. Many courses are 10 to 12 weeks long. We made this demonstration course three weeks for simplicity. Let's now look at the learning sequence. Each item in the left column reveals a corresponding learning sequence. Work your way from left to right. Learning sequences can contain lectures, exercises, and interactive lessons that you can complete on your own schedule. Next, let's discover what makes edX fun and unique, its interactivity. edX prides itself on its interactive lessons, which can include demonstrations, visualizations, and virtual environments. You can try out some in the demo course. Interactive lessons are often graded and contribute to your final grade. While the edX platform also supports more traditional question formats like multiple choice, our classes also test your understanding by allowing you to use labs and simulators, and even asking you to write an essay. Example of these graded interactions are in the demo course. You can see how the questions the course uses for gauging your learning process can even be auto graded, or detailed feedback given in real time. So while an edX course might be rigorous, the tools and visualizations are really fun and truly interactive. Finally, there are many ways successful students like to you interact to get the most out of a course. Beyond the discussion forums, you can meet and engage with fellow classmates through a local meet up-- which we highly recommend-- a Google Hangout, or even invite students to join you via Twitter, Facebook, or other social networks. It's a proven fact that if you engage with others while taking a course, you're more likely to succeed. Now that you've seen how easy it is to take an edX course, experience this demonstration course. Firsthand all you have to do is click on week one to the left and you can get started. "
+        },
+        "content_type": "Video",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@video+block@0b9e39477cf34507a7a48f74be381fdd",
+        "start_date": "1970-01-01T05:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Introduction",
+          "Demo Course Overview",
+          "Introduction: Video and Sequences"
+        ],
+        "excerpt": " ERIC: Hi, and welcome to the edX demonstration <b>course</b>. I'm Eric, and",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@video+block@0b9e39477cf34507a7a48f74be381fdd"
+      },
+      "score": 1.4792063
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@a0effb954cca4759994f1ac9e9434bf4",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Multiple Choice Questions",
+          "capa_content": " Many edX courses have homework or exercises you need to complete. Notice the clock image to the left? That means this homework or exercise needs to be completed for you to pass the course. (This can be a bit confusing; the exercise may or may not have a due date prior to the end of the course.) We\u2019ve provided eight (8) examples of how a professor might ask you questions. While the multiple choice question types below are somewhat standard, explore the other question types in the sequence above, like the formula builder- try them all out. As you go through the question types, notice how edX gives you immediate feedback on your responses - it really helps in the learning process. What color is the open ocean on a sunny day? 'yellow','blue','green' Which piece of furniture is built for sitting? a table a desk a chair a bookshelf Which of the following are musical instruments? a piano a tree a guitar a window "
+        },
+        "content_type": "CAPA",
+        "problem_types": [
+          "multiplechoiceresponse",
+          "choiceresponse",
+          "optionresponse"
+        ],
+        "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@a0effb954cca4759994f1ac9e9434bf4",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 1: Getting Started",
+          "Homework - Question Styles",
+          "Multiple Choice Questions"
+        ],
+        "excerpt": " Many edX <b>course</b>s have homework or exercises you need to complete.",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@a0effb954cca4759994f1ac9e9434bf4"
+      },
+      "score": 1.4341705
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@75f9562c77bc4858b61f907bb810d974",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Numerical Input",
+          "capa_content": " Some course questions ask that you insert numbers into web-text fields, and your answers can be judged exactly - or approximately - according to the question. Note that the edX system uses a period to indicate decimals, so fifteen and three quarters is written \"15.75\", not \"15,75\". Enter the numerical value of Pi: Enter the approximate value of 502*9: Enter the number of fingernails on a healthy human hand. For the purposes of this question, please consider the thumb as a finger: "
+        },
+        "content_type": "CAPA",
+        "problem_types": [
+          "numericalresponse"
+        ],
+        "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@75f9562c77bc4858b61f907bb810d974",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 1: Getting Started",
+          "Homework - Question Styles",
+          "Numerical Input"
+        ],
+        "excerpt": " Some <b>course</b> questions ask that you insert numbers into web-text",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@75f9562c77bc4858b61f907bb810d974"
+      },
+      "score": 1.2987298
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@video+block@636541acbae448d98ab484b028c9a7f6",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Connecting a Circuit and a Circuit Diagram",
+          "transcript_en": "SPEAKER 1: What we see here-- a mess. OK? What we have is a voltmeter and an amp meter. The amp meter measures current, the voltmeter measures voltage of course. And we're measuring the voltage across the light bulb-- the lamp. And we're measuring the current into the lamp. PETER: So we've got a voltmeter measuring across the-- volts meter-- across there. And then we've got an amp reader measuring into. SPEAKER 1: Right. Exactly. Now, we're going to connect that to a battery. The three cell battery that you've seen before. And we're going to see, of course, that the light bulb lit up. And the current we measure is 122 milliamperes going into the light bulb. 122 milliamperes. And the voltage across is from the plus to minus, 4.31 volts. OK? Now, we can do another experiment. Notice how the light bulb is lit up and how much it's lit, approximately. Now, I'm going to reverse the battery so that we connect the battery in the opposite polarity. OK. Go ahead, Peter. PETER: You connect it, I will draw. SPEAKER 1: OK, I'm just doing it. PETER: So I'll swap these. SPEAKER 1: Yes, sir. OK. And what we observe is basically the amp meter is measuring 122 milliamperes in the negative direction. So that means it's measuring the current into the light bulb-- because I've not changed the orientation with respect to the light bulb-- of minus 122 milliamperes. And the voltage across the light bulb, from here to here, is minus 4.29 volts. PETER: Sorry, that's a minus? SPEAKER 1: Yes. PETER: So if we look at the power in the first case, 122 milliamps times 4.31 volts, we get 526 milliwatts. SPEAKER 1: Yep. PETER: If we measure the power in this case over here, minus 122 milliamps times minus 4.29 volts, we get approximately the same thing. So I'm going to round it off to, let's say best guess, 524, maybe 23 or something. No less. SPEAKER 1: OK. PETER: So this is equal to that within measurement error. SPEAKER 1: And of course, you see the power is the power going into the light bulb and coming out as light and heat. OK? We have arranged our measurements by having these associated reference directions, so that this is plus and that's minus, and that the current always goes into the terminal that we label with plus. That always means that the power we measure by multiplying these two numbers is the power going into this device. PETER: So this light bulb is dissipating 524 milliwatts. If we were to do the same calculation for the battery, so current would be going to the positive terminal, we would-- SPEAKER 1: Well, you have to measure it then from there to there. PETER: Yeah. Plus, minus. That's what we're doing. So this would be 4.29 volts. The current would still be minus 122 milliamps. The current's moving in a loop, so here is the same as here, but the signs are swapped. That same calculation would give us minus 524 milliwatts. And that's because the battery is outputting power, whereas the light bulb is dissipating power. SPEAKER 1: Think about it as, if we're measuring the power entering the battery, it's minus 524 milliwatts. OK? That's the way to think about it. This always gives you the power entering that element."
+        },
+        "content_type": "Video",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@video+block@636541acbae448d98ab484b028c9a7f6",
+        "start_date": "2013-02-05T05:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 1: Getting Started",
+          "Lesson 1 - Getting Started",
+          "Video Presentation Styles"
+        ],
+        "excerpt": "measures voltage of <b>course</b>. And we're measuring the voltage across the",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@video+block@636541acbae448d98ab484b028c9a7f6"
+      },
+      "score": 1.1870136
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@python_grader",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "",
+          "capa_content": " We are searching for the smallest monthly payment such that we can pay off the entire balance of a loan within a year. The following values might be useful when writing your solution Monthly interest rate = (Annual interest rate) / 12 Monthly payment lower bound = Balance / 12 Monthly payment upper bound = (Balance x (1 + Monthly interest rate)12) / 12 The following variables contain values as described below: balance - the outstanding balance on the credit card annualInterestRate - annual interest rate as a decimal Write a program that uses these bounds and bisection search (for more info check out the Wikipedia page on bisection search) to find the smallest monthly payment to the cent such that we can pay off the debt within a year. Note that if you do not use bisection search, your code will not run - your code only has 30 seconds to run on our servers. If you get a message that states \"Your submission could not be graded. Please recheck your submission and try again. If the problem persists, please notify the course staff.\", check to be sure your code doesn't take too long to run. The code you paste into the following box should not specify the values for the variables balance or annualInterestRate - our test code will define those values before testing your submission. monthlyInterestRate = annualInterestRate/12 lowerBound = balance/12 upperBound = (balance * (1+annualInterestRate/12)**12)/12 originalBalance = balance # Keep testing new payment values # until the balance is +/- $0.02 while abs(balance) &gt; .02: # Reset the value of balance to its original value balance = originalBalance # Calculate a new monthly payment value from the bounds payment = (upperBound - lowerBound)/2 + lowerBound # Test if this payment value is sufficient to pay off the # entire balance in 12 months for month in range(12): balance -= payment balance *= 1+monthlyInterestRate # Reset bounds based on the final value of balance if balance &gt; 0: # If the balance is too big, need higher payment # so we increase the lower bound lowerBound = payment else: # If the balance is too small, we need a lower # payment, so we decrease the upper bound upperBound = payment # When the while loop terminates, we know we have # our answer! print(\"Lowest Payment:\", round(payment, 2)) {\"grader\": \"ps02/bisect/grade_bisect.py\"} Note: Depending on where, and how frequently, you round during this function, your answers may be off a few cents in either direction. Try rounding as few times as possible in order to increase the accuracy of your result. Hints Test Cases to test your code with. Be sure to test these on your own machine - and that you get the same output! - before running your code on this webpage! Note: The automated tests are lenient - if your answers are off by a few cents in either direction, your code is OK. Test Cases: Test Case 1: balance = 320000 annualInterestRate = 0.2 Result Your Code Should Generate: ------------------- Lowest Payment: 29157.09 Test Case 2: balance = 999999 annualInterestRate = 0.18 Result Your Code Should Generate: ------------------- Lowest Payment: 90325.07 The autograder says, \"Your submission could not be graded.\" Help! If the autograder gives you the following message: Your submission could not be graded. Please recheck your submission and try again. If the problem persists, please notify the course staff. Don't panic! There are a few things that might be wrong with your code that you should check out. The number one reason this message appears is because your code timed out. You only get 30 seconds of computation time on our servers. If your code times out, you probably have an infinite loop. What to do? The number 1 thing to do is that you need to run this code in your own local environment. Your code should print one line at the end of the loop. If your code never prints anything out - you have an infinite loop! To debug your infinite loop - check your loop conditional. When will it stop? Try inserting print statements inside your loop that prints out information (like variables) - are you incrementing or decrementing your loop counter correctly? Search the forum for people with similar issues. If your search turns up nothing, make a new post and paste in your loop conditional for others to help you out with. Please don't email the course staff unless your code legitimately works and prints out the correct answers in your local environment. In that case, please email your code file, a screenshot of the code printing out the correct answers in your local environment, and a screenshot of the exact same code not working on the tutor. The course staff is otherwise unable to help debug your problem set via email - we can only address platform issues. "
+        },
+        "content_type": "CAPA",
+        "problem_types": [
+          "coderesponse"
+        ],
+        "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@python_grader",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 2: Get Interactive",
+          "Homework - Labs and Demos",
+          "Code Grader"
+        ],
+        "excerpt": "notify the <b>course</b> staff.\", check to be sure your code doesn't take too",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@python_grader"
+      },
+      "score": 1.0107487
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@9cee77a606ea4c1aa5440e0ea5d0f618",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Interactive Questions",
+          "capa_content": " Most courses have interactive questions that test your knowledge like the one below. They can be part of a learning sequence or an exam. Notice the visual feedback. Go ahead, try it out! Questions which are part of assignments or exams may have due dates - the last possible time you can submit an assignment for grading. Once this time has passed, you will not be able to get credit for any incomplete problems in the assignment. If an assignment has a due date, you can see the due date in the sidebar. (This demo course does not have any assignments with due dates.) If no due date is displayed, the assignment can be turned in at any time. All assignment due dates are displayed in the time zone that you select in your account settings. If you do not specify a time zone, assignment due dates display in your browser's time zone. What kinds of late policies does edX allow? late penalties instructor forgiveness late time budget none of the above "
+        },
+        "content_type": "CAPA",
+        "problem_types": [
+          "choiceresponse"
+        ],
+        "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@9cee77a606ea4c1aa5440e0ea5d0f618",
+        "start_date": "2013-02-05T05:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 1: Getting Started",
+          "Lesson 1 - Getting Started",
+          "Interactive Questions"
+        ],
+        "excerpt": " Most <b>course</b>s have interactive questions that test your knowledge like",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@9cee77a606ea4c1aa5440e0ea5d0f618"
+      },
+      "score": 0.96387196
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@html+block@030e35c4756a4ddc8d40b95fbbfff4d4",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Blank HTML Page",
+          "html_content": "Welcome to the Open edX Demo Course Introduction. This is where you can explore how to take an edX course (like this one). Most courses have an \"intro\" video that shows you how it all works. You can watch the introduction video (below) or scroll though the course studies and assignments using the toolbar (above). Just for fun, we'll keep track of your work in this demo course, and show you your progress in the toolbar just like in a real course. Watch the overview video (below), then click on \"Example Week One\" in the left hand navigation to get started. "
+        },
+        "content_type": "Text",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@030e35c4756a4ddc8d40b95fbbfff4d4",
+        "start_date": "1970-01-01T05:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Introduction",
+          "Demo Course Overview",
+          "Introduction: Video and Sequences"
+        ],
+        "excerpt": "Welcome to the Open edX Demo <b>Course</b> Introduction. This is where you",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@030e35c4756a4ddc8d40b95fbbfff4d4"
+      },
+      "score": 0.8844358
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@html+block@html_49b4494da2f7",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Discussion Forums",
+          "html_content": "Discussion FORUMS The discussion forum for each course is found at the top of the course page. You might come across a subset of the discussion forum inside the course (see below), where you can talk with fellow students about the course in context. Go ahead and be social! Make your first post in this demo course. Keep an eye out for posts with a green check mark. The green check means the post has been recognized by a staff member or forum moderator as a great post. You can also actively upvote a post. Others can search on user \u201cupvoted\u201d posts. They tend to be very helpful. "
+        },
+        "content_type": "Text",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@html_49b4494da2f7",
+        "start_date": "1978-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 3: Be Social",
+          "Lesson 3 - Be Social",
+          "Discussion Forums"
+        ],
+        "excerpt": "Discussion FORUMS The discussion forum for each <b>course</b> is found at the",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@html_49b4494da2f7"
+      },
+      "score": 0.8803684
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@html+block@f4a39219742149f781a1dda6f43a623c",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Overall Grade",
+          "html_content": " OVERALL GRADE PERFORMANCE The progress tab (selectable near the top of each page in your course) shows your performance. Click on it now, and you will see how you're doing in this demo course. The bar chart shows the overall percentage that you have earned on each assignment in the course, and how each of those assignments combine into your overall grade. Further down the page is a detailed breakdown of your score on every graded question in the class. You might notice that some of your assignments on the bar chart show an 'x'. The 'x's indicate the assignments that the edX system will NOT be counting toward your final grade, according to the course grading. The 'x's go to the assignments that you scored the lowest on. Each course has its own percentage cutoff for a Certificate of Mastery. You can see where those cutoffs are by looking at the vertical description. In this demo, a \"pass\" is considered 60%. When you \"pass\" a live edX course, you will receive a certificate after the class has closed. Sorry - the demo course does not grant certificates! "
+        },
+        "content_type": "Text",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@f4a39219742149f781a1dda6f43a623c",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "About Exams and Certificates",
+          "edX Exams",
+          "Overall Grade Performance"
+        ],
+        "excerpt": "of each page in your <b>course</b>) shows your performance. Click on it now,",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@f4a39219742149f781a1dda6f43a623c"
+      },
+      "score": 0.87981963
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@html+block@87fa6792d79f4862be098e5169e93339",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Blank HTML Page",
+          "html_content": "Find Your Study Buddy Working with other students offline can help you get the most out of an online course and even increase the likelihood you will successfully complete the course. So, your homework is to find a study buddy. The course specific discussion forums are a great place to find neighbors or even new friends to invite to a Meetup you are looking to organize or even a virtual Google Hangout. "
+        },
+        "content_type": "Text",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@87fa6792d79f4862be098e5169e93339",
+        "start_date": "1978-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 3: Be Social",
+          "Lesson 3 - Be Social",
+          "Homework - Find Your Study Buddy"
+        ],
+        "excerpt": "get the most out of an online <b>course</b> and even increase the likelihood",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@87fa6792d79f4862be098e5169e93339"
+      },
+      "score": 0.84284115
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@html+block@6018785795994726950614ce7d0f38c5",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Find Your Study Buddy",
+          "html_content": "Find Your Study Buddy Working with other students offline can help you get the most out of an online course and even increase the likelihood you will successfully complete the course. So, your homework is to find a study buddy. The course specific discussion forums are a great place to find neighbors or even new friends to invite to a Meetup you are looking to organize or even a virtual Google Hangout. "
+        },
+        "content_type": "Text",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@6018785795994726950614ce7d0f38c5",
+        "start_date": "2013-02-05T05:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 3: Be Social",
+          "Homework - Find Your Study Buddy",
+          "Homework - Find Your Study Buddy"
+        ],
+        "excerpt": "get the most out of an online <b>course</b> and even increase the likelihood",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@6018785795994726950614ce7d0f38c5"
+      },
+      "score": 0.84284115
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@html+block@f9f3a25e7bab46e583fd1fbbd7a2f6a0",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "Be Social",
+          "html_content": "Be SOCIAL A big part of learning online includes \u201cbeing social.\u201d We encourage all students to communicate within the course discussion forums \u2013 a great place to connect with other students and to get support from the course staff. Some students and professors also engage through other social mediums like Meetup or Facebook. Recent research has found that if you take a class with a friend, or engage socially with other learners while taking a course, there is a higher likelihood that you will complete a course. If you haven\u2019t already, consider finding a study buddy! Check out more information about the discussion forum by navigating to the next item in this learning sequence. In the discussion forums, remember to be polite and respectful. Simply put, treat others the way you want to be treated. "
+        },
+        "content_type": "Text",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@f9f3a25e7bab46e583fd1fbbd7a2f6a0",
+        "start_date": "1978-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 3: Be Social",
+          "Lesson 3 - Be Social",
+          "Be Social"
+        ],
+        "excerpt": "encourage all students to communicate within the <b>course</b> discussion",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@f9f3a25e7bab46e583fd1fbbd7a2f6a0"
+      },
+      "score": 0.84210813
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@html+block@8293139743f34377817d537b69911530",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "EdX Exams",
+          "html_content": " EDX EXAMS Not all edX courses have exams; many do, but not all. When choosing a course, it's a good idea to check the exam and study requirements, as well as any prerequisites. Of course - you can \"audit\" any edX course, which means you can study alongside other students using the same content, tools and materials, but you're not focused on grades and might skip the exams and assignments. Follow this learning sequence via the links above to understand more about how we grade your work and track your progress. "
+        },
+        "content_type": "Text",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@8293139743f34377817d537b69911530",
+        "start_date": "2013-02-05T00:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "About Exams and Certificates",
+          "edX Exams",
+          "EdX Exams"
+        ],
+        "excerpt": " EDX EXAMS Not all edX <b>course</b>s have exams; many do, but not all. When",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@8293139743f34377817d537b69911530"
+      },
+      "score": 0.8306555
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "block-v1:edX+DemoX+Demo_Course+type@html+block@9d5104b502f24ee89c3d2f4ce9d347cf",
+      "data": {
+        "course": "course-v1:edX+DemoX+Demo_Course",
+        "org": "edX",
+        "content": {
+          "display_name": "When Are Your Exams? ",
+          "html_content": "WHEN ARE YOUR Exams? Every course treats the timing on its exams differently, and you should be really careful to pay attention to any announcements about exam timing that your course makes. "
+        },
+        "content_type": "Text",
+        "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@9d5104b502f24ee89c3d2f4ce9d347cf",
+        "start_date": "2013-02-05T05:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": [
+          "Example Week 1: Getting Started",
+          "Lesson 1 - Getting Started",
+          "When Are Your Exams? "
+        ],
+        "excerpt": "WHEN ARE YOUR Exams? Every <b>course</b> treats the timing on its exams",
+        "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@9d5104b502f24ee89c3d2f4ce9d347cf"
+      },
+      "score": 0.82610154
+    },
+    {
+      "_index": "courseware_content",
+      "_type": "_doc",
+      "_id": "some-external-reference",
+      "data": {
+        "course": "External Course",
+        "org": "edX",
+        "content": {
+          "display_name": "External Course Link Test",
+          "html_content": "This should open a new tab when following the link."
+        },
+        "content_type": "Unknown",
+        "id": "random-element-id",
+        "start_date": "2013-02-05T05:00:00+00:00",
+        "content_groups": null,
+        "course_name": "Demonstration Course",
+        "location": null,
+        "excerpt": "Just testing external links",
+        "url": "https://www.edx.org"
+      },
+      "score": 0.82610154
+    }
+  ],
+  "access_denied_count": 0
+}

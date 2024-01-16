@@ -32,6 +32,121 @@
       margin-bottom: 2rem;
     }
   }
+
+  &__results-summary {
+    font-size: .9rem;
+    color: $gray-500;
+    padding: 1rem 0 .5rem;
+  }
+
+  &__spinner {
+    display: grid;
+    place-items: center;
+    min-height: 20vh;
+  }
+}
+
+.courseware-search-results {
+  margin-top: 1.5rem;
+
+  &__empty {
+    color: $gray-500;
+  }
+
+  &__item {
+    display: block;
+    padding: .75rem 1rem;
+    font-weight: 500;
+    display: flex;
+    gap: 0.625rem;
+
+    &:hover {
+      text-decoration: none;
+      background: $light-300;
+    }
+
+    &:not(:first-child) {
+      border-top: 1px solid $light-300;
+    }
+  }
+
+  &__icon {
+    padding: 0.375rem 0 0 0.375rem;
+    color: $gray-300;
+  }
+
+  &__info {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    line-height: 2.5;
+    font-size: 0.875rem;
+    color: $black;
+
+    > span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    em {
+      padding: 0.125rem 0.375rem;
+      font-variant-numeric: lining-nums tabular-nums;
+      min-width: 1.25rem;
+      line-height: 1rem;
+      background: $light-300;
+      border-radius: 99rem;
+      font-style: normal;
+      margin-left: 0.375rem;
+      font-size: 0.6875rem;
+      text-align: center;
+    }
+  }
+
+  &__breadcrumbs {
+    display: flex;
+    gap: 1.25rem;
+    color: $gray-500;
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    > li {
+      position: relative;
+      flex-shrink: 1;
+      min-width: 0;
+
+      &:not(:first-child)::before {
+        content: '›';
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -55%);
+        left: -0.625rem;
+      }
+    }
+
+    div {
+      font-size: 0.75rem;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.courseware-search-results-tabs {
+  border-bottom-color: $gray-400 !important;
+
+  &.nav-tabs .nav-link.active {
+    border-bottom-width: 4px !important;
+  }
 }
 
 @media (min-width: map-get($grid-breakpoints, 'md')) {
