@@ -33,7 +33,7 @@
     "@edx/frontend-component-footer": "12.2.1",
     "@edx/frontend-component-header": "4.6.0",
     "@edx/frontend-lib-special-exams": "2.27.0",
-    "@edx/frontend-lib-learning-assistant": "^1.19.0",
+    "@edx/frontend-lib-learning-assistant": "^1.20.1",
     "@edx/frontend-platform": "5.5.2",
     "@edx/paragon": "20.46.0",
     "@edx/react-unit-test-utils": "npm:@edx/react-unit-test-utils@1.7.0",
