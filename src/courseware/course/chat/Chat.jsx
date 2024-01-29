@@ -24,13 +24,6 @@ const Chat = ({
     'paid-bootcamp',
   ];
 
-  const AUDIT_MODES = [
-    'audit',
-    'honor',
-    'unpaid-executive-education',
-    'unpaid-bootcamp',
-  ];
-
   const hasVerifiedEnrollment = (
     enrollmentMode !== null
     && enrollmentMode !== undefined
