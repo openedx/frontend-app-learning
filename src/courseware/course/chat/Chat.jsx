@@ -24,17 +24,10 @@ const Chat = ({
     'paid-bootcamp',
   ];
 
-  const AUDIT_MODES = [
-    'audit',
-    'honor',
-    'unpaid-executive-education',
-    'unpaid-bootcamp',
-  ];
-
-  const isEnrolled = (
+  const hasVerifiedEnrollment = (
     enrollmentMode !== null
     && enrollmentMode !== undefined
-    && [...VERIFIED_MODES, ...AUDIT_MODES].some(mode => mode === enrollmentMode)
+    && [...VERIFIED_MODES].some(mode => mode === enrollmentMode)
   );
 
   const endDatePassed = () => {
@@ -46,7 +39,7 @@ const Chat = ({
 
   const shouldDisplayChat = (
     enabled
-    && (isEnrolled || isStaff) // display only to enrolled or staff
+    && (hasVerifiedEnrollment || isStaff) // display only to verified learners or staff
     && !endDatePassed()
   );
 
