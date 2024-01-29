@@ -16,9 +16,9 @@ let enabledTestCases = [];
 let disabledTestCases = [];
 const enabledModes = [
   'professional', 'verified', 'no-id-professional', 'credit', 'masters', 'executive-education',
-  'paid-executive-education', 'paid-bootcamp', 'audit', 'honor', 'unpaid-executive-education', 'unpaid-bootcamp',
+  'paid-executive-education', 'paid-bootcamp',
 ];
-const disabledModes = [null, undefined, 'xyz'];
+const disabledModes = [null, undefined, 'xyz', 'audit', 'honor', 'unpaid-executive-education', 'unpaid-bootcamp'];
 const currentTime = new Date();
 
 describe('Chat', () => {
