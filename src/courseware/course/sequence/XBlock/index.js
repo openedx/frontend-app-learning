@@ -1,2 +1,2 @@
 /* eslint-disable-next-line import/prefer-default-export */
-export { default as LibraryBlock } from './LibraryBlock';
+export { default as XBlock } from './XBlock';

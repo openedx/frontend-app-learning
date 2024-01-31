@@ -100,6 +100,10 @@ function blockFrameJS() {
       // so we first have to generate a secure handler URL for it:
       postMessageToParent({ method: 'get_handler_url', usageId }, (handlerData) => {
         element[HANDLER_URL] = handlerData.handlerUrl;
+
+        // HACK: Replace the old handler URL with the v2 XBlock API.
+        element.innerHTML = element.innerHTML.replace(/data-url="[^"]*"/, `data-url="${handlerData.handlerUrl.replace('handler_name/', 'xmodule_handler')}"`);
+
         // Now proceed with initializing the block's JavaScript:
         const InitFunction = (window)[initFunctionName];
         // Does the XBlock HTML contain arguments to pass to the InitFunction?
@@ -220,13 +224,13 @@ export default function wrapBlockHtmlForIFrame(html, resources, lmsBaseUrl) {
   /* Extract CSS resources. */
   const cssUrls = urlResources.filter((r) => r.mimetype === 'text/css').map((r) => r.data);
   const sheets = textResources.filter((r) => r.mimetype === 'text/css').map((r) => r.data);
-  let cssTags = cssUrls.map((url) => `<link rel="stylesheet" href="${url}">`).join('\n');
+  let cssTags = cssUrls.map((url) => `<link rel="stylesheet" href="${lmsBaseUrl}${url}">`).join('\n');
   cssTags += sheets.map((sheet) => `<style>${sheet}</style>`).join('\n');
 
   /* Extract JS resources. */
   const jsUrls = urlResources.filter((r) => r.mimetype === 'application/javascript').map((r) => r.data);
   const scripts = textResources.filter((r) => r.mimetype === 'application/javascript').map((r) => r.data);
-  let jsTags = jsUrls.map((url) => `<script src="${url}"></script>`).join('\n');
+  let jsTags = jsUrls.map((url) => `<script src="${lmsBaseUrl}${url}"></script>`).join('\n');
   jsTags += scripts.map((script) => `<script>${script}</script>`).join('\n');
 
   // Most older XModules/XBlocks have a ton of undeclared dependencies on various JavaScript in the global scope.
@@ -237,10 +241,10 @@ export default function wrapBlockHtmlForIFrame(html, resources, lmsBaseUrl) {
   // Otherwise, if the XBlock uses 'student_view', 'author_view', or 'studio_view', include known required globals:
   let legacyIncludes = '';
   if (
-    html.indexOf('xblock-v1-student_view') !== -1
-    || html.indexOf('xblock-v1-public_view') !== -1
-    || html.indexOf('xblock-v1-studio_view') !== -1
-    || html.indexOf('xblock-v1-author_view') !== -1
+    html.indexOf('xblock-student_view') !== -1
+    || html.indexOf('xblock-public_view') !== -1
+    || html.indexOf('xblock-studio_view') !== -1
+    || html.indexOf('xblock-author_view') !== -1
   ) {
     legacyIncludes += `
       <!-- gettext & XBlock JS i18n code -->
@@ -276,6 +280,7 @@ export default function wrapBlockHtmlForIFrame(html, resources, lmsBaseUrl) {
                       draggabilly: 'js/vendor/draggabilly',
                       hls: 'common/js/vendor/hls',
                       moment: 'common/js/vendor/moment-with-locales',
+                      'moment-timezone': 'common/js/vendor/moment-timezone-with-data',
                       HtmlUtils: 'edx-ui-toolkit/js/utils/html-utils',
                   },
               });
@@ -288,6 +293,10 @@ export default function wrapBlockHtmlForIFrame(html, resources, lmsBaseUrl) {
       <!-- edX HTML Utils requires GlobalLoader -->
       <script type="text/javascript" src="${lmsBaseUrl}/static/edx-ui-toolkit/js/utils/global-loader.js"></script>
       <script>
+      
+      // Required by moment-timezone, which is used by the LibraryContentBlock.
+      RequireJS.require(['moment']);
+      
       // The video XBlock has an undeclared dependency on edX HTML Utils
       RequireJS.require(['HtmlUtils'], function (HtmlUtils) {
           window.edx.HtmlUtils = HtmlUtils;

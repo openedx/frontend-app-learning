@@ -183,6 +183,30 @@ export async function getSequenceMetadata(sequenceId) {
 
 const getSequenceHandlerUrl = (courseId, sequenceId) => `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler`;
 
+export async function getBlockMetadataWithChildren(usageKey) {
+  const { data } = await getAuthenticatedHttpClient()
+    .get(`${getConfig().LMS_BASE_URL}/api/xblock/v2/xblocks/${usageKey}/?include=children`, {});
+
+  return camelCaseObject(data);
+}
+
+export async function getBlockHandlerUrl(usageKey, handlerName) {
+  const { data } = await getAuthenticatedHttpClient()
+    .get(`${getConfig().LMS_BASE_URL}/api/xblock/v2/xblocks/${usageKey}/handler_url/${handlerName}/`, {});
+
+  return data.handler_url;
+}
+
+export const renderXBlockView = async (usageKey, viewName) => {
+  const { data } = await getAuthenticatedHttpClient()
+    .get(`${getConfig().LMS_BASE_URL}/api/xblock/v2/xblocks/${usageKey}/view/${viewName}/`, {});
+
+  return {
+    content: data.content,
+    resources: data.resources,
+  };
+};
+
 export async function getBlockCompletion(courseId, sequenceId, usageKey) {
   const { data } = await getAuthenticatedHttpClient().post(
     `${getSequenceHandlerUrl(courseId, sequenceId)}/get_completion`,

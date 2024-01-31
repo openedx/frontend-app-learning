@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ensureConfig, getConfig } from '@edx/frontend-platform';
+import { getConfig } from '@edx/frontend-platform';
 
 import wrapBlockHtmlForIFrame from './wrap';
-
-ensureConfig(['LMS_BASE_URL', 'SECURE_ORIGIN_XBLOCK_BOOTSTRAP_HTML_URL'], 'library block component');
+import { getBlockHandlerUrl, renderXBlockView } from '../../../data/api';
 
 /**
  * React component that displays an XBlock in a sandboxed IFrame.
@@ -15,7 +14,7 @@ ensureConfig(['LMS_BASE_URL', 'SECURE_ORIGIN_XBLOCK_BOOTSTRAP_HTML_URL'], 'libra
  * cannot access things like the user's cookies, nor can it make GET/POST
  * requests as the user. However, it is allowed to call any XBlock handlers.
  */
-class LibraryBlock extends React.Component {
+class XBlock extends React.Component {
   constructor(props) {
     super(props);
     this.iframeRef = React.createRef();
@@ -23,6 +22,7 @@ class LibraryBlock extends React.Component {
       html: null,
       iFrameHeight: 400,
       iframeKey: 0,
+      view: null,
     };
   }
 
@@ -35,12 +35,15 @@ class LibraryBlock extends React.Component {
     // with the surrounding UI.
     window.addEventListener('message', this.receivedWindowMessage);
 
+    // Fetch the XBlock HTML from the LMS:
+    this.fetchBlockHtml();
+
     // Process the XBlock view:
     this.processView();
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.view !== this.props.view) {
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.view !== this.state.view) {
       this.processView();
     }
   }
@@ -48,6 +51,19 @@ class LibraryBlock extends React.Component {
   componentWillUnmount() {
     window.removeEventListener('message', this.receivedWindowMessage);
   }
+
+  /**
+   * Fetch the XBlock HTML and resources from the LMS.
+   */
+  fetchBlockHtml = async () => {
+    try {
+      const response = await renderXBlockView(this.props.usageId, 'student_view');
+      this.setState({ view: response });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error:', error);
+    }
+  };
 
   /**
    * Handle any messages we receive from the XBlock Runtime code in the IFrame.
@@ -67,7 +83,7 @@ class LibraryBlock extends React.Component {
     if (method === 'bootstrap') {
       sendReply({ initialHtml: this.state.html });
     } else if (method === 'get_handler_url') {
-      const handlerUrl = await this.props.getHandlerUrl(args.usageId);
+      const handlerUrl = await getBlockHandlerUrl(args.usageId, 'handler_name');
       sendReply({ handlerUrl });
     } else if (method === 'update_frame_height') {
       this.setState({ iFrameHeight: args.height });
@@ -83,11 +99,17 @@ class LibraryBlock extends React.Component {
   };
 
   processView() {
-    const { view } = this.props;
-    if (view.value) {
+    if (this.state.view) {
+      // HACK: Replace relative URLs starting with /static/, /assets/, or /xblock/ with absolute ones.
+      // This regexp captures the quote character (', ", or their encoded equivalents) followed by the relative path.
+      const regexp = /(["']|&#34;|&#39;)\/(static|assets|xblock)\//g;
+      const contentString = JSON.stringify(this.state.view.content || '');
+      const updatedContentString = contentString.replace(regexp, `$1${getConfig().LMS_BASE_URL}/$2/`);
+      const content = JSON.parse(updatedContentString);
+
       const html = wrapBlockHtmlForIFrame(
-        view.value.content,
-        view.value.resources,
+        content,
+        this.state.view.resources || [],
         getConfig().LMS_BASE_URL,
       );
 
@@ -121,7 +143,7 @@ class LibraryBlock extends React.Component {
           key={this.state.iframeKey}
           ref={this.iframeRef}
           title="block"
-          src={getConfig().SECURE_ORIGIN_XBLOCK_BOOTSTRAP_HTML_URL}
+          src="/xblock-bootstrap.html"
           data-testid="block-preview"
           style={{
             position: 'absolute',
@@ -153,19 +175,13 @@ class LibraryBlock extends React.Component {
   }
 }
 
-LibraryBlock.propTypes = {
-  getHandlerUrl: PropTypes.func.isRequired,
+XBlock.propTypes = {
   onBlockNotification: PropTypes.func,
-  view: PropTypes.shape({
-    value: PropTypes.shape({
-      content: PropTypes.string.isRequired,
-      resources: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    }).isRequired,
-  }).isRequired,
+  usageId: PropTypes.string.isRequired,
 };
 
-LibraryBlock.defaultProps = {
+XBlock.defaultProps = {
   onBlockNotification: null,
 };
 
-export default LibraryBlock;
+export default XBlock;
