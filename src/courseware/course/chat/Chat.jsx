@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { Xpert } from '@edx/frontend-lib-learning-assistant';
@@ -13,6 +14,10 @@ const Chat = ({
   unitId,
   endDate,
 }) => {
+  const {
+    activeAttempt, exam,
+  } = useSelector(state => state.specialExams);
+
   const VERIFIED_MODES = [
     'professional',
     'verified',
@@ -41,6 +46,10 @@ const Chat = ({
     enabled
     && (hasVerifiedEnrollment || isStaff) // display only to verified learners or staff
     && !endDatePassed()
+    // it is necessary to check both whether the user is in an exam, and whether or not they are viewing an exam
+    // this will prevent the learner from interacting with the tool at any point of the exam flow, even at the
+    // entrance interstitial.
+    && !(activeAttempt?.attempt_id || exam?.id)
   );
 
   return (
