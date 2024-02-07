@@ -8,6 +8,23 @@ import { initializeMockApp, render, screen } from '../../../setupTest';
 
 import Chat from './Chat';
 
+// We do a partial mock to avoid mocking out other exported values (e.g. the reducer).
+// We mock out the Xpert component, because the Xpert component has its own rules for whether it renders
+// or not, and this includes the results of API calls it makes. We don't want to test those rules here, just
+// whether the Xpert is rendered by the Chat component in certain conditions. Instead of actually rendering
+// Xpert, we render and assert on a mocked component.
+const mockXpertTestId = 'xpert';
+
+jest.mock('@edx/frontend-lib-learning-assistant', () => {
+  const originalModule = jest.requireActual('@edx/frontend-lib-learning-assistant');
+
+  return {
+    __esModule: true,
+    ...originalModule,
+    Xpert: () => (<div data-testid={mockXpertTestId}>mocked Xpert</div>),
+  };
+});
+
 initializeMockApp();
 
 const courseId = 'course-v1:edX+DemoX+Demo_Course';
@@ -51,7 +68,7 @@ describe('Chat', () => {
           { store },
         );
 
-        const chat = screen.queryByTestId('toggle-button');
+        const chat = screen.queryByTestId(mockXpertTestId);
         if (test.isVisible) {
           expect(chat).toBeInTheDocument();
         } else {
@@ -85,7 +102,7 @@ describe('Chat', () => {
         { store },
       );
 
-      const chat = screen.queryByTestId('toggle-button');
+      const chat = screen.queryByTestId(mockXpertTestId);
       if (test.isVisible) {
         expect(chat).toBeInTheDocument();
       } else {
@@ -147,7 +164,7 @@ describe('Chat', () => {
           { store },
         );
 
-        const chat = screen.queryByTestId('toggle-button');
+        const chat = screen.queryByTestId(mockXpertTestId);
         if (test.isVisible) {
           expect(chat).toBeInTheDocument();
         } else {
@@ -178,7 +195,7 @@ describe('Chat', () => {
       { store },
     );
 
-    const chat = screen.queryByTestId('toggle-button');
+    const chat = screen.queryByTestId(mockXpertTestId);
     expect(chat).not.toBeInTheDocument();
   });
 
@@ -203,7 +220,7 @@ describe('Chat', () => {
       { store },
     );
 
-    const chat = screen.queryByTestId('toggle-button');
+    const chat = screen.queryByTestId(mockXpertTestId);
     expect(chat).toBeInTheDocument();
   });
 });
