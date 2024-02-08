@@ -8,9 +8,10 @@ import PropTypes from 'prop-types';
 import CoursewareSearchEmpty from './CoursewareSearchEmpty';
 
 const iconTypeMapping = {
-  document: Folder,
   text: TextFields,
   video: VideoCamera,
+  sequence: Folder,
+  other: Article,
 };
 
 const defaultIcon = Article;
@@ -34,9 +35,7 @@ const CoursewareSearchResults = ({ results = [] }) => {
       }) => {
         const key = type.toLowerCase();
         const icon = iconTypeMapping[key] || defaultIcon;
-
         const isExternal = !url.startsWith('/');
-
         const linkProps = isExternal ? {
           href: url,
           target: '_blank',

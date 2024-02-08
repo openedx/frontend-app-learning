@@ -8,15 +8,10 @@ import messages from './messages';
 import { useCoursewareSearchParams } from './hooks';
 import { useModel } from '../../generic/model-store';
 
-const allFilterKey = 'all';
-const otherFilterKey = 'other';
-const allowedFilterKeys = {
-  [allFilterKey]: true,
-  text: true,
-  video: true,
-  sequence: true,
-  [otherFilterKey]: true,
-};
+const filterAll = 'all';
+const filterTypes = ['text', 'video', 'sequence'];
+const filterOther = 'other';
+const validFilters = [filterAll, ...filterTypes, filterOther];
 
 export const CoursewareSearchResultsFilter = ({ intl }) => {
   const { courseId } = useParams();
@@ -27,28 +22,34 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
 
   const { results: data = [] } = lastSearch;
 
-  const results = useMemo(() => data.reduce((acc, { type, ...rest }) => {
-    acc[allFilterKey] = [...(acc[allFilterKey] || []), { type: allFilterKey, ...rest }];
-    if (type === allFilterKey) { return acc; }
+  if (!data.length) { return null; }
 
-    let targetKey = otherFilterKey;
-    if (allowedFilterKeys[type]) { targetKey = type; }
-    acc[targetKey] = [...(acc[targetKey] || []), { type: targetKey, ...rest }];
-    return acc;
-  }, {}), [data]);
+  const results = useMemo(() => {
+    const grouped = data.reduce((acc, { type, ...rest }) => {
+      const resultType = filterTypes.includes(type) ? type : filterOther;
+      acc[filterAll].push({ type: resultType, ...rest });
+      acc[resultType] = [...(acc[resultType] || []), { type: resultType, ...rest }];
+      return acc;
+    }, { [filterAll]: [] });
 
-  const filters = useMemo(() => Object.keys(allowedFilterKeys).map((key) => ({
+    // This is just to keep the tab order
+    const output = {};
+    validFilters.forEach(key => { if (grouped[key]) { output[key] = grouped[key]; } });
+
+    return output;
+  }, [lastSearch]);
+
+  const tabKeys = Object.keys(results);
+  // Filter has no use if it has only 2 tabs (The "all" tab and another one with the same items).
+  if (tabKeys.length < 3) { return <CoursewareSearchResults results={results[filterAll]} />; }
+
+  const filters = useMemo(() => tabKeys.map((key) => ({
     key,
     label: intl.formatMessage(messages[`filter:${key}`]),
-    count: results[key]?.length || 0,
+    count: results[key].length,
   })), [results]);
 
-  const activeKey = allowedFilterKeys[filterKeyword] ? filterKeyword : allFilterKey;
-
-  const filterCount = filters.reduce((sum, { count }) => (count ? 1 : 0), 0);
-
-  // Filter is not useful if it has only 2 tabs (The "all" tab and another one with the same items).
-  if (filterCount < 3) { return null; }
+  const activeKey = validFilters.includes(filterKeyword) ? filterKeyword : filterAll;
 
   return (
     <Tabs

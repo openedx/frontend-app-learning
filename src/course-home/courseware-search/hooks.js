@@ -75,7 +75,7 @@ export function useCoursewareSearchParams() {
   const clearSearchParams = () => setSearchParams({ q: '', f: '' });
 
   const query = searchParams.get('q');
-  const filter = searchParams.get('f');
+  const filter = searchParams.get('f')?.toLowerCase();
 
   const setQuery = (q) => setSearchParams((params) => ({ q, f: params.get('f') }));
   const setFilter = (f) => setSearchParams((params) => ({ q: params.get('q'), f }));
