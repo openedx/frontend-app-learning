@@ -68,29 +68,38 @@ describe('CoursewareSearchResultsFilter', () => {
 
     it('should render without errors', async () => {
       await waitFor(() => {
-        expect(screen.queryByTestId('courseware-search-results-tabs')).toBeInTheDocument();
-        expect(screen.queryByTestId('courseware-search-results-tabs-all')).toBeInTheDocument();
-        expect(screen.queryByTestId('courseware-search-results-tabs-text')).toBeInTheDocument();
-        expect(screen.queryByTestId('courseware-search-results-tabs-video')).toBeInTheDocument();
-        expect(screen.queryByTestId('courseware-search-results-tabs-sequence')).toBeInTheDocument();
-        expect(screen.queryByTestId('courseware-search-results-tabs-other')).toBeInTheDocument();
+        expect(useCoursewareSearchParams).toBeCalled();
       });
+
+      expect(screen.queryByTestId('courseware-search-results-tabs')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-all')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-text')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-video')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-sequence')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-other')).toBeInTheDocument();
     });
   });
 
   describe('when returning only one result type', () => {
     beforeEach(async () => {
-      // Filter only videos
-      const results = searchResultsFactory().filter(({ type }) => type === 'video');
+      // Get results for only videos
+      const data = searchResultsFactory();
+      const onlyVideos = data.results.filter(({ type }) => type === 'video');
+      const filteredResults = {
+        ...data,
+        results: onlyVideos,
+      };
 
-      useModel.mockReturnValue(results);
+      useModel.mockReturnValue(filteredResults);
       await renderComponent();
     });
 
-    it('should render without errors', async () => {
+    it('should not render', async () => {
       await waitFor(() => {
-        expect(screen.queryByTestId('courseware-search-results-tabs')).not.toBeInTheDocument();
+        expect(useCoursewareSearchParams).toBeCalled();
       });
+
+      expect(screen.queryByTestId('courseware-search-results-tabs')).not.toBeInTheDocument();
     });
   });
 
@@ -108,8 +117,10 @@ describe('CoursewareSearchResultsFilter', () => {
 
     it('should not render', async () => {
       await waitFor(() => {
-        expect(screen.queryByTestId('courseware-search-results-tabs')).not.toBeInTheDocument();
+        expect(useCoursewareSearchParams).toBeCalled();
       });
+
+      expect(screen.queryByTestId('courseware-search-results-tabs')).not.toBeInTheDocument();
     });
   });
 });
