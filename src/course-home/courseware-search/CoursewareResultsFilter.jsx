@@ -45,6 +45,11 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
 
   const activeKey = allowedFilterKeys[filterKeyword] ? filterKeyword : allFilterKey;
 
+  const filterCount = filters.reduce((sum, { count }) => (count ? 1 : 0), 0);
+
+  // Filter is not useful if it has only 2 tabs (The "all" tab and another one with the same items).
+  if (filterCount < 3) { return null; }
+
   return (
     <Tabs
       id="courseware-search-results-tabs"
@@ -54,11 +59,11 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
       activeKey={activeKey}
       onSelect={setFilter}
     >
-      {filters.map(({ key, label }) => (
+      {filters.filter(({ count }) => (count > 0)).map(({ key, label }) => (results[key].length ? (
         <Tab key={key} eventKey={key} title={label} data-testid={`courseware-search-results-tabs-${key}`}>
           <CoursewareSearchResults results={results[key]} />
         </Tab>
-      ))}
+      ) : null))}
     </Tabs>
   );
 };
