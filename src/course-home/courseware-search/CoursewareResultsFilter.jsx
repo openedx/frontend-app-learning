@@ -22,9 +22,13 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
 
   const { results: data = [] } = lastSearch;
 
-  if (!data.length) { return null; }
+  // If there's no data, we show an empty result.
+  if (!data.length) { return <CoursewareSearchResults />; }
 
   const results = useMemo(() => {
+    // This reducer distributes the data into different groups to make it easy to
+    // use on the filters.
+    // All results are added to the "all" key and then to its proper group key as well.
     const grouped = data.reduce((acc, { type, ...rest }) => {
       const resultType = filterTypes.includes(type) ? type : filterOther;
       acc[filterAll].push({ type: resultType, ...rest });
@@ -32,7 +36,7 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
       return acc;
     }, { [filterAll]: [] });
 
-    // This is just to keep the tab order
+    // This is just to format the output object with the expected tab order.
     const output = {};
     validFilters.forEach(key => { if (grouped[key]) { output[key] = grouped[key]; } });
 
@@ -60,11 +64,11 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
       activeKey={activeKey}
       onSelect={setFilter}
     >
-      {filters.filter(({ count }) => (count > 0)).map(({ key, label }) => (results[key].length ? (
+      {filters.filter(({ count }) => (count > 0)).map(({ key, label }) => (
         <Tab key={key} eventKey={key} title={label} data-testid={`courseware-search-results-tabs-${key}`}>
           <CoursewareSearchResults results={results[key]} />
         </Tab>
-      ) : null))}
+      ))}
     </Tabs>
   );
 };

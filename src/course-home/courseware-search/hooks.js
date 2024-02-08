@@ -70,9 +70,10 @@ export function useLockScroll() {
   }, []);
 }
 
+const initSearchParams = { q: '', f: '' };
 export function useCoursewareSearchParams() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const clearSearchParams = () => setSearchParams({ q: '', f: '' });
+  const [searchParams, setSearchParams] = useSearchParams(initSearchParams);
+  const clearSearchParams = () => setSearchParams(initSearchParams);
 
   const query = searchParams.get('q');
   const filter = searchParams.get('f')?.toLowerCase();
