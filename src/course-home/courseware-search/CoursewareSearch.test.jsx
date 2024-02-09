@@ -236,14 +236,14 @@ describe('CoursewareSearch', () => {
       expect(screen.queryByTestId('courseware-search-error')).toBeInTheDocument();
     });
 
-    it('should show "No results found." if results is empty', () => {
+    it('should not show a summary if there are no results', () => {
       mockModels({
         searchKeyword: 'test',
         total: 0,
       });
       renderComponent();
 
-      expect(screen.queryByTestId('courseware-search-summary').textContent).toBe('No results found.');
+      expect(screen.queryByTestId('courseware-search-summary')).not.toBeInTheDocument();
     });
 
     it('should show a summary for the results', () => {

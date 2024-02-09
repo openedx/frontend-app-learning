@@ -1,9 +1,13 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { fetchCoursewareSearchSettings } from '../data/thunks';
 import {
-  useCoursewareSearchFeatureFlag, useCoursewareSearchState, useElementBoundingBox, useLockScroll,
+  useCoursewareSearchFeatureFlag,
+  useCoursewareSearchParams,
+  useCoursewareSearchState,
+  useElementBoundingBox,
+  useLockScroll,
 } from './hooks';
 
 jest.mock('react-redux');
@@ -182,6 +186,47 @@ describe('CoursewareSearch Hooks', () => {
       hook.unmount();
 
       expect(removeBodyClassSpy).toHaveBeenCalledWith('_search-no-scroll');
+    });
+  });
+
+  describe('useSearchParams', () => {
+    const initSearch = { q: '', f: '' };
+    const q = { value: '' };
+    const f = { value: '' };
+    const mockedQuery = { q, f };
+    const searchParams = { get: (prop) => mockedQuery[prop].value };
+    const setSearchParams = jest.fn();
+
+    beforeEach(() => {
+      useSearchParams.mockImplementation(() => [searchParams, setSearchParams]);
+    });
+
+    it('should init the search params properly', () => {
+      const {
+        query, filter, setQuery, setFilter, clearSearchParams,
+      } = useCoursewareSearchParams();
+
+      expect(useSearchParams).toBeCalledWith(initSearch);
+      expect(query).toBe('');
+      expect(filter).toBe('');
+
+      setQuery('setQuery');
+      expect(setSearchParams).toBeCalledWith(expect.any(Function));
+
+      setFilter('setFilter');
+      expect(setSearchParams).toBeCalledWith(expect.any(Function));
+
+      clearSearchParams();
+      expect(setSearchParams).toBeCalledWith(initSearch);
+    });
+
+    it('should return the query and lowercase filter if any', () => {
+      q.value = '42';
+      f.value = 'LOWERCASE';
+      const { query, filter } = useCoursewareSearchParams();
+
+      expect(query).toBe('42');
+      expect(filter).toBe('lowercase');
     });
   });
 });

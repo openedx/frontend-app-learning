@@ -52,49 +52,75 @@ function renderComponent(props = {}) {
 describe('CoursewareSearchResultsFilter', () => {
   beforeAll(initializeMockApp);
 
-  describe('</CoursewareSearchResultsFilter />', () => {
-    beforeEach(() => {
-      useCoursewareSearchParams.mockReturnValue(coursewareSearch);
-    });
+  beforeEach(() => {
+    useCoursewareSearchParams.mockReturnValue(coursewareSearch);
+  });
 
-    afterEach(() => {
-      jest.clearAllMocks();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('when returning full results', () => {
+    beforeEach(async () => {
+      useModel.mockReturnValue(searchResultsFactory());
+      await renderComponent();
     });
 
     it('should render without errors', async () => {
-      useModel.mockReturnValue(searchResultsFactory());
-
-      await renderComponent();
-
       await waitFor(() => {
-        expect(screen.queryByTestId('courseware-search-results-tabs-all')).toBeInTheDocument();
-        expect(screen.queryByTestId('courseware-search-results-tabs-text')).toBeInTheDocument();
-        expect(screen.queryByTestId('courseware-search-results-tabs-video')).toBeInTheDocument();
-        expect(screen.queryByTestId('courseware-search-results-tabs-sequence')).toBeInTheDocument();
-        expect(screen.queryByTestId('courseware-search-results-tabs-other')).toBeInTheDocument();
+        expect(useCoursewareSearchParams).toBeCalled();
       });
+
+      expect(screen.queryByTestId('courseware-search-results-tabs')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-all')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-text')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-video')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-sequence')).toBeInTheDocument();
+      expect(screen.queryByTestId('courseware-search-results-tabs-other')).toBeInTheDocument();
+    });
+  });
+
+  describe('when returning only one result type', () => {
+    beforeEach(async () => {
+      // Get results for only videos
+      const data = searchResultsFactory();
+      const onlyVideos = data.results.filter(({ type }) => type === 'video');
+      const filteredResults = {
+        ...data,
+        results: onlyVideos,
+      };
+
+      useModel.mockReturnValue(filteredResults);
+      await renderComponent();
     });
 
-    describe('when there are not results', () => {
-      it('should render without errors', async () => {
-        useModel.mockReturnValue(searchResultsFactory('blah', {
-          results: [],
-          filters: [],
-          total: 0,
-          maxScore: null,
-          ms: 5,
-        }));
-
-        await renderComponent();
-
-        await waitFor(() => {
-          expect(screen.queryByTestId('courseware-search-results-tabs-all')).toBeInTheDocument();
-          expect(screen.queryByTestId('courseware-search-results-tabs-text')).toBeInTheDocument();
-          expect(screen.queryByTestId('courseware-search-results-tabs-video')).toBeInTheDocument();
-          expect(screen.queryByTestId('courseware-search-results-tabs-sequence')).toBeInTheDocument();
-          expect(screen.queryByTestId('courseware-search-results-tabs-other')).toBeInTheDocument();
-        });
+    it('should not render', async () => {
+      await waitFor(() => {
+        expect(useCoursewareSearchParams).toBeCalled();
       });
+
+      expect(screen.queryByTestId('courseware-search-results-tabs')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('when there are not results', () => {
+    beforeEach(async () => {
+      useModel.mockReturnValue(searchResultsFactory('blah', {
+        results: [],
+        filters: [],
+        total: 0,
+        maxScore: null,
+        ms: 5,
+      }));
+      await renderComponent();
+    });
+
+    it('should not render', async () => {
+      await waitFor(() => {
+        expect(useCoursewareSearchParams).toBeCalled();
+      });
+
+      expect(screen.queryByTestId('courseware-search-results-tabs')).not.toBeInTheDocument();
     });
   });
 });
