@@ -1,10 +1,12 @@
 import { BrowserRouter } from 'react-router-dom';
-import { configureStore } from '@reduxjs/toolkit';
 import React from 'react';
 
-import { reducer as learningAssistantReducer } from '@edx/frontend-lib-learning-assistant';
-
-import { initializeMockApp, render, screen } from '../../../setupTest';
+import {
+  initializeMockApp,
+  initializeTestStore,
+  render,
+  screen,
+} from '../../../setupTest';
 
 import Chat from './Chat';
 
@@ -39,6 +41,21 @@ const disabledModes = [null, undefined, 'xyz', 'audit', 'honor', 'unpaid-executi
 const currentTime = new Date();
 
 describe('Chat', () => {
+  let store;
+
+  beforeAll(async () => {
+    store = await initializeTestStore({
+      specialExams: {
+        activeAttempt: {
+          attempt_id: null,
+        },
+        exam: {
+          id: null,
+        },
+      },
+    });
+  });
+
   // Generate test cases.
   enabledTestCases = enabledModes.map((mode) => ({ enrollmentMode: mode, isVisible: true }));
   disabledTestCases = disabledModes.map((mode) => ({ enrollmentMode: mode, isVisible: false }));
@@ -48,12 +65,6 @@ describe('Chat', () => {
     it(
       `visibility determined by ${test.enrollmentMode} enrollment mode when enabled and not isStaff`,
       async () => {
-        const store = configureStore({
-          reducer: {
-            learningAssistant: learningAssistantReducer,
-          },
-        });
-
         render(
           <BrowserRouter>
             <Chat
@@ -82,12 +93,6 @@ describe('Chat', () => {
   testCases = enabledModes.concat(disabledModes).map((mode) => ({ enrollmentMode: mode, isVisible: true }));
   testCases.forEach(test => {
     it('visibility determined by isStaff when enabled and any enrollment mode', async () => {
-      const store = configureStore({
-        reducer: {
-          learningAssistant: learningAssistantReducer,
-        },
-      });
-
       render(
         <BrowserRouter>
           <Chat
@@ -144,12 +149,6 @@ describe('Chat', () => {
       `visibility determined by ${test.enabled} enabled when ${test.isStaff} isStaff
       and ${test.enrollmentMode} enrollment mode`,
       async () => {
-        const store = configureStore({
-          reducer: {
-            learningAssistant: learningAssistantReducer,
-          },
-        });
-
         render(
           <BrowserRouter>
             <Chat
@@ -175,12 +174,6 @@ describe('Chat', () => {
   });
 
   it('if course end date has passed, component should not be visible', async () => {
-    const store = configureStore({
-      reducer: {
-        learningAssistant: learningAssistantReducer,
-      },
-    });
-
     render(
       <BrowserRouter>
         <Chat
@@ -200,9 +193,30 @@ describe('Chat', () => {
   });
 
   it('if course has no end date, component should be visible', async () => {
-    const store = configureStore({
-      reducer: {
-        learningAssistant: learningAssistantReducer,
+    render(
+      <BrowserRouter>
+        <Chat
+          enrollmentMode="verified"
+          isStaff
+          enabled
+          courseId={courseId}
+          contentToolsEnabled={false}
+          endDate={null}
+        />
+      </BrowserRouter>,
+      { store },
+    );
+
+    const chat = screen.queryByTestId(mockXpertTestId);
+    expect(chat).toBeInTheDocument();
+  });
+
+  it('if learner has active exam attempt, component should not be visible', async () => {
+    store = await initializeTestStore({
+      specialExams: {
+        activeAttempt: {
+          attempt_id: 1,
+        },
       },
     });
 
