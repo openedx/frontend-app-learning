@@ -20,7 +20,10 @@ const SidebarProvider = ({
 }) => {
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
-  const [currentSidebar, setCurrentSidebar] = useState(null);
+  const query = new URLSearchParams(window.location.search);
+  const initialSidebar = (shouldDisplaySidebarOpen || query.get('sidebar') === 'true')
+    ? SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID : null;
+  const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
   const [hideDiscussionbar, setHideDiscussionbar] = useState(false);
   const [hideNotificationbar, setHideNotificationbar] = useState(false);
@@ -29,7 +32,7 @@ const SidebarProvider = ({
   );
   const topic = useModel('discussionTopics', unitId);
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
-  const isDiscussionbarAvailable = topic?.id && topic?.enabledInContext;
+  const isDiscussionbarAvailable = (topic?.id && topic?.enabledInContext) || false;
   const isNotificationbarAvailable = !isEmpty(verifiedMode);
 
   const onNotificationSeen = useCallback(() => {
@@ -40,9 +43,7 @@ const SidebarProvider = ({
   useEffect(() => {
     setHideDiscussionbar(!isDiscussionbarAvailable);
     setHideNotificationbar(!isNotificationbarAvailable);
-    if (isDiscussionbarAvailable || isNotificationbarAvailable) {
-      setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
-    }
+    setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
   }, [unitId, topic]);
 
   useEffect(() => {
