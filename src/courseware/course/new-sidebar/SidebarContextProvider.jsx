@@ -32,7 +32,7 @@ const SidebarProvider = ({
   );
   const topic = useModel('discussionTopics', unitId);
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
-  const isDiscussionbarAvailable = topic?.id && topic?.enabledInContext;
+  const isDiscussionbarAvailable = (topic?.id && topic?.enabledInContext) || false;
   const isNotificationbarAvailable = !isEmpty(verifiedMode);
 
   const onNotificationSeen = useCallback(() => {

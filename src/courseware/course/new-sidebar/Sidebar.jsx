@@ -4,9 +4,9 @@ import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 
 const Sidebar = () => {
-  const { currentSidebar } = useContext(SidebarContext);
+  const { currentSidebar, isDiscussionbarAvailable, isNotificationbarAvailable } = useContext(SidebarContext);
 
-  if (currentSidebar === null) { return null; }
+  if (currentSidebar === null || (!isDiscussionbarAvailable && !isNotificationbarAvailable)) { return null; }
   const SidebarToRender = SIDEBARS[currentSidebar].Sidebar;
 
   return (
