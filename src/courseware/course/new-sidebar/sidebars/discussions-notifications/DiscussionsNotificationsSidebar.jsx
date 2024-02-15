@@ -17,7 +17,7 @@ const DiscussionsNotificationsSidebar = () => {
     <SidebarBase
       ariaLabel={intl.formatMessage(messages.discussionNotificationTray)}
       sidebarId={ID}
-      className="d-flex flex-column flex-fill"
+      className="d-flex flex-column flex-fill sticky-top vh-100"
       showTitleBar={false}
       showBorder={false}
     >
