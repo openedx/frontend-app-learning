@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
-import { getConfig } from '@edx/frontend-platform';
+import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { useModel } from '../../../../generic/model-store';
 
 import BookmarkButton from '../../bookmark/BookmarkButton';
@@ -12,10 +12,11 @@ import messages from '../messages';
 import ContentIFrame from './ContentIFrame';
 import UnitSuspense from './UnitSuspense';
 import { modelKeys, views } from './constants';
-import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
+import { useExamAccess, useShouldDisplayHonorCode, useLoadUnitChildren } from './hooks';
 import { getIFrameUrl } from './urls';
-import { getBlockMetadataWithChildren } from '../../../data/api';
 import { XBlock } from '../XBlock';
+
+ensureConfig(['RENDER_XBLOCKS_EXPERIMENTAL', 'RENDER_XBLOCKS_DEFAULT']);
 
 const Unit = ({
   courseId,
@@ -30,6 +31,7 @@ const Unit = ({
   const unit = useModel(modelKeys.units, id);
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
   const view = authenticatedUser ? views.student : views.public;
+  const unitChildren = useLoadUnitChildren(id);
 
   const iframeUrl = getIFrameUrl({
     id,
@@ -37,22 +39,6 @@ const Unit = ({
     format,
     examAccess,
   });
-
-  const [unitChildren, setUnitChildren] = useState(null);
-
-  if (getConfig().RENDER_XBLOCKS_EXPERIMENTAL === true || getConfig().RENDER_XBLOCKS_EXPERIMENTAL === 'true') {
-    useEffect(() => {
-      (async () => {
-        try {
-          const response = await getBlockMetadataWithChildren(id);
-          setUnitChildren(response.children);
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('Error:', error);
-        }
-      })();
-    }, [id]);
-  }
 
   return (
     <div className="unit">

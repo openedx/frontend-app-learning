@@ -65,6 +65,8 @@ export function initializeMockApp() {
       administrator: false,
     },
     SUPPORT_URL_ID_VERIFICATION: 'http://example.com',
+    RENDER_XBLOCKS_EXPERIMENTAL: process.env.RENDER_XBLOCKS_EXPERIMENTAL || false,
+    RENDER_XBLOCKS_DEFAULT: process.env.RENDER_XBLOCKS_DEFAULT || true,
   });
 
   const loggingService = configureLogging(MockLoggingService, {
