@@ -70,12 +70,13 @@ export function useLockScroll() {
   }, []);
 }
 
+const initSearchParams = { q: '', f: '' };
 export function useCoursewareSearchParams() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const clearSearchParams = () => setSearchParams({ q: '', f: '' });
+  const [searchParams, setSearchParams] = useSearchParams(initSearchParams);
+  const clearSearchParams = () => setSearchParams(initSearchParams);
 
   const query = searchParams.get('q');
-  const filter = searchParams.get('f');
+  const filter = searchParams.get('f')?.toLowerCase();
 
   const setQuery = (q) => setSearchParams((params) => ({ q, f: params.get('f') }));
   const setFilter = (f) => setSearchParams((params) => ({ q: params.get('q'), f }));

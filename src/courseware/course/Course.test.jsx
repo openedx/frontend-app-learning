@@ -1,18 +1,16 @@
 import React from 'react';
+
 import { Factory } from 'rosie';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import MockAdapter from 'axios-mock-adapter';
+
 import { breakpoints } from '@openedx/paragon';
+
 import {
   act, fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
-import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
-import { handleNextSectionCelebration } from './celebration';
 import * as celebrationUtils from './celebration/utils';
+import { handleNextSectionCelebration } from './celebration';
 import Course from './Course';
-import { executeThunk } from '../../utils';
-import * as thunks from '../data/thunks';
+import setupDiscussionSidebar from './test-utils';
 
 jest.mock('@edx/frontend-platform/analytics');
 jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
@@ -50,26 +48,6 @@ describe('Course', () => {
     getItemSpy.mockRestore();
     setItemSpy.mockRestore();
   });
-
-  const setupDiscussionSidebar = async () => {
-    const courseHomeMetadata = Factory.build('courseHomeMetadata', { verified_mode: null });
-    const testStore = await initializeTestStore({ provider: 'openedx', courseHomeMetadata });
-    const state = testStore.getState();
-    const { courseware: { courseId } } = state;
-    const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(200, { provider: 'openedx' });
-    const topicsResponse = buildTopicsFromUnits(state.models.units);
-    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
-      .reply(200, topicsResponse);
-
-    await executeThunk(thunks.getCourseDiscussionTopics(courseId), testStore.dispatch);
-    const [firstUnitId] = Object.keys(state.models.units);
-    mockData.unitId = firstUnitId;
-    const [firstSequenceId] = Object.keys(state.models.sequences);
-    mockData.sequenceId = firstSequenceId;
-
-    await render(<Course {...mockData} />, { store: testStore, wrapWithRouter: true });
-  };
 
   it('loads learning sequence', async () => {
     render(<Course {...mockData} />, { wrapWithRouter: true });
@@ -183,7 +161,7 @@ describe('Course', () => {
   });
 
   it('handles click to open/close notification tray', async () => {
-    render(<Course {...mockData} />, { wrapWithRouter: true });
+    await setupDiscussionSidebar();
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
     expect(screen.queryByRole('region', { name: /notification tray/i })).toHaveClass('d-none');
     fireEvent.click(notificationShowButton);

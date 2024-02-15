@@ -15,6 +15,8 @@ import ContentTools from './content-tools';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import SidebarTriggers from './sidebar/SidebarTriggers';
+import NewSidebarProvider from './new-sidebar/SidebarContextProvider';
+import NewSidebarTriggers from './new-sidebar/SidebarTriggers';
 
 import { useModel } from '../../generic/model-store';
 
@@ -34,6 +36,7 @@ const Course = ({
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
+  const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
 
   const pageTitleBreadCrumbs = [
     sequence,
@@ -64,12 +67,14 @@ const Course = ({
     ));
   }, [sequenceId]);
 
+  const SidebarProviderComponent = enableNewSidebar === 'true' ? NewSidebarProvider : SidebarProvider;
+
   return (
-    <SidebarProvider courseId={courseId} unitId={unitId}>
+    <SidebarProviderComponent courseId={courseId} unitId={unitId}>
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
-      <div className="position-relative d-flex align-items-start">
+      <div className="position-relative d-flex align-items-center mb-4 mt-1">
         <CourseBreadcrumbs
           courseId={courseId}
           sectionId={section ? section.id : null}
@@ -85,8 +90,10 @@ const Course = ({
               isStaff={isStaff}
               courseId={courseId}
               contentToolsEnabled={course.showCalculator || course.notes.enabled}
+              unitId={unitId}
+              endDate={course.end ? course.end : ''}
             />
-            <SidebarTriggers />
+            {enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
           </>
         )}
       </div>
@@ -112,7 +119,7 @@ const Course = ({
         onClose={() => setWeeklyGoalCelebrationOpen(false)}
       />
       <ContentTools course={course} />
-    </SidebarProvider>
+    </SidebarProviderComponent>
   );
 };
 

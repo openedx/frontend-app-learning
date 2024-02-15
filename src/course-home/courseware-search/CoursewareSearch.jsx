@@ -122,16 +122,16 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
           )}
           {status === 'results' ? (
             <>
-              <div
-                className="courseware-search__results-summary"
-                aria-live="polite"
-                aria-relevant="all"
-                aria-atomic="true"
-                data-testid="courseware-search-summary"
-              >{total > 0
-                ? intl.formatMessage(messages.searchResultsLabel, { total, keyword: lastSearchKeyword })
-                : intl.formatMessage(messages.searchResultsNone)}
-              </div>
+              {total > 0 ? (
+                <div
+                  className="courseware-search__results-summary"
+                  aria-live="polite"
+                  aria-relevant="all"
+                  aria-atomic="true"
+                  data-testid="courseware-search-summary"
+                >{intl.formatMessage(messages.searchResultsLabel, { total, keyword: lastSearchKeyword })}
+                </div>
+              ) : null}
               <CoursewareSearchResultsFilterContainer />
             </>
           ) : null}

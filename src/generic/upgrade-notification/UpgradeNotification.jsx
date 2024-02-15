@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import {
+  useIntl, FormattedDate, FormattedMessage, injectIntl,
+} from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { FormattedDate, FormattedMessage, injectIntl } from '@edx/frontend-platform/i18n';
-import { Button } from '@openedx/paragon';
+import { Button, Icon, IconButton } from '@openedx/paragon';
+import { Close } from '@openedx/paragon/icons';
 import { setLocalStorage } from '../../data/localStorage';
 import { UpgradeButton } from '../upgrade-button';
 import {
@@ -12,6 +15,7 @@ import {
   FullAccessBullet,
   SupportMissionBullet,
 } from '../upsell-bullets/UpsellBullets';
+import messages from '../messages';
 
 const UpsellNoFBECardContent = () => (
   <ul className="fa-ul upgrade-notification-ul pt-0">
@@ -122,7 +126,7 @@ const ExpirationCountdown = ({
     expirationText = (
       <FormattedMessage
         id="learning.generic.upgradeNotification.expirationDays"
-        defaultMessage={`{dayCount, number} {dayCount, plural, 
+        defaultMessage={`{dayCount, number} {dayCount, plural,
           one {day}
           other {days}} left`}
         values={{
@@ -283,7 +287,9 @@ const UpgradeNotification = ({
   upsellPageName,
   userTimezone,
   verifiedMode,
+  toggleSidebar,
 }) => {
+  const intl = useIntl();
   const dateNow = Date.now();
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
   const correctedTime = new Date(dateNow + timeOffsetMillis);
@@ -483,8 +489,25 @@ const UpgradeNotification = ({
   return (
     <section className={classNames('upgrade-notification small', { 'card mb-4': shouldDisplayBorder })}>
       <div id="courseHome-upgradeNotification">
-        <h2 className="h5 upgrade-notification-header" id="outline-sidebar-upgrade-header">
+        <h2
+          className={classNames('h5 upgrade-notification-header', {
+            'd-flex align-items-center mr-2 ml-4 my-1.5 font-size-18': !!toggleSidebar,
+          })}
+          id="outline-sidebar-upgrade-header"
+        >
           {upgradeNotificationHeaderText}
+          {!!toggleSidebar && (
+            <div className="d-inline-flex ml-auto">
+              <IconButton
+                src={Close}
+                size="sm"
+                iconAs={Icon}
+                onClick={toggleSidebar}
+                className="icon-hover"
+                alt={intl.formatMessage(messages.close)}
+              />
+            </div>
+          )}
         </h2>
         {expirationBanner}
         <div className="upgrade-notification-message">
@@ -512,6 +535,7 @@ UpgradeNotification.propTypes = {
     percentage: PropTypes.number,
     code: PropTypes.string,
   }),
+  toggleSidebar: PropTypes.func,
   shouldDisplayBorder: PropTypes.bool,
   setupgradeNotificationCurrentState: PropTypes.func,
   timeOffsetMillis: PropTypes.number,
@@ -534,6 +558,7 @@ UpgradeNotification.defaultProps = {
   timeOffsetMillis: 0,
   userTimezone: null,
   verifiedMode: null,
+  toggleSidebar: null,
 };
 
 export default injectIntl(UpgradeNotification);
