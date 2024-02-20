@@ -54,6 +54,7 @@ const Course = ({
     celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal,
   );
   const shouldDisplayTriggers = windowWidth >= breakpoints.small.minWidth;
+  const shouldDisplayChat = windowWidth >= breakpoints.medium.minWidth;
   const daysPerWeek = course?.courseGoals?.selectedGoal?.daysPerWeek;
 
   useEffect(() => {
@@ -82,7 +83,7 @@ const Course = ({
           isStaff={isStaff}
           unitId={unitId}
         />
-        {shouldDisplayTriggers && (
+        {shouldDisplayChat && (
           <>
             <Chat
               enabled={course.learningAssistantEnabled}
@@ -93,6 +94,10 @@ const Course = ({
               unitId={unitId}
               endDate={course.end ? course.end : ''}
             />
+          </>
+        )}
+        {shouldDisplayTriggers && (
+          <>
             {enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
           </>
         )}

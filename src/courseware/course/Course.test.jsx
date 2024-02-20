@@ -17,6 +17,14 @@ jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
   ...jest.requireActual('@edx/frontend-lib-special-exams/dist/data/thunks.js'),
   checkExamEntry: () => jest.fn(),
 }));
+const mockChatTestId = 'fake-chat';
+jest.mock(
+  './chat/Chat',
+  // eslint-disable-next-line react/prop-types
+  () => function ({ courseId }) {
+    return <div className="fake-chat" data-testid={mockChatTestId}>Chat contents {courseId} </div>;
+  },
+);
 
 const recordFirstSectionCelebration = jest.fn();
 // eslint-disable-next-line no-import-assign
@@ -316,5 +324,42 @@ describe('Course', () => {
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
       await waitFor(() => expect(screen.getByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument());
     });
+  });
+
+  it('displays chat when screen is wide enough (browser)', async () => {
+    const courseMetadata = Factory.build('courseMetadata', {
+      learning_assistant_enabled: true,
+      enrollment: { mode: 'verified' },
+    });
+    const testStore = await initializeTestStore({ courseMetadata }, false);
+    const { courseware } = testStore.getState();
+    const { courseId, sequenceId } = courseware;
+    const testData = {
+      ...mockData,
+      courseId,
+      sequenceId,
+    };
+    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    const chat = screen.queryByTestId(mockChatTestId);
+    await expect(chat).toBeInTheDocument();
+  });
+
+  it('does not display chat when screen is too narrow (mobile)', async () => {
+    global.innerWidth = breakpoints.extraSmall.minWidth;
+    const courseMetadata = Factory.build('courseMetadata', {
+      learning_assistant_enabled: true,
+      enrollment: { mode: 'verified' },
+    });
+    const testStore = await initializeTestStore({ courseMetadata }, false);
+    const { courseware } = testStore.getState();
+    const { courseId, sequenceId } = courseware;
+    const testData = {
+      ...mockData,
+      courseId,
+      sequenceId,
+    };
+    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    const chat = screen.queryByTestId(mockChatTestId);
+    await expect(chat).not.toBeInTheDocument();
   });
 });
