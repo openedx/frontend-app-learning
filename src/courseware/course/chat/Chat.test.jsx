@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
+import { Factory } from 'rosie';
 
 import {
   initializeMockApp,
@@ -72,7 +73,6 @@ describe('Chat', () => {
               enabled
               courseId={courseId}
               contentToolsEnabled={false}
-              validDates
             />
           </BrowserRouter>,
           { store },
@@ -100,7 +100,6 @@ describe('Chat', () => {
             enabled
             courseId={courseId}
             contentToolsEnabled={false}
-            validDates
           />
         </BrowserRouter>,
         { store },
@@ -156,7 +155,6 @@ describe('Chat', () => {
               enabled={test.enabled}
               courseId={courseId}
               contentToolsEnabled={false}
-              validDates
             />
           </BrowserRouter>,
           { store },
@@ -173,6 +171,18 @@ describe('Chat', () => {
   });
 
   it('if course end date has passed, component should not be visible', async () => {
+    store = await initializeTestStore({
+      specialExams: {
+        activeAttempt: {
+          attempt_id: 1,
+        },
+      },
+      courseMetadata: Factory.build('courseMetadata', {
+        start: '2014-02-03T05:00:00Z',
+        end: '2014-02-05T05:00:00Z',
+      }),
+    });
+
     render(
       <BrowserRouter>
         <Chat
@@ -181,7 +191,6 @@ describe('Chat', () => {
           enabled
           courseId={courseId}
           contentToolsEnabled={false}
-          validDates={false}
         />
       </BrowserRouter>,
       { store },
@@ -208,7 +217,6 @@ describe('Chat', () => {
           enabled
           courseId={courseId}
           contentToolsEnabled={false}
-          validDates
         />
       </BrowserRouter>,
       { store },

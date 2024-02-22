@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import { Xpert } from '@edx/frontend-lib-learning-assistant';
 import { injectIntl } from '@edx/frontend-platform/i18n';
 
+import { useModel } from '../../../generic/model-store';
+
 const Chat = ({
   enabled,
   enrollmentMode,
@@ -12,11 +14,11 @@ const Chat = ({
   courseId,
   contentToolsEnabled,
   unitId,
-  validDates,
 }) => {
   const {
     activeAttempt, exam,
   } = useSelector(state => state.specialExams);
+  const course = useModel('coursewareMeta', courseId);
 
   const VERIFIED_MODES = [
     'professional',
@@ -35,10 +37,27 @@ const Chat = ({
     && [...VERIFIED_MODES].some(mode => mode === enrollmentMode)
   );
 
+  const validDates = () => {
+    const date = new Date();
+    const utcDate = date.toISOString();
+
+    const enrollmentStartDate = course.enrollmentStart || utcDate;
+    const startDate = course.start || enrollmentStartDate;
+    const enrollmentEndDate = course.enrollmentEnd || utcDate;
+    const endDate = course.end || enrollmentEndDate;
+
+    return (
+      startDate <= enrollmentStartDate
+      && enrollmentStartDate <= utcDate
+      && utcDate <= enrollmentEndDate
+      && enrollmentEndDate <= endDate
+    );
+  };
+
   const shouldDisplayChat = (
     enabled
     && (hasVerifiedEnrollment || isStaff) // display only to verified learners or staff
-    && validDates
+    && validDates()
     // it is necessary to check both whether the user is in an exam, and whether or not they are viewing an exam
     // this will prevent the learner from interacting with the tool at any point of the exam flow, even at the
     // entrance interstitial.
@@ -63,7 +82,6 @@ Chat.propTypes = {
   courseId: PropTypes.string.isRequired,
   contentToolsEnabled: PropTypes.bool.isRequired,
   unitId: PropTypes.string.isRequired,
-  validDates: PropTypes.bool.isRequired,
 };
 
 Chat.defaultProps = {
