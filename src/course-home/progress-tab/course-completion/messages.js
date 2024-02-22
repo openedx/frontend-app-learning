@@ -6,6 +6,11 @@ const messages = defineMessages({
     defaultMessage: 'completed',
     description: 'Label text for progress donut chart',
   },
+  optionalDonutLabel: {
+    id: 'progress.completion.optionalDonut.label',
+    defaultMessage: 'optional',
+    description: 'Label text for optional progress donut chart',
+  },
   completionBody: {
     id: 'progress.completion.body',
     defaultMessage: 'This represents how much of the course content you have completed. Note that some content may not yet be released.',

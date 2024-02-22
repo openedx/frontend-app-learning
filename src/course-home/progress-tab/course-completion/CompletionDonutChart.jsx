@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import {
   getLocale, injectIntl, intlShape, isRtl,
 } from '@edx/frontend-platform/i18n';
+import PropTypes from 'prop-types';
 import { useModel } from '../../../generic/model-store';
 
 import CompleteDonutSegment from './CompleteDonutSegment';
@@ -10,18 +11,20 @@ import IncompleteDonutSegment from './IncompleteDonutSegment';
 import LockedDonutSegment from './LockedDonutSegment';
 import messages from './messages';
 
-const CompletionDonutChart = ({ intl }) => {
+const CompletionDonutChart = ({ intl, optional }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
 
+  const key = optional ? 'optionalCompletionSummary' : 'completionSummary';
+  const label = optional ? intl.formatMessage(messages.optionalDonutLabel) : intl.formatMessage(messages.donutLabel);
+
+  const progress = useModel('progress', courseId);
   const {
-    completionSummary: {
-      completeCount,
-      incompleteCount,
-      lockedCount,
-    },
-  } = useModel('progress', courseId);
+    completeCount,
+    incompleteCount,
+    lockedCount,
+  } = progress[key];
 
   const numTotalUnits = completeCount + incompleteCount + lockedCount;
   const completePercentage = completeCount ? Number(((completeCount / numTotalUnits) * 100).toFixed(0)) : 0;
@@ -29,6 +32,10 @@ const CompletionDonutChart = ({ intl }) => {
   const incompletePercentage = 100 - completePercentage - lockedPercentage;
 
   const isLocaleRtl = isRtl(getLocale());
+
+  if (optional && numTotalUnits === 0) {
+    return <></>;
+  }
 
   return (
     <>
@@ -42,7 +49,7 @@ const CompletionDonutChart = ({ intl }) => {
             {completePercentage}{isLocaleRtl && '\u200f'}%
           </text>
           <text x="50%" y="50%" className="donut-chart-label">
-            {intl.formatMessage(messages.donutLabel)}
+            {label}
           </text>
         </g>
         <IncompleteDonutSegment incompletePercentage={incompletePercentage} />
@@ -62,8 +69,13 @@ const CompletionDonutChart = ({ intl }) => {
   );
 };
 
+CompletionDonutChart.defaultProps = {
+  optional: false,
+};
+
 CompletionDonutChart.propTypes = {
   intl: intlShape.isRequired,
+  optional: PropTypes.bool,
 };
 
 export default injectIntl(CompletionDonutChart);

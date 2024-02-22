@@ -12,6 +12,11 @@ Factory.define('progressTabData')
       incomplete_count: 1,
       locked_count: 0,
     },
+    optional_completion_summary: {
+      complete_count: 1,
+      incomplete_count: 1,
+      locked_count: 0,
+    },
     course_grade: {
       letter_grade: 'pass',
       percent: 1,

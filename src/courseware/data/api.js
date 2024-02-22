@@ -169,6 +169,7 @@ function normalizeSequenceMetadata(sequence) {
       contentType: unit.type,
       graded: unit.graded,
       containsContentTypeGatedContent: unit.contains_content_type_gated_content,
+      optional: unit.optional_content,
     })),
   };
 }

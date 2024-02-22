@@ -29,6 +29,7 @@ const SequenceLink = ({
     due,
     showLink,
     title,
+    optional,
   } = sequence;
   const {
     userTimezone,
@@ -115,6 +116,9 @@ const SequenceLink = ({
           </div>
         </div>
         <div className="row w-100 m-0 ml-3 pl-3">
+          <small className="text-body pl-2 pr-0">
+            {optional ? intl.formatMessage(messages.optionalContent) : ''}
+          </small>
           <small className="text-body pl-2">
             {due ? dueDateMessage : noDueDateMessage}
           </small>

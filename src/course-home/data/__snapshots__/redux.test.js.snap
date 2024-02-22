@@ -428,6 +428,7 @@ Object {
               "complete": false,
               "courseId": "course-v1:edX+DemoX+Demo_Course",
               "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
+              "optional": undefined,
               "resumeBlock": false,
               "sequenceIds": Array [
                 "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
@@ -444,6 +445,7 @@ Object {
               "effortTime": 15,
               "icon": null,
               "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
+              "optional": undefined,
               "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               "showLink": true,
               "title": "Title of Sequence",
@@ -636,6 +638,11 @@ Object {
         },
         "hasScheduledContent": false,
         "id": "course-v1:edX+DemoX+Demo_Course",
+        "optionalCompletionSummary": Object {
+          "completeCount": 1,
+          "incompleteCount": 1,
+          "lockedCount": 0,
+        },
         "sectionScores": Array [
           Object {
             "displayName": "First section",

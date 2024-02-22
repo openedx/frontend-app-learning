@@ -14,7 +14,8 @@ const CourseCompletion = ({ intl }) => (
         </p>
       </div>
       <div className="col-12 col-sm-6 col-md-5 mt-sm-n3 p-0 text-center">
-        <CompletionDonutChart />
+        <CompletionDonutChart optional={false} />
+        <CompletionDonutChart optional />
       </div>
     </div>
   </section>

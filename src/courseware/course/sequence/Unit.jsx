@@ -1,7 +1,7 @@
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { AppContext, ErrorPage } from '@edx/frontend-platform/react';
-import { Modal } from '@edx/paragon';
+import { Modal, Badge } from '@edx/paragon';
 import PropTypes from 'prop-types';
 import React, {
   Suspense, useCallback, useContext, useEffect, useLayoutEffect, useState,
@@ -155,6 +155,7 @@ const Unit = ({
   return (
     <div className="unit">
       <h1 className="mb-0 h3">{unit.title}</h1>
+      <Badge className="ml-2" variant="light" hidden={!unit.optional}>{intl.formatMessage(messages.optionalContent)}</Badge>
       <h2 className="sr-only">{intl.formatMessage(messages.headerPlaceholder)}</h2>
       <BookmarkButton
         unitId={unit.id}

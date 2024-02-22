@@ -262,6 +262,11 @@ describe('Progress Tab', () => {
           incomplete_count: 1,
           locked_count: 1,
         },
+        optional_completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 0,
+        },
         verified_mode: {
           access_expiration_date: '2050-01-01T12:00:00',
           currency: 'USD',
@@ -303,6 +308,11 @@ describe('Progress Tab', () => {
           complete_count: 1,
           incomplete_count: 1,
           locked_count: 1,
+        },
+        optional_completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 0,
         },
         verified_mode: {
           access_expiration_date: '2050-01-01T12:00:00',
@@ -364,6 +374,11 @@ describe('Progress Tab', () => {
           incomplete_count: 1,
           locked_count: 1,
         },
+        optional_completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 0,
+        },
         section_scores: [
           {
             display_name: 'First section',
@@ -401,6 +416,11 @@ describe('Progress Tab', () => {
           complete_count: 1,
           incomplete_count: 1,
           locked_count: 1,
+        },
+        optional_completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 0,
         },
         verified_mode: {
           access_expiration_date: '2050-01-01T12:00:00',

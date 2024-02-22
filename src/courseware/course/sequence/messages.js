@@ -31,6 +31,11 @@ const messages = defineMessages({
     defaultMessage: 'There is no content here.',
     description: 'Message shown when there is no content to show a user inside a learning sequence.',
   },
+  optionalContent: {
+    id: 'learn.sequence.optionalBlock',
+    defaultMessage: 'Optional',
+    description: 'Used as a label to indicate that a section, sequence, or unit is optional.',
+  },
 });
 
 export default messages;
