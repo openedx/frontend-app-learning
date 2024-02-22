@@ -70,23 +70,6 @@ const Course = ({
 
   const SidebarProviderComponent = enableNewSidebar === 'true' ? NewSidebarProvider : SidebarProvider;
 
-  const chatValidDates = () => {
-    const date = new Date();
-    const utcDate = date.toISOString();
-
-    const enrollmentStartDate = course.enrollmentStart || utcDate;
-    const startDate = course.start || enrollmentStartDate;
-    const enrollmentEndDate = course.enrollmentEnd || utcDate;
-    const endDate = course.end || enrollmentEndDate;
-
-    return (
-      startDate <= enrollmentStartDate
-      && enrollmentStartDate <= utcDate
-      && utcDate <= enrollmentEndDate
-      && enrollmentEndDate <= endDate
-    );
-  };
-
   return (
     <SidebarProviderComponent courseId={courseId} unitId={unitId}>
       <Helmet>
@@ -109,7 +92,6 @@ const Course = ({
               courseId={courseId}
               contentToolsEnabled={course.showCalculator || course.notes.enabled}
               unitId={unitId}
-              validDates={chatValidDates()}
             />
           </>
         )}
