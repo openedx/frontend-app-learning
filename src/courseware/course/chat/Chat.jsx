@@ -12,7 +12,7 @@ const Chat = ({
   courseId,
   contentToolsEnabled,
   unitId,
-  endDate,
+  validDates,
 }) => {
   const {
     activeAttempt, exam,
@@ -35,17 +35,10 @@ const Chat = ({
     && [...VERIFIED_MODES].some(mode => mode === enrollmentMode)
   );
 
-  const endDatePassed = () => {
-    const date = new Date();
-    const utcDate = date.toISOString();
-
-    return endDate ? utcDate > endDate : false; // evaluate if end date has passed only if course has end date
-  };
-
   const shouldDisplayChat = (
     enabled
     && (hasVerifiedEnrollment || isStaff) // display only to verified learners or staff
-    && !endDatePassed()
+    && validDates
     // it is necessary to check both whether the user is in an exam, and whether or not they are viewing an exam
     // this will prevent the learner from interacting with the tool at any point of the exam flow, even at the
     // entrance interstitial.
@@ -70,7 +63,7 @@ Chat.propTypes = {
   courseId: PropTypes.string.isRequired,
   contentToolsEnabled: PropTypes.bool.isRequired,
   unitId: PropTypes.string.isRequired,
-  endDate: PropTypes.string.isRequired,
+  validDates: PropTypes.bool.isRequired,
 };
 
 Chat.defaultProps = {
