@@ -38,7 +38,6 @@ const enabledModes = [
   'paid-executive-education', 'paid-bootcamp',
 ];
 const disabledModes = [null, undefined, 'xyz', 'audit', 'honor', 'unpaid-executive-education', 'unpaid-bootcamp'];
-const currentTime = new Date();
 
 describe('Chat', () => {
   let store;
@@ -73,7 +72,7 @@ describe('Chat', () => {
               enabled
               courseId={courseId}
               contentToolsEnabled={false}
-              endDate={new Date(currentTime.getTime() + 10 * 60000).toISOString()}
+              validDates
             />
           </BrowserRouter>,
           { store },
@@ -101,7 +100,7 @@ describe('Chat', () => {
             enabled
             courseId={courseId}
             contentToolsEnabled={false}
-            endDate={new Date(currentTime.getTime() + 10 * 60000).toISOString()}
+            validDates
           />
         </BrowserRouter>,
         { store },
@@ -157,7 +156,7 @@ describe('Chat', () => {
               enabled={test.enabled}
               courseId={courseId}
               contentToolsEnabled={false}
-              endDate={new Date(currentTime.getTime() + 10 * 60000).toISOString()}
+              validDates
             />
           </BrowserRouter>,
           { store },
@@ -182,7 +181,7 @@ describe('Chat', () => {
           enabled
           courseId={courseId}
           contentToolsEnabled={false}
-          endDate={new Date(currentTime.getTime() - 10 * 60000).toISOString()}
+          validDates={false}
         />
       </BrowserRouter>,
       { store },
@@ -190,25 +189,6 @@ describe('Chat', () => {
 
     const chat = screen.queryByTestId(mockXpertTestId);
     expect(chat).not.toBeInTheDocument();
-  });
-
-  it('if course has no end date, component should be visible', async () => {
-    render(
-      <BrowserRouter>
-        <Chat
-          enrollmentMode="verified"
-          isStaff
-          enabled
-          courseId={courseId}
-          contentToolsEnabled={false}
-          endDate={null}
-        />
-      </BrowserRouter>,
-      { store },
-    );
-
-    const chat = screen.queryByTestId(mockXpertTestId);
-    expect(chat).toBeInTheDocument();
   });
 
   it('if learner has active exam attempt, component should not be visible', async () => {
@@ -228,7 +208,7 @@ describe('Chat', () => {
           enabled
           courseId={courseId}
           contentToolsEnabled={false}
-          endDate={null}
+          validDates
         />
       </BrowserRouter>,
       { store },
