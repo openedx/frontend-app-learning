@@ -1,6 +1,6 @@
 const { createConfig } = require('@edx/frontend-build');
 
-module.exports = createConfig('jest', {
+const config = createConfig('jest', {
   setupFilesAfterEnv: [
     '<rootDir>/src/setupTest.js',
   ],
@@ -16,6 +16,30 @@ module.exports = createConfig('jest', {
     'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
   },
   testTimeout: 30000,
+  globalSetup: "./global-setup.js",
+  verbose: true,
   testEnvironment: 'jsdom',
-  globalSetup: "./global-setup.js"
+  // testEnvironmentOptions: {
+  //   url: 'http://localhost/',
+  // },
 });
+
+// delete config.testURL;
+
+config.reporters = [...(config.reporters || []), ["jest-console-group-reporter", {
+  // change this setting if need to see less details for each test
+  // reportType: "summary" | "details", 
+  // enable: true | false,
+  afterEachTest: {
+    enable: true,
+    filePaths: false,
+    reportType: "details",
+  },
+  afterAllTests: {
+    reportType: "summary",
+    enable: true,
+    filePaths: true,
+  },
+}]];
+
+module.exports = config;
