@@ -13,12 +13,11 @@ import UnitSuspense from './UnitSuspense';
 import { modelKeys, views } from './constants';
 import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
+import TranslationSelection from './translation-selection';
+import { getTranslateLanguage } from './translation-selection/useTranslationSelection';
 
 const Unit = ({
-  courseId,
-  format,
-  onLoaded,
-  id,
+  courseId, format, onLoaded, id,
 }) => {
   const { formatMessage } = useIntl();
   const { authenticatedUser } = React.useContext(AppContext);
@@ -27,17 +26,22 @@ const Unit = ({
   const unit = useModel(modelKeys.units, id);
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
   const view = authenticatedUser ? views.student : views.public;
+  const translateLanguage = getTranslateLanguage(courseId);
 
   const iframeUrl = getIFrameUrl({
     id,
     view,
     format,
     examAccess,
+    translateLanguage,
   });
 
   return (
     <div className="unit">
-      <h1 className="mb-0 h3">{unit.title}</h1>
+      <div className="mb-0">
+        <h3 className="h3">{unit.title}</h3>
+        <TranslationSelection courseId={courseId} />
+      </div>
       <h2 className="sr-only">{formatMessage(messages.headerPlaceholder)}</h2>
       <BookmarkButton
         unitId={unit.id}
