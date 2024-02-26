@@ -31,8 +31,7 @@ const HiddenAfterDue = ({ courseId, intl }) => {
           <>
             <br />
             <FormattedMessage
-              id="learn.hiddenAfterDue.gradeAvailable"
-              defaultMessage="If you have completed this assignment, your grade is available on the {progressPage}."
+              {...messages.gradeAvailable}
               values={{
                 progressPage: progressLink,
               }}
