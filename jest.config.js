@@ -19,9 +19,6 @@ const config = createConfig('jest', {
   globalSetup: "./global-setup.js",
   verbose: true,
   testEnvironment: 'jsdom',
-  // testEnvironmentOptions: {
-  //   url: 'http://localhost/',
-  // },
 });
 
 // delete config.testURL;
