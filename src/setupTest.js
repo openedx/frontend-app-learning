@@ -41,12 +41,14 @@ window.getComputedStyle = jest.fn(() => ({
   getPropertyValue: jest.fn(),
 }));
 
+/* eslint-disable no-console */
 const supressWarningBlock = (callback) => {
   const originalConsoleWarning = console.warn;
   console.warn = jest.fn();
   callback();
   console.warn = originalConsoleWarning;
 };
+/* eslint-enable no-console */
 
 // Mock Intersection Observer which is unavailable in the context of a test.
 global.IntersectionObserver = jest.fn(function mockIntersectionObserver() {
