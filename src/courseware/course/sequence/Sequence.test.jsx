@@ -114,6 +114,35 @@ describe('Sequence', () => {
     expect(screen.queryAllByRole('button').length).toEqual(0);
   });
 
+  it('renders correctly for after due content', async () => {
+    const sequenceBlocks = [Factory.build(
+      'block',
+      { type: 'sequential', children: unitBlocks.map(block => block.id) },
+      { courseId: courseMetadata.id },
+    )];
+    const sequenceMetadata = [Factory.build(
+      'sequenceMetadata',
+      { is_after_due: true },
+      { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
+    )];
+    const testStore = await initializeTestStore({
+      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
+    }, false);
+    render(
+      <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
+      { store: testStore },
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('The due date for this assignment has passed.')).toBeInTheDocument();
+    });
+    expect(screen.getByRole('link', { name: 'progress page' }))
+      .toHaveAttribute('href', 'http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/progress');
+
+    // Normal content or navigation should be rendered in addition to the above alert.
+    expect(screen.queryAllByRole('button').length).toBeGreaterThan(0);
+  });
+
   it('displays error message on sequence load failure', async () => {
     const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
     testStore.dispatch(fetchSequenceFailure({ sequenceId: mockData.sequenceId }));

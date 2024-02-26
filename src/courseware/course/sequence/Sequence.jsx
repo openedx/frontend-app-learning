@@ -22,7 +22,7 @@ import CourseLicense from '../course-license';
 import Sidebar from '../sidebar/Sidebar';
 import SidebarTriggers from '../sidebar/SidebarTriggers';
 import messages from './messages';
-import HiddenAfterDue from './hidden-after-due';
+import AfterDue from './after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
 
@@ -135,7 +135,7 @@ const Sequence = ({
   if (sequenceStatus === 'loaded' && sequence.isHiddenAfterDue) {
     // Shouldn't even be here - these sequences are normally stripped out of the navigation.
     // But we are here, so render a notice instead of the normal content.
-    return <HiddenAfterDue courseId={courseId} />;
+    return <AfterDue courseId={courseId} />;
   }
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
@@ -146,6 +146,9 @@ const Sequence = ({
   const defaultContent = (
     <div className="sequence-container d-inline-flex flex-row">
       <div className={classNames('sequence w-100', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
+        {
+          sequence.isAfterDue ? <AfterDue courseId={courseId} /> : <></>
+        }
         <SequenceNavigation
           sequenceId={sequenceId}
           unitId={unitId}

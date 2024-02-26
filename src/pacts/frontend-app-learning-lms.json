@@ -473,6 +473,7 @@
           "is_time_limited": false,
           "is_proctored": false,
           "is_hidden_after_due": true,
+          "is_after_due": true,
           "position": null,
           "tag": "sequential",
           "banner_text": null,
