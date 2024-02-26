@@ -13,6 +13,7 @@ import {
 import { getSequenceMetadata } from './courseware/data/api';
 import { executeThunk, appendBrowserTimezoneToUrl } from './utils';
 import messages from './i18n';
+import { UserMessagesProvider } from './generic/user-messages';
 
 export {
   Sequence,
@@ -28,6 +29,7 @@ export {
   executeThunk,
   appendBrowserTimezoneToUrl,
   messages,
+  UserMessagesProvider,
   updateModel,
   updateModels,
   getSequenceMetadata,
