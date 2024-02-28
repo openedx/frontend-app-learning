@@ -39,6 +39,8 @@ Factory.define('courseMetadata')
       enabled: false,
     },
     marketing_url: null,
+    language: 'en',
+    whole_course_translation_enabled: false,
     celebrations: null,
     enroll_alert: null,
     course_exit_page_is_active: true,

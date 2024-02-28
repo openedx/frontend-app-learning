@@ -24,6 +24,7 @@ const Unit = ({
   const examAccess = useExamAccess({ id });
   const shouldDisplayHonorCode = useShouldDisplayHonorCode({ courseId, id });
   const unit = useModel(modelKeys.units, id);
+  const { wholeCourseTranslationEnabled } = useModel('coursewareMeta', courseId);
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
   const view = authenticatedUser ? views.student : views.public;
   const { selectedLanguage, setSelectedLanguage } = useSelectLanguage(courseId);
@@ -40,11 +41,13 @@ const Unit = ({
     <div className="unit">
       <div className="mb-0">
         <h3 className="h3">{unit.title}</h3>
-        <TranslationSelection
-          courseId={courseId}
-          selectedLanguage={selectedLanguage}
-          setSelectedLanguage={setSelectedLanguage}
-        />
+        {wholeCourseTranslationEnabled && (
+          <TranslationSelection
+            courseId={courseId}
+            selectedLanguage={selectedLanguage}
+            setSelectedLanguage={setSelectedLanguage}
+          />
+        )}
       </div>
       <h2 className="sr-only">{formatMessage(messages.headerPlaceholder)}</h2>
       <BookmarkButton
