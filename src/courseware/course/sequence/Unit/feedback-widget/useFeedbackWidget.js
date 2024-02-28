@@ -9,12 +9,12 @@ const useFeedbackWidget = ({
   const [showFeedbackWidget, setShowFeedbackWidget] = useState(true);
   const [showGratitudeText, setShowGratitudeText] = useState(false);
 
-  const openFeedbackWidget = () => {
-    setShowFeedbackWidget(true);
-  };
-
   const closeFeedbackWidget = () => {
     setShowFeedbackWidget(false);
+  };
+
+  const openFeedbackWidget = () => {
+    setShowFeedbackWidget(true);
   };
 
   const openGratitudeText = () => {
@@ -33,6 +33,7 @@ const useFeedbackWidget = ({
   return {
     closeFeedbackWidget,
     openFeedbackWidget,
+    openGratitudeText,
     sendFeedback,
     showFeedbackWidget,
     showGratitudeText,

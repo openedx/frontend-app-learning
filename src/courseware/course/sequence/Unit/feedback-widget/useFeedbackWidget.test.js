@@ -1,3 +1,5 @@
+import React from 'react';
+import { renderHook } from '@testing-library/react-hooks';
 import useFeedbackWidget from './useFeedbackWidget';
 
 jest.mock('react', () => ({
@@ -5,6 +7,9 @@ jest.mock('react', () => ({
   useCallback: jest.fn((cb, prereqs) => ({ useCallback: { cb, prereqs } })),
   useState: jest.fn(),
 }));
+
+const setState = jest.fn();
+React.useState.mockImplementation((val) => [val, setState]);
 
 describe('useFeedbackWidget', () => {
   const props = {
@@ -18,17 +23,17 @@ describe('useFeedbackWidget', () => {
     jest.clearAllMocks();
   });
 
-  test('sendFeedback behavior', () => {
-    const {
-      sendFeedback,
-      showFeedbackWidget,
-      showGratitudeText,
-    } = useFeedbackWidget(props);
+  test('sendFeedback behavior', async () => {
+    const { result } = renderHook(() => (
+      useFeedbackWidget(props)
+    ));
+    const closeFeedbackWidgetSpy = jest.spyOn(result.current, 'closeFeedbackWidget');
+    const openGratitudeTextSpy = jest.spyOn(result.current, 'openGratitudeText');
 
-    expect(showFeedbackWidget).toBe(true);
-    expect(showGratitudeText).toBe(false);
-    sendFeedback.useCallback.cb();
-    expect(showFeedbackWidget).toBe(false);
-    expect(showFeedbackWidget).toBe(true);
+    expect(result.current.showFeedbackWidget).toBe(true);
+    expect(result.current.showGratitudeText).toBe(false);
+    result.current.sendFeedback.useCallback.cb();
+    expect(closeFeedbackWidgetSpy).toHaveBeenCalled();
+    expect(openGratitudeTextSpy).toHaveBeenCalled();
   });
 });
