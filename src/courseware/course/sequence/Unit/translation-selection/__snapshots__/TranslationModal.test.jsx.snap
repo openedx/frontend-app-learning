@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TranslationModal renders correctly 1`] = `
+<StandardModal
+  footerNode={
+    <ActionRow>
+      <Spacer />
+      <Button
+        onClick={[MockFunction close]}
+        variant="tertiary"
+      >
+        Cancel
+      </Button>
+      <Button
+        onClick={[MockFunction onSubmit]}
+      >
+        Submit
+      </Button>
+    </ActionRow>
+  }
+  isOpen={true}
+  onClose={[MockFunction close]}
+  title="Translate this course"
+>
+  <ListBox
+    className="listbox-container"
+  >
+    <ListBoxOption
+      className="d-flex justify-content-between"
+      key="en"
+      onSelect={[Function]}
+      selectedOptionIndex={0}
+    >
+      English
+      <Icon
+        src={[MockFunction icons.Check]}
+      />
+    </ListBoxOption>
+    <ListBoxOption
+      className="d-flex justify-content-between"
+      key="es"
+      onSelect={[Function]}
+      selectedOptionIndex={0}
+    >
+      Spanish
+    </ListBoxOption>
+  </ListBox>
+</StandardModal>
+`;

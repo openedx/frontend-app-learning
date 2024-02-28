@@ -36,7 +36,7 @@ const LockedDonutSegment = ({ intl, lockedPercentage }) => {
         show={showLockedPopover}
         placement="top"
         overlay={(
-          <Popover aria-hidden="true">
+          <Popover id="locked-tooltip-popover" aria-hidden="true">
             <Popover.Content>
               {intl.formatMessage(messages.lockedContentTooltip)}
             </Popover.Content>

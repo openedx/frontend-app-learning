@@ -62,6 +62,7 @@ const CourseBreadcrumb = ({
               <Menu>
                 {content.map((item) => (
                   <JumpNavMenuItem
+                    key={item.label}
                     isDefault={item.default}
                     sequences={item.sequences}
                     courseId={courseId}
@@ -169,8 +170,10 @@ const CourseBreadcrumbs = ({
             />
           </Link>
         </li>
-        {links.map((content) => (
+        {links.map((content, i) => (
           <CourseBreadcrumb
+            // eslint-disable-next-line react/no-array-index-key
+            key={i}
             courseId={courseId}
             sequenceId={sequenceId}
             content={content}

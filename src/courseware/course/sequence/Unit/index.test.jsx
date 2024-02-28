@@ -28,6 +28,11 @@ jest.mock('./ContentIFrame', () => 'ContentIFrame');
 jest.mock('./UnitSuspense', () => 'UnitSuspense');
 jest.mock('../honor-code', () => 'HonorCode');
 jest.mock('../lock-paywall', () => 'LockPaywall');
+jest.mock('./translation-selection', () => 'TranslationSelection');
+jest.mock('./translation-selection/useSelectLanguage', () => () => ({
+  selectedLanguage: 'en',
+  setSelectedLanguage: jest.fn().mockName('setSelectedLanguage'),
+}));
 
 jest.mock('../../../../generic/model-store', () => ({
   useModel: jest.fn(),
