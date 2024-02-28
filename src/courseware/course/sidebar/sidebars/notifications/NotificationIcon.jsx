@@ -29,9 +29,13 @@ const NotificationIcon = ({
   </>
 );
 
+NotificationIcon.defaultProps = {
+  status: null,
+};
+
 NotificationIcon.propTypes = {
   intl: intlShape.isRequired,
-  status: PropTypes.string.isRequired,
+  status: PropTypes.string,
   notificationColor: PropTypes.string.isRequired,
 };
 

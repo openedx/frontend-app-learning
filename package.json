@@ -48,6 +48,7 @@
     "classnames": "2.3.2",
     "core-js": "3.22.2",
     "history": "5.3.0",
+    "jest": "^26.6.3",
     "joi": "^17.11.0",
     "js-cookie": "3.0.5",
     "lodash.camelcase": "4.3.0",
@@ -79,7 +80,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "es-check": "6.2.1",
     "husky": "7.0.4",
-    "jest": "29.5.0",
+    "jest-console-group-reporter": "^1.0.1",
     "rosie": "2.1.1"
   }
 }

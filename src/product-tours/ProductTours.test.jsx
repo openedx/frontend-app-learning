@@ -217,6 +217,7 @@ describe('Courseware Tour', () => {
           <Routes>
             {DECODE_ROUTES.COURSEWARE.map((route) => (
               <Route
+                key={route}
                 path={route}
                 element={<CoursewareContainer />}
               />

@@ -12,6 +12,7 @@ export const getIFrameUrl = ({
   view,
   format,
   examAccess,
+  translateLanguage,
 }) => {
   const xblockUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}`;
   const params = stringify({
@@ -19,6 +20,7 @@ export const getIFrameUrl = ({
     view,
     ...(format && { format }),
     ...(!examAccess.blockAccess && { exam_access: examAccess.accessToken }),
+    ...(translateLanguage && { translate_lang: translateLanguage }),
   });
   return `${xblockUrl}?${params}`;
 };

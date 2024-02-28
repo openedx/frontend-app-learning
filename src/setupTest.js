@@ -18,6 +18,8 @@ import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams'
 import AppProvider from '@edx/frontend-platform/react/AppProvider';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
+import { reducer as recommendationsReducer } from './courseware/course/course-exit/data/slice';
+import { reducer as toursReducer } from './product-tours/data';
 import { reducer as modelsReducer } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
 
@@ -38,6 +40,15 @@ class MockLoggingService {
 window.getComputedStyle = jest.fn(() => ({
   getPropertyValue: jest.fn(),
 }));
+
+/* eslint-disable no-console */
+const supressWarningBlock = (callback) => {
+  const originalConsoleWarning = console.warn;
+  console.warn = jest.fn();
+  callback();
+  console.warn = originalConsoleWarning;
+};
+/* eslint-enable no-console */
 
 // Mock Intersection Observer which is unavailable in the context of a test.
 global.IntersectionObserver = jest.fn(function mockIntersectionObserver() {
@@ -77,11 +88,13 @@ export function initializeMockApp() {
   });
 
   // i18n doesn't have a service class to return.
-  configureI18n({
+  // ignore missing/unexpect locale warnings from @edx/frontend-platform/i18n
+  // it is unnecessary and not relevant to the tests
+  supressWarningBlock(() => configureI18n({
     config: getConfig(),
     loggingService,
     messages,
-  });
+  }));
 
   return { loggingService, authService };
 }
@@ -120,6 +133,8 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
       courseHome: courseHomeReducer,
       learningAssistant: learningAssistantReducer,
       specialExams: specialExamsReducer,
+      recommendations: recommendationsReducer,
+      tours: toursReducer,
     },
   });
   if (overrideStore) {
