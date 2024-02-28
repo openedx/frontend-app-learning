@@ -46,7 +46,7 @@ const IntlProfileLink = ({ intl }) => {
     <Hyperlink
       variant="muted"
       isInline
-      destination={`${getConfig().LMS_BASE_URL}/u/${username}`}
+      destination={`${getConfig().ACCOUNT_PROFILE_URL}/u/${username}`}
     >
       {intl.formatMessage(messages.profileLink)}
     </Hyperlink>
