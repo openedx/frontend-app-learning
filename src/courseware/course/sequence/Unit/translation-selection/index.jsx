@@ -5,7 +5,7 @@ import { Language } from '@edx/paragon/icons';
 import TranslationModal from './TranslationModal';
 import useTranslationTour from './useTranslationTour';
 
-const TranslationSelection = ({ courseId }) => {
+const TranslationSelection = (props) => {
   const {
     translationTour, isOpen, open, close,
   } = useTranslationTour();
@@ -22,13 +22,15 @@ const TranslationSelection = ({ courseId }) => {
         className="mr-2 mb-2 float-right"
         id="translation-selection-button"
       />
-      <TranslationModal isOpen={isOpen} close={close} courseId={courseId} />
+      <TranslationModal isOpen={isOpen} close={close} {...props} />
     </>
   );
 };
 
 TranslationSelection.propTypes = {
   courseId: PropTypes.string.isRequired,
+  selectedLanguage: PropTypes.string.isRequired,
+  setSelectedLanguage: PropTypes.func.isRequired,
 };
 
 TranslationSelection.defaultProps = {};

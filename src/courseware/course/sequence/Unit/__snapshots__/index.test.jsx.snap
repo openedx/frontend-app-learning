@@ -30,6 +30,8 @@ exports[`Unit component output snapshot: not bookmarked, do not show content 1`]
     </h3>
     <TranslationSelection
       courseId="test-course-id"
+      selectedLanguage="en"
+      setSelectedLanguage={[MockFunction setSelectedLanguage]}
     />
   </div>
   <h2

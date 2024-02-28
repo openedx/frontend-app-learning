@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -14,7 +14,7 @@ import { modelKeys, views } from './constants';
 import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
 import TranslationSelection from './translation-selection';
-import { getTranslateLanguage } from './translation-selection/useTranslationSelection';
+import useSelectLanguage from './translation-selection/useSelectLanguage';
 
 const Unit = ({
   courseId, format, onLoaded, id,
@@ -26,21 +26,25 @@ const Unit = ({
   const unit = useModel(modelKeys.units, id);
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
   const view = authenticatedUser ? views.student : views.public;
-  const translateLanguage = getTranslateLanguage(courseId);
+  const { selectedLanguage, setSelectedLanguage } = useSelectLanguage(courseId);
 
-  const iframeUrl = getIFrameUrl({
+  const iframeUrl = useMemo(() => getIFrameUrl({
     id,
     view,
     format,
     examAccess,
-    translateLanguage,
-  });
+    translateLanguage: selectedLanguage,
+  }), [id, view, format, examAccess, selectedLanguage]);
 
   return (
     <div className="unit">
       <div className="mb-0">
         <h3 className="h3">{unit.title}</h3>
-        <TranslationSelection courseId={courseId} />
+        <TranslationSelection
+          courseId={courseId}
+          selectedLanguage={selectedLanguage}
+          setSelectedLanguage={setSelectedLanguage}
+        />
       </div>
       <h2 className="sr-only">{formatMessage(messages.headerPlaceholder)}</h2>
       <BookmarkButton

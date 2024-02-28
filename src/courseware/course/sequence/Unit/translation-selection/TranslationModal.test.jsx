@@ -2,14 +2,13 @@ import { shallow } from '@edx/react-unit-test-utils';
 
 import TranslationModal from './TranslationModal';
 
-jest.mock('./useTranslationSelection', () => ({
+jest.mock('./useTranslationModal', () => ({
   __esModule: true,
   default: () => ({
     selectedIndex: 0,
     setSelectedIndex: jest.fn(),
     onSubmit: jest.fn().mockName('onSubmit'),
   }),
-  languages: [['en', 'English'], ['es', 'Spanish']],
 }));
 jest.mock('@edx/paragon', () => jest.requireActual('@edx/react-unit-test-utils').mockComponents({
   StandardModal: 'StandardModal',
@@ -42,9 +41,10 @@ jest.mock('@edx/frontend-platform/i18n', () => {
 
 describe('TranslationModal', () => {
   const props = {
-    courseId: 'course-v1:edX+DemoX+Demo_Course',
     isOpen: true,
     close: jest.fn().mockName('close'),
+    selectedLanguage: 'en',
+    setSelectedLanguage: jest.fn().mockName('setSelectedLanguage'),
   };
   it('renders correctly', () => {
     const wrapper = shallow(<TranslationModal {...props} />);

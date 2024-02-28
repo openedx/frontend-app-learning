@@ -20,8 +20,13 @@ jest.mock('./useTranslationTour', () => () => ({
 }));
 
 describe('<TranslationSelection />', () => {
+  const props = {
+    courseId: 'course-v1:edX+DemoX+Demo_Course',
+    selectedLanguage: 'en',
+    setSelectedLanguage: jest.fn().mockName('setSelectedLanguage'),
+  };
   it('renders', () => {
-    const wrapper = shallow(<TranslationSelection courseId="course-v1:edX+DemoX+Demo_Course" />);
+    const wrapper = shallow(<TranslationSelection {...props} />);
     expect(wrapper.snapshot).toMatchSnapshot();
   });
 });

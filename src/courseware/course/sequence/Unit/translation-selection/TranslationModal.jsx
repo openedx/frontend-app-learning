@@ -12,14 +12,21 @@ import {
 } from '@edx/paragon';
 import { Check } from '@edx/paragon/icons';
 
-import useTranslationSelection, { languages } from './useTranslationSelection';
+import useTranslationModal from './useTranslationModal';
+import { languages } from './useSelectLanguage';
 import messages, { languageMessages } from './messages';
 
 import './TranslationModal.scss';
 
-const TranslationModal = ({ courseId, isOpen, close }) => {
+const TranslationModal = ({
+  isOpen, close, selectedLanguage, setSelectedLanguage,
+}) => {
   const { formatMessage } = useIntl();
-  const { selectedIndex, setSelectedIndex, onSubmit } = useTranslationSelection({ courseId, close });
+  const {
+    selectedIndex,
+    setSelectedIndex,
+    onSubmit,
+  } = useTranslationModal({ selectedLanguage, setSelectedLanguage, close });
 
   return (
     <StandardModal
@@ -56,7 +63,8 @@ const TranslationModal = ({ courseId, isOpen, close }) => {
 TranslationModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   close: PropTypes.func.isRequired,
-  courseId: PropTypes.string.isRequired,
+  selectedLanguage: PropTypes.string.isRequired,
+  setSelectedLanguage: PropTypes.func.isRequired,
 };
 
 export default TranslationModal;

@@ -24,6 +24,8 @@ exports[`<TranslationSelection /> renders 1`] = `
     close={[MockFunction close]}
     courseId="course-v1:edX+DemoX+Demo_Course"
     isOpen={false}
+    selectedLanguage="en"
+    setSelectedLanguage={[MockFunction setSelectedLanguage]}
   />
 </Fragment>
 `;
