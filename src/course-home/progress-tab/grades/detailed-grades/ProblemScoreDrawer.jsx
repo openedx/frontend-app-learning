@@ -15,8 +15,9 @@ const ProblemScoreDrawer = ({ intl, problemScores, subsection }) => {
       <span id="problem-score-label" className="col-auto p-0">{intl.formatMessage(messages.problemScoreLabel)}</span>
       <div className={classNames('col', 'p-0', { 'greyed-out': !subsection.learnerHasAccess })}>
         <ul className="list-unstyled row w-100 m-0" aria-labelledby="problem-score-label">
-          {problemScores.map(problemScore => (
-            <li className="ml-3">{problemScore.earned}{isLocaleRtl ? '\\' : '/'}{problemScore.possible}</li>
+          {problemScores.map((problemScore, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <li key={i} className="ml-3">{problemScore.earned}{isLocaleRtl ? '\\' : '/'}{problemScore.possible}</li>
           ))}
         </ul>
       </div>

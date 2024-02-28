@@ -17,6 +17,7 @@ const props = {
   view: 'test-view',
   format: 'test-format',
   examAccess: { blockAccess: false, accessToken: 'test-access-token' },
+  translateLanguage: 'test-translate-language',
 };
 
 describe('urls module', () => {
@@ -27,6 +28,7 @@ describe('urls module', () => {
         view: props.view,
         format: props.format,
         exam_access: props.examAccess.accessToken,
+        translate_lang: props.translateLanguage,
       });
       expect(getIFrameUrl(props)).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
     });
