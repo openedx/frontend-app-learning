@@ -27,6 +27,7 @@ import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+import FeedbackWidget from './Unit/feedback-widget';
 
 const Sequence = ({
   unitId,
@@ -144,55 +145,60 @@ const Sequence = ({
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
 
   const defaultContent = (
-    <div className="sequence-container d-inline-flex flex-row">
-      <div className={classNames('sequence w-100', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
-        <SequenceNavigation
-          sequenceId={sequenceId}
-          unitId={unitId}
-          className="mb-4"
-          nextHandler={() => {
-            logEvent('edx.ui.lms.sequence.next_selected', 'top');
-            handleNext();
-          }}
-          onNavigate={(destinationUnitId) => {
-            logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-            handleNavigate(destinationUnitId);
-          }}
-          previousHandler={() => {
-            logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-            handlePrevious();
-          }}
-        />
-        {shouldDisplayNotificationTriggerInSequence && (
-          enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers />
-        )}
-
-        <div className="unit-container flex-grow-1">
-          <SequenceContent
-            courseId={courseId}
-            gated={gated}
+    <>
+      <div className="sequence-container d-inline-flex flex-row">
+        <div className={classNames('sequence w-100', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
+          <SequenceNavigation
             sequenceId={sequenceId}
             unitId={unitId}
-            unitLoadedHandler={handleUnitLoaded}
-          />
-          {unitHasLoaded && (
-          <UnitNavigation
-            sequenceId={sequenceId}
-            unitId={unitId}
-            onClickPrevious={() => {
-              logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-              handlePrevious();
-            }}
-            onClickNext={() => {
-              logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+            className="mb-4"
+            nextHandler={() => {
+              logEvent('edx.ui.lms.sequence.next_selected', 'top');
               handleNext();
             }}
+            onNavigate={(destinationUnitId) => {
+              logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+              handleNavigate(destinationUnitId);
+            }}
+            previousHandler={() => {
+              logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+              handlePrevious();
+            }}
           />
+          {shouldDisplayNotificationTriggerInSequence && (
+            enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers />
           )}
+
+          <div className="unit-container flex-grow-1">
+            <SequenceContent
+              courseId={courseId}
+              gated={gated}
+              sequenceId={sequenceId}
+              unitId={unitId}
+              unitLoadedHandler={handleUnitLoaded}
+            />
+            {unitHasLoaded && (
+            <UnitNavigation
+              sequenceId={sequenceId}
+              unitId={unitId}
+              onClickPrevious={() => {
+                logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
+                handlePrevious();
+              }}
+              onClickNext={() => {
+                logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+                handleNext();
+              }}
+            />
+            )}
+          </div>
         </div>
+        {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
       </div>
-      {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
-    </div>
+      <div className="sequence-container d-inline-flex flex-row">
+        <FeedbackWidget />
+      </div>
+    </>
   );
 
   if (sequenceStatus === 'loaded') {
