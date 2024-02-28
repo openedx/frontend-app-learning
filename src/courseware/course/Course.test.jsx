@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Factory } from 'rosie';
 
-import { breakpoints } from '@edx/paragon';
+import { breakpoints } from '@openedx/paragon';
 
 import {
   act, fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,

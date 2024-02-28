@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown } from '@edx/paragon';
+import { Dropdown } from '@openedx/paragon';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 

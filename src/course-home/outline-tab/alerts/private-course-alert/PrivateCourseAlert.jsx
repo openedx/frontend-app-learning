@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { getLoginRedirectUrl } from '@edx/frontend-platform/auth';
-import { Alert, Button, Hyperlink } from '@edx/paragon';
+import { Alert, Button, Hyperlink } from '@openedx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 

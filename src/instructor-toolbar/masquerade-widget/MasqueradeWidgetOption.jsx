@@ -2,7 +2,7 @@ import React, {
   Component,
 } from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown } from '@edx/paragon';
+import { Dropdown } from '@openedx/paragon';
 
 class MasqueradeWidgetOption extends Component {
   onClick(event) {

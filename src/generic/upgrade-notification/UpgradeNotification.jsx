@@ -5,8 +5,8 @@ import {
   useIntl, FormattedDate, FormattedMessage, injectIntl,
 } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { Button, Icon, IconButton } from '@edx/paragon';
-import { Close } from '@edx/paragon/icons';
+import { Button, Icon, IconButton } from '@openedx/paragon';
+import { Close } from '@openedx/paragon/icons';
 import { setLocalStorage } from '../../data/localStorage';
 import { UpgradeButton } from '../upgrade-button';
 import {

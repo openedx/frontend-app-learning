@@ -5,7 +5,7 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
-import { useToggle, ModalPopup, Menu } from '@edx/paragon';
+import { useToggle, ModalPopup, Menu } from '@openedx/paragon';
 import { Link } from 'react-router-dom';
 import { useModel, useModels } from '../../generic/model-store';
 import JumpNavMenuItem from './JumpNavMenuItem';

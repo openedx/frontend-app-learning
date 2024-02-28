@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
-import { Badge } from '@edx/paragon';
+import { Badge } from '@openedx/paragon';
 
 import messages from '../messages';
 import { daycmp, isLearnerAssignment } from '../utils';

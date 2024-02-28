@@ -2,8 +2,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Blocked } from '@edx/paragon/icons';
-import { Icon } from '@edx/paragon';
+import { Blocked } from '@openedx/paragon/icons';
+import { Icon } from '@openedx/paragon';
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
 

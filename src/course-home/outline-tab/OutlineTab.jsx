@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Button } from '@edx/paragon';
+import { Button } from '@openedx/paragon';
 import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';

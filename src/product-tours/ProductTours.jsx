@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { ProductTour } from '@edx/paragon';
+import { ProductTour } from '@openedx/paragon';
 
 import abandonTour from './AbandonTour';
 import coursewareTour from './CoursewareTour';

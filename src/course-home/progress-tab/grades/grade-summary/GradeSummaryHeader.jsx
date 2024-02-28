@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
   Icon, IconButton, OverlayTrigger, Popover,
-} from '@edx/paragon';
-import { Blocked, InfoOutline } from '@edx/paragon/icons';
+} from '@openedx/paragon';
+import { Blocked, InfoOutline } from '@openedx/paragon/icons';
 
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Spinner } from '@edx/paragon';
+import { Spinner } from '@openedx/paragon';
 
 export default class PageLoading extends Component {
   renderSrMessage() {

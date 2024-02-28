@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { breakpoints } from '@edx/paragon';
+import { breakpoints } from '@openedx/paragon';
 import {
   loadUnit, render, screen, fireEvent, waitFor, initializeTestStore,
 } from '../../../setupTest';

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { ActionRow, Alert, Button } from '@edx/paragon';
+import { ActionRow, Alert, Button } from '@openedx/paragon';
 
 import { useNavigate } from 'react-router-dom';
 import { useModel } from '../../../../generic/model-store';

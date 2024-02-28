@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import camelCase from 'lodash.camelcase';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Button } from '@edx/paragon';
+import { Button } from '@openedx/paragon';
 
 import messages from '../messages';
 import { getProctoringInfoData } from '../../data/api';

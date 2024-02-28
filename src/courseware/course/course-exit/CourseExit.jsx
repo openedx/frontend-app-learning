@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Button } from '@edx/paragon';
+import { Button } from '@openedx/paragon';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 

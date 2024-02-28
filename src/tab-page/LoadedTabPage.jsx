@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 
 import { getConfig } from '@edx/frontend-platform';
-import { useToggle } from '@edx/paragon';
+import { useToggle } from '@openedx/paragon';
 
 import { CourseTabsNavigation } from '../course-tabs';
 import { useModel } from '../generic/model-store';

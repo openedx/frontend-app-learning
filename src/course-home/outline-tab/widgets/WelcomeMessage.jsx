@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Alert, Button, TransitionReplace } from '@edx/paragon';
+import { Alert, Button, TransitionReplace } from '@openedx/paragon';
 import truncate from 'truncate-html';
 
 import { useDispatch } from 'react-redux';

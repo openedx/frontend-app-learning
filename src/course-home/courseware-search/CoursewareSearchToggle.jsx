@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Button, Icon } from '@edx/paragon';
-import { Search } from '@edx/paragon/icons';
+import { Button, Icon } from '@openedx/paragon';
+import { Search } from '@openedx/paragon/icons';
 import { useDispatch } from 'react-redux';
 import messages from './messages';
 import { useCoursewareSearchFeatureFlag, useCoursewareSearchParams } from './hooks';

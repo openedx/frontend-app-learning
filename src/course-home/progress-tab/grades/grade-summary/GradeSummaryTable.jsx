@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import {
   getLocale, injectIntl, intlShape, isRtl,
 } from '@edx/frontend-platform/i18n';
-import { DataTable } from '@edx/paragon';
+import { DataTable } from '@openedx/paragon';
 import { useModel } from '../../../../generic/model-store';
 
 import AssignmentTypeCell from './AssignmentTypeCell';

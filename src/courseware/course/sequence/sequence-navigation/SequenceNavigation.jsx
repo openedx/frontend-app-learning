@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { breakpoints, Button, useWindowSize } from '@edx/paragon';
-import { ChevronLeft, ChevronRight } from '@edx/paragon/icons';
+import { breakpoints, Button, useWindowSize } from '@openedx/paragon';
+import { ChevronLeft, ChevronRight } from '@openedx/paragon/icons';
 import classNames from 'classnames';
 import {
   injectIntl,

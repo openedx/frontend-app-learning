@@ -3,8 +3,8 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   FormattedMessage, FormattedDate, injectIntl, intlShape,
 } from '@edx/frontend-platform/i18n';
-import { Alert, Hyperlink } from '@edx/paragon';
-import { Info } from '@edx/paragon/icons';
+import { Alert, Hyperlink } from '@openedx/paragon';
+import { Info } from '@openedx/paragon/icons';
 
 import messages from './messages';
 

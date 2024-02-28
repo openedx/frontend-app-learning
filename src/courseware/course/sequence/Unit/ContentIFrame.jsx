@@ -3,7 +3,7 @@ import React from 'react';
 
 import { ErrorPage } from '@edx/frontend-platform/react';
 import { StrictDict } from '@edx/react-unit-test-utils';
-import { ModalDialog, Modal } from '@edx/paragon';
+import { ModalDialog, Modal } from '@openedx/paragon';
 
 import PageLoading from '../../../../generic/PageLoading';
 import * as hooks from './hooks';

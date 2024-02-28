@@ -6,8 +6,8 @@ import {
   FormattedRelativeTime,
   FormattedTime,
 } from '@edx/frontend-platform/i18n';
-import { Alert } from '@edx/paragon';
-import { Info } from '@edx/paragon/icons';
+import { Alert } from '@openedx/paragon';
+import { Info } from '@openedx/paragon/icons';
 
 import { useModel } from '../../generic/model-store';
 

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { StatefulButton } from '@edx/paragon';
+import { StatefulButton } from '@openedx/paragon';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { useDispatch } from 'react-redux';
 import BookmarkOutlineIcon from './BookmarkOutlineIcon';

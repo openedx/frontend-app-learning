@@ -3,10 +3,10 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { InfoOutline } from '@edx/paragon/icons';
+import { InfoOutline } from '@openedx/paragon/icons';
 import {
   Icon, IconButton, OverlayTrigger, Popover,
-} from '@edx/paragon';
+} from '@openedx/paragon';
 import { useModel } from '../../../../generic/model-store';
 
 import messages from '../messages';

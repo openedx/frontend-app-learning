@@ -2,8 +2,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { CheckCircle, WarningFilled, WatchFilled } from '@edx/paragon/icons';
-import { Hyperlink, Icon } from '@edx/paragon';
+import { CheckCircle, WarningFilled, WatchFilled } from '@openedx/paragon/icons';
+import { Hyperlink, Icon } from '@openedx/paragon';
 
 import { useModel } from '../../../generic/model-store';
 import { DashboardLink } from '../../../shared/links';

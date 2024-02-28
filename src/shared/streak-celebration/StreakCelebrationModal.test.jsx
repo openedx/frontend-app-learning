@@ -3,7 +3,7 @@ import { Factory } from 'rosie';
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { breakpoints } from '@edx/paragon';
+import { breakpoints } from '@openedx/paragon';
 import MockAdapter from 'axios-mock-adapter';
 
 import {

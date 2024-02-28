@@ -5,10 +5,10 @@ import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
   Alert, Button, Icon, Spinner,
-} from '@edx/paragon';
+} from '@openedx/paragon';
 import {
   Close,
-} from '@edx/paragon/icons';
+} from '@openedx/paragon/icons';
 import { setShowSearch } from '../data/slice';
 import { useCoursewareSearchParams, useElementBoundingBox, useLockScroll } from './hooks';
 import messages from './messages';

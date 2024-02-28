@@ -5,8 +5,8 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
   Alert, Hyperlink, breakpoints, useWindowSize,
-} from '@edx/paragon';
-import { Locked } from '@edx/paragon/icons';
+} from '@openedx/paragon';
+import { Locked } from '@openedx/paragon/icons';
 import SidebarContext from '../../sidebar/SidebarContext';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';

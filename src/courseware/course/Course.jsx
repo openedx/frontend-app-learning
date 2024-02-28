@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
-import { breakpoints, useWindowSize } from '@edx/paragon';
+import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '../../generic/user-messages';
 

@@ -7,7 +7,7 @@ import {
   Button,
   StandardModal,
   useWindowSize,
-} from '@edx/paragon';
+} from '@openedx/paragon';
 
 import { useDispatch } from 'react-redux';
 import ClapsMobile from './assets/claps_280x201.gif';

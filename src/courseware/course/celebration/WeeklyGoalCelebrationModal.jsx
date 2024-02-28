@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
   ActionRow, Button, Icon, StandardModal,
-} from '@edx/paragon';
-import { Lightbulb } from '@edx/paragon/icons';
+} from '@openedx/paragon';
+import { Lightbulb } from '@openedx/paragon/icons';
 
 import Target from './assets/target.svg';
 import messages from './messages';

@@ -4,7 +4,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
 import {
   ActionRow, Button, MarketingModal, ModalDialog,
-} from '@edx/paragon';
+} from '@openedx/paragon';
 
 import heroImage from './course_home_tour_modal_hero.png';
 import messages from '../messages';

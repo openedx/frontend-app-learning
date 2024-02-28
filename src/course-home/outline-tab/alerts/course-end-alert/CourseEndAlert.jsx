@@ -6,8 +6,8 @@ import {
   FormattedRelativeTime,
   FormattedTime,
 } from '@edx/frontend-platform/i18n';
-import { Alert } from '@edx/paragon';
-import { Info } from '@edx/paragon/icons';
+import { Alert } from '@openedx/paragon';
+import { Info } from '@openedx/paragon/icons';
 
 const DAY_SEC = 24 * 60 * 60; // in seconds
 const DAY_MS = DAY_SEC * 1000; // in ms
