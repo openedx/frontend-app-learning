@@ -50,7 +50,8 @@ const Sequence = ({
   const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
   const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
 
-  const handleNext = () => {
+  const handleNext = (position) => {
+    logEvent('edx.ui.lms.sequence.next_selected', position);
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
     if (nextIndex < sequence.unitIds.length) {
       const newUnitId = sequence.unitIds[nextIndex];
@@ -60,7 +61,8 @@ const Sequence = ({
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = (position) => {
+    logEvent('edx.ui.lms.sequence.previous_selected', position);
     const previousIndex = sequence.unitIds.indexOf(unitId) - 1;
     if (previousIndex >= 0) {
       const newUnitId = sequence.unitIds[previousIndex];
@@ -153,16 +155,14 @@ const Sequence = ({
             unitId={unitId}
             className="mb-4"
             nextHandler={() => {
-              logEvent('edx.ui.lms.sequence.next_selected', 'top');
-              handleNext();
+              handleNext('top');
             }}
             onNavigate={(destinationUnitId) => {
               logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
               handleNavigate(destinationUnitId);
             }}
             previousHandler={() => {
-              logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-              handlePrevious();
+              handlePrevious('top');
             }}
           />
           {shouldDisplayNotificationTriggerInSequence && (
@@ -182,12 +182,10 @@ const Sequence = ({
               sequenceId={sequenceId}
               unitId={unitId}
               onClickPrevious={() => {
-                logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-                handlePrevious();
+                handlePrevious('bottom');
               }}
               onClickNext={() => {
-                logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-                handleNext();
+                handleNext('bottom');
               }}
             />
             )}
