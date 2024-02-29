@@ -27,12 +27,13 @@ describe('useFeedbackWidget', () => {
     const { result } = renderHook(() => (
       useFeedbackWidget(props)
     ));
+    const { showFeedbackWidget, showGratitudeText, sendFeedback } = result.current;
     const closeFeedbackWidgetSpy = jest.spyOn(result.current, 'closeFeedbackWidget');
     const openGratitudeTextSpy = jest.spyOn(result.current, 'openGratitudeText');
 
-    expect(result.current.showFeedbackWidget).toBe(true);
-    expect(result.current.showGratitudeText).toBe(false);
-    result.current.sendFeedback.useCallback.cb();
+    expect(showFeedbackWidget).toBe(true);
+    expect(showGratitudeText).toBe(false);
+    sendFeedback.useCallback.cb();
     expect(closeFeedbackWidgetSpy).toHaveBeenCalled();
     expect(openGratitudeTextSpy).toHaveBeenCalled();
   });

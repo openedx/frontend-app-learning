@@ -4,6 +4,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { ActionRow, IconButton, Icon } from '@edx/paragon';
 import { Close, ThumbUpOutline, ThumbDownOffAlt } from '@edx/paragon/icons';
 
+import './index.scss';
 import messages from './messages';
 import useFeedbackWidget from './useFeedbackWidget';
 
@@ -30,18 +31,18 @@ const FeedbackWidget = ({
       <div className="sequence w-100">
         {
           showFeedbackWidget && (
-            <div className="ml-4 mr-4">
+            <div className="ml-4 mr-2">
               <ActionRow>
                 {formatMessage(messages.rateTranslationText)}
                 <ActionRow.Spacer />
-                <div className="mr-3">
+                <div>
                   <IconButton
                     src={ThumbUpOutline}
                     iconAs={Icon}
                     alt="positive-feedback"
                     onClick={sendFeedback}
                     variant="secondary"
-                    className="m-2"
+                    className="m-1"
                     id="positive-feedback-button"
                   />
                   <IconButton
@@ -50,19 +51,21 @@ const FeedbackWidget = ({
                     alt="negative-feedback"
                     onClick={sendFeedback}
                     variant="secondary"
-                    className="m-2"
+                    className="mr-2"
                     id="negative-feedback-button"
                   />
                 </div>
-                <div class="vr" />
-                <div className="ml-3">
+                <div className="mb-1 text-light action-row-divider">
+                  |
+                </div>
+                <div>
                   <IconButton
                     src={Close}
                     iconAs={Icon}
                     alt="close-feedback"
                     onClick={closeFeedbackWidget}
                     variant="secondary"
-                    className="m-2 float-right"
+                    className="ml-1 mr-2 float-right"
                     id="close-feedback-button"
                   />
                 </div>
