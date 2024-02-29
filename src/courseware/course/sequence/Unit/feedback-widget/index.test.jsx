@@ -2,8 +2,10 @@ import { shallow } from '@edx/react-unit-test-utils';
 
 import FeedbackWidget from './index';
 
-jest.mock('@edx/paragon', () => ({
-  ActionRow: 'ActionRow',
+jest.mock('@edx/paragon', () => jest.requireActual('@edx/react-unit-test-utils').mockComponents({
+  ActionRow: {
+    Spacer: 'Spacer',
+  },
   IconButton: 'IconButton',
   Icon: 'Icon',
 }));
@@ -19,6 +21,21 @@ jest.mock('./useFeedbackWidget', () => () => ({
   showFeedbackWidget: true,
   showGratitudeText: false,
 }));
+jest.mock('@edx/frontend-platform/i18n', () => {
+  const i18n = jest.requireActual('@edx/frontend-platform/i18n');
+  const { formatMessage } = jest.requireActual('@edx/react-unit-test-utils');
+  // this provide consistent for the test on different platform/timezone
+  const formatDate = jest.fn(date => new Date(date).toISOString()).mockName('useIntl.formatDate');
+  return {
+    ...i18n,
+    useIntl: jest.fn(() => ({
+      formatMessage,
+      formatDate,
+    })),
+    defineMessages: m => m,
+    FormattedMessage: () => 'FormattedMessage',
+  };
+});
 
 describe('<FeedbackWidget />', () => {
   const props = {

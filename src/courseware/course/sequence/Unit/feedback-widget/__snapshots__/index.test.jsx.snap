@@ -1,3 +1,54 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<FeedbackWidget /> renders 1`] = `undefined`;
+exports[`<FeedbackWidget /> renders 1`] = `
+<div
+  className="sequence w-100"
+>
+  <div
+    className="ml-4 mr-4"
+  >
+    <ActionRow>
+      Rate this page translation
+      <Spacer />
+      <div
+        className="mr-3"
+      >
+        <IconButton
+          alt="positive-feedback"
+          className="m-2"
+          iconAs="Icon"
+          id="positive-feedback-button"
+          onClick={[MockFunction sendFeedback]}
+          src="ThumbUpOutline"
+          variant="secondary"
+        />
+        <IconButton
+          alt="negative-feedback"
+          className="m-2"
+          iconAs="Icon"
+          id="negative-feedback-button"
+          onClick={[MockFunction sendFeedback]}
+          src="ThumbDownOffAlt"
+          variant="secondary"
+        />
+      </div>
+      <div
+        class="vr"
+      />
+      <div
+        className="ml-3"
+      >
+        <IconButton
+          alt="close-feedback"
+          className="m-2 float-right"
+          iconAs="Icon"
+          id="close-feedback-button"
+          onClick={[MockFunction closeFeedbackWidget]}
+          src="Close"
+          variant="secondary"
+        />
+      </div>
+    </ActionRow>
+  </div>
+</div>
+`;

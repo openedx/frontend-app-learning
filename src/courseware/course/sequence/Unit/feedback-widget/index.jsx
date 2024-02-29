@@ -39,7 +39,7 @@ const FeedbackWidget = ({
                     src={ThumbUpOutline}
                     iconAs={Icon}
                     alt="positive-feedback"
-                    onClick={() => sendFeedback(true)}
+                    onClick={sendFeedback}
                     variant="secondary"
                     className="m-2"
                     id="positive-feedback-button"
@@ -48,7 +48,7 @@ const FeedbackWidget = ({
                     src={ThumbDownOffAlt}
                     iconAs={Icon}
                     alt="negative-feedback"
-                    onClick={() => sendFeedback(false)}
+                    onClick={sendFeedback}
                     variant="secondary"
                     className="m-2"
                     id="negative-feedback-button"
