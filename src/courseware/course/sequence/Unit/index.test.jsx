@@ -1,4 +1,5 @@
 import React from 'react';
+import { when } from 'jest-when';
 import { formatMessage, shallow } from '@edx/react-unit-test-utils/dist';
 
 import { useModel } from '../../../../generic/model-store';
@@ -9,7 +10,7 @@ import ContentIFrame from './ContentIFrame';
 import Unit from '.';
 import messages from '../messages';
 import { getIFrameUrl } from './urls';
-import { views } from './constants';
+import { modelKeys, views } from './constants';
 import * as hooks from './hooks';
 
 jest.mock('./hooks', () => ({ useUnitData: jest.fn() }));
@@ -75,7 +76,14 @@ const unit = {
   bookmarked: false,
   bookmarkedUpdateState: 'pending',
 };
-useModel.mockReturnValue(unit);
+const mockCoursewareMetaFn = jest.fn(() => ({ wholeCourseTranslationEnabled: false }));
+const mockUnitsFn = jest.fn(() => unit);
+
+when(useModel)
+  .calledWith('coursewareMeta', props.courseId)
+  .mockImplementation(mockCoursewareMetaFn)
+  .calledWith(modelKeys.units, props.id)
+  .mockImplementation(mockUnitsFn);
 
 let el;
 describe('Unit component', () => {
@@ -118,7 +126,7 @@ describe('Unit component', () => {
       });
       describe('bookmarked, bookmark update pending', () => {
         beforeEach(() => {
-          useModel.mockReturnValueOnce({ ...unit, bookmarked: true });
+          mockUnitsFn.mockReturnValueOnce({ ...unit, bookmarked: true });
           renderComponent();
         });
         test('snapshot', () => {
@@ -190,6 +198,19 @@ describe('Unit component', () => {
             examAccess,
           }));
         });
+      });
+    });
+    describe('TranslationSelection', () => {
+      test('renders if wholeCourseTranslationEnabled', () => {
+        mockCoursewareMetaFn.mockReturnValueOnce({ wholeCourseTranslationEnabled: true });
+        el = shallow(<Unit {...props} />);
+        expect(el.snapshot).toMatchSnapshot();
+        expect(el.instance.findByType('TranslationSelection')).toHaveLength(1);
+      });
+      test('does not render if wholeCourseTranslationEnabled is false', () => {
+        mockCoursewareMetaFn.mockReturnValueOnce({ wholeCourseTranslationEnabled: false });
+        el = shallow(<Unit {...props} />);
+        expect(el.instance.findByType('TranslationSelection')).toHaveLength(0);
       });
     });
   });

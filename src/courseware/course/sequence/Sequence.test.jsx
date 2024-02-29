@@ -137,8 +137,7 @@ describe('Sequence', () => {
     render(<Sequence {...mockData} />, { wrapWithRouter: true });
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
     // `Previous`, `Bookmark` and `Close Tray` buttons
-    // `Change Language`, `Dismiss` and `Try it` buttons from translation selection.
-    expect(screen.getAllByRole('button')).toHaveLength(6);
+    expect(screen.getAllByRole('button')).toHaveLength(3);
     // Renders `Next` button plus one button for each unit.
     expect(screen.getAllByRole('link')).toHaveLength(1 + unitBlocks.length);
 

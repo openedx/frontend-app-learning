@@ -306,7 +306,9 @@
           "verification_status": "none",
           "linkedin_add_to_profile_url": null,
           "user_needs_integrity_signature": false,
-          "learning_assistant_enabled": false
+          "learning_assistant_enabled": false,
+          "language": "en",
+          "whole_course_translation_enabled": false
         },
         "matchingRules": {
           "$.body.access_expiration.expiration_date": {
@@ -443,6 +445,9 @@
             "match": "type"
           },
           "$.body.learning_assistant_enabled": {
+            "match": "type"
+          },
+          "$.body.whole_course_translation_enabled": {
             "match": "type"
           }
         }

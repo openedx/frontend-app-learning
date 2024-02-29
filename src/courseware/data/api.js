@@ -110,6 +110,8 @@ function normalizeMetadata(metadata) {
     showCalculator: data.show_calculator,
     notes: camelCaseObject(data.notes),
     marketingUrl: data.marketing_url,
+    language: data.language,
+    wholeCourseTranslationEnabled: data.whole_course_translation_enabled,
     celebrations: camelCaseObject(data.celebrations),
     userHasPassingGrade: data.user_has_passing_grade,
     courseExitPageIsActive: data.course_exit_page_is_active,
