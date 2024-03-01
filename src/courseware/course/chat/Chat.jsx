@@ -41,16 +41,12 @@ const Chat = ({
     const date = new Date();
     const utcDate = date.toISOString();
 
-    const enrollmentStartDate = course.enrollmentStart || utcDate;
-    const startDate = course.start || enrollmentStartDate;
-    const enrollmentEndDate = course.enrollmentEnd || utcDate;
-    const endDate = course.end || enrollmentEndDate;
+    const startDate = course.start || utcDate;
+    const endDate = course.end || utcDate;
 
     return (
-      startDate <= enrollmentStartDate
-      && enrollmentStartDate <= utcDate
-      && utcDate <= enrollmentEndDate
-      && enrollmentEndDate <= endDate
+      startDate <= utcDate
+      && utcDate <= endDate
     );
   };
 
