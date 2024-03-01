@@ -38,7 +38,11 @@ const Sequence = ({
   previousSequenceHandler,
 }) => {
   const intl = useIntl();
-  const course = useModel('coursewareMeta', courseId);
+  const {
+    canAccessProctoredExams,
+    license,
+    wholeCourseTranslationEnabled,
+  } = useModel('coursewareMeta', courseId);
   const {
     isStaff,
     originalUserIsStaff,
@@ -193,9 +197,13 @@ const Sequence = ({
         </div>
         {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
       </div>
-      <div className="sequence-container d-inline-flex flex-row">
-        <FeedbackWidget />
-      </div>
+      {
+        wholeCourseTranslationEnabled && (
+          <div className="sequence-container d-inline-flex flex-row">
+            <FeedbackWidget />
+          </div>
+        )
+      }
     </>
   );
 
@@ -207,11 +215,11 @@ const Sequence = ({
           courseId={courseId}
           isStaff={isStaff}
           originalUserIsStaff={originalUserIsStaff}
-          canAccessProctoredExams={course.canAccessProctoredExams}
+          canAccessProctoredExams={canAccessProctoredExams}
         >
           {defaultContent}
         </SequenceExamWrapper>
-        <CourseLicense license={course.license || undefined} />
+        <CourseLicense license={license || undefined} />
       </div>
     );
   }
