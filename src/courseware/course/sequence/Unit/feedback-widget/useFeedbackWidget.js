@@ -1,34 +1,29 @@
 import { useCallback, useState } from 'react';
 
-const useFeedbackWidget = ({
-  courseId,
-  languageCode,
-  userId,
-  unitId,
-}) => {
+const useFeedbackWidget = () => {
   const [showFeedbackWidget, setShowFeedbackWidget] = useState(true);
   const [showGratitudeText, setShowGratitudeText] = useState(false);
 
-  const closeFeedbackWidget = () => {
+  const closeFeedbackWidget = useCallback(() => {
     setShowFeedbackWidget(false);
-  };
+  }, [setShowFeedbackWidget]);
 
-  const openFeedbackWidget = () => {
+  const openFeedbackWidget = useCallback(() => {
     setShowFeedbackWidget(true);
-  };
+  }, [setShowFeedbackWidget]);
 
-  const openGratitudeText = () => {
+  const openGratitudeText = useCallback(() => {
     setShowGratitudeText(true);
     setTimeout(() => {
       setShowGratitudeText(false);
     }, 3000);
-  };
+  }, [setShowGratitudeText]);
 
   const sendFeedback = useCallback(() => {
     // Create feedback
     closeFeedbackWidget();
     openGratitudeText();
-  }, [courseId, userId, unitId, languageCode]);
+  }, [closeFeedbackWidget, openGratitudeText]);
 
   return {
     closeFeedbackWidget,
