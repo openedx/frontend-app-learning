@@ -16,7 +16,7 @@ exports[`Unit component output BookmarkButton props not bookmarked, bookmark upd
 />
 `;
 
-exports[`Unit component output TranslationSelection renders if wholeCourseTranslationEnabled 1`] = `
+exports[`Unit component output TranslationSelection renders if wholeCourseTranslationEnabled and language is defined 1`] = `
 <div
   className="unit"
 >

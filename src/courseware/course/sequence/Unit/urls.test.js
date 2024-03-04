@@ -17,28 +17,45 @@ const props = {
   view: 'test-view',
   format: 'test-format',
   examAccess: { blockAccess: false, accessToken: 'test-access-token' },
-  translateLanguage: 'test-translate-language',
 };
 
-describe('urls module', () => {
-  describe('getIFrameUrl', () => {
-    test('format provided, exam access and token available', () => {
-      const params = stringify({
-        ...iframeParams,
-        view: props.view,
-        format: props.format,
-        exam_access: props.examAccess.accessToken,
-        translate_lang: props.translateLanguage,
-      });
-      expect(getIFrameUrl(props)).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
+describe('urls module getIFrameUrl', () => {
+  test('format provided, exam access and token available', () => {
+    const params = stringify({
+      ...iframeParams,
+      view: props.view,
+      format: props.format,
+      exam_access: props.examAccess.accessToken,
     });
-    test('no format provided, exam access blocked', () => {
-      const params = stringify({ ...iframeParams, view: props.view });
-      expect(getIFrameUrl({
-        id: props.id,
-        view: props.view,
-        examAccess: { blockAccess: true },
-      })).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
+    expect(getIFrameUrl(props)).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
+  });
+  test('no format provided, exam access blocked', () => {
+    const params = stringify({ ...iframeParams, view: props.view });
+    expect(getIFrameUrl({
+      id: props.id,
+      view: props.view,
+      examAccess: { blockAccess: true },
+    })).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
+  });
+  test('src and dest languages provided', () => {
+    const params = stringify({
+      ...iframeParams,
+      view: props.view,
+      src_lang: 'test-src-lang',
+      dest_lang: 'test-dest-lang',
     });
+    expect(getIFrameUrl({
+      ...props,
+      srcLanguage: 'test-src-lang',
+      destLanguage: 'test-dest-lang',
+    })).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
+  });
+  test('src and dest languages provided are the same', () => {
+    const params = stringify({ ...iframeParams, view: props.view });
+    expect(getIFrameUrl({
+      ...props,
+      srcLanguage: 'test-lang',
+      destLanguage: 'test-lang',
+    })).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
   });
 });

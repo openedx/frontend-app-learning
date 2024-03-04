@@ -29,7 +29,10 @@ jest.mock('../../../../../data/localStorage', () => ({
 }));
 
 describe('useSelectLanguage', () => {
-  const courseId = 'some-course-id';
+  const props = {
+    courseId: 'test-course-id',
+    language: 'en',
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -41,8 +44,8 @@ describe('useSelectLanguage', () => {
 
   languages.forEach(([key, value]) => {
     it(`initializes selectedLanguage to the selected language (${value})`, () => {
-      getLocalStorage.mockReturnValueOnce({ [courseId]: key });
-      const { selectedLanguage } = useSelectLanguage(courseId);
+      getLocalStorage.mockReturnValueOnce({ [props.courseId]: key });
+      const { selectedLanguage } = useSelectLanguage(props);
 
       state.expectInitializedWith(stateKeys.selectedLanguage, key);
       expect(selectedLanguage).toBe(key);
@@ -50,12 +53,12 @@ describe('useSelectLanguage', () => {
   });
 
   test('setSelectedLanguage behavior', () => {
-    const { setSelectedLanguage } = useSelectLanguage(courseId);
+    const { setSelectedLanguage } = useSelectLanguage(props);
 
     setSelectedLanguage('es');
     state.expectSetStateCalledWith(stateKeys.selectedLanguage, 'es');
     expect(setLocalStorage).toHaveBeenCalledWith(selectedLanguageKey, {
-      [courseId]: 'es',
+      [props.courseId]: 'es',
     });
   });
 });
