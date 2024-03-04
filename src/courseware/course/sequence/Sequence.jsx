@@ -27,6 +27,7 @@ import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+import FeedbackWidget from './Unit/feedback-widget';
 
 const Sequence = ({
   unitId,
@@ -37,7 +38,11 @@ const Sequence = ({
   previousSequenceHandler,
 }) => {
   const intl = useIntl();
-  const course = useModel('coursewareMeta', courseId);
+  const {
+    canAccessProctoredExams,
+    license,
+    wholeCourseTranslationEnabled,
+  } = useModel('coursewareMeta', courseId);
   const {
     isStaff,
     originalUserIsStaff,
@@ -49,7 +54,8 @@ const Sequence = ({
   const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
   const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
 
-  const handleNext = () => {
+  const handleNext = (position) => {
+    logEvent('edx.ui.lms.sequence.next_selected', position);
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
     if (nextIndex < sequence.unitIds.length) {
       const newUnitId = sequence.unitIds[nextIndex];
@@ -59,7 +65,8 @@ const Sequence = ({
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = (position) => {
+    logEvent('edx.ui.lms.sequence.previous_selected', position);
     const previousIndex = sequence.unitIds.indexOf(unitId) - 1;
     if (previousIndex >= 0) {
       const newUnitId = sequence.unitIds[previousIndex];
@@ -144,55 +151,60 @@ const Sequence = ({
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
 
   const defaultContent = (
-    <div className="sequence-container d-inline-flex flex-row">
-      <div className={classNames('sequence w-100', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
-        <SequenceNavigation
-          sequenceId={sequenceId}
-          unitId={unitId}
-          className="mb-4"
-          nextHandler={() => {
-            logEvent('edx.ui.lms.sequence.next_selected', 'top');
-            handleNext();
-          }}
-          onNavigate={(destinationUnitId) => {
-            logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-            handleNavigate(destinationUnitId);
-          }}
-          previousHandler={() => {
-            logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-            handlePrevious();
-          }}
-        />
-        {shouldDisplayNotificationTriggerInSequence && (
-          enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers />
-        )}
-
-        <div className="unit-container flex-grow-1">
-          <SequenceContent
-            courseId={courseId}
-            gated={gated}
+    <>
+      <div className="sequence-container d-inline-flex flex-row">
+        <div className={classNames('sequence w-100', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
+          <SequenceNavigation
             sequenceId={sequenceId}
             unitId={unitId}
-            unitLoadedHandler={handleUnitLoaded}
-          />
-          {unitHasLoaded && (
-          <UnitNavigation
-            sequenceId={sequenceId}
-            unitId={unitId}
-            onClickPrevious={() => {
-              logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-              handlePrevious();
+            className="mb-4"
+            nextHandler={() => {
+              handleNext('top');
             }}
-            onClickNext={() => {
-              logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-              handleNext();
+            onNavigate={(destinationUnitId) => {
+              logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+              handleNavigate(destinationUnitId);
+            }}
+            previousHandler={() => {
+              handlePrevious('top');
             }}
           />
+          {shouldDisplayNotificationTriggerInSequence && (
+            enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers />
           )}
+
+          <div className="unit-container flex-grow-1">
+            <SequenceContent
+              courseId={courseId}
+              gated={gated}
+              sequenceId={sequenceId}
+              unitId={unitId}
+              unitLoadedHandler={handleUnitLoaded}
+            />
+            {unitHasLoaded && (
+            <UnitNavigation
+              sequenceId={sequenceId}
+              unitId={unitId}
+              onClickPrevious={() => {
+                handlePrevious('bottom');
+              }}
+              onClickNext={() => {
+                handleNext('bottom');
+              }}
+            />
+            )}
+          </div>
         </div>
+        {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
       </div>
-      {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
-    </div>
+      {
+        wholeCourseTranslationEnabled && (
+          <div className="sequence-container d-inline-flex flex-row">
+            <FeedbackWidget />
+          </div>
+        )
+      }
+    </>
   );
 
   if (sequenceStatus === 'loaded') {
@@ -203,11 +215,11 @@ const Sequence = ({
           courseId={courseId}
           isStaff={isStaff}
           originalUserIsStaff={originalUserIsStaff}
-          canAccessProctoredExams={course.canAccessProctoredExams}
+          canAccessProctoredExams={canAccessProctoredExams}
         >
           {defaultContent}
         </SequenceExamWrapper>
-        <CourseLicense license={course.license || undefined} />
+        <CourseLicense license={license || undefined} />
       </div>
     );
   }
