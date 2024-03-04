@@ -18,6 +18,7 @@ const Section = ({
   expand,
   intl,
   section,
+  setExpandedSections,
 }) => {
   const {
     complete,
@@ -38,6 +39,7 @@ const Section = ({
 
   useEffect(() => {
     setOpen(defaultOpen);
+    setExpandedSections((prevObj) => ({ ...prevObj, [section.id]: defaultOpen }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -78,12 +80,12 @@ const Section = ({
         styling="card-lg"
         title={sectionTitle}
         open={open}
-        onToggle={() => { setOpen(!open); }}
+        onToggle={() => { setOpen(!open); setExpandedSections((prevObj) => ({ ...prevObj, [section.id]: !open })); }}
         iconWhenClosed={(
           <IconButton
             alt={intl.formatMessage(messages.openSection)}
             icon={faPlus}
-            onClick={() => { setOpen(true); }}
+            onClick={() => { setOpen(true); setExpandedSections((prevObj) => ({ ...prevObj, [section.id]: true })); }}
             size="sm"
           />
         )}
@@ -91,7 +93,7 @@ const Section = ({
           <IconButton
             alt={intl.formatMessage(genericMessages.close)}
             icon={faMinus}
-            onClick={() => { setOpen(false); }}
+            onClick={() => { setOpen(false); setExpandedSections((prevObj) => ({ ...prevObj, [section.id]: false })); }}
             size="sm"
           />
         )}
@@ -118,6 +120,7 @@ Section.propTypes = {
   expand: PropTypes.bool.isRequired,
   intl: intlShape.isRequired,
   section: PropTypes.shape().isRequired,
+  setExpandedSections: PropTypes.func.isRequired,
 };
 
 export default injectIntl(Section);
