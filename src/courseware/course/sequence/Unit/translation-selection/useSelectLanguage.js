@@ -6,6 +6,7 @@ import {
 } from '../../../../../data/localStorage';
 
 export const selectedLanguageKey = 'selectedLanguages';
+// This will be use to check supported languages
 export const languages = Object.entries({
   en: 'English',
   es: 'Spanish',
@@ -18,11 +19,11 @@ export const stateKeys = StrictDict({
   selectedLanguage: 'selectedLanguage',
 });
 
-const useSelectLanguage = (courseId) => {
+const useSelectLanguage = ({ courseId, language }) => {
   const selectedLanguageItem = getLocalStorage(selectedLanguageKey) || {};
   const [selectedLanguage, updateSelectedLanguage] = useKeyedState(
     stateKeys.selectedLanguage,
-    selectedLanguageItem[courseId] || 'en',
+    selectedLanguageItem[courseId] || language,
   );
 
   const setSelectedLanguage = useCallback((newSelectedLanguage) => {
