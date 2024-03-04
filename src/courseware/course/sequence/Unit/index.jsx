@@ -24,24 +24,28 @@ const Unit = ({
   const examAccess = useExamAccess({ id });
   const shouldDisplayHonorCode = useShouldDisplayHonorCode({ courseId, id });
   const unit = useModel(modelKeys.units, id);
-  const { wholeCourseTranslationEnabled } = useModel('coursewareMeta', courseId);
+  const { language, wholeCourseTranslationEnabled } = useModel('courseHomeMeta', courseId);
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
   const view = authenticatedUser ? views.student : views.public;
-  const { selectedLanguage, setSelectedLanguage } = useSelectLanguage(courseId);
+  const { selectedLanguage, setSelectedLanguage } = useSelectLanguage({
+    courseId,
+    language,
+  });
 
   const iframeUrl = useMemo(() => getIFrameUrl({
     id,
     view,
     format,
     examAccess,
-    translateLanguage: selectedLanguage,
-  }), [id, view, format, examAccess, selectedLanguage]);
+    srcLanguage: language,
+    destLanguage: selectedLanguage,
+  }), [id, view, format, examAccess, selectedLanguage, language]);
 
   return (
     <div className="unit">
       <div className="mb-0">
         <h3 className="h3">{unit.title}</h3>
-        {wholeCourseTranslationEnabled && (
+        {wholeCourseTranslationEnabled && language && (
           <TranslationSelection
             courseId={courseId}
             selectedLanguage={selectedLanguage}

@@ -80,7 +80,7 @@ const mockCoursewareMetaFn = jest.fn(() => ({ wholeCourseTranslationEnabled: fal
 const mockUnitsFn = jest.fn(() => unit);
 
 when(useModel)
-  .calledWith('coursewareMeta', props.courseId)
+  .calledWith('courseHomeMeta', props.courseId)
   .mockImplementation(mockCoursewareMetaFn)
   .calledWith(modelKeys.units, props.id)
   .mockImplementation(mockUnitsFn);
@@ -201,14 +201,19 @@ describe('Unit component', () => {
       });
     });
     describe('TranslationSelection', () => {
-      test('renders if wholeCourseTranslationEnabled', () => {
-        mockCoursewareMetaFn.mockReturnValueOnce({ wholeCourseTranslationEnabled: true });
+      test('renders if wholeCourseTranslationEnabled and language is defined', () => {
+        mockCoursewareMetaFn.mockReturnValueOnce({ wholeCourseTranslationEnabled: true, language: 'en' });
         el = shallow(<Unit {...props} />);
         expect(el.snapshot).toMatchSnapshot();
         expect(el.instance.findByType('TranslationSelection')).toHaveLength(1);
       });
       test('does not render if wholeCourseTranslationEnabled is false', () => {
         mockCoursewareMetaFn.mockReturnValueOnce({ wholeCourseTranslationEnabled: false });
+        el = shallow(<Unit {...props} />);
+        expect(el.instance.findByType('TranslationSelection')).toHaveLength(0);
+      });
+      test('does not render if language is undefined', () => {
+        mockCoursewareMetaFn.mockReturnValueOnce({ wholeCourseTranslationEnabled: true });
         el = shallow(<Unit {...props} />);
         expect(el.instance.findByType('TranslationSelection')).toHaveLength(0);
       });
