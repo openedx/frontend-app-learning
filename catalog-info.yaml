@@ -1,0 +1,18 @@
+# This file records information about this repo. Its use is described in OEP-55:
+# https://open-edx-proposals.readthedocs.io/en/latest/processes/oep-0055-proc-project-maintainers.html
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: 'frontend-app-learning'
+  description: "This is the Learning MFE, which renders all learner-facing course pages."
+  links:
+    - url: "https://github.com/openedx/frontend-app-learning"
+      title: "Learning MFE"
+      icon: "Web"
+  annotations:
+    openedx.org/arch-interest-groups: ""
+spec:
+  owner: group:2u-arch-bom
+  type: 'website'
+  lifecycle: 'production'
