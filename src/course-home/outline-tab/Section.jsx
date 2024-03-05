@@ -33,13 +33,17 @@ const Section = ({
 
   const [open, setOpen] = useState(defaultOpen);
 
+  const updateExpandedSection = (status) => {
+    setOpen(status);
+    setExpandedSections((prevObj) => ({ ...prevObj, [section.id]: status }));
+  };
+
   useEffect(() => {
     setOpen(expand);
   }, [expand]);
 
   useEffect(() => {
-    setOpen(defaultOpen);
-    setExpandedSections((prevObj) => ({ ...prevObj, [section.id]: defaultOpen }));
+    updateExpandedSection(defaultOpen);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -80,12 +84,12 @@ const Section = ({
         styling="card-lg"
         title={sectionTitle}
         open={open}
-        onToggle={() => { setOpen(!open); setExpandedSections((prevObj) => ({ ...prevObj, [section.id]: !open })); }}
+        onToggle={() => updateExpandedSection(!open)}
         iconWhenClosed={(
           <IconButton
             alt={intl.formatMessage(messages.openSection)}
             icon={faPlus}
-            onClick={() => { setOpen(true); setExpandedSections((prevObj) => ({ ...prevObj, [section.id]: true })); }}
+            onClick={() => updateExpandedSection(true)}
             size="sm"
           />
         )}
@@ -93,7 +97,7 @@ const Section = ({
           <IconButton
             alt={intl.formatMessage(genericMessages.close)}
             icon={faMinus}
-            onClick={() => { setOpen(false); setExpandedSections((prevObj) => ({ ...prevObj, [section.id]: false })); }}
+            onClick={() => updateExpandedSection(false)}
             size="sm"
           />
         )}
