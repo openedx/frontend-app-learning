@@ -30,7 +30,7 @@ export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) 
   const isLastSequence = sequenceIndex === sequenceIds.length - 1;
   const isLastUnitInSequence = unitIndex === sequence.unitIds.length - 1;
   const isLastUnit = isLastSequence && isLastUnitInSequence;
-  const sequenceNavigationDisabled = sequence?.navigationDisabled;
+  const sequenceNavigationDisabled = sequence.navigationDisabled;
   const navigationDisabledPrevSequence = sequenceNavigationDisabled && isFirstUnitInSequence;
   const navigationDisabledNextSequence = sequenceNavigationDisabled && isLastUnitInSequence;
 

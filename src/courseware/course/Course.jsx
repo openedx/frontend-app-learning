@@ -77,7 +77,7 @@ const Course = ({
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
       <div className="position-relative d-flex align-items-center mb-4 mt-1">
-        {!navigationDisabled && (
+        {navigationDisabled || (
         <>
           <CourseBreadcrumbs
             courseId={courseId}
