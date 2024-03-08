@@ -160,6 +160,7 @@ function normalizeSequenceMetadata(sequence) {
       saveUnitPosition: sequence.save_position,
       showCompletion: sequence.show_completion,
       allowProctoringOptOut: sequence.allow_proctoring_opt_out,
+      navigationDisabled: sequence.navigation_disabled,
     },
     units: sequence.items.map(unit => ({
       id: unit.id,

@@ -78,6 +78,27 @@ describe('Course', () => {
     );
   });
 
+  it('removes breadcrumbs when navigation is disabled', async () => {
+    const sequenceBlocks = [Factory.build(
+      'block',
+      { type: 'sequential', children: [] },
+      { courseId: mockData.courseId },
+    )];
+    const sequenceMetadata = [Factory.build(
+      'sequenceMetadata',
+      { navigation_disabled: true },
+      { courseId: mockData.courseId, sequenceBlock: sequenceBlocks[0] },
+    )];
+    const testStore = await initializeTestStore({ sequenceBlocks, sequenceMetadata }, false);
+    const testData = {
+      ...mockData,
+      sequenceId: sequenceBlocks[0].id,
+      onNavigate: jest.fn(),
+    };
+    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
+  });
+
   it('displays first section celebration modal', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { firstSection: true } });
     const testStore = await initializeTestStore({ courseHomeMetadata }, false);
