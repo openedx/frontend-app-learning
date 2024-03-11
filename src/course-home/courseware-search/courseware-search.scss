@@ -6,7 +6,7 @@
   right: 0;
   bottom: 0;
   border-top: 1px solid $light-300;
-  z-index: 200;
+  z-index: $zindex-modal; // Bootstrap's z-index layer for Modals.
 
   &__close {
     position: absolute !important; // For some reason it gets overridden
