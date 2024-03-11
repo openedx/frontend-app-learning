@@ -4,9 +4,10 @@ import { getConfig, snakeCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import { breakpoints } from '@openedx/paragon';
-import { initializeTestStore, render } from '../../setupTest';
+import { executeThunk } from '@src/utils';
+import { initializeTestStore, render } from '@src/setupTest';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
-import { executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
 import Course from './Course';
 
@@ -26,7 +27,7 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
     sequenceId,
     unitId: Object.values(models.units)[0].id,
   });
-  global.innerWidth = breakpoints.extraLarge.minWidth;
+  global.innerWidth = breakpoints.extraExtraLarge.minWidth;
 
   const courseHomeMetadata = Factory.build('courseHomeMetadata', { ...snakeCaseObject(params) });
   const testStore = await initializeTestStore({ provider: 'openedx', courseHomeMetadata });
@@ -42,8 +43,14 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
   mockData.unitId = firstUnitId;
   const [firstSequenceId] = Object.keys(state.models.sequences);
   mockData.sequenceId = firstSequenceId;
+  const contextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
 
-  const wrapper = await render(<Course {...mockData} />, { store: testStore, wrapWithRouter: true });
+  const wrapper = await render(
+    <SidebarContext.Provider value={contextValue}>
+      <Course {...mockData} />
+    </SidebarContext.Provider>,
+    { store: testStore, wrapWithRouter: true },
+  );
   return wrapper;
 };
 

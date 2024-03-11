@@ -18,6 +18,7 @@ jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
 
 describe('Sequence', () => {
   let mockData;
+  let defaultContextValue;
   const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
     'block',
@@ -38,11 +39,28 @@ describe('Sequence', () => {
       toggleNotificationTray: () => {},
       setNotificationStatus: () => {},
     };
+    defaultContextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
   });
 
   beforeEach(() => {
     global.innerWidth = breakpoints.extraLarge.minWidth;
   });
+
+  const SidebarWrapper = ({ contextValue = defaultContextValue, overrideData = {} }) => (
+    <SidebarContext.Provider value={contextValue}>
+      <Sequence {...({ ...mockData, ...overrideData })} />
+    </SidebarContext.Provider>
+  );
+
+  SidebarWrapper.defaultProps = {
+    contextValue: defaultContextValue,
+    overrideData: {},
+  };
+
+  SidebarWrapper.propTypes = {
+    contextValue: PropTypes.shape({}),
+    overrideData: PropTypes.shape({}),
+  };
 
   it('renders correctly without data', async () => {
     const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
@@ -77,7 +95,7 @@ describe('Sequence', () => {
       courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
     }, false);
     const { container } = render(
-      <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
+      <SidebarWrapper overrideData={{ sequenceId: sequenceBlocks[0].id }} />,
       { store: testStore, wrapWithRouter: true },
     );
 
@@ -134,9 +152,9 @@ describe('Sequence', () => {
   });
 
   it('handles loading unit', async () => {
-    render(<Sequence {...mockData} />, { wrapWithRouter: true });
+    render(<SidebarWrapper />, { wrapWithRouter: true });
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
-    // `Previous`, `Bookmark` and `Close Tray` buttons
+    // `Previous`, `Prerequisite` and `Close Tray` buttons.
     expect(screen.getAllByRole('button')).toHaveLength(3);
     // Renders `Next` button plus one button for each unit.
     expect(screen.getAllByRole('link')).toHaveLength(1 + unitBlocks.length);
@@ -174,13 +192,13 @@ describe('Sequence', () => {
         sequenceId: sequenceBlocks[1].id,
         previousSequenceHandler: jest.fn(),
       };
-      render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
+      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       const sequencePreviousButton = screen.getByRole('link', { name: /previous/i });
       fireEvent.click(sequencePreviousButton);
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(1);
-      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
       expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.previous_selected', {
         current_tab: 1,
         id: testData.unitId,
@@ -194,8 +212,8 @@ describe('Sequence', () => {
         .filter(button => button !== sequencePreviousButton)[0];
       fireEvent.click(unitPreviousButton);
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(sendTrackEvent).toHaveBeenCalledTimes(3);
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.previous_selected', {
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.previous_selected', {
         current_tab: 1,
         id: testData.unitId,
         tab_count: unitBlocks.length,
@@ -210,7 +228,7 @@ describe('Sequence', () => {
         sequenceId: sequenceBlocks[0].id,
         nextSequenceHandler: jest.fn(),
       };
-      render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
+      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       const sequenceNextButton = screen.getByRole('link', { name: /next/i });
@@ -229,8 +247,8 @@ describe('Sequence', () => {
         .filter(button => button !== sequenceNextButton)[0];
       fireEvent.click(unitNextButton);
       expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(sendTrackEvent).toHaveBeenCalledTimes(3);
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.next_selected', {
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.next_selected', {
         current_tab: unitBlocks.length,
         id: testData.unitId,
         tab_count: unitBlocks.length,
@@ -248,7 +266,7 @@ describe('Sequence', () => {
         previousSequenceHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
       };
-      render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
+      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).toBeInTheDocument());
 
       fireEvent.click(screen.getByRole('link', { name: /previous/i }));
@@ -261,7 +279,7 @@ describe('Sequence', () => {
       // Therefore the next unit will still be `the initial one + 1`.
       expect(testData.unitNavigationHandler).toHaveBeenNthCalledWith(2, unitBlocks[unitNumber + 1].id);
 
-      expect(sendTrackEvent).toHaveBeenCalledTimes(3);
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
     });
 
     it('handles the `Previous` buttons for the first unit in the first sequence', async () => {
@@ -272,7 +290,7 @@ describe('Sequence', () => {
         unitNavigationHandler: jest.fn(),
         previousSequenceHandler: jest.fn(),
       };
-      render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
+      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
@@ -280,7 +298,7 @@ describe('Sequence', () => {
 
       expect(testData.previousSequenceHandler).not.toHaveBeenCalled();
       expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
-      expect(sendTrackEvent).toHaveBeenCalled();
+      expect(sendTrackEvent).not.toHaveBeenCalled();
     });
 
     it('handles the `Next` buttons for the last unit in the last sequence', async () => {
@@ -291,7 +309,7 @@ describe('Sequence', () => {
         unitNavigationHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
       };
-      render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
+      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
@@ -299,7 +317,7 @@ describe('Sequence', () => {
 
       expect(testData.nextSequenceHandler).not.toHaveBeenCalled();
       expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
-      expect(sendTrackEvent).toHaveBeenCalled();
+      expect(sendTrackEvent).not.toHaveBeenCalled();
     });
 
     it('handles the navigation buttons for empty sequence', async () => {
@@ -333,51 +351,37 @@ describe('Sequence', () => {
         nextSequenceHandler: jest.fn(),
       };
 
-      render(<Sequence {...testData} />, { store: innerTestStore, wrapWithRouter: true });
+      render(<SidebarWrapper overrideData={testData} />, { store: innerTestStore, wrapWithRouter: true });
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
       screen.getAllByRole('link', { name: /previous/i }).forEach(button => fireEvent.click(button));
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
+      expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(2);
 
       screen.getAllByRole('link', { name: /next/i }).forEach(button => fireEvent.click(button));
       expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
+      expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(4);
 
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(1, 'edx.ui.course.upgrade.old_sidebar.notifications', {
-        course_end: undefined,
-        course_modes: undefined,
-        course_start: undefined,
-        courserun_key: undefined,
-        enrollment_end: undefined,
-        enrollment_mode: undefined,
-        enrollment_start: undefined,
-        is_upgrade_notification_visible: false,
-        name: 'Old Sidebar Notification Tray',
-        org_key: undefined,
-        username: undefined,
-        verification_status: undefined,
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(1, 'edx.ui.lms.sequence.previous_selected', {
+        current_tab: 1,
+        id: testData.unitId,
+        tab_count: 0,
+        widget_placement: 'top',
       });
       expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.previous_selected', {
         current_tab: 1,
         id: testData.unitId,
         tab_count: 0,
-        widget_placement: 'top',
-      });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.previous_selected', {
-        current_tab: 1,
-        id: testData.unitId,
-        tab_count: 0,
         widget_placement: 'bottom',
       });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(4, 'edx.ui.lms.sequence.next_selected', {
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.next_selected', {
         current_tab: 1,
         id: testData.unitId,
         tab_count: 0,
         widget_placement: 'top',
       });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(5, 'edx.ui.lms.sequence.next_selected', {
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(4, 'edx.ui.lms.sequence.next_selected', {
         current_tab: 1,
         id: testData.unitId,
         tab_count: 0,
@@ -395,7 +399,7 @@ describe('Sequence', () => {
         sequenceId: sequenceBlocks[0].id,
         unitNavigationHandler: jest.fn(),
       };
-      render(<Sequence {...testData} />, { store: testStore, wrapWithRouter: true });
+      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).toBeInTheDocument());
 
       fireEvent.click(screen.getByRole('link', { name: targetUnit.display_name }));
@@ -410,16 +414,6 @@ describe('Sequence', () => {
     });
   });
 
-  const SidebarWrapper = ({ contextValue }) => (
-    <SidebarContext.Provider value={contextValue}>
-      <Sequence {...mockData} />
-    </SidebarContext.Provider>
-  );
-
-  SidebarWrapper.propTypes = {
-    contextValue: PropTypes.shape({}).isRequired,
-  };
-
   describe('notification feature', () => {
     it('renders notification tray in sequence', async () => {
       render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: () => null }} />, { wrapWithRouter: true });
@@ -431,7 +425,7 @@ describe('Sequence', () => {
       render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: toggleNotificationTray }} />, { wrapWithRouter: true });
       const notificationCloseIconButton = await screen.findByRole('button', { name: /Close notification tray/i });
       fireEvent.click(notificationCloseIconButton);
-      expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
+      expect(toggleNotificationTray).toHaveBeenCalled();
     });
 
     it('does not render notification tray in sequence by default if in responsive view', async () => {

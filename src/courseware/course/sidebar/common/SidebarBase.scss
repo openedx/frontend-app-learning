@@ -1,0 +1,6 @@
+#course-sidebar {
+    @media (max-width: -1 + map-get($grid-breakpoints, "lg")) {
+        overflow-y: scroll;
+        padding: 0 .625rem !important;
+    }
+}

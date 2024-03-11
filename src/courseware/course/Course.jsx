@@ -1,24 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
-import { AlertList } from '../../generic/user-messages';
-
-import Sequence from './sequence';
-
-import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
+import { AlertList } from '@src/generic/user-messages';
+import { useModel } from '@src/generic/model-store';
+import { getCoursewareOutlineSidebarSettings } from '../data/selectors';
+import { Trigger as CourseOutlineTrigger } from './sidebar/sidebars/course-outline';
 import Chat from './chat/Chat';
-import ContentTools from './content-tools';
-import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import SidebarTriggers from './sidebar/SidebarTriggers';
 import NewSidebarProvider from './new-sidebar/SidebarContextProvider';
 import NewSidebarTriggers from './new-sidebar/SidebarTriggers';
-
-import { useModel } from '../../generic/model-store';
+import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
+import CourseBreadcrumbs from './CourseBreadcrumbs';
+import ContentTools from './content-tools';
+import Sequence from './sequence';
 
 const Course = ({
   courseId,
@@ -37,7 +36,8 @@ const Course = ({
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const navigationDisabled = sequence?.navigationDisabled ?? false;
+  const { enableNavigationSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
+  const navigationDisabled = enableNavigationSidebar || (sequence?.navigationDisabled ?? false);
 
   const pageTitleBreadCrumbs = [
     sequence,
@@ -54,7 +54,6 @@ const Course = ({
   const [weeklyGoalCelebrationOpen, setWeeklyGoalCelebrationOpen] = useState(
     celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal,
   );
-  const shouldDisplayTriggers = windowWidth >= breakpoints.small.minWidth;
   const shouldDisplayChat = windowWidth >= breakpoints.medium.minWidth;
   const daysPerWeek = course?.courseGoals?.selectedGoal?.daysPerWeek;
 
@@ -76,7 +75,7 @@ const Course = ({
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
-      <div className="position-relative d-flex align-items-center mb-4 mt-1">
+      <div className="position-relative d-flex align-items-xl-center mb-4 mt-1 flex-column flex-xl-row">
         {navigationDisabled || (
         <>
           <CourseBreadcrumbs
@@ -100,11 +99,10 @@ const Course = ({
             />
           </>
         )}
-        {shouldDisplayTriggers && (
-          <>
-            {isNewDiscussionSidebarViewEnabled ? <NewSidebarTriggers /> : <SidebarTriggers /> }
-          </>
-        )}
+        <div className="w-100 d-flex align-items-center">
+          <CourseOutlineTrigger isMobileView />
+          {isNewDiscussionSidebarViewEnabled ? <NewSidebarTriggers /> : <SidebarTriggers /> }
+        </div>
       </div>
 
       <AlertList topic="sequence" />

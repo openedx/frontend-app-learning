@@ -3,14 +3,14 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Icon } from '@openedx/paragon';
 import { QuestionAnswer } from '@openedx/paragon/icons';
 import PropTypes from 'prop-types';
-import React, { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useModel } from '../../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
+import { WIDGETS } from '@src/constants';
 import { getCourseDiscussionTopics } from '../../../../data/thunks';
 import SidebarTriggerBase from '../../common/TriggerBase';
 import SidebarContext from '../../SidebarContext';
 import messages from './messages';
-import { WIDGETS } from '../../../../../constants';
 
 ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);
 export const ID = WIDGETS.DISCUSSIONS;

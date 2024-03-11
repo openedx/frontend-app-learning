@@ -5,6 +5,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
 
 import * as thunks from './thunks';
+import { FAILED, LOADING } from './slice';
 
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 
@@ -43,6 +44,7 @@ describe('Data layer integration tests', () => {
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
   const sequenceId = sequenceBlocks[0].id;
   const unitId = unitBlocks[0].id;
+  const coursewareSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-navigation-sidebar/toggles/`;
 
   let store;
 
@@ -57,13 +59,20 @@ describe('Data layer integration tests', () => {
     it('Should fail to fetch course and blocks if request error happens', async () => {
       axiosMock.onGet(courseUrl).networkError();
       axiosMock.onGet(learningSequencesUrlRegExp).networkError();
+      axiosMock.onGet(coursewareSidebarSettingsUrl).networkError();
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
       expect(store.getState().courseware).toEqual(expect.objectContaining({
         courseId,
-        courseStatus: 'failed',
+        courseOutline: {},
+        courseStatus: FAILED,
+        coursewareOutlineSidebarSettings: {},
+        courseOutlineStatus: LOADING,
+        sequenceId: null,
+        sequenceMightBeUnit: false,
+        sequenceStatus: LOADING,
       }));
     });
 
@@ -101,6 +110,10 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
+      axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
+        enable_navigation_sidebar: true,
+        always_open_auxiliary_sidebar: true,
+      });
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
@@ -110,6 +123,10 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.courseId).toEqual(courseId);
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
+      expect(state.courseware.coursewareOutlineSidebarSettings).toEqual({
+        enableNavigationSidebar: true,
+        alwaysOpenAuxiliarySidebar: true,
+      });
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
@@ -121,6 +138,10 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, simpleOutline);
+      axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
+        enable_navigation_sidebar: false,
+        always_open_auxiliary_sidebar: false,
+      });
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
@@ -130,6 +151,10 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.courseId).toEqual(courseId);
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
+      expect(state.courseware.coursewareOutlineSidebarSettings).toEqual({
+        enableNavigationSidebar: false,
+        alwaysOpenAuxiliarySidebar: false,
+      });
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
@@ -254,13 +279,20 @@ describe('Data layer integration tests', () => {
     });
 
     describe('Test checkBlockCompletion', () => {
+      const getCourseOutlineURL = `${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/${courseId}`;
       const getCompletionURL = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/get_completion`;
 
       it('Should fail to check completion and log error', async () => {
         axiosMock.onPost(getCompletionURL).networkError();
+        axiosMock.onGet(getCourseOutlineURL).networkError();
 
         await executeThunk(
           thunks.checkBlockCompletion(courseId, sequenceId, unitId),
+          store.dispatch,
+          store.getState,
+        );
+        await executeThunk(
+          thunks.getCourseOutlineStructure(courseId, sequenceId, unitId),
           store.dispatch,
           store.getState,
         );
@@ -269,16 +301,52 @@ describe('Data layer integration tests', () => {
         expect(axiosMock.history.post[0].url).toEqual(getCompletionURL);
       });
 
-      it('Should update complete field of unit model', async () => {
+      it('Should update complete field of unit model and course outline', async () => {
         axiosMock.onPost(getCompletionURL).reply(201, { complete: true });
+        axiosMock.onGet(getCourseOutlineURL).reply(201, {
+          ...courseBlocks,
+          ...sequenceBlocks,
+          ...unitBlocks,
+        });
 
-        await executeThunk(
-          thunks.checkBlockCompletion(courseId, sequenceId, unitId),
-          store.dispatch,
-          store.getState,
-        );
+        await executeThunk(thunks.getCourseOutlineStructure(courseId), store.dispatch, store.getState);
 
-        expect(store.getState().models.units[unitId].complete).toBeTruthy();
+        const [unit] = Object.values(store.getState().courseware.courseOutline.units);
+        const [sequence] = Object.values(store.getState().courseware.courseOutline.sequences);
+        const [section] = Object.values(store.getState().courseware.courseOutline.sections);
+
+        expect(unit.complete).not.toBeTruthy();
+        expect(sequence.complete).not.toBeTruthy();
+        expect(section.complete).not.toBeTruthy();
+
+        await executeThunk(thunks.checkBlockCompletion(courseId, sequenceId, unit.id), store.dispatch, store.getState);
+
+        expect(store.getState().models.units[unit.id].complete).toBeTruthy();
+        expect(store.getState().courseware.courseOutline.units[unit.id].complete).toBeTruthy();
+        expect(store.getState().courseware.courseOutline.sequences[sequence.id].complete).toBeTruthy();
+        expect(store.getState().courseware.courseOutline.sections[section.id].complete).toBeTruthy();
+      });
+
+      it('Shouldn\'t update complete field if complete is false', async () => {
+        axiosMock.onPost(getCompletionURL).reply(201, { complete: false });
+        axiosMock.onGet(getCourseOutlineURL).reply(201, {
+          ...courseBlocks,
+          ...sequenceBlocks,
+          ...unitBlocks,
+        });
+
+        await executeThunk(thunks.getCourseOutlineStructure(courseId), store.dispatch, store.getState);
+
+        const [unit] = Object.values(store.getState().courseware.courseOutline.units);
+        const [sequence] = Object.values(store.getState().courseware.courseOutline.sequences);
+        const [section] = Object.values(store.getState().courseware.courseOutline.sections);
+
+        await executeThunk(thunks.checkBlockCompletion(courseId, sequenceId, unit.id), store.dispatch, store.getState);
+
+        expect(store.getState().models.units[unit.id].complete).not.toBeTruthy();
+        expect(store.getState().courseware.courseOutline.units[unit.id].complete).not.toBeTruthy();
+        expect(store.getState().courseware.courseOutline.sequences[sequence.id].complete).not.toBeTruthy();
+        expect(store.getState().courseware.courseOutline.sections[section.id].complete).not.toBeTruthy();
       });
     });
 

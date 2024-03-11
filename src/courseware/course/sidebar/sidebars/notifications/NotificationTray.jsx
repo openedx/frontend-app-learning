@@ -1,9 +1,9 @@
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
-import React, { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { useModel } from '../../../../../generic/model-store';
-import UpgradeNotification from '../../../../../generic/upgrade-notification/UpgradeNotification';
+import { useModel } from '@src/generic/model-store';
+import UpgradeNotification from '@src/generic/upgrade-notification/UpgradeNotification';
 
 import messages from '../../../messages';
 import SidebarBase from '../../common/SidebarBase';
@@ -70,8 +70,10 @@ const NotificationTray = ({ intl }) => {
       title={intl.formatMessage(messages.notificationTitle)}
       ariaLabel={intl.formatMessage(messages.notificationTray)}
       sidebarId={ID}
-      width="50rem"
-      className={classNames({ 'h-100': !verifiedMode && !shouldDisplayFullScreen })}
+      className={classNames({
+        'h-100': !verifiedMode && !shouldDisplayFullScreen,
+        'ml-4': !shouldDisplayFullScreen,
+      })}
     >
       <div>{verifiedMode
         ? (

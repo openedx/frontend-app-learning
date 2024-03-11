@@ -9,11 +9,15 @@ export const DENIED = 'denied';
 const slice = createSlice({
   name: 'courseware',
   initialState: {
-    courseStatus: 'loading',
     courseId: null,
-    sequenceStatus: 'loading',
+    courseStatus: LOADING,
     sequenceId: null,
     sequenceMightBeUnit: false,
+    sequenceStatus: LOADING,
+    courseOutline: {},
+    coursewareOutlineSidebarSettings: {},
+    courseOutlineStatus: LOADING,
+    courseOutlineShouldUpdate: false,
   },
   reducers: {
     fetchCourseRequest: (state, { payload }) => {
@@ -47,6 +51,59 @@ const slice = createSlice({
       state.sequenceStatus = FAILED;
       state.sequenceMightBeUnit = payload.sequenceMightBeUnit || false;
     },
+    fetchCourseOutlineRequest: (state) => {
+      state.courseOutline = {};
+      state.courseOutlineStatus = LOADING;
+    },
+    fetchCourseOutlineSuccess: (state, { payload }) => {
+      state.courseOutline = payload.courseOutline;
+      state.courseOutlineStatus = LOADED;
+      state.courseOutlineShouldUpdate = false;
+    },
+    fetchCourseOutlineFailure: (state) => {
+      state.courseOutline = {};
+      state.courseOutlineStatus = FAILED;
+    },
+    setCoursewareOutlineSidebarToggles: (state, { payload }) => {
+      state.coursewareOutlineSidebarSettings = payload;
+    },
+    updateCourseOutlineCompletion: (state, { payload }) => {
+      const { unitId, isComplete: isUnitComplete } = payload;
+      if (!isUnitComplete) {
+        return state;
+      }
+
+      state.courseOutline.units[unitId].complete = true;
+
+      const sequenceId = Object.keys(state.courseOutline.sequences)
+        .find(id => state.courseOutline.sequences[id].unitIds.includes(unitId));
+      const sequenceUnits = state.courseOutline.sequences[sequenceId].unitIds;
+      const isAllUnitsAreComplete = sequenceUnits.every((id) => state.courseOutline.units[id].complete);
+
+      if (isAllUnitsAreComplete) {
+        state.courseOutline.sequences[sequenceId].complete = true;
+      }
+
+      const sectionId = Object.keys(state.courseOutline.sections)
+        .find(id => state.courseOutline.sections[id].sequenceIds.includes(sequenceId));
+      const sectionSequences = state.courseOutline.sections[sectionId].sequenceIds;
+      const isAllSequencesAreComplete = sectionSequences.every((id) => state.courseOutline.sequences[id].complete);
+      const hasLockedSequence = sectionSequences.some((id) => state.courseOutline.sequences[id].type === 'lock');
+
+      // This block of code checks whether all units in the current sequence are complete
+      // and if the parent section has a locked (prerequisites) sequence. If both conditions
+      // are met, it switches the state of the 'courseOutlineShouldUpdate' flag to true,
+      // indicating that the sidebar outline structure needs to be refetched.
+      if (isAllUnitsAreComplete && hasLockedSequence) {
+        state.courseOutlineShouldUpdate = true;
+      }
+
+      if (isAllSequencesAreComplete) {
+        state.courseOutline.sections[sectionId].complete = true;
+      }
+
+      return state;
+    },
   },
 });
 
@@ -61,6 +118,11 @@ export const {
   fetchCourseRecommendationsRequest,
   fetchCourseRecommendationsSuccess,
   fetchCourseRecommendationsFailure,
+  fetchCourseOutlineRequest,
+  fetchCourseOutlineSuccess,
+  fetchCourseOutlineFailure,
+  setCoursewareOutlineSidebarToggles,
+  updateCourseOutlineCompletion,
 } = slice.actions;
 
 export const {
