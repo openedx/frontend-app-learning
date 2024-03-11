@@ -76,8 +76,8 @@
 
 .sequence {
   @media (min-width: map-get($grid-breakpoints, "sm")) {
-    border: solid 1px #eaeaea;
-    border-radius: 4px;
+    border-left: solid 1px #eaeaea;
+    border-right: solid 1px #eaeaea;
   }
 }
 
@@ -102,6 +102,10 @@
 
   @media (min-width: map-get($grid-breakpoints, "sm")) {
     margin: -1px -1px 0;
+  }
+
+  @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+    width: 100% !important;
   }
 
   .btn {
@@ -400,10 +404,12 @@
 @import "generic/upgrade-notification/UpgradeNotification.scss";
 @import "generic/upsell-bullets/UpsellBullets.scss";
 @import "course-home/outline-tab/widgets/ProctoringInfoPanel.scss";
-@import "src/course-home/outline-tab/widgets/FlagButton.scss";
+@import "course-home/outline-tab/widgets/FlagButton.scss";
 @import "course-home/progress-tab/course-completion/CompletionDonutChart.scss";
 @import "course-home/progress-tab/grades/course-grade/GradeBar.scss";
 @import "courseware/course/course-exit/CourseRecommendations";
 @import "product-tours/newUserCourseHomeTour/NewUserCourseHomeTourModal.scss";
 @import "course-home/courseware-search/courseware-search.scss";
 @import "course-tabs/course-tabs-navigation.scss";
+@import "courseware/course/sidebar/common/SidebarBase.scss";
+@import "courseware/course/sidebar/sidebars/course-outline/CourseOutlineTray.scss";

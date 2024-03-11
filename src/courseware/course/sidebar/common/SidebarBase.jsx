@@ -36,14 +36,15 @@ const SidebarBase = ({
 
   return (
     <section
-      className={classNames('ml-0 ml-lg-4 border border-light-400 rounded-sm h-auto align-top', {
+      className={classNames('ml-0 h-auto align-top', {
         'bg-white m-0 border-0 fixed-top vh-100 rounded-0': shouldDisplayFullScreen,
         'min-vh-100': !shouldDisplayFullScreen,
         'd-none': currentSidebar !== sidebarId,
       }, className)}
       data-testid={`sidebar-${sidebarId}`}
-      style={{ width: shouldDisplayFullScreen ? '100%' : width }}
+      style={{ minWidth: shouldDisplayFullScreen ? '100%' : width }}
       aria-label={ariaLabel}
+      id="course-outline-sidebar"
     >
       {shouldDisplayFullScreen ? (
         <div
@@ -52,7 +53,6 @@ const SidebarBase = ({
           onKeyDown={() => toggleSidebar(null)}
           role="button"
           tabIndex="0"
-          alt={intl.formatMessage(messages.responsiveCloseNotificationTray)}
         >
           <Icon src={ArrowBackIos} />
           <span className="font-weight-bold m-2 d-inline-block">
@@ -62,12 +62,12 @@ const SidebarBase = ({
       ) : null}
       {showTitleBar && (
         <>
-          <div className="d-flex align-items-center">
-            <span className="p-2.5 d-inline-block">{title}</span>
+          <div className="row d-flex align-items-center mb-2">
+            <strong className="p-2.5 d-inline-block course-outline-sidebar-title">{title}</strong>
             {shouldDisplayFullScreen
               ? null
               : (
-                <div className="d-inline-flex mr-2 mt-1.5 ml-auto">
+                <div className="d-inline-flex mr-2 ml-auto">
                   <IconButton
                     src={Close}
                     size="sm"
@@ -79,7 +79,6 @@ const SidebarBase = ({
                 </div>
               )}
           </div>
-          <div className="py-1 bg-gray-100 border-top border-bottom border-light-400" />
         </>
       )}
       {children}
@@ -92,16 +91,15 @@ SidebarBase.propTypes = {
   title: PropTypes.string.isRequired,
   ariaLabel: PropTypes.string.isRequired,
   sidebarId: PropTypes.string.isRequired,
-  className: PropTypes.string,
+  className: PropTypes.string.isRequired,
   children: PropTypes.element.isRequired,
   showTitleBar: PropTypes.bool,
   width: PropTypes.string,
 };
 
 SidebarBase.defaultProps = {
-  width: '31rem',
+  width: '410px',
   showTitleBar: true,
-  className: '',
 };
 
 export default injectIntl(SidebarBase);

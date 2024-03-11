@@ -1,0 +1,37 @@
+#courseHome-outline {
+    .is-open > .collapsible-trigger {
+        background: #f5f5f5;
+    }
+
+    li {
+        font-size: 1rem;
+        line-height: 1.25rem;
+
+        .collapsible-trigger {
+            padding: .625rem $spacer;
+            position: relative;
+
+            @media (max-width: -1 + map-get($grid-breakpoints, "xs")) {
+                border-left: 3px solid transparent;
+                padding: .625rem .75rem;
+
+                .collapsible-icon {
+                    margin-inline-start: initial;
+                }
+            }
+        }
+    }
+
+    .collapsible-body {
+        padding: 0;
+
+        ol li {
+            border-left: 5px solid transparent !important;
+            padding: $spacer .625rem;
+
+            &.active-sequence {
+                border-left: 5px solid $brand !important;
+            }
+        }
+    }
+}

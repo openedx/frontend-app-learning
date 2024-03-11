@@ -17,7 +17,7 @@ const SidebarProvider = ({
 }) => {
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
-  const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
+  const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.extraLarge.minWidth;
   const query = new URLSearchParams(window.location.search);
   const initialSidebar = (shouldDisplaySidebarOpen || query.get('sidebar') === 'true') ? SIDEBARS.DISCUSSIONS.ID : null;
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
@@ -26,8 +26,14 @@ const SidebarProvider = ({
 
   useEffect(() => {
     // if the user hasn't purchased the course, show the notifications sidebar
-    setCurrentSidebar(verifiedMode ? SIDEBARS.NOTIFICATIONS.ID : SIDEBARS.DISCUSSIONS.ID);
+    if (currentSidebar === null) {
+      setCurrentSidebar(verifiedMode ? SIDEBARS.NOTIFICATIONS.ID : SIDEBARS.DISCUSSIONS.ID);
+    }
   }, [unitId]);
+
+  useEffect(() => {
+    setCurrentSidebar(initialSidebar);
+  }, [shouldDisplaySidebarOpen]);
 
   const onNotificationSeen = useCallback(() => {
     setNotificationStatus('inactive');
