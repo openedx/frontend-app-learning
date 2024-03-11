@@ -8,12 +8,14 @@ import { useDispatch } from 'react-redux';
 import { useModel } from '../../../../../generic/model-store';
 import { getCourseDiscussionTopics } from '../../../../data/thunks';
 import SidebarTriggerBase from '../../common/TriggerBase';
+import { LAYOUT_RIGHT } from '../../common/constants';
 import SidebarContext from '../../SidebarContext';
 import messages from './messages';
 import { WIDGETS } from '../../../../../constants';
 
 ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);
 export const ID = WIDGETS.DISCUSSIONS;
+export const LAYOUT = LAYOUT_RIGHT;
 
 const DiscussionsTrigger = ({
   intl,

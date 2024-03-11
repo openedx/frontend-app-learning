@@ -136,7 +136,7 @@ describe('Sequence', () => {
   it('handles loading unit', async () => {
     render(<Sequence {...mockData} />, { wrapWithRouter: true });
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
-    // `Previous`, `Bookmark` and `Close Tray` buttons
+    // `Previous`, `Prerequisite` and `Close Tray` buttons.
     expect(screen.getAllByRole('button')).toHaveLength(3);
     // Renders `Next` button plus one button for each unit.
     expect(screen.getAllByRole('link')).toHaveLength(1 + unitBlocks.length);
@@ -180,7 +180,7 @@ describe('Sequence', () => {
       const sequencePreviousButton = screen.getByRole('link', { name: /previous/i });
       fireEvent.click(sequencePreviousButton);
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(1);
-      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
       expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.previous_selected', {
         current_tab: 1,
         id: testData.unitId,
@@ -194,8 +194,8 @@ describe('Sequence', () => {
         .filter(button => button !== sequencePreviousButton)[0];
       fireEvent.click(unitPreviousButton);
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(sendTrackEvent).toHaveBeenCalledTimes(3);
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.previous_selected', {
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.previous_selected', {
         current_tab: 1,
         id: testData.unitId,
         tab_count: unitBlocks.length,
@@ -229,8 +229,8 @@ describe('Sequence', () => {
         .filter(button => button !== sequenceNextButton)[0];
       fireEvent.click(unitNextButton);
       expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(sendTrackEvent).toHaveBeenCalledTimes(3);
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.next_selected', {
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.next_selected', {
         current_tab: unitBlocks.length,
         id: testData.unitId,
         tab_count: unitBlocks.length,
@@ -261,7 +261,7 @@ describe('Sequence', () => {
       // Therefore the next unit will still be `the initial one + 1`.
       expect(testData.unitNavigationHandler).toHaveBeenNthCalledWith(2, unitBlocks[unitNumber + 1].id);
 
-      expect(sendTrackEvent).toHaveBeenCalledTimes(3);
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
     });
 
     it('handles the `Previous` buttons for the first unit in the first sequence', async () => {
@@ -280,7 +280,7 @@ describe('Sequence', () => {
 
       expect(testData.previousSequenceHandler).not.toHaveBeenCalled();
       expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
-      expect(sendTrackEvent).toHaveBeenCalled();
+      expect(sendTrackEvent).not.toHaveBeenCalled();
     });
 
     it('handles the `Next` buttons for the last unit in the last sequence', async () => {
@@ -299,7 +299,7 @@ describe('Sequence', () => {
 
       expect(testData.nextSequenceHandler).not.toHaveBeenCalled();
       expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
-      expect(sendTrackEvent).toHaveBeenCalled();
+      expect(sendTrackEvent).not.toHaveBeenCalled();
     });
 
     it('handles the navigation buttons for empty sequence', async () => {
@@ -339,45 +339,31 @@ describe('Sequence', () => {
 
       screen.getAllByRole('link', { name: /previous/i }).forEach(button => fireEvent.click(button));
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
+      expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(2);
 
       screen.getAllByRole('link', { name: /next/i }).forEach(button => fireEvent.click(button));
       expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
+      expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(4);
 
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(1, 'edx.ui.course.upgrade.old_sidebar.notifications', {
-        course_end: undefined,
-        course_modes: undefined,
-        course_start: undefined,
-        courserun_key: undefined,
-        enrollment_end: undefined,
-        enrollment_mode: undefined,
-        enrollment_start: undefined,
-        is_upgrade_notification_visible: false,
-        name: 'Old Sidebar Notification Tray',
-        org_key: undefined,
-        username: undefined,
-        verification_status: undefined,
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(1, 'edx.ui.lms.sequence.previous_selected', {
+        current_tab: 1,
+        id: testData.unitId,
+        tab_count: 0,
+        widget_placement: 'top',
       });
       expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.previous_selected', {
         current_tab: 1,
         id: testData.unitId,
         tab_count: 0,
-        widget_placement: 'top',
-      });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.previous_selected', {
-        current_tab: 1,
-        id: testData.unitId,
-        tab_count: 0,
         widget_placement: 'bottom',
       });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(4, 'edx.ui.lms.sequence.next_selected', {
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.next_selected', {
         current_tab: 1,
         id: testData.unitId,
         tab_count: 0,
         widget_placement: 'top',
       });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(5, 'edx.ui.lms.sequence.next_selected', {
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(4, 'edx.ui.lms.sequence.next_selected', {
         current_tab: 1,
         id: testData.unitId,
         tab_count: 0,

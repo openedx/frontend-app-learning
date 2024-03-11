@@ -1,12 +1,17 @@
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 import PropTypes from 'prop-types';
-import React, {
+import { useSelector } from 'react-redux';
+import {
   useEffect, useState, useMemo, useCallback,
 } from 'react';
 
-import { useModel } from '../../../generic/model-store';
-import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
+import { useModel } from '@src/generic/model-store';
+import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
+import { getRightSidebarSettings } from '../../data/selectors';
 
+import * as courseOutlineSidebar from './sidebars/course-outline';
+import * as discussionsSidebar from './sidebars/discussions';
+import * as notificationsSidebar from './sidebars/notifications';
 import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 
@@ -16,18 +21,38 @@ const SidebarProvider = ({
   children,
 }) => {
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
-  const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
-  const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
+  const topic = useModel('discussionTopics', unitId);
+  const isUnitHasDiscussionTopics = topic?.id && topic?.enabledInContext;
+  const shouldDisplayFullScreen = useWindowSize().width < breakpoints.extraLarge.minWidth;
+  const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.extraLarge.minWidth;
   const query = new URLSearchParams(window.location.search);
-  const initialSidebar = (shouldDisplaySidebarOpen || query.get('sidebar') === 'true') ? SIDEBARS.DISCUSSIONS.ID : null;
+  const isDefaultDisplayRightSidebar = useSelector(getRightSidebarSettings).enabled;
+  const isCollapsedOutlineSidebar = window.sessionStorage.getItem('hideCourseOutlineSidebar');
+  const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
+
+  let initialSidebar = null;
+  if (isInitiallySidebarOpen) {
+    if (isDefaultDisplayRightSidebar) {
+      initialSidebar = isUnitHasDiscussionTopics
+        ? SIDEBARS[discussionsSidebar.ID].ID
+        : verifiedMode && SIDEBARS[notificationsSidebar.ID].ID;
+    } else {
+      initialSidebar = !isCollapsedOutlineSidebar && SIDEBARS[courseOutlineSidebar.ID].ID;
+    }
+  }
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
 
   useEffect(() => {
-    // if the user hasn't purchased the course, show the notifications sidebar
-    setCurrentSidebar(verifiedMode ? SIDEBARS.NOTIFICATIONS.ID : SIDEBARS.DISCUSSIONS.ID);
-  }, [unitId]);
+    if (currentSidebar !== initialSidebar) {
+      setCurrentSidebar(initialSidebar);
+    }
+  }, [unitId, topic]);
+
+  useEffect(() => {
+    setCurrentSidebar(initialSidebar);
+  }, [shouldDisplaySidebarOpen]);
 
   const onNotificationSeen = useCallback(() => {
     setNotificationStatus('inactive');

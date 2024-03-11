@@ -4,11 +4,13 @@ import React, { useContext, useEffect } from 'react';
 import { getLocalStorage, setLocalStorage } from '../../../../../data/localStorage';
 import messages from '../../../messages';
 import SidebarTriggerBase from '../../common/TriggerBase';
+import { LAYOUT_RIGHT } from '../../common/constants';
 import SidebarContext from '../../SidebarContext';
 import { WIDGETS } from '../../../../../constants';
 import NotificationIcon from './NotificationIcon';
 
 export const ID = WIDGETS.NOTIFICATIONS;
+export const LAYOUT = LAYOUT_RIGHT;
 
 const NotificationTrigger = ({
   intl,

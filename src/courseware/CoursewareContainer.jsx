@@ -12,6 +12,9 @@ import {
   getSequenceForUnitDeprecated,
   saveSequencePosition,
 } from './data';
+import {
+  fetchOutlineTab,
+} from '../course-home/data';
 import { TabPage } from '../tab-page';
 
 import Course from './course';
@@ -139,6 +142,12 @@ class CoursewareContainer extends Component {
     this.props.fetchCourse(courseId);
   });
 
+  checkFetchOutlineData = memoize((courseId) => {
+    if (courseId) {
+      this.props.fetchOutlineTab(courseId);
+    }
+  });
+
   checkFetchSequence = memoize((sequenceId) => {
     if (sequenceId) {
       this.props.fetchSequence(sequenceId);
@@ -147,12 +156,14 @@ class CoursewareContainer extends Component {
 
   componentDidMount() {
     const {
+      courseId,
       routeCourseId,
       routeSequenceId,
     } = this.props;
     // Load data whenever the course or sequence ID changes.
     this.checkFetchCourse(routeCourseId);
     this.checkFetchSequence(routeSequenceId);
+    this.checkFetchOutlineData(courseId);
   }
 
   componentDidUpdate() {
@@ -174,6 +185,7 @@ class CoursewareContainer extends Component {
     // Load data whenever the course or sequence ID changes.
     this.checkFetchCourse(routeCourseId);
     this.checkFetchSequence(routeSequenceId);
+    this.checkFetchOutlineData(courseId);
 
     // Check if we should save our sequence position.  Only do this when the route unit ID changes.
     this.checkSaveSequencePosition(routeUnitId);
@@ -333,6 +345,7 @@ CoursewareContainer.propTypes = {
   checkBlockCompletion: PropTypes.func.isRequired,
   fetchCourse: PropTypes.func.isRequired,
   fetchSequence: PropTypes.func.isRequired,
+  fetchOutlineTab: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,
 };
 
@@ -455,4 +468,5 @@ export default connect(mapStateToProps, {
   saveSequencePosition,
   fetchCourse,
   fetchSequence,
+  fetchOutlineTab,
 })(withParamsAndNavigation(CoursewareContainer));

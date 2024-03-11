@@ -7,7 +7,10 @@ import {
   getBlockCompletion,
   getCourseDiscussionConfig,
   getCourseMetadata,
+  getCourseOutline,
   getCourseTopics,
+  getCoursewareOutlineSidebarEnabledFlag,
+  getRightSidebarDefaultOpeningFlag,
   getLearningSequencesOutline,
   getSequenceMetadata,
   postIntegritySignature,
@@ -21,6 +24,12 @@ import {
   fetchSequenceFailure,
   fetchSequenceRequest,
   fetchSequenceSuccess,
+  fetchCourseOutlineRequest,
+  fetchCourseOutlineSuccess,
+  fetchCourseOutlineFailure,
+  setCoursewareOutlineSidebarSettings,
+  setRightSidebarSettings,
+  updateCourseOutlineCompletion,
 } from './slice';
 
 export function fetchCourse(courseId) {
@@ -30,18 +39,28 @@ export function fetchCourse(courseId) {
       getCourseMetadata(courseId),
       getLearningSequencesOutline(courseId),
       getCourseHomeCourseMetadata(courseId, 'courseware'),
+      getCoursewareOutlineSidebarEnabledFlag(courseId),
+      getRightSidebarDefaultOpeningFlag(courseId),
     ]).then(([
       courseMetadataResult,
       learningSequencesOutlineResult,
-      courseHomeMetadataResult]) => {
-      if (courseMetadataResult.status === 'fulfilled') {
+      courseHomeMetadataResult,
+      courseOutlineSidebarDisableFlagResult,
+      rightSidebarDefaultOpenFlagResult]) => {
+      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
+      const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
+      const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
+      const fetchedOutlineSidebarEnableFlag = courseOutlineSidebarDisableFlagResult.status === 'fulfilled';
+      const fetchedRightSidebarDefaultOpenFlag = rightSidebarDefaultOpenFlagResult.status === 'fulfilled';
+
+      if (fetchedMetadata) {
         dispatch(addModel({
           modelType: 'coursewareMeta',
           model: courseMetadataResult.value,
         }));
       }
 
-      if (courseHomeMetadataResult.status === 'fulfilled') {
+      if (fetchedCourseHomeMetadata) {
         dispatch(addModel({
           modelType: 'courseHomeMeta',
           model: {
@@ -51,7 +70,7 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      if (learningSequencesOutlineResult.status === 'fulfilled') {
+      if (fetchedOutline) {
         const {
           courses, sections, sequences,
         } = learningSequencesOutlineResult.value;
@@ -72,9 +91,17 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
-      const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
-      const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
+      if (fetchedOutlineSidebarEnableFlag) {
+        dispatch(setCoursewareOutlineSidebarSettings({
+          enabled: courseOutlineSidebarDisableFlagResult.value.enabled,
+        }));
+      }
+
+      if (fetchedRightSidebarDefaultOpenFlag) {
+        dispatch(setRightSidebarSettings({
+          enabled: rightSidebarDefaultOpenFlagResult.value.enabled,
+        }));
+      }
 
       // Log errors for each request if needed. Outline failures may occur
       // even if the course metadata request is successful
@@ -93,6 +120,9 @@ export function fetchCourse(courseId) {
       }
       if (!fetchedCourseHomeMetadata) {
         logError(courseHomeMetadataResult.reason);
+      }
+      if (!fetchedOutlineSidebarEnableFlag) {
+        logError(courseOutlineSidebarDisableFlagResult.reason);
       }
       if (fetchedMetadata && fetchedCourseHomeMetadata) {
         if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedOutline) {
@@ -153,7 +183,7 @@ export function fetchSequence(sequenceId) {
 export function checkBlockCompletion(courseId, sequenceId, unitId) {
   return async (dispatch, getState) => {
     const { models } = getState();
-    if (models.units[unitId].complete) {
+    if (models.units[unitId]?.complete) {
       return {}; // do nothing. Things don't get uncompleted after they are completed.
     }
 
@@ -166,6 +196,7 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
           complete: isComplete,
         },
       }));
+      dispatch(updateCourseOutlineCompletion({ sequenceId, unitId, isComplete }));
       return isComplete;
     } catch (error) {
       logError(error);
@@ -248,6 +279,19 @@ export function getCourseDiscussionTopics(courseId) {
       }
     } catch (error) {
       logError(error);
+    }
+  };
+}
+
+export function getCourseOutlineStructure(courseId) {
+  return async (dispatch) => {
+    dispatch(fetchCourseOutlineRequest());
+    try {
+      const courseOutline = await getCourseOutline(courseId);
+      dispatch(fetchCourseOutlineSuccess({ courseOutline }));
+    } catch (error) {
+      logError(error);
+      dispatch(fetchCourseOutlineFailure());
     }
   };
 }

@@ -1,10 +1,7 @@
 /* eslint-disable no-use-before-define */
-import React, {
-  useEffect, useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
 import {
   sendTrackEvent,
@@ -13,7 +10,6 @@ import {
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
-import { breakpoints, useWindowSize } from '@openedx/paragon';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
 import PageLoading from '../../../generic/PageLoading';
@@ -23,8 +19,8 @@ import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '../../
 import CourseLicense from '../course-license';
 import Sidebar from '../sidebar/Sidebar';
 import NewSidebar from '../new-sidebar/Sidebar';
-import SidebarTriggers from '../sidebar/SidebarTriggers';
-import NewSidebarTriggers from '../new-sidebar/SidebarTriggers';
+import { LAYOUT_RIGHT, LAYOUT_LEFT } from '../sidebar/common/constants';
+import { Trigger as CourseOutlineTrigger } from '../sidebar/sidebars/course-outline';
 import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
@@ -51,25 +47,24 @@ const Sequence = ({
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
-  const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
   const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
-    if (nextIndex < sequence.unitIds.length) {
-      const newUnitId = sequence.unitIds[nextIndex];
-      handleNavigate(newUnitId);
-    } else {
+    const newUnitId = sequence.unitIds[nextIndex];
+    handleNavigate(newUnitId);
+
+    if (nextIndex >= sequence.unitIds.length) {
       nextSequenceHandler();
     }
   };
 
   const handlePrevious = () => {
     const previousIndex = sequence.unitIds.indexOf(unitId) - 1;
-    if (previousIndex >= 0) {
-      const newUnitId = sequence.unitIds[previousIndex];
-      handleNavigate(newUnitId);
-    } else {
+    const newUnitId = sequence.unitIds[previousIndex];
+    handleNavigate(newUnitId);
+
+    if (previousIndex < 0) {
       previousSequenceHandler();
     }
   };
@@ -151,7 +146,9 @@ const Sequence = ({
   const defaultContent = (
     <>
       <div className="sequence-container d-inline-flex flex-row w-100">
-        <div className={classNames('sequence w-100', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
+        <CourseOutlineTrigger />
+        <Sidebar layout={LAYOUT_LEFT} />
+        <div className="sequence w-100">
           <div className="sequence-navigation-container">
             <SequenceNavigation
               sequenceId={sequenceId}
@@ -170,9 +167,6 @@ const Sequence = ({
                 handlePrevious();
               }}
             />
-            {shouldDisplayNotificationTriggerInSequence && (
-              enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers />
-            )}
           </div>
 
           <div className="unit-container flex-grow-1">
@@ -184,22 +178,22 @@ const Sequence = ({
               unitLoadedHandler={handleUnitLoaded}
             />
             {unitHasLoaded && (
-            <UnitNavigation
-              sequenceId={sequenceId}
-              unitId={unitId}
-              onClickPrevious={() => {
-                logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-                handlePrevious();
-              }}
-              onClickNext={() => {
-                logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-                handleNext();
-              }}
-            />
+              <UnitNavigation
+                sequenceId={sequenceId}
+                unitId={unitId}
+                onClickPrevious={() => {
+                  logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
+                  handlePrevious();
+                }}
+                onClickNext={() => {
+                  logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+                  handleNext();
+                }}
+              />
             )}
           </div>
         </div>
-        {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
+        {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar layout={LAYOUT_RIGHT} />}
       </div>
       <PluginSlot
         id="sequence_container_plugin"
