@@ -1,5 +1,5 @@
 import { mockUseKeyedState } from '@edx/react-unit-test-utils';
-import { useEventListener } from '../../../../../generic/hooks';
+import { useEventListener } from '@src/generic/hooks';
 import { messageTypes } from '../constants';
 
 import useModalIFrameData, { stateKeys, DEFAULT_HEIGHT } from './useModalIFrameData';
@@ -8,7 +8,7 @@ jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useCallback: jest.fn((cb, prereqs) => ({ cb, prereqs })),
 }));
-jest.mock('../../../../../generic/hooks', () => ({
+jest.mock('@src/generic/hooks', () => ({
   useEventListener: jest.fn(),
 }));
 

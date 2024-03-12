@@ -7,7 +7,9 @@ export const stateKeys = StrictDict({
   selectedIndex: 'selectedIndex',
 });
 
-const useTranslationModal = ({ selectedLanguage, setSelectedLanguage, close }) => {
+const useTranslationModal = ({
+  selectedLanguage, setSelectedLanguage, close,
+}) => {
   const [selectedIndex, setSelectedIndex] = useKeyedState(
     stateKeys.selectedIndex,
     getIndexByLanguage(selectedLanguage),

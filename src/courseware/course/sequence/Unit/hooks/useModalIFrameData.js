@@ -2,7 +2,7 @@ import React from 'react';
 
 import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils/dist';
 
-import { useEventListener } from '../../../../../generic/hooks';
+import { useEventListener } from '@src/generic/hooks';
 
 export const stateKeys = StrictDict({
   isOpen: 'isOpen',

@@ -4,7 +4,7 @@ import { ErrorPage } from '@edx/frontend-platform/react';
 import { ModalDialog, Modal } from '@openedx/paragon';
 import { shallow } from '@edx/react-unit-test-utils';
 
-import PageLoading from '../../../../generic/PageLoading';
+import PageLoading from '@src/generic/PageLoading';
 
 import * as hooks from './hooks';
 import ContentIFrame, { IFRAME_FEATURE_POLICY, testIDs } from './ContentIFrame';
@@ -19,7 +19,7 @@ jest.mock('@openedx/paragon', () => jest.requireActual('@edx/react-unit-test-uti
     },
   }));
 
-jest.mock('../../../../generic/PageLoading', () => 'PageLoading');
+jest.mock('@src/generic/PageLoading', () => 'PageLoading');
 
 jest.mock('./hooks', () => ({
   useIFrameBehavior: jest.fn(),

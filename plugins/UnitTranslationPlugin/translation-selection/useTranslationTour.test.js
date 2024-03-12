@@ -28,7 +28,7 @@ jest.mock('@edx/frontend-platform/i18n', () => {
     FormattedMessage: () => 'FormattedMessage',
   };
 });
-jest.mock('../../../../../data/localStorage', () => ({
+jest.mock('@src/data/localStorage', () => ({
   getLocalStorage: jest.fn(),
   setLocalStorage: jest.fn(),
 }));

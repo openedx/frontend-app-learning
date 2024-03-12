@@ -40,6 +40,7 @@ Object {
         "isMasquerading": false,
         "isSelfPaced": false,
         "isStaff": false,
+        "language": undefined,
         "number": "DemoX",
         "org": "edX",
         "originalUserIsStaff": false,
@@ -309,6 +310,7 @@ Object {
       },
     },
   },
+  "plugins": Object {},
   "recommendations": Object {
     "recommendationsStatus": "loading",
   },
@@ -426,6 +428,7 @@ Object {
         "isMasquerading": false,
         "isSelfPaced": false,
         "isStaff": false,
+        "language": undefined,
         "number": "DemoX",
         "org": "edX",
         "originalUserIsStaff": false,
@@ -576,6 +579,7 @@ Object {
       },
     },
   },
+  "plugins": Object {},
   "recommendations": Object {
     "recommendationsStatus": "loading",
   },
@@ -693,6 +697,7 @@ Object {
         "isMasquerading": false,
         "isSelfPaced": false,
         "isStaff": false,
+        "language": undefined,
         "number": "DemoX",
         "org": "edX",
         "originalUserIsStaff": false,
@@ -846,6 +851,7 @@ Object {
       },
     },
   },
+  "plugins": Object {},
   "recommendations": Object {
     "recommendationsStatus": "loading",
   },
