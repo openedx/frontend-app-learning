@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
-import { useModel } from '../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
+import { usePluginsCallback } from '@src/generic/plugin-store';
 
+import { PluginSlot } from '@plugin-framework';
 import BookmarkButton from '../../bookmark/BookmarkButton';
 import messages from '../messages';
 import ContentIFrame from './ContentIFrame';
@@ -13,8 +15,6 @@ import UnitSuspense from './UnitSuspense';
 import { modelKeys, views } from './constants';
 import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
-import TranslationSelection from './translation-selection';
-import useSelectLanguage from './translation-selection/useSelectLanguage';
 
 const Unit = ({
   courseId, format, onLoaded, id,
@@ -24,34 +24,28 @@ const Unit = ({
   const examAccess = useExamAccess({ id });
   const shouldDisplayHonorCode = useShouldDisplayHonorCode({ courseId, id });
   const unit = useModel(modelKeys.units, id);
-  const { language, wholeCourseTranslationEnabled } = useModel('courseHomeMeta', courseId);
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
   const view = authenticatedUser ? views.student : views.public;
-  const { selectedLanguage, setSelectedLanguage } = useSelectLanguage({
-    courseId,
-    language,
-  });
 
-  const iframeUrl = useMemo(() => getIFrameUrl({
+  const getUrl = usePluginsCallback('getIFrameUrl', () => getIFrameUrl({
     id,
     view,
     format,
     examAccess,
-    srcLanguage: language,
-    destLanguage: selectedLanguage,
-  }), [id, view, format, examAccess, selectedLanguage, language]);
+  }));
+
+  const iframeUrl = getUrl();
 
   return (
     <div className="unit">
       <div className="mb-0">
         <h3 className="h3">{unit.title}</h3>
-        {wholeCourseTranslationEnabled && language && (
-          <TranslationSelection
-            courseId={courseId}
-            selectedLanguage={selectedLanguage}
-            setSelectedLanguage={setSelectedLanguage}
-          />
-        )}
+        <PluginSlot
+          id="unit_title_plugin"
+          pluginProps={{
+            courseId,
+          }}
+        />
       </div>
       <h2 className="sr-only">{formatMessage(messages.headerPlaceholder)}</h2>
       <BookmarkButton

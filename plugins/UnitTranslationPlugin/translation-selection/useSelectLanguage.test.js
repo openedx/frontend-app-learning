@@ -2,7 +2,7 @@ import { mockUseKeyedState } from '@edx/react-unit-test-utils';
 import {
   getLocalStorage,
   setLocalStorage,
-} from '../../../../../data/localStorage';
+} from '@src/data/localStorage';
 
 import useSelectLanguage, {
   stateKeys,
@@ -23,7 +23,7 @@ jest.mock('react', () => ({
     { cb, prereqs },
   ]),
 }));
-jest.mock('../../../../../data/localStorage', () => ({
+jest.mock('@src/data/localStorage', () => ({
   getLocalStorage: jest.fn(),
   setLocalStorage: jest.fn(),
 }));

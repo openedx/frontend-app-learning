@@ -14,6 +14,9 @@ const config = createConfig('jest', {
     "^axios$": "axios/dist/axios.js",
     // See https://stackoverflow.com/questions/72382316/jest-encountered-an-unexpected-token-react-markdown
     'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
+    '@src/(.*)': '<rootDir>/src/$1',
+    '@plugins/(.*)': '<rootDir>/plugins/$1',
+    '@plugin-framework': '<rootDir>/plugin-framework/index.js',
   },
   testTimeout: 30000,
   globalSetup: "./global-setup.js",

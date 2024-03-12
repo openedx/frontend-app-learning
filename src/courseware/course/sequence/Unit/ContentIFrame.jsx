@@ -5,7 +5,7 @@ import { ErrorPage } from '@edx/frontend-platform/react';
 import { StrictDict } from '@edx/react-unit-test-utils';
 import { ModalDialog, Modal } from '@edx/paragon';
 
-import PageLoading from '../../../../generic/PageLoading';
+import PageLoading from '@src/generic/PageLoading';
 import * as hooks from './hooks';
 
 /**

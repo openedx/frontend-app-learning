@@ -5,9 +5,9 @@ import { useDispatch } from 'react-redux';
 import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils';
 import { logError } from '@edx/frontend-platform/logging';
 
-import { fetchCourse } from '../../../../data';
-import { processEvent } from '../../../../../course-home/data/thunks';
-import { useEventListener } from '../../../../../generic/hooks';
+import { fetchCourse } from '@src/courseware/data';
+import { processEvent } from '@src/course-home/data/thunks';
+import { useEventListener } from '@src/generic/hooks';
 import { messageTypes } from '../constants';
 
 import useLoadBearingHook from './useLoadBearingHook';
