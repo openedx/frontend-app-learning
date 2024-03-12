@@ -12,6 +12,13 @@ const config = createConfig('eslint', {
     'react/no-unknown-property': 'off',
     'func-names': 'off',
   },
+  settings: {
+    'import/resolver': {
+      webpack: {
+        config: 'webpack.prod.config.js',
+      },
+    },
+  },
 });
 
 module.exports = config;

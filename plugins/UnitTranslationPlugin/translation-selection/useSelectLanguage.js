@@ -3,7 +3,7 @@ import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils';
 import {
   getLocalStorage,
   setLocalStorage,
-} from '../../../../../data/localStorage';
+} from '@src/data/localStorage';
 
 export const selectedLanguageKey = 'selectedLanguages';
 // This will be use to check supported languages

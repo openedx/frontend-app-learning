@@ -23,9 +23,10 @@ exports[`<TranslationSelection /> renders 1`] = `
   <TranslationModal
     close={[MockFunction close]}
     courseId="course-v1:edX+DemoX+Demo_Course"
+    id="plugin-test-id"
     isOpen={false}
     selectedLanguage="en"
-    setSelectedLanguage={[MockFunction setSelectedLanguage]}
+    setSelectedLanguage={[Function]}
   />
 </Fragment>
 `;

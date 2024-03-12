@@ -18,12 +18,15 @@ jest.mock('./useTranslationTour', () => () => ({
   open: jest.fn().mockName('open'),
   close: jest.fn().mockName('close'),
 }));
+jest.mock('react-redux', () => ({
+  useDispatch: jest.fn().mockName('useDispatch'),
+}));
 
 describe('<TranslationSelection />', () => {
   const props = {
+    id: 'plugin-test-id',
     courseId: 'course-v1:edX+DemoX+Demo_Course',
-    selectedLanguage: 'en',
-    setSelectedLanguage: jest.fn().mockName('setSelectedLanguage'),
+    language: 'en',
   };
   it('renders', () => {
     const wrapper = shallow(<TranslationSelection {...props} />);

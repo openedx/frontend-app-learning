@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { getEffects, mockUseKeyedState } from '@edx/react-unit-test-utils';
-import { useModel } from '../../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
 
 import { modelKeys } from '../constants';
 
@@ -11,7 +11,7 @@ jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useEffect: jest.fn(),
 }));
-jest.mock('../../../../../generic/model-store', () => ({
+jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn(),
 }));
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { when } from 'jest-when';
 import { formatMessage, shallow } from '@edx/react-unit-test-utils/dist';
 
-import { useModel } from '../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
 
 import BookmarkButton from '../../bookmark/BookmarkButton';
 import UnitSuspense from './UnitSuspense';
@@ -23,19 +23,14 @@ jest.mock('@edx/frontend-platform/i18n', () => {
   };
 });
 
-jest.mock('../../../../generic/PageLoading', () => 'PageLoading');
+jest.mock('@src/generic/PageLoading', () => 'PageLoading');
 jest.mock('../../bookmark/BookmarkButton', () => 'BookmarkButton');
 jest.mock('./ContentIFrame', () => 'ContentIFrame');
 jest.mock('./UnitSuspense', () => 'UnitSuspense');
 jest.mock('../honor-code', () => 'HonorCode');
 jest.mock('../lock-paywall', () => 'LockPaywall');
-jest.mock('./translation-selection', () => 'TranslationSelection');
-jest.mock('./translation-selection/useSelectLanguage', () => () => ({
-  selectedLanguage: 'en',
-  setSelectedLanguage: jest.fn().mockName('setSelectedLanguage'),
-}));
 
-jest.mock('../../../../generic/model-store', () => ({
+jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn(),
 }));
 
@@ -198,24 +193,6 @@ describe('Unit component', () => {
             examAccess,
           }));
         });
-      });
-    });
-    describe('TranslationSelection', () => {
-      test('renders if wholeCourseTranslationEnabled and language is defined', () => {
-        mockCoursewareMetaFn.mockReturnValueOnce({ wholeCourseTranslationEnabled: true, language: 'en' });
-        el = shallow(<Unit {...props} />);
-        expect(el.snapshot).toMatchSnapshot();
-        expect(el.instance.findByType('TranslationSelection')).toHaveLength(1);
-      });
-      test('does not render if wholeCourseTranslationEnabled is false', () => {
-        mockCoursewareMetaFn.mockReturnValueOnce({ wholeCourseTranslationEnabled: false });
-        el = shallow(<Unit {...props} />);
-        expect(el.instance.findByType('TranslationSelection')).toHaveLength(0);
-      });
-      test('does not render if language is undefined', () => {
-        mockCoursewareMetaFn.mockReturnValueOnce({ wholeCourseTranslationEnabled: true });
-        el = shallow(<Unit {...props} />);
-        expect(el.instance.findByType('TranslationSelection')).toHaveLength(0);
       });
     });
   });

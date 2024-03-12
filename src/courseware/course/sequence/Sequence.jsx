@@ -27,7 +27,6 @@ import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
-import FeedbackWidget from './Unit/feedback-widget';
 
 const Sequence = ({
   unitId,
@@ -41,7 +40,6 @@ const Sequence = ({
   const {
     canAccessProctoredExams,
     license,
-    wholeCourseTranslationEnabled,
   } = useModel('coursewareMeta', courseId);
   const {
     isStaff,
@@ -201,13 +199,6 @@ const Sequence = ({
         </div>
         {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
       </div>
-      {
-        wholeCourseTranslationEnabled && (
-          <div className="sequence-container d-inline-flex flex-row">
-            <FeedbackWidget />
-          </div>
-        )
-      }
     </>
   );
 

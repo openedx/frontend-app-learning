@@ -19,14 +19,16 @@ import messages, { languageMessages } from './messages';
 import './TranslationModal.scss';
 
 const TranslationModal = ({
-  isOpen, close, selectedLanguage, setSelectedLanguage,
+  isOpen, close, selectedLanguage, setSelectedLanguage, id,
 }) => {
   const { formatMessage } = useIntl();
   const {
     selectedIndex,
     setSelectedIndex,
     onSubmit,
-  } = useTranslationModal({ selectedLanguage, setSelectedLanguage, close });
+  } = useTranslationModal({
+    selectedLanguage, setSelectedLanguage, close, id,
+  });
 
   return (
     <StandardModal
@@ -65,6 +67,7 @@ TranslationModal.propTypes = {
   close: PropTypes.func.isRequired,
   selectedLanguage: PropTypes.string.isRequired,
   setSelectedLanguage: PropTypes.func.isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 export default TranslationModal;

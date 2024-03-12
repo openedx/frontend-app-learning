@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 
-import { useModel } from '../../../../generic/model-store';
-import PageLoading from '../../../../generic/PageLoading';
+import { useModel } from '@src/generic/model-store';
+import PageLoading from '@src/generic/PageLoading';
 
 import messages from '../messages';
 import HonorCode from '../honor-code';
