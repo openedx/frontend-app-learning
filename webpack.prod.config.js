@@ -15,4 +15,10 @@ config.plugins.push(
   }),
 );
 
+config.resolve.alias = {
+  ...config.resolve.alias,
+  '@src': path.resolve(__dirname, 'src'),
+  '@plugins': path.resolve(__dirname, 'plugins'),
+};
+
 module.exports = config;

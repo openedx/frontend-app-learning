@@ -2,7 +2,7 @@ import React from 'react';
 import { when } from 'jest-when';
 import { formatMessage, shallow } from '@edx/react-unit-test-utils/dist';
 
-import { useModel } from '../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
 
 import BookmarkButton from '../../bookmark/BookmarkButton';
 import UnitSuspense from './UnitSuspense';
@@ -23,7 +23,7 @@ jest.mock('@edx/frontend-platform/i18n', () => {
   };
 });
 
-jest.mock('../../../../generic/PageLoading', () => 'PageLoading');
+jest.mock('@src/generic/PageLoading', () => 'PageLoading');
 jest.mock('../../bookmark/BookmarkButton', () => 'BookmarkButton');
 jest.mock('./ContentIFrame', () => 'ContentIFrame');
 jest.mock('./UnitSuspense', () => 'UnitSuspense');
@@ -35,7 +35,7 @@ jest.mock('./translation-selection/useSelectLanguage', () => () => ({
   setSelectedLanguage: jest.fn().mockName('setSelectedLanguage'),
 }));
 
-jest.mock('../../../../generic/model-store', () => ({
+jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn(),
 }));
 

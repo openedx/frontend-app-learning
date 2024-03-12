@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
-import { useModel } from '../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
 
 import BookmarkButton from '../../bookmark/BookmarkButton';
 import messages from '../messages';
