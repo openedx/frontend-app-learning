@@ -55,6 +55,7 @@ const SequenceContent = ({
   return (
     <Unit
       courseId={courseId}
+      sequenceId={sequenceId}
       format={sequence.format}
       key={unitId}
       id={unitId}

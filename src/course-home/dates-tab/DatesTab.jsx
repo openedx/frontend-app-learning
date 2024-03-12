@@ -48,7 +48,7 @@ const DatesTab = ({ intl }) => {
       </div>
       {isSelfPaced && hasDeadlines && (
         <>
-          <ShiftDatesAlert model="dates" fetch={fetchDatesTab} />
+          <ShiftDatesAlert model="dates" fetch={fetchDatesTab} modelId={courseId}/>
           <SuggestedScheduleHeader />
           <UpgradeToCompleteAlert logUpgradeLinkClick={logUpgradeLinkClick} />
           <UpgradeToShiftDatesAlert logUpgradeLinkClick={logUpgradeLinkClick} model="dates" />

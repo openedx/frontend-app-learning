@@ -14,26 +14,28 @@ import { resetDeadlines } from '../data';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
-const ShiftDatesAlert = ({ fetch, intl, model }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
-
+const ShiftDatesAlert = ({ fetch, intl, model, modelId }) => {
   const {
     datesBannerInfo,
     hasEnded,
-  } = useModel(model, courseId);
+    canResetDeadlines,
+  } = useModel(model, modelId);
 
-  const {
-    missedDeadlines,
-    missedGatedContent,
-  } = datesBannerInfo;
+  if (datesBannerInfo !== undefined) {
+    const {
+      missedDeadlines,
+      missedGatedContent,
+    } = datesBannerInfo;
 
-  const dispatch = useDispatch();
 
-  if (!missedDeadlines || missedGatedContent || hasEnded) {
+    if (!missedDeadlines || missedGatedContent || hasEnded) {
+      return null;
+    }
+  } else if (canResetDeadlines === false) {
     return null;
   }
+  console.log(model, canResetDeadlines)
+  const dispatch = useDispatch();
 
   return (
     <Alert variant="warning">
@@ -47,7 +49,7 @@ const ShiftDatesAlert = ({ fetch, intl, model }) => {
             variant="primary"
             size="sm"
             className="w-xs-100 w-md-auto"
-            onClick={() => dispatch(resetDeadlines(courseId, model, fetch))}
+            onClick={() => dispatch(resetDeadlines(modelId, model, fetch))}
           >
             {intl.formatMessage(messages.shiftDatesButton)}
           </Button>
@@ -61,6 +63,7 @@ ShiftDatesAlert.propTypes = {
   fetch: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
   model: PropTypes.string.isRequired,
+  modelId: PropTypes.string.isRequired,
 };
 
 export default injectIntl(ShiftDatesAlert);

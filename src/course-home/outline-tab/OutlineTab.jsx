@@ -153,7 +153,7 @@ const OutlineTab = ({ intl }) => {
           />
           {isSelfPaced && hasDeadlines && (
             <>
-              <ShiftDatesAlert model="outline" fetch={fetchOutlineTab} />
+              <ShiftDatesAlert model="outline" modelId={courseId} fetch={fetchOutlineTab} />
               <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
             </>
           )}

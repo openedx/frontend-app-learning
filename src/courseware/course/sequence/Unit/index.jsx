@@ -13,9 +13,12 @@ import UnitSuspense from './UnitSuspense';
 import { modelKeys, views } from './constants';
 import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
+import ShiftDatesAlert from '../../../../course-home/suggested-schedule-messaging/ShiftDatesAlert';
+import { fetchSequence } from '../../../data';
 
 const Unit = ({
   courseId,
+  sequenceId,
   format,
   onLoaded,
   id,
@@ -37,6 +40,7 @@ const Unit = ({
 
   return (
     <div className="unit">
+      <ShiftDatesAlert model="units" fetch={(_) => fetchSequence(sequenceId)} modelId={id}/>
       <h1 className="mb-0 h3">{unit.title}</h1>
       <h2 className="sr-only">{formatMessage(messages.headerPlaceholder)}</h2>
       <BookmarkButton
@@ -60,6 +64,7 @@ const Unit = ({
 
 Unit.propTypes = {
   courseId: PropTypes.string.isRequired,
+  sequenceId: PropTypes.string.isRequired,
   format: PropTypes.string,
   id: PropTypes.string.isRequired,
   onLoaded: PropTypes.func,
