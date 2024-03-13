@@ -6,6 +6,7 @@ const invisibleStyle = {
   left: 0,
   pointerEvents: 'none',
   visibility: 'hidden',
+  maxWidth: '100%',
 };
 
 /**

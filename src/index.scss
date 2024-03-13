@@ -70,7 +70,6 @@
   flex-direction: column;
   flex-grow: 1;
   margin-bottom: 4rem;
-  width: 100%;
   margin-right: auto;
   margin-left: auto;
 }
@@ -82,8 +81,24 @@
   }
 }
 
+.sequence-navigation-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.notification-btn {
+  @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+    height: 3rem;
+  }
+}
+
 .sequence-navigation {
   display: flex;
+  flex-grow: 1;
+
+  @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+    max-width: 100%;
+  }
 
   @media (min-width: map-get($grid-breakpoints, "sm")) {
     margin: -1px -1px 0;
@@ -151,9 +166,10 @@
   }
 
   .sequence-navigation-tabs {
+    overflow: auto;
     .btn {
       flex-basis: 100%;
-      min-width: 2rem;
+      min-width: 3rem;
     }
   }
 

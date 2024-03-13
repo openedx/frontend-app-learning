@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React, { useContext } from 'react';
+import { breakpoints, useWindowSize } from '@edx/paragon';
 import SidebarContext from './SidebarContext';
 import { SIDEBAR_ORDER, SIDEBARS } from './sidebars';
 
@@ -8,6 +9,9 @@ const SidebarTriggers = () => {
     toggleSidebar,
     currentSidebar,
   } = useContext(SidebarContext);
+
+  const isMobileView = useWindowSize().width < breakpoints.small.minWidth;
+
   return (
     <div className="d-flex ml-auto">
       {SIDEBAR_ORDER.map((sidebarId) => {
@@ -15,7 +19,7 @@ const SidebarTriggers = () => {
         const isActive = sidebarId === currentSidebar;
         return (
           <div
-            className={classNames('mt-3', { 'border-primary-700': isActive })}
+            className={classNames({ 'mt-3': !isMobileView, 'border-primary-700': isActive })}
             style={{ borderBottom: isActive ? '2px solid' : null }}
             key={sidebarId}
           >
