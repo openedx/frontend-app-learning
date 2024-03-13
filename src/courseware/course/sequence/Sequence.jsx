@@ -144,27 +144,29 @@ const Sequence = ({
   };
 
   const defaultContent = (
-    <div className="sequence-container d-inline-flex flex-row">
+    <div className="sequence-container d-inline-flex flex-row w-100">
       <div className={classNames('sequence w-100', { 'position-relative': shouldDisplayNotificationTriggerInSequence })}>
-        <SequenceNavigation
-          sequenceId={sequenceId}
-          unitId={unitId}
-          className="mb-4"
-          nextSequenceHandler={() => {
-            logEvent('edx.ui.lms.sequence.next_selected', 'top');
-            handleNext();
-          }}
-          onNavigate={(destinationUnitId) => {
-            logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-            handleNavigate(destinationUnitId);
-          }}
-          previousSequenceHandler={() => {
-            logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-            handlePrevious();
-          }}
-          goToCourseExitPage={() => goToCourseExitPage()}
-        />
-        {shouldDisplayNotificationTriggerInSequence && <SidebarTriggers />}
+        <div className="sequence-navigation-container">
+          <SequenceNavigation
+            sequenceId={sequenceId}
+            unitId={unitId}
+            className="mb-4"
+            nextSequenceHandler={() => {
+              logEvent('edx.ui.lms.sequence.next_selected', 'top');
+              handleNext();
+            }}
+            onNavigate={(destinationUnitId) => {
+              logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+              handleNavigate(destinationUnitId);
+            }}
+            previousSequenceHandler={() => {
+              logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+              handlePrevious();
+            }}
+            goToCourseExitPage={() => goToCourseExitPage()}
+          />
+          {shouldDisplayNotificationTriggerInSequence && <SidebarTriggers />}
+        </div>
 
         <div className="unit-container flex-grow-1">
           <SequenceContent
