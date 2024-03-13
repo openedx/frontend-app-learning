@@ -149,44 +149,38 @@ describe('Plugin', () => {
     throw new Error(error);
   };
 
-  function HealthyComponent() {
-    return (
-      <div>
+  const HealthyComponent = () => (
+    <div>
+      <FormattedMessage
+        id="hello.world.message.text"
+        defaultMessage="Hello World!"
+        description="greeting the world with a hello"
+      />
+    </div>
+  );
+
+  const ErrorFallbackComponent = () => (
+    <div>
+      <p>
         <FormattedMessage
-          id="hello.world.message.text"
-          defaultMessage="Hello World!"
-          description="greeting the world with a hello"
+          id="unexpected.error.message.text"
+          defaultMessage="Oh geez, this is not good at all."
+          description="error message when an unexpected error occurs"
         />
-      </div>
-    );
-  }
+      </p>
+      <br />
+    </div>
+  );
 
-  function ErrorFallbackComponent() {
-    return (
-      <div>
-        <p>
-          <FormattedMessage
-            id="unexpected.error.message.text"
-            defaultMessage="Oh geez, this is not good at all."
-            description="error message when an unexpected error occurs"
-          />
-        </p>
-        <br />
-      </div>
-    );
-  }
-
-  function PluginPageWrapper({
+  const PluginPageWrapper = ({
     params, FallbackComponent, ChildComponent,
-  }) {
-    return (
-      <IntlProvider locale="en">
-        <Plugin params={params} ErrorFallbackComponent={FallbackComponent}>
-          <ChildComponent />
-        </Plugin>
-      </IntlProvider>
-    );
-  }
+  }) => (
+    <IntlProvider locale="en">
+      <Plugin params={params} ErrorFallbackComponent={FallbackComponent}>
+        <ChildComponent />
+      </Plugin>
+    </IntlProvider>
+  );
 
   it('should render children if no error', () => {
     const component = (

@@ -21,12 +21,11 @@ export default function initializeStore() {
       plugins: pluginsReducer,
     },
     // temporarily solutions to disable serializable check for plugin actions
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: ['plugin/registerOverrideMethod'],
-          ignoredPaths: ['plugins']
-        },
-      }),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['plugin/registerOverrideMethod'],
+        ignoredPaths: ['plugins'],
+      },
+    }),
   });
 }

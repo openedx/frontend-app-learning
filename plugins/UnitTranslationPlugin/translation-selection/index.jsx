@@ -1,20 +1,21 @@
-import React, { useEffect } from "react";
-import PropTypes from "prop-types";
-import { IconButton, Icon, ProductTour } from "@edx/paragon";
-import { Language } from "@edx/paragon/icons";
-import { useDispatch } from "react-redux";
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { IconButton, Icon, ProductTour } from '@edx/paragon';
+import { Language } from '@edx/paragon/icons';
+import { useDispatch } from 'react-redux';
 
-import { registerOverrideMethod } from "@src/generic/plugin-store";
-
-import TranslationModal from "./TranslationModal";
-import useTranslationTour from "./useTranslationTour";
-import useSelectLanguage from "./useSelectLanguage";
+import { registerOverrideMethod } from '@src/generic/plugin-store';
 
 import { stringifyUrl } from 'query-string';
+import TranslationModal from './TranslationModal';
+import useTranslationTour from './useTranslationTour';
+import useSelectLanguage from './useSelectLanguage';
 
 const TranslationSelection = ({ id, courseId, language }) => {
   const dispatch = useDispatch();
-  const { translationTour, isOpen, open, close } = useTranslationTour();
+  const {
+    translationTour, isOpen, open, close,
+  } = useTranslationTour();
 
   const { selectedLanguage, setSelectedLanguage } = useSelectLanguage({
     courseId,
@@ -25,25 +26,22 @@ const TranslationSelection = ({ id, courseId, language }) => {
     dispatch(
       registerOverrideMethod({
         pluginName: id,
-        methodName: "getIFrameUrl",
+        methodName: 'getIFrameUrl',
         method: (iframeUrl) => {
-          if (!iframeUrl) {
-            return;
-          }
           const finalUrl = stringifyUrl({
             url: iframeUrl,
             query: {
-              ...(language &&
-                selectedLanguage &&
-                language !== selectedLanguage && {
-                  src_lang: language,
-                  dest_lang: selectedLanguage,
-                }),
+              ...(language
+                && selectedLanguage
+                && language !== selectedLanguage && {
+                src_lang: language,
+                dest_lang: selectedLanguage,
+              }),
             },
           });
           return finalUrl;
         },
-      })
+      }),
     );
   }, [language, selectedLanguage]);
 
@@ -65,6 +63,7 @@ const TranslationSelection = ({ id, courseId, language }) => {
         courseId={courseId}
         selectedLanguage={selectedLanguage}
         setSelectedLanguage={setSelectedLanguage}
+        id={id}
       />
     </>
   );

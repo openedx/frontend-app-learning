@@ -45,6 +45,7 @@ describe('TranslationModal', () => {
     close: jest.fn().mockName('close'),
     selectedLanguage: 'en',
     setSelectedLanguage: jest.fn().mockName('setSelectedLanguage'),
+    id: 'plugin-test-id',
   };
   it('renders correctly', () => {
     const wrapper = shallow(<TranslationModal {...props} />);

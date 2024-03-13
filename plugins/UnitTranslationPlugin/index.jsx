@@ -1,14 +1,14 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { useModel } from "@src/generic/model-store";
+import { useModel } from '@src/generic/model-store';
 
-import TranslationSelection from "./translation-selection";
+import TranslationSelection from './translation-selection';
 
 const UnitTranslationPlugin = ({ id, courseId }) => {
   const { language, wholeCourseTranslationEnabled } = useModel(
-    "courseHomeMeta",
-    courseId
+    'courseHomeMeta',
+    courseId,
   );
 
   if (!wholeCourseTranslationEnabled || !language) {

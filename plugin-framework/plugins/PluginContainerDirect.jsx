@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { directPluginConfigShape } from './data/shapes';
 
-function PluginContainerDirect({ config, loadingFallback, ...props }) {
+const PluginContainerDirect = ({ config, loadingFallback, ...props }) => {
   const {
     RenderWidget, id, content,
   } = config;
@@ -13,7 +13,7 @@ function PluginContainerDirect({ config, loadingFallback, ...props }) {
       <RenderWidget id={id} content={content} {...props} />
     </Suspense>
   );
-}
+};
 
 PluginContainerDirect.propTypes = {
   /** Configuration for the Plugin in this container (i.e. pluginSlot[id].example_plugin) */

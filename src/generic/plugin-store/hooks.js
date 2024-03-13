@@ -1,5 +1,6 @@
 import { useSelector, shallowEqual } from 'react-redux';
 
+// eslint-disable-next-line import/prefer-default-export
 export function usePluginsCallback(methodName, defaultMethod) {
   return useSelector(
     state => (() => {

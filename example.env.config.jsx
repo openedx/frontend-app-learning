@@ -1,5 +1,5 @@
 import UnitTranslationPlugin from '@plugins/UnitTranslationPlugin';
-import { DIRECT_PLUGIN } from "@plugin-framework";
+import { DIRECT_PLUGIN } from '@plugin-framework';
 
 // Load environment variables from .env file
 const config = {
@@ -8,7 +8,7 @@ const config = {
     unit_title_plugin: {
       defaultContents: [
         {
-          id: "default_widget",
+          id: 'default_widget',
           type: DIRECT_PLUGIN,
           priority: 1,
           RenderWidget: UnitTranslationPlugin,

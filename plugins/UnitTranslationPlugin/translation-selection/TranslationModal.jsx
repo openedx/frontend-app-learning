@@ -26,7 +26,9 @@ const TranslationModal = ({
     selectedIndex,
     setSelectedIndex,
     onSubmit,
-  } = useTranslationModal({ selectedLanguage, setSelectedLanguage, close, id });
+  } = useTranslationModal({
+    selectedLanguage, setSelectedLanguage, close, id,
+  });
 
   return (
     <StandardModal

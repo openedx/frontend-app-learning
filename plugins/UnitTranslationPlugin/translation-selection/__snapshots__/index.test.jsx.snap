@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<TranslationSelection /> renders 1`] = `
+<Fragment>
+  <ProductTour
+    tours={
+      Array [
+        Object {
+          "abitrarily": "defined",
+        },
+      ]
+    }
+  />
+  <IconButton
+    alt="change-language"
+    className="mr-2 mb-2 float-right"
+    iconAs="Icon"
+    id="translation-selection-button"
+    onClick={[MockFunction open]}
+    src="Language"
+    variant="primary"
+  />
+  <TranslationModal
+    close={[MockFunction close]}
+    courseId="course-v1:edX+DemoX+Demo_Course"
+    id="plugin-test-id"
+    isOpen={false}
+    selectedLanguage="en"
+    setSelectedLanguage={[Function]}
+  />
+</Fragment>
+`;

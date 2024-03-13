@@ -15,7 +15,7 @@ const slice = createSlice({
 });
 
 export const {
-  registerOverrideMethod
+  registerOverrideMethod,
 } = slice.actions;
 
 export const { reducer } = slice;

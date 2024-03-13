@@ -14,7 +14,7 @@ import { PLUGIN_RESIZE } from './data/constants';
 import messages from './Plugin.messages';
 
 // TODO: create example-plugin-app/src/PluginOne.jsx for example of customizing errorFallback as part of APER-3042 https://2u-internal.atlassian.net/browse/APER-3042
-function ErrorFallbackDefault() {
+const ErrorFallbackDefault = () => {
   const { formatMessage } = useIntl();
   return (
     <div>
@@ -23,11 +23,11 @@ function ErrorFallbackDefault() {
       </h2>
     </div>
   );
-}
+};
 
-function Plugin({
+const Plugin = ({
   children, className, style, ready, ErrorFallbackComponent,
-}) {
+}) => {
   const [dimensions, setDimensions] = useState({
     width: null,
     height: null,
@@ -74,7 +74,7 @@ function Plugin({
       </ErrorBoundary>
     </div>
   );
-}
+};
 
 export default Plugin;
 

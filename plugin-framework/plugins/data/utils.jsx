@@ -11,7 +11,7 @@ import { PLUGIN_OPERATIONS } from './constants';
  */
 export const organizePlugins = (defaultContents, plugins) => {
   const newContents = [...defaultContents];
-  
+
   plugins.forEach(change => {
     if (change.op === PLUGIN_OPERATIONS.Insert) {
       newContents.push(change.widget);
