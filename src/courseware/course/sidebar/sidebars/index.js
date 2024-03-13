@@ -6,7 +6,6 @@ export const SIDEBARS = {
   [courseOutline.ID]: {
     ID: courseOutline.ID,
     Sidebar: courseOutline.Sidebar,
-    Trigger: courseOutline.Trigger,
     LAYOUT: courseOutline.LAYOUT,
   },
   [notifications.ID]: {
@@ -24,7 +23,6 @@ export const SIDEBARS = {
 };
 
 export const SIDEBAR_ORDER = [
-  courseOutline.ID,
   discussions.ID,
   notifications.ID,
 ];

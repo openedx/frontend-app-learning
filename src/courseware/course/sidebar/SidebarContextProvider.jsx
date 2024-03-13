@@ -16,7 +16,7 @@ const SidebarProvider = ({
   children,
 }) => {
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
-  const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
+  const shouldDisplayFullScreen = useWindowSize().width < breakpoints.extraLarge.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.extraLarge.minWidth;
   const query = new URLSearchParams(window.location.search);
   const initialSidebar = (shouldDisplaySidebarOpen || query.get('sidebar') === 'true') ? SIDEBARS.DISCUSSIONS.ID : null;

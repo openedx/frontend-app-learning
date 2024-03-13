@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import SidebarContext from './SidebarContext';
-import { SIDEBAR_ORDER, SIDEBARS } from './sidebars';
+import { SIDEBARS } from './sidebars';
 
 const Sidebar = ({ layout }) => {
   const { currentSidebar } = useContext(SidebarContext);
@@ -15,15 +15,10 @@ const Sidebar = ({ layout }) => {
     return null;
   }
 
+  const SidebarToRender = SIDEBARS[currentSidebar].Sidebar;
+
   return (
-    <>
-      {
-        SIDEBAR_ORDER.map((sideBarId) => {
-          const SidebarToRender = SIDEBARS[sideBarId].Sidebar;
-          return <SidebarToRender key={sideBarId} />;
-        })
-      }
-    </>
+    <SidebarToRender />
   );
 };
 

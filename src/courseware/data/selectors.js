@@ -1,12 +1,16 @@
-/* eslint-disable import/prefer-default-export */
+import { LOADED } from './slice';
+
+export const selectCourse = (state) => state.course;
 export function sequenceIdsSelector(state) {
-  if (state.courseware.courseStatus !== 'loaded') {
+  if (state.courseware.courseStatus !== LOADED) {
     return [];
   }
   const { sectionIds = [] } = state.models.coursewareMeta[state.courseware.courseId];
 
-  const sequenceIds = sectionIds
+  return sectionIds
     .flatMap(sectionId => state.models.sections[sectionId].sequenceIds);
-
-  return sequenceIds;
 }
+
+export const getSequenceId = state => state.courseware.sequenceId;
+
+export const getCourseStatus = state => state.courseHome;

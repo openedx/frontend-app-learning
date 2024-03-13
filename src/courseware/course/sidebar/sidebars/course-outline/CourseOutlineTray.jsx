@@ -1,29 +1,35 @@
 import { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { useSelector } from 'react-redux';
-import { Button } from '@edx/paragon';
+import { Button, useToggle } from '@edx/paragon';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { IconButton } from '@openedx/paragon';
+import {
+  MenuOpen as MenuOpenIcon,
+  ChevronLeft as ChevronLeftIcon,
+} from '@openedx/paragon/icons';
 
 import { useModel } from '../../../../../generic/model-store';
 import { LOADING } from '../../../../../course-home/data/slice';
-import Section from '../../../../../course-home/outline-tab/Section';
 import PageLoading from '../../../../../generic/PageLoading';
-import SidebarBase from '../../common/SidebarBase';
+import { getSequenceId, getCourseStatus } from '../../../../data/selectors';
 import SidebarContext from '../../SidebarContext';
-import CourseOutlineTrigger, { ID } from './CourseOutlineTrigger';
+import { ID } from './CourseOutlineTrigger';
+import SidebarSection from './SidebarSection';
+import SidebarSequence from './SidebarSequence';
 import messages from './messages';
 
 const CourseOutlineTray = ({ intl }) => {
-  const [expandAll, setExpandAll] = useState(false);
+  const [selectedSection, setSelectedSection] = useState(null);
+  const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
 
-  const {
-    courseStatus,
-  } = useSelector(state => state.courseHome);
-
-  const activeSequenceId = useSelector(state => state.courseware.sequenceId);
+  const { courseStatus } = useSelector(getCourseStatus);
+  const activeSequenceId = useSelector(getSequenceId);
 
   const {
     courseId,
+    currentSidebar,
+    toggleSidebar,
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
@@ -32,66 +38,90 @@ const CourseOutlineTray = ({ intl }) => {
   } = useModel('outline', courseId);
 
   const {
-    verifiedMode,
-  } = useModel('courseHomeMeta', courseId);
-
-  const {
     sectionId: activeSectionId,
   } = useModel('sequences', activeSequenceId);
 
   const rootCourseId = courseBlocks?.courses && Object.keys(courseBlocks?.courses)[0];
+  const sectionsIds = courseBlocks?.courses[rootCourseId]?.sectionIds;
+  const sequenceIds = courseBlocks?.sections[selectedSection || activeSectionId]?.sequenceIds;
+  const backButtonTitle = courseBlocks?.sections[selectedSection || activeSectionId]?.title;
+
+  const handleToggleCollapse = () => (currentSidebar === ID ? toggleSidebar(null) : toggleSidebar(ID));
+
+  const handleBackToSectionLevel = () => {
+    setDisplaySectionLevel();
+    setSelectedSection(null);
+  };
+
+  const handleSelectSection = (id) => {
+    setDisplaySequenceLevel();
+    setSelectedSection(id);
+  };
+
+  const sidebarHeading = (
+    <div className="outline-sidebar-heading-wrapper d-flex justify-content-between align-items-center bg-light-200 p-2.5 pl-4">
+      {isDisplaySequenceLevel ? (
+        <Button
+          variant="link"
+          iconBefore={ChevronLeftIcon}
+          className="outline-sidebar-heading p-0 mb-0 text-left text-dark-500"
+          onClick={handleBackToSectionLevel}
+        >
+          {backButtonTitle}
+        </Button>
+      ) : (
+        <span className="outline-sidebar-heading mb-0 h4 text-dark-500">
+          {intl.formatMessage(messages.courseOutlineTitle)}
+        </span>
+      )}
+      <IconButton
+        alt={intl.formatMessage(messages.toggleCourseOutlineTrigger)}
+        className="outline-sidebar-toggle-btn flex-shrink-0 text-dark bg-light-200"
+        iconAs={MenuOpenIcon}
+        onClick={handleToggleCollapse}
+      />
+    </div>
+  );
 
   if (courseStatus === LOADING) {
     return (
-      <SidebarBase
-        title={intl.formatMessage(messages.courseOutlineTitle)}
-        ariaLabel={intl.formatMessage(messages.courseOutlineTray)}
-        sidebarId={ID}
-        className={classNames({
-          'h-100': !verifiedMode && !shouldDisplayFullScreen,
-          'mr-4': !shouldDisplayFullScreen,
-        })}
-      >
+      <section className="outline-sidebar flex-shrink-0 mr-4 min-vh-100 h-auto">
+        {sidebarHeading}
         <PageLoading
           srMessage={intl.formatMessage(messages.loading)}
         />
-      </SidebarBase>
+      </section>
     );
   }
 
   return (
-    <SidebarBase
-      title={intl.formatMessage(messages.courseOutlineTitle)}
-      ariaLabel={intl.formatMessage(messages.courseOutlineTray)}
-      sidebarId={ID}
-      className={classNames({
-        'h-100': !verifiedMode && !shouldDisplayFullScreen,
-        'mr-4': !shouldDisplayFullScreen,
+    <section
+      className={classNames('outline-sidebar ', {
+        'flex-shrink-0 mr-4 min-vh-100 h-auto': !shouldDisplayFullScreen,
+        'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
       })}
     >
-      {rootCourseId && (
-        <>
-          <div className="row mb-3 justify-content-center">
-            <div className="col-12">
-              <Button variant="outline-primary" block onClick={() => { setExpandAll(!expandAll); }}>
-                {expandAll ? intl.formatMessage(messages.collapseAll) : intl.formatMessage(messages.expandAll)}
-              </Button>
-            </div>
-          </div>
-          <ol id="courseHome-outline" className="list-unstyled">
-            {courseBlocks.courses[rootCourseId].sectionIds.map((sectionId) => (
-              <Section
-                key={sectionId}
-                courseId={courseId}
-                defaultOpen={sectionId === activeSectionId}
-                expand={expandAll}
-                section={courseBlocks.sections[sectionId]}
-              />
-            ))}
-          </ol>
-        </>
-      )}
-    </SidebarBase>
+      {sidebarHeading}
+      <ol id="outline-sidebar-outline" className="list-unstyled">
+        {isDisplaySequenceLevel
+          ? sequenceIds.map((sequenceId) => (
+            <SidebarSequence
+              key={sequenceId}
+              courseId={courseId}
+              sequence={courseBlocks.sequences[sequenceId]}
+              defaultOpen={sequenceId === activeSequenceId}
+            />
+          ))
+          : sectionsIds.map((sectionId) => (
+            <SidebarSection
+              key={sectionId}
+              courseId={courseId}
+              section={courseBlocks.sections[sectionId]}
+              handleSelectSection={handleSelectSection}
+            />
+          ))}
+      </ol>
+    </section>
   );
 };
 
@@ -99,7 +129,6 @@ CourseOutlineTray.propTypes = {
   intl: intlShape.isRequired,
 };
 
-CourseOutlineTray.Trigger = CourseOutlineTrigger;
 CourseOutlineTray.ID = ID;
 
 export default injectIntl(CourseOutlineTray);

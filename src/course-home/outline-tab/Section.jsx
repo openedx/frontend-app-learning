@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Collapsible, IconButton, Icon } from '@openedx/paragon';
@@ -23,7 +21,6 @@ const Section = ({
   section,
 }) => {
   const {
-    id,
     complete,
     sequenceIds,
     title,
@@ -46,14 +43,9 @@ const Section = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const activeSequenceId = useSelector(state => state.courseware.sequenceId);
-  const {
-    sectionId: activeSectionId,
-  } = useModel('sequences', activeSequenceId);
-
   const sectionTitle = (
-    <div className="d-flex row w-100 m-0 d-flex align-items-center">
-      <div className="col-auto p-0" style={{ fontSize: '1.1rem' }}>
+    <div className="d-flex row w-100 m-0">
+      <div className="col-auto p-0">
         {complete ? (
           <FontAwesomeIcon
             icon={fasCheckCircle}
@@ -96,7 +88,7 @@ const Section = ({
   return (
     <li>
       <Collapsible
-        className={classNames('mb-2', { 'active-section': id === activeSectionId })}
+        className="mb-2"
         styling="card-lg"
         title={sectionTitle}
         open={open}
@@ -125,8 +117,6 @@ const Section = ({
               id={sequenceId}
               courseId={courseId}
               sequence={sequences[sequenceId]}
-              isActive={sequenceId === activeSequenceId}
-              hasActiveSection={sequences[sequenceId].sectionId === activeSectionId}
               first={index === 0}
             />
           ))}

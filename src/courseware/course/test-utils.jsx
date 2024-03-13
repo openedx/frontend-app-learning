@@ -25,7 +25,7 @@ const setupDiscussionSidebar = async (verifiedMode = null, enabledInContext = tr
     sequenceId,
     unitId: Object.values(models.units)[0].id,
   });
-  global.innerWidth = breakpoints.extraLarge.minWidth;
+  global.innerWidth = breakpoints.extraExtraLarge.minWidth;
 
   const courseHomeMetadata = Factory.build('courseHomeMetadata', { verified_mode: verifiedMode });
   const testStore = await initializeTestStore({ provider: 'openedx', courseHomeMetadata });
