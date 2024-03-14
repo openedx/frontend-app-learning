@@ -4,6 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 
 import {
   initializeMockApp, initializeTestStore, render, screen,
@@ -16,6 +17,7 @@ import DiscussionsNotificationsSidebar from '../DiscussionsNotificationsSidebar'
 import DiscussionsWidget from './DiscussionsWidget';
 
 initializeMockApp();
+jest.mock('@edx/frontend-platform/analytics');
 
 describe('DiscussionsWidget', () => {
   let axiosMock;
@@ -74,7 +76,9 @@ describe('DiscussionsWidget', () => {
   });
 
   it('should display the Back to course button on small screens.', async () => {
+    sendTrackEvent.mockClear();
     renderWithProvider(DiscussionsNotificationsSidebar, { shouldDisplayFullScreen: true });
     expect(screen.queryByText('Back to course')).toBeInTheDocument();
+    expect(sendTrackEvent).toHaveBeenCalledTimes(1);
   });
 });

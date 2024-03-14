@@ -94,13 +94,9 @@ describe('NotificationsWidget', () => {
     );
     const UpgradeNotification = document.querySelector('.upgrade-notification');
 
-    expect(UpgradeNotification)
-      .toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Upgrade for $149' }))
-      .toBeInTheDocument();
-    expect(screen.queryByText('You have no new notifications at this time.'))
-      .not
-      .toBeInTheDocument();
+    expect(UpgradeNotification).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Upgrade for $149' })).toBeInTheDocument();
+    expect(screen.queryByText('You have no new notifications at this time.')).not.toBeInTheDocument();
   });
 
   it('renders no notifications bar if no verified mode', async () => {
@@ -116,17 +112,14 @@ describe('NotificationsWidget', () => {
         <NotificationsWidget />
       </SidebarContext.Provider>,
     );
-    expect(screen.queryByText('Notifications'))
-      .not
-      .toBeInTheDocument();
+    expect(screen.queryByText('Notifications')).not.toBeInTheDocument();
   });
 
   it.each([
     {
       description: 'close the notification widget.',
       enabledInContext: true,
-      testId:
-      'notification-widget',
+      testId: 'notification-widget',
     },
     {
       description: 'close the sidebar when the notification widget is closed, and the discussion widget is unavailable.',
