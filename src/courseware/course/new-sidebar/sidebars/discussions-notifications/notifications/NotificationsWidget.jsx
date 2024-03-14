@@ -1,5 +1,6 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { useModel } from '../../../../../../generic/model-store';
 import UpgradeNotification from '../../../../../../generic/upgrade-notification/UpgradeNotification';
 import WIDGETS from '../../../constants';
@@ -21,19 +22,47 @@ const NotificationsWidget = () => {
   const {
     accessExpiration,
     contentTypeGatingEnabled,
+    end,
+    enrollmentEnd,
+    enrollmentMode,
+    enrollmentStart,
     marketingUrl,
     offer,
+    start,
     timeOffsetMillis,
     userTimezone,
+    verificationStatus,
   } = course;
 
   const {
+    courseModes,
     org,
     verifiedMode,
+    username,
   } = useModel('courseHomeMeta', courseId);
 
+  const activeCourseModes = useMemo(() => courseModes?.map(mode => mode.slug), [courseModes]);
+
+  const notificationTrayEventProperties = {
+    course_end: end,
+    course_modes: activeCourseModes,
+    course_start: start,
+    courserun_key: courseId,
+    enrollment_end: enrollmentEnd,
+    enrollment_mode: enrollmentMode,
+    enrollment_start: enrollmentStart,
+    is_upgrade_notification_visible: !!verifiedMode,
+    name: 'New Sidebar Notification Tray',
+    org_key: org,
+    username,
+    verification_status: verificationStatus,
+  };
+
   // After three seconds, update notificationSeen (to hide red dot)
-  useEffect(() => { setTimeout(onNotificationSeen, 3000); }, []);
+  useEffect(() => {
+    setTimeout(onNotificationSeen, 3000);
+    sendTrackEvent('edx.ui.course.upgrade.new_sidebar.notifications', notificationTrayEventProperties);
+  }, []);
 
   if (hideNotificationbar || !isNotificationbarAvailable) { return null; }
 
