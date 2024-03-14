@@ -33,7 +33,7 @@ jest.mock('@plugin-framework', () => ({
   ...jest.requireActual('@plugin-framework'),
   Plugin: () => 'Plugin',
   PluginSlot: () => 'PluginSlot',
-}))
+}));
 
 jest.mock('@src/generic/plugin-store', () => ({
   ...jest.requireActual('@src/generic/plugin-store'),

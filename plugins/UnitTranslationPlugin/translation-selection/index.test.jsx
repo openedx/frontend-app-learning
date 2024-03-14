@@ -20,7 +20,7 @@ jest.mock('./useTranslationTour', () => () => ({
 }));
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn().mockName('useDispatch'),
-}))
+}));
 
 describe('<TranslationSelection />', () => {
   const props = {
