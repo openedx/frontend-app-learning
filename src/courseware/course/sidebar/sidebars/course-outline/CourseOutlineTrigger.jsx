@@ -26,7 +26,15 @@ const CourseOutlineTrigger = ({ intl, isMobileView }) => {
     return null;
   }
 
-  const handleToggleCollapse = () => (currentSidebar === ID ? toggleSidebar(null) : toggleSidebar(ID));
+  const handleToggleCollapse = () => {
+    if (currentSidebar === ID) {
+      toggleSidebar(null);
+      window.sessionStorage.removeItem('showCourseOutlineSidebar');
+    } else {
+      toggleSidebar(ID);
+      window.sessionStorage.setItem('showCourseOutlineSidebar', 'true');
+    }
+  };
 
   return (
     <div className={classNames('outline-sidebar-heading-wrapper bg-light-200 collapsed', {

@@ -6,49 +6,27 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Collapsible } from '@openedx/paragon';
 import { CheckCircle as CheckCircleIcon } from '@openedx/paragon/icons';
 
-import { useModel } from '../../../../../generic/model-store';
 import courseOutlineMessages from '../../../../../course-home/outline-tab/messages';
-import { getSequenceId } from '../../../../data/selectors';
+import { getCourseOutline, getSequenceId } from '../../../../data/selectors';
 import { CompletionSolidIcon } from './icons';
 import SidebarUnit from './SidebarUnit';
 
-const MOCKED_UNIT_IDS = ['123', '456', '789']; // ToDo: should be refactored after API is ready
-const MOCKED_UNITS = {
-  123: {
-    complete: false,
-    showLink: true,
-    title: 'Test unit title 1',
-  },
-  456: {
-    complete: true,
-    showLink: true,
-    title: 'Test unit title 2',
-  },
-  789: {
-    complete: false,
-    showLink: true,
-    title: 'Test unit title 3',
-  },
-}; // ToDo: should be refactored after API is ready
-
 const SidebarSequence = ({
+  intl,
   courseId,
   defaultOpen,
-  intl,
   sequence,
+  activeUnitId,
 }) => {
   const {
     id,
     complete,
     title,
-    unitIds = MOCKED_UNIT_IDS,
+    unitIds,
   } = sequence;
 
-  const {
-    courseBlocks: { units = MOCKED_UNITS },
-  } = useModel('outline', courseId);
-
   const [open, setOpen] = useState(defaultOpen);
+  const { units = {} } = useSelector(getCourseOutline);
   const activeSequenceId = useSelector(getSequenceId);
 
   const sectionTitle = (
@@ -82,9 +60,10 @@ const SidebarSequence = ({
               key={unitId}
               id={unitId}
               courseId={courseId}
-              sequence={units[unitId]}
-              isActive={defaultOpen && index === 1} // ToDo: should be refactored after API is ready
-              first={index === 0}
+              sequenceId={id}
+              unit={units[unitId]}
+              isActive={activeUnitId === unitId}
+              isFirst={index === 0}
             />
           ))}
         </ol>
@@ -97,7 +76,13 @@ SidebarSequence.propTypes = {
   intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
   defaultOpen: PropTypes.bool.isRequired,
-  sequence: PropTypes.shape().isRequired,
+  sequence: PropTypes.shape({
+    complete: PropTypes.bool,
+    id: PropTypes.string,
+    title: PropTypes.string,
+    unitIds: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  activeUnitId: PropTypes.string.isRequired,
 };
 
 export default injectIntl(SidebarSequence);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
@@ -7,18 +7,17 @@ import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '../../generic/user-messages';
 import { useModel } from '../../generic/model-store';
-
-import Sequence from './sequence';
-
+import { getCourseOutlineStructure } from '../data/thunks';
 import { Trigger as CourseOutlineTrigger } from './sidebar/sidebars/course-outline';
-import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
 import Chat from './chat/Chat';
-import ContentTools from './content-tools';
-import CourseBreadcrumbs from './CourseBreadcrumbs';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import SidebarTriggers from './sidebar/SidebarTriggers';
 import NewSidebarProvider from './new-sidebar/SidebarContextProvider';
 import NewSidebarTriggers from './new-sidebar/SidebarTriggers';
+import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
+import CourseBreadcrumbs from './CourseBreadcrumbs';
+import ContentTools from './content-tools';
+import Sequence from './sequence';
 
 const Course = ({
   courseId,
@@ -67,6 +66,10 @@ const Course = ({
       celebrations,
     ));
   }, [sequenceId]);
+
+  useEffect(() => {
+    dispatch(getCourseOutlineStructure(courseId));
+  }, []);
 
   const SidebarProviderComponent = enableNewSidebar === 'true' ? NewSidebarProvider : SidebarProvider;
 

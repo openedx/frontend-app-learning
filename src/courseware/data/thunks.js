@@ -6,7 +6,7 @@ import {
 import {
   getBlockCompletion,
   getCourseDiscussionConfig,
-  getCourseMetadata,
+  getCourseMetadata, getCourseOutline,
   getCourseTopics,
   getLearningSequencesOutline,
   getSequenceMetadata,
@@ -21,6 +21,9 @@ import {
   fetchSequenceFailure,
   fetchSequenceRequest,
   fetchSequenceSuccess,
+  fetchCourseOutlineRequest,
+  fetchCourseOutlineSuccess,
+  fetchCourseOutlineFailure,
 } from './slice';
 
 export function fetchCourse(courseId) {
@@ -248,6 +251,19 @@ export function getCourseDiscussionTopics(courseId) {
       }
     } catch (error) {
       logError(error);
+    }
+  };
+}
+
+export function getCourseOutlineStructure(courseId) {
+  return async (dispatch) => {
+    dispatch(fetchCourseOutlineRequest());
+    try {
+      const courseOutline = await getCourseOutline(courseId);
+      dispatch(fetchCourseOutlineSuccess({ courseOutline }));
+    } catch (error) {
+      logError(error);
+      dispatch(fetchCourseOutlineFailure());
     }
   };
 }

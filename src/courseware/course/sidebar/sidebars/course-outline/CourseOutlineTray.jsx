@@ -12,7 +12,9 @@ import {
 import { useModel } from '../../../../../generic/model-store';
 import { LOADING } from '../../../../../course-home/data/slice';
 import PageLoading from '../../../../../generic/PageLoading';
-import { getSequenceId, getCourseStatus } from '../../../../data/selectors';
+import {
+  getCourseStatus, getSequenceId, getCourseOutline, getCourseOutlineStatus,
+} from '../../../../data/selectors';
 import SidebarContext from '../../SidebarContext';
 import { ID } from './CourseOutlineTrigger';
 import SidebarSection from './SidebarSection';
@@ -25,28 +27,34 @@ const CourseOutlineTray = ({ intl }) => {
 
   const { courseStatus } = useSelector(getCourseStatus);
   const activeSequenceId = useSelector(getSequenceId);
+  const { sections = {}, sequences = {} } = useSelector(getCourseOutline);
+  const courseOutlineStatus = useSelector(getCourseOutlineStatus);
 
   const {
     courseId,
+    unitId,
     currentSidebar,
     toggleSidebar,
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
   const {
-    courseBlocks,
-  } = useModel('outline', courseId);
-
-  const {
     sectionId: activeSectionId,
   } = useModel('sequences', activeSequenceId);
 
-  const rootCourseId = courseBlocks?.courses && Object.keys(courseBlocks?.courses)[0];
-  const sectionsIds = courseBlocks?.courses[rootCourseId]?.sectionIds;
-  const sequenceIds = courseBlocks?.sections[selectedSection || activeSectionId]?.sequenceIds;
-  const backButtonTitle = courseBlocks?.sections[selectedSection || activeSectionId]?.title;
+  const sectionsIds = Object.keys(sections);
+  const sequenceIds = sections[selectedSection || activeSectionId]?.sequenceIds || [];
+  const backButtonTitle = sections[selectedSection || activeSectionId]?.title;
 
-  const handleToggleCollapse = () => (currentSidebar === ID ? toggleSidebar(null) : toggleSidebar(ID));
+  const handleToggleCollapse = () => {
+    if (currentSidebar === ID) {
+      toggleSidebar(null);
+      window.sessionStorage.removeItem('showCourseOutlineSidebar');
+    } else {
+      toggleSidebar(ID);
+      window.sessionStorage.setItem('showCourseOutlineSidebar', 'true');
+    }
+  };
 
   const handleBackToSectionLevel = () => {
     setDisplaySectionLevel();
@@ -83,7 +91,7 @@ const CourseOutlineTray = ({ intl }) => {
     </div>
   );
 
-  if (courseStatus === LOADING) {
+  if (courseStatus === LOADING || courseOutlineStatus === LOADING) {
     return (
       <section className="outline-sidebar flex-shrink-0 mr-4 min-vh-100 h-auto">
         {sidebarHeading}
@@ -108,15 +116,16 @@ const CourseOutlineTray = ({ intl }) => {
             <SidebarSequence
               key={sequenceId}
               courseId={courseId}
-              sequence={courseBlocks.sequences[sequenceId]}
+              sequence={sequences[sequenceId]}
               defaultOpen={sequenceId === activeSequenceId}
+              activeUnitId={unitId}
             />
           ))
           : sectionsIds.map((sectionId) => (
             <SidebarSection
               key={sectionId}
               courseId={courseId}
-              section={courseBlocks.sections[sectionId]}
+              section={sections[sectionId]}
               handleSelectSection={handleSelectSection}
             />
           ))}

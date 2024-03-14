@@ -14,3 +14,7 @@ export function sequenceIdsSelector(state) {
 export const getSequenceId = state => state.courseware.sequenceId;
 
 export const getCourseStatus = state => state.courseHome;
+
+export const getCourseOutline = state => state.courseware.courseOutline;
+
+export const getCourseOutlineStatus = state => state.courseware.courseOutlineStatus;

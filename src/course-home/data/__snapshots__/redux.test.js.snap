@@ -14,6 +14,8 @@ Object {
   },
   "courseware": Object {
     "courseId": null,
+    "courseOutline": Object {},
+    "courseOutlineStatus": "loading",
     "courseStatus": "loading",
     "sequenceId": null,
     "sequenceMightBeUnit": false,
@@ -401,6 +403,8 @@ Object {
   },
   "courseware": Object {
     "courseId": null,
+    "courseOutline": Object {},
+    "courseOutlineStatus": "loading",
     "courseStatus": "loading",
     "sequenceId": null,
     "sequenceMightBeUnit": false,
@@ -669,6 +673,8 @@ Object {
   },
   "courseware": Object {
     "courseId": null,
+    "courseOutline": Object {},
+    "courseOutlineStatus": "loading",
     "courseStatus": "loading",
     "sequenceId": null,
     "sequenceMightBeUnit": false,

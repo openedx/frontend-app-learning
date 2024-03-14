@@ -48,7 +48,12 @@ const SidebarSection = ({ intl, section, handleSelectSection }) => {
 
 SidebarSection.propTypes = {
   intl: intlShape.isRequired,
-  section: PropTypes.shape().isRequired,
+  section: PropTypes.shape({
+    complete: PropTypes.bool,
+    id: PropTypes.string,
+    title: PropTypes.string,
+    sequenceIds: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
   handleSelectSection: PropTypes.func.isRequired,
 };
 

@@ -9,11 +9,13 @@ export const DENIED = 'denied';
 const slice = createSlice({
   name: 'courseware',
   initialState: {
-    courseStatus: 'loading',
     courseId: null,
-    sequenceStatus: 'loading',
+    courseStatus: LOADING,
     sequenceId: null,
     sequenceMightBeUnit: false,
+    sequenceStatus: LOADING,
+    courseOutline: {},
+    courseOutlineStatus: LOADING,
   },
   reducers: {
     fetchCourseRequest: (state, { payload }) => {
@@ -47,6 +49,18 @@ const slice = createSlice({
       state.sequenceStatus = FAILED;
       state.sequenceMightBeUnit = payload.sequenceMightBeUnit || false;
     },
+    fetchCourseOutlineRequest: (state) => {
+      state.courseOutline = {};
+      state.courseOutlineStatus = LOADING;
+    },
+    fetchCourseOutlineSuccess: (state, { payload }) => {
+      state.courseOutline = payload.courseOutline;
+      state.courseOutlineStatus = LOADED;
+    },
+    fetchCourseOutlineFailure: (state) => {
+      state.courseOutline = {};
+      state.courseOutlineStatus = FAILED;
+    },
   },
 });
 
@@ -61,6 +75,9 @@ export const {
   fetchCourseRecommendationsRequest,
   fetchCourseRecommendationsSuccess,
   fetchCourseRecommendationsFailure,
+  fetchCourseOutlineRequest,
+  fetchCourseOutlineSuccess,
+  fetchCourseOutlineFailure,
 } = slice.actions;
 
 export const {
