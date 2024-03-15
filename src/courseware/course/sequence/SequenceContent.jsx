@@ -14,6 +14,8 @@ const SequenceContent = ({
   intl,
   courseId,
   sequenceId,
+  selectedLanguage,
+  setSelectedLanguage,
   unitId,
   unitLoadedHandler,
 }) => {
@@ -59,6 +61,8 @@ const SequenceContent = ({
       key={unitId}
       id={unitId}
       onLoaded={unitLoadedHandler}
+      selectedLanguage={selectedLanguage}
+      setSelectedLanguage={setSelectedLanguage}
     />
   );
 };
@@ -70,6 +74,8 @@ SequenceContent.propTypes = {
   unitId: PropTypes.string,
   unitLoadedHandler: PropTypes.func.isRequired,
   intl: intlShape.isRequired,
+  selectedLanguage: PropTypes.string.isRequired,
+  setSelectedLanguage: PropTypes.func.isRequired,
 };
 
 SequenceContent.defaultProps = {

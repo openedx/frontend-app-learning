@@ -17,7 +17,12 @@ import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
 
 const Unit = ({
-  courseId, format, onLoaded, id,
+  courseId,
+  format,
+  onLoaded,
+  id,
+  selectedLanguage,
+  setSelectedLanguage,
 }) => {
   const { formatMessage } = useIntl();
   const { authenticatedUser } = React.useContext(AppContext);
@@ -72,6 +77,8 @@ Unit.propTypes = {
   format: PropTypes.string,
   id: PropTypes.string.isRequired,
   onLoaded: PropTypes.func,
+  selectedLanguage: PropTypes.string.isRequired,
+  setSelectedLanguage: PropTypes.func.isRequired,
 };
 
 Unit.defaultProps = {
