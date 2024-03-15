@@ -22,6 +22,7 @@ const SidebarSequence = ({
     id,
     complete,
     title,
+    description,
     unitIds,
   } = sequence;
 
@@ -34,8 +35,9 @@ const SidebarSequence = ({
       <div className="col-auto p-0" style={{ fontSize: '1.1rem' }}>
         {complete ? <CheckCircleIcon className="text-success" /> : <CompletionSolidIcon />}
       </div>
-      <div className="col-auto flex-grow-1 ml-3 p-0 text-dark-500 text-left">
-        <span className="align-middle">{title}</span>
+      <div className="col-9 d-flex flex-column flex-grow-1 ml-3 mr-auto p-0 text-left">
+        <span className="align-middle text-dark-500">{title}</span>
+        {description && <span className="align-middle small text-muted">{description}</span>}
         <span className="sr-only">
           , {intl.formatMessage(complete
           ? courseOutlineMessages.completedAssignment
@@ -80,6 +82,7 @@ SidebarSequence.propTypes = {
     complete: PropTypes.bool,
     id: PropTypes.string,
     title: PropTypes.string,
+    description: PropTypes.string,
     unitIds: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   activeUnitId: PropTypes.string.isRequired,

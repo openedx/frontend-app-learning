@@ -1,10 +1,12 @@
 import { useContext } from 'react';
+import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { IconButton } from '@openedx/paragon';
 import { MenuOpen as MenuOpenIcon } from '@openedx/paragon/icons';
 
+import { getCoursewareOutlineSidebarSettings } from '../../../../data/selectors';
 import { LAYOUT_LEFT } from '../../common/constants';
 import SidebarContext from '../../SidebarContext';
 import messages from './messages';
@@ -19,10 +21,11 @@ const CourseOutlineTrigger = ({ intl, isMobileView }) => {
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
+  const { enabled: isEnabled } = useSelector(getCoursewareOutlineSidebarSettings);
   const isDisplayForDesktopView = !isMobileView && !shouldDisplayFullScreen && currentSidebar !== ID;
   const isDisplayForMobileView = isMobileView && shouldDisplayFullScreen;
 
-  if (!isDisplayForDesktopView && !isDisplayForMobileView) {
+  if ((!isDisplayForDesktopView && !isDisplayForMobileView) || !isEnabled) {
     return null;
   }
 

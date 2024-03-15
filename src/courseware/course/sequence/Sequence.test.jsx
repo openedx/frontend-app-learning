@@ -82,8 +82,8 @@ describe('Sequence', () => {
     );
 
     await waitFor(() => expect(screen.queryByText('Loading locked content messaging...')).toBeInTheDocument());
-    // `Previous`, `Prerequisite` and `Close Tray` buttons.
-    expect(screen.getAllByRole('button').length).toEqual(3);
+    // `Previous` and `Prerequisite` buttons.
+    expect(screen.getAllByRole('button').length).toEqual(2);
     // `Active` and `Next` buttons.
     expect(screen.getAllByRole('link').length).toEqual(2);
 
@@ -136,8 +136,8 @@ describe('Sequence', () => {
   it('handles loading unit', async () => {
     render(<Sequence {...mockData} />, { wrapWithRouter: true });
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
-    // `Previous`, `Bookmark` and `Close Tray` buttons
-    expect(screen.getAllByRole('button')).toHaveLength(3);
+    // `Previous` and `Bookmark` buttons
+    expect(screen.getAllByRole('button')).toHaveLength(2);
     // Renders `Next` button plus one button for each unit.
     expect(screen.getAllByRole('link')).toHaveLength(1 + unitBlocks.length);
 

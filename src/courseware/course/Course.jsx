@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '../../generic/user-messages';
 import { useModel } from '../../generic/model-store';
-import { getCourseOutlineStructure } from '../data/thunks';
+import { getCoursewareOutlineSidebarSettings } from '../data/selectors';
 import { Trigger as CourseOutlineTrigger } from './sidebar/sidebars/course-outline';
 import Chat from './chat/Chat';
 import SidebarProvider from './sidebar/SidebarContextProvider';
@@ -36,7 +36,8 @@ const Course = ({
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
   const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
-  const navigationDisabled = sequence?.navigationDisabled ?? false;
+  const { enabled: isEnabledOutlineSidebar = false } = useSelector(getCoursewareOutlineSidebarSettings);
+  const navigationDisabled = isEnabledOutlineSidebar || (sequence?.navigationDisabled ?? false);
 
   const pageTitleBreadCrumbs = [
     sequence,
@@ -66,10 +67,6 @@ const Course = ({
       celebrations,
     ));
   }, [sequenceId]);
-
-  useEffect(() => {
-    dispatch(getCourseOutlineStructure(courseId));
-  }, []);
 
   const SidebarProviderComponent = enableNewSidebar === 'true' ? NewSidebarProvider : SidebarProvider;
 

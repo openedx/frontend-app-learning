@@ -98,3 +98,14 @@ export async function getCourseOutline(courseId) {
 
   return data.blocks ? normalizeOutlineBlocks(courseId, data.blocks) : null;
 }
+
+/**
+ * Get waffle flag value that enable courseware outline sidebar.
+ * @param {string} courseId - The unique identifier for the course.
+ * @returns {Promise<{enabled: boolean}>} - The boolean value of enabling of the outline sidebar.
+ */
+export async function getCoursewareOutlineSidebarEnabledFlag(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-sidebar/enabled/`);
+  const { data } = await getAuthenticatedHttpClient().get(url.href);
+  return { enabled: data.enabled || false };
+}

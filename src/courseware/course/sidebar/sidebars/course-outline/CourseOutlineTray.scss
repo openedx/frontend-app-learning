@@ -46,10 +46,10 @@
 
             @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
                 padding-left: map-get($spacers, 4);
+            }
 
-                .collapsible-icon {
-                    margin-inline-start: initial;
-                }
+            .collapsible-icon {
+                margin-inline-start: initial;
             }
         }
     }

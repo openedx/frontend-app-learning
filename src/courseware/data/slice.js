@@ -15,6 +15,7 @@ const slice = createSlice({
     sequenceMightBeUnit: false,
     sequenceStatus: LOADING,
     courseOutline: {},
+    courseOutlineSidebarSettings: {},
     courseOutlineStatus: LOADING,
   },
   reducers: {
@@ -61,6 +62,9 @@ const slice = createSlice({
       state.courseOutline = {};
       state.courseOutlineStatus = FAILED;
     },
+    setCoursewareOutlineSidebarSettings: (state, { payload }) => {
+      state.courseOutlineSidebarSettings = payload;
+    },
   },
 });
 
@@ -78,6 +82,7 @@ export const {
   fetchCourseOutlineRequest,
   fetchCourseOutlineSuccess,
   fetchCourseOutlineFailure,
+  setCoursewareOutlineSidebarSettings,
 } = slice.actions;
 
 export const {
