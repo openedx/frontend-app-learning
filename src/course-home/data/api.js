@@ -432,7 +432,8 @@ export async function postDismissWelcomeMessage(courseId) {
 
 export async function postRequestCert(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/generate_user_cert`);
-  await getAuthenticatedHttpClient().post(url.href);
+  const { status } =  await getAuthenticatedHttpClient().post(url.href);
+  return status
 }
 
 export async function executePostFromPostEvent(postData, researchEventData) {

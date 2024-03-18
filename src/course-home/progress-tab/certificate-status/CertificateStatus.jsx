@@ -104,7 +104,16 @@ const CertificateStatus = ({ intl }) => {
     switch (certStatus) {
       case 'requesting':
         certCase = 'requestable';
-        buttonAction = () => { dispatch(requestCert(courseId)); };
+        buttonAction = () => {
+          
+          const requestCertFunc = requestCert()
+          const status = await requestCertFunc()
+          if (status === 200){
+            dispatch(fetchOutlineTab(courseIdFromUrl, targetUserId));
+          }
+
+          
+          //dispatch(requestCert(courseId)); };
         body = intl.formatMessage(messages[`${certCase}Body`]);
         buttonText = intl.formatMessage(messages[`${certCase}Button`]);
         break;

@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
+import { useParams } from 'react-router-dom';
+
 
 import {
   FormattedDate, FormattedMessage, injectIntl, intlShape,
@@ -33,13 +35,17 @@ import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import CourseRecommendations from './CourseRecommendations';
+import { fetchOutlineTab } from '../../../course-home/data';
 
 const LINKEDIN_BLUE = '#2867B2';
 
 const CourseCelebration = ({ intl }) => {
   const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
   const { courseId } = useSelector(state => state.courseware);
+  
   const dispatch = useDispatch();
+  const { targetUserId } = useParams();
+
   const {
     certificateData,
     end,
@@ -152,9 +158,16 @@ const CourseCelebration = ({ intl }) => {
       buttonPrefix = (
         <Button
           variant={buttonVariant}
-          onClick={() => {
+          onClick={async () => {
             logClick(org, courseId, administrator, buttonEvent);
-            dispatch(requestCert(courseId));
+            //dispatch(requestCert(courseId));
+            //dispatch(requestCert(courseId));
+            const requestCertFunc = requestCert()
+            const status = await requestCertFunc()
+            if (status === 200){
+              dispatch(fetchOutlineTab(courseIdFromUrl, targetUserId));
+            }
+
           }}
         >
           {intl.formatMessage(messages.requestCertificateButton)}

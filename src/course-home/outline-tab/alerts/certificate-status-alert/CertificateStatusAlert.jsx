@@ -6,8 +6,11 @@ import {
   injectIntl,
   intlShape,
 } from '@edx/frontend-platform/i18n';
+
+
 import { Alert, Button } from '@openedx/paragon';
 import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -17,6 +20,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import certMessages from './messages';
 import certStatusMessages from '../../../progress-tab/certificate-status/messages';
 import { requestCert } from '../../../data/thunks';
+import { fetchOutlineTab } from '../../../../course-home/data';
 
 export const CERT_STATUS_TYPE = {
   EARNED_NOT_AVAILABLE: 'earned_but_not_available',
@@ -27,6 +31,8 @@ export const CERT_STATUS_TYPE = {
 
 const CertificateStatusAlert = ({ intl, payload }) => {
   const dispatch = useDispatch();
+  const {  targetUserId } = useParams();
+
   const {
     certificateAvailableDate,
     certStatus,
@@ -89,9 +95,14 @@ const CertificateStatusAlert = ({ intl, payload }) => {
       alertProps.buttonMessage = intl.formatMessage(certStatusMessages.requestableButton);
       alertProps.buttonVisible = true;
       alertProps.buttonLink = '';
-      alertProps.buttonAction = () => {
+      alertProps.buttonAction = async () => {
         sendAlertClickTracking('edx.ui.lms.course_outline.certificate_alert_request_cert_button.clicked');
-        dispatch(requestCert(courseId));
+       //dispatch(requestCert(courseId));
+        const requestCertFunc = requestCert()
+        const status = await requestCertFunc()
+        if (status === 200){
+          dispatch(fetchOutlineTab(courseIdFromUrl, targetUserId));
+        }
       };
     }
     return alertProps;
