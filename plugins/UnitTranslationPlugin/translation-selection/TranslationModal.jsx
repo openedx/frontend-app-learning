@@ -13,21 +13,23 @@ import {
 import { Check } from '@edx/paragon/icons';
 
 import useTranslationModal from './useTranslationModal';
-import { languages } from './useSelectLanguage';
-import messages, { languageMessages } from './messages';
+import messages from './messages';
 
 import './TranslationModal.scss';
 
 const TranslationModal = ({
-  isOpen, close, selectedLanguage, setSelectedLanguage, id,
+  isOpen,
+  close,
+  selectedLanguage,
+  setSelectedLanguage,
+  availableLanguages,
 }) => {
   const { formatMessage } = useIntl();
-  const {
-    selectedIndex,
-    setSelectedIndex,
-    onSubmit,
-  } = useTranslationModal({
-    selectedLanguage, setSelectedLanguage, close, id,
+  const { selectedIndex, setSelectedIndex, onSubmit } = useTranslationModal({
+    selectedLanguage,
+    setSelectedLanguage,
+    close,
+    availableLanguages,
   });
 
   return (
@@ -41,19 +43,21 @@ const TranslationModal = ({
           <Button variant="tertiary" onClick={close}>
             {formatMessage(messages.cancelButtonText)}
           </Button>
-          <Button onClick={onSubmit}>{formatMessage(messages.submitButtonText)}</Button>
+          <Button onClick={onSubmit}>
+            {formatMessage(messages.submitButtonText)}
+          </Button>
         </ActionRow>
       )}
     >
       <ListBox className="listbox-container">
-        {languages.map(([key, value], index) => (
+        {availableLanguages.map(({ code, label }, index) => (
           <ListBoxOption
             className="d-flex justify-content-between"
-            key={key}
+            key={code}
             selectedOptionIndex={selectedIndex}
             onSelect={() => setSelectedIndex(index)}
           >
-            {formatMessage(languageMessages[value])}
+            {label}
             {selectedIndex === index && <Icon src={Check} />}
           </ListBoxOption>
         ))}
@@ -67,7 +71,12 @@ TranslationModal.propTypes = {
   close: PropTypes.func.isRequired,
   selectedLanguage: PropTypes.string.isRequired,
   setSelectedLanguage: PropTypes.func.isRequired,
-  id: PropTypes.string.isRequired,
+  availableLanguages: PropTypes.arrayOf(
+    PropTypes.shape({
+      code: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
 };
 
 export default TranslationModal;

@@ -115,6 +115,7 @@ function normalizeMetadata(metadata) {
     courseExitPageIsActive: data.course_exit_page_is_active,
     certificateData: camelCaseObject(data.certificate_data),
     entranceExamData: camelCaseObject(data.entrance_exam_data),
+    language: data.language,
     timeOffsetMillis: getTimeOffsetMillis(headers && headers.date, requestTime, responseTime),
     verifyIdentityUrl: data.verify_identity_url,
     verificationStatus: data.verification_status,
