@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<UnitTranslationPlugin /> render TranslationSelection when translation is enabled and language is available 1`] = `
+<TranslationSelection
+  availableLanguages={
+    Array [
+      "en",
+    ]
+  }
+  courseId="courseId"
+  id="id"
+  language="en"
+  unitId="unitId"
+/>
+`;

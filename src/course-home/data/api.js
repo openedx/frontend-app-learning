@@ -109,7 +109,6 @@ function normalizeCourseHomeCourseMetadata(metadata, rootSlug) {
       url: tab.url,
     })),
     isMasquerading: data.originalUserIsStaff && !data.isStaff,
-    language: data.language?.slice(0, 2),
   };
 }
 

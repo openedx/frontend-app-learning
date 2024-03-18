@@ -38,17 +38,4 @@ const messages = defineMessages({
   },
 });
 
-export const languageMessages = defineMessages({
-  English: {
-    id: 'translationSelection.English',
-    defaultMessage: 'English',
-    description: 'Language name for English.',
-  },
-  Spanish: {
-    id: 'translationSelection.Spanish',
-    defaultMessage: 'Spanish',
-    description: 'Language name for Spanish.',
-  },
-});
-
 export default messages;

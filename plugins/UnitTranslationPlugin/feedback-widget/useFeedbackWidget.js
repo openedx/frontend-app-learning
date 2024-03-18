@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { createTranslationFeedback, getTranslationFeedback } from './data/api';
+import { createTranslationFeedback, getTranslationFeedback } from '../data/api';
 
 const useFeedbackWidget = ({
   courseId,
@@ -60,6 +60,13 @@ const useFeedbackWidget = ({
     openGratitudeText,
   ]);
 
+  const onThumbsUpClick = useCallback(() => {
+    sendFeedback(true);
+  }, [sendFeedback]);
+  const onThumbsDownClick = useCallback(() => {
+    sendFeedback(false);
+  }, [sendFeedback]);
+
   return {
     closeFeedbackWidget,
     openFeedbackWidget,
@@ -67,6 +74,8 @@ const useFeedbackWidget = ({
     sendFeedback,
     showFeedbackWidget,
     showGratitudeText,
+    onThumbsUpClick,
+    onThumbsDownClick,
   };
 };
 

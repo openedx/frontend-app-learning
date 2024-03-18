@@ -1,9 +1,9 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import useFeedbackWidget from './useFeedbackWidget';
-import { createTranslationFeedback, getTranslationFeedback } from './data/api';
+import { createTranslationFeedback, getTranslationFeedback } from '../data/api';
 
-jest.mock('./data/api', () => ({
+jest.mock('../data/api', () => ({
   createTranslationFeedback: jest.fn(),
   getTranslationFeedback: jest.fn(),
 }));
@@ -94,6 +94,38 @@ describe('useFeedbackWidget', () => {
     waitFor(() => {
       expect(result.current.showGratitudeText).toBe(false);
     }, { timeout: 3000 });
+  });
+
+  test('onThumbsUpClick behavior', () => {
+    const { result } = renderHook(() => useFeedbackWidget(initialProps));
+
+    act(() => {
+      result.current.onThumbsUpClick();
+    });
+
+    expect(createTranslationFeedback).toHaveBeenCalledWith({
+      courseId: initialProps.courseId,
+      feedbackValue: true,
+      translationLanguage: initialProps.translationLanguage,
+      unitId: initialProps.unitId,
+      userId: initialProps.userId,
+    });
+  });
+
+  test('onThumbsDownClick behavior', () => {
+    const { result } = renderHook(() => useFeedbackWidget(initialProps));
+
+    act(() => {
+      result.current.onThumbsDownClick();
+    });
+
+    expect(createTranslationFeedback).toHaveBeenCalledWith({
+      courseId: initialProps.courseId,
+      feedbackValue: false,
+      translationLanguage: initialProps.translationLanguage,
+      unitId: initialProps.unitId,
+      userId: initialProps.userId,
+    });
   });
 
   test('fetch feedback on initialization', () => {
