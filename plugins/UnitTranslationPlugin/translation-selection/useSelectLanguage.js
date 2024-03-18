@@ -6,14 +6,6 @@ import {
 } from '@src/data/localStorage';
 
 export const selectedLanguageKey = 'selectedLanguages';
-// This will be use to check supported languages
-export const languages = Object.entries({
-  en: 'English',
-  es: 'Spanish',
-});
-
-export const getIndexByLanguage = (language) => languages.findIndex(([key]) => key === language);
-export const getLanguageByIndex = (index) => languages[index][0];
 
 export const stateKeys = StrictDict({
   selectedLanguage: 'selectedLanguage',

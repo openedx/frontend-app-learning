@@ -74,22 +74,18 @@ export const authenticatedUser = {
   administrator: false,
 };
 
-export function initializeMockApp() {
-  mergeConfig({
-    CONTACT_URL: process.env.CONTACT_URL || null,
-    DISCUSSIONS_MFE_BASE_URL: process.env.DISCUSSIONS_MFE_BASE_URL || null,
-    INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
-    STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,
-    TWITTER_URL: process.env.TWITTER_URL || null,
-    authenticatedUser: {
-      userId: 'abc123',
-      username: 'MockUser',
-      roles: [],
-      administrator: false,
-    },
-    SUPPORT_URL_ID_VERIFICATION: 'http://example.com',
-  });
+mergeConfig({
+  ...process.env,
+  authenticatedUser: {
+    userId: 'abc123',
+    username: 'MockUser',
+    roles: [],
+    administrator: false,
+  },
+  SUPPORT_URL_ID_VERIFICATION: 'http://example.com',
+});
 
+export function initializeMockApp() {
   const loggingService = configureLogging(MockLoggingService, {
     config: getConfig(),
   });
