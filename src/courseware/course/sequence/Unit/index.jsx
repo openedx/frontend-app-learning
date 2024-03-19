@@ -17,7 +17,10 @@ import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
 
 const Unit = ({
-  courseId, format, onLoaded, id,
+  courseId,
+  format,
+  onLoaded,
+  id,
 }) => {
   const { formatMessage } = useIntl();
   const { authenticatedUser } = React.useContext(AppContext);

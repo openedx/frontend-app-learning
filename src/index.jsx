@@ -150,6 +150,7 @@ initialize({
   handlers: {
     config: () => {
       mergeConfig({
+        AI_TRANSLATIONS_URL: process.env.AI_TRANSLATIONS_URL || null,
         CONTACT_URL: process.env.CONTACT_URL || null,
         CREDENTIALS_BASE_URL: process.env.CREDENTIALS_BASE_URL || null,
         CREDIT_HELP_LINK_URL: process.env.CREDIT_HELP_LINK_URL || null,

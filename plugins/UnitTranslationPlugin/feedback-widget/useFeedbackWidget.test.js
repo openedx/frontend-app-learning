@@ -1,12 +1,39 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import useFeedbackWidget from './useFeedbackWidget';
+import { createTranslationFeedback, getTranslationFeedback } from './data/api';
+
+jest.mock('./data/api', () => ({
+  createTranslationFeedback: jest.fn(),
+  getTranslationFeedback: jest.fn(),
+}));
+
+const initialProps = {
+  courseId: 'course-v1:edX+DemoX+Demo_Course',
+  translationLanguage: 'es',
+  unitId: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@vertical_0270f6de40fc',
+  userId: 3,
+};
+
+const newProps = {
+  courseId: 'course-v1:edX+DemoX+Demo_Course',
+  translationLanguage: 'fr',
+  unitId: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@vertical_0270f6de40fc',
+  userId: 3,
+};
 
 describe('useFeedbackWidget', () => {
-  test('closeFeedbackWidget behavior', () => {
-    const { result } = renderHook(() => useFeedbackWidget());
+  beforeEach(async () => {
+    getTranslationFeedback.mockReturnValue('');
+  });
 
-    expect(result.current.showFeedbackWidget).toBe(true);
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('closeFeedbackWidget behavior', () => {
+    const { result, waitFor } = renderHook(() => useFeedbackWidget(initialProps));
+    waitFor(() => expect(result.current.showFeedbackWidget.toBe(true)));
     act(() => {
       result.current.closeFeedbackWidget();
     });
@@ -14,8 +41,7 @@ describe('useFeedbackWidget', () => {
   });
 
   test('openFeedbackWidget behavior', () => {
-    const { result } = renderHook(() => useFeedbackWidget());
-
+    const { result } = renderHook(() => useFeedbackWidget(initialProps));
     act(() => {
       result.current.closeFeedbackWidget();
     });
@@ -27,7 +53,7 @@ describe('useFeedbackWidget', () => {
   });
 
   test('openGratitudeText behavior', async () => {
-    const { result, waitFor } = renderHook(() => useFeedbackWidget());
+    const { result, waitFor } = renderHook(() => useFeedbackWidget(initialProps));
 
     expect(result.current.showGratitudeText).toBe(false);
     act(() => {
@@ -41,19 +67,65 @@ describe('useFeedbackWidget', () => {
   });
 
   test('sendFeedback behavior', () => {
-    const { result, waitFor } = renderHook(() => useFeedbackWidget());
+    const { result, waitFor } = renderHook(() => useFeedbackWidget(initialProps));
+    const feedbackValue = true;
 
-    expect(result.current.showFeedbackWidget).toBe(true);
+    waitFor(() => expect(result.current.showFeedbackWidget.toBe(true)));
+
     expect(result.current.showGratitudeText).toBe(false);
     act(() => {
-      result.current.sendFeedback();
+      result.current.sendFeedback(feedbackValue);
     });
-    expect(result.current.showFeedbackWidget).toBe(false);
-    expect(result.current.showGratitudeText).toBe(true);
+
+    waitFor(() => {
+      expect(result.current.showFeedbackWidget).toBe(false);
+      expect(result.current.showGratitudeText).toBe(true);
+    });
+
+    expect(createTranslationFeedback).toHaveBeenCalledWith({
+      courseId: initialProps.courseId,
+      feedbackValue,
+      translationLanguage: initialProps.translationLanguage,
+      unitId: initialProps.unitId,
+      userId: initialProps.userId,
+    });
 
     // Wait for 3 seconds to hide the gratitude text
     waitFor(() => {
       expect(result.current.showGratitudeText).toBe(false);
     }, { timeout: 3000 });
+  });
+
+  test('fetch feedback on initialization', () => {
+    const { waitFor } = renderHook(() => useFeedbackWidget(initialProps));
+    waitFor(() => {
+      expect(getTranslationFeedback).toHaveBeenCalledWith({
+        courseId: initialProps.courseId,
+        translationLanguage: initialProps.translationLanguage,
+        unitId: initialProps.unitId,
+        userId: initialProps.userId,
+      });
+    });
+  });
+
+  test('fetch feedback on props update', () => {
+    const { rerender, waitFor } = renderHook(() => useFeedbackWidget(initialProps));
+    waitFor(() => {
+      expect(getTranslationFeedback).toHaveBeenCalledWith({
+        courseId: initialProps.courseId,
+        translationLanguage: initialProps.translationLanguage,
+        unitId: initialProps.unitId,
+        userId: initialProps.userId,
+      });
+    });
+    rerender(newProps);
+    waitFor(() => {
+      expect(getTranslationFeedback).toHaveBeenCalledWith({
+        courseId: newProps.courseId,
+        translationLanguage: newProps.translationLanguage,
+        unitId: newProps.unitId,
+        userId: newProps.userId,
+      });
+    });
   });
 });
