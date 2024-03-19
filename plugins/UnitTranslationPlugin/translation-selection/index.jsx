@@ -9,18 +9,18 @@ import { registerOverrideMethod } from '@src/generic/plugin-store';
 import { stringifyUrl } from 'query-string';
 import TranslationModal from './TranslationModal';
 import useTranslationTour from './useTranslationTour';
-import useSelectLanguage from './useSelectLanguage';
 
-const TranslationSelection = ({ id, courseId, language }) => {
+const TranslationSelection = ({
+  id,
+  courseId,
+  language,
+  selectedLanguage,
+  setSelectedLanguage,
+}) => {
   const dispatch = useDispatch();
   const {
     translationTour, isOpen, open, close,
   } = useTranslationTour();
-
-  const { selectedLanguage, setSelectedLanguage } = useSelectLanguage({
-    courseId,
-    language,
-  });
 
   useEffect(() => {
     dispatch(
@@ -73,6 +73,8 @@ TranslationSelection.propTypes = {
   id: PropTypes.string.isRequired,
   courseId: PropTypes.string.isRequired,
   language: PropTypes.string.isRequired,
+  selectedLanguage: PropTypes.string.isRequired,
+  setSelectedLanguage: PropTypes.func.isRequired,
 };
 
 TranslationSelection.defaultProps = {};

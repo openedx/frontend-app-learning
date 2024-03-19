@@ -40,7 +40,7 @@ jest.mock('@edx/frontend-platform/i18n', () => {
 describe('<FeedbackWidget />', () => {
   const props = {
     courseId: 'course-v1:edX+DemoX+Demo_Course',
-    languageCode: 'es',
+    translationLanguage: 'es',
     unitId: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@37b72b3915204b70acb00c55b604b563',
     userId: '123',
   };
