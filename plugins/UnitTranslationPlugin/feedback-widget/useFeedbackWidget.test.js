@@ -1,23 +1,11 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import useFeedbackWidget from './useFeedbackWidget';
+import { createTranslationFeedback, getTranslationFeedback } from './data/api';
 
-import { useModel } from '../../../../../generic/model-store';
-import { createWholeCourseTranslationFeedback, fetchWholeCourseTranslationFeedback } from './data/thunks';
-
-jest.mock('./data/thunks', () => ({
-  createWholeCourseTranslationFeedback: jest.fn(),
-  fetchWholeCourseTranslationFeedback: jest.fn(),
-}));
-
-jest.mock('../../../../../generic/model-store', () => ({
-  useModel: jest.fn(),
-}));
-
-const mockDispatch = jest.fn();
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
+jest.mock('./data/api', () => ({
+  createTranslationFeedback: jest.fn(),
+  getTranslationFeedback: jest.fn(),
 }));
 
 const initialProps = {
@@ -36,9 +24,7 @@ const newProps = {
 
 describe('useFeedbackWidget', () => {
   beforeEach(async () => {
-    useModel.mockReturnValue({
-      translationFeedback: null,
-    });
+    getTranslationFeedback.mockReturnValue('');
   });
 
   afterEach(() => {
@@ -48,7 +34,6 @@ describe('useFeedbackWidget', () => {
   test('closeFeedbackWidget behavior', () => {
     const { result, waitFor } = renderHook(() => useFeedbackWidget(initialProps));
     waitFor(() => expect(result.current.showFeedbackWidget.toBe(true)));
-    expect(result.current.showFeedbackWidget).toBe(true);
     act(() => {
       result.current.closeFeedbackWidget();
     });
@@ -97,14 +82,13 @@ describe('useFeedbackWidget', () => {
       expect(result.current.showGratitudeText).toBe(true);
     });
 
-    expect(mockDispatch).toHaveBeenCalled();
-    expect(createWholeCourseTranslationFeedback).toHaveBeenCalledWith(
-      initialProps.courseId,
+    expect(createTranslationFeedback).toHaveBeenCalledWith({
+      courseId: initialProps.courseId,
       feedbackValue,
-      initialProps.translationLanguage,
-      initialProps.unitId,
-      initialProps.userId,
-    );
+      translationLanguage: initialProps.translationLanguage,
+      unitId: initialProps.unitId,
+      userId: initialProps.userId,
+    });
 
     // Wait for 3 seconds to hide the gratitude text
     waitFor(() => {
@@ -115,33 +99,33 @@ describe('useFeedbackWidget', () => {
   test('fetch feedback on initialization', () => {
     const { waitFor } = renderHook(() => useFeedbackWidget(initialProps));
     waitFor(() => {
-      expect(fetchWholeCourseTranslationFeedback).toHaveBeenCalledWith(
-        initialProps.courseId,
-        initialProps.translationLanguage,
-        initialProps.unitId,
-        initialProps.userId,
-      );
+      expect(getTranslationFeedback).toHaveBeenCalledWith({
+        courseId: initialProps.courseId,
+        translationLanguage: initialProps.translationLanguage,
+        unitId: initialProps.unitId,
+        userId: initialProps.userId,
+      });
     });
   });
 
   test('fetch feedback on props update', () => {
     const { rerender, waitFor } = renderHook(() => useFeedbackWidget(initialProps));
     waitFor(() => {
-      expect(fetchWholeCourseTranslationFeedback).toHaveBeenCalledWith(
-        initialProps.courseId,
-        initialProps.translationLanguage,
-        initialProps.unitId,
-        initialProps.userId,
-      );
+      expect(getTranslationFeedback).toHaveBeenCalledWith({
+        courseId: initialProps.courseId,
+        translationLanguage: initialProps.translationLanguage,
+        unitId: initialProps.unitId,
+        userId: initialProps.userId,
+      });
     });
     rerender(newProps);
     waitFor(() => {
-      expect(fetchWholeCourseTranslationFeedback).toHaveBeenCalledWith(
-        newProps.courseId,
-        newProps.translationLanguage,
-        newProps.unitId,
-        newProps.userId,
-      );
+      expect(getTranslationFeedback).toHaveBeenCalledWith({
+        courseId: newProps.courseId,
+        translationLanguage: newProps.translationLanguage,
+        unitId: newProps.unitId,
+        userId: newProps.userId,
+      });
     });
   });
 });

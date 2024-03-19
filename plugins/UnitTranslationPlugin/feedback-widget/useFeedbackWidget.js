@@ -1,11 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
-import { useModel } from '../../../../../generic/model-store';
-import {
-  createWholeCourseTranslationFeedback,
-  fetchWholeCourseTranslationFeedback,
-} from './data';
+import { createTranslationFeedback, getTranslationFeedback } from './data/api';
 
 const useFeedbackWidget = ({
   courseId,
@@ -13,8 +8,6 @@ const useFeedbackWidget = ({
   unitId,
   userId,
 }) => {
-  const dispatch = useDispatch();
-  const { translationFeedback } = useModel('coursewareMeta', courseId);
   const [showFeedbackWidget, setShowFeedbackWidget] = useState(false);
   const [showGratitudeText, setShowGratitudeText] = useState(false);
 
@@ -26,24 +19,20 @@ const useFeedbackWidget = ({
     setShowFeedbackWidget(true);
   }, [setShowFeedbackWidget]);
 
-  useEffect(() => {
-    dispatch(fetchWholeCourseTranslationFeedback(
+  useEffect(async () => {
+    const translationFeedback = await getTranslationFeedback({
       courseId,
       translationLanguage,
       unitId,
       userId,
-    ));
+    });
+    setShowFeedbackWidget(!translationFeedback);
   }, [
     courseId,
     translationLanguage,
     unitId,
     userId,
-    openFeedbackWidget,
   ]);
-
-  useEffect(() => {
-    setShowFeedbackWidget(!translationFeedback);
-  }, [translationFeedback]);
 
   const openGratitudeText = useCallback(() => {
     setShowGratitudeText(true);
@@ -52,14 +41,14 @@ const useFeedbackWidget = ({
     }, 3000);
   }, [setShowGratitudeText]);
 
-  const sendFeedback = useCallback((feedbackValue) => {
-    dispatch(createWholeCourseTranslationFeedback(
+  const sendFeedback = useCallback(async (feedbackValue) => {
+    await createTranslationFeedback({
       courseId,
       feedbackValue,
       translationLanguage,
       unitId,
       userId,
-    ));
+    });
     closeFeedbackWidget();
     openGratitudeText();
   }, [

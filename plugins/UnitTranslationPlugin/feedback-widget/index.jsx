@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
+
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { ActionRow, IconButton, Icon } from '@edx/paragon';
 import { Close, ThumbUpOutline, ThumbDownOffAlt } from '@edx/paragon/icons';

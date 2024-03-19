@@ -19,10 +19,6 @@ Object {
     "sequenceMightBeUnit": false,
     "sequenceStatus": "loading",
   },
-  "feedbackWidget": Object {
-    "createWholeCourseTranslationFeedbackStatus": "unset",
-    "fetchWholeCourseTranslationFeedbackStatus": "unset",
-  },
   "learningAssistant": ObjectContaining {
     "conversationId": Any<String>,
   },
@@ -411,10 +407,6 @@ Object {
     "sequenceMightBeUnit": false,
     "sequenceStatus": "loading",
   },
-  "feedbackWidget": Object {
-    "createWholeCourseTranslationFeedbackStatus": "unset",
-    "fetchWholeCourseTranslationFeedbackStatus": "unset",
-  },
   "learningAssistant": ObjectContaining {
     "conversationId": Any<String>,
   },
@@ -680,10 +672,6 @@ Object {
     "sequenceId": null,
     "sequenceMightBeUnit": false,
     "sequenceStatus": "loading",
-  },
-  "feedbackWidget": Object {
-    "createWholeCourseTranslationFeedbackStatus": "unset",
-    "fetchWholeCourseTranslationFeedbackStatus": "unset",
   },
   "learningAssistant": ObjectContaining {
     "conversationId": Any<String>,
