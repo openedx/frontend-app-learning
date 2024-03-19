@@ -2,9 +2,10 @@
 import React, {
   useEffect, useState,
 } from 'react';
-import { getConfig } from '@edx/frontend-platform';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+
+import { getConfig } from '@edx/frontend-platform';
 import {
   sendTrackEvent,
   sendTrackingLogEvent,
@@ -199,6 +200,7 @@ const Sequence = ({
         </div>
         {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
       </div>
+      <div id="whole-course-translation-feedback-widget" />
     </>
   );
 

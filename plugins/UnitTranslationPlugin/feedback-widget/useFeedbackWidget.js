@@ -1,7 +1,14 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-const useFeedbackWidget = () => {
-  const [showFeedbackWidget, setShowFeedbackWidget] = useState(true);
+import { createTranslationFeedback, getTranslationFeedback } from './data/api';
+
+const useFeedbackWidget = ({
+  courseId,
+  translationLanguage,
+  unitId,
+  userId,
+}) => {
+  const [showFeedbackWidget, setShowFeedbackWidget] = useState(false);
   const [showGratitudeText, setShowGratitudeText] = useState(false);
 
   const closeFeedbackWidget = useCallback(() => {
@@ -12,6 +19,21 @@ const useFeedbackWidget = () => {
     setShowFeedbackWidget(true);
   }, [setShowFeedbackWidget]);
 
+  useEffect(async () => {
+    const translationFeedback = await getTranslationFeedback({
+      courseId,
+      translationLanguage,
+      unitId,
+      userId,
+    });
+    setShowFeedbackWidget(!translationFeedback);
+  }, [
+    courseId,
+    translationLanguage,
+    unitId,
+    userId,
+  ]);
+
   const openGratitudeText = useCallback(() => {
     setShowGratitudeText(true);
     setTimeout(() => {
@@ -19,11 +41,24 @@ const useFeedbackWidget = () => {
     }, 3000);
   }, [setShowGratitudeText]);
 
-  const sendFeedback = useCallback(() => {
-    // Create feedback
+  const sendFeedback = useCallback(async (feedbackValue) => {
+    await createTranslationFeedback({
+      courseId,
+      feedbackValue,
+      translationLanguage,
+      unitId,
+      userId,
+    });
     closeFeedbackWidget();
     openGratitudeText();
-  }, [closeFeedbackWidget, openGratitudeText]);
+  }, [
+    courseId,
+    translationLanguage,
+    unitId,
+    userId,
+    closeFeedbackWidget,
+    openGratitudeText,
+  ]);
 
   return {
     closeFeedbackWidget,
