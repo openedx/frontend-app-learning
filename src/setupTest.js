@@ -152,7 +152,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   axiosMock.reset();
 
   const {
-    courseBlocks, sequenceBlocks, courseMetadata, sequenceMetadata, courseHomeMetadata,
+    courseBlocks, sequenceBlocks, unitBlocks, courseMetadata, sequenceMetadata, courseHomeMetadata,
   } = buildSimpleCourseAndSequenceMetadata(options);
 
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseMetadata.id}`;
@@ -161,14 +161,28 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
   let courseHomeMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseMetadata.id}`;
   const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
+  const outlineSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseMetadata.id}/courseware-sidebar/enabled/`;
+  const discussionsSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseMetadata.id}/discussion-sidebar/enabled/`;
+  const outlineSidebarUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/sidebar/${courseMetadata.id}`;
   courseHomeMetadataUrl = appendBrowserTimezoneToUrl(courseHomeMetadataUrl);
 
   const provider = options?.provider || 'legacy';
+  const outlineSidebarSettings = options.outlineSidebarSettings || { enabled: true };
+  const discussionsSidebarSettings = options.discussionsSidebarSettings || { enabled: true };
 
   axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
   axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
   axiosMock.onGet(discussionConfigUrl).reply(200, { provider });
+  axiosMock.onGet(outlineSidebarSettingsUrl).reply(200, outlineSidebarSettings);
+  axiosMock.onGet(discussionsSidebarSettingsUrl).reply(200, discussionsSidebarSettings);
+
+  axiosMock.onGet(outlineSidebarUrl).reply(200, {
+    ...courseBlocks,
+    ...sequenceBlocks,
+    ...unitBlocks,
+  });
+
   sequenceMetadata.forEach(metadata => {
     const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${metadata.item_id}`;
     axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);

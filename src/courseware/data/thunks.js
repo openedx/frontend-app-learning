@@ -10,6 +10,7 @@ import {
   getCourseOutline,
   getCourseTopics,
   getCoursewareOutlineSidebarEnabledFlag,
+  getDiscussionSidebarDefaultOpeningFlag,
   getLearningSequencesOutline,
   getSequenceMetadata,
   postIntegritySignature,
@@ -27,6 +28,7 @@ import {
   fetchCourseOutlineSuccess,
   fetchCourseOutlineFailure,
   setCoursewareOutlineSidebarSettings,
+  setDiscussionsSidebarSettings,
 } from './slice';
 
 export function fetchCourse(courseId) {
@@ -37,15 +39,18 @@ export function fetchCourse(courseId) {
       getLearningSequencesOutline(courseId),
       getCourseHomeCourseMetadata(courseId, 'courseware'),
       getCoursewareOutlineSidebarEnabledFlag(courseId),
+      getDiscussionSidebarDefaultOpeningFlag(courseId),
     ]).then(([
       courseMetadataResult,
       learningSequencesOutlineResult,
       courseHomeMetadataResult,
-      courseOutlineSidebarDisableFlagResult]) => {
+      courseOutlineSidebarDisableFlagResult,
+      discussionSidebarDisableFlagResult]) => {
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
       const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
       const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
       const fetchedOutlineSidebarEnableFlag = courseOutlineSidebarDisableFlagResult.status === 'fulfilled';
+      const fetchedDiscussionSidebarEnableFlag = discussionSidebarDisableFlagResult.status === 'fulfilled';
 
       if (fetchedMetadata) {
         dispatch(addModel({
@@ -88,6 +93,12 @@ export function fetchCourse(courseId) {
       if (fetchedOutlineSidebarEnableFlag) {
         dispatch(setCoursewareOutlineSidebarSettings({
           enabled: courseOutlineSidebarDisableFlagResult.value.enabled,
+        }));
+      }
+
+      if (fetchedDiscussionSidebarEnableFlag) {
+        dispatch(setDiscussionsSidebarSettings({
+          enabled: discussionSidebarDisableFlagResult.value.enabled,
         }));
       }
 

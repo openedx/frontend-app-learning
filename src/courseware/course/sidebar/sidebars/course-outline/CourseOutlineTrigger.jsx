@@ -32,10 +32,10 @@ const CourseOutlineTrigger = ({ intl, isMobileView }) => {
   const handleToggleCollapse = () => {
     if (currentSidebar === ID) {
       toggleSidebar(null);
-      window.sessionStorage.removeItem('showCourseOutlineSidebar');
+      window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
     } else {
       toggleSidebar(ID);
-      window.sessionStorage.setItem('showCourseOutlineSidebar', 'true');
+      window.sessionStorage.removeItem('hideCourseOutlineSidebar');
     }
   };
 

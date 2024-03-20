@@ -30,7 +30,7 @@ const DiscussionsSidebar = ({ intl }) => {
       title={intl.formatMessage(messages.discussionsTitle)}
       ariaLabel={intl.formatMessage(messages.discussionsTitle)}
       sidebarId={ID}
-      width="50rem"
+      width="45rem"
       showTitleBar={false}
       className={classNames({
         'ml-4': !shouldDisplayFullScreen,

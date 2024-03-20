@@ -59,7 +59,7 @@ describe('Course', () => {
 
   it('loads learning sequence', async () => {
     render(<Course {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
@@ -210,7 +210,9 @@ describe('Course', () => {
       { type: 'vertical' },
       { courseId: courseMetadata.id },
     ));
-    const testStore = await initializeTestStore({ courseMetadata, unitBlocks }, false);
+    const testStore = await initializeTestStore({
+      courseMetadata, unitBlocks, outlineSidebarSettings: { enabled: false },
+    }, false);
     const { courseware, models } = testStore.getState();
     const { courseId, sequenceId } = courseware;
     const testData = {
