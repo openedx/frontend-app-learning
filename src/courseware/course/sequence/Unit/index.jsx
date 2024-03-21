@@ -7,7 +7,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { useModel } from '@src/generic/model-store';
 import { usePluginsCallback } from '@src/generic/plugin-store';
 
-// import { PluginSlot } from '@openedx/frontend-plugin-framework';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import BookmarkButton from '../../bookmark/BookmarkButton';
 import messages from '../messages';
 import ContentIFrame from './ContentIFrame';
@@ -43,13 +43,13 @@ const Unit = ({
     <div className="unit">
       <div className="mb-0">
         <h3 className="h3">{unit.title}</h3>
-        {/* <PluginSlot
+        <PluginSlot
           id="unit_title_plugin"
           pluginProps={{
             courseId,
             unitId: id,
           }}
-        /> */}
+        />
       </div>
       <h2 className="sr-only">{formatMessage(messages.headerPlaceholder)}</h2>
       <BookmarkButton
