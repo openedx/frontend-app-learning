@@ -29,8 +29,8 @@ import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 import { buildOutlineFromBlocks } from './courseware/data/__factories__/learningSequencesOutline.factory';
 
-jest.mock('@plugin-framework', () => ({
-  ...jest.requireActual('@plugin-framework'),
+jest.mock('@openedx/frontend-plugin-framework', () => ({
+  ...jest.requireActual('@openedx/frontend-plugin-framework'),
   Plugin: () => 'Plugin',
   PluginSlot: () => 'PluginSlot',
 }));

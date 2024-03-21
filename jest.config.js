@@ -16,7 +16,6 @@ const config = createConfig('jest', {
     'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
     '@src/(.*)': '<rootDir>/src/$1',
     '@plugins/(.*)': '<rootDir>/plugins/$1',
-    '@plugin-framework': '<rootDir>/plugin-framework/index.js',
   },
   testTimeout: 30000,
   globalSetup: "./global-setup.js",
