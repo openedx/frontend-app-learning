@@ -8,8 +8,6 @@ You can define plugin in `env.config.jsx` see `example.env.config.jsx` as exampl
   - The redux still require middleware to ignore the plugin's action from serializing
   - I am not sure how it behave with useCallback, useMemo, ...etc
   - There are still open question on how to write it properly
-- `@plugin-framework` will be replace by https://github.com/openedx/frontend-plugin-framework/. I will leave it there for now.
-- I am still unsure about writing tests for this
 
 ## Current work that should consider core part and extendable for the future plugin framework
 
