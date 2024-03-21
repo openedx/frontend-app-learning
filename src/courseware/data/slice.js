@@ -69,6 +69,34 @@ const slice = createSlice({
     setDiscussionsSidebarSettings: (state, { payload }) => {
       state.discussionsSidebarSettings = payload;
     },
+    updateCourseOutlineCompletion: (state, { payload }) => {
+      const { unitId, isComplete: isUnitComplete } = payload;
+      if (!isUnitComplete) {
+        return state;
+      }
+
+      state.courseOutline.units[unitId].complete = true;
+
+      const sequenceId = Object.keys(state.courseOutline.sequences)
+        .find(id => state.courseOutline.sequences[id].unitIds.includes(unitId));
+      const sequenceUnits = state.courseOutline.sequences[sequenceId].unitIds;
+      const isAllUnitsAreComplete = sequenceUnits.every((id) => state.courseOutline.units[id].complete);
+
+      if (isAllUnitsAreComplete) {
+        state.courseOutline.sequences[sequenceId].complete = true;
+      }
+
+      const sectionId = Object.keys(state.courseOutline.sections)
+        .find(id => state.courseOutline.sections[id].sequenceIds.includes(sequenceId));
+      const sectionSequences = state.courseOutline.sections[sectionId].sequenceIds;
+      const isAllSequencesAreComplete = sectionSequences.every((id) => state.courseOutline.sequences[id].complete);
+
+      if (isAllSequencesAreComplete) {
+        state.courseOutline.sections[sectionId].complete = true;
+      }
+
+      return state;
+    },
   },
 });
 
@@ -88,6 +116,7 @@ export const {
   fetchCourseOutlineFailure,
   setCoursewareOutlineSidebarSettings,
   setDiscussionsSidebarSettings,
+  updateCourseOutlineCompletion,
 } = slice.actions;
 
 export const {

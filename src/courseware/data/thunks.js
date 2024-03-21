@@ -29,6 +29,7 @@ import {
   fetchCourseOutlineFailure,
   setCoursewareOutlineSidebarSettings,
   setDiscussionsSidebarSettings,
+  updateCourseOutlineCompletion,
 } from './slice';
 
 export function fetchCourse(courseId) {
@@ -195,6 +196,7 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
           complete: isComplete,
         },
       }));
+      dispatch(updateCourseOutlineCompletion({ sequenceId, unitId, isComplete }));
       return isComplete;
     } catch (error) {
       logError(error);

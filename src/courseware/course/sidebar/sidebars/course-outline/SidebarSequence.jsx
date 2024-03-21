@@ -51,7 +51,7 @@ const SidebarSequence = ({
     <li>
       <Collapsible
         className={classNames('mb-2', { 'active-section': id === activeSequenceId })}
-        styling="card-lg"
+        styling="card-lg text-break"
         title={sectionTitle}
         open={open}
         onToggle={() => setOpen(!open)}
@@ -65,6 +65,7 @@ const SidebarSequence = ({
               sequenceId={id}
               unit={units[unitId]}
               isActive={activeUnitId === unitId}
+              activeUnitId={activeUnitId}
               isFirst={index === 0}
             />
           ))}

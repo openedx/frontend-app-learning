@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
+import { checkBlockCompletion } from '../../../../data';
 import UnitIcon from './UnitIcon';
 import messages from './messages';
 
@@ -14,12 +16,18 @@ const SidebarUnit = ({
   isFirst,
   unit,
   isActive,
+  activeUnitId,
 }) => {
   const {
     complete,
     title,
     icon,
   } = unit;
+  const dispatch = useDispatch();
+
+  const handleClick = () => {
+    dispatch(checkBlockCompletion(courseId, sequenceId, activeUnitId));
+  };
 
   return (
     <li className={classNames({ 'bg-info-100': isActive, 'border-top border-light': !isFirst })}>
@@ -29,7 +37,11 @@ const SidebarUnit = ({
         </div>
         <div className="col-10 p-0 ml-3 text-break">
           <span className="align-middle">
-            <Link to={`/course/${courseId}/${sequenceId}/${id}`} className="text-gray-700">
+            <Link
+              to={`/course/${courseId}/${sequenceId}/${id}`}
+              className="text-gray-700"
+              onClick={handleClick}
+            >
               {title}
             </Link>
           </span>
@@ -56,6 +68,7 @@ SidebarUnit.propTypes = {
   isActive: PropTypes.bool,
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
+  activeUnitId: PropTypes.string.isRequired,
 };
 
 SidebarUnit.defaultProps = {
