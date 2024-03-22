@@ -40,7 +40,11 @@ const UnitIcon = ({ type, isCompleted, ...props }) => {
     },
   };
 
-  const Icon = iconMap[type]?.[isCompleted ? 'complete' : 'default'];
+  let Icon = iconMap[type || UNIT_ICON_TYPES.other];
+
+  if (typeof Icon === 'object') {
+    Icon = iconMap[type || UNIT_ICON_TYPES.other]?.[isCompleted ? 'complete' : 'default'];
+  }
 
   return (
     <Icon {...props} className={classNames({ 'text-success': isCompleted, 'text-gray-700': !isCompleted })} />

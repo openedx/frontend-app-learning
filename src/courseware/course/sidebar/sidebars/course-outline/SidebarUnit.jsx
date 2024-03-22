@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { checkBlockCompletion } from '../../../../data';
-import UnitIcon from './UnitIcon';
+import UnitIcon, { UNIT_ICON_TYPES } from './UnitIcon';
 import messages from './messages';
 
 const SidebarUnit = ({
@@ -16,6 +16,7 @@ const SidebarUnit = ({
   isFirst,
   unit,
   isActive,
+  isLocked,
   activeUnitId,
 }) => {
   const {
@@ -29,11 +30,13 @@ const SidebarUnit = ({
     dispatch(checkBlockCompletion(courseId, sequenceId, activeUnitId));
   };
 
+  const iconType = isLocked ? UNIT_ICON_TYPES.lock : icon;
+
   return (
     <li className={classNames({ 'bg-info-100': isActive, 'border-top border-light': !isFirst })}>
       <div className="row w-100 m-0 d-flex align-items-center">
         <div className="col-auto p-0">
-          <UnitIcon type={icon} isCompleted={complete} />
+          <UnitIcon type={iconType} isCompleted={complete} />
         </div>
         <div className="col-10 p-0 ml-3 text-break">
           <span className="align-middle">
@@ -65,14 +68,11 @@ SidebarUnit.propTypes = {
     title: PropTypes.string,
     type: PropTypes.string,
   }).isRequired,
-  isActive: PropTypes.bool,
+  isActive: PropTypes.bool.isRequired,
+  isLocked: PropTypes.bool.isRequired,
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
   activeUnitId: PropTypes.string.isRequired,
-};
-
-SidebarUnit.defaultProps = {
-  isActive: false,
 };
 
 export default injectIntl(SidebarUnit);

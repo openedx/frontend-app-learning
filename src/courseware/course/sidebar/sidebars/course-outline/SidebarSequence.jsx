@@ -10,6 +10,7 @@ import courseOutlineMessages from '../../../../../course-home/outline-tab/messag
 import { getCourseOutline, getSequenceId } from '../../../../data/selectors';
 import { CompletionSolidIcon } from './icons';
 import SidebarUnit from './SidebarUnit';
+import { UNIT_ICON_TYPES } from './UnitIcon';
 
 const SidebarSequence = ({
   intl,
@@ -22,8 +23,9 @@ const SidebarSequence = ({
     id,
     complete,
     title,
-    description,
+    specialExamInfo,
     unitIds,
+    type,
   } = sequence;
 
   const [open, setOpen] = useState(defaultOpen);
@@ -37,7 +39,7 @@ const SidebarSequence = ({
       </div>
       <div className="col-9 d-flex flex-column flex-grow-1 ml-3 mr-auto p-0 text-left">
         <span className="align-middle text-dark-500">{title}</span>
-        {description && <span className="align-middle small text-muted">{description}</span>}
+        {specialExamInfo && <span className="align-middle small text-muted">{specialExamInfo}</span>}
         <span className="sr-only">
           , {intl.formatMessage(complete
           ? courseOutlineMessages.completedAssignment
@@ -67,6 +69,7 @@ const SidebarSequence = ({
               isActive={activeUnitId === unitId}
               activeUnitId={activeUnitId}
               isFirst={index === 0}
+              isLocked={type === UNIT_ICON_TYPES.lock}
             />
           ))}
         </ol>
@@ -83,7 +86,8 @@ SidebarSequence.propTypes = {
     complete: PropTypes.bool,
     id: PropTypes.string,
     title: PropTypes.string,
-    description: PropTypes.string,
+    type: PropTypes.string,
+    specialExamInfo: PropTypes.string,
     unitIds: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   activeUnitId: PropTypes.string.isRequired,
