@@ -158,6 +158,14 @@ TWITTER_URL
 
   Example: https://twitter.com/edXOnline
 
+RENDER_XBLOCKS_EXPERIMENTAL
+  Enables the experimental rendering of XBlocks directly in the MFE. This
+  feature is not yet ready for production use. The default value is ``false``.
+  Note: if you enable this feature (by setting this variable to ``true``), you
+  can disable the default rendering of XBlocks by setting
+  ``RENDER_XBLOCKS_DEFAULT`` to ``false``.
+  Optional.
+
 Getting Help
 ===========
 

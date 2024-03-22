@@ -1,0 +1,65 @@
+<!--
+  This file is meant to be hosted on a completely separate domain name
+  from the LMS / frontend that is hosting the Open edX content (XBlocks).
+
+  Doing so allows us to enable features like cookies in the sandboxed
+  IFrame while keeping the XBlock content on a distinct origin, so that
+  the XBlock cannot access user data from the host application (like
+  cookies nor call APIs as the user).
+
+  This particular sandboxing code uses the secure message passing API
+  to request the XBlock HTML from the host application and then replaces
+  its content with that HTML.
+-->
+<!DOCTYPE html>
+<html dir="auto">
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <script>
+      const uniqueKeyPrefix = "k" + +Date.now() + "-" + Math.floor(Math.random() * 1e10) + "-";
+      var messageCount = 0;
+      function postMessageToParent(messageData, callback) {
+        const messageReplyKey = uniqueKeyPrefix + (messageCount++);
+        messageData.replyKey = messageReplyKey;
+        if (callback !== undefined) {
+          const handleResponse = function (event) {
+            if (event.source === window.parent && event.data.replyKey === messageReplyKey) {
+              callback(event.data);
+              window.removeEventListener('message', handleResponse);
+            }
+          };
+          window.addEventListener('message', handleResponse);
+        }
+        window.parent.postMessage(messageData, '*');
+      }
+      /**
+       * Replace the entire current document with a new document that has the specified HTML.
+       */
+      function replaceAllHtml(newHtml) {
+        if(navigator.userAgent.indexOf('MSIE') !==-1 || navigator.appVersion.indexOf('Trident/') > -1) {
+          // Can't use document.open/close on IE11, it replaces this with an empty page.
+          // Thank god for StackOverflow and this crazy-ass hack that somehow works.
+          // https://stackoverflow.com/a/18262905
+          window.contents = newHtml;
+          location.replace('javascript:window["contents"]');
+        } else {
+          document.open();
+          document.write(newHtml);
+          document.close();
+        }
+      }
+
+      if (window.parent === window) {
+        document.write("This XBlock sandbox launch tool must be embedded in an IFrame.");
+      } else {
+        // Request the HTML from the parent and then completely replace this entire
+        // HTML document with the resulting HTML
+        postMessageToParent({method: 'bootstrap'}, function(data) {
+          replaceAllHtml(data.initialHtml || 'Error: Missing XBlock HTML.');
+        });
+      }
+    </script>
+  </body>
+</html>

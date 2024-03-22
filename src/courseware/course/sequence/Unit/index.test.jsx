@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatMessage, shallow } from '@edx/react-unit-test-utils/dist';
 
+import { getConfig } from '@edx/frontend-platform';
 import { useModel } from '../../../../generic/model-store';
 
 import BookmarkButton from '../../bookmark/BookmarkButton';
@@ -28,6 +29,7 @@ jest.mock('./ContentIFrame', () => 'ContentIFrame');
 jest.mock('./UnitSuspense', () => 'UnitSuspense');
 jest.mock('../honor-code', () => 'HonorCode');
 jest.mock('../lock-paywall', () => 'LockPaywall');
+jest.mock('../XBlock/XBlock', () => 'XBlock');
 
 jest.mock('../../../../generic/model-store', () => ({
   useModel: jest.fn(),
@@ -41,6 +43,7 @@ jest.mock('react', () => ({
 jest.mock('./hooks', () => ({
   useExamAccess: jest.fn(),
   useShouldDisplayHonorCode: jest.fn(),
+  useLoadUnitChildren: jest.fn(),
 }));
 
 jest.mock('./urls', () => ({
@@ -64,6 +67,9 @@ const examAccess = {
 hooks.useExamAccess.mockReturnValue(examAccess);
 hooks.useShouldDisplayHonorCode.mockReturnValue(false);
 
+const unitChildren = [];
+hooks.useLoadUnitChildren.mockReturnValue(unitChildren);
+
 const unit = {
   id: 'unit-id',
   title: 'unit-title',
@@ -71,6 +77,12 @@ const unit = {
   bookmarkedUpdateState: 'pending',
 };
 useModel.mockReturnValue(unit);
+
+jest.mock('@edx/frontend-platform', () => ({
+  ...jest.requireActual('@edx/frontend-platform'),
+  getConfig: jest.fn(),
+}));
+getConfig.mockReturnValue({ RENDER_XBLOCKS_EXPERIMENTAL: false, RENDER_XBLOCKS_DEFAULT: true });
 
 let el;
 describe('Unit component', () => {
@@ -84,6 +96,7 @@ describe('Unit component', () => {
         courseId: props.courseId,
         id: props.id,
       });
+      expect(hooks.useLoadUnitChildren).toHaveBeenCalledWith(props.id);
     });
   });
   describe('output', () => {
@@ -184,6 +197,51 @@ describe('Unit component', () => {
             format: props.format,
             examAccess,
           }));
+        });
+      });
+    });
+    describe('Experimental XBlock Rendering', () => {
+      const defaultProps = {
+        courseId: 'course-id',
+        format: 'format',
+        onLoaded: jest.fn(),
+        id: 'unit-id',
+      };
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
+      const configurations = [
+        { experimental: true, default: true, description: 'both true' },
+        { experimental: true, default: false, description: 'experimental true, default false' },
+        { experimental: false, default: true, description: 'experimental false, default true' },
+        { experimental: false, default: false, description: 'both false' },
+      ];
+
+      configurations.forEach(({ experimental, default: defaultConfig, description }) => {
+        it(`renders with RENDER_XBLOCKS_EXPERIMENTAL=${experimental} and RENDER_XBLOCKS_DEFAULT=${defaultConfig} (${description})`, async () => {
+          getConfig.mockReturnValue({
+            RENDER_XBLOCKS_EXPERIMENTAL: experimental,
+            RENDER_XBLOCKS_DEFAULT: defaultConfig,
+          });
+
+          if (experimental) {
+            hooks.useLoadUnitChildren.mockReturnValueOnce(['child1', 'child2']);
+          }
+
+          component = shallow(<Unit {...defaultProps} />);
+
+          if (experimental) {
+            expect(component.instance.findByType('XBlock').length).toEqual(2);
+          } else {
+            expect(component.instance.findByType('XBlock').length).toEqual(0);
+          }
+          if (defaultConfig) {
+            expect(component.instance.findByType('ContentIFrame').length).toEqual(1);
+          } else {
+            expect(component.instance.findByType('ContentIFrame').length).toEqual(0);
+          }
         });
       });
     });
