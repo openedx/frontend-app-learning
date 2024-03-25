@@ -6,7 +6,6 @@
 @import "~@edx/frontend-component-footer/dist/footer";
 @import "~@edx/frontend-component-header/dist/index";
 
-
 #root {
   display: flex;
   flex-direction: column;
@@ -89,6 +88,8 @@
 }
 
 .sequence {
+  min-width: 0;
+
   @media (min-width: map-get($grid-breakpoints, "sm")) {
     border: solid 1px #eaeaea;
     border-radius: 4px;
