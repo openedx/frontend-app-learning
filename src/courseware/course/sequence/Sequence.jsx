@@ -146,7 +146,7 @@ const Sequence = ({
           <SequenceNavigation
             sequenceId={sequenceId}
             unitId={unitId}
-            className="mb-4"
+            className="mb-4 w-100"
             nextHandler={() => {
               logEvent('edx.ui.lms.sequence.next_selected', 'top');
               handleNext();
