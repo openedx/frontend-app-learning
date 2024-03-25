@@ -3,7 +3,7 @@ import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
-  initializeTestStore, logUnhandledRequests, render, screen,
+  initializeTestStore, logUnhandledRequests, render, screen, waitFor,
 } from '../setupTest';
 import { TabPage } from './index';
 import { executeThunk } from '../utils';
@@ -53,8 +53,10 @@ describe('Tab Page', () => {
 
     await executeThunk(thunks.resetDeadlines('courseId', model, getTabDataMock), testStore.dispatch);
 
-    expect(screen.getByText('test-toast-header')).toBeInTheDocument();
-    expect(screen.getByText('test-toast-body')).toBeInTheDocument();
+    waitFor(() => {
+      expect(screen.getByText('test-toast-header')).toBeInTheDocument();
+      expect(screen.getByText('test-toast-body')).toBeInTheDocument();
+    });
   });
 
   it('displays Loaded Tab Page', () => {
