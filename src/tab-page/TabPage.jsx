@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
 import Footer from '@edx/frontend-component-footer';
-// import { Toast } from '@openedx/paragon';
+import { Toast } from '@openedx/paragon';
 import { LearningHeader as Header } from '@edx/frontend-component-header';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
@@ -47,9 +47,9 @@ const TabPage = ({ intl, ...props }) => {
 
   return (
     <>
-      {['loaded', 'denied'].includes(courseStatus) && (
+      {['loaded', 'denied'].includes(courseStatus) && injectIntl(
         <>
-          {/* <Toast
+          <Toast
             action={toastBodyText ? {
               label: toastBodyText,
               href: toastBodyLink,
@@ -59,9 +59,9 @@ const TabPage = ({ intl, ...props }) => {
             show={!!(toastHeader)}
           >
             {toastHeader}
-          </Toast> */}
+          </Toast>
           {metadataModel === 'courseHomeMeta' && (<LaunchCourseHomeTourButton srOnly />)}
-        </>
+        </>,
       )}
 
       <Header courseOrg={org} courseNumber={number} courseTitle={title} />
