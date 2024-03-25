@@ -1,6 +1,11 @@
 import { defineMessages } from '@edx/frontend-platform/i18n';
 
 const messages = defineMessages({
+  loading: {
+    id: 'courseOutline.loading',
+    defaultMessage: 'Loading...',
+    description: 'Screen reader text to use on the spinner while the sidebar is loading.',
+  },
   toggleCourseOutlineTrigger: {
     id: 'courseOutline.toggle.button',
     defaultMessage: 'Toggle course outline tray',

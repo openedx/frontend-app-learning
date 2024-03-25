@@ -9,7 +9,7 @@ const CourseOutlineIcon = ({
   status,
 }) => (
   <>
-    <span className="pgn__icon m-0 m-auto" aria-label={intl.formatMessage(messages.openCourseOutlineTrigger)}>
+    <span className="pgn__icon m-0 m-auto" aria-label={intl.formatMessage(messages.toggleCourseOutlineTrigger)}>
       <OutlineIcon />
     </span>
     {status === 'active'

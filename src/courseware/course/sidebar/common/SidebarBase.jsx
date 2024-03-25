@@ -36,7 +36,7 @@ const SidebarBase = ({
 
   return (
     <section
-      className={classNames('ml-0 h-auto align-top', {
+      className={classNames('ml-0 border border-light-400 rounded-sm h-auto align-top', {
         'bg-white m-0 border-0 fixed-top vh-100 rounded-0': shouldDisplayFullScreen,
         'min-vh-100': !shouldDisplayFullScreen,
         'd-none': currentSidebar !== sidebarId,
@@ -62,7 +62,7 @@ const SidebarBase = ({
       ) : null}
       {showTitleBar && (
         <>
-          <div className="row d-flex align-items-center mb-2">
+          <div className="d-flex align-items-center mb-2">
             <strong className="p-2.5 d-inline-block course-outline-sidebar-title">{title}</strong>
             {shouldDisplayFullScreen
               ? null

@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
 import {
   sendTrackEvent,
@@ -145,9 +144,9 @@ const Sequence = ({
 
   const defaultContent = (
     <>
-      <div className="sequence-container d-inline-flex flex-row align-items-start w-100">
-        <CourseOutlineTrigger/>
-        <Sidebar layout={LAYOUT_LEFT}/>
+      <div className="sequence-container d-inline-flex flex-row w-100">
+        <CourseOutlineTrigger />
+        <Sidebar layout={LAYOUT_LEFT} />
         <div className="sequence w-100">
           <div className="sequence-navigation-container">
             <SequenceNavigation
@@ -193,9 +192,9 @@ const Sequence = ({
             )}
           </div>
         </div>
-        {enableNewSidebar === 'true' ? <NewSidebar/> : <Sidebar layout={LAYOUT_RIGHT}/>}
+        {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar layout={LAYOUT_RIGHT} />}
       </div>
-      <div id="whole-course-translation-feedback-widget"/>
+      <div id="whole-course-translation-feedback-widget" />
     </>
   );
 

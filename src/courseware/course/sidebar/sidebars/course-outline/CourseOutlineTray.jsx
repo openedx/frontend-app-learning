@@ -13,7 +13,7 @@ import { useModel } from '../../../../../generic/model-store';
 import { LOADING, LOADED } from '../../../../../course-home/data/slice';
 import PageLoading from '../../../../../generic/PageLoading';
 import {
-  getCourseStatus, getSequenceId, getCourseOutline, getCourseOutlineStatus, getCoursewareOutlineSidebarSettings,
+  getSequenceId, getCourseOutline, getCourseOutlineStatus, getCoursewareOutlineSidebarSettings,
 } from '../../../../data/selectors';
 import { getCourseOutlineStructure } from '../../../../data/thunks';
 import SidebarContext from '../../SidebarContext';
@@ -27,7 +27,6 @@ const CourseOutlineTray = ({ intl }) => {
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
 
   const dispatch = useDispatch();
-  const { courseStatus } = useSelector(getCourseStatus);
   const activeSequenceId = useSelector(getSequenceId);
   const { sections = {}, sequences = {} } = useSelector(getCourseOutline);
   const courseOutlineStatus = useSelector(getCourseOutlineStatus);
@@ -104,46 +103,53 @@ const CourseOutlineTray = ({ intl }) => {
     return null;
   }
 
-  if (courseStatus === LOADING || courseOutlineStatus === LOADING) {
+  if (courseOutlineStatus === LOADING) {
     return (
-      <section className="outline-sidebar flex-shrink-0 mr-4 min-vh-100 h-auto">
-        {sidebarHeading}
-        <PageLoading
-          srMessage={intl.formatMessage(messages.loading)}
-        />
-      </section>
+      <div className={classNames('outline-sidebar-wrapper', {
+        'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
+        'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
+      })}
+      >
+        <section className="outline-sidebar w-100">
+          {sidebarHeading}
+          <PageLoading
+            srMessage={intl.formatMessage(messages.loading)}
+          />
+        </section>
+      </div>
     );
   }
 
   return (
-    <section
-      className={classNames('outline-sidebar ', {
-        'flex-shrink-0 mr-4 min-vh-100 h-auto': !shouldDisplayFullScreen,
-        'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
-      })}
+    <div className={classNames('outline-sidebar-wrapper', {
+      'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
+      'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
+    })}
     >
-      {sidebarHeading}
-      <ol id="outline-sidebar-outline" className="list-unstyled">
-        {isDisplaySequenceLevel
-          ? sequenceIds.map((sequenceId) => (
-            <SidebarSequence
-              key={sequenceId}
-              courseId={courseId}
-              sequence={sequences[sequenceId]}
-              defaultOpen={sequenceId === activeSequenceId}
-              activeUnitId={unitId}
-            />
-          ))
-          : sectionsIds.map((sectionId) => (
-            <SidebarSection
-              key={sectionId}
-              courseId={courseId}
-              section={sections[sectionId]}
-              handleSelectSection={handleSelectSection}
-            />
-          ))}
-      </ol>
-    </section>
+      <section className="outline-sidebar w-100">
+        {sidebarHeading}
+        <ol id="outline-sidebar-outline" className="list-unstyled">
+          {isDisplaySequenceLevel
+            ? sequenceIds.map((sequenceId) => (
+              <SidebarSequence
+                key={sequenceId}
+                courseId={courseId}
+                sequence={sequences[sequenceId]}
+                defaultOpen={sequenceId === activeSequenceId}
+                activeUnitId={unitId}
+              />
+            ))
+            : sectionsIds.map((sectionId) => (
+              <SidebarSection
+                key={sectionId}
+                courseId={courseId}
+                section={sections[sectionId]}
+                handleSelectSection={handleSelectSection}
+              />
+            ))}
+        </ol>
+      </section>
+    </div>
   );
 };
 

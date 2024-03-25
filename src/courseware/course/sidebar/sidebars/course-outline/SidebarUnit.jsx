@@ -22,7 +22,7 @@ const SidebarUnit = ({
   const {
     complete,
     title,
-    icon,
+    icon = UNIT_ICON_TYPES.other,
   } = unit;
   const dispatch = useDispatch();
 

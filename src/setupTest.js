@@ -25,6 +25,7 @@ import { UserMessagesProvider } from './generic/user-messages';
 
 import messages from './i18n';
 import { fetchCourse, fetchSequence } from './courseware/data';
+import { getCourseOutlineStructure } from './courseware/data/thunks';
 import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 import { buildOutlineFromBlocks } from './courseware/data/__factories__/learningSequencesOutline.factory';
@@ -194,6 +195,12 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
 
   // eslint-disable-next-line no-unused-expressions
   !options.excludeFetchCourse && await executeThunk(fetchCourse(courseMetadata.id), store.dispatch);
+
+  // eslint-disable-next-line no-unused-expressions
+  !options.excludeFetchOutlineSidebar && await executeThunk(
+    getCourseOutlineStructure(courseMetadata.id),
+    store.dispatch,
+  );
 
   if (!options.excludeFetchSequence) {
     await Promise.all(sequenceBlocks

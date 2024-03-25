@@ -1,11 +1,26 @@
-.outline-sidebar:not(.collapsed) {
+.outline-sidebar-wrapper {
     width: 32.125rem;
     max-width: 100%;
     overflow: auto;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.outline-sidebar {
+    @media (min-width: map-get($grid-breakpoints, "xl")) {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
 }
 
 .outline-sidebar-heading-wrapper {
     border: 1px solid #d7d3d1;
+    align-self: flex-start;
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 5;
 
     .outline-sidebar-heading {
         font-weight: $font-weight-bold;
@@ -37,6 +52,10 @@
 #outline-sidebar-outline {
     margin-top: -1px;
 
+    @media (min-width: map-get($grid-breakpoints, "xl")) {
+        margin-bottom: 0;
+    }
+
     li {
         font-size: 1rem;
         line-height: 1.5rem;
@@ -51,6 +70,10 @@
             .collapsible-icon {
                 margin-inline-start: initial;
             }
+        }
+
+        &:last-child .pgn_collapsible {
+            @extend .mb-0;
         }
     }
 

@@ -274,14 +274,20 @@ describe('Data layer integration tests', () => {
     });
 
     describe('Test checkBlockCompletion', () => {
-      const getCompletionURL = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/get_completion`;
       const getCourseOutlineURL = `${getConfig().LMS_BASE_URL}/api/course_home/v1/sidebar/${courseId}`;
+      const getCompletionURL = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/get_completion`;
 
       it('Should fail to check completion and log error', async () => {
         axiosMock.onPost(getCompletionURL).networkError();
+        axiosMock.onGet(getCourseOutlineURL).networkError();
 
         await executeThunk(
           thunks.checkBlockCompletion(courseId, sequenceId, unitId),
+          store.dispatch,
+          store.getState,
+        );
+        await executeThunk(
+          thunks.getCourseOutlineStructure(courseId, sequenceId, unitId),
           store.dispatch,
           store.getState,
         );
