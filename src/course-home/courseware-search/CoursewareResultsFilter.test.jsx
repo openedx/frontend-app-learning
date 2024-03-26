@@ -19,6 +19,12 @@ jest.mock('../../generic/model-store', () => ({
   useModel: jest.fn(),
 }));
 
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
 const decodedCourseId = 'course-v1:edX+DemoX+Demo_Course';
 const decodedSequenceId = 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction';
 const decodedUnitId = 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@vertical_0270f6de40fc';
@@ -61,9 +67,9 @@ describe('CoursewareSearchResultsFilter', () => {
   });
 
   describe('when returning full results', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       useModel.mockReturnValue(searchResultsFactory());
-      await renderComponent();
+      renderComponent();
     });
 
     it('should render without errors', async () => {

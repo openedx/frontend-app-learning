@@ -10,7 +10,7 @@ const coursewareTour = ({ enabled, onEnd }) => ({
       defaultMessage="The top bar within your course allows you to easily jump to different sections and shows you what’s coming up."
     />,
     placement: 'bottom',
-    target: '#courseware-sequenceNavigation',
+    target: '#courseware-sequence-navigation',
   }],
   enabled,
   endButtonText: <OkayButtonFormattedMessage />,
