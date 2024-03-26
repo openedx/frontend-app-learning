@@ -79,7 +79,7 @@ const LockPaywall = ({
   };
 
   return (
-    <Alert variant="light" aria-live="off" icon={Locked} className="lock-paywall-container">
+    <Alert variant="light" aria-live="off" icon={Locked} className="lock-paywall-container" data-testId="lock-paywall-test-id">
       <div className="row">
         <div className="col">
           <h4 aria-level="3">

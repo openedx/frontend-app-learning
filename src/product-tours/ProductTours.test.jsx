@@ -163,7 +163,7 @@ describe('Course Home Tours', () => {
 jest.mock(
   '../courseware/course/sequence/Unit',
   () => function ({ courseId, id }) {
-    return <div id="courseware-sequenceNavigation" className="fake-unit">Unit Contents {courseId} {id}</div>;
+    return <div id="courseware-sequence-navigation" className="fake-unit">Unit Contents {courseId} {id}</div>;
   },
 );
 

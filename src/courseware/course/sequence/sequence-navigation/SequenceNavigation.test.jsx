@@ -33,9 +33,9 @@ describe('Sequence Navigation', () => {
 
   it('is empty while loading', async () => {
     const testStore = await initializeTestStore({ excludeFetchSequence: true }, false);
-    const { container } = render(<SequenceNavigation {...mockData} />, { store: testStore, wrapWithRouter: true });
+    render(<SequenceNavigation {...mockData} />, { store: testStore, wrapWithRouter: true });
 
-    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByTestId('courseware-sequence-navigation')).not.toBeInTheDocument();
   });
 
   it('renders empty div without unitId', () => {

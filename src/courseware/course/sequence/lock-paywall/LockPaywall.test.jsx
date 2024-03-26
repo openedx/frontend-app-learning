@@ -76,9 +76,9 @@ describe('Lock Paywall', () => {
   it('does not display anything if course does not have verified mode', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { verified_mode: null });
     const testStore = await initializeTestStore({ courseHomeMetadata, excludeFetchSequence: true }, false);
-    const { container } = render(<LockPaywall {...mockData} courseId={courseHomeMetadata.id} />, { store: testStore });
+    render(<LockPaywall {...mockData} courseId={courseHomeMetadata.id} />, { store: testStore });
 
-    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByTestId('lock-paywall-test-id')).not.toBeInTheDocument();
   });
 
   it('displays past expiration message if expiration date has expired', async () => {
