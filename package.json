@@ -85,8 +85,6 @@
     "jest-console-group-reporter": "^1.0.1",
     "jest-when": "^3.6.0",
     "postcss-loader": "^8.1.1",
-    "react-intl": "^6.6.3",
-    "react-markdown": "^8.0.7",
     "rosie": "2.1.1",
     "sass": "^1.72.0",
     "sass-loader": "^14.1.1",
