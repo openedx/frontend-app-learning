@@ -1,5 +1,5 @@
 import { mockUseKeyedState } from '@edx/react-unit-test-utils';
-import { useToggle } from '@edx/paragon';
+import { useToggle } from '@openedx/paragon';
 
 import useTranslationTour, { stateKeys } from './useTranslationTour';
 
@@ -10,7 +10,7 @@ jest.mock('react', () => ({
     return { useCallback: { cb, prereqs } };
   }),
 }));
-jest.mock('@edx/paragon', () => ({
+jest.mock('@openedx/paragon', () => ({
   useToggle: jest.fn(),
 }));
 jest.mock('@edx/frontend-platform/i18n', () => {

@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 
 import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { Icon, IconButton } from '@edx/paragon';
+import { Icon, IconButton } from '@openedx/paragon';
 
 import { getLocalStorage, setLocalStorage } from '../../../../../data/localStorage';
 import { getSessionStorage, setSessionStorage } from '../../../../../data/sessionStorage';

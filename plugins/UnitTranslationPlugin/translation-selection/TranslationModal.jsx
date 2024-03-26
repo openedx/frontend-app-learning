@@ -9,8 +9,8 @@ import {
   Icon,
   ListBox,
   ListBoxOption,
-} from '@edx/paragon';
-import { Check } from '@edx/paragon/icons';
+} from '@openedx/paragon';
+import { Check } from '@openedx/paragon/icons';
 
 import useTranslationModal from './useTranslationModal';
 import messages from './messages';

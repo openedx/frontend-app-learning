@@ -10,7 +10,7 @@ jest.mock('./useTranslationModal', () => ({
     onSubmit: jest.fn().mockName('onSubmit'),
   }),
 }));
-jest.mock('@edx/paragon', () => jest.requireActual('@edx/react-unit-test-utils').mockComponents({
+jest.mock('@openedx/paragon', () => jest.requireActual('@edx/react-unit-test-utils').mockComponents({
   StandardModal: 'StandardModal',
   ActionRow: {
     Spacer: 'Spacer',
@@ -20,7 +20,7 @@ jest.mock('@edx/paragon', () => jest.requireActual('@edx/react-unit-test-utils')
   ListBox: 'ListBox',
   ListBoxOption: 'ListBoxOption',
 }));
-jest.mock('@edx/paragon/icons', () => ({
+jest.mock('@openedx/paragon/icons', () => ({
   Check: jest.fn().mockName('icons.Check'),
 }));
 jest.mock('@edx/frontend-platform/i18n', () => {

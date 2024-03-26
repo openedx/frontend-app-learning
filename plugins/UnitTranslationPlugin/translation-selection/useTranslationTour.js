@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useToggle } from '@edx/paragon';
+import { useToggle } from '@openedx/paragon';
 import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils';
 
 import messages from './messages';

@@ -8,14 +8,14 @@ jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useState: jest.fn((value) => [value, jest.fn()]),
 }));
-jest.mock('@edx/paragon', () => jest.requireActual('@edx/react-unit-test-utils').mockComponents({
+jest.mock('@openedx/paragon', () => jest.requireActual('@edx/react-unit-test-utils').mockComponents({
   ActionRow: {
     Spacer: 'Spacer',
   },
   IconButton: 'IconButton',
   Icon: 'Icon',
 }));
-jest.mock('@edx/paragon/icons', () => ({
+jest.mock('@openedx/paragon/icons', () => ({
   Close: 'Close',
   ThumbUpOutline: 'ThumbUpOutline',
   ThumbDownOffAlt: 'ThumbDownOffAlt',
