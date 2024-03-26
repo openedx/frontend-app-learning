@@ -5,17 +5,19 @@ import { PLUGIN_OPERATIONS, DIRECT_PLUGIN } from '@openedx/frontend-plugin-frame
 const config = {
   ...process.env,
   pluginSlots: {
-    plugins: [
-      {
-        op: PLUGIN_OPERATIONS.Insert,
-        widget: {
-          id: 'unit_title_plugin',
-          type: DIRECT_PLUGIN,
-          priority: 1,
-          RenderWidget: UnitTranslationPlugin,
+    unit_title_plugin: {
+      plugins: [
+        {
+          op: PLUGIN_OPERATIONS.Insert,
+          widget: {
+            id: 'unit_title_plugin',
+            type: DIRECT_PLUGIN,
+            priority: 1,
+            RenderWidget: UnitTranslationPlugin,
+          },
         },
-      },
-    ],
+      ],
+    },
   },
 };
 
