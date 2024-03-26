@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { Icon, IconButton } from '@edx/paragon';
-import { ArrowBackIos, Close } from '@edx/paragon/icons';
+import { Icon, IconButton } from '@openedx/paragon';
+import { ArrowBackIos, Close } from '@openedx/paragon/icons';
 
 import { useEventListener } from '../../../../generic/hooks';
 import WIDGETS from '../constants';

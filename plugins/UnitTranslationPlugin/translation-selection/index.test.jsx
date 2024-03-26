@@ -10,12 +10,12 @@ jest.mock('react', () => ({
     },
   }),
 }));
-jest.mock('@edx/paragon', () => ({
+jest.mock('@openedx/paragon', () => ({
   IconButton: 'IconButton',
   Icon: 'Icon',
   ProductTour: 'ProductTour',
 }));
-jest.mock('@edx/paragon/icons', () => ({
+jest.mock('@openedx/paragon/icons', () => ({
   Language: 'Language',
 }));
 jest.mock('./useTranslationTour', () => () => ({

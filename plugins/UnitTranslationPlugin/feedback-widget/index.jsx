@@ -4,8 +4,8 @@ import React, {
 import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { ActionRow, IconButton, Icon } from '@edx/paragon';
-import { Close, ThumbUpOutline, ThumbDownOffAlt } from '@edx/paragon/icons';
+import { ActionRow, IconButton, Icon } from '@openedx/paragon';
+import { Close, ThumbUpOutline, ThumbDownOffAlt } from '@openedx/paragon/icons';
 
 import './index.scss';
 import messages from './messages';

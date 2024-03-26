@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import isEmpty from 'lodash/isEmpty';
 
-import { breakpoints, useWindowSize } from '@edx/paragon';
+import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 import { useModel } from '../../../generic/model-store';

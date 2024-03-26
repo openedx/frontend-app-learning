@@ -2,8 +2,8 @@ import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { AppContext } from '@edx/frontend-platform/react';
-import { IconButton, Icon, ProductTour } from '@edx/paragon';
-import { Language } from '@edx/paragon/icons';
+import { IconButton, Icon, ProductTour } from '@openedx/paragon';
+import { Language } from '@openedx/paragon/icons';
 import { useDispatch } from 'react-redux';
 import { stringifyUrl } from 'query-string';
 

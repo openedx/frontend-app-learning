@@ -6,7 +6,7 @@ import { Factory } from 'rosie';
 
 import { mergeConfig, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { breakpoints } from '@edx/paragon';
+import { breakpoints } from '@openedx/paragon';
 
 import {
   initializeMockApp, render, screen, within, act, fireEvent, waitFor,
