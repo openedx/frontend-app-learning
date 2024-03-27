@@ -84,10 +84,9 @@ describe('<FeedbackWidget />', () => {
     });
     useState.mockReturnValueOnce([true, jest.fn()]);
     const wrapper = shallow(<FeedbackWidget {...props} />);
-    expect(wrapper.instance.findByType('div')[0].props.className).toContain(
-      'd-none',
-    );
+    expect(wrapper.instance.findByType('div')[0].children.length).toBe(0);
   });
+
   it('render feedback widget', () => {
     mockUseFeedbackWidget({
       showFeedbackWidget: true,
@@ -96,6 +95,7 @@ describe('<FeedbackWidget />', () => {
     const wrapper = shallow(<FeedbackWidget {...props} />);
     expect(wrapper.snapshot).toMatchSnapshot();
   });
+
   it('render gratitude text', () => {
     mockUseFeedbackWidget({
       showFeedbackWidget: false,
