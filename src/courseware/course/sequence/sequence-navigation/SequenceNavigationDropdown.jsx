@@ -12,7 +12,7 @@ const SequenceNavigationDropdown = ({
   unitIds,
 }) => (
   <Dropdown className="sequence-navigation-dropdown">
-    <Dropdown.Toggle variant="link" className="font-weight-normal w-100 border-right-0">
+    <Dropdown.Toggle id="navigation-toggle" variant="link" className="font-weight-normal w-100 border-right-0">
       <FormattedMessage
         defaultMessage="{current} of {total}"
         description="The title of the mobile menu for sequence navigation of units"

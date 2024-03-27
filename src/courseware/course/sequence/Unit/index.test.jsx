@@ -1,7 +1,8 @@
 import React from 'react';
+import { when } from 'jest-when';
 import { formatMessage, shallow } from '@edx/react-unit-test-utils/dist';
 
-import { useModel } from '../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
 
 import BookmarkButton from '../../bookmark/BookmarkButton';
 import UnitSuspense from './UnitSuspense';
@@ -9,7 +10,7 @@ import ContentIFrame from './ContentIFrame';
 import Unit from '.';
 import messages from '../messages';
 import { getIFrameUrl } from './urls';
-import { views } from './constants';
+import { modelKeys, views } from './constants';
 import * as hooks from './hooks';
 
 jest.mock('./hooks', () => ({ useUnitData: jest.fn() }));
@@ -22,14 +23,14 @@ jest.mock('@edx/frontend-platform/i18n', () => {
   };
 });
 
-jest.mock('../../../../generic/PageLoading', () => 'PageLoading');
+jest.mock('@src/generic/PageLoading', () => 'PageLoading');
 jest.mock('../../bookmark/BookmarkButton', () => 'BookmarkButton');
 jest.mock('./ContentIFrame', () => 'ContentIFrame');
 jest.mock('./UnitSuspense', () => 'UnitSuspense');
 jest.mock('../honor-code', () => 'HonorCode');
 jest.mock('../lock-paywall', () => 'LockPaywall');
 
-jest.mock('../../../../generic/model-store', () => ({
+jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn(),
 }));
 
@@ -70,7 +71,14 @@ const unit = {
   bookmarked: false,
   bookmarkedUpdateState: 'pending',
 };
-useModel.mockReturnValue(unit);
+const mockCoursewareMetaFn = jest.fn(() => ({ wholeCourseTranslationEnabled: false }));
+const mockUnitsFn = jest.fn(() => unit);
+
+when(useModel)
+  .calledWith('courseHomeMeta', props.courseId)
+  .mockImplementation(mockCoursewareMetaFn)
+  .calledWith(modelKeys.units, props.id)
+  .mockImplementation(mockUnitsFn);
 
 let el;
 describe('Unit component', () => {
@@ -113,7 +121,7 @@ describe('Unit component', () => {
       });
       describe('bookmarked, bookmark update pending', () => {
         beforeEach(() => {
-          useModel.mockReturnValueOnce({ ...unit, bookmarked: true });
+          mockUnitsFn.mockReturnValueOnce({ ...unit, bookmarked: true });
           renderComponent();
         });
         test('snapshot', () => {

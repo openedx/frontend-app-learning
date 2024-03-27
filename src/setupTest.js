@@ -15,9 +15,11 @@ import { configureStore } from '@reduxjs/toolkit';
 import MockAdapter from 'axios-mock-adapter';
 import { reducer as learningAssistantReducer } from '@edx/frontend-lib-learning-assistant';
 import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams';
-import AppProvider from '@edx/frontend-platform/react/AppProvider';
+import { AppProvider } from '@edx/frontend-platform/react';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
+import { reducer as recommendationsReducer } from './courseware/course/course-exit/data/slice';
+import { reducer as toursReducer } from './product-tours/data';
 import { reducer as modelsReducer } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
 
@@ -26,6 +28,17 @@ import { fetchCourse, fetchSequence } from './courseware/data';
 import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 import { buildOutlineFromBlocks } from './courseware/data/__factories__/learningSequencesOutline.factory';
+
+jest.mock('@openedx/frontend-plugin-framework', () => ({
+  ...jest.requireActual('@openedx/frontend-plugin-framework'),
+  Plugin: () => 'Plugin',
+  PluginSlot: () => 'PluginSlot',
+}));
+
+jest.mock('@src/generic/plugin-store', () => ({
+  ...jest.requireActual('@src/generic/plugin-store'),
+  usePluginsCallback: jest.fn((_, cb) => cb),
+}));
 
 class MockLoggingService {
   // eslint-disable-next-line no-console
@@ -38,6 +51,15 @@ class MockLoggingService {
 window.getComputedStyle = jest.fn(() => ({
   getPropertyValue: jest.fn(),
 }));
+
+/* eslint-disable no-console */
+const supressWarningBlock = (callback) => {
+  const originalConsoleWarning = console.warn;
+  console.warn = jest.fn();
+  callback();
+  console.warn = originalConsoleWarning;
+};
+/* eslint-enable no-console */
 
 // Mock Intersection Observer which is unavailable in the context of a test.
 global.IntersectionObserver = jest.fn(function mockIntersectionObserver() {
@@ -52,22 +74,18 @@ export const authenticatedUser = {
   administrator: false,
 };
 
-export function initializeMockApp() {
-  mergeConfig({
-    CONTACT_URL: process.env.CONTACT_URL || null,
-    DISCUSSIONS_MFE_BASE_URL: process.env.DISCUSSIONS_MFE_BASE_URL || null,
-    INSIGHTS_BASE_URL: process.env.INSIGHTS_BASE_URL || null,
-    STUDIO_BASE_URL: process.env.STUDIO_BASE_URL || null,
-    TWITTER_URL: process.env.TWITTER_URL || null,
-    authenticatedUser: {
-      userId: 'abc123',
-      username: 'MockUser',
-      roles: [],
-      administrator: false,
-    },
-    SUPPORT_URL_ID_VERIFICATION: 'http://example.com',
-  });
+mergeConfig({
+  ...process.env,
+  authenticatedUser: {
+    userId: 'abc123',
+    username: 'MockUser',
+    roles: [],
+    administrator: false,
+  },
+  SUPPORT_URL_ID_VERIFICATION: 'http://example.com',
+});
 
+export function initializeMockApp() {
   const loggingService = configureLogging(MockLoggingService, {
     config: getConfig(),
   });
@@ -77,11 +95,13 @@ export function initializeMockApp() {
   });
 
   // i18n doesn't have a service class to return.
-  configureI18n({
+  // ignore missing/unexpect locale warnings from @edx/frontend-platform/i18n
+  // it is unnecessary and not relevant to the tests
+  supressWarningBlock(() => configureI18n({
     config: getConfig(),
     loggingService,
     messages,
-  });
+  }));
 
   return { loggingService, authService };
 }
@@ -120,6 +140,8 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
       courseHome: courseHomeReducer,
       learningAssistant: learningAssistantReducer,
       specialExams: specialExamsReducer,
+      recommendations: recommendationsReducer,
+      tours: toursReducer,
     },
   });
   if (overrideStore) {

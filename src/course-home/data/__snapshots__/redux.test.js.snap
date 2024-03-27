@@ -309,6 +309,7 @@ Object {
       },
     },
   },
+  "plugins": Object {},
   "recommendations": Object {
     "recommendationsStatus": "loading",
   },
@@ -576,6 +577,7 @@ Object {
       },
     },
   },
+  "plugins": Object {},
   "recommendations": Object {
     "recommendationsStatus": "loading",
   },
@@ -846,6 +848,7 @@ Object {
       },
     },
   },
+  "plugins": Object {},
   "recommendations": Object {
     "recommendationsStatus": "loading",
   },

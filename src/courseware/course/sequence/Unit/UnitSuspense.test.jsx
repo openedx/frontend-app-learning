@@ -2,8 +2,8 @@ import React from 'react';
 
 import { formatMessage, shallow } from '@edx/react-unit-test-utils';
 
-import { useModel } from '../../../../generic/model-store';
-import PageLoading from '../../../../generic/PageLoading';
+import { useModel } from '@src/generic/model-store';
+import PageLoading from '@src/generic/PageLoading';
 
 import messages from '../messages';
 import HonorCode from '../honor-code';
@@ -25,8 +25,8 @@ jest.mock('react', () => ({
 
 jest.mock('../honor-code', () => 'HonorCode');
 jest.mock('../lock-paywall', () => 'LockPaywall');
-jest.mock('../../../../generic/model-store', () => ({ useModel: jest.fn() }));
-jest.mock('../../../../generic/PageLoading', () => 'PageLoading');
+jest.mock('@src/generic/model-store', () => ({ useModel: jest.fn() }));
+jest.mock('@src/generic/PageLoading', () => 'PageLoading');
 
 jest.mock('./hooks', () => ({
   useShouldDisplayHonorCode: jest.fn(() => false),

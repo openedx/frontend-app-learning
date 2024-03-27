@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils/dist';
-import { useModel } from '../../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
 
 import { modelKeys } from '../constants';
 
