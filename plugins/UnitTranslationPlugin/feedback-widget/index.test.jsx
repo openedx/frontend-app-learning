@@ -82,8 +82,11 @@ describe('<FeedbackWidget />', () => {
       showFeedbackWidget: false,
       showGratitudeText: false,
     });
+    useState.mockReturnValueOnce([true, jest.fn()]);
     const wrapper = shallow(<FeedbackWidget {...props} />);
-    expect(wrapper.isEmptyRender()).toBe(true);
+    expect(wrapper.instance.findByType('div')[0].props.className).toContain(
+      'd-none',
+    );
   });
   it('render feedback widget', () => {
     mockUseFeedbackWidget({
