@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { createConfig } = require('@openedx/frontend-build');
 
-const config = createConfig('eslint', {
+const config = createConfig('eslint-next', {
   rules: {
     // TODO: all these rules should be renabled/addressed. temporarily turned off to unblock a release.
     'react-hooks/rules-of-hooks': 'off',

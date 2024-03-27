@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@edx/browserslist-config": "1.2.0",
-    "@openedx/frontend-build": "13.0.28",
+    "@openedx/frontend-build": "github:brian-smith-tcril/frontend-build#eslint-next",
     "@edx/reactifex": "2.2.0",
     "@pact-foundation/pact": "^11.0.2",
     "@testing-library/jest-dom": "5.16.5",
