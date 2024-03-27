@@ -42,8 +42,8 @@ const FeedbackWidget = ({
   }, [ref.current]);
 
   return (
-    (showFeedbackWidget || showGratitudeText) && (
-      <div ref={ref} className={elemReady ? 'sequence-container d-inline-flex flex-row' : 'd-none'}>
+    <div ref={ref} className={(elemReady) ? 'sequence-container d-inline-flex flex-row w-100' : 'd-none'}>
+      {(showFeedbackWidget || showGratitudeText) ? (
         <div className="sequence w-100">
           {
             showFeedbackWidget && (
@@ -99,8 +99,8 @@ const FeedbackWidget = ({
             )
           }
         </div>
-      </div>
-    )
+      ) : null}
+    </div>
   );
 };
 

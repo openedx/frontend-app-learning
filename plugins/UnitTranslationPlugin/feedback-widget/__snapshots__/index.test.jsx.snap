@@ -141,7 +141,7 @@ exports[`<FeedbackWidget /> renders hidden by default 1`] = `
 
 exports[`<FeedbackWidget /> renders show when elemReady is true 1`] = `
 <div
-  className="sequence-container d-inline-flex flex-row"
+  className="sequence-container d-inline-flex flex-row w-100"
 >
   <div
     className="sequence w-100"
