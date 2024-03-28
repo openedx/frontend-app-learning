@@ -1,4 +1,5 @@
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import classNames from 'classnames';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
@@ -75,21 +76,25 @@ const NotificationTray = ({ intl }) => {
     >
       <div>{verifiedMode
         ? (
-          <UpgradeNotification
-            offer={offer}
-            verifiedMode={verifiedMode}
-            accessExpiration={accessExpiration}
-            contentTypeGatingEnabled={contentTypeGatingEnabled}
-            marketingUrl={marketingUrl}
-            upsellPageName="in_course"
-            userTimezone={userTimezone}
-            shouldDisplayBorder={false}
-            timeOffsetMillis={timeOffsetMillis}
-            courseId={courseId}
-            org={org}
-            upgradeNotificationCurrentState={upgradeNotificationCurrentState}
-            setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
-          />
+          <PluginSlot
+            id="upgrade_notification_plugin"
+          >
+            <UpgradeNotification
+              offer={offer}
+              verifiedMode={verifiedMode}
+              accessExpiration={accessExpiration}
+              contentTypeGatingEnabled={contentTypeGatingEnabled}
+              marketingUrl={marketingUrl}
+              upsellPageName="in_course"
+              userTimezone={userTimezone}
+              shouldDisplayBorder={false}
+              timeOffsetMillis={timeOffsetMillis}
+              courseId={courseId}
+              org={org}
+              upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+              setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
+            />
+          </PluginSlot>
         ) : (
           <p className="p-3 small">{intl.formatMessage(messages.noNotificationsMessage)}</p>
         )}

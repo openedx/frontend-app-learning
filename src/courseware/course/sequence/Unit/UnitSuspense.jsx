@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
 import { useModel } from '@src/generic/model-store';
 import PageLoading from '@src/generic/PageLoading';
@@ -33,7 +34,13 @@ const UnitSuspense = ({
   return (
     <>
       {shouldDisplayContentGating && (
-        suspenseComponent(messages.loadingLockedContent, LockPaywall)
+        <Suspense fallback={<PageLoading srMessage={formatMessage(messages.loadingLockedContent)} />}>
+          <PluginSlot
+            id="fbe_message_plugin"
+          >
+            <LockPaywall courseId={courseId} />
+          </PluginSlot>
+        </Suspense>
       )}
       {shouldDisplayHonorCode && (
         suspenseComponent(messages.loadingHonorCode, HonorCode)
