@@ -339,11 +339,11 @@ describe('Sequence', () => {
 
       screen.getAllByRole('link', { name: /previous/i }).forEach(button => fireEvent.click(button));
       expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
+      expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(2);
 
       screen.getAllByRole('link', { name: /next/i }).forEach(button => fireEvent.click(button));
       expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
+      expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(4);
 
       expect(sendTrackEvent).toHaveBeenNthCalledWith(1, 'edx.ui.lms.sequence.previous_selected', {
         current_tab: 1,

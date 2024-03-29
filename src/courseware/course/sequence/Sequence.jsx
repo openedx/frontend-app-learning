@@ -50,20 +50,20 @@ const Sequence = ({
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
-    if (nextIndex < sequence.unitIds.length) {
-      const newUnitId = sequence.unitIds[nextIndex];
-      handleNavigate(newUnitId);
-    } else {
+    const newUnitId = sequence.unitIds[nextIndex];
+    handleNavigate(newUnitId);
+
+    if (nextIndex >= sequence.unitIds.length) {
       nextSequenceHandler();
     }
   };
 
   const handlePrevious = () => {
     const previousIndex = sequence.unitIds.indexOf(unitId) - 1;
-    if (previousIndex >= 0) {
-      const newUnitId = sequence.unitIds[previousIndex];
-      handleNavigate(newUnitId);
-    } else {
+    const newUnitId = sequence.unitIds[previousIndex];
+    handleNavigate(newUnitId);
+
+    if (previousIndex < 0) {
       previousSequenceHandler();
     }
   };
