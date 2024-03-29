@@ -30,7 +30,7 @@ const LmsHtmlFragment = ({
   const iframe = useRef(null);
   function resetIframeHeight() {
     if (iframe?.current?.contentWindow?.document?.body) {
-      iframe.current.height = iframe.current.contentWindow.document.body.scrollHeight;
+      iframe.current.height = iframe.current.contentWindow.document.body.parentNode.scrollHeight;
     }
   }
 
