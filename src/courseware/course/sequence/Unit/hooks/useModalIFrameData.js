@@ -9,7 +9,7 @@ export const stateKeys = StrictDict({
   options: 'options',
 });
 
-export const DEFAULT_HEIGHT = '100vh';
+export const DEFAULT_HEIGHT = '100%';
 
 const useModalIFrameData = () => {
   const [isOpen, setIsOpen] = useKeyedState(stateKeys.isOpen, false);
