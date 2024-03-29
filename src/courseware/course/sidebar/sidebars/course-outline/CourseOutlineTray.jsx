@@ -40,13 +40,19 @@ const CourseOutlineTray = ({ intl }) => {
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
+  const course = useModel('coursewareMeta', courseId);
   const {
     sectionId: activeSectionId,
   } = useModel('sequences', activeSequenceId);
+  const {
+    entranceExamEnabled,
+    entranceExamPassed,
+  } = course.entranceExamData || {};
 
   const sectionsIds = Object.keys(sections);
   const sequenceIds = sections[selectedSection || activeSectionId]?.sequenceIds || [];
   const backButtonTitle = sections[selectedSection || activeSectionId]?.title;
+  const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
 
   const handleToggleCollapse = () => {
     if (currentSidebar === ID) {
@@ -99,7 +105,7 @@ const CourseOutlineTray = ({ intl }) => {
     }
   }, [courseId, isEnabled]);
 
-  if (!isEnabled) {
+  if (!isEnabled || isActiveEntranceExam) {
     return null;
   }
 

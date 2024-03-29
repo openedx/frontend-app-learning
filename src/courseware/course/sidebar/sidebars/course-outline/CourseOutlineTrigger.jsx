@@ -6,6 +6,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { IconButton } from '@openedx/paragon';
 import { MenuOpen as MenuOpenIcon } from '@openedx/paragon/icons';
 
+import { useModel } from '../../../../../generic/model-store';
 import { getCoursewareOutlineSidebarSettings } from '../../../../data/selectors';
 import { LAYOUT_LEFT } from '../../common/constants';
 import SidebarContext from '../../SidebarContext';
@@ -16,16 +17,23 @@ export const LAYOUT = LAYOUT_LEFT;
 
 const CourseOutlineTrigger = ({ intl, isMobileView }) => {
   const {
+    courseId,
     currentSidebar,
     toggleSidebar,
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
+  const course = useModel('coursewareMeta', courseId);
+  const {
+    entranceExamEnabled,
+    entranceExamPassed,
+  } = course.entranceExamData || {};
   const { enabled: isEnabled } = useSelector(getCoursewareOutlineSidebarSettings);
   const isDisplayForDesktopView = !isMobileView && !shouldDisplayFullScreen && currentSidebar !== ID;
   const isDisplayForMobileView = isMobileView && shouldDisplayFullScreen;
+  const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
 
-  if ((!isDisplayForDesktopView && !isDisplayForMobileView) || !isEnabled) {
+  if ((!isDisplayForDesktopView && !isDisplayForMobileView) || !isEnabled || isActiveEntranceExam) {
     return null;
   }
 
