@@ -1,9 +1,8 @@
 import { useContext, useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, useToggle } from '@edx/paragon';
+import { Button, useToggle, IconButton } from '@openedx/paragon';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { IconButton } from '@openedx/paragon';
 import {
   MenuOpen as MenuOpenIcon,
   ChevronLeft as ChevronLeftIcon,
