@@ -12,7 +12,11 @@ import { useModel } from '../../../../../generic/model-store';
 import { LOADING, LOADED } from '../../../../../course-home/data/slice';
 import PageLoading from '../../../../../generic/PageLoading';
 import {
-  getSequenceId, getCourseOutline, getCourseOutlineStatus, getCoursewareOutlineSidebarSettings,
+  getSequenceId,
+  getCourseOutline,
+  getCourseOutlineStatus,
+  getCoursewareOutlineSidebarSettings,
+  getCourseOutlineShouldUpdate,
 } from '../../../../data/selectors';
 import { getCourseOutlineStructure } from '../../../../data/thunks';
 import SidebarContext from '../../SidebarContext';
@@ -29,6 +33,7 @@ const CourseOutlineTray = ({ intl }) => {
   const activeSequenceId = useSelector(getSequenceId);
   const { sections = {}, sequences = {} } = useSelector(getCourseOutline);
   const courseOutlineStatus = useSelector(getCourseOutlineStatus);
+  const courseOutlineShouldUpdate = useSelector(getCourseOutlineShouldUpdate);
   const { enabled: isEnabled } = useSelector(getCoursewareOutlineSidebarSettings);
 
   const {
@@ -99,10 +104,10 @@ const CourseOutlineTray = ({ intl }) => {
   );
 
   useEffect(() => {
-    if (isEnabled && courseOutlineStatus !== LOADED) {
+    if ((isEnabled && courseOutlineStatus !== LOADED) || courseOutlineShouldUpdate) {
       dispatch(getCourseOutlineStructure(courseId));
     }
-  }, [courseId, isEnabled]);
+  }, [courseId, isEnabled, courseOutlineShouldUpdate]);
 
   if (!isEnabled || isActiveEntranceExam) {
     return null;
