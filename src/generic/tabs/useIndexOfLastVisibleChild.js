@@ -50,7 +50,7 @@ export default function useIndexOfLastVisibleChild() {
 
     // Get array of child nodes from NodeList form
     const childNodesArr = Array.prototype.slice.call(containerElementRef.current.children);
-    const { nextIndexOfLastVisibleChild } = childNodesArr
+    const { nextIndexOfLastVisibleChild, isOverFlow } = childNodesArr
       // filter out the overflow element
       .filter(childNode => childNode !== overflowElementRef.current)
       // sum the widths to find the last visible element's index
@@ -59,6 +59,8 @@ export default function useIndexOfLastVisibleChild() {
         acc.sumWidth += Math.floor(childNode.getBoundingClientRect().width);
         if (acc.sumWidth <= containingRect.width) {
           acc.nextIndexOfLastVisibleChild = index;
+        } else {
+          acc.isOverFlow = true;
         }
         return acc;
       }, {
@@ -68,9 +70,10 @@ export default function useIndexOfLastVisibleChild() {
         // to do above.
         sumWidth: overflowElementRef.current ? overflowElementRef.current.getBoundingClientRect().width : 0,
         nextIndexOfLastVisibleChild: -1,
+        isOverFlow: false,
       });
 
-    setIndexOfLastVisibleChild(nextIndexOfLastVisibleChild);
+    setIndexOfLastVisibleChild(isOverFlow ? -1 : nextIndexOfLastVisibleChild);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windowSize, containerElementRef.current]);
 
