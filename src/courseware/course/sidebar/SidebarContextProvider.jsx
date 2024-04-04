@@ -5,14 +5,13 @@ import {
   useEffect, useState, useMemo, useCallback,
 } from 'react';
 
-import { useModel } from '../../../generic/model-store';
-import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
+import { useModel } from '@src/generic/model-store';
+import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import { getDiscussionsSidebarSettings } from '../../data/selectors';
 
-import * as courseOutlineSidebar from './sidebars/course-outline';
 import * as discussionsSidebar from './sidebars/discussions';
 import SidebarContext from './SidebarContext';
-import { SIDEBARS } from './sidebars';
+import { COURSE_OUTLINE_SIDEBAR_ID, SIDEBARS, checkIsSidebarAvailable } from './sidebars';
 
 const SidebarProvider = ({
   courseId,
@@ -27,7 +26,8 @@ const SidebarProvider = ({
   const isCollapsedOutlineSidebar = window.sessionStorage.getItem('hideCourseOutlineSidebar');
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
   const isInitiallyOpenDiscussionsSidebar = isDefaultDisplayDiscussionsSidebar && SIDEBARS[discussionsSidebar.ID].ID;
-  const isInitiallyOpenOutlineSidebar = !isCollapsedOutlineSidebar && SIDEBARS[courseOutlineSidebar.ID].ID;
+  const isInitiallyOpenOutlineSidebar = checkIsSidebarAvailable(COURSE_OUTLINE_SIDEBAR_ID)
+    && !isCollapsedOutlineSidebar && COURSE_OUTLINE_SIDEBAR_ID;
   const initialSidebar = isInitiallySidebarOpen
     ? isInitiallyOpenDiscussionsSidebar || isInitiallyOpenOutlineSidebar
     : null;

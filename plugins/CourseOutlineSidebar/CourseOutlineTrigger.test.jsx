@@ -3,10 +3,11 @@ import userEvent from '@testing-library/user-event';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { initializeTestStore } from '../../../../../setupTest';
-import SidebarContext from '../../SidebarContext';
-import { ID as discussionSidebarId } from '../discussions/DiscussionsTrigger';
-import CourseOutlineTrigger, { ID as outlineSidebarId } from './CourseOutlineTrigger';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { ID as discussionSidebarId } from '@src/courseware/course/sidebar/sidebars/discussions/DiscussionsTrigger';
+import CourseOutlineTrigger from './CourseOutlineTrigger';
+import { ID as outlineSidebarId } from './constants';
+import { initOutlineSidebarTestStore } from './utils';
 import messages from './messages';
 
 describe('<CourseOutlineTrigger />', () => {
@@ -16,7 +17,7 @@ describe('<CourseOutlineTrigger />', () => {
   let store;
 
   const initTestStore = async (options) => {
-    store = await initializeTestStore(options);
+    store = await initOutlineSidebarTestStore(options);
     const state = store.getState();
     courseId = state.courseware.courseId;
     [unitId] = Object.keys(state.models.units);
@@ -94,15 +95,5 @@ describe('<CourseOutlineTrigger />', () => {
 
     expect(mockToggleSidebar).toHaveBeenCalledTimes(1);
     expect(mockToggleSidebar).toHaveBeenCalledWith(null);
-  });
-
-  it('does not render when isEnabled is false', async () => {
-    await initTestStore({ outlineSidebarSettings: { enabled: false } });
-    renderWithProvider({}, { isMobileView: false });
-
-    const toggleButton = await screen.queryByRole('button', {
-      name: messages.toggleCourseOutlineTrigger.defaultMessage,
-    });
-    expect(toggleButton).not.toBeInTheDocument();
   });
 });

@@ -3,10 +3,9 @@ import { MemoryRouter } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { initializeMockApp, initializeTestStore } from '../../../../../setupTest';
 import SidebarUnit from './SidebarUnit';
-
-initializeMockApp();
+import { ID } from './constants';
+import { initOutlineSidebarTestStore } from './utils';
 
 describe('<SidebarUnit />', () => {
   let store = {};
@@ -14,11 +13,11 @@ describe('<SidebarUnit />', () => {
   let sequenceId;
 
   const initTestStore = async (options) => {
-    store = await initializeTestStore(options);
+    store = await initOutlineSidebarTestStore(options);
     const state = store.getState();
-    [sequenceId] = Object.keys(state.courseware.courseOutline.sequences);
-    const sequence = state.courseware.courseOutline.sequences[sequenceId];
-    unit = state.courseware.courseOutline.units[sequence.unitIds[0]];
+    [sequenceId] = Object.keys(state.plugins[ID].structure.sequences);
+    const sequence = state.plugins[ID].structure.sequences[sequenceId];
+    unit = state.plugins[ID].structure.units[sequence.unitIds[0]];
   };
 
   function renderWithProvider(props = {}) {
@@ -31,7 +30,9 @@ describe('<SidebarUnit />', () => {
               id="unit1"
               courseId="course123"
               sequenceId={sequenceId}
-              unit={{ ...unit, icon: 'video', isLocked: false }}
+              activeUnitId={unit.id}
+              unit={{ ...unit, icon: 'video' }}
+              isLocked={false}
               isActive={false}
               {...props}
             />
@@ -73,7 +74,7 @@ describe('<SidebarUnit />', () => {
   it('renders correctly when unit is locked', async () => {
     await initTestStore();
     renderWithProvider({
-      unit: { ...unit, isLocked: true },
+      isLocked: true,
     });
 
     expect(screen.getByText(unit.title)).toBeInTheDocument();

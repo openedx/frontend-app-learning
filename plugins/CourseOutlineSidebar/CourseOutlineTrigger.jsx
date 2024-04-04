@@ -1,51 +1,39 @@
-import { useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useContext, useEffect } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { IconButton } from '@openedx/paragon';
 import { MenuOpen as MenuOpenIcon } from '@openedx/paragon/icons';
 
-import { useModel } from '../../../../../generic/model-store';
-import { getCoursewareOutlineSidebarSettings } from '../../../../data/selectors';
-import { LAYOUT_LEFT } from '../../common/constants';
-import SidebarContext from '../../SidebarContext';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { extendSidebars } from '@src/courseware/course/sidebar/sidebars';
+import { OUTLINE_SIDEBAR } from './CourseOutlineTray';
+import { ID } from './constants';
 import messages from './messages';
-
-export const ID = 'COURSE_OUTLINE';
-export const LAYOUT = LAYOUT_LEFT;
+import { useCourseOutlineSidebar } from './hooks';
 
 const CourseOutlineTrigger = ({ intl, isMobileView }) => {
   const {
-    courseId,
     currentSidebar,
-    toggleSidebar,
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
-  const course = useModel('coursewareMeta', courseId);
   const {
-    entranceExamEnabled,
-    entranceExamPassed,
-  } = course.entranceExamData || {};
-  const { enabled: isEnabled } = useSelector(getCoursewareOutlineSidebarSettings);
+    handleToggleCollapse, isActiveEntranceExam,
+  } = useCourseOutlineSidebar();
+
   const isDisplayForDesktopView = !isMobileView && !shouldDisplayFullScreen && currentSidebar !== ID;
   const isDisplayForMobileView = isMobileView && shouldDisplayFullScreen;
-  const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
 
-  if ((!isDisplayForDesktopView && !isDisplayForMobileView) || !isEnabled || isActiveEntranceExam) {
+  // Adding CourseOutlineSidebar to the list of all sidebars on the unit page
+  // only when connecting CourseOutlineSidebar via PluginSlot.
+  useEffect(() => {
+    extendSidebars(ID, OUTLINE_SIDEBAR);
+  }, []);
+
+  if ((!isDisplayForDesktopView && !isDisplayForMobileView) || isActiveEntranceExam) {
     return null;
   }
-
-  const handleToggleCollapse = () => {
-    if (currentSidebar === ID) {
-      toggleSidebar(null);
-      window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
-    } else {
-      toggleSidebar(ID);
-      window.sessionStorage.removeItem('hideCourseOutlineSidebar');
-    }
-  };
 
   return (
     <div className={classNames('outline-sidebar-heading-wrapper bg-light-200 collapsed', {

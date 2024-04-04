@@ -8,65 +8,55 @@ import {
   ChevronLeft as ChevronLeftIcon,
 } from '@openedx/paragon/icons';
 
-import { useModel } from '../../../../../generic/model-store';
-import { LOADING, LOADED } from '../../../../../course-home/data/slice';
-import PageLoading from '../../../../../generic/PageLoading';
-import {
-  getSequenceId,
-  getCourseOutline,
-  getCourseOutlineStatus,
-  getCoursewareOutlineSidebarSettings,
-  getCourseOutlineShouldUpdate,
-} from '../../../../data/selectors';
-import { getCourseOutlineStructure } from '../../../../data/thunks';
-import SidebarContext from '../../SidebarContext';
-import { ID } from './CourseOutlineTrigger';
+import { useModel } from '@src/generic/model-store';
+import PageLoading from '@src/generic/PageLoading';
+import { usePluginsSelector } from '@src/generic/plugin-store';
+import { LOADED } from '@src/course-home/data/slice';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { getSequenceId, getUnitsModel } from './data/selectors';
 import SidebarSection from './SidebarSection';
 import SidebarSequence from './SidebarSequence';
 import messages from './messages';
+import { ID, LAYOUT } from './constants';
+import { useCourseOutlineSidebar } from './hooks';
+import { getCourseOutlineStructure, updateCourseOutlineCompletion } from './data/thunks';
 
 const CourseOutlineTray = ({ intl }) => {
+  const [completedIds, setCompletedIds] = useState([]);
   const [selectedSection, setSelectedSection] = useState(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
 
   const dispatch = useDispatch();
+
+  const {
+    handleToggleCollapse, isActiveEntranceExam,
+  } = useCourseOutlineSidebar();
+
   const activeSequenceId = useSelector(getSequenceId);
-  const { sections = {}, sequences = {} } = useSelector(getCourseOutline);
-  const courseOutlineStatus = useSelector(getCourseOutlineStatus);
-  const courseOutlineShouldUpdate = useSelector(getCourseOutlineShouldUpdate);
-  const { enabled: isEnabled } = useSelector(getCoursewareOutlineSidebarSettings);
+  const sequenceNavUnits = useSelector(getUnitsModel) || {};
+  const {
+    loadingStatus, courseOutlineShouldUpdate, structure: courseOutlineStructure,
+  } = usePluginsSelector(ID);
+  const { sections = {}, sequences = {} } = courseOutlineStructure ?? {};
 
   const {
     courseId,
     unitId,
-    currentSidebar,
-    toggleSidebar,
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
-  const course = useModel('coursewareMeta', courseId);
   const {
     sectionId: activeSectionId,
   } = useModel('sequences', activeSequenceId);
-  const {
-    entranceExamEnabled,
-    entranceExamPassed,
-  } = course.entranceExamData || {};
 
   const sectionsIds = Object.keys(sections);
   const sequenceIds = sections[selectedSection || activeSectionId]?.sequenceIds || [];
   const backButtonTitle = sections[selectedSection || activeSectionId]?.title;
-  const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
+  const newCompletedUnitIds = Object.keys(sequenceNavUnits).filter((id) => sequenceNavUnits[id].complete);
 
-  const handleToggleCollapse = () => {
-    if (currentSidebar === ID) {
-      toggleSidebar(null);
-      window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
-    } else {
-      toggleSidebar(ID);
-      window.sessionStorage.removeItem('hideCourseOutlineSidebar');
-    }
-  };
+  if (JSON.stringify(completedIds.sort()) !== JSON.stringify(newCompletedUnitIds.sort())) {
+    setCompletedIds(newCompletedUnitIds);
+  }
 
   const handleBackToSectionLevel = () => {
     setDisplaySectionLevel();
@@ -104,16 +94,22 @@ const CourseOutlineTray = ({ intl }) => {
   );
 
   useEffect(() => {
-    if ((isEnabled && courseOutlineStatus !== LOADED) || courseOutlineShouldUpdate) {
+    if (loadingStatus !== LOADED || courseOutlineShouldUpdate) {
       dispatch(getCourseOutlineStructure(courseId));
     }
-  }, [courseId, isEnabled, courseOutlineShouldUpdate]);
+  }, [courseId, courseOutlineShouldUpdate]);
 
-  if (!isEnabled || isActiveEntranceExam) {
+  useEffect(() => {
+    if (courseId && completedIds.length) {
+      dispatch(updateCourseOutlineCompletion(completedIds));
+    }
+  }, [courseId, completedIds]);
+
+  if (isActiveEntranceExam) {
     return null;
   }
 
-  if (courseOutlineStatus === LOADING) {
+  if (!loadingStatus) {
     return (
       <div className={classNames('outline-sidebar-wrapper', {
         'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
@@ -167,6 +163,12 @@ CourseOutlineTray.propTypes = {
   intl: intlShape.isRequired,
 };
 
-CourseOutlineTray.ID = ID;
+// CourseOutlineTray.ID = ID;
 
 export default injectIntl(CourseOutlineTray);
+
+export const OUTLINE_SIDEBAR = {
+  ID,
+  LAYOUT,
+  Sidebar: injectIntl(CourseOutlineTray),
+};

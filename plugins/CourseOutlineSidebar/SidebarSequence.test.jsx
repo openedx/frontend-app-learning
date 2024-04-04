@@ -4,12 +4,11 @@ import userEvent from '@testing-library/user-event';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import courseOutlineMessages from '../../../../../course-home/outline-tab/messages';
-import { initializeMockApp, initializeTestStore } from '../../../../../setupTest';
+import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import SidebarSequence from './SidebarSequence';
 import messages from './messages';
-
-initializeMockApp();
+import { ID } from './constants';
+import { initOutlineSidebarTestStore } from './utils';
 
 describe('<SidebarSequence />', () => {
   let courseId;
@@ -19,14 +18,14 @@ describe('<SidebarSequence />', () => {
   const sequenceDescription = 'sequence test description';
 
   const initTestStore = async (options) => {
-    store = await initializeTestStore(options);
+    store = await initOutlineSidebarTestStore(options);
     const state = store.getState();
     courseId = state.courseware.courseId;
     let activeSequenceId = '';
-    [activeSequenceId] = Object.keys(state.courseware.courseOutline.sequences);
-    sequence = state.courseware.courseOutline.sequences[activeSequenceId];
+    [activeSequenceId] = Object.keys(state.plugins[ID].structure.sequences);
+    sequence = state.plugins[ID].structure.sequences[activeSequenceId];
     const unitId = sequence.unitIds[0];
-    unit = state.courseware.courseOutline.units[unitId];
+    unit = state.plugins[ID].structure.units[unitId];
   };
 
   function renderWithProvider(props = {}) {

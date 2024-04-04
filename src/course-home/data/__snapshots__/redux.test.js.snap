@@ -14,10 +14,6 @@ Object {
   },
   "courseware": Object {
     "courseId": null,
-    "courseOutline": Object {},
-    "courseOutlineShouldUpdate": false,
-    "courseOutlineSidebarSettings": Object {},
-    "courseOutlineStatus": "loading",
     "courseStatus": "loading",
     "discussionsSidebarSettings": Object {},
     "sequenceId": null,
@@ -406,10 +402,6 @@ Object {
   },
   "courseware": Object {
     "courseId": null,
-    "courseOutline": Object {},
-    "courseOutlineShouldUpdate": false,
-    "courseOutlineSidebarSettings": Object {},
-    "courseOutlineStatus": "loading",
     "courseStatus": "loading",
     "discussionsSidebarSettings": Object {},
     "sequenceId": null,
@@ -679,10 +671,6 @@ Object {
   },
   "courseware": Object {
     "courseId": null,
-    "courseOutline": Object {},
-    "courseOutlineShouldUpdate": false,
-    "courseOutlineSidebarSettings": Object {},
-    "courseOutlineStatus": "loading",
     "courseStatus": "loading",
     "discussionsSidebarSettings": Object {},
     "sequenceId": null,

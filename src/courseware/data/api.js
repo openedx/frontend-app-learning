@@ -1,8 +1,8 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { appendBrowserTimezoneToUrl } from '../../utils';
+import { appendBrowserTimezoneToUrl } from '@src/utils';
 import {
-  normalizeLearningSequencesData, normalizeMetadata, normalizeOutlineBlocks, normalizeSequenceMetadata,
+  normalizeLearningSequencesData, normalizeMetadata, normalizeSequenceMetadata,
 } from './utils';
 
 // Do not add further calls to this API - we don't like making use of the modulestore if we can help it
@@ -85,18 +85,6 @@ export async function getCourseTopics(courseId) {
   const { data } = await getAuthenticatedHttpClient()
     .get(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`);
   return camelCaseObject(data);
-}
-
-/**
- * Get course outline structure for the courseware sidebar.
- * @param {string} courseId - The unique identifier for the course.
- * @returns {Promise<{units: {}, sequences: {}, sections: {}}|null>}
- */
-export async function getCourseOutline(courseId) {
-  const { data } = await getAuthenticatedHttpClient()
-    .get(`${getConfig().LMS_BASE_URL}/api/course_home/v1/sidebar/${courseId}`);
-
-  return data.blocks ? normalizeOutlineBlocks(courseId, data.blocks) : null;
 }
 
 /**

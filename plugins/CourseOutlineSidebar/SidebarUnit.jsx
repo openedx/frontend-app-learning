@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-import { checkBlockCompletion } from '../../../../data';
+import { checkBlockCompletion } from '@src/courseware/data';
 import UnitIcon, { UNIT_ICON_TYPES } from './UnitIcon';
 import messages from './messages';
 
@@ -22,15 +22,16 @@ const SidebarUnit = ({
   const {
     complete,
     title,
-    icon = UNIT_ICON_TYPES.other,
+    icon,
   } = unit;
+
   const dispatch = useDispatch();
 
   const handleClick = () => {
     dispatch(checkBlockCompletion(courseId, sequenceId, activeUnitId));
   };
 
-  const iconType = isLocked ? UNIT_ICON_TYPES.lock : icon;
+  const iconType = isLocked ? UNIT_ICON_TYPES.lock : icon || UNIT_ICON_TYPES.other;
 
   return (
     <li className={classNames({ 'bg-info-100': isActive, 'border-top border-light': !isFirst })}>

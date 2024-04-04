@@ -1,6 +1,5 @@
 import { useSelector, shallowEqual } from 'react-redux';
 
-// eslint-disable-next-line import/prefer-default-export
 export function usePluginsCallback(methodName, defaultMethod) {
   return useSelector(
     state => (() => {
@@ -12,6 +11,13 @@ export function usePluginsCallback(methodName, defaultMethod) {
       });
       return result;
     }),
+    shallowEqual,
+  );
+}
+
+export function usePluginsSelector(pluginName) {
+  return useSelector(
+    state => state.plugins[pluginName] ?? {},
     shallowEqual,
   );
 }

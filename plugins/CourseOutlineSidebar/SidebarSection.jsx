@@ -6,7 +6,7 @@ import {
   ChevronRight as ChevronRightIcon,
 } from '@openedx/paragon/icons';
 
-import courseOutlineMessages from '../../../../../course-home/outline-tab/messages';
+import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { CompletionSolidIcon } from './icons';
 
 const SidebarSection = ({ intl, section, handleSelectSection }) => {

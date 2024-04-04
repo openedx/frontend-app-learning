@@ -6,11 +6,13 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Collapsible } from '@openedx/paragon';
 import { CheckCircle as CheckCircleIcon } from '@openedx/paragon/icons';
 
-import courseOutlineMessages from '../../../../../course-home/outline-tab/messages';
-import { getCourseOutline, getSequenceId } from '../../../../data/selectors';
+import { usePluginsSelector } from '@src/generic/plugin-store';
+import courseOutlineMessages from '@src/course-home/outline-tab/messages';
+import { getSequenceId } from './data/selectors';
 import { CompletionSolidIcon } from './icons';
 import SidebarUnit from './SidebarUnit';
 import { UNIT_ICON_TYPES } from './UnitIcon';
+import { ID } from './constants';
 
 const SidebarSequence = ({
   intl,
@@ -29,7 +31,8 @@ const SidebarSequence = ({
   } = sequence;
 
   const [open, setOpen] = useState(defaultOpen);
-  const { units = {} } = useSelector(getCourseOutline);
+  const { structure: courseOutlineStructure } = usePluginsSelector(ID);
+  const { units = {} } = courseOutlineStructure;
   const activeSequenceId = useSelector(getSequenceId);
 
   const sectionTitle = (
@@ -52,8 +55,8 @@ const SidebarSequence = ({
   return (
     <li>
       <Collapsible
-        className={classNames('mb-2', { 'active-section': id === activeSequenceId })}
-        styling="card-lg text-break"
+        className={classNames('mb-2 text-break', { 'active-section': id === activeSequenceId })}
+        styling="card-lg"
         title={sectionTitle}
         open={open}
         onToggle={() => setOpen(!open)}

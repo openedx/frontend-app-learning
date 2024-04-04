@@ -59,7 +59,7 @@ describe('Course', () => {
 
   it('loads learning sequence', async () => {
     render(<Course {...mockData} />, { wrapWithRouter: true });
-    expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();

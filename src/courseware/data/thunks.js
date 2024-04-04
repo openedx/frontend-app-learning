@@ -1,15 +1,13 @@
 import { logError, logInfo } from '@edx/frontend-platform/logging';
-import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
+import { getCourseHomeCourseMetadata } from '@src/course-home/data/api';
 import {
   addModel, addModelsMap, updateModel, updateModels, updateModelsMap,
-} from '../../generic/model-store';
+} from '@src/generic/model-store';
 import {
   getBlockCompletion,
   getCourseDiscussionConfig,
   getCourseMetadata,
-  getCourseOutline,
   getCourseTopics,
-  getCoursewareOutlineSidebarEnabledFlag,
   getDiscussionSidebarDefaultOpeningFlag,
   getLearningSequencesOutline,
   getSequenceMetadata,
@@ -24,12 +22,7 @@ import {
   fetchSequenceFailure,
   fetchSequenceRequest,
   fetchSequenceSuccess,
-  fetchCourseOutlineRequest,
-  fetchCourseOutlineSuccess,
-  fetchCourseOutlineFailure,
-  setCoursewareOutlineSidebarSettings,
   setDiscussionsSidebarSettings,
-  updateCourseOutlineCompletion,
 } from './slice';
 
 export function fetchCourse(courseId) {
@@ -39,18 +32,15 @@ export function fetchCourse(courseId) {
       getCourseMetadata(courseId),
       getLearningSequencesOutline(courseId),
       getCourseHomeCourseMetadata(courseId, 'courseware'),
-      getCoursewareOutlineSidebarEnabledFlag(courseId),
       getDiscussionSidebarDefaultOpeningFlag(courseId),
     ]).then(([
       courseMetadataResult,
       learningSequencesOutlineResult,
       courseHomeMetadataResult,
-      courseOutlineSidebarDisableFlagResult,
       discussionSidebarDisableFlagResult]) => {
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
       const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
       const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
-      const fetchedOutlineSidebarEnableFlag = courseOutlineSidebarDisableFlagResult.status === 'fulfilled';
       const fetchedDiscussionSidebarEnableFlag = discussionSidebarDisableFlagResult.status === 'fulfilled';
 
       if (fetchedMetadata) {
@@ -91,12 +81,6 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      if (fetchedOutlineSidebarEnableFlag) {
-        dispatch(setCoursewareOutlineSidebarSettings({
-          enabled: courseOutlineSidebarDisableFlagResult.value.enabled,
-        }));
-      }
-
       if (fetchedDiscussionSidebarEnableFlag) {
         dispatch(setDiscussionsSidebarSettings({
           enabled: discussionSidebarDisableFlagResult.value.enabled,
@@ -120,9 +104,6 @@ export function fetchCourse(courseId) {
       }
       if (!fetchedCourseHomeMetadata) {
         logError(courseHomeMetadataResult.reason);
-      }
-      if (!fetchedOutlineSidebarEnableFlag) {
-        logError(courseOutlineSidebarDisableFlagResult.reason);
       }
       if (fetchedMetadata && fetchedCourseHomeMetadata) {
         if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedOutline) {
@@ -196,7 +177,6 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
           complete: isComplete,
         },
       }));
-      dispatch(updateCourseOutlineCompletion({ sequenceId, unitId, isComplete }));
       return isComplete;
     } catch (error) {
       logError(error);
@@ -279,19 +259,6 @@ export function getCourseDiscussionTopics(courseId) {
       }
     } catch (error) {
       logError(error);
-    }
-  };
-}
-
-export function getCourseOutlineStructure(courseId) {
-  return async (dispatch) => {
-    dispatch(fetchCourseOutlineRequest());
-    try {
-      const courseOutline = await getCourseOutline(courseId);
-      dispatch(fetchCourseOutlineSuccess({ courseOutline }));
-    } catch (error) {
-      logError(error);
-      dispatch(fetchCourseOutlineFailure());
     }
   };
 }

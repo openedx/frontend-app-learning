@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import courseOutlineMessages from '../../../../../course-home/outline-tab/messages';
+import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import SidebarSection from './SidebarSection';
 
 describe('<SidebarSection />', () => {
