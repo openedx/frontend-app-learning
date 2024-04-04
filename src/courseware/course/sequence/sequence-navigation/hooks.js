@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
 import { useSelector } from 'react-redux';
+import { breakpoints, useWindowSize } from '@openedx/paragon';
 import { useModel } from '../../../../generic/model-store';
 import { sequenceIdsSelector } from '../../../data';
 
@@ -67,4 +68,14 @@ export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) 
     navigationDisabledNextSequence,
     navigationDisabledPrevSequence,
   };
+}
+
+export function useIsOnDesktop() {
+  const windowSize = useWindowSize();
+  return windowSize.width >= breakpoints.medium.minWidth;
+}
+
+export function useIsOnXLDesktop() {
+  const windowSize = useWindowSize();
+  return windowSize.width >= breakpoints.extraLarge.minWidth;
 }
