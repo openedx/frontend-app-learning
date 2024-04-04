@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import UnitButton from './UnitButton';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
-import { useIsOnDesktop, useIsOnXLDesktop } from './hooks';
+import { useIsOnXLDesktop } from './hooks';
 
 const SequenceNavigationTabs = ({
   unitIds, unitId, showCompletion, onNavigate,
@@ -15,7 +15,6 @@ const SequenceNavigationTabs = ({
     containerRef,
     invisibleStyle,
   ] = useIndexOfLastVisibleChild();
-  const isOnDesktop = useIsOnDesktop();
   const isOnXLDesktop = useIsOnXLDesktop();
   const shouldDisplayDropdown = indexOfLastVisibleChild === -1;
 
@@ -24,7 +23,7 @@ const SequenceNavigationTabs = ({
       <div
         ref={containerRef}
         className={classNames('sequence-navigation-tabs-container', {
-          'navigation-tab-width': (isOnDesktop || isOnXLDesktop) && shouldDisplayDropdown,
+          'navigation-tab-width': isOnXLDesktop && shouldDisplayDropdown,
         })}
       >
         <div
