@@ -24,7 +24,9 @@ describe('<UnitTranslationPlugin />', () => {
     useState.mockReturnValue([{ enabled, availableLanguages }, jest.fn()]);
   };
   it('render empty when translation is not enabled', () => {
-    useModel.mockReturnValue({ language: 'en' });
+    useModel
+      .mockReturnValueOnce({ language: 'en' })
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({ enabled: false });
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -32,7 +34,9 @@ describe('<UnitTranslationPlugin />', () => {
     expect(wrapper.isEmptyRender()).toBe(true);
   });
   it('render empty when available languages is empty', () => {
-    useModel.mockReturnValue({ language: 'fr' });
+    useModel
+      .mockReturnValueOnce({ language: 'fr' })
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({
       availableLanguages: [],
     });
@@ -43,7 +47,20 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render empty when course language has not been set', () => {
-    useModel.mockReturnValue({ language: undefined });
+    useModel
+      .mockReturnValueOnce({ language: undefined })
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
+    mockInitialState({});
+
+    const wrapper = shallow(<UnitTranslationPlugin {...props} />);
+
+    expect(wrapper.isEmptyRender()).toBe(true);
+  });
+
+  it('render empty when verifiedMode has not been set', () => {
+    useModel
+      .mockReturnValueOnce({ language: 'en' })
+      .mockReturnValueOnce({ verifiedMode: null });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -52,7 +69,9 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render TranslationSelection when translation is enabled and language is available', () => {
-    useModel.mockReturnValue({ language: 'en' });
+    useModel
+      .mockReturnValueOnce({ language: 'en' })
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
