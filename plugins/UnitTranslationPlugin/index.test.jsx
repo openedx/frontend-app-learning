@@ -26,13 +26,11 @@ describe('<UnitTranslationPlugin />', () => {
     useState.mockReturnValue([{ enabled, availableLanguages }, jest.fn()]);
   };
   it('render empty when translation is not enabled', () => {
-    const mockCoursewareMetaFn = jest.fn(() => ({ language: 'en' }));
-    const mockCourseHomeMetaFn = jest.fn(() => ({ verifiedMode: { accessExpirationDate: null } }));
     when(useModel)
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockImplementation(mockCourseHomeMetaFn)
       .calledWith('coursewareMeta', props.courseId)
-      .mockImplementation(mockCoursewareMetaFn);
+      .mockReturnValueOnce({ language: 'en' })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({ enabled: false });
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -40,13 +38,11 @@ describe('<UnitTranslationPlugin />', () => {
     expect(wrapper.isEmptyRender()).toBe(true);
   });
   it('render empty when available languages is empty', () => {
-    const mockCoursewareMetaFn = jest.fn(() => ({ language: 'fr' }));
-    const mockCourseHomeMetaFn = jest.fn(() => ({ verifiedMode: { accessExpirationDate: null } }));
     when(useModel)
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockImplementation(mockCourseHomeMetaFn)
       .calledWith('coursewareMeta', props.courseId)
-      .mockImplementation(mockCoursewareMetaFn);
+      .mockReturnValueOnce({ language: 'fr' })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({
       availableLanguages: [],
     });
@@ -57,13 +53,11 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render empty when course language has not been set', () => {
-    const mockCoursewareMetaFn = jest.fn(() => ({ language: undefined }));
-    const mockCourseHomeMetaFn = jest.fn(() => ({ verifiedMode: { accessExpirationDate: null } }));
     when(useModel)
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockImplementation(mockCourseHomeMetaFn)
       .calledWith('coursewareMeta', props.courseId)
-      .mockImplementation(mockCoursewareMetaFn);
+      .mockReturnValueOnce({ language: undefined })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -72,13 +66,11 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render empty when verifiedMode has not been set', () => {
-    const mockCoursewareMetaFn = jest.fn(() => ({ language: 'en' }));
-    const mockCourseHomeMetaFn = jest.fn(() => ({ verifiedMode: null }));
     when(useModel)
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockImplementation(mockCourseHomeMetaFn)
       .calledWith('coursewareMeta', props.courseId)
-      .mockImplementation(mockCoursewareMetaFn);
+      .mockReturnValueOnce({ language: 'en' })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: null });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -87,13 +79,11 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render TranslationSelection when translation is enabled and language is available', () => {
-    const mockCoursewareMetaFn = jest.fn(() => ({ language: 'en' }));
-    const mockCourseHomeMetaFn = jest.fn(() => ({ verifiedMode: { accessExpirationDate: null } }));
     when(useModel)
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockImplementation(mockCourseHomeMetaFn)
       .calledWith('coursewareMeta', props.courseId)
-      .mockImplementation(mockCoursewareMetaFn);
+      .mockReturnValueOnce({ language: 'en' })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
