@@ -1,3 +1,5 @@
+import { when } from 'jest-when';
+
 import { shallow } from '@edx/react-unit-test-utils';
 import { useState } from 'react';
 import { useModel } from '@src/generic/model-store';
@@ -24,7 +26,11 @@ describe('<UnitTranslationPlugin />', () => {
     useState.mockReturnValue([{ enabled, availableLanguages }, jest.fn()]);
   };
   it('render empty when translation is not enabled', () => {
-    useModel.mockReturnValue({ language: 'en' });
+    when(useModel)
+      .calledWith('coursewareMeta', props.courseId)
+      .mockReturnValueOnce({ language: 'en' })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({ enabled: false });
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -32,7 +38,11 @@ describe('<UnitTranslationPlugin />', () => {
     expect(wrapper.isEmptyRender()).toBe(true);
   });
   it('render empty when available languages is empty', () => {
-    useModel.mockReturnValue({ language: 'fr' });
+    when(useModel)
+      .calledWith('coursewareMeta', props.courseId)
+      .mockReturnValueOnce({ language: 'fr' })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({
       availableLanguages: [],
     });
@@ -43,7 +53,24 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render empty when course language has not been set', () => {
-    useModel.mockReturnValue({ language: undefined });
+    when(useModel)
+      .calledWith('coursewareMeta', props.courseId)
+      .mockReturnValueOnce({ language: undefined })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
+    mockInitialState({});
+
+    const wrapper = shallow(<UnitTranslationPlugin {...props} />);
+
+    expect(wrapper.isEmptyRender()).toBe(true);
+  });
+
+  it('render empty when verifiedMode has not been set', () => {
+    when(useModel)
+      .calledWith('coursewareMeta', props.courseId)
+      .mockReturnValueOnce({ language: 'en' })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: null });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -52,7 +79,11 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render TranslationSelection when translation is enabled and language is available', () => {
-    useModel.mockReturnValue({ language: 'en' });
+    when(useModel)
+      .calledWith('coursewareMeta', props.courseId)
+      .mockReturnValueOnce({ language: 'en' })
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
