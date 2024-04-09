@@ -432,7 +432,16 @@ export async function postDismissWelcomeMessage(courseId) {
 
 export async function postRequestCert(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/generate_user_cert`);
-  await getAuthenticatedHttpClient().post(url.href);
+  try {
+    const { data } = await getAuthenticatedHttpClient().post(url.href);
+    return camelCaseObject(data);
+  } catch (error) {
+    // The request will faild when the status is 400
+    // Which can be because of:
+    // 1. The certificate has been requested and it's still in the porcess of generation
+    // 2. The certificate was was generated even before user/learner request it.
+    return {};
+  }
 }
 
 export async function executePostFromPostEvent(postData, researchEventData) {
