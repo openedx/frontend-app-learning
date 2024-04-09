@@ -15,6 +15,7 @@
     "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
     "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx .",
     "prepare": "husky install",
+    "postinstall": "patch-package",
     "snapshot": "fedx-scripts jest --updateSnapshot",
     "start": "fedx-scripts webpack-dev-server --progress",
     "test": "fedx-scripts jest --coverage --passWithNoTests"
@@ -84,6 +85,7 @@
     "jest": "^26.6.3",
     "jest-console-group-reporter": "^1.0.1",
     "jest-when": "^3.6.0",
+    "patch-package": "^8.0.0",
     "postcss-loader": "^8.1.1",
     "rosie": "2.1.1",
     "sass": "^1.72.0",
