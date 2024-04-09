@@ -12,15 +12,18 @@ import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
+import { useModel } from '@src/generic/model-store';
+import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
 import PageLoading from '../../../generic/PageLoading';
-import { useModel } from '../../../generic/model-store';
-import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '../../../alerts/sequence-alerts/hooks';
 
 import CourseLicense from '../course-license';
 import Sidebar from '../sidebar/Sidebar';
 import NewSidebar from '../new-sidebar/Sidebar';
 import { LAYOUT_RIGHT, LAYOUT_LEFT } from '../sidebar/common/constants';
-import { Trigger as CourseOutlineTrigger } from '../sidebar/sidebars/course-outline';
+import {
+  OUTLINE_SIDEBAR_MOBILE_PLUGIN_SLOT_ID,
+  Trigger as CourseOutlineTrigger,
+} from '../sidebar/sidebars/course-outline';
 import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
@@ -146,7 +149,9 @@ const Sequence = ({
   const defaultContent = (
     <>
       <div className="sequence-container d-inline-flex flex-row w-100">
-        <CourseOutlineTrigger />
+        <PluginSlot id={OUTLINE_SIDEBAR_MOBILE_PLUGIN_SLOT_ID}>
+          <CourseOutlineTrigger />
+        </PluginSlot>
         <Sidebar layout={LAYOUT_LEFT} />
         <div className="sequence w-100">
           <div className="sequence-navigation-container">

@@ -8,14 +8,13 @@ import {
   ChevronLeft as ChevronLeftIcon,
 } from '@openedx/paragon/icons';
 
-import { useModel } from '../../../../../generic/model-store';
-import { LOADING, LOADED } from '../../../../../course-home/data/slice';
-import PageLoading from '../../../../../generic/PageLoading';
+import { useModel } from '@src/generic/model-store';
+import PageLoading from '@src/generic/PageLoading';
+import { LOADING, LOADED } from '@src/course-home/data/slice';
 import {
   getSequenceId,
   getCourseOutline,
   getCourseOutlineStatus,
-  getCoursewareOutlineSidebarSettings,
   getCourseOutlineShouldUpdate,
 } from '../../../../data/selectors';
 import { getCourseOutlineStructure } from '../../../../data/thunks';
@@ -23,6 +22,7 @@ import SidebarContext from '../../SidebarContext';
 import { ID } from './CourseOutlineTrigger';
 import SidebarSection from './SidebarSection';
 import SidebarSequence from './SidebarSequence';
+import { OUTLINE_SIDEBAR_SESSION_STORAGE_NAME } from './constants';
 import messages from './messages';
 
 const CourseOutlineTray = ({ intl }) => {
@@ -34,7 +34,6 @@ const CourseOutlineTray = ({ intl }) => {
   const { sections = {}, sequences = {} } = useSelector(getCourseOutline);
   const courseOutlineStatus = useSelector(getCourseOutlineStatus);
   const courseOutlineShouldUpdate = useSelector(getCourseOutlineShouldUpdate);
-  const { enabled: isEnabled } = useSelector(getCoursewareOutlineSidebarSettings);
 
   const {
     courseId,
@@ -61,10 +60,10 @@ const CourseOutlineTray = ({ intl }) => {
   const handleToggleCollapse = () => {
     if (currentSidebar === ID) {
       toggleSidebar(null);
-      window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
+      window.sessionStorage.setItem(OUTLINE_SIDEBAR_SESSION_STORAGE_NAME, 'true');
     } else {
       toggleSidebar(ID);
-      window.sessionStorage.removeItem('hideCourseOutlineSidebar');
+      window.sessionStorage.removeItem(OUTLINE_SIDEBAR_SESSION_STORAGE_NAME);
     }
   };
 
@@ -104,12 +103,12 @@ const CourseOutlineTray = ({ intl }) => {
   );
 
   useEffect(() => {
-    if ((isEnabled && courseOutlineStatus !== LOADED) || courseOutlineShouldUpdate) {
+    if ((courseOutlineStatus !== LOADED) || courseOutlineShouldUpdate) {
       dispatch(getCourseOutlineStructure(courseId));
     }
-  }, [courseId, isEnabled, courseOutlineShouldUpdate]);
+  }, [courseId, courseOutlineShouldUpdate]);
 
-  if (!isEnabled || isActiveEntranceExam) {
+  if (isActiveEntranceExam) {
     return null;
   }
 

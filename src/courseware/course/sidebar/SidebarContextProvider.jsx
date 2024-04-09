@@ -9,7 +9,11 @@ import { useModel } from '@src/generic/model-store';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import { getRightSidebarSettings } from '../../data/selectors';
 
-import * as courseOutlineSidebar from './sidebars/course-outline';
+import {
+  ID as courseOutlineSidebarId,
+  OUTLINE_SIDEBAR_SESSION_STORAGE_NAME,
+  checkIsOutlineSidebarAvailable,
+} from './sidebars/course-outline';
 import * as discussionsSidebar from './sidebars/discussions';
 import * as notificationsSidebar from './sidebars/notifications';
 import SidebarContext from './SidebarContext';
@@ -27,7 +31,7 @@ const SidebarProvider = ({
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.extraLarge.minWidth;
   const query = new URLSearchParams(window.location.search);
   const isDefaultDisplayRightSidebar = useSelector(getRightSidebarSettings).enabled;
-  const isCollapsedOutlineSidebar = window.sessionStorage.getItem('hideCourseOutlineSidebar');
+  const isCollapsedOutlineSidebar = window.sessionStorage.getItem(OUTLINE_SIDEBAR_SESSION_STORAGE_NAME);
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
 
   let initialSidebar = null;
@@ -37,7 +41,8 @@ const SidebarProvider = ({
         ? SIDEBARS[discussionsSidebar.ID].ID
         : verifiedMode && SIDEBARS[notificationsSidebar.ID].ID;
     } else {
-      initialSidebar = !isCollapsedOutlineSidebar && SIDEBARS[courseOutlineSidebar.ID].ID;
+      initialSidebar = checkIsOutlineSidebarAvailable()
+    && !isCollapsedOutlineSidebar && SIDEBARS[courseOutlineSidebarId].ID;
     }
   }
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);

@@ -1,6 +1,7 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { appendBrowserTimezoneToUrl } from '../../utils';
+
+import { appendBrowserTimezoneToUrl } from '@src/utils';
 import {
   normalizeLearningSequencesData, normalizeMetadata, normalizeOutlineBlocks, normalizeSequenceMetadata,
 } from './utils';
@@ -97,17 +98,6 @@ export async function getCourseOutline(courseId) {
     .get(`${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/${courseId}`);
 
   return data.blocks ? normalizeOutlineBlocks(courseId, data.blocks) : null;
-}
-
-/**
- * Get waffle flag value that enable courseware outline sidebar.
- * @param {string} courseId - The unique identifier for the course.
- * @returns {Promise<{enabled: boolean}>} - The boolean value of enabling of the outline sidebar.
- */
-export async function getCoursewareOutlineSidebarEnabledFlag(courseId) {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-sidebar/enabled/`);
-  const { data } = await getAuthenticatedHttpClient().get(url.href);
-  return { enabled: data.enabled || false };
 }
 
 /**

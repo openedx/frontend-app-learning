@@ -44,7 +44,6 @@ describe('Data layer integration tests', () => {
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
   const sequenceId = sequenceBlocks[0].id;
   const unitId = unitBlocks[0].id;
-  const outlineSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-sidebar/enabled/`;
   const rightSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/show-default-right-sidebar/enabled/`;
 
   let store;
@@ -60,7 +59,6 @@ describe('Data layer integration tests', () => {
     it('Should fail to fetch course and blocks if request error happens', async () => {
       axiosMock.onGet(courseUrl).networkError();
       axiosMock.onGet(learningSequencesUrlRegExp).networkError();
-      axiosMock.onGet(outlineSidebarSettingsUrl).networkError();
       axiosMock.onGet(rightSidebarSettingsUrl).networkError();
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
@@ -70,7 +68,6 @@ describe('Data layer integration tests', () => {
         courseId,
         courseOutline: {},
         courseStatus: FAILED,
-        courseOutlineSidebarSettings: {},
         rightSidebarSettings: {},
         courseOutlineStatus: LOADING,
         sequenceId: null,
@@ -113,7 +110,6 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
-      axiosMock.onGet(outlineSidebarSettingsUrl).reply(200, { enabled: true });
       axiosMock.onGet(rightSidebarSettingsUrl).reply(200, { enabled: true });
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
@@ -124,7 +120,6 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.courseId).toEqual(courseId);
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
-      expect(state.courseware.courseOutlineSidebarSettings).toEqual({ enabled: true });
       expect(state.courseware.rightSidebarSettings).toEqual({ enabled: true });
 
       // check that at least one key camel cased, thus course data normalized
@@ -137,7 +132,6 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, simpleOutline);
-      axiosMock.onGet(outlineSidebarSettingsUrl).reply(200, { enabled: false });
       axiosMock.onGet(rightSidebarSettingsUrl).reply(200, { enabled: false });
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
@@ -148,7 +142,6 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.courseId).toEqual(courseId);
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
-      expect(state.courseware.courseOutlineSidebarSettings).toEqual({ enabled: false });
       expect(state.courseware.rightSidebarSettings).toEqual({ enabled: false });
 
       // check that at least one key camel cased, thus course data normalized

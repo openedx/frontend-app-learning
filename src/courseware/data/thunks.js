@@ -1,15 +1,14 @@
 import { logError, logInfo } from '@edx/frontend-platform/logging';
-import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
+import { getCourseHomeCourseMetadata } from '@src/course-home/data/api';
 import {
   addModel, addModelsMap, updateModel, updateModels, updateModelsMap,
-} from '../../generic/model-store';
+} from '@src/generic/model-store';
 import {
   getBlockCompletion,
   getCourseDiscussionConfig,
   getCourseMetadata,
   getCourseOutline,
   getCourseTopics,
-  getCoursewareOutlineSidebarEnabledFlag,
   getRightSidebarDefaultOpeningFlag,
   getLearningSequencesOutline,
   getSequenceMetadata,
@@ -27,7 +26,6 @@ import {
   fetchCourseOutlineRequest,
   fetchCourseOutlineSuccess,
   fetchCourseOutlineFailure,
-  setCoursewareOutlineSidebarSettings,
   setRightSidebarSettings,
   updateCourseOutlineCompletion,
 } from './slice';
@@ -39,18 +37,15 @@ export function fetchCourse(courseId) {
       getCourseMetadata(courseId),
       getLearningSequencesOutline(courseId),
       getCourseHomeCourseMetadata(courseId, 'courseware'),
-      getCoursewareOutlineSidebarEnabledFlag(courseId),
       getRightSidebarDefaultOpeningFlag(courseId),
     ]).then(([
       courseMetadataResult,
       learningSequencesOutlineResult,
       courseHomeMetadataResult,
-      courseOutlineSidebarDisableFlagResult,
       rightSidebarDefaultOpenFlagResult]) => {
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
       const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
       const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
-      const fetchedOutlineSidebarEnableFlag = courseOutlineSidebarDisableFlagResult.status === 'fulfilled';
       const fetchedRightSidebarDefaultOpenFlag = rightSidebarDefaultOpenFlagResult.status === 'fulfilled';
 
       if (fetchedMetadata) {
@@ -91,12 +86,6 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      if (fetchedOutlineSidebarEnableFlag) {
-        dispatch(setCoursewareOutlineSidebarSettings({
-          enabled: courseOutlineSidebarDisableFlagResult.value.enabled,
-        }));
-      }
-
       if (fetchedRightSidebarDefaultOpenFlag) {
         dispatch(setRightSidebarSettings({
           enabled: rightSidebarDefaultOpenFlagResult.value.enabled,
@@ -120,9 +109,6 @@ export function fetchCourse(courseId) {
       }
       if (!fetchedCourseHomeMetadata) {
         logError(courseHomeMetadataResult.reason);
-      }
-      if (!fetchedOutlineSidebarEnableFlag) {
-        logError(courseOutlineSidebarDisableFlagResult.reason);
       }
       if (fetchedMetadata && fetchedCourseHomeMetadata) {
         if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedOutline) {

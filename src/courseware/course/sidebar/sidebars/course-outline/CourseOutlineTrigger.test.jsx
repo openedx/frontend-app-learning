@@ -43,7 +43,7 @@ describe('<CourseOutlineTrigger />', () => {
 
   it('renders correctly for desktop when sidebar is enabled', async () => {
     const mockToggleSidebar = jest.fn();
-    await initTestStore({ outlineSidebarSettings: { enabled: true } });
+    await initTestStore();
     renderWithProvider({ toggleSidebar: mockToggleSidebar }, { isMobileView: false });
 
     const toggleButton = await screen.getByRole('button', {
@@ -59,7 +59,7 @@ describe('<CourseOutlineTrigger />', () => {
 
   it('renders correctly for mobile when sidebar is enabled', async () => {
     const mockToggleSidebar = jest.fn();
-    await initTestStore({ outlineSidebarSettings: { enabled: true } });
+    await initTestStore();
     renderWithProvider({
       toggleSidebar: mockToggleSidebar,
       shouldDisplayFullScreen: true,
@@ -78,7 +78,7 @@ describe('<CourseOutlineTrigger />', () => {
 
   it('changes current sidebar value on click', async () => {
     const mockToggleSidebar = jest.fn();
-    await initTestStore({ outlineSidebarSettings: { enabled: true } });
+    await initTestStore();
     renderWithProvider({
       toggleSidebar: mockToggleSidebar,
       shouldDisplayFullScreen: true,
@@ -94,15 +94,5 @@ describe('<CourseOutlineTrigger />', () => {
 
     expect(mockToggleSidebar).toHaveBeenCalledTimes(1);
     expect(mockToggleSidebar).toHaveBeenCalledWith(null);
-  });
-
-  it('does not render when isEnabled is false', async () => {
-    await initTestStore({ outlineSidebarSettings: { enabled: false } });
-    renderWithProvider({}, { isMobileView: false });
-
-    const toggleButton = await screen.queryByRole('button', {
-      name: messages.toggleCourseOutlineTrigger.defaultMessage,
-    });
-    expect(toggleButton).not.toBeInTheDocument();
   });
 });

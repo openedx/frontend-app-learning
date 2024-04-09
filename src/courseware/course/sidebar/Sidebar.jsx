@@ -11,7 +11,7 @@ const Sidebar = ({ layout }) => {
     return null;
   }
 
-  if (layout !== SIDEBARS[currentSidebar].LAYOUT) {
+  if (layout !== SIDEBARS[currentSidebar]?.LAYOUT) {
     return null;
   }
 

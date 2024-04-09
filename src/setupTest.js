@@ -162,20 +162,17 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
   let courseHomeMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseMetadata.id}`;
   const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
-  const outlineSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseMetadata.id}/courseware-sidebar/enabled/`;
   const rightSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseMetadata.id}/show-default-right-sidebar/enabled/`;
   const outlineSidebarUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/${courseMetadata.id}`;
   courseHomeMetadataUrl = appendBrowserTimezoneToUrl(courseHomeMetadataUrl);
 
   const provider = options?.provider || 'legacy';
-  const outlineSidebarSettings = options.outlineSidebarSettings || { enabled: true };
   const rightSidebarSettings = options.rightSidebarSettings || { enabled: true };
 
   axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
   axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
   axiosMock.onGet(discussionConfigUrl).reply(200, { provider });
-  axiosMock.onGet(outlineSidebarSettingsUrl).reply(200, outlineSidebarSettings);
   axiosMock.onGet(rightSidebarSettingsUrl).reply(200, rightSidebarSettings);
 
   axiosMock.onGet(outlineSidebarUrl).reply(200, {

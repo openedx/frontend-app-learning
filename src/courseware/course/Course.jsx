@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
-import { AlertList } from '../../generic/user-messages';
-import { useModel } from '../../generic/model-store';
-import { getCoursewareOutlineSidebarSettings } from '../data/selectors';
-import { Trigger as CourseOutlineTrigger } from './sidebar/sidebars/course-outline';
+import { AlertList } from '@src/generic/user-messages';
+import { useModel } from '@src/generic/model-store';
+import {
+  OUTLINE_SIDEBAR_DESKTOP_PLUGIN_SLOT_ID,
+  Trigger as CourseOutlineTrigger,
+  checkIsOutlineSidebarAvailable,
+} from './sidebar/sidebars/course-outline';
 import Chat from './chat/Chat';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import SidebarTriggers from './sidebar/SidebarTriggers';
@@ -36,8 +40,7 @@ const Course = ({
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
   const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
-  const { enabled: isEnabledOutlineSidebar = false } = useSelector(getCoursewareOutlineSidebarSettings);
-  const navigationDisabled = isEnabledOutlineSidebar || (sequence?.navigationDisabled ?? false);
+  const navigationDisabled = checkIsOutlineSidebarAvailable() || (sequence?.navigationDisabled ?? false);
 
   const pageTitleBreadCrumbs = [
     sequence,
@@ -100,7 +103,9 @@ const Course = ({
           </>
         )}
         <div className="w-100 d-flex align-items-center">
-          <CourseOutlineTrigger isMobileView />
+          <PluginSlot id={OUTLINE_SIDEBAR_DESKTOP_PLUGIN_SLOT_ID}>
+            <CourseOutlineTrigger isMobileView />
+          </PluginSlot>
           {enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
         </div>
       </div>
