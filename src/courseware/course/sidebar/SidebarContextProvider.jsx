@@ -5,8 +5,8 @@ import {
   useEffect, useState, useMemo, useCallback,
 } from 'react';
 
-import { useModel } from '../../../generic/model-store';
-import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
+import { useModel } from '@src/generic/model-store';
+import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import { getDiscussionsSidebarSettings } from '../../data/selectors';
 
 import * as courseOutlineSidebar from './sidebars/course-outline';
@@ -37,8 +37,8 @@ const SidebarProvider = ({
 
   useEffect(() => {
     // if the user hasn't purchased the course, show the notifications sidebar
-    if (!currentSidebar) {
-      setCurrentSidebar(verifiedMode ? SIDEBARS.NOTIFICATIONS.ID : SIDEBARS.DISCUSSIONS.ID);
+    if (!currentSidebar && verifiedMode) {
+      setCurrentSidebar(SIDEBARS.NOTIFICATIONS.ID);
     }
   }, [unitId]);
 
