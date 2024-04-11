@@ -10,7 +10,7 @@ import {
   getCourseOutline,
   getCourseTopics,
   getCoursewareOutlineSidebarEnabledFlag,
-  getDiscussionSidebarDefaultOpeningFlag,
+  getRightSidebarDefaultOpeningFlag,
   getLearningSequencesOutline,
   getSequenceMetadata,
   postIntegritySignature,
@@ -28,7 +28,7 @@ import {
   fetchCourseOutlineSuccess,
   fetchCourseOutlineFailure,
   setCoursewareOutlineSidebarSettings,
-  setDiscussionsSidebarSettings,
+  setRightSidebarSettings,
   updateCourseOutlineCompletion,
 } from './slice';
 
@@ -40,18 +40,18 @@ export function fetchCourse(courseId) {
       getLearningSequencesOutline(courseId),
       getCourseHomeCourseMetadata(courseId, 'courseware'),
       getCoursewareOutlineSidebarEnabledFlag(courseId),
-      getDiscussionSidebarDefaultOpeningFlag(courseId),
+      getRightSidebarDefaultOpeningFlag(courseId),
     ]).then(([
       courseMetadataResult,
       learningSequencesOutlineResult,
       courseHomeMetadataResult,
       courseOutlineSidebarDisableFlagResult,
-      discussionSidebarDisableFlagResult]) => {
+      rightSidebarDefaultOpenFlagResult]) => {
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
       const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
       const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
       const fetchedOutlineSidebarEnableFlag = courseOutlineSidebarDisableFlagResult.status === 'fulfilled';
-      const fetchedDiscussionSidebarEnableFlag = discussionSidebarDisableFlagResult.status === 'fulfilled';
+      const fetchedRightSidebarDefaultOpenFlag = rightSidebarDefaultOpenFlagResult.status === 'fulfilled';
 
       if (fetchedMetadata) {
         dispatch(addModel({
@@ -97,9 +97,9 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      if (fetchedDiscussionSidebarEnableFlag) {
-        dispatch(setDiscussionsSidebarSettings({
-          enabled: discussionSidebarDisableFlagResult.value.enabled,
+      if (fetchedRightSidebarDefaultOpenFlag) {
+        dispatch(setRightSidebarSettings({
+          enabled: rightSidebarDefaultOpenFlagResult.value.enabled,
         }));
       }
 

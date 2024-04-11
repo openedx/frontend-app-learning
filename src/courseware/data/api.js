@@ -115,8 +115,8 @@ export async function getCoursewareOutlineSidebarEnabledFlag(courseId) {
  * @param {string} courseId - The unique identifier for the course.
  * @returns {Promise<{enabled: boolean}>} - The boolean value of default opening of the discussion sidebar.
  */
-export async function getDiscussionSidebarDefaultOpeningFlag(courseId) {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/discussion-sidebar/enabled/`);
+export async function getRightSidebarDefaultOpeningFlag(courseId) {
+  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/show-default-right-sidebar/enabled/`);
   const { data } = await getAuthenticatedHttpClient().get(url.href);
   return { enabled: data.enabled || false };
 }

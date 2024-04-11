@@ -7,10 +7,11 @@ import {
 
 import { useModel } from '@src/generic/model-store';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
-import { getDiscussionsSidebarSettings } from '../../data/selectors';
+import { getRightSidebarSettings } from '../../data/selectors';
 
 import * as courseOutlineSidebar from './sidebars/course-outline';
 import * as discussionsSidebar from './sidebars/discussions';
+import * as notificationsSidebar from './sidebars/notifications';
 import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 
@@ -20,27 +21,34 @@ const SidebarProvider = ({
   children,
 }) => {
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
+  const topic = useModel('discussionTopics', unitId);
+  const isUnitHasDiscussionTopics = topic?.id && topic?.enabledInContext;
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.extraLarge.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.extraLarge.minWidth;
   const query = new URLSearchParams(window.location.search);
-  const isDefaultDisplayDiscussionsSidebar = useSelector(getDiscussionsSidebarSettings).enabled;
+  const isDefaultDisplayRightSidebar = useSelector(getRightSidebarSettings).enabled;
   const isCollapsedOutlineSidebar = window.sessionStorage.getItem('hideCourseOutlineSidebar');
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
-  const isInitiallyOpenDiscussionsSidebar = isDefaultDisplayDiscussionsSidebar && SIDEBARS[discussionsSidebar.ID].ID;
-  const isInitiallyOpenOutlineSidebar = !isCollapsedOutlineSidebar && SIDEBARS[courseOutlineSidebar.ID].ID;
-  const initialSidebar = isInitiallySidebarOpen
-    ? isInitiallyOpenDiscussionsSidebar || isInitiallyOpenOutlineSidebar
-    : null;
+
+  let initialSidebar = null;
+  if (isInitiallySidebarOpen) {
+    if (isDefaultDisplayRightSidebar) {
+      initialSidebar = isUnitHasDiscussionTopics
+        ? SIDEBARS[discussionsSidebar.ID].ID
+        : verifiedMode && SIDEBARS[notificationsSidebar.ID].ID;
+    } else {
+      initialSidebar = !isCollapsedOutlineSidebar && SIDEBARS[courseOutlineSidebar.ID].ID;
+    }
+  }
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
 
   useEffect(() => {
-    // if the user hasn't purchased the course, show the notifications sidebar
-    if (!currentSidebar && verifiedMode) {
-      setCurrentSidebar(SIDEBARS.NOTIFICATIONS.ID);
+    if (currentSidebar !== initialSidebar) {
+      setCurrentSidebar(initialSidebar);
     }
-  }, [unitId]);
+  }, [unitId, topic]);
 
   useEffect(() => {
     setCurrentSidebar(initialSidebar);
