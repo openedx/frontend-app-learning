@@ -61,10 +61,15 @@
         line-height: 1.5rem;
 
         .collapsible-trigger {
+            border-radius: 0;
             padding: map-get($spacers, 3\.5) map-get($spacers, 4) map-get($spacers, 3\.5) map-get($spacers, 5);
 
             @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
                 padding-left: map-get($spacers, 4);
+            }
+
+            &:hover {
+                background-color: $light-500;
             }
 
             .collapsible-icon {
@@ -81,10 +86,10 @@
         padding: 0;
 
         ol li {
-            padding: map-get($spacers, 3\.5) map-get($spacers, 4) map-get($spacers, 3\.5) map-get($spacers, 5);
+            padding: map-get($spacers, 3\.5) map-get($spacers, 4) map-get($spacers, 3\.5) map-get($spacers, 5\.5);
 
             @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
-                padding-left: map-get($spacers, 4);
+                padding-left: map-get($spacers, 4\.5);
             }
         }
     }

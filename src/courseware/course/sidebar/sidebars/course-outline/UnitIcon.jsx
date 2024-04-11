@@ -47,7 +47,7 @@ const UnitIcon = ({ type, isCompleted, ...props }) => {
   }
 
   return (
-    <Icon {...props} className={classNames({ 'text-success': isCompleted, 'text-gray-700': !isCompleted })} />
+    <Icon {...props} className={classNames({ 'text-success': isCompleted, 'text-gray-500': !isCompleted })} />
   );
 };
 
