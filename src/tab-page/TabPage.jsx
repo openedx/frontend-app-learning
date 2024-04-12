@@ -64,7 +64,7 @@ const TabPage = ({ intl, ...props }) => {
         </>
       )}
 
-      <Header courseOrg={org} courseNumber={number} courseTitle={title} />
+      {/* <Header courseOrg={org} courseNumber={number} courseTitle={title} showUserDropdown={false} /> */}
 
       {courseStatus === 'loading' && (
         <PageLoading srMessage={intl.formatMessage(messages.loading)} />
@@ -80,7 +80,7 @@ const TabPage = ({ intl, ...props }) => {
           {intl.formatMessage(messages.failure)}
         </p>
       )}
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

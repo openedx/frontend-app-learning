@@ -72,7 +72,7 @@ const InstructorToolbar = (props) => {
           <div className="align-items-center flex-grow-1 d-md-flex mx-1 my-1">
             <MasqueradeWidget courseId={courseId} onError={showMasqueradeError} />
           </div>
-          {(urlStudio || urlInsights) && (
+          {/* {(urlStudio || urlInsights) && (
             <>
               <hr className="border-light" />
               <span className="mr-2 mt-1 col-form-label">View course in:</span>
@@ -87,7 +87,7 @@ const InstructorToolbar = (props) => {
             <span className="mx-1 my-1">
               <a className="btn btn-inverse-outline-primary" href={urlInsights}>Insights</a>
             </span>
-          )}
+          )} */}
         </div>
       </div>
       {masqueradeErrorMessage && (
