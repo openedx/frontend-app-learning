@@ -88,13 +88,13 @@ export async function getCourseTopics(courseId) {
 }
 
 /**
- * Get course outline structure for the courseware sidebar.
+ * Get course outline structure for the courseware navigation sidebar.
  * @param {string} courseId - The unique identifier for the course.
  * @returns {Promise<{units: {}, sequences: {}, sections: {}}|null>}
  */
 export async function getCourseOutline(courseId) {
   const { data } = await getAuthenticatedHttpClient()
-    .get(`${getConfig().LMS_BASE_URL}/api/course_home/v1/sidebar/${courseId}`);
+    .get(`${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/${courseId}`);
 
   return data.blocks ? normalizeOutlineBlocks(courseId, data.blocks) : null;
 }
