@@ -8,19 +8,23 @@ import { fetchTranslationConfig } from './data/api';
 
 const UnitTranslationPlugin = ({ id, courseId, unitId }) => {
   const { language } = useModel('coursewareMeta', courseId);
-  const { verifiedMode } = useModel('courseHomeMeta', courseId);
+  const { enrollmentMode } = useModel('courseHomeMeta', courseId);
   const [translationConfig, setTranslationConfig] = useState({
     enabled: false,
     availableLanguages: [],
   });
 
+  const verifiedMode = enrollmentMode === 'verified';
+
   useEffect(() => {
-    fetchTranslationConfig(courseId).then(setTranslationConfig);
+    if (verifiedMode) {
+      fetchTranslationConfig(courseId).then(setTranslationConfig);
+    }
   }, []);
 
   const { enabled, availableLanguages } = translationConfig;
 
-  if (!enabled || !language || !availableLanguages.length || !verifiedMode) {
+  if (!verifiedMode || !enabled || !language || !availableLanguages.length) {
     return null;
   }
 
