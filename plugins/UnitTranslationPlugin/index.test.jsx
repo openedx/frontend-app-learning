@@ -25,12 +25,17 @@ describe('<UnitTranslationPlugin />', () => {
   const mockInitialState = ({ enabled = true, availableLanguages = ['en'] }) => {
     useState.mockReturnValue([{ enabled, availableLanguages }, jest.fn()]);
   };
+  when(useModel)
+    .calledWith('coursewareMeta', props.courseId)
+    .mockReturnValue({ language: 'en' })
+    .calledWith('courseHomeMeta', props.courseId)
+    .mockReturnValue({ enrollmentMode: 'verified' });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('render empty when translation is not enabled', () => {
-    when(useModel)
-      .calledWith('coursewareMeta', props.courseId)
-      .mockReturnValueOnce({ language: 'en' })
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({ enabled: false });
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -38,11 +43,6 @@ describe('<UnitTranslationPlugin />', () => {
     expect(wrapper.isEmptyRender()).toBe(true);
   });
   it('render empty when available languages is empty', () => {
-    when(useModel)
-      .calledWith('coursewareMeta', props.courseId)
-      .mockReturnValueOnce({ language: 'fr' })
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({
       availableLanguages: [],
     });
@@ -55,9 +55,7 @@ describe('<UnitTranslationPlugin />', () => {
   it('render empty when course language has not been set', () => {
     when(useModel)
       .calledWith('coursewareMeta', props.courseId)
-      .mockReturnValueOnce({ language: undefined })
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
+      .mockReturnValueOnce({ language: null });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -65,12 +63,10 @@ describe('<UnitTranslationPlugin />', () => {
     expect(wrapper.isEmptyRender()).toBe(true);
   });
 
-  it('render empty when verifiedMode has not been set', () => {
+  it('render empty when student is enroll as verified', () => {
     when(useModel)
-      .calledWith('coursewareMeta', props.courseId)
-      .mockReturnValueOnce({ language: 'en' })
       .calledWith('courseHomeMeta', props.courseId)
-      .mockReturnValueOnce({ verifiedMode: null });
+      .mockReturnValueOnce({ enrollmentMode: 'audit' });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
@@ -79,11 +75,6 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render TranslationSelection when translation is enabled and language is available', () => {
-    when(useModel)
-      .calledWith('coursewareMeta', props.courseId)
-      .mockReturnValueOnce({ language: 'en' })
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockReturnValueOnce({ verifiedMode: { accessExpirationDate: null } });
     mockInitialState({});
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
