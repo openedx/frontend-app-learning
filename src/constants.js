@@ -33,3 +33,14 @@ export const REDIRECT_MODES = {
   HOME_REDIRECT: 'home-redirect',
   SURVEY_REDIRECT: 'survey-redirect',
 };
+
+export const VERIFIED_MODES = [
+  'professional',
+  'verified',
+  'no-id-professional',
+  'credit',
+  'masters',
+  'executive-education',
+  'paid-executive-education',
+  'paid-bootcamp',
+];

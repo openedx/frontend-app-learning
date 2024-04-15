@@ -22,14 +22,23 @@ describe('<UnitTranslationPlugin />', () => {
     courseId: 'courseId',
     unitId: 'unitId',
   };
-  const mockInitialState = ({ enabled = true, availableLanguages = ['en'] }) => {
-    useState.mockReturnValue([{ enabled, availableLanguages }, jest.fn()]);
+  const mockInitialState = ({
+    enabled = true,
+    availableLanguages = ['en'],
+    language = 'en',
+    enrollmentMode = 'verified',
+    isStaff = false,
+  }) => {
+    useState.mockReturnValueOnce([{ enabled, availableLanguages }, jest.fn()]);
+
+    when(useModel)
+      .calledWith('coursewareMeta', props.courseId)
+      .mockReturnValueOnce({ language, enrollmentMode });
+
+    when(useModel)
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ isStaff });
   };
-  when(useModel)
-    .calledWith('coursewareMeta', props.courseId)
-    .mockReturnValue({ language: 'en' })
-    .calledWith('courseHomeMeta', props.courseId)
-    .mockReturnValue({ enrollmentMode: 'verified' });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -53,10 +62,9 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render empty when course language has not been set', () => {
-    when(useModel)
-      .calledWith('coursewareMeta', props.courseId)
-      .mockReturnValueOnce({ language: null });
-    mockInitialState({});
+    mockInitialState({
+      language: null,
+    });
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
 
@@ -64,14 +72,24 @@ describe('<UnitTranslationPlugin />', () => {
   });
 
   it('render empty when student is enroll as verified', () => {
-    when(useModel)
-      .calledWith('courseHomeMeta', props.courseId)
-      .mockReturnValueOnce({ enrollmentMode: 'audit' });
-    mockInitialState({});
+    mockInitialState({
+      enrollmentMode: 'audit',
+    });
 
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
 
     expect(wrapper.isEmptyRender()).toBe(true);
+  });
+
+  it('render translation when the user is staff', () => {
+    mockInitialState({
+      enrollmentMode: 'audit',
+      isStaff: true,
+    });
+
+    const wrapper = shallow(<UnitTranslationPlugin {...props} />);
+
+    expect(wrapper.snapshot).toMatchSnapshot();
   });
 
   it('render TranslationSelection when translation is enabled and language is available', () => {

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Xpert } from '@edx/frontend-lib-learning-assistant';
 import { injectIntl } from '@edx/frontend-platform/i18n';
 
+import { VERIFIED_MODES } from '@src/constants';
 import { useModel } from '../../../generic/model-store';
 
 const Chat = ({
@@ -20,21 +21,10 @@ const Chat = ({
   } = useSelector(state => state.specialExams);
   const course = useModel('coursewareMeta', courseId);
 
-  const VERIFIED_MODES = [
-    'professional',
-    'verified',
-    'no-id-professional',
-    'credit',
-    'masters',
-    'executive-education',
-    'paid-executive-education',
-    'paid-bootcamp',
-  ];
-
   const hasVerifiedEnrollment = (
     enrollmentMode !== null
     && enrollmentMode !== undefined
-    && [...VERIFIED_MODES].some(mode => mode === enrollmentMode)
+    && VERIFIED_MODES.includes(enrollmentMode)
   );
 
   const validDates = () => {

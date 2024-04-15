@@ -13,3 +13,17 @@ exports[`<UnitTranslationPlugin /> render TranslationSelection when translation 
   unitId="unitId"
 />
 `;
+
+exports[`<UnitTranslationPlugin /> render translation when the user is staff 1`] = `
+<TranslationSelection
+  availableLanguages={
+    Array [
+      "en",
+    ]
+  }
+  courseId="courseId"
+  id="id"
+  language="en"
+  unitId="unitId"
+/>
+`;
