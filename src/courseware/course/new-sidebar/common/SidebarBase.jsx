@@ -41,7 +41,7 @@ const SidebarBase = ({
 
   return (
     <section
-      className={classNames('ml-0 ml-lg-4 h-auto align-top', {
+      className={classNames('ml-0 ml-lg-4 h-auto align-top zindex-0', {
         'min-vh-100': !shouldDisplayFullScreen && allowFullHeight,
         'bg-white m-0 border-0 fixed-top vh-100 rounded-0': shouldDisplayFullScreen,
         'd-none': currentSidebar !== sidebarId,

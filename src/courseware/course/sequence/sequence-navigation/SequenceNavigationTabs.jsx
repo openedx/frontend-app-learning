@@ -23,7 +23,7 @@ const SequenceNavigationTabs = ({
       <div
         ref={containerRef}
         className={classNames('sequence-navigation-tabs-container', {
-          'navigation-tab-width': isOnXLDesktop && shouldDisplayDropdown,
+          'navigation-tab-width': isOnXLDesktop,
         })}
       >
         <div
