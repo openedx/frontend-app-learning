@@ -164,7 +164,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
   const outlineSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseMetadata.id}/courseware-sidebar/enabled/`;
   const rightSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseMetadata.id}/show-default-right-sidebar/enabled/`;
-  const outlineSidebarUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/sidebar/${courseMetadata.id}`;
+  const outlineSidebarUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/${courseMetadata.id}`;
   courseHomeMetadataUrl = appendBrowserTimezoneToUrl(courseHomeMetadataUrl);
 
   const provider = options?.provider || 'legacy';

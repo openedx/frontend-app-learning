@@ -274,7 +274,7 @@ describe('Data layer integration tests', () => {
     });
 
     describe('Test checkBlockCompletion', () => {
-      const getCourseOutlineURL = `${getConfig().LMS_BASE_URL}/api/course_home/v1/sidebar/${courseId}`;
+      const getCourseOutlineURL = `${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/${courseId}`;
       const getCompletionURL = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/get_completion`;
 
       it('Should fail to check completion and log error', async () => {
