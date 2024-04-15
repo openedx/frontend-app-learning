@@ -9,12 +9,13 @@ import { fetchTranslationConfig } from './data/api';
 
 const UnitTranslationPlugin = ({ id, courseId, unitId }) => {
   const { language, enrollmentMode } = useModel('coursewareMeta', courseId);
+  const { isStaff } = useModel('courseHomeMeta', courseId);
   const [translationConfig, setTranslationConfig] = useState({
     enabled: false,
     availableLanguages: [],
   });
 
-  const hasVerifiedEnrollment = (
+  const hasVerifiedEnrollment = isStaff || (
     enrollmentMode !== null
     && enrollmentMode !== undefined
     && VERIFIED_MODES.includes(enrollmentMode)

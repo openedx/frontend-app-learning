@@ -27,12 +27,17 @@ describe('<UnitTranslationPlugin />', () => {
     availableLanguages = ['en'],
     language = 'en',
     enrollmentMode = 'verified',
+    isStaff = false,
   }) => {
     useState.mockReturnValueOnce([{ enabled, availableLanguages }, jest.fn()]);
 
     when(useModel)
       .calledWith('coursewareMeta', props.courseId)
       .mockReturnValueOnce({ language, enrollmentMode });
+
+    when(useModel)
+      .calledWith('courseHomeMeta', props.courseId)
+      .mockReturnValueOnce({ isStaff });
   };
 
   beforeEach(() => {
@@ -74,6 +79,17 @@ describe('<UnitTranslationPlugin />', () => {
     const wrapper = shallow(<UnitTranslationPlugin {...props} />);
 
     expect(wrapper.isEmptyRender()).toBe(true);
+  });
+
+  it('render translation when the user is staff', () => {
+    mockInitialState({
+      enrollmentMode: 'audit',
+      isStaff: true,
+    });
+
+    const wrapper = shallow(<UnitTranslationPlugin {...props} />);
+
+    expect(wrapper.snapshot).toMatchSnapshot();
   });
 
   it('render TranslationSelection when translation is enabled and language is available', () => {
