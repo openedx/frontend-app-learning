@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { AppContext } from '@edx/frontend-platform/react';
 import { IconButton, Icon, ProductTour } from '@openedx/paragon';
 import { Language } from '@openedx/paragon/icons';
@@ -29,6 +30,20 @@ const TranslationSelection = ({
     courseId,
     language,
   });
+
+  useEffect(() => {
+    if (courseId && language && selectedLanguage && unitId && userId) {
+      const eventName = 'edx.whole_course_translations.translation_requested';
+      const eventProperties = {
+        courseId,
+        sourceLanguage: language,
+        targetLanguage: selectedLanguage,
+        unitId,
+        userId,
+      };
+      sendTrackEvent(eventName, eventProperties);
+    }
+  }, [courseId, language, selectedLanguage, unitId, userId]);
 
   useEffect(() => {
     dispatch(
