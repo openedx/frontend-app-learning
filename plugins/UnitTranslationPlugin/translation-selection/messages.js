@@ -3,7 +3,7 @@ import { defineMessages } from '@edx/frontend-platform/i18n';
 const messages = defineMessages({
   translationTourModalTitle: {
     id: 'translationSelection.translationTourModalTitle',
-    defaultMessage: 'This is a standard modal dialog',
+    defaultMessage: 'New translation feature!',
     description: 'Title for the translation modal.',
   },
   translationTourModalBody: {
