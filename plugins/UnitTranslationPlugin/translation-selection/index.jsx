@@ -32,7 +32,7 @@ const TranslationSelection = ({
   });
 
   useEffect(() => {
-    if (courseId && language && selectedLanguage && unitId && userId) {
+    if ((courseId && language && selectedLanguage && unitId && userId) && (language !== selectedLanguage)) {
       const eventName = 'edx.whole_course_translations.translation_requested';
       const eventProperties = {
         courseId,

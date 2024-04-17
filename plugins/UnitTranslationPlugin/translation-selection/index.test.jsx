@@ -63,7 +63,12 @@ describe('<TranslationSelection />', () => {
     const wrapper = shallow(<TranslationSelection {...props} />);
     expect(wrapper.snapshot).toMatchSnapshot();
   });
-  it('sends track event when switching selected language', async () => {
+  it('does not send track event when source != target language', async () => {
+    await initializeTestStore();
+    render(<TranslationSelection {...props} />);
+    expect(sendTrackEvent).not.toHaveBeenCalled();
+  });
+  it('sends track event when source != target language', async () => {
     await initializeTestStore();
     render(<TranslationSelection {...props} />);
     const eventName = 'edx.whole_course_translations.translation_requested';
@@ -74,6 +79,6 @@ describe('<TranslationSelection />', () => {
       unitId: props.unitId,
       userId: '123',
     };
-    expect(sendTrackEvent).toHaveBeenCalledWith(eventName, eventProperties);
+    expect(sendTrackEvent).not.toHaveBeenCalledWith(eventName, eventProperties);
   });
 });
