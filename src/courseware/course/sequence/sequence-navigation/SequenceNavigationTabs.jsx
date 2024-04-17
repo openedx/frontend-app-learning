@@ -6,9 +6,10 @@ import { getConfig } from '@edx/frontend-platform';
 import UnitButton from './UnitButton';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
-import { useIsOnXLDesktop } from './hooks';
+import { useIsOnXLDesktop, WIDGETS } from './hooks';
 import SidebarContext from '../../sidebar/SidebarContext';
 import NewSidebarContext from '../../new-sidebar/SidebarContext';
+import { useModel } from '../../../../generic/model-store';
 
 const SequenceNavigationTabs = ({
   unitIds, unitId, showCompletion, onNavigate,
@@ -16,6 +17,9 @@ const SequenceNavigationTabs = ({
   const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
   const sidebarContext = enableNewSidebar === 'true' ? NewSidebarContext : SidebarContext;
   const { currentSidebar } = useContext(sidebarContext);
+  const topic = useModel('discussionTopics', unitId);
+  const shouldDisplaySideBar = currentSidebar === WIDGETS.NOTIFICATIONS
+  || (currentSidebar === WIDGETS.DISCUSSIONS && !!(topic?.id || topic?.enabledInContext));
   const [
     indexOfLastVisibleChild,
     containerRef,
@@ -29,7 +33,7 @@ const SequenceNavigationTabs = ({
       <div
         ref={containerRef}
         className={classNames('sequence-navigation-tabs-container', {
-          'navigation-tab-width': isOnXLDesktop && currentSidebar,
+          'navigation-tab-width': isOnXLDesktop && shouldDisplaySideBar,
         })}
       >
         <div

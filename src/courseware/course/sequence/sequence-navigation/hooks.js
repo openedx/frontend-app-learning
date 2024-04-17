@@ -74,3 +74,8 @@ export function useIsOnXLDesktop() {
   const windowSize = useWindowSize();
   return windowSize.width >= breakpoints.extraLarge.minWidth;
 }
+
+export const WIDGETS = {
+  DISCUSSIONS: 'DISCUSSIONS',
+  NOTIFICATIONS: 'NOTIFICATIONS',
+};
