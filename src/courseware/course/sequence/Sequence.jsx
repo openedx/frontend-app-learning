@@ -14,6 +14,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
 import PageLoading from '../../../generic/PageLoading';
 import { useModel } from '../../../generic/model-store';
@@ -200,6 +201,13 @@ const Sequence = ({
         </div>
         {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
       </div>
+      <PluginSlot
+        id="sequence_container_plugin"
+        pluginProps={{
+          courseId,
+          unitId,
+        }}
+      />
     </>
   );
 
