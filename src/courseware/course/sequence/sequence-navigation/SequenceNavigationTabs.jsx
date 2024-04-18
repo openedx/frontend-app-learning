@@ -1,21 +1,16 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { getConfig } from '@edx/frontend-platform';
 
 import UnitButton from './UnitButton';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
-import { useIsOnXLDesktop } from './hooks';
-import SidebarContext from '../../sidebar/SidebarContext';
-import NewSidebarContext from '../../new-sidebar/SidebarContext';
+import { useIsOnXLDesktop, useIsSidebarOpen } from './hooks';
 
 const SequenceNavigationTabs = ({
   unitIds, unitId, showCompletion, onNavigate,
 }) => {
-  const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
-  const sidebarContext = enableNewSidebar === 'true' ? NewSidebarContext : SidebarContext;
-  const { currentSidebar } = useContext(sidebarContext);
+  const isSidebarOpen = useIsSidebarOpen(unitId);
   const [
     indexOfLastVisibleChild,
     containerRef,
@@ -29,7 +24,7 @@ const SequenceNavigationTabs = ({
       <div
         ref={containerRef}
         className={classNames('sequence-navigation-tabs-container', {
-          'navigation-tab-width': isOnXLDesktop && currentSidebar,
+          'navigation-tab-width': isOnXLDesktop && isSidebarOpen,
         })}
       >
         <div

@@ -44,3 +44,8 @@ export const VERIFIED_MODES = [
   'paid-executive-education',
   'paid-bootcamp',
 ];
+
+export const WIDGETS = {
+  DISCUSSIONS: 'DISCUSSIONS',
+  NOTIFICATIONS: 'NOTIFICATIONS',
+};
