@@ -20,6 +20,10 @@ export const fetchTranslationConfig = async (courseId) => {
           code: 'es',
           label: 'Spanish',
         },
+        {
+          code: 'ar',
+          label: 'Arabic',
+        },
       ],
     };
   } catch (error) {
