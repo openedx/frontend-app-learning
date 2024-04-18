@@ -7,7 +7,7 @@ import { useModel } from '../../../../generic/model-store';
 import { sequenceIdsSelector } from '../../../data';
 import SidebarContext from '../../sidebar/SidebarContext';
 import NewSidebarContext from '../../new-sidebar/SidebarContext';
-import { WIDGETS } from '../../../../generic/hooks';
+import { WIDGETS } from '../../../../constants';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
   const sequenceIds = useSelector(sequenceIdsSelector);

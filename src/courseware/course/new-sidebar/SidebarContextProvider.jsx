@@ -9,7 +9,7 @@ import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 import { useModel } from '../../../generic/model-store';
-import { WIDGETS } from '../../../generic/hooks';
+import { WIDGETS } from '../../../constants';
 import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 

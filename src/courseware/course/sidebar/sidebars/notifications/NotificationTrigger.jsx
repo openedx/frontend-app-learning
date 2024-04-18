@@ -5,7 +5,7 @@ import { getLocalStorage, setLocalStorage } from '../../../../../data/localStora
 import messages from '../../../messages';
 import SidebarTriggerBase from '../../common/TriggerBase';
 import SidebarContext from '../../SidebarContext';
-import { WIDGETS } from '../../../../../generic/hooks';
+import { WIDGETS } from '../../../../../constants';
 import NotificationIcon from './NotificationIcon';
 
 export const ID = WIDGETS.NOTIFICATIONS;

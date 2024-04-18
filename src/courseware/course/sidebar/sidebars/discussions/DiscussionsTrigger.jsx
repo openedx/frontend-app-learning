@@ -10,7 +10,7 @@ import { getCourseDiscussionTopics } from '../../../../data/thunks';
 import SidebarTriggerBase from '../../common/TriggerBase';
 import SidebarContext from '../../SidebarContext';
 import messages from './messages';
-import { WIDGETS } from '../../../../../generic/hooks';
+import { WIDGETS } from '../../../../../constants';
 
 ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);
 export const ID = WIDGETS.DISCUSSIONS;

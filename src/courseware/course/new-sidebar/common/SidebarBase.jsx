@@ -7,7 +7,8 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon, IconButton } from '@openedx/paragon';
 import { ArrowBackIos, Close } from '@openedx/paragon/icons';
 
-import { useEventListener, WIDGETS } from '../../../../generic/hooks';
+import { useEventListener } from '../../../../generic/hooks';
+import { WIDGETS } from '../../../../constants';
 import messages from '../messages';
 import SidebarContext from '../SidebarContext';
 
