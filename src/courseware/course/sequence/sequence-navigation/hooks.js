@@ -1,9 +1,12 @@
-/* eslint-disable import/prefer-default-export */
-
+import { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
+import { getConfig } from '@edx/frontend-platform';
+
 import { useModel } from '../../../../generic/model-store';
 import { sequenceIdsSelector } from '../../../data';
+import SidebarContext from '../../sidebar/SidebarContext';
+import NewSidebarContext from '../../new-sidebar/SidebarContext';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
   const sequenceIds = useSelector(sequenceIdsSelector);
@@ -79,3 +82,10 @@ export const WIDGETS = {
   DISCUSSIONS: 'DISCUSSIONS',
   NOTIFICATIONS: 'NOTIFICATIONS',
 };
+
+export function useIsSidebarOpen(unitId) {
+  const { currentSidebar } = useContext(getConfig().ENABLE_NEW_SIDEBAR === 'true' ? NewSidebarContext : SidebarContext);
+  const topic = useModel('discussionTopics', unitId);
+  return currentSidebar === WIDGETS.NOTIFICATIONS
+    || (currentSidebar === WIDGETS.DISCUSSIONS && !!(topic?.id || topic?.enabledInContext));
+}
