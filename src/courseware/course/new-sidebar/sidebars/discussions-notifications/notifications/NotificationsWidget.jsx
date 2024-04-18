@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { useModel } from '../../../../../../generic/model-store';
 import UpgradeNotification from '../../../../../../generic/upgrade-notification/UpgradeNotification';
-import WIDGETS from '../../../constants';
+import { WIDGETS } from '../../../../../../generic/hooks';
 import SidebarContext from '../../../SidebarContext';
 
 const NotificationsWidget = () => {

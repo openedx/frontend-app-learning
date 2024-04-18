@@ -59,3 +59,8 @@ export function useIFrameHeight(onIframeLoaded = null) {
   useIFramePluginEvents({ 'plugin.resize': receiveResizeMessage });
   return [hasLoaded, iframeHeight];
 }
+
+export const WIDGETS = {
+  DISCUSSIONS: 'DISCUSSIONS',
+  NOTIFICATIONS: 'NOTIFICATIONS',
+};

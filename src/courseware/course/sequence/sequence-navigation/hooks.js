@@ -7,6 +7,7 @@ import { useModel } from '../../../../generic/model-store';
 import { sequenceIdsSelector } from '../../../data';
 import SidebarContext from '../../sidebar/SidebarContext';
 import NewSidebarContext from '../../new-sidebar/SidebarContext';
+import { WIDGETS } from '../../../../generic/hooks';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
   const sequenceIds = useSelector(sequenceIdsSelector);
@@ -77,11 +78,6 @@ export function useIsOnXLDesktop() {
   const windowSize = useWindowSize();
   return windowSize.width >= breakpoints.extraLarge.minWidth;
 }
-
-export const WIDGETS = {
-  DISCUSSIONS: 'DISCUSSIONS',
-  NOTIFICATIONS: 'NOTIFICATIONS',
-};
 
 export function useIsSidebarOpen(unitId) {
   const { currentSidebar } = useContext(getConfig().ENABLE_NEW_SIDEBAR === 'true' ? NewSidebarContext : SidebarContext);

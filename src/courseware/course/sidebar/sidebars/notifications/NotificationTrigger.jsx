@@ -5,10 +5,10 @@ import { getLocalStorage, setLocalStorage } from '../../../../../data/localStora
 import messages from '../../../messages';
 import SidebarTriggerBase from '../../common/TriggerBase';
 import SidebarContext from '../../SidebarContext';
-
+import { WIDGETS } from '../../../../../generic/hooks';
 import NotificationIcon from './NotificationIcon';
 
-export const ID = 'NOTIFICATIONS';
+export const ID = WIDGETS.NOTIFICATIONS;
 
 const NotificationTrigger = ({
   intl,
