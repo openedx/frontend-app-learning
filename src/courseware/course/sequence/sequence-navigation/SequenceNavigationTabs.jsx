@@ -10,7 +10,7 @@ import { useIsOnXLDesktop, useIsSidebarOpen } from './hooks';
 const SequenceNavigationTabs = ({
   unitIds, unitId, showCompletion, onNavigate,
 }) => {
-  const shouldDisplaySideBar = useIsSidebarOpen(unitId);
+  const isSidebarOpen = useIsSidebarOpen(unitId);
   const [
     indexOfLastVisibleChild,
     containerRef,
@@ -24,7 +24,7 @@ const SequenceNavigationTabs = ({
       <div
         ref={containerRef}
         className={classNames('sequence-navigation-tabs-container', {
-          'navigation-tab-width': isOnXLDesktop && shouldDisplaySideBar,
+          'navigation-tab-width': isOnXLDesktop && isSidebarOpen,
         })}
       >
         <div
