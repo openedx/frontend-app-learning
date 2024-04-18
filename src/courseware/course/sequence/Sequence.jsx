@@ -200,7 +200,6 @@ const Sequence = ({
         </div>
         {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
       </div>
-      <div id="whole-course-translation-feedback-widget" />
     </>
   );
 
