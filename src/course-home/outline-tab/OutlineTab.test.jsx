@@ -139,7 +139,7 @@ describe('Outline Tab', () => {
       });
       await fetchAndRender();
 
-      const pluginSlot = screen.getByTestId('upgrade-notification-slot');
+      const pluginSlot = screen.getByTestId('outline-tab-slot');
       expect(pluginSlot).toBeInTheDocument();
 
       // The Upgrade Notification should be inside the PluginSlot.

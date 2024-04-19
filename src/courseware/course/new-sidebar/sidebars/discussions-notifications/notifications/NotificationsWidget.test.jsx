@@ -93,7 +93,7 @@ describe('NotificationsWidget', () => {
       </SidebarContext.Provider>,
     );
 
-    const pluginSlot = screen.getByTestId('upgrade-notification-slot');
+    const pluginSlot = screen.getByTestId('notification-widget-slot');
     expect(pluginSlot).toBeInTheDocument();
 
     // The Upgrade Notification should be inside the PluginSlot.
