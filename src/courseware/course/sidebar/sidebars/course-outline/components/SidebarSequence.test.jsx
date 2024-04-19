@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import courseOutlineMessages from '../../../../../course-home/outline-tab/messages';
-import { initializeMockApp, initializeTestStore } from '../../../../../setupTest';
+import courseOutlineMessages from '@src/course-home/outline-tab/messages';
+import { initializeMockApp, initializeTestStore } from '@src/setupTest';
+import messages from '../messages';
 import SidebarSequence from './SidebarSequence';
-import messages from './messages';
 
 initializeMockApp();
 

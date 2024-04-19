@@ -12,7 +12,7 @@ import {
   EditSquareIcon,
   VideocamCompleteIcon,
   VideocamIcon,
-} from './icons';
+} from '../icons';
 
 export const UNIT_ICON_TYPES = {
   video: 'video',

@@ -4,8 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { initializeTestStore } from '../../../../../setupTest';
-import courseOutlineMessages from '../../../../../course-home/outline-tab/messages';
+import { initializeTestStore } from '@src/setupTest';
+import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import SidebarContext from '../../SidebarContext';
 import CourseOutlineTray from './CourseOutlineTray';
 import { ID as outlineSidebarId } from './CourseOutlineTrigger';

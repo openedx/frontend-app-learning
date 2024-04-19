@@ -8,9 +8,9 @@ import {
   ChevronLeft as ChevronLeftIcon,
 } from '@openedx/paragon/icons';
 
-import { useModel } from '../../../../../generic/model-store';
-import { LOADING, LOADED } from '../../../../../course-home/data/slice';
-import PageLoading from '../../../../../generic/PageLoading';
+import { useModel } from '@src/generic/model-store';
+import { LOADING, LOADED } from '@src/course-home/data/slice';
+import PageLoading from '@src/generic/PageLoading';
 import {
   getSequenceId,
   getCourseOutline,
@@ -20,9 +20,9 @@ import {
 } from '../../../../data/selectors';
 import { getCourseOutlineStructure } from '../../../../data/thunks';
 import SidebarContext from '../../SidebarContext';
+import SidebarSection from './components/SidebarSection';
+import SidebarSequence from './components/SidebarSequence';
 import { ID } from './CourseOutlineTrigger';
-import SidebarSection from './SidebarSection';
-import SidebarSequence from './SidebarSequence';
 import messages from './messages';
 
 const CourseOutlineTray = ({ intl }) => {

@@ -6,7 +6,7 @@ import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { IconButton } from '@openedx/paragon';
 import { MenuOpen as MenuOpenIcon } from '@openedx/paragon/icons';
 
-import { useModel } from '../../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
 import { getCoursewareOutlineSidebarSettings } from '../../../../data/selectors';
 import { LAYOUT_LEFT } from '../../common/constants';
 import SidebarContext from '../../SidebarContext';

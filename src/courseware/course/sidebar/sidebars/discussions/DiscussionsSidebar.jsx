@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-import { useModel } from '../../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
 import SidebarBase from '../../common/SidebarBase';
 import SidebarContext from '../../SidebarContext';
 import { ID } from './DiscussionsTrigger';

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { initializeTestStore } from '../../../../../setupTest';
+import { initializeTestStore } from '@src/setupTest';
 import SidebarContext from '../../SidebarContext';
 import { ID as discussionSidebarId } from '../discussions/DiscussionsTrigger';
 import CourseOutlineTrigger, { ID as outlineSidebarId } from './CourseOutlineTrigger';

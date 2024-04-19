@@ -5,7 +5,7 @@ import { QuestionAnswer } from '@openedx/paragon/icons';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useModel } from '../../../../../generic/model-store';
+import { useModel } from '@src/generic/model-store';
 import { getCourseDiscussionTopics } from '../../../../data/thunks';
 import SidebarTriggerBase from '../../common/TriggerBase';
 import { LAYOUT_RIGHT } from '../../common/constants';

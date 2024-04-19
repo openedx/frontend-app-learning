@@ -4,11 +4,10 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Collapsible } from '@openedx/paragon';
-import { CheckCircle as CheckCircleIcon } from '@openedx/paragon/icons';
 
-import courseOutlineMessages from '../../../../../course-home/outline-tab/messages';
-import { getCourseOutline, getSequenceId } from '../../../../data/selectors';
-import { CompletionSolidIcon } from './icons';
+import courseOutlineMessages from '@src/course-home/outline-tab/messages';
+import { getCourseOutline, getSequenceId } from '@src/courseware/data/selectors';
+import CompletionIcon from './CompletionIcon';
 import SidebarUnit from './SidebarUnit';
 import { UNIT_ICON_TYPES } from './UnitIcon';
 
@@ -26,6 +25,7 @@ const SidebarSequence = ({
     specialExamInfo,
     unitIds,
     type,
+    completionStat,
   } = sequence;
 
   const [open, setOpen] = useState(defaultOpen);
@@ -35,7 +35,7 @@ const SidebarSequence = ({
   const sectionTitle = (
     <>
       <div className="col-auto p-0" style={{ fontSize: '1.1rem' }}>
-        {complete ? <CheckCircleIcon className="text-success" /> : <CompletionSolidIcon />}
+        <CompletionIcon completionStat={completionStat} />
       </div>
       <div className="col-9 d-flex flex-column flex-grow-1 ml-3 mr-auto p-0 text-left">
         <span className="align-middle text-dark-500">{title}</span>
@@ -89,6 +89,10 @@ SidebarSequence.propTypes = {
     type: PropTypes.string,
     specialExamInfo: PropTypes.string,
     unitIds: PropTypes.arrayOf(PropTypes.string),
+    completionStat: PropTypes.shape({
+      completed: PropTypes.number,
+      total: PropTypes.number,
+    }),
   }).isRequired,
   activeUnitId: PropTypes.string.isRequired,
 };

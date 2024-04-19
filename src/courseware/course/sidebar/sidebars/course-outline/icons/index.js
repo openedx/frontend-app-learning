@@ -6,3 +6,4 @@ export { default as VideocamCompleteIcon } from './VideocamCompleteIcon';
 export { default as EditSquareCompleteIcon } from './EditSquareCompleteIcon';
 export { default as BookIcon } from './BookIcon';
 export { default as BookCompleteIcon } from './BookCompleteIcon';
+export { default as DashedCircleIcon } from './DashedCircleIcon';

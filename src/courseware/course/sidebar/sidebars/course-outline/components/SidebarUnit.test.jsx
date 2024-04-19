@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { initializeMockApp, initializeTestStore } from '../../../../../setupTest';
+import { initializeMockApp, initializeTestStore } from '@src/setupTest';
 import SidebarUnit from './SidebarUnit';
 
 initializeMockApp();

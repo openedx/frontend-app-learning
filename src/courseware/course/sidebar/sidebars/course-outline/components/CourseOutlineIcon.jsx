@@ -1,8 +1,8 @@
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
 
-import messages from './messages';
-import { OutlineIcon } from './icons';
+import messages from '../messages';
+import { OutlineIcon } from '../icons';
 
 const CourseOutlineIcon = ({
   intl,

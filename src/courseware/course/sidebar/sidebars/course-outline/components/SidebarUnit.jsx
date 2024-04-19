@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-import { checkBlockCompletion } from '../../../../data';
+import { checkBlockCompletion } from '@src/courseware/data';
+import messages from '../messages';
 import UnitIcon, { UNIT_ICON_TYPES } from './UnitIcon';
-import messages from './messages';
 
 const SidebarUnit = ({
   id,

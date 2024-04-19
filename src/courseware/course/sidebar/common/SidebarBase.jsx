@@ -3,8 +3,8 @@ import { Icon, IconButton } from '@openedx/paragon';
 import { ArrowBackIos, Close } from '@openedx/paragon/icons';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, { useCallback, useContext } from 'react';
-import { useEventListener } from '../../../../generic/hooks';
+import { useCallback, useContext } from 'react';
+import { useEventListener } from '@src/generic/hooks';
 import messages from '../../messages';
 import SidebarContext from '../SidebarContext';
 

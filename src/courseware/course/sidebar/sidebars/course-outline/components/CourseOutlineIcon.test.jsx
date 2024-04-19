@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
+import messages from '../messages';
 import CourseOutlineIcon from './CourseOutlineIcon';
-import messages from './messages';
 
 const RootWrapper = (props) => (
   <IntlProvider locale="en">
