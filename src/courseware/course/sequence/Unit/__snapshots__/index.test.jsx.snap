@@ -28,7 +28,7 @@ exports[`Unit component output snapshot: not bookmarked, do not show content 1`]
     >
       unit-title
     </h3>
-    <PluginSlot
+    <MockedPluginSlot
       id="unit_title_plugin"
       pluginProps={
         Object {
