@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo } from 'react';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useModel } from '../../../../../../generic/model-store';
 import UpgradeNotification from '../../../../../../generic/upgrade-notification/UpgradeNotification';
 import { WIDGETS } from '../../../../../../constants';
@@ -66,24 +67,32 @@ const NotificationsWidget = () => {
 
   if (hideNotificationbar || !isNotificationbarAvailable) { return null; }
 
+  const upgradeNotificationProps = {
+    offer,
+    verifiedMode,
+    accessExpiration,
+    contentTypeGatingEnabled,
+    marketingUrl,
+    upsellPageName: 'in_course',
+    userTimezone,
+    timeOffsetMillis,
+    courseId,
+    org,
+    upgradeNotificationCurrentState,
+    setupgradeNotificationCurrentState: setUpgradeNotificationCurrentState, // TODO: Check typo in component?
+    shouldDisplayBorder: false,
+    toggleSidebar: () => toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS),
+  };
+
   return (
     <div className="border border-light-400 rounded-sm" data-testid="notification-widget">
-      <UpgradeNotification
-        offer={offer}
-        verifiedMode={verifiedMode}
-        accessExpiration={accessExpiration}
-        contentTypeGatingEnabled={contentTypeGatingEnabled}
-        marketingUrl={marketingUrl}
-        upsellPageName="in_course"
-        userTimezone={userTimezone}
-        shouldDisplayBorder={false}
-        timeOffsetMillis={timeOffsetMillis}
-        courseId={courseId}
-        org={org}
-        upgradeNotificationCurrentState={upgradeNotificationCurrentState}
-        setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
-        toggleSidebar={() => toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS)}
-      />
+      <PluginSlot
+        id="notifications_widget_upgrade_notification_slot"
+        pluginProps={{ upgradeNotificationProps }}
+        testId="upgrade-notification-slot"
+      >
+        <UpgradeNotification {...upgradeNotificationProps} />
+      </PluginSlot>
     </div>
   );
 };

@@ -7,6 +7,8 @@ const MockedPluginSlot = ({ children, testId }) => {
   return <div data-testid={testId}>{children}</div>;
 };
 
+MockedPluginSlot.displayName = 'PluginSlot';
+
 MockedPluginSlot.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
