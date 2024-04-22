@@ -48,7 +48,7 @@ const CourseOutlineTrigger = ({ intl, isMobileView }) => {
   };
 
   return (
-    <div className={classNames('outline-sidebar-heading-wrapper bg-light-200 collapsed', {
+    <div className={classNames('outline-sidebar-heading-wrapper bg-light-200 collapsed align-self-start', {
       'flex-shrink-0 mr-4 p-2.5': isDisplayForDesktopView,
       'p-0': isDisplayForMobileView,
     })}

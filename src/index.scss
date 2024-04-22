@@ -319,9 +319,13 @@
   max-width: 640px;
   margin: 0 auto;
 
+  @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+    flex-direction: column;
+    gap: $spacer;
+  }
+
   .previous-button,
   .next-button {
-    white-space: nowrap;
     border-radius: 4px;
 
     &:focus:before {
@@ -331,10 +335,31 @@
 
   .next-button {
     flex-basis: 75%;
+
+     @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+       flex-basis: 100%;
+     }
   }
 
   .previous-button {
     flex-basis: 25%;
+
+     @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+       flex-basis: 100%;
+     }
+  }
+}
+
+.top-unit-navigation {
+  max-width: 100%;
+  justify-content: flex-end;
+
+  .next-button,
+  .previous-button {
+    @media (min-width: map-get($grid-breakpoints, "md")) {
+      flex-basis: auto;
+      min-width: 8rem;
+    }
   }
 }
 
