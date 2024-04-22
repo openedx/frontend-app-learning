@@ -91,10 +91,14 @@ describe('NotificationTray', () => {
         <NotificationTray />
       </SidebarContext.Provider>,
     );
-    const UpgradeNotification = document.querySelector('.upgrade-notification');
 
-    expect(UpgradeNotification)
-      .toBeInTheDocument();
+    const pluginSlot = screen.getByTestId('notification-tray-slot');
+    expect(pluginSlot).toBeInTheDocument();
+
+    // The Upgrade Notification should be inside the PluginSlot.
+    const UpgradeNotification = pluginSlot.querySelector('.upgrade-notification');
+    expect(UpgradeNotification).toBeInTheDocument();
+
     expect(screen.getByRole('link', { name: 'Upgrade for $149' }))
       .toBeInTheDocument();
     expect(screen.queryByText('You have no new notifications at this time.'))
