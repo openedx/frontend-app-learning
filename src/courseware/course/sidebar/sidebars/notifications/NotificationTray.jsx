@@ -94,7 +94,7 @@ const NotificationTray = ({ intl }) => {
         ? (
           <PluginSlot
             id="notification_tray"
-            pluginProps={{ upgradeNotificationProps }}
+            pluginProps={upgradeNotificationProps}
             testId="notification-tray-slot"
           >
             <UpgradeNotification {...upgradeNotificationProps} />
