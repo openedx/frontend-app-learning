@@ -88,7 +88,7 @@ const NotificationsWidget = () => {
     <div className="border border-light-400 rounded-sm" data-testid="notification-widget">
       <PluginSlot
         id="notification_widget"
-        pluginProps={{ upgradeNotificationProps }}
+        pluginProps={upgradeNotificationProps}
         testId="notification-widget-slot"
       >
         <UpgradeNotification {...upgradeNotificationProps} />
