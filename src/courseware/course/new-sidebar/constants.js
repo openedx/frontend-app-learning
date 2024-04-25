@@ -1,6 +1,0 @@
-const WIDGETS = {
-  DISCUSSIONS: 'DISCUSSIONS',
-  NOTIFICATIONS: 'NOTIFICATIONS',
-};
-
-export default WIDGETS;

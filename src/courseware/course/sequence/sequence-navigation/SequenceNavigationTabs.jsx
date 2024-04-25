@@ -5,11 +5,12 @@ import classNames from 'classnames';
 import UnitButton from './UnitButton';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
-import { useIsOnXLDesktop } from './hooks';
+import { useIsOnXLDesktop, useIsSidebarOpen } from './hooks';
 
 const SequenceNavigationTabs = ({
   unitIds, unitId, showCompletion, onNavigate,
 }) => {
+  const isSidebarOpen = useIsSidebarOpen(unitId);
   const [
     indexOfLastVisibleChild,
     containerRef,
@@ -23,7 +24,7 @@ const SequenceNavigationTabs = ({
       <div
         ref={containerRef}
         className={classNames('sequence-navigation-tabs-container', {
-          'navigation-tab-width': isOnXLDesktop && shouldDisplayDropdown,
+          'navigation-tab-width': isOnXLDesktop && isSidebarOpen,
         })}
       >
         <div
