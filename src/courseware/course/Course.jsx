@@ -33,10 +33,10 @@ const Course = ({
   const {
     celebrations,
     isStaff,
+    isNewDiscussionSidebarViewEnabled,
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
   const navigationDisabled = sequence?.navigationDisabled ?? false;
 
   const pageTitleBreadCrumbs = [
@@ -69,7 +69,7 @@ const Course = ({
     ));
   }, [sequenceId]);
 
-  const SidebarProviderComponent = enableNewSidebar === 'true' ? NewSidebarProvider : SidebarProvider;
+  const SidebarProviderComponent = isNewDiscussionSidebarViewEnabled ? NewSidebarProvider : SidebarProvider;
 
   return (
     <SidebarProviderComponent courseId={courseId} unitId={unitId}>
@@ -102,7 +102,7 @@ const Course = ({
         )}
         {shouldDisplayTriggers && (
           <>
-            {enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers /> }
+            {isNewDiscussionSidebarViewEnabled ? <NewSidebarTriggers /> : <SidebarTriggers /> }
           </>
         )}
       </div>

@@ -2,7 +2,6 @@
 import React, {
   useEffect, useState,
 } from 'react';
-import { getConfig } from '@edx/frontend-platform';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
@@ -46,13 +45,13 @@ const Sequence = ({
   const {
     isStaff,
     originalUserIsStaff,
+    isNewDiscussionSidebarViewEnabled,
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
   const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
-  const enableNewSidebar = getConfig().ENABLE_NEW_SIDEBAR;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -171,7 +170,7 @@ const Sequence = ({
               }}
             />
             {shouldDisplayNotificationTriggerInSequence && (
-              enableNewSidebar === 'true' ? <NewSidebarTriggers /> : <SidebarTriggers />
+              isNewDiscussionSidebarViewEnabled ? <NewSidebarTriggers /> : <SidebarTriggers />
             )}
           </div>
 
@@ -199,7 +198,7 @@ const Sequence = ({
             )}
           </div>
         </div>
-        {enableNewSidebar === 'true' ? <NewSidebar /> : <Sidebar />}
+        {isNewDiscussionSidebarViewEnabled ? <NewSidebar /> : <Sidebar />}
       </div>
       <PluginSlot
         id="sequence_container_plugin"

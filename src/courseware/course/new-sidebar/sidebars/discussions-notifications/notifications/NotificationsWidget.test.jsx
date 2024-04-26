@@ -4,7 +4,7 @@ import React from 'react';
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 
-import { mergeConfig, getConfig } from '@edx/frontend-platform';
+import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 
@@ -49,7 +49,6 @@ describe('NotificationsWidget', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
-    mergeConfig({ ENABLE_NEW_SIDEBAR: 'true' }, 'Custom app config');
   });
 
   it('successfully Open/Hide sidebar tray.', async () => {

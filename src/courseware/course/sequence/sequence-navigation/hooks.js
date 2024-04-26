@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
-import { getConfig } from '@edx/frontend-platform';
 
 import { useModel } from '../../../../generic/model-store';
 import { sequenceIdsSelector } from '../../../data';
@@ -80,8 +79,11 @@ export function useIsOnXLDesktop() {
 }
 
 export function useIsSidebarOpen(unitId) {
-  const { currentSidebar } = useContext(getConfig().ENABLE_NEW_SIDEBAR === 'true' ? NewSidebarContext : SidebarContext);
+  const courseId = useSelector(state => state.courseware.courseId);
+  const { isNewDiscussionSidebarViewEnabled } = useModel('courseHomeMeta', courseId);
+  const { currentSidebar } = useContext(isNewDiscussionSidebarViewEnabled ? NewSidebarContext : SidebarContext);
   const topic = useModel('discussionTopics', unitId);
-  return currentSidebar === WIDGETS.NOTIFICATIONS
-    || (currentSidebar === WIDGETS.DISCUSSIONS && !!(topic?.id || topic?.enabledInContext));
+
+  return (currentSidebar === WIDGETS.NOTIFICATIONS) || (
+    currentSidebar === WIDGETS.DISCUSSIONS && !!(topic?.id || topic?.enabledInContext));
 }
