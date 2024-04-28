@@ -51,10 +51,9 @@ describe('NotificationsWidget', () => {
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
   });
 
-  it('successfully Open/Hide sidebar tray.', async () => {
+  it('successfully Open/Hide sidebar tray', async () => {
     const userVerifiedMode = Factory.build('verifiedMode');
-
-    await setupDiscussionSidebar(userVerifiedMode);
+    await setupDiscussionSidebar({ verifiedMode: userVerifiedMode, isNewDiscussionSidebarViewEnabled: true });
 
     const sidebarButton = await screen.getByRole('button', { name: /Show sidebar tray/i });
 
@@ -128,7 +127,11 @@ describe('NotificationsWidget', () => {
   ])('successfully %s', async ({ enabledInContext, testId }) => {
     const userVerifiedMode = Factory.build('verifiedMode');
 
-    await setupDiscussionSidebar(userVerifiedMode, enabledInContext);
+    await setupDiscussionSidebar({
+      verifiedMode: userVerifiedMode,
+      enabledInContext,
+      isNewDiscussionSidebarViewEnabled: true,
+    });
 
     const sidebarButton = screen.getByRole('button', { name: /Show sidebar tray/i });
 

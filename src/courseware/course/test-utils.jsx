@@ -1,6 +1,6 @@
 import React from 'react';
 import { Factory } from 'rosie';
-import { getConfig } from '@edx/frontend-platform';
+import { getConfig, snakeCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import { breakpoints } from '@openedx/paragon';
@@ -16,7 +16,8 @@ const mockData = {
   unitNavigationHandler: () => {},
 };
 
-const setupDiscussionSidebar = async (verifiedMode = null, enabledInContext = true) => {
+const setupDiscussionSidebar = async (HomeMetaParams) => {
+  const params = { verifiedMode: null, enabledInContext: true, ...HomeMetaParams };
   const store = await initializeTestStore();
   const { courseware, models } = store.getState();
   const { courseId, sequenceId } = courseware;
@@ -27,12 +28,12 @@ const setupDiscussionSidebar = async (verifiedMode = null, enabledInContext = tr
   });
   global.innerWidth = breakpoints.extraLarge.minWidth;
 
-  const courseHomeMetadata = Factory.build('courseHomeMetadata', { verified_mode: verifiedMode });
+  const courseHomeMetadata = Factory.build('courseHomeMetadata', { ...snakeCaseObject(params) });
   const testStore = await initializeTestStore({ provider: 'openedx', courseHomeMetadata });
   const state = testStore.getState();
   const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
   axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(200, { provider: 'openedx' });
-  const topicsResponse = buildTopicsFromUnits(state.models.units, enabledInContext);
+  const topicsResponse = buildTopicsFromUnits(state.models.units, params.enabledInContext);
   axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
     .reply(200, topicsResponse);
 
