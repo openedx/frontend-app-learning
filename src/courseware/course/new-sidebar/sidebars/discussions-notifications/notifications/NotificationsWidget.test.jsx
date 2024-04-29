@@ -4,7 +4,7 @@ import React from 'react';
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 
-import { mergeConfig, getConfig } from '@edx/frontend-platform';
+import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 
@@ -49,13 +49,11 @@ describe('NotificationsWidget', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
-    mergeConfig({ ENABLE_NEW_SIDEBAR: 'true' }, 'Custom app config');
   });
 
-  it('successfully Open/Hide sidebar tray.', async () => {
+  it('successfully Open/Hide sidebar tray', async () => {
     const userVerifiedMode = Factory.build('verifiedMode');
-
-    await setupDiscussionSidebar(userVerifiedMode);
+    await setupDiscussionSidebar({ verifiedMode: userVerifiedMode, isNewDiscussionSidebarViewEnabled: true });
 
     const sidebarButton = await screen.getByRole('button', { name: /Show sidebar tray/i });
 
@@ -129,7 +127,11 @@ describe('NotificationsWidget', () => {
   ])('successfully %s', async ({ enabledInContext, testId }) => {
     const userVerifiedMode = Factory.build('verifiedMode');
 
-    await setupDiscussionSidebar(userVerifiedMode, enabledInContext);
+    await setupDiscussionSidebar({
+      verifiedMode: userVerifiedMode,
+      enabledInContext,
+      isNewDiscussionSidebarViewEnabled: true,
+    });
 
     const sidebarButton = screen.getByRole('button', { name: /Show sidebar tray/i });
 
