@@ -5,7 +5,9 @@ import classNames from 'classnames';
 import UnitButton from './UnitButton';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
-import { useIsOnXLDesktop, useIsSidebarOpen } from './hooks';
+import {
+  useIsOnXLDesktop, useIsOnMediumDesktop, useIsOnLargeDesktop, useIsSidebarOpen,
+} from './hooks';
 
 const SequenceNavigationTabs = ({
   unitIds, unitId, showCompletion, onNavigate,
@@ -15,21 +17,28 @@ const SequenceNavigationTabs = ({
     indexOfLastVisibleChild,
     containerRef,
     invisibleStyle,
-  ] = useIndexOfLastVisibleChild();
+  ] = useIndexOfLastVisibleChild(isSidebarOpen);
   const isOnXLDesktop = useIsOnXLDesktop();
-  const shouldDisplayDropdown = indexOfLastVisibleChild === -1;
+  const isOnLargeDesktop = useIsOnLargeDesktop();
+  const isOnMediumDesktop = useIsOnMediumDesktop();
+  const shouldDisplayDropdown = indexOfLastVisibleChild === -1 || indexOfLastVisibleChild < unitIds.length - 1;
 
   return (
-    <div style={{ flexBasis: '100%', minWidth: 0 }}>
+    <div
+      style={{ flexBasis: '100%', minWidth: 0 }}
+      className={classNames({
+        'navigation-tab-width-xl': isOnXLDesktop && isSidebarOpen,
+        'navigation-tab-width-large': isOnLargeDesktop && isSidebarOpen,
+        'navigation-tab-width-medium': isOnMediumDesktop && isSidebarOpen,
+      })}
+    >
       <div
-        ref={containerRef}
-        className={classNames('sequence-navigation-tabs-container', {
-          'navigation-tab-width': isOnXLDesktop && isSidebarOpen,
-        })}
+        className="sequence-navigation-tabs-container"
       >
         <div
           className="sequence-navigation-tabs d-flex flex-grow-1"
           style={shouldDisplayDropdown ? invisibleStyle : null}
+          ref={containerRef}
         >
           {unitIds.map(buttonUnitId => (
             <UnitButton

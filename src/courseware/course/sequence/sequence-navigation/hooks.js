@@ -73,9 +73,19 @@ export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) 
   };
 }
 
+export function useIsOnMediumDesktop() {
+  const windowSize = useWindowSize();
+  return windowSize.width >= breakpoints.medium.minWidth && windowSize.width < breakpoints.extraLarge.minWidth;
+}
+
+export function useIsOnLargeDesktop() {
+  const windowSize = useWindowSize();
+  return windowSize.width >= breakpoints.extraLarge.minWidth && windowSize.width < breakpoints.extraLarge.maxWidth;
+}
+
 export function useIsOnXLDesktop() {
   const windowSize = useWindowSize();
-  return windowSize.width >= breakpoints.extraLarge.minWidth;
+  return windowSize.width >= breakpoints.extraLarge.maxWidth;
 }
 
 export function useIsSidebarOpen(unitId) {
@@ -84,6 +94,6 @@ export function useIsSidebarOpen(unitId) {
   const { currentSidebar } = useContext(isNewDiscussionSidebarViewEnabled ? NewSidebarContext : SidebarContext);
   const topic = useModel('discussionTopics', unitId);
 
-  return (currentSidebar === WIDGETS.NOTIFICATIONS) || (
+  return (currentSidebar === WIDGETS.NOTIFICATIONS) || (currentSidebar === 'DISCUSSIONS_NOTIFICATIONS') || (
     currentSidebar === WIDGETS.DISCUSSIONS && !!(topic?.id || topic?.enabledInContext));
 }
