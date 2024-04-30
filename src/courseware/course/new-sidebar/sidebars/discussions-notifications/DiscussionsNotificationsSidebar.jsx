@@ -21,11 +21,9 @@ const DiscussionsNotificationsSidebar = () => {
       showTitleBar={false}
       showBorder={false}
     >
-      <div className="sticky-top vh-100">
-        <NotificationTray />
-        {!hideNotificationbar && <div className="my-1.5" />}
-        <DiscussionsSidebar />
-      </div>
+      <NotificationTray />
+      {!hideNotificationbar && <div className="my-1.5" />}
+      <DiscussionsSidebar />
     </SidebarBase>
   );
 };
