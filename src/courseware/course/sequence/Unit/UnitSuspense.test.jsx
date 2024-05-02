@@ -64,7 +64,7 @@ describe('UnitSuspense component', () => {
   describe('output', () => {
     describe('LockPaywall', () => {
       const testNoPaywall = () => {
-        it('does not display LockPaywal', () => {
+        it('does not display LockPaywall', () => {
           el = shallow(<UnitSuspense {...props} />);
           expect(el.instance.findByType(LockPaywall).length).toEqual(0);
         });
@@ -79,8 +79,9 @@ describe('UnitSuspense component', () => {
         it('displays LockPaywall in Suspense wrapper with PageLoading fallback', () => {
           el = shallow(<UnitSuspense {...props} />);
           const [component] = el.instance.findByType(LockPaywall);
-          expect(component.parent.type).toEqual('Suspense');
-          expect(component.parent.props.fallback)
+          expect(component.parent.type).toEqual('PluginSlot');
+          expect(component.parent.parent.type).toEqual('Suspense');
+          expect(component.parent.parent.props.fallback)
             .toEqual(<PageLoading srMessage={formatMessage(messages.loadingLockedContent)} />);
           expect(component.props.courseId).toEqual(props.courseId);
         });
