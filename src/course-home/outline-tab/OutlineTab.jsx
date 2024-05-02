@@ -124,20 +124,6 @@ const OutlineTab = ({ intl }) => {
     }
   }, [location.search]);
 
-  const upgradeNotificationProps = {
-    offer,
-    verifiedMode,
-    accessExpiration,
-    contentTypeGatingEnabled: datesBannerInfo.contentTypeGatingEnabled,
-    marketingUrl,
-    upsellPageName: 'course_home',
-    userTimezone,
-    timeOffsetMillis,
-    courseId,
-    org,
-    shouldDisplayBorder: true,
-  };
-
   return (
     <>
       <div data-learner-type={learnerType} className="row w-100 mx-0 my-3 justify-content-between">
@@ -210,11 +196,22 @@ const OutlineTab = ({ intl }) => {
             )}
             <CourseTools />
             <PluginSlot
-              id="outline_tab"
-              pluginProps={upgradeNotificationProps}
-              testId="outline-tab-slot"
+              id="outline_tab_notifications"
+              pluginProps={{ courseId }}
             >
-              <UpgradeNotification {...upgradeNotificationProps} />
+              <UpgradeNotification
+                offer={offer}
+                verifiedMode={verifiedMode}
+                accessExpiration={accessExpiration}
+                contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
+                marketingUrl={marketingUrl}
+                upsellPageName="course_home"
+                userTimezone={userTimezone}
+                shouldDisplayBorder
+                timeOffsetMillis={timeOffsetMillis}
+                courseId={courseId}
+                org={org}
+              />
             </PluginSlot>
             <CourseDates />
             <CourseHandouts />
