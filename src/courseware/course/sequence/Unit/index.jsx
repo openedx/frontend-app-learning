@@ -7,7 +7,6 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { useModel } from '@src/generic/model-store';
 import { usePluginsCallback } from '@src/generic/plugin-store';
 
-import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import BookmarkButton from '../../bookmark/BookmarkButton';
 import messages from '../messages';
 import ContentIFrame from './ContentIFrame';
@@ -15,6 +14,7 @@ import UnitSuspense from './UnitSuspense';
 import { modelKeys, views } from './constants';
 import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
+import UnitTitleSlot from '../../../../plugin-slots/UnitTitleSlot';
 
 const Unit = ({
   courseId,
@@ -43,13 +43,7 @@ const Unit = ({
     <div className="unit">
       <div className="mb-0">
         <h3 className="h3">{unit.title}</h3>
-        <PluginSlot
-          id="unit_title_plugin"
-          pluginProps={{
-            courseId,
-            unitId: id,
-          }}
-        />
+        <UnitTitleSlot courseId={courseId} unitId={id} />
       </div>
       <h2 className="sr-only">{formatMessage(messages.headerPlaceholder)}</h2>
       <BookmarkButton
