@@ -91,9 +91,14 @@ const messages = defineMessages({
     defaultMessage: 'Detailed grades',
     description: 'Headline for the (detailed grade) section in the progress tab',
   },
-  detailedGradesEmpty: {
+  detailedGradesEmptyOnlyGraded: {
     id: 'progress.detailedGrades.emptyTable',
     defaultMessage: 'You currently have no graded problem scores.',
+    description: 'It indicate that there are no graded problem or assignments to be scored',
+  },
+  detailedGradesEmpty: {
+    id: 'progress.detailedGrades.including-ungraded.emptyTable',
+    defaultMessage: 'You currently have no graded or ungraded problem scores.',
     description: 'It indicate that there are no problem or assignments to be scored',
   },
   footnotesTitle: {
@@ -158,10 +163,15 @@ const messages = defineMessages({
     defaultMessage: 'Passing grade',
     description: 'Label for mark on the (grade bar) chart which indicate the poisition of passing grade on the bar',
   },
-  problemScoreLabel: {
+  gradedScoreLabel: {
     id: 'progress.detailedGrades.problemScore.label',
-    defaultMessage: 'Problem Scores:',
+    defaultMessage: 'Graded Scores:',
     description: 'Label text which precedes detailed view of all scores per assignment',
+  },
+  practiceScoreLabel: {
+    id: 'progress.detailedGrades.practice.problemScore.label',
+    defaultMessage: 'Practice Scores:',
+    description: 'Label text which precedes detailed view of all ungraded problem scores per assignment',
   },
   problemScoreToggleAltText: {
     id: 'progress.detailedGrades.problemScore.toggleButton',
