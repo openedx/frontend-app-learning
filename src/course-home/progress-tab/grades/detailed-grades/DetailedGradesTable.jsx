@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { getConfig } from '@edx/frontend-platform';
 import {
   getLocale, injectIntl, intlShape, isRtl,
 } from '@edx/frontend-platform/i18n';
@@ -20,13 +21,18 @@ const DetailedGradesTable = ({ intl }) => {
   } = useModel('progress', courseId);
 
   const isLocaleRtl = isRtl(getLocale());
+  const showUngradedAssignments = (
+    getConfig().SHOW_UNGRADED_ASSIGNMENT_PROGRESS === 'true'
+    || getConfig().SHOW_UNGRADED_ASSIGNMENT_PROGRESS === true
+  );
   return (
     sectionScores.map((chapter) => {
       const subsectionScores = chapter.subsections.filter(
         (subsection) => !!(
-          subsection.hasGradedAssignment
-          && subsection.showGrades
-          && (subsection.numPointsPossible > 0 || subsection.numPointsEarned > 0)),
+          (showUngradedAssignments || subsection.hasGradedAssignment)
+            && subsection.showGrades
+            && (subsection.numPointsPossible > 0 || subsection.numPointsEarned > 0)
+        ),
       );
 
       if (subsectionScores.length === 0) {
