@@ -91,9 +91,14 @@ const messages = defineMessages({
     defaultMessage: 'Detailed grades',
     description: 'Headline for the (detailed grade) section in the progress tab',
   },
-  detailedGradesEmpty: {
+  detailedGradesEmptyOnlyGraded: {
     id: 'progress.detailedGrades.emptyTable',
     defaultMessage: 'You currently have no graded problem scores.',
+    description: 'It indicate that there are no graded problem or assignments to be scored',
+  },
+  detailedGradesEmpty: {
+    id: 'progress.detailedGrades.including-ungraded.emptyTable',
+    defaultMessage: 'You currently have no graded or ungraded problem scores.',
     description: 'It indicate that there are no problem or assignments to be scored',
   },
   footnotesTitle: {

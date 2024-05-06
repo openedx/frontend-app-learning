@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -28,6 +29,11 @@ const DetailedGrades = ({ intl }) => {
   } = useModel('progress', courseId);
 
   const hasSectionScores = sectionScores.length > 0;
+  const showUngradedAssignments = (
+    getConfig().SHOW_UNGRADED_ASSIGNMENT_PROGRESS === 'true'
+    || getConfig().SHOW_UNGRADED_ASSIGNMENT_PROGRESS === true
+  );
+  const emptyTableMsg = showUngradedAssignments ? messages.detailedGradesEmpty : messages.detailedGradesEmptyOnlyGraded;
 
   const logOutlineLinkClick = () => {
     sendTrackEvent('edx.ui.lms.course_progress.detailed_grades.course_outline_link.clicked', {
@@ -65,9 +71,9 @@ const DetailedGrades = ({ intl }) => {
         <DetailedGradesTable />
       )}
       {!hasSectionScores && (
-        <p className="small">{intl.formatMessage(messages.detailedGradesEmpty)}</p>
+        <p className="small">{intl.formatMessage(emptyTableMsg)}</p>
       )}
-      {overviewTabUrl && (
+      {overviewTabUrl && !showUngradedAssignments && (
         <p className="x-small m-0">
           <FormattedMessage
             id="progress.ungradedAlert"
