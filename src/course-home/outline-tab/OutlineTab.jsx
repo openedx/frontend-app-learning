@@ -196,7 +196,7 @@ const OutlineTab = ({ intl }) => {
             )}
             <CourseTools />
             <PluginSlot
-              id="outline_tab_notifications"
+              id="outline_tab_notifications_plugin"
               pluginProps={{ courseId }}
             >
               <UpgradeNotification

@@ -77,7 +77,7 @@ const NotificationTray = ({ intl }) => {
       <div>{verifiedMode
         ? (
           <PluginSlot
-            id="notification_tray"
+            id="notification_tray_plugin"
             pluginProps={{
               courseId,
               notificationCurrentState: upgradeNotificationCurrentState,

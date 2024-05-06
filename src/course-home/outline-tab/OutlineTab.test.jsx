@@ -132,19 +132,14 @@ describe('Outline Tab', () => {
       expect(expandedSectionNode).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('renders the Notification wrapper', async () => {
+    it('includes outline_tab_notifications_plugin slot', async () => {
       const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
       setTabData({
         course_blocks: { blocks: courseBlocks.blocks },
       });
       await fetchAndRender();
 
-      const pluginSlot = screen.getByTestId('outline-tab-slot');
-      expect(pluginSlot).toBeInTheDocument();
-
-      // The Upgrade Notification should be inside the PluginSlot.
-      const UpgradeNotification = pluginSlot.querySelector('.upgrade-notification');
-      expect(UpgradeNotification).toBeInTheDocument();
+      expect(screen.getByTestId('outline_tab_notifications_plugin')).toBeInTheDocument();
     });
 
     it('handles expand/collapse all button click', async () => {

@@ -67,31 +67,33 @@ const NotificationsWidget = () => {
 
   if (hideNotificationbar || !isNotificationbarAvailable) { return null; }
 
-  const upgradeNotificationProps = {
-    offer,
-    verifiedMode,
-    accessExpiration,
-    contentTypeGatingEnabled,
-    marketingUrl,
-    upsellPageName: 'in_course',
-    userTimezone,
-    timeOffsetMillis,
-    courseId,
-    org,
-    upgradeNotificationCurrentState,
-    setupgradeNotificationCurrentState: setUpgradeNotificationCurrentState, // TODO: Check typo in component?
-    shouldDisplayBorder: false,
-    toggleSidebar: () => toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS),
-  };
-
   return (
     <div className="border border-light-400 rounded-sm" data-testid="notification-widget">
       <PluginSlot
-        id="notification_widget"
-        pluginProps={upgradeNotificationProps}
-        testId="notification-widget-slot"
+        id="notification_widget_plugin"
+        pluginProps={{
+          courseId,
+          notificationCurrentState: upgradeNotificationCurrentState,
+          setNotificationCurrentState: setUpgradeNotificationCurrentState,
+          toggleSidebar: () => toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS),
+        }}
       >
-        <UpgradeNotification {...upgradeNotificationProps} />
+        <UpgradeNotification
+          offer={offer}
+          verifiedMode={verifiedMode}
+          accessExpiration={accessExpiration}
+          contentTypeGatingEnabled={contentTypeGatingEnabled}
+          marketingUrl={marketingUrl}
+          upsellPageName="in_course"
+          userTimezone={userTimezone}
+          shouldDisplayBorder={false}
+          timeOffsetMillis={timeOffsetMillis}
+          courseId={courseId}
+          org={org}
+          upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+          setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
+          toggleSidebar={() => toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS)}
+        />
       </PluginSlot>
     </div>
   );
