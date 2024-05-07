@@ -1,0 +1,104 @@
+.outline-sidebar-wrapper {
+    width: 32.125rem;
+    max-width: 100%;
+    overflow: auto;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.outline-sidebar {
+    @media (min-width: map-get($grid-breakpoints, "xl")) {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
+
+.outline-sidebar-heading-wrapper {
+    border: 1px solid #d7d3d1;
+    align-self: flex-start;
+
+    &.sticky {
+        position: sticky;
+        top: 0;
+        left: 0;
+        z-index: 5;
+    }
+
+    .outline-sidebar-heading {
+        font-weight: $font-weight-bold;
+    }
+}
+
+.course-sidebar-section {
+    background: $white;
+    border: 1px solid #d7d3d1;
+
+    button {
+        line-height: 1.75rem;
+
+        &.focus::before,
+        &:focus::before {
+            border-radius: 0;
+        }
+    }
+}
+
+.outline-sidebar-toggle-btn {
+    font-size: 1.5rem;
+
+    .collapsed & {
+        transform: scale(-1, 1);
+    }
+}
+
+#outline-sidebar-outline {
+    margin-top: -1px;
+
+    @media (min-width: map-get($grid-breakpoints, "xl")) {
+        margin-bottom: 0;
+    }
+
+    li {
+        font-size: 1rem;
+        line-height: 1.5rem;
+
+        .collapsible-trigger {
+            border-radius: 0;
+            padding: map-get($spacers, 3\.5) map-get($spacers, 4) map-get($spacers, 3\.5) map-get($spacers, 5);
+
+            @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+                padding-left: map-get($spacers, 4);
+            }
+
+            &:hover {
+                background-color: $light-500;
+            }
+
+            .collapsible-icon {
+                margin-inline-start: initial;
+            }
+        }
+
+        &:last-child .pgn_collapsible {
+            @extend .mb-0;
+        }
+    }
+
+    .collapsible-body {
+        padding: 0;
+
+        ol li > a {
+            padding: map-get($spacers, 3\.5) map-get($spacers, 4) map-get($spacers, 3\.5) map-get($spacers, 5\.5);
+
+            @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+                padding-left: map-get($spacers, 4\.5);
+            }
+
+            &:hover {
+                text-decoration: none;
+                background-color: $light-500;
+            }
+        }
+    }
+}

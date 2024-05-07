@@ -14,19 +14,17 @@ const DiscussionsNotificationsSidebar = () => {
   const { hideNotificationbar } = useContext(SidebarContext);
 
   return (
-    <div className="sticky-top vh-100">
-      <SidebarBase
-        ariaLabel={intl.formatMessage(messages.discussionNotificationTray)}
-        sidebarId={ID}
-        className="d-flex flex-column flex-fill"
-        showTitleBar={false}
-        showBorder={false}
-      >
-        <NotificationTray />
-        {!hideNotificationbar && <div className="my-1.5" />}
-        <DiscussionsSidebar />
-      </SidebarBase>
-    </div>
+    <SidebarBase
+      ariaLabel={intl.formatMessage(messages.discussionNotificationTray)}
+      sidebarId={ID}
+      className="d-flex flex-column flex-fill"
+      showTitleBar={false}
+      showBorder={false}
+    >
+      <NotificationTray />
+      {!hideNotificationbar && <div className="my-1.5" />}
+      <DiscussionsSidebar />
+    </SidebarBase>
   );
 };
 

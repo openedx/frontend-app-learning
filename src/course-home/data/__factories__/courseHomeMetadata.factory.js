@@ -6,6 +6,7 @@ Factory.define('courseHomeMetadata')
   .option('host', 'http://localhost:18000')
   .attrs({
     title: 'Demonstration Course',
+    is_new_discussion_sidebar_view_enabled: false,
     is_self_paced: false,
     is_enrolled: false,
     is_staff: false,
