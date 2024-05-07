@@ -59,6 +59,10 @@ const NotificationsWidget = () => {
     verification_status: verificationStatus,
   };
 
+  const onToggleSidebar = () => {
+    toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS);
+  };
+
   // After three seconds, update notificationSeen (to hide red dot)
   useEffect(() => {
     setTimeout(onNotificationSeen, 3000);
@@ -75,7 +79,7 @@ const NotificationsWidget = () => {
           courseId,
           notificationCurrentState: upgradeNotificationCurrentState,
           setNotificationCurrentState: setUpgradeNotificationCurrentState,
-          toggleSidebar: () => toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS),
+          toggleSidebar: onToggleSidebar,
         }}
       >
         <UpgradeNotification
@@ -92,7 +96,7 @@ const NotificationsWidget = () => {
           org={org}
           upgradeNotificationCurrentState={upgradeNotificationCurrentState}
           setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
-          toggleSidebar={() => toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS)}
+          toggleSidebar={onToggleSidebar}
         />
       </PluginSlot>
     </div>
