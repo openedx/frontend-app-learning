@@ -6,7 +6,6 @@ import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useModel } from '../../../../../generic/model-store';
 import UpgradeNotification from '../../../../../generic/upgrade-notification/UpgradeNotification';
 
-
 import messages from '../../../messages';
 import SidebarBase from '../../common/SidebarBase';
 import SidebarContext from '../../SidebarContext';
