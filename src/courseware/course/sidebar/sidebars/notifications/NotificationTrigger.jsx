@@ -1,11 +1,12 @@
+import { useContext, useEffect } from 'react';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
-import React, { useContext, useEffect } from 'react';
-import { getLocalStorage, setLocalStorage } from '../../../../../data/localStorage';
+
+import { WIDGETS } from '@src/constants';
+import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import messages from '../../../messages';
 import SidebarTriggerBase from '../../common/TriggerBase';
 import SidebarContext from '../../SidebarContext';
-import { WIDGETS } from '../../../../../constants';
 import NotificationIcon from './NotificationIcon';
 
 export const ID = WIDGETS.NOTIFICATIONS;

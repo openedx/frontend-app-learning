@@ -5,7 +5,7 @@ import { Factory } from 'rosie';
 import { breakpoints } from '@openedx/paragon';
 
 import {
-  act, fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
+  fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
 import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
@@ -59,7 +59,7 @@ describe('Course', () => {
 
   it('loads learning sequence', async () => {
     render(<Course {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
@@ -142,27 +142,32 @@ describe('Course', () => {
 
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
     expect(notificationTrigger).toBeInTheDocument();
-    expect(notificationTrigger.parentNode).not.toHaveClass('mt-3', { exact: true });
+    expect(notificationTrigger.parentNode).not.toHaveClass('sidebar-active', { exact: true });
     fireEvent.click(notificationTrigger);
-    expect(notificationTrigger.parentNode).toHaveClass('mt-3');
+    expect(notificationTrigger.parentNode).toHaveClass('sidebar-active');
   });
 
   it('handles click to open/close discussions sidebar', async () => {
     await setupDiscussionSidebar();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
+      expect(screen.getByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
+    });
+
     const discussionsTrigger = await screen.getByRole('button', { name: /Show discussions tray/i });
-    const discussionsSideBar = await waitFor(() => screen.findByTestId('sidebar-DISCUSSIONS'));
+    expect(discussionsTrigger).toBeInTheDocument();
+    fireEvent.click(discussionsTrigger);
 
-    expect(discussionsSideBar).not.toHaveClass('d-none');
-
-    await act(async () => {
-      fireEvent.click(discussionsTrigger);
+    await waitFor(() => {
+      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
     });
-    await expect(discussionsSideBar).toHaveClass('d-none');
 
-    await act(async () => {
-      fireEvent.click(discussionsTrigger);
+    fireEvent.click(discussionsTrigger);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
     });
-    await expect(discussionsSideBar).not.toHaveClass('d-none');
   });
 
   it('displays discussions sidebar when unit changes', async () => {
@@ -192,8 +197,9 @@ describe('Course', () => {
   it('handles click to open/close notification tray', async () => {
     await setupDiscussionSidebar();
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
-    expect(screen.queryByRole('region', { name: /notification tray/i })).toHaveClass('d-none');
+    expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
     fireEvent.click(notificationShowButton);
+    expect(screen.queryByRole('region', { name: /notification tray/i })).toBeInTheDocument();
     expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
   });
 
@@ -204,7 +210,9 @@ describe('Course', () => {
       { type: 'vertical' },
       { courseId: courseMetadata.id },
     ));
-    const testStore = await initializeTestStore({ courseMetadata, unitBlocks }, false);
+    const testStore = await initializeTestStore({
+      courseMetadata, unitBlocks, enableNavigationSidebar: { enable_navigation_sidebar: false },
+    }, false);
     const { courseware, models } = testStore.getState();
     const { courseId, sequenceId } = courseware;
     const testData = {
