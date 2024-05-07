@@ -66,22 +66,6 @@ const NotificationTray = ({ intl }) => {
     sendTrackEvent('edx.ui.course.upgrade.old_sidebar.notifications', notificationTrayEventProperties);
   }, []);
 
-  const upgradeNotificationProps = {
-    offer,
-    verifiedMode,
-    accessExpiration,
-    contentTypeGatingEnabled,
-    marketingUrl,
-    upsellPageName: 'in_course',
-    userTimezone,
-    shouldDisplayBorder: false,
-    timeOffsetMillis,
-    courseId,
-    org,
-    upgradeNotificationCurrentState,
-    setupgradeNotificationCurrentState: setUpgradeNotificationCurrentState, // TODO: Check typo in component?
-  };
-
   return (
     <SidebarBase
       title={intl.formatMessage(messages.notificationTitle)}
@@ -93,11 +77,28 @@ const NotificationTray = ({ intl }) => {
       <div>{verifiedMode
         ? (
           <PluginSlot
-            id="notification_tray"
-            pluginProps={upgradeNotificationProps}
-            testId="notification-tray-slot"
+            id="notification_tray_plugin"
+            pluginProps={{
+              courseId,
+              notificationCurrentState: upgradeNotificationCurrentState,
+              setNotificationCurrentState: setUpgradeNotificationCurrentState,
+            }}
           >
-            <UpgradeNotification {...upgradeNotificationProps} />
+            <UpgradeNotification
+              offer={offer}
+              verifiedMode={verifiedMode}
+              accessExpiration={accessExpiration}
+              contentTypeGatingEnabled={contentTypeGatingEnabled}
+              marketingUrl={marketingUrl}
+              upsellPageName="in_course"
+              userTimezone={userTimezone}
+              shouldDisplayBorder={false}
+              timeOffsetMillis={timeOffsetMillis}
+              courseId={courseId}
+              org={org}
+              upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+              setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
+            />
           </PluginSlot>
         ) : (
           <p className="p-3 small">{intl.formatMessage(messages.noNotificationsMessage)}</p>
