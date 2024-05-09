@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@openedx/paragon';
-import { Search } from '@openedx/paragon/icons';
+import { ManageSearch } from '@openedx/paragon/icons';
 import { useDispatch } from 'react-redux';
 import messages from './messages';
 import { useCoursewareSearchFeatureFlag, useCoursewareSearchParams } from './hooks';
@@ -33,9 +33,9 @@ const CoursewareSearchToggle = ({
         aria-label={intl.formatMessage(messages.searchOpenAction)}
         onClick={handleSearchOpenClick}
         data-testid="courseware-search-open-button"
-        iconAfter={Search}
+        iconAfter={ManageSearch}
       >
-        {messages.contentSearchButton}
+        {intl.formatMessage(messages.contentSearchButton)}
       </Button>
     </div>
   );
