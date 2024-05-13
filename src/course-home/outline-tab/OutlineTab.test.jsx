@@ -132,6 +132,16 @@ describe('Outline Tab', () => {
       expect(expandedSectionNode).toHaveAttribute('aria-expanded', 'true');
     });
 
+    it('includes outline_tab_notifications_plugin slot', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      setTabData({
+        course_blocks: { blocks: courseBlocks.blocks },
+      });
+      await fetchAndRender();
+
+      expect(screen.getByTestId('outline_tab_notifications_plugin')).toBeInTheDocument();
+    });
+
     it('handles expand/collapse all button click', async () => {
       await fetchAndRender();
       // Button renders as "Expand All"

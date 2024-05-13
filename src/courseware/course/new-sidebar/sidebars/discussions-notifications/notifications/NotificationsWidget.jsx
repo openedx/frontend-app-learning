@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo } from 'react';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useModel } from '../../../../../../generic/model-store';
 import UpgradeNotification from '../../../../../../generic/upgrade-notification/UpgradeNotification';
 import { WIDGETS } from '../../../../../../constants';
@@ -58,6 +59,10 @@ const NotificationsWidget = () => {
     verification_status: verificationStatus,
   };
 
+  const onToggleSidebar = () => {
+    toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS);
+  };
+
   // After three seconds, update notificationSeen (to hide red dot)
   useEffect(() => {
     setTimeout(onNotificationSeen, 3000);
@@ -68,22 +73,32 @@ const NotificationsWidget = () => {
 
   return (
     <div className="border border-light-400 rounded-sm" data-testid="notification-widget">
-      <UpgradeNotification
-        offer={offer}
-        verifiedMode={verifiedMode}
-        accessExpiration={accessExpiration}
-        contentTypeGatingEnabled={contentTypeGatingEnabled}
-        marketingUrl={marketingUrl}
-        upsellPageName="in_course"
-        userTimezone={userTimezone}
-        shouldDisplayBorder={false}
-        timeOffsetMillis={timeOffsetMillis}
-        courseId={courseId}
-        org={org}
-        upgradeNotificationCurrentState={upgradeNotificationCurrentState}
-        setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
-        toggleSidebar={() => toggleSidebar(currentSidebar, WIDGETS.NOTIFICATIONS)}
-      />
+      <PluginSlot
+        id="notification_widget_slot"
+        pluginProps={{
+          courseId,
+          notificationCurrentState: upgradeNotificationCurrentState,
+          setNotificationCurrentState: setUpgradeNotificationCurrentState,
+          toggleSidebar: onToggleSidebar,
+        }}
+      >
+        <UpgradeNotification
+          offer={offer}
+          verifiedMode={verifiedMode}
+          accessExpiration={accessExpiration}
+          contentTypeGatingEnabled={contentTypeGatingEnabled}
+          marketingUrl={marketingUrl}
+          upsellPageName="in_course"
+          userTimezone={userTimezone}
+          shouldDisplayBorder={false}
+          timeOffsetMillis={timeOffsetMillis}
+          courseId={courseId}
+          org={org}
+          upgradeNotificationCurrentState={upgradeNotificationCurrentState}
+          setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
+          toggleSidebar={onToggleSidebar}
+        />
+      </PluginSlot>
     </div>
   );
 };

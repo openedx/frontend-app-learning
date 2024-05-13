@@ -78,6 +78,21 @@ describe('NotificationsWidget', () => {
     });
   });
 
+  it('includes notification_widget_slot', async () => {
+    await fetchAndRender(
+      <SidebarContext.Provider value={{
+        currentSidebar: ID,
+        courseId,
+        hideNotificationbar: false,
+        isNotificationbarAvailable: true,
+      }}
+      >
+        <NotificationsWidget />
+      </SidebarContext.Provider>,
+    );
+    expect(screen.getByTestId('notification_widget_slot')).toBeInTheDocument();
+  });
+
   it('renders upgrade card', async () => {
     await fetchAndRender(
       <SidebarContext.Provider value={{
@@ -90,9 +105,11 @@ describe('NotificationsWidget', () => {
         <NotificationsWidget />
       </SidebarContext.Provider>,
     );
-    const UpgradeNotification = document.querySelector('.upgrade-notification');
 
+    // The Upgrade Notification should be inside the PluginSlot.
+    const UpgradeNotification = document.querySelector('.upgrade-notification');
     expect(UpgradeNotification).toBeInTheDocument();
+
     expect(screen.getByRole('link', { name: 'Upgrade for $149' })).toBeInTheDocument();
     expect(screen.queryByText('You have no new notifications at this time.')).not.toBeInTheDocument();
   });

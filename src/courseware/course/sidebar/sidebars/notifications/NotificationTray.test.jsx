@@ -81,6 +81,19 @@ describe('NotificationTray', () => {
       .toBeInTheDocument();
   });
 
+  it('includes notification_tray_plugin slot', async () => {
+    await fetchAndRender(
+      <SidebarContext.Provider value={{
+        currentSidebar: ID,
+        courseId,
+      }}
+      >
+        <NotificationTray />
+      </SidebarContext.Provider>,
+    );
+    expect(screen.getByTestId('notification_tray_plugin')).toBeInTheDocument();
+  });
+
   it('renders upgrade card', async () => {
     await fetchAndRender(
       <SidebarContext.Provider value={{
@@ -91,10 +104,9 @@ describe('NotificationTray', () => {
         <NotificationTray />
       </SidebarContext.Provider>,
     );
-    const UpgradeNotification = document.querySelector('.upgrade-notification');
 
-    expect(UpgradeNotification)
-      .toBeInTheDocument();
+    expect(document.querySelector('.upgrade-notification')).toBeInTheDocument();
+
     expect(screen.getByRole('link', { name: 'Upgrade for $149' }))
       .toBeInTheDocument();
     expect(screen.queryByText('You have no new notifications at this time.'))

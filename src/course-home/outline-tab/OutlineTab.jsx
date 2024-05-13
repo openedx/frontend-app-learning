@@ -5,6 +5,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@openedx/paragon';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
@@ -194,19 +195,24 @@ const OutlineTab = ({ intl }) => {
               />
             )}
             <CourseTools />
-            <UpgradeNotification
-              offer={offer}
-              verifiedMode={verifiedMode}
-              accessExpiration={accessExpiration}
-              contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
-              marketingUrl={marketingUrl}
-              upsellPageName="course_home"
-              userTimezone={userTimezone}
-              shouldDisplayBorder
-              timeOffsetMillis={timeOffsetMillis}
-              courseId={courseId}
-              org={org}
-            />
+            <PluginSlot
+              id="outline_tab_notifications_plugin"
+              pluginProps={{ courseId }}
+            >
+              <UpgradeNotification
+                offer={offer}
+                verifiedMode={verifiedMode}
+                accessExpiration={accessExpiration}
+                contentTypeGatingEnabled={datesBannerInfo.contentTypeGatingEnabled}
+                marketingUrl={marketingUrl}
+                upsellPageName="course_home"
+                userTimezone={userTimezone}
+                shouldDisplayBorder
+                timeOffsetMillis={timeOffsetMillis}
+                courseId={courseId}
+                org={org}
+              />
+            </PluginSlot>
             <CourseDates />
             <CourseHandouts />
           </div>
