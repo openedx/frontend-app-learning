@@ -78,7 +78,7 @@ describe('NotificationsWidget', () => {
     });
   });
 
-  it('includes notification_widget_plugin slot', async () => {
+  it('includes notification_widget_slot', async () => {
     await fetchAndRender(
       <SidebarContext.Provider value={{
         currentSidebar: ID,
@@ -90,7 +90,7 @@ describe('NotificationsWidget', () => {
         <NotificationsWidget />
       </SidebarContext.Provider>,
     );
-    expect(screen.getByTestId('notification_widget_plugin')).toBeInTheDocument();
+    expect(screen.getByTestId('notification_widget_slot')).toBeInTheDocument();
   });
 
   it('renders upgrade card', async () => {

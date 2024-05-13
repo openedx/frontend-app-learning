@@ -30,7 +30,7 @@ const UnitSuspense = ({
       {shouldDisplayContentGating && (
         <Suspense fallback={<PageLoading srMessage={formatMessage(messages.loadingLockedContent)} />}>
           <PluginSlot
-            id="fbe_message_plugin"
+            id="gated_unit_content_message_slot"
             pluginProps={{
               courseId,
             }}
