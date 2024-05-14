@@ -16,9 +16,19 @@
     }
   }
 
-  &__search-toggle {
-    position: absolute;
-    top: .05rem;
-    right: 0;
+  // todo: remove after testing
+  //.nav-bar {
+  //  display: flex;
+  //  justify-content: space-between;
+  //}
+
+  .search-toggle {
+    flex-grow: 0;
+    white-space: nowrap;
   }
+
+  // todo: remove after testing
+  //.nav-menu {
+  //  flex: 1;
+  //}
 }
