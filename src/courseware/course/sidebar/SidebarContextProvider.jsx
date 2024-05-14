@@ -28,7 +28,7 @@ const SidebarProvider = ({
   const { alwaysOpenAuxiliarySidebar } = useSelector(getCoursewareOutlineSidebarSettings);
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
 
-  let initialSidebar = shouldDisplayFullScreen ? getLocalStorage(`sidebar.${courseId}`): null;
+  let initialSidebar = shouldDisplayFullScreen ? getLocalStorage(`sidebar.${courseId}`) : null;
   if (!shouldDisplayFullScreen && isInitiallySidebarOpen && alwaysOpenAuxiliarySidebar) {
     initialSidebar = isUnitHasDiscussionTopics
       ? SIDEBARS[discussionsSidebar.ID].ID
