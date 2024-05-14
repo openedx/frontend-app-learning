@@ -28,8 +28,8 @@ const SidebarProvider = ({
   const { alwaysOpenAuxiliarySidebar } = useSelector(getCoursewareOutlineSidebarSettings);
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
 
-  let initialSidebar = null;
-  if (isInitiallySidebarOpen && alwaysOpenAuxiliarySidebar) {
+  let initialSidebar = shouldDisplayFullScreen ? getLocalStorage(`sidebar.${courseId}`): null;
+  if (!shouldDisplayFullScreen && isInitiallySidebarOpen && alwaysOpenAuxiliarySidebar) {
     initialSidebar = isUnitHasDiscussionTopics
       ? SIDEBARS[discussionsSidebar.ID].ID
       : verifiedMode && SIDEBARS[notificationsSidebar.ID].ID;
@@ -57,7 +57,9 @@ const SidebarProvider = ({
 
   const toggleSidebar = useCallback((sidebarId) => {
     // Switch to new sidebar or hide the current sidebar
-    setCurrentSidebar(sidebarId === currentSidebar ? null : sidebarId);
+    const newSidebar = sidebarId === currentSidebar ? null : sidebarId;
+    setCurrentSidebar(newSidebar);
+    setLocalStorage(`sidebar.${courseId}`, newSidebar);
   }, [currentSidebar]);
 
   const contextValue = useMemo(() => ({
