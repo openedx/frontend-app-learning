@@ -33,7 +33,7 @@ const CourseTabsNavigation = ({
               ))}
             </Tabs>
           </div>
-          <div xs={{ order: 'last' }} className="col search-toggle justify-content-end">
+          <div xs={{ order: 'last' }} className="col search-toggle">
             <CoursewareSearchToggle />
           </div>
         </div>
