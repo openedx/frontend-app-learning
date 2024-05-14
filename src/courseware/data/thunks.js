@@ -113,7 +113,7 @@ export function fetchCourse(courseId) {
         logError(courseHomeMetadataResult.reason);
       }
       if (!fetchedCoursewareOutlineSidebarTogglesResult) {
-        logError(fetchedCoursewareOutlineSidebarTogglesResult.reason);
+        logError(coursewareOutlineSidebarTogglesResult.reason);
       }
       if (fetchedMetadata && fetchedCourseHomeMetadata) {
         if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedOutline) {
