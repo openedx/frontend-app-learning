@@ -16,7 +16,7 @@ const CourseTabsNavigation = ({
   return (
     <div id="courseTabsNavigation" className={classNames('course-tabs-navigation', className)}>
       <div className="container-xl">
-        <div className="row">
+        <div className="row d-flex flex-nowrap">
           <div className="col">
             <Tabs
               className="nav-underline-tabs"
