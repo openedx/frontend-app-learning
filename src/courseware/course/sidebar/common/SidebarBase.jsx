@@ -38,7 +38,7 @@ const SidebarBase = ({
     <section
       className={classNames('ml-0 border border-light-400 rounded-sm h-auto align-top zindex-0', {
         'bg-white m-0 border-0 fixed-top vh-100 rounded-0': shouldDisplayFullScreen,
-        'min-vh-100': !shouldDisplayFullScreen,
+        'align-self-start': !shouldDisplayFullScreen,
         'd-none': currentSidebar !== sidebarId,
       }, className)}
       data-testid={`sidebar-${sidebarId}`}

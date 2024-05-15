@@ -15,6 +15,7 @@ import PageLoading from '@src/generic/PageLoading';
 import { useModel } from '@src/generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
 
+import { getCoursewareOutlineSidebarSettings } from '../../data/selectors';
 import CourseLicense from '../course-license';
 import Sidebar from '../sidebar/Sidebar';
 import NewSidebar from '../new-sidebar/Sidebar';
@@ -49,6 +50,7 @@ const Sequence = ({
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
+  const { enableNavigationSidebar: isEnabledOutlineSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -144,33 +146,50 @@ const Sequence = ({
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
 
+  const renderUnitNavigation = (isAtTop) => (
+    <UnitNavigation
+      sequenceId={sequenceId}
+      unitId={unitId}
+      isAtTop={isAtTop}
+      onClickPrevious={() => {
+        logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
+        handlePrevious();
+      }}
+      onClickNext={() => {
+        logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
+        handleNext();
+      }}
+    />
+  );
+
   const defaultContent = (
     <>
       <div className="sequence-container d-inline-flex flex-row w-100">
         <CourseOutlineTrigger />
         <CourseOutlineTray />
         <div className="sequence w-100">
-          <div className="sequence-navigation-container">
-            <SequenceNavigation
-              sequenceId={sequenceId}
-              unitId={unitId}
-              className="mb-4"
-              nextHandler={() => {
-                logEvent('edx.ui.lms.sequence.next_selected', 'top');
-                handleNext();
-              }}
-              onNavigate={(destinationUnitId) => {
-                logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-                handleNavigate(destinationUnitId);
-              }}
-              previousHandler={() => {
-                logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-                handlePrevious();
-              }}
-            />
-          </div>
+          {!isEnabledOutlineSidebar && (
+            <div className="sequence-navigation-container">
+              <SequenceNavigation
+                sequenceId={sequenceId}
+                unitId={unitId}
+                nextHandler={() => {
+                  logEvent('edx.ui.lms.sequence.next_selected', 'top');
+                  handleNext();
+                }}
+                onNavigate={(destinationUnitId) => {
+                  logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+                  handleNavigate(destinationUnitId);
+                }}
+                previousHandler={() => {
+                  logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+                  handlePrevious();
+                }}
+              />
+            </div>
+          )}
 
-          <div className="unit-container flex-grow-1">
+          <div className="unit-container flex-grow-1 pt-4">
             <SequenceContent
               courseId={courseId}
               gated={gated}
@@ -178,20 +197,7 @@ const Sequence = ({
               unitId={unitId}
               unitLoadedHandler={handleUnitLoaded}
             />
-            {unitHasLoaded && (
-              <UnitNavigation
-                sequenceId={sequenceId}
-                unitId={unitId}
-                onClickPrevious={() => {
-                  logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-                  handlePrevious();
-                }}
-                onClickNext={() => {
-                  logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-                  handleNext();
-                }}
-              />
-            )}
+            {unitHasLoaded && renderUnitNavigation(false)}
           </div>
         </div>
         {isNewDiscussionSidebarViewEnabled ? <NewSidebar /> : <Sidebar />}
@@ -216,6 +222,7 @@ const Sequence = ({
           originalUserIsStaff={originalUserIsStaff}
           canAccessProctoredExams={canAccessProctoredExams}
         >
+          {isEnabledOutlineSidebar && renderUnitNavigation(true)}
           {defaultContent}
         </SequenceExamWrapper>
         <CourseLicense license={license || undefined} />

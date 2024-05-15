@@ -3,14 +3,11 @@ import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button, Icon } from '@openedx/paragon';
-import {
-  CheckCircle as CheckCircleIcon,
-  ChevronRight as ChevronRightIcon,
-  LmsCompletionSolid as LmsCompletionSolidIcon,
-} from '@openedx/paragon/icons';
+import { ChevronRight as ChevronRightIcon } from '@openedx/paragon/icons';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { getSequenceId } from '@src/courseware/data/selectors';
+import CompletionIcon from './CompletionIcon';
 
 const SidebarSection = ({ intl, section, handleSelectSection }) => {
   const {
@@ -18,6 +15,7 @@ const SidebarSection = ({ intl, section, handleSelectSection }) => {
     complete,
     title,
     sequenceIds,
+    completionStat,
   } = section;
 
   const activeSequenceId = useSelector(getSequenceId);
@@ -26,7 +24,7 @@ const SidebarSection = ({ intl, section, handleSelectSection }) => {
   const sectionTitle = (
     <>
       <div className="col-auto p-0">
-        {complete ? <CheckCircleIcon className="text-success" /> : <LmsCompletionSolidIcon className="text-gray-300" />}
+        <CompletionIcon completionStat={completionStat} />
       </div>
       <div className="col-10 ml-3 p-0 flex-grow-1 text-dark-500 text-left text-break">
         {title}
@@ -63,6 +61,10 @@ SidebarSection.propTypes = {
     id: PropTypes.string,
     title: PropTypes.string,
     sequenceIds: PropTypes.arrayOf(PropTypes.string),
+    completionStat: PropTypes.shape({
+      completed: PropTypes.number,
+      total: PropTypes.number,
+    }),
   }).isRequired,
   handleSelectSection: PropTypes.func.isRequired,
 };
