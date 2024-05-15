@@ -16,8 +16,8 @@ const CourseTabsNavigation = ({
   return (
     <div id="courseTabsNavigation" className={classNames('course-tabs-navigation', className)}>
       <div className="container-xl">
-        <div className="row d-flex flex-nowrap">
-          <div className="col">
+        <div className="nav-bar">
+          <div className="nav-menu col">
             <Tabs
               className="nav-underline-tabs"
               aria-label={intl.formatMessage(messages.courseMaterial)}
@@ -33,7 +33,7 @@ const CourseTabsNavigation = ({
               ))}
             </Tabs>
           </div>
-          <div xs={{ order: 'last' }} className="col search-toggle">
+          <div className="search-toggle">
             <CoursewareSearchToggle />
           </div>
         </div>
