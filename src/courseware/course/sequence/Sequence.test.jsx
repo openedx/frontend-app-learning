@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
@@ -25,6 +24,7 @@ describe('Sequence', () => {
     { type: 'vertical' },
     { courseId: courseMetadata.id },
   ));
+  const enableNavigationSidebar = { enable_navigation_sidebar: false };
 
   beforeAll(async () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
@@ -92,7 +92,11 @@ describe('Sequence', () => {
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
     const testStore = await initializeTestStore({
-      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
+      courseMetadata,
+      unitBlocks,
+      sequenceBlocks,
+      sequenceMetadata,
+      enableNavigationSidebar: { enable_navigation_sidebar: true },
     }, false);
     const { container } = render(
       <SidebarWrapper overrideData={{ sequenceId: sequenceBlocks[0].id }} />,
@@ -102,8 +106,8 @@ describe('Sequence', () => {
     await waitFor(() => expect(screen.queryByText('Loading locked content messaging...')).toBeInTheDocument());
     // `Previous`, `Prerequisite` and `Close Tray` buttons.
     expect(screen.getAllByRole('button').length).toEqual(3);
-    // `Active` and `Next` buttons.
-    expect(screen.getAllByRole('link').length).toEqual(2);
+    // `Next` button.
+    expect(screen.getAllByRole('link').length).toEqual(1);
 
     expect(screen.getByText('Content Locked')).toBeInTheDocument();
     const unitContainer = container.querySelector('.unit-container');
@@ -125,7 +129,7 @@ describe('Sequence', () => {
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
     const testStore = await initializeTestStore({
-      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
+      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata, enableNavigationSidebar,
     }, false);
     render(
       <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
@@ -156,14 +160,16 @@ describe('Sequence', () => {
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
     // `Previous`, `Prerequisite` and `Close Tray` buttons.
     expect(screen.getAllByRole('button')).toHaveLength(3);
-    // Renders `Next` button plus one button for each unit.
-    expect(screen.getAllByRole('link')).toHaveLength(1 + unitBlocks.length);
+    // Renders `Next` button.
+    expect(screen.getAllByRole('link')).toHaveLength(1);
 
     loadUnit();
     await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
     // At this point there will be 2 `Previous` and 2 `Next` buttons.
     expect(screen.getAllByRole('button', { name: /previous/i }).length).toEqual(2);
     expect(screen.getAllByRole('link', { name: /next/i }).length).toEqual(2);
+    // Renders two `Next` buttons for top and bottom unit navigations.
+    expect(screen.getAllByRole('link')).toHaveLength(2);
   });
 
   describe('sequence and unit navigation buttons', () => {
@@ -179,7 +185,9 @@ describe('Sequence', () => {
     )];
 
     beforeAll(async () => {
-      testStore = await initializeTestStore({ courseMetadata, unitBlocks, sequenceBlocks }, false);
+      testStore = await initializeTestStore({
+        courseMetadata, unitBlocks, sequenceBlocks, enableNavigationSidebar,
+      }, false);
     });
 
     beforeEach(() => {
@@ -340,7 +348,11 @@ describe('Sequence', () => {
         { courseId: courseMetadata.id, unitBlocks: block.children.length ? unitBlocks : [], sequenceBlock: block },
       ));
       const innerTestStore = await initializeTestStore({
-        courseMetadata, unitBlocks, sequenceBlocks: testSequenceBlocks, sequenceMetadata: testSequenceMetadata,
+        courseMetadata,
+        unitBlocks,
+        sequenceBlocks: testSequenceBlocks,
+        sequenceMetadata: testSequenceMetadata,
+        enableNavigationSidebar,
       }, false);
       const testData = {
         ...mockData,
