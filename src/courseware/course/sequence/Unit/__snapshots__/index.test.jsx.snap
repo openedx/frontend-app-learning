@@ -28,14 +28,9 @@ exports[`Unit component output snapshot: not bookmarked, do not show content 1`]
     >
       unit-title
     </h3>
-    <PluginSlot
-      id="unit_title_plugin"
-      pluginProps={
-        Object {
-          "courseId": "test-course-id",
-          "unitId": "test-props-id",
-        }
-      }
+    <UnitTitleSlot
+      courseId="test-course-id"
+      unitId="test-props-id"
     />
   </div>
   <h2

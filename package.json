@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.2",
-    "@edx/frontend-component-footer": "^13.0.4",
     "@edx/frontend-component-header": "^5.0.2",
     "@edx/frontend-lib-learning-assistant": "^2.0.0",
     "@edx/frontend-lib-special-exams": "^3.0.1",
@@ -43,7 +42,8 @@
     "@fortawesome/free-regular-svg-icons": "5.15.4",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.4",
-    "@openedx/frontend-plugin-framework": "^1.0.2",
+    "@openedx/frontend-plugin-framework": "^1.1.2",
+    "@openedx/frontend-slot-footer": "^1.0.2",
     "@openedx/paragon": "^22.3.0",
     "@popperjs/core": "2.11.8",
     "@reduxjs/toolkit": "1.8.1",

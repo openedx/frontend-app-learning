@@ -9,11 +9,11 @@ import {
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
-import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
 import PageLoading from '@src/generic/PageLoading';
 import { useModel } from '@src/generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
+import SequenceContainerSlot from '../../../plugin-slots/SequenceContainerSlot';
 
 import CourseLicense from '../course-license';
 import Sidebar from '../sidebar/Sidebar';
@@ -196,13 +196,7 @@ const Sequence = ({
         </div>
         {isNewDiscussionSidebarViewEnabled ? <NewSidebar /> : <Sidebar />}
       </div>
-      <PluginSlot
-        id="sequence_container_plugin"
-        pluginProps={{
-          courseId,
-          unitId,
-        }}
-      />
+      <SequenceContainerSlot courseId={courseId} unitId={unitId} />
     </>
   );
 

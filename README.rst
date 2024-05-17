@@ -100,6 +100,12 @@ The Learning MFE is similar to all the other Open edX MFEs. Read the Open
 edX Developer Guide's section on
 `MFE applications <https://edx.readthedocs.io/projects/edx-developer-docs/en/latest/developers_guide/micro_frontends_in_open_edx.html>`_.
 
+Plugins
+=======
+This MFE can be customized using `Frontend Plugin Framework <https://github.com/openedx/frontend-plugin-framework>`_.
+
+The parts of this MFE that can be customized in that manner are documented `here </src/plugin-slots>`_.
+
 Environment Variables
 ======================
 
