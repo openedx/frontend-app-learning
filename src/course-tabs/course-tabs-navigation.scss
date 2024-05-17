@@ -16,12 +16,15 @@
     }
   }
 
-  // todo: remove after testing
   .nav-bar {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 10px;
+  }
+
+  .nav-menu {
+    flex: 1;
   }
 
   .search-toggle {
@@ -31,8 +34,5 @@
     margin-bottom: 10px;
   }
 
-  // todo: remove after testing
-  .nav-menu {
-    flex: 1;
-  }
+
 }
