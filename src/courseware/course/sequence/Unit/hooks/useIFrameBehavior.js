@@ -105,6 +105,11 @@ const useIFrameBehavior = ({
     };
   };
 
+  React.useEffect(() => {
+    setIframeHeight(0);
+    setHasLoaded(false);
+  }, [iframeUrl]);
+
   return {
     iframeHeight,
     handleIFrameLoad,
