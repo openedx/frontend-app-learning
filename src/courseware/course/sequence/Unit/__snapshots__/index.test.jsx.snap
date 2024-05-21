@@ -31,6 +31,7 @@ exports[`Unit component output snapshot: not bookmarked, do not show content 1`]
     <UnitTitleSlot
       courseId="test-course-id"
       unitId="test-props-id"
+      unitTitle="unit-title"
     />
   </div>
   <h2
