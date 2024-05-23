@@ -29,7 +29,7 @@ const CoursewareSearchToggle = ({
       <Button
         variant="outline-primary"
         size="sm"
-        className="p-1 mt-2 mr-2 rounded-lg"
+        className="p-1 mt-2 mr-2"
         aria-label={intl.formatMessage(messages.searchOpenAction)}
         onClick={handleSearchOpenClick}
         data-testid="courseware-search-open-button"
