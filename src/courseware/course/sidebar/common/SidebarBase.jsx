@@ -42,7 +42,7 @@ const SidebarBase = ({
         'd-none': currentSidebar !== sidebarId,
       }, className)}
       data-testid={`sidebar-${sidebarId}`}
-      style={{ minWidth: shouldDisplayFullScreen ? '100%' : width }}
+      style={{ width: shouldDisplayFullScreen ? '100%' : width }}
       aria-label={ariaLabel}
       id="course-sidebar"
     >
@@ -98,7 +98,7 @@ SidebarBase.propTypes = {
 };
 
 SidebarBase.defaultProps = {
-  width: '410px',
+  width: '31rem',
   showTitleBar: true,
 };
 

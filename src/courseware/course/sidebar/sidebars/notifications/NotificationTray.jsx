@@ -71,6 +71,7 @@ const NotificationTray = ({ intl }) => {
       title={intl.formatMessage(messages.notificationTitle)}
       ariaLabel={intl.formatMessage(messages.notificationTray)}
       sidebarId={ID}
+      width="45rem"
       className={classNames({
         'h-100': !verifiedMode && !shouldDisplayFullScreen,
         'ml-4': !shouldDisplayFullScreen,
