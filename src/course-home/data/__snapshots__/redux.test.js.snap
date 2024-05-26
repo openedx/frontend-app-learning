@@ -782,7 +782,7 @@ exports[`Data layer integration tests Test fetchProgressTab Should fetch, normal
         "gradingPolicy": {
           "assignmentPolicies": [
             {
-              "averageGrade": "1.00",
+              "averageGrade": "1.0000",
               "numDroppable": 1,
               "shortLabel": "HW",
               "type": "Homework",
