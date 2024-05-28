@@ -168,6 +168,11 @@ const messages = defineMessages({
     defaultMessage: 'Problem Scores:',
     description: 'Label text which precedes detailed view of all scores per assignment',
   },
+  ungradedProblemScoreLabel: {
+    id: 'progress.detailedGrades.ungraded.problemScore.label',
+    defaultMessage: 'Ungraded Problem Scores:',
+    description: 'Label text which precedes detailed view of all ungraded problem scores per assignment',
+  },
   problemScoreToggleAltText: {
     id: 'progress.detailedGrades.problemScore.toggleButton',
     defaultMessage: 'Toggle individual problem scores for {subsectionTitle}',
