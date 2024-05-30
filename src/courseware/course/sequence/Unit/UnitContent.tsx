@@ -1,7 +1,7 @@
 import React from "react";
 import { useUnitContents } from "./data/apiHooks";
 import { Spinner } from "@openedx/paragon";
-import { AutoXBlock } from "../../../component/XBlock";
+import { AutoXBlock, XBlockRenderingContext } from "../../../component/XBlock";
 
 
 interface Props {
@@ -25,11 +25,12 @@ export const UnitContent: React.FC<Props> = ({ unitId, ...props }) => {
         );
     }
 
-    console.log(unitContents);
     return <main>
-        {unitContents.blocks.map((blockData) => (
-            <AutoXBlock key={blockData.id} {...blockData} />
-        ))}
+        <XBlockRenderingContext>
+            {unitContents.blocks.map((blockData) => (
+                <AutoXBlock key={blockData.id} {...blockData} />
+            ))}
+        </XBlockRenderingContext>
     </main>;
 };
 
