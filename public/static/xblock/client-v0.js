@@ -168,8 +168,23 @@ function toVdom(element, nodeName) {
 	return _$1(nodeName || element.nodeName.toLowerCase(), props, wrappedChildren);
 }
 
+function useFields(props) {
+    var parts = [props['system-fields'], props['content-fields'], props['user-fields']];
+    return q(function () {
+        var fields = {};
+        for (var _i = 0, parts_1 = parts; _i < parts_1.length; _i++) {
+            var part = parts_1[_i];
+            var parsed = JSON.parse(part);
+            for (var _a = 0, _b = Object.entries(parsed); _a < _b.length; _a++) {
+                var _c = _b[_a], key = _c[0], value = _c[1];
+                fields[key] = value;
+            }
+        }
+        return fields;
+    }, parts);
+}
 function registerPreactXBlock(componentClass, blockType, options) {
-    register(componentClass, "xblock2-".concat(blockType), [], options);
+    register(componentClass, "xblock2-".concat(blockType), ['content-fields', 'user-fields'], options);
 }
 
-export { b$1 as Component, k$1 as Fragment, E as cloneElement, G as createContext, _$1 as createElement, m$2 as createRef, _$1 as h, m as html, D$1 as hydrate, t$2 as isValidElement, l$1 as options, registerPreactXBlock, B$1 as render, H as toChildArray, x as useCallback, P as useContext, V as useDebugValue, _ as useEffect, b as useErrorBoundary, g as useId, T as useImperativeHandle, A as useLayoutEffect, q as useMemo, y as useReducer, F as useRef, p as useState };
+export { b$1 as Component, k$1 as Fragment, E as cloneElement, G as createContext, _$1 as createElement, m$2 as createRef, _$1 as h, m as html, D$1 as hydrate, t$2 as isValidElement, l$1 as options, registerPreactXBlock, B$1 as render, H as toChildArray, x as useCallback, P as useContext, V as useDebugValue, _ as useEffect, b as useErrorBoundary, useFields, g as useId, T as useImperativeHandle, A as useLayoutEffect, q as useMemo, y as useReducer, F as useRef, p as useState };
