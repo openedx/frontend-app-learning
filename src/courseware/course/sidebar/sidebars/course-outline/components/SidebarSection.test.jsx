@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { AppProvider } from '@edx/frontend-platform/react';
@@ -40,7 +40,7 @@ describe('<SidebarSection />', () => {
     const { getByText, container } = render(<RootWrapper />);
 
     expect(getByText(section.title)).toBeInTheDocument();
-    expect(screen.getByText(`, ${courseOutlineMessages.incompleteSection.defaultMessage}`)).toBeInTheDocument();
+    expect(getByText(`, ${courseOutlineMessages.incompleteSection.defaultMessage}`)).toBeInTheDocument();
     expect(container.querySelector('.text-success')).not.toBeInTheDocument();
 
     const button = getByText(section.title);
@@ -51,13 +51,13 @@ describe('<SidebarSection />', () => {
 
   it('renders correctly when section is complete', async () => {
     await initTestStore();
-    const { getByText, container } = render(
-      <RootWrapper section={{ ...section, complete: true }} />,
+    const { getByText, getByTestId } = render(
+      <RootWrapper section={{ ...section, completionStat: { completed: 4, total: 4 }, complete: true }} />,
     );
 
     expect(getByText(section.title)).toBeInTheDocument();
-    expect(screen.getByText(`, ${courseOutlineMessages.completedSection.defaultMessage}`)).toBeInTheDocument();
-    expect(container.querySelector('.text-success')).toBeInTheDocument();
+    expect(getByText(`, ${courseOutlineMessages.completedSection.defaultMessage}`)).toBeInTheDocument();
+    expect(getByTestId('check-circle-icon')).toBeInTheDocument();
 
     const button = getByText(section.title);
     userEvent.click(button);

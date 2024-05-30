@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 
 import { checkBlockCompletion } from '@src/courseware/data';
-import UnitIcon, { UNIT_ICON_TYPES } from './UnitIcon';
+import { getCourseOutline } from '@src/courseware/data/selectors';
 import messages from '../messages';
+import UnitIcon, { UNIT_ICON_TYPES } from './UnitIcon';
 
 const SidebarUnit = ({
   id,
@@ -25,8 +27,31 @@ const SidebarUnit = ({
     icon = UNIT_ICON_TYPES.other,
   } = unit;
   const dispatch = useDispatch();
+  const { sequences = {} } = useSelector(getCourseOutline);
+
+  const logEvent = (eventName, widgetPlacement) => {
+    const findSequenceByUnitId = (unitId) => Object.values(sequences).find(seq => seq.unitIds.includes(unitId));
+    const activeSequence = findSequenceByUnitId(activeUnitId);
+    const targetSequence = findSequenceByUnitId(id);
+    const payload = {
+      id: activeUnitId,
+      current_tab: activeSequence.unitIds.indexOf(activeUnitId) + 1,
+      tab_count: activeSequence.unitIds.length,
+      target_id: id,
+      target_tab: targetSequence.unitIds.indexOf(id) + 1,
+      widget_placement: widgetPlacement,
+    };
+
+    if (activeSequence.id !== targetSequence.id) {
+      payload.target_tab_count = targetSequence.unitIds.length;
+    }
+
+    sendTrackEvent(eventName, payload);
+    sendTrackingLogEvent(eventName, payload);
+  };
 
   const handleClick = () => {
+    logEvent('edx.ui.lms.sequence.tab_selected', 'left');
     dispatch(checkBlockCompletion(courseId, sequenceId, activeUnitId));
   };
 
