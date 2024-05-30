@@ -6,8 +6,8 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { initializeMockApp, initializeTestStore } from '@src/setupTest';
-import SidebarSequence from './SidebarSequence';
 import messages from '../messages';
+import SidebarSequence from './SidebarSequence';
 
 initializeMockApp();
 
