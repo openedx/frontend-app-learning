@@ -3,7 +3,8 @@ import classNames from 'classnames';
 import { useContext, useEffect, useMemo } from 'react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
-import { useModel } from '../../../../../generic/model-store';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { useModel } from '@src/generic/model-store';
 import UpgradeNotification from '../../../../../generic/upgrade-notification/UpgradeNotification';
 
 import messages from '../../../messages';
@@ -41,10 +42,10 @@ const NotificationTray = ({ intl }) => {
     org,
     verifiedMode,
     username,
+    isStaff,
   } = useModel('courseHomeMeta', courseId);
-
+  const { administrator } = getAuthenticatedUser();
   const activeCourseModes = useMemo(() => courseModes?.map(mode => mode.slug), [courseModes]);
-
   const notificationTrayEventProperties = {
     course_end: end,
     course_modes: activeCourseModes,
@@ -58,8 +59,9 @@ const NotificationTray = ({ intl }) => {
     org_key: org,
     username,
     verification_status: verificationStatus,
+    is_staff: isStaff,
+    is_admin: administrator,
   };
-
   // After three seconds, update notificationSeen (to hide red dot)
   useEffect(() => {
     setTimeout(onNotificationSeen, 3000);
