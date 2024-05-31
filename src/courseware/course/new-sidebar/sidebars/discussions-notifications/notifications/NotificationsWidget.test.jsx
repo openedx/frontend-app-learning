@@ -169,7 +169,6 @@ describe('NotificationsWidget', () => {
   });
 
   it('marks notification as seen 3 seconds later', async () => {
-    jest.useFakeTimers();
     const onNotificationSeen = jest.fn();
     await fetchAndRender(
       <SidebarContext.Provider value={{
@@ -184,7 +183,6 @@ describe('NotificationsWidget', () => {
       </SidebarContext.Provider>,
     );
     expect(onNotificationSeen).toHaveBeenCalledTimes(0);
-    jest.advanceTimersByTime(3000);
-    expect(onNotificationSeen).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(onNotificationSeen).toHaveBeenCalledTimes(1), { timeout: 3500 });
   });
 });

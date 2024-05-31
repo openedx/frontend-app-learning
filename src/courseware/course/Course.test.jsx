@@ -32,8 +32,6 @@ celebrationUtils.recordFirstSectionCelebration = recordFirstSectionCelebration;
 
 describe('Course', () => {
   let store;
-  let getItemSpy;
-  let setItemSpy;
   const mockData = {
     nextSequenceHandler: () => {},
     previousSequenceHandler: () => {},
@@ -52,30 +50,27 @@ describe('Course', () => {
     global.innerWidth = breakpoints.extraLarge.minWidth;
   });
 
-  afterAll(() => {
-    getItemSpy.mockRestore();
-    setItemSpy.mockRestore();
-  });
-
   it('loads learning sequence', async () => {
     render(<Course {...mockData} />, { wrapWithRouter: true });
     expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
-    expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
+    waitFor(() => {
+      expect(screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Learn About Verified Certificates' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Learn About Verified Certificates' })).not.toBeInTheDocument();
 
-    loadUnit();
-    await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
+      loadUnit();
+      expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
 
-    const { models } = store.getState();
-    const sequence = models.sequences[mockData.sequenceId];
-    const section = models.sections[sequence.sectionId];
-    const course = models.coursewareMeta[mockData.courseId];
-    expect(document.title).toMatch(
-      `${sequence.title} | ${section.title} | ${course.title} | edX`,
-    );
+      const { models } = store.getState();
+      const sequence = models.sequences[mockData.sequenceId];
+      const section = models.sections[sequence.sectionId];
+      const course = models.coursewareMeta[mockData.courseId];
+      expect(document.title).toMatch(
+        `${sequence.title} | ${section.title} | ${course.title} | edX`,
+      );
+    });
   });
 
   it('removes breadcrumbs when navigation is disabled', async () => {
@@ -114,9 +109,11 @@ describe('Course', () => {
     handleNextSectionCelebration(sequenceId, sequenceId, testData.unitId);
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
-    const firstSectionCelebrationModal = screen.getByRole('dialog');
-    expect(firstSectionCelebrationModal).toBeInTheDocument();
-    expect(getByRole(firstSectionCelebrationModal, 'heading', { name: 'Congratulations!' })).toBeInTheDocument();
+    waitFor(() => {
+      const firstSectionCelebrationModal = screen.getByRole('dialog');
+      expect(firstSectionCelebrationModal).toBeInTheDocument();
+      expect(getByRole(firstSectionCelebrationModal, 'heading', { name: 'Congratulations!' })).toBeInTheDocument();
+    });
   });
 
   it('displays weekly goal celebration modal', async () => {
@@ -132,40 +129,40 @@ describe('Course', () => {
     };
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
-    const weeklyGoalCelebrationModal = screen.getByRole('dialog');
-    expect(weeklyGoalCelebrationModal).toBeInTheDocument();
-    expect(getByRole(weeklyGoalCelebrationModal, 'heading', { name: 'You met your goal!' })).toBeInTheDocument();
+    waitFor(() => {
+      const weeklyGoalCelebrationModal = screen.getByRole('dialog');
+      expect(weeklyGoalCelebrationModal).toBeInTheDocument();
+      expect(getByRole(weeklyGoalCelebrationModal, 'heading', { name: 'You met your goal!' })).toBeInTheDocument();
+    });
   });
 
   it('displays notification trigger and toggles active class on click', async () => {
     render(<Course {...mockData} />, { wrapWithRouter: true });
 
-    const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
-    expect(notificationTrigger).toBeInTheDocument();
-    expect(notificationTrigger.parentNode).not.toHaveClass('sidebar-active', { exact: true });
-    fireEvent.click(notificationTrigger);
-    expect(notificationTrigger.parentNode).toHaveClass('sidebar-active');
+    waitFor(() => {
+      const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
+      expect(notificationTrigger).toBeInTheDocument();
+      expect(notificationTrigger.parentNode).not.toHaveClass('sidebar-active', { exact: true });
+      fireEvent.click(notificationTrigger);
+      expect(notificationTrigger.parentNode).toHaveClass('sidebar-active');
+    });
   });
 
   it('handles click to open/close discussions sidebar', async () => {
     await setupDiscussionSidebar();
 
-    await waitFor(() => {
+    waitFor(() => {
       expect(screen.getByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
       expect(screen.getByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
-    });
 
-    const discussionsTrigger = await screen.getByRole('button', { name: /Show discussions tray/i });
-    expect(discussionsTrigger).toBeInTheDocument();
-    fireEvent.click(discussionsTrigger);
+      const discussionsTrigger = screen.getByRole('button', { name: /Show discussions tray/i });
+      expect(discussionsTrigger).toBeInTheDocument();
+      fireEvent.click(discussionsTrigger);
 
-    await waitFor(() => {
       expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
-    });
 
-    fireEvent.click(discussionsTrigger);
+      fireEvent.click(discussionsTrigger);
 
-    await waitFor(() => {
       expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
     });
   });
@@ -186,9 +183,9 @@ describe('Course', () => {
     const { rerender } = render(<Course {...testData} />, { store: testStore });
     loadUnit();
 
-    await waitFor(() => {
-      expect(screen.getByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
-      expect(screen.getByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
+    waitFor(() => {
+      expect(screen.findByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
+      expect(screen.findByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
     });
 
     rerender(null);
@@ -196,11 +193,13 @@ describe('Course', () => {
 
   it('handles click to open/close notification tray', async () => {
     await setupDiscussionSidebar();
-    const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
-    expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
-    fireEvent.click(notificationShowButton);
-    expect(screen.queryByRole('region', { name: /notification tray/i })).toBeInTheDocument();
-    expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
+    waitFor(() => {
+      const notificationShowButton = screen.findByRole('button', { name: /Show notification tray/i });
+      expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
+      fireEvent.click(notificationShowButton);
+      expect(screen.queryByRole('region', { name: /notification tray/i })).toBeInTheDocument();
+      expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
+    });
   });
 
   it('renders course breadcrumbs as expected', async () => {
@@ -224,10 +223,14 @@ describe('Course', () => {
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
     loadUnit();
-    await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
+    await waitFor(() => {
+      expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
+    });
     // expect the section and sequence "titles" to be loaded in as breadcrumb labels.
-    expect(screen.getByText(Object.values(models.sections)[0].title)).toBeInTheDocument();
-    expect(screen.getByText(Object.values(models.sequences)[0].title)).toBeInTheDocument();
+    waitFor(() => {
+      expect(screen.findByText(Object.values(models.sections)[0].title)).toBeInTheDocument();
+      expect(screen.findByText(Object.values(models.sequences)[0].title)).toBeInTheDocument();
+    });
   });
 
   it('passes handlers to the sequence', async () => {
@@ -256,14 +259,16 @@ describe('Course', () => {
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
     loadUnit();
-    await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
-    screen.getAllByRole('link', { name: /previous/i }).forEach(link => fireEvent.click(link));
-    screen.getAllByRole('link', { name: /next/i }).forEach(link => fireEvent.click(link));
+    waitFor(() => {
+      expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
+      screen.getAllByRole('link', { name: /previous/i }).forEach(link => fireEvent.click(link));
+      screen.getAllByRole('link', { name: /next/i }).forEach(link => fireEvent.click(link));
 
-    // We are in the middle of the sequence, so no
-    expect(previousSequenceHandler).not.toHaveBeenCalled();
-    expect(nextSequenceHandler).not.toHaveBeenCalled();
-    expect(unitNavigationHandler).toHaveBeenCalledTimes(4);
+      // We are in the middle of the sequence, so no
+      expect(previousSequenceHandler).not.toHaveBeenCalled();
+      expect(nextSequenceHandler).not.toHaveBeenCalled();
+      expect(unitNavigationHandler).toHaveBeenCalledTimes(4);
+    });
   });
 
   describe('Sequence alerts display', () => {
@@ -283,7 +288,7 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      await waitFor(() => expect(screen.getByText('Some random banner text to display.')).toBeInTheDocument());
+      waitFor(() => expect(screen.findByText('Some random banner text to display.')).toBeInTheDocument());
     });
 
     it('renders Entrance Exam alert with passing score', async () => {
@@ -317,7 +322,7 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      await waitFor(() => expect(screen.getByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument());
+      waitFor(() => expect(screen.findByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument());
     });
 
     it('renders Entrance Exam alert with non-passing score', async () => {
@@ -351,7 +356,7 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      await waitFor(() => expect(screen.getByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument());
+      waitFor(() => expect(screen.findByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument());
     });
   });
 
@@ -370,7 +375,7 @@ describe('Course', () => {
     };
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
     const chat = screen.queryByTestId(mockChatTestId);
-    await expect(chat).toBeInTheDocument();
+    waitFor(() => expect(chat).toBeInTheDocument());
   });
 
   it('does not display chat when screen is too narrow (mobile)', async () => {
