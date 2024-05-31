@@ -1,29 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`mapSearchResponse when the response is correct should match snapshot 1`] = `
-Object {
-  "filters": Array [
-    Object {
+{
+  "filters": [
+    {
       "count": 7,
       "key": "capa",
       "label": "CAPA",
     },
-    Object {
+    {
       "count": 2,
       "key": "sequence",
       "label": "Sequence",
     },
-    Object {
+    {
       "count": 9,
       "key": "text",
       "label": "Text",
     },
-    Object {
+    {
       "count": 1,
       "key": "unknown",
       "label": "Unknown",
     },
-    Object {
+    {
       "count": 2,
       "key": "video",
       "label": "Video",
@@ -31,11 +31,11 @@ Object {
   ],
   "maxScore": 3.4545178,
   "ms": 5,
-  "results": Array [
-    Object {
+  "results": [
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction",
-      "location": Array [
+      "location": [
         "Introduction",
         "Demo Course Overview",
       ],
@@ -44,10 +44,10 @@ Object {
       "type": "sequence",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@5e009378f0b64585baa0a14b155974b9",
-      "location": Array [
+      "location": [
         "About Exams and Certificates",
         "edX Exams",
         "Passing a Course",
@@ -57,10 +57,10 @@ Object {
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@5e009378f0b64585baa0a14b155974b9",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@vertical+block@c7e98fd39a6944edb6b286c32e1150ff",
-      "location": Array [
+      "location": [
         "About Exams and Certificates",
         "edX Exams",
         "Passing a Course",
@@ -70,10 +70,10 @@ Object {
       "type": "sequence",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@vertical+block@c7e98fd39a6944edb6b286c32e1150ff",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@0d759dee4f9d459c8956136dbde55f02",
-      "location": Array [
+      "location": [
         "Example Week 1: Getting Started",
         "Homework - Question Styles",
         "Text input",
@@ -83,10 +83,10 @@ Object {
       "type": "capa",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@0d759dee4f9d459c8956136dbde55f02",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@c554538a57664fac80783b99d9d6da7c",
-      "location": Array [
+      "location": [
         "Example Week 1: Getting Started",
         "Homework - Question Styles",
         "Pointing on a Picture",
@@ -96,10 +96,10 @@ Object {
       "type": "capa",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@c554538a57664fac80783b99d9d6da7c",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@45d46192272c4f6db6b63586520bbdf4",
-      "location": Array [
+      "location": [
         "About Exams and Certificates",
         "edX Exams",
         "Getting Answers",
@@ -109,10 +109,10 @@ Object {
       "type": "capa",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@45d46192272c4f6db6b63586520bbdf4",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@video+block@0b9e39477cf34507a7a48f74be381fdd",
-      "location": Array [
+      "location": [
         "Introduction",
         "Demo Course Overview",
         "Introduction: Video and Sequences",
@@ -122,10 +122,10 @@ Object {
       "type": "video",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@video+block@0b9e39477cf34507a7a48f74be381fdd",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@a0effb954cca4759994f1ac9e9434bf4",
-      "location": Array [
+      "location": [
         "Example Week 1: Getting Started",
         "Homework - Question Styles",
         "Multiple Choice Questions",
@@ -135,10 +135,10 @@ Object {
       "type": "capa",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@a0effb954cca4759994f1ac9e9434bf4",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@75f9562c77bc4858b61f907bb810d974",
-      "location": Array [
+      "location": [
         "Example Week 1: Getting Started",
         "Homework - Question Styles",
         "Numerical Input",
@@ -148,10 +148,10 @@ Object {
       "type": "capa",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@75f9562c77bc4858b61f907bb810d974",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@video+block@636541acbae448d98ab484b028c9a7f6",
-      "location": Array [
+      "location": [
         "Example Week 1: Getting Started",
         "Lesson 1 - Getting Started",
         "Video Presentation Styles",
@@ -161,10 +161,10 @@ Object {
       "type": "video",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@video+block@636541acbae448d98ab484b028c9a7f6",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@python_grader",
-      "location": Array [
+      "location": [
         "Example Week 2: Get Interactive",
         "Homework - Labs and Demos",
         "Code Grader",
@@ -174,10 +174,10 @@ Object {
       "type": "capa",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@python_grader",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@problem+block@9cee77a606ea4c1aa5440e0ea5d0f618",
-      "location": Array [
+      "location": [
         "Example Week 1: Getting Started",
         "Lesson 1 - Getting Started",
         "Interactive Questions",
@@ -187,10 +187,10 @@ Object {
       "type": "capa",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@problem+block@9cee77a606ea4c1aa5440e0ea5d0f618",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@030e35c4756a4ddc8d40b95fbbfff4d4",
-      "location": Array [
+      "location": [
         "Introduction",
         "Demo Course Overview",
         "Introduction: Video and Sequences",
@@ -200,10 +200,10 @@ Object {
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@030e35c4756a4ddc8d40b95fbbfff4d4",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@html_49b4494da2f7",
-      "location": Array [
+      "location": [
         "Example Week 3: Be Social",
         "Lesson 3 - Be Social",
         "Discussion Forums",
@@ -213,10 +213,10 @@ Object {
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@html_49b4494da2f7",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@f4a39219742149f781a1dda6f43a623c",
-      "location": Array [
+      "location": [
         "About Exams and Certificates",
         "edX Exams",
         "Overall Grade Performance",
@@ -226,10 +226,10 @@ Object {
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@f4a39219742149f781a1dda6f43a623c",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@87fa6792d79f4862be098e5169e93339",
-      "location": Array [
+      "location": [
         "Example Week 3: Be Social",
         "Lesson 3 - Be Social",
         "Homework - Find Your Study Buddy",
@@ -239,10 +239,10 @@ Object {
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@87fa6792d79f4862be098e5169e93339",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@6018785795994726950614ce7d0f38c5",
-      "location": Array [
+      "location": [
         "Example Week 3: Be Social",
         "Homework - Find Your Study Buddy",
         "Homework - Find Your Study Buddy",
@@ -252,10 +252,10 @@ Object {
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@6018785795994726950614ce7d0f38c5",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@f9f3a25e7bab46e583fd1fbbd7a2f6a0",
-      "location": Array [
+      "location": [
         "Example Week 3: Be Social",
         "Lesson 3 - Be Social",
         "Be Social",
@@ -265,10 +265,10 @@ Object {
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@f9f3a25e7bab46e583fd1fbbd7a2f6a0",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@8293139743f34377817d537b69911530",
-      "location": Array [
+      "location": [
         "About Exams and Certificates",
         "edX Exams",
         "EdX Exams",
@@ -278,10 +278,10 @@ Object {
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@8293139743f34377817d537b69911530",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "block-v1:edX+DemoX+Demo_Course+type@html+block@9d5104b502f24ee89c3d2f4ce9d347cf",
-      "location": Array [
+      "location": [
         "Example Week 1: Getting Started",
         "Lesson 1 - Getting Started",
         "When Are Your Exams? ",
@@ -291,7 +291,7 @@ Object {
       "type": "text",
       "url": "/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+DemoX+Demo_Course+type@html+block@9d5104b502f24ee89c3d2f4ce9d347cf",
     },
-    Object {
+    {
       "contentHits": 0,
       "id": "random-element-id",
       "location": null,
