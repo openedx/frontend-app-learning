@@ -16,9 +16,23 @@
     }
   }
 
-  &__search-toggle {
-    position: absolute;
-    top: .05rem;
-    right: 0;
+  .nav-bar {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
   }
+
+  .nav-menu {
+    flex: 1;
+  }
+
+  .search-toggle {
+    flex-grow: 0;
+    text-align: right;
+    white-space: nowrap;
+    margin-bottom: 10px;
+  }
+
+
 }

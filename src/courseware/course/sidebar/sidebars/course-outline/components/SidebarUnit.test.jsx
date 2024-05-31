@@ -1,10 +1,17 @@
 import { AppProvider } from '@edx/frontend-platform/react';
 import { MemoryRouter } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 
 import { initializeMockApp, initializeTestStore } from '@src/setupTest';
 import SidebarUnit from './SidebarUnit';
+
+jest.mock('@edx/frontend-platform/analytics', () => ({
+  sendTrackEvent: jest.fn(),
+  sendTrackingLogEvent: jest.fn(),
+}));
 
 initializeMockApp();
 
@@ -28,11 +35,12 @@ describe('<SidebarUnit />', () => {
           <MemoryRouter>
             <SidebarUnit
               isFirst
-              id="unit1"
+              id={unit.id}
               courseId="course123"
               sequenceId={sequenceId}
               unit={{ ...unit, icon: 'video', isLocked: false }}
               isActive={false}
+              activeUnitId={unit.id}
               {...props}
             />
           </MemoryRouter>
@@ -77,5 +85,23 @@ describe('<SidebarUnit />', () => {
     });
 
     expect(screen.getByText(unit.title)).toBeInTheDocument();
+  });
+
+  it('sends log event correctly when unit is clicked', async () => {
+    await initTestStore();
+    renderWithProvider({ unit: { ...unit } });
+    const logData = {
+      id: unit.id,
+      current_tab: 1,
+      tab_count: 1,
+      target_id: unit.id,
+      target_tab: 1,
+      widget_placement: 'left',
+    };
+
+    userEvent.click(screen.getByText(unit.title));
+
+    expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);
+    expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);
   });
 });

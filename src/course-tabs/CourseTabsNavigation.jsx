@@ -16,23 +16,27 @@ const CourseTabsNavigation = ({
   return (
     <div id="courseTabsNavigation" className={classNames('course-tabs-navigation', className)}>
       <div className="container-xl">
-        <Tabs
-          className="nav-underline-tabs"
-          aria-label={intl.formatMessage(messages.courseMaterial)}
-        >
-          {tabs.map(({ url, title, slug }) => (
-            <a
-              key={slug}
-              className={classNames('nav-item flex-shrink-0 nav-link', { active: slug === activeTabSlug })}
-              href={url}
+        <div className="nav-bar">
+          <div className="nav-menu">
+            <Tabs
+              className="nav-underline-tabs"
+              aria-label={intl.formatMessage(messages.courseMaterial)}
             >
-              {title}
-            </a>
-          ))}
-        </Tabs>
-      </div>
-      <div className="course-tabs-navigation__search-toggle">
-        <CoursewareSearchToggle />
+              {tabs.map(({ url, title, slug }) => (
+                <a
+                  key={slug}
+                  className={classNames('nav-item flex-shrink-0 nav-link', { active: slug === activeTabSlug })}
+                  href={url}
+                >
+                  {title}
+                </a>
+              ))}
+            </Tabs>
+          </div>
+          <div className="search-toggle">
+            <CoursewareSearchToggle />
+          </div>
+        </div>
       </div>
       {show && <CoursewareSearch />}
     </div>

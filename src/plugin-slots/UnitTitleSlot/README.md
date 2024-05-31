@@ -4,6 +4,7 @@
 ### Props:
 * `courseId`
 * `unitId`
+* `unitTitle`
 
 ## Description
 
@@ -11,7 +12,7 @@ This slot is used for adding content after the Unit title.
 
 ## Example
 
-The following `env.config.jsx` will render the `course_id` and `unit_id` of the course as `<p>` elements.
+The following `env.config.jsx` will render the `course_id`, `unit_id` and `unitTitle` of the course as `<p>` elements.
 
 ![Screenshot of Content added after the Unit Title](./images/post_unit_title.png)
 
@@ -28,10 +29,11 @@ const config = {
           widget: {
             id: 'custom_unit_title_content',
             type: DIRECT_PLUGIN,
-            RenderWidget: ({courseId, unitId}) => (
+            RenderWidget: ({courseId, unitId, unitTitle}) => (
               <>
                 <p>📚: {courseId}</p>
                 <p>📙: {unitId}</p>
+                <p>📙: {unitTitle}</p>
               </>
             ),
           },

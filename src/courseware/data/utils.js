@@ -169,6 +169,10 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           id: block.id,
           title: block.display_name,
           sequenceIds: block.children || [],
+          completionStat: {
+            completed: block.completion_stat?.completion,
+            total: block.completion_stat?.completable_children,
+          },
         };
         break;
 
@@ -181,6 +185,10 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           type: block.type,
           specialExamInfo: block.special_exam_info,
           unitIds: block.children || [],
+          completionStat: {
+            completed: block.completion_stat?.completion,
+            total: block.completion_stat?.completable_children,
+          },
         };
         break;
 

@@ -104,7 +104,7 @@ SidebarBase.propTypes = {
 
 SidebarBase.defaultProps = {
   title: '',
-  width: '50rem',
+  width: '45rem',
   allowFullHeight: false,
   showTitleBar: true,
   className: '',

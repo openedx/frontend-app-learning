@@ -154,6 +154,9 @@ describe('useIFrameBehavior hook', () => {
         const resizeMessage = (height = 23) => ({
           data: { type: messageTypes.resize, payload: { height } },
         });
+        const videoFullScreenMessage = (open = false) => ({
+          data: { type: messageTypes.videoFullScreen, payload: { open } },
+        });
         const testSetIFrameHeight = (height = 23) => {
           const { cb } = useEventListener.mock.calls[0][1];
           cb(resizeMessage(height));
@@ -209,7 +212,7 @@ describe('useIFrameBehavior hook', () => {
           state.mockVals({ ...defaultStateVals, windowTopOffset });
           hook = useIFrameBehavior(props);
           const { cb } = useEventListener.mock.calls[0][1];
-          cb(resizeMessage());
+          cb(videoFullScreenMessage());
           expect(window.scrollTo).toHaveBeenCalledWith(0, windowTopOffset);
         });
         it('does not scroll if towverticalp offset is not set', () => {
