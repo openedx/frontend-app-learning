@@ -168,6 +168,11 @@ function toVdom(element, nodeName) {
 	return _$1(nodeName || element.nodeName.toLowerCase(), props, wrappedChildren);
 }
 
+/**
+ * Preact hook to make it easy to access the XBlock field data from the Web Component implementation
+ *
+ * e.g. `const { learnerAnswer } = useFields(props);`
+ */
 function useFields(props) {
     var parts = [props['system-fields'], props['content-fields'], props['user-fields']];
     return q(function () {
@@ -183,8 +188,30 @@ function useFields(props) {
         return fields;
     }, parts);
 }
+/**
+ * Get the DOM element (web component) for this XBlock.
+ * @param usageKey The usage key, available as an attribute/prop on the web component.
+ */
+function getDomElement(usageKey) {
+    var result = document.querySelector(".xblock-component.xblock-v2[usage-key=\"".concat(usageKey, "\"]"));
+    if (result === null) {
+        throw new Error("Unable to find DOM element for ".concat(usageKey));
+    }
+    return result;
+}
+function getRenderContext(usageKey) {
+    var result = getDomElement(usageKey).closest('xblock-render-context');
+    if (result === null) {
+        throw new Error("XBlock was rendered outside of an <xblock-render-context>: ".concat(usageKey));
+    }
+    return result;
+}
+function callHandler(usageKey, handlerName, body, method) {
+    if (method === void 0) { method = 'POST'; }
+    return getRenderContext(usageKey).callHandler(usageKey, handlerName, body, method);
+}
 function registerPreactXBlock(componentClass, blockType, options) {
     register(componentClass, "xblock2-".concat(blockType), ['content-fields', 'user-fields'], options);
 }
 
-export { b$1 as Component, k$1 as Fragment, E as cloneElement, G as createContext, _$1 as createElement, m$2 as createRef, _$1 as h, m as html, D$1 as hydrate, t$2 as isValidElement, l$1 as options, registerPreactXBlock, B$1 as render, H as toChildArray, x as useCallback, P as useContext, V as useDebugValue, _ as useEffect, b as useErrorBoundary, useFields, g as useId, T as useImperativeHandle, A as useLayoutEffect, q as useMemo, y as useReducer, F as useRef, p as useState };
+export { b$1 as Component, k$1 as Fragment, callHandler, E as cloneElement, G as createContext, _$1 as createElement, m$2 as createRef, getDomElement, _$1 as h, m as html, D$1 as hydrate, t$2 as isValidElement, l$1 as options, registerPreactXBlock, B$1 as render, H as toChildArray, x as useCallback, P as useContext, V as useDebugValue, _ as useEffect, b as useErrorBoundary, useFields, g as useId, T as useImperativeHandle, A as useLayoutEffect, q as useMemo, y as useReducer, F as useRef, p as useState };
