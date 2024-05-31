@@ -21,5 +21,6 @@ export const useUnitContents = (unitId: string) => (
   useQuery({
     queryKey: queryKeys.unitContents(unitId),
     queryFn: () => api.getUnitContentsData(unitId),
+    refetchOnWindowFocus: false,
   })
 );

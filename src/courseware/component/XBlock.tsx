@@ -23,7 +23,7 @@ export const XBlockRenderingContext: React.FC<{children: React.ReactNode}> = ({c
             globalStatus._loadedBlockTypes.add(blockType);
             // We want the browser to handle this import(), not webpack, so the comment on the next line is essential.
             import(/* webpackIgnore: true */ `${getConfig().LMS_BASE_URL}/xblock/resource-v2/${blockType}/public/learner-view-v2.js`).then(() => {
-                console.log(`✅ Loaded JavaScript for ${blockType} v2 XBlock.`);
+                console.log(`Loaded JavaScript for ${blockType} v2 XBlock.`);
             }, (err) => {
                 console.error(`🛑 Unable to Load JavaScript for ${blockType} v2 XBlock: ${err}`);
                 globalStatus._loadedBlockTypes.delete(blockType);
