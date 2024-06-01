@@ -174,14 +174,12 @@ function toVdom(element, nodeName) {
  * e.g. `const { learnerAnswer } = useFields(props);`
  */
 function useFields(props) {
-    var parts = [props['system-fields'], props['content-fields'], props['user-fields']];
-    return q(function () {
-        var fields = {};
-        for (var _i = 0, parts_1 = parts; _i < parts_1.length; _i++) {
-            var part = parts_1[_i];
-            var parsed = JSON.parse(part);
-            for (var _a = 0, _b = Object.entries(parsed); _a < _b.length; _a++) {
-                var _c = _b[_a], key = _c[0], value = _c[1];
+    const parts = [props['content-fields'], props['user-fields']];
+    return q(() => {
+        const fields = {};
+        for (const part of parts) {
+            const parsed = JSON.parse(part);
+            for (const [key, value] of Object.entries(parsed)) {
                 fields[key] = value;
             }
         }
@@ -193,25 +191,42 @@ function useFields(props) {
  * @param usageKey The usage key, available as an attribute/prop on the web component.
  */
 function getDomElement(usageKey) {
-    var result = document.querySelector(".xblock-component.xblock-v2[usage-key=\"".concat(usageKey, "\"]"));
+    const result = document.querySelector(`.xblock-component.xblock-v2[usage-key="${usageKey}"]`);
     if (result === null) {
-        throw new Error("Unable to find DOM element for ".concat(usageKey));
+        throw new Error(`Unable to find DOM element for ${usageKey}`);
     }
     return result;
 }
 function getRenderContext(usageKey) {
-    var result = getDomElement(usageKey).closest('xblock-render-context');
+    const result = getDomElement(usageKey).closest('xblock-render-context');
     if (result === null) {
-        throw new Error("XBlock was rendered outside of an <xblock-render-context>: ".concat(usageKey));
+        throw new Error(`XBlock was rendered outside of an <xblock-render-context>: ${usageKey}`);
     }
     return result;
 }
-function callHandler(usageKey, handlerName, body, method) {
-    if (method === void 0) { method = 'POST'; }
-    return getRenderContext(usageKey).callHandler(usageKey, handlerName, body, method);
+function callHandlerRaw(usageKey, handlerName, body, method = 'post') {
+    return getRenderContext(usageKey).callHandlerRaw(usageKey, handlerName, body, method);
+}
+/** Call a JSON handler using POST. Most handler calls should use this. */
+async function callHandler(usageKey, handlerName, body = {}) {
+    const response = await callHandlerRaw(usageKey, handlerName, new Blob([JSON.stringify(body)]), 'post');
+    const { data, updated_fields } = await response.json();
+    const domElement = getDomElement(usageKey);
+    // Update the actual web component DOM element with any changed field values, if applicable:
+    for (const fieldScope of ["user", "content"]) {
+        if (Object.keys(updated_fields[fieldScope]).length > 0) {
+            const attributeName = `${fieldScope}-fields`;
+            const scopeFieldValues = JSON.parse(domElement.getAttribute(attributeName));
+            for (const [key, value] of Object.entries(updated_fields[fieldScope])) {
+                scopeFieldValues[key] = value;
+            }
+            domElement.setAttribute(attributeName, JSON.stringify(scopeFieldValues));
+        }
+    }
+    return data;
 }
 function registerPreactXBlock(componentClass, blockType, options) {
-    register(componentClass, "xblock2-".concat(blockType), ['content-fields', 'user-fields'], options);
+    register(componentClass, `xblock2-${blockType}`, ['content-fields', 'user-fields'], options);
 }
 
-export { b$1 as Component, k$1 as Fragment, callHandler, E as cloneElement, G as createContext, _$1 as createElement, m$2 as createRef, getDomElement, _$1 as h, m as html, D$1 as hydrate, t$2 as isValidElement, l$1 as options, registerPreactXBlock, B$1 as render, H as toChildArray, x as useCallback, P as useContext, V as useDebugValue, _ as useEffect, b as useErrorBoundary, useFields, g as useId, T as useImperativeHandle, A as useLayoutEffect, q as useMemo, y as useReducer, F as useRef, p as useState };
+export { b$1 as Component, k$1 as Fragment, callHandler, callHandlerRaw, E as cloneElement, G as createContext, _$1 as createElement, m$2 as createRef, getDomElement, _$1 as h, m as html, D$1 as hydrate, t$2 as isValidElement, l$1 as options, registerPreactXBlock, B$1 as render, H as toChildArray, x as useCallback, P as useContext, V as useDebugValue, _ as useEffect, b as useErrorBoundary, useFields, g as useId, T as useImperativeHandle, A as useLayoutEffect, q as useMemo, y as useReducer, F as useRef, p as useState };

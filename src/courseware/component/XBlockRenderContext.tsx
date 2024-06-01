@@ -1,5 +1,5 @@
 import React from "react";
-import type { AxiosInstance } from "axios";
+import { AxiosHeaders, type AxiosInstance } from "axios";
 import { getConfig } from "@edx/frontend-platform";
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
@@ -9,25 +9,20 @@ if (!globalStatus._loadedBlockTypes) {
 }
 
 // TODO: HandlerResponse and CallHandler type definitions should be in a 'xblock-client-api' package on NPM?
-export interface HandlerResponse {
-    data: Record<string, any>;
-    updatedFields: Record<string, any>;
-}
-
-export interface CallHandler {
+interface CallHandlerRaw {
     (
         usageKey: string,
         handlerName: string,
-        body: Record<string, any> | ReadableStream | Blob,
-        method?: 'GET'|'POST',
-    ): Promise<HandlerResponse>;
+        body: Blob,
+        method?: 'get'|'post'|'put'|'delete',
+    ): Promise<Response>;
 }
 
 export function ensureBlockScript(blockType: string): void {
     if (!globalStatus._loadedBlockTypes.has(blockType)) {
         globalStatus._loadedBlockTypes.add(blockType);
         // We want the browser to handle this import(), not webpack, so the comment on the next line is essential.
-        import(/* webpackIgnore: true */ `${getConfig().LMS_BASE_URL}/xblock/resource-v2/${blockType}/public/learner-view-v2.js`).then(() => {
+        import(/* webpackIgnore: true */ `${getConfig().LMS_BASE_URL}/xblock/resource/${blockType}/public/learner-view-v2.js`).then(() => {
             console.log(`Loaded JavaScript for ${blockType} v2 XBlock.`);
         }, (err) => {
             console.error(`🛑 Unable to Load JavaScript for ${blockType} v2 XBlock: ${err}`);
@@ -36,11 +31,20 @@ export function ensureBlockScript(blockType: string): void {
     }
 }
 
-const callHandler: CallHandler = async (usageKey, handlerName, body, method): Promise<HandlerResponse> => {
+const callHandlerRaw: CallHandlerRaw = async (usageKey, handlerName, body, method = 'post'): Promise<Response> => {
     const client: AxiosInstance = getAuthenticatedHttpClient();
-    const makeRequest = client[method === "POST" ? 'post' : 'get'];
-    const response = await makeRequest(`${getConfig().LMS_BASE_URL}/api/xblock/v1/${usageKey}/handler_v2/${handlerName}`, body);
-    return response.data;
+    const makeRequest = client[method];
+    const axiosResponse = await makeRequest(
+        `${getConfig().LMS_BASE_URL}/xblock/${usageKey}/handler/${handlerName}`,
+        body,
+        { transformResponse: (r) => r }
+    );
+    // Convert from the vague axios format to the standard Response format:
+    const headers: Record<string, any> = (
+        axiosResponse.headers instanceof AxiosHeaders ? axiosResponse.headers.toJSON(true) : axiosResponse.headers
+    );
+    const response = new Response(axiosResponse.data, {headers, status: axiosResponse.status});
+    return response;
 }
 
 /**
@@ -53,7 +57,7 @@ export const XBlockRenderContextProvider: React.FC<{children: React.ReactNode}> 
     const ref = React.useRef<HTMLElement>(null);
     React.useEffect(() => {
         if (ref.current) {
-            (ref.current as any).callHandler = callHandler;
+            (ref.current as any).callHandlerRaw = callHandlerRaw;
         }
     }, [ref.current]);
     return (

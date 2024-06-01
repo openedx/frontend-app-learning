@@ -12,7 +12,6 @@ export const XBlock: React.FC<XBlockDataV2> = ({ id, ...props }) => {
         class: 'xblock-component xblock-v2',  // For web components in React, the prop is 'class', not 'className'
         'usage-key': id,
         'content-fields': JSON.stringify(props.contentFields),
-        'system-fields': JSON.stringify(props.systemFields),
         'user-fields': JSON.stringify(props.userFields),
     };
 
