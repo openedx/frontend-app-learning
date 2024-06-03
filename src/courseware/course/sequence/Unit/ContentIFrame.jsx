@@ -29,6 +29,7 @@ export const testIDs = StrictDict({
 
 const ContentIFrame = ({
   iframeUrl,
+  courseId,
   shouldShowContent,
   loadingMessage,
   id,
@@ -46,6 +47,7 @@ const ContentIFrame = ({
     id,
     iframeUrl,
     onLoaded,
+    courseId,
   });
 
   const {
@@ -124,6 +126,7 @@ ContentIFrame.propTypes = {
   elementId: PropTypes.string.isRequired,
   onLoaded: PropTypes.func,
   title: PropTypes.node.isRequired,
+  courseId: PropTypes.string.isRequired,
 };
 
 ContentIFrame.defaultProps = {

@@ -54,6 +54,7 @@ const Unit = ({
       <UnitSuspense {...{ courseId, id }} />
       <ContentIFrame
         elementId="unit-iframe"
+        courseId={courseId}
         id={id}
         iframeUrl={iframeUrl}
         loadingMessage={formatMessage(messages.loadingSequence)}

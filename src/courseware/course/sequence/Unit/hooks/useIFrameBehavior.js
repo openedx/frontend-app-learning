@@ -1,4 +1,5 @@
 import { getConfig } from '@edx/frontend-platform';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -22,6 +23,7 @@ export const stateKeys = StrictDict({
 const useIFrameBehavior = ({
   elementId,
   id,
+  courseId,
   iframeUrl,
   onLoaded,
 }) => {
@@ -94,6 +96,11 @@ const useIFrameBehavior = ({
   const handleIFrameLoad = () => {
     if (!hasLoaded) {
       setShowError(true);
+      sendTrackEvent('edx.bi.error.learning.iframe_load_failed', {
+        iframeUrl,
+        unitId: id,
+        courseId,
+      });
       logError('Unit iframe failed to load. Server possibly returned 4xx or 5xx response.', {
         iframeUrl,
       });
