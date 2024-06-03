@@ -49,7 +49,6 @@ exports[`Unit component output snapshot: not bookmarked, do not show content 1`]
     id="test-props-id"
   />
   <ContentIFrame
-    courseId="test-course-id"
     elementId="unit-iframe"
     id="test-props-id"
     loadingMessage="Loading learning sequence..."

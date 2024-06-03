@@ -52,7 +52,6 @@ const props = {
   elementId: 'test-element-id',
   id: 'test-id',
   iframeUrl: 'test-iframe-url',
-  courseId: 'test-course-id',
   onLoaded: jest.fn(),
 };
 
@@ -280,7 +279,6 @@ describe('useIFrameBehavior hook', () => {
         hook.handleIFrameLoad();
         const eventName = 'edx.bi.error.learning.iframe_load_failed';
         const eventProperties = {
-          courseId: props.courseId,
           unitId: props.id,
           iframeUrl: props.iframeUrl,
         };
