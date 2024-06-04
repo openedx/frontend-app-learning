@@ -5,6 +5,7 @@ import { getEffects, mockUseKeyedState } from '@edx/react-unit-test-utils';
 import { logError } from '@edx/frontend-platform/logging';
 
 import { getConfig } from '@edx/frontend-platform';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { fetchCourse } from '@src/courseware/data';
 import { processEvent } from '@src/course-home/data/thunks';
 import { useEventListener } from '@src/generic/hooks';
@@ -16,6 +17,8 @@ import useIFrameBehavior, { stateKeys } from './useIFrameBehavior';
 jest.mock('@edx/frontend-platform', () => ({
   getConfig: jest.fn(),
 }));
+
+jest.mock('@edx/frontend-platform/analytics');
 
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
@@ -271,12 +274,28 @@ describe('useIFrameBehavior hook', () => {
         expect(state.setState.showError).toHaveBeenCalledWith(true);
         expect(logError).toHaveBeenCalled();
       });
+      it('sends track event if has not loaded', () => {
+        hook = useIFrameBehavior(props);
+        hook.handleIFrameLoad();
+        const eventName = 'edx.bi.error.learning.iframe_load_failed';
+        const eventProperties = {
+          unitId: props.id,
+          iframeUrl: props.iframeUrl,
+        };
+        expect(sendTrackEvent).toHaveBeenCalledWith(eventName, eventProperties);
+      });
       it('does not set/log errors if loaded', () => {
         state.mockVals({ ...defaultStateVals, hasLoaded: true });
         hook = useIFrameBehavior(props);
         hook.handleIFrameLoad();
         expect(state.setState.showError).not.toHaveBeenCalled();
         expect(logError).not.toHaveBeenCalled();
+      });
+      it('does not send track event if loaded', () => {
+        state.mockVals({ ...defaultStateVals, hasLoaded: true });
+        hook = useIFrameBehavior(props);
+        hook.handleIFrameLoad();
+        expect(sendTrackEvent).not.toHaveBeenCalled();
       });
       it('registers an event handler to process fetchCourse events.', () => {
         hook = useIFrameBehavior(props);
