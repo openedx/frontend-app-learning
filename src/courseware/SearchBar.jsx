@@ -27,7 +27,7 @@ const SearchBar = ({ courseId }) => {
 
     setState({ ...state, loading: true });
 
-    fetch(`${getConfig().LMS_BASE_URL}/search/${courseId}/auto_suggest_search?q=${userProvidedText}`, requestOptions)
+    fetch(`${getConfig().LMS_BASE_URL}/search/${courseId}/auto_suggest_search?term=${userProvidedText}`, requestOptions)
       .then(data => data.json())
       .then(data => data.results)
       .then(results => {
