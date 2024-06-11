@@ -7,6 +7,7 @@ import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '@src/generic/user-messages';
 import { useModel } from '@src/generic/model-store';
+import SearchBar from '@src/courseware/SearchBar';
 import { getCoursewareOutlineSidebarSettings } from '../data/selectors';
 import { Trigger as CourseOutlineTrigger } from './sidebar/sidebars/course-outline';
 import Chat from './chat/Chat';
@@ -103,6 +104,9 @@ const Course = ({
           <CourseOutlineTrigger isMobileView />
           {isNewDiscussionSidebarViewEnabled ? <NewSidebarTriggers /> : <SidebarTriggers /> }
         </div>
+      </div>
+      <div className="flex-xl-row">
+        <SearchBar courseId={courseId} />
       </div>
 
       <AlertList topic="sequence" />
