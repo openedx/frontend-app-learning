@@ -6,11 +6,11 @@ import PropTypes from 'prop-types';
 const myHeaders = new Headers();
 myHeaders.append('Content-Type', 'application/json');
 
-const SearchBar = ({ courseId }) => {
+const CourseUnitAutoSuggest = ({ courseId }) => {
   const [state, setState] = useState({
     data: [], loading: false, userProvidedText: null,
   });
-  const [userProvidedText, setUserProvidedText] = useState(null);
+  const [userProvidedText, setUserProvidedText] = useState('');
 
   const valueChange = (value) => {
     if (userProvidedText !== value.userProvidedText) {
@@ -19,8 +19,6 @@ const SearchBar = ({ courseId }) => {
   };
 
   useEffect(() => {
-    if (!userProvidedText) { return; }
-
     const requestOptions = {
       method: 'GET', headers: myHeaders, redirect: 'follow',
     };
@@ -47,14 +45,17 @@ const SearchBar = ({ courseId }) => {
         <h4>Course Search</h4>
       </Form.Label>
       <Form.Autosuggest
-        placeholder="Seach ..."
+        placeholder="Seach course module ..."
         screenReaderText="Loading..."
-        loading={state.loading}
+        isLoading={state.loading}
         onChange={valueChange}
       >
         {state.data.map((item) => (
           <Form.AutosuggestOption
-            key={item.id}
+            key={item.usage_key}
+            onClick={() => {
+              window.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/jump_to/${item.usage_key}`);
+            }}
           >{item.display_name}
           </Form.AutosuggestOption>
         ))}
@@ -63,8 +64,8 @@ const SearchBar = ({ courseId }) => {
   );
 };
 
-SearchBar.propTypes = {
+CourseUnitAutoSuggest.propTypes = {
   courseId: PropTypes.string.isRequired,
 };
 
-export default SearchBar;
+export default CourseUnitAutoSuggest;
