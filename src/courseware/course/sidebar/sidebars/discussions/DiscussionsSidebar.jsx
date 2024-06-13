@@ -32,7 +32,7 @@ const DiscussionsSidebar = ({ intl }) => {
     >
       <iframe
         src={`${discussionsUrl}?inContextSidebar`}
-        className="d-flex w-100 h-100 border-0"
+        className="d-flex w-100 h-100 border-0 discussions-sidebar-frame"
         title={intl.formatMessage(messages.discussionsTitle)}
         allow="clipboard-write"
         loading="lazy"
