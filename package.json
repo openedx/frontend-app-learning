@@ -63,7 +63,7 @@
     "util": "0.12.5"
   },
   "devDependencies": {
-    "@edx/browserslist-config": "1.1.1",
+    "@edx/browserslist-config": "^1.0.0",
     "@edx/frontend-build": "^12.8.27",
     "@edx/reactifex": "2.1.1",
     "@pact-foundation/pact": "9.17.3",
