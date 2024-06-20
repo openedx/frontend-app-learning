@@ -7,7 +7,6 @@ import PageLoading from '@src/generic/PageLoading';
 
 import messages from '../messages';
 import HonorCode from '../honor-code';
-import LockPaywall from '../lock-paywall';
 import hooks from './hooks';
 import { modelKeys } from './constants';
 
@@ -24,7 +23,6 @@ jest.mock('react', () => ({
 }));
 
 jest.mock('../honor-code', () => 'HonorCode');
-jest.mock('../lock-paywall', () => 'LockPaywall');
 jest.mock('@src/generic/model-store', () => ({ useModel: jest.fn() }));
 jest.mock('@src/generic/PageLoading', () => 'PageLoading');
 
@@ -62,31 +60,6 @@ describe('UnitSuspense component', () => {
     });
   });
   describe('output', () => {
-    describe('LockPaywall', () => {
-      const testNoPaywall = () => {
-        it('does not display LockPaywall', () => {
-          el = shallow(<UnitSuspense {...props} />);
-          expect(el.instance.findByType(LockPaywall).length).toEqual(0);
-        });
-      };
-      describe('gating not enabled', () => { testNoPaywall(); });
-      describe('gating enabled, but no gated content included', () => {
-        beforeEach(() => { mockModels(true, false); });
-        testNoPaywall();
-      });
-      describe('gating enabled, gated content included', () => {
-        beforeEach(() => { mockModels(true, true); });
-        it('displays LockPaywall in Suspense wrapper with PageLoading fallback', () => {
-          el = shallow(<UnitSuspense {...props} />);
-          const [component] = el.instance.findByType(LockPaywall);
-          expect(component.parent.type).toEqual('PluginSlot');
-          expect(component.parent.parent.type).toEqual('Suspense');
-          expect(component.parent.parent.props.fallback)
-            .toEqual(<PageLoading srMessage={formatMessage(messages.loadingLockedContent)} />);
-          expect(component.props.courseId).toEqual(props.courseId);
-        });
-      });
-    });
     describe('HonorCode', () => {
       it('does not display HonorCode if useShouldDisplayHonorCode => false', () => {
         hooks.useShouldDisplayHonorCode.mockReturnValueOnce(false);

@@ -9,7 +9,6 @@ import PageLoading from '@src/generic/PageLoading';
 
 import messages from '../messages';
 import HonorCode from '../honor-code';
-import LockPaywall from '../lock-paywall';
 import * as hooks from './hooks';
 import { modelKeys } from './constants';
 
@@ -34,9 +33,7 @@ const UnitSuspense = ({
             pluginProps={{
               courseId,
             }}
-          >
-            <LockPaywall courseId={courseId} />
-          </PluginSlot>
+          />
         </Suspense>
       )}
       {shouldDisplayHonorCode && (
