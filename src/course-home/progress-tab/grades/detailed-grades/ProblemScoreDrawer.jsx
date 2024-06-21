@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { OverlayTrigger, Tooltip } from '@openedx/paragon';
 
 import {
   getLocale, injectIntl, intlShape, isRtl,
@@ -12,25 +11,11 @@ import messages from '../messages';
 const ProblemScoreDrawer = ({ intl, problemScores, subsection }) => {
   const isLocaleRtl = isRtl(getLocale());
 
-  let scoreLabel = messages.practiceScoreLabel;
-  let scoreLabelTooltip = messages.practiceScoreLabelTooltip;
-  if (subsection.hasGradedAssignment) {
-    scoreLabel = messages.problemScoreLabel;
-    scoreLabelTooltip = messages.problemScoreLabelTooltip;
-  }
+  const scoreLabel = subsection.hasGradedAssignment ? messages.problemScoreLabel : messages.practiceScoreLabel;
 
   return (
     <span className="row w-100 m-0 x-small ml-4 pt-2 pl-1 text-gray-700 flex-nowrap">
-      <OverlayTrigger
-        placement="auto"
-        overlay={(
-          <Tooltip variant="light">
-            <small>{intl.formatMessage(scoreLabelTooltip)}</small>
-          </Tooltip>
-        )}
-      >
-        <span id="problem-score-label" className="col-auto p-0">{intl.formatMessage(scoreLabel)}</span>
-      </OverlayTrigger>
+      <span id="problem-score-label" className="col-auto p-0">{intl.formatMessage(scoreLabel)}</span>
       <div className={classNames('col', 'p-0', { 'greyed-out': !subsection.learnerHasAccess })}>
         <ul className="list-unstyled row w-100 m-0" aria-labelledby="problem-score-label">
           {problemScores.map((problemScore, i) => (

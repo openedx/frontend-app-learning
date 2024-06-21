@@ -914,7 +914,7 @@ describe('Progress Tab', () => {
 
       // Open the problem score drawer
       fireEvent.click(problemScoreDrawerToggle);
-      expect(screen.getByText('Problem Scores:')).toBeInTheDocument();
+      expect(screen.getAllByText('Problem Scores:').length).toBeGreaterThan(1);
       expect(screen.getAllByText('0/1')).toHaveLength(3);
     });
 

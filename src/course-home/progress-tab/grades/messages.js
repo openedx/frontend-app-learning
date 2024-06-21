@@ -168,20 +168,10 @@ const messages = defineMessages({
     defaultMessage: 'Problem Scores:',
     description: 'Label text which precedes detailed view of all scores per assignment',
   },
-  problemScoreLabelTooltip: {
-    id: 'progress.detailedGrades.problemScore.tooltip',
-    defaultMessage: 'Scores from activities that contribute to your final grade.',
-    description: 'Tooltip text for the label which precedes detailed view of all scores per assignment',
-  },
   practiceScoreLabel: {
     id: 'progress.detailedGrades.practice.problemScore.label',
     defaultMessage: 'Practice Scores:',
     description: 'Label text which precedes detailed view of all ungraded problem scores per assignment',
-  },
-  practiceScoreLabelTooltip: {
-    id: 'progress.detailedGrades.practice.problemScore.tooltip',
-    defaultMessage: 'Scores from non-graded activities meant for practice and self-assessment.',
-    description: 'Tooltip text for the label which precedes detailed view of all ungraded problem scores per assignment',
   },
   problemScoreToggleAltText: {
     id: 'progress.detailedGrades.problemScore.toggleButton',
