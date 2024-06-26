@@ -110,7 +110,30 @@ export function dismissWelcomeMessage(courseId) {
 }
 
 export function requestCert(courseId) {
-  return async () => postRequestCert(courseId);
+  return async (dispatch) => {
+    const { certificateData } = await postRequestCert(courseId);
+
+    // This action could be triggerd, from either course home
+    // or course progress page, each of which has it's own model
+    // and need to be update.
+    // Hence the CertficateStatus compoenent is important by both.
+
+    dispatch(updateModel({
+      modelType: 'progress',
+      model: {
+        id: courseId,
+        certificateData,
+      },
+    }));
+
+    dispatch(updateModel({
+      modelType: 'outline',
+      model: {
+        id: courseId,
+        certData: certificateData,
+      },
+    }));
+  };
 }
 
 export function resetDeadlines(courseId, model, getTabData) {
