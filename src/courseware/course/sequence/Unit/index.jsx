@@ -15,6 +15,7 @@ import { modelKeys, views } from './constants';
 import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
 import UnitTitleSlot from '../../../../plugin-slots/UnitTitleSlot';
+import UnitContentsSlot from '../../../../plugin-slots/UnitContentsSlot';
 
 const Unit = ({
   courseId,
@@ -52,15 +53,17 @@ const Unit = ({
         isProcessing={isProcessing}
       />
       <UnitSuspense {...{ courseId, id }} />
-      <ContentIFrame
-        elementId="unit-iframe"
-        id={id}
-        iframeUrl={iframeUrl}
-        loadingMessage={formatMessage(messages.loadingSequence)}
-        onLoaded={onLoaded}
-        shouldShowContent={!shouldDisplayHonorCode && !examAccess.blockAccess}
-        title={unit.title}
-      />
+      <UnitContentsSlot courseId={courseId} unitId={id}>
+        <ContentIFrame
+          elementId="unit-iframe"
+          id={id}
+          iframeUrl={iframeUrl}
+          loadingMessage={formatMessage(messages.loadingSequence)}
+          onLoaded={onLoaded}
+          shouldShowContent={!shouldDisplayHonorCode && !examAccess.blockAccess}
+          title={unit.title}
+        />
+      </UnitContentsSlot>
     </div>
   );
 };
