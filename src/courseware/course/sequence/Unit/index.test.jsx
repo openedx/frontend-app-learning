@@ -28,6 +28,7 @@ jest.mock('../../bookmark/BookmarkButton', () => 'BookmarkButton');
 jest.mock('./ContentIFrame', () => 'ContentIFrame');
 jest.mock('./UnitSuspense', () => 'UnitSuspense');
 jest.mock('../honor-code', () => 'HonorCode');
+jest.mock('../lock-paywall', () => 'LockPaywall');
 
 jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn(),
