@@ -7,6 +7,7 @@ import { AppProvider, ErrorPage, PageWrap } from '@edx/frontend-platform/react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { Helmet } from 'react-helmet';
 import { fetchDiscussionTab, fetchLiveTab } from './course-home/data/thunks';
@@ -37,6 +38,8 @@ import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
 
+const queryClient = new QueryClient();
+
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
 
@@ -49,7 +52,7 @@ subscribe(APP_READY, () => {
         <PathFixesProvider>
           <NoticesProvider>
             <UserMessagesProvider>
-              <Routes>
+              <QueryClientProvider client={queryClient}><Routes>
                 <Route path="*" element={<PageWrap><PageNotFound /></PageWrap>} />
                 <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
                 <Route path={ROUTES.REDIRECT} element={<PageWrap><CoursewareRedirectLandingPage /></PageWrap>} />
@@ -57,7 +60,7 @@ subscribe(APP_READY, () => {
                   path={ROUTES.PREFERENCES_UNSUBSCRIBE}
                   element={
                     <PageWrap><PreferencesUnsubscribe /></PageWrap>
-                }
+                  }
                 />
                 <Route
                   path={DECODE_ROUTES.ACCESS_DENIED}
@@ -71,7 +74,7 @@ subscribe(APP_READY, () => {
                         <OutlineTab />
                       </TabContainer>
                     </DecodePageRoute>
-              )}
+                  )}
                 />
                 <Route
                   path={DECODE_ROUTES.LIVE}
@@ -81,7 +84,7 @@ subscribe(APP_READY, () => {
                         <LiveTab />
                       </TabContainer>
                     </DecodePageRoute>
-                )}
+                  )}
                 />
                 <Route
                   path={DECODE_ROUTES.DATES}
@@ -91,7 +94,7 @@ subscribe(APP_READY, () => {
                         <DatesTab />
                       </TabContainer>
                     </DecodePageRoute>
-                )}
+                  )}
                 />
                 <Route
                   path={DECODE_ROUTES.DISCUSSION}
@@ -101,7 +104,7 @@ subscribe(APP_READY, () => {
                         <DiscussionTab />
                       </TabContainer>
                     </DecodePageRoute>
-                )}
+                  )}
                 />
                 {DECODE_ROUTES.PROGRESS.map((route) => (
                   <Route
@@ -118,7 +121,7 @@ subscribe(APP_READY, () => {
                           <ProgressTab />
                         </TabContainer>
                       </DecodePageRoute>
-                  )}
+                    )}
                   />
                 ))}
                 <Route
@@ -129,7 +132,7 @@ subscribe(APP_READY, () => {
                         <CourseExit />
                       </TabContainer>
                     </DecodePageRoute>
-                )}
+                  )}
                 />
                 {DECODE_ROUTES.COURSEWARE.map((route) => (
                   <Route
@@ -139,10 +142,10 @@ subscribe(APP_READY, () => {
                       <DecodePageRoute>
                         <CoursewareContainer />
                       </DecodePageRoute>
-                  )}
+                    )}
                   />
                 ))}
-              </Routes>
+              </Routes></QueryClientProvider>
             </UserMessagesProvider>
           </NoticesProvider>
         </PathFixesProvider>
