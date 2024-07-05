@@ -32,7 +32,7 @@
   "dependencies": {
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.2",
     "@edx/frontend-component-header": "^5.3.3",
-    "@edx/frontend-lib-learning-assistant": "^2.1.1",
+    "@edx/frontend-lib-learning-assistant": "^2.1.2",
     "@edx/frontend-lib-special-exams": "^3.1.0",
     "@edx/frontend-platform": "^8.0.0",
     "@edx/openedx-atlas": "^0.6.0",
