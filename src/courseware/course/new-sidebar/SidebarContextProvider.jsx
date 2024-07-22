@@ -20,16 +20,17 @@ const SidebarProvider = ({
 }) => {
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
   const topic = useModel('discussionTopics', unitId);
-  const isUnitHasDiscussionTopics = topic?.id && topic?.enabledInContext;
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const query = new URLSearchParams(window.location.search);
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
+  const sidebarKey = `sidebar.${courseId}`;
+  const keyExists = sidebarKey in localStorage;
 
-  let initialSidebar = shouldDisplayFullScreen ? getLocalStorage(`sidebar.${courseId}`) : null;
+  let initialSidebar = shouldDisplayFullScreen && keyExists ? getLocalStorage(`sidebar.${courseId}`) : SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID;
 
   if (!shouldDisplayFullScreen && isInitiallySidebarOpen) {
-    initialSidebar = verifiedMode ? WIDGETS.NOTIFICATIONS : isUnitHasDiscussionTopics && WIDGETS.DISCUSSIONS;
+    initialSidebar = SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID;
   }
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
