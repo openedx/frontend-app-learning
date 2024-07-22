@@ -18,11 +18,19 @@ const SidebarProvider = ({
   unitId,
   children,
 }) => {
+  const { verifiedMode } = useModel('courseHomeMeta', courseId);
+  const topic = useModel('discussionTopics', unitId);
+  const isUnitHasDiscussionTopics = topic?.id && topic?.enabledInContext;
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const query = new URLSearchParams(window.location.search);
-  const initialSidebar = (shouldDisplaySidebarOpen || query.get('sidebar') === 'true')
-    ? SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID : null;
+  const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
+
+  let initialSidebar = shouldDisplayFullScreen ? getLocalStorage(`sidebar.${courseId}`) : null;
+
+  if (!shouldDisplayFullScreen && isInitiallySidebarOpen) {
+    initialSidebar = verifiedMode ? WIDGETS.NOTIFICATIONS : isUnitHasDiscussionTopics && WIDGETS.DISCUSSIONS;
+  }
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
   const [hideDiscussionbar, setHideDiscussionbar] = useState(false);
@@ -30,8 +38,6 @@ const SidebarProvider = ({
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(
     getLocalStorage(`upgradeNotificationCurrentState.${courseId}`),
   );
-  const topic = useModel('discussionTopics', unitId);
-  const { verifiedMode } = useModel('courseHomeMeta', courseId);
   const isDiscussionbarAvailable = (topic?.id && topic?.enabledInContext) || false;
   const isNotificationbarAvailable = !isEmpty(verifiedMode);
 
@@ -43,7 +49,9 @@ const SidebarProvider = ({
   useEffect(() => {
     setHideDiscussionbar(!isDiscussionbarAvailable);
     setHideNotificationbar(!isNotificationbarAvailable);
-    setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
+    if (initialSidebar && currentSidebar !== initialSidebar) {
+      setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
+    }
   }, [unitId, topic]);
 
   useEffect(() => {
@@ -56,12 +64,18 @@ const SidebarProvider = ({
     if (widgetId) {
       setHideDiscussionbar(prevWidgetId => (widgetId === WIDGETS.DISCUSSIONS ? true : prevWidgetId));
       setHideNotificationbar(prevWidgetId => (widgetId === WIDGETS.NOTIFICATIONS ? true : prevWidgetId));
+      setLocalStorage(`sidebar.${courseId}`, sidebarId);
     } else {
       setCurrentSidebar(prevSidebar => (sidebarId === prevSidebar ? null : sidebarId));
       setHideDiscussionbar(!isDiscussionbarAvailable);
       setHideNotificationbar(!isNotificationbarAvailable);
+      setLocalStorage(`sidebar.${courseId}`, sidebarId === currentSidebar ? null : sidebarId);
     }
-  }, [isDiscussionbarAvailable, isNotificationbarAvailable]);
+    if ((!isNotificationbarAvailable && widgetId === WIDGETS.DISCUSSIONS)
+      || (!isDiscussionbarAvailable && widgetId === WIDGETS.NOTIFICATIONS)) {
+      setLocalStorage(`sidebar.${courseId}`, null);
+    }
+  }, [isDiscussionbarAvailable, isNotificationbarAvailable, currentSidebar]);
 
   const contextValue = useMemo(() => ({
     toggleSidebar,
