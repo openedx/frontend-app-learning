@@ -18,11 +18,20 @@ const SidebarProvider = ({
   unitId,
   children,
 }) => {
+  const { verifiedMode } = useModel('courseHomeMeta', courseId);
+  const topic = useModel('discussionTopics', unitId);
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.large.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.medium.minWidth;
   const query = new URLSearchParams(window.location.search);
-  const initialSidebar = (shouldDisplaySidebarOpen || query.get('sidebar') === 'true')
-    ? SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID : null;
+  const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
+  const sidebarKey = `sidebar.${courseId}`;
+
+  let initialSidebar = shouldDisplayFullScreen && sidebarKey in localStorage ? getLocalStorage(sidebarKey)
+    : SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID;
+
+  if (!shouldDisplayFullScreen && isInitiallySidebarOpen) {
+    initialSidebar = SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID;
+  }
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
   const [hideDiscussionbar, setHideDiscussionbar] = useState(false);
@@ -30,8 +39,6 @@ const SidebarProvider = ({
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(
     getLocalStorage(`upgradeNotificationCurrentState.${courseId}`),
   );
-  const topic = useModel('discussionTopics', unitId);
-  const { verifiedMode } = useModel('courseHomeMeta', courseId);
   const isDiscussionbarAvailable = (topic?.id && topic?.enabledInContext) || false;
   const isNotificationbarAvailable = !isEmpty(verifiedMode);
 
@@ -43,7 +50,9 @@ const SidebarProvider = ({
   useEffect(() => {
     setHideDiscussionbar(!isDiscussionbarAvailable);
     setHideNotificationbar(!isNotificationbarAvailable);
-    setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
+    if (initialSidebar && currentSidebar !== initialSidebar) {
+      setCurrentSidebar(SIDEBARS.DISCUSSIONS_NOTIFICATIONS.ID);
+    }
   }, [unitId, topic]);
 
   useEffect(() => {
@@ -52,16 +61,35 @@ const SidebarProvider = ({
     }
   }, [hideDiscussionbar, hideNotificationbar]);
 
-  const toggleSidebar = useCallback((sidebarId = null, widgetId = null) => {
-    if (widgetId) {
-      setHideDiscussionbar(prevWidgetId => (widgetId === WIDGETS.DISCUSSIONS ? true : prevWidgetId));
-      setHideNotificationbar(prevWidgetId => (widgetId === WIDGETS.NOTIFICATIONS ? true : prevWidgetId));
-    } else {
-      setCurrentSidebar(prevSidebar => (sidebarId === prevSidebar ? null : sidebarId));
-      setHideDiscussionbar(!isDiscussionbarAvailable);
-      setHideNotificationbar(!isNotificationbarAvailable);
+  const handleWidgetToggle = useCallback((widgetId, sidebarId) => {
+    setHideDiscussionbar(prevWidgetId => (widgetId === WIDGETS.DISCUSSIONS ? true : prevWidgetId));
+    setHideNotificationbar(prevWidgetId => (widgetId === WIDGETS.NOTIFICATIONS ? true : prevWidgetId));
+    setLocalStorage(sidebarKey, sidebarId);
+  }, []);
+
+  const handleSidebarToggle = useCallback((sidebarId) => {
+    setCurrentSidebar(prevSidebar => (sidebarId === prevSidebar ? null : sidebarId));
+    setHideDiscussionbar(!isDiscussionbarAvailable);
+    setHideNotificationbar(!isNotificationbarAvailable);
+    setLocalStorage(sidebarKey, sidebarId === currentSidebar ? null : sidebarId);
+  }, [currentSidebar, isDiscussionbarAvailable, isNotificationbarAvailable]);
+
+  const clearSidebarKeyIfWidgetsUnavailable = useCallback((widgetId) => {
+    if ((!isNotificationbarAvailable && widgetId === WIDGETS.DISCUSSIONS)
+      || (!isDiscussionbarAvailable && widgetId === WIDGETS.NOTIFICATIONS)) {
+      setLocalStorage(sidebarKey, null);
     }
   }, [isDiscussionbarAvailable, isNotificationbarAvailable]);
+
+  const toggleSidebar = useCallback((sidebarId = null, widgetId = null) => {
+    if (widgetId) {
+      handleWidgetToggle(widgetId, sidebarId);
+    } else {
+      handleSidebarToggle(sidebarId);
+    }
+
+    clearSidebarKeyIfWidgetsUnavailable(widgetId);
+  }, [handleWidgetToggle, handleSidebarToggle, clearSidebarKeyIfWidgetsUnavailable]);
 
   const contextValue = useMemo(() => ({
     toggleSidebar,
