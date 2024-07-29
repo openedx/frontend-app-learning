@@ -79,7 +79,7 @@ const SidebarProvider = ({
       || ((!isDiscussionbarAvailable || hideDiscussionbar) && widgetId === WIDGETS.NOTIFICATIONS)) {
       setLocalStorage(sidebarKey, null);
     }
-  }, [isDiscussionbarAvailable, isNotificationbarAvailable]);
+  }, [isDiscussionbarAvailable, isNotificationbarAvailable, hideDiscussionbar, hideNotificationbar]);
 
   const toggleSidebar = useCallback((sidebarId = null, widgetId = null) => {
     if (widgetId) {
