@@ -75,8 +75,8 @@ const SidebarProvider = ({
   }, [currentSidebar, isDiscussionbarAvailable, isNotificationbarAvailable]);
 
   const clearSidebarKeyIfWidgetsUnavailable = useCallback((widgetId) => {
-    if ((!isNotificationbarAvailable && widgetId === WIDGETS.DISCUSSIONS)
-      || (!isDiscussionbarAvailable && widgetId === WIDGETS.NOTIFICATIONS)) {
+    if (((!isNotificationbarAvailable || hideNotificationbar) && widgetId === WIDGETS.DISCUSSIONS)
+      || ((!isDiscussionbarAvailable || hideDiscussionbar) && widgetId === WIDGETS.NOTIFICATIONS)) {
       setLocalStorage(sidebarKey, null);
     }
   }, [isDiscussionbarAvailable, isNotificationbarAvailable]);
