@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
+
 import SidebarContext from '../../../SidebarContext';
 import messages from '../../../messages';
 
@@ -24,7 +25,10 @@ const DiscussionsWidget = () => {
   return (
     <iframe
       src={`${discussionsUrl}?inContextSidebar`}
-      className={classNames('d-flex w-100 flex-fill border border-light-400 rounded-sm', { 'vh-100': !shouldDisplayFullScreen })}
+      className={classNames('d-flex w-100 flex-fill border border-light-400 rounded-sm', {
+        'vh-100': !shouldDisplayFullScreen,
+        'min-height-700': shouldDisplayFullScreen,
+      })}
       title={intl.formatMessage(messages.discussionsTitle)}
       allow="clipboard-write"
       loading="lazy"

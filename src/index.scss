@@ -430,8 +430,13 @@
   top: 0;
 }
 
+.min-height-700 {
+  min-height: 700px;
+}
+
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
+@import "courseware/course/sidebar/sidebars/discussions/Discussions.scss";
 @import "courseware/course/sidebar/sidebars/notifications/NotificationIcon.scss";
 @import "courseware/course/sequence/lock-paywall/LockPaywall.scss";
 @import "shared/streak-celebration/StreakCelebrationModal.scss";

@@ -10,8 +10,9 @@ import {
   isRtl,
   getLocale,
 } from '@edx/frontend-platform/i18n';
-
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useSelector } from 'react-redux';
+
 import { GetCourseExitNavigation } from '../../course-exit';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
@@ -29,6 +30,11 @@ const SequenceNavigation = ({
   onNavigate,
   nextHandler,
   previousHandler,
+  nextSequenceHandler,
+  handleNavigate,
+  isOpen,
+  open,
+  close,
 }) => {
   const sequence = useModel('sequences', sequenceId);
   const {
@@ -95,17 +101,37 @@ const SequenceNavigation = ({
     const nextArrow = isRtl(getLocale()) ? ChevronLeft : ChevronRight;
 
     return navigationDisabledNextSequence || (
-      <Button
-        variant="link"
-        className="next-btn"
-        onClick={nextHandler}
-        disabled={disabled}
-        iconAfter={nextArrow}
-        as={disabled ? undefined : Link}
-        to={disabled ? undefined : nextLink}
+      <PluginSlot
+        id="next_button_slot"
+        pluginProps={{
+          courseId,
+          disabled,
+          buttonText,
+          nextArrow,
+          nextLink,
+          shouldDisplayNotificationTriggerInSequence,
+          sequenceId,
+          unitId,
+          nextSequenceHandler,
+          handleNavigate,
+          isOpen,
+          open,
+          close,
+          linkComponent: Link,
+        }}
       >
-        {shouldDisplayNotificationTriggerInSequence ? null : buttonText}
-      </Button>
+        <Button
+          variant="link"
+          className="next-btn"
+          onClick={nextHandler}
+          disabled={disabled}
+          iconAfter={nextArrow}
+          as={disabled ? undefined : Link}
+          to={disabled ? undefined : nextLink}
+        >
+          {shouldDisplayNotificationTriggerInSequence ? null : buttonText}
+        </Button>
+      </PluginSlot>
     );
   };
 
@@ -126,11 +152,21 @@ SequenceNavigation.propTypes = {
   onNavigate: PropTypes.func.isRequired,
   nextHandler: PropTypes.func.isRequired,
   previousHandler: PropTypes.func.isRequired,
+  close: PropTypes.func,
+  open: PropTypes.func,
+  isOpen: PropTypes.bool,
+  handleNavigate: PropTypes.func,
+  nextSequenceHandler: PropTypes.func,
 };
 
 SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
+  close: null,
+  open: null,
+  isOpen: false,
+  handleNavigate: null,
+  nextSequenceHandler: null,
 };
 
 export default injectIntl(SequenceNavigation);
