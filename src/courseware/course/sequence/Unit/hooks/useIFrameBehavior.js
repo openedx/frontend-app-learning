@@ -23,6 +23,7 @@ export const stateKeys = StrictDict({
   hasLoaded: 'hasLoaded',
   showError: 'showError',
   windowTopOffset: 'windowTopOffset',
+  sequences: 'sequences',
 });
 
 const useIFrameBehavior = ({
@@ -35,9 +36,9 @@ const useIFrameBehavior = ({
   useLoadBearingHook(id);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const activeSequenceId = useSelector(getSequenceId);
-  const activeSequence = useModel('sequences', activeSequenceId);
+  const navigate = useNavigate();
+  const activeSequence = useModel(stateKeys.sequences, activeSequenceId);
   const activeUnitId = activeSequence.unitIds.length > 0
     ? activeSequence.unitIds[activeSequence.activeUnitIndex] : null;
   const { isLastUnit, nextLink } = useSequenceNavigationMetadata(activeSequenceId, activeUnitId);
