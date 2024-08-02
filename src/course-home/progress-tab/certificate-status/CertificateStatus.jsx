@@ -20,6 +20,10 @@ const CertificateStatus = ({ intl }) => {
   } = useSelector(state => state.courseHome);
 
   const {
+    entranceExamData,
+  } = useModel('coursewareMeta', courseId);
+
+  const {
     isEnrolled,
     org,
     canViewCertificate,
@@ -42,6 +46,8 @@ const CertificateStatus = ({ intl }) => {
     certificateAvailableDate,
   } = certificateData || {};
 
+  const entranceExamPassed = entranceExamData?.entranceExamPassed ?? null;
+
   const mode = getCourseExitMode(
     certificateData,
     hasScheduledContent,
@@ -49,6 +55,7 @@ const CertificateStatus = ({ intl }) => {
     userHasPassingGrade,
     null, // CourseExitPageIsActive
     canViewCertificate,
+    entranceExamPassed,
   );
 
   const eventProperties = {

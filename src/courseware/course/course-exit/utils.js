@@ -9,6 +9,7 @@ const COURSE_EXIT_MODES = {
   celebration: 1,
   nonPassing: 2,
   inProgress: 3,
+  entranceExamFail: 4,
 };
 
 // These are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
@@ -32,8 +33,13 @@ function getCourseExitMode(
   userHasPassingGrade,
   courseExitPageIsActive = null,
   canImmediatelyViewCertificate = false,
+  entranceExamPassed = null,
 ) {
   const authenticatedUser = getAuthenticatedUser();
+
+  if (entranceExamPassed === false) {
+    return COURSE_EXIT_MODES.entranceExamFail;
+  }
 
   if (courseExitPageIsActive === false || !authenticatedUser || !isEnrolled) {
     return COURSE_EXIT_MODES.disabled;
@@ -73,6 +79,7 @@ function GetCourseExitNavigation(courseId, intl) {
     isEnrolled,
     userHasPassingGrade,
     courseExitPageIsActive,
+    entranceExamData: { entranceExamPassed },
   } = useModel('coursewareMeta', courseId);
   const { canViewCertificate } = useModel('courseHomeMeta', courseId);
   const exitMode = getCourseExitMode(
@@ -82,8 +89,15 @@ function GetCourseExitNavigation(courseId, intl) {
     userHasPassingGrade,
     courseExitPageIsActive,
     canViewCertificate,
+    entranceExamPassed,
   );
-  const exitActive = exitMode !== COURSE_EXIT_MODES.disabled;
+
+  // exitActive is used to enable/disable the exit i.e. next buttons.
+  // COURSE_EXIT_MODES denote the current status of the course.
+  // Available COURSE_EXIT_MODES: disabled, celebration, nonPassing, inProgress, entranceExamFail
+  // If the user fails the entrance exam,
+  // access to further course sections should not be allowed i.e. disable the next buttons.
+  const exitActive = ((exitMode !== COURSE_EXIT_MODES.disabled) && (exitMode !== COURSE_EXIT_MODES.entranceExamFail));
 
   let exitText;
   switch (exitMode) {
