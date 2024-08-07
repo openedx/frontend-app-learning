@@ -28,6 +28,7 @@ jest.mock('react', () => ({
 
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
+  useSelector: jest.fn(),
 }));
 
 jest.mock('./useLoadBearingHook', () => jest.fn());
@@ -44,6 +45,12 @@ jest.mock('@src/course-home/data/thunks', () => ({
 }));
 jest.mock('@src/generic/hooks', () => ({
   useEventListener: jest.fn(),
+}));
+jest.mock('@src/generic/model-store', () => ({
+  useModel: () => ({ unitIds: ['unit1', 'unit2'] }),
+}));
+jest.mock('react-router-dom', () => ({
+  useNavigate: jest.fn(),
 }));
 
 const state = mockUseKeyedState(stateKeys);
