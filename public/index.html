@@ -9,6 +9,13 @@
     <% if (htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID) { %>
       <script src="https://www.edx.org/optimizelyjs/<%= htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID %>.js"></script>
     <% } %>
+    <script type="importmap">
+      {
+        "imports": {
+            "xblock2-client-v0": "<%= process.env.PUBLIC_PATH ?? "/" %>static/xblock/client-v0.js"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

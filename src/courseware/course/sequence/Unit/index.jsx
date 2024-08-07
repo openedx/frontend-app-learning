@@ -1,19 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { useModel } from '@src/generic/model-store';
-import { usePluginsCallback } from '@src/generic/plugin-store';
 
 import BookmarkButton from '../../bookmark/BookmarkButton';
 import messages from '../messages';
-import ContentIFrame from './ContentIFrame';
+import UnitContent from './UnitContent';
 import UnitSuspense from './UnitSuspense';
-import { modelKeys, views } from './constants';
+import { modelKeys } from './constants';
 import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
-import { getIFrameUrl } from './urls';
 import UnitTitleSlot from '../../../../plugin-slots/UnitTitleSlot';
 
 const Unit = ({
@@ -23,21 +20,12 @@ const Unit = ({
   id,
 }) => {
   const { formatMessage } = useIntl();
-  const { authenticatedUser } = React.useContext(AppContext);
   const examAccess = useExamAccess({ id });
   const shouldDisplayHonorCode = useShouldDisplayHonorCode({ courseId, id });
   const unit = useModel(modelKeys.units, id);
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
-  const view = authenticatedUser ? views.student : views.public;
 
-  const getUrl = usePluginsCallback('getIFrameUrl', () => getIFrameUrl({
-    id,
-    view,
-    format,
-    examAccess,
-  }));
-
-  const iframeUrl = getUrl();
+  const shouldShowContent = !shouldDisplayHonorCode && !examAccess.blockAccess;
 
   return (
     <div className="unit">
@@ -52,15 +40,8 @@ const Unit = ({
         isProcessing={isProcessing}
       />
       <UnitSuspense {...{ courseId, id }} />
-      <ContentIFrame
-        elementId="unit-iframe"
-        id={id}
-        iframeUrl={iframeUrl}
-        loadingMessage={formatMessage(messages.loadingSequence)}
-        onLoaded={onLoaded}
-        shouldShowContent={!shouldDisplayHonorCode && !examAccess.blockAccess}
-        title={unit.title}
-      />
+      <br />
+      { shouldShowContent ? <UnitContent unitId={id} /> : null }
     </div>
   );
 };
