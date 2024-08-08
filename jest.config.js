@@ -9,12 +9,12 @@ const config = createConfig('jest', {
     'src/i18n',
     'src/.*\\.exp\\..*',
   ],
-  // see https://github.com/axios/axios/issues/5026
   moduleNameMapper: {
-    "^axios$": "axios/dist/axios.js",
     // See https://stackoverflow.com/questions/72382316/jest-encountered-an-unexpected-token-react-markdown
     'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
     '@src/(.*)': '<rootDir>/src/$1',
+    // Explicit mapping to ensure Jest resolves the module correctly
+    '@edx/frontend-lib-special-exams': '<rootDir>/node_modules/@edx/frontend-lib-special-exams',
   },
   testTimeout: 30000,
   globalSetup: "./global-setup.js",
@@ -26,7 +26,7 @@ const config = createConfig('jest', {
 
 config.reporters = [...(config.reporters || []), ["jest-console-group-reporter", {
   // change this setting if need to see less details for each test
-  // reportType: "summary" | "details", 
+  // reportType: "summary" | "details",
   // enable: true | false,
   afterEachTest: {
     enable: true,
