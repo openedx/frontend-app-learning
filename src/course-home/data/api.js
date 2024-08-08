@@ -1,6 +1,6 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { logInfo } from '@edx/frontend-platform/logging';
+import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { logError, logInfo } from '@edx/frontend-platform/logging';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 
 const calculateAssignmentTypeGrades = (points, assignmentWeight, numDroppable) => {
@@ -464,4 +464,24 @@ export async function searchCourseContentFromAPI(courseId, searchKeyword, option
   const response = await getAuthenticatedHttpClient().post(url.href, formData);
 
   return camelCaseObject(response);
+}
+
+export async function getSearchEngineAuthToken() {
+  const authenticatedUser = getAuthenticatedUser();
+  const url = new URL(`${getConfig().LMS_BASE_URL}/api/search/token/`);
+
+  if (authenticatedUser) {
+    try {
+      const { data } = await getAuthenticatedHttpClient().get(url.href, {});
+      return data;
+    } catch (e) {
+      const { customAttributes: { httpErrorStatus } } = e;
+      if (httpErrorStatus === 404) {
+        logInfo(`${e}. This probably happened because the search plugin is not installed on platform.`);
+      } else {
+        logError(e);
+      }
+    }
+  }
+  return null;
 }
