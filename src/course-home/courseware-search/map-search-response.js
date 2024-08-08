@@ -39,17 +39,15 @@ export default function mapSearchResponse(response, searchKeywords = '') {
   const results = rawResults.map(result => {
     const {
       score,
-      data: {
-        id,
-        content: {
-          displayName,
-          htmlContent,
-          transcriptEn,
-        },
-        contentType,
-        location,
-        url,
+      id,
+      content: {
+        displayName,
+        htmlContent,
+        transcriptEn,
       },
+      contentType,
+      location,
+      url,
     } = result;
 
     const type = contentType?.toLowerCase() || defaultType;
