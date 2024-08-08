@@ -61,6 +61,10 @@ const SidebarProvider = ({
     }
   }, [hideDiscussionbar, hideNotificationbar]);
 
+  useEffect(() => {
+    setCurrentSidebar(initialSidebar);
+  }, [shouldDisplaySidebarOpen, initialSidebar]);
+
   const handleWidgetToggle = useCallback((widgetId, sidebarId) => {
     setHideDiscussionbar(prevWidgetId => (widgetId === WIDGETS.DISCUSSIONS ? true : prevWidgetId));
     setHideNotificationbar(prevWidgetId => (widgetId === WIDGETS.NOTIFICATIONS ? true : prevWidgetId));

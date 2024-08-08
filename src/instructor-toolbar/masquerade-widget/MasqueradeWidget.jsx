@@ -135,7 +135,7 @@ class MasqueradeWidget extends Component {
             <span className="col-auto col-form-label pl-3" id="masquerade-search-label">{`${specificLearnerInputText}:`}</span>
             <MasqueradeUserNameInput
               id="masquerade-search"
-              className="col-4 form-control"
+              className="col-4"
               autoFocus={autoFocus}
               defaultValue={masqueradeUsername}
               onError={(errorMessage) => this.onError(errorMessage)}
