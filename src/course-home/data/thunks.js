@@ -1,5 +1,5 @@
 import { logError } from '@edx/frontend-platform/logging';
-import { camelCaseObject } from '@edx/frontend-platform';
+import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import {
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
@@ -196,7 +196,7 @@ export function searchCourseContent(courseId, searchKeyword, config) {
         results: data.results.map(hit => ({
           id: hit.item_id,
           location: [hit.usage_key],
-          url: 'http://localhost:8080',
+          url: `${getConfig().LMS_BASE_URL}/courses/${courseId}/jump_to/${hit.usage_key}`,
           contentType: hit.content_type,
           content: {
             displayName: hit?.content?.display_name,
