@@ -13,11 +13,13 @@ import {
   postRequestCert,
   getLiveTabIframe,
   getCoursewareSearchEnabledFlag,
-  searchCourseContentFromAPI,
+  getSearchEngineAuthToken,
 } from './api';
 
 import {
-  addModel, updateModel,
+  addModel,
+  updateModel,
+  setSearchEngineAuthToken,
 } from '../../generic/model-store';
 
 import {
@@ -166,9 +168,12 @@ export async function fetchCoursewareSearchSettings(courseId) {
   }
 }
 
-export function searchCourseContent(courseId, searchKeyword) {
+export function searchCourseContent(courseId, searchKeyword, config) {
   return async (dispatch) => {
     const start = new Date();
+
+    // eslint-disable-next-line no-undef
+    const searchEngine = new SearchEngine(config.searchEngine, config, 'courseware_course_structure');
 
     dispatch(addModel({
       modelType: 'contentSearchResults',
@@ -185,8 +190,21 @@ export function searchCourseContent(courseId, searchKeyword) {
     let curatedResponse;
     let errors;
     try {
-      ({ data } = await searchCourseContentFromAPI(courseId, searchKeyword));
-      curatedResponse = mapSearchResponse(data, searchKeyword);
+      data = await searchEngine.search(searchKeyword, {});
+      curatedResponse = mapSearchResponse({
+        ...data,
+        results: data.results.map(hit => ({
+          id: hit.item_id,
+          location: [hit.usage_key],
+          url: 'http://localhost:8080',
+          contentType: hit.content_type,
+          content: {
+            displayName: hit?.content?.display_name,
+            htmlContent: hit?.content?.display_name,
+            transcriptEn: hit?.content?.display_name,
+          },
+        })),
+      }, searchKeyword);
     } catch (e) {
       // TODO: Remove when publishing to prod. Just temporary for performance debugging.
       // eslint-disable-next-line no-console
@@ -221,5 +239,12 @@ export function searchCourseContent(courseId, searchKeyword) {
       'Max score': maxScore,
       'Access denied count': accessDeniedCount,
     });
+  };
+}
+
+export function generateSearchEngineAuthToken() {
+  return async (dispatch) => {
+    const response = await getSearchEngineAuthToken();
+    dispatch(setSearchEngineAuthToken(camelCaseObject(response)));
   };
 }

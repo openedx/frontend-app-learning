@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import { camelCaseObject } from '@edx/frontend-platform';
 
 function add(state, modelType, model, idField) {
   idField = idField ?? 'id';
@@ -63,6 +64,9 @@ const slice = createSlice({
       const { modelType, ids } = payload;
       ids.forEach(id => remove(state, modelType, id));
     },
+    setSearchEngineAuthToken: (state, { payload }) => {
+      state.searchEngineConfig = camelCaseObject(payload);
+    },
   },
 });
 
@@ -75,6 +79,7 @@ export const {
   updateModelsMap,
   removeModel,
   removeModels,
+  setSearchEngineAuthToken,
 } = slice.actions;
 
 export const { reducer } = slice;

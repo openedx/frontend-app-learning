@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
-import { useDispatch } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
@@ -16,9 +16,9 @@ import messages from './messages';
 import CoursewareSearchForm from './CoursewareSearchForm';
 import CoursewareSearchResultsFilterContainer from './CoursewareResultsFilter';
 import { updateModel, useModel } from '../../generic/model-store';
-import { searchCourseContent } from '../data/thunks';
+import { searchCourseContent, generateSearchEngineAuthToken } from '../data/thunks';
 
-const CoursewareSearch = ({ intl, ...sectionProps }) => {
+const CoursewareSearch = ({ searchEngineConfig, intl, ...sectionProps }) => {
   const { courseId } = useParams();
   const { query: searchKeyword, setQuery, clearSearchParams } = useCoursewareSearchParams();
   const dispatch = useDispatch();
@@ -62,13 +62,19 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
       keyword: value,
     });
 
-    dispatch(searchCourseContent(courseId, value));
+    dispatch(searchCourseContent(courseId, value, searchEngineConfig));
     setQuery(value);
   };
 
   useEffect(() => {
-    handleSubmit(searchKeyword);
+    dispatch(generateSearchEngineAuthToken());
   }, []);
+
+  useEffect(() => {
+    if (searchEngineConfig) {
+      handleSubmit(searchKeyword);
+    }
+  }, [searchEngineConfig]);
 
   const handleOnChange = (value) => {
     if (value === searchKeyword) { return; }
@@ -143,6 +149,11 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
 
 CoursewareSearch.propTypes = {
   intl: intlShape.isRequired,
+  searchEngineConfig: injectIntl.isRequired,
 };
 
-export default injectIntl(CoursewareSearch);
+function mapStateToProps(state) {
+  const { searchEngineConfig } = state.models;
+  return { searchEngineConfig };
+}
+export default injectIntl(connect(mapStateToProps)(CoursewareSearch));

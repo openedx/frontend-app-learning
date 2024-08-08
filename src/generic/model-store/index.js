@@ -8,6 +8,7 @@ export {
   updateModelsMap,
   removeModel,
   removeModels,
+  setSearchEngineAuthToken,
 } from './slice';
 
 export {
