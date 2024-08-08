@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -23,6 +24,7 @@ const Unit = ({
   id,
 }) => {
   const { formatMessage } = useIntl();
+  const [searchParams] = useSearchParams();
   const { authenticatedUser } = React.useContext(AppContext);
   const examAccess = useExamAccess({ id });
   const shouldDisplayHonorCode = useShouldDisplayHonorCode({ courseId, id });
@@ -35,6 +37,7 @@ const Unit = ({
     view,
     format,
     examAccess,
+    jumpToId: searchParams.get('jumpToId'),
   }));
 
   const iframeUrl = getUrl();
