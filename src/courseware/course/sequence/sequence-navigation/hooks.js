@@ -13,6 +13,7 @@ export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) 
   const sequence = useModel('sequences', currentSequenceId);
   const courseId = useSelector(state => state.courseware.courseId);
   const courseStatus = useSelector(state => state.courseware.courseStatus);
+  const { entranceExamData: { entranceExamPassed } } = useModel('coursewareMeta', courseId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
 
   // If we don't know the sequence and unit yet, then assume no.
@@ -20,6 +21,16 @@ export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) 
     return {
       isFirstUnit: false,
       isLastUnit: false,
+      navigationDisabledNextSequence: false,
+      navigationDisabledPrevSequence: false,
+    };
+  }
+
+  // if entrance exam is not passed then we should treat this as 1st and last unit
+  if (entranceExamPassed === false) {
+    return {
+      isFirstUnit: true,
+      isLastUnit: true,
       navigationDisabledNextSequence: false,
       navigationDisabledPrevSequence: false,
     };
