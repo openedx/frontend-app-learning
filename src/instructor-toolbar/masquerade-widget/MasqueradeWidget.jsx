@@ -22,7 +22,8 @@ class MasqueradeWidget extends Component {
     this.state = {
       autoFocus: false,
       masquerade: 'Staff',
-      options: [],
+      active: {},
+      available: [],
       shouldShowUserNameInput: false,
       masqueradeUsername: null,
     };
@@ -58,10 +59,28 @@ class MasqueradeWidget extends Component {
   }
 
   onSuccess(data) {
-    const options = this.parseAvailableOptions(data);
+    const { active, available } = this.parseAvailableOptions(data);
     this.setState({
-      options,
+      active,
+      available,
     });
+  }
+
+  getOptions() {
+    const options = this.state.available.map((group) => (
+      <MasqueradeWidgetOption
+        groupId={group.groupId}
+        groupName={group.name}
+        key={group.name}
+        role={group.role}
+        selected={this.state.active}
+        userName={group.userName}
+        userPartitionId={group.userPartitionId}
+        userNameInputToggle={(...args) => this.toggle(...args)}
+        onSubmit={(payload) => this.onSubmit(payload)}
+      />
+    ));
+    return options;
   }
 
   clearError() {
@@ -80,19 +99,6 @@ class MasqueradeWidget extends Component {
     const data = postData || {};
     const active = data.active || {};
     const available = data.available || [];
-    const options = available.map((group) => (
-      <MasqueradeWidgetOption
-        groupId={group.groupId}
-        groupName={group.name}
-        key={group.name}
-        role={group.role}
-        selected={active}
-        userName={group.userName}
-        userPartitionId={group.userPartitionId}
-        userNameInputToggle={(...args) => this.toggle(...args)}
-        onSubmit={(payload) => this.onSubmit(payload)}
-      />
-    ));
     if (active.userName) {
       this.setState({
         autoFocus: false,
@@ -105,14 +111,13 @@ class MasqueradeWidget extends Component {
     } else if (active.role === 'student') {
       this.setState({ masquerade: 'Learner' });
     }
-    return options;
+    return { active, available };
   }
 
   render() {
     const {
       autoFocus,
       masquerade,
-      options,
       shouldShowUserNameInput,
       masqueradeUsername,
     } = this.state;
@@ -126,7 +131,7 @@ class MasqueradeWidget extends Component {
               {masquerade}
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              {options}
+              {this.getOptions()}
             </Dropdown.Menu>
           </Dropdown>
         </div>
