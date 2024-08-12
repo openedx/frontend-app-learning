@@ -87,11 +87,14 @@ class MasqueradeWidget extends Component {
     this.props.onError('');
   }
 
-  toggle(show) {
+  toggle(show, groupId, groupName, role, userName, userPartitionId) {
     this.setState(prevState => ({
       autoFocus: true,
-      masquerade: 'Specific Student...',
+      masquerade: groupName,
       shouldShowUserNameInput: show === undefined ? !prevState.shouldShowUserNameInput : show,
+      active: {
+        ...prevState.active, groupId, role, userName, userPartitionId,
+      },
     }));
   }
 

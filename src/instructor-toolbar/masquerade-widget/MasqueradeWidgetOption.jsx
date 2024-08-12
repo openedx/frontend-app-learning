@@ -16,6 +16,7 @@ class MasqueradeWidgetOption extends Component {
     event.target.parentNode.parentNode.click();
     const {
       groupId,
+      groupName,
       role,
       userName,
       userPartitionId,
@@ -23,7 +24,7 @@ class MasqueradeWidgetOption extends Component {
     } = this.props;
     const payload = {};
     if (userName || userName === '') {
-      userNameInputToggle(true);
+      userNameInputToggle(true, groupId, groupName, role, userName, userPartitionId);
       return false;
     }
     if (role) {
