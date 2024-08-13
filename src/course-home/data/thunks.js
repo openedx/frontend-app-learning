@@ -196,7 +196,7 @@ export function searchCourseContent(courseId, searchKeyword, config) {
         ...data,
         results: data.results.map(hit => ({
           id: hit.item_id,
-          location: [hit.usage_key],
+          location: hit.location || [],
           url: `${getConfig().LMS_BASE_URL}/courses/${courseId}/jump_to/${hit.usage_key}`,
           contentType: hit.content_type,
           content: {
