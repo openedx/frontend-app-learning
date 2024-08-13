@@ -9,8 +9,6 @@
     <% if (htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID) { %>
       <script src="https://www.edx.org/optimizelyjs/<%= htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID %>.js"></script>
     <% } %>
-    <script src="<%= process.env.LMS_BASE_URL %>/static/django_search_backend/js/search_library.js"
-            type="text/javascript"></script>
   </head>
   <body>
     <div id="root"></div>

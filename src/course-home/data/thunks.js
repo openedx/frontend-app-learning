@@ -1,5 +1,6 @@
 import { logError } from '@edx/frontend-platform/logging';
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
+import 'search_library'; // eslint-disable-line import/no-unresolved
 import {
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
