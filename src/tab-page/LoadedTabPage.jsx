@@ -29,6 +29,7 @@ const LoadedTabPage = ({
     tabs,
     title,
     verifiedMode,
+    hasCourseAuthorAccess,
   } = useModel('courseHomeMeta', courseId);
 
   // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
@@ -58,6 +59,7 @@ const LoadedTabPage = ({
           courseId={courseId}
           unitId={unitId}
           tab={activeTabSlug}
+          isStudioButtonVisible={hasCourseAuthorAccess}
         />
       )}
       <StreakModal
