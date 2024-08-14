@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Data layer integration tests Test fetchDatesTab Should fetch, normalize, and save metadata 1`] = `
-Object {
-  "courseHome": Object {
+{
+  "courseHome": {
     "courseId": "course-v1:edX+DemoX+Demo_Course",
     "courseStatus": "loaded",
     "proctoringPanelStatus": "loading",
@@ -12,13 +12,13 @@ Object {
     "toastBodyText": null,
     "toastHeader": "",
   },
-  "courseware": Object {
+  "courseware": {
     "courseId": null,
-    "courseOutline": Object {},
+    "courseOutline": {},
     "courseOutlineShouldUpdate": false,
     "courseOutlineStatus": "loading",
     "courseStatus": "loading",
-    "coursewareOutlineSidebarSettings": Object {},
+    "coursewareOutlineSidebarSettings": {},
     "sequenceId": null,
     "sequenceMightBeUnit": false,
     "sequenceStatus": "loading",
@@ -26,12 +26,12 @@ Object {
   "learningAssistant": ObjectContaining {
     "conversationId": Any<String>,
   },
-  "models": Object {
-    "courseHomeMeta": Object {
-      "course-v1:edX+DemoX+Demo_Course": Object {
+  "models": {
+    "courseHomeMeta": {
+      "course-v1:edX+DemoX+Demo_Course": {
         "canViewCertificate": true,
         "celebrations": null,
-        "courseAccess": Object {
+        "courseAccess": {
           "additionalContextUserMessage": null,
           "developerMessage": null,
           "errorCode": null,
@@ -49,33 +49,33 @@ Object {
         "org": "edX",
         "originalUserIsStaff": false,
         "start": "2013-02-05T05:00:00Z",
-        "tabs": Array [
-          Object {
+        "tabs": [
+          {
             "slug": "outline",
             "title": "Course",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course/",
           },
-          Object {
+          {
             "slug": "discussion",
             "title": "Discussion",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/discussion/forum/",
           },
-          Object {
+          {
             "slug": "wiki",
             "title": "Wiki",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course_wiki",
           },
-          Object {
+          {
             "slug": "progress",
             "title": "Progress",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/progress",
           },
-          Object {
+          {
             "slug": "instructor",
             "title": "Instructor",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/instructor",
           },
-          Object {
+          {
             "slug": "dates",
             "title": "Dates",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/dates",
@@ -84,7 +84,7 @@ Object {
         "title": "Demonstration Course",
         "userTimezone": "UTC",
         "username": "MockUser",
-        "verifiedMode": Object {
+        "verifiedMode": {
           "accessExpirationDate": null,
           "currency": "USD",
           "currencySymbol": "$",
@@ -94,10 +94,10 @@ Object {
         },
       },
     },
-    "dates": Object {
-      "course-v1:edX+DemoX+Demo_Course": Object {
-        "courseDateBlocks": Array [
-          Object {
+    "dates": {
+      "course-v1:edX+DemoX+Demo_Course": {
+        "courseDateBlocks": [
+          {
             "date": "2020-05-01T17:59:41Z",
             "dateType": "course-start-date",
             "description": "",
@@ -106,7 +106,7 @@ Object {
             "link": "",
             "title": "Course Starts",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "complete": true,
             "date": "2020-05-04T02:59:40.942669Z",
@@ -116,7 +116,7 @@ Object {
             "learnerHasAccess": true,
             "title": "Multi Badges Completed",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2020-05-05T02:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -125,7 +125,7 @@ Object {
             "learnerHasAccess": true,
             "title": "Multi Badges Past Due",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2020-05-27T02:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -135,7 +135,7 @@ Object {
             "link": "https://example.com/",
             "title": "Both Past Due 1",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2020-05-27T02:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -145,7 +145,7 @@ Object {
             "link": "https://example.com/",
             "title": "Both Past Due 2",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "complete": true,
             "date": "2020-05-28T08:59:40.942669Z",
@@ -156,7 +156,7 @@ Object {
             "link": "https://example.com/",
             "title": "One Completed/Due 1",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2020-05-28T08:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -166,7 +166,7 @@ Object {
             "link": "https://example.com/",
             "title": "One Completed/Due 2",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "complete": true,
             "date": "2020-05-29T08:59:40.942669Z",
@@ -177,7 +177,7 @@ Object {
             "link": "https://example.com/",
             "title": "Both Completed 1",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "complete": true,
             "date": "2020-05-29T08:59:40.942669Z",
@@ -188,7 +188,7 @@ Object {
             "link": "https://example.com/",
             "title": "Both Completed 2",
           },
-          Object {
+          {
             "date": "2020-06-16T17:59:40.942669Z",
             "dateType": "verified-upgrade-deadline",
             "description": "Don't miss the opportunity to highlight your new knowledge and skills by earning a verified certificate.",
@@ -197,7 +197,7 @@ Object {
             "link": "https://example.com/",
             "title": "Upgrade to Verified Certificate",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2030-08-17T05:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -207,7 +207,7 @@ Object {
             "link": "https://example.com/",
             "title": "One Verified 1",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2030-08-17T05:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -217,7 +217,7 @@ Object {
             "link": "https://example.com/",
             "title": "One Verified 2",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2030-08-17T05:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -227,7 +227,7 @@ Object {
             "link": "https://example.com/",
             "title": "ORA Verified 2",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2030-08-18T05:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -237,7 +237,7 @@ Object {
             "link": "https://example.com/",
             "title": "Both Verified 1",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2030-08-18T05:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -247,7 +247,7 @@ Object {
             "link": "https://example.com/",
             "title": "Both Verified 2",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2030-08-19T05:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -255,7 +255,7 @@ Object {
             "learnerHasAccess": true,
             "title": "One Unreleased 1",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2030-08-19T05:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -265,7 +265,7 @@ Object {
             "link": "https://example.com/",
             "title": "One Unreleased 2",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2030-08-20T05:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -274,7 +274,7 @@ Object {
             "learnerHasAccess": true,
             "title": "Both Unreleased 1",
           },
-          Object {
+          {
             "assignmentType": "Homework",
             "date": "2030-08-20T05:59:40.942669Z",
             "dateType": "assignment-due-date",
@@ -283,7 +283,7 @@ Object {
             "learnerHasAccess": true,
             "title": "Both Unreleased 2",
           },
-          Object {
+          {
             "date": "2030-08-23T00:00:00Z",
             "dateType": "course-end-date",
             "description": "",
@@ -292,7 +292,7 @@ Object {
             "link": "",
             "title": "Course Ends",
           },
-          Object {
+          {
             "date": "2030-09-01T00:00:00Z",
             "dateType": "verification-deadline-date",
             "description": "You must successfully complete verification before this date to qualify for a Verified Certificate.",
@@ -302,7 +302,7 @@ Object {
             "title": "Verification Deadline",
           },
         ],
-        "datesBannerInfo": Object {
+        "datesBannerInfo": {
           "contentTypeGatingEnabled": false,
           "missedDeadlines": false,
           "missedGatedContent": false,
@@ -314,16 +314,16 @@ Object {
       },
     },
   },
-  "plugins": Object {},
-  "recommendations": Object {
+  "plugins": {},
+  "recommendations": {
     "recommendationsStatus": "loading",
   },
-  "specialExams": Object {
+  "specialExams": {
     "activeAttempt": null,
     "allowProctoringOptOut": false,
     "apiErrorMsg": "",
-    "exam": Object {
-      "attempt": Object {
+    "exam": {
+      "attempt": {
         "attempt_code": "",
         "attempt_id": null,
         "attempt_status": "",
@@ -351,27 +351,27 @@ Object {
       "is_active": true,
       "is_practice_exam": false,
       "is_proctored": false,
-      "prerequisite_status": Object {
+      "prerequisite_status": {
         "are_prerequisites_satisifed": true,
-        "declined_prerequisites": Array [],
-        "failed_prerequisites": Array [],
-        "pending_prerequisites": Array [],
-        "satisfied_prerequisites": Array [],
+        "declined_prerequisites": [],
+        "failed_prerequisites": [],
+        "pending_prerequisites": [],
+        "satisfied_prerequisites": [],
       },
       "time_limit_mins": null,
       "type": "",
     },
-    "examAccessToken": Object {
+    "examAccessToken": {
       "exam_access_token": "",
       "exam_access_token_expiration": "",
     },
     "isLoading": true,
-    "proctoringSettings": Object {
-      "exam_proctoring_backend": Object {
+    "proctoringSettings": {
+      "exam_proctoring_backend": {
         "download_url": "",
-        "instructions": Array [],
+        "instructions": [],
         "name": "",
-        "rules": Object {},
+        "rules": {},
       },
       "integration_specific_email": "",
       "learner_notification_from_email": "",
@@ -382,7 +382,7 @@ Object {
     },
     "timeIsOver": false,
   },
-  "tours": Object {
+  "tours": {
     "showCoursewareTour": false,
     "showExistingUserCourseHomeTour": false,
     "showNewUserCourseHomeModal": false,
@@ -393,8 +393,8 @@ Object {
 `;
 
 exports[`Data layer integration tests Test fetchOutlineTab Should fetch, normalize, and save metadata 1`] = `
-Object {
-  "courseHome": Object {
+{
+  "courseHome": {
     "courseId": "course-v1:edX+DemoX+Demo_Course",
     "courseStatus": "loaded",
     "proctoringPanelStatus": "loading",
@@ -404,13 +404,13 @@ Object {
     "toastBodyText": null,
     "toastHeader": "",
   },
-  "courseware": Object {
+  "courseware": {
     "courseId": null,
-    "courseOutline": Object {},
+    "courseOutline": {},
     "courseOutlineShouldUpdate": false,
     "courseOutlineStatus": "loading",
     "courseStatus": "loading",
-    "coursewareOutlineSidebarSettings": Object {},
+    "coursewareOutlineSidebarSettings": {},
     "sequenceId": null,
     "sequenceMightBeUnit": false,
     "sequenceStatus": "loading",
@@ -418,12 +418,12 @@ Object {
   "learningAssistant": ObjectContaining {
     "conversationId": Any<String>,
   },
-  "models": Object {
-    "courseHomeMeta": Object {
-      "course-v1:edX+DemoX+Demo_Course": Object {
+  "models": {
+    "courseHomeMeta": {
+      "course-v1:edX+DemoX+Demo_Course": {
         "canViewCertificate": true,
         "celebrations": null,
-        "courseAccess": Object {
+        "courseAccess": {
           "additionalContextUserMessage": null,
           "developerMessage": null,
           "errorCode": null,
@@ -441,33 +441,33 @@ Object {
         "org": "edX",
         "originalUserIsStaff": false,
         "start": "2013-02-05T05:00:00Z",
-        "tabs": Array [
-          Object {
+        "tabs": [
+          {
             "slug": "outline",
             "title": "Course",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course/",
           },
-          Object {
+          {
             "slug": "discussion",
             "title": "Discussion",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/discussion/forum/",
           },
-          Object {
+          {
             "slug": "wiki",
             "title": "Wiki",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course_wiki",
           },
-          Object {
+          {
             "slug": "progress",
             "title": "Progress",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/progress",
           },
-          Object {
+          {
             "slug": "instructor",
             "title": "Instructor",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/instructor",
           },
-          Object {
+          {
             "slug": "dates",
             "title": "Dates",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/dates",
@@ -476,7 +476,7 @@ Object {
         "title": "Demonstration Course",
         "userTimezone": "UTC",
         "username": "MockUser",
-        "verifiedMode": Object {
+        "verifiedMode": {
           "accessExpirationDate": null,
           "currency": "USD",
           "currencySymbol": "$",
@@ -486,41 +486,41 @@ Object {
         },
       },
     },
-    "outline": Object {
-      "course-v1:edX+DemoX+Demo_Course": Object {
+    "outline": {
+      "course-v1:edX+DemoX+Demo_Course": {
         "accessExpiration": null,
         "canShowUpgradeSock": false,
-        "certData": Object {
+        "certData": {
           "certStatus": null,
           "certWebViewUrl": null,
           "certificateAvailableDate": null,
         },
-        "courseBlocks": Object {
-          "courses": Object {
-            "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": Object {
+        "courseBlocks": {
+          "courses": {
+            "block-v1:edX+DemoX+Demo_Course+type@course+block@bcdabcdabcdabcdabcdabcdabcdabcd3": {
               "hasScheduledContent": false,
               "id": "course-v1:edX+DemoX+Demo_Course",
-              "sectionIds": Array [
+              "sectionIds": [
                 "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               ],
               "title": "bcdabcdabcdabcdabcdabcdabcdabcd3",
             },
           },
-          "sections": Object {
-            "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2": Object {
+          "sections": {
+            "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2": {
               "complete": false,
               "courseId": "course-v1:edX+DemoX+Demo_Course",
               "hideFromTOC": undefined,
               "id": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               "resumeBlock": false,
-              "sequenceIds": Array [
+              "sequenceIds": [
                 "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
               ],
               "title": "Title of Section",
             },
           },
-          "sequences": Object {
-            "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1": Object {
+          "sequences": {
+            "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1": {
               "complete": false,
               "description": null,
               "due": null,
@@ -536,30 +536,30 @@ Object {
             },
           },
         },
-        "courseGoals": Object {
+        "courseGoals": {
           "daysPerWeek": null,
-          "goalOptions": Array [],
+          "goalOptions": [],
           "selectedGoal": null,
           "subscribedToReminders": null,
           "weeklyLearningGoalEnabled": false,
         },
-        "courseTools": Array [
-          Object {
+        "courseTools": [
+          {
             "analyticsId": "edx.bookmarks",
             "title": "Bookmarks",
             "url": "https://example.com/bookmarks",
           },
         ],
-        "datesBannerInfo": Object {
+        "datesBannerInfo": {
           "contentTypeGatingEnabled": false,
           "missedDeadlines": false,
           "missedGatedContent": false,
         },
-        "datesWidget": Object {
-          "courseDateBlocks": Array [],
+        "datesWidget": {
+          "courseDateBlocks": [],
         },
         "enableProctoredExams": undefined,
-        "enrollAlert": Object {
+        "enrollAlert": {
           "canEnroll": true,
           "extraText": "Contact the administrator.",
         },
@@ -569,13 +569,13 @@ Object {
         "hasScheduledContent": null,
         "id": "course-v1:edX+DemoX+Demo_Course",
         "offer": null,
-        "resumeCourse": Object {
+        "resumeCourse": {
           "hasVisitedCourse": false,
           "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/jump_to/block-v1:edX+Test+Block@12345abcde",
         },
         "timeOffsetMillis": 0,
         "userHasPassingGrade": undefined,
-        "verifiedMode": Object {
+        "verifiedMode": {
           "accessExpirationDate": "2050-01-01T12:00:00",
           "currency": "USD",
           "currencySymbol": "$",
@@ -587,16 +587,16 @@ Object {
       },
     },
   },
-  "plugins": Object {},
-  "recommendations": Object {
+  "plugins": {},
+  "recommendations": {
     "recommendationsStatus": "loading",
   },
-  "specialExams": Object {
+  "specialExams": {
     "activeAttempt": null,
     "allowProctoringOptOut": false,
     "apiErrorMsg": "",
-    "exam": Object {
-      "attempt": Object {
+    "exam": {
+      "attempt": {
         "attempt_code": "",
         "attempt_id": null,
         "attempt_status": "",
@@ -624,27 +624,27 @@ Object {
       "is_active": true,
       "is_practice_exam": false,
       "is_proctored": false,
-      "prerequisite_status": Object {
+      "prerequisite_status": {
         "are_prerequisites_satisifed": true,
-        "declined_prerequisites": Array [],
-        "failed_prerequisites": Array [],
-        "pending_prerequisites": Array [],
-        "satisfied_prerequisites": Array [],
+        "declined_prerequisites": [],
+        "failed_prerequisites": [],
+        "pending_prerequisites": [],
+        "satisfied_prerequisites": [],
       },
       "time_limit_mins": null,
       "type": "",
     },
-    "examAccessToken": Object {
+    "examAccessToken": {
       "exam_access_token": "",
       "exam_access_token_expiration": "",
     },
     "isLoading": true,
-    "proctoringSettings": Object {
-      "exam_proctoring_backend": Object {
+    "proctoringSettings": {
+      "exam_proctoring_backend": {
         "download_url": "",
-        "instructions": Array [],
+        "instructions": [],
         "name": "",
-        "rules": Object {},
+        "rules": {},
       },
       "integration_specific_email": "",
       "learner_notification_from_email": "",
@@ -655,7 +655,7 @@ Object {
     },
     "timeIsOver": false,
   },
-  "tours": Object {
+  "tours": {
     "showCoursewareTour": false,
     "showExistingUserCourseHomeTour": false,
     "showNewUserCourseHomeModal": false,
@@ -666,8 +666,8 @@ Object {
 `;
 
 exports[`Data layer integration tests Test fetchProgressTab Should fetch, normalize, and save metadata 1`] = `
-Object {
-  "courseHome": Object {
+{
+  "courseHome": {
     "courseId": "course-v1:edX+DemoX+Demo_Course",
     "courseStatus": "loaded",
     "proctoringPanelStatus": "loading",
@@ -677,13 +677,13 @@ Object {
     "toastBodyText": null,
     "toastHeader": "",
   },
-  "courseware": Object {
+  "courseware": {
     "courseId": null,
-    "courseOutline": Object {},
+    "courseOutline": {},
     "courseOutlineShouldUpdate": false,
     "courseOutlineStatus": "loading",
     "courseStatus": "loading",
-    "coursewareOutlineSidebarSettings": Object {},
+    "coursewareOutlineSidebarSettings": {},
     "sequenceId": null,
     "sequenceMightBeUnit": false,
     "sequenceStatus": "loading",
@@ -691,12 +691,12 @@ Object {
   "learningAssistant": ObjectContaining {
     "conversationId": Any<String>,
   },
-  "models": Object {
-    "courseHomeMeta": Object {
-      "course-v1:edX+DemoX+Demo_Course": Object {
+  "models": {
+    "courseHomeMeta": {
+      "course-v1:edX+DemoX+Demo_Course": {
         "canViewCertificate": true,
         "celebrations": null,
-        "courseAccess": Object {
+        "courseAccess": {
           "additionalContextUserMessage": null,
           "developerMessage": null,
           "errorCode": null,
@@ -714,33 +714,33 @@ Object {
         "org": "edX",
         "originalUserIsStaff": false,
         "start": "2013-02-05T05:00:00Z",
-        "tabs": Array [
-          Object {
+        "tabs": [
+          {
             "slug": "outline",
             "title": "Course",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course/",
           },
-          Object {
+          {
             "slug": "discussion",
             "title": "Discussion",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/discussion/forum/",
           },
-          Object {
+          {
             "slug": "wiki",
             "title": "Wiki",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/course_wiki",
           },
-          Object {
+          {
             "slug": "progress",
             "title": "Progress",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/progress",
           },
-          Object {
+          {
             "slug": "instructor",
             "title": "Instructor",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/instructor",
           },
-          Object {
+          {
             "slug": "dates",
             "title": "Dates",
             "url": "http://localhost:18000/courses/course-v1:edX+DemoX+Demo_Course/dates",
@@ -749,7 +749,7 @@ Object {
         "title": "Demonstration Course",
         "userTimezone": "UTC",
         "username": "MockUser",
-        "verifiedMode": Object {
+        "verifiedMode": {
           "accessExpirationDate": null,
           "currency": "USD",
           "currencySymbol": "$",
@@ -759,16 +759,16 @@ Object {
         },
       },
     },
-    "progress": Object {
-      "course-v1:edX+DemoX+Demo_Course": Object {
+    "progress": {
+      "course-v1:edX+DemoX+Demo_Course": {
         "accessExpiration": null,
-        "certificateData": Object {},
-        "completionSummary": Object {
+        "certificateData": {},
+        "completionSummary": {
           "completeCount": 1,
           "incompleteCount": 1,
           "lockedCount": 0,
         },
-        "courseGrade": Object {
+        "courseGrade": {
           "isPassing": true,
           "letterGrade": "pass",
           "percent": 1,
@@ -779,9 +779,9 @@ Object {
         "enrollmentMode": "audit",
         "gradesFeatureIsFullyLocked": false,
         "gradesFeatureIsPartiallyLocked": false,
-        "gradingPolicy": Object {
-          "assignmentPolicies": Array [
-            Object {
+        "gradingPolicy": {
+          "assignmentPolicies": [
+            {
               "averageGrade": "1.00",
               "numDroppable": 1,
               "shortLabel": "HW",
@@ -790,17 +790,17 @@ Object {
               "weightedGrade": 1,
             },
           ],
-          "gradeRange": Object {
+          "gradeRange": {
             "pass": 0.75,
           },
         },
         "hasScheduledContent": false,
         "id": "course-v1:edX+DemoX+Demo_Course",
-        "sectionScores": Array [
-          Object {
+        "sectionScores": [
+          {
             "displayName": "First section",
-            "subsections": Array [
-              Object {
+            "subsections": [
+              {
                 "assignmentType": "Homework",
                 "blockKey": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345",
                 "displayName": "First subsection",
@@ -809,16 +809,16 @@ Object {
                 "numPointsEarned": 0,
                 "numPointsPossible": 3,
                 "percentGraded": 0,
-                "problemScores": Array [
-                  Object {
+                "problemScores": [
+                  {
                     "earned": 0,
                     "possible": 1,
                   },
-                  Object {
+                  {
                     "earned": 0,
                     "possible": 1,
                   },
-                  Object {
+                  {
                     "earned": 0,
                     "possible": 1,
                   },
@@ -829,18 +829,18 @@ Object {
               },
             ],
           },
-          Object {
+          {
             "displayName": "Second section",
-            "subsections": Array [
-              Object {
+            "subsections": [
+              {
                 "assignmentType": "Homework",
                 "displayName": "Second subsection",
                 "hasGradedAssignment": true,
                 "numPointsEarned": 1,
                 "numPointsPossible": 1,
                 "percentGraded": 1,
-                "problemScores": Array [
-                  Object {
+                "problemScores": [
+                  {
                     "earned": 1,
                     "possible": 1,
                   },
@@ -854,7 +854,7 @@ Object {
         ],
         "studioUrl": "http://studio.edx.org/settings/grading/course-v1:edX+Test+run",
         "userHasPassingGrade": false,
-        "verificationData": Object {
+        "verificationData": {
           "link": null,
           "status": "none",
           "statusDate": null,
@@ -863,16 +863,16 @@ Object {
       },
     },
   },
-  "plugins": Object {},
-  "recommendations": Object {
+  "plugins": {},
+  "recommendations": {
     "recommendationsStatus": "loading",
   },
-  "specialExams": Object {
+  "specialExams": {
     "activeAttempt": null,
     "allowProctoringOptOut": false,
     "apiErrorMsg": "",
-    "exam": Object {
-      "attempt": Object {
+    "exam": {
+      "attempt": {
         "attempt_code": "",
         "attempt_id": null,
         "attempt_status": "",
@@ -900,27 +900,27 @@ Object {
       "is_active": true,
       "is_practice_exam": false,
       "is_proctored": false,
-      "prerequisite_status": Object {
+      "prerequisite_status": {
         "are_prerequisites_satisifed": true,
-        "declined_prerequisites": Array [],
-        "failed_prerequisites": Array [],
-        "pending_prerequisites": Array [],
-        "satisfied_prerequisites": Array [],
+        "declined_prerequisites": [],
+        "failed_prerequisites": [],
+        "pending_prerequisites": [],
+        "satisfied_prerequisites": [],
       },
       "time_limit_mins": null,
       "type": "",
     },
-    "examAccessToken": Object {
+    "examAccessToken": {
       "exam_access_token": "",
       "exam_access_token_expiration": "",
     },
     "isLoading": true,
-    "proctoringSettings": Object {
-      "exam_proctoring_backend": Object {
+    "proctoringSettings": {
+      "exam_proctoring_backend": {
         "download_url": "",
-        "instructions": Array [],
+        "instructions": [],
         "name": "",
-        "rules": Object {},
+        "rules": {},
       },
       "integration_specific_email": "",
       "learner_notification_from_email": "",
@@ -931,7 +931,7 @@ Object {
     },
     "timeIsOver": false,
   },
-  "tours": Object {
+  "tours": {
     "showCoursewareTour": false,
     "showExistingUserCourseHomeTour": false,
     "showNewUserCourseHomeModal": false,
