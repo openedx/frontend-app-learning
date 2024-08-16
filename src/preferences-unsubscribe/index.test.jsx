@@ -1,15 +1,18 @@
 import React from 'react';
+
+import MockAdapter from 'axios-mock-adapter';
 import {
   MemoryRouter, Route, Routes,
 } from 'react-router-dom';
-import MockAdapter from 'axios-mock-adapter';
+
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { getUnsubscribeUrl } from './data/api';
-import NotificationPreferencesUnsubscribe from './NotificationPreferencesUnsubscribe';
+
+import { ROUTES } from '../constants';
 import {
   initializeTestStore, render, screen, waitFor,
 } from '../setupTest';
-import { ROUTES } from '../constants';
+import { getUnsubscribeUrl } from './data/api';
+import PreferencesUnsubscribe from './index';
 
 describe('Notification Preferences One Click Unsubscribe', () => {
   let axiosMock;
@@ -26,7 +29,7 @@ describe('Notification Preferences One Click Unsubscribe', () => {
     component = (
       <MemoryRouter initialEntries={['/preferences-unsubscribe/user/patch/']}>
         <Routes>
-          <Route path={ROUTES.NOTIFICATION_PREFERENCES_UNSUBSCRIBE} element={<NotificationPreferencesUnsubscribe />} />
+          <Route path={ROUTES.PREFERENCES_UNSUBSCRIBE} element={<PreferencesUnsubscribe />} />
         </Routes>
       </MemoryRouter>
     );

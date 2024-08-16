@@ -5,7 +5,7 @@ export const getUnsubscribeUrl = (userToken, updatePatch) => (
   `${getConfig().LMS_BASE_URL}/api/notifications/preferences/update/${userToken}/${updatePatch}/`
 );
 
-export async function updateNotificationPreferencesFromPatch(userToken, updatePatch) {
+export async function unsubscribeNotificationPreferences(userToken, updatePatch) {
   const url = getUnsubscribeUrl(userToken, updatePatch);
-  await getAuthenticatedHttpClient().get(url);
+  return getAuthenticatedHttpClient().get(url);
 }
