@@ -20,6 +20,7 @@ export const DECODE_ROUTES = {
 
 export const ROUTES = {
   UNSUBSCRIBE: '/goal-unsubscribe/:token',
+  NOTIFICATION_PREFERENCES_UNSUBSCRIBE: '/preferences-unsubscribe/:userToken/:updatePatch',
   REDIRECT: '/redirect/*',
   DASHBOARD: 'dashboard',
   ENTERPRISE_LEARNER_DASHBOARD: 'enterprise-learner-dashboard',
@@ -48,4 +49,10 @@ export const VERIFIED_MODES = [
 export const WIDGETS = {
   DISCUSSIONS: 'DISCUSSIONS',
   NOTIFICATIONS: 'NOTIFICATIONS',
+};
+
+export const RequestStatus = {
+  IN_PROGRESS: 'in-progress',
+  FAILED: 'failed',
+  SUCCESSFUL: 'successful',
 };

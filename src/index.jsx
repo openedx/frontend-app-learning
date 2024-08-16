@@ -37,6 +37,7 @@ import LiveTab from './course-home/live-tab/LiveTab';
 import CourseAccessErrorPage from './generic/CourseAccessErrorPage';
 import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
+import NotificationPreferencesUnsubscribe from './notification-preferences/NotificationPreferencesUnsubscribe';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
@@ -50,6 +51,10 @@ subscribe(APP_READY, () => {
             <Routes>
               <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
               <Route path={ROUTES.REDIRECT} element={<PageWrap><CoursewareRedirectLandingPage /></PageWrap>} />
+              <Route
+                path={ROUTES.NOTIFICATION_PREFERENCES_UNSUBSCRIBE}
+                element={<NotificationPreferencesUnsubscribe />}
+              />
               <Route
                 path={DECODE_ROUTES.ACCESS_DENIED}
                 element={<DecodePageRoute><CourseAccessErrorPage /></DecodePageRoute>}
