@@ -25,11 +25,6 @@ const messages = defineMessages({
     id: 'learning.notification.preferences.unsubscribe.preferenceCenterUrl',
     defaultMessage: 'preferences page',
   },
-  preferencePageUrlText: {
-    id: 'learning.notification.preferences.unsubscribe.preferencePageUrlText',
-    defaultMessage: 'Notifications Preferences in Account Settings',
-    description: 'Its shown as a suggestion or recommendation for learner when their unsubscribing request has failed',
-  },
 });
 
 export default messages;
