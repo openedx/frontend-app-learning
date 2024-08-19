@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { Container, Icon } from '@openedx/paragon';
-import { CheckCircleLightOutline, ErrorOutline, Hyperlink } from '@openedx/paragon/icons';
+import { Container, Icon, Hyperlink } from '@openedx/paragon';
+import { CheckCircleLightOutline, ErrorOutline } from '@openedx/paragon/icons';
 import { useParams } from 'react-router-dom';
 
 import Header from '@edx/frontend-component-header';
@@ -61,20 +61,23 @@ const PreferencesUnsubscribe = () => {
                 <div className="font-weight-normal text-gray-700 text-center">
                   {intl.formatMessage(pageContent.bodyText)}
                 </div>
-                <FormattedMessage
-                  id="learning.notification.preferences.unsubscribe.successMessage"
-                  defaultMessage="Go to the {preferenceCenterUrl} to set your preferences"
-                  values={{
-                    preferenceCenterUrl: (
-                      <Hyperlink
-                        className="text-gray"
-                        destination={`${getConfig().ACCOUNT_SETTINGS_URL}/notifications`}
-                      >
-                        {intl.formatMessage(messages.preferencePageUrlText)}
-                      </Hyperlink>
-                    ),
-                  }}
-                />
+                <small className="d-block font-weight-normal text-gray text-center mt-3">
+                  <FormattedMessage
+                    id="learning.notification.preferences.unsubscribe.preferenceCenterUrl"
+                    description="Shown as a suggestion or recommendation for learner when their unsubscribing request has failed"
+                    defaultMessage="Go to the {preferenceCenterUrl} to set your preferences"
+                    values={{
+                      preferenceCenterUrl: (
+                        <Hyperlink
+                          className="text-gray"
+                          destination={`${getConfig().ACCOUNT_SETTINGS_URL}/notifications`}
+                        >
+                          {intl.formatMessage(messages.preferencePageUrlText)}
+                        </Hyperlink>
+                      ),
+                    }}
+                  />
+                </small>
               </>
             )}
           </div>

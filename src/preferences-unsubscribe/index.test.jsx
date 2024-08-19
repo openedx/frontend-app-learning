@@ -1,23 +1,31 @@
 import React from 'react';
 
 import MockAdapter from 'axios-mock-adapter';
-import {
-  MemoryRouter, Route, Routes,
-} from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { AppProvider } from '@edx/frontend-platform/react';
 
 import { ROUTES } from '../constants';
 import {
-  initializeTestStore, render, screen, waitFor,
+  initializeTestStore, initializeMockApp, render, screen, waitFor,
 } from '../setupTest';
 import { getUnsubscribeUrl } from './data/api';
 import PreferencesUnsubscribe from './index';
+import initializeStore from '../store';
+import { UserMessagesProvider } from '../generic/user-messages';
+
+initializeMockApp();
+jest.mock('@edx/frontend-platform/analytics');
 
 describe('Notification Preferences One Click Unsubscribe', () => {
   let axiosMock;
   let component;
-  const url = getUnsubscribeUrl('user', 'patch');
+  let store;
+  const userToken = '1234';
+  const updatePatch = 'abc123';
+  const url = getUnsubscribeUrl(userToken, updatePatch);
 
   beforeAll(async () => {
     await initializeTestStore();
@@ -25,13 +33,19 @@ describe('Notification Preferences One Click Unsubscribe', () => {
   });
 
   beforeEach(() => {
+    sendTrackEvent.mockClear();
     axiosMock.reset();
+    store = initializeStore();
     component = (
-      <MemoryRouter initialEntries={['/preferences-unsubscribe/user/patch/']}>
-        <Routes>
-          <Route path={ROUTES.PREFERENCES_UNSUBSCRIBE} element={<PreferencesUnsubscribe />} />
-        </Routes>
-      </MemoryRouter>
+      <AppProvider store={store} wrapWithRouter={false}>
+        <UserMessagesProvider>
+          <MemoryRouter initialEntries={[`${`/preferences-unsubscribe/${userToken}/${updatePatch}/`}`]}>
+            <Routes>
+              <Route path={ROUTES.PREFERENCES_UNSUBSCRIBE} element={<PreferencesUnsubscribe />} />
+            </Routes>
+          </MemoryRouter>
+        </UserMessagesProvider>
+      </AppProvider>
     );
   });
 
@@ -40,6 +54,8 @@ describe('Notification Preferences One Click Unsubscribe', () => {
     render(component);
 
     await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
+    expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+
     expect(screen.getByTestId('heading-text')).toHaveTextContent('Unsubscribe successful');
   });
 
@@ -48,6 +64,12 @@ describe('Notification Preferences One Click Unsubscribe', () => {
     render(component);
 
     await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
+
+    expect(sendTrackEvent).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId('heading-text')).toHaveTextContent('Error unsubscribing from preference');
+    expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.notifications.preferences.unsubscribe', {
+      userToken,
+      updatePatch,
+    });
   });
 });
