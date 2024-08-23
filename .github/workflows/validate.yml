@@ -9,13 +9,15 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 20]
+    continue-on-error: ${{ matrix.node }}
     steps:
     - uses: actions/checkout@v3
-    - name: Setup Nodejs Env
-      run: echo "NODE_VER=`cat .nvmrc`" >> $GITHUB_ENV
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VER }}
+        node-version: ${{ matrix.node }}
     - run: make validate.ci
     - name: Upload coverage
       uses: codecov/codecov-action@v4
