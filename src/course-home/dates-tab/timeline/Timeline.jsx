@@ -20,7 +20,7 @@ const Timeline = () => {
   const now = new Date();
   let foundNextDue = false;
   let foundToday = false;
-  courseDateBlocks.forEach(courseDateBlock => {
+  courseDateBlocks?.forEach(courseDateBlock => {
     const dateInfo = { ...courseDateBlock };
     const parsedDate = new Date(dateInfo.date);
 

@@ -12,6 +12,7 @@ import ReactDOM from 'react-dom';
 import { Routes, Route } from 'react-router-dom';
 
 import { Helmet } from 'react-helmet';
+import CoursewarePage from '@src/pages/courseware/components';
 import { fetchDiscussionTab, fetchLiveTab } from './course-home/data/thunks';
 import DiscussionTab from './course-home/discussion-tab/DiscussionTab';
 
@@ -48,6 +49,14 @@ subscribe(APP_READY, () => {
         <NoticesProvider>
           <UserMessagesProvider>
             <Routes>
+              <Route
+                path={'/test/course/:courseId/*'}
+                element={(
+                  <DecodePageRoute>
+                    <CoursewarePage key="abc" />
+                  </DecodePageRoute>
+              )}
+              />
               <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
               <Route path={ROUTES.REDIRECT} element={<PageWrap><CoursewareRedirectLandingPage /></PageWrap>} />
               <Route
