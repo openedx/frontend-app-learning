@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
+import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
 import { ALERT_TYPES, AlertList } from '../generic/user-messages';
 import Alert from '../generic/user-messages/Alert';
+import messages from './messages';
 import MasqueradeWidget from './masquerade-widget';
 import { useAccessExpirationMasqueradeBanner } from '../alerts/access-expiration-alert';
 import { useCourseStartMasqueradeBanner } from '../alerts/course-start-alert';
@@ -75,17 +77,17 @@ const InstructorToolbar = (props) => {
           {(urlStudio || urlInsights) && (
             <>
               <hr className="border-light" />
-              <span className="mr-2 mt-1 col-form-label">View course in:</span>
+              <span className="mr-2 mt-1 col-form-label">{props.intl.formatMessage(messages.titleViewAs)}</span>
             </>
           )}
           {urlStudio && (
             <span className="mx-1 my-1">
-              <a className="btn btn-inverse-outline-primary" href={urlStudio}>Studio</a>
+              <a className="btn btn-inverse-outline-primary" href={urlStudio}>{props.intl.formatMessage(messages.titleStudio)}</a>
             </span>
           )}
           {urlInsights && (
             <span className="mx-1 my-1">
-              <a className="btn btn-inverse-outline-primary" href={urlInsights}>Insights</a>
+              <a className="btn btn-inverse-outline-primary" href={urlInsights}>{props.intl.formatMessage(messages.titleInsights)}</a>
             </span>
           )}
         </div>
@@ -115,6 +117,7 @@ InstructorToolbar.propTypes = {
   courseId: PropTypes.string,
   unitId: PropTypes.string,
   tab: PropTypes.string,
+  intl: intlShape.isRequired,
 };
 
 InstructorToolbar.defaultProps = {
@@ -123,4 +126,4 @@ InstructorToolbar.defaultProps = {
   tab: '',
 };
 
-export default InstructorToolbar;
+export default injectIntl(InstructorToolbar);

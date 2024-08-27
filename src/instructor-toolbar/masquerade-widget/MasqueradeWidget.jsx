@@ -21,7 +21,7 @@ class MasqueradeWidget extends Component {
     this.courseId = props.courseId;
     this.state = {
       autoFocus: false,
-      masquerade: 'Staff',
+      masquerade: this.props.intl.formatMessage(messages.buttonStaff),
       options: [],
       shouldShowUserNameInput: false,
       masqueradeUsername: null,
@@ -71,7 +71,7 @@ class MasqueradeWidget extends Component {
   toggle(show) {
     this.setState(prevState => ({
       autoFocus: true,
-      masquerade: 'Specific Student...',
+      masquerade: this.props.intl.formatMessage(messages.buttonSpecificStudent),
       shouldShowUserNameInput: show === undefined ? !prevState.shouldShowUserNameInput : show,
     }));
   }
@@ -96,7 +96,7 @@ class MasqueradeWidget extends Component {
     if (active.userName) {
       this.setState({
         autoFocus: false,
-        masquerade: 'Specific Student...',
+        masquerade: this.props.intl.formatMessage(messages.buttonSpecificStudent),
         masqueradeUsername: active.userName,
         shouldShowUserNameInput: true,
       });
@@ -120,7 +120,7 @@ class MasqueradeWidget extends Component {
     return (
       <div className="flex-grow-1">
         <div className="row">
-          <span className="col-auto col-form-label pl-3">View this course as:</span>
+          <span className="col-auto col-form-label pl-3">{this.props.intl.formatMessage(messages.titleViewCourseIn)}</span>
           <Dropdown className="flex-shrink-1 mx-1">
             <Dropdown.Toggle id="masquerade-widget-toggle" variant="inverse-outline-primary">
               {masquerade}
@@ -135,7 +135,7 @@ class MasqueradeWidget extends Component {
             <span className="col-auto col-form-label pl-3" id="masquerade-search-label">{`${specificLearnerInputText}:`}</span>
             <MasqueradeUserNameInput
               id="masquerade-search"
-              className="col-4"
+              className="col-4 form-control"
               autoFocus={autoFocus}
               defaultValue={masqueradeUsername}
               onError={(errorMessage) => this.onError(errorMessage)}
