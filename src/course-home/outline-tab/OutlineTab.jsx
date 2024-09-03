@@ -170,7 +170,7 @@ const OutlineTab = ({ intl }) => {
                 </div>
               </div>
               <ol id="courseHome-outline" className="list-unstyled">
-                {courses[rootCourseId].sectionIds.map((sectionId) => (
+                {courses && courses[rootCourseId].sectionIds.map((sectionId) => (
                   <Section
                     key={sectionId}
                     courseId={courseId}

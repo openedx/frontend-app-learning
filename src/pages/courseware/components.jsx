@@ -26,15 +26,18 @@ import OutlineTab from '@src/course-home/outline-tab/OutlineTab';
 import DatesTab from '@src/course-home/dates-tab';
 import { fetchDiscussionTab, fetchLiveTab } from '@src/course-home/data/thunks';
 import ProgressTab from '@src/course-home/progress-tab/ProgressTab';
+import PropTypes from 'prop-types';
+import DiscussionTab from '@src/course-home/discussion-tab/DiscussionTab';
 
 const TabComponents = {
   outline: (activeTab) => ((activeTab === 'outline') ? <OutlineTab /> : <></>),
   dates: (activeTab) => ((activeTab === 'dates') ? <DatesTab /> : <></>),
   progress: (activeTab) => ((activeTab === 'progress') ? <ProgressTab /> : <></>),
+  discussion: (activeTab) => ((activeTab === 'discussion') ? <DiscussionTab /> : <></>),
 };
-const CoursewarePage = ({ intl }) => {
+const CoursewarePage = ({ intl, activeKey }) => {
   const dispatch = useDispatch();
-  const [activeTabSlug, setActiveTab] = useState('outline');
+  const [activeTabSlug, setActiveTab] = useState(activeKey);
   const metadataModel = 'courseHomeMeta';
   const unitId = null;
   const { courseId: courseIdFromUrl } = useParams();
@@ -69,6 +72,7 @@ const CoursewarePage = ({ intl }) => {
     verifiedMode,
   } = useModel('courseHomeMeta', courseIdFromUrl, courseId);
 
+  console.log(tabs);
   const activeTab = tabs ? tabs[0] : {};
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
@@ -139,16 +143,16 @@ const CoursewarePage = ({ intl }) => {
         {(courseStatus === 'loaded' && tabs) && (
         <Tabs
           variant="tabs"
-          defaultActiveKey={activeTab?.slug}
+          defaultActiveKey={activeKey}
           id="uncontrolled-tab-example"
           style={{ marginLeft: '64px', marginRight: '64px' }}
-          onSelect={(activeKey) => {
-            if (activeKey === 'teams' || activeKey === 'instructor') {
-              window.location.replace(tabs.filter(t => (t.slug === activeKey))[0].url);
+          onSelect={(_activeKey) => {
+            if (_activeKey === 'teams' || _activeKey === 'instructor') {
+              window.location.replace(tabs.filter(t => (t.slug === _activeKey))[0].url);
               return;
             }
-            if (activeKey === 'progress') { dispatch(fetchProgressTab(courseIdFromUrl)); }
-            setActiveTab(activeKey);
+            if (_activeKey === 'progress') { dispatch(fetchProgressTab(courseIdFromUrl)); }
+            setActiveTab(_activeKey);
           }}
         >
           { tabs?.map(tab => (
@@ -180,6 +184,7 @@ CoursewarePage.defaultProps = {
 CoursewarePage.propTypes = {
   // activeTabSlug: PropTypes.string.isRequired,
   intl: intlShape.isRequired,
+  activeKey: PropTypes.string.isRequired,
   // courseStatus: PropTypes.string.isRequired,
   // unitId: PropTypes.string,
 };
