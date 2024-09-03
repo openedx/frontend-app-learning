@@ -72,7 +72,6 @@ const CoursewarePage = ({ intl, activeKey }) => {
     verifiedMode,
   } = useModel('courseHomeMeta', courseIdFromUrl, courseId);
 
-  console.log(tabs);
   const activeTab = tabs ? tabs[0] : {};
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
