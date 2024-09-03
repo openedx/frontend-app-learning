@@ -341,7 +341,6 @@ class Calculator extends Component {
                         <li>arccsch(4x+y)</li>
                       </ul>
                     </td>
-                    { /* eslint-disable-next-line jsx-a11y/control-has-associated-label */ }
                     <td dir="auto" />
                   </tr>
                   <tr>
