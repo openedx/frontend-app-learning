@@ -434,6 +434,16 @@
   min-height: 700px;
 }
 
+.size-4r {
+  width: 4rem !important;
+  height: 4rem !important;
+}
+
+.size-56px {
+  width: 56px !important;
+  height: 56px !important;
+}
+
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
 @import "courseware/course/sidebar/sidebars/discussions/Discussions.scss";
