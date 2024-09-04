@@ -13,7 +13,7 @@ import { waitForElementToBeRemoved } from '@testing-library/dom';
 import * as popper from '@popperjs/core';
 
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, waitFor,
+  fireEvent, initializeMockApp, logUnhandledRequests, render, screen,
 } from '../setupTest';
 import initializeStore from '../store';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../utils';
@@ -295,15 +295,13 @@ describe('Courseware Tour', () => {
         const container = await loadContainer();
         const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation a, nav.sequence-navigation button');
         const sequenceNextButton = sequenceNavButtons[4];
-        waitFor(() => {
-          expect(sequenceNextButton).toHaveTextContent('Next');
-          fireEvent.click(sequenceNextButton);
+        expect(sequenceNextButton).toHaveTextContent('Next');
+        fireEvent.click(sequenceNextButton);
 
-          expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlocks[1].id}`);
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlocks[1].id}`);
 
-          const checkpoint = container.querySelectorAll('#pgn__checkpoint');
-          expect(checkpoint).toHaveLength(showCoursewareTour ? 1 : 0);
-        });
+        const checkpoint = container.querySelectorAll('#pgn__checkpoint');
+        expect(checkpoint).toHaveLength(showCoursewareTour ? 1 : 0);
       },
     );
   });
