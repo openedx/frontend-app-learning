@@ -34,6 +34,7 @@ describe('Instructor Toolbar', () => {
     mockData = {
       courseId: courseware.courseId,
       unitId: Object.values(models.units)[0].id,
+      hasStudioAccess: true,
     };
     axiosMock.reset();
     axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
@@ -75,5 +76,17 @@ describe('Instructor Toolbar', () => {
     render(<InstructorToolbar {...mockData} unitId={null} />);
 
     expect(screen.queryByText('View course in:')).not.toBeInTheDocument();
+  });
+
+  it('does not display Studio link if user does not have studio access', () => {
+    const config = { ...originalConfig };
+    const data = { ...mockData, hasStudioAccess: false };
+    config.INSIGHTS_BASE_URL = 'http://localhost:18100';
+    getConfig.mockImplementation(() => config);
+    render(<InstructorToolbar {...data} />);
+
+    const linksContainer = screen.getByText('View course in:').parentElement;
+    expect(screen.queryByText(linksContainer, 'Studio')).toBeNull();
+    expect(getByText(linksContainer, 'Insights').getAttribute('href')).toMatch(/http.*/);
   });
 });
