@@ -12,7 +12,6 @@ jobs:
     strategy:
       matrix:
         node: [18, 20]
-    continue-on-error: ${{ matrix.node == 20 }}
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v4
