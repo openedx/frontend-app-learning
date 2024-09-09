@@ -9,14 +9,11 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [18, 20]
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node }}
+        node-version-file: '.nvmrc'
     - run: make validate.ci
     - name: Upload coverage
       uses: codecov/codecov-action@v4
