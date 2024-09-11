@@ -60,6 +60,7 @@ const Unit = ({
         onLoaded={onLoaded}
         shouldShowContent={!shouldDisplayHonorCode && !examAccess.blockAccess}
         title={unit.title}
+        courseId={courseId}
       />
     </div>
   );
