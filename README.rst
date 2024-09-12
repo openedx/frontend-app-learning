@@ -21,25 +21,19 @@ Getting Started
 Prerequisites
 =============
 
-The `devstack`_ is currently recommended as a development environment for your
-new MFE.  If you start it with ``make dev.up.lms`` that should give you
-everything you need as a companion to this frontend.
-
-Note that it is also possible to use `Tutor`_ to develop an MFE.  You can refer
-to the `relevant tutor-mfe documentation`_ to get started using it.
-
-.. _Devstack: https://github.com/openedx/devstack
+`Tutor`_ is currently recommended as a development environment for the Learning
+MFE. Most likely, it already has this MFE configured; however, you'll need to
+make some changes in order to run it in development mode. You can refer
+to the `relevant tutor-mfe documentation`_ for details, or follow the quick
+guide below.
 
 .. _Tutor: https://github.com/overhangio/tutor
 
 .. _relevant tutor-mfe documentation: https://github.com/overhangio/tutor-mfe#mfe-development
 
-To use this application, `devstack <https://github.com/openedx/devstack>`__ must be running and you must be logged into it.
 
-- Visit http://localhost:2000/course/course-v1:edX+DemoX+Demo_Course to view the demo course.  You can replace ``course-v1:edX+DemoX+Demo_Course`` with a different course key.
-
-Cloning and Startup
-===================
+Cloning and Setup
+=================
 
 1. Clone your new repo:
 
@@ -47,24 +41,54 @@ Cloning and Startup
 
     git clone https://github.com/openedx/frontend-app-learning.git
 
-2. Use node v18.x.
+2. Use node v20.x.
 
   The current version of the micro-frontend build scripts supports node 18.
   Using other major versions of node *may* work, but this is unsupported.  For
   convenience, this repository includes an ``.nvmrc`` file to help in setting the
   correct node version via `nvm <https://github.com/nvm-sh/nvm>`_.
 
-3. Install npm dependencies:
+3. Stop the Tutor devstack, if it's running: ``tutor dev stop``
+
+4. Next, we need to tell Tutor that we're going to be running this repo in
+   development mode, and it should be excluded from the ``mfe`` container that
+   otherwise runs every MFE. Run this:
+
+.. code-block:: bash
+
+    tutor mounts add /path/to/frontend-app-learning
+
+5. Start Tutor in development mode. This command will start the LMS and Studio,
+   and other required MFEs like ``authn`` and ``account``, but will not start
+   the learning MFE, which we're going to run on the host instead of in a
+   container managed by Tutor. Run:
+
+.. code-block:: bash
+
+    tutor dev start lms cms mfe
+
+Startup
+=======
+
+1. Install npm dependencies:
 
 .. code-block:: bash
 
   cd frontend-app-learning && npm ci
 
-4. Start the dev server:
+2. Start the dev server:
 
 .. code-block:: bash
 
-  npm start
+  npm run start-tutor
+
+Then you can access the app at http://apps.local.edly.io:2000/learning/
+
+Note: if you see an "Invalid Host header" error, then you're probably using an
+old installation of Tutor that was configured with the former ``overhang.io``
+domain name instead of ``edly.io``. In that case, run
+``npm run start-tutor-overhang`` instead, and you'll access it at
+http://apps.local.overhang.io:2000/learning/
 
 Local module development
 =========================
