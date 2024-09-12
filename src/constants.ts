@@ -16,7 +16,7 @@ export const DECODE_ROUTES = {
   ],
   REDIRECT_HOME: 'home/:courseId',
   REDIRECT_SURVEY: 'survey/:courseId',
-};
+} as const satisfies Readonly<{ [k: string]: string | readonly string[] }>;
 
 export const ROUTES = {
   UNSUBSCRIBE: '/goal-unsubscribe/:token',
@@ -25,7 +25,7 @@ export const ROUTES = {
   DASHBOARD: 'dashboard',
   ENTERPRISE_LEARNER_DASHBOARD: 'enterprise-learner-dashboard',
   CONSENT: 'consent',
-};
+} as const satisfies Readonly<{ [k: string]: string }>;
 
 export const REDIRECT_MODES = {
   DASHBOARD_REDIRECT: 'dashboard-redirect',
@@ -33,7 +33,7 @@ export const REDIRECT_MODES = {
   CONSENT_REDIRECT: 'consent-redirect',
   HOME_REDIRECT: 'home-redirect',
   SURVEY_REDIRECT: 'survey-redirect',
-};
+} as const satisfies Readonly<{ [k: string]: string }>;
 
 export const VERIFIED_MODES = [
   'professional',
@@ -44,14 +44,15 @@ export const VERIFIED_MODES = [
   'executive-education',
   'paid-executive-education',
   'paid-bootcamp',
-];
+] as const satisfies readonly string[];
 
 export const WIDGETS = {
   DISCUSSIONS: 'DISCUSSIONS',
   NOTIFICATIONS: 'NOTIFICATIONS',
-};
+} as const satisfies Readonly<{ [k: string]: string }>;
 
 export const LOADING = 'loading';
 export const LOADED = 'loaded';
 export const FAILED = 'failed';
 export const DENIED = 'denied';
+export type StatusValue = typeof LOADING | typeof LOADED | typeof FAILED | typeof DENIED;

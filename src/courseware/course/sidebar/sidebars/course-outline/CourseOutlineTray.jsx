@@ -9,7 +9,7 @@ import {
 } from '@openedx/paragon/icons';
 
 import { useModel } from '@src/generic/model-store';
-import { LOADING, LOADED } from '@src/course-home/data/slice';
+import { LOADING, LOADED } from '@src/constants';
 import PageLoading from '@src/generic/PageLoading';
 import {
   getSequenceId,

@@ -95,7 +95,7 @@ SidebarBase.propTypes = {
   ariaLabel: PropTypes.string.isRequired,
   sidebarId: PropTypes.string.isRequired,
   className: PropTypes.string,
-  children: PropTypes.element.isRequired,
+  children: PropTypes.node.isRequired,
   showTitleBar: PropTypes.bool,
   width: PropTypes.string,
   allowFullHeight: PropTypes.bool,

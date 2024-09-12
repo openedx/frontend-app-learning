@@ -4,10 +4,10 @@ import { useParams, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import FooterSlot from '@openedx/frontend-slot-footer';
+import { LOADED, LOADING } from '@src/constants';
 import useActiveEnterpriseAlert from '../alerts/active-enteprise-alert';
 import { AlertList } from './user-messages';
 import { fetchDiscussionTab } from '../course-home/data/thunks';
-import { LOADED, LOADING } from '../course-home/data/slice';
 import PageLoading from './PageLoading';
 import messages from '../tab-page/messages';
 
