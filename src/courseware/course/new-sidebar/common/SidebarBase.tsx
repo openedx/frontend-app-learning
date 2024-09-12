@@ -1,5 +1,4 @@
 import React, { useCallback, useContext } from 'react';
-import PropTypes from 'prop-types';
 
 import classNames from 'classnames';
 
@@ -10,18 +9,30 @@ import { ArrowBackIos, Close } from '@openedx/paragon/icons';
 import { useEventListener } from '../../../../generic/hooks';
 import { WIDGETS } from '../../../../constants';
 import messages from '../messages';
-import SidebarContext from '../SidebarContext';
+import SidebarContext, { type SidebarId } from '../SidebarContext';
 
-const SidebarBase = ({
-  title,
+interface Props {
+  title?: string;
+  ariaLabel: string;
+  sidebarId: SidebarId;
+  className?: string;
+  children: React.ReactNode;
+  showTitleBar?: boolean;
+  width?: string;
+  allowFullHeight?: boolean;
+  showBorder?: boolean;
+}
+
+const SidebarBase: React.FC<Props> = ({
+  title = '',
   ariaLabel,
   sidebarId,
   className,
   children,
-  showTitleBar,
-  width,
-  allowFullHeight,
-  showBorder,
+  showTitleBar = true,
+  width = '45rem',
+  allowFullHeight = false,
+  showBorder = true,
 }) => {
   const intl = useIntl();
   const {
@@ -58,8 +69,7 @@ const SidebarBase = ({
           onClick={() => toggleSidebar(null)}
           onKeyDown={() => toggleSidebar(null)}
           role="button"
-          tabIndex="0"
-          alt={intl.formatMessage(messages.responsiveCloseSidebarTray)}
+          tabIndex={0}
         >
           <Icon src={ArrowBackIos} />
           <span className="font-weight-bold m-2 d-inline-block">
@@ -88,27 +98,6 @@ const SidebarBase = ({
       {children}
     </section>
   );
-};
-
-SidebarBase.propTypes = {
-  title: PropTypes.string,
-  ariaLabel: PropTypes.string.isRequired,
-  sidebarId: PropTypes.string.isRequired,
-  className: PropTypes.string,
-  children: PropTypes.node.isRequired,
-  showTitleBar: PropTypes.bool,
-  width: PropTypes.string,
-  allowFullHeight: PropTypes.bool,
-  showBorder: PropTypes.bool,
-};
-
-SidebarBase.defaultProps = {
-  title: '',
-  width: '45rem',
-  allowFullHeight: false,
-  showTitleBar: true,
-  className: '',
-  showBorder: true,
 };
 
 export default SidebarBase;

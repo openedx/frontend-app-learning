@@ -95,7 +95,6 @@ const NotificationsWidget = () => {
           timeOffsetMillis={timeOffsetMillis}
           courseId={courseId}
           org={org}
-          upgradeNotificationCurrentState={upgradeNotificationCurrentState}
           setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
           toggleSidebar={onToggleSidebar}
         />

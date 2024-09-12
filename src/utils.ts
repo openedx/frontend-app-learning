@@ -4,7 +4,7 @@
  *
  * TODO: move this to setupTest or testUtils - it's only used in tests.
  */
-export const executeThunk = async (thunk, dispatch, getState) => {
+export const executeThunk = async (thunk, dispatch, getState = undefined) => {
   await thunk(dispatch, getState);
   await new Promise(setImmediate);
 };
