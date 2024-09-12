@@ -57,6 +57,7 @@ validate:
 	npm run lint -- --max-warnings 0
 	npm run test
 	npm run build
+	npm run bundlewatch
 
 .PHONY: validate.ci
 validate.ci:
