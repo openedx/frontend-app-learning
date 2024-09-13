@@ -23,10 +23,10 @@ function getInsightsUrl(courseId) {
   return urlFull;
 }
 
-function getStudioUrl(courseId, unitId, hasStudioAccess) {
+function getStudioUrl(courseId, unitId) {
   const urlBase = getConfig().STUDIO_BASE_URL;
   let urlFull;
-  if (urlBase && hasStudioAccess) {
+  if (urlBase) {
     if (unitId) {
       urlFull = `${urlBase}/container/${unitId}`;
     } else if (courseId) {
@@ -56,11 +56,10 @@ const InstructorToolbar = (props) => {
     courseId,
     unitId,
     tab,
-    hasStudioAccess,
   } = props;
 
   const urlInsights = getInsightsUrl(courseId);
-  const urlStudio = getStudioUrl(courseId, unitId, hasStudioAccess);
+  const urlStudio = getStudioUrl(courseId, unitId);
   const [masqueradeErrorMessage, showMasqueradeError] = useState(null);
 
   const accessExpirationMasqueradeBanner = useAccessExpirationMasqueradeBanner(courseId, tab);
@@ -116,14 +115,12 @@ InstructorToolbar.propTypes = {
   courseId: PropTypes.string,
   unitId: PropTypes.string,
   tab: PropTypes.string,
-  hasStudioAccess: PropTypes.bool,
 };
 
 InstructorToolbar.defaultProps = {
   courseId: undefined,
   unitId: undefined,
   tab: '',
-  hasStudioAccess: false,
 };
 
 export default InstructorToolbar;
