@@ -86,9 +86,14 @@ Then you can access the app at http://apps.local.edly.io:2000/learning/
 
 Note: if you see an "Invalid Host header" error, then you're probably using an
 old installation of Tutor that was configured with the former ``overhang.io``
-domain name instead of ``edly.io``. In that case, run
-``npm run start-tutor-overhang`` instead, and you'll access it at
-http://apps.local.overhang.io:2000/learning/
+domain name instead of ``edly.io``. In that case, run these commands to fix it:
+
+.. code-block:: bash
+
+  tutor dev stop
+  tutor config save --set LMS_HOST=local.edly.io --set CMS_HOST=studio.local.edly.io
+  tutor dev start cms lms mfe
+  tutor dev do init
 
 Local module development
 =========================

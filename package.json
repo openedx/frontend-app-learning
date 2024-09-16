@@ -19,7 +19,6 @@
     "snapshot": "fedx-scripts jest --updateSnapshot",
     "start": "fedx-scripts webpack-dev-server --progress",
     "start-tutor": "PUBLIC_PATH=/learning/ MFE_CONFIG_API_URL='http://localhost:8000/api/mfe_config/v1' fedx-scripts webpack-dev-server --progress --host apps.local.edly.io",
-    "start-tutor-overhang": "PUBLIC_PATH=/learning/ MFE_CONFIG_API_URL='http://localhost:8000/api/mfe_config/v1' fedx-scripts webpack-dev-server --progress --host apps.local.overhang.io",
     "test": "fedx-scripts jest --coverage --passWithNoTests"
   },
   "author": "edX",
