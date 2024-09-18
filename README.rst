@@ -82,18 +82,21 @@ Startup
 
   npm run dev
 
-Then you can access the app at http://apps.local.edly.io:2000/learning/
+Then you can access the app at http://local.openedx.io:2000/learning/
 
 Troubleshooting
 ---------------
 
-If you see an "Invalid Host header" error, then you're probably using an old
-installation of Tutor that was configured with the former ``overhang.io``
-domain name instead of ``edly.io``. In that case, run ``tutor dev launch`` to
-re-configure your instance, and enter ``local.edly.io`` and
-``studio.local.edly.io`` when prompted for the LMS domain and Studio domain
-respectively. (In this case, you may also pass the ``--skip-build`` parameter
-to speed up the launch, as rebuilding the container images is not necessary).
+If you see an "Invalid Host header" error, then you're probably using a different domain name for your devstack such as
+``local.edly.io`` or ``local.overhang.io`` (not the new recommended default, ``local.openedx.io``). In that case, run
+these commands to update your devstack's domain names:
+
+.. code-block:: bash
+
+  tutor dev stop
+  tutor config save --set LMS_HOST=local.openedx.io --set CMS_HOST=studio.local.openedx.io
+  tutor dev launch -I --skip-build
+  tutor dev stop learning  # We will run this MFE on the host
 
 Local module development
 =========================
