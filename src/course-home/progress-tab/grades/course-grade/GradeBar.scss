@@ -36,17 +36,17 @@
 }
 
 #passing-grade-tooltip {
+  background: $success-500;
+
   .arrow::after {
     border-top-color: $success-500;
   }
-
-  background: $success-500;
 }
 
 #non-passing-grade-tooltip {
+  background: $accent-b;
+
   .arrow::after {
     border-top-color: $accent-b;
   }
-
-  background: $accent-b;
 }
