@@ -92,11 +92,11 @@ function GetCourseExitNavigation(courseId, intl) {
     entranceExamPassed,
   );
 
-  // exitActive is used to enable/disable the exit i.e. next buttons.
-  // COURSE_EXIT_MODES denote the current status of the course.
-  // Available COURSE_EXIT_MODES: disabled, celebration, nonPassing, inProgress, entranceExamFail
-  // If the user fails the entrance exam,
-  // access to further course sections should not be allowed i.e. disable the next buttons.
+  /** exitActive is used to enable/disable the exit i.e. next buttons.
+   COURSE_EXIT_MODES denote the current status of the course.
+   Available COURSE_EXIT_MODES: disabled, celebration, nonPassing, inProgress, entranceExamFail
+   If the user fails the entrance exam,
+   access to further course sections should not be allowed i.e. disable the next buttons. */
   const exitActive = ((exitMode !== COURSE_EXIT_MODES.disabled) && (exitMode !== COURSE_EXIT_MODES.entranceExamFail));
 
   let exitText;
