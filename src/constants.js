@@ -3,7 +3,10 @@ export const DECODE_ROUTES = {
   HOME: '/course/:courseId/home',
   LIVE: '/course/:courseId/live',
   DATES: '/course/:courseId/dates',
-  DISCUSSION: '/course/:courseId/discussion/:path/*',
+  DISCUSSION_ROUTES: [
+    '/course/:courseId/discussion/:path/*',
+    '/course/:courseId/discussion',
+  ],
   PROGRESS: [
     '/course/:courseId/progress/:targetUserId/',
     '/course/:courseId/progress',

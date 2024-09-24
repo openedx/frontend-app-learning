@@ -73,14 +73,16 @@ subscribe(APP_READY, () => {
                   </DecodePageRoute>
                 )}
               />
-              <Route
-                path={DECODE_ROUTES.DISCUSSION}
-                element={(
-                  <DecodePageRoute>
-                    <CoursewarePage key="courseHome" activeKey="discussion" />
-                  </DecodePageRoute>
+              {DECODE_ROUTES.DISCUSSION_ROUTES.map(r => (
+                <Route
+                  path={r}
+                  element={(
+                    <DecodePageRoute>
+                      <CoursewarePage key="courseHome" activeKey="discussion" />
+                    </DecodePageRoute>
                     )}
-              />
+                />
+              ))}
               {DECODE_ROUTES.PROGRESS.map((route) => (
                 <Route
                   key={route}
