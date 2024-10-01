@@ -30,6 +30,11 @@ jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
 }));
 
+jest.mock('lodash', () => ({
+  ...jest.requireActual('lodash'),
+  throttle: jest.fn((fn) => fn),
+}));
+
 jest.mock('./useLoadBearingHook', () => jest.fn());
 
 jest.mock('@edx/frontend-platform/logging', () => ({
@@ -64,7 +69,10 @@ const dispatch = jest.fn();
 useDispatch.mockReturnValue(dispatch);
 
 const postMessage = jest.fn();
-const frame = { contentWindow: { postMessage } };
+const frame = {
+  contentWindow: { postMessage },
+  getBoundingClientRect: jest.fn(() => ({ top: 100 })),
+};
 const mockGetElementById = jest.fn(() => frame);
 const testHash = '#test-hash';
 
@@ -87,6 +95,10 @@ describe('useIFrameBehavior hook', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     state.mock();
+    global.document.getElementById = mockGetElementById;
+    global.window.addEventListener = jest.fn();
+    global.window.removeEventListener = jest.fn();
+    global.window.innerHeight = 800;
   });
   afterEach(() => {
     state.resetVals();
@@ -263,6 +275,53 @@ describe('useIFrameBehavior hook', () => {
           document.getElementById = oldGetElement;
           window.scrollTo = oldScrollTo;
         });
+      });
+    });
+    describe('visibility tracking', () => {
+      it('sets up visibility tracking after iframe has loaded', () => {
+        state.mockVals({ ...defaultStateVals, hasLoaded: true });
+        useIFrameBehavior(props);
+
+        const effects = getEffects([true, props.elementId], React);
+        expect(effects.length).toEqual(2);
+        effects[0](); // Execute the visibility tracking effect.
+
+        expect(global.window.addEventListener).toHaveBeenCalledTimes(2);
+        expect(global.window.addEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
+        expect(global.window.addEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
+        // Initial visibility update.
+        expect(postMessage).toHaveBeenCalledWith(
+          {
+            type: 'unit.visibilityStatus',
+            data: {
+              topPosition: 100,
+              viewportHeight: 800,
+            },
+          },
+          config.LMS_BASE_URL,
+        );
+      });
+      it('does not set up visibility tracking before iframe has loaded', () => {
+        state.mockVals({ ...defaultStateVals, hasLoaded: false });
+        useIFrameBehavior(props);
+
+        const effects = getEffects([false, props.elementId], React);
+        expect(effects).toBeNull();
+
+        expect(global.window.addEventListener).not.toHaveBeenCalled();
+        expect(postMessage).not.toHaveBeenCalled();
+      });
+      it('cleans up event listeners on unmount', () => {
+        state.mockVals({ ...defaultStateVals, hasLoaded: true });
+        useIFrameBehavior(props);
+
+        const effects = getEffects([true, props.elementId], React);
+        const cleanup = effects[0](); // Execute the effect and get the cleanup function.
+        cleanup(); // Call the cleanup function.
+
+        expect(global.window.removeEventListener).toHaveBeenCalledTimes(2);
+        expect(global.window.removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
+        expect(global.window.removeEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
       });
     });
   });
