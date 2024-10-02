@@ -1,6 +1,6 @@
 import { logError } from '@edx/frontend-platform/logging';
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
-import 'search_library'; // eslint-disable-line import/no-unresolved
+import SearchEngine from 'openedx-search-api';
 import {
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
@@ -173,7 +173,6 @@ export function searchCourseContent(courseId, searchKeyword, config) {
   return async (dispatch) => {
     const start = new Date();
 
-    // eslint-disable-next-line no-undef
     const searchEngine = new SearchEngine(config.searchEngine, config, 'courseware_course_structure');
 
     dispatch(addModel({

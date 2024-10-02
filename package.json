@@ -60,6 +60,7 @@
     "lodash.camelcase": "4.3.0",
     "patch-package": "^8.0.0",
     "postcss-loader": "^8.1.1",
+    "openedx-search-api": "github:qasimgulzar/openedx-search-api#main",
     "prop-types": "15.8.1",
     "query-string": "^7.1.3",
     "react": "17.0.2",
