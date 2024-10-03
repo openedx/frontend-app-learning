@@ -26,7 +26,6 @@ const LoadedTabPage = ({
     celebrations,
     org,
     originalUserIsStaff,
-    studioAccess,
     tabs,
     title,
     verifiedMode,
@@ -59,7 +58,6 @@ const LoadedTabPage = ({
           courseId={courseId}
           unitId={unitId}
           tab={activeTabSlug}
-          hasStudioAccess={studioAccess}
         />
       )}
       <StreakModal

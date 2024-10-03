@@ -2,6 +2,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { throttle } from 'lodash';
 
 import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils';
 import { logError } from '@edx/frontend-platform/logging';
@@ -84,6 +85,49 @@ const useIFrameBehavior = ({
   ]);
 
   useEventListener('message', receiveMessage);
+
+  // Send visibility status to the iframe. It's used to mark XBlocks as viewed.
+  React.useEffect(() => {
+    if (!hasLoaded) {
+      return undefined;
+    }
+
+    const iframeElement = document.getElementById(elementId);
+    if (!iframeElement || !iframeElement.contentWindow) {
+      return undefined;
+    }
+
+    const updateIframeVisibility = () => {
+      const rect = iframeElement.getBoundingClientRect();
+      const visibleInfo = {
+        type: 'unit.visibilityStatus',
+        data: {
+          topPosition: rect.top,
+          viewportHeight: window.innerHeight,
+        },
+      };
+      iframeElement.contentWindow.postMessage(
+        visibleInfo,
+        `${getConfig().LMS_BASE_URL}`,
+      );
+    };
+
+    // Throttle the update function to prevent it from sending too many messages to the iframe.
+    const throttledUpdateVisibility = throttle(updateIframeVisibility, 100);
+
+    // Update the visibility of the iframe in case the element is already visible.
+    updateIframeVisibility();
+
+    // Add event listeners to update the visibility of the iframe when the window is scrolled or resized.
+    window.addEventListener('scroll', throttledUpdateVisibility);
+    window.addEventListener('resize', throttledUpdateVisibility);
+
+    // Clean up event listeners on unmount.
+    return () => {
+      window.removeEventListener('scroll', throttledUpdateVisibility);
+      window.removeEventListener('resize', throttledUpdateVisibility);
+    };
+  }, [hasLoaded, elementId]);
 
   /**
   * onLoad *should* only fire after everything in the iframe has finished its own load events.
