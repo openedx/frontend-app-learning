@@ -78,6 +78,7 @@ const NotificationsWidget = () => {
         id="notification_widget_slot"
         pluginProps={{
           courseId,
+          model: 'coursewareMeta',
           notificationCurrentState: upgradeNotificationCurrentState,
           setNotificationCurrentState: setUpgradeNotificationCurrentState,
           toggleSidebar: onToggleSidebar,
