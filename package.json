@@ -12,8 +12,8 @@
   "scripts": {
     "build": "fedx-scripts webpack",
     "i18n_extract": "fedx-scripts formatjs extract",
-    "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
-    "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx .",
+    "lint": "fedx-scripts eslint --ext .js --ext .jsx --ext .ts --ext .tsx .",
+    "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx --ext .ts --ext .tsx .",
     "prepare": "husky install",
     "postinstall": "patch-package",
     "snapshot": "fedx-scripts jest --updateSnapshot",
