@@ -2,14 +2,13 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
-import CertificateStatus from './certificate-status/CertificateStatus';
 import CourseCompletion from './course-completion/CourseCompletion';
-import CourseGrade from './grades/course-grade/CourseGrade';
-import DetailedGrades from './grades/detailed-grades/DetailedGrades';
-import GradeSummary from './grades/grade-summary/GradeSummary';
 import ProgressHeader from './ProgressHeader';
-import RelatedLinks from './related-links/RelatedLinks';
 
+import ProgressTabCertificateStatusSlot from '../../plugin-slots/ProgressTabCertificateStatusSlot';
+import ProgressTabCourseGradeSlot from '../../plugin-slots/ProgressTabCourseGradeSlot';
+import ProgressTabGradeBreakdownSlot from '../../plugin-slots/ProgressTabGradeBreakdownSlot';
+import ProgressTabRelatedLinksSlot from '../../plugin-slots/ProgressTabRelatedLinksSlot';
 import { useModel } from '../../generic/model-store';
 
 const ProgressTab = () => {
@@ -17,11 +16,7 @@ const ProgressTab = () => {
     courseId,
   } = useSelector(state => state.courseHome);
 
-  const {
-    gradesFeatureIsFullyLocked, disableProgressGraph,
-  } = useModel('progress', courseId);
-
-  const applyLockedOverlay = gradesFeatureIsFullyLocked ? 'locked-overlay' : '';
+  const { disableProgressGraph } = useModel('progress', courseId);
 
   const windowWidth = useWindowSize().width;
   if (windowWidth === undefined) {
@@ -39,18 +34,15 @@ const ProgressTab = () => {
         {/* Main body */}
         <div className="col-12 col-md-8 p-0">
           {!disableProgressGraph && <CourseCompletion />}
-          {!wideScreen && <CertificateStatus />}
-          <CourseGrade />
-          <div className={`grades my-4 p-4 rounded raised-card ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
-            <GradeSummary />
-            <DetailedGrades />
-          </div>
+          {!wideScreen && <ProgressTabCertificateStatusSlot courseId={courseId} />}
+          <ProgressTabCourseGradeSlot courseId={courseId} />
+          <ProgressTabGradeBreakdownSlot courseId={courseId} />
         </div>
 
         {/* Side panel */}
         <div className="col-12 col-md-4 p-0 px-md-4">
-          {wideScreen && <CertificateStatus />}
-          <RelatedLinks />
+          {wideScreen && <ProgressTabCertificateStatusSlot courseId={courseId} />}
+          <ProgressTabRelatedLinksSlot courseId={courseId} />
         </div>
       </div>
     </>
