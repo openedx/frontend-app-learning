@@ -1,19 +1,17 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { CheckCircle, WarningFilled } from '@openedx/paragon/icons';
 import { breakpoints, Icon, useWindowSize } from '@openedx/paragon';
+import { useContextId } from '../../../../data/hooks';
 import { useModel } from '../../../../generic/model-store';
 
 import GradeRangeTooltip from './GradeRangeTooltip';
 import messages from '../messages';
 
 const CourseGradeFooter = ({ intl, passingGrade }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
 
   const {
     courseGrade: {

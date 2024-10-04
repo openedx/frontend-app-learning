@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
@@ -9,15 +8,14 @@ import { Collapsible, Icon, Row } from '@openedx/paragon';
 import {
   ArrowDropDown, ArrowDropUp, Blocked, Info,
 } from '@openedx/paragon/icons';
+import { useContextId } from '../../../../data/hooks';
 
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 import ProblemScoreDrawer from './ProblemScoreDrawer';
 
 const SubsectionTitleCell = ({ intl, subsection }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
   const {
     org,
   } = useModel('courseHomeMeta', courseId);
