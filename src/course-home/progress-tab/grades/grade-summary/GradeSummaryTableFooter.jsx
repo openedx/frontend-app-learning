@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { useSelector } from 'react-redux';
 
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -11,6 +10,7 @@ import {
   Tooltip,
 } from '@openedx/paragon';
 import { InfoOutline } from '@openedx/paragon/icons';
+import { useContextId } from '../../../../data/hooks';
 
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
@@ -29,9 +29,7 @@ const GradeSummaryTableFooter = () => {
     0,
   ).toFixed(2);
 
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
 
   const {
     courseGrade: {

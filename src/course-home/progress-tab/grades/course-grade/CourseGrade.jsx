@@ -1,6 +1,6 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useContextId } from '../../../../data/hooks';
 
 import { useModel } from '../../../../generic/model-store';
 
@@ -12,9 +12,7 @@ import CreditInformation from '../../credit-information/CreditInformation';
 import messages from '../messages';
 
 const CourseGrade = ({ intl }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
 
   const {
     creditCourseRequirements,

@@ -1,27 +1,20 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { breakpoints, useWindowSize } from '@openedx/paragon';
+import { useWindowSize } from '@openedx/paragon';
+import { useContextId } from '../../data/hooks';
+import ProgressTabCertificateStatusSidePanelSlot from '../../plugin-slots/ProgressTabCertificateStatusSidePanelSlot';
 
-import CertificateStatus from './certificate-status/CertificateStatus';
 import CourseCompletion from './course-completion/CourseCompletion';
-import CourseGrade from './grades/course-grade/CourseGrade';
-import DetailedGrades from './grades/detailed-grades/DetailedGrades';
-import GradeSummary from './grades/grade-summary/GradeSummary';
 import ProgressHeader from './ProgressHeader';
-import RelatedLinks from './related-links/RelatedLinks';
 
+import ProgressTabCertificateStatusMainBodySlot from '../../plugin-slots/ProgressTabCertificateStatusMainBodySlot';
+import ProgressTabCourseGradeSlot from '../../plugin-slots/ProgressTabCourseGradeSlot';
+import ProgressTabGradeBreakdownSlot from '../../plugin-slots/ProgressTabGradeBreakdownSlot';
+import ProgressTabRelatedLinksSlot from '../../plugin-slots/ProgressTabRelatedLinksSlot';
 import { useModel } from '../../generic/model-store';
 
 const ProgressTab = () => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
-
-  const {
-    gradesFeatureIsFullyLocked, disableProgressGraph,
-  } = useModel('progress', courseId);
-
-  const applyLockedOverlay = gradesFeatureIsFullyLocked ? 'locked-overlay' : '';
+  const courseId = useContextId();
+  const { disableProgressGraph } = useModel('progress', courseId);
 
   const windowWidth = useWindowSize().width;
   if (windowWidth === undefined) {
@@ -31,7 +24,6 @@ const ProgressTab = () => {
     return null;
   }
 
-  const wideScreen = windowWidth >= breakpoints.large.minWidth;
   return (
     <>
       <ProgressHeader />
@@ -39,18 +31,15 @@ const ProgressTab = () => {
         {/* Main body */}
         <div className="col-12 col-md-8 p-0">
           {!disableProgressGraph && <CourseCompletion />}
-          {!wideScreen && <CertificateStatus />}
-          <CourseGrade />
-          <div className={`grades my-4 p-4 rounded raised-card ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
-            <GradeSummary />
-            <DetailedGrades />
-          </div>
+          <ProgressTabCertificateStatusMainBodySlot />
+          <ProgressTabCourseGradeSlot />
+          <ProgressTabGradeBreakdownSlot />
         </div>
 
         {/* Side panel */}
         <div className="col-12 col-md-4 p-0 px-md-4">
-          {wideScreen && <CertificateStatus />}
-          <RelatedLinks />
+          <ProgressTabCertificateStatusSidePanelSlot />
+          <ProgressTabRelatedLinksSlot />
         </div>
       </div>
     </>

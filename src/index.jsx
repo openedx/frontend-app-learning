@@ -26,7 +26,7 @@ import { TabContainer } from './tab-page';
 
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
-import initializeStore from './store';
+import { store } from './store';
 import NoticesProvider from './generic/notices';
 import PathFixesProvider from './generic/path-fixes';
 import LiveTab from './course-home/live-tab/LiveTab';
@@ -38,7 +38,7 @@ import PageNotFound from './generic/PageNotFound';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
-    <AppProvider store={initializeStore()}>
+    <AppProvider store={store}>
       <Helmet>
         <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />
       </Helmet>

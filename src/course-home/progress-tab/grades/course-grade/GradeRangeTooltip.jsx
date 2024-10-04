@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -7,14 +6,13 @@ import { InfoOutline } from '@openedx/paragon/icons';
 import {
   Icon, IconButton, OverlayTrigger, Popover,
 } from '@openedx/paragon';
+import { useContextId } from '../../../../data/hooks';
 import { useModel } from '../../../../generic/model-store';
 
 import messages from '../messages';
 
 const GradeRangeTooltip = ({ intl, iconButtonClassName, passingGrade }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
 
   const {
     gradesFeatureIsFullyLocked,

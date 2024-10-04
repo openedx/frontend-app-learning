@@ -1,8 +1,8 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import {
   getLocale, injectIntl, intlShape, isRtl,
 } from '@edx/frontend-platform/i18n';
+import { useContextId } from '../../../data/hooks';
 import { useModel } from '../../../generic/model-store';
 
 import CompleteDonutSegment from './CompleteDonutSegment';
@@ -11,9 +11,7 @@ import LockedDonutSegment from './LockedDonutSegment';
 import messages from './messages';
 
 const CompletionDonutChart = ({ intl }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
 
   const {
     completionSummary: {
