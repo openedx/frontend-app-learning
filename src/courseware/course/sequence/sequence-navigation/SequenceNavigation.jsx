@@ -13,12 +13,12 @@ import {
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useSelector } from 'react-redux';
 
+import { LOADED } from '@src/constants';
 import { GetCourseExitNavigation } from '../../course-exit';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
-import { LOADED } from '../../../data/slice';
 
 import messages from './messages';
 

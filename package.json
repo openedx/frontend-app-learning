@@ -13,14 +13,15 @@
     "build": "fedx-scripts webpack",
     "bundlewatch": "bundlewatch",
     "i18n_extract": "fedx-scripts formatjs extract",
-    "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
-    "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx .",
+    "lint": "fedx-scripts eslint --ext .js --ext .jsx --ext .ts --ext .tsx .",
+    "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx --ext .ts --ext .tsx .",
     "prepare": "husky install",
     "postinstall": "patch-package",
     "snapshot": "fedx-scripts jest --updateSnapshot",
     "start": "fedx-scripts webpack-dev-server --progress",
     "dev": "PUBLIC_PATH=/learning/ MFE_CONFIG_API_URL='http://localhost:8000/api/mfe_config/v1' fedx-scripts webpack-dev-server --progress --host apps.local.openedx.io",
-    "test": "fedx-scripts jest --coverage --passWithNoTests"
+    "test": "fedx-scripts jest --coverage --passWithNoTests",
+    "types": "tsc --noEmit"
   },
   "author": "edX",
   "license": "AGPL-3.0",

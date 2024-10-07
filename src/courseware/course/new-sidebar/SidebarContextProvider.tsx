@@ -1,7 +1,6 @@
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-import PropTypes from 'prop-types';
 
 import isEmpty from 'lodash/isEmpty';
 
@@ -13,7 +12,13 @@ import { WIDGETS } from '../../../constants';
 import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 
-const SidebarProvider = ({
+interface Props {
+  courseId: string;
+  unitId: string;
+  children?: React.ReactNode;
+}
+
+const SidebarProvider: React.FC<Props> = ({
   courseId,
   unitId,
   children,
@@ -120,16 +125,6 @@ const SidebarProvider = ({
       {children}
     </SidebarContext.Provider>
   );
-};
-
-SidebarProvider.propTypes = {
-  courseId: PropTypes.string.isRequired,
-  unitId: PropTypes.string.isRequired,
-  children: PropTypes.node,
-};
-
-SidebarProvider.defaultProps = {
-  children: null,
 };
 
 export default SidebarProvider;

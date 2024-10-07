@@ -1,4 +1,4 @@
-/* eslint-disable no-use-before-define */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 

@@ -31,7 +31,7 @@ describe('DiscussionsWidget', () => {
       excludeFetchSequence: false,
     });
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    const state = store.getState();
+    const state = store.getState() as any; // TODO: remove 'any' once redux state gets types
     courseId = state.courseware.courseId;
     [unitId] = Object.keys(state.models.units);
 

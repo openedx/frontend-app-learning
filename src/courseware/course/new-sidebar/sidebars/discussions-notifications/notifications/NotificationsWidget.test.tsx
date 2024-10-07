@@ -14,7 +14,7 @@ import {
 import initializeStore from '../../../../../../store';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../../../../../utils';
 import { fetchCourse } from '../../../../../data';
-import SidebarContext from '../../../SidebarContext';
+import SidebarContext, { SidebarContextData } from '../../../SidebarContext';
 import NotificationsWidget from './NotificationsWidget';
 import setupDiscussionSidebar from '../../../../test-utils';
 
@@ -24,7 +24,7 @@ jest.mock('@edx/frontend-platform/analytics');
 describe('NotificationsWidget', () => {
   let axiosMock;
   let store;
-  const ID = 'NEWSIDEBAR';
+  const ID = 'DISCUSSIONS_NOTIFICATIONS';
   const defaultMetadata = Factory.build('courseMetadata');
   const courseId = defaultMetadata.id;
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultMetadata.id}`;
@@ -33,7 +33,7 @@ describe('NotificationsWidget', () => {
   const courseHomeMetadata = Factory.build('courseHomeMetadata');
   const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`);
 
-  function setMetadata(attributes, options) {
+  function setMetadata(attributes, options = undefined) {
     const updatedCourseHomeMetadata = Factory.build('courseHomeMetadata', attributes, options);
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, updatedCourseHomeMetadata);
   }
@@ -85,7 +85,7 @@ describe('NotificationsWidget', () => {
         courseId,
         hideNotificationbar: false,
         isNotificationbarAvailable: true,
-      }}
+      } as SidebarContextData}
       >
         <NotificationsWidget />
       </SidebarContext.Provider>,
@@ -94,14 +94,14 @@ describe('NotificationsWidget', () => {
   });
 
   it('renders upgrade card', async () => {
+    const contextData: Partial<SidebarContextData> = {
+      currentSidebar: ID,
+      courseId,
+      hideNotificationbar: false,
+      isNotificationbarAvailable: true,
+    };
     await fetchAndRender(
-      <SidebarContext.Provider value={{
-        currentSidebar: ID,
-        courseId,
-        hideNotificationbar: false,
-        isNotificationbarAvailable: true,
-      }}
-      >
+      <SidebarContext.Provider value={contextData as SidebarContextData}>
         <NotificationsWidget />
       </SidebarContext.Provider>,
     );
@@ -116,14 +116,14 @@ describe('NotificationsWidget', () => {
 
   it('renders no notifications bar if no verified mode', async () => {
     setMetadata({ verified_mode: null });
+    const contextData: Partial<SidebarContextData> = {
+      currentSidebar: ID,
+      courseId,
+      hideNotificationbar: true,
+      isNotificationbarAvailable: false,
+    };
     await fetchAndRender(
-      <SidebarContext.Provider value={{
-        currentSidebar: ID,
-        courseId,
-        hideNotificationbar: true,
-        isNotificationbarAvailable: false,
-      }}
-      >
+      <SidebarContext.Provider value={contextData as SidebarContextData}>
         <NotificationsWidget />
       </SidebarContext.Provider>,
     );
@@ -170,15 +170,15 @@ describe('NotificationsWidget', () => {
 
   it('marks notification as seen 3 seconds later', async () => {
     const onNotificationSeen = jest.fn();
+    const contextData: Partial<SidebarContextData> = {
+      currentSidebar: ID,
+      courseId,
+      onNotificationSeen,
+      hideNotificationbar: false,
+      isNotificationbarAvailable: true,
+    };
     await fetchAndRender(
-      <SidebarContext.Provider value={{
-        currentSidebar: ID,
-        courseId,
-        onNotificationSeen,
-        hideNotificationbar: false,
-        isNotificationbarAvailable: true,
-      }}
-      >
+      <SidebarContext.Provider value={contextData as SidebarContextData}>
         <NotificationsWidget />
       </SidebarContext.Provider>,
     );

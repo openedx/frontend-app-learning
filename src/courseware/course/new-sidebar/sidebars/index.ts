@@ -6,8 +6,8 @@ export const SIDEBARS = {
     Sidebar: discussionsNotifications.Sidebar,
     Trigger: discussionsNotifications.Trigger,
   },
-};
+} as const;
 
 export const SIDEBAR_ORDER = [
   discussionsNotifications.ID,
-];
+] as const;
