@@ -86,6 +86,7 @@ const NotificationTray = ({ intl }) => {
             id="notification_tray_slot"
             pluginProps={{
               courseId,
+              model: 'coursewareMeta',
               notificationCurrentState: upgradeNotificationCurrentState,
               setNotificationCurrentState: setUpgradeNotificationCurrentState,
             }}
