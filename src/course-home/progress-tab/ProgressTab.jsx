@@ -2,14 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
-import CertificateStatus from './certificate-status/CertificateStatus';
 import CourseCompletion from './course-completion/CourseCompletion';
-import CourseGrade from './grades/course-grade/CourseGrade';
-import DetailedGrades from './grades/detailed-grades/DetailedGrades';
-import GradeSummary from './grades/grade-summary/GradeSummary';
 import ProgressHeader from './ProgressHeader';
-import RelatedLinks from './related-links/RelatedLinks';
 
+import ProgressTabCertificateStatusSlot from '../../plugin-slots/ProgressTabCertificateStatusSlot';
+import ProgressTabCourseGradeSlot from '../../plugin-slots/ProgressTabCourseGradeSlot';
+import ProgressTabDetailedGradesSlot from '../../plugin-slots/ProgressTabDetailedGradesSlot';
+import ProgressTabGradeSummarySlot from '../../plugin-slots/ProgressTabGradeSummarySlot';
+import ProgressTabRelatedLinksSlot from '../../plugin-slots/ProgressTabRelatedLinksSlot';
 import { useModel } from '../../generic/model-store';
 
 const ProgressTab = () => {
@@ -39,18 +39,18 @@ const ProgressTab = () => {
         {/* Main body */}
         <div className="col-12 col-md-8 p-0">
           {!disableProgressGraph && <CourseCompletion />}
-          {!wideScreen && <CertificateStatus />}
-          <CourseGrade />
+          {!wideScreen && <ProgressTabCertificateStatusSlot courseId={courseId} />}
+          <ProgressTabCourseGradeSlot courseId={courseId} />
           <div className={`grades my-4 p-4 rounded raised-card ${applyLockedOverlay}`} aria-hidden={gradesFeatureIsFullyLocked}>
-            <GradeSummary />
-            <DetailedGrades />
+            <ProgressTabGradeSummarySlot courseId={courseId} />
+            <ProgressTabDetailedGradesSlot courseId={courseId} />
           </div>
         </div>
 
         {/* Side panel */}
         <div className="col-12 col-md-4 p-0 px-md-4">
-          {wideScreen && <CertificateStatus />}
-          <RelatedLinks />
+          {wideScreen && <ProgressTabCertificateStatusSlot courseId={courseId} />}
+          <ProgressTabRelatedLinksSlot courseId={courseId} />
         </div>
       </div>
     </>
