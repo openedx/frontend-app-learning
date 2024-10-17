@@ -1,10 +1,10 @@
 import { defineMessages } from '@edx/frontend-platform/i18n';
 
 const messages = defineMessages({
-  titleViewAs: {
-    id: 'instructor.toolbar.view.as',
-    defaultMessage: 'View this course as: ',
-    description: 'Button to view this course as',
+  titleViewCourseIn: {
+    id: 'instructor.toolbar.view.course',
+    defaultMessage: 'View course in:',
+    description: 'Button to view the course in the studio',
   },
   titleStudio: {
     id: 'instructor.toolbar.studio',

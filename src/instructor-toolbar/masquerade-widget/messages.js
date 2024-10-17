@@ -16,10 +16,10 @@ const messages = defineMessages({
     defaultMessage: 'Masquerade as this user',
     description: 'Label for the masquerade user input',
   },
-  titleViewCourseIn: {
-    id: 'instructor.toolbar.view.course',
-    defaultMessage: 'View course in: ',
-    description: 'Button to view the course in the studio',
+  titleViewAs: {
+    id: 'instructor.toolbar.view.as',
+    defaultMessage: 'View this course as: ',
+    description: 'Button to view this course as',
   },
   buttonStaff: {
     id: 'buttonStaff',

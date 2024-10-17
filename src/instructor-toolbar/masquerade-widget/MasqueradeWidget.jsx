@@ -2,11 +2,10 @@ import React, {
   Component,
 } from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { Dropdown } from '@openedx/paragon';
 
 import { UserMessagesContext } from '../../generic/user-messages';
-
 import MasqueradeUserNameInput from './MasqueradeUserNameInput';
 import MasqueradeWidgetOption from './MasqueradeWidgetOption';
 import {
@@ -21,7 +20,7 @@ class MasqueradeWidget extends Component {
     this.courseId = props.courseId;
     this.state = {
       autoFocus: false,
-      masquerade: this.props.intl.formatMessage(messages.buttonStaff),
+      masquerade: 'Staff',
       options: [],
       shouldShowUserNameInput: false,
       masqueradeUsername: null,
@@ -71,7 +70,7 @@ class MasqueradeWidget extends Component {
   toggle(show) {
     this.setState(prevState => ({
       autoFocus: true,
-      masquerade: this.props.intl.formatMessage(messages.buttonSpecificStudent),
+      masquerade: 'Specific Student...',
       shouldShowUserNameInput: show === undefined ? !prevState.shouldShowUserNameInput : show,
     }));
   }
@@ -96,7 +95,7 @@ class MasqueradeWidget extends Component {
     if (active.userName) {
       this.setState({
         autoFocus: false,
-        masquerade: this.props.intl.formatMessage(messages.buttonSpecificStudent),
+        masquerade: 'Specific Student...',
         masqueradeUsername: active.userName,
         shouldShowUserNameInput: true,
       });
@@ -120,7 +119,7 @@ class MasqueradeWidget extends Component {
     return (
       <div className="flex-grow-1">
         <div className="row">
-          <span className="col-auto col-form-label pl-3">{this.props.intl.formatMessage(messages.titleViewCourseIn)}</span>
+          <span className="col-auto col-form-label pl-3"><FormattedMessage {...messages.titleViewAs} /></span>
           <Dropdown className="flex-shrink-1 mx-1">
             <Dropdown.Toggle id="masquerade-widget-toggle" variant="inverse-outline-primary">
               {masquerade}
