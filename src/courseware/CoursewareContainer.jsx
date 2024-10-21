@@ -19,13 +19,15 @@ import { handleNextSectionCelebration } from './course/celebration';
 import withParamsAndNavigation from './utils';
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSequenceId, navigate) => {
+const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSequenceId, navigate, isPreview) => {
   if (courseStatus === 'loaded' && !sequenceId) {
     // Note that getResumeBlock is just an API call, not a redux thunk.
     getResumeBlock(courseId).then((data) => {
       // This is a replace because we don't want this change saved in the browser's history.
       if (data.sectionId && data.unitId) {
-        navigate(`/course/${courseId}/${data.sectionId}/${data.unitId}`, { replace: true });
+        const baseUrl = `/course/${courseId}/${data.sectionId}`;
+        const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
+        navigate(`${sequenceUrl}/${data.unitId}`, { replace: true });
       } else if (firstSequenceId) {
         navigate(`/course/${courseId}/${firstSequenceId}`, { replace: true });
       }
@@ -34,9 +36,19 @@ const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSe
 });
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkSectionUnitToUnitRedirect = memoize((courseStatus, courseId, sequenceStatus, section, unitId, navigate) => {
+const checkSectionUnitToUnitRedirect = memoize((
+  courseStatus,
+  courseId,
+  sequenceStatus,
+  section,
+  unitId,
+  navigate,
+  isPreview,
+) => {
   if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && unitId) {
-    navigate(`/course/${courseId}/${unitId}`, { replace: true });
+    const baseUrl = `/course/${courseId}`;
+    const courseUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
+    navigate(`${courseUrl}/${unitId}`, { replace: true });
   }
 });
 
@@ -54,68 +66,84 @@ const checkSectionToSequenceRedirect = memoize((courseStatus, courseId, sequence
 });
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkUnitToSequenceUnitRedirect = memoize(
-  (courseStatus, courseId, sequenceStatus, sequenceMightBeUnit, sequenceId, section, routeUnitId, navigate) => {
-    if (courseStatus === 'loaded' && sequenceStatus === 'failed' && !section && !routeUnitId) {
-      if (sequenceMightBeUnit) {
-        // If the sequence failed to load as a sequence, but it is marked as a possible unit, then
-        // we need to look up the correct parent sequence for it, and redirect there.
-        const unitId = sequenceId; // just for clarity during the rest of this method
-        getSequenceForUnitDeprecated(courseId, unitId).then(
-          parentId => {
-            if (parentId) {
-              navigate(`/course/${courseId}/${parentId}/${unitId}`, { replace: true });
-            } else {
-              navigate(`/course/${courseId}`, { replace: true });
-            }
-          },
-          () => { // error case
+const checkUnitToSequenceUnitRedirect = memoize((
+  courseStatus,
+  courseId,
+  sequenceStatus,
+  sequenceMightBeUnit,
+  sequenceId,
+  section,
+  routeUnitId,
+  navigate,
+  isPreview,
+) => {
+  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && !section && !routeUnitId) {
+    if (sequenceMightBeUnit) {
+      // If the sequence failed to load as a sequence, but it is marked as a possible unit, then
+      // we need to look up the correct parent sequence for it, and redirect there.
+      const unitId = sequenceId; // just for clarity during the rest of this method
+      getSequenceForUnitDeprecated(courseId, unitId).then(
+        parentId => {
+          if (parentId) {
+            const baseUrl = `/course/${courseId}/${parentId}`;
+            const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
+            navigate(`${sequenceUrl}/${unitId}`, { replace: true });
+          } else {
             navigate(`/course/${courseId}`, { replace: true });
-          },
-        );
-      } else {
-        // Invalid sequence that isn't a unit either. Redirect up to main course.
-        navigate(`/course/${courseId}`, { replace: true });
+          }
+        },
+        () => { // error case
+          navigate(`/course/${courseId}`, { replace: true });
+        },
+      );
+    } else {
+      // Invalid sequence that isn't a unit either. Redirect up to main course.
+      navigate(`/course/${courseId}`, { replace: true });
+    }
+  }
+});
+
+// Look at where this is called in componentDidUpdate for more info about its usage
+const checkSequenceToSequenceUnitRedirect = memoize(
+  (courseId, sequenceStatus, sequence, unitId, navigate, isPreview) => {
+    if (sequenceStatus === 'loaded' && sequence.id && !unitId) {
+      if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
+        const baseUrl = `/course/${courseId}/${sequence.id}`;
+        const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
+        const nextUnitId = sequence.unitIds[sequence.activeUnitIndex];
+        // This is a replace because we don't want this change saved in the browser's history.
+        navigate(`${sequenceUrl}/${nextUnitId}`, { replace: true });
       }
     }
   },
 );
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkSequenceToSequenceUnitRedirect = memoize((courseId, sequenceStatus, sequence, unitId, navigate) => {
-  if (sequenceStatus === 'loaded' && sequence.id && !unitId) {
-    if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
-      const nextUnitId = sequence.unitIds[sequence.activeUnitIndex];
-      // This is a replace because we don't want this change saved in the browser's history.
-      navigate(`/course/${courseId}/${sequence.id}/${nextUnitId}`, { replace: true });
-    }
-  }
-});
-
-// Look at where this is called in componentDidUpdate for more info about its usage
 const checkSequenceUnitMarkerToSequenceUnitRedirect = memoize(
-  (courseId, sequenceStatus, sequence, unitId, navigate) => {
+  (courseId, sequenceStatus, sequence, unitId, navigate, isPreview) => {
     if (sequenceStatus !== 'loaded' || !sequence.id) {
       return;
     }
 
+    const baseUrl = `/course/${courseId}/${sequence.id}`;
+    const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
     const hasUnits = sequence.unitIds?.length > 0;
 
     if (unitId === 'first') {
       if (hasUnits) {
         const firstUnitId = sequence.unitIds[0];
-        navigate(`/course/${courseId}/${sequence.id}/${firstUnitId}`, { replace: true });
+        navigate(`${sequenceUrl}/${firstUnitId}`, { replace: true });
       } else {
       // No units... go to general sequence page
-        navigate(`/course/${courseId}/${sequence.id}`, { replace: true });
+        navigate(baseUrl, { replace: true });
       }
     } else if (unitId === 'last') {
       if (hasUnits) {
         const lastUnitId = sequence.unitIds[sequence.unitIds.length - 1];
-        navigate(`/course/${courseId}/${sequence.id}/${lastUnitId}`, { replace: true });
+        navigate(`${sequenceUrl}/${lastUnitId}`, { replace: true });
       } else {
       // No units... go to general sequence page
-        navigate(`/course/${courseId}/${sequence.id}`, { replace: true });
+        navigate(baseUrl, { replace: true });
       }
     }
   },
@@ -169,6 +197,7 @@ class CoursewareContainer extends Component {
       routeSequenceId,
       routeUnitId,
       navigate,
+      isPreview,
     } = this.props;
 
     // Load data whenever the course or sequence ID changes.
@@ -197,7 +226,7 @@ class CoursewareContainer extends Component {
     // Check resume redirect:
     //   /course/:courseId -> /course/:courseId/:sequenceId/:unitId
     // based on sequence/unit where user was last active.
-    checkResumeRedirect(courseStatus, courseId, sequenceId, firstSequenceId, navigate);
+    checkResumeRedirect(courseStatus, courseId, sequenceId, firstSequenceId, navigate, isPreview);
 
     // Check section-unit to unit redirect:
     //    /course/:courseId/:sectionId/:unitId -> /course/:courseId/:unitId
@@ -210,33 +239,69 @@ class CoursewareContainer extends Component {
     // otherwise, we could get stuck in a redirect loop, since a sequence that failed to load
     // would endlessly redirect to itself through `checkSectionUnitToUnitRedirect`
     // and `checkUnitToSequenceUnitRedirect`.
-    checkSectionUnitToUnitRedirect(courseStatus, courseId, sequenceStatus, sectionViaSequenceId, routeUnitId, navigate);
+    checkSectionUnitToUnitRedirect(
+      courseStatus,
+      courseId,
+      sequenceStatus,
+      sectionViaSequenceId,
+      routeUnitId,
+      navigate,
+      isPreview,
+    );
 
     // Check section to sequence redirect:
     //    /course/:courseId/:sectionId         -> /course/:courseId/:sequenceId
     // by redirecting to the first sequence within the section.
-    checkSectionToSequenceRedirect(courseStatus, courseId, sequenceStatus, sectionViaSequenceId, routeUnitId, navigate);
+    checkSectionToSequenceRedirect(
+      courseStatus,
+      courseId,
+      sequenceStatus,
+      sectionViaSequenceId,
+      routeUnitId,
+      navigate,
+    );
 
     // Check unit to sequence-unit redirect:
     //    /course/:courseId/:unitId -> /course/:courseId/:sequenceId/:unitId
     // by filling in the ID of the parent sequence of :unitId.
-    checkUnitToSequenceUnitRedirect((
-      courseStatus, courseId, sequenceStatus, sequenceMightBeUnit,
-      sequenceId, sectionViaSequenceId, routeUnitId, navigate
-    ));
+    checkUnitToSequenceUnitRedirect(
+      courseStatus,
+      courseId,
+      sequenceStatus,
+      sequenceMightBeUnit,
+      sequenceId,
+      sectionViaSequenceId,
+      routeUnitId,
+      navigate,
+      isPreview,
+    );
 
     // Check sequence to sequence-unit redirect:
     //    /course/:courseId/:sequenceId -> /course/:courseId/:sequenceId/:unitId
     // by filling in the ID the most-recently-active unit in the sequence, OR
     // the ID of the first unit the sequence if none is active.
-    checkSequenceToSequenceUnitRedirect(courseId, sequenceStatus, sequence, routeUnitId, navigate);
+    checkSequenceToSequenceUnitRedirect(
+      courseId,
+      sequenceStatus,
+      sequence,
+      routeUnitId,
+      navigate,
+      isPreview,
+    );
 
     // Check sequence-unit marker to sequence-unit redirect:
     //    /course/:courseId/:sequenceId/first -> /course/:courseId/:sequenceId/:unitId
     //    /course/:courseId/:sequenceId/last -> /course/:courseId/:sequenceId/:unitId
     // by filling in the ID the first or last unit in the sequence.
     // "Sequence unit marker" is an invented term used only in this component.
-    checkSequenceUnitMarkerToSequenceUnitRedirect(courseId, sequenceStatus, sequence, routeUnitId, navigate);
+    checkSequenceUnitMarkerToSequenceUnitRedirect(
+      courseId,
+      sequenceStatus,
+      sequence,
+      routeUnitId,
+      navigate,
+      isPreview,
+    );
   }
 
   handleUnitNavigationClick = () => {
@@ -334,6 +399,7 @@ CoursewareContainer.propTypes = {
   fetchCourse: PropTypes.func.isRequired,
   fetchSequence: PropTypes.func.isRequired,
   navigate: PropTypes.func.isRequired,
+  isPreview: PropTypes.bool.isRequired,
 };
 
 CoursewareContainer.defaultProps = {

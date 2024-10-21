@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -22,15 +22,18 @@ const Unit = ({
   format,
   onLoaded,
   id,
+  isStaff,
 }) => {
   const { formatMessage } = useIntl();
   const [searchParams] = useSearchParams();
+  const { pathname } = useLocation();
   const { authenticatedUser } = React.useContext(AppContext);
   const examAccess = useExamAccess({ id });
   const shouldDisplayHonorCode = useShouldDisplayHonorCode({ courseId, id });
   const unit = useModel(modelKeys.units, id);
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
   const view = authenticatedUser ? views.student : views.public;
+  const shouldDisplayUnitPreview = pathname.startsWith('/preview') && isStaff;
 
   const getUrl = usePluginsCallback('getIFrameUrl', () => getIFrameUrl({
     id,
@@ -38,6 +41,7 @@ const Unit = ({
     format,
     examAccess,
     jumpToId: searchParams.get('jumpToId'),
+    preview: shouldDisplayUnitPreview ? '1' : '0',
   }));
 
   const iframeUrl = getUrl();
@@ -74,6 +78,7 @@ Unit.propTypes = {
   format: PropTypes.string,
   id: PropTypes.string.isRequired,
   onLoaded: PropTypes.func,
+  isStaff: PropTypes.bool.isRequired,
 };
 
 Unit.defaultProps = {
