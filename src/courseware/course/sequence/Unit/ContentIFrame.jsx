@@ -20,7 +20,7 @@ import * as hooks from './hooks';
  * Changes to it should be vetted by them (security@edx.org).
  */
 export const IFRAME_FEATURE_POLICY = (
-  'microphone *; camera *; midi *; geolocation *; encrypted-media *, clipboard-write *'
+  'microphone *; camera *; midi *; geolocation *; encrypted-media *; clipboard-write *'
 );
 
 export const testIDs = StrictDict({
