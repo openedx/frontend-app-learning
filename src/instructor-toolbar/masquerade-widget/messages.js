@@ -18,18 +18,8 @@ const messages = defineMessages({
   },
   titleViewAs: {
     id: 'instructor.toolbar.view.as',
-    defaultMessage: 'View this course as: ',
+    defaultMessage: 'View this course as:',
     description: 'Button to view this course as',
-  },
-  buttonStaff: {
-    id: 'buttonStaff',
-    defaultMessage: 'Staff',
-    description: 'Button to see the different staff options',
-  },
-  buttonSpecificStudent: {
-    id: 'buttonSpecificStudent',
-    defaultMessage: 'Specific Student...',
-    description: 'Button specific student',
   },
 });
 
