@@ -55,6 +55,7 @@ const InstructorToolbar = (props) => {
   const {
     courseId,
     unitId,
+    studioButtonVisible,
     tab,
   } = props;
 
@@ -72,13 +73,13 @@ const InstructorToolbar = (props) => {
           <div className="align-items-center flex-grow-1 d-md-flex mx-1 my-1">
             <MasqueradeWidget courseId={courseId} onError={showMasqueradeError} />
           </div>
-          {(urlStudio || urlInsights) && (
+          {((urlStudio && studioButtonVisible) || urlInsights) && (
             <>
               <hr className="border-light" />
               <span className="mr-2 mt-1 col-form-label">View course in:</span>
             </>
           )}
-          {urlStudio && (
+          {urlStudio && studioButtonVisible && (
             <span className="mx-1 my-1">
               <a className="btn btn-inverse-outline-primary" href={urlStudio}>Studio</a>
             </span>
@@ -114,12 +115,14 @@ const InstructorToolbar = (props) => {
 InstructorToolbar.propTypes = {
   courseId: PropTypes.string,
   unitId: PropTypes.string,
+  studioButtonVisible: PropTypes.bool,
   tab: PropTypes.string,
 };
 
 InstructorToolbar.defaultProps = {
   courseId: undefined,
   unitId: undefined,
+  studioButtonVisible: true,
   tab: '',
 };
 
