@@ -19,24 +19,26 @@ import { handleNextSectionCelebration } from './course/celebration';
 import withParamsAndNavigation from './utils';
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkResumeRedirect = memoize((courseStatus, courseId, sequenceId, firstSequenceId, navigate, isPreview) => {
-  if (courseStatus === 'loaded' && !sequenceId) {
-    // Note that getResumeBlock is just an API call, not a redux thunk.
-    getResumeBlock(courseId).then((data) => {
-      // This is a replace because we don't want this change saved in the browser's history.
-      if (data.sectionId && data.unitId) {
-        const baseUrl = `/course/${courseId}/${data.sectionId}`;
-        const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
-        navigate(`${sequenceUrl}/${data.unitId}`, { replace: true });
-      } else if (firstSequenceId) {
-        navigate(`/course/${courseId}/${firstSequenceId}`, { replace: true });
-      }
-    });
-  }
-});
+export const checkResumeRedirect = memoize(
+  (courseStatus, courseId, sequenceId, firstSequenceId, navigate, isPreview) => {
+    if (courseStatus === 'loaded' && !sequenceId) {
+      // Note that getResumeBlock is just an API call, not a redux thunk.
+      getResumeBlock(courseId).then((data) => {
+        // This is a replace because we don't want this change saved in the browser's history.
+        if (data.sectionId && data.unitId) {
+          const baseUrl = `/course/${courseId}/${data.sectionId}`;
+          const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
+          navigate(`${sequenceUrl}/${data.unitId}`, { replace: true });
+        } else if (firstSequenceId) {
+          navigate(`/course/${courseId}/${firstSequenceId}`, { replace: true });
+        }
+      }, () => {});
+    }
+  },
+);
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkSectionUnitToUnitRedirect = memoize((
+export const checkSectionUnitToUnitRedirect = memoize((
   courseStatus,
   courseId,
   sequenceStatus,
@@ -53,20 +55,22 @@ const checkSectionUnitToUnitRedirect = memoize((
 });
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkSectionToSequenceRedirect = memoize((courseStatus, courseId, sequenceStatus, section, unitId, navigate) => {
-  if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && !unitId) {
-    // If the section is non-empty, redirect to its first sequence.
-    if (section.sequenceIds && section.sequenceIds[0]) {
-      navigate(`/course/${courseId}/${section.sequenceIds[0]}`, { replace: true });
-    // Otherwise, just go to the course root, letting the resume redirect take care of things.
-    } else {
-      navigate(`/course/${courseId}`, { replace: true });
+export const checkSectionToSequenceRedirect = memoize(
+  (courseStatus, courseId, sequenceStatus, section, unitId, navigate) => {
+    if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && !unitId) {
+      // If the section is non-empty, redirect to its first sequence.
+      if (section.sequenceIds && section.sequenceIds[0]) {
+        navigate(`/course/${courseId}/${section.sequenceIds[0]}`, { replace: true });
+      // Otherwise, just go to the course root, letting the resume redirect take care of things.
+      } else {
+        navigate(`/course/${courseId}`, { replace: true });
+      }
     }
-  }
-});
+  },
+);
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkUnitToSequenceUnitRedirect = memoize((
+export const checkUnitToSequenceUnitRedirect = memoize((
   courseStatus,
   courseId,
   sequenceStatus,
@@ -104,7 +108,7 @@ const checkUnitToSequenceUnitRedirect = memoize((
 });
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkSequenceToSequenceUnitRedirect = memoize(
+export const checkSequenceToSequenceUnitRedirect = memoize(
   (courseId, sequenceStatus, sequence, unitId, navigate, isPreview) => {
     if (sequenceStatus === 'loaded' && sequence.id && !unitId) {
       if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
@@ -119,32 +123,27 @@ const checkSequenceToSequenceUnitRedirect = memoize(
 );
 
 // Look at where this is called in componentDidUpdate for more info about its usage
-const checkSequenceUnitMarkerToSequenceUnitRedirect = memoize(
+export const checkSequenceUnitMarkerToSequenceUnitRedirect = memoize(
   (courseId, sequenceStatus, sequence, unitId, navigate, isPreview) => {
     if (sequenceStatus !== 'loaded' || !sequence.id) {
       return;
     }
 
     const baseUrl = `/course/${courseId}/${sequence.id}`;
-    const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
     const hasUnits = sequence.unitIds?.length > 0;
 
-    if (unitId === 'first') {
-      if (hasUnits) {
+    if (hasUnits) {
+      const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
+      if (unitId === 'first') {
         const firstUnitId = sequence.unitIds[0];
         navigate(`${sequenceUrl}/${firstUnitId}`, { replace: true });
-      } else {
-      // No units... go to general sequence page
-        navigate(baseUrl, { replace: true });
-      }
-    } else if (unitId === 'last') {
-      if (hasUnits) {
+      } else if (unitId === 'last') {
         const lastUnitId = sequence.unitIds[sequence.unitIds.length - 1];
         navigate(`${sequenceUrl}/${lastUnitId}`, { replace: true });
-      } else {
-      // No units... go to general sequence page
-        navigate(baseUrl, { replace: true });
       }
+    } else {
+      // No units... go to general sequence page
+      navigate(baseUrl, { replace: true });
     }
   },
 );
