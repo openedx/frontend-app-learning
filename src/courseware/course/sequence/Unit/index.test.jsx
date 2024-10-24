@@ -1,7 +1,7 @@
 import React from 'react';
 import { when } from 'jest-when';
 import { formatMessage, shallow } from '@edx/react-unit-test-utils/dist';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 
 import { useModel } from '@src/generic/model-store';
 
@@ -55,6 +55,7 @@ const props = {
   format: 'test-format',
   onLoaded: jest.fn().mockName('props.onLoaded'),
   id: 'test-props-id',
+  isStaff: false,
 };
 
 const context = { authenticatedUser: { test: 'user' } };
@@ -89,6 +90,7 @@ describe('Unit component', () => {
 
   beforeEach(() => {
     useSearchParams.mockImplementation(() => [searchParams, setSearchParams]);
+    useLocation.mockImplementation(() => ({ pathname: `/course/${props.courseId}` }));
     jest.clearAllMocks();
     el = shallow(<Unit {...props} />);
   });

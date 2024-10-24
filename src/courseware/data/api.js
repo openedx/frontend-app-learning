@@ -6,7 +6,7 @@ import {
 } from './utils';
 
 // Do not add further calls to this API - we don't like making use of the modulestore if we can help it
-export async function getSequenceForUnitDeprecated(courseId, unitId) {
+export const getSequenceForUnitDeprecatedUrl = (courseId) => {
   const authenticatedUser = getAuthenticatedUser();
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/`);
   url.searchParams.append('course_id', courseId);
@@ -14,6 +14,10 @@ export async function getSequenceForUnitDeprecated(courseId, unitId) {
   url.searchParams.append('depth', 3);
   url.searchParams.append('requested_fields', 'children,discussions_url');
 
+  return url;
+};
+export async function getSequenceForUnitDeprecated(courseId, unitId) {
+  const url = getSequenceForUnitDeprecatedUrl(courseId);
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
   const parent = Object.values(data.blocks).find(block => block.type === 'sequential' && block.children.includes(unitId));
   return parent?.id;

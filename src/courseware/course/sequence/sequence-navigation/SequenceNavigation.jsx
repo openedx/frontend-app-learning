@@ -1,15 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { breakpoints, Button, useWindowSize } from '@openedx/paragon';
-import { ChevronLeft, ChevronRight } from '@openedx/paragon/icons';
+import { breakpoints, useWindowSize } from '@openedx/paragon';
 import classNames from 'classnames';
-import {
-  injectIntl,
-  intlShape,
-  isRtl,
-  getLocale,
-} from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useSelector } from 'react-redux';
 
@@ -21,9 +14,10 @@ import { useSequenceNavigationMetadata } from './hooks';
 import { useModel } from '../../../../generic/model-store';
 
 import messages from './messages';
+import PreviousButton from './generic/PreviousButton';
+import NextButton from './generic/NextButton';
 
 const SequenceNavigation = ({
-  intl,
   unitId,
   sequenceId,
   className,
@@ -36,6 +30,7 @@ const SequenceNavigation = ({
   open,
   close,
 }) => {
+  const intl = useIntl();
   const sequence = useModel('sequences', sequenceId);
   const {
     isFirstUnit,
@@ -76,29 +71,21 @@ const SequenceNavigation = ({
     );
   };
 
-  const renderPreviousButton = () => {
-    const disabled = isFirstUnit;
-    const prevArrow = isRtl(getLocale()) ? ChevronRight : ChevronLeft;
-    return navigationDisabledPrevSequence || (
-      <Button
-        variant="link"
-        className="previous-btn"
-        onClick={previousHandler}
-        disabled={disabled}
-        iconBefore={prevArrow}
-        as={disabled ? undefined : Link}
-        to={disabled ? undefined : previousLink}
-      >
-        {shouldDisplayNotificationTriggerInSequence ? null : intl.formatMessage(messages.previousButton)}
-      </Button>
-    );
-  };
+  const renderPreviousButton = () => navigationDisabledPrevSequence || (
+    <PreviousButton
+      variant="link"
+      buttonStyle="previous-btn"
+      onClick={previousHandler}
+      previousLink={previousLink}
+      isFirstUnit={isFirstUnit}
+      buttonLabel={shouldDisplayNotificationTriggerInSequence ? null : intl.formatMessage(messages.previousButton)}
+    />
+  );
 
   const renderNextButton = () => {
     const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
-    const nextArrow = isRtl(getLocale()) ? ChevronLeft : ChevronRight;
 
     return navigationDisabledNextSequence || (
       <PluginSlot
@@ -106,10 +93,8 @@ const SequenceNavigation = ({
         pluginProps={{
           courseId,
           disabled,
-          buttonText,
-          nextArrow,
+          buttonText: shouldDisplayNotificationTriggerInSequence ? null : buttonText,
           nextLink,
-          shouldDisplayNotificationTriggerInSequence,
           sequenceId,
           unitId,
           nextSequenceHandler,
@@ -117,20 +102,16 @@ const SequenceNavigation = ({
           isOpen,
           open,
           close,
-          linkComponent: Link,
         }}
       >
-        <Button
+        <NextButton
           variant="link"
-          className="next-btn"
+          buttonStyle="next-btn"
           onClick={nextHandler}
+          nextLink={nextLink}
           disabled={disabled}
-          iconAfter={nextArrow}
-          as={disabled ? undefined : Link}
-          to={disabled ? undefined : nextLink}
-        >
-          {shouldDisplayNotificationTriggerInSequence ? null : buttonText}
-        </Button>
+          buttonLabel={shouldDisplayNotificationTriggerInSequence ? null : buttonText}
+        />
       </PluginSlot>
     );
   };
@@ -145,7 +126,6 @@ const SequenceNavigation = ({
 };
 
 SequenceNavigation.propTypes = {
-  intl: intlShape.isRequired,
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   className: PropTypes.string,
@@ -169,4 +149,4 @@ SequenceNavigation.defaultProps = {
   nextSequenceHandler: null,
 };
 
-export default injectIntl(SequenceNavigation);
+export default SequenceNavigation;

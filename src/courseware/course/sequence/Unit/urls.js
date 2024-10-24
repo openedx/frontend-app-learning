@@ -13,6 +13,7 @@ export const getIFrameUrl = ({
   format,
   examAccess,
   jumpToId,
+  preview,
 }) => {
   const xblockUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}`;
   return stringifyUrl({
@@ -20,6 +21,7 @@ export const getIFrameUrl = ({
     query: {
       ...iframeParams,
       view,
+      preview,
       ...(format && { format }),
       ...(!examAccess.blockAccess && { exam_access: examAccess.accessToken }),
       jumpToId, // Pass jumpToId as query param as fragmentIdentifier is not passed to server.

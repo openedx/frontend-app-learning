@@ -13,6 +13,8 @@ export const DECODE_ROUTES = {
     '/course/:courseId/:sequenceId/:unitId',
     '/course/:courseId/:sequenceId',
     '/course/:courseId',
+    '/preview/course/:courseId/:sequenceId/:unitId',
+    '/preview/course/:courseId/:sequenceId',
   ],
   REDIRECT_HOME: 'home/:courseId',
   REDIRECT_SURVEY: 'survey/:courseId',

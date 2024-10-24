@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import classNames from 'classnames';
@@ -22,6 +22,9 @@ const UnitButton = ({
   showTitle,
 }) => {
   const { courseId, sequenceId } = useSelector(state => state.courseware);
+  const { pathname } = useLocation();
+  const basePath = `/course/${courseId}/${sequenceId}/${unitId}`;
+  const unitPath = pathname.startsWith('/preview') ? `/preview${basePath}` : basePath;
 
   const handleClick = useCallback(() => {
     onClick(unitId);
@@ -37,7 +40,7 @@ const UnitButton = ({
       onClick={handleClick}
       title={title}
       as={Link}
-      to={`/course/${courseId}/${sequenceId}/${unitId}`}
+      to={unitPath}
     >
       <UnitIcon type={contentType} />
       {showTitle && <span className="unit-title">{title}</span>}

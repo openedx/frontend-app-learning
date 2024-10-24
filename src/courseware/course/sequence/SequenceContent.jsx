@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import PageLoading from '../../../generic/PageLoading';
 import { useModel } from '../../../generic/model-store';
 
@@ -11,12 +11,13 @@ const ContentLock = React.lazy(() => import('./content-lock'));
 
 const SequenceContent = ({
   gated,
-  intl,
   courseId,
   sequenceId,
   unitId,
   unitLoadedHandler,
+  isStaff,
 }) => {
+  const intl = useIntl();
   const sequence = useModel('sequences', sequenceId);
 
   // Go back to the top of the page whenever the unit or sequence changes.
@@ -59,6 +60,7 @@ const SequenceContent = ({
       key={unitId}
       id={unitId}
       onLoaded={unitLoadedHandler}
+      isStaff={isStaff}
     />
   );
 };
@@ -69,11 +71,11 @@ SequenceContent.propTypes = {
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   unitLoadedHandler: PropTypes.func.isRequired,
-  intl: intlShape.isRequired,
+  isStaff: PropTypes.bool.isRequired,
 };
 
 SequenceContent.defaultProps = {
   unitId: null,
 };
 
-export default injectIntl(SequenceContent);
+export default SequenceContent;
