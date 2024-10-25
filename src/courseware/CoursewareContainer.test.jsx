@@ -673,8 +673,13 @@ describe('Course redirect functions', () => {
 
       it('calls navigate with parentId and sequenceId', () => {
         axiosMock.onGet(apiUrl).reply(200, {
-          parent: { id: 'sequence_1' },
+          blocks: {
+            id: 'sequence_1',
+            type: 'seuenctial',
+            children: ['unit_1'],
+          },
         });
+
         checkUnitToSequenceUnitRedirect(
           'loaded',
           'courseId',
@@ -696,6 +701,7 @@ describe('Course redirect functions', () => {
       it('calls navigate to course page when getSequenceForUnitDeprecated errors', () => {
         const getSequenceForUnitDeprecated = jest.fn();
         axiosMock.onGet(apiUrl).reply(404);
+
         checkUnitToSequenceUnitRedirect(
           'loaded',
           'courseId',
@@ -718,8 +724,9 @@ describe('Course redirect functions', () => {
       it('calls navigate to course page when no parent id is returned', () => {
         const getSequenceForUnitDeprecated = jest.fn();
         axiosMock.onGet(apiUrl).reply(200, {
-          parent: { children: ['block_1'] },
+          block: { type: 'sequential', children: ['block_1'] },
         });
+
         checkUnitToSequenceUnitRedirect(
           'loaded',
           'courseId',
@@ -735,6 +742,28 @@ describe('Course redirect functions', () => {
 
         waitFor(() => {
           expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
+          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
+        });
+      });
+
+      it('calls navigate to course page when sequnce is not unit', () => {
+        const getSequenceForUnitDeprecated = jest.fn();
+
+        checkUnitToSequenceUnitRedirect(
+          'loaded',
+          'courseId',
+          'failed',
+          false,
+          'unit_1',
+          false,
+          null,
+          navigate,
+          true,
+        );
+        const expectedUrl = '/course/courseId';
+
+        waitFor(() => {
+          expect(getSequenceForUnitDeprecated).not.toHaveBeenCalled();
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
