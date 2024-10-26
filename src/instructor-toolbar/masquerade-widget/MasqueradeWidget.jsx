@@ -2,11 +2,10 @@ import React, {
   Component,
 } from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { Dropdown } from '@openedx/paragon';
 
 import { UserMessagesContext } from '../../generic/user-messages';
-
 import MasqueradeUserNameInput from './MasqueradeUserNameInput';
 import MasqueradeWidgetOption from './MasqueradeWidgetOption';
 import {
@@ -21,7 +20,7 @@ class MasqueradeWidget extends Component {
     this.courseId = props.courseId;
     this.state = {
       autoFocus: false,
-      masquerade: 'Staff',
+      masquerade: this.props.intl.formatMessage(messages.titleStaff),
       active: {},
       available: [],
       shouldShowUserNameInput: false,
@@ -128,7 +127,7 @@ class MasqueradeWidget extends Component {
     return (
       <div className="flex-grow-1">
         <div className="row">
-          <span className="col-auto col-form-label pl-3">View this course as:</span>
+          <span className="col-auto col-form-label pl-3"><FormattedMessage {...messages.titleViewAs} /></span>
           <Dropdown className="flex-shrink-1 mx-1">
             <Dropdown.Toggle id="masquerade-widget-toggle" variant="inverse-outline-primary">
               {masquerade}
