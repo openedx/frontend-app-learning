@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '@src/generic/user-messages';
@@ -38,6 +39,13 @@ const Course = ({
   const section = useModel('sections', sequence ? sequence.sectionId : null);
   const { enableNavigationSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
   const navigationDisabled = enableNavigationSidebar || (sequence?.navigationDisabled ?? false);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  if (!isStaff && pathname.startsWith('/preview')) {
+    const courseUrl = pathname.replace('/preview', '');
+    navigate(courseUrl, { replace: true });
+  }
 
   const pageTitleBreadCrumbs = [
     sequence,
