@@ -669,15 +669,16 @@ describe('Course redirect functions', () => {
     });
 
     describe('checkUnitToSequenceUnitRedirect', () => {
-      const apiUrl = getSequenceForUnitDeprecatedUrl('courseId');
+      const { href: apiUrl } = getSequenceForUnitDeprecatedUrl('courseId');
 
       it('calls navigate with parentId and sequenceId', () => {
+        const getSequenceForUnitDeprecated = jest.fn();
         axiosMock.onGet(apiUrl).reply(200, {
-          blocks: {
+          blocks: [{
             id: 'sequence_1',
-            type: 'seuenctial',
+            type: 'sequential',
             children: ['unit_1'],
-          },
+          }],
         });
 
         checkUnitToSequenceUnitRedirect(
@@ -694,6 +695,7 @@ describe('Course redirect functions', () => {
         const expectedUrl = '/course/courseId/sequence_1';
 
         waitFor(() => {
+          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
@@ -724,7 +726,11 @@ describe('Course redirect functions', () => {
       it('calls navigate to course page when no parent id is returned', () => {
         const getSequenceForUnitDeprecated = jest.fn();
         axiosMock.onGet(apiUrl).reply(200, {
-          block: { type: 'sequential', children: ['block_1'] },
+          blocks: [{
+            id: 'sequence_1',
+            type: 'sequential',
+            children: ['block_1'],
+          }],
         });
 
         checkUnitToSequenceUnitRedirect(
