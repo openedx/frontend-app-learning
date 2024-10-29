@@ -23,7 +23,7 @@ const messages = defineMessages({
   },
   titleStaff: {
     id: 'instructor.toolbar.staff',
-    defaultMessage: 'Staffaaaa',
+    defaultMessage: 'Staff',
     description: 'Button Staff',
   },
 });
