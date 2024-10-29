@@ -64,6 +64,7 @@ const NotificationTray = ({ intl }) => {
   };
   // After three seconds, update notificationSeen (to hide red dot)
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     setTimeout(onNotificationSeen, 3000);
     sendTrackEvent('edx.ui.course.upgrade.old_sidebar.notifications', notificationTrayEventProperties);
   }, []);
@@ -85,6 +86,7 @@ const NotificationTray = ({ intl }) => {
             id="notification_tray_slot"
             pluginProps={{
               courseId,
+              model: 'coursewareMeta',
               notificationCurrentState: upgradeNotificationCurrentState,
               setNotificationCurrentState: setUpgradeNotificationCurrentState,
             }}

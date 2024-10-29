@@ -86,6 +86,50 @@ describe('Unit Navigation', () => {
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });
 
+  it('has the "Next" button disabled for entrance exam failed', async () => {
+    const testCourseMetadata = {
+      ...courseMetadata,
+      certificate_data: { cert_status: 'bogus_status' },
+      enrollment: { is_active: true },
+      entrance_exam_data: {
+        entrance_exam_current_score: 0, entrance_exam_enabled: true, entrance_exam_id: '1', entrance_exam_minimum_score_pct: 0.65, entrance_exam_passed: false,
+      },
+    };
+    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
+    // Have to refetch the sequenceId since the new store generates new sequences
+    const { courseware } = testStore.getState();
+    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+
+    render(
+      <UnitNavigation {...testData} unitId={unitBlocks[0].id} />,
+      { store: testStore, wrapWithRouter: true },
+    );
+
+    expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
+  });
+
+  it('has the "Next" button enabled for entrance exam pass', async () => {
+    const testCourseMetadata = {
+      ...courseMetadata,
+      certificate_data: { cert_status: 'bogus_status' },
+      enrollment: { is_active: true },
+      entrance_exam_data: {
+        entrance_exam_current_score: 1.0, entrance_exam_enabled: true, entrance_exam_id: '1', entrance_exam_minimum_score_pct: 0.65, entrance_exam_passed: true,
+      },
+    };
+    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
+    // Have to refetch the sequenceId since the new store generates new sequences
+    const { courseware } = testStore.getState();
+    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+
+    render(
+      <UnitNavigation {...testData} unitId={unitBlocks[0].id} />,
+      { store: testStore, wrapWithRouter: true },
+    );
+
+    expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
+  });
+
   it('displays end of course message instead of the "Next" button as needed', async () => {
     const testCourseMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' }, enrollment: { is_active: true } };
     const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);

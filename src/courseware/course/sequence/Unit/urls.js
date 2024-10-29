@@ -1,5 +1,5 @@
 import { getConfig } from '@edx/frontend-platform';
-import { stringify } from 'query-string';
+import { stringifyUrl } from 'query-string';
 
 export const iframeParams = {
   show_title: 0,
@@ -12,15 +12,22 @@ export const getIFrameUrl = ({
   view,
   format,
   examAccess,
+  jumpToId,
+  preview,
 }) => {
   const xblockUrl = `${getConfig().LMS_BASE_URL}/xblock/${id}`;
-  const params = stringify({
-    ...iframeParams,
-    view,
-    ...(format && { format }),
-    ...(!examAccess.blockAccess && { exam_access: examAccess.accessToken }),
+  return stringifyUrl({
+    url: xblockUrl,
+    query: {
+      ...iframeParams,
+      view,
+      preview,
+      ...(format && { format }),
+      ...(!examAccess.blockAccess && { exam_access: examAccess.accessToken }),
+      jumpToId, // Pass jumpToId as query param as fragmentIdentifier is not passed to server.
+    },
+    fragmentIdentifier: jumpToId, // this is used by browser to scroll to correct block.
   });
-  return `${xblockUrl}?${params}`;
 };
 
 export default {

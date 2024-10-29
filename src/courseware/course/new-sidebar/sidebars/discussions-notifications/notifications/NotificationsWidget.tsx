@@ -65,6 +65,7 @@ const NotificationsWidget = () => {
 
   // After three seconds, update notificationSeen (to hide red dot)
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     setTimeout(onNotificationSeen, 3000);
     sendTrackEvent('edx.ui.course.upgrade.new_sidebar.notifications', notificationTrayEventProperties);
   }, []);
@@ -77,6 +78,7 @@ const NotificationsWidget = () => {
         id="notification_widget_slot"
         pluginProps={{
           courseId,
+          model: 'coursewareMeta',
           notificationCurrentState: upgradeNotificationCurrentState,
           setNotificationCurrentState: setUpgradeNotificationCurrentState,
           toggleSidebar: onToggleSidebar,
@@ -94,7 +96,6 @@ const NotificationsWidget = () => {
           timeOffsetMillis={timeOffsetMillis}
           courseId={courseId}
           org={org}
-          upgradeNotificationCurrentState={upgradeNotificationCurrentState}
           setupgradeNotificationCurrentState={setUpgradeNotificationCurrentState}
           toggleSidebar={onToggleSidebar}
         />

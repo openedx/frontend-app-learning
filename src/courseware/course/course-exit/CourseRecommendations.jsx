@@ -12,9 +12,9 @@ import {
 } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import truncate from 'truncate-html';
+import { FAILED, LOADED, LOADING } from '@src/constants';
 import { useModel } from '../../../generic/model-store';
 import fetchCourseRecommendations from './data/thunks';
-import { FAILED, LOADED, LOADING } from './data/slice';
 import CatalogSuggestion from './CatalogSuggestion';
 import PageLoading from '../../../generic/PageLoading';
 import { logClick } from './utils';

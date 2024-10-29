@@ -1,12 +1,12 @@
 import { getConfig } from '@edx/frontend-platform';
-import { stringify } from 'query-string';
+import { stringifyUrl } from 'query-string';
 import { getIFrameUrl, iframeParams } from './urls';
 
 jest.mock('@edx/frontend-platform', () => ({
   getConfig: jest.fn(),
 }));
 jest.mock('query-string', () => ({
-  stringify: jest.fn((...args) => ({ stringify: args })),
+  stringifyUrl: jest.fn((arg) => ({ stringifyUrl: arg })),
 }));
 
 const config = { LMS_BASE_URL: 'test-lms-url' };
@@ -17,45 +17,67 @@ const props = {
   view: 'test-view',
   format: 'test-format',
   examAccess: { blockAccess: false, accessToken: 'test-access-token' },
+  preview: false,
 };
 
 describe('urls module getIFrameUrl', () => {
   test('format provided, exam access and token available', () => {
-    const params = stringify({
-      ...iframeParams,
-      view: props.view,
-      format: props.format,
-      exam_access: props.examAccess.accessToken,
+    const url = stringifyUrl({
+      url: `${config.LMS_BASE_URL}/xblock/${props.id}`,
+      query: {
+        ...iframeParams,
+        view: props.view,
+        format: props.format,
+        exam_access: props.examAccess.accessToken,
+        preview: props.preview,
+      },
     });
-    expect(getIFrameUrl(props)).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
+    expect(getIFrameUrl(props)).toEqual(url);
   });
   test('no format provided, exam access blocked', () => {
-    const params = stringify({ ...iframeParams, view: props.view });
+    const url = stringifyUrl({
+      url: `${config.LMS_BASE_URL}/xblock/${props.id}`,
+      query: { ...iframeParams, view: props.view, preview: props.preview },
+    });
     expect(getIFrameUrl({
       id: props.id,
       view: props.view,
+      preview: props.preview,
       examAccess: { blockAccess: true },
-    })).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
+    })).toEqual(url);
   });
-  test('src and dest languages provided', () => {
-    const params = stringify({
-      ...iframeParams,
-      view: props.view,
-      src_lang: 'test-src-lang',
-      dest_lang: 'test-dest-lang',
+  test('jumpToId and fragmentIdentifier is added to url', () => {
+    const url = stringifyUrl({
+      url: `${config.LMS_BASE_URL}/xblock/${props.id}`,
+      query: {
+        ...iframeParams,
+        view: props.view,
+        format: props.format,
+        preview: props.preview,
+        exam_access: props.examAccess.accessToken,
+        jumpToId: 'some-xblock-id',
+      },
+      fragmentIdentifier: 'some-xblock-id',
     });
     expect(getIFrameUrl({
       ...props,
-      srcLanguage: 'test-src-lang',
-      destLanguage: 'test-dest-lang',
-    })).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
+      jumpToId: 'some-xblock-id',
+    })).toEqual(url);
   });
-  test('src and dest languages provided are the same', () => {
-    const params = stringify({ ...iframeParams, view: props.view });
+  test('preview is true and url param equals 1', () => {
+    const url = stringifyUrl({
+      url: `${config.LMS_BASE_URL}/xblock/${props.id}`,
+      query: {
+        ...iframeParams,
+        view: props.view,
+        format: props.format,
+        preview: true,
+        exam_access: props.examAccess.accessToken,
+      },
+    });
     expect(getIFrameUrl({
       ...props,
-      srcLanguage: 'test-lang',
-      destLanguage: 'test-lang',
-    })).toEqual(`${config.LMS_BASE_URL}/xblock/${props.id}?${params}`);
+      preview: true,
+    })).toEqual(url);
   });
 });

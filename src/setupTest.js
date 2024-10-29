@@ -1,5 +1,3 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 import '@testing-library/jest-dom';
 import '@testing-library/jest-dom/extend-expect';
 import './courseware/data/__factories__';
@@ -195,10 +193,10 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
 
   logUnhandledRequests(axiosMock);
 
-  // eslint-disable-next-line no-unused-expressions
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   !options.excludeFetchCourse && await executeThunk(fetchCourse(courseMetadata.id), store.dispatch);
 
-  // eslint-disable-next-line no-unused-expressions
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   !options.excludeFetchOutlineSidebar && await executeThunk(
     getCourseOutlineStructure(courseMetadata.id),
     store.dispatch,

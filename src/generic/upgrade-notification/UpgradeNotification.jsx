@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import {
-  useIntl, FormattedDate, FormattedMessage, injectIntl,
-} from '@edx/frontend-platform/i18n';
+import { useIntl, FormattedDate, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { Button, Icon, IconButton } from '@openedx/paragon';
 import { Close } from '@openedx/paragon/icons';
@@ -561,4 +559,4 @@ UpgradeNotification.defaultProps = {
   toggleSidebar: null,
 };
 
-export default injectIntl(UpgradeNotification);
+export default UpgradeNotification;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { when } from 'jest-when';
 import { formatMessage, shallow } from '@edx/react-unit-test-utils/dist';
+import { useSearchParams, useLocation } from 'react-router-dom';
 
 import { useModel } from '@src/generic/model-store';
 
@@ -14,6 +15,7 @@ import { modelKeys, views } from './constants';
 import * as hooks from './hooks';
 
 jest.mock('./hooks', () => ({ useUnitData: jest.fn() }));
+jest.mock('react-router-dom');
 
 jest.mock('@edx/frontend-platform/i18n', () => {
   const utils = jest.requireActual('@edx/react-unit-test-utils/dist');
@@ -53,6 +55,7 @@ const props = {
   format: 'test-format',
   onLoaded: jest.fn().mockName('props.onLoaded'),
   id: 'test-props-id',
+  isStaff: false,
 };
 
 const context = { authenticatedUser: { test: 'user' } };
@@ -82,7 +85,12 @@ when(useModel)
 
 let el;
 describe('Unit component', () => {
+  const searchParams = { get: (prop) => prop };
+  const setSearchParams = jest.fn();
+
   beforeEach(() => {
+    useSearchParams.mockImplementation(() => [searchParams, setSearchParams]);
+    useLocation.mockImplementation(() => ({ pathname: `/course/${props.courseId}` }));
     jest.clearAllMocks();
     el = shallow(<Unit {...props} />);
   });

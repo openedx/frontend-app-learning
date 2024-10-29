@@ -10,7 +10,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { logError } from '@edx/frontend-platform/logging';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 
-import { LOADED, LOADING, FAILED } from '../constants';
+import { LOADED, LOADING, FAILED } from '@src/constants';
 import PageLoading from '../generic/PageLoading';
 import { unsubscribeNotificationPreferences } from './data/api';
 import messages from './messages';

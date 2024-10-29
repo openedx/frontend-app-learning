@@ -55,8 +55,10 @@ validate:
 	make validate-no-uncommitted-package-lock-changes
 	npm run i18n_extract
 	npm run lint -- --max-warnings 0
+	npm run types
 	npm run test
 	npm run build
+	npm run bundlewatch
 
 .PHONY: validate.ci
 validate.ci:

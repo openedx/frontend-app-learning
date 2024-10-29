@@ -1,4 +1,4 @@
-import { LOADED } from './slice';
+import { LOADED } from '@src/constants';
 
 export function sequenceIdsSelector(state) {
   if (state.courseware.courseStatus !== LOADED) {

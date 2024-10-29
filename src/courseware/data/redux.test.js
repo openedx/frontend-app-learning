@@ -4,8 +4,8 @@ import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
 
+import { FAILED, LOADING } from '@src/constants';
 import * as thunks from './thunks';
-import { FAILED, LOADING } from './slice';
 
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 

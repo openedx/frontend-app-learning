@@ -4,6 +4,7 @@ import React from 'react';
 import { ErrorPage } from '@edx/frontend-platform/react';
 import { StrictDict } from '@edx/react-unit-test-utils';
 import { ModalDialog, Modal } from '@openedx/paragon';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
 import PageLoading from '@src/generic/PageLoading';
 import * as hooks from './hooks';
@@ -35,6 +36,7 @@ const ContentIFrame = ({
   elementId,
   onLoaded,
   title,
+  courseId,
 }) => {
   const {
     handleIFrameLoad,
@@ -82,7 +84,17 @@ const ContentIFrame = ({
   return (
     <>
       {(shouldShowContent && !hasLoaded) && (
-        showError ? <ErrorPage /> : <PageLoading srMessage={loadingMessage} />
+        showError ? <ErrorPage /> : (
+          <PluginSlot
+            id="content_iframe_loader_slot"
+            pluginProps={{
+              defaultLoaderComponent: <PageLoading srMessage={loadingMessage} />,
+              courseId,
+            }}
+          >
+            <PageLoading srMessage={loadingMessage} />
+          </PluginSlot>
+        )
       )}
       {shouldShowContent && (
         <div className="unit-iframe-wrapper">
@@ -124,11 +136,13 @@ ContentIFrame.propTypes = {
   elementId: PropTypes.string.isRequired,
   onLoaded: PropTypes.func,
   title: PropTypes.node.isRequired,
+  courseId: PropTypes.string,
 };
 
 ContentIFrame.defaultProps = {
   iframeUrl: null,
   onLoaded: () => ({}),
+  courseId: '',
 };
 
 export default ContentIFrame;

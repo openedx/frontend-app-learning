@@ -1,6 +1,4 @@
-import * as React from 'react';
-
-const RightSidebarOutlined = (props) => (
+const RightSidebarFilled = (props) => (
   <svg
     width={24}
     height={24}
@@ -12,9 +10,9 @@ const RightSidebarOutlined = (props) => (
     <path
       fillRule="evenodd"
       clipRule="evenodd"
-      d="M2 2v20h20V2H2Zm18 2h-4v16h4V4ZM4 4h10v16H4V4Z"
+      d="M2 22V2h20v20H2ZM14 4H4v16h10V4Z"
       fill="currentColor"
     />
   </svg>
 );
-export default RightSidebarOutlined;
+export default RightSidebarFilled;
