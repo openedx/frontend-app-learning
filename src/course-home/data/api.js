@@ -449,7 +449,7 @@ export async function unsubscribeFromCourseGoal(token) {
     .then(res => camelCaseObject(res));
 }
 
-export async function getCoursewareSearchEnabledFlag(courseId) {
+export async function getCoursewareSearchEnabled(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-search/enabled/`);
   const { data } = await getAuthenticatedHttpClient().get(url.href);
   return { enabled: data.enabled || false };
