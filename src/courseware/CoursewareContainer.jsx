@@ -168,7 +168,7 @@ class CoursewareContainer extends Component {
 
   checkFetchSequence = memoize((sequenceId) => {
     if (sequenceId) {
-      this.props.fetchSequence(sequenceId);
+      this.props.fetchSequence(sequenceId, this.props.isPreview);
     }
   });
 

@@ -36,9 +36,9 @@ export async function getCourseMetadata(courseId) {
   return normalizeMetadata(metadata);
 }
 
-export async function getSequenceMetadata(sequenceId) {
+export async function getSequenceMetadata(sequenceId, params) {
   const { data } = await getAuthenticatedHttpClient()
-    .get(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceId}`, {});
+    .get(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceId}`, { params });
 
   return normalizeSequenceMetadata(data);
 }
