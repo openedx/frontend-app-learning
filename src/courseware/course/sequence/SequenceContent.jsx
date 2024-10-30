@@ -15,7 +15,7 @@ const SequenceContent = ({
   sequenceId,
   unitId,
   unitLoadedHandler,
-  isStaff,
+  isOriginalUserStaff,
 }) => {
   const intl = useIntl();
   const sequence = useModel('sequences', sequenceId);
@@ -60,7 +60,7 @@ const SequenceContent = ({
       key={unitId}
       id={unitId}
       onLoaded={unitLoadedHandler}
-      isStaff={isStaff}
+      isOriginalUserStaff={isOriginalUserStaff}
     />
   );
 };
@@ -71,7 +71,7 @@ SequenceContent.propTypes = {
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   unitLoadedHandler: PropTypes.func.isRequired,
-  isStaff: PropTypes.bool.isRequired,
+  isOriginalUserStaff: PropTypes.bool.isRequired,
 };
 
 SequenceContent.defaultProps = {

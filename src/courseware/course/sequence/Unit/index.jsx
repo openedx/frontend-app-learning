@@ -22,7 +22,7 @@ const Unit = ({
   format,
   onLoaded,
   id,
-  isStaff,
+  isOriginalUserStaff,
 }) => {
   const { formatMessage } = useIntl();
   const [searchParams] = useSearchParams();
@@ -33,7 +33,7 @@ const Unit = ({
   const unit = useModel(modelKeys.units, id);
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
   const view = authenticatedUser ? views.student : views.public;
-  const shouldDisplayUnitPreview = pathname.startsWith('/preview') && isStaff;
+  const shouldDisplayUnitPreview = pathname.startsWith('/preview') && isOriginalUserStaff;
 
   const getUrl = usePluginsCallback('getIFrameUrl', () => getIFrameUrl({
     id,
@@ -78,7 +78,7 @@ Unit.propTypes = {
   format: PropTypes.string,
   id: PropTypes.string.isRequired,
   onLoaded: PropTypes.func,
-  isStaff: PropTypes.bool.isRequired,
+  isOriginalUserStaff: PropTypes.bool.isRequired,
 };
 
 Unit.defaultProps = {

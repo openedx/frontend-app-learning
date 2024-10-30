@@ -204,7 +204,7 @@ const Sequence = ({
               sequenceId={sequenceId}
               unitId={unitId}
               unitLoadedHandler={handleUnitLoaded}
-              isStaff={isStaff}
+              isOriginalUserStaff={originalUserIsStaff}
             />
             {unitHasLoaded && renderUnitNavigation(false)}
           </div>
