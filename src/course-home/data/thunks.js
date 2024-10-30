@@ -12,7 +12,7 @@ import {
   postDismissWelcomeMessage,
   postRequestCert,
   getLiveTabIframe,
-  getCoursewareSearchEnabledFlag,
+  getCoursewareSearchEnabled,
   searchCourseContentFromAPI,
 } from './api';
 
@@ -159,7 +159,7 @@ export function processEvent(eventData, getTabData) {
 
 export async function fetchCoursewareSearchSettings(courseId) {
   try {
-    const { enabled } = await getCoursewareSearchEnabledFlag(courseId);
+    const { enabled } = await getCoursewareSearchEnabled(courseId);
     return { enabled };
   } catch (e) {
     return { enabled: false };
