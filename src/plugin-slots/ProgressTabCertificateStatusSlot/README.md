@@ -6,14 +6,14 @@
 
 ## Description
 
-This slot is used to replace or modify the Certificate Status component in the 
+This slot is used to replace or modify the Certificate Status component in the
 Progress Tab.
 
 ## Example
 
 The following `env.config.jsx` will render the `course_id` and `unit_id` of the course as `<p>` elements in a `<div>`.
 
-![Screenshot of Content added after the Sequence Container](./images/post_sequence_container.png)
+![Screenshot of Content added after the Certificate Status Container](./images/progress_tab_certificate_status_slot.png)
 
 ```js
 import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
