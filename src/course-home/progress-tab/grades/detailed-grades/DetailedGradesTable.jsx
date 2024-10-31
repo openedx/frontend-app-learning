@@ -9,6 +9,7 @@ import { DataTable } from '@openedx/paragon';
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
 import SubsectionTitleCell from './SubsectionTitleCell';
+import { showUngradedAssignments } from '../../utils';
 
 const DetailedGradesTable = ({ intl }) => {
   const {
@@ -24,9 +25,10 @@ const DetailedGradesTable = ({ intl }) => {
     sectionScores.map((chapter) => {
       const subsectionScores = chapter.subsections.filter(
         (subsection) => !!(
-          subsection.hasGradedAssignment
-          && subsection.showGrades
-          && (subsection.numPointsPossible > 0 || subsection.numPointsEarned > 0)),
+          (showUngradedAssignments() || subsection.hasGradedAssignment)
+            && subsection.showGrades
+            && (subsection.numPointsPossible > 0 || subsection.numPointsEarned > 0)
+        ),
       );
 
       if (subsectionScores.length === 0) {
