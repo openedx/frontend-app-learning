@@ -34,6 +34,7 @@ const Course = ({
     celebrations,
     isStaff,
     isNewDiscussionSidebarViewEnabled,
+    originalUserIsStaff,
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
@@ -42,7 +43,7 @@ const Course = ({
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  if (!isStaff && pathname.startsWith('/preview')) {
+  if (!originalUserIsStaff && pathname.startsWith('/preview')) {
     const courseUrl = pathname.replace('/preview', '');
     navigate(courseUrl, { replace: true });
   }
