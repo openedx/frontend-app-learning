@@ -1,10 +1,9 @@
-import React from 'react';
 import { getAllByRole } from '@testing-library/dom';
 import { act } from '@testing-library/react';
 import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import MasqueradeWidget from './MasqueradeWidget';
+import { MasqueradeWidget } from './MasqueradeWidget';
 import {
   render, screen, fireEvent, initializeTestStore, waitFor, logUnhandledRequests,
 } from '../../setupTest';
@@ -96,11 +95,11 @@ describe('Masquerade Widget Dropdown', () => {
       axiosMock.onGet(masqueradeUrl).reply(200, mockResponse);
 
       const { container } = render(<MasqueradeWidget {...mockData} />);
-      const dropdownToggle = container.querySelector('.dropdown-toggle');
+      const dropdownToggle = container.querySelector('.dropdown-toggle')!;
       await act(async () => {
         await fireEvent.click(dropdownToggle);
       });
-      const dropdownMenu = container.querySelector('.dropdown-menu');
+      const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
       getAllByRole(dropdownMenu, 'button', { hidden: true }).forEach(button => {
         if (button.textContent === option.name) {
           expect(button).toHaveClass('active');
@@ -115,11 +114,11 @@ describe('Masquerade Widget Dropdown', () => {
     const { container } = render(<MasqueradeWidget {...mockData} />);
     await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
 
-    const dropdownToggle = container.querySelector('.dropdown-toggle');
+    const dropdownToggle = container.querySelector('.dropdown-toggle')!;
     await act(async () => {
       await fireEvent.click(dropdownToggle);
     });
-    const dropdownMenu = container.querySelector('.dropdown-menu');
+    const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
     const studentOption = getAllByRole(dropdownMenu, 'button', { hidden: true }).filter(
       button => (button.textContent === 'Specific Student...'),
     )[0];

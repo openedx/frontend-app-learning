@@ -1,8 +1,7 @@
-import React from 'react';
 import { getAllByRole } from '@testing-library/dom';
 import { act } from '@testing-library/react';
 import { getConfig } from '@edx/frontend-platform';
-import MasqueradeWidgetOption from './MasqueradeWidgetOption';
+import { MasqueradeWidgetOption } from './MasqueradeWidgetOption';
 import {
   render, fireEvent, initializeTestStore,
 } from '../../setupTest';
