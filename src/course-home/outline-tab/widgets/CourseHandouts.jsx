@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
-import LmsHtmlFragment from '../LmsHtmlFragment';
+import SanitizedHtmlFragment from '@src/generic/sanitized-html-fragment';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 
@@ -22,10 +22,9 @@ const CourseHandouts = ({ intl }) => {
   return (
     <section className="mb-4">
       <h2 className="h4">{intl.formatMessage(messages.handouts)}</h2>
-      <LmsHtmlFragment
+      <SanitizedHtmlFragment
         className="small"
         html={handoutsHtml}
-        title={intl.formatMessage(messages.handouts)}
       />
     </section>
   );
