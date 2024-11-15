@@ -26,6 +26,7 @@ import messages from './messages';
 
 const CourseOutlineTray = ({ intl }) => {
   const [selectedSection, setSelectedSection] = useState(null);
+  const [openSequenceId, setOpenSequenceId] = useState(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
 
   const dispatch = useDispatch();
@@ -62,6 +63,11 @@ const CourseOutlineTray = ({ intl }) => {
     setSelectedSection(id);
   };
 
+  const handleToggleSequence = (sequenceId) => {
+    setOpenSequenceId((prevOpenSequenceId) => (prevOpenSequenceId === sequenceId ? null : sequenceId));
+  };
+
+  // Sidebar Heading definition
   const sidebarHeading = (
     <div className="outline-sidebar-heading-wrapper sticky d-flex justify-content-between align-self-start align-items-center bg-light-200 p-2.5 pl-4">
       {isDisplaySequenceLevel && backButtonTitle ? (
@@ -129,7 +135,8 @@ const CourseOutlineTray = ({ intl }) => {
                 key={sequenceId}
                 courseId={courseId}
                 sequence={sequences[sequenceId]}
-                defaultOpen={sequenceId === activeSequenceId}
+                isOpen={sequenceId === openSequenceId} // Control if the sequence is open
+                onToggle={() => handleToggleSequence(sequenceId)} // Change the state
                 activeUnitId={unitId}
               />
             ))

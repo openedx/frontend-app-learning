@@ -15,7 +15,6 @@ describe('<CourseOutlineTray />', () => {
   let store;
   let section = {};
   let sequence = {};
-  let unit;
   let unitId;
   let courseId;
   let mockData;
@@ -32,7 +31,6 @@ describe('<CourseOutlineTray />', () => {
       const activeSectionId = Object.keys(state.courseware.courseOutline.sections)[0];
       section = state.courseware.courseOutline.sections[activeSectionId];
       [unitId] = sequence.unitIds;
-      unit = state.courseware.courseOutline.units[unitId];
     }
 
     mockData = {
@@ -84,7 +82,6 @@ describe('<CourseOutlineTray />', () => {
     expect(screen.getByRole('button', { name: section.title })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` })).toBeInTheDocument();
-    expect(screen.getByText(unit.title)).toBeInTheDocument();
   });
 
   it('collapses sidebar correctly when toggle button is clicked', async () => {
