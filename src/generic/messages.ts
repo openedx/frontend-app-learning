@@ -21,6 +21,21 @@ const messages = defineMessages({
     defaultMessage: 'Sign in',
     description: 'Text in a button, prompting the user to log in.',
   },
+  pageNotFoundHeader: {
+    id: 'learning.pageNotFound.header',
+    defaultMessage: 'Page not found',
+    description: 'Text for header notifying them that the page is not found',
+  },
+  pageNotFoundBody: {
+    id: 'learning.pageNotFound.body',
+    defaultMessage: 'The page you you were looking for was not found. Go back to the {homepageLink}.',
+    description: 'Text for body, prompting the user to go back to the home page',
+  },
+  homepageLink: {
+    id: 'learning.pageNotFound.body.homepageLink.label',
+    defaultMessage: 'homepage',
+    description: 'Text for url, telling them the page they will be navigated to',
+  },
 });
 
 export default messages;

@@ -4,7 +4,6 @@ import {
   getConfig,
 } from '@edx/frontend-platform';
 import { AppProvider, ErrorPage, PageWrap } from '@edx/frontend-platform/react';
-import React from 'react';
 import ReactDOM from 'react-dom';
 import { Routes, Route } from 'react-router-dom';
 
@@ -35,6 +34,7 @@ import CourseAccessErrorPage from './generic/CourseAccessErrorPage';
 import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
+import PageNotFound from './generic/PageNotFound';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
@@ -46,6 +46,7 @@ subscribe(APP_READY, () => {
         <NoticesProvider>
           <UserMessagesProvider>
             <Routes>
+              <Route path="*" element={<PageWrap><PageNotFound /></PageWrap>} />
               <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
               <Route path={ROUTES.REDIRECT} element={<PageWrap><CoursewareRedirectLandingPage /></PageWrap>} />
               <Route path={ROUTES.PREFERENCES_UNSUBSCRIBE} element={<PageWrap><PreferencesUnsubscribe /></PageWrap>} />
