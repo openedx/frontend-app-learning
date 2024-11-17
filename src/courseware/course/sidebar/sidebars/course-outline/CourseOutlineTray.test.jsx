@@ -98,6 +98,28 @@ describe('<CourseOutlineTray />', () => {
     expect(mockToggleSidebar).toHaveBeenCalledWith(null);
   });
 
+  it('toggles openSequenceId correctly when a sequence is clicked', async () => {
+    await initTestStore();
+    renderWithProvider();
+    const sequenceButton = screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` });
+    expect(sequenceButton).toBeInTheDocument();
+    userEvent.click(sequenceButton);
+    expect(screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` })).toHaveAttribute('aria-expanded', 'true');
+    userEvent.click(sequenceButton);
+    expect(screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` })).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('updates setOpenSequenceId correctly when toggling sequences', async () => {
+    await initTestStore();
+    renderWithProvider();
+    const sequenceButton = screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` });
+    expect(sequenceButton).toBeInTheDocument();
+    userEvent.click(sequenceButton);
+    expect(sequenceButton).toHaveAttribute('aria-expanded', 'true');
+    userEvent.click(sequenceButton);
+    expect(sequenceButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
   it('navigates to section or sequence level correctly on click by back/section button', async () => {
     await initTestStore();
     renderWithProvider();

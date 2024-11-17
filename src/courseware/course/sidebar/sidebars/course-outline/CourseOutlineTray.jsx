@@ -67,7 +67,6 @@ const CourseOutlineTray = ({ intl }) => {
     setOpenSequenceId((prevOpenSequenceId) => (prevOpenSequenceId === sequenceId ? null : sequenceId));
   };
 
-  // Sidebar Heading definition
   const sidebarHeading = (
     <div className="outline-sidebar-heading-wrapper sticky d-flex justify-content-between align-self-start align-items-center bg-light-200 p-2.5 pl-4">
       {isDisplaySequenceLevel && backButtonTitle ? (
@@ -135,8 +134,8 @@ const CourseOutlineTray = ({ intl }) => {
                 key={sequenceId}
                 courseId={courseId}
                 sequence={sequences[sequenceId]}
-                isOpen={sequenceId === openSequenceId} // Control if the sequence is open
-                onToggle={() => handleToggleSequence(sequenceId)} // Change the state
+                isOpen={sequenceId === openSequenceId}
+                onToggle={() => handleToggleSequence(sequenceId)}
                 activeUnitId={unitId}
               />
             ))
