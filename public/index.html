@@ -9,8 +9,8 @@
     <% if (htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID) { %>
       <script src="https://www.edx.org/optimizelyjs/<%= htmlWebpackPlugin.options.OPTIMIZELY_PROJECT_ID %>.js"></script>
     <% } %>
-    <% if (htmlWebpackPlugin.options.ROBOTS_CONTENT_TAG) { %>
-      <meta name="robots" content="<%= htmlWebpackPlugin.options.ROBOT_CONTENT_TAG %>">
+    <% if (htmlWebpackPlugin.options.META_TAG_ROBOTS_CONTENT_ATTR) { %>
+      <meta name="robots" content="<%= htmlWebpackPlugin.options.META_TAG_ROBOTS_CONTENT_ATTR %>">
     <% } %>
   </head>
   <body>
