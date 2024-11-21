@@ -107,6 +107,14 @@ const OutlineTab = ({ intl }) => {
 
   const location = useLocation();
 
+  const getSectionsExpandStatus = (status = false) => courses[rootCourseId].sectionIds.reduce((obj, sectionId) => {
+    // eslint-disable-next-line no-param-reassign
+    obj[sectionId] = status;
+    return obj;
+  }, {});
+
+  const [expandedSections, setExpandedSections] = useState(() => getSectionsExpandStatus());
+
   useEffect(() => {
     const currentParams = new URLSearchParams(location.search);
     const startCourse = currentParams.get('start_course');
@@ -123,6 +131,15 @@ const OutlineTab = ({ intl }) => {
       });
     }
   }, [location.search]);
+
+  useEffect(() => {
+    const allSectionsExpanded = Object.values(expandedSections);
+    const isAllExpanded = allSectionsExpanded.every(Boolean);
+    if (isAllExpanded) { setExpandAll(true); }
+
+    const isAllCollapsed = allSectionsExpanded.every(val => val === false);
+    if (isAllCollapsed) { setExpandAll(false); }
+  }, [expandedSections]);
 
   return (
     <>
@@ -164,7 +181,14 @@ const OutlineTab = ({ intl }) => {
             <>
               <div className="row w-100 m-0 mb-3 justify-content-end">
                 <div className="col-12 col-md-auto p-0">
-                  <Button variant="outline-primary" block onClick={() => { setExpandAll(!expandAll); }}>
+                  <Button
+                    variant="outline-primary"
+                    block
+                    onClick={() => {
+                      setExpandAll(!expandAll);
+                      setExpandedSections(() => getSectionsExpandStatus(!expandAll));
+                    }}
+                  >
                     {expandAll ? intl.formatMessage(messages.collapseAll) : intl.formatMessage(messages.expandAll)}
                   </Button>
                 </div>
@@ -177,6 +201,7 @@ const OutlineTab = ({ intl }) => {
                     defaultOpen={sections[sectionId].resumeBlock}
                     expand={expandAll}
                     section={sections[sectionId]}
+                    setExpandedSections={setExpandedSections}
                   />
                 ))}
               </ol>
