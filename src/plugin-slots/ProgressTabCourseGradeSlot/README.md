@@ -10,7 +10,7 @@ This slot is used to replace or modify the Course Grades view in the Progress Ta
 
 ## Example
 
-The following `env.config.jsx` will render the `course_id` and `unit_id` of the course as `<p>` elements in a `<div>`.
+The following `env.config.jsx` will render the `course_id` of the course as a `<p>` element in a `<div>`.
 
 ![Screenshot of Content added after the Grades Container](./images/progress_tab_course_grade_slot.png)
 
