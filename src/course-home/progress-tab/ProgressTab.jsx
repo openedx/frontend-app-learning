@@ -12,10 +12,7 @@ import ProgressTabRelatedLinksSlot from '../../plugin-slots/ProgressTabRelatedLi
 import { useModel } from '../../generic/model-store';
 
 const ProgressTab = () => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
-
+  const { courseId } = useSelector(state => state.courseHome);
   const { disableProgressGraph } = useModel('progress', courseId);
 
   const windowWidth = useWindowSize().width;
@@ -34,15 +31,15 @@ const ProgressTab = () => {
         {/* Main body */}
         <div className="col-12 col-md-8 p-0">
           {!disableProgressGraph && <CourseCompletion />}
-          {!wideScreen && <ProgressTabCertificateStatusSlot courseId={courseId} placement="MAIN_BODY" />}
-          <ProgressTabCourseGradeSlot courseId={courseId} />
-          <ProgressTabGradeBreakdownSlot courseId={courseId} />
+          {!wideScreen && <ProgressTabCertificateStatusSlot placement="MAIN_BODY" />}
+          <ProgressTabCourseGradeSlot />
+          <ProgressTabGradeBreakdownSlot />
         </div>
 
         {/* Side panel */}
         <div className="col-12 col-md-4 p-0 px-md-4">
-          {wideScreen && <ProgressTabCertificateStatusSlot courseId={courseId} placement="SIDEBAR" />}
-          <ProgressTabRelatedLinksSlot courseId={courseId} />
+          {wideScreen && <ProgressTabCertificateStatusSlot placement="SIDEBAR" />}
+          <ProgressTabRelatedLinksSlot />
         </div>
       </div>
     </>

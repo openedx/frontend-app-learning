@@ -27,11 +27,14 @@ const config = {
           widget: {
             id: 'custom_course_grade_content',
             type: DIRECT_PLUGIN,
-            RenderWidget: ({courseId}) => (
-              <div>
-                <p>📚: {courseId}</p>
-              </div>
-            ),
+            RenderWidget: () => {
+              const { courseId } = useSelector(state => state.courseHome);
+              return (
+                <div>
+                  <p>📚: {courseId}</p>
+                </div>
+              );
+            },
           },
         },
       ]

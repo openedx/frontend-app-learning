@@ -2,11 +2,10 @@ import PropTypes from 'prop-types';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import CertificateStatus from '../../course-home/progress-tab/certificate-status/CertificateStatus';
 
-const ProgressTabCertificateStatusSlot = ({ courseId, placement }) => (
+const ProgressTabCertificateStatusSlot = ({ placement }) => (
   <PluginSlot
     id="progress_tab_certificate_status_slot"
     pluginProps={{
-      courseId,
       placement,
     }}
   >
@@ -15,7 +14,6 @@ const ProgressTabCertificateStatusSlot = ({ courseId, placement }) => (
 );
 
 ProgressTabCertificateStatusSlot.propTypes = {
-  courseId: PropTypes.string.isRequired,
   placement: PropTypes.oneOf(['MAIN_BODY', 'SIDEBAR']),
 };
 
