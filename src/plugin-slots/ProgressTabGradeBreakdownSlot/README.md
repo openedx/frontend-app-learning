@@ -10,7 +10,7 @@ This slot is used to replace or modify the Grade Summary and Details Breakdown v
 
 ## Example
 
-The following `env.config.jsx` will render the `course_id` and `unit_id` of the course as `<p>` elements in a `<div>`.
+The following `env.config.jsx` will render the `course_id` of the course as a `<p>` element in a `<div>`.
 
 ![Screenshot of Content added after the Grade Summary and Details Container](./images/progress_tab_grade_breakdown_slot.png)
 
