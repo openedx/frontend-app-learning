@@ -11,7 +11,7 @@ Progress Tab.
 
 ## Example
 
-The following `env.config.jsx` will render the `course_id` and `unit_id` of the course as `<p>` elements in a `<div>`.
+The following `env.config.jsx` will render the `course_id` of the course as a `<p>` element in a `<div>`.
 
 ![Screenshot of Content added after the Certificate Status Container](./images/progress_tab_certificate_status_slot.png)
 
