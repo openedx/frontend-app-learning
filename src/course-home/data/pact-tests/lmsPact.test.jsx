@@ -89,6 +89,7 @@ describe('Course Home Service', () => {
               }),
               title: string('Demonstration Course'),
               username: string('edx'),
+              has_course_author_access: boolean(true),
             },
           },
         });
@@ -133,6 +134,7 @@ describe('Course Home Service', () => {
           ],
           title: 'Demonstration Course',
           username: 'edx',
+          hasCourseAuthorAccess: true,
         };
         const response = getCourseHomeCourseMetadata(courseId, 'outline');
         expect(response).toBeTruthy();
