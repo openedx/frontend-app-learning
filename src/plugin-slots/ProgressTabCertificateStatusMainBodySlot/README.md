@@ -1,17 +1,18 @@
-# Progress Tab Related Links Slot
+# Progress Tab Certificate Status Slot
 
-### Slot ID: `progress_tab_related_links_slot`
+### Slot ID: `progress_tab_certificate_status_main_body_slot`
 ### Props:
 
 ## Description
 
-This slot is used to replace or modify the related links view in the Progress Tab.
+This slot is used to replace or modify the Certificate Status component in the
+main body of the Progress Tab.
 
 ## Example
 
 The following `env.config.jsx` will render the `course_id` of the course as a `<p>` element in a `<div>`.
 
-![Screenshot of Content added after the Related Links Container](./images/progress_tab_related_links_slot.png)
+![Screenshot of Content added after the Certificate Status Container](./images/progress_tab_certificate_status_slot.png)
 
 ```js
 import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
@@ -19,13 +20,13 @@ import { useContextId } from './src/data/hooks';
 
 const config = {
   pluginSlots: {
-    progress_tab_related_links_slot: {
+    progress_tab_certificate_status_slot: {
       plugins: [
         {
-          // Insert custom content after related links widget
+          // Insert custom content after certificate status
           op: PLUGIN_OPERATIONS.Insert,
           widget: {
-            id: 'custom_related_links_content',
+            id: 'custom_certificate_status_content',
             type: DIRECT_PLUGIN,
             RenderWidget: () => {
               const courseId = useContextId();

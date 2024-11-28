@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+
 import PropTypes from 'prop-types';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
@@ -7,14 +7,13 @@ import {
   Icon, IconButton, OverlayTrigger, Popover,
 } from '@openedx/paragon';
 import { Blocked, InfoOutline } from '@openedx/paragon/icons';
+import { useContextId } from '../../../../data/hooks';
 
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 
 const GradeSummaryHeader = ({ intl, allOfSomeAssignmentTypeIsLocked }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
   const {
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);

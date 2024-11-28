@@ -2,7 +2,6 @@
 
 ### Slot ID: `progress_tab_grade_breakdown_slot`
 ### Props:
-* `courseId`
 
 ## Description
 
@@ -16,6 +15,7 @@ The following `env.config.jsx` will render the `course_id` of the course as a `<
 
 ```js
 import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
+import { useContextId } from './src/data/hooks';
 
 const config = {
   pluginSlots: {
@@ -28,7 +28,7 @@ const config = {
             id: 'custom_grade_summary_content',
             type: DIRECT_PLUGIN,
             RenderWidget: () => {
-              const { courseId } = useSelector(state => state.courseHome);
+              const courseId = useContextId();
               return (
                 <div>
                   <p>📚: {courseId}</p>
