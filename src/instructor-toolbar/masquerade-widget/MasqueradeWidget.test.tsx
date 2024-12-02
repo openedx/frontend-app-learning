@@ -7,7 +7,6 @@ import {
   fireEvent,
   getAllByRole,
   initializeTestStore,
-  logUnhandledRequests,
   render,
   screen,
   waitFor,
@@ -18,8 +17,8 @@ describe('Masquerade Widget Dropdown', () => {
   let mockData;
   let courseware;
   let mockResponse;
-  let axiosMock;
-  let masqueradeUrl;
+  let axiosMock: MockAdapter;
+  let masqueradeUrl: string;
   const masqueradeOptions = [
     {
       name: 'Staff',
@@ -45,7 +44,7 @@ describe('Masquerade Widget Dropdown', () => {
     masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseware.courseId}/masquerade`;
     mockData = {
       courseId: courseware.courseId,
-      onError: () => {},
+      onError: jest.fn(),
     };
   });
 
@@ -64,7 +63,6 @@ describe('Masquerade Widget Dropdown', () => {
     };
     axiosMock.reset();
     axiosMock.onGet(masqueradeUrl).reply(200, mockResponse);
-    logUnhandledRequests(axiosMock);
   });
 
   it('renders masquerade name correctly', async () => {
@@ -141,9 +139,7 @@ describe('Masquerade Widget Dropdown', () => {
     const dropdownToggle = container.querySelector('.dropdown-toggle')!;
     await user.click(dropdownToggle);
     const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
-    const studentOption = getAllByRole(dropdownMenu, 'button', { hidden: true }).filter(
-      button => (button.textContent === 'Specific Student...'),
-    )[0];
+    const studentOption = await within(dropdownMenu).findByRole('button', { name: 'Specific Student...' });
     await user.click(studentOption);
 
     // Enter a username, POST the request to the server
@@ -152,5 +148,60 @@ describe('Masquerade Widget Dropdown', () => {
     expect(axiosMock.history.post).toHaveLength(0);
     await user.keyboard('{Enter}');
     await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+  });
+
+  it('can display an error when failing to masquerade as a specific user', async () => {
+    const user = userEvent.setup();
+    // Configure our mock:
+    axiosMock.onPost(masqueradeUrl).reply(200, { // Note: The API endpoint returns a 200 response on error!
+      success: false,
+      error: 'That user does not exist',
+    });
+    // Render the masquerade controls:
+    const { container } = render(<MasqueradeWidget {...mockData} />);
+    await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
+
+    // Select "specific student..."
+    const dropdownToggle = container.querySelector('.dropdown-toggle')!;
+    await user.click(dropdownToggle);
+    const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
+    const studentOption = await within(dropdownMenu).findByRole('button', { name: 'Specific Student...' });
+    await user.click(studentOption);
+
+    // Enter a username, POST the request to the server
+    const usernameInput = await screen.findByLabelText(/Username or email/);
+    await user.type(usernameInput, 'testuser');
+    expect(axiosMock.history.post).toHaveLength(0);
+    await user.keyboard('{Enter}');
+    await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    await waitFor(() => {
+      expect(mockData.onError).toHaveBeenLastCalledWith('That user does not exist');
+    });
+  });
+
+  it('can display an error when failing to masquerade as a specific user due to network issues etc', async () => {
+    const user = userEvent.setup();
+    // Configure our mock:
+    axiosMock.onPost(masqueradeUrl).networkError();
+    // Render the masquerade controls:
+    const { container } = render(<MasqueradeWidget {...mockData} />);
+    await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
+
+    // Select "specific student..."
+    const dropdownToggle = container.querySelector('.dropdown-toggle')!;
+    await user.click(dropdownToggle);
+    const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
+    const studentOption = await within(dropdownMenu).findByRole('button', { name: 'Specific Student...' });
+    await user.click(studentOption);
+
+    // Enter a username, POST the request to the server
+    const usernameInput = await screen.findByLabelText(/Username or email/);
+    await user.type(usernameInput, 'testuser');
+    expect(axiosMock.history.post).toHaveLength(0);
+    await user.keyboard('{Enter}');
+    await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    await waitFor(() => {
+      expect(mockData.onError).toHaveBeenLastCalledWith('An error has occurred; please try again.');
+    });
   });
 });
