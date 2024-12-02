@@ -43,6 +43,7 @@ describe('<CourseOutlineTrigger />', () => {
   }
 
   it('renders correctly for desktop when sidebar is enabled', async () => {
+    const user = userEvent.setup();
     const mockToggleSidebar = jest.fn();
     await initTestStore({ enableNavigationSidebar: { enable_navigation_sidebar: true } });
     renderWithProvider({ toggleSidebar: mockToggleSidebar }, { isMobileView: false });
@@ -52,13 +53,14 @@ describe('<CourseOutlineTrigger />', () => {
     });
     expect(toggleButton).toBeInTheDocument();
 
-    userEvent.click(toggleButton);
+    await user.click(toggleButton);
 
     expect(mockToggleSidebar).toHaveBeenCalled();
     expect(mockToggleSidebar).toHaveBeenCalledWith(outlineSidebarId);
   });
 
   it('renders correctly for mobile when sidebar is enabled', async () => {
+    const user = userEvent.setup();
     const mockToggleSidebar = jest.fn();
     await initTestStore({ enableNavigationSidebar: { enable_navigation_sidebar: true } });
     renderWithProvider({
@@ -71,13 +73,14 @@ describe('<CourseOutlineTrigger />', () => {
     });
     expect(toggleButton).toBeInTheDocument();
 
-    userEvent.click(toggleButton);
+    await user.click(toggleButton);
 
     expect(mockToggleSidebar).toHaveBeenCalled();
     expect(mockToggleSidebar).toHaveBeenCalledWith(outlineSidebarId);
   });
 
   it('changes current sidebar value on click', async () => {
+    const user = userEvent.setup();
     const mockToggleSidebar = jest.fn();
     await initTestStore({ enableNavigationSidebar: { enable_navigation_sidebar: true } });
     renderWithProvider({
@@ -91,7 +94,7 @@ describe('<CourseOutlineTrigger />', () => {
     });
     expect(toggleButton).toBeInTheDocument();
 
-    userEvent.click(toggleButton);
+    await user.click(toggleButton);
 
     expect(mockToggleSidebar).toHaveBeenCalledTimes(1);
     expect(mockToggleSidebar).toHaveBeenCalledWith(null);

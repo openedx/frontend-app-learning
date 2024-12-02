@@ -143,6 +143,7 @@ describe('Outline Tab', () => {
     });
 
     it('handles expand/collapse all button click', async () => {
+      const user = userEvent.setup();
       await fetchAndRender();
       // Button renders as "Expand All"
       const expandButton = screen.getByRole('button', { name: 'Expand all' });
@@ -153,11 +154,11 @@ describe('Outline Tab', () => {
       expect(collapsedSectionNode).toHaveAttribute('aria-expanded', 'false');
 
       // Click to expand section
-      userEvent.click(expandButton);
+      await user.click(expandButton);
       await waitFor(() => expect(collapsedSectionNode).toHaveAttribute('aria-expanded', 'true'));
 
       // Click to collapse section
-      userEvent.click(expandButton);
+      await user.click(expandButton);
       await waitFor(() => expect(collapsedSectionNode).toHaveAttribute('aria-expanded', 'false'));
     });
 
@@ -275,16 +276,17 @@ describe('Outline Tab', () => {
       });
 
       it('renders show more/less button and handles click', async () => {
+        const user = userEvent.setup();
         expect(screen.getByTestId('alert-container-welcome')).toBeInTheDocument();
         let showMoreButton = screen.getByRole('button', { name: 'Show More' });
         expect(showMoreButton).toBeInTheDocument();
 
-        userEvent.click(showMoreButton);
+        await user.click(showMoreButton);
         let showLessButton = screen.getByRole('button', { name: 'Show Less' });
         expect(showLessButton).toBeInTheDocument();
         expect(screen.getByTestId('long-welcome-message-iframe')).toBeInTheDocument();
 
-        userEvent.click(showLessButton);
+        await user.click(showLessButton);
         showLessButton = screen.queryByRole('button', { name: 'Show Less' });
         expect(showLessButton).not.toBeInTheDocument();
         showMoreButton = screen.getByRole('button', { name: 'Show More' });

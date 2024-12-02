@@ -135,6 +135,7 @@ describe('DatesTab', () => {
     });
 
     it('shows extra info', async () => {
+      const user = userEvent.setup();
       const { items } = await getDay('Sat, Aug 17, 2030');
       expect(items).toHaveLength(3);
 
@@ -142,10 +143,12 @@ describe('DatesTab', () => {
       const tipText = "ORA Dates are set by the instructor, and can't be changed";
 
       expect(screen.queryByText(tipText)).toBeNull(); // tooltip does not start in DOM
-      userEvent.hover(tipIcon);
-      const tooltip = screen.getByText(tipText); // now it's there
-      userEvent.unhover(tipIcon);
-      await waitForElementToBeRemoved(tooltip); // and it's gone again
+      await user.hover(tipIcon);
+      screen.getByText(tipText); // now it's there
+      await user.unhover(tipIcon);
+      await waitFor(() => {
+        expect(screen.queryByText(tipText)).toBeNull(); // and it's gone again
+      });
     });
   });
 

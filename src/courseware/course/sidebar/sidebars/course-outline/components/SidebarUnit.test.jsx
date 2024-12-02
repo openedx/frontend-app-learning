@@ -88,6 +88,7 @@ describe('<SidebarUnit />', () => {
   });
 
   it('sends log event correctly when unit is clicked', async () => {
+    const user = userEvent.setup();
     await initTestStore();
     renderWithProvider({ unit: { ...unit } });
     const logData = {
@@ -99,7 +100,7 @@ describe('<SidebarUnit />', () => {
       widget_placement: 'left',
     };
 
-    userEvent.click(screen.getByText(unit.title));
+    await user.click(screen.getByText(unit.title));
 
     expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);
     expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);

@@ -54,6 +54,7 @@ describe('<SidebarSequence />', () => {
   });
 
   it('renders correctly when sequence is not collapsed and complete', async () => {
+    const user = userEvent.setup();
     await initTestStore();
     renderWithProvider({
       defaultOpen: true,
@@ -67,6 +68,6 @@ describe('<SidebarSequence />', () => {
     expect(screen.getByText(sequence.title)).toBeInTheDocument();
     expect(screen.getByText(sequenceDescription)).toBeInTheDocument();
     expect(screen.getByText(`, ${courseOutlineMessages.completedAssignment.defaultMessage}`)).toBeInTheDocument();
-    userEvent.click(screen.getByText(sequence.title));
+    await user.click(screen.getByText(sequence.title));
   });
 });
