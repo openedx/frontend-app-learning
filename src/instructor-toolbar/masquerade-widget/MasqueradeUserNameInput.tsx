@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import React from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Input } from '@openedx/paragon';

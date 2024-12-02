@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import React from 'react';
 import { Dropdown } from '@openedx/paragon';
 import { ActiveMasqueradeData } from './data/api';

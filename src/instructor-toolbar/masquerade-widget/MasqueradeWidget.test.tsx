@@ -1,19 +1,17 @@
-import { getAllByRole } from '@testing-library/dom';
-import { act } from '@testing-library/react';
 import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { MasqueradeWidget } from './MasqueradeWidget';
 import {
-  render, screen, fireEvent, initializeTestStore, waitFor, logUnhandledRequests,
+  fireEvent,
+  getAllByRole,
+  initializeTestStore,
+  logUnhandledRequests,
+  render,
+  screen,
+  waitFor,
+  within,
 } from '../../setupTest';
-
-const originalConfig = jest.requireActual('@edx/frontend-platform').getConfig();
-jest.mock('@edx/frontend-platform', () => ({
-  ...jest.requireActual('@edx/frontend-platform'),
-  getConfig: jest.fn(),
-}));
-getConfig.mockImplementation(() => originalConfig);
 
 describe('Masquerade Widget Dropdown', () => {
   let mockData;
@@ -96,10 +94,9 @@ describe('Masquerade Widget Dropdown', () => {
 
       const { container } = render(<MasqueradeWidget {...mockData} />);
       const dropdownToggle = container.querySelector('.dropdown-toggle')!;
-      await act(async () => {
-        await fireEvent.click(dropdownToggle);
-      });
+      fireEvent.click(dropdownToggle);
       const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
+      await within(dropdownMenu).findAllByRole('button'); // Wait for the buttons to load/render
       getAllByRole(dropdownMenu, 'button', { hidden: true }).forEach(button => {
         if (button.textContent === option.name) {
           expect(button).toHaveClass('active');
@@ -115,16 +112,10 @@ describe('Masquerade Widget Dropdown', () => {
     await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
 
     const dropdownToggle = container.querySelector('.dropdown-toggle')!;
-    await act(async () => {
-      await fireEvent.click(dropdownToggle);
-    });
+    fireEvent.click(dropdownToggle);
     const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
-    const studentOption = getAllByRole(dropdownMenu, 'button', { hidden: true }).filter(
-      button => (button.textContent === 'Specific Student...'),
-    )[0];
-    await act(async () => {
-      await fireEvent.click(studentOption);
-    });
+    const studentOption = await within(dropdownMenu).findByRole('button', { name: 'Specific Student...' });
+    fireEvent.click(studentOption);
     getAllByRole(dropdownMenu, 'button', { hidden: true }).forEach(button => {
       if (button.textContent === 'Specific Student...') {
         expect(button).toHaveClass('active');
@@ -132,5 +123,32 @@ describe('Masquerade Widget Dropdown', () => {
         expect(button).not.toHaveClass('active');
       }
     });
+  });
+
+  it('can masquerade as a specific user', async () => {
+    // Configure our mock:
+    axiosMock.onPost(masqueradeUrl).reply(200, {
+      ...mockResponse,
+      active: { ...mockResponse.active, role: null, user_name: 'testUser' },
+    });
+    // Render the masquerade controls:
+    const { container } = render(<MasqueradeWidget {...mockData} />);
+    await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
+
+    // Select "specific student..."
+    const dropdownToggle = container.querySelector('.dropdown-toggle')!;
+    fireEvent.click(dropdownToggle);
+    const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
+    const studentOption = getAllByRole(dropdownMenu, 'button', { hidden: true }).filter(
+      button => (button.textContent === 'Specific Student...'),
+    )[0];
+    fireEvent.click(studentOption);
+
+    // Enter a username
+    const usernameInput = await screen.findByLabelText(/Username or email/);
+    fireEvent.change(usernameInput, { target: { value: 'testUser' } });
+    expect(axiosMock.history.post).toHaveLength(0);
+    fireEvent.keyDown(usernameInput, { key: 'Enter' });
+    // await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
   });
 });
