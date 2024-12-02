@@ -1,4 +1,5 @@
 import { getConfig } from '@edx/frontend-platform';
+import userEvent from '@testing-library/user-event';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { MasqueradeWidget } from './MasqueradeWidget';
@@ -126,6 +127,7 @@ describe('Masquerade Widget Dropdown', () => {
   });
 
   it('can masquerade as a specific user', async () => {
+    const user = userEvent.setup();
     // Configure our mock:
     axiosMock.onPost(masqueradeUrl).reply(200, {
       ...mockResponse,
@@ -137,18 +139,18 @@ describe('Masquerade Widget Dropdown', () => {
 
     // Select "specific student..."
     const dropdownToggle = container.querySelector('.dropdown-toggle')!;
-    fireEvent.click(dropdownToggle);
+    await user.click(dropdownToggle);
     const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
     const studentOption = getAllByRole(dropdownMenu, 'button', { hidden: true }).filter(
       button => (button.textContent === 'Specific Student...'),
     )[0];
-    fireEvent.click(studentOption);
+    await user.click(studentOption);
 
-    // Enter a username
+    // Enter a username, POST the request to the server
     const usernameInput = await screen.findByLabelText(/Username or email/);
-    fireEvent.change(usernameInput, { target: { value: 'testUser' } });
+    await user.type(usernameInput, 'testuser');
     expect(axiosMock.history.post).toHaveLength(0);
-    fireEvent.keyDown(usernameInput, { key: 'Enter' });
-    // await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    await user.keyboard('{Enter}');
+    await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
   });
 });
