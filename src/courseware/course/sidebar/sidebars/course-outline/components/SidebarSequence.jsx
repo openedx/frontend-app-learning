@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -13,8 +14,7 @@ import { UNIT_ICON_TYPES } from './UnitIcon';
 const SidebarSequence = ({
   intl,
   courseId,
-  isOpen,
-  onToggle,
+  defaultOpen,
   sequence,
   activeUnitId,
 }) => {
@@ -28,6 +28,7 @@ const SidebarSequence = ({
     completionStat,
   } = sequence;
 
+  const [open, setOpen] = useState(defaultOpen);
   const { units = {} } = useSelector(getCourseOutline);
   const activeSequenceId = useSelector(getSequenceId);
   const isActiveSequence = id === activeSequenceId;
@@ -52,11 +53,11 @@ const SidebarSequence = ({
   return (
     <li>
       <Collapsible
-        className={classNames('mb-2', { 'active-section': isActiveSequence, 'bg-info-100': isActiveSequence && !isOpen })}
+        className={classNames('mb-2', { 'active-section': isActiveSequence, 'bg-info-100': isActiveSequence && !open })}
         styling="card-lg text-break"
         title={sectionTitle}
-        open={isOpen}
-        onToggle={onToggle}
+        open={open}
+        onToggle={() => setOpen(!open)}
       >
         <ol className="list-unstyled">
           {unitIds.map((unitId, index) => (
@@ -81,8 +82,7 @@ const SidebarSequence = ({
 SidebarSequence.propTypes = {
   intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
-  isOpen: PropTypes.bool.isRequired,
-  onToggle: PropTypes.func.isRequired,
+  defaultOpen: PropTypes.bool.isRequired,
   sequence: PropTypes.shape({
     complete: PropTypes.bool,
     id: PropTypes.string,

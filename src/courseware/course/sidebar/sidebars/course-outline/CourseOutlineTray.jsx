@@ -26,7 +26,6 @@ import messages from './messages';
 
 const CourseOutlineTray = ({ intl }) => {
   const [selectedSection, setSelectedSection] = useState(null);
-  const [openSequenceId, setOpenSequenceId] = useState(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
 
   const dispatch = useDispatch();
@@ -61,10 +60,6 @@ const CourseOutlineTray = ({ intl }) => {
   const handleSelectSection = (id) => {
     setDisplaySequenceLevel();
     setSelectedSection(id);
-  };
-
-  const handleToggleSequence = (sequenceId) => {
-    setOpenSequenceId((prevOpenSequenceId) => (prevOpenSequenceId === sequenceId ? null : sequenceId));
   };
 
   const sidebarHeading = (
@@ -134,8 +129,7 @@ const CourseOutlineTray = ({ intl }) => {
                 key={sequenceId}
                 courseId={courseId}
                 sequence={sequences[sequenceId]}
-                isOpen={sequenceId === openSequenceId}
-                onToggle={() => handleToggleSequence(sequenceId)}
+                defaultOpen={sequenceId === activeSequenceId}
                 activeUnitId={unitId}
               />
             ))

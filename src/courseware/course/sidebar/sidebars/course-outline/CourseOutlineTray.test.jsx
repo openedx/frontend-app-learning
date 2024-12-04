@@ -15,6 +15,7 @@ describe('<CourseOutlineTray />', () => {
   let store;
   let section = {};
   let sequence = {};
+  let unit;
   let unitId;
   let courseId;
   let mockData;
@@ -31,6 +32,7 @@ describe('<CourseOutlineTray />', () => {
       const activeSectionId = Object.keys(state.courseware.courseOutline.sections)[0];
       section = state.courseware.courseOutline.sections[activeSectionId];
       [unitId] = sequence.unitIds;
+      unit = state.courseware.courseOutline.units[unitId];
     }
 
     mockData = {
@@ -82,6 +84,7 @@ describe('<CourseOutlineTray />', () => {
     expect(screen.getByRole('button', { name: section.title })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` })).toBeInTheDocument();
+    expect(screen.getByText(unit.title)).toBeInTheDocument();
   });
 
   it('collapses sidebar correctly when toggle button is clicked', async () => {
@@ -97,30 +100,6 @@ describe('<CourseOutlineTray />', () => {
 
     await user.click(collapseBtn);
     expect(mockToggleSidebar).toHaveBeenCalledWith(null);
-  });
-
-  it('toggles openSequenceId correctly when a sequence is clicked', async () => {
-    const user = userEvent.setup();
-    await initTestStore();
-    renderWithProvider();
-    const sequenceButton = screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` });
-    expect(sequenceButton).toBeInTheDocument();
-    await user.click(sequenceButton);
-    expect(screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` })).toHaveAttribute('aria-expanded', 'true');
-    await user.click(sequenceButton);
-    expect(screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` })).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('updates setOpenSequenceId correctly when toggling sequences', async () => {
-    const user = userEvent.setup();
-    await initTestStore();
-    renderWithProvider();
-    const sequenceButton = screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` });
-    expect(sequenceButton).toBeInTheDocument();
-    await user.click(sequenceButton);
-    expect(sequenceButton).toHaveAttribute('aria-expanded', 'true');
-    await user.click(sequenceButton);
-    expect(sequenceButton).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('navigates to section or sequence level correctly on click by back/section button', async () => {
