@@ -18,16 +18,13 @@ import SequenceContainerSlot from '../../../plugin-slots/SequenceContainerSlot';
 
 import { getCoursewareOutlineSidebarSettings } from '../../data/selectors';
 import CourseLicense from '../course-license';
-import Sidebar from '../sidebar/Sidebar';
-import NewSidebar from '../new-sidebar/Sidebar';
-import {
-  Trigger as CourseOutlineTrigger,
-  Sidebar as CourseOutlineTray,
-} from '../sidebar/sidebars/course-outline';
+import { NotificationsDiscussionsSidebarSlot } from '../../../plugin-slots/NotificationsDiscussionsSidebarSlot';
 import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+import { CourseOutlineSidebarSlot } from '../../../plugin-slots/CourseOutlineSidebarSlot';
+import { CourseOutlineSidebarTriggerSlot } from '../../../plugin-slots/CourseOutlineSidebarTriggerSlot';
 
 const Sequence = ({
   unitId,
@@ -46,7 +43,6 @@ const Sequence = ({
   const {
     isStaff,
     originalUserIsStaff,
-    isNewDiscussionSidebarViewEnabled,
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const unit = useModel('units', unitId);
@@ -166,8 +162,8 @@ const Sequence = ({
   const defaultContent = (
     <>
       <div className="sequence-container d-inline-flex flex-row w-100">
-        <CourseOutlineTrigger />
-        <CourseOutlineTray />
+        <CourseOutlineSidebarTriggerSlot />
+        <CourseOutlineSidebarSlot />
         <div className="sequence w-100">
           {!isEnabledOutlineSidebar && (
             <div className="sequence-navigation-container">
@@ -209,7 +205,7 @@ const Sequence = ({
             {unitHasLoaded && renderUnitNavigation(false)}
           </div>
         </div>
-        {isNewDiscussionSidebarViewEnabled ? <NewSidebar /> : <Sidebar />}
+        <NotificationsDiscussionsSidebarSlot courseId={courseId} />
       </div>
       <SequenceContainerSlot courseId={courseId} unitId={unitId} />
     </>
