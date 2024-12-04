@@ -36,6 +36,7 @@ describe('<SidebarSection />', () => {
   });
 
   it('renders correctly when section is incomplete', async () => {
+    const user = userEvent.setup();
     await initTestStore();
     const { getByText, container } = render(<RootWrapper />);
 
@@ -44,12 +45,13 @@ describe('<SidebarSection />', () => {
     expect(container.querySelector('.text-success')).not.toBeInTheDocument();
 
     const button = getByText(section.title);
-    userEvent.click(button);
+    await user.click(button);
     expect(mockHandleSelectSection).toHaveBeenCalledTimes(1);
     expect(mockHandleSelectSection).toHaveBeenCalledWith(section.id);
   });
 
   it('renders correctly when section is complete', async () => {
+    const user = userEvent.setup();
     await initTestStore();
     const { getByText, getByTestId } = render(
       <RootWrapper section={{ ...section, completionStat: { completed: 4, total: 4 }, complete: true }} />,
@@ -60,7 +62,7 @@ describe('<SidebarSection />', () => {
     expect(getByTestId('check-circle-icon')).toBeInTheDocument();
 
     const button = getByText(section.title);
-    userEvent.click(button);
+    await user.click(button);
     expect(mockHandleSelectSection).toHaveBeenCalledTimes(1);
     expect(mockHandleSelectSection).toHaveBeenCalledWith(section.id);
   });
