@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 
 import {
   getLocale, injectIntl, intlShape, isRtl,
 } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@openedx/paragon';
+import { useContextId } from '../../../../data/hooks';
 import { useModel } from '../../../../generic/model-store';
 
 import AssignmentTypeCell from './AssignmentTypeCell';
@@ -15,9 +15,7 @@ import GradeSummaryTableFooter from './GradeSummaryTableFooter';
 import messages from '../messages';
 
 const GradeSummaryTable = ({ intl, setAllOfSomeAssignmentTypeIsLocked }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
 
   const {
     gradingPolicy: {
