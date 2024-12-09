@@ -48,6 +48,13 @@ export const VERIFIED_MODES = [
   'paid-bootcamp',
 ] as const satisfies readonly string[];
 
+export const AUDIT_MODES = [
+  'audit',
+  'honor',
+  'unpaid-executive-education',
+  'unpaid-bootcamp',
+] as const satisfies readonly string[];
+
 export const WIDGETS = {
   DISCUSSIONS: 'DISCUSSIONS',
   NOTIFICATIONS: 'NOTIFICATIONS',

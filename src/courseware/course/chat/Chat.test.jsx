@@ -2,6 +2,8 @@ import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 import { Factory } from 'rosie';
 
+import { getConfig } from '@edx/frontend-platform';
+
 import {
   initializeMockApp,
   initializeTestStore,
@@ -27,6 +29,10 @@ jest.mock('@edx/frontend-lib-learning-assistant', () => {
     Xpert: () => (<div data-testid={mockXpertTestId}>mocked Xpert</div>),
   };
 });
+
+jest.mock('@edx/frontend-platform', () => ({
+  getConfig: jest.fn().mockReturnValue({ ENABLE_XPERT_AUDIT: false }),
+}));
 
 initializeMockApp();
 
@@ -214,6 +220,26 @@ describe('Chat', () => {
         <Chat
           enrollmentMode="verified"
           isStaff
+          enabled
+          courseId={courseId}
+          contentToolsEnabled={false}
+        />
+      </BrowserRouter>,
+      { store },
+    );
+
+    const chat = screen.queryByTestId(mockXpertTestId);
+    expect(chat).toBeInTheDocument();
+  });
+
+  it('displays component for audit learner if explicitly enabled', async () => {
+    getConfig.mockImplementation(() => ({ ENABLE_XPERT_AUDIT: true }));
+
+    render(
+      <BrowserRouter>
+        <Chat
+          enrollmentMode="audit"
+          isStaff={false}
           enabled
           courseId={courseId}
           contentToolsEnabled={false}
