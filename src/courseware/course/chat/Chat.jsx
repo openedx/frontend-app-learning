@@ -22,32 +22,45 @@ const Chat = ({
   } = useSelector(state => state.specialExams);
   const course = useModel('coursewareMeta', courseId);
 
-  const hasValidEnrollment = (
+  const {
+    accessExpiration,
+    start,
+    end,
+  } = course;
+
+  const hasVerifiedEnrollment = (
     enrollmentMode !== null
     && enrollmentMode !== undefined
-    && (
-      VERIFIED_MODES.includes(enrollmentMode)
-      // audit learners are only eligible if Xpert has been explicitly enabled for audit
-      || (AUDIT_MODES.includes(enrollmentMode) && getConfig().ENABLE_XPERT_AUDIT)
-    )
+    && VERIFIED_MODES.includes(enrollmentMode)
+  );
+
+  // audit learners should only have access if the ENABLE_XPERT_AUDIT setting is true
+  const hasAuditEnrollmentAndAccess = (
+    enrollmentMode !== null
+    && enrollmentMode !== undefined
+    && AUDIT_MODES.includes(enrollmentMode)
+    && getConfig().ENABLE_XPERT_AUDIT
   );
 
   const validDates = () => {
     const date = new Date();
     const utcDate = date.toISOString();
 
-    const startDate = course.start || utcDate;
-    const endDate = course.end || utcDate;
+    const startDate = start || utcDate;
+    const endDate = end || utcDate;
+    const accessExpirationDate = accessExpiration && accessExpiration.expirationDate
+      ? accessExpiration.expirationDate : utcDate;
 
     return (
       startDate <= utcDate
       && utcDate <= endDate
+      && (hasAuditEnrollmentAndAccess ? utcDate <= accessExpirationDate : true)
     );
   };
 
   const shouldDisplayChat = (
     enabled
-    && (hasValidEnrollment || isStaff)
+    && (hasVerifiedEnrollment || isStaff || hasAuditEnrollmentAndAccess)
     && validDates()
     // it is necessary to check both whether the user is in an exam, and whether or not they are viewing an exam
     // this will prevent the learner from interacting with the tool at any point of the exam flow, even at the
@@ -55,11 +68,7 @@ const Chat = ({
     && !(activeAttempt?.attempt_id || exam?.id)
   );
 
-  const isUpgradeEligible = (
-    enrollmentMode !== null
-    && enrollmentMode !== undefined
-    && AUDIT_MODES.includes(enrollmentMode)
-  );
+  const isUpgradeEligible = !hasVerifiedEnrollment && !isStaff;
 
   return (
     <>
@@ -69,7 +78,7 @@ const Chat = ({
           courseId={courseId}
           contentToolsEnabled={contentToolsEnabled}
           unitId={unitId}
-          isUpgradEligible={isUpgradeEligible}
+          isUpgradeEligible={isUpgradeEligible}
         />,
         document.body,
       ))}

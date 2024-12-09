@@ -235,6 +235,12 @@ describe('Chat', () => {
   it('displays component for audit learner if explicitly enabled', async () => {
     getConfig.mockImplementation(() => ({ ENABLE_XPERT_AUDIT: true }));
 
+    store = await initializeTestStore({
+      courseMetadata: Factory.build('courseMetadata', {
+        access_expiration: { expiration_date: '' },
+      }),
+    });
+
     render(
       <BrowserRouter>
         <Chat
@@ -250,5 +256,31 @@ describe('Chat', () => {
 
     const chat = screen.queryByTestId(mockXpertTestId);
     expect(chat).toBeInTheDocument();
+  });
+
+  it('does not display component for audit learner if access deadline has passed', async () => {
+    getConfig.mockImplementation(() => ({ ENABLE_XPERT_AUDIT: true }));
+
+    store = await initializeTestStore({
+      courseMetadata: Factory.build('courseMetadata', {
+        access_expiration: { expiration_date: '2014-02-03T05:00:00Z' },
+      }),
+    });
+
+    render(
+      <BrowserRouter>
+        <Chat
+          enrollmentMode="audit"
+          isStaff={false}
+          enabled
+          courseId={courseId}
+          contentToolsEnabled={false}
+        />
+      </BrowserRouter>,
+      { store },
+    );
+
+    const chat = screen.queryByTestId(mockXpertTestId);
+    expect(chat).not.toBeInTheDocument();
   });
 });
