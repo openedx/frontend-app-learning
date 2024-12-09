@@ -29,3 +29,7 @@ export default function initializeStore() {
     }),
   });
 }
+
+export const store = initializeStore();
+
+export type RootState = ReturnType<typeof store.getState>;

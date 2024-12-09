@@ -1,23 +1,23 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
-  FormattedDate, FormattedMessage, injectIntl, intlShape,
+  FormattedDate, FormattedMessage, useIntl,
 } from '@edx/frontend-platform/i18n';
 
 import { Button, Card } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
+import { useContextId } from '../../../data/hooks';
 import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import { requestCert } from '../../data/thunks';
 import messages from './messages';
 
-const CertificateStatus = ({ intl }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+const CertificateStatus = () => {
+  const intl = useIntl();
+  const courseId = useContextId();
 
   const {
     entranceExamData,
@@ -267,8 +267,6 @@ const CertificateStatus = ({ intl }) => {
   );
 };
 
-CertificateStatus.propTypes = {
-  intl: intlShape.isRequired,
-};
+CertificateStatus.propTypes = {};
 
-export default injectIntl(CertificateStatus);
+export default CertificateStatus;
