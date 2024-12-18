@@ -1,8 +1,10 @@
+import { useContext } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import {
   DataTable,
+  DataTableContext,
   Icon,
   OverlayTrigger,
   Stack,
@@ -15,6 +17,18 @@ import messages from '../messages';
 
 const GradeSummaryTableFooter = () => {
   const intl = useIntl();
+
+  const { data } = useContext(DataTableContext);
+
+  const rawGrade = data.reduce(
+    (grade, currentValue) => {
+      const { weightedGrade } = currentValue.weightedGrade;
+      const percent = weightedGrade.replace(/%/g, '').trim();
+      return grade + parseFloat(percent);
+    },
+    0,
+  ).toFixed(2);
+
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -42,7 +56,10 @@ const GradeSummaryTableFooter = () => {
               placement="bottom"
               overlay={(
                 <Tooltip>
-                  {intl.formatMessage(messages.weightedGradeSummaryTooltip)}
+                  {intl.formatMessage(
+                    messages.weightedGradeSummaryTooltip,
+                    { roundedGrade: totalGrade, rawGrade },
+                  )}
                 </Tooltip>
               )}
             >
