@@ -1,15 +1,20 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import {
-  getLocale, injectIntl, intlShape, isRtl,
-} from '@edx/frontend-platform/i18n';
-import { DataTable } from '@openedx/paragon';
-import { useModel } from '../../../../generic/model-store';
+  DataTable,
+  Icon,
+  OverlayTrigger,
+  Stack,
+  Tooltip,
+} from '@openedx/paragon';
+import { InfoOutline } from '@openedx/paragon/icons';
 
+import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
 
-const GradeSummaryTableFooter = ({ intl }) => {
+const GradeSummaryTableFooter = () => {
+  const intl = useIntl();
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -29,15 +34,30 @@ const GradeSummaryTableFooter = ({ intl }) => {
   return (
     <DataTable.TableFooter className={`border-top border-primary ${bgColor}`}>
       <div className="row w-100 m-0">
-        <div id="weighted-grade-summary" className="col-8 p-0 small">{intl.formatMessage(messages.weightedGradeSummary)}</div>
+        <div id="weighted-grade-summary" className="col-8 p-0 small">
+          <Stack gap={2} direction="horizontal">
+            {intl.formatMessage(messages.weightedGradeSummary)}
+            <OverlayTrigger
+              trigger="hover"
+              placement="bottom"
+              overlay={(
+                <Tooltip>
+                  {intl.formatMessage(messages.weightedGradeSummaryTooltip)}
+                </Tooltip>
+              )}
+            >
+              <Icon
+                src={InfoOutline}
+                size="sm"
+                alt={intl.formatMessage(messages.gradeSummaryTooltipAlt)}
+              />
+            </OverlayTrigger>
+          </Stack>
+        </div>
         <div data-testid="gradeSummaryFooterTotalWeightedGrade" aria-labelledby="weighted-grade-summary" className="col-4 p-0 text-right font-weight-bold small">{totalGrade}{isLocaleRtl && '\u200f'}%</div>
       </div>
     </DataTable.TableFooter>
   );
 };
 
-GradeSummaryTableFooter.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(GradeSummaryTableFooter);
+export default GradeSummaryTableFooter;

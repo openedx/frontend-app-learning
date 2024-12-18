@@ -203,7 +203,11 @@ const messages = defineMessages({
     defaultMessage: 'Your current weighted grade summary',
     description: 'It the text precede the sum of weighted grades of all the assignment',
   },
-
+  weightedGradeSummaryTooltip: {
+    id: 'progress.weightedGradeSummary',
+    defaultMessage: 'The weighted grade for individual assignment types is raw and the weighted grade summary is rounded.',
+    description: 'Tooltip content that explains the rounding of the summary versus individual assignments',
+  },
 });
 
 export default messages;
