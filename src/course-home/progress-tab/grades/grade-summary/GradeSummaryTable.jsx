@@ -1,10 +1,7 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
-import {
-  getLocale, injectIntl, intlShape, isRtl,
-} from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@openedx/paragon';
 import { useModel } from '../../../../generic/model-store';
 
@@ -14,7 +11,8 @@ import GradeSummaryTableFooter from './GradeSummaryTableFooter';
 
 import messages from '../messages';
 
-const GradeSummaryTable = ({ intl, setAllOfSomeAssignmentTypeIsLocked }) => {
+const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
+  const intl = useIntl();
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -75,8 +73,8 @@ const GradeSummaryTable = ({ intl, setAllOfSomeAssignmentTypeIsLocked }) => {
         footnoteId, footnoteMarker, type: assignment.type, locked,
       },
       weight: { weight: `${(assignment.weight * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
-      grade: { grade: `${(assignment.averageGrade * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
-      weightedGrade: { weightedGrade: `${(assignment.weightedGrade * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
+      grade: { grade: `${(assignment.averageGrade * 100).toFixed(2)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
+      weightedGrade: { weightedGrade: `${(assignment.weightedGrade * 100).toFixed(2)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
     };
   });
   const getAssignmentTypeCell = (value) => (
@@ -137,8 +135,7 @@ const GradeSummaryTable = ({ intl, setAllOfSomeAssignmentTypeIsLocked }) => {
 };
 
 GradeSummaryTable.propTypes = {
-  intl: intlShape.isRequired,
   setAllOfSomeAssignmentTypeIsLocked: PropTypes.func.isRequired,
 };
 
-export default injectIntl(GradeSummaryTable);
+export default GradeSummaryTable;
