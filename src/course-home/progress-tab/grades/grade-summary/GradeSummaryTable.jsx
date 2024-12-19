@@ -32,6 +32,14 @@ const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
     return footnoteId.replace(/[^A-Za-z0-9.-_]+/g, '-');
   };
 
+  const getGradePercent = (grade) => {
+    if (Number.isInteger(grade * 100)) {
+      return (grade * 100).toFixed(0);
+    }
+
+    return (grade * 100).toFixed(2);
+  };
+
   const hasNoAccessToAssignmentsOfType = (assignmentType) => {
     const subsectionAssignmentsOfType = sectionScores.map((chapter) => chapter.subsections.filter((subsection) => (
       subsection.assignmentType === assignmentType && subsection.hasGradedAssignment
@@ -50,31 +58,37 @@ const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
   };
 
   const gradeSummaryData = assignmentPolicies.map((assignment) => {
+    const {
+      averageGrade,
+      numDroppable,
+      type: assignmentType,
+      weight,
+      weightedGrade,
+    } = assignment;
     let footnoteId = '';
     let footnoteMarker;
 
-    if (assignment.numDroppable > 0) {
+    if (numDroppable > 0) {
       footnoteId = getFootnoteId(assignment);
       footnotes.push({
         id: footnoteId,
-        numDroppable: assignment.numDroppable,
-        assignmentType: assignment.type,
+        numDroppable,
+        assignmentType,
       });
 
       footnoteMarker = footnotes.length;
     }
 
-    const locked = !gradesFeatureIsFullyLocked && hasNoAccessToAssignmentsOfType(assignment.type);
-
+    const locked = !gradesFeatureIsFullyLocked && hasNoAccessToAssignmentsOfType(assignmentType);
     const isLocaleRtl = isRtl(getLocale());
 
     return {
       type: {
-        footnoteId, footnoteMarker, type: assignment.type, locked,
+        footnoteId, footnoteMarker, type: assignmentType, locked,
       },
-      weight: { weight: `${(assignment.weight * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
-      grade: { grade: `${(assignment.averageGrade * 100).toFixed(2)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
-      weightedGrade: { weightedGrade: `${(assignment.weightedGrade * 100).toFixed(2)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
+      weight: { weight: `${(weight * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
+      grade: { grade: `${getGradePercent(averageGrade)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
+      weightedGrade: { weightedGrade: `${getGradePercent(weightedGrade)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
     };
   });
   const getAssignmentTypeCell = (value) => (
