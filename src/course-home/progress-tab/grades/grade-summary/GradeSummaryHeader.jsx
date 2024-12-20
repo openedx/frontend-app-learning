@@ -1,49 +1,39 @@
-import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import {
-  Icon, IconButton, OverlayTrigger, Popover,
-} from '@openedx/paragon';
+import { useIntl } from '@edx/frontend-platform/i18n';
+import { Icon, OverlayTrigger, Tooltip } from '@openedx/paragon';
 import { Blocked, InfoOutline } from '@openedx/paragon/icons';
 
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 
-const GradeSummaryHeader = ({ intl, allOfSomeAssignmentTypeIsLocked }) => {
+const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
+  const intl = useIntl();
   const {
     courseId,
   } = useSelector(state => state.courseHome);
   const {
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <div className="row w-100 m-0 align-items-center">
       <h3 className="h4 mb-3 mr-1">{intl.formatMessage(messages.gradeSummary)}</h3>
       <OverlayTrigger
-        trigger="click"
+        trigger="hover"
         placement="top"
-        show={showTooltip}
         overlay={(
-          <Popover>
-            <Popover.Content className="small text-dark-700">
-              {intl.formatMessage(messages.gradeSummaryTooltipBody)}
-            </Popover.Content>
-          </Popover>
+          <Tooltip>
+            {intl.formatMessage(messages.gradeSummaryTooltipBody)}
+          </Tooltip>
         )}
       >
-        <IconButton
-          onClick={() => { setShowTooltip(!showTooltip); }}
-          onBlur={() => { setShowTooltip(false); }}
+        <Icon
           alt={intl.formatMessage(messages.gradeSummaryTooltipAlt)}
           src={InfoOutline}
-          iconAs={Icon}
           className="mb-3"
           size="sm"
-          disabled={gradesFeatureIsFullyLocked}
         />
       </OverlayTrigger>
       {!gradesFeatureIsFullyLocked && allOfSomeAssignmentTypeIsLocked && (
@@ -57,8 +47,7 @@ const GradeSummaryHeader = ({ intl, allOfSomeAssignmentTypeIsLocked }) => {
 };
 
 GradeSummaryHeader.propTypes = {
-  intl: intlShape.isRequired,
   allOfSomeAssignmentTypeIsLocked: PropTypes.bool.isRequired,
 };
 
-export default injectIntl(GradeSummaryHeader);
+export default GradeSummaryHeader;
