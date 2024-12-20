@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { useModel } from '@src/generic/model-store';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import OldSidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import NewSidebarContext from '@src/courseware/course/new-sidebar/SidebarContext';
 import { getCoursewareOutlineSidebarSettings } from '@src/courseware/data/selectors';
 import { ID } from './constants';
 
@@ -10,9 +12,13 @@ import { ID } from './constants';
 export const useCourseOutlineSidebar = () => {
   const isCollapsedOutlineSidebar = window.sessionStorage.getItem('hideCourseOutlineSidebar');
   const { enableNavigationSidebar: isEnabledSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
+  const { courseId } = useParams();
+  const course = useModel('coursewareMeta', courseId);
+  const { isNewDiscussionSidebarViewEnabled } = useModel('courseHomeMeta', courseId);
+  const SidebarContext = isNewDiscussionSidebarViewEnabled ? NewSidebarContext : OldSidebarContext;
+
   const {
     unitId,
-    courseId,
     initialSidebar,
     currentSidebar,
     toggleSidebar,
@@ -22,7 +28,6 @@ export const useCourseOutlineSidebar = () => {
   const isOpenSidebar = !initialSidebar && isEnabledSidebar && !isCollapsedOutlineSidebar;
   const [isOpen, setIsOpen] = useState(true);
 
-  const course = useModel('coursewareMeta', courseId);
   const {
     entranceExamEnabled,
     entranceExamPassed,
