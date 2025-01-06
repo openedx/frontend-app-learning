@@ -306,8 +306,8 @@
   // here we compensate for the padding of the parent div with "container-xl"
   // class to ensure that the viewport width is the same as the width of the
   // iframe.
-  margin-left: -var(--pgn-spacing-grid-gutter-width) * .5;
-  margin-right: -var(--pgn-spacing-grid-gutter-width) * .5;
+  margin-left: calc(-var(--pgn-spacing-grid-gutter-width) * .5);
+  margin-right: calc(-var(--pgn-spacing-grid-gutter-width) * .5);
 
   margin-bottom: 2rem;
 
