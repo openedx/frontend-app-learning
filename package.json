@@ -37,7 +37,7 @@
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.2",
     "@edx/browserslist-config": "1.2.0",
     "@edx/frontend-component-footer": "github:edunext/frontend-component-footer#edunext/css-variables-14.0.0",
-    "@edx/frontend-component-header": "github:edunext/frontend-component-header#edunext/css-variables-5.8.0",
+    "@edx/frontend-component-header": "github:edunext/frontend-component-header-edunext#edunext/css-variables-5.8.0",
     "@edx/frontend-lib-learning-assistant": "github:edunext/frontend-lib-learning-assistant#edunext/css-variables-2.13.0",
     "@edx/frontend-lib-special-exams": "github:edunext/frontend-lib-special-exams#edunext/css-variables-3.1.3",
     "@edx/frontend-platform": "github:eduNEXT/frontend-platform#edunext/css-variables-8.1.2",
