@@ -1,9 +1,9 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { CheckCircle, WarningFilled, WatchFilled } from '@openedx/paragon/icons';
 import { Hyperlink, Icon } from '@openedx/paragon';
+import { useContextId } from '../../../data/hooks';
 
 import { useModel } from '../../../generic/model-store';
 import { DashboardLink } from '../../../shared/links';
@@ -11,9 +11,7 @@ import { DashboardLink } from '../../../shared/links';
 import messages from './messages';
 
 const CreditInformation = ({ intl }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
 
   const {
     creditCourseRequirements,

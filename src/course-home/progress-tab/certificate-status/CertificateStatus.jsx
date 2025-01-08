@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 
 import { Button, Card } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
+import { useContextId } from '../../../data/hooks';
 import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
@@ -15,9 +16,7 @@ import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertifi
 
 const CertificateStatus = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
 
   const {
     entranceExamData,

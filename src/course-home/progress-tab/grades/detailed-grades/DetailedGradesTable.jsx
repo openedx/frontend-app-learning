@@ -1,10 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import {
   getLocale, injectIntl, intlShape, isRtl,
 } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@openedx/paragon';
+import { useContextId } from '../../../../data/hooks';
 
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
@@ -12,9 +12,7 @@ import SubsectionTitleCell from './SubsectionTitleCell';
 import { showUngradedAssignments } from '../../utils';
 
 const DetailedGradesTable = ({ intl }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
 
   const {
     sectionScores,

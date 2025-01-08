@@ -1,18 +1,16 @@
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon, OverlayTrigger, Tooltip } from '@openedx/paragon';
 import { Blocked, InfoOutline } from '@openedx/paragon/icons';
+import { useContextId } from '../../../../data/hooks';
 
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 
 const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
   const {
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
