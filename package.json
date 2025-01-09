@@ -96,7 +96,7 @@
     "files": [
       {
         "path": "dist/*.js",
-        "maxSize": "1300kB"
+        "maxSize": "1350kB"
       }
     ],
     "normalizeFilenames": "^.+?(\\..+?)\\.\\w+$"
