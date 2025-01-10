@@ -69,7 +69,7 @@ const PreferencesUnsubscribe = () => {
                     values={{
                       preferenceCenterUrl: (
                         <Hyperlink
-                          destination={`${getConfig().ACCOUNT_SETTINGS_URL}/notifications`}
+                          destination={`${getConfig().ACCOUNT_SETTINGS_URL}/#notifications`}
                         >
                           {intl.formatMessage(messages.preferenceCenterUrl)}
                         </Hyperlink>
