@@ -1,11 +1,11 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Blocked } from '@openedx/paragon/icons';
 import { Icon, Hyperlink } from '@openedx/paragon';
+import { useContextId } from '../../../../data/hooks';
 import { useModel } from '../../../../generic/model-store';
 import { showUngradedAssignments } from '../../utils';
 
@@ -15,9 +15,7 @@ import messages from '../messages';
 
 const DetailedGrades = ({ intl }) => {
   const { administrator } = getAuthenticatedUser();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
   const {
     org,
     tabs,

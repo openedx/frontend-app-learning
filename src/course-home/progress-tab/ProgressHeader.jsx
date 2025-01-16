@@ -1,9 +1,9 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Button } from '@openedx/paragon';
+import { useSelector } from 'react-redux';
 
 import { useModel } from '../../generic/model-store';
 

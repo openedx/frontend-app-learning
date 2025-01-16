@@ -1,16 +1,15 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+
 import PropTypes from 'prop-types';
 
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useContextId } from '../../../../data/hooks';
 
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 
 const DroppableAssignmentFootnote = ({ footnotes, intl }) => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const courseId = useContextId();
   const {
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
