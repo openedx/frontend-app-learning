@@ -12,6 +12,7 @@ metadata:
       icon: "Web"
   annotations:
     openedx.org/arch-interest-groups: ""
+    openedx.org/release: "master"
 spec:
   owner: group:committers-frontend-app-learning
   type: 'website'
