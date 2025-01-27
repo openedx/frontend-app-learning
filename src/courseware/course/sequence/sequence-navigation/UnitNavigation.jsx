@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useSelector } from 'react-redux';
 
 import { GetCourseExitNavigation } from '../../course-exit';
 
@@ -9,6 +8,7 @@ import { useSequenceNavigationMetadata } from './hooks';
 import messages from './messages';
 import PreviousButton from './generic/PreviousButton';
 import NextButton from './generic/NextButton';
+import { NextUnitTopNavTriggerSlot } from '../../../../plugin-slots/NextUnitTopNavTriggerSlot';
 
 const UnitNavigation = ({
   sequenceId,
@@ -16,12 +16,12 @@ const UnitNavigation = ({
   onClickPrevious,
   onClickNext,
   isAtTop,
+  courseId,
 }) => {
   const intl = useIntl();
   const {
     isFirstUnit, isLastUnit, nextLink, previousLink,
   } = useSequenceNavigationMetadata(sequenceId, unitId);
-  const { courseId } = useSelector(state => state.courseware);
 
   const renderPreviousButton = () => (
     <PreviousButton
@@ -38,13 +38,33 @@ const UnitNavigation = ({
     const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
+    const variant = 'outline-primary';
+    const buttonStyle = 'next-button justify-content-center';
+
+    if (isAtTop) {
+      return (
+        <NextUnitTopNavTriggerSlot
+          {...{
+            courseId,
+            variant,
+            buttonStyle,
+            buttonText,
+            disabled,
+            sequenceId,
+            nextLink,
+            onClickHandler: onClickNext,
+          }}
+        />
+      );
+    }
+
     return (
       <NextButton
-        variant="outline-primary"
-        buttonStyle="next-button justify-content-center"
-        onClick={onClickNext}
+        variant={variant}
+        buttonStyle={buttonStyle}
+        onClickHandler={onClickNext}
         disabled={disabled}
-        buttonLabel={buttonText}
+        buttonText={buttonText}
         nextLink={nextLink}
         hasEffortEstimate
       />
@@ -60,6 +80,7 @@ const UnitNavigation = ({
 };
 
 UnitNavigation.propTypes = {
+  courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
   unitId: PropTypes.string,
   onClickPrevious: PropTypes.func.isRequired,

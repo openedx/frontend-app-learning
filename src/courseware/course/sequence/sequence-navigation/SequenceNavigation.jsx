@@ -1,9 +1,7 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 import classNames from 'classnames';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useSelector } from 'react-redux';
 
 import { LOADED } from '@src/constants';
@@ -15,7 +13,7 @@ import { useModel } from '../../../../generic/model-store';
 
 import messages from './messages';
 import PreviousButton from './generic/PreviousButton';
-import NextButton from './generic/NextButton';
+import { NextUnitTopNavTriggerSlot } from '../../../../plugin-slots/NextUnitTopNavTriggerSlot';
 
 const SequenceNavigation = ({
   unitId,
@@ -24,11 +22,6 @@ const SequenceNavigation = ({
   onNavigate,
   nextHandler,
   previousHandler,
-  nextSequenceHandler,
-  handleNavigate,
-  isOpen,
-  open,
-  close,
 }) => {
   const intl = useIntl();
   const sequence = useModel('sequences', sequenceId);
@@ -83,36 +76,28 @@ const SequenceNavigation = ({
   );
 
   const renderNextButton = () => {
+    let buttonText;
     const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
-    const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
 
+    if (isLastUnit && exitText) {
+      buttonText = exitText;
+    } else if (!shouldDisplayNotificationTriggerInSequence) {
+      buttonText = intl.formatMessage(messages.nextButton);
+    }
     return navigationDisabledNextSequence || (
-      <PluginSlot
-        id="next_button_slot"
-        pluginProps={{
+      <NextUnitTopNavTriggerSlot
+        {...{
           courseId,
           disabled,
-          buttonText: shouldDisplayNotificationTriggerInSequence ? null : buttonText,
+          buttonText,
           nextLink,
           sequenceId,
-          unitId,
-          nextSequenceHandler,
-          handleNavigate,
-          isOpen,
-          open,
-          close,
+          onClickHandler: nextHandler,
+          variant: 'link',
+          buttonStyle: 'next-btn',
         }}
-      >
-        <NextButton
-          variant="link"
-          buttonStyle="next-btn"
-          onClick={nextHandler}
-          nextLink={nextLink}
-          disabled={disabled}
-          buttonLabel={shouldDisplayNotificationTriggerInSequence ? null : buttonText}
-        />
-      </PluginSlot>
+      />
     );
   };
 
@@ -132,21 +117,11 @@ SequenceNavigation.propTypes = {
   onNavigate: PropTypes.func.isRequired,
   nextHandler: PropTypes.func.isRequired,
   previousHandler: PropTypes.func.isRequired,
-  close: PropTypes.func,
-  open: PropTypes.func,
-  isOpen: PropTypes.bool,
-  handleNavigate: PropTypes.func,
-  nextSequenceHandler: PropTypes.func,
 };
 
 SequenceNavigation.defaultProps = {
   className: null,
   unitId: null,
-  close: null,
-  open: null,
-  isOpen: false,
-  handleNavigate: null,
-  nextSequenceHandler: null,
 };
 
 export default SequenceNavigation;
