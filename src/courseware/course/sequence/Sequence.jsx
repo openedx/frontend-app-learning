@@ -9,7 +9,6 @@ import {
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
-import { useToggle } from '@openedx/paragon';
 
 import PageLoading from '@src/generic/PageLoading';
 import { useModel } from '@src/generic/model-store';
@@ -35,7 +34,6 @@ const Sequence = ({
   previousSequenceHandler,
 }) => {
   const intl = useIntl();
-  const [isOpen, open, close] = useToggle();
   const {
     canAccessProctoredExams,
     license,
@@ -145,6 +143,7 @@ const Sequence = ({
 
   const renderUnitNavigation = (isAtTop) => (
     <UnitNavigation
+      courseId={courseId}
       sequenceId={sequenceId}
       unitId={unitId}
       isAtTop={isAtTop}
@@ -185,9 +184,6 @@ const Sequence = ({
                 {...{
                   nextSequenceHandler,
                   handleNavigate,
-                  isOpen,
-                  open,
-                  close,
                 }}
               />
             </div>
