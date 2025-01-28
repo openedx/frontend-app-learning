@@ -7,8 +7,8 @@ import { isRtl, getLocale } from '@edx/frontend-platform/i18n';
 import UnitNavigationEffortEstimate from '../UnitNavigationEffortEstimate';
 
 const NextButton = ({
-  onClick,
-  buttonLabel,
+  onClickHandler,
+  buttonText,
   nextLink,
   variant,
   buttonStyle,
@@ -20,16 +20,16 @@ const NextButton = ({
   const navLink = pathname.startsWith('/preview') ? `/preview${nextLink}` : nextLink;
   const buttonContent = hasEffortEstimate ? (
     <UnitNavigationEffortEstimate>
-      {buttonLabel}
+      {buttonText}
     </UnitNavigationEffortEstimate>
-  ) : buttonLabel;
+  ) : buttonText;
 
   return (
     <Button
       variant={variant}
       className={buttonStyle}
       disabled={disabled}
-      onClick={onClick}
+      onClick={onClickHandler}
       as={disabled ? undefined : Link}
       to={disabled ? undefined : navLink}
       iconAfter={nextArrow}
@@ -44,8 +44,8 @@ NextButton.defaultProps = {
 };
 
 NextButton.propTypes = {
-  onClick: PropTypes.func.isRequired,
-  buttonLabel: PropTypes.string.isRequired,
+  onClickHandler: PropTypes.func.isRequired,
+  buttonText: PropTypes.string.isRequired,
   nextLink: PropTypes.string.isRequired,
   variant: PropTypes.string.isRequired,
   buttonStyle: PropTypes.string.isRequired,

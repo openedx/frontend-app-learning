@@ -18,6 +18,7 @@ describe('Unit Navigation', () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
     const { courseware } = store.getState();
     mockData = {
+      courseId: courseware.courseId,
       unitId: unitBlocks[1].id,
       sequenceId: courseware.sequenceId,
       onClickPrevious: () => {},
