@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Alert, Button, TransitionReplace } from '@openedx/paragon';
 import truncate from 'truncate-html';
 
@@ -11,11 +11,13 @@ import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 import { dismissWelcomeMessage } from '../../data/thunks';
 
-const WelcomeMessage = ({ courseId, intl }) => {
+const WelcomeMessage = ({ courseId, nextElementRef }) => {
+  const intl = useIntl();
   const {
     welcomeMessageHtml,
   } = useModel('outline', courseId);
 
+  const messageBodyRef = useRef();
   const [display, setDisplay] = useState(true);
 
   // welcomeMessageHtml can contain comments or malformatted HTML which can impact the length that determines
@@ -49,13 +51,20 @@ const WelcomeMessage = ({ courseId, intl }) => {
       dismissible
       show={display}
       onClose={() => {
+        nextElementRef.current?.focus();
         setDisplay(false);
         dispatch(dismissWelcomeMessage(courseId));
       }}
       className="raised-card"
       actions={messageCanBeShortened ? [
         <Button
-          onClick={() => setShowShortMessage(!showShortMessage)}
+          onClick={() => {
+            if (showShortMessage && messageBodyRef.current) {
+              messageBodyRef.current.focus();
+            }
+
+            setShowShortMessage(!showShortMessage);
+          }}
           variant="outline-primary"
         >
           {showShortMessage ? intl.formatMessage(messages.welcomeMessageShowMoreButton)
@@ -63,32 +72,35 @@ const WelcomeMessage = ({ courseId, intl }) => {
         </Button>,
       ] : []}
     >
-      <TransitionReplace className="mb-3" enterDuration={400} exitDuration={200}>
-        {showShortMessage ? (
-          <LmsHtmlFragment
-            className="inline-link"
-            data-testid="short-welcome-message-iframe"
-            key="short-html"
-            html={shortWelcomeMessageHtml}
-            title={intl.formatMessage(messages.welcomeMessage)}
-          />
-        ) : (
-          <LmsHtmlFragment
-            className="inline-link"
-            data-testid="long-welcome-message-iframe"
-            key="full-html"
-            html={cleanedWelcomeMessageHtml}
-            title={intl.formatMessage(messages.welcomeMessage)}
-          />
-        )}
-      </TransitionReplace>
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+      <div ref={messageBodyRef} tabIndex={0}>
+        <TransitionReplace className="mb-3" enterDuration={400} exitDuration={200}>
+          {showShortMessage ? (
+            <LmsHtmlFragment
+              className="inline-link"
+              data-testid="short-welcome-message-iframe"
+              key="short-html"
+              html={shortWelcomeMessageHtml}
+              title={intl.formatMessage(messages.welcomeMessage)}
+            />
+          ) : (
+            <LmsHtmlFragment
+              className="inline-link"
+              data-testid="long-welcome-message-iframe"
+              key="full-html"
+              html={cleanedWelcomeMessageHtml}
+              title={intl.formatMessage(messages.welcomeMessage)}
+            />
+          )}
+        </TransitionReplace>
+      </div>
     </Alert>
   );
 };
 
 WelcomeMessage.propTypes = {
   courseId: PropTypes.string.isRequired,
-  intl: intlShape.isRequired,
+  nextElementRef: PropTypes.shape({ current: PropTypes.instanceOf(HTMLInputElement) }),
 };
 
-export default injectIntl(WelcomeMessage);
+export default WelcomeMessage;
