@@ -1,13 +1,13 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import { Button } from '@openedx/paragon';
+import { Button, Icon } from '@openedx/paragon';
+import { Bookmark } from '@openedx/paragon/icons';
 
 import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
-import BookmarkFilledIcon from '../../bookmark/BookmarkFilledIcon';
 
 const UnitButton = ({
   onClick,
@@ -46,7 +46,8 @@ const UnitButton = ({
       {showTitle && <span className="unit-title">{title}</span>}
       {showCompletion && complete ? <CompleteIcon size="sm" className="text-success ml-2" /> : null}
       {bookmarked ? (
-        <BookmarkFilledIcon
+        <Icon
+          src={Bookmark}
           className="text-primary small position-absolute"
           style={{ top: '-3px', right: '5px' }}
         />
