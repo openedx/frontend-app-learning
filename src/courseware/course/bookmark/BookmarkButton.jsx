@@ -1,10 +1,9 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { StatefulButton } from '@openedx/paragon';
+import { Icon, StatefulButton } from '@openedx/paragon';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { useDispatch } from 'react-redux';
-import BookmarkOutlineIcon from './BookmarkOutlineIcon';
-import BookmarkFilledIcon from './BookmarkFilledIcon';
+import { Bookmark, BookmarkBorder } from '@openedx/paragon/icons';
 import { removeBookmark, addBookmark } from './data/thunks';
 
 const addBookmarkLabel = (
@@ -45,7 +44,8 @@ const BookmarkButton = ({
       className="px-1 ml-n1 btn-sm text-primary-500"
       onClick={toggleBookmark}
       state={state}
-      disabledStates={['defaultProcessing', 'bookmarkedProcessing']}
+      aria-busy={isProcessing}
+      disabled={isProcessing}
       labels={{
         default: addBookmarkLabel,
         defaultProcessing: addBookmarkLabel,
@@ -53,10 +53,10 @@ const BookmarkButton = ({
         bookmarkedProcessing: hasBookmarkLabel,
       }}
       icons={{
-        default: <BookmarkOutlineIcon className="text-primary" />,
-        defaultProcessing: <BookmarkOutlineIcon className="text-primary" />,
-        bookmarked: <BookmarkFilledIcon className="text-primary" />,
-        bookmarkedProcessing: <BookmarkFilledIcon className="text-primary" />,
+        default: <Icon src={BookmarkBorder} className="text-primary" />,
+        defaultProcessing: <Icon src={BookmarkBorder} className="text-primary" />,
+        bookmarked: <Icon src={Bookmark} className="text-primary" />,
+        bookmarkedProcessing: <Icon src={Bookmark} className="text-primary" />,
       }}
     />
   );
