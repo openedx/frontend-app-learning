@@ -52,7 +52,7 @@ const Unit = ({
         <h3 className="h3">{unit.title}</h3>
         <UnitTitleSlot courseId={courseId} unitId={id} unitTitle={unit.title} />
       </div>
-      <h2 className="sr-only">{formatMessage(messages.headerPlaceholder)}</h2>
+      <p className="sr-only">{formatMessage(messages.headerPlaceholder)}</p>
       <BookmarkButton
         unitId={unit.id}
         isBookmarked={unit.bookmarked}
