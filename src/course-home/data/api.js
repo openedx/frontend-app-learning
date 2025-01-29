@@ -289,9 +289,17 @@ export async function getProgressTabData(courseId, targetUserId) {
 }
 
 export async function getProctoringInfoData(courseId, username) {
-  let url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
-  if (username) {
-    url += `&username=${encodeURIComponent(username)}`;
+  let url;
+  if (!getConfig().EXAMS_BASE_URL) {
+    url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
+    if (username) {
+      url += `&username=${encodeURIComponent(username)}`;
+    }
+  } else {
+    url = `${getConfig().EXAMS_BASE_URL}/api/v1/student/course_id/${encodeURIComponent(courseId)}/onboarding`;
+    if (username) {
+      url += `?username=${encodeURIComponent(username)}`;
+    }
   }
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
