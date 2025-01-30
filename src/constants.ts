@@ -55,6 +55,13 @@ export const AUDIT_MODES = [
   'unpaid-bootcamp',
 ] as const satisfies readonly string[];
 
+// In sync with CourseMode.UPSELL_TO_VERIFIED_MODES
+// https://github.com/openedx/edx-platform/blob/master/common/djangoapps/course_modes/models.py#L231
+export const ALLOW_UPSELL_MODES = [
+  'audit',
+  'honor',
+] as const satisfies readonly string[];
+
 export const WIDGETS = {
   DISCUSSIONS: 'DISCUSSIONS',
   NOTIFICATIONS: 'NOTIFICATIONS',
