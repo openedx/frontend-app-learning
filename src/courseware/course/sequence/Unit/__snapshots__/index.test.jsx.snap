@@ -34,11 +34,11 @@ exports[`Unit component output snapshot: not bookmarked, do not show content 1`]
       unitTitle="unit-title"
     />
   </div>
-  <h2
+  <p
     className="sr-only"
   >
     Level 2 headings may be created by course providers in the future.
-  </h2>
+  </p>
   <BookmarkButton
     isBookmarked={false}
     isProcessing={false}
