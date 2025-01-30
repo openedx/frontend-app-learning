@@ -63,17 +63,17 @@ describe('Unit Button', () => {
   });
 
   it('does not show bookmark', () => {
-    const { container } = render(<UnitButton {...mockData} />);
-    container.querySelectorAll('svg').forEach(icon => {
-      expect(icon).not.toHaveClass('fa-bookmark');
-    });
+    const { queryByTestId } = render(<UnitButton {...mockData} />);
+    expect(queryByTestId('bookmark-icon')).toBeNull();
   });
 
   it('shows bookmark', () => {
     const { container } = render(<UnitButton {...mockData} unitId={bookmarkedUnit.id} />, { wrapWithRouter: true });
     const buttonIcons = container.querySelectorAll('svg');
     expect(buttonIcons).toHaveLength(3);
-    expect(buttonIcons[2]).toHaveClass('fa-bookmark');
+
+    const bookmarkIcon = buttonIcons[2].closest('span');
+    expect(bookmarkIcon.getAttribute('data-testid')).toBe('bookmark-icon');
   });
 
   it('handles the click', () => {
