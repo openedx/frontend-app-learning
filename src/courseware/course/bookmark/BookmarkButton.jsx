@@ -41,7 +41,7 @@ const BookmarkButton = ({
   return (
     <StatefulButton
       variant="link"
-      className="px-1 ml-n1 btn-sm text-primary-500"
+      className={`px-1 ml-n1 btn-sm text-primary-500 ${isProcessing && 'disabled'}`}
       onClick={toggleBookmark}
       state={state}
       aria-busy={isProcessing}
