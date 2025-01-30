@@ -25,7 +25,7 @@ const Chat = ({
   // If is disabled or taking an exam, we don't show the chat.
   if (!enabled || activeAttempt?.attempt_id || exam?.id) { return null; }
 
-  // If is not staff and doesn't have an entollment, we don't show the chat.
+  // If is not staff and doesn't have an enrollment, we don't show the chat.
   if (!isStaff && !enrollmentMode) { return null; }
 
   const verifiedMode = VERIFIED_MODES.includes(enrollmentMode); // Enrollment verified
