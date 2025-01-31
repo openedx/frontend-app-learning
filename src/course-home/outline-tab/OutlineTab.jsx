@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Button } from '@openedx/paragon';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { AlertList } from '../../generic/user-messages';
@@ -29,7 +29,8 @@ import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
 
-const OutlineTab = ({ intl }) => {
+const OutlineTab = () => {
+  const intl = useIntl();
   const {
     courseId,
     proctoringPanelStatus,
@@ -41,6 +42,8 @@ const OutlineTab = ({ intl }) => {
     title,
     userTimezone,
   } = useModel('courseHomeMeta', courseId);
+
+  const expandButtonRef = useRef();
 
   const {
     accessExpiration,
@@ -159,12 +162,12 @@ const OutlineTab = ({ intl }) => {
             </>
           )}
           <StartOrResumeCourseCard />
-          <WelcomeMessage courseId={courseId} />
+          <WelcomeMessage courseId={courseId} nextElementRef={expandButtonRef} />
           {rootCourseId && (
             <>
               <div className="row w-100 m-0 mb-3 justify-content-end">
                 <div className="col-12 col-md-auto p-0">
-                  <Button variant="outline-primary" block onClick={() => { setExpandAll(!expandAll); }}>
+                  <Button ref={expandButtonRef} variant="outline-primary" block onClick={() => { setExpandAll(!expandAll); }}>
                     {expandAll ? intl.formatMessage(messages.collapseAll) : intl.formatMessage(messages.expandAll)}
                   </Button>
                 </div>
@@ -225,8 +228,4 @@ const OutlineTab = ({ intl }) => {
   );
 };
 
-OutlineTab.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(OutlineTab);
+export default OutlineTab;

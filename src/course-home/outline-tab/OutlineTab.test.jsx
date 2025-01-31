@@ -292,6 +292,18 @@ describe('Outline Tab', () => {
         showMoreButton = screen.getByRole('button', { name: 'Show More' });
         expect(showMoreButton).toBeInTheDocument();
       });
+
+      fit('dismisses message', async () => {
+        expect(screen.getByTestId('alert-container-welcome')).toBeInTheDocument();
+        const dismissButton = screen.queryByRole('button', { name: 'Dismiss' });
+        const expandButton = screen.queryByRole('button', { name: 'Expand all' });
+
+        fireEvent.click(dismissButton);
+
+        expect(expandButton).toHaveFocus();
+
+        expect(screen.queryByText('Welcome Message')).toBeNull();
+      });
     });
 
     it('ignores comments and misformatted HTML', async () => {
