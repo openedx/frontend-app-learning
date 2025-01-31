@@ -59,8 +59,8 @@ const WelcomeMessage = ({ courseId, nextElementRef }) => {
       actions={messageCanBeShortened ? [
         <Button
           onClick={() => {
-            if (showShortMessage && messageBodyRef.current) {
-              messageBodyRef.current.focus();
+            if (showShortMessage) {
+              messageBodyRef.current?.focus();
             }
 
             setShowShortMessage(!showShortMessage);
