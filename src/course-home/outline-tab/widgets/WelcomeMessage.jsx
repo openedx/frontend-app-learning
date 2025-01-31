@@ -72,8 +72,7 @@ const WelcomeMessage = ({ courseId, nextElementRef }) => {
         </Button>,
       ] : []}
     >
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
-      <div ref={messageBodyRef} tabIndex={0}>
+      <div ref={messageBodyRef} tabIndex="-1">
         <TransitionReplace className="mb-3" enterDuration={400} exitDuration={200}>
           {showShortMessage ? (
             <LmsHtmlFragment
