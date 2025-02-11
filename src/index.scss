@@ -444,6 +444,22 @@
   height: 56px !important;
 }
 
+@include media-breakpoint-down(xs) {
+  .course-outline-tab .pgn__card {
+    .pgn__card-header {
+      display: block;
+  
+      .pgn__card-header-content {
+        margin-top: 0;
+      }
+    }
+    
+    .pgn__card-header-actions {
+      margin-left: 0;
+    }
+  }
+}
+
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
 @import "courseware/course/sidebar/sidebars/discussions/Discussions.scss";
