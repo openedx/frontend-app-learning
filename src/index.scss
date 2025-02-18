@@ -451,3 +451,7 @@
 @import "course-tabs/course-tabs-navigation.scss";
 @import "courseware/course/sidebar/common/SidebarBase.scss";
 @import "courseware/course/sidebar/sidebars/course-outline/CourseOutlineTray.scss";
+
+@import '~brand-openedx-zeit/paragon/overrides';
+@import '~brand-openedx-zeit/paragon/fonts';
+@import '~brand-openedx-zeit/paragon/variables';
