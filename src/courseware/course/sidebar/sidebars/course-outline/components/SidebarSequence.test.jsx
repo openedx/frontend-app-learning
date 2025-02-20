@@ -6,6 +6,7 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { initializeMockApp, initializeTestStore } from '@src/setupTest';
+import SidebarContext from '../../../SidebarContext';
 import messages from '../messages';
 import SidebarSequence from './SidebarSequence';
 
@@ -17,6 +18,7 @@ describe('<SidebarSequence />', () => {
   let sequence;
   let unit;
   const sequenceDescription = 'sequence test description';
+  let mockData;
 
   const initTestStore = async (options) => {
     store = await initializeTestStore(options);
@@ -27,21 +29,27 @@ describe('<SidebarSequence />', () => {
     sequence = state.courseware.courseOutline.sequences[activeSequenceId];
     const unitId = sequence.unitIds[0];
     unit = state.courseware.courseOutline.units[unitId];
+
+    mockData = {
+      toggleSidebar: jest.fn(),
+    };
   };
 
   function renderWithProvider(props = {}) {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
         <IntlProvider locale="en">
-          <MemoryRouter>
-            <SidebarSequence
-              courseId={courseId}
-              defaultOpen={false}
-              sequence={sequence}
-              activeUnitId={sequence.unitIds[0]}
-              {...props}
-            />
-          </MemoryRouter>
+          <SidebarContext.Provider value={{ ...mockData }}>
+            <MemoryRouter>
+              <SidebarSequence
+                courseId={courseId}
+                defaultOpen={false}
+                sequence={sequence}
+                activeUnitId={sequence.unitIds[0]}
+                {...props}
+              />
+            </MemoryRouter>
+          </SidebarContext.Provider>
         </IntlProvider>
       </AppProvider>,
     );
