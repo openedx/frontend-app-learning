@@ -11,6 +11,14 @@ interface Props {
   children?: React.ReactNode;
 }
 
+/*
+ * UnitLinkWrapper is necessary for unit navigation within the OutlineTrayPlugin.
+ * import { Link } from 'react-router-dom' throws errors inside the plugin
+ * because the package tries to load two versions of 'react-router-dom' or a
+ * route can not be found. This component abstracts the import into a wrapper
+ * component that can be imported into plugins without a render error.
+ */
+
 const UnitLinkWrapper: React.FC<Props> = ({
   sequenceId,
   activeUnitId,
