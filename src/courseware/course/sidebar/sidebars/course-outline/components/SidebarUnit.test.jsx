@@ -6,6 +6,7 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 
 import { initializeMockApp, initializeTestStore } from '@src/setupTest';
+import SidebarContext from '../../../SidebarContext';
 import SidebarUnit from './SidebarUnit';
 
 jest.mock('@edx/frontend-platform/analytics', () => ({
@@ -19,6 +20,7 @@ describe('<SidebarUnit />', () => {
   let store = {};
   let unit;
   let sequenceId;
+  let mockData;
 
   const initTestStore = async (options) => {
     store = await initializeTestStore(options);
@@ -26,24 +28,30 @@ describe('<SidebarUnit />', () => {
     [sequenceId] = Object.keys(state.courseware.courseOutline.sequences);
     const sequence = state.courseware.courseOutline.sequences[sequenceId];
     unit = state.courseware.courseOutline.units[sequence.unitIds[0]];
+
+    mockData = {
+      toggleSidebar: jest.fn(),
+    };
   };
 
   function renderWithProvider(props = {}) {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
         <IntlProvider locale="en">
-          <MemoryRouter>
-            <SidebarUnit
-              isFirst
-              id={unit.id}
-              courseId="course123"
-              sequenceId={sequenceId}
-              unit={{ ...unit, icon: 'video', isLocked: false }}
-              isActive={false}
-              activeUnitId={unit.id}
-              {...props}
-            />
-          </MemoryRouter>
+          <SidebarContext.Provider value={{ ...mockData }}>
+            <MemoryRouter>
+              <SidebarUnit
+                isFirst
+                id={unit.id}
+                courseId="course123"
+                sequenceId={sequenceId}
+                unit={{ ...unit, icon: 'video', isLocked: false }}
+                isActive={false}
+                activeUnitId={unit.id}
+                {...props}
+              />
+            </MemoryRouter>
+          </SidebarContext.Provider>
         </IntlProvider>
       </AppProvider>,
     );

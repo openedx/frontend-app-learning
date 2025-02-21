@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Collapsible } from '@openedx/paragon';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
-import { getCourseOutline, getSequenceId } from '@src/courseware/data/selectors';
+import { useCourseOutlineSidebar } from '../hooks';
 import CompletionIcon from './CompletionIcon';
 import SidebarUnit from './SidebarUnit';
 import { UNIT_ICON_TYPES } from './UnitIcon';
@@ -29,8 +28,7 @@ const SidebarSequence = ({
   } = sequence;
 
   const [open, setOpen] = useState(defaultOpen);
-  const { units = {} } = useSelector(getCourseOutline);
-  const activeSequenceId = useSelector(getSequenceId);
+  const { activeSequenceId, units } = useCourseOutlineSidebar();
   const isActiveSequence = id === activeSequenceId;
 
   const sectionTitle = (
