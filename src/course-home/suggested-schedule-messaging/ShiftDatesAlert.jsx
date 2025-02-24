@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -8,6 +9,8 @@ import {
   Button,
   Row,
   Col,
+  breakpoints,
+  useWindowSize,
 } from '@openedx/paragon';
 
 import { resetDeadlines } from '../data';
@@ -19,6 +22,7 @@ const ShiftDatesAlert = ({ fetch, model }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const {
     datesBannerInfo,
@@ -39,14 +43,17 @@ const ShiftDatesAlert = ({ fetch, model }) => {
   return (
     <Alert variant="warning">
       <Row className="w-100 m-0">
-        <Col xs={12} md={9} className="small p-0 pr-md-2">
+        <Col
+          xs={12}
+          md={9}
+          className={classNames('p-0 pr-md-2 shift-dates-alert-text', { small: !wideScreen })}
+        >
           <strong>{intl.formatMessage(messages.missedDeadlines)}</strong>
           {' '}{intl.formatMessage(messages.shiftDatesBody)}
         </Col>
         <Col xs={12} md={3} className="align-self-center text-right mt-3 mt-md-0 p-0">
           <Button
-            variant="primary"
-            size="sm"
+            size={!wideScreen ? 'sm' : 'md'}
             className="w-xs-100 w-md-auto"
             onClick={() => dispatch(resetDeadlines(courseId, model, fetch))}
           >
