@@ -1,11 +1,13 @@
-import { useState, useMemo, useRef } from 'react';
+import React, {
+  useState, useRef, useEffect, useMemo,
+} from 'react';
 import PropTypes from 'prop-types';
 
-import { useIntl } from '@edx/frontend-platform/i18n';
 import { Alert, Button, TransitionReplace } from '@openedx/paragon';
 import truncate from 'truncate-html';
 
 import { useDispatch } from 'react-redux';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import LmsHtmlFragment from '../LmsHtmlFragment';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
@@ -38,16 +40,28 @@ const WelcomeMessage = ({ courseId, nextElementRef }) => {
 
   const [showShortMessage, setShowShortMessage] = useState(messageCanBeShortened);
   const dispatch = useDispatch();
+  const alertRef = useRef(null);
 
   if (!welcomeMessageHtml) {
     return null;
   }
+
+  useEffect(() => {
+    // TODO: Temporary solution due to a bug in the Paragon Alert component
+    // that prevents changing the button sizes. Delete after correction.
+    // Issue: https://github.com/openedx/paragon/issues/3205
+    if (alertRef.current) {
+      const buttons = alertRef.current.querySelectorAll('button.btn-sm');
+      buttons.forEach(btn => btn.classList.remove('btn-sm'));
+    }
+  }, [showShortMessage]);
 
   return (
     <Alert
       data-testid="alert-container-welcome"
       variant="light"
       stacked
+      ref={alertRef}
       dismissible
       show={display}
       onClose={() => {

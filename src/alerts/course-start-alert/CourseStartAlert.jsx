@@ -40,7 +40,7 @@ const CourseStartAlert = ({ payload }) => {
   );
   if (delta < DAY_MS) {
     return (
-      <Alert variant="info" icon={Info}>
+      <Alert className="course-start-info-alert" variant="info" icon={Info}>
         <FormattedMessage
           id="learning.outline.alert.start.short"
           defaultMessage="Course starts {timeRemaining} at {courseStartTime}."
@@ -65,7 +65,7 @@ const CourseStartAlert = ({ payload }) => {
   }
 
   return (
-    <Alert variant="info" icon={Info}>
+    <Alert className="course-start-info-alert" variant="info" icon={Info}>
       <strong>
         <FormattedMessage
           id="learning.outline.alert.start.long"
