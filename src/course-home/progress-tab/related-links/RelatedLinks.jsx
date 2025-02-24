@@ -1,9 +1,10 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Hyperlink } from '@openedx/paragon';
+import { Hyperlink, breakpoints, useWindowSize } from '@openedx/paragon';
 import { useContextId } from '../../../data/hooks';
 
 import messages from './messages';
@@ -15,6 +16,7 @@ const RelatedLinks = ({ intl }) => {
     org,
     tabs,
   } = useModel('courseHomeMeta', courseId);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const { administrator } = getAuthenticatedUser();
   const logLinkClicked = (linkName) => {
@@ -32,11 +34,13 @@ const RelatedLinks = ({ intl }) => {
   const datesTabUrl = datesTab && datesTab.url;
 
   return (
-    <section className="mb-4 x-small">
-      <h3 className="h4">{intl.formatMessage(messages.relatedLinks)}</h3>
-      <ul className="pl-4">
+    <section className="mb-4 x-small related-links">
+      <h3 className={classNames('h4', { 'related-links-title': wideScreen })}>
+        {intl.formatMessage(messages.relatedLinks)}
+      </h3>
+      <ul className="pl-4 related-links-list">
         {datesTabUrl && (
-        <li>
+        <li className={classNames({ 'related-links-list-item': wideScreen })}>
           <Hyperlink destination={datesTabUrl} onClick={() => logLinkClicked('dates')}>
             {intl.formatMessage(messages.datesCardLink)}
           </Hyperlink>
@@ -44,7 +48,7 @@ const RelatedLinks = ({ intl }) => {
         </li>
         )}
         {overviewTabUrl && (
-        <li>
+        <li className={classNames({ 'related-links-list-item': wideScreen })}>
           <Hyperlink destination={overviewTabUrl} onClick={() => logLinkClicked('course_outline')}>
             {intl.formatMessage(messages.outlineCardLink)}
           </Hyperlink>
