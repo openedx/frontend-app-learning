@@ -101,13 +101,16 @@ describe('Hooks', () => {
       const skipLink = screen.getByRole('link', { name: /skip to content/i });
       const targetContent = screen.getByTestId('target-content');
 
-      delete targetContent.focus;
+      jest.spyOn(targetContent, 'focus').mockImplementationOnce(() => {
+        throw new Error('focus is not a function');
+      });
 
-      userEvent.click(skipLink);
+      await userEvent.click(skipLink);
 
       await waitFor(() => {
         expect(global.scrollTo).toHaveBeenCalledWith({
-          top: expect.any(Number), behavior: 'smooth',
+          top: expect.any(Number),
+          behavior: 'smooth',
         });
       });
 
@@ -120,9 +123,10 @@ describe('Hooks', () => {
 
       const skipLink = screen.getByRole('link', { name: /skip to content/i });
 
-      document.getElementById('main-content').remove();
+      const targetElement = document.getElementById('main-content');
+      targetElement?.parentNode?.removeChild(targetElement);
 
-      userEvent.click(skipLink);
+      await userEvent.click(skipLink);
 
       await waitFor(() => {
         // eslint-disable-next-line no-console
