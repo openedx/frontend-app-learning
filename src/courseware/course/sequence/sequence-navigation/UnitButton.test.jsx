@@ -133,6 +133,7 @@ describe('Unit Button', () => {
         <UnitButton {...mockData} />
         <button id="bookmark-button" type="button">Bookmark</button>
       </>,
+      { wrapWithRouter: true },
     );
 
     const bookmarkButton = container.querySelector('#bookmark-button');
@@ -169,6 +170,7 @@ describe('Unit Button', () => {
         <UnitButton {...mockData} />
         <button id="bookmark-button" type="button">Bookmark</button>
       </>,
+      { wrapWithRouter: true },
     );
 
     jest.advanceTimersByTime(200);
