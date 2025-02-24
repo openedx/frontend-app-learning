@@ -1,5 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useWindowSize, breakpoints } from '@openedx/paragon';
+import classNames from 'classnames';
 
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 
@@ -14,6 +16,7 @@ const CourseHandouts = ({ intl }) => {
   const {
     handoutsHtml,
   } = useModel('outline', courseId);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   if (!handoutsHtml) {
     return null;
@@ -23,7 +26,7 @@ const CourseHandouts = ({ intl }) => {
     <section className="mb-4">
       <h2 className="h4">{intl.formatMessage(messages.handouts)}</h2>
       <LmsHtmlFragment
-        className="small"
+        className={classNames({ small: !wideScreen })}
         html={handoutsHtml}
         title={intl.formatMessage(messages.handouts)}
       />
