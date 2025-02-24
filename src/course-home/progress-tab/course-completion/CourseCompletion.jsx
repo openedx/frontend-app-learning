@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { breakpoints, useWindowSize } from '@edx/paragon';
+import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import CompletionDonutChart from './CompletionDonutChart';
 import messages from './messages';
