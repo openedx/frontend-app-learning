@@ -1,5 +1,7 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import userEvent from '@testing-library/user-event';
+import { act, waitFor } from '@testing-library/react';
 import {
   fireEvent, initializeTestStore, render, screen,
 } from '../../../../setupTest';
@@ -121,5 +123,60 @@ describe('Unit Button', () => {
     expect(document.activeElement).toBe(bookmarkButton);
 
     document.body.removeChild(bookmarkButton);
+  });
+
+  it('focuses bookmark-button after pressing Enter or Space', async () => {
+    jest.useFakeTimers();
+
+    const { container } = render(
+      <>
+        <UnitButton {...mockData} />
+        <button id="bookmark-button" type="button">Bookmark</button>
+      </>,
+    );
+
+    const bookmarkButton = container.querySelector('#bookmark-button');
+    bookmarkButton.focus();
+
+    jest.advanceTimersByTime(200);
+
+    await act(async () => {
+      await userEvent.keyboard('{Enter}');
+    });
+
+    await waitFor(() => {
+      expect(document.activeElement.id).toBe('bookmark-button');
+    });
+
+    bookmarkButton.focus();
+
+    await act(async () => {
+      await userEvent.keyboard('{Space}');
+    });
+
+    await waitFor(() => {
+      expect(document.activeElement.id).toBe('bookmark-button');
+    });
+
+    jest.useRealTimers();
+  });
+
+  it('not focuses bookmark-button after pressing other keys', async () => {
+    jest.useFakeTimers();
+
+    const { getByRole } = render(
+      <>
+        <UnitButton {...mockData} />
+        <button id="bookmark-button" type="button">Bookmark</button>
+      </>,
+    );
+
+    jest.advanceTimersByTime(200);
+
+    await userEvent.keyboard('{A}');
+
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Bookmark' })).not.toHaveFocus();
+    });
   });
 });
