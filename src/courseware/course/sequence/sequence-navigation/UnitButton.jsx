@@ -75,6 +75,7 @@ const UnitButton = ({
       {bookmarked ? (
         <BookmarkFilledIcon
           className="unit-filled-bookmark text-primary small position-absolute"
+          data-testid="bookmark-icon"
           style={{
             top: '-3px', right: '2px', height: '20px', width: '20px',
           }}

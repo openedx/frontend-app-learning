@@ -34,16 +34,16 @@ describe('Unit Button', () => {
 
   it('hides title by default', () => {
     render(<UnitButton {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByRole('link')).not.toHaveTextContent(unit.display_name);
+    expect(screen.getByRole('tabpanel')).not.toHaveTextContent(unit.display_name);
   });
 
   it('shows title', () => {
-    render(<UnitButton {...mockData} showTitle />);
+    render(<UnitButton {...mockData} showTitle />, { wrapWithRouter: true });
     expect(screen.getByRole('tabpanel')).toHaveTextContent(unit.display_name);
   });
 
   it('check button attributes', () => {
-    render(<UnitButton {...mockData} showTitle />);
+    render(<UnitButton {...mockData} showTitle />, { wrapWithRouter: true });
     expect(screen.getByRole('tabpanel')).toHaveAttribute('id', `${unit.display_name}-${courseMetadata.id}`);
     expect(screen.getByRole('tabpanel')).toHaveAttribute('aria-controls', unit.display_name);
     expect(screen.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', unit.display_name);
@@ -51,7 +51,7 @@ describe('Unit Button', () => {
   });
 
   it('button with isActive prop has tabindex 0', () => {
-    render(<UnitButton {...mockData} isActive />);
+    render(<UnitButton {...mockData} isActive />, { wrapWithRouter: true });
     expect(screen.getByRole('tabpanel')).toHaveAttribute('tabindex', '0');
   });
 
@@ -93,7 +93,33 @@ describe('Unit Button', () => {
   it('handles the click', () => {
     const onClick = jest.fn();
     render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
-    fireEvent.click(screen.getByRole('link'));
+    fireEvent.click(screen.getByRole('tabpanel'));
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('handles keydown events for Enter and Space and focuses bookmark button', async () => {
+    const onClick = jest.fn();
+    render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
+
+    const button = screen.getByRole('tabpanel');
+
+    fireEvent.keyDown(button, { key: 'Enter' });
+    expect(onClick).toHaveBeenCalledTimes(1);
+
+    fireEvent.keyDown(button, { key: ' ' });
+    expect(onClick).toHaveBeenCalledTimes(2);
+
+    const bookmarkButton = document.createElement('button');
+    bookmarkButton.id = 'bookmark-button';
+    document.body.appendChild(bookmarkButton);
+
+    fireEvent.keyDown(button, { key: 'Enter' });
+
+    // eslint-disable-next-line no-promise-executor-return
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    expect(document.activeElement).toBe(bookmarkButton);
+
+    document.body.removeChild(bookmarkButton);
   });
 });

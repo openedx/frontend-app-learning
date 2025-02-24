@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { useScrollToContent, useEventListener, useIFrameHeight } from './hooks';
 
 global.scrollTo = jest.fn();
+global.console.warn = jest.fn();
 
 describe('Hooks', () => {
   test('useEventListener', async () => {
@@ -92,6 +93,41 @@ describe('Hooks', () => {
         });
       });
       expect(targetContent.focus).toHaveBeenCalled();
+    });
+
+    test('should warn if element is not focusable', async () => {
+      render(<TestComponent />);
+
+      const skipLink = screen.getByRole('link', { name: /skip to content/i });
+      const targetContent = screen.getByTestId('target-content');
+
+      delete targetContent.focus;
+
+      userEvent.click(skipLink);
+
+      await waitFor(() => {
+        expect(global.scrollTo).toHaveBeenCalledWith({
+          top: expect.any(Number), behavior: 'smooth',
+        });
+      });
+
+      // eslint-disable-next-line no-console
+      expect(console.warn).toHaveBeenCalledWith('Element with ID "main-content" exists but is not focusable.');
+    });
+
+    test('should warn if target element is not found', async () => {
+      render(<TestComponent />);
+
+      const skipLink = screen.getByRole('link', { name: /skip to content/i });
+
+      document.getElementById('main-content').remove();
+
+      userEvent.click(skipLink);
+
+      await waitFor(() => {
+        // eslint-disable-next-line no-console
+        expect(console.warn).toHaveBeenCalledWith('Element with ID "main-content" not found.');
+      });
     });
   });
 });
