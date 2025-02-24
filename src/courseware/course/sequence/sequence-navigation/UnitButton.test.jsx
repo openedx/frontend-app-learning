@@ -28,6 +28,7 @@ describe('Unit Button', () => {
     mockData = {
       unitId: unit.id,
       onClick: () => {},
+      unitIndex: courseMetadata.id,
     };
   });
 
@@ -37,8 +38,21 @@ describe('Unit Button', () => {
   });
 
   it('shows title', () => {
-    render(<UnitButton {...mockData} showTitle />, { wrapWithRouter: true });
-    expect(screen.getByRole('link')).toHaveTextContent(unit.display_name);
+    render(<UnitButton {...mockData} showTitle />);
+    expect(screen.getByRole('tabpanel')).toHaveTextContent(unit.display_name);
+  });
+
+  it('check button attributes', () => {
+    render(<UnitButton {...mockData} showTitle />);
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('id', `${unit.display_name}-${courseMetadata.id}`);
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('aria-controls', unit.display_name);
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', unit.display_name);
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('button with isActive prop has tabindex 0', () => {
+    render(<UnitButton {...mockData} isActive />);
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('tabindex', '0');
   });
 
   it('does not show completion for non-completed unit', () => {

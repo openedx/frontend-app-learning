@@ -1,5 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { useEventListener, useIFrameHeight } from './hooks';
+import userEvent from '@testing-library/user-event';
+import { useScrollToContent, useEventListener, useIFrameHeight } from './hooks';
+
+global.scrollTo = jest.fn();
 
 describe('Hooks', () => {
   test('useEventListener', async () => {
@@ -41,5 +44,54 @@ describe('Hooks', () => {
     await waitFor(() => expect(onLoaded).toHaveBeenCalled());
     await waitFor(() => expect(screen.getByTestId('loaded')).toHaveTextContent('true'));
     expect(screen.getByTestId('height')).toHaveTextContent('1234');
+  });
+  describe('useScrollToContent', () => {
+    const TestComponent = () => {
+      useScrollToContent();
+      return (
+        <>
+          <a href="#main-content" data-testid="skip-link">Skip to content</a>
+          <div id="main-content" tabIndex={-1} data-testid="target-content">Main Content</div>
+        </>
+      );
+    };
+
+    test('should scroll to target element and focus', async () => {
+      render(<TestComponent />);
+
+      const skipLink = screen.getByRole('link', { name: /skip to content/i });
+      const targetContent = screen.getByTestId('target-content');
+
+      targetContent.focus = jest.fn();
+
+      userEvent.click(skipLink);
+
+      await waitFor(() => {
+        expect(global.scrollTo).toHaveBeenCalledWith({
+          top: expect.any(Number), behavior: 'smooth',
+        });
+      });
+      expect(targetContent.focus).toHaveBeenCalled();
+    });
+
+    test('should trigger on "Enter" key', async () => {
+      render(<TestComponent />);
+
+      const skipLink = screen.getByRole('link', { name: /skip to content/i });
+      const targetContent = screen.getByTestId('target-content');
+
+      targetContent.focus = jest.fn();
+
+      skipLink.focus();
+
+      await userEvent.keyboard('{Enter}');
+
+      await waitFor(() => {
+        expect(global.scrollTo).toHaveBeenCalledWith({
+          top: expect.any(Number), behavior: 'smooth',
+        });
+      });
+      expect(targetContent.focus).toHaveBeenCalled();
+    });
   });
 });
