@@ -3,6 +3,8 @@ frontend-app-learning
 
 |codecov| |license|
 
+some text
+
 Purpose
 *******
 
