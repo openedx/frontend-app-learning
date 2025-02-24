@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { Form, Card, Icon } from '@openedx/paragon';
+import {
+  Form, Card, Icon, useWindowSize, breakpoints,
+} from '@openedx/paragon';
+import classNames from 'classnames';
 import { history } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -23,6 +26,7 @@ const WeeklyLearningGoalCard = ({
   const {
     courseId,
   } = useSelector(state => state.courseHome);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const {
     isMasquerading,
@@ -94,11 +98,11 @@ const WeeklyLearningGoalCard = ({
       data-testid="weekly-learning-goal-card"
     >
       <Card.Header
-        size="sm"
+        size={!wideScreen ? 'sm' : 'md'}
         title={(<div id="set-weekly-goal-header">{intl.formatMessage(messages.setWeeklyGoal)}</div>)}
         subtitle={intl.formatMessage(messages.setWeeklyGoalDetail)}
       />
-      <Card.Section className="text-gray-700 small">
+      <Card.Section className={classNames('text-gray-700', { small: !wideScreen })}>
         <div
           role="radiogroup"
           aria-labelledby="set-weekly-goal-header"
@@ -125,14 +129,17 @@ const WeeklyLearningGoalCard = ({
             checked={isGetReminderSelected}
             onChange={(event) => handleSubscribeToReminders(event)}
             disabled={!daysPerWeekGoal}
+            className={classNames({ small: !wideScreen })}
           >
-            <small>{intl.formatMessage(messages.setGoalReminder)}</small>
+            {wideScreen
+              ? intl.formatMessage(messages.setGoalReminder)
+              : <small>{intl.formatMessage(messages.setGoalReminder)}</small>}
           </Form.Switch>
         </div>
       </Card.Section>
       {isGetReminderSelected && (
         <Card.Section muted>
-          <div className="row w-100 m-0 small align-center">
+          <div className="row w-100 m-0 align-center">
             <div className="d-flex align-items-center pr-1">
               <Icon
                 className="text-primary-500"
