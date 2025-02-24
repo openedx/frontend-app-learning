@@ -13,11 +13,16 @@ import SuggestedScheduleHeader from '../suggested-schedule-messaging/SuggestedSc
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpgradeToCompleteAlert from '../suggested-schedule-messaging/UpgradeToCompleteAlert';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
+import { useScrollToContent } from '../../generic/hooks';
+
+const MAIN_CONTENT_ID = 'main-content-heading';
 
 const DatesTab = ({ intl }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
+
+  useScrollToContent(MAIN_CONTENT_ID);
 
   const {
     isSelfPaced,
@@ -43,7 +48,7 @@ const DatesTab = ({ intl }) => {
 
   return (
     <>
-      <div role="heading" aria-level="1" className="h2 my-3">
+      <div id={MAIN_CONTENT_ID} tabIndex="-1" role="heading" aria-level="1" className="h2 my-3">
         {intl.formatMessage(messages.title)}
       </div>
       {isSelfPaced && hasDeadlines && (
