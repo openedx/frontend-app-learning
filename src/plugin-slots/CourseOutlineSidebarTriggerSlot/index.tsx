@@ -5,7 +5,6 @@ import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import CourseOutlineTrigger from '../../courseware/course/sidebar/sidebars/course-outline/CourseOutlineTrigger';
 
 interface Props {
-  courseId: string;
   sectionId?: string;
   sequenceId?: string;
   unitId?: string;
@@ -13,7 +12,7 @@ interface Props {
 }
 
 export const CourseOutlineSidebarTriggerSlot : React.FC<Props> = ({
-  courseId, sectionId, sequenceId, unitId, isStaff,
+  sectionId, sequenceId, unitId, isStaff,
 }) => (
   <PluginSlot
     id="course_outline_sidebar_trigger_slot"
@@ -21,7 +20,6 @@ export const CourseOutlineSidebarTriggerSlot : React.FC<Props> = ({
       mergeProps: true,
     }}
     pluginProps={{
-      courseId,
       sectionId,
       sequenceId,
       unitId,

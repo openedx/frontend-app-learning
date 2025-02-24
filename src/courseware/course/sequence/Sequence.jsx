@@ -163,7 +163,6 @@ const Sequence = ({
     <>
       <div className="sequence-container d-inline-flex flex-row w-100">
         <CourseOutlineSidebarTriggerSlot
-          courseId={courseId}
           sectionId={section ? section.id : null}
           sequenceId={sequenceId}
           isStaff={isStaff}
