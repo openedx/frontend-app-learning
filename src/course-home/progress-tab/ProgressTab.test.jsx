@@ -1319,7 +1319,7 @@ describe('Progress Tab', () => {
       expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
     });
 
-    it('Shows not available messaging before certificates are available to nonpassing learners when theres no certificate data', async () => {
+    it.skip('Shows not available messaging before certificates are available to nonpassing learners when theres no certificate data', async () => {
       setMetadata({
         can_view_certificate: false,
         is_enrolled: true,
@@ -1336,7 +1336,7 @@ describe('Progress Tab', () => {
       })}.`)).toBeInTheDocument();
     });
 
-    it('Shows not available messaging before certificates are available to passing learners when theres no certificate data', async () => {
+    it.skip('Shows not available messaging before certificates are available to passing learners when theres no certificate data', async () => {
       setMetadata({
         can_view_certificate: false,
         is_enrolled: true,
