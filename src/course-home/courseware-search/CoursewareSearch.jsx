@@ -81,18 +81,29 @@ const CoursewareSearch = ({ ...sectionProps }) => {
 
   const handlePopState = () => close();
 
+  const handleBackdropClick = function (event) {
+    if (event.target === dialogRef.current) {
+      dialogRef.current.close();
+    }
+  };
+
   useEffect(() => {
+    // We need this to keep the dialog reference when unmounting.
+    const dialog = dialogRef.current;
+
     // Open the dialog as a modal on render to confine focus within it.
     dialogRef.current.showModal();
 
     if (searchKeyword) {
-      handleSubmit(searchKeyword); // In case it's opened with a search link.
+      handleSubmit(searchKeyword); // In case it's opened with a search link, we run the search.
     }
 
     window.addEventListener('popstate', handlePopState);
+    dialog.addEventListener('click', handleBackdropClick);
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
+      dialog.removeEventListener('click', handleBackdropClick);
     };
   }, []);
 
