@@ -1,6 +1,11 @@
 # Course Outline Sidebar Trigger Slot
 
 ### Slot ID: `course_outline_sidebar_trigger_slot`
+### Props:
+* `sectionId`
+* `sequenceId`
+* `unitId`
+* `isStaff`
 
 ## Description
 
