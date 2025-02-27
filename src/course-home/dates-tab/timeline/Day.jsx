@@ -8,7 +8,9 @@ import {
   injectIntl,
   intlShape,
 } from '@edx/frontend-platform/i18n';
-import { Tooltip, OverlayTrigger } from '@openedx/paragon';
+import {
+  Tooltip, OverlayTrigger, breakpoints, useWindowSize,
+} from '@openedx/paragon';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -30,6 +32,7 @@ const Day = ({
   const {
     userTimezone,
   } = useModel('courseHomeMeta', courseId);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
@@ -69,9 +72,13 @@ const Day = ({
           const textColor = available ? 'text-primary-700' : 'text-gray-500';
 
           return (
-            <div key={item.title + item.date} className={classNames(textColor, 'small pb-1')} data-testid="dates-item">
+            <div
+              key={item.title + item.date}
+              className={classNames(textColor, 'pb-1', { small: !wideScreen })}
+              data-testid="dates-item"
+            >
               <div>
-                <span className="small">
+                <span className={classNames({ small: !wideScreen })}>
                   <span className="font-weight-bold">{item.assignmentType && `${item.assignmentType}: `}{title}</span>
                   {showDueDateTime && (
                     <span>
@@ -96,7 +103,11 @@ const Day = ({
                   </OverlayTrigger>
                 )}
               </div>
-              {item.description && <div className="small mb-2">{item.description}</div>}
+              {item.description && (
+                <div className={classNames('mb-2', { small: !wideScreen })}>
+                  {item.description}
+                </div>
+              )}
             </div>
           );
         })}

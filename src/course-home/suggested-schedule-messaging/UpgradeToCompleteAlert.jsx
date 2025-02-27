@@ -1,12 +1,15 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import {
   Alert,
   Button,
   Col,
   Row,
+  breakpoints,
+  useWindowSize,
 } from '@openedx/paragon';
 
 import { useModel } from '../../generic/model-store';
@@ -16,6 +19,7 @@ const UpgradeToCompleteAlert = ({ intl, logUpgradeLinkClick }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const {
     datesBannerInfo,
@@ -35,14 +39,18 @@ const UpgradeToCompleteAlert = ({ intl, logUpgradeLinkClick }) => {
   return (
     <Alert className="bg-light-200">
       <Row className="w-100 m-0">
-        <Col xs={12} md={9} className="small p-0 pr-md-2">
-          <Alert.Heading>{intl.formatMessage(messages.upgradeToCompleteHeader)}</Alert.Heading>
-          {intl.formatMessage(messages.upgradeToCompleteBody)}
+        <Col xs={12} md={9} className={classNames('p-0 pr-md-2', { small: !wideScreen })}>
+          <Alert.Heading className={classNames({ 'upgrade-to-complete-alert-title': wideScreen })}>
+            {intl.formatMessage(messages.upgradeToCompleteHeader)}
+          </Alert.Heading>
+          <p className={classNames({ 'upgrade-to-complete-alert-text m-0': wideScreen })}>
+            {intl.formatMessage(messages.upgradeToCompleteBody)}
+          </p>
         </Col>
         <Col xs={12} md={3} className="align-self-center text-right mt-3 mt-md-0 p-0">
           <Button
             variant="brand"
-            size="sm"
+            size={!wideScreen ? 'sm' : 'md'}
             className="w-xs-100 w-md-auto"
             onClick={() => {
               logUpgradeLinkClick();
