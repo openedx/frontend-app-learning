@@ -14,6 +14,7 @@ import {
   getCourseOutlineStatus,
   getSequenceId,
   getCourseOutline,
+  getSequenceStatus,
 } from '@src/courseware/data/selectors';
 import { ID } from './constants';
 
@@ -24,6 +25,7 @@ export const useCourseOutlineSidebar = () => {
   const { enableNavigationSidebar: isEnabledSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
   const courseOutlineShouldUpdate = useSelector(getCourseOutlineShouldUpdate);
   const courseOutlineStatus = useSelector(getCourseOutlineStatus);
+  const sequenceStatus = useSelector(getSequenceStatus);
   const activeSequenceId = useSelector(getSequenceId);
   const { sections = {}, sequences = {}, units = {} } = useSelector(getCourseOutline);
 
@@ -113,5 +115,6 @@ export const useCourseOutlineSidebar = () => {
     sequences,
     units,
     handleUnitClick,
+    sequenceStatus,
   };
 };
