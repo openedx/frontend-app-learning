@@ -98,13 +98,13 @@ const CoursewareSearch = ({ ...sectionProps }) => {
       handleSubmit(searchKeyword); // In case it's opened with a search link, we run the search.
     }
 
-    window.addEventListener('popstate', handlePopState);
-    dialog.addEventListener('click', handleBackdropClick);
+    const controller = new AbortController();
+    const { signal } = controller;
 
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-      dialog.removeEventListener('click', handleBackdropClick);
-    };
+    window.addEventListener('popstate', handlePopState, { signal });
+    dialog.addEventListener('click', handleBackdropClick, { signal });
+
+    return () => controller.abort(); // Removes event listeners.
   }, []);
 
   const handleSearchClose = () => close();
