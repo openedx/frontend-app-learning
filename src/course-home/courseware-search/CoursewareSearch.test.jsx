@@ -103,20 +103,7 @@ const mockSearchParams = ((params) => {
 });
 
 describe('CoursewareSearch', () => {
-  beforeAll(() => {
-    // jsdom does not support HTML Dialogs yet: https://github.com/jsdom/jsdom/issues/3294
-    HTMLDialogElement.prototype.show = jest.fn();
-    HTMLDialogElement.prototype.showModal = jest.fn(function mock() {
-      const onShowModal = new CustomEvent('show_modal');
-      this.dispatchEvent(onShowModal);
-    });
-    HTMLDialogElement.prototype.close = jest.fn(function mock() {
-      const onClose = new CustomEvent('close');
-      this.dispatchEvent(onClose);
-    });
-
-    initializeMockApp();
-  });
+  beforeAll(() => initializeMockApp());
 
   beforeEach(() => {
     mockModels();
@@ -142,7 +129,7 @@ describe('CoursewareSearch', () => {
     it('should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
       renderComponent();
 
-      const section = screen.getByTestId('courseware-search-section');
+      const section = screen.getByTestId('courseware-search-dialog');
       expect(section.style.getPropertyValue('--modal-top-position')).toBe(`${tabsTopPosition}px`);
     });
   });
@@ -167,7 +154,7 @@ describe('CoursewareSearch', () => {
 
       renderComponent();
 
-      const section = screen.getByTestId('courseware-search-section');
+      const section = screen.getByTestId('courseware-search-dialog');
       expect(section.style.getPropertyValue('--modal-top-position')).toBe('0');
     });
   });
@@ -176,7 +163,7 @@ describe('CoursewareSearch', () => {
     it('should pass on extra props to section element', () => {
       renderComponent({ foo: 'bar' });
 
-      const section = screen.getByTestId('courseware-search-section');
+      const section = screen.getByTestId('courseware-search-dialog');
       expect(section).toHaveAttribute('foo', 'bar');
     });
   });

@@ -119,7 +119,7 @@ const CoursewareSearch = ({ ...sectionProps }) => {
   }
 
   return (
-    <dialog ref={dialogRef} className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-section" onClose={handleSearchClose} {...sectionProps}>
+    <dialog ref={dialogRef} className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-dialog" onClose={handleSearchClose} {...sectionProps}>
       <div className="courseware-search__outer-content">
         <div className="courseware-search__content" data-testid="courseware-search-content">
           <div className="courseware-search__form">

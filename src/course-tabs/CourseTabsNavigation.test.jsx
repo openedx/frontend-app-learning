@@ -73,13 +73,13 @@ describe('Course Tabs Navigation', () => {
   it('should NOT render CoursewareSearch if the flag is off', () => {
     renderComponent();
 
-    expect(screen.queryByTestId('courseware-search-section')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('courseware-search-dialog')).not.toBeInTheDocument();
   });
 
   it('should render CoursewareSearch if the flag is on', () => {
     useCoursewareSearchState.mockImplementation(() => ({ show: true }));
     renderComponent();
 
-    expect(screen.queryByTestId('courseware-search-section')).toBeInTheDocument();
+    expect(screen.queryByTestId('courseware-search-dialog')).toBeInTheDocument();
   });
 });
