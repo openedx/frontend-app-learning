@@ -14,6 +14,7 @@ interface Props {
   onClickHandler: () => void;
   variant: string;
   buttonStyle: string;
+  isAtTop: boolean;
 }
 
 export const NextUnitTopNavTriggerSlot : React.FC<Props> = ({
@@ -25,6 +26,7 @@ export const NextUnitTopNavTriggerSlot : React.FC<Props> = ({
   onClickHandler,
   variant,
   buttonStyle,
+  isAtTop,
 }) => (
   <PluginSlot
     id="next_unit_top_nav_trigger_slot"
@@ -47,6 +49,7 @@ export const NextUnitTopNavTriggerSlot : React.FC<Props> = ({
         nextLink,
         disabled,
         buttonText,
+        isAtTop,
       }}
     />
   </PluginSlot>

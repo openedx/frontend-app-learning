@@ -336,6 +336,11 @@
     gap: $spacer;
   }
 
+  .previous-icon-button,
+  .next-icon-button {
+    font-size: 1.5rem;
+  }
+
   .previous-button,
   .next-button {
     border-radius: 4px;

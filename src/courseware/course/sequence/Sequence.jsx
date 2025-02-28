@@ -196,6 +196,7 @@ const Sequence = ({
           )}
 
           <div className="unit-container flex-grow-1 pt-4">
+            {isEnabledOutlineSidebar && renderUnitNavigation(true)}
             <SequenceContent
               courseId={courseId}
               gated={gated}
@@ -223,7 +224,6 @@ const Sequence = ({
           originalUserIsStaff={originalUserIsStaff}
           canAccessProctoredExams={canAccessProctoredExams}
         >
-          {isEnabledOutlineSidebar && renderUnitNavigation(true)}
           {defaultContent}
         </SequenceExamWrapper>
         <CourseLicense license={license || undefined} />

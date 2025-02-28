@@ -23,23 +23,31 @@ const UnitNavigation = ({
     isFirstUnit, isLastUnit, nextLink, previousLink,
   } = useSequenceNavigationMetadata(sequenceId, unitId);
 
-  const renderPreviousButton = () => (
-    <PreviousButton
-      isFirstUnit={isFirstUnit}
-      variant="outline-secondary"
-      buttonLabel={intl.formatMessage(messages.previousButton)}
-      buttonStyle="previous-button justify-content-center"
-      onClick={onClickPrevious}
-      previousLink={previousLink}
-    />
-  );
+  const renderPreviousButton = () => {
+    const buttonStyle = isAtTop
+      ? 'previous-icon-button text-dark mr-4'
+      : 'previous-button justify-content-center';
+    return (
+      <PreviousButton
+        isFirstUnit={isFirstUnit}
+        variant="outline-secondary"
+        buttonLabel={intl.formatMessage(messages.previousButton)}
+        buttonStyle={buttonStyle}
+        onClick={onClickPrevious}
+        previousLink={previousLink}
+        isAtTop={isAtTop}
+      />
+    );
+  };
 
   const renderNextButton = () => {
     const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
     const variant = 'outline-primary';
-    const buttonStyle = 'next-button justify-content-center';
+    const buttonStyle = isAtTop
+      ? 'next-icon-button text-dark'
+      : 'next-button justify-content-center';
 
     if (isAtTop) {
       return (
@@ -53,6 +61,7 @@ const UnitNavigation = ({
             sequenceId,
             nextLink,
             onClickHandler: onClickNext,
+            isAtTop,
           }}
         />
       );
