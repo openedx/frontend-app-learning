@@ -19,6 +19,7 @@ import { updateModel, useModel } from '../../generic/model-store';
 
 jest.mock('./hooks');
 jest.mock('../../generic/model-store', () => ({
+  ...jest.requireActual('../../generic/model-store'),
   updateModel: jest.fn(),
   useModel: jest.fn(),
 }));
@@ -56,7 +57,7 @@ const defaultProps = {
   total: 0,
 };
 
-const coursewareSearch = {
+const defaultSearchParams = {
   query: '',
   filter: '',
   setQuery: jest.fn(),
@@ -96,14 +97,20 @@ const mockModels = ((props = defaultProps) => {
   });
 });
 
-const mockSearchParams = ((props = coursewareSearch) => {
+const mockSearchParams = ((params) => {
+  const props = { ...defaultSearchParams, ...params };
   useCoursewareSearchParams.mockReturnValue(props);
 });
 
 describe('CoursewareSearch', () => {
-  beforeAll(initializeMockApp);
+  beforeAll(() => initializeMockApp());
 
   beforeEach(() => {
+    mockModels();
+    mockSearchParams();
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
@@ -113,27 +120,22 @@ describe('CoursewareSearch', () => {
     });
 
     it('should use useElementBoundingBox() and useLockScroll() hooks', () => {
-      mockModels();
-      mockSearchParams();
       renderComponent();
 
-      expect(useElementBoundingBox).toBeCalledTimes(1);
-      expect(useLockScroll).toBeCalledTimes(1);
+      expect(useElementBoundingBox).toHaveBeenCalledTimes(1);
+      expect(useLockScroll).toHaveBeenCalledTimes(1);
     });
 
     it('should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
-      mockModels();
-      mockSearchParams();
       renderComponent();
 
-      const section = screen.getByTestId('courseware-search-section');
+      const section = screen.getByTestId('courseware-search-dialog');
       expect(section.style.getPropertyValue('--modal-top-position')).toBe(`${tabsTopPosition}px`);
     });
   });
 
   describe('when clicking on the "Close" button', () => {
-    it('should dispatch setShowSearch(false)', async () => {
-      mockModels();
+    it('should close the dialog', async () => {
       renderComponent();
 
       await waitFor(() => {
@@ -141,7 +143,8 @@ describe('CoursewareSearch', () => {
         fireEvent.click(close);
       });
 
-      expect(setShowSearch).toBeCalledWith(false);
+      expect(HTMLDialogElement.prototype.close).toHaveBeenCalled();
+      expect(setShowSearch).toHaveBeenCalledWith(false);
     });
   });
 
@@ -149,29 +152,24 @@ describe('CoursewareSearch', () => {
     it('should use "--modal-top-position: 0" if  nce element is not present', () => {
       useElementBoundingBox.mockImplementation(() => undefined);
 
-      mockModels();
-      mockSearchParams();
       renderComponent();
 
-      const section = screen.getByTestId('courseware-search-section');
+      const section = screen.getByTestId('courseware-search-dialog');
       expect(section.style.getPropertyValue('--modal-top-position')).toBe('0');
     });
   });
 
   describe('when passing extra props', () => {
     it('should pass on extra props to section element', () => {
-      mockModels();
-      mockSearchParams();
       renderComponent({ foo: 'bar' });
 
-      const section = screen.getByTestId('courseware-search-section');
+      const section = screen.getByTestId('courseware-search-dialog');
       expect(section).toHaveAttribute('foo', 'bar');
     });
   });
 
   describe('when submitting an empty search', () => {
     it('should clear the search by dispatch updateModel', async () => {
-      mockModels();
       renderComponent();
 
       await waitFor(() => {
@@ -203,7 +201,6 @@ describe('CoursewareSearch', () => {
     });
 
     it('should call searchCourseContent', async () => {
-      mockModels();
       renderComponent();
 
       const searchKeyword = 'course';
@@ -259,6 +256,7 @@ describe('CoursewareSearch', () => {
 
   describe('when clearing the search input', () => {
     it('should clear the search by dispatch updateModel', async () => {
+      mockSearchParams({ query: 'fubar' });
       mockModels({
         searchKeyword: 'fubar',
         total: 2,

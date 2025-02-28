@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Alert, Button, Icon, Spinner,
 } from '@openedx/paragon';
@@ -18,7 +18,8 @@ import CoursewareSearchResultsFilterContainer from './CoursewareResultsFilter';
 import { updateModel, useModel } from '../../generic/model-store';
 import { searchCourseContent } from '../data/thunks';
 
-const CoursewareSearch = ({ intl, ...sectionProps }) => {
+const CoursewareSearch = ({ ...sectionProps }) => {
+  const { formatMessage } = useIntl();
   const { courseId } = useParams();
   const { query: searchKeyword, setQuery, clearSearchParams } = useCoursewareSearchParams();
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
     errors,
     total,
   } = useModel('contentSearchResults', courseId);
+  const dialogRef = useRef();
 
   useLockScroll();
 
@@ -44,7 +46,8 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
         searchKeyword: '',
         results: [],
         errors: undefined,
-        loading: false,
+        loading:
+        false,
       },
     }));
   };
@@ -66,19 +69,45 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
     setQuery(value);
   };
 
-  useEffect(() => {
-    handleSubmit(searchKeyword);
-  }, []);
-
   const handleOnChange = (value) => {
     if (value === searchKeyword) { return; }
     if (!value) { clearSearch(); }
   };
 
-  const handleSearchCloseClick = () => {
+  const close = () => {
     clearSearch();
     dispatch(setShowSearch(false));
   };
+
+  const handlePopState = () => close();
+
+  const handleBackdropClick = function (event) {
+    if (event.target === dialogRef.current) {
+      dialogRef.current.close();
+    }
+  };
+
+  useEffect(() => {
+    // We need this to keep the dialog reference when unmounting.
+    const dialog = dialogRef.current;
+
+    // Open the dialog as a modal on render to confine focus within it.
+    dialogRef.current.showModal();
+
+    if (searchKeyword) {
+      handleSubmit(searchKeyword); // In case it's opened with a search link, we run the search.
+    }
+
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    window.addEventListener('popstate', handlePopState, { signal });
+    dialog.addEventListener('click', handleBackdropClick, { signal });
+
+    return () => controller.abort(); // Removes event listeners.
+  }, []);
+
+  const handleSearchClose = () => close();
 
   let status = 'idle';
   if (loading) {
@@ -90,34 +119,37 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
   }
 
   return (
-    <section className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-section" {...sectionProps}>
-      <div className="courseware-search__close">
-        <Button
-          variant="tertiary"
-          className="p-1"
-          aria-label={intl.formatMessage(messages.searchCloseAction)}
-          onClick={handleSearchCloseClick}
-          data-testid="courseware-search-close-button"
-        ><Icon src={Close} />
-        </Button>
-      </div>
+    <dialog ref={dialogRef} className="courseware-search" style={{ '--modal-top-position': top }} data-testid="courseware-search-dialog" onClose={handleSearchClose} {...sectionProps}>
       <div className="courseware-search__outer-content">
-        <div className="courseware-search__content">
-          <h1 className="h2">{intl.formatMessage(messages.searchModuleTitle)}</h1>
-          <CoursewareSearchForm
-            searchTerm={searchKeyword}
-            onSubmit={handleSubmit}
-            onChange={handleOnChange}
-            placeholder={intl.formatMessage(messages.searchBarPlaceholderText)}
-          />
+        <div className="courseware-search__content" data-testid="courseware-search-content">
+          <div className="courseware-search__form">
+            <h1 className="h2">{formatMessage(messages.searchModuleTitle)}</h1>
+            <CoursewareSearchForm
+              searchTerm={searchKeyword}
+              onSubmit={handleSubmit}
+              onChange={handleOnChange}
+              placeholder={formatMessage(messages.searchBarPlaceholderText)}
+            />
+            <div className="courseware-search__close">
+              <Button
+                variant="tertiary"
+                className="p-1"
+                aria-label={formatMessage(messages.searchCloseAction)}
+                onClick={() => dialogRef.current.close()}
+                data-testid="courseware-search-close-button"
+              ><Icon src={Close} />
+              </Button>
+            </div>
+          </div>
+
           {status === 'loading' ? (
             <div className="courseware-search__spinner" data-testid="courseware-search-spinner">
-              <Spinner animation="border" variant="light" screenReaderText={intl.formatMessage(messages.loading)} />
+              <Spinner animation="border" variant="light" screenReaderText={formatMessage(messages.loading)} />
             </div>
           ) : null}
           {status === 'error' && (
             <Alert className="mt-4" variant="danger" data-testid="courseware-search-error">
-              {intl.formatMessage(messages.searchResultsError)}
+              {formatMessage(messages.searchResultsError)}
             </Alert>
           )}
           {status === 'results' ? (
@@ -129,7 +161,7 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
                   aria-relevant="all"
                   aria-atomic="true"
                   data-testid="courseware-search-summary"
-                >{intl.formatMessage(messages.searchResultsLabel, { total, keyword: lastSearchKeyword })}
+                >{formatMessage(messages.searchResultsLabel, { total, keyword: lastSearchKeyword })}
                 </div>
               ) : null}
               <CoursewareSearchResultsFilterContainer />
@@ -137,12 +169,8 @@ const CoursewareSearch = ({ intl, ...sectionProps }) => {
           ) : null}
         </div>
       </div>
-    </section>
+    </dialog>
   );
 };
 
-CoursewareSearch.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(CoursewareSearch);
+export default CoursewareSearch;
