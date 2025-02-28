@@ -15,7 +15,7 @@
     "i18n_extract": "fedx-scripts formatjs extract",
     "lint": "fedx-scripts eslint --ext .js --ext .jsx --ext .ts --ext .tsx .",
     "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx --ext .ts --ext .tsx .",
-    "prepare": "husky install",
+    "prepare": "husky",
     "postinstall": "patch-package",
     "snapshot": "fedx-scripts jest --updateSnapshot",
     "start": "fedx-scripts webpack-dev-server --progress",
