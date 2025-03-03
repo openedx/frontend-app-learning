@@ -84,7 +84,7 @@
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "12.1.5",
     "@testing-library/react-hooks": "^8.0.1",
-    "@testing-library/user-event": "14.5.2",
+    "@testing-library/user-event": "14.6.1",
     "axios-mock-adapter": "2.1.0",
     "bundlewatch": "^0.4.0",
     "eslint-import-resolver-webpack": "^0.13.9",
