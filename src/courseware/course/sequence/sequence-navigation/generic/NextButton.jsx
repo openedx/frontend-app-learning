@@ -53,6 +53,7 @@ const NextButton = ({
         src={nextArrow}
         disabled={disabled}
         iconAs={Icon}
+        alt={buttonText}
       />
     );
   }

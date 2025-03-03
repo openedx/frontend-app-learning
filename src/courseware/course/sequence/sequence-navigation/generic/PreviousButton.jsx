@@ -46,6 +46,7 @@ const PreviousButton = ({
         src={prevArrow}
         disabled={disabled}
         iconAs={Icon}
+        alt={buttonLabel}
       />
     );
   }
