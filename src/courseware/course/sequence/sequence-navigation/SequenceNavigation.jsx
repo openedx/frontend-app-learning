@@ -88,7 +88,6 @@ const SequenceNavigation = ({
     return navigationDisabledNextSequence || (
       <NextUnitTopNavTriggerSlot
         {...{
-          courseId,
           disabled,
           buttonText,
           nextLink,

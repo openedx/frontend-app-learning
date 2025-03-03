@@ -21,18 +21,22 @@ exports[`Unit component output snapshot: not bookmarked, do not show content 1`]
   className="unit"
 >
   <div
-    className="mb-0"
+    className="d-flex justify-content-between align-items-center"
   >
-    <h3
-      className="h3"
+    <div
+      className="mb-0"
     >
-      unit-title
-    </h3>
-    <UnitTitleSlot
-      courseId="test-course-id"
-      unitId="test-props-id"
-      unitTitle="unit-title"
-    />
+      <h3
+        className="h3"
+      >
+        unit-title
+      </h3>
+      <UnitTitleSlot
+        courseId="test-course-id"
+        unitId="test-props-id"
+        unitTitle="unit-title"
+      />
+    </div>
   </div>
   <p
     className="sr-only"

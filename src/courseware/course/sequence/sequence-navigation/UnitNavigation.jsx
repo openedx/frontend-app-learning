@@ -23,29 +23,32 @@ const UnitNavigation = ({
     isFirstUnit, isLastUnit, nextLink, previousLink,
   } = useSequenceNavigationMetadata(sequenceId, unitId);
 
-  const renderPreviousButton = () => (
-    <PreviousButton
-      isFirstUnit={isFirstUnit}
-      variant="outline-secondary"
-      buttonLabel={intl.formatMessage(messages.previousButton)}
-      buttonStyle="previous-button justify-content-center"
-      onClick={onClickPrevious}
-      previousLink={previousLink}
-    />
-  );
+  const renderPreviousButton = () => {
+    const buttonStyle = `previous-button ${isAtTop ? 'text-dark mr-3' : 'justify-content-center'}`;
+    return (
+      <PreviousButton
+        isFirstUnit={isFirstUnit}
+        variant="outline-secondary"
+        buttonLabel={intl.formatMessage(messages.previousButton)}
+        buttonStyle={buttonStyle}
+        onClick={onClickPrevious}
+        previousLink={previousLink}
+        isAtTop={isAtTop}
+      />
+    );
+  };
 
   const renderNextButton = () => {
     const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
     const variant = 'outline-primary';
-    const buttonStyle = 'next-button justify-content-center';
+    const buttonStyle = `next-button ${isAtTop ? 'text-dark' : 'justify-content-center'}`;
 
     if (isAtTop) {
       return (
         <NextUnitTopNavTriggerSlot
           {...{
-            courseId,
             variant,
             buttonStyle,
             buttonText,
@@ -53,6 +56,7 @@ const UnitNavigation = ({
             sequenceId,
             nextLink,
             onClickHandler: onClickNext,
+            isAtTop,
           }}
         />
       );
@@ -72,7 +76,11 @@ const UnitNavigation = ({
   };
 
   return (
-    <div className={classNames('unit-navigation d-flex', { 'top-unit-navigation mb-3 w-100': isAtTop })}>
+    <div className={classNames('d-flex', {
+      'unit-navigation': !isAtTop,
+      'top-unit-navigation': isAtTop,
+    })}
+    >
       {renderPreviousButton()}
       {renderNextButton()}
     </div>

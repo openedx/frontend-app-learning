@@ -16,6 +16,8 @@ const SequenceContent = ({
   unitId,
   unitLoadedHandler,
   isOriginalUserStaff,
+  isEnabledOutlineSidebar,
+  renderUnitNavigation,
 }) => {
   const intl = useIntl();
   const sequence = useModel('sequences', sequenceId);
@@ -61,6 +63,8 @@ const SequenceContent = ({
       id={unitId}
       onLoaded={unitLoadedHandler}
       isOriginalUserStaff={isOriginalUserStaff}
+      isEnabledOutlineSidebar={isEnabledOutlineSidebar}
+      renderUnitNavigation={renderUnitNavigation}
     />
   );
 };
@@ -72,6 +76,8 @@ SequenceContent.propTypes = {
   unitId: PropTypes.string,
   unitLoadedHandler: PropTypes.func.isRequired,
   isOriginalUserStaff: PropTypes.bool.isRequired,
+  isEnabledOutlineSidebar: PropTypes.bool.isRequired,
+  renderUnitNavigation: PropTypes.func.isRequired,
 };
 
 SequenceContent.defaultProps = {
