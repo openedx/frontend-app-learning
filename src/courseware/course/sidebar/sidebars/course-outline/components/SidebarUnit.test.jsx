@@ -8,6 +8,7 @@ import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/ana
 import { initializeMockApp, initializeTestStore } from '@src/setupTest';
 import SidebarContext from '../../../SidebarContext';
 import SidebarUnit from './SidebarUnit';
+import { ID } from '../constants';
 
 jest.mock('@edx/frontend-platform/analytics', () => ({
   sendTrackEvent: jest.fn(),
@@ -20,7 +21,7 @@ describe('<SidebarUnit />', () => {
   let store = {};
   let unit;
   let sequenceId;
-  let mockData;
+  let defaultSidebarContext;
 
   const initTestStore = async (options) => {
     store = await initializeTestStore(options);
@@ -29,16 +30,17 @@ describe('<SidebarUnit />', () => {
     const sequence = state.courseware.courseOutline.sequences[sequenceId];
     unit = state.courseware.courseOutline.units[sequence.unitIds[0]];
 
-    mockData = {
+    defaultSidebarContext = {
       toggleSidebar: jest.fn(),
+      currentSidebar: ID,
     };
   };
 
-  function renderWithProvider(props = {}) {
+  function renderWithProvider(props = {}, sidebarContext = defaultSidebarContext) {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
         <IntlProvider locale="en">
-          <SidebarContext.Provider value={{ ...mockData }}>
+          <SidebarContext.Provider value={{ ...sidebarContext }}>
             <MemoryRouter>
               <SidebarUnit
                 isFirst
@@ -95,22 +97,45 @@ describe('<SidebarUnit />', () => {
     expect(screen.getByText(unit.title)).toBeInTheDocument();
   });
 
-  it('sends log event correctly when unit is clicked', async () => {
-    const user = userEvent.setup();
-    await initTestStore();
-    renderWithProvider({ unit: { ...unit } });
-    const logData = {
-      id: unit.id,
-      current_tab: 1,
-      tab_count: 1,
-      target_id: unit.id,
-      target_tab: 1,
-      widget_placement: 'left',
-    };
+  describe('When a unit is clicked', () => {
+    it('sends log event correctly', async () => {
+      const user = userEvent.setup();
+      await initTestStore();
+      renderWithProvider({ unit: { ...unit } });
+      const logData = {
+        id: unit.id,
+        current_tab: 1,
+        tab_count: 1,
+        target_id: unit.id,
+        target_tab: 1,
+        widget_placement: 'left',
+      };
 
-    await user.click(screen.getByText(unit.title));
+      await user.click(screen.getByText(unit.title));
 
-    expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);
-    expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);
+    });
+
+    it('leaves sidebar open in desktop mode', async () => {
+      const user = userEvent.setup();
+      await initTestStore();
+      renderWithProvider({ unit: { ...unit } });
+      await user.click(screen.getByText(unit.title));
+
+      expect(defaultSidebarContext.toggleSidebar).not.toHaveBeenCalled();
+      expect(window.sessionStorage.getItem('hideCourseOutlineSidebar')).toBeNull();
+    });
+
+    it('closes sidebar on mobile devices', async () => {
+      const user = userEvent.setup();
+      await initTestStore();
+      renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true });
+      await user.click(screen.getByText(unit.title));
+
+      expect(defaultSidebarContext.toggleSidebar).toHaveBeenCalledTimes(1);
+      expect(defaultSidebarContext.toggleSidebar).toHaveBeenCalledWith(null);
+      expect(window.sessionStorage.getItem('hideCourseOutlineSidebar')).toEqual('true');
+    });
   });
 });
