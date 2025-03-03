@@ -85,6 +85,11 @@ export const useCourseOutlineSidebar = () => {
 
     logEvent('edx.ui.lms.sequence.tab_selected', 'left');
     dispatch(checkBlockCompletion(courseId, sequenceId, activeUnitId));
+
+    // Hide the sidebar after selecting a unit on a mobile device.
+    if (shouldDisplayFullScreen) {
+      handleToggleCollapse();
+    }
   };
 
   useEffect(() => {
