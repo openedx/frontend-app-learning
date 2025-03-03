@@ -196,7 +196,6 @@ const Sequence = ({
           )}
 
           <div className="unit-container flex-grow-1 pt-4">
-            {isEnabledOutlineSidebar && renderUnitNavigation(true)}
             <SequenceContent
               courseId={courseId}
               gated={gated}
@@ -204,6 +203,8 @@ const Sequence = ({
               unitId={unitId}
               unitLoadedHandler={handleUnitLoaded}
               isOriginalUserStaff={originalUserIsStaff}
+              isEnabledOutlineSidebar={isEnabledOutlineSidebar}
+              renderUnitNavigation={renderUnitNavigation}
             />
             {unitHasLoaded && renderUnitNavigation(false)}
           </div>

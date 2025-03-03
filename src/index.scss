@@ -336,11 +336,6 @@
     gap: $spacer;
   }
 
-  .previous-icon-button,
-  .next-icon-button {
-    font-size: 1.5rem;
-  }
-
   .previous-button,
   .next-button {
     border-radius: 4px;
@@ -368,15 +363,13 @@
 }
 
 .top-unit-navigation {
+  display: flex;
   max-width: 100%;
   justify-content: flex-end;
 
   .next-button,
   .previous-button {
-    @media (min-width: map-get($grid-breakpoints, "md")) {
-      flex-basis: auto;
-      min-width: 8rem;
-    }
+    font-size: 1.5rem;
   }
 }
 

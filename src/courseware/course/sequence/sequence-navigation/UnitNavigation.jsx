@@ -24,9 +24,7 @@ const UnitNavigation = ({
   } = useSequenceNavigationMetadata(sequenceId, unitId);
 
   const renderPreviousButton = () => {
-    const buttonStyle = isAtTop
-      ? 'previous-icon-button text-dark mr-4'
-      : 'previous-button justify-content-center';
+    const buttonStyle = `previous-button ${isAtTop ? 'text-dark mr-3' : 'justify-content-center'}`;
     return (
       <PreviousButton
         isFirstUnit={isFirstUnit}
@@ -45,15 +43,12 @@ const UnitNavigation = ({
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
     const disabled = isLastUnit && !exitActive;
     const variant = 'outline-primary';
-    const buttonStyle = isAtTop
-      ? 'next-icon-button text-dark'
-      : 'next-button justify-content-center';
+    const buttonStyle = `next-button ${isAtTop ? 'text-dark' : 'justify-content-center'}`;
 
     if (isAtTop) {
       return (
         <NextUnitTopNavTriggerSlot
           {...{
-            courseId,
             variant,
             buttonStyle,
             buttonText,
@@ -81,7 +76,11 @@ const UnitNavigation = ({
   };
 
   return (
-    <div className={classNames('unit-navigation d-flex', { 'top-unit-navigation mb-3 w-100': isAtTop })}>
+    <div className={classNames('d-flex', {
+      'unit-navigation': !isAtTop,
+      'top-unit-navigation': isAtTop,
+    })}
+    >
       {renderPreviousButton()}
       {renderNextButton()}
     </div>

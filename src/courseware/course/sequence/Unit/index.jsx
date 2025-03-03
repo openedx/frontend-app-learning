@@ -23,6 +23,8 @@ const Unit = ({
   onLoaded,
   id,
   isOriginalUserStaff,
+  isEnabledOutlineSidebar,
+  renderUnitNavigation,
 }) => {
   const { formatMessage } = useIntl();
   const [searchParams] = useSearchParams();
@@ -48,9 +50,12 @@ const Unit = ({
 
   return (
     <div className="unit">
-      <div className="mb-0">
-        <h3 className="h3">{unit.title}</h3>
-        <UnitTitleSlot courseId={courseId} unitId={id} unitTitle={unit.title} />
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="mb-0">
+          <h3 className="h3">{unit.title}</h3>
+          <UnitTitleSlot courseId={courseId} unitId={id} unitTitle={unit.title} />
+        </div>
+        {isEnabledOutlineSidebar && renderUnitNavigation(true)}
       </div>
       <p className="sr-only">{formatMessage(messages.headerPlaceholder)}</p>
       <BookmarkButton
@@ -79,6 +84,8 @@ Unit.propTypes = {
   id: PropTypes.string.isRequired,
   onLoaded: PropTypes.func,
   isOriginalUserStaff: PropTypes.bool.isRequired,
+  isEnabledOutlineSidebar: PropTypes.bool.isRequired,
+  renderUnitNavigation: PropTypes.func.isRequired,
 };
 
 Unit.defaultProps = {
