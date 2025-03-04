@@ -5,6 +5,13 @@ import {
 } from '../../../../setupTest';
 import UnitNavigation from './UnitNavigation';
 
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
 describe('Unit Navigation', () => {
   let mockData;
   const courseMetadata = Factory.build('courseMetadata');
@@ -54,6 +61,26 @@ describe('Unit Navigation', () => {
 
     fireEvent.click(screen.getByRole('link', { name: /next/i }));
     expect(onClickNext).toHaveBeenCalledTimes(1);
+  });
+
+  it('when clicked it calls navigate when is at the top', () => {
+    const onClickPrevious = jest.fn();
+    const onClickNext = jest.fn();
+
+    render(<UnitNavigation
+      {...mockData}
+      onClickPrevious={onClickPrevious}
+      onClickNext={onClickNext}
+      isAtTop
+    />, { wrapWithRouter: true });
+
+    fireEvent.click(screen.getByRole('button', { name: /previous/i }));
+    expect(onClickPrevious).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    expect(onClickNext).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledTimes(2);
   });
 
   it('has the navigation buttons enabled for the non-corner unit in the sequence', () => {

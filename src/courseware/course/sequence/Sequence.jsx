@@ -203,6 +203,8 @@ const Sequence = ({
               unitId={unitId}
               unitLoadedHandler={handleUnitLoaded}
               isOriginalUserStaff={originalUserIsStaff}
+              isEnabledOutlineSidebar={isEnabledOutlineSidebar}
+              renderUnitNavigation={renderUnitNavigation}
             />
             {unitHasLoaded && renderUnitNavigation(false)}
           </div>
@@ -223,7 +225,6 @@ const Sequence = ({
           originalUserIsStaff={originalUserIsStaff}
           canAccessProctoredExams={canAccessProctoredExams}
         >
-          {isEnabledOutlineSidebar && renderUnitNavigation(true)}
           {defaultContent}
         </SequenceExamWrapper>
         <CourseLicense license={license || undefined} />
