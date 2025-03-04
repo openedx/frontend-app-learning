@@ -32,7 +32,7 @@ import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
-import CourseRecommendations from './CourseRecommendations';
+import CourseRecommendationsSlot from '../../../plugin-slots/CourseRecommendationsSlot';
 
 const LINKEDIN_BLUE = '#2867B2';
 
@@ -357,7 +357,7 @@ const CourseCelebration = ({ intl }) => {
             />
           ))}
           {footnote}
-          <CourseRecommendations variant={visitEvent} />
+          <CourseRecommendationsSlot variant={visitEvent} />
         </div>
       </div>
     </>
