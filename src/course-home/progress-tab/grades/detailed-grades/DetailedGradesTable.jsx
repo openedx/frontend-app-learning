@@ -45,7 +45,7 @@ const DetailedGradesTable = ({ intl }) => {
             itemCount={detailedGradesData.length}
             columns={[
               {
-                Header: chapter.displayName,
+                Header: <h4 className="m-0">{chapter.displayName}</h4>,
                 accessor: 'subsectionTitle',
                 headerClassName: 'h5 mb-0',
                 cellClassName: 'mw-100',
