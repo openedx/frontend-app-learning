@@ -33,12 +33,12 @@ describe('Unit Button', () => {
 
   it('hides title by default', () => {
     render(<UnitButton {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByRole('link')).not.toHaveTextContent(unit.display_name);
+    expect(screen.getByRole('tab')).not.toHaveTextContent(unit.display_name);
   });
 
   it('shows title', () => {
     render(<UnitButton {...mockData} showTitle />, { wrapWithRouter: true });
-    expect(screen.getByRole('link')).toHaveTextContent(unit.display_name);
+    expect(screen.getByRole('tab')).toHaveTextContent(unit.display_name);
   });
 
   it('does not show completion for non-completed unit', () => {
@@ -79,7 +79,7 @@ describe('Unit Button', () => {
   it('handles the click', () => {
     const onClick = jest.fn();
     render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
-    fireEvent.click(screen.getByRole('link'));
+    fireEvent.click(screen.getByRole('tab'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 });

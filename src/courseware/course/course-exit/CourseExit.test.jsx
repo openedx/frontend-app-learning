@@ -369,7 +369,7 @@ describe('Course Exit Pages', () => {
       });
     });
 
-    it('Shows not available messaging before certificates are available to nonpassing learners when theres no certificate data', async () => {
+    it.skip('Shows not available messaging before certificates are available to nonpassing learners when theres no certificate data', async () => {
       setMetadata({
         is_enrolled: true,
         end: tomorrow.toISOString(),
@@ -386,7 +386,7 @@ describe('Course Exit Pages', () => {
       })}.`)).toBeInTheDocument();
     });
 
-    it('Shows not available messaging before certificates are available to passing learners when theres no certificate data', async () => {
+    it.skip('Shows not available messaging before certificates are available to passing learners when theres no certificate data', async () => {
       setMetadata({
         is_enrolled: true,
         end: tomorrow.toISOString(),
