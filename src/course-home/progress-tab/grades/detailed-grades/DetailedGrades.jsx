@@ -1,10 +1,13 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
 import { Blocked } from '@openedx/paragon/icons';
-import { Icon, Hyperlink } from '@openedx/paragon';
+import {
+  Icon, Hyperlink, breakpoints, useWindowSize,
+} from '@openedx/paragon';
 import { useContextId } from '../../../../data/hooks';
 import { useModel } from '../../../../generic/model-store';
 import { showUngradedAssignments } from '../../utils';
@@ -25,6 +28,7 @@ const DetailedGrades = ({ intl }) => {
     gradesFeatureIsPartiallyLocked,
     sectionScores,
   } = useModel('progress', courseId);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const hasSectionScores = sectionScores.length > 0;
   const emptyTableMsg = showUngradedAssignments()
@@ -84,10 +88,12 @@ const DetailedGrades = ({ intl }) => {
         <DetailedGradesTable />
       )}
       {!hasSectionScores && (
-        <p className="small">{intl.formatMessage(emptyTableMsg)}</p>
+        <p className={classNames({ small: !wideScreen })}>
+          {intl.formatMessage(emptyTableMsg)}
+        </p>
       )}
       {overviewTabUrl && !showUngradedAssignments() && (
-        <p className="x-small m-0">
+        <p className={classNames('m-0', { small: !wideScreen })}>
           <FormattedMessage
             id="progress.ungradedAlert"
             defaultMessage="For progress on ungraded aspects of the course, view your {outlineLink}."
