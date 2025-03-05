@@ -5,6 +5,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 import MockAdapter from 'axios-mock-adapter';
+import { within } from '@testing-library/react';
 
 import {
   fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act,
@@ -1250,6 +1251,11 @@ describe('Progress Tab', () => {
           linkType: 'button',
           pageName: 'progress',
         });
+
+        const certificateStatusComponent = screen.queryByTestId('certificate-status-component');
+        expect(certificateStatusComponent).toBeInTheDocument();
+        const headerElement = within(certificateStatusComponent).getByRole('heading', { level: 2 });
+        expect(headerElement).toBeInTheDocument();
       });
 
       it('Displays nothing if audit only', async () => {
