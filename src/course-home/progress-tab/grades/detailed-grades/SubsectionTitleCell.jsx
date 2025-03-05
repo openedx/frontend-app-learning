@@ -1,12 +1,14 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Collapsible, Icon, Row } from '@openedx/paragon';
 import {
-  ArrowDropDown, ArrowDropUp, Blocked, Info,
+  ArrowDropDown,
+  ArrowDropUp,
+  Info,
+  Locked,
 } from '@openedx/paragon/icons';
 import { useContextId } from '../../../../data/hooks';
 
@@ -14,7 +16,8 @@ import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 import ProblemScoreDrawer from './ProblemScoreDrawer';
 
-const SubsectionTitleCell = ({ intl, subsection }) => {
+const SubsectionTitleCell = ({ subsection }) => {
+  const intl = useIntl();
   const courseId = useContextId();
   const {
     org,
@@ -59,7 +62,7 @@ const SubsectionTitleCell = ({ intl, subsection }) => {
                 aria-label={intl.formatMessage(messages.noAccessToSubsection, { displayName })}
                 className="mr-1 mt-1 d-inline-flex"
                 style={{ height: '1rem', width: '1rem' }}
-                src={Blocked}
+                src={Locked}
                 data-testid="blocked-icon"
               />
             )}
@@ -100,7 +103,6 @@ const SubsectionTitleCell = ({ intl, subsection }) => {
 };
 
 SubsectionTitleCell.propTypes = {
-  intl: intlShape.isRequired,
   subsection: PropTypes.shape({
     blockKey: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
@@ -117,4 +119,4 @@ SubsectionTitleCell.propTypes = {
   }).isRequired,
 };
 
-export default injectIntl(SubsectionTitleCell);
+export default SubsectionTitleCell;
