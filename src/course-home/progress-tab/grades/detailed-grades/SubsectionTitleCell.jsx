@@ -63,7 +63,7 @@ const SubsectionTitleCell = ({ subsection }) => {
                 className="mr-1 mt-1 d-inline-flex"
                 style={{ height: '1rem', width: '1rem' }}
                 src={Locked}
-                data-testid="blocked-icon"
+                data-testid="locked-icon"
               />
             )}
           {url ? (

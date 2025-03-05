@@ -17,11 +17,9 @@ const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
   const intl = useIntl();
   const courseId = useContextId();
   const {
+    verifiedMode,
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
-  const {
-    verifiedMode,
-  } = useModel('courseHomeMeta', courseId);
 
   return (
     <Stack gap={2} className="mb-3">
