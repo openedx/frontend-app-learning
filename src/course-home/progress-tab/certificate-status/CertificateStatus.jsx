@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
+import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 
-import { Button, Card } from '@openedx/paragon';
+import {
+  Button, Card, breakpoints, useWindowSize,
+} from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { useContextId } from '../../../data/hooks';
 import { useModel } from '../../../generic/model-store';
@@ -28,6 +31,8 @@ const CertificateStatus = () => {
     canViewCertificate,
     userTimezone,
   } = useModel('courseHomeMeta', courseId);
+
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const {
     certificateData,
@@ -244,7 +249,7 @@ const CertificateStatus = () => {
         <ProgressCertificateStatusSlot courseId={courseId}>
           <div id={`${certCase}_certificate_status`}>
             <Card.Header title={header} />
-            <Card.Section className="small text-gray-700">
+            <Card.Section className={classNames('text-gray-700', { small: !wideScreen })}>
               {body}
             </Card.Section>
             <Card.Footer>

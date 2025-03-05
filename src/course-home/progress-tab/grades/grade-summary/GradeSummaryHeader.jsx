@@ -1,15 +1,13 @@
+import React, { useState } from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
-  Hyperlink,
-  Icon,
-  OverlayTrigger,
-  Stack,
-  Tooltip,
+  Icon, IconButton, OverlayTrigger, Popover, breakpoints, useWindowSize, Stack, Hyperlink,
 } from '@openedx/paragon';
 import { InfoOutline, Locked } from '@openedx/paragon/icons';
-import { useContextId } from '../../../../data/hooks';
 
+import { useContextId } from '../../../../data/hooks';
 import messages from '../messages';
 import { useModel } from '../../../../generic/model-store';
 
@@ -21,6 +19,15 @@ const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
 
+  const [showTooltip, setShowTooltip] = useState(false);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      setShowTooltip(false);
+    }
+  };
+
   return (
     <Stack gap={2} className="mb-3">
       <Stack direction="horizontal" gap={2}>
@@ -29,15 +36,25 @@ const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
           trigger="hover"
           placement="top"
           overlay={(
-            <Tooltip>
-              {intl.formatMessage(messages.gradeSummaryTooltipBody)}
-            </Tooltip>
+            <Popover>
+              <Popover.Content
+                className={classNames('text-dark-700', { small: !wideScreen })}
+              >
+                {intl.formatMessage(messages.gradeSummaryTooltipBody)}
+              </Popover.Content>
+            </Popover>
           )}
         >
-          <Icon
+          <IconButton
+            onClick={() => { setShowTooltip(!showTooltip); }}
+            onBlur={() => { setShowTooltip(false); }}
+            onKeyDown={handleKeyDown}
             alt={intl.formatMessage(messages.gradeSummaryTooltipAlt)}
             src={InfoOutline}
+            iconAs={Icon}
+            className="mb-3"
             size="sm"
+            disabled={gradesFeatureIsFullyLocked}
           />
         </OverlayTrigger>
       </Stack>
