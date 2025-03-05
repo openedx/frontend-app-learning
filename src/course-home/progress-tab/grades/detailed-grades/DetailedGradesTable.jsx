@@ -1,8 +1,4 @@
-import React from 'react';
-
-import {
-  getLocale, injectIntl, intlShape, isRtl,
-} from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@openedx/paragon';
 import { useContextId } from '../../../../data/hooks';
 
@@ -11,7 +7,8 @@ import messages from '../messages';
 import SubsectionTitleCell from './SubsectionTitleCell';
 import { showUngradedAssignments } from '../../utils';
 
-const DetailedGradesTable = ({ intl }) => {
+const DetailedGradesTable = () => {
+  const intl = useIntl();
   const courseId = useContextId();
 
   const {
@@ -66,8 +63,4 @@ const DetailedGradesTable = ({ intl }) => {
   );
 };
 
-DetailedGradesTable.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(DetailedGradesTable);
+export default DetailedGradesTable;

@@ -1,7 +1,4 @@
-import React from 'react';
-import {
-  getLocale, injectIntl, intlShape, isRtl,
-} from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import { useContextId } from '../../../data/hooks';
 import { useModel } from '../../../generic/model-store';
 
@@ -10,7 +7,8 @@ import IncompleteDonutSegment from './IncompleteDonutSegment';
 import LockedDonutSegment from './LockedDonutSegment';
 import messages from './messages';
 
-const CompletionDonutChart = ({ intl }) => {
+const CompletionDonutChart = () => {
+  const intl = useIntl();
   const courseId = useContextId();
 
   const {
@@ -60,8 +58,4 @@ const CompletionDonutChart = ({ intl }) => {
   );
 };
 
-CompletionDonutChart.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(CompletionDonutChart);
+export default CompletionDonutChart;

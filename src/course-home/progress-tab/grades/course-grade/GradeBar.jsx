@@ -1,9 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
-import {
-  getLocale, injectIntl, intlShape, isRtl,
-} from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import { useContextId } from '../../../../data/hooks';
 import { useModel } from '../../../../generic/model-store';
 import CurrentGradeTooltip from './CurrentGradeTooltip';
@@ -11,7 +8,8 @@ import PassingGradeTooltip from './PassingGradeTooltip';
 
 import messages from '../messages';
 
-const GradeBar = ({ intl, passingGrade }) => {
+const GradeBar = ({ passingGrade }) => {
+  const intl = useIntl();
   const courseId = useContextId();
 
   const {
@@ -50,8 +48,7 @@ const GradeBar = ({ intl, passingGrade }) => {
 };
 
 GradeBar.propTypes = {
-  intl: intlShape.isRequired,
   passingGrade: PropTypes.number.isRequired,
 };
 
-export default injectIntl(GradeBar);
+export default GradeBar;
