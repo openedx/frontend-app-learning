@@ -43,7 +43,7 @@ const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
           />
         </OverlayTrigger>
       </Stack>
-      {!gradesFeatureIsFullyLocked && !allOfSomeAssignmentTypeIsLocked && (
+      {!gradesFeatureIsFullyLocked && allOfSomeAssignmentTypeIsLocked && (
         <Stack direction="horizontal" className="small" gap={2}>
           <Icon size="sm" src={Locked} data-testid="locked-icon" />
           <span>
