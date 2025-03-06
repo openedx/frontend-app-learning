@@ -50,7 +50,7 @@ const Unit = ({
 
   return (
     <div className="unit">
-      <div className="d-flex justify-content-between align-items-center">
+      <div className="d-flex justify-content-between">
         <div className="mb-0">
           <h3 className="h3">{unit.title}</h3>
           <UnitTitleSlot courseId={courseId} unitId={id} unitTitle={unit.title} />
