@@ -141,32 +141,32 @@ const CoursewareSearch = ({ ...sectionProps }) => {
               </Button>
             </div>
           </div>
-
-          {status === 'loading' ? (
-            <div className="courseware-search__spinner" data-testid="courseware-search-spinner">
-              <Spinner animation="border" variant="light" screenReaderText={formatMessage(messages.loading)} />
-            </div>
-          ) : null}
-          {status === 'error' && (
-            <Alert className="mt-4" variant="danger" data-testid="courseware-search-error">
-              {formatMessage(messages.searchResultsError)}
-            </Alert>
-          )}
-          {status === 'results' ? (
-            <>
-              {total > 0 ? (
-                <div
-                  className="courseware-search__results-summary"
-                  aria-live="polite"
-                  aria-relevant="all"
-                  aria-atomic="true"
-                  data-testid="courseware-search-summary"
-                >{formatMessage(messages.searchResultsLabel, { total, keyword: lastSearchKeyword })}
-                </div>
-              ) : null}
-              <CoursewareSearchResultsFilterContainer />
-            </>
-          ) : null}
+          <div className="courseware-search__results" aria-live="polite" data-testid="courseware-search-results">
+            {status === 'loading' ? (
+              <div className="courseware-search__spinner" data-testid="courseware-search-spinner">
+                <Spinner animation="border" variant="light" screenReaderText={formatMessage(messages.loading)} />
+              </div>
+            ) : null}
+            {status === 'error' && (
+              <Alert className="mt-4" variant="danger" data-testid="courseware-search-error">
+                {formatMessage(messages.searchResultsError)}
+              </Alert>
+            )}
+            {status === 'results' ? (
+              <>
+                {total > 0 ? (
+                  <div
+                    className="courseware-search__results-summary"
+                    aria-relevant="all"
+                    aria-atomic="true"
+                    data-testid="courseware-search-summary"
+                  >{formatMessage(messages.searchResultsLabel, { total, keyword: lastSearchKeyword })}
+                  </div>
+                ) : null}
+                <CoursewareSearchResultsFilterContainer />
+              </>
+            ) : null}
+          </div>
         </div>
       </div>
     </dialog>

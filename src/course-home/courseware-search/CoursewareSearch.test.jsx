@@ -9,6 +9,7 @@ import {
   screen,
   waitFor,
   fireEvent,
+  within,
 } from '../../setupTest';
 import { CoursewareSearch } from './index';
 import { useElementBoundingBox, useLockScroll, useCoursewareSearchParams } from './hooks';
@@ -243,14 +244,17 @@ describe('CoursewareSearch', () => {
       expect(screen.queryByTestId('courseware-search-summary')).not.toBeInTheDocument();
     });
 
-    it('should show a summary for the results', () => {
+    it('should show a summary for the results within a container with aria-live="polite"', () => {
       mockModels({
         searchKeyword: 'fubar',
         total: 1,
       });
       renderComponent();
 
-      expect(screen.queryByTestId('courseware-search-summary').textContent).toBe('Results for "fubar":');
+      const results = screen.queryByTestId('courseware-search-results');
+
+      expect(results).toHaveAttribute('aria-live', 'polite');
+      expect(within(results).queryByTestId('courseware-search-summary').textContent).toBe('Results for "fubar":');
     });
   });
 
