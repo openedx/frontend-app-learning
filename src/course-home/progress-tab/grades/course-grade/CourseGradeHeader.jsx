@@ -1,8 +1,6 @@
-import React from 'react';
-
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Locked } from '@openedx/paragon/icons';
 import { Button, Icon } from '@openedx/paragon';
 import { useContextId } from '../../../../data/hooks';
@@ -10,7 +8,8 @@ import { useContextId } from '../../../../data/hooks';
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
 
-const CourseGradeHeader = ({ intl }) => {
+const CourseGradeHeader = () => {
+  const intl = useIntl();
   const courseId = useContextId();
   const {
     org,
@@ -81,8 +80,4 @@ const CourseGradeHeader = ({ intl }) => {
   );
 };
 
-CourseGradeHeader.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(CourseGradeHeader);
+export default CourseGradeHeader;

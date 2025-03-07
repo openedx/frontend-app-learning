@@ -1,22 +1,22 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Blocked } from '@openedx/paragon/icons';
+import { useIntl } from '@edx/frontend-platform/i18n';
+import { Locked } from '@openedx/paragon/icons';
 import { Icon } from '@openedx/paragon';
 import { useContextId } from '../../../../data/hooks';
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
 
 const AssignmentTypeCell = ({
-  intl, assignmentType, footnoteMarker, footnoteId, locked,
+  assignmentType, footnoteMarker, footnoteId, locked,
 }) => {
+  const intl = useIntl();
   const courseId = useContextId();
 
   const {
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
 
-  const lockedIcon = locked ? <Icon id={`assignmentTypeBlockedIcon${assignmentType}`} aria-label={intl.formatMessage(messages.noAccessToAssignmentType, { assignmentType })} className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" /> : '';
+  const lockedIcon = locked ? <Icon id={`assignmentTypeBlockedIcon${assignmentType}`} aria-label={intl.formatMessage(messages.noAccessToAssignmentType, { assignmentType })} className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Locked} data-testid="locked-icon" /> : '';
 
   return (
     <div className="d-flex small">
@@ -43,7 +43,6 @@ const AssignmentTypeCell = ({
 };
 
 AssignmentTypeCell.propTypes = {
-  intl: intlShape.isRequired,
   assignmentType: PropTypes.string.isRequired,
   footnoteId: PropTypes.string,
   footnoteMarker: PropTypes.number,
@@ -56,4 +55,4 @@ AssignmentTypeCell.defaultProps = {
   locked: false,
 };
 
-export default injectIntl(AssignmentTypeCell);
+export default AssignmentTypeCell;

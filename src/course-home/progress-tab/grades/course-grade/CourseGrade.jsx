@@ -1,5 +1,4 @@
-import React from 'react';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { useContextId } from '../../../../data/hooks';
 
 import { useModel } from '../../../../generic/model-store';
@@ -11,7 +10,8 @@ import CreditInformation from '../../credit-information/CreditInformation';
 
 import messages from '../messages';
 
-const CourseGrade = ({ intl }) => {
+const CourseGrade = () => {
+  const intl = useIntl();
   const courseId = useContextId();
 
   const {
@@ -52,8 +52,4 @@ const CourseGrade = ({ intl }) => {
   );
 };
 
-CourseGrade.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(CourseGrade);
+export default CourseGrade;

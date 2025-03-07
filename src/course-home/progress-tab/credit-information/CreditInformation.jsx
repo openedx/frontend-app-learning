@@ -1,6 +1,5 @@
-import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
-import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { CheckCircle, WarningFilled, WatchFilled } from '@openedx/paragon/icons';
 import { Hyperlink, Icon } from '@openedx/paragon';
 import { useContextId } from '../../../data/hooks';
@@ -10,7 +9,8 @@ import { DashboardLink } from '../../../shared/links';
 
 import messages from './messages';
 
-const CreditInformation = ({ intl }) => {
+const CreditInformation = () => {
+  const intl = useIntl();
   const courseId = useContextId();
 
   const {
@@ -34,36 +34,13 @@ const CreditInformation = ({ intl }) => {
 
   switch (creditCourseRequirements.eligibilityStatus) {
     case 'not_eligible':
-      eligibilityStatus = (
-        <FormattedMessage
-          id="progress.creditInformation.creditNotEligible"
-          defaultMessage="You are no longer eligible for credit in this course. Learn more about {creditLink}."
-          description="Message to learner who are not eligible for course credit, it can because the a requirement deadline have passed"
-          values={{ creditLink }}
-        />
-      );
+      eligibilityStatus = intl.formatMessage(messages.creditNotEligibleStatus, { creditLink });
       break;
     case 'eligible':
-      eligibilityStatus = (
-        <FormattedMessage
-          id="progress.creditInformation.creditEligible"
-          defaultMessage="
-          You have met the requirements for credit in this course. Go to your
-          {dashboardLink} to purchase course credit. Or learn more about {creditLink}."
-          description="After the credit requirements are met, leaners can then do the last step which purchasing the credit. Note that is only doable for leaners after they met all the requirements"
-          values={{ dashboardLink, creditLink }}
-        />
-      );
+      eligibilityStatus = intl.formatMessage(messages.creditEligibleStatus, { dashboardLink, creditLink });
       break;
     case 'partial_eligible':
-      eligibilityStatus = (
-        <FormattedMessage
-          id="progress.creditInformation.creditPartialEligible"
-          defaultMessage="You have not yet met the requirements for credit. Learn more about {creditLink}."
-          description="This means that one or more requirements is not satisfied yet"
-          values={{ creditLink }}
-        />
-      );
+      eligibilityStatus = intl.formatMessage(messages.creditPartialEligibleStatus, { creditLink });
       break;
     default:
       break;
@@ -106,8 +83,4 @@ const CreditInformation = ({ intl }) => {
   );
 };
 
-CreditInformation.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(CreditInformation);
+export default CreditInformation;

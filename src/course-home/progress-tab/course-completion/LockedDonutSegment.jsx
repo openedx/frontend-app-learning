@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { OverlayTrigger, Popover } from '@openedx/paragon';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 
-const LockedDonutSegment = ({ intl, lockedPercentage }) => {
+const LockedDonutSegment = ({ lockedPercentage }) => {
+  const intl = useIntl();
   const [showLockedPopover, setShowLockedPopover] = useState(false);
 
   if (!lockedPercentage) {
@@ -65,8 +66,7 @@ const LockedDonutSegment = ({ intl, lockedPercentage }) => {
 };
 
 LockedDonutSegment.propTypes = {
-  intl: intlShape.isRequired,
   lockedPercentage: PropTypes.number.isRequired,
 };
 
-export default injectIntl(LockedDonutSegment);
+export default LockedDonutSegment;

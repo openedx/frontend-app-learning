@@ -1,15 +1,14 @@
-import React from 'react';
-
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@openedx/paragon';
 import { useContextId } from '../../../data/hooks';
 
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 
-const RelatedLinks = ({ intl }) => {
+const RelatedLinks = () => {
+  const intl = useIntl();
   const courseId = useContextId();
   const {
     org,
@@ -56,8 +55,4 @@ const RelatedLinks = ({ intl }) => {
   );
 };
 
-RelatedLinks.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(RelatedLinks);
+export default RelatedLinks;

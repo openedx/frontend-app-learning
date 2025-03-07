@@ -1,14 +1,12 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import {
-  getLocale, injectIntl, intlShape, isRtl,
-} from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from '../messages';
 
-const ProblemScoreDrawer = ({ intl, problemScores, subsection }) => {
+const ProblemScoreDrawer = ({ problemScores, subsection }) => {
+  const intl = useIntl();
   const isLocaleRtl = isRtl(getLocale());
 
   const scoreLabel = subsection.hasGradedAssignment ? messages.gradedScoreLabel : messages.practiceScoreLabel;
@@ -29,7 +27,6 @@ const ProblemScoreDrawer = ({ intl, problemScores, subsection }) => {
 };
 
 ProblemScoreDrawer.propTypes = {
-  intl: intlShape.isRequired,
   problemScores: PropTypes.arrayOf(PropTypes.shape({
     earned: PropTypes.number.isRequired,
     possible: PropTypes.number.isRequired,
@@ -40,4 +37,4 @@ ProblemScoreDrawer.propTypes = {
   }).isRequired,
 };
 
-export default injectIntl(ProblemScoreDrawer);
+export default ProblemScoreDrawer;
