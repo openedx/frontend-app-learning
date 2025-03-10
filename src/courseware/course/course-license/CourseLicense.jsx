@@ -134,6 +134,9 @@ const CourseLicense = ({
         </span>
       ))}
       {intl.formatMessage(messages['learn.course.license.creativeCommons.text'])}
+      <span className="sr-only">
+        {intl.formatMessage(messages['learn.course.license.creativeCommons.externalSite.screenreaderOnly.message'])}
+      </span>
     </a>
   );
 
