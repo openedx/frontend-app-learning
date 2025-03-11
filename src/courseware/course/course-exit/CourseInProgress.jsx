@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Helmet } from 'react-helmet';
 import { useSelector } from 'react-redux';
 import { Alert, Button } from '@openedx/paragon';
@@ -14,7 +14,8 @@ import DashboardFootnote from './DashboardFootnote';
 import messages from './messages';
 import { logClick, logVisit } from './utils';
 
-const CourseInProgress = ({ intl }) => {
+const CourseInProgress = () => {
+  const intl = useIntl();
   const { courseId } = useSelector(state => state.courseware);
   const {
     org,
@@ -60,8 +61,4 @@ const CourseInProgress = ({ intl }) => {
   );
 };
 
-CourseInProgress.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(CourseInProgress);
+export default CourseInProgress;

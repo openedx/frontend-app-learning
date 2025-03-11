@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Alert,
   Button,
@@ -13,7 +13,8 @@ import {
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
-const UpgradeToShiftDatesAlert = ({ intl, logUpgradeLinkClick, model }) => {
+const UpgradeToShiftDatesAlert = ({ logUpgradeLinkClick, model }) => {
+  const intl = useIntl();
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -60,7 +61,6 @@ const UpgradeToShiftDatesAlert = ({ intl, logUpgradeLinkClick, model }) => {
 };
 
 UpgradeToShiftDatesAlert.propTypes = {
-  intl: intlShape.isRequired,
   logUpgradeLinkClick: PropTypes.func,
   model: PropTypes.string.isRequired,
 };
@@ -69,4 +69,4 @@ UpgradeToShiftDatesAlert.defaultProps = {
   logUpgradeLinkClick: () => {},
 };
 
-export default injectIntl(UpgradeToShiftDatesAlert);
+export default UpgradeToShiftDatesAlert;

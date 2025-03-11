@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import classNames from 'classnames';
 import { ensureConfig, getConfig } from '@edx/frontend-platform';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { useModel } from '@src/generic/model-store';
 import SidebarBase from '../../common/SidebarBase';
@@ -12,7 +12,8 @@ import messages from './messages';
 
 ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);
 
-const DiscussionsSidebar = ({ intl }) => {
+const DiscussionsSidebar = () => {
+  const intl = useIntl();
   const {
     unitId,
     courseId,
@@ -47,11 +48,7 @@ const DiscussionsSidebar = ({ intl }) => {
   );
 };
 
-DiscussionsSidebar.propTypes = {
-  intl: intlShape.isRequired,
-};
-
 DiscussionsSidebar.Trigger = DiscussionsSidebar;
 DiscussionsSidebar.ID = ID;
 
-export default injectIntl(DiscussionsSidebar);
+export default DiscussionsSidebar;
