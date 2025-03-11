@@ -168,7 +168,7 @@ describe('Outline Tab', () => {
         course_blocks: { blocks: courseBlocks.blocks },
       });
       await fetchAndRender();
-      expect(screen.getByTitle('Completed section')).toBeInTheDocument();
+      expect(screen.getByLabelText('Completed section')).toBeInTheDocument();
     });
 
     it('displays correct icon for incomplete assignment', async () => {
@@ -177,7 +177,7 @@ describe('Outline Tab', () => {
         course_blocks: { blocks: courseBlocks.blocks },
       });
       await fetchAndRender();
-      expect(screen.getByTitle('Incomplete section')).toBeInTheDocument();
+      expect(screen.getByLabelText('Incomplete section')).toBeInTheDocument();
     });
 
     it('SequenceLink displays link', async () => {
@@ -293,7 +293,7 @@ describe('Outline Tab', () => {
         expect(showMoreButton).toBeInTheDocument();
       });
 
-      fit('dismisses message', async () => {
+      it('dismisses message', async () => {
         expect(screen.getByTestId('alert-container-welcome')).toBeInTheDocument();
         const dismissButton = screen.queryByRole('button', { name: 'Dismiss' });
         const expandButton = screen.queryByRole('button', { name: 'Expand all' });
