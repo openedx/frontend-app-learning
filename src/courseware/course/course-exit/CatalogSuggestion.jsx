@@ -4,9 +4,7 @@ import { useSelector } from 'react-redux';
 
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import {
-  FormattedMessage, injectIntl, intlShape,
-} from '@edx/frontend-platform/i18n';
+import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@openedx/paragon';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,7 +14,8 @@ import { useModel } from '../../../generic/model-store';
 import messages from './messages';
 import { logClick } from './utils';
 
-const CatalogSuggestion = ({ intl, variant }) => {
+const CatalogSuggestion = ({ variant }) => {
+  const intl = useIntl();
   const { courseId } = useSelector(state => state.courseware);
   const { org } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
@@ -48,8 +47,7 @@ const CatalogSuggestion = ({ intl, variant }) => {
 };
 
 CatalogSuggestion.propTypes = {
-  intl: intlShape.isRequired,
   variant: PropTypes.string.isRequired,
 };
 
-export default injectIntl(CatalogSuggestion);
+export default CatalogSuggestion;

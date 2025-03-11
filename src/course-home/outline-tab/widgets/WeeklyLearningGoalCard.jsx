@@ -6,7 +6,7 @@ import { Form, Card, Icon } from '@openedx/paragon';
 import { history } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Email } from '@openedx/paragon/icons';
 import { useSelector } from 'react-redux';
 import messages from '../messages';
@@ -18,8 +18,8 @@ import './FlagButton.scss';
 const WeeklyLearningGoalCard = ({
   daysPerWeek,
   subscribedToReminders,
-  intl,
 }) => {
+  const intl = useIntl();
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -152,11 +152,10 @@ const WeeklyLearningGoalCard = ({
 WeeklyLearningGoalCard.propTypes = {
   daysPerWeek: PropTypes.number,
   subscribedToReminders: PropTypes.bool,
-  intl: intlShape.isRequired,
 };
 
 WeeklyLearningGoalCard.defaultProps = {
   daysPerWeek: null,
   subscribedToReminders: false,
 };
-export default injectIntl(WeeklyLearningGoalCard);
+export default WeeklyLearningGoalCard;
