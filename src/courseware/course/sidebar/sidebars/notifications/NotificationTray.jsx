@@ -1,4 +1,4 @@
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 import { useContext, useEffect, useMemo } from 'react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
@@ -11,7 +11,8 @@ import SidebarBase from '../../common/SidebarBase';
 import SidebarContext from '../../SidebarContext';
 import NotificationTrigger, { ID } from './NotificationTrigger';
 
-const NotificationTray = ({ intl }) => {
+const NotificationTray = () => {
+  const intl = useIntl();
   const {
     courseId,
     onNotificationSeen,
@@ -92,11 +93,7 @@ const NotificationTray = ({ intl }) => {
   );
 };
 
-NotificationTray.propTypes = {
-  intl: intlShape.isRequired,
-};
-
 NotificationTray.Trigger = NotificationTrigger;
 NotificationTray.ID = ID;
 
-export default injectIntl(NotificationTray);
+export default NotificationTray;

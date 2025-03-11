@@ -1,13 +1,14 @@
 import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
-import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
+import { useIntl, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { getLoginRedirectUrl } from '@edx/frontend-platform/auth';
 import { Alert, Hyperlink } from '@openedx/paragon';
 import { WarningFilled } from '@openedx/paragon/icons';
 
 import genericMessages from '../../generic/messages';
 
-const LogistrationAlert = ({ intl }) => {
+const LogistrationAlert = () => {
+  const intl = useIntl();
   const signIn = (
     <Hyperlink
       style={{ textDecoration: 'underline' }}
@@ -43,8 +44,4 @@ const LogistrationAlert = ({ intl }) => {
   );
 };
 
-LogistrationAlert.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(LogistrationAlert);
+export default LogistrationAlert;

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { getConfig } from '@edx/frontend-platform';
-import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Alert, Button, Hyperlink } from '@openedx/paragon';
 import certImage from '../../../generic/assets/edX_certificate.png';
 import messages from './messages';
@@ -20,12 +20,12 @@ import messages from './messages';
 const programTypes = ['microbachelors', 'micromasters', 'professional-certificate', 'xseries'];
 
 const ProgramCompletion = ({
-  intl,
   progress,
   title,
   type,
   url,
 }) => {
+  const intl = useIntl();
   if (!programTypes.includes(type) || progress.notStarted !== 0 || progress.inProgress !== 0) {
     return null;
   }
@@ -98,7 +98,6 @@ const ProgramCompletion = ({
 };
 
 ProgramCompletion.propTypes = {
-  intl: intlShape.isRequired,
   progress: PropTypes.shape({
     completed: PropTypes.number.isRequired,
     inProgress: PropTypes.number.isRequired,
@@ -109,4 +108,4 @@ ProgramCompletion.propTypes = {
   url: PropTypes.string.isRequired,
 };
 
-export default injectIntl(ProgramCompletion);
+export default ProgramCompletion;
