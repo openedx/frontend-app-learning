@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { useIntl, FormattedDate, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { Button, Icon, IconButton } from '@openedx/paragon';
-import { Close } from '@openedx/paragon/icons';
+import { Close, Launch } from '@openedx/paragon/icons';
 import { setLocalStorage } from '../../data/localStorage';
 import { UpgradeButton } from '../upgrade-button';
 import {
@@ -57,6 +57,17 @@ const UpsellFBESoonCardContent = ({ accessExpirationDate, timezoneFormatArgs }) 
         id="learning.generic.upgradeNotification.expirationVerifiedCert.benefits"
         defaultMessage="benefits of upgrading"
       />
+      <span
+        className="pgn__hyperlink__external-icon"
+        title="Opens in a new tab"
+      >
+        <Icon
+          src={Launch}
+          screenReaderText=" in a new tab"
+          style={{ height: '1em', width: '1em' }}
+          data-testid="hyperlink-icon"
+        />
+      </span>
     </a>
   );
 

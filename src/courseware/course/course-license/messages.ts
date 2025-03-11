@@ -42,6 +42,11 @@ const messages = defineMessages({
     defaultMessage: 'Some Rights Reserved',
     description: 'License text shown when using all Creative Commons license types.',
   },
+  'learn.course.license.creativeCommons.externalSite.screenreaderOnly.message': {
+    id: 'learn.course.license.creativeCommons.externalSite.screenreaderOnly.message',
+    defaultMessage: 'external site, in a new tab',
+    description: 'Screenreader only text for external site link',
+  },
 });
 
 export default messages;

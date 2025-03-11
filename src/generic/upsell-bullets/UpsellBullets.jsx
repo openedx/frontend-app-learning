@@ -17,6 +17,12 @@ export const VerifiedCertBullet = () => {
         defaultMessage="verified certificate"
         description="Bolded words 'verified certificate', which is the name of credential the learner receives."
       />
+      <span className="sr-only">
+        <FormattedMessage
+          id="learning.generic.upsell.verifiedCertBullet.verifiedCert.newTab.screenreaderOnly.message"
+          defaultMessage=" (learn more in a new tab)"
+        />
+      </span>
     </a>
   );
   return (
