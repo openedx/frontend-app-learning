@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import {
-  FormattedMessage, FormattedDate, injectIntl, intlShape,
-} from '@edx/frontend-platform/i18n';
+import { FormattedMessage, FormattedDate, useIntl } from '@edx/frontend-platform/i18n';
 import { Alert, Hyperlink } from '@openedx/paragon';
 import { Info } from '@openedx/paragon/icons';
 
 import messages from './messages';
 
-const AccessExpirationAlert = ({ intl, payload }) => {
+const AccessExpirationAlert = ({ payload }) => {
+  const intl = useIntl();
   const {
     accessExpiration,
     courseId,
@@ -119,7 +118,6 @@ const AccessExpirationAlert = ({ intl, payload }) => {
 };
 
 AccessExpirationAlert.propTypes = {
-  intl: intlShape.isRequired,
   payload: PropTypes.shape({
     accessExpiration: PropTypes.shape({
       expirationDate: PropTypes.string.isRequired,
@@ -134,4 +132,4 @@ AccessExpirationAlert.propTypes = {
   }).isRequired,
 };
 
-export default injectIntl(AccessExpirationAlert);
+export default AccessExpirationAlert;

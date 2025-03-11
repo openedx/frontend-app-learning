@@ -9,13 +9,12 @@ import {
   Icon,
 } from '@openedx/paragon';
 import { Check, ArrowForward } from '@openedx/paragon/icons';
-import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { sendActivationEmail } from '../../courseware/data';
 import messages from './messages';
 
-const AccountActivationAlert = ({
-  intl,
-}) => {
+const AccountActivationAlert = () => {
+  const intl = useIntl();
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showCheck, setShowCheck] = useState(false);
@@ -125,8 +124,4 @@ const AccountActivationAlert = ({
   );
 };
 
-AccountActivationAlert.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(AccountActivationAlert);
+export default AccountActivationAlert;

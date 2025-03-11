@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Collapsible } from '@openedx/paragon';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
@@ -11,12 +11,12 @@ import SidebarUnit from './SidebarUnit';
 import { UNIT_ICON_TYPES } from './UnitIcon';
 
 const SidebarSequence = ({
-  intl,
   courseId,
   defaultOpen,
   sequence,
   activeUnitId,
 }) => {
+  const intl = useIntl();
   const {
     id,
     complete,
@@ -78,7 +78,6 @@ const SidebarSequence = ({
 };
 
 SidebarSequence.propTypes = {
-  intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
   defaultOpen: PropTypes.bool.isRequired,
   sequence: PropTypes.shape({
@@ -96,4 +95,4 @@ SidebarSequence.propTypes = {
   activeUnitId: PropTypes.string.isRequired,
 };
 
-export default injectIntl(SidebarSequence);
+export default SidebarSequence;

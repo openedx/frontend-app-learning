@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Alert, Hyperlink, breakpoints, useWindowSize,
 } from '@openedx/paragon';
@@ -20,9 +20,9 @@ import {
 } from '../../../../generic/upsell-bullets/UpsellBullets';
 
 const LockPaywall = ({
-  intl,
   courseId,
 }) => {
+  const intl = useIntl();
   const { notificationTrayVisible } = useContext(SidebarContext);
   const course = useModel('coursewareMeta', courseId);
   const {
@@ -143,7 +143,6 @@ const LockPaywall = ({
   );
 };
 LockPaywall.propTypes = {
-  intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
 };
-export default injectIntl(LockPaywall);
+export default LockPaywall;

@@ -1,5 +1,5 @@
 import { ensureConfig, getConfig } from '@edx/frontend-platform';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon } from '@openedx/paragon';
 import { QuestionAnswer } from '@openedx/paragon/icons';
 import PropTypes from 'prop-types';
@@ -16,9 +16,9 @@ ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);
 export const ID = WIDGETS.DISCUSSIONS;
 
 const DiscussionsTrigger = ({
-  intl,
   onClick,
 }) => {
+  const intl = useIntl();
   const {
     unitId,
     courseId,
@@ -51,8 +51,7 @@ const DiscussionsTrigger = ({
 };
 
 DiscussionsTrigger.propTypes = {
-  intl: intlShape.isRequired,
   onClick: PropTypes.func.isRequired,
 };
 
-export default injectIntl(DiscussionsTrigger);
+export default DiscussionsTrigger;

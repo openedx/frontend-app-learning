@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 // These flag svgs are derivatives of the Flag icon from paragon
 import { ReactComponent as FlagIntenseIcon } from './flag_black.svg';
 import { ReactComponent as FlagCasualIcon } from './flag_outline.svg';
@@ -13,8 +13,8 @@ const LearningGoalButton = ({
   level,
   isSelected,
   handleSelect,
-  intl,
 }) => {
+  const intl = useIntl();
   const buttonDetails = {
     casual: {
       daysPerWeek: 1,
@@ -53,7 +53,6 @@ LearningGoalButton.propTypes = {
   level: PropTypes.string.isRequired,
   isSelected: PropTypes.bool.isRequired,
   handleSelect: PropTypes.func.isRequired,
-  intl: intlShape.isRequired,
 };
 
-export default injectIntl(LearningGoalButton);
+export default LearningGoalButton;
