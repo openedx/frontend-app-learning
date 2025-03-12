@@ -27,9 +27,6 @@ const DiscussionsNotificationsTrigger = ({ onClick }) => {
     isDiscussionbarAvailable,
   } = useContext(SidebarContext);
 
-  console.log(currentSidebar);
-  
-
   const dispatch = useDispatch();
   const intl = useIntl();
   const { tabs } = useModel('courseHomeMeta', courseId);
