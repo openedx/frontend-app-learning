@@ -27,6 +27,9 @@ const DiscussionsNotificationsTrigger = ({ onClick }) => {
     isDiscussionbarAvailable,
   } = useContext(SidebarContext);
 
+  console.log(currentSidebar);
+  
+
   const dispatch = useDispatch();
   const intl = useIntl();
   const { tabs } = useModel('courseHomeMeta', courseId);
@@ -35,6 +38,8 @@ const DiscussionsNotificationsTrigger = ({ onClick }) => {
     () => tabs?.find(tab => tab.slug === 'discussion'),
     [tabs],
   );
+
+  const sidebarIcon = currentSidebar === ID ? RightSidebarFilled : RightSidebarOutlined;
 
   useEffect(() => {
     if (baseUrl && edxProvider) {
@@ -81,7 +86,7 @@ const DiscussionsNotificationsTrigger = ({ onClick }) => {
 
   return (
     <IconButton
-      src={currentSidebar ? RightSidebarFilled : RightSidebarOutlined}
+      src={sidebarIcon}
       iconAs={Icon}
       onClick={handleClick}
       alt={intl.formatMessage(messages.openSidebarTrigger)}
