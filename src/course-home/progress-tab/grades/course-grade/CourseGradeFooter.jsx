@@ -1,7 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { CheckCircle, WarningFilled } from '@openedx/paragon/icons';
 import { breakpoints, Icon, useWindowSize } from '@openedx/paragon';
 import { useContextId } from '../../../../data/hooks';
@@ -10,7 +9,8 @@ import { useModel } from '../../../../generic/model-store';
 import GradeRangeTooltip from './GradeRangeTooltip';
 import messages from '../messages';
 
-const CourseGradeFooter = ({ intl, passingGrade }) => {
+const CourseGradeFooter = ({ passingGrade }) => {
+  const intl = useIntl();
   const courseId = useContextId();
 
   const {
@@ -84,8 +84,7 @@ const CourseGradeFooter = ({ intl, passingGrade }) => {
 };
 
 CourseGradeFooter.propTypes = {
-  intl: intlShape.isRequired,
   passingGrade: PropTypes.number.isRequired,
 };
 
-export default injectIntl(CourseGradeFooter);
+export default CourseGradeFooter;

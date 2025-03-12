@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { OverlayTrigger, Popover } from '@openedx/paragon';
 
 import messages from './messages';
 
-const IncompleteDonutSegment = ({ incompletePercentage, intl }) => {
+const IncompleteDonutSegment = ({ incompletePercentage }) => {
+  const intl = useIntl();
   const [showIncompletePopover, setShowIncompletePopover] = useState(false);
 
   if (!incompletePercentage) {
@@ -53,7 +54,6 @@ const IncompleteDonutSegment = ({ incompletePercentage, intl }) => {
 
 IncompleteDonutSegment.propTypes = {
   incompletePercentage: PropTypes.number.isRequired,
-  intl: intlShape.isRequired,
 };
 
-export default injectIntl(IncompleteDonutSegment);
+export default IncompleteDonutSegment;

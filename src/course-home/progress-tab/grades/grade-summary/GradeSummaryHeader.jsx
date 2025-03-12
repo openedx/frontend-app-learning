@@ -1,8 +1,13 @@
 import PropTypes from 'prop-types';
-
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { Icon, OverlayTrigger, Tooltip } from '@openedx/paragon';
-import { Blocked, InfoOutline } from '@openedx/paragon/icons';
+import {
+  Hyperlink,
+  Icon,
+  OverlayTrigger,
+  Stack,
+  Tooltip,
+} from '@openedx/paragon';
+import { InfoOutline, Locked } from '@openedx/paragon/icons';
 import { useContextId } from '../../../../data/hooks';
 
 import messages from '../messages';
@@ -12,35 +17,48 @@ const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
   const intl = useIntl();
   const courseId = useContextId();
   const {
+    verifiedMode,
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
 
   return (
-    <div className="row w-100 m-0 align-items-center">
-      <h3 className="h4 mb-3 mr-1">{intl.formatMessage(messages.gradeSummary)}</h3>
-      <OverlayTrigger
-        trigger="hover"
-        placement="top"
-        overlay={(
-          <Tooltip>
-            {intl.formatMessage(messages.gradeSummaryTooltipBody)}
-          </Tooltip>
-        )}
-      >
-        <Icon
-          alt={intl.formatMessage(messages.gradeSummaryTooltipAlt)}
-          src={InfoOutline}
-          className="mb-3"
-          size="sm"
-        />
-      </OverlayTrigger>
+    <Stack gap={2} className="mb-3">
+      <Stack direction="horizontal" gap={2}>
+        <h3 className="h4 m-0">{intl.formatMessage(messages.gradeSummary)}</h3>
+        <OverlayTrigger
+          trigger="hover"
+          placement="top"
+          overlay={(
+            <Tooltip>
+              {intl.formatMessage(messages.gradeSummaryTooltipBody)}
+            </Tooltip>
+          )}
+        >
+          <Icon
+            alt={intl.formatMessage(messages.gradeSummaryTooltipAlt)}
+            src={InfoOutline}
+            size="sm"
+          />
+        </OverlayTrigger>
+      </Stack>
       {!gradesFeatureIsFullyLocked && allOfSomeAssignmentTypeIsLocked && (
-        <div className="mb-3 small ml-0 d-inline">
-          <Icon className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Blocked} data-testid="blocked-icon" />
-          {intl.formatMessage(messages.gradeSummaryLimitedAccessExplanation)}
-        </div>
+        <Stack direction="horizontal" className="small" gap={2}>
+          <Icon size="sm" src={Locked} data-testid="locked-icon" />
+          <span>
+            {intl.formatMessage(
+              messages.gradeSummaryLimitedAccessExplanation,
+              {
+                upgradeLink: verifiedMode && (
+                  <Hyperlink destination={verifiedMode.upgradeUrl}>
+                    {intl.formatMessage(messages.courseGradePreviewUpgradeButton)}.
+                  </Hyperlink>
+                ),
+              },
+            )}
+          </span>
+        </Stack>
       )}
-    </div>
+    </Stack>
   );
 };
 

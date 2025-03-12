@@ -133,7 +133,7 @@ const messages = defineMessages({
   },
   gradeSummaryLimitedAccessExplanation: {
     id: 'progress.gradeSummary.limitedAccessExplanation',
-    defaultMessage: 'You have limited access to graded assignments as part of the audit track in this course.',
+    defaultMessage: 'You have limited access to graded assignments as part of the audit track in this course. {upgradeLink}',
     description: 'Text shown when learner has limited access to grade feature',
   },
   gradeSummaryTooltipAlt: {
@@ -207,6 +207,26 @@ const messages = defineMessages({
     id: 'progress.weightedGradeSummary',
     defaultMessage: 'Your raw weighted grade summary is {rawGrade} and rounds to {roundedGrade}.',
     description: 'Tooltip content that explains the rounding of the summary versus individual assignments',
+  },
+  practiceScoreInfoText: {
+    id: 'progress.detailedGrades.practice-label.info.text',
+    defaultMessage: 'Scores from non-graded activities meant for practice and self-assessment.',
+    description: 'Information text about non-graded practice score label',
+  },
+  gradedScoreInfoText: {
+    id: 'progress.detailedGrades.problem-label.info.text',
+    defaultMessage: 'Scores from activities that contribute to your final grade.',
+    description: 'Information text about graded problem score label',
+  },
+  ungradedAlert: {
+    id: 'progress.ungradedAlert',
+    defaultMessage: 'For progress on ungraded aspects of the course, view your {outlineLink}.',
+    description: 'Text that precede link that redirect to course outline page',
+  },
+  droppableAssignmentsText: {
+    id: 'progress.footnotes.droppableAssignments',
+    defaultMessage: 'The lowest {numDroppable, plural, one{# {assignmentType} score is} other{# {assignmentType} scores are}} dropped.',
+    description: 'Footnote text stating how many assignments are dropped',
   },
 });
 
