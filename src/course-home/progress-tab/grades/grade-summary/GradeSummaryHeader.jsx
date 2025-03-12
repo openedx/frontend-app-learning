@@ -1,8 +1,12 @@
+import React, { useState } from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import { useIntl } from '@edx/frontend-platform/i18n';
-import { Icon, OverlayTrigger, Tooltip } from '@openedx/paragon';
+import {
+  Icon, IconButton, OverlayTrigger, Popover, breakpoints, useWindowSize,
+} from '@openedx/paragon';
 import { Blocked, InfoOutline } from '@openedx/paragon/icons';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { useContextId } from '../../../../data/hooks';
 
 import messages from '../messages';
@@ -14,24 +18,42 @@ const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
   const {
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      setShowTooltip(false);
+    }
+  };
 
   return (
     <div className="row w-100 m-0 align-items-center">
       <h3 className="h4 mb-3 mr-1">{intl.formatMessage(messages.gradeSummary)}</h3>
       <OverlayTrigger
-        trigger="hover"
+        trigger="click"
         placement="top"
+        show={showTooltip}
         overlay={(
-          <Tooltip>
-            {intl.formatMessage(messages.gradeSummaryTooltipBody)}
-          </Tooltip>
+          <Popover>
+            <Popover.Content
+              className={classNames('text-dark-700', { small: !wideScreen })}
+            >
+              {intl.formatMessage(messages.gradeSummaryTooltipBody)}
+            </Popover.Content>
+          </Popover>
         )}
       >
-        <Icon
+        <IconButton
+          onClick={() => { setShowTooltip(!showTooltip); }}
+          onBlur={() => { setShowTooltip(false); }}
+          onKeyDown={handleKeyDown}
           alt={intl.formatMessage(messages.gradeSummaryTooltipAlt)}
           src={InfoOutline}
+          iconAs={Icon}
           className="mb-3"
           size="sm"
+          disabled={gradesFeatureIsFullyLocked}
         />
       </OverlayTrigger>
       {!gradesFeatureIsFullyLocked && allOfSomeAssignmentTypeIsLocked && (
