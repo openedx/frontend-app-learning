@@ -132,6 +132,24 @@ describe('Outline Tab', () => {
       expect(expandedSectionNode).toHaveAttribute('aria-expanded', 'true');
     });
 
+    it('displays correct heading for expanded section', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+      const headingContent = screen.getByText('Title of Section');
+      const { parentElement } = headingContent;
+      expect(parentElement.tagName).toBe('H2');
+    });
+
+    it('checks that the expanded section is within the correct list', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+      const listElement = screen.getByRole('presentation', { id: 'courseHome-outline' });
+      expect(listElement).toBeInTheDocument();
+      expect(listElement.tagName).toBe('OL');
+    });
+
     it('includes outline_tab_notifications_slot', async () => {
       const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
       setTabData({
