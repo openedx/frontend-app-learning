@@ -68,7 +68,7 @@ const DetailedGrades = () => {
       {gradesFeatureIsPartiallyLocked && (
         <div className="mb-3 small ml-0 d-inline">
           <Icon className="mr-1 mt-1 d-inline-flex" style={{ height: '1rem', width: '1rem' }} src={Locked} data-testid="locked-icon" />
-          {intl.formatMessage(messages.gradeSummaryLimitedAccessExplanation)}
+          {intl.formatMessage(messages.gradeSummaryLimitedAccessExplanation, { upgradeLink: '' })}
         </div>
       )}
       {hasSectionScores && (
