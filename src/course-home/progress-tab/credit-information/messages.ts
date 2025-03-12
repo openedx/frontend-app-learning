@@ -38,7 +38,7 @@ const messages = defineMessages({
   creditNotEligibleStatus: {
     id: 'progress.creditInformation.creditNotEligible',
     defaultMessage: 'You are no longer eligible for credit in this course. Learn more about {creditLink}.',
-    description: 'Message to learner who are not eligible for course credit, it can because the a requirement deadline have passed',
+    description: 'Message to learner who are not eligible for course credit, it can be that a requirement deadline has passed',
   },
   creditEligibleStatus: {
     id: 'progress.creditInformation.creditEligible',
