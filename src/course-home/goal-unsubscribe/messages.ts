@@ -16,6 +16,11 @@ const messages = defineMessages({
     defaultMessage: 'Something went wrong',
     description: 'It indicate that the unsubscribing request has failed',
   },
+  errorDescription: {
+    id: 'learning.goals.unsubscribe.errorDescription',
+    defaultMessage: 'We were unable to unsubscribe you from goal reminder emails. Please try again later or {contactSupport} for help.',
+    description: 'Message that notifies user that unsubscribing failed and to try again',
+  },
   goToDashboard: {
     id: 'learning.goals.unsubscribe.goToDashboard',
     defaultMessage: 'Go to dashboard',

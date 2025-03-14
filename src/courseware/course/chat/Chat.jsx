@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 import { Xpert } from '@edx/frontend-lib-learning-assistant';
 import { getConfig } from '@edx/frontend-platform';
-import { injectIntl } from '@edx/frontend-platform/i18n';
 
 import { ALLOW_UPSELL_MODES, VERIFIED_MODES } from '@src/constants';
 import { useModel } from '../../../generic/model-store';
@@ -80,4 +79,4 @@ Chat.defaultProps = {
   enrollmentMode: null,
 };
 
-export default injectIntl(Chat);
+export default Chat;

@@ -1,16 +1,15 @@
 import React from 'react';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 
-const SuggestedScheduleHeader = ({ intl }) => (
-  <p className="large">
-    {intl.formatMessage(messages.suggestedSchedule)}
-  </p>
-);
-
-SuggestedScheduleHeader.propTypes = {
-  intl: intlShape.isRequired,
+const SuggestedScheduleHeader = () => {
+  const intl = useIntl();
+  return (
+    <p className="large">
+      {intl.formatMessage(messages.suggestedSchedule)}
+    </p>
+  );
 };
 
-export default injectIntl(SuggestedScheduleHeader);
+export default SuggestedScheduleHeader;
