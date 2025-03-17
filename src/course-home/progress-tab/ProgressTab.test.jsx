@@ -111,7 +111,7 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       sendTrackEvent.mockClear();
 
-      const outlineTabLink = screen.getAllByRole('link', { name: 'Course Outline' });
+      const outlineTabLink = screen.getAllByRole('link', { name: 'Course outline' });
       fireEvent.click(outlineTabLink[1]); // outlineTabLink[0] corresponds to the link in the DetailedGrades component
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -896,7 +896,7 @@ describe('Progress Tab', () => {
       sendTrackEvent.mockClear();
       expect(screen.getByText('Detailed grades')).toBeInTheDocument();
 
-      const outlineLink = screen.getAllByRole('link', { name: 'Course Outline' })[0];
+      const outlineLink = screen.getAllByRole('link', { name: 'Course outline' })[0];
       fireEvent.click(outlineLink);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);

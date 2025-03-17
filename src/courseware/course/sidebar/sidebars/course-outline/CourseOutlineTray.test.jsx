@@ -64,7 +64,7 @@ describe('<CourseOutlineTray />', () => {
 
     expect(screen.getByText(messages.loading.defaultMessage)).toBeInTheDocument();
     expect(screen.getByText(messages.courseOutlineTitle.defaultMessage)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Course Outline' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Course outline' })).not.toBeInTheDocument();
   });
 
   it('doesn\'t render when outline sidebar is disabled', async () => {
