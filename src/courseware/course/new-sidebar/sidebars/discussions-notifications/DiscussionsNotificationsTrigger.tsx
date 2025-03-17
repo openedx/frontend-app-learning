@@ -36,6 +36,8 @@ const DiscussionsNotificationsTrigger = ({ onClick }) => {
     [tabs],
   );
 
+  const sidebarIcon = currentSidebar === ID ? RightSidebarFilled : RightSidebarOutlined;
+
   useEffect(() => {
     if (baseUrl && edxProvider) {
       dispatch(getCourseDiscussionTopics(courseId));
@@ -81,7 +83,7 @@ const DiscussionsNotificationsTrigger = ({ onClick }) => {
 
   return (
     <IconButton
-      src={currentSidebar ? RightSidebarFilled : RightSidebarOutlined}
+      src={sidebarIcon}
       iconAs={Icon}
       onClick={handleClick}
       alt={intl.formatMessage(messages.openSidebarTrigger)}
