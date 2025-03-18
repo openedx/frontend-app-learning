@@ -15,7 +15,6 @@ import WeeklyLearningGoalCard from './widgets/WeeklyLearningGoalCard';
 import CourseTools from './widgets/CourseTools';
 import { fetchOutlineTab } from '../data';
 import messages from './messages';
-import Section from './Section';
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpgradeNotification from '../../generic/upgrade-notification/UpgradeNotification';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
@@ -28,6 +27,7 @@ import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
+import CourseHomeSectionOutlineSlot from '../../plugin-slots/CourseHomeSectionOutlineSlot';
 
 const OutlineTab = () => {
   const intl = useIntl();
@@ -165,24 +165,18 @@ const OutlineTab = () => {
           <WelcomeMessage courseId={courseId} nextElementRef={expandButtonRef} />
           {rootCourseId && (
             <>
-              <div className="row w-100 m-0 mb-3 justify-content-end">
+              <div id="expand-button-row" className="row w-100 m-0 mb-3 justify-content-end">
                 <div className="col-12 col-md-auto p-0">
                   <Button ref={expandButtonRef} variant="outline-primary" block onClick={() => { setExpandAll(!expandAll); }}>
                     {expandAll ? intl.formatMessage(messages.collapseAll) : intl.formatMessage(messages.expandAll)}
                   </Button>
                 </div>
               </div>
-              <ol id="courseHome-outline" className="list-unstyled">
-                {courses[rootCourseId].sectionIds.map((sectionId) => (
-                  <Section
-                    key={sectionId}
-                    courseId={courseId}
-                    defaultOpen={sections[sectionId].resumeBlock}
-                    expand={expandAll}
-                    section={sections[sectionId]}
-                  />
-                ))}
-              </ol>
+              <CourseHomeSectionOutlineSlot
+                expandAll={expandAll}
+                sectionIds={courses[rootCourseId].sectionIds}
+                sections={sections}
+              />
             </>
           )}
         </div>
