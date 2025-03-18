@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import FooterSlot from '@openedx/frontend-slot-footer';
 import { LOADED, LOADING } from '@src/constants';
 import HeaderSlot from '../plugin-slots/HeaderSlot';
@@ -11,7 +11,8 @@ import { fetchDiscussionTab } from '../course-home/data/thunks';
 import PageLoading from './PageLoading';
 import messages from '../tab-page/messages';
 
-const CourseAccessErrorPage = ({ intl }) => {
+const CourseAccessErrorPage = () => {
+  const intl = useIntl();
   const { courseId } = useParams();
 
   const dispatch = useDispatch();
@@ -56,8 +57,4 @@ const CourseAccessErrorPage = ({ intl }) => {
   );
 };
 
-CourseAccessErrorPage.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(CourseAccessErrorPage);
+export default CourseAccessErrorPage;

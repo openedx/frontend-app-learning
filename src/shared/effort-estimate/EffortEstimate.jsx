@@ -1,20 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 
 // This component shows an effort estimate provided by the backend block data. Either time, activities, or both.
 
 const EffortEstimate = (props) => {
+  const intl = useIntl();
   const {
     block: {
       effortActivities,
       effortTime,
     },
     className,
-    intl,
   } = props;
 
   const minuteCount = Math.ceil(effortTime / 60); // effortTime is in seconds
@@ -66,7 +66,6 @@ EffortEstimate.propTypes = {
     effortTime: PropTypes.number,
   }).isRequired,
   className: PropTypes.string,
-  intl: intlShape.isRequired,
 };
 
-export default injectIntl(EffortEstimate);
+export default EffortEstimate;

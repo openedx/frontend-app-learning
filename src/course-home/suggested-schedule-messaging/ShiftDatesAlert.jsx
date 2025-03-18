@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Alert,
   Button,
@@ -14,7 +14,8 @@ import { resetDeadlines } from '../data';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
-const ShiftDatesAlert = ({ fetch, intl, model }) => {
+const ShiftDatesAlert = ({ fetch, model }) => {
+  const intl = useIntl();
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -59,8 +60,7 @@ const ShiftDatesAlert = ({ fetch, intl, model }) => {
 
 ShiftDatesAlert.propTypes = {
   fetch: PropTypes.func.isRequired,
-  intl: intlShape.isRequired,
   model: PropTypes.string.isRequired,
 };
 
-export default injectIntl(ShiftDatesAlert);
+export default ShiftDatesAlert;

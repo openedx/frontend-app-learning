@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   ActionRow,
   breakpoints,
@@ -18,8 +18,9 @@ import { recordFirstSectionCelebration } from './utils';
 import { useModel } from '../../../generic/model-store';
 
 const CelebrationModal = ({
-  courseId, intl, isOpen, onClose, ...rest
+  courseId, isOpen, onClose, ...rest
 }) => {
+  const intl = useIntl();
   const { org, celebrations } = useModel('courseHomeMeta', courseId);
   const dispatch = useDispatch();
   const wideScreen = useWindowSize().width >= breakpoints.small.minWidth;
@@ -66,9 +67,8 @@ const CelebrationModal = ({
 
 CelebrationModal.propTypes = {
   courseId: PropTypes.string.isRequired,
-  intl: intlShape.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
-export default injectIntl(CelebrationModal);
+export default CelebrationModal;

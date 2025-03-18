@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { ActionRow, Alert, Button } from '@openedx/paragon';
 
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,8 @@ import { useModel } from '../../../../generic/model-store';
 import { saveIntegritySignature } from '../../../data';
 import messages from './messages';
 
-const HonorCode = ({ intl, courseId }) => {
+const HonorCode = ({ courseId }) => {
+  const intl = useIntl();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
@@ -68,8 +69,7 @@ const HonorCode = ({ intl, courseId }) => {
 };
 
 HonorCode.propTypes = {
-  intl: intlShape.isRequired,
   courseId: PropTypes.string.isRequired,
 };
 
-export default injectIntl(HonorCode);
+export default HonorCode;
