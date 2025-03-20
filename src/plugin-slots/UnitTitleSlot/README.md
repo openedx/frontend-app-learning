@@ -2,19 +2,20 @@
 
 ### Slot ID: `unit_title_slot`
 ### Props:
-* `courseId`
 * `unitId`
-* `unitTitle`
+* `unit`
+* `isEnabledOutlineSidebar`
+* `renderUnitNavigation`
 
 ## Description
 
-This slot is used for adding content after the Unit title.
+This slot is used for adding content before or after the Unit title.
 
 ## Example
 
-The following `env.config.jsx` will render the `course_id`, `unit_id` and `unitTitle` of the course as `<p>` elements.
+The following `env.config.jsx` will render `unit_id` and `unitTitle` of the course as `<p>` elements.
 
-![Screenshot of Content added after the Unit Title](./images/post_unit_title.png)
+![Screenshot of Content added before and after the Unit Title](./images/screenshot_custom.png)
 
 ```js
 import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
@@ -29,11 +30,11 @@ const config = {
           widget: {
             id: 'custom_unit_title_content',
             type: DIRECT_PLUGIN,
-            RenderWidget: ({courseId, unitId, unitTitle}) => (
+            RenderWidget: ({ unitId, unit, isEnabledOutlineSidebar, renderUnitNavigation }) => (
               <>
-                <p>📚: {courseId}</p>
+                {isEnabledOutlineSidebar && renderUnitNavigation(true)}
+                <p>📙: {unit.title}</p>
                 <p>📙: {unitId}</p>
-                <p>📙: {unitTitle}</p>
               </>
             ),
           },
