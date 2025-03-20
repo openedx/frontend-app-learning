@@ -13,7 +13,7 @@ const UnitTitleSlot = ({
 }) => {
   const { formatMessage } = useIntl();
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
-  
+
   return (
     <PluginSlot
       id="unit_title_slot"
@@ -41,9 +41,15 @@ const UnitTitleSlot = ({
 };
 
 UnitTitleSlot.propTypes = {
-  courseId: PropTypes.string.isRequired,
   unitId: PropTypes.string.isRequired,
-  unitTitle: PropTypes.string.isRequired,
+  unit: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    bookmarked: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
+    bookmarkedUpdateState: PropTypes.string.isRequired,
+  }).isRequired,
+  isEnabledOutlineSidebar: PropTypes.bool.isRequired,
+  renderUnitNavigation: PropTypes.func.isRequired,
 };
 
 export default UnitTitleSlot;
