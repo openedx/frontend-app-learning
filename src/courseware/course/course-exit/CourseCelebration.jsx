@@ -32,7 +32,7 @@ import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
-import CourseRecommendationsSlot from '../../../plugin-slots/CourseRecommendationsSlot';
+import CourseRecommendationsSlot from '../../../plugin-slots/CourseEndPluginSlots/CourseRecommendationsSlot';
 
 const LINKEDIN_BLUE = '#2867B2';
 
