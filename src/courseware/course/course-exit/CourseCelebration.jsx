@@ -25,12 +25,12 @@ import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
 import ProgramCompletion from './ProgramCompletion';
-import DashboardFootnote from './DashboardFootnote';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
-import CourseRecommendationsSlot from '../../../plugin-slots/CourseRecommendationsSlot';
+import DashboardFootnote from './DashboardFootnote';
+import { CourseRecommendationsSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
 const LINKEDIN_BLUE = '#2867B2';
 
@@ -53,10 +53,19 @@ const CourseCelebration = () => {
 
   const {
     org,
-    verifiedMode,
+    // verifiedMode,
     canViewCertificate,
     userTimezone,
   } = useModel('courseHomeMeta', courseId);
+
+  const verifiedMode = {
+    accessExpirationDate: null,
+    currency: 'USD',
+    currencySymbol: '$',
+    price: 99,
+    sku: '765F6C2',
+    upgradeUrl: 'https://commerce-coordinator.edx.org/lms/payment_page_redirect/?sku=765F6C2&course_run_key=course-v1%3AIBM%2BPY0101EN%2B2T2023',
+  };
 
   const {
     certStatus,
@@ -83,7 +92,7 @@ const CourseCelebration = () => {
   let certHeader;
   let visitEvent = 'celebration_generic';
   // These cases are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
-  switch (certStatus) {
+  switch ('audit_passing') {
     case 'downloadable':
       certHeader = intl.formatMessage(messages.certificateHeaderDownloadable);
       message = (
