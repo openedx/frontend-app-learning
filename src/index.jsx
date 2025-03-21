@@ -4,6 +4,7 @@ import {
   getConfig,
 } from '@edx/frontend-platform';
 import { AppProvider, ErrorPage, PageWrap } from '@edx/frontend-platform/react';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Routes, Route } from 'react-router-dom';
@@ -58,7 +59,7 @@ subscribe(APP_READY, () => {
                     path={ROUTES.PREFERENCES_UNSUBSCRIBE}
                     element={
                       <PageWrap><PreferencesUnsubscribe /></PageWrap>
-                    }
+                }
                   />
                   <Route
                     path={DECODE_ROUTES.ACCESS_DENIED}
@@ -72,7 +73,7 @@ subscribe(APP_READY, () => {
                           <OutlineTab />
                         </TabContainer>
                       </DecodePageRoute>
-                    )}
+                )}
                   />
                   <Route
                     path={DECODE_ROUTES.LIVE}
@@ -82,7 +83,7 @@ subscribe(APP_READY, () => {
                           <LiveTab />
                         </TabContainer>
                       </DecodePageRoute>
-                    )}
+                )}
                   />
                   <Route
                     path={DECODE_ROUTES.DATES}
@@ -92,7 +93,7 @@ subscribe(APP_READY, () => {
                           <DatesTab />
                         </TabContainer>
                       </DecodePageRoute>
-                    )}
+                )}
                   />
                   <Route
                     path={DECODE_ROUTES.DISCUSSION}
@@ -102,7 +103,7 @@ subscribe(APP_READY, () => {
                           <DiscussionTab />
                         </TabContainer>
                       </DecodePageRoute>
-                    )}
+                )}
                   />
                   {DECODE_ROUTES.PROGRESS.map((route) => (
                     <Route
@@ -119,7 +120,7 @@ subscribe(APP_READY, () => {
                             <ProgressTab />
                           </TabContainer>
                         </DecodePageRoute>
-                      )}
+                  )}
                     />
                   ))}
                   <Route
@@ -130,7 +131,7 @@ subscribe(APP_READY, () => {
                           <CourseExit />
                         </TabContainer>
                       </DecodePageRoute>
-                    )}
+                )}
                   />
                   {DECODE_ROUTES.COURSEWARE.map((route) => (
                     <Route
@@ -140,7 +141,18 @@ subscribe(APP_READY, () => {
                         <DecodePageRoute>
                           <CoursewareContainer />
                         </DecodePageRoute>
-                      )}
+                  )}
+                    />
+                  ))}
+                  {getConfig()?.PLUGIN_ROUTES?.map((route) => (
+                    <Route
+                      key={route}
+                      path={route}
+                      element={(
+                        <DecodePageRoute>
+                          <PluginSlot id="course_page_route_slot" pluginProps={{ route }} />
+                        </DecodePageRoute>
+                  )}
                     />
                   ))}
                 </Routes>
