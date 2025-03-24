@@ -192,7 +192,6 @@ describe('Courseware Service', () => {
           upgradeDeadline: '2013-02-05T05:00:00Z',
           upgradeUrl: 'link',
         },
-        canShowUpgradeSock: false,
         contentTypeGatingEnabled: false,
         id: 'course-v1:edX+DemoX+Demo_Course',
         title: 'Demonstration Course',
@@ -256,7 +255,6 @@ describe('Courseware Service', () => {
                 }),
                 upgrade_url: string('link'),
               },
-              can_show_upgrade_sock: boolean(false),
               content_type_gating_enabled: boolean(false),
               end: term({
                 generate: '2013-02-05T05:00:00Z',

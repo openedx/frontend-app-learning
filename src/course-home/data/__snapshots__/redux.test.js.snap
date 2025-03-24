@@ -489,7 +489,6 @@ exports[`Data layer integration tests Test fetchOutlineTab Should fetch, normali
     "outline": {
       "course-v1:edX+DemoX+Demo_Course": {
         "accessExpiration": null,
-        "canShowUpgradeSock": false,
         "certData": {
           "certStatus": null,
           "certWebViewUrl": null,
