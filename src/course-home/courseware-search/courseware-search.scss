@@ -101,6 +101,11 @@
     font-size: 0.875rem;
     color: $black;
 
+    > h3 {
+      font-size: inherit;
+      margin: 0;
+    }
+
     > span {
       display: block;
       overflow: hidden;

@@ -244,7 +244,7 @@ describe('CoursewareSearch', () => {
       expect(screen.queryByTestId('courseware-search-summary')).not.toBeInTheDocument();
     });
 
-    it('should show a summary for the results within a container with aria-live="polite"', () => {
+    it('should show a wrapper div with proper aria attributes', () => {
       mockModels({
         searchKeyword: 'fubar',
         total: 1,
@@ -253,7 +253,9 @@ describe('CoursewareSearch', () => {
 
       const results = screen.queryByTestId('courseware-search-results');
 
-      expect(results).toHaveAttribute('aria-live', 'polite');
+      expect(results).toHaveAttribute('aria-live', 'assertive');
+      expect(results).toHaveAttribute('aria-atomic', 'true');
+      expect(results).toHaveAttribute('role', 'alert');
       expect(within(results).queryByTestId('courseware-search-summary').textContent).toBe('Results for "fubar":');
     });
   });

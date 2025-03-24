@@ -63,6 +63,7 @@ export const CoursewareSearchResultsFilter = ({ intl }) => {
       variant="tabs"
       activeKey={activeKey}
       onSelect={setFilter}
+      aria-label={intl.formatMessage(messages.searchResultsFilterDescription)}
     >
       {filters.filter(({ count }) => (count > 0)).map(({ key, label }) => (
         <Tab key={key} eventKey={key} title={label} data-testid={`courseware-search-results-tabs-${key}`}>
