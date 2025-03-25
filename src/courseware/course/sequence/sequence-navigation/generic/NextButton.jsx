@@ -47,8 +47,7 @@ const NextButton = ({
   if (isAtTop) {
     return (
       <IconButton
-        variant="light"
-        className={buttonStyle}
+        className={`${buttonStyle} icon-hover`}
         onClick={onClick}
         src={nextArrow}
         disabled={disabled}
