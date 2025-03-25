@@ -40,7 +40,7 @@ const PreviousButton = ({
   if (isAtTop) {
     return (
       <IconButton
-      className={`${buttonStyle} icon-hover`}
+        className={`${buttonStyle} icon-hover`}
         onClick={onClickHandler}
         src={prevArrow}
         disabled={disabled}
