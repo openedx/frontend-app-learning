@@ -131,7 +131,7 @@ Deployment
 
 The Learning MFE is similar to all the other Open edX MFEs. Read the Open
 edX Developer Guide's section on
-`MFE applications <https://edx.readthedocs.io/projects/edx-developer-docs/en/latest/developers_guide/micro_frontends_in_open_edx.html>`_.
+`MFE applications <https://openedx.github.io/frontend-platform/>`_.
 
 Plugins
 =======
@@ -145,7 +145,7 @@ Environment Variables
 This MFE is configured via environment variables supplied at build time.
 All micro-frontends have a shared set of required environment variables,
 as documented in the Open edX Developer Guide under
-`Required Environment Variables <https://edx.readthedocs.io/projects/edx-developer-docs/en/latest/developers_guide/micro_frontends_in_open_edx.html#required-environment-variables>`_.
+`Required Environment Variables <https://openedx.github.io/frontend-platform/>`_.
 
 The learning micro-frontend also supports the following additional variables:
 
