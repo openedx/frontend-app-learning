@@ -41,9 +41,8 @@ Cloning and Setup
 
     git clone https://github.com/openedx/frontend-app-learning.git
 
-2. Use node v20.x.
+2. Use the version of Node specified in ``.nvmrc``.
 
-  The current version of the micro-frontend build scripts supports node 18.
   Using other major versions of node *may* work, but this is unsupported.  For
   convenience, this repository includes an ``.nvmrc`` file to help in setting the
   correct node version via `nvm <https://github.com/nvm-sh/nvm>`_.
