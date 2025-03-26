@@ -27,12 +27,12 @@ import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
 import ProgramCompletion from './ProgramCompletion';
-import DashboardFootnote from './DashboardFootnote';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import CourseRecommendationsSlot from '../../../plugin-slots/CourseExitPluginSlots/CourseRecommendationsSlot';
+import DashboardFootnotePluginSlot from '../../../plugin-slots/CourseExitPluginSlots/DashboardFootnotePluginSlot';
 
 const LINKEDIN_BLUE = '#2867B2';
 
@@ -119,7 +119,7 @@ const CourseCelebration = ({ intl }) => {
       }
       buttonEvent = 'view_cert';
       visitEvent = 'celebration_with_cert';
-      footnote = <DashboardFootnote variant={visitEvent} />;
+      footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
       break;
     case 'earned_but_not_available': {
       const endDate = <FormattedDate value={end} day="numeric" month="long" year="numeric" />;
@@ -142,7 +142,7 @@ const CourseCelebration = ({ intl }) => {
         </>
       );
       visitEvent = 'celebration_with_unavailable_cert';
-      footnote = <DashboardFootnote variant={visitEvent} />;
+      footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
       break;
     }
     case 'requesting':
@@ -163,12 +163,12 @@ const CourseCelebration = ({ intl }) => {
       certHeader = intl.formatMessage(messages.certificateHeaderRequestable);
       message = (<p>{intl.formatMessage(messages.requestCertificateBodyText)}</p>);
       visitEvent = 'celebration_with_requestable_cert';
-      footnote = <DashboardFootnote variant={visitEvent} />;
+      footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
       break;
     case 'unverified':
       certHeader = intl.formatMessage(messages.certificateHeaderUnverified);
       visitEvent = 'celebration_unverified';
-      footnote = <DashboardFootnote variant={visitEvent} />;
+      footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
       if (verificationStatus === 'pending') {
         message = (<p>{intl.formatMessage(messages.verificationPending)}</p>);
       } else {
@@ -240,7 +240,7 @@ const CourseCelebration = ({ intl }) => {
         if (verifiedMode.accessExpirationDate) {
           footnote = <UpgradeFootnote deadline={verifiedMode.accessExpirationDate} href={verifiedMode.upgradeUrl} />;
         } else {
-          footnote = <DashboardFootnote variant={visitEvent} />;
+          footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
         }
       } else {
         visitEvent = 'celebration_audit_no_upgrade';

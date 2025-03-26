@@ -10,7 +10,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { useModel } from '../../../generic/model-store';
 
 import CatalogSuggestion from './CatalogSuggestion';
-import DashboardFootnote from './DashboardFootnote';
+import DashboardFootnotePluginSlot from '../../../plugin-slots/CourseExitPluginSlots/DashboardFootnotePluginSlot';
 import messages from './messages';
 import { logClick, logVisit } from './utils';
 
@@ -53,7 +53,7 @@ const CourseNonPassing = ({ intl }) => {
             )}
           </div>
         </Alert>
-        <DashboardFootnote variant="nonpassing" />
+        <DashboardFootnotePluginSlot variant="nonpassing" />
         <CatalogSuggestion variant="nonpassing" />
       </div>
     </>
