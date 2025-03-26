@@ -31,8 +31,7 @@ import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
-import CourseRecommendationsSlot from '../../../plugin-slots/CourseExitPluginSlots/CourseRecommendationsSlot';
-import DashboardFootnotePluginSlot from '../../../plugin-slots/CourseExitPluginSlots/DashboardFootnotePluginSlot';
+import { CourseRecommendationsSlot, DashboardFootnotePluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
 const LINKEDIN_BLUE = '#2867B2';
 

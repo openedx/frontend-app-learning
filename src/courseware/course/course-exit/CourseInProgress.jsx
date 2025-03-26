@@ -10,7 +10,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { useModel } from '../../../generic/model-store';
 
 import CatalogSuggestion from './CatalogSuggestion';
-import DashboardFootnotePluginSlot from '../../../plugin-slots/CourseExitPluginSlots/DashboardFootnotePluginSlot';
+import { DashboardFootnotePluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 import messages from './messages';
 import { logClick, logVisit } from './utils';
 
