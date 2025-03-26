@@ -1,5 +1,6 @@
 import { Button } from '@openedx/paragon';
 import PropTypes from 'prop-types';
+import { getConfig } from '@edx/frontend-platform';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import messages from '../../../courseware/course/course-exit/messages';
@@ -24,14 +25,15 @@ ViewCoursesLink.propTypes = {
   }).isRequired,
 };
 
-const CourseExitViewCoursesPluginSlot = ({ href }) => (
-  <PluginSlot id="course_exit_view_courses_slot">
-    <ViewCoursesLink content={{ href }} />
-  </PluginSlot>
-);
-
-CourseExitViewCoursesPluginSlot.propTypes = {
-  href: PropTypes.string.isRequired,
+const CourseExitViewCoursesPluginSlot = () => {
+  const href = `${getConfig().LMS_BASE_URL}/dashboard`;
+  return (
+    <PluginSlot id="course_exit_view_courses_slot">
+      <ViewCoursesLink content={{ href }} />
+    </PluginSlot>
+  );
 };
+
+CourseExitViewCoursesPluginSlot.propTypes = {};
 
 export default CourseExitViewCoursesPluginSlot;

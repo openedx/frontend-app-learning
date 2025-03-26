@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-import { getConfig } from '@edx/frontend-platform';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
@@ -61,7 +60,7 @@ const CourseExit = () => {
 
   return (
     <>
-      <CourseExitViewCoursesPluginSlot href={`${getConfig().LMS_BASE_URL}/dashboard`} />
+      <CourseExitViewCoursesPluginSlot />
       {body}
     </>
   );
