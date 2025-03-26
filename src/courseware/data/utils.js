@@ -73,7 +73,6 @@ export function normalizeMetadata(metadata) {
   const { data, headers } = metadata;
   return {
     accessExpiration: camelCaseObject(data.access_expiration),
-    canShowUpgradeSock: data.can_show_upgrade_sock,
     contentTypeGatingEnabled: data.content_type_gating_enabled,
     courseGoals: camelCaseObject(data.course_goals),
     id: data.id,
