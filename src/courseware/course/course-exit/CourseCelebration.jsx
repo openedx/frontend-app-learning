@@ -31,7 +31,8 @@ import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
-import { CourseRecommendationsSlot, DashboardFootnotePluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
+import DashboardFootnote from './DashboardFootnote';
+import { CourseRecommendationsSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
 const LINKEDIN_BLUE = '#2867B2';
 
@@ -53,10 +54,19 @@ const CourseCelebration = ({ intl }) => {
 
   const {
     org,
-    verifiedMode,
+    // verifiedMode,
     canViewCertificate,
     userTimezone,
   } = useModel('courseHomeMeta', courseId);
+
+  const verifiedMode = {
+    accessExpirationDate: null,
+    currency: 'USD',
+    currencySymbol: '$',
+    price: 99,
+    sku: '765F6C2',
+    upgradeUrl: 'https://commerce-coordinator.edx.org/lms/payment_page_redirect/?sku=765F6C2&course_run_key=course-v1%3AIBM%2BPY0101EN%2B2T2023',
+  };
 
   const {
     certStatus,
@@ -83,7 +93,7 @@ const CourseCelebration = ({ intl }) => {
   let certHeader;
   let visitEvent = 'celebration_generic';
   // These cases are taken from the edx-platform `get_cert_data` function found in lms/courseware/views/views.py
-  switch (certStatus) {
+  switch ('audit_passing') {
     case 'downloadable':
       certHeader = intl.formatMessage(messages.certificateHeaderDownloadable);
       message = (
@@ -118,7 +128,7 @@ const CourseCelebration = ({ intl }) => {
       }
       buttonEvent = 'view_cert';
       visitEvent = 'celebration_with_cert';
-      footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
+      footnote = <DashboardFootnote variant={visitEvent} />;
       break;
     case 'earned_but_not_available': {
       const endDate = <FormattedDate value={end} day="numeric" month="long" year="numeric" />;
@@ -141,7 +151,7 @@ const CourseCelebration = ({ intl }) => {
         </>
       );
       visitEvent = 'celebration_with_unavailable_cert';
-      footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
+      footnote = <DashboardFootnote variant={visitEvent} />;
       break;
     }
     case 'requesting':
@@ -162,12 +172,12 @@ const CourseCelebration = ({ intl }) => {
       certHeader = intl.formatMessage(messages.certificateHeaderRequestable);
       message = (<p>{intl.formatMessage(messages.requestCertificateBodyText)}</p>);
       visitEvent = 'celebration_with_requestable_cert';
-      footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
+      footnote = <DashboardFootnote variant={visitEvent} />;
       break;
     case 'unverified':
       certHeader = intl.formatMessage(messages.certificateHeaderUnverified);
       visitEvent = 'celebration_unverified';
-      footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
+      footnote = <DashboardFootnote variant={visitEvent} />;
       if (verificationStatus === 'pending') {
         message = (<p>{intl.formatMessage(messages.verificationPending)}</p>);
       } else {
@@ -239,7 +249,7 @@ const CourseCelebration = ({ intl }) => {
         if (verifiedMode.accessExpirationDate) {
           footnote = <UpgradeFootnote deadline={verifiedMode.accessExpirationDate} href={verifiedMode.upgradeUrl} />;
         } else {
-          footnote = <DashboardFootnotePluginSlot variant={visitEvent} />;
+          footnote = <DashboardFootnote variant={visitEvent} />;
         }
       } else {
         visitEvent = 'celebration_audit_no_upgrade';

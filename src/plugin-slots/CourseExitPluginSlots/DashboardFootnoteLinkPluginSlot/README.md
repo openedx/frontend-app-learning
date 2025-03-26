@@ -1,12 +1,13 @@
-# Course Exit Dashboard Footnote Plugin Slot
+# Course Exit Dashboard Footnote Link Plugin Slot
 
-### Slot ID: `course_exit_dashboard_footnote_slot`
+### Slot ID: `course_exit_dashboard_footnote_link_slot`
 ### Props:
 * `variant`
+* `content: { destination }`
 
 ## Description
 
-This slot is used for modifying the footnote on the course exit page that links to the learner dashboard
+This slot is used for modifying the link to the learner dashboard in the footnote on the course exit page
 
 ## Example
 
@@ -19,14 +20,14 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    course_exit_dashboard_footnote_slot: {
+    course_exit_dashboard_footnote_link_slot: {
       keepDefault: true,
       plugins: [
         {
           op: PLUGIN_OPERATIONS.Modify,
           widgetId: 'default_contents',
           fn: (widget) => {
-            widget.content.dashboardFootnoteUrl = 'http://www.example.com';
+            widget.content.destination = 'http://www.example.com';
             return widget;
           }
         },

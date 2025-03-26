@@ -1,9 +1,9 @@
-import DashboardFootnotePluginSlot from './DashboardFootnotePluginSlot';
+import DashboardFootnoteLinkPluginSlot from './DashboardFootnoteLinkPluginSlot';
 import CourseRecommendationsSlot from './CourseRecommendationsSlot';
 import CourseExitViewCoursesPluginSlot from './CourseExitViewCoursesPluginSlot';
 
 export {
-  DashboardFootnotePluginSlot,
+  DashboardFootnoteLinkPluginSlot,
   CourseRecommendationsSlot,
   CourseExitViewCoursesPluginSlot,
 };
