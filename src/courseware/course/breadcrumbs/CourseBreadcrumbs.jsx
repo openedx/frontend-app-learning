@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+
 import { useModel, useModels } from '../../../generic/model-store';
 import BreadcrumbItem from './BreadcrumbItem';
 
@@ -15,13 +16,11 @@ const CourseBreadcrumbs = ({
   unitId,
   isStaff,
 }) => {
-  const course = useModel('coursewareMeta', courseId);  
+  const course = useModel('coursewareMeta', courseId);
   const courseStatus = useSelector((state) => state.courseware.courseStatus);
   const sequenceStatus = useSelector(
     (state) => state.courseware.sequenceStatus,
   );
-  console.log( useModels('sections', course.sectionIds));
-  
 
   const allSequencesInSections = Object.fromEntries(
     useModels('sections', course.sectionIds)?.map((section) => [
@@ -59,8 +58,6 @@ const CourseBreadcrumbs = ({
     }
     return [chapters, sequentials];
   }, [courseStatus, sequenceStatus, allSequencesInSections]);
-  console.log(links);
-   
 
   return (
     <nav aria-label="breadcrumb" className="d-inline-block col-sm-10 mb-3">
