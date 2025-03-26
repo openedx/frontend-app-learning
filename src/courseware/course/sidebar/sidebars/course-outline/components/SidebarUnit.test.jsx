@@ -36,12 +36,12 @@ describe('<SidebarUnit />', () => {
     };
   };
 
-  function renderWithProvider(props = {}, sidebarContext = defaultSidebarContext) {
+  function renderWithProvider(props = {}, sidebarContext = defaultSidebarContext, pathname = '/course') {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
         <IntlProvider locale="en">
           <SidebarContext.Provider value={{ ...sidebarContext }}>
-            <MemoryRouter>
+            <MemoryRouter initialEntries={[{ pathname }]}>
               <SidebarUnit
                 isFirst
                 id={unit.id}
@@ -136,6 +136,36 @@ describe('<SidebarUnit />', () => {
       expect(defaultSidebarContext.toggleSidebar).toHaveBeenCalledTimes(1);
       expect(defaultSidebarContext.toggleSidebar).toHaveBeenCalledWith(null);
       expect(window.sessionStorage.getItem('hideCourseOutlineSidebar')).toEqual('true');
+    });
+  });
+
+  describe('UnitLinkWrapper', () => {
+    describe('course in preview mode', () => {
+      beforeEach(async () => {
+        await initTestStore();
+        renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true }, '/preview/course');
+      });
+
+      it('href includes /preview', async () => {
+        const unitLink = screen.getByText(unit.title).closest('a');
+        const linkHref = unitLink.getAttribute('href');
+
+        expect(linkHref.includes('/preview/')).toBeTruthy();
+      });
+    });
+
+    describe('course in live mode', () => {
+      beforeEach(async () => {
+        await initTestStore();
+        renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true });
+      });
+
+      it('href does not include /preview/', async () => {
+        const unitLink = screen.getByText(unit.title).closest('a');
+        const linkHref = unitLink.getAttribute('href');
+
+        expect(linkHref.includes('/preview/')).toBeFalsy();
+      });
     });
   });
 });
