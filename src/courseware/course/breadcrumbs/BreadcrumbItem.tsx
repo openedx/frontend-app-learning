@@ -4,6 +4,7 @@ import {
   useToggle,
   ModalPopup,
   Menu,
+  Button,
 } from '@openedx/paragon';
 import { Link, useLocation } from 'react-router-dom';
 import JumpNavMenuItem from '../JumpNavMenuItem';
@@ -33,7 +34,7 @@ const BreadcrumbItem: React.FC<Props> = ({
   sequenceId,
   unitId,
   isStaff,
-}) => {    
+}) => {
   const defaultContent = content.filter(
     (destination: { default: boolean }) => destination.default,
   )[0] || { id: courseId, label: '', sequences: [] };
@@ -73,9 +74,9 @@ const BreadcrumbItem: React.FC<Props> = ({
           <>
             {
               // @ts-ignore
-              <a className="text-primary-500" variant="link" onClick={open} ref={setTarget}>
+              <Button className="text-primary-500 m-0 p-0" variant="link" onClick={open} ref={setTarget}>
                 {defaultContent.label}
-              </a>
+              </Button>
             }
             <ModalPopup positionRef={target} isOpen={isOpen} onClose={close}>
               <Menu>
