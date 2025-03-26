@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { IconButton } from '@openedx/paragon';
 import { MenuOpen as MenuOpenIcon } from '@openedx/paragon/icons';
 
@@ -8,7 +8,8 @@ import { useCourseOutlineSidebar } from './hooks';
 import { ID } from './constants';
 import messages from './messages';
 
-const CourseOutlineTrigger = ({ intl, isMobileView }) => {
+const CourseOutlineTrigger = ({ isMobileView }) => {
+  const intl = useIntl();
   const {
     currentSidebar,
     shouldDisplayFullScreen,
@@ -45,8 +46,7 @@ CourseOutlineTrigger.defaultProps = {
 };
 
 CourseOutlineTrigger.propTypes = {
-  intl: intlShape.isRequired,
   isMobileView: PropTypes.bool,
 };
 
-export default injectIntl(CourseOutlineTrigger);
+export default CourseOutlineTrigger;

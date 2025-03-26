@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 import { Button, useToggle, IconButton } from '@openedx/paragon';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   MenuOpen as MenuOpenIcon,
   ChevronLeft as ChevronLeftIcon,
@@ -16,7 +16,8 @@ import { ID } from './constants';
 import { useCourseOutlineSidebar } from './hooks';
 import messages from './messages';
 
-const CourseOutlineTray = ({ intl }) => {
+const CourseOutlineTray = () => {
+  const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
 
@@ -131,10 +132,6 @@ const CourseOutlineTray = ({ intl }) => {
   );
 };
 
-CourseOutlineTray.propTypes = {
-  intl: intlShape.isRequired,
-};
-
 CourseOutlineTray.ID = ID;
 
-export default injectIntl(CourseOutlineTray);
+export default CourseOutlineTray;
