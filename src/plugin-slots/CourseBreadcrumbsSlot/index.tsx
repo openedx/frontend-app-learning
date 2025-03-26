@@ -2,7 +2,7 @@ import React from 'react';
 
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
-import CourseBreadcrumbs from '../../courseware/course/CourseBreadcrumbs';
+import CourseBreadcrumbs from '../../courseware/course/breadcrumbs';
 
 interface Props {
   courseId: string;
