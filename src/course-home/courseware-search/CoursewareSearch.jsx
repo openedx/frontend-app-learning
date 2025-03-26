@@ -141,7 +141,15 @@ const CoursewareSearch = ({ ...sectionProps }) => {
               </Button>
             </div>
           </div>
-          <div className="courseware-search__results" aria-live="polite" data-testid="courseware-search-results">
+          <div
+            key={status}
+            className="courseware-search__results"
+            aria-live="assertive"
+            aria-atomic="true"
+            aria-busy={status === 'loading'}
+            data-testid="courseware-search-results"
+            role={status === 'results' ? 'alert' : 'none'}
+          >
             {status === 'loading' ? (
               <div className="courseware-search__spinner" data-testid="courseware-search-spinner">
                 <Spinner animation="border" variant="light" screenReaderText={formatMessage(messages.loading)} />
@@ -157,8 +165,6 @@ const CoursewareSearch = ({ ...sectionProps }) => {
                 {total > 0 ? (
                   <div
                     className="courseware-search__results-summary"
-                    aria-relevant="all"
-                    aria-atomic="true"
                     data-testid="courseware-search-summary"
                   >{formatMessage(messages.searchResultsLabel, { total, keyword: lastSearchKeyword })}
                   </div>
