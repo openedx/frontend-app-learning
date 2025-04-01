@@ -108,7 +108,7 @@ const NotificationTray = ({ intl }) => {
             />
           </PluginSlot>
         ) : (
-          <p className="p-3 small">{intl.formatMessage(messages.noNotificationsMessage)}</p>
+          <p className="p-3">{intl.formatMessage(messages.noNotificationsMessage)}</p>
         )}
       </div>
     </SidebarBase>
