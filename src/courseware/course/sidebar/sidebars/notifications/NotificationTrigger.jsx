@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
 
 import { WIDGETS } from '@src/constants';
@@ -12,9 +12,9 @@ import NotificationIcon from './NotificationIcon';
 export const ID = WIDGETS.NOTIFICATIONS;
 
 const NotificationTrigger = ({
-  intl,
   onClick,
 }) => {
+  const intl = useIntl();
   const {
     courseId,
     notificationStatus,
@@ -55,8 +55,7 @@ const NotificationTrigger = ({
 };
 
 NotificationTrigger.propTypes = {
-  intl: intlShape.isRequired,
   onClick: PropTypes.func.isRequired,
 };
 
-export default injectIntl(NotificationTrigger);
+export default NotificationTrigger;

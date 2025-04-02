@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBookmark, faCertificate, faInfo, faCalendar, faStar,
@@ -14,7 +14,8 @@ import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 import LaunchCourseHomeTourButton from '../../../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 
-const CourseTools = ({ intl }) => {
+const CourseTools = () => {
+  const intl = useIntl();
   const {
     courseId,
   } = useSelector(state => state.courseHome);
@@ -81,8 +82,4 @@ const CourseTools = ({ intl }) => {
   );
 };
 
-CourseTools.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(CourseTools);
+export default CourseTools;

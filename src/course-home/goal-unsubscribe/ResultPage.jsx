@@ -1,28 +1,26 @@
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
-import { FormattedMessage, injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Button, Hyperlink } from '@openedx/paragon';
 
 import messages from './messages';
 import { ReactComponent as UnsubscribeIcon } from './unsubscribe.svg';
 
-const ResultPage = ({ courseTitle, error, intl }) => {
-  const errorDescription = (
-    <FormattedMessage
-      id="learning.goals.unsubscribe.errorDescription"
-      defaultMessage="We were unable to unsubscribe you from goal reminder emails. Please try again later or {contactSupport} for help."
-      values={{
-        contactSupport: (
-          <Hyperlink
-            className="text-reset"
-            style={{ textDecoration: 'underline' }}
-            destination={`${getConfig().CONTACT_URL}`}
-          >
-            {intl.formatMessage(messages.contactSupport)}
-          </Hyperlink>
-        ),
-      }}
-    />
+const ResultPage = ({ courseTitle, error }) => {
+  const intl = useIntl();
+  const errorDescription = intl.formatMessage(
+    messages.errorDescription,
+    {
+      contactSupport: (
+        <Hyperlink
+          className="text-reset"
+          style={{ textDecoration: 'underline' }}
+          destination={`${getConfig().CONTACT_URL}`}
+        >
+          {intl.formatMessage(messages.contactSupport)}
+        </Hyperlink>
+      ),
+    },
   );
 
   const header = error
@@ -54,7 +52,6 @@ ResultPage.defaultProps = {
 ResultPage.propTypes = {
   courseTitle: PropTypes.string,
   error: PropTypes.bool,
-  intl: intlShape.isRequired,
 };
 
-export default injectIntl(ResultPage);
+export default ResultPage;

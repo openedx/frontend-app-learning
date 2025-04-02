@@ -1,5 +1,5 @@
 import React from 'react';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopyright } from '@fortawesome/free-regular-svg-icons';
@@ -105,8 +105,8 @@ function parseLicense(license) {
 
 const CourseLicense = ({
   license,
-  intl,
 }) => {
+  const intl = useIntl();
   const renderAllRightsReservedLicense = () => (
     <div className="text-gray-500">
       <FontAwesomeIcon aria-hidden="true" className="mr-1" icon={faCopyright} />
@@ -155,11 +155,10 @@ const CourseLicense = ({
 
 CourseLicense.propTypes = {
   license: PropTypes.string,
-  intl: intlShape.isRequired,
 };
 
 CourseLicense.defaultProps = {
   license: 'all-rights-reserved',
 };
 
-export default injectIntl(CourseLicense);
+export default CourseLicense;

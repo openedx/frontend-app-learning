@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
-import { injectIntl, intlShape, FormattedMessage } from '@edx/frontend-platform/i18n';
+import { useIntl, FormattedMessage } from '@edx/frontend-platform/i18n';
 import { getLoginRedirectUrl } from '@edx/frontend-platform/auth';
 import { Alert, Button, Hyperlink } from '@openedx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,7 +14,8 @@ import outlineMessages from '../../messages';
 import useEnrollClickHandler from '../../../../alerts/enrollment-alert/clickHook';
 import { useModel } from '../../../../generic/model-store';
 
-const PrivateCourseAlert = ({ intl, payload }) => {
+const PrivateCourseAlert = ({ payload }) => {
+  const intl = useIntl();
   const {
     anonymousUser,
     canEnroll,
@@ -103,7 +104,6 @@ const PrivateCourseAlert = ({ intl, payload }) => {
 };
 
 PrivateCourseAlert.propTypes = {
-  intl: intlShape.isRequired,
   payload: PropTypes.shape({
     anonymousUser: PropTypes.bool,
     canEnroll: PropTypes.bool,
@@ -111,4 +111,4 @@ PrivateCourseAlert.propTypes = {
   }).isRequired,
 };
 
-export default injectIntl(PrivateCourseAlert);
+export default PrivateCourseAlert;

@@ -1,4 +1,4 @@
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon, IconButton } from '@openedx/paragon';
 import { ArrowBackIos, Close } from '@openedx/paragon/icons';
 import classNames from 'classnames';
@@ -9,7 +9,6 @@ import messages from '../../messages';
 import SidebarContext from '../SidebarContext';
 
 const SidebarBase = ({
-  intl,
   title,
   ariaLabel,
   sidebarId,
@@ -18,6 +17,7 @@ const SidebarBase = ({
   showTitleBar,
   width,
 }) => {
+  const intl = useIntl();
   const {
     toggleSidebar,
     shouldDisplayFullScreen,
@@ -87,7 +87,6 @@ const SidebarBase = ({
 };
 
 SidebarBase.propTypes = {
-  intl: intlShape.isRequired,
   title: PropTypes.string.isRequired,
   ariaLabel: PropTypes.string.isRequired,
   sidebarId: PropTypes.string.isRequired,
@@ -102,4 +101,4 @@ SidebarBase.defaultProps = {
   showTitleBar: true,
 };
 
-export default injectIntl(SidebarBase);
+export default SidebarBase;

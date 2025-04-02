@@ -14,7 +14,7 @@ import {
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 import { useModel } from '../../generic/model-store';
@@ -26,9 +26,9 @@ const SocialIcons = ({
   emailBody,
   emailSubject,
   hashtags,
-  intl,
   socialMessage,
 }) => {
+  const intl = useIntl();
   const { marketingUrl } = useModel('coursewareMeta', courseId);
 
   const {
@@ -122,8 +122,7 @@ SocialIcons.propTypes = {
   emailBody: PropTypes.shape({}),
   emailSubject: PropTypes.shape({}),
   hashtags: PropTypes.arrayOf(PropTypes.string),
-  intl: intlShape.isRequired,
   socialMessage: PropTypes.shape({}),
 };
 
-export default injectIntl(SocialIcons);
+export default SocialIcons;

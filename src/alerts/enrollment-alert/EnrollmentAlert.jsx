@@ -1,5 +1,5 @@
 import React from 'react';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
 import { Alert, Button } from '@openedx/paragon';
 import { Info, WarningFilled } from '@openedx/paragon/icons';
@@ -11,7 +11,8 @@ import { useModel } from '../../generic/model-store';
 import messages from './messages';
 import useEnrollClickHandler from './clickHook';
 
-const EnrollmentAlert = ({ intl, payload }) => {
+const EnrollmentAlert = ({ payload }) => {
+  const intl = useIntl();
   const {
     canEnroll,
     courseId,
@@ -58,7 +59,6 @@ const EnrollmentAlert = ({ intl, payload }) => {
 };
 
 EnrollmentAlert.propTypes = {
-  intl: intlShape.isRequired,
   payload: PropTypes.shape({
     canEnroll: PropTypes.bool,
     courseId: PropTypes.string,
@@ -67,4 +67,4 @@ EnrollmentAlert.propTypes = {
   }).isRequired,
 };
 
-export default injectIntl(EnrollmentAlert);
+export default EnrollmentAlert;

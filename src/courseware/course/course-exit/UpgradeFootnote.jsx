@@ -3,9 +3,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import {
-  FormattedDate, FormattedMessage, injectIntl, intlShape,
-} from '@edx/frontend-platform/i18n';
+import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@openedx/paragon';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 
@@ -14,7 +12,8 @@ import { logClick } from './utils';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 
-const UpgradeFootnote = ({ deadline, href, intl }) => {
+const UpgradeFootnote = ({ deadline, href }) => {
+  const intl = useIntl();
   const { courseId } = useSelector(state => state.courseware);
   const { org } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
@@ -60,7 +59,6 @@ const UpgradeFootnote = ({ deadline, href, intl }) => {
 UpgradeFootnote.propTypes = {
   deadline: PropTypes.instanceOf(Date).isRequired,
   href: PropTypes.string.isRequired,
-  intl: intlShape.isRequired,
 };
 
-export default injectIntl(UpgradeFootnote);
+export default UpgradeFootnote;
