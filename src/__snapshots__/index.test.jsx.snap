@@ -1,0 +1,224 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`app registry subscribe: APP_INIT_ERROR.  snapshot: displays an ErrorPage to root element 1`] = `
+<React Strict Mode>
+  <ErrorPage
+    message="test-error-message"
+  />
+</React Strict Mode>
+`;
+
+exports[`app registry subscribe: APP_READY.  links App to root element 1`] = `
+<React Strict Mode>
+  <AppProvider
+    store={
+      {
+        "dispatch": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+        Symbol(Symbol.observable): [Function],
+      }
+    }
+  >
+    <HelmetWrapper
+      defer={true}
+      encodeSpecialCharacters={true}
+    >
+      <link
+        href="favicon-url"
+        rel="shortcut icon"
+        type="image/x-icon"
+      />
+    </HelmetWrapper>
+    <PathFixesProvider>
+      <NoticesProvider>
+        <UserMessagesProvider>
+          <Routes>
+            <Route
+              element={
+                <PageWrap>
+                  <Page Not Found />
+                </PageWrap>
+              }
+              path="*"
+            />
+            <Route
+              element={
+                <PageWrap>
+                  <Goal Unsubscribe />
+                </PageWrap>
+              }
+              path="/goal-unsubscribe/:token"
+            />
+            <Route
+              element={
+                <PageWrap>
+                  <Courseware Redirect Landing Page />
+                </PageWrap>
+              }
+              path="/redirect/*"
+            />
+            <Route
+              element={
+                <PageWrap>
+                  <Preferences Unsubscribe />
+                </PageWrap>
+              }
+              path="/preferences-unsubscribe/:userToken/:updatePatch"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Course Access Error Page />
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/access-denied"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Tab Container
+                    fetch={[Function]}
+                    slice="courseHome"
+                    tab="outline"
+                  >
+                    <Outline Tab />
+                  </Tab Container>
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/home"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Tab Container
+                    fetch={[Function]}
+                    slice="courseHome"
+                    tab="lti_live"
+                  >
+                    <Live Tab />
+                  </Tab Container>
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/live"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Tab Container
+                    fetch={[Function]}
+                    slice="courseHome"
+                    tab="dates"
+                  >
+                    <Dates Tab />
+                  </Tab Container>
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/dates"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Tab Container
+                    fetch={[Function]}
+                    slice="courseHome"
+                    tab="discussion"
+                  >
+                    <Discussion Tab />
+                  </Tab Container>
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/discussion/:path/*"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Tab Container
+                    fetch={[Function]}
+                    isProgressTab={true}
+                    slice="courseHome"
+                    tab="progress"
+                  >
+                    <Progress Tab />
+                  </Tab Container>
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/progress/:targetUserId/"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Tab Container
+                    fetch={[Function]}
+                    isProgressTab={true}
+                    slice="courseHome"
+                    tab="progress"
+                  >
+                    <Progress Tab />
+                  </Tab Container>
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/progress"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Tab Container
+                    fetch={[Function]}
+                    slice="courseware"
+                    tab="courseware"
+                  >
+                    <Course Exit />
+                  </Tab Container>
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/course-end"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Courseware Container />
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/:sequenceId/:unitId"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Courseware Container />
+                </DecodePageRoute>
+              }
+              path="/course/:courseId/:sequenceId"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Courseware Container />
+                </DecodePageRoute>
+              }
+              path="/course/:courseId"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Courseware Container />
+                </DecodePageRoute>
+              }
+              path="/preview/course/:courseId/:sequenceId/:unitId"
+            />
+            <Route
+              element={
+                <DecodePageRoute>
+                  <Courseware Container />
+                </DecodePageRoute>
+              }
+              path="/preview/course/:courseId/:sequenceId"
+            />
+          </Routes>
+        </UserMessagesProvider>
+      </NoticesProvider>
+    </PathFixesProvider>
+  </AppProvider>
+</React Strict Mode>
+`;
