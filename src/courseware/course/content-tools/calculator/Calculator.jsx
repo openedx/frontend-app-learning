@@ -341,7 +341,7 @@ class Calculator extends Component {
                         <li>arccsch(4x+y)</li>
                       </ul>
                     </td>
-                    <td dir="auto" />
+                    <td aria-label="todo: what is this? it's causing a jsx-a11y/control-has-associated-label error" dir="auto" />
                   </tr>
                   <tr>
                     <th scope="row">
