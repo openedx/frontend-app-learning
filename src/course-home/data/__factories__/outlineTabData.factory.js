@@ -31,7 +31,6 @@ Factory.define('outlineTabData')
     course_access_redirect: false,
     has_scheduled_content: null,
     access_expiration: null,
-    can_show_upgrade_sock: false,
     cert_data: {
       cert_status: null,
       cert_web_view_url: null,
