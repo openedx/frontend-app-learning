@@ -102,6 +102,23 @@ const useIFrameBehavior = ({
   useEventListener('message', receiveMessage);
 
   // Send visibility status to the iframe. It's used to mark XBlocks as viewed.
+  const updateIframeVisibility = () => {
+    const iframeElement = document.getElementById(elementId) as HTMLIFrameElement | null;
+    const rect = iframeElement?.getBoundingClientRect();
+    const visibleInfo = {
+      type: 'unit.visibilityStatus',
+      data: {
+        topPosition: rect?.top,
+        viewportHeight: window.innerHeight,
+      },
+    };
+    iframeElement?.contentWindow?.postMessage(
+      visibleInfo,
+      `${getConfig().LMS_BASE_URL}`,
+    );
+  };
+
+  // Set up visibility tracking event listeners.
   React.useEffect(() => {
     if (!hasLoaded) {
       return undefined;
@@ -112,26 +129,8 @@ const useIFrameBehavior = ({
       return undefined;
     }
 
-    const updateIframeVisibility = () => {
-      const rect = iframeElement.getBoundingClientRect();
-      const visibleInfo = {
-        type: 'unit.visibilityStatus',
-        data: {
-          topPosition: rect.top,
-          viewportHeight: window.innerHeight,
-        },
-      };
-      iframeElement?.contentWindow?.postMessage(
-        visibleInfo,
-        `${getConfig().LMS_BASE_URL}`,
-      );
-    };
-
     // Throttle the update function to prevent it from sending too many messages to the iframe.
     const throttledUpdateVisibility = throttle(updateIframeVisibility, 100);
-
-    // Update the visibility of the iframe in case the element is already visible.
-    updateIframeVisibility();
 
     // Add event listeners to update the visibility of the iframe when the window is scrolled or resized.
     window.addEventListener('scroll', throttledUpdateVisibility);
@@ -167,6 +166,9 @@ const useIFrameBehavior = ({
         dispatch(processEvent(e.data, fetchCourse));
       }
     };
+
+    // Update the visibility of the iframe in case the element is already visible.
+    updateIframeVisibility();
   };
 
   React.useEffect(() => {
