@@ -341,7 +341,6 @@ class Calculator extends Component {
                         <li>arccsch(4x+y)</li>
                       </ul>
                     </td>
-                    <td dir="auto" />
                   </tr>
                   <tr>
                     <th scope="row">

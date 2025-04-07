@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { logError } from '@edx/frontend-platform/logging';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useExamAccessToken, useFetchExamAccessToken, useIsExam } from '@edx/frontend-lib-special-exams';
 
 import { initializeMockApp } from '../../../../../setupTest';
@@ -64,24 +64,27 @@ describe('useExamAccess hook', () => {
     it('returns true for blockAccess if an exam but accessToken not yet fetched', async () => {
       useIsExam.mockImplementation(() => mockUseIsExam(true));
 
-      const { result, waitForNextUpdate } = renderHook(() => useExamAccess({ id }));
+      const { result } = renderHook(() => useExamAccess({ id }));
       const { accessToken, blockAccess } = result.current;
 
       expect(accessToken).toEqual('');
       expect(blockAccess).toBe(true);
       expect(mockFetchExamAccessToken).toHaveBeenCalled();
 
-      // This is to get rid of the act(...) warning.
-      await act(async () => {
-        await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current).toBeTruthy();
+        expect(result.current?.isFetching).toBeFalsy();
       });
     });
     it('returns false for blockAccess if an exam and accessToken fetch succeeds', async () => {
       useIsExam.mockImplementation(() => mockUseIsExam(true));
-      const { result, waitForNextUpdate } = renderHook(() => useExamAccess({ id }));
+      const { result } = renderHook(() => useExamAccess({ id }));
 
       // We wait for the promise to resolve and for updates to state to complete so that blockAccess is updated.
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current).toBeTruthy();
+        expect(result.current?.isFetching).toBeFalsy();
+      });
 
       const { accessToken, blockAccess } = result.current;
 
@@ -90,7 +93,7 @@ describe('useExamAccess hook', () => {
       expect(mockFetchExamAccessToken).toHaveBeenCalled();
     });
     it('in progress', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useExamAccess({ id }));
+      const { result } = renderHook(() => useExamAccess({ id }));
 
       let { accessToken, blockAccess } = result.current;
 
@@ -104,7 +107,10 @@ describe('useExamAccess hook', () => {
       // wait for call to setBlockAccess in the finally clause of useEffect hook.
       await act(async () => {
         jest.runAllTimers();
-        await waitForNextUpdate();
+        await waitFor(() => {
+          expect(result.current).toBeTruthy();
+          expect(result.current?.isFetching).toBeFalsy();
+        });
       });
 
       ({ accessToken, blockAccess } = result.current);
@@ -119,17 +125,22 @@ describe('useExamAccess hook', () => {
       const testError = 'test-error';
       mockFetchExamAccessToken.mockImplementationOnce(() => Promise.reject(testError));
 
-      const { result, waitForNextUpdate } = renderHook(() => useExamAccess({ id }));
+      const { result } = renderHook(() => useExamAccess({ id }));
 
       // We wait for the promise to resolve and for updates to state to complete so that blockAccess is updated.
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current).toBeTruthy();
+        expect(result.current?.isFetching).toBeFalsy();
+      });
 
       const { accessToken, blockAccess } = result.current;
 
       expect(accessToken).toEqual(testAccessToken.curr);
       expect(blockAccess).toBe(false);
       expect(mockFetchExamAccessToken).toHaveBeenCalled();
-      expect(logError).toHaveBeenCalledWith(testError);
+      await waitFor(() => {
+        expect(logError).toHaveBeenCalledWith(testError);
+      });
     });
   });
 });
