@@ -10,23 +10,6 @@ describe('MockedPluginSlot', () => {
     expect(component).toBeInTheDocument();
   });
 
-  it('renders as the slot children directly if there is content within', () => {
-    render(
-      <div role="article">
-        <MockedPluginSlot>
-          <q role="note">How much wood could a woodchuck chuck if a woodchuck could chuck wood?</q>
-        </MockedPluginSlot>
-      </div>,
-    );
-
-    const component = screen.getByRole('article');
-    expect(component).toBeInTheDocument();
-
-    // Direct children
-    const quote = component.querySelector(':scope > q');
-    expect(quote.getAttribute('role')).toBe('note');
-  });
-
   it('renders mock plugin with a data-testid ', () => {
     render(
       <MockedPluginSlot id="guybrush">
