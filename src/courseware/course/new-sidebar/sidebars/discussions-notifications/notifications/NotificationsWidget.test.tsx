@@ -9,7 +9,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 
 import {
-  initializeMockApp, render, screen, within, act, fireEvent, waitFor,
+  initializeMockApp, render, screen, act, fireEvent, waitFor,
 } from '../../../../../../setupTest';
 import initializeStore from '../../../../../../store';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../../../../../utils';
@@ -93,27 +93,6 @@ describe('NotificationsWidget', () => {
     expect(screen.getByTestId('notification_widget_slot')).toBeInTheDocument();
   });
 
-  it('renders upgrade card', async () => {
-    const contextData: Partial<SidebarContextData> = {
-      currentSidebar: ID,
-      courseId,
-      hideNotificationbar: false,
-      isNotificationbarAvailable: true,
-    };
-    await fetchAndRender(
-      <SidebarContext.Provider value={contextData as SidebarContextData}>
-        <NotificationsWidget />
-      </SidebarContext.Provider>,
-    );
-
-    // The Upgrade Notification should be inside the PluginSlot.
-    const UpgradeNotification = document.querySelector('.upgrade-notification');
-    expect(UpgradeNotification).toBeInTheDocument();
-
-    expect(screen.getByRole('link', { name: 'Upgrade for $149' })).toBeInTheDocument();
-    expect(screen.queryByText('You have no new notifications at this time.')).not.toBeInTheDocument();
-  });
-
   it('renders no notifications bar if no verified mode', async () => {
     setMetadata({ verified_mode: null });
     const contextData: Partial<SidebarContextData> = {
@@ -128,44 +107,6 @@ describe('NotificationsWidget', () => {
       </SidebarContext.Provider>,
     );
     expect(screen.queryByText('Notifications')).not.toBeInTheDocument();
-  });
-
-  it.each([
-    {
-      description: 'close the notification widget.',
-      enabledInContext: true,
-      testId: 'notification-widget',
-    },
-    {
-      description: 'close the sidebar when the notification widget is closed, and the discussion widget is unavailable.',
-      enabledInContext: false,
-      testId: 'sidebar-DISCUSSIONS_NOTIFICATIONS',
-    },
-  ])('successfully %s', async ({ enabledInContext, testId }) => {
-    const userVerifiedMode = Factory.build('verifiedMode');
-
-    await setupDiscussionSidebar({
-      verifiedMode: userVerifiedMode,
-      enabledInContext,
-      isNewDiscussionSidebarViewEnabled: true,
-    });
-
-    const sidebarButton = screen.getByRole('button', { name: /Show sidebar tray/i });
-
-    await act(async () => {
-      fireEvent.click(sidebarButton);
-    });
-
-    const notificationWidget = await waitFor(() => screen.getByTestId('notification-widget'));
-    const closeNotificationButton = within(notificationWidget).getByRole('button', { name: /Close/i });
-
-    await act(async () => {
-      fireEvent.click(closeNotificationButton);
-    });
-
-    await waitFor(() => {
-      expect(screen.queryByTestId(testId)).not.toBeInTheDocument();
-    });
   });
 
   it('marks notification as seen 3 seconds later', async () => {

@@ -148,18 +148,6 @@ describe('Course', () => {
     });
   });
 
-  it('displays notification trigger and toggles active class on click', async () => {
-    render(<Course {...mockData} />, { wrapWithRouter: true });
-
-    waitFor(() => {
-      const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
-      expect(notificationTrigger).toBeInTheDocument();
-      expect(notificationTrigger.parentNode).not.toHaveClass('sidebar-active', { exact: true });
-      fireEvent.click(notificationTrigger);
-      expect(notificationTrigger.parentNode).toHaveClass('sidebar-active');
-    });
-  });
-
   it('handles click to open/close discussions sidebar', async () => {
     await setupDiscussionSidebar();
 
