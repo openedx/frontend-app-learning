@@ -439,7 +439,7 @@
   height: 56px !important;
 }
 
-@include media-breakpoint-down(xs) {
+@media (--pgn-size-breakpoint-max-width-xs) {
   .course-outline-tab .pgn__card {
     .pgn__card-header {
       display: block;
