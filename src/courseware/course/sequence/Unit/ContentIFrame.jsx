@@ -75,29 +75,30 @@ const ContentIFrame = ({
           <iframe title={title} {...contentIFrameProps} data-testid={testIDs.contentIFrame} />
         </div>
       )}
-      {modalOptions.isOpen && 
-          (<ModalDialog
+      {modalOptions.isOpen
+          && (
+          <ModalDialog
             dialogClassName="modal-lti"
             onClose={handleModalClose}
-            size={ modalOptions.isFullscreen ? 'fullscreen': 'md'}
+            size={modalOptions.isFullscreen ? 'fullscreen' : 'md'}
             isOpen
             hasCloseButton={false}
           >
             <ModalDialog.Body className={modalOptions.modalBodyClassName}>
-            {modalOptions.body
-              ? <div className="unit-modal">{ modalOptions.body }</div>
-              : (
-                <iframe
-                  title={modalOptions.title}
-                  allow={IFRAME_FEATURE_POLICY}
-                  frameBorder="0"
-                  src={modalOptions.url}
-                  style={{ width: '100%', height: modalOptions.height }}
-                />
-              )}
+              {modalOptions.body
+                ? <div className="unit-modal">{ modalOptions.body }</div>
+                : (
+                  <iframe
+                    title={modalOptions.title}
+                    allow={IFRAME_FEATURE_POLICY}
+                    frameBorder="0"
+                    src={modalOptions.url}
+                    style={{ width: '100%', height: modalOptions.height }}
+                  />
+                )}
             </ModalDialog.Body>
           </ModalDialog>
-      )}
+          )}
     </>
   );
 };
