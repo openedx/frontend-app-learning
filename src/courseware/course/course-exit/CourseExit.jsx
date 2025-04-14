@@ -1,8 +1,5 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
-import { getConfig } from '@edx/frontend-platform';
-import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';
-import { Button } from '@openedx/paragon';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
@@ -10,12 +7,12 @@ import CourseCelebration from './CourseCelebration';
 import CourseInProgress from './CourseInProgress';
 import CourseNonPassing from './CourseNonPassing';
 import { COURSE_EXIT_MODES, getCourseExitMode } from './utils';
-import messages from './messages';
 import { unsubscribeFromGoalReminders } from './data/thunks';
+import { CourseExitViewCoursesPluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
 import { useModel } from '../../../generic/model-store';
 
-const CourseExit = ({ intl }) => {
+const CourseExit = () => {
   const { courseId } = useSelector(state => state.courseware);
   const {
     certificateData,
@@ -63,21 +60,10 @@ const CourseExit = ({ intl }) => {
 
   return (
     <>
-      <div className="row w-100 mt-2 mb-4 justify-content-end">
-        <Button
-          variant="outline-primary"
-          href={`${getConfig().LMS_BASE_URL}/dashboard`}
-        >
-          {intl.formatMessage(messages.viewCoursesButton)}
-        </Button>
-      </div>
+      <CourseExitViewCoursesPluginSlot />
       {body}
     </>
   );
 };
 
-CourseExit.propTypes = {
-  intl: intlShape.isRequired,
-};
-
-export default injectIntl(CourseExit);
+export default CourseExit;
