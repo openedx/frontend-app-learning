@@ -16,6 +16,7 @@ jest.mock('react-router-dom', () => ({
   useLocation: () => ({
     search: '?consentPath=/some-path',
   }),
+  useSearchParams: () => [new URLSearchParams('?consentPath=/some-path'), () => {}],
 }));
 
 describe('RedirectPage component', () => {
