@@ -56,7 +56,21 @@ const messages = defineMessages({
     defaultMessage: 'There was an error on the search process. Please try again in a few minutes. If the problem persists, please contact the support team.',
     description: 'Error message to show to the users when there\'s an error with the endpoint or the returned payload format.',
   },
-
+  searchResultsFilterDescription: {
+    id: 'learn.coursewareSearch.searchResultsFilterDescription',
+    defaultMessage: 'Search result filters',
+    description: 'Screen Reader text to describe the filter options.',
+  },
+  searchResultsBreadcrumb: {
+    id: 'learn.coursewareSearch.searchResultsBreadcrumb',
+    defaultMessage: 'Location: {path}.',
+    description: 'Screen Reader text to describe the search result breadcrumbs.',
+  },
+  searchResultsBreadcrumbSeparator: {
+    id: 'learn.searchResultsBreadcrumbSeparator',
+    defaultMessage: ', then ',
+    description: 'Screen Reader text to connect breadcrumb sections. i.e.: "Introduction, then Register, then Something else.',
+  },
   // These are translations for labeling the filters
   'filter:all': {
     id: 'learn.coursewareSearch.filter:all',
