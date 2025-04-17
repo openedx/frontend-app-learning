@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { Button, useToggle, IconButton } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -19,7 +19,7 @@ import messages from './messages';
 const CourseOutlineTray = () => {
   const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState(null);
-  const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
+  const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(false);
 
   const {
     courseId,
@@ -42,6 +42,12 @@ const CourseOutlineTray = () => {
   const sectionsIds = Object.keys(sections);
   const sequenceIds = sections[selectedSection || activeSectionId]?.sequenceIds || [];
   const backButtonTitle = sections[selectedSection || activeSectionId]?.title;
+
+  useEffect(() => {
+    if (sequenceIds.length > 0) {
+      setDisplaySequenceLevel();
+    }
+  }, [sequenceIds]);
 
   const handleBackToSectionLevel = () => {
     setDisplaySectionLevel();
