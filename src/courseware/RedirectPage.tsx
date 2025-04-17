@@ -1,18 +1,20 @@
-import PropTypes from 'prop-types';
 import {
-  generatePath, useParams, useLocation,
+  generatePath, useParams, useLocation, useSearchParams,
 } from 'react-router-dom';
 import { getConfig } from '@edx/frontend-platform';
 
-import queryString from 'query-string';
 import { REDIRECT_MODES } from '../constants';
 
-const RedirectPage = ({
-  pattern, mode,
-}) => {
+interface Props {
+  pattern: string;
+  mode: string;
+}
+
+const RedirectPage = ({ pattern = '', mode }: Props) => {
   const { courseId } = useParams();
   const location = useLocation();
-  const { consentPath } = queryString.parse(location?.search);
+  const [searchParams] = useSearchParams();
+  const consentPath = searchParams.get('consentPath') ?? '';
 
   const {
     LMS_BASE_URL,
@@ -37,15 +39,6 @@ const RedirectPage = ({
   }
 
   return null;
-};
-
-RedirectPage.propTypes = {
-  pattern: PropTypes.string,
-  mode: PropTypes.string.isRequired,
-};
-
-RedirectPage.defaultProps = {
-  pattern: null,
 };
 
 export default RedirectPage;
