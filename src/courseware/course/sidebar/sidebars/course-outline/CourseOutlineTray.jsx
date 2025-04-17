@@ -19,7 +19,7 @@ import messages from './messages';
 const CourseOutlineTray = () => {
   const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState(null);
-  const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
+  const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(false);
 
   const {
     courseId,
