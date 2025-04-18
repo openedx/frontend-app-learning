@@ -15,7 +15,7 @@ const CourseHomeSectionOutlineSlot: React.FC<Props> = ({
     id="course_home_section_outline_slot"
     pluginProps={{ expandAll, sectionIds, sections }}
   >
-    <ol id="courseHome-outline" className="list-unstyled">
+    <ol id="courseHome-outline" className="list-unstyled" role="presentation">
       {sectionIds.map((sectionId) => (
         <Section
           key={sectionId}
