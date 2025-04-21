@@ -1,6 +1,6 @@
 # `frontend-app-learning` Plugin Slots
 
-* [`footer_slot`](./FooterSlot/)
+* [`org.openedx.frontend.layout.footer.v1`](./FooterSlot/)
 * [`org.openedx.frontend.layout.header_learning.v1`](./HeaderSlot/)
 * [`org.openedx.frontend.learning.content_iframe_loader.v1`](./ContentIFrameLoaderSlot/)
 * [`org.openedx.frontend.learning.course_breadcrumbs.v1`](./CourseBreadcrumbsSlot/)
