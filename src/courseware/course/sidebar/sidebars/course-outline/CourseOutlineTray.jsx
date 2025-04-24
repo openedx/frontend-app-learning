@@ -1,28 +1,24 @@
-import { useState } from "react";
-import classNames from "classnames";
-import { Button, useToggle, IconButton } from "@openedx/paragon";
-import { useIntl } from "@edx/frontend-platform/i18n";
+import { useState } from 'react';
+import classNames from 'classnames';
+import { Button, useToggle, IconButton } from '@openedx/paragon';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   MenuOpen as MenuOpenIcon,
   ChevronLeft as ChevronLeftIcon,
-} from "@openedx/paragon/icons";
+} from '@openedx/paragon/icons';
 
-import { LOADING } from "@src/constants";
-import PageLoading from "@src/generic/PageLoading";
-import SidebarSection from "./components/SidebarSection";
-import SidebarSequence from "./components/SidebarSequence";
-import { ID } from "./constants";
-import { useCourseOutlineSidebar } from "./hooks";
-import messages from "./messages";
+import { LOADING } from '@src/constants';
+import PageLoading from '@src/generic/PageLoading';
+import SidebarSection from './components/SidebarSection';
+import SidebarSequence from './components/SidebarSequence';
+import { ID } from './constants';
+import { useCourseOutlineSidebar } from './hooks';
+import messages from './messages';
 
 const CourseOutlineTray = () => {
   const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState(null);
-  const [
-    isDisplaySequenceLevel,
-    setDisplaySequenceLevel,
-    setDisplaySectionLevel,
-  ] = useToggle(true);
+  const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
 
   const {
     courseId,
@@ -37,10 +33,10 @@ const CourseOutlineTray = () => {
     sections,
     sequences,
   } = useCourseOutlineSidebar();
-
+  
   const resolvedSectionId =
     selectedSection ||
-    Object.keys(sections).find((sectionId) =>
+    Object.keys(sections).find(sectionId =>
       sections[sectionId].sequenceIds.includes(activeSequenceId)
     );
 
@@ -89,48 +85,48 @@ const CourseOutlineTray = () => {
 
   if (courseOutlineStatus === LOADING) {
     return (
-      <div
-        className={classNames("outline-sidebar-wrapper", {
-          "flex-shrink-0 mr-4 h-auto": !shouldDisplayFullScreen,
-          "bg-white m-0 fixed-top w-100 vh-100": shouldDisplayFullScreen,
-        })}
+      <div className={classNames('outline-sidebar-wrapper', {
+        'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
+        'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
+      })}
       >
         <section className="outline-sidebar w-100">
           {sidebarHeading}
-          <PageLoading srMessage={intl.formatMessage(messages.loading)} />
+          <PageLoading
+            srMessage={intl.formatMessage(messages.loading)}
+          />
         </section>
       </div>
     );
   }
 
   return (
-    <div
-      className={classNames("outline-sidebar-wrapper", {
-        "flex-shrink-0 mr-4 h-auto": !shouldDisplayFullScreen,
-        "bg-white m-0 fixed-top w-100 vh-100": shouldDisplayFullScreen,
-      })}
+    <div className={classNames('outline-sidebar-wrapper', {
+      'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
+      'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
+    })}
     >
       <section className="outline-sidebar w-100">
         {sidebarHeading}
         <ol id="outline-sidebar-outline" className="list-unstyled">
           {isDisplaySequenceLevel
             ? sequenceIds.map((sequenceId) => (
-                <SidebarSequence
-                  key={sequenceId}
-                  courseId={courseId}
-                  sequence={sequences[sequenceId]}
-                  defaultOpen={sequenceId === activeSequenceId}
-                  activeUnitId={unitId}
-                />
-              ))
+              <SidebarSequence
+                key={sequenceId}
+                courseId={courseId}
+                sequence={sequences[sequenceId]}
+                defaultOpen={sequenceId === activeSequenceId}
+                activeUnitId={unitId}
+              />
+            ))
             : sectionsIds.map((sectionId) => (
-                <SidebarSection
-                  key={sectionId}
-                  courseId={courseId}
-                  section={sections[sectionId]}
-                  handleSelectSection={handleSelectSection}
-                />
-              ))}
+              <SidebarSection
+                key={sectionId}
+                courseId={courseId}
+                section={sections[sectionId]}
+                handleSelectSection={handleSelectSection}
+              />
+            ))}
         </ol>
       </section>
     </div>
