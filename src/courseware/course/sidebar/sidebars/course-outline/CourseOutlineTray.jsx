@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import classNames from 'classnames';
 import { Button, useToggle, IconButton } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -48,13 +48,6 @@ const CourseOutlineTray = () => {
   const sectionsIds = Object.keys(sections);
   const sequenceIds = sections[resolvedSectionId]?.sequenceIds || [];
   const backButtonTitle = sections[resolvedSectionId]?.title;
-
-  const currentId = activeSequenceId || activeSectionId;
-  console.log('sections', JSON.stringify(sections));
-  console.log('currentId', JSON.stringify(currentId));
-  console.log('sectionsIds', JSON.stringify(sectionsIds));
-  console.log('sequenceIds', JSON.stringify(sequenceIds));
-
 
   const handleBackToSectionLevel = () => {
     setDisplaySectionLevel();
