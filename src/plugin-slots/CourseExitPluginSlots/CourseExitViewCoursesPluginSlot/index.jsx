@@ -28,7 +28,7 @@ ViewCoursesLink.propTypes = {
 const CourseExitViewCoursesPluginSlot = () => {
   const href = `${getConfig().LMS_BASE_URL}/dashboard`;
   return (
-    <PluginSlot id="course_exit_view_courses_slot">
+    <PluginSlot id="org.openedx.frontend.learning.course_exit_view_courses.v1">
       <ViewCoursesLink content={{ href }} />
     </PluginSlot>
   );

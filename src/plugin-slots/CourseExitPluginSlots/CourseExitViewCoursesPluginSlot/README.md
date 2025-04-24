@@ -1,8 +1,8 @@
 # Course Exit "View Courses" Button Plugin Slot
 
-### Slot ID: `course_exit_view_courses_slot`
+### Slot ID: `org.openedx.frontend.learning.course_exit_view_courses.v1`
 ### Props:
-* `href`
+* `content: { href }`
 
 ## Description
 
@@ -17,7 +17,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    course_exit_view_courses_slot: {
+    'org.openedx.frontend.learning.course_exit_view_courses.v1: {
       keepDefault: true,
       plugins: [
         {

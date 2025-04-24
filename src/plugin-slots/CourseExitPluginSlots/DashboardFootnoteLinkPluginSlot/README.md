@@ -1,6 +1,6 @@
 # Course Exit Dashboard Footnote Link Plugin Slot
 
-### Slot ID: `course_exit_dashboard_footnote_link_slot`
+### Slot ID: `org.openedx.frontend.learning.course_exit_dashboard_footnote_link.v1`
 ### Props:
 * `variant`
 * `content: { destination }`
@@ -20,7 +20,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    course_exit_dashboard_footnote_link_slot: {
+    'org.openedx.frontend.learning.course_exit_dashboard_footnote_link.v1': {
       keepDefault: true,
       plugins: [
         {

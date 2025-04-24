@@ -37,7 +37,7 @@ DashboardFootnoteLink.propTypes = {
 const DashboardFootnoteLinkPluginSlot = ({ variant }) => {
   const destination = `${getConfig().LMS_BASE_URL}/dashboard`;
   return (
-    <PluginSlot id="course_exit_dashboard_footnote_link_slot">
+    <PluginSlot id="org.openedx.frontend.learning.course_exit_dashboard_footnote_link.v1">
       <DashboardFootnoteLink variant={variant} content={{ destination }} />
     </PluginSlot>
   );
