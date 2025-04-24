@@ -7,7 +7,6 @@ import {
   ChevronLeft as ChevronLeftIcon,
 } from '@openedx/paragon/icons';
 
-import { useModel } from '@src/generic/model-store';
 import { LOADING } from '@src/constants';
 import PageLoading from '@src/generic/PageLoading';
 import SidebarSection from './components/SidebarSection';
@@ -34,10 +33,6 @@ const CourseOutlineTray = () => {
     sections,
     sequences,
   } = useCourseOutlineSidebar();
-
-  const {
-    sectionId: activeSectionId,
-  } = useModel('sequences', activeSequenceId);
   
   const resolvedSectionId =
     selectedSection ||
