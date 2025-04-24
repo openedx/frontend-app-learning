@@ -4,9 +4,8 @@ import React from 'react';
 import { ErrorPage } from '@edx/frontend-platform/react';
 import { StrictDict } from '@edx/react-unit-test-utils';
 import { ModalDialog, Modal } from '@openedx/paragon';
-import { PluginSlot } from '@openedx/frontend-plugin-framework';
+import { ContentIFrameLoaderSlot } from '../../../../plugin-slots/ContentIFrameLoaderSlot';
 
-import PageLoading from '@src/generic/PageLoading';
 import * as hooks from './hooks';
 
 /**
@@ -84,17 +83,7 @@ const ContentIFrame = ({
   return (
     <>
       {(shouldShowContent && !hasLoaded) && (
-        showError ? <ErrorPage /> : (
-          <PluginSlot
-            id="content_iframe_loader_slot"
-            pluginProps={{
-              defaultLoaderComponent: <PageLoading srMessage={loadingMessage} />,
-              courseId,
-            }}
-          >
-            <PageLoading srMessage={loadingMessage} />
-          </PluginSlot>
-        )
+        showError ? <ErrorPage /> : <ContentIFrameLoaderSlot courseId={courseId} loadingMessage={loadingMessage} />
       )}
       {shouldShowContent && (
         <div className="unit-iframe-wrapper">

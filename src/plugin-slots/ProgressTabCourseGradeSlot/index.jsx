@@ -3,7 +3,8 @@ import CourseGrade from '../../course-home/progress-tab/grades/course-grade/Cour
 
 const ProgressTabCourseGradeSlot = () => (
   <PluginSlot
-    id="progress_tab_course_grade_slot"
+    id="org.openedx.frontend.learning.progress_tab_course_grade.v1"
+    idAliases={['progress_tab_course_grade_slot']}
   >
     <CourseGrade />
   </PluginSlot>

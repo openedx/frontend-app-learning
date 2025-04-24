@@ -57,7 +57,7 @@ describe('<Unit />', () => {
   describe('unit title', () => {
     it('has two children', () => {
       renderComponent(defaultProps);
-      const unitTitleWrapper = screen.getByTestId('unit_title_slot').children[0];
+      const unitTitleWrapper = screen.getByTestId('org.openedx.frontend.learning.unit_title.v1').children[0];
 
       expect(unitTitleWrapper.children).toHaveLength(3);
     });

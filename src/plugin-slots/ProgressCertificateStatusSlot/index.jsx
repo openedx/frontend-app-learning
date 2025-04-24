@@ -3,7 +3,8 @@ import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
 const ProgressCertificateStatusSlot = ({ courseId, children }) => (
   <PluginSlot
-    id="progress_certificate_status_slot"
+    id="org.openedx.frontend.learning.progress_certificate_status.v1"
+    idAliases={['progress_certificate_status_slot']}
     pluginProps={{ courseId }}
   >
     {children}

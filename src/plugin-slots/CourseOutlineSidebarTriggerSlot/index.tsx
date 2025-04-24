@@ -15,7 +15,8 @@ export const CourseOutlineSidebarTriggerSlot : React.FC<Props> = ({
   sectionId, sequenceId, unitId, isStaff,
 }) => (
   <PluginSlot
-    id="course_outline_sidebar_trigger_slot"
+    id="org.openedx.frontend.learning.course_outline_sidebar_trigger.v1"
+    idAliases={['course_outline_sidebar_trigger_slot']}
     slotOptions={{
       mergeProps: true,
     }}

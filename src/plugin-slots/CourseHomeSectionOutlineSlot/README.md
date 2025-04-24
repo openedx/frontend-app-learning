@@ -1,6 +1,9 @@
 # Course Home Section Outline Slot
 
-### Slot ID: `course_home_section_outline_slot`
+### Slot ID: `org.openedx.frontend.learning.course_home_section_outline.v1`
+
+### Slot ID Aliases
+* `course_home_section_outline_slot`
 
 ## Description
 
@@ -22,7 +25,7 @@ import Section from '@src/course-home/outline-tab/section-outline/Section';
 
 const config = {
   pluginSlots: {
-    course_home_section_outline_slot: {
+    'org.openedx.frontend.learning.course_home_section_outline.v1': {
       keepDefault: false,
       plugins: [
         {

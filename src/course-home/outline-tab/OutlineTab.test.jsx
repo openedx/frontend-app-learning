@@ -139,7 +139,7 @@ describe('Outline Tab', () => {
       });
       await fetchAndRender();
 
-      expect(screen.getByTestId('outline_tab_notifications_slot')).toBeInTheDocument();
+      expect(screen.getByTestId('org.openedx.frontend.learning.course_outline_tab_notifications.v1')).toBeInTheDocument();
     });
 
     it('handles expand/collapse all button click', async () => {
