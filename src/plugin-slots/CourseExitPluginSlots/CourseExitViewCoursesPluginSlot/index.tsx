@@ -8,7 +8,7 @@ interface Props {
   content: { href: string }
 }
 
-const ViewCoursesLink: React.FC<Props> = ({ content }) => {
+const ViewCoursesLink: React.FC<Props> = ({ content }: Props) => {
   const intl = useIntl();
   return (
     <div className="row w-100 mt-2 mb-4 justify-content-end">

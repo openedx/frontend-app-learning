@@ -2,20 +2,22 @@ import { Hyperlink } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useSelector } from 'react-redux';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import messages from '../../../courseware/course/course-exit/messages';
 import { logClick } from '../../../courseware/course/course-exit/utils';
 import { useModel } from '../../../generic/model-store';
+import { useContextId } from '../../../data/hooks';
 
 interface LinkProps {
-  variant: string,
-  content: { destination: string }
+  variant: string;
+  content: {
+    destination: string;
+  };
 }
 
-const DashboardFootnoteLink: React.FC<LinkProps> = ({ variant, content }) => {
+const DashboardFootnoteLink: React.FC<LinkProps> = ({ variant, content }: LinkProps) => {
   const intl = useIntl();
-  const { courseId } = useSelector(state => state.courseware);
+  const courseId = useContextId();
   const { org } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
   const { destination } = content;
@@ -35,7 +37,7 @@ interface PluginProps {
   variant: string
 }
 
-export const DashboardFootnoteLinkPluginSlot: React.FC<PluginProps> = ({ variant }) => {
+export const DashboardFootnoteLinkPluginSlot: React.FC = ({ variant }: PluginProps) => {
   const destination = `${getConfig().LMS_BASE_URL}/dashboard`;
   return (
     <PluginSlot id="org.openedx.frontend.learning.course_exit_dashboard_footnote_link.v1">
