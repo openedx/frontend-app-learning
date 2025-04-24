@@ -34,11 +34,7 @@ const CourseOutlineTray = () => {
     sequences,
   } = useCourseOutlineSidebar();
   
-  const resolvedSectionId = selectedSection
-  || Object.keys(sections).find((sectionId) =>
-    sections[sectionId].sequenceIds.includes(activeSequenceId),
-  );
-
+  const resolvedSectionId = selectedSection || Object.keys(sections).find((sectionId) => sections[sectionId].sequenceIds.includes(activeSequenceId));
   const sectionsIds = Object.keys(sections);
   const sequenceIds = sections[resolvedSectionId]?.sequenceIds || [];
   const backButtonTitle = sections[resolvedSectionId]?.title;
