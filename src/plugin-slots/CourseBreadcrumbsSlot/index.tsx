@@ -16,7 +16,8 @@ export const CourseBreadcrumbsSlot : React.FC<Props> = ({
   courseId, sectionId, sequenceId, unitId, isStaff,
 }) => (
   <PluginSlot
-    id="course_breadcrumbs_slot"
+    id="org.openedx.frontend.learning.course_breadcrumbs.v1"
+    idAliases={['course_breadcrumbs_slot']}
     slotOptions={{
       mergeProps: true,
     }}

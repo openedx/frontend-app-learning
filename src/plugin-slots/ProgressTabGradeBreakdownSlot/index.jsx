@@ -11,7 +11,8 @@ const ProgressTabGradeBreakdownSlot = () => {
   const applyLockedOverlay = gradesFeatureIsFullyLocked ? 'locked-overlay' : '';
   return (
     <PluginSlot
-      id="progress_tab_grade_breakdown_slot"
+      id="org.openedx.frontend.learning.progress_tab_grade_breakdown.v1"
+      idAliases={['progress_tab_grade_breakdown_slot']}
     >
       <div
         className={`grades my-4 p-4 rounded raised-card ${applyLockedOverlay}`}

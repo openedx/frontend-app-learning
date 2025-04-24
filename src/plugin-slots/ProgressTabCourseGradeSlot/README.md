@@ -1,6 +1,10 @@
 # Progress Tab Course Grade Slot
 
-### Slot ID: `progress_tab_course_grade_slot`
+### Slot ID: `org.openedx.frontend.learning.progress_tab_course_grade.v1`
+
+### Slot ID Aliases
+* `progress_tab_course_grade_slot`
+
 ### Props:
 
 ## Description
@@ -19,7 +23,7 @@ import { useContextId } from './src/data/hooks';
 
 const config = {
   pluginSlots: {
-    progress_tab_course_grade_slot: {
+    'org.openedx.frontend.learning.progress_tab_course_grade.v1': {
       plugins: [
         {
           // Insert custom content after course grade widget

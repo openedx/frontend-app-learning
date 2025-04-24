@@ -7,7 +7,8 @@ const ProgressTabCertificateStatusMainBodySlot = () => {
   const wideScreen = windowWidth >= breakpoints.large.minWidth;
   return (
     <PluginSlot
-      id="progress_tab_certificate_status_main_body_slot"
+      id="org.openedx.frontend.learning.progress_tab_certificate_status_main_body.v1"
+      idAliases={['progress_tab_certificate_status_main_body_slot']}
     >
       {windowWidth && !wideScreen && <CertificateStatus />}
     </PluginSlot>

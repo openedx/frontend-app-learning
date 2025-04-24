@@ -17,7 +17,8 @@ export const NotificationsDiscussionsSidebarTriggerSlot : React.FC<Props> = ({ c
 
   return (
     <PluginSlot
-      id="notifications_discussions_sidebar_trigger_slot"
+      id="org.openedx.frontend.learning.notifications_discussions_sidebar_trigger.v1"
+      idAliases={['notifications_discussions_sidebar_trigger_slot']}
       slotOptions={{
         mergeProps: true,
       }}
