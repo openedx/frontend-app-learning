@@ -19,7 +19,7 @@ import messages from './messages';
 const CourseOutlineTray = () => {
   const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState(null);
-  const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(false);
+  const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
 
   const {
     courseId,
@@ -38,16 +38,23 @@ const CourseOutlineTray = () => {
   const {
     sectionId: activeSectionId,
   } = useModel('sequences', activeSequenceId);
+  
+  const resolvedSectionId =
+    selectedSection ||
+    Object.keys(sections).find(sectionId =>
+      sections[sectionId].sequenceIds.includes(activeSequenceId)
+    );
 
   const sectionsIds = Object.keys(sections);
-  const sequenceIds = sections[selectedSection || activeSectionId]?.sequenceIds || [];
-  const backButtonTitle = sections[selectedSection || activeSectionId]?.title;
+  const sequenceIds = sections[resolvedSectionId]?.sequenceIds || [];
+  const backButtonTitle = sections[resolvedSectionId]?.title;
 
-  useEffect(() => {
-    if (sequenceIds.length > 0) {
-      setDisplaySequenceLevel();
-    }
-  }, [sequenceIds]);
+  const currentId = activeSequenceId || activeSectionId;
+  console.log('sections', JSON.stringify(sections));
+  console.log('currentId', JSON.stringify(currentId));
+  console.log('sectionsIds', JSON.stringify(sectionsIds));
+  console.log('sequenceIds', JSON.stringify(sequenceIds));
+
 
   const handleBackToSectionLevel = () => {
     setDisplaySectionLevel();
