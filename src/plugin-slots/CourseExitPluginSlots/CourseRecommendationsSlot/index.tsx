@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import CourseRecommendations from '../../../courseware/course/course-exit/CourseRecommendations';
 
-const CourseRecommendationsSlot = ({ variant }) => (
+interface Props {
+  variant: string
+}
+
+export const CourseRecommendationsSlot: React.FC<Props> = ({ variant }) => (
   <PluginSlot
     id="org.openedx.frontend.learning.course_recommendations.v1"
     idAliases={['course_recommendations_slot']}
@@ -11,8 +15,3 @@ const CourseRecommendationsSlot = ({ variant }) => (
   </PluginSlot>
 );
 
-CourseRecommendationsSlot.propTypes = {
-  variant: PropTypes.string.isRequired,
-};
-
-export default CourseRecommendationsSlot;

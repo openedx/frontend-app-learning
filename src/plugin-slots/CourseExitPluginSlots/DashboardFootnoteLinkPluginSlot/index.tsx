@@ -9,7 +9,12 @@ import messages from '../../../courseware/course/course-exit/messages';
 import { logClick } from '../../../courseware/course/course-exit/utils';
 import { useModel } from '../../../generic/model-store';
 
-const DashboardFootnoteLink = ({ variant, content }) => {
+interface LinkProps {
+  variant: string,
+  content: { destination: string }
+}
+
+const DashboardFootnoteLink: React.FC<LinkProps> = ({ variant, content }) => {
   const intl = useIntl();
   const { courseId } = useSelector(state => state.courseware);
   const { org } = useModel('courseHomeMeta', courseId);
@@ -27,14 +32,11 @@ const DashboardFootnoteLink = ({ variant, content }) => {
   );
 };
 
-DashboardFootnoteLink.propTypes = {
-  variant: PropTypes.string.isRequired,
-  content: PropTypes.shape({
-    destination: PropTypes.string.isRequired,
-  }).isRequired,
-};
+interface PluginProps {
+  variant: string
+}
 
-const DashboardFootnoteLinkPluginSlot = ({ variant }) => {
+export const DashboardFootnoteLinkPluginSlot: React.FC<PluginProps> = ({ variant }) => {
   const destination = `${getConfig().LMS_BASE_URL}/dashboard`;
   return (
     <PluginSlot id="org.openedx.frontend.learning.course_exit_dashboard_footnote_link.v1">
@@ -42,9 +44,3 @@ const DashboardFootnoteLinkPluginSlot = ({ variant }) => {
     </PluginSlot>
   );
 };
-
-DashboardFootnoteLinkPluginSlot.propTypes = {
-  variant: PropTypes.string.isRequired,
-};
-
-export default DashboardFootnoteLinkPluginSlot;

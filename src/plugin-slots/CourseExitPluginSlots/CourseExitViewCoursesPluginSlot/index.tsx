@@ -5,7 +5,11 @@ import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import messages from '../../../courseware/course/course-exit/messages';
 
-const ViewCoursesLink = ({ content }) => {
+interface Props {
+  content: { href: string }
+}
+
+const ViewCoursesLink: React.FC<Props> = ({ content }) => {
   const intl = useIntl();
   return (
     <div className="row w-100 mt-2 mb-4 justify-content-end">
@@ -19,13 +23,7 @@ const ViewCoursesLink = ({ content }) => {
   );
 };
 
-ViewCoursesLink.propTypes = {
-  content: PropTypes.shape({
-    href: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
-const CourseExitViewCoursesPluginSlot = () => {
+const CourseExitViewCoursesPluginSlot: React.FC = () => {
   const href = `${getConfig().LMS_BASE_URL}/dashboard`;
   return (
     <PluginSlot id="org.openedx.frontend.learning.course_exit_view_courses.v1">
@@ -33,7 +31,5 @@ const CourseExitViewCoursesPluginSlot = () => {
     </PluginSlot>
   );
 };
-
-CourseExitViewCoursesPluginSlot.propTypes = {};
 
 export default CourseExitViewCoursesPluginSlot;
