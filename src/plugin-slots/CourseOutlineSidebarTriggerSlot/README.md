@@ -1,6 +1,10 @@
 # Course Outline Sidebar Trigger Slot
 
-### Slot ID: `course_outline_sidebar_trigger_slot`
+### Slot ID: `org.openedx.frontend.learning.course_outline_sidebar_trigger.v1`
+
+### Slot ID Aliases
+* `course_outline_sidebar_trigger_slot`
+
 ### Props:
 * `sectionId`
 * `sequenceId`
@@ -26,7 +30,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    course_outline_sidebar_trigger_slot: {
+    'org.openedx.frontend.learning.course_outline_sidebar_trigger.v1': {
       keepDefault: false,
       plugins: [
         {

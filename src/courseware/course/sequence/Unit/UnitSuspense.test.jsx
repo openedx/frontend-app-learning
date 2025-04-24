@@ -5,6 +5,7 @@ import { formatMessage, shallow } from '@edx/react-unit-test-utils';
 import { useModel } from '@src/generic/model-store';
 import PageLoading from '@src/generic/PageLoading';
 
+import { GatedUnitContentMessageSlot } from '@src/plugin-slots/GatedUnitContentMessageSlot';
 import messages from '../messages';
 import HonorCode from '../honor-code';
 import LockPaywall from '../lock-paywall';
@@ -78,10 +79,9 @@ describe('UnitSuspense component', () => {
         beforeEach(() => { mockModels(true, true); });
         it('displays LockPaywall in Suspense wrapper with PageLoading fallback', () => {
           el = shallow(<UnitSuspense {...props} />);
-          const [component] = el.instance.findByType(LockPaywall);
-          expect(component.parent.type).toEqual('PluginSlot');
-          expect(component.parent.parent.type).toEqual('Suspense');
-          expect(component.parent.parent.props.fallback)
+          const [component] = el.instance.findByType(GatedUnitContentMessageSlot);
+          expect(component.parent.type).toEqual('Suspense');
+          expect(component.parent.props.fallback)
             .toEqual(<PageLoading srMessage={formatMessage(messages.loadingLockedContent)} />);
           expect(component.props.courseId).toEqual(props.courseId);
         });

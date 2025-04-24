@@ -1,6 +1,9 @@
 # Next Unit Top Navigation Trigger Slot
 
-### Slot ID: `next_unit_top_nav_trigger_slot`
+### Slot ID: `org.openedx.frontend.learning.next_unit_top_nav_trigger.v1`
+
+### Slot ID Aliases
+* `next_unit_top_nav_trigger_slot`
 
 ## Description
 
@@ -33,7 +36,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    next_unit_top_nav_trigger_slot: {
+    'org.openedx.frontend.learning.next_unit_top_nav_trigger.v1': {
       keepDefault: false,
       plugins: [
         {

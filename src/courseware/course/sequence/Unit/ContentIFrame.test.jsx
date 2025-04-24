@@ -6,6 +6,7 @@ import { shallow } from '@edx/react-unit-test-utils';
 
 import PageLoading from '@src/generic/PageLoading';
 
+import { ContentIFrameLoaderSlot } from '@src/plugin-slots/ContentIFrameLoaderSlot';
 import * as hooks from './hooks';
 import ContentIFrame, { IFRAME_FEATURE_POLICY, testIDs } from './ContentIFrame';
 
@@ -99,8 +100,8 @@ describe('ContentIFrame Component', () => {
         });
         it('displays PageLoading component if not showError', () => {
           el = shallow(<ContentIFrame {...props} />);
-          [component] = el.instance.findByType(PageLoading);
-          expect(component.props.srMessage).toEqual(props.loadingMessage);
+          [component] = el.instance.findByType(ContentIFrameLoaderSlot);
+          expect(component.props.loadingMessage).toEqual(props.loadingMessage);
         });
       });
       describe('hasLoaded', () => {

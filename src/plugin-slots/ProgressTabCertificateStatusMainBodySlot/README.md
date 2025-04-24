@@ -1,6 +1,10 @@
 # Progress Tab Certificate Status Slot
 
-### Slot ID: `progress_tab_certificate_status_main_body_slot`
+### Slot ID: `org.openedx.frontend.learning.progress_tab_certificate_status_main_body.v1`
+
+### Slot ID Aliases
+* `progress_tab_certificate_status_main_body_slot`
+
 ### Props:
 
 ## Description
@@ -20,7 +24,7 @@ import { useContextId } from './src/data/hooks';
 
 const config = {
   pluginSlots: {
-    progress_tab_certificate_status_main_body_slot: {
+    'org.openedx.frontend.learning.progress_tab_certificate_status_main_body.v1': {
       plugins: [
         {
           // Insert custom content after certificate status

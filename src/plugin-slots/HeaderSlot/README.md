@@ -1,6 +1,10 @@
 # Header Slot
 
-### Slot ID: `header_slot`
+### Slot ID: `org.openedx.frontend.layout.header_learning.v1`
+
+### Slot ID Aliases
+* `header_slot`
+
 ### Props:
 * `courseOrg`
 * `courseNumber`
@@ -22,7 +26,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    header_slot: {
+    'org.openedx.frontend.layout.header_learning.v1': {
       keepDefault: false,
       plugins: [
         {

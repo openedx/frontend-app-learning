@@ -91,7 +91,7 @@ describe('NotificationTray', () => {
         <NotificationTray />
       </SidebarContext.Provider>,
     );
-    expect(screen.getByTestId('notification_tray_slot')).toBeInTheDocument();
+    expect(screen.getByTestId('org.openedx.frontend.learning.notification_tray.v1')).toBeInTheDocument();
   });
 
   it('renders no notifications message if no verified mode', async () => {

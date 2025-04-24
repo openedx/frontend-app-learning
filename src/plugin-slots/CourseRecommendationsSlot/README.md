@@ -1,6 +1,10 @@
 # Unit Title Slot
 
-### Slot ID: `course_recommendations_slot`
+### Slot ID: `org.openedx.frontend.learning.course_recommendations.v1`
+
+### Slot ID Aliases
+* `course_recommendations_slot`
+
 ### Props:
 * `variant`
 
@@ -19,7 +23,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    course_recommendations_slot: {
+    'org.openedx.frontend.learning.course_recommendations.v1': {
       plugins: [
         {
           op: PLUGIN_OPERATIONS.Insert,

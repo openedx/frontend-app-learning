@@ -1,6 +1,9 @@
 # Course Outline Sidebar Slot
 
-### Slot ID: `course_outline_sidebar_slot`
+### Slot ID: `org.openedx.frontend.learning.course_outline_sidebar.v1`
+
+### Slot ID Aliases
+* `course_outline_sidebar_slot`
 
 ## Description
 
@@ -21,7 +24,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    course_outline_sidebar_slot: {
+    'org.openedx.frontend.learning.course_outline_sidebar.v1': {
       keepDefault: false,
       plugins: [
         {
