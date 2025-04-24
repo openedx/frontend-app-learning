@@ -1,6 +1,10 @@
 # Unit Title Slot
 
-### Slot ID: `progress_certificate_status_slot`
+### Slot ID: `org.openedx.frontend.learning.progress_certificate_status.v1`
+
+### Slot ID Aliases
+* `progress_certificate_status_slot`
+
 ### Props:
 * `courseId`
 
@@ -37,7 +41,7 @@ const modifyWidget = (widget) => {
 
 const config = {
   pluginSlots: {
-    progress_certificate_status_slot: {
+    'org.openedx.frontend.learning.progress_certificate_status.v1': {
       keepDefault: true,
       plugins: [{
         op: PLUGIN_OPERATIONS.Modify,

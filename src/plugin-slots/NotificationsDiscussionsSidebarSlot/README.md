@@ -1,6 +1,9 @@
 # Notifications Discussions Sidebar Slot
 
-### Slot ID: `notifications_discussions_sidebar_slot`
+### Slot ID: `org.openedx.frontend.learning.notifications_discussions_sidebar.v1`
+
+### Slot ID Aliases
+* `notifications_discussions_sidebar_slot`
 
 ## Description
 
@@ -21,7 +24,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    notifications_discussions_sidebar_slot: {
+    'org.openedx.frontend.learning.notifications_discussions_sidebar.v1': {
       keepDefault: false,
       plugins: [
         {

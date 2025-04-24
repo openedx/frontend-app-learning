@@ -2,9 +2,9 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 import { useContext, useEffect, useMemo } from 'react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useModel } from '@src/generic/model-store';
+import { NotificationTraySlot } from '../../../../../plugin-slots/NotificationTraySlot';
 
 import messages from '../../../messages';
 import SidebarBase from '../../common/SidebarBase';
@@ -76,14 +76,10 @@ const NotificationTray = () => {
     >
       <div>{verifiedMode
         ? (
-          <PluginSlot
-            id="notification_tray_slot"
-            pluginProps={{
-              courseId,
-              model: 'coursewareMeta',
-              notificationCurrentState: upgradeNotificationCurrentState,
-              setNotificationCurrentState: setUpgradeNotificationCurrentState,
-            }}
+          <NotificationTraySlot
+            courseId={courseId}
+            notificationCurrentState={upgradeNotificationCurrentState}
+            setNotificationCurrentState={setUpgradeNotificationCurrentState}
           />
         ) : (
           <p className="p-3 small">{intl.formatMessage(messages.noNotificationsMessage)}</p>

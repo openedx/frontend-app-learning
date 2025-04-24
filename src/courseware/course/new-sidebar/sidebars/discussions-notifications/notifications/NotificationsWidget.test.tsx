@@ -90,7 +90,7 @@ describe('NotificationsWidget', () => {
         <NotificationsWidget />
       </SidebarContext.Provider>,
     );
-    expect(screen.getByTestId('notification_widget_slot')).toBeInTheDocument();
+    expect(screen.getByTestId('org.openedx.frontend.learning.notification_widget.v1')).toBeInTheDocument();
   });
 
   it('renders no notifications bar if no verified mode', async () => {

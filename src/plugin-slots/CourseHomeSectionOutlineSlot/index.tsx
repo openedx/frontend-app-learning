@@ -12,7 +12,8 @@ const CourseHomeSectionOutlineSlot: React.FC<Props> = ({
   expandAll, sections, sectionIds,
 }) => (
   <PluginSlot
-    id="course_home_section_outline_slot"
+    id="org.openedx.frontend.learning.course_home_section_outline.v1"
+    idAliases={['course_home_section_outline_slot']}
     pluginProps={{ expandAll, sectionIds, sections }}
   >
     <ol id="courseHome-outline" className="list-unstyled">
