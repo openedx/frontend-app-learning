@@ -34,7 +34,7 @@
   "dependencies": {
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.2",
     "@edx/browserslist-config": "1.5.0",
-    "@edx/frontend-component-footer": "^14.3.0",
+    "@edx/frontend-component-footer": "^14.6.0",
     "@edx/frontend-component-header": "^6.2.0",
     "@edx/frontend-lib-learning-assistant": "^2.20.0",
     "@edx/frontend-lib-special-exams": "^3.5.0",
@@ -47,7 +47,6 @@
     "@fortawesome/react-fontawesome": "^0.1.4",
     "@openedx/frontend-build": "^14.5.0",
     "@openedx/frontend-plugin-framework": "^1.7.0",
-    "@openedx/frontend-slot-footer": "^1.0.2",
     "@openedx/paragon": "^22.16.0",
     "@popperjs/core": "2.11.8",
     "@reduxjs/toolkit": "1.9.7",
