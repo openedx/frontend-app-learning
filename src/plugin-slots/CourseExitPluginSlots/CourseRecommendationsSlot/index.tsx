@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import CourseRecommendations from '../../../courseware/course/course-exit/CourseRecommendations';
 
@@ -14,4 +13,3 @@ export const CourseRecommendationsSlot: React.FC<Props> = ({ variant }) => (
     <CourseRecommendations variant={variant} />
   </PluginSlot>
 );
-

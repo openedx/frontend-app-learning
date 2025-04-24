@@ -1,5 +1,4 @@
 import { Button } from '@openedx/paragon';
-import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -23,7 +22,7 @@ const ViewCoursesLink: React.FC<Props> = ({ content }) => {
   );
 };
 
-const CourseExitViewCoursesPluginSlot: React.FC = () => {
+export const CourseExitViewCoursesPluginSlot: React.FC = () => {
   const href = `${getConfig().LMS_BASE_URL}/dashboard`;
   return (
     <PluginSlot id="org.openedx.frontend.learning.course_exit_view_courses.v1">
@@ -31,5 +30,3 @@ const CourseExitViewCoursesPluginSlot: React.FC = () => {
     </PluginSlot>
   );
 };
-
-export default CourseExitViewCoursesPluginSlot;

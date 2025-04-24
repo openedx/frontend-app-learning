@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { Hyperlink } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
