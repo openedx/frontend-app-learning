@@ -10,17 +10,14 @@ import { useContextId } from '../../../data/hooks';
 
 interface LinkProps {
   variant: string;
-  content: {
-    destination: string;
-  };
+  destination: string;
 }
 
-const DashboardFootnoteLink: React.FC<LinkProps> = ({ variant, content }: LinkProps) => {
+const DashboardFootnoteLink: React.FC<LinkProps> = ({ variant, destination }: LinkProps) => {
   const intl = useIntl();
   const courseId = useContextId();
   const { org } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
-  const { destination } = content;
   return (
     <Hyperlink
       style={{ textDecoration: 'underline' }}
@@ -40,8 +37,13 @@ interface PluginProps {
 export const DashboardFootnoteLinkPluginSlot: React.FC = ({ variant }: PluginProps) => {
   const destination = `${getConfig().LMS_BASE_URL}/dashboard`;
   return (
-    <PluginSlot id="org.openedx.frontend.learning.course_exit_dashboard_footnote_link.v1">
-      <DashboardFootnoteLink variant={variant} content={{ destination }} />
+    <PluginSlot
+      id="org.openedx.frontend.learning.course_exit_dashboard_footnote_link.v1"
+      slotOptions={{
+        mergeProps: true,
+      }}
+    >
+      <DashboardFootnoteLink variant={variant} destination={destination} />
     </PluginSlot>
   );
 };
