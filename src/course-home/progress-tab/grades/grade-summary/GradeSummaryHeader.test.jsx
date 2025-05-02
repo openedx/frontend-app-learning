@@ -54,20 +54,20 @@ describe('GradeSummaryHeader', () => {
     });
   });
 
-  it('hides tooltip on mouse out', async () => {
+  it('hides tooltip on click', async () => {
     renderComponent();
 
     const iconButton = screen.getByRole('button', {
       name: messages.gradeSummaryTooltipAlt.defaultMessage,
     });
 
-    fireEvent.mouseOver(iconButton);
+    fireEvent.click(iconButton);
 
     await waitFor(() => {
       expect(screen.getByText(messages.gradeSummaryTooltipBody.defaultMessage)).toBeVisible();
     });
 
-    fireEvent.mouseOut(iconButton);
+    fireEvent.click(iconButton);
 
     await waitFor(() => {
       expect(screen.queryByText(messages.gradeSummaryTooltipBody.defaultMessage)).toBeNull();
