@@ -1,4 +1,4 @@
-# Unit Title Slot
+# Progress Certificate Status Slot
 
 ### Slot ID: `org.openedx.frontend.learning.progress_certificate_status.v1`
 

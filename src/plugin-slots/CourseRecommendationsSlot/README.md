@@ -1,4 +1,4 @@
-# Unit Title Slot
+# Course Recommendations Slot
 
 ### Slot ID: `org.openedx.frontend.learning.course_recommendations.v1`
 
