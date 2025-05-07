@@ -9,7 +9,7 @@ import {
 import { Locked } from '@openedx/paragon/icons';
 import SidebarContext from '../../sidebar/SidebarContext';
 import messages from './messages';
-import certificateLocked from '../../../../generic/assets/edX_locked_certificate.png';
+import certificateLocked from '../../../../generic/assets/openedx_locked_certificate.png';
 import { useModel } from '../../../../generic/model-store';
 import { UpgradeButton } from '../../../../generic/upgrade-button';
 import {
