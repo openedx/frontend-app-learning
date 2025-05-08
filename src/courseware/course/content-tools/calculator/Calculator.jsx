@@ -149,7 +149,7 @@ const Calculator = () => {
                 />
               </li>
             </ul>
-            <table className="table small">
+            <table className="pgn__data-table small">
               <thead>
                 <tr>
                   <th scope="col">

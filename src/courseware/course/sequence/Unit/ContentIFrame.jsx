@@ -3,7 +3,7 @@ import React from 'react';
 
 import { ErrorPage } from '@edx/frontend-platform/react';
 import { StrictDict } from '@edx/react-unit-test-utils';
-import { ModalDialog, Modal } from '@openedx/paragon';
+import { ModalDialog } from '@openedx/paragon';
 import { ContentIFrameLoaderSlot } from '../../../../plugin-slots/ContentIFrameLoaderSlot';
 
 import * as hooks from './hooks';
@@ -65,21 +65,6 @@ const ContentIFrame = ({
     onLoad: handleIFrameLoad,
   };
 
-  let modalContent;
-  if (modalOptions.isOpen) {
-    modalContent = modalOptions.body
-      ? <div className="unit-modal">{ modalOptions.body }</div>
-      : (
-        <iframe
-          title={modalOptions.title}
-          allow={IFRAME_FEATURE_POLICY}
-          frameBorder="0"
-          src={modalOptions.url}
-          style={{ width: '100%', height: modalOptions.height }}
-        />
-      );
-  }
-
   return (
     <>
       {(shouldShowContent && !hasLoaded) && (
@@ -90,29 +75,30 @@ const ContentIFrame = ({
           <iframe title={title} {...contentIFrameProps} data-testid={testIDs.contentIFrame} />
         </div>
       )}
-      {modalOptions.isOpen && (modalOptions.isFullscreen
-        ? (
+      {modalOptions.isOpen
+          && (
           <ModalDialog
             dialogClassName="modal-lti"
             onClose={handleModalClose}
-            size="fullscreen"
+            size={modalOptions.isFullscreen ? 'fullscreen' : 'md'}
             isOpen
             hasCloseButton={false}
           >
             <ModalDialog.Body className={modalOptions.modalBodyClassName}>
-              {modalContent}
+              {modalOptions.body
+                ? <div className="unit-modal">{ modalOptions.body }</div>
+                : (
+                  <iframe
+                    title={modalOptions.title}
+                    allow={IFRAME_FEATURE_POLICY}
+                    frameBorder="0"
+                    src={modalOptions.url}
+                    style={{ width: '100%', height: modalOptions.height }}
+                  />
+                )}
             </ModalDialog.Body>
           </ModalDialog>
-
-        ) : (
-          <Modal
-            body={modalContent}
-            dialogClassName="modal-lti"
-            onClose={handleModalClose}
-            open
-          />
-        )
-      )}
+          )}
     </>
   );
 };
