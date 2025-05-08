@@ -52,7 +52,7 @@ jest.mock('@src/generic/hooks', () => ({
   useEventListener: jest.fn(),
 }));
 jest.mock('@src/generic/model-store', () => ({
-  useModel: () => ({ unitIds: ['unit1', 'unit2'] }),
+  useModel: () => ({ unitIds: ['unit1', 'unit2'], entranceExamData: { entranceExamPassed: null } }),
 }));
 jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
