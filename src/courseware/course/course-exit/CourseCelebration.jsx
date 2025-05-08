@@ -25,12 +25,12 @@ import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 import { requestCert } from '../../../course-home/data/thunks';
 import ProgramCompletion from './ProgramCompletion';
-import DashboardFootnote from './DashboardFootnote';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
-import CourseRecommendationsSlot from '../../../plugin-slots/CourseRecommendationsSlot';
+import DashboardFootnote from './DashboardFootnote';
+import { CourseRecommendationsSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
 const LINKEDIN_BLUE = '#2867B2';
 
