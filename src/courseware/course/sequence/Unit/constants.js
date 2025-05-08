@@ -16,6 +16,7 @@ export const messageTypes = StrictDict({
   modal: 'plugin.modal',
   resize: 'plugin.resize',
   videoFullScreen: 'plugin.videoFullScreen',
+  autoAdvance: 'plugin.autoAdvance',
 });
 
 export default StrictDict({
