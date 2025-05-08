@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Alert, Button, Hyperlink } from '@openedx/paragon';
-import certImage from '../../../generic/assets/openedx_certificate.png';
+import certImage from '../../../generic/assets/edX_certificate.png';
 import messages from './messages';
 
 /**
