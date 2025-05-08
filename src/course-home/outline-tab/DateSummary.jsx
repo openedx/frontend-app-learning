@@ -5,6 +5,8 @@ import { FormattedDate } from '@edx/frontend-platform/i18n';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import { useWindowSize, breakpoints } from '@openedx/paragon';
 import { useModel } from '../../generic/model-store';
 import { isLearnerAssignment } from '../dates-tab/utils';
 import './DateSummary.scss';
@@ -19,6 +21,7 @@ const DateSummary = ({
   const {
     org,
   } = useModel('courseHomeMeta', courseId);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const linkedTitle = dateBlock.link && isLearnerAssignment(dateBlock);
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
@@ -35,7 +38,7 @@ const DateSummary = ({
   };
 
   return (
-    <li className="p-0 mb-3 small text-dark-500">
+    <li className={classNames('p-0 mb-3 text-dark-500', { small: !wideScreen })}>
       <div className="row">
         <FontAwesomeIcon icon={faCalendarAlt} className="ml-3 mt-1 mr-1" fixedWidth />
         <div className="ml-1 font-weight-bold">
