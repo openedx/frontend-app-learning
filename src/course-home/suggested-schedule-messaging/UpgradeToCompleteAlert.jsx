@@ -34,7 +34,7 @@ const UpgradeToCompleteAlert = ({ logUpgradeLinkClick }) => {
   }
 
   return (
-    <Alert className="bg-light-200">
+    <Alert id="upgrade-complete-alert" className="bg-light-200">
       <Row className="w-100 m-0">
         <Col xs={12} md={9} className="small p-0 pr-md-2">
           <Alert.Heading>{intl.formatMessage(messages.upgradeToCompleteHeader)}</Alert.Heading>

@@ -36,7 +36,7 @@ const UpgradeToShiftDatesAlert = ({ logUpgradeLinkClick, model }) => {
   }
 
   return (
-    <Alert className="bg-light-200">
+    <Alert id="upgrade-shift-dates-alert" className="bg-light-200">
       <Row className="w-100 m-0">
         <Col xs={12} md={9} className="small p-0 pr-md-2">
           <strong>{intl.formatMessage(messages.missedDeadlines)}</strong>
