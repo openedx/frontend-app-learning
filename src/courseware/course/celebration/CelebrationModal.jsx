@@ -36,7 +36,7 @@ const CelebrationModal = ({
     <StandardModal
       footerNode={(
         <ActionRow isStacked className="pb-2">
-          <Button className="btn-primary" onClick={onClose}>{intl.formatMessage(messages.forward)}</Button>
+          <Button onClick={onClose}>{intl.formatMessage(messages.forward)}</Button>
         </ActionRow>
       )}
       hasCloseButton={false}
