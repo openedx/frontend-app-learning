@@ -1,4 +1,4 @@
-import React from 'react';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Folder, TextFields, VideoCamera, Article,
 } from '@openedx/paragon/icons';
@@ -6,6 +6,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { Icon } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import CoursewareSearchEmpty from './CoursewareSearchEmpty';
+import messages from './messages';
 
 const iconTypeMapping = {
   text: TextFields,
@@ -20,6 +21,8 @@ const CoursewareSearchResults = ({ results = [] }) => {
   if (!results?.length) {
     return <CoursewareSearchEmpty />;
   }
+
+  const { formatMessage } = useIntl();
 
   const baseUrl = `${getConfig().LMS_BASE_URL}`;
 
@@ -42,24 +45,30 @@ const CoursewareSearchResults = ({ results = [] }) => {
           rel: 'nofollow',
         } : { href: `${baseUrl}${url}` };
 
+        const ariaSeaparator = formatMessage(messages.searchResultsBreadcrumbSeparator);
+        const ariaLocation = location?.length ? formatMessage(messages.searchResultsBreadcrumb, { path: location.join(ariaSeaparator) }) : '';
+
         return (
           <a key={id} className="courseware-search-results__item" {...linkProps}>
             <div className="courseware-search-results__icon"><Icon src={icon} /></div>
             <div className="courseware-search-results__info">
               <div className="courseware-search-results__title">
-                <span>{title}</span>
-                {contentHits ? (<em>{contentHits}</em>) : null }
+                <h3>{title}</h3>
+                {contentHits ? (<em aria-hidden="true">{contentHits}</em>) : null }
               </div>
-              {location?.length ? (
-                <ul className="courseware-search-results__breadcrumbs">
-                  {
+
+              <div aria-label={ariaLocation}>
+                {location?.length ? (
+                  <ul className="courseware-search-results__breadcrumbs" aria-hidden="true">
+                    {
                   // This ignore is necessary because the breadcrumb texts might have duplicates.
                   // The breadcrumbs are not expected to change.
                   // eslint-disable-next-line react/no-array-index-key
                   location.map((breadcrumb, i) => (<li key={`${i}:${breadcrumb}`}><div>{breadcrumb}</div></li>))
                   }
-                </ul>
-              ) : null}
+                  </ul>
+                ) : null}
+              </div>
             </div>
           </a>
         );

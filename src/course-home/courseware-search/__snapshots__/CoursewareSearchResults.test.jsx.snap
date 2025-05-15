@@ -38,24 +38,29 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Demo Course Overview
-        </span>
+        </h3>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Introduction, then Demo Course Overview."
       >
-        <li>
-          <div>
-            Introduction
-          </div>
-        </li>
-        <li>
-          <div>
-            Demo Course Overview
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Introduction
+            </div>
+          </li>
+          <li>
+            <div>
+              Demo Course Overview
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -91,32 +96,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Passing a Course
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           1
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: About Exams and Certificates, then edX Exams, then Passing a Course."
       >
-        <li>
-          <div>
-            About Exams and Certificates
-          </div>
-        </li>
-        <li>
-          <div>
-            edX Exams
-          </div>
-        </li>
-        <li>
-          <div>
-            Passing a Course
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              About Exams and Certificates
+            </div>
+          </li>
+          <li>
+            <div>
+              edX Exams
+            </div>
+          </li>
+          <li>
+            <div>
+              Passing a Course
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -152,29 +164,34 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Passing a Course
-        </span>
+        </h3>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: About Exams and Certificates, then edX Exams, then Passing a Course."
       >
-        <li>
-          <div>
-            About Exams and Certificates
-          </div>
-        </li>
-        <li>
-          <div>
-            edX Exams
-          </div>
-        </li>
-        <li>
-          <div>
-            Passing a Course
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              About Exams and Certificates
+            </div>
+          </li>
+          <li>
+            <div>
+              edX Exams
+            </div>
+          </li>
+          <li>
+            <div>
+              Passing a Course
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -210,29 +227,34 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Text Input
-        </span>
+        </h3>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 1: Getting Started, then Homework - Question Styles, then Text input."
       >
-        <li>
-          <div>
-            Example Week 1: Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            Homework - Question Styles
-          </div>
-        </li>
-        <li>
-          <div>
-            Text input
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 1: Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              Homework - Question Styles
+            </div>
+          </li>
+          <li>
+            <div>
+              Text input
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -268,29 +290,34 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Pointing on a Picture
-        </span>
+        </h3>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 1: Getting Started, then Homework - Question Styles, then Pointing on a Picture."
       >
-        <li>
-          <div>
-            Example Week 1: Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            Homework - Question Styles
-          </div>
-        </li>
-        <li>
-          <div>
-            Pointing on a Picture
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 1: Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              Homework - Question Styles
+            </div>
+          </li>
+          <li>
+            <div>
+              Pointing on a Picture
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -326,29 +353,34 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Getting Answers
-        </span>
+        </h3>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: About Exams and Certificates, then edX Exams, then Getting Answers."
       >
-        <li>
-          <div>
-            About Exams and Certificates
-          </div>
-        </li>
-        <li>
-          <div>
-            edX Exams
-          </div>
-        </li>
-        <li>
-          <div>
-            Getting Answers
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              About Exams and Certificates
+            </div>
+          </li>
+          <li>
+            <div>
+              edX Exams
+            </div>
+          </li>
+          <li>
+            <div>
+              Getting Answers
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -384,32 +416,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Welcome!
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           30
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Introduction, then Demo Course Overview, then Introduction: Video and Sequences."
       >
-        <li>
-          <div>
-            Introduction
-          </div>
-        </li>
-        <li>
-          <div>
-            Demo Course Overview
-          </div>
-        </li>
-        <li>
-          <div>
-            Introduction: Video and Sequences
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Introduction
+            </div>
+          </li>
+          <li>
+            <div>
+              Demo Course Overview
+            </div>
+          </li>
+          <li>
+            <div>
+              Introduction: Video and Sequences
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -445,29 +484,34 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Multiple Choice Questions
-        </span>
+        </h3>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 1: Getting Started, then Homework - Question Styles, then Multiple Choice Questions."
       >
-        <li>
-          <div>
-            Example Week 1: Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            Homework - Question Styles
-          </div>
-        </li>
-        <li>
-          <div>
-            Multiple Choice Questions
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 1: Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              Homework - Question Styles
+            </div>
+          </li>
+          <li>
+            <div>
+              Multiple Choice Questions
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -503,29 +547,34 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Numerical Input
-        </span>
+        </h3>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 1: Getting Started, then Homework - Question Styles, then Numerical Input."
       >
-        <li>
-          <div>
-            Example Week 1: Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            Homework - Question Styles
-          </div>
-        </li>
-        <li>
-          <div>
-            Numerical Input
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 1: Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              Homework - Question Styles
+            </div>
+          </li>
+          <li>
+            <div>
+              Numerical Input
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -561,32 +610,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Connecting a Circuit and a Circuit Diagram
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           3
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 1: Getting Started, then Lesson 1 - Getting Started, then Video Presentation Styles."
       >
-        <li>
-          <div>
-            Example Week 1: Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            Lesson 1 - Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            Video Presentation Styles
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 1: Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              Lesson 1 - Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              Video Presentation Styles
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -622,29 +678,34 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           CAPA
-        </span>
+        </h3>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 2: Get Interactive, then Homework - Labs and Demos, then Code Grader."
       >
-        <li>
-          <div>
-            Example Week 2: Get Interactive
-          </div>
-        </li>
-        <li>
-          <div>
-            Homework - Labs and Demos
-          </div>
-        </li>
-        <li>
-          <div>
-            Code Grader
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 2: Get Interactive
+            </div>
+          </li>
+          <li>
+            <div>
+              Homework - Labs and Demos
+            </div>
+          </li>
+          <li>
+            <div>
+              Code Grader
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -680,29 +741,34 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Interactive Questions
-        </span>
+        </h3>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 1: Getting Started, then Lesson 1 - Getting Started, then Interactive Questions."
       >
-        <li>
-          <div>
-            Example Week 1: Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            Lesson 1 - Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            Interactive Questions
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 1: Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              Lesson 1 - Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              Interactive Questions
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -738,32 +804,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Blank HTML Page
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           6
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Introduction, then Demo Course Overview, then Introduction: Video and Sequences."
       >
-        <li>
-          <div>
-            Introduction
-          </div>
-        </li>
-        <li>
-          <div>
-            Demo Course Overview
-          </div>
-        </li>
-        <li>
-          <div>
-            Introduction: Video and Sequences
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Introduction
+            </div>
+          </li>
+          <li>
+            <div>
+              Demo Course Overview
+            </div>
+          </li>
+          <li>
+            <div>
+              Introduction: Video and Sequences
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -799,32 +872,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Discussion Forums
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           5
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 3: Be Social, then Lesson 3 - Be Social, then Discussion Forums."
       >
-        <li>
-          <div>
-            Example Week 3: Be Social
-          </div>
-        </li>
-        <li>
-          <div>
-            Lesson 3 - Be Social
-          </div>
-        </li>
-        <li>
-          <div>
-            Discussion Forums
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 3: Be Social
+            </div>
+          </li>
+          <li>
+            <div>
+              Lesson 3 - Be Social
+            </div>
+          </li>
+          <li>
+            <div>
+              Discussion Forums
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -860,32 +940,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Overall Grade
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           7
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: About Exams and Certificates, then edX Exams, then Overall Grade Performance."
       >
-        <li>
-          <div>
-            About Exams and Certificates
-          </div>
-        </li>
-        <li>
-          <div>
-            edX Exams
-          </div>
-        </li>
-        <li>
-          <div>
-            Overall Grade Performance
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              About Exams and Certificates
+            </div>
+          </li>
+          <li>
+            <div>
+              edX Exams
+            </div>
+          </li>
+          <li>
+            <div>
+              Overall Grade Performance
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -921,32 +1008,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Blank HTML Page
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           3
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 3: Be Social, then Lesson 3 - Be Social, then Homework - Find Your Study Buddy."
       >
-        <li>
-          <div>
-            Example Week 3: Be Social
-          </div>
-        </li>
-        <li>
-          <div>
-            Lesson 3 - Be Social
-          </div>
-        </li>
-        <li>
-          <div>
-            Homework - Find Your Study Buddy
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 3: Be Social
+            </div>
+          </li>
+          <li>
+            <div>
+              Lesson 3 - Be Social
+            </div>
+          </li>
+          <li>
+            <div>
+              Homework - Find Your Study Buddy
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -982,32 +1076,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Find Your Study Buddy
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           3
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 3: Be Social, then Homework - Find Your Study Buddy, then Homework - Find Your Study Buddy."
       >
-        <li>
-          <div>
-            Example Week 3: Be Social
-          </div>
-        </li>
-        <li>
-          <div>
-            Homework - Find Your Study Buddy
-          </div>
-        </li>
-        <li>
-          <div>
-            Homework - Find Your Study Buddy
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 3: Be Social
+            </div>
+          </li>
+          <li>
+            <div>
+              Homework - Find Your Study Buddy
+            </div>
+          </li>
+          <li>
+            <div>
+              Homework - Find Your Study Buddy
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -1043,32 +1144,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           Be Social
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           4
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 3: Be Social, then Lesson 3 - Be Social, then Be Social."
       >
-        <li>
-          <div>
-            Example Week 3: Be Social
-          </div>
-        </li>
-        <li>
-          <div>
-            Lesson 3 - Be Social
-          </div>
-        </li>
-        <li>
-          <div>
-            Be Social
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 3: Be Social
+            </div>
+          </li>
+          <li>
+            <div>
+              Lesson 3 - Be Social
+            </div>
+          </li>
+          <li>
+            <div>
+              Be Social
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -1104,32 +1212,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           EdX Exams
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           4
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: About Exams and Certificates, then edX Exams, then EdX Exams."
       >
-        <li>
-          <div>
-            About Exams and Certificates
-          </div>
-        </li>
-        <li>
-          <div>
-            edX Exams
-          </div>
-        </li>
-        <li>
-          <div>
-            EdX Exams
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              About Exams and Certificates
+            </div>
+          </li>
+          <li>
+            <div>
+              edX Exams
+            </div>
+          </li>
+          <li>
+            <div>
+              EdX Exams
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -1165,32 +1280,39 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           When Are Your Exams? 
-        </span>
-        <em>
+        </h3>
+        <em
+          aria-hidden="true"
+        >
           2
         </em>
       </div>
-      <ul
-        class="courseware-search-results__breadcrumbs"
+      <div
+        aria-label="Location: Example Week 1: Getting Started, then Lesson 1 - Getting Started, then When Are Your Exams? ."
       >
-        <li>
-          <div>
-            Example Week 1: Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            Lesson 1 - Getting Started
-          </div>
-        </li>
-        <li>
-          <div>
-            When Are Your Exams? 
-          </div>
-        </li>
-      </ul>
+        <ul
+          aria-hidden="true"
+          class="courseware-search-results__breadcrumbs"
+        >
+          <li>
+            <div>
+              Example Week 1: Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              Lesson 1 - Getting Started
+            </div>
+          </li>
+          <li>
+            <div>
+              When Are Your Exams? 
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </a>
   <a
@@ -1228,10 +1350,13 @@ exports[`CoursewareSearchResults when list of results is provided should match t
       <div
         class="courseware-search-results__title"
       >
-        <span>
+        <h3>
           External Course Link Test
-        </span>
+        </h3>
       </div>
+      <div
+        aria-label=""
+      />
     </div>
   </a>
 </div>
