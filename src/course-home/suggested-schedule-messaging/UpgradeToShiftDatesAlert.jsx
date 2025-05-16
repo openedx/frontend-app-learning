@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -8,6 +9,8 @@ import {
   Button,
   Row,
   Col,
+  breakpoints,
+  useWindowSize,
 } from '@openedx/paragon';
 
 import { useModel } from '../../generic/model-store';
@@ -18,6 +21,7 @@ const UpgradeToShiftDatesAlert = ({ logUpgradeLinkClick, model }) => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const {
     datesBannerInfo,
@@ -38,14 +42,18 @@ const UpgradeToShiftDatesAlert = ({ logUpgradeLinkClick, model }) => {
   return (
     <Alert className="bg-light-200">
       <Row className="w-100 m-0">
-        <Col xs={12} md={9} className="small p-0 pr-md-2">
+        <Col
+          xs={12}
+          md={9}
+          className={classNames('p-0 pr-md-2', { 'upgrade-to-shift-dates-alert-text': wideScreen })}
+        >
           <strong>{intl.formatMessage(messages.missedDeadlines)}</strong>
           {' '}{intl.formatMessage(messages.upgradeToShiftBody)}
         </Col>
         <Col xs={12} md={3} className="align-self-center text-right mt-3 mt-md-0 p-0">
           <Button
             variant="brand"
-            size="sm"
+            size={!wideScreen ? 'sm' : 'md'}
             className="w-xs-100 w-md-auto"
             onClick={() => {
               logUpgradeLinkClick();
