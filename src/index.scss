@@ -446,12 +446,12 @@
   .course-outline-tab .pgn__card {
     .pgn__card-header {
       display: block;
-  
+
       .pgn__card-header-content {
         margin-top: 0;
       }
     }
-    
+
     .pgn__card-header-actions {
       margin-left: 0;
     }
@@ -466,8 +466,11 @@
 @import "courseware/course/content-tools/calculator/calculator.scss";
 @import "courseware/course/content-tools/contentTools.scss";
 @import "course-home/dates-tab/timeline/Day.scss";
+@import "generic/user-messages/Alert.scss";
+@import "generic/upsell-bullets/UpsellBullets.scss";
 @import "course-home/outline-tab/widgets/ProctoringInfoPanel.scss";
 @import "course-home/outline-tab/widgets/FlagButton.scss";
+@import "course-home/suggested-schedule-messaging/SuggestedScheduleMessaging.scss";
 @import "course-home/progress-tab/course-completion/CompletionDonutChart.scss";
 @import "course-home/progress-tab/grades/course-grade/GradeBar.scss";
 @import "courseware/course/course-exit/CourseRecommendations";
