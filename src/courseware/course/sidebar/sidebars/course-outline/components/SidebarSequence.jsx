@@ -28,22 +28,24 @@ const SidebarSequence = ({
   } = sequence;
 
   const [open, setOpen] = useState(defaultOpen);
-  const { activeSequenceId, units } = useCourseOutlineSidebar();
+  const { activeSequenceId, units, isEnabledCompletionTracking } = useCourseOutlineSidebar();
   const isActiveSequence = id === activeSequenceId;
 
   const sectionTitle = (
     <>
       <div className="col-auto p-0" style={{ fontSize: '1.1rem' }}>
-        <CompletionIcon completionStat={completionStat} />
+        <CompletionIcon completionStat={completionStat} enabled={isEnabledCompletionTracking} />
       </div>
       <div className="col-9 d-flex flex-column flex-grow-1 ml-3 mr-auto p-0 text-left">
         <span className="align-middle text-dark-500">{title}</span>
         {specialExamInfo && <span className="align-middle small text-muted">{specialExamInfo}</span>}
-        <span className="sr-only">
-          , {intl.formatMessage(complete
-          ? courseOutlineMessages.completedAssignment
-          : courseOutlineMessages.incompleteAssignment)}
-        </span>
+        {isEnabledCompletionTracking && (
+          <span className="sr-only">
+            , {intl.formatMessage(complete
+            ? courseOutlineMessages.completedAssignment
+            : courseOutlineMessages.incompleteAssignment)}
+          </span>
+        )}
       </div>
     </>
   );
@@ -69,6 +71,7 @@ const SidebarSequence = ({
               activeUnitId={activeUnitId}
               isFirst={index === 0}
               isLocked={type === UNIT_ICON_TYPES.lock}
+              isCompletionTrackingEnabled={isEnabledCompletionTracking}
             />
           ))}
         </ol>

@@ -18,21 +18,24 @@ const SidebarSection = ({ section, handleSelectSection }) => {
     completionStat,
   } = section;
 
-  const { activeSequenceId } = useCourseOutlineSidebar();
+  const { activeSequenceId, isEnabledCompletionTracking } = useCourseOutlineSidebar();
   const isActiveSection = sequenceIds.includes(activeSequenceId);
 
   const sectionTitle = (
     <>
       <div className="col-auto p-0">
-        <CompletionIcon completionStat={completionStat} />
+        <CompletionIcon completionStat={completionStat} enabled={isEnabledCompletionTracking} />
       </div>
       <div className="col-10 ml-3 p-0 flex-grow-1 text-dark-500 text-left text-break">
         {title}
-        <span className="sr-only">
-          , {intl.formatMessage(complete
-          ? courseOutlineMessages.completedSection
-          : courseOutlineMessages.incompleteSection)}
-        </span>
+        {isEnabledCompletionTracking && (
+          <span className="sr-only">
+            , {intl.formatMessage(complete
+              ? courseOutlineMessages.completedSection
+              : courseOutlineMessages.incompleteSection)}
+          </span>
+        )}
+
       </div>
     </>
   );
