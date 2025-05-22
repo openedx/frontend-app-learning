@@ -31,8 +31,8 @@ const SidebarSection = ({ section, handleSelectSection }) => {
         {isEnabledCompletionTracking && (
           <span className="sr-only">
             , {intl.formatMessage(complete
-              ? courseOutlineMessages.completedSection
-              : courseOutlineMessages.incompleteSection)}
+            ? courseOutlineMessages.completedSection
+            : courseOutlineMessages.incompleteSection)}
           </span>
         )}
 

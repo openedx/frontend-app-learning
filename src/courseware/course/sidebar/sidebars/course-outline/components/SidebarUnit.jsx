@@ -44,7 +44,7 @@ const SidebarUnit = ({
           <span className="align-middle">
             {title}
           </span>
-          {completeAndEnabled && (
+          {isCompletionTrackingEnabled && (
             <span className="sr-only">
               , {intl.formatMessage(complete ? messages.completedUnit : messages.incompleteUnit)}
             </span>
@@ -70,7 +70,7 @@ SidebarUnit.propTypes = {
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
   activeUnitId: PropTypes.string.isRequired,
-  isCompletionTrackingEnabled: PropTypes.bool,
+  isCompletionTrackingEnabled: PropTypes.bool.isRequired,
 };
 
 export default SidebarUnit;
