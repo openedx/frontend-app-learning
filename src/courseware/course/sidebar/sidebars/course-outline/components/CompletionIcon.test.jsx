@@ -15,6 +15,12 @@ describe('CompletionIcon', () => {
     expect(screen.getByTestId('dashed-circle-icon')).toBeInTheDocument();
   });
 
+  it('renders completion solid icon when completion is between 0 and total and completion tracking is not enabled', () => {
+    const completionStat = { completed: 2, total: 5 };
+    render(<CompletionIcon completionStat={completionStat} enabled={false} />);
+    expect(screen.getByTestId('completion-solid-icon')).toBeInTheDocument();
+  });
+
   it('renders completion solid icon when completion is 0 and enabled', () => {
     const completionStat = { completed: 0, total: 5 };
     render(<CompletionIcon completionStat={completionStat} enabled />);
