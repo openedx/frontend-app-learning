@@ -100,13 +100,19 @@ const SequenceNavigation = ({
     );
   };
 
-  return sequenceStatus === LOADED && (
-    <nav id="courseware-sequence-navigation" data-testid="courseware-sequence-navigation" className={classNames('sequence-navigation', className, { 'mr-2': shouldDisplayNotificationTriggerInSequence })}>
-      {renderPreviousButton()}
-      {renderUnitButtons()}
-      {renderNextButton()}
-    </nav>
-  );
+  return sequenceStatus === LOADED ? (
+    <div className="sequence-navigation-container">
+      <nav
+        id="courseware-sequence-navigation"
+        data-testid="courseware-sequence-navigation"
+        className={classNames('sequence-navigation', className, { 'mr-2': shouldDisplayNotificationTriggerInSequence })}
+      >
+        {renderPreviousButton()}
+        {renderUnitButtons()}
+        {renderNextButton()}
+      </nav>
+    </div>
+  ) : null;
 };
 
 SequenceNavigation.propTypes = {

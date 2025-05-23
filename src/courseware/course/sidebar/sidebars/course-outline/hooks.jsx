@@ -9,7 +9,6 @@ import { checkBlockCompletion, getCourseOutlineStructure } from '@src/courseware
 import OldSidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import NewSidebarContext from '@src/courseware/course/new-sidebar/SidebarContext';
 import {
-  getCoursewareOutlineSidebarSettings,
   getCourseOutlineShouldUpdate,
   getCourseOutlineStatus,
   getSequenceId,
@@ -22,7 +21,6 @@ import { ID } from './constants';
 export const useCourseOutlineSidebar = () => {
   const dispatch = useDispatch();
   const isCollapsedOutlineSidebar = window.sessionStorage.getItem('hideCourseOutlineSidebar');
-  const { enableNavigationSidebar: isEnabledSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
   const courseOutlineShouldUpdate = useSelector(getCourseOutlineShouldUpdate);
   const courseOutlineStatus = useSelector(getCourseOutlineStatus);
   const sequenceStatus = useSelector(getSequenceStatus);
@@ -42,7 +40,7 @@ export const useCourseOutlineSidebar = () => {
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
-  const isOpenSidebar = !initialSidebar && isEnabledSidebar && !isCollapsedOutlineSidebar;
+  const isOpenSidebar = !initialSidebar && !isCollapsedOutlineSidebar;
   const [isOpen, setIsOpen] = useState(true);
 
   const {
@@ -99,17 +97,16 @@ export const useCourseOutlineSidebar = () => {
   }, [initialSidebar, unitId]);
 
   useEffect(() => {
-    if ((isEnabledSidebar && courseOutlineStatus !== LOADED) || courseOutlineShouldUpdate) {
+    if (courseOutlineStatus !== LOADED || courseOutlineShouldUpdate) {
       dispatch(getCourseOutlineStructure(courseId));
     }
-  }, [courseId, isEnabledSidebar, courseOutlineShouldUpdate]);
+  }, [courseId, courseOutlineShouldUpdate]);
 
   return {
     courseId,
     unitId,
     currentSidebar,
     shouldDisplayFullScreen,
-    isEnabledSidebar,
     isOpen,
     setIsOpen,
     handleToggleCollapse,

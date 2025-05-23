@@ -96,7 +96,6 @@ describe('Sequence', () => {
       unitBlocks,
       sequenceBlocks,
       sequenceMetadata,
-      enableNavigationSidebar: { enable_navigation_sidebar: true },
     }, false);
     const { container } = render(
       <SidebarWrapper overrideData={{ sequenceId: sequenceBlocks[0].id }} />,

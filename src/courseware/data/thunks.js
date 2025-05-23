@@ -9,7 +9,6 @@ import {
   getCourseMetadata,
   getCourseOutline,
   getCourseTopics,
-  getCoursewareOutlineSidebarToggles,
   getLearningSequencesOutline,
   getSequenceMetadata,
   postIntegritySignature,
@@ -26,7 +25,6 @@ import {
   fetchCourseOutlineRequest,
   fetchCourseOutlineSuccess,
   fetchCourseOutlineFailure,
-  setCoursewareOutlineSidebarToggles,
   updateCourseOutlineCompletion,
 } from './slice';
 
@@ -37,16 +35,13 @@ export function fetchCourse(courseId) {
       getCourseMetadata(courseId),
       getLearningSequencesOutline(courseId),
       getCourseHomeCourseMetadata(courseId, 'courseware'),
-      getCoursewareOutlineSidebarToggles(courseId),
     ]).then(([
       courseMetadataResult,
       learningSequencesOutlineResult,
-      courseHomeMetadataResult,
-      coursewareOutlineSidebarTogglesResult]) => {
+      courseHomeMetadataResult]) => {
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
       const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
       const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
-      const fetchedCoursewareOutlineSidebarTogglesResult = coursewareOutlineSidebarTogglesResult.status === 'fulfilled';
 
       if (fetchedMetadata) {
         dispatch(addModel({
@@ -86,14 +81,6 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      if (fetchedCoursewareOutlineSidebarTogglesResult) {
-        const {
-          enable_navigation_sidebar: enableNavigationSidebar,
-          always_open_auxiliary_sidebar: alwaysOpenAuxiliarySidebar,
-        } = coursewareOutlineSidebarTogglesResult.value;
-        dispatch(setCoursewareOutlineSidebarToggles({ enableNavigationSidebar, alwaysOpenAuxiliarySidebar }));
-      }
-
       // Log errors for each request if needed. Outline failures may occur
       // even if the course metadata request is successful
       if (!fetchedOutline) {
@@ -111,9 +98,6 @@ export function fetchCourse(courseId) {
       }
       if (!fetchedCourseHomeMetadata) {
         logError(courseHomeMetadataResult.reason);
-      }
-      if (!fetchedCoursewareOutlineSidebarTogglesResult) {
-        logError(coursewareOutlineSidebarTogglesResult.reason);
       }
       if (fetchedMetadata && fetchedCourseHomeMetadata) {
         if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedOutline) {
