@@ -22,7 +22,6 @@ const Unit = ({
   onLoaded,
   id,
   isOriginalUserStaff,
-  isEnabledOutlineSidebar,
   renderUnitNavigation,
 }) => {
   const { formatMessage } = useIntl();
@@ -48,7 +47,7 @@ const Unit = ({
 
   return (
     <div className="unit">
-      <UnitTitleSlot unitId={id} {...{ unit, isEnabledOutlineSidebar, renderUnitNavigation }} />
+      <UnitTitleSlot unitId={id} {...{ unit, renderUnitNavigation }} />
       <UnitSuspense {...{ courseId, id }} />
       <ContentIFrame
         elementId="unit-iframe"
@@ -70,7 +69,6 @@ Unit.propTypes = {
   id: PropTypes.string.isRequired,
   onLoaded: PropTypes.func,
   isOriginalUserStaff: PropTypes.bool.isRequired,
-  isEnabledOutlineSidebar: PropTypes.bool.isRequired,
   renderUnitNavigation: PropTypes.func.isRequired,
 };
 

@@ -113,8 +113,6 @@ export async function getCoursewareOutlineSidebarToggles(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-navigation-sidebar/toggles/`);
   const { data } = await getAuthenticatedHttpClient().get(url.href);
   return {
-    enable_navigation_sidebar: data.enable_navigation_sidebar || false,
-    always_open_auxiliary_sidebar: data.always_open_auxiliary_sidebar || false,
     enable_completion_tracking: data.enable_completion_tracking || false,
   };
 }

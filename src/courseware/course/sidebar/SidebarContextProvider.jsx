@@ -1,13 +1,11 @@
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import {
   useEffect, useState, useMemo, useCallback,
 } from 'react';
 
 import { useModel } from '@src/generic/model-store';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
-import { getCoursewareOutlineSidebarSettings } from '../../data/selectors';
 
 import * as discussionsSidebar from './sidebars/discussions';
 import * as notificationsSidebar from './sidebars/notifications';
@@ -25,11 +23,10 @@ const SidebarProvider = ({
   const shouldDisplayFullScreen = useWindowSize().width < breakpoints.extraLarge.minWidth;
   const shouldDisplaySidebarOpen = useWindowSize().width > breakpoints.extraLarge.minWidth;
   const query = new URLSearchParams(window.location.search);
-  const { alwaysOpenAuxiliarySidebar } = useSelector(getCoursewareOutlineSidebarSettings);
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
 
   let initialSidebar = shouldDisplayFullScreen ? getLocalStorage(`sidebar.${courseId}`) : null;
-  if (!shouldDisplayFullScreen && isInitiallySidebarOpen && alwaysOpenAuxiliarySidebar) {
+  if (!shouldDisplayFullScreen && isInitiallySidebarOpen) {
     initialSidebar = isUnitHasDiscussionTopics
       ? SIDEBARS[discussionsSidebar.ID].ID
       : verifiedMode && SIDEBARS[notificationsSidebar.ID].ID;
