@@ -6,6 +6,7 @@ import {
   sendTrackEvent,
   sendTrackingLogEvent,
 } from '@edx/frontend-platform/analytics';
+import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
@@ -15,7 +16,6 @@ import { useModel } from '@src/generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
 import SequenceContainerSlot from '../../../plugin-slots/SequenceContainerSlot';
 
-import { getCoursewareOutlineSidebarSettings } from '../../data/selectors';
 import CourseLicense from '../course-license';
 import { NotificationsDiscussionsSidebarSlot } from '../../../plugin-slots/NotificationsDiscussionsSidebarSlot';
 import messages from './messages';
@@ -47,7 +47,6 @@ const Sequence = ({
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
-  const { enableNavigationSidebar: isEnabledOutlineSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
     const newUnitId = sequence.unitIds[nextIndex];
@@ -170,7 +169,7 @@ const Sequence = ({
         />
         <CourseOutlineSidebarSlot />
         <div className="sequence w-100">
-          {!isEnabledOutlineSidebar && (
+          {!getConfig().ENABLE_SEQUENCE_NAVIGATION && (
             <div className="sequence-navigation-container">
               <SequenceNavigation
                 sequenceId={sequenceId}
@@ -203,7 +202,6 @@ const Sequence = ({
               unitId={unitId}
               unitLoadedHandler={handleUnitLoaded}
               isOriginalUserStaff={originalUserIsStaff}
-              isEnabledOutlineSidebar={isEnabledOutlineSidebar}
               renderUnitNavigation={renderUnitNavigation}
             />
             {unitHasLoaded && renderUnitNavigation(false)}
