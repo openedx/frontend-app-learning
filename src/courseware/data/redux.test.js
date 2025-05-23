@@ -68,7 +68,6 @@ describe('Data layer integration tests', () => {
         courseId,
         courseOutline: {},
         courseStatus: FAILED,
-        coursewareOutlineSidebarSettings: {},
         courseOutlineStatus: LOADING,
         sequenceId: null,
         sequenceMightBeUnit: false,
@@ -110,10 +109,6 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
-      axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
-        enable_navigation_sidebar: true,
-        always_open_auxiliary_sidebar: true,
-      });
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
@@ -123,10 +118,6 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.courseId).toEqual(courseId);
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
-      expect(state.courseware.coursewareOutlineSidebarSettings).toEqual({
-        enableNavigationSidebar: true,
-        alwaysOpenAuxiliarySidebar: true,
-      });
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
@@ -138,10 +129,6 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, simpleOutline);
-      axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
-        enable_navigation_sidebar: false,
-        always_open_auxiliary_sidebar: false,
-      });
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
@@ -151,10 +138,6 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.courseId).toEqual(courseId);
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
-      expect(state.courseware.coursewareOutlineSidebarSettings).toEqual({
-        enableNavigationSidebar: false,
-        alwaysOpenAuxiliarySidebar: false,
-      });
 
       // check that at least one key camel cased, thus course data normalized
       expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
