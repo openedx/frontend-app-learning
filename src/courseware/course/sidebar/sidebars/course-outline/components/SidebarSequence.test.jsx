@@ -66,7 +66,7 @@ describe('<SidebarSequence />', () => {
     expect(screen.queryByText(unit.title)).not.toBeInTheDocument();
   });
 
-  it('renders correctly when sequence is not collapsed and complete', async () => {
+  it('renders correctly when sequence is not collapsed and complete and completion tracking enabled', async () => {
     const user = userEvent.setup();
     await initTestStore();
     renderWithProvider({
