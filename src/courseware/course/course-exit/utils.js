@@ -17,6 +17,7 @@ const CELEBRATION_STATUSES = [
   'audit_passing',
   'downloadable',
   'earned_but_not_available',
+  'not_earned_but_available_date',
   'honor_passing',
   'requesting',
   'unverified',
