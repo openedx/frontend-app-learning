@@ -187,7 +187,8 @@ const CertificateStatus = () => {
         // regardless of passing or nonpassing status
         if (!canViewCertificate) {
           certCase = 'notAvailable';
-          endDate = intl.formatDate(end, {
+          // use the certificate_available_date if it is available, otherwise use the end date of the course
+          endDate = intl.formatDate((certificateAvailableDate || end), {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
