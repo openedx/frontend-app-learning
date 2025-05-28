@@ -328,6 +328,7 @@
 .unit-navigation {
   display: flex;
   justify-content: center;
+  gap: 5px;
   max-width: 640px;
   margin: 0 auto;
 
@@ -346,7 +347,7 @@
   }
 
   .next-button {
-    flex-basis: 75%;
+    flex-basis: 25%;
 
      @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
        flex-basis: 100%;
@@ -365,6 +366,7 @@
 .top-unit-navigation {
   display: flex;
   max-width: 100%;
+  gap: 5px;
   justify-content: flex-end;
 
   .next-button,
