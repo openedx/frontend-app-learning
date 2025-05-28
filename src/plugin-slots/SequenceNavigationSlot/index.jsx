@@ -13,10 +13,8 @@ const SequenceNavigationSlot = ({
 }) => (
   <PluginSlot
     id="org.openedx.frontend.learning.sequence_navigation.v1"
-    idAliases={['sequence_navigation_slot']}
     slotOptions={{
       mergeProps: true,
-      keepDefault: false,
     }}
     pluginProps={{
       sequenceId,
