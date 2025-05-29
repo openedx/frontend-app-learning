@@ -20,7 +20,7 @@ import {
 } from '@src/courseware/data/selectors';
 import { ID } from './constants';
 
-const DEBOUNCE_WAIT = 100; // ms
+const DEBOUNCE_WAIT = 1; // ms
 
 // eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
@@ -115,15 +115,16 @@ export const useCourseOutlineSidebar = () => {
   useLayoutEffect(() => {
     const handleResize = () => {
       // breakpoints.large.maxWidth is 1200px and currently the breakpoint for showing the sidebar
-      if (global.innerWidth < breakpoints.large.maxWidth) {
-        handleToggleCollapse();
+      if (isOpen && global.innerWidth < breakpoints.large.maxWidth) {
+        if (isOpen) {
+          handleToggleCollapse();
+        }
       }
     };
-    const debounceHandleResize = debounce(handleResize, DEBOUNCE_WAIT, { leading: true });
 
-    global.addEventListener('resize', debounceHandleResize);
+    global.addEventListener('resize', handleResize);
     return () => {
-      global.removeEventListener('resize', debounceHandleResize);
+      global.removeEventListener('resize', handleResize);
     };
   }, []);
 
