@@ -1,7 +1,9 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { debounce } from 'lodash';
+import { breakpoints } from '@openedx/paragon';
 
 import { useModel } from '@src/generic/model-store';
 import { LOADED } from '@src/constants';
@@ -17,6 +19,8 @@ import {
   getSequenceStatus,
 } from '@src/courseware/data/selectors';
 import { ID } from './constants';
+
+const DEBOUNCE_WAIT = 100; // ms
 
 // eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
@@ -106,6 +110,24 @@ export const useCourseOutlineSidebar = () => {
       dispatch(getCourseOutlineStructure(courseId));
     }
   }, [courseId, isEnabledSidebar, courseOutlineShouldUpdate]);
+
+  // Collapse sidebar if screen resized to a width that displays the sidebar automatically
+  useLayoutEffect(() => {
+    const handleResize = () => {
+      // breakpoints.large.maxWidth is 1200px and currently the breakpoint for showing the sidebar
+      if (global.innerWidth < breakpoints.large.maxWidth) {
+        if (isOpen) {
+          handleToggleCollapse();
+        }
+      }
+    };
+    const debounceHandleResize = debounce(handleResize, DEBOUNCE_WAIT, { leading: true });
+
+    global.addEventListener('resize', debounceHandleResize);
+    return () => {
+      global.removeEventListener('resize', debounceHandleResize);
+    };
+  }, []);
 
   return {
     courseId,
