@@ -115,9 +115,7 @@ export const useCourseOutlineSidebar = () => {
     const handleResize = () => {
       // breakpoints.large.maxWidth is 1200px and currently the breakpoint for showing the sidebar
       if (isOpen && global.innerWidth < breakpoints.large.maxWidth) {
-        if (isOpen) {
-          handleToggleCollapse();
-        }
+        handleToggleCollapse();
       }
     };
 
@@ -125,7 +123,7 @@ export const useCourseOutlineSidebar = () => {
     return () => {
       global.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [isOpen]);
 
   return {
     courseId,
