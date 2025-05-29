@@ -345,22 +345,6 @@
       border-radius: 6px;
     }
   }
-
-  .next-button {
-    flex-basis: 25%;
-
-     @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
-       flex-basis: 100%;
-     }
-  }
-
-  .previous-button {
-    flex-basis: 25%;
-
-     @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
-       flex-basis: 100%;
-     }
-  }
 }
 
 .top-unit-navigation {
