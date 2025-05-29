@@ -1,8 +1,9 @@
-import { useContext, useEffect, useLayoutEffect, useState } from 'react';
+import {
+  useContext, useEffect, useLayoutEffect, useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { debounce } from 'lodash';
 import { breakpoints } from '@openedx/paragon';
 
 import { useModel } from '@src/generic/model-store';
@@ -19,8 +20,6 @@ import {
   getSequenceStatus,
 } from '@src/courseware/data/selectors';
 import { ID } from './constants';
-
-const DEBOUNCE_WAIT = 1; // ms
 
 // eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
