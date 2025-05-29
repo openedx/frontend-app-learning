@@ -116,9 +116,7 @@ export const useCourseOutlineSidebar = () => {
     const handleResize = () => {
       // breakpoints.large.maxWidth is 1200px and currently the breakpoint for showing the sidebar
       if (global.innerWidth < breakpoints.large.maxWidth) {
-        if (isOpen) {
-          handleToggleCollapse();
-        }
+        handleToggleCollapse();
       }
     };
     const debounceHandleResize = debounce(handleResize, DEBOUNCE_WAIT, { leading: true });
