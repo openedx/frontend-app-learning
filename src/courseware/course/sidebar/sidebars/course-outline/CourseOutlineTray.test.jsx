@@ -102,6 +102,23 @@ describe('<CourseOutlineTray />', () => {
     expect(mockToggleSidebar).toHaveBeenCalledWith(null);
   });
 
+  it('collapses sidebar correctly when screen is resized', async () => {
+    const user = userEvent.setup();
+    const mockToggleSidebar = jest.fn();
+    await initTestStore();
+    renderWithProvider({ toggleSidebar: mockToggleSidebar });
+
+    const collapseBtn = screen.getByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage });
+    expect(collapseBtn).toBeInTheDocument();
+
+    // Simulate screen resize
+    window.innerWidth = 500;
+    window.dispatchEvent(new Event('resize'));
+
+    expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+  }
+  );
+
   it('navigates to section or sequence level correctly on click by back/section button', async () => {
     const user = userEvent.setup();
     await initTestStore();
