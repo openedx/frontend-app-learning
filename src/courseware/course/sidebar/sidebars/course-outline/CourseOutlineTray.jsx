@@ -7,7 +7,6 @@ import {
   ChevronLeft as ChevronLeftIcon,
 } from '@openedx/paragon/icons';
 
-import { useModel } from '@src/generic/model-store';
 import { LOADING } from '@src/constants';
 import PageLoading from '@src/generic/PageLoading';
 import SidebarSection from './components/SidebarSection';
@@ -35,13 +34,13 @@ const CourseOutlineTray = () => {
     sequences,
   } = useCourseOutlineSidebar();
 
-  const {
-    sectionId: activeSectionId,
-  } = useModel('sequences', activeSequenceId);
-
+  const resolvedSectionId = selectedSection
+    || Object.keys(sections).find(
+      (sectionId) => sections[sectionId].sequenceIds.includes(activeSequenceId),
+    );
   const sectionsIds = Object.keys(sections);
-  const sequenceIds = sections[selectedSection || activeSectionId]?.sequenceIds || [];
-  const backButtonTitle = sections[selectedSection || activeSectionId]?.title;
+  const sequenceIds = sections[resolvedSectionId]?.sequenceIds || [];
+  const backButtonTitle = sections[resolvedSectionId]?.title;
 
   const handleBackToSectionLevel = () => {
     setDisplaySectionLevel();
