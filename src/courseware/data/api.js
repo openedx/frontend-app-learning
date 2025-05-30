@@ -102,18 +102,3 @@ export async function getCourseOutline(courseId) {
 
   return data.blocks ? normalizeOutlineBlocks(courseId, data.blocks) : null;
 }
-
-/**
- * Get waffle flag value that enable courseware outline sidebar and always open auxiliary sidebar.
- * @param {string} courseId - The unique identifier for the course.
- * @returns {Promise<{enable_navigation_sidebar: boolean, enable_navigation_sidebar: boolean}>} - The object
- * of boolean values of enabling of the outline sidebar and is always open auxiliary sidebar.
- */
-export async function getCoursewareOutlineSidebarToggles(courseId) {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-navigation-sidebar/toggles/`);
-  const { data } = await getAuthenticatedHttpClient().get(url.href);
-  return {
-    enable_navigation_sidebar: data.enable_navigation_sidebar || false,
-    always_open_auxiliary_sidebar: data.always_open_auxiliary_sidebar || false,
-  };
-}
