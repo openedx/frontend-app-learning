@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import PropTypes from 'prop-types';
 import { getNotices } from './api';
@@ -25,11 +25,7 @@ const NoticesProvider = ({ children }) => {
     getData();
   }, []);
 
-  return (
-    <div>
-      {isRedirected === true ? null : children}
-    </div>
-  );
+  return isRedirected === true ? null : children;
 };
 
 NoticesProvider.propTypes = {

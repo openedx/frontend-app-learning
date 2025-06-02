@@ -218,7 +218,7 @@ const Sequence = ({
 
   if (sequenceStatus === 'loaded') {
     return (
-      <div>
+      <>
         <SequenceExamWrapper
           sequence={sequence}
           courseId={courseId}
@@ -229,7 +229,7 @@ const Sequence = ({
           {defaultContent}
         </SequenceExamWrapper>
         <CourseLicense license={license || undefined} />
-      </div>
+      </>
     );
   }
 
