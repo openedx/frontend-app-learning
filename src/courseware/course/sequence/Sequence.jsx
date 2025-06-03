@@ -219,15 +219,17 @@ const Sequence = ({
   if (sequenceStatus === 'loaded') {
     return (
       <>
-        <SequenceExamWrapper
-          sequence={sequence}
-          courseId={courseId}
-          isStaff={isStaff}
-          originalUserIsStaff={originalUserIsStaff}
-          canAccessProctoredExams={canAccessProctoredExams}
-        >
-          {defaultContent}
-        </SequenceExamWrapper>
+        <div className="d-flex flex-column flex-grow-1 justify-content-center">
+          <SequenceExamWrapper
+            sequence={sequence}
+            courseId={courseId}
+            isStaff={isStaff}
+            originalUserIsStaff={originalUserIsStaff}
+            canAccessProctoredExams={canAccessProctoredExams}
+          >
+            {defaultContent}
+          </SequenceExamWrapper>
+        </div>
         <CourseLicense license={license || undefined} />
       </>
     );
