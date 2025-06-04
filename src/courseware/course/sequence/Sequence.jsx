@@ -13,17 +13,18 @@ import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 import PageLoading from '@src/generic/PageLoading';
 import { useModel } from '@src/generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
-import SequenceContainerSlot from '../../../plugin-slots/SequenceContainerSlot';
+import SequenceContainerSlot from '@src/plugin-slots/SequenceContainerSlot';
+import { CourseOutlineSidebarSlot } from '@src/plugin-slots/CourseOutlineSidebarSlot';
+import { CourseOutlineSidebarTriggerSlot } from '@src/plugin-slots/CourseOutlineSidebarTriggerSlot';
+import { NotificationsDiscussionsSidebarSlot } from '@src/plugin-slots/NotificationsDiscussionsSidebarSlot';
+import SequenceNavigationSlot from '@src/plugin-slots/SequenceNavigationSlot';
 
 import { getCoursewareOutlineSidebarSettings } from '../../data/selectors';
 import CourseLicense from '../course-license';
-import { NotificationsDiscussionsSidebarSlot } from '../../../plugin-slots/NotificationsDiscussionsSidebarSlot';
 import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
-import { SequenceNavigation, UnitNavigation } from './sequence-navigation';
+import { UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
-import { CourseOutlineSidebarSlot } from '../../../plugin-slots/CourseOutlineSidebarSlot';
-import { CourseOutlineSidebarTriggerSlot } from '../../../plugin-slots/CourseOutlineSidebarTriggerSlot';
 
 const Sequence = ({
   unitId,
@@ -172,7 +173,7 @@ const Sequence = ({
         <div className="sequence w-100">
           {!isEnabledOutlineSidebar && (
             <div className="sequence-navigation-container">
-              <SequenceNavigation
+              <SequenceNavigationSlot
                 sequenceId={sequenceId}
                 unitId={unitId}
                 nextHandler={() => {
