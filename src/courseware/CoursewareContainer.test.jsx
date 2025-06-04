@@ -1,4 +1,4 @@
-import { getConfig, history } from '@edx/frontend-platform';
+import { getConfig, mergeConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { waitForElementToBeRemoved, fireEvent } from '@testing-library/dom';
@@ -213,6 +213,9 @@ describe('CoursewareContainer', () => {
     describe('when the URL only contains a course ID', () => {
       const sequenceBlock = defaultSequenceBlock;
       const unitBlocks = defaultUnitBlocks;
+      mergeConfig({
+        ENABLE_SEQUENCE_NAVIGATION: true,
+      }, 'Add configs for sequence navigation');
 
       it('should use the resume block response to pick a unit if it contains one', async () => {
         axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {

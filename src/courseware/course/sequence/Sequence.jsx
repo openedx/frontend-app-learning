@@ -170,7 +170,7 @@ const Sequence = ({
         />
         <CourseOutlineSidebarSlot />
         <div className="sequence w-100">
-          {!getConfig().ENABLE_SEQUENCE_NAVIGATION && (
+          {getConfig().ENABLE_SEQUENCE_NAVIGATION && (
             <div className="sequence-navigation-container">
               <SequenceNavigationSlot
                 sequenceId={sequenceId}
