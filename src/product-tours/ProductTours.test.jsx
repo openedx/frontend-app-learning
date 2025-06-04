@@ -5,7 +5,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
-import { getConfig, history } from '@edx/frontend-platform';
+import { getConfig, history, mergeConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
 import MockAdapter from 'axios-mock-adapter';
@@ -287,6 +287,9 @@ describe('Courseware Tour', () => {
     it.each([true, false])(
       'should load courseware checkpoint correctly if tour enabled is $showCoursewareTour',
       async (showCoursewareTour) => {
+        mergeConfig({
+          ENABLE_SEQUENCE_NAVIGATION: true,
+        }, 'Add configs for sequence navigation');
         axiosMock.onGet(tourDataUrl).reply(200, {
           course_home_tour_status: 'no-tour',
           show_courseware_tour: showCoursewareTour,
