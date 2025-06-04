@@ -1,7 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
+import {
+  useContext, useEffect, useLayoutEffect, useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { breakpoints } from '@openedx/paragon';
 
 import { useModel } from '@src/generic/model-store';
 import { LOADED } from '@src/constants';
@@ -54,10 +57,14 @@ export const useCourseOutlineSidebar = () => {
   } = course.entranceExamData || {};
   const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
 
+  const collapseSidebar = () => {
+    toggleSidebar(null);
+    window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
+  };
+
   const handleToggleCollapse = () => {
     if (currentSidebar === ID) {
-      toggleSidebar(null);
-      window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
+      collapseSidebar();
     } else {
       toggleSidebar(ID);
       window.sessionStorage.removeItem('hideCourseOutlineSidebar');
@@ -106,6 +113,21 @@ export const useCourseOutlineSidebar = () => {
       dispatch(getCourseOutlineStructure(courseId));
     }
   }, [courseId, isEnabledSidebar, courseOutlineShouldUpdate]);
+
+  // Collapse sidebar if screen resized to a width that displays the sidebar automatically
+  useLayoutEffect(() => {
+    const handleResize = () => {
+      // breakpoints.large.maxWidth is 1200px and currently the breakpoint for showing the sidebar
+      if (currentSidebar === ID && global.innerWidth < breakpoints.large.maxWidth) {
+        collapseSidebar();
+      }
+    };
+
+    global.addEventListener('resize', handleResize);
+    return () => {
+      global.removeEventListener('resize', handleResize);
+    };
+  }, [isOpen]);
 
   return {
     courseId,
