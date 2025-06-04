@@ -57,10 +57,14 @@ export const useCourseOutlineSidebar = () => {
   } = course.entranceExamData || {};
   const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
 
+  const collapseSidebar = () => {
+    toggleSidebar(null);
+    window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
+  };
+
   const handleToggleCollapse = () => {
     if (currentSidebar === ID) {
-      toggleSidebar(null);
-      window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
+      collapseSidebar();
     } else {
       toggleSidebar(ID);
       window.sessionStorage.removeItem('hideCourseOutlineSidebar');
@@ -114,8 +118,8 @@ export const useCourseOutlineSidebar = () => {
   useLayoutEffect(() => {
     const handleResize = () => {
       // breakpoints.large.maxWidth is 1200px and currently the breakpoint for showing the sidebar
-      if (isOpen && global.innerWidth < breakpoints.large.maxWidth) {
-        handleToggleCollapse();
+      if (currentSidebar === ID && global.innerWidth < breakpoints.large.maxWidth) {
+        collapseSidebar();
       }
     };
 
