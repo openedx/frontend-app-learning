@@ -22,7 +22,10 @@ import { ID } from './constants';
 export const useCourseOutlineSidebar = () => {
   const dispatch = useDispatch();
   const isCollapsedOutlineSidebar = window.sessionStorage.getItem('hideCourseOutlineSidebar');
-  const { enableNavigationSidebar: isEnabledSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
+  const {
+    enableNavigationSidebar: isEnabledSidebar,
+    enableCompletionTracking: isEnabledCompletionTracking,
+  } = useSelector(getCoursewareOutlineSidebarSettings);
   const courseOutlineShouldUpdate = useSelector(getCourseOutlineShouldUpdate);
   const courseOutlineStatus = useSelector(getCourseOutlineStatus);
   const sequenceStatus = useSelector(getSequenceStatus);
@@ -110,6 +113,7 @@ export const useCourseOutlineSidebar = () => {
     currentSidebar,
     shouldDisplayFullScreen,
     isEnabledSidebar,
+    isEnabledCompletionTracking,
     isOpen,
     setIsOpen,
     handleToggleCollapse,
