@@ -68,8 +68,7 @@ jest.mock('react-router-dom', () => ({
 // }));
 
 jest.mock('@src/courseware/course/sequence/sequence-navigation/hooks');
-useSequenceNavigationMetadata.mockReturnValue({ isLastUnit: false, nextLink: '/next-unit-link' })
-
+useSequenceNavigationMetadata.mockReturnValue({ isLastUnit: false, nextLink: '/next-unit-link' });
 
 const state = mockUseKeyedState(stateKeys);
 
@@ -401,11 +400,11 @@ describe('useIFrameBehavior hook', () => {
         data: { type: messageTypes.autoAdvance },
       });
       cb(autoAdvanceMessage());
-      expect(mockNavigate).toHaveBeenCalledWith("/next-unit-link");
+      expect(mockNavigate).toHaveBeenCalledWith('/next-unit-link');
     });
     it('test for link when it is last unit', () => {
       useSequenceNavigationMetadata.mockReset();
-      useSequenceNavigationMetadata.mockReturnValue({ isLastUnit: true, nextLink: '/next-unit-link' })
+      useSequenceNavigationMetadata.mockReturnValue({ isLastUnit: true, nextLink: '/next-unit-link' });
       hook = useIFrameBehavior(props);
       const { cb } = useEventListener.mock.calls[0][1];
       const autoAdvanceMessage = () => ({
