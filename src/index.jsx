@@ -43,13 +43,13 @@ subscribe(APP_READY, () => {
   root.render(
     <StrictMode>
       <AppProvider store={store}>
-        <div className="app-container">
-          <Helmet>
-            <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />
-          </Helmet>
-          <PathFixesProvider>
-            <NoticesProvider>
-              <UserMessagesProvider>
+        <Helmet>
+          <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />
+        </Helmet>
+        <PathFixesProvider>
+          <NoticesProvider>
+            <UserMessagesProvider>
+              <div className="app-container">
                 <Routes>
                   <Route path="*" element={<PageWrap><PageNotFound /></PageWrap>} />
                   <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
@@ -144,10 +144,10 @@ subscribe(APP_READY, () => {
                     />
                   ))}
                 </Routes>
-              </UserMessagesProvider>
-            </NoticesProvider>
-          </PathFixesProvider>
-        </div>
+              </div>
+            </UserMessagesProvider>
+          </NoticesProvider>
+        </PathFixesProvider>
       </AppProvider>
     </StrictMode>,
   );
