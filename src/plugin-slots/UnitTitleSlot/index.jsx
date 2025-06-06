@@ -8,7 +8,6 @@ import messages from '@src/courseware/course/sequence/messages';
 const UnitTitleSlot = ({
   unitId,
   unit,
-  isEnabledOutlineSidebar,
   renderUnitNavigation,
 }) => {
   const { formatMessage } = useIntl();
@@ -21,7 +20,6 @@ const UnitTitleSlot = ({
       pluginProps={{
         unitId,
         unit,
-        isEnabledOutlineSidebar,
         renderUnitNavigation,
       }}
     >
@@ -29,7 +27,7 @@ const UnitTitleSlot = ({
         <div className="mb-0">
           <h3 className="h3">{unit.title}</h3>
         </div>
-        {isEnabledOutlineSidebar && renderUnitNavigation(true)}
+        {renderUnitNavigation(true)}
       </div>
       <p className="sr-only">{formatMessage(messages.headerPlaceholder)}</p>
       <BookmarkButton
@@ -49,7 +47,6 @@ UnitTitleSlot.propTypes = {
     title: PropTypes.string.isRequired,
     bookmarkedUpdateState: PropTypes.string.isRequired,
   }).isRequired,
-  isEnabledOutlineSidebar: PropTypes.bool.isRequired,
   renderUnitNavigation: PropTypes.func.isRequired,
 };
 

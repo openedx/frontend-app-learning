@@ -26,7 +26,6 @@ export const useCourseOutlineSidebar = () => {
   const dispatch = useDispatch();
   const isCollapsedOutlineSidebar = window.sessionStorage.getItem('hideCourseOutlineSidebar');
   const {
-    enableNavigationSidebar: isEnabledSidebar,
     enableCompletionTracking: isEnabledCompletionTracking,
   } = useSelector(getCoursewareOutlineSidebarSettings);
   const courseOutlineShouldUpdate = useSelector(getCourseOutlineShouldUpdate);
@@ -48,7 +47,7 @@ export const useCourseOutlineSidebar = () => {
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
-  const isOpenSidebar = !initialSidebar && isEnabledSidebar && !isCollapsedOutlineSidebar;
+  const isOpenSidebar = !initialSidebar && !isCollapsedOutlineSidebar;
   const [isOpen, setIsOpen] = useState(true);
 
   const {
@@ -109,10 +108,10 @@ export const useCourseOutlineSidebar = () => {
   }, [initialSidebar, unitId]);
 
   useEffect(() => {
-    if ((isEnabledSidebar && courseOutlineStatus !== LOADED) || courseOutlineShouldUpdate) {
+    if (courseOutlineStatus !== LOADED || courseOutlineShouldUpdate) {
       dispatch(getCourseOutlineStructure(courseId));
     }
-  }, [courseId, isEnabledSidebar, courseOutlineShouldUpdate]);
+  }, [courseId, courseOutlineShouldUpdate]);
 
   // Collapse sidebar if screen resized to a width that displays the sidebar automatically
   useLayoutEffect(() => {
@@ -134,7 +133,6 @@ export const useCourseOutlineSidebar = () => {
     unitId,
     currentSidebar,
     shouldDisplayFullScreen,
-    isEnabledSidebar,
     isEnabledCompletionTracking,
     isOpen,
     setIsOpen,

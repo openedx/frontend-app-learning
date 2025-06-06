@@ -15,6 +15,7 @@ describe('Sequence Content', () => {
       sequenceId: courseware.sequenceId,
       unitId: models.sequences[courseware.sequenceId].unitIds[0],
       unitLoadedHandler: () => { },
+      renderUnitNavigation: () => { },
     };
   });
 
@@ -38,7 +39,7 @@ describe('Sequence Content', () => {
   });
 
   it('displays message for no content', () => {
-    render(<SequenceContent {...mockData} unitId={null} />, { wrapWithRouter: true });
+    render(<SequenceContent {...mockData} unitId="" />, { wrapWithRouter: true });
     expect(screen.getByText('There is no content here.')).toBeInTheDocument();
   });
 });
