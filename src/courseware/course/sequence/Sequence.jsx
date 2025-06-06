@@ -6,7 +6,6 @@ import {
   sendTrackEvent,
   sendTrackingLogEvent,
 } from '@edx/frontend-platform/analytics';
-import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
@@ -170,30 +169,28 @@ const Sequence = ({
         />
         <CourseOutlineSidebarSlot />
         <div className="sequence w-100">
-          {getConfig().ENABLE_SEQUENCE_NAVIGATION && (
-            <div className="sequence-navigation-container">
-              <SequenceNavigationSlot
-                sequenceId={sequenceId}
-                unitId={unitId}
-                nextHandler={() => {
-                  logEvent('edx.ui.lms.sequence.next_selected', 'top');
-                  handleNext();
-                }}
-                onNavigate={(destinationUnitId) => {
-                  logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-                  handleNavigate(destinationUnitId);
-                }}
-                previousHandler={() => {
-                  logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-                  handlePrevious();
-                }}
-                {...{
-                  nextSequenceHandler,
-                  handleNavigate,
-                }}
-              />
-            </div>
-          )}
+          <div className="sequence-navigation-container">
+            <SequenceNavigationSlot
+              sequenceId={sequenceId}
+              unitId={unitId}
+              nextHandler={() => {
+                logEvent('edx.ui.lms.sequence.next_selected', 'top');
+                handleNext();
+              }}
+              onNavigate={(destinationUnitId) => {
+                logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+                handleNavigate(destinationUnitId);
+              }}
+              previousHandler={() => {
+                logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+                handlePrevious();
+              }}
+              {...{
+                nextSequenceHandler,
+                handleNavigate,
+              }}
+            />
+          </div>
 
           <div className="unit-container flex-grow-1 pt-4">
             <SequenceContent

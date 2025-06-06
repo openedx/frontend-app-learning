@@ -104,10 +104,10 @@ export async function getCourseOutline(courseId) {
 }
 
 /**
- * Get waffle flag value that enable courseware outline sidebar and always open auxiliary sidebar.
+ * Get waffle flag value that enables completion tracking.
  * @param {string} courseId - The unique identifier for the course.
- * @returns {Promise<{enable_navigation_sidebar: boolean, enable_navigation_sidebar: boolean}>} - The object
- * of boolean values of enabling of the outline sidebar and is always open auxiliary sidebar.
+ * @returns {Promise<{enable_completion_tracking: boolean}>} - The object
+ * of boolean values of enabling of the completion tracking.
  */
 export async function getCoursewareOutlineSidebarToggles(courseId) {
   const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-navigation-sidebar/toggles/`);
