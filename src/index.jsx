@@ -4,6 +4,7 @@ import {
   getConfig,
 } from '@edx/frontend-platform';
 import { AppProvider, ErrorPage, PageWrap } from '@edx/frontend-platform/react';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Routes, Route } from 'react-router-dom';
@@ -71,7 +72,7 @@ subscribe(APP_READY, () => {
                         <OutlineTab />
                       </TabContainer>
                     </DecodePageRoute>
-              )}
+                )}
                 />
                 <Route
                   path={DECODE_ROUTES.LIVE}
@@ -138,6 +139,17 @@ subscribe(APP_READY, () => {
                     element={(
                       <DecodePageRoute>
                         <CoursewareContainer />
+                      </DecodePageRoute>
+                  )}
+                  />
+                ))}
+                {getConfig()?.PLUGIN_ROUTES?.map((route) => (
+                  <Route
+                    key={route}
+                    path={route}
+                    element={(
+                      <DecodePageRoute>
+                        <PluginSlot id="course_page_route_slot" pluginProps={{ route }} />
                       </DecodePageRoute>
                   )}
                   />
