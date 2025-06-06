@@ -61,7 +61,7 @@ const CreditInformation = () => {
         requirementStatus = (<>{intl.formatMessage(messages.upcoming)} <Icon src={WatchFilled} className="text-gray-500 d-inline-flex align-bottom" /></>);
     }
     requirements.push((
-      <div className="row w-100 m-0 small" key={`requirement-${requirement.order}`}>
+      <div className="row w-100 m-0" key={`requirement-${requirement.order}`}>
         <p className="font-weight-bold">
           {requirement.namespace === 'grade'
             ? `${intl.formatMessage(messages.minimumGrade, { minGrade: Number(requirement.criteria.minGrade) * 100 })}:`
@@ -77,7 +77,7 @@ const CreditInformation = () => {
   return (
     <>
       <h3 className="h4 col-12 p-0">{intl.formatMessage(messages.requirementsHeader)}</h3>
-      <p className="small">{eligibilityStatus}</p>
+      <p>{eligibilityStatus}</p>
       {requirements}
     </>
   );
