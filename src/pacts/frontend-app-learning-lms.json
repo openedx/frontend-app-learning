@@ -52,7 +52,7 @@
             {
               "tab_id": "courseware",
               "title": "Course",
-              "url": "http://localhost:2000/course/course-v1:edX+DemoX+Demo_Course/home"
+              "url": "http://localhost:2010/course/course-v1:edX+DemoX+Demo_Course/home"
             }
           ],
           "title": "Demonstration Course",
@@ -262,7 +262,7 @@
               "slug": "courseware",
               "priority": 0,
               "type": "courseware",
-              "url": "http://localhost:2000/course/course-v1:edX+DemoX+Demo_Course/home"
+              "url": "http://localhost:2010/course/course-v1:edX+DemoX+Demo_Course/home"
             }
           ],
           "user_timezone": null,

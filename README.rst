@@ -81,7 +81,7 @@ Startup
 
   npm run dev
 
-Then you can access the app at http://local.openedx.io:2000/learning/
+Then you can access the app at http://local.openedx.io:2010/learning/
 
 Troubleshooting
 ---------------
