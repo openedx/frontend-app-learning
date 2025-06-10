@@ -12,6 +12,9 @@ const LmsHtmlFragment = ({
 
   const getCssUrl = () => {
     let baseUrl = getConfig().BASE_URL;
+    if (!baseUrl || typeof baseUrl !== 'string') {
+      throw new Error('BASE_URL is not defined or is invalid in the configuration.');
+    }
     if (!/^https?:\/\//i.test(baseUrl)) {
       baseUrl = `https://${baseUrl}`;
     }
