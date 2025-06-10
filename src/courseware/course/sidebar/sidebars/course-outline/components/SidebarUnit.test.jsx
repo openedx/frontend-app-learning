@@ -50,6 +50,7 @@ describe('<SidebarUnit />', () => {
                 unit={{ ...unit, icon: 'video', isLocked: false }}
                 isActive={false}
                 activeUnitId={unit.id}
+                isCompletionTrackingEnabled
                 {...props}
               />
             </MemoryRouter>
@@ -68,7 +69,7 @@ describe('<SidebarUnit />', () => {
     expect(container.querySelector('.text-success')).not.toBeInTheDocument();
   });
 
-  it('renders correctly when unit is complete', async () => {
+  it('renders correctly when unit is complete and tracking enabled', async () => {
     await initTestStore();
     const container = renderWithProvider({ unit: { ...unit, complete: true } });
 

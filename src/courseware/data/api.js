@@ -115,5 +115,6 @@ export async function getCoursewareOutlineSidebarToggles(courseId) {
   return {
     enable_navigation_sidebar: data.enable_navigation_sidebar || false,
     always_open_auxiliary_sidebar: data.always_open_auxiliary_sidebar || false,
+    enable_completion_tracking: data.enable_completion_tracking || false,
   };
 }
