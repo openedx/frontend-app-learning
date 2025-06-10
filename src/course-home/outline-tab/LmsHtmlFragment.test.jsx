@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import LmsHtmlFragment from './LmsHtmlFragment';
 import { getConfig } from '@edx/frontend-platform';
+import LmsHtmlFragment from './LmsHtmlFragment';
 
 jest.mock('@edx/frontend-platform', () => ({
   getConfig: jest.fn(),
