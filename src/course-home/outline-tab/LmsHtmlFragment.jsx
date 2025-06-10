@@ -1,28 +1,27 @@
-import React, { useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { getConfig } from '@edx/frontend-platform';
+import React, { useEffect, useRef } from "react";
+import PropTypes from "prop-types";
+import { getConfig } from "@edx/frontend-platform";
 
-const LmsHtmlFragment = ({
-  className,
-  html,
-  title,
-  ...rest
-}) => {
-  const direction = document.documentElement?.getAttribute('dir') || 'ltr';
+const LmsHtmlFragment = ({ className, html, title, ...rest }) => {
+  const direction = document.documentElement?.getAttribute("dir") || "ltr";
 
   const getCssUrl = () => {
-    const baseUrl = getConfig().BASE_URL;
-    if (/^https?:\/\//i.test(baseUrl)) {
-      return `${baseUrl}/static/LmsHtmlFragment.css`;
+    let lmsBaseUrl = getConfig().BASE_URL;
+    if (!/^https?:\/\//.test(lmsBaseUrl)) {
+      lmsBaseUrl = `https://${lmsBaseUrl}`;
     }
-    return `//${baseUrl}/static/LmsHtmlFragment.css`;
+    return `${lmsBaseUrl}/static/LmsHtmlFragment.css`;
   };
 
   const wholePage = `
     <html dir="${direction}">
       <head>
         <base href="${getConfig().LMS_BASE_URL}" target="_parent">
-        <link rel="stylesheet" href="/static/${getConfig().LEGACY_THEME_NAME ? `${getConfig().LEGACY_THEME_NAME}/` : ''}css/bootstrap/lms-main.css">
+        <link rel="stylesheet" href="/static/${
+          getConfig().LEGACY_THEME_NAME
+            ? `${getConfig().LEGACY_THEME_NAME}/`
+            : ""
+        }css/bootstrap/lms-main.css">
         <link rel="stylesheet" type="text/css" href="${getCssUrl()}">
       </head>
       <body class="${className}">${html}</body>
@@ -39,21 +38,22 @@ const LmsHtmlFragment = ({
 
   function resetIframeHeight() {
     if (iframe?.current?.contentWindow?.document?.body) {
-      iframe.current.height = iframe.current.contentWindow.document.body.parentNode.scrollHeight;
+      iframe.current.height =
+        iframe.current.contentWindow.document.body.parentNode.scrollHeight;
     }
   }
 
   useEffect(() => {
     function receiveMessage(event) {
       const { type } = event.data;
-      if (type === 'lmshtmlfragment.resize') {
+      if (type === "lmshtmlfragment.resize") {
         resetIframeHeight();
       }
     }
-    global.addEventListener('message', receiveMessage);
+    global.addEventListener("message", receiveMessage);
 
     return () => {
-      global.removeEventListener('message', receiveMessage);
+      global.removeEventListener("message", receiveMessage);
     };
   }, []);
 
@@ -72,7 +72,7 @@ const LmsHtmlFragment = ({
 };
 
 LmsHtmlFragment.defaultProps = {
-  className: '',
+  className: "",
 };
 
 LmsHtmlFragment.propTypes = {
