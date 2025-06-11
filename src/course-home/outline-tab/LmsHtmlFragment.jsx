@@ -11,22 +11,14 @@ const LmsHtmlFragment = ({
   const direction = document.documentElement?.getAttribute('dir') || 'ltr';
 
   const getCssUrl = () => {
-    let lmsBaseUrl = getConfig().BASE_URL;
-    if (!/^https?:\/\//.test(lmsBaseUrl)) {
-      lmsBaseUrl = `https://${lmsBaseUrl}`;
-    }
-    return `${lmsBaseUrl}/static/LmsHtmlFragment.css`;
+    return `${/^https?:\/\//.test(getConfig().BASE_URL) ? getConfig().BASE_URL : `https://${getConfig().BASE_URL}`}/static/LmsHtmlFragment.css`;
   };
 
   const wholePage = `
     <html dir='${direction}'>
       <head>
         <base href='${getConfig().LMS_BASE_URL}' target='_parent'>
-        <link rel='stylesheet' href='/static/${
-  getConfig().LEGACY_THEME_NAME
-    ? `${getConfig().LEGACY_THEME_NAME}/`
-    : ''
-}css/bootstrap/lms-main.css'>
+        <link rel="stylesheet" href="/static/${getConfig().LEGACY_THEME_NAME ? `${getConfig().LEGACY_THEME_NAME}/` : ''}css/bootstrap/lms-main.css">
         <link rel='stylesheet' type='text/css' href='${getCssUrl()}'>
       </head>
       <body class='${className}'>${html}</body>
