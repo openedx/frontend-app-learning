@@ -43,8 +43,7 @@ const LmsHtmlFragment = ({
 
   function resetIframeHeight() {
     if (iframe?.current?.contentWindow?.document?.body) {
-      iframe.current.height =
-        iframe.current.contentWindow.document.body.parentNode.scrollHeight;
+      iframe.current.height = iframe.current.contentWindow.document.body.parentNode.scrollHeight;
     }
   }
 
@@ -64,11 +63,11 @@ const LmsHtmlFragment = ({
 
   return (
     <iframe
-      className='w-100 border-0'
+      className="w-100 border-0"
       onLoad={resetIframeHeight}
       ref={iframe}
-      referrerPolicy='origin'
-      scrolling='no'
+      referrerPolicy="origin"
+      scrolling="no"
       srcDoc={wholePage}
       title={title}
       {...rest}
