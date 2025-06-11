@@ -10,11 +10,11 @@ const LmsHtmlFragment = ({
 }) => {
   const direction = document.documentElement?.getAttribute('dir') || 'ltr';
 
-  const getCssUrl = () => (
-    `${/^https?:\/\//.test(getConfig().BASE_URL)
-      ? getConfig().BASE_URL
-      : `https://${getConfig().BASE_URL}`}/static/LmsHtmlFragment.css`
-  );
+  const getCssUrl = () => {
+    const baseUrl = getConfig().BASE_URL;
+    const standardizedBaseUrl = /^https?:\/\//.test(baseUrl) ? baseUrl : `https://${baseUrl}`;
+    return `${standardizedBaseUrl}/static/LmsHtmlFragment.css`;
+  };
 
   const wholePage = `
     <html dir='${direction}'>
