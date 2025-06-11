@@ -54,6 +54,7 @@ const SidebarProvider: React.FC<Props> = ({
   }, [courseId]);
 
   useEffect(() => {
+    window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
     setHideDiscussionbar(!isDiscussionbarAvailable);
     setHideNotificationbar(!isNotificationbarAvailable);
     if (initialSidebar && currentSidebar !== initialSidebar) {
