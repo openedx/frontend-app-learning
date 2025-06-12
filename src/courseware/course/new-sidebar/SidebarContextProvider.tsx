@@ -55,6 +55,7 @@ const SidebarProvider: React.FC<Props> = ({
 
   useEffect(() => {
     window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
+    window.sessionStorage.setItem(`notificationTrayStatus.${courseId}`, 'open');
     setHideDiscussionbar(!isDiscussionbarAvailable);
     setHideNotificationbar(!isNotificationbarAvailable);
     if (initialSidebar && currentSidebar !== initialSidebar) {
