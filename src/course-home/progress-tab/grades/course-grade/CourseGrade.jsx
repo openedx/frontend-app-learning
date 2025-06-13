@@ -1,4 +1,7 @@
+import React from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
+import classNames from 'classnames';
+import { breakpoints, useWindowSize } from '@openedx/paragon';
 import { useContextId } from '../../../../data/hooks';
 
 import { useModel } from '../../../../generic/model-store';
@@ -13,6 +16,8 @@ import messages from '../messages';
 const CourseGrade = () => {
   const intl = useIntl();
   const courseId = useContextId();
+
+  const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
 
   const {
     creditCourseRequirements,
@@ -37,7 +42,7 @@ const CourseGrade = () => {
               ? intl.formatMessage(messages.gradesAndCredit)
               : intl.formatMessage(messages.grades)}
             </h2>
-            <p className="small">
+            <p className={classNames({ small: !wideScreen })}>
               {intl.formatMessage(messages.courseGradeBody)}
             </p>
           </div>
