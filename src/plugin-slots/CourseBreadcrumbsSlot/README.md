@@ -1,6 +1,6 @@
 # Course Breadcrumbs Slot
 
-### Slot ID: `org.openedx.frontend.learning.course_breadcrumbs.v1`
+### Slot ID: `org.openedx.frontend.learning.course_breadcrumbs.v2`
 
 ### Slot ID Aliases
 * `course_breadcrumbs_slot`
@@ -25,7 +25,7 @@ import CourseBreadcrumbs from './src/courseware/course/breadcrumbs';
 
 const config = {
   pluginSlots: {
-    'org.openedx.frontend.learning.course_breadcrumbs.v1': {
+    'org.openedx.frontend.learning.course_breadcrumbs.v2': {
       keepDefault: false,
       plugins: [
         {
@@ -62,7 +62,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    'org.openedx.frontend.learning.course_breadcrumbs.v1': {
+    'org.openedx.frontend.learning.course_breadcrumbs.v2': {
       keepDefault: false,
       plugins: [
         {
@@ -82,3 +82,7 @@ const config = {
 
 export default config;
 ```
+
+## Version Notes
+
+- `v2`: Removed default slot content.

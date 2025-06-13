@@ -1,6 +1,6 @@
 # Sequence Navigation Slot
 
-### Slot ID: `org.openedx.frontend.learning.sequence_navigation.v1`
+### Slot ID: `org.openedx.frontend.learning.sequence_navigation.v2`
 
 ### Props:
 * `sequenceId` (string) — Current sequence identifier
@@ -29,7 +29,7 @@ import { SequenceNavigation } from './src/courseware/course/sequence/sequence-na
 
 const config = {
   pluginSlots: {
-    'org.openedx.frontend.learning.sequence_navigation.v1': {
+    'org.openedx.frontend.learning.sequence_navigation.v2': {
       keepDefault: false,
       plugins: [
         {
@@ -66,7 +66,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    'org.openedx.frontend.learning.sequence_navigation.v1': {
+    'org.openedx.frontend.learning.sequence_navigation.v2': {
       keepDefault: false,
       plugins: [
         {
@@ -116,3 +116,7 @@ const config = {
 
 export default config;
 ```
+
+## Version Notes
+
+- `v2`: Removed default slot content.

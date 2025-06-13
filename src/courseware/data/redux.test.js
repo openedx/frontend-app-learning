@@ -137,7 +137,7 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, simpleOutline);
       axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
-        enableCompletionTracking: false,
+        enable_completion_tracking: false,
       });
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
