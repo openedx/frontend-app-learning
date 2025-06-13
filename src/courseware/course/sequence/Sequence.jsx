@@ -19,7 +19,6 @@ import { CourseOutlineSidebarTriggerSlot } from '@src/plugin-slots/CourseOutline
 import { NotificationsDiscussionsSidebarSlot } from '@src/plugin-slots/NotificationsDiscussionsSidebarSlot';
 import SequenceNavigationSlot from '@src/plugin-slots/SequenceNavigationSlot';
 
-import { getCoursewareOutlineSidebarSettings } from '../../data/selectors';
 import CourseLicense from '../course-license';
 import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
@@ -48,7 +47,6 @@ const Sequence = ({
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
-  const { enableNavigationSidebar: isEnabledOutlineSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
     const newUnitId = sequence.unitIds[nextIndex];
@@ -171,30 +169,28 @@ const Sequence = ({
         />
         <CourseOutlineSidebarSlot />
         <div className="sequence w-100">
-          {!isEnabledOutlineSidebar && (
-            <div className="sequence-navigation-container">
-              <SequenceNavigationSlot
-                sequenceId={sequenceId}
-                unitId={unitId}
-                nextHandler={() => {
-                  logEvent('edx.ui.lms.sequence.next_selected', 'top');
-                  handleNext();
-                }}
-                onNavigate={(destinationUnitId) => {
-                  logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-                  handleNavigate(destinationUnitId);
-                }}
-                previousHandler={() => {
-                  logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-                  handlePrevious();
-                }}
-                {...{
-                  nextSequenceHandler,
-                  handleNavigate,
-                }}
-              />
-            </div>
-          )}
+          <div className="sequence-navigation-container">
+            <SequenceNavigationSlot
+              sequenceId={sequenceId}
+              unitId={unitId}
+              nextHandler={() => {
+                logEvent('edx.ui.lms.sequence.next_selected', 'top');
+                handleNext();
+              }}
+              onNavigate={(destinationUnitId) => {
+                logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+                handleNavigate(destinationUnitId);
+              }}
+              previousHandler={() => {
+                logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+                handlePrevious();
+              }}
+              {...{
+                nextSequenceHandler,
+                handleNavigate,
+              }}
+            />
+          </div>
 
           <div className="unit-container flex-grow-1 pt-4">
             <SequenceContent
@@ -204,7 +200,6 @@ const Sequence = ({
               unitId={unitId}
               unitLoadedHandler={handleUnitLoaded}
               isOriginalUserStaff={originalUserIsStaff}
-              isEnabledOutlineSidebar={isEnabledOutlineSidebar}
               renderUnitNavigation={renderUnitNavigation}
             />
             {unitHasLoaded && renderUnitNavigation(false)}

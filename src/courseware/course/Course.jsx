@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '@src/generic/user-messages';
 import { useModel } from '@src/generic/model-store';
-import { getCoursewareOutlineSidebarSettings } from '../data/selectors';
 import Chat from './chat/Chat';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import NewSidebarProvider from './new-sidebar/SidebarContextProvider';
@@ -37,8 +36,6 @@ const Course = ({
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const { enableNavigationSidebar } = useSelector(getCoursewareOutlineSidebarSettings);
-  const navigationDisabled = enableNavigationSidebar || (sequence?.navigationDisabled ?? false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -84,17 +81,13 @@ const Course = ({
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
       <div className="position-relative d-flex align-items-xl-center mb-4 mt-1 flex-column flex-xl-row">
-        {navigationDisabled || (
-        <>
-          <CourseBreadcrumbsSlot
-            courseId={courseId}
-            sectionId={section ? section.id : null}
-            sequenceId={sequenceId}
-            isStaff={isStaff}
-            unitId={unitId}
-          />
-        </>
-        )}
+        <CourseBreadcrumbsSlot
+          courseId={courseId}
+          sectionId={section ? section.id : null}
+          sequenceId={sequenceId}
+          isStaff={isStaff}
+          unitId={unitId}
+        />
         {shouldDisplayChat && (
           <>
             <Chat
