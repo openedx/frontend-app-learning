@@ -6,12 +6,12 @@ import {
 
 import { DashedCircleIcon } from '../icons';
 
-const CompletionIcon = ({ completionStat: { completed = 0, total = 0 } }) => {
+const CompletionIcon = ({ completionStat: { completed = 0, total = 0 }, enabled }) => {
   const percentage = total !== 0 ? Math.min((completed / total) * 100, 100) : 0;
   const remainder = 100 - percentage;
 
   switch (true) {
-    case !completed:
+    case !completed || !enabled:
       return <LmsCompletionSolidIcon className="text-gray-300" data-testid="completion-solid-icon" />;
     case completed === total:
       return <CheckCircleIcon className="text-success" data-testid="check-circle-icon" />;
@@ -25,6 +25,7 @@ CompletionIcon.propTypes = {
     completed: PropTypes.number,
     total: PropTypes.number,
   }).isRequired,
+  enabled: PropTypes.bool.isRequired,
 };
 
 export default CompletionIcon;

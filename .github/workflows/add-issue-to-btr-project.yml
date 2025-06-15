@@ -1,0 +1,18 @@
+# Run the workflow that adds new tickets that are labelled "release testing"
+# to the org-wide BTR project board
+
+name: Add release testing issues to the BTR project board
+
+on:
+  issues:
+    types: [labeled]
+    # This workflow is triggered when an issue is labeled with 'release testing'.
+    # It adds the issue to the BTR project and applies the 'needs triage' label
+    # if it doesn't already have it.
+
+jobs:
+  handle-release-testing:
+    uses: openedx/.github/.github/workflows/add-issue-to-btr-project.yml@master
+    secrets:
+      GITHUB_APP_ID: ${{ secrets.GRAPHQL_AUTH_APP_ID }}
+      GITHUB_APP_PRIVATE_KEY: ${{ secrets.GRAPHQL_AUTH_APP_PEM }}

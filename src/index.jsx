@@ -49,100 +49,102 @@ subscribe(APP_READY, () => {
         <PathFixesProvider>
           <NoticesProvider>
             <UserMessagesProvider>
-              <Routes>
-                <Route path="*" element={<PageWrap><PageNotFound /></PageWrap>} />
-                <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
-                <Route path={ROUTES.REDIRECT} element={<PageWrap><CoursewareRedirectLandingPage /></PageWrap>} />
-                <Route
-                  path={ROUTES.PREFERENCES_UNSUBSCRIBE}
-                  element={
-                    <PageWrap><PreferencesUnsubscribe /></PageWrap>
-                }
-                />
-                <Route
-                  path={DECODE_ROUTES.ACCESS_DENIED}
-                  element={<DecodePageRoute><CourseAccessErrorPage /></DecodePageRoute>}
-                />
-                <Route
-                  path={DECODE_ROUTES.HOME}
-                  element={(
-                    <DecodePageRoute>
-                      <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
-                        <OutlineTab />
-                      </TabContainer>
-                    </DecodePageRoute>
-              )}
-                />
-                <Route
-                  path={DECODE_ROUTES.LIVE}
-                  element={(
-                    <DecodePageRoute>
-                      <TabContainer tab="lti_live" fetch={fetchLiveTab} slice="courseHome">
-                        <LiveTab />
-                      </TabContainer>
-                    </DecodePageRoute>
-                )}
-                />
-                <Route
-                  path={DECODE_ROUTES.DATES}
-                  element={(
-                    <DecodePageRoute>
-                      <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-                        <DatesTab />
-                      </TabContainer>
-                    </DecodePageRoute>
-                )}
-                />
-                <Route
-                  path={DECODE_ROUTES.DISCUSSION}
-                  element={(
-                    <DecodePageRoute>
-                      <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
-                        <DiscussionTab />
-                      </TabContainer>
-                    </DecodePageRoute>
-                )}
-                />
-                {DECODE_ROUTES.PROGRESS.map((route) => (
+              <div className="app-container">
+                <Routes>
+                  <Route path="*" element={<PageWrap><PageNotFound /></PageWrap>} />
+                  <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
+                  <Route path={ROUTES.REDIRECT} element={<PageWrap><CoursewareRedirectLandingPage /></PageWrap>} />
                   <Route
-                    key={route}
-                    path={route}
+                    path={ROUTES.PREFERENCES_UNSUBSCRIBE}
+                    element={
+                      <PageWrap><PreferencesUnsubscribe /></PageWrap>
+                    }
+                  />
+                  <Route
+                    path={DECODE_ROUTES.ACCESS_DENIED}
+                    element={<DecodePageRoute><CourseAccessErrorPage /></DecodePageRoute>}
+                  />
+                  <Route
+                    path={DECODE_ROUTES.HOME}
                     element={(
                       <DecodePageRoute>
-                        <TabContainer
-                          tab="progress"
-                          fetch={fetchProgressTab}
-                          slice="courseHome"
-                          isProgressTab
-                        >
-                          <ProgressTab />
+                        <TabContainer tab="outline" fetch={fetchOutlineTab} slice="courseHome">
+                          <OutlineTab />
                         </TabContainer>
                       </DecodePageRoute>
-                  )}
+                    )}
                   />
-                ))}
-                <Route
-                  path={DECODE_ROUTES.COURSE_END}
-                  element={(
-                    <DecodePageRoute>
-                      <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
-                        <CourseExit />
-                      </TabContainer>
-                    </DecodePageRoute>
-                )}
-                />
-                {DECODE_ROUTES.COURSEWARE.map((route) => (
                   <Route
-                    key={route}
-                    path={route}
+                    path={DECODE_ROUTES.LIVE}
                     element={(
                       <DecodePageRoute>
-                        <CoursewareContainer />
+                        <TabContainer tab="lti_live" fetch={fetchLiveTab} slice="courseHome">
+                          <LiveTab />
+                        </TabContainer>
                       </DecodePageRoute>
-                  )}
+                    )}
                   />
-                ))}
-              </Routes>
+                  <Route
+                    path={DECODE_ROUTES.DATES}
+                    element={(
+                      <DecodePageRoute>
+                        <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
+                          <DatesTab />
+                        </TabContainer>
+                      </DecodePageRoute>
+                    )}
+                  />
+                  <Route
+                    path={DECODE_ROUTES.DISCUSSION}
+                    element={(
+                      <DecodePageRoute>
+                        <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
+                          <DiscussionTab />
+                        </TabContainer>
+                      </DecodePageRoute>
+                    )}
+                  />
+                  {DECODE_ROUTES.PROGRESS.map((route) => (
+                    <Route
+                      key={route}
+                      path={route}
+                      element={(
+                        <DecodePageRoute>
+                          <TabContainer
+                            tab="progress"
+                            fetch={fetchProgressTab}
+                            slice="courseHome"
+                            isProgressTab
+                          >
+                            <ProgressTab />
+                          </TabContainer>
+                        </DecodePageRoute>
+                      )}
+                    />
+                  ))}
+                  <Route
+                    path={DECODE_ROUTES.COURSE_END}
+                    element={(
+                      <DecodePageRoute>
+                        <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
+                          <CourseExit />
+                        </TabContainer>
+                      </DecodePageRoute>
+                    )}
+                  />
+                  {DECODE_ROUTES.COURSEWARE.map((route) => (
+                    <Route
+                      key={route}
+                      path={route}
+                      element={(
+                        <DecodePageRoute>
+                          <CoursewareContainer />
+                        </DecodePageRoute>
+                      )}
+                    />
+                  ))}
+                </Routes>
+              </div>
             </UserMessagesProvider>
           </NoticesProvider>
         </PathFixesProvider>

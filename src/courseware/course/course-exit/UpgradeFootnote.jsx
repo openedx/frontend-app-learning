@@ -20,6 +20,7 @@ const UpgradeFootnote = ({ deadline, href }) => {
 
   const upgradeLink = (
     <Hyperlink
+      id="upgrade-link"
       style={{ textDecoration: 'underline' }}
       destination={href}
       className="text-reset"

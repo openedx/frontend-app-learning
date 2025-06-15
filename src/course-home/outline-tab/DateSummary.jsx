@@ -65,6 +65,7 @@ const DateSummary = ({
         )}
         {!linkedTitle && dateBlock.link && (
           <a
+            id={dateBlock.dateType === 'verified-upgrade-deadline' ? 'date-verified-upgrade-deadline' : ''}
             href={dateBlock.link}
             onClick={dateBlock.dateType === 'verified-upgrade-deadline' ? logVerifiedUpgradeClick : () => {}}
             className="description-link"

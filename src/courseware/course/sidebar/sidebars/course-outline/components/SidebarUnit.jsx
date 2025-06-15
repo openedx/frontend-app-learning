@@ -15,6 +15,7 @@ const SidebarUnit = ({
   isActive,
   isLocked,
   activeUnitId,
+  isCompletionTrackingEnabled,
 }) => {
   const intl = useIntl();
   const {
@@ -24,6 +25,7 @@ const SidebarUnit = ({
   } = unit;
 
   const iconType = isLocked ? UNIT_ICON_TYPES.lock : icon;
+  const completeAndEnabled = complete && isCompletionTrackingEnabled;
 
   return (
     <li className={classNames({ 'bg-info-100': isActive, 'border-top border-light': !isFirst })}>
@@ -36,15 +38,17 @@ const SidebarUnit = ({
         }}
       >
         <div className="col-auto p-0">
-          <UnitIcon type={iconType} isCompleted={complete} />
+          <UnitIcon type={iconType} isCompleted={completeAndEnabled} />
         </div>
         <div className="col-10 p-0 ml-3 text-break">
           <span className="align-middle">
             {title}
           </span>
-          <span className="sr-only">
-            , {intl.formatMessage(complete ? messages.completedUnit : messages.incompleteUnit)}
-          </span>
+          {isCompletionTrackingEnabled && (
+            <span className="sr-only">
+              , {intl.formatMessage(complete ? messages.completedUnit : messages.incompleteUnit)}
+            </span>
+          )}
         </div>
       </UnitLinkWrapper>
     </li>
@@ -66,6 +70,7 @@ SidebarUnit.propTypes = {
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
   activeUnitId: PropTypes.string.isRequired,
+  isCompletionTrackingEnabled: PropTypes.bool.isRequired,
 };
 
 export default SidebarUnit;

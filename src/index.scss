@@ -5,12 +5,19 @@
 
 
 #root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+  }
+  
   main {
     flex-grow: 1;
+  }
+  #main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   header {
@@ -325,6 +332,7 @@
 .unit-navigation {
   display: flex;
   justify-content: center;
+  gap: 5px;
   max-width: 640px;
   margin: 0 auto;
 
@@ -341,27 +349,12 @@
       border-radius: 6px;
     }
   }
-
-  .next-button {
-    flex-basis: 75%;
-
-     @media (--pgn-size-breakpoint-max-width-xs) {
-       flex-basis: 100%;
-     }
-  }
-
-  .previous-button {
-    flex-basis: 25%;
-
-     @media (--pgn-size-breakpoint-max-width-xs) {
-       flex-basis: 100%;
-     }
-  }
 }
 
 .top-unit-navigation {
   display: flex;
   max-width: 100%;
+  gap: 5px;
   justify-content: flex-end;
 
   .next-button,

@@ -1,14 +1,12 @@
 .outline-sidebar-wrapper {
     width: 32.125rem;
     max-width: 100%;
-    overflow: auto;
     position: relative;
     flex-shrink: 0;
 }
 
 .outline-sidebar {
     @media (--pgn-size-breakpoint-min-width-xl) {
-        position: absolute;
         left: 0;
         top: 0;
     }
