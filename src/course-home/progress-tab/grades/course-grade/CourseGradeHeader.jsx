@@ -48,7 +48,7 @@ const CourseGradeHeader = () => {
     previewText = intl.formatMessage(messages.courseGradePreviewUpgradeDeadlinePassedBody);
   }
   return (
-    <div className="row w-100 m-0 p-4 rounded-top bg-primary-500 text-white">
+    <div id="grade-course-header" className="row w-100 m-0 p-4 rounded-top bg-primary-500 text-white">
       <div className={`col-12 ${verifiedMode ? 'col-md-9' : ''} p-0`}>
         <div className="row w-100 m-0 p-0">
           <div className="col-1 p-0">
@@ -71,7 +71,7 @@ const CourseGradeHeader = () => {
       </div>
       {verifiedMode && (
         <div className="col-12 col-md-3 mt-3 mt-md-0 p-0 align-self-center text-right">
-          <Button variant="brand" size="sm" href={verifiedMode.upgradeUrl} onClick={logUpgradeButtonClick}>
+          <Button id="upgrade-button" variant="brand" size="sm" href={verifiedMode.upgradeUrl} onClick={logUpgradeButtonClick}>
             {intl.formatMessage(messages.courseGradePreviewUpgradeButton)}
           </Button>
         </div>

@@ -1,11 +1,13 @@
 import React from 'react';
 
+import { fireEvent } from '@testing-library/react';
 import MockAdapter from 'axios-mock-adapter';
 
 import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
+import { getSessionStorage, setSessionStorage } from '../../../../../../data/sessionStorage';
 import {
   initializeMockApp, initializeTestStore, render, screen,
 } from '../../../../../../setupTest';
@@ -14,10 +16,18 @@ import { buildTopicsFromUnits } from '../../../../../data/__factories__/discussi
 import { getCourseDiscussionTopics } from '../../../../../data/thunks';
 import SidebarContext from '../../../SidebarContext';
 import DiscussionsNotificationsSidebar from '../DiscussionsNotificationsSidebar';
+import DiscussionsNotificationsTrigger from '../DiscussionsNotificationsTrigger';
 import DiscussionsWidget from './DiscussionsWidget';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
+
+jest.mock('../../../../../../data/sessionStorage', () => ({
+  getSessionStorage: jest.fn(),
+  setSessionStorage: jest.fn(),
+}));
+
+const onClickMock = jest.fn();
 
 describe('DiscussionsWidget', () => {
   let axiosMock;
@@ -80,5 +90,35 @@ describe('DiscussionsWidget', () => {
     renderWithProvider(DiscussionsNotificationsSidebar, { shouldDisplayFullScreen: true });
     expect(screen.queryByText('Back to course')).toBeInTheDocument();
     expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('should open notification tray if closed', () => {
+    (getSessionStorage as jest.Mock).mockReturnValue('closed');
+
+    renderWithProvider(() => <DiscussionsNotificationsTrigger onClick={onClickMock} />);
+
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+
+    expect(setSessionStorage).toHaveBeenCalledWith(
+      `notificationTrayStatus.${courseId}`,
+      'open',
+    );
+    expect(onClickMock).toHaveBeenCalled();
+  });
+
+  it('should close notification tray if open', () => {
+    (getSessionStorage as jest.Mock).mockReturnValue('open');
+
+    renderWithProvider(() => <DiscussionsNotificationsTrigger onClick={onClickMock} />);
+
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+
+    expect(setSessionStorage).toHaveBeenCalledWith(
+      `notificationTrayStatus.${courseId}`,
+      'open',
+    );
+    expect(onClickMock).toHaveBeenCalled();
   });
 });

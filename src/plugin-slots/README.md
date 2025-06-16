@@ -23,4 +23,5 @@
 * [`org.openedx.frontend.learning.progress_tab_grade_breakdown.v1`](./ProgressTabGradeBreakdownSlot/)
 * [`org.openedx.frontend.learning.progress_tab_related_links.v1`](./ProgressTabRelatedLinksSlot/)
 * [`org.openedx.frontend.learning.sequence_container.v1`](./SequenceContainerSlot/)
+* [`org.openedx.frontend.learning.sequence_navigation.v1`](./SequenceNavigationSlot/)
 * [`org.openedx.frontend.learning.unit_title.v1`](./UnitTitleSlot/)
