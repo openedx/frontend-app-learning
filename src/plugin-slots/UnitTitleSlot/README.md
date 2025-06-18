@@ -1,6 +1,6 @@
 # Unit Title Slot
 
-### Slot ID: `org.openedx.frontend.learning.unit_title.v1`
+### Slot ID: `org.openedx.frontend.learning.unit_title.v2`
 
 ### Slot ID Aliases
 * `unit_title_slot`
@@ -8,12 +8,13 @@
 ### Props:
 * `unitId`
 * `unit`
-* `isEnabledOutlineSidebar`
 * `renderUnitNavigation`
 
 ## Description
 
 This slot is used for adding content before or after the Unit title.
+`isEnabledOutlineSidebar` is no longer used in the default implementation,  
+but is still passed as a plugin prop with a default value of `true` for backward compatibility.
 
 ## Example
 
@@ -26,7 +27,7 @@ import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-frame
 
 const config = {
   pluginSlots: {
-    'org.openedx.frontend.learning.unit_title.v1': {
+    'org.openedx.frontend.learning.unit_title.v2': {
       plugins: [
         {
           // Insert custom content after unit title
@@ -34,9 +35,9 @@ const config = {
           widget: {
             id: 'custom_unit_title_content',
             type: DIRECT_PLUGIN,
-            RenderWidget: ({ unitId, unit, isEnabledOutlineSidebar, renderUnitNavigation }) => (
+            RenderWidget: ({ unitId, unit, renderUnitNavigation }) => (
               <>
-                {isEnabledOutlineSidebar && renderUnitNavigation(true)}
+                {renderUnitNavigation(true)}
                 <p>📙: {unit.title}</p>
                 <p>📙: {unitId}</p>
               </>
@@ -50,3 +51,8 @@ const config = {
 
 export default config;
 ```
+
+## Version Notes
+
+- `v2`: Removed default slot content. `isEnabledOutlineSidebar` is no longer used internally,  
+  but still passed as a plugin prop (`true`) to maintain compatibility.

@@ -14,7 +14,6 @@ const defaultProps = {
   onLoaded: jest.fn().mockName('props.onLoaded'),
   id: 'unit-id',
   isOriginalUserStaff: false,
-  isEnabledOutlineSidebar: false,
   renderUnitNavigation: jest.fn(enabled => enabled && 'UnitNaviagtion'),
 };
 
@@ -57,7 +56,7 @@ describe('<Unit />', () => {
   describe('unit title', () => {
     it('has two children', () => {
       renderComponent(defaultProps);
-      const unitTitleWrapper = screen.getByTestId('org.openedx.frontend.learning.unit_title.v1').children[0];
+      const unitTitleWrapper = screen.getByTestId('org.openedx.frontend.learning.unit_title.v2').children[0];
 
       expect(unitTitleWrapper.children).toHaveLength(3);
     });
@@ -68,16 +67,8 @@ describe('<Unit />', () => {
       expect(screen.getByText('Bookmark this page')).toBeInTheDocument();
     });
 
-    it('does not render unit navigation buttons', () => {
-      renderComponent(defaultProps);
-
-      const nextButton = screen.queryByText('UnitNaviagtion');
-
-      expect(nextButton).toBeNull();
-    });
-
-    it('renders unit navigation buttons when isEnabledOutlineSidebar is true', () => {
-      const props = { ...defaultProps, isEnabledOutlineSidebar: true };
+    it('renders unit navigation buttons', () => {
+      const props = { ...defaultProps };
       renderComponent(props);
 
       const nextButton = screen.getByText('UnitNaviagtion');
