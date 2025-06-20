@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Ujumbe unaoonyeshwa wakati faili yenye ukubwa wa chini ya chini unaoruhusiwa inapakiwa katika Dropzone.",
+    "string": "Faili lazima iwe kubwa kuliko {size} ."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Ujumbe unaoonyeshwa wakati faili iliyo na zaidi ya ukubwa unaoruhusiwa inapakiwa kwenye Dropzone.",
+    "string": "Faili lazima iwe chini ya {size} ."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Ujumbe unaoonyeshwa wakati faili yenye aina isiyo sahihi ya MIME inapakiwa.",
+    "string": "Aina ya faili lazima iwe {count, wingi, moja { {typeString} file} nyingine {moja ya faili {typeString} }}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Ujumbe unaoonyeshwa wakati faili nyingi zinaburutwa kupitia Dropzone.",
+    "string": "Upakiaji mmoja pekee unaruhusiwa."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Ujumbe unaoonyeshwa katika kesi ya uthibitishaji wa faili katika sehemu ya Dropzone kwa sababu isiyojulikana.",
+    "string": "Tatizo lisilotarajiwa lilitokea wakati wa uthibitishaji wa faili. Tafadhali jaribu tena."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Ujumbe unaoonyeshwa katika kesi ya upakiaji wa faili katika sehemu ya Dropzone husababisha hitilafu.",
+    "string": "Tatizo limetokea wakati wa kupakia faili yako. Tafadhali jaribu tena."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Lebo ya kitufe cha kufunga kwenye kipengele cha Arifa",
+    "string": "Ondoa"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Maandishi ya ufikivu yanayoelezea kitendo cha kuelekeza jukwa linalosogezwa hadi kwenye kipengele kinachofuata",
+    "string": "Tembeza hadi inayofuata"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Maandishi ya ufikivu yanayoelezea kitendo cha kuelekeza jukwa linalosogezwa hadi kwenye kipengele kilichotangulia",
+    "string": "Sogeza hadi uliopita"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Maandishi ya ufikivu yanayoelezea kitendo cha kuelekeza jukwa linalosogezwa hadi kwenye kipengele kinachofuata",
+    "string": "Tembeza hadi inayofuata"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Maandishi ya ufikivu yanayoelezea kitendo cha kuelekeza jukwa linalosogezwa hadi kwenye kipengele kilichotangulia",
+    "string": "Sogeza hadi uliopita"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Maandishi kwa lebo zote zilizochaguliwa",
+    "string": "Zote {numSelectedRows} zimechaguliwa"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Lebo ya futa kitufe cha uteuzi wote.",
+    "string": "Futa uteuzi"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Lebo ya kitufe cha kuchagua zote.",
+    "string": "Chagua zote {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Maandishi ya lebo iliyochaguliwa",
+    "string": "{numSelectedRows} imechaguliwa"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Maandishi ya lebo iliyochaguliwa wakati jedwali limewekwa alama",
+    "string": "{numSelectedRows} imechaguliwa ( {numSelectedRowsOnPage} imeonyeshwa hapa chini)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Lebo ya kitufe cha kitendo ambacho hukunja safu mlalo zote zinazoweza kupanuliwa za DataTable.",
+    "string": "Kunja zote"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Lebo ya kitufe cha kitendo kinachopanua safu mlalo zote zinazoweza kupanuliwa za DataTable.",
+    "string": "Panua zote"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "Maandishi yanayoonekana kwenye kitufe cha `Futa vichujio`",
+    "string": "Futa vichungi"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Maandishi yanayoelezea ni safu mlalo ngapi zinaonyeshwa kwenye jedwali",
+    "string": "Inaonyesha {firstRow} - {lastRow} ya {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Kichwa cha sehemu ya vichujio vya utepe",
+    "string": "Vichujio"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Ujumbe unaoonyeshwa wakati saizi ya faili iliyopakiwa lazima iwe katika safu fulani.",
+    "string": "Kati ya {sizeMin} na {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Ujumbe unaoonyeshwa wakati saizi ya faili iliyopakiwa lazima iwe zaidi ya thamani fulani.",
+    "string": "Upeo wa {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Ujumbe unaoonyeshwa wakati saizi ya faili iliyopakiwa lazima iwe zaidi ya thamani fulani.",
+    "string": "Chini ya {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Ujumbe unaoonyeshwa wakati faili iliyopakiwa lazima iwe ya aina fulani.",
+    "string": "Pakia {count, wingi, moja { {firstPart} files} nyingine { {firstPart} au {secondPart} faili}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Maandishi yanayoonekana kama lebo ya ingizo la sehemu ya Dropzone.",
+    "string": "Buruta na udondoshe faili yako hapa au ubofye ili upakie."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Lebo ya kitufe cha kughairi kinachoonyeshwa wakati wa kupakia faili katika kipengele cha Dropzone.",
+    "string": "Ghairi"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Maandishi ambayo yanaonyeshwa karibu na upau wa maendeleo wakati wa upakiaji wa faili katika sehemu ya Dropzone.",
+    "string": "Inapakia {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Ujumbe unaoonyeshwa katika kesi wakati menyu ya pendekezo otomatiki inafunguliwa.",
+    "string": "Funga menyu ya chaguzi"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Ujumbe unaoonyeshwa katika kesi wakati menyu ya pendekezo otomatiki imefungwa.",
+    "string": "Fungua menyu ya chaguzi"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Ujumbe wa kisoma skrini ili kumjulisha mtumiaji kuwa ziko sehemu ya chini ya hatua ya ziara ya bidhaa.",
+    "string": "Chini ya hatua {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Ujumbe wa kisoma skrini ili kumjulisha mtumiaji kuwa ziko sehemu ya chini ya hatua ya ziara ya bidhaa.",
+    "string": "Juu ya hatua {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Funga lebo ya kipengele cha Toast",
+    "string": "Funga"
+  }
+}

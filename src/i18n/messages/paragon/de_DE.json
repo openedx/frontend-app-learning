@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Eine Meldung wird angezeigt, wenn eine Datei mit einer geringeren als der zulässigen Mindestgröße in Dropzone hochgeladen wird.",
+    "string": "Die Datei muss größer als {size} sein."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Eine Meldung wird angezeigt, wenn eine Datei mit mehr als der maximal zulässigen Größe in Dropzone hochgeladen wird.",
+    "string": "Die Datei muss kleiner als {size} sein."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Eine Meldung wird angezeigt, wenn eine Datei mit falschem MIME-Typ hochgeladen wird.",
+    "string": "Der Dateityp muss {count, plural, one { {typeString} file} other {one of {typeString} files}} sein."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Eine Meldung wird angezeigt, wenn mehrere Dateien über Dropzone gezogen werden.",
+    "string": "Es ist nur ein Upload zulässig."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Aus unbekanntem Grund wird bei der Validierung der Falldatei in der Dropzone-Komponente eine Meldung angezeigt.",
+    "string": "Bei der Dateivalidierung ist ein unerwartetes Problem aufgetreten. Bitte versuche es erneut."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Eine Meldung wird angezeigt, wenn das Hochladen einer Datei in die Dropzone-Komponente zu einem Fehler führt.",
+    "string": "Beim Hochladen Ihrer Datei ist ein Problem aufgetreten. Bitte versuche es erneut."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Beschriftung einer Schließen-Schaltfläche in der Alert-Komponente",
+    "string": "Tour Beenden"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Barrierefreiheitstext, der die Aktion zum Navigieren in einem scrollbaren Karussell zum nächsten Element beschreibt",
+    "string": "Scrollen Sie zum nächsten"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Barrierefreiheitstext, der die Aktion zum Navigieren in einem scrollbaren Karussell zum vorherigen Element beschreibt",
+    "string": "Scrollen Sie zum vorherigen"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Barrierefreiheitstext, der die Aktion zum Navigieren in einem scrollbaren Karussell zum nächsten Element beschreibt",
+    "string": "Scrollen Sie zum nächsten"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Barrierefreiheitstext, der die Aktion zum Navigieren in einem scrollbaren Karussell zum vorherigen Element beschreibt",
+    "string": "Scrollen Sie zum vorherigen"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Text für alle ausgewählten Etiketten",
+    "string": "Alle {numSelectedRows} ausgewählt"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Eine Beschriftung der Schaltfläche „Alle Auswahl löschen“.",
+    "string": "Klare Auswahl"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Eine Beschriftung für die Schaltfläche „Alle auswählen“.",
+    "string": "Alle auswählen {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Text für ausgewähltes Etikett",
+    "string": "{numSelectedRows} ausgewählt"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Text für die ausgewählte Beschriftung, wenn die Tabelle paginiert ist",
+    "string": "{numSelectedRows} ausgewählt ( {numSelectedRowsOnPage} unten gezeigt)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Bezeichnung einer Aktionsschaltfläche, die alle erweiterbaren Zeilen von DataTable reduziert.",
+    "string": "Alles zusammenklappen"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Bezeichnung einer Aktionsschaltfläche, die alle erweiterbaren Zeilen von DataTable erweitert.",
+    "string": "Alle erweitern"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "Ein Text, der auf der Schaltfläche „Filter löschen“ angezeigt wird",
+    "string": "Filter löschen"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Ein Text, der beschreibt, wie viele Zeilen in der Tabelle angezeigt werden",
+    "string": "Zeigt {firstRow} - {lastRow} von {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Titel für die Seitenleistenfilterkomponente",
+    "string": "Filter"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Es wird eine Meldung angezeigt, wenn die Größe der hochgeladenen Datei im angegebenen Bereich liegen muss.",
+    "string": "Zwischen {sizeMin} und {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Es wird eine Meldung angezeigt, wenn die Größe der hochgeladenen Datei einen bestimmten Wert überschreiten muss.",
+    "string": "Max {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Es wird eine Meldung angezeigt, wenn die Größe der hochgeladenen Datei einen bestimmten Wert überschreiten muss.",
+    "string": "Min. {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Eine beim Hochladen der Datei angezeigte Meldung muss von einem oder mehreren bestimmten Typ(en) sein.",
+    "string": "Laden Sie {count, plural, one { {firstPart} files} other { {firstPart} or {secondPart} files}} hoch"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Ein Text, der als Beschriftung für die Eingabe der Dropzone-Komponente erscheint.",
+    "string": "Ziehen Sie Ihre Datei per Drag-and-Drop hierher oder klicken Sie zum Hochladen."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Bezeichnung einer Abbrechen-Schaltfläche, die während des Datei-Uploads in der Dropzone-Komponente angezeigt wird.",
+    "string": "Löschen"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Ein Text, der während des Datei-Uploads in der Dropzone-Komponente neben einem Fortschrittsbalken angezeigt wird.",
+    "string": "Hochladen von {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Eine Meldung wird angezeigt, wenn das Autosuggest-Menü geöffnet wird.",
+    "string": "Schließen Sie das Optionsmenü"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Eine Meldung wird angezeigt, wenn das Autosuggest-Menü geschlossen wird.",
+    "string": "Öffnen Sie das Optionsmenü"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Bildschirmlesemeldung, um den Benutzer darüber zu informieren, dass er sich am Ende des Produkttourschritts befindet.",
+    "string": "Unterseite der Stufe {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Bildschirmlesemeldung, um den Benutzer darüber zu informieren, dass er sich am Ende des Produkttourschritts befindet.",
+    "string": "Oberseite der Stufe {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Schließen Sie die Bezeichnung für die Toast-Komponente",
+    "string": "Schließen"
+  }
+}

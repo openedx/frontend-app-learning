@@ -1,0 +1,156 @@
+{
+  "Hyperlink.externalLinkAltText": {
+    "string": ""
+  },
+  "Hyperlink.externalLinkTitle": {
+    "string": ""
+  },
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Tiek parādīts ziņojums, kad Dropzone tiek augšupielādēts fails, kura izmērs ir mazāks par minimālo atļauto.",
+    "string": "Failam ir jābūt lielākam par {size} ."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Tiek parādīts ziņojums, kad Dropzone tiek augšupielādēts fails, kura izmērs pārsniedz maksimālo atļauto.",
+    "string": "Faila izmēram ir jābūt mazākam par {size} ."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Ziņojums tiek parādīts, kad tiek augšupielādēts fails ar nepareizu MIME tipu.",
+    "string": "Faila tipam ir jābūt {count, plural, one {{typeString} file} other {one of {typeString} files}}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Ziņojums, kas tiek parādīts, kad vairāki faili tiek vilkti virs Dropzone.",
+    "string": "Atļauta tikai viena augšupielāde."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Ziņojums, kas nezināma iemesla dēļ tiek parādīts lietas faila validācijā Dropzone komponentā.",
+    "string": "Faila validācijas laikā radās neparedzēta problēma. Lūdzu mēģiniet vēlreiz."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Ziņojums, kas tiek parādīts gadījuma faila augšupielādē Dropzone komponentā, rada kļūdu.",
+    "string": "Augšupielādējot failu, radās problēma. Lūdzu mēģiniet vēlreiz."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Brīdinājuma komponenta aizvēršanas pogas iezīme",
+    "string": "Noraidīt"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Pieejamības teksts, kurā aprakstīta darbība ritināmā karuseļa pārejai uz nākamo elementu",
+    "string": "Ritiniet uz nākamo"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Pieejamības teksts, kas apraksta darbību, lai ritināmā karuselī pārvietotos uz iepriekšējo elementu",
+    "string": "Ritiniet uz iepriekšējo"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Pieejamības teksts, kurā aprakstīta darbība ritināmā karuseļa virzīšanai uz nākamo elementu",
+    "string": "Ritiniet uz nākamo"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Pieejamības teksts, kas apraksta darbību, lai ritināmā karuselī pārvietotos uz iepriekšējo elementu",
+    "string": "Ritiniet uz iepriekšējo"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Teksts visām atlasītajām iezīmēm",
+    "string": "Atlasīti visi {numSelectedRows}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Iezīme pogai “Dzēst visu”.",
+    "string": "Notīrīt atlasi"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Iezīme pogai “Atlasīt visu”.",
+    "string": "Atlasiet visu {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Teksts atlasītajai iezīmei",
+    "string": "Atlasīts {numSelectedRows}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Izvēlētās iezīmes teksts, ja tabula ir sadalīta lappusēs",
+    "string": "Atlasīts {numSelectedRows} ( {numSelectedRowsOnPage} parādīts tālāk)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Darbības pogas iezīme, kas sakļauj visas DataTable izvēršamās rindas.",
+    "string": "Sakļaut visu"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Darbības pogas iezīme, kas paplašina visas DataTable izvēršamās rindas.",
+    "string": "Paplašināt visu"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "Teksts, kas parādās uz pogas Notīrīt filtrus",
+    "string": "Notīrīt filtrus"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Teksts, kas apraksta, cik rindu ir parādīts tabulā",
+    "string": "Tiek rādīts {firstRow} - {lastRow} no {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Sānjoslas filtru komponenta nosaukums",
+    "string": "Filtri"
+  },
+  "pgn.DataTable.paginationLabel": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Ziņojumam, kas tiek rādīts, kad augšupielādēts fails, ir jāatrodas norādītajā diapazonā.",
+    "string": "Starp {sizeMin} un {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Ziņojumam, kas tiek rādīts, kad augšupielādēts fails, ir jābūt lielākam par noteiktu vērtību.",
+    "string": "Maksimālais {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Ziņojumam, kas tiek rādīts, kad augšupielādēts fails, ir jābūt lielākam par noteiktu vērtību.",
+    "string": "Min. {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Ziņojumam, kas tiek rādīts, augšupielādējot failu, ir jābūt noteikta veida(-iem).",
+    "string": "Augšupielādējiet {skaits, daudzskaitlis, viens { {firstPart} faili} cits { {firstPart} vai {secondPart} faili}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Teksts, kas parādās kā iezīme Dropzone komponenta ievadei.",
+    "string": "Velciet un nometiet failu šeit vai noklikšķiniet, lai augšupielādētu."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Atcelšanas pogas iezīme, kas tiek rādīta faila augšupielādes laikā komponentā Dropzone.",
+    "string": "Atcelt"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Teksts, kas tiek rādīts blakus norises joslai faila augšupielādes laikā komponentā Dropzone.",
+    "string": "Notiek {filename} augšupielāde."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Paziņojums, kas tiek parādīts gadījumā, ja tiek atvērta automātiskās ierosināšanas izvēlne.",
+    "string": "Aizveriet opciju izvēlni"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Ziņojums, kas tiek rādīts gadījumā, ja tiek aizvērta automātiskās ierosināšanas izvēlne.",
+    "string": "Atveriet opciju izvēlni"
+  },
+  "pgn.Modal.closeButon": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Ekrāna lasītāja ziņojums, kas lietotājam paziņo, ka viņš atrodas produkta apskates soļa apakšā.",
+    "string": "Darbības apakšā {step}"
+  },
+  "pgn.ProductTour.Checkpoint.page-index-text": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Ekrāna lasītāja ziņojums, kas lietotājam paziņo, ka viņš atrodas produkta apskates soļa apakšā.",
+    "string": "Darbības sākums {step}"
+  },
+  "pgn.ProductTour.checkpointHeader.close": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Aizveriet grauzdiņa komponenta iezīmi",
+    "string": "Aizvērt"
+  }
+}

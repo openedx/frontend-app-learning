@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται όταν ένα αρχείο με μικρότερο από το ελάχιστο επιτρεπόμενο μέγεθος μεταφορτώνεται στο Dropzone.",
+    "string": "Το αρχείο πρέπει να είναι μεγαλύτερο από {size} ."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται όταν ένα αρχείο με μεγαλύτερο από το μέγιστο επιτρεπόμενο μέγεθος μεταφορτώνεται στο Dropzone.",
+    "string": "Το αρχείο πρέπει να είναι μικρότερο από {size} ."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται όταν γίνεται αποστολή ενός αρχείου με λάθος τύπο MIME.",
+    "string": "Ο τύπος αρχείου πρέπει να είναι {count, plural, one { {typeString} file} other {one of {typeString} files}}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται όταν σύρονται πολλά αρχεία στο Dropzone.",
+    "string": "Επιτρέπεται μόνο μία μεταφόρτωση."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται στην επικύρωση αρχείου υπόθεσης στο στοιχείο Dropzone για άγνωστο λόγο.",
+    "string": "Παρουσιάστηκε ένα μη αναμενόμενο πρόβλημα κατά την επικύρωση του αρχείου. ΠΑΡΑΚΑΛΩ προσπαθησε ξανα."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται στη μεταφόρτωση αρχείου υπόθεσης στο στοιχείο Dropzone οδηγεί σε σφάλμα.",
+    "string": "Παρουσιάστηκε πρόβλημα κατά τη μεταφόρτωση του αρχείου σας. ΠΑΡΑΚΑΛΩ προσπαθησε ξανα."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Ετικέτα ενός κουμπιού κλεισίματος στο στοιχείο ειδοποίησης",
+    "string": "Απόρριψη"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Κείμενο προσβασιμότητας που περιγράφει την ενέργεια για την πλοήγηση ενός καρουζέλ με δυνατότητα κύλισης στο επόμενο στοιχείο",
+    "string": "Κάντε κύλιση στο επόμενο"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Κείμενο προσβασιμότητας που περιγράφει την ενέργεια για την πλοήγηση ενός καρουζέλ με δυνατότητα κύλισης στο προηγούμενο στοιχείο",
+    "string": "Κάντε κύλιση στο προηγούμενο"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Κείμενο προσβασιμότητας που περιγράφει την ενέργεια για την πλοήγηση ενός καρουζέλ με δυνατότητα κύλισης στο επόμενο στοιχείο",
+    "string": "Κάντε κύλιση στο επόμενο"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Κείμενο προσβασιμότητας που περιγράφει την ενέργεια για την πλοήγηση ενός καρουζέλ με δυνατότητα κύλισης στο προηγούμενο στοιχείο",
+    "string": "Κάντε κύλιση στο προηγούμενο"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Κείμενο για όλες τις επιλεγμένες ετικέτες",
+    "string": "Επιλέχθηκαν όλα {numSelectedRows}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Μια ετικέτα με το κουμπί διαγραφής όλων των επιλογών.",
+    "string": "Καθαρή επιλογή"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Μια ετικέτα για το κουμπί επιλογής όλων.",
+    "string": "Επιλέξτε όλα {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Κείμενο για την επιλεγμένη ετικέτα",
+    "string": "Επιλέχθηκε {numSelectedRows}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Κείμενο για την επιλεγμένη ετικέτα κατά τη σελιδοποίηση του πίνακα",
+    "string": "Επιλέχθηκε {numSelectedRows} ( {numSelectedRowsOnPage} φαίνεται παρακάτω)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Ετικέτα ενός κουμπιού ενέργειας που συμπτύσσει όλες τις επεκτάσιμες σειρές του DataTable.",
+    "string": "Αναδίπλωση όλων"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Ετικέτα ενός κουμπιού ενέργειας που επεκτείνει όλες τις επεκτάσιμες σειρές του DataTable.",
+    "string": "Εμφάνιση όλων"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "Ένα κείμενο που εμφανίζεται στο κουμπί &quot;Διαγραφή φίλτρων&quot;.",
+    "string": "Καθαρισμός φίλτρων"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Ένα κείμενο που περιγράφει πόσες σειρές εμφανίζεται στον πίνακα",
+    "string": "Εμφάνιση {firstRow} - {lastRow} του {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Τίτλος για το στοιχείο φίλτρα πλευρικής γραμμής",
+    "string": "Φίλτρα"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται όταν το μέγεθος του αρχείου μεταφόρτωσης πρέπει να βρίσκεται σε δεδομένο εύρος.",
+    "string": "Μεταξύ {sizeMin} και {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται όταν το μέγεθος του αρχείου μεταφόρτωσης πρέπει να είναι μεγαλύτερη από κάποια τιμή.",
+    "string": "Μέγιστο {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται όταν το μέγεθος του αρχείου μεταφόρτωσης πρέπει να είναι μεγαλύτερη από κάποια τιμή.",
+    "string": "Ελάχ. {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται κατά τη μεταφόρτωση του αρχείου πρέπει να είναι συγκεκριμένου τύπου.",
+    "string": "Μεταφόρτωση {count, plural, one { {firstPart} files} other { {firstPart} or {secondPart} files}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Ένα κείμενο που εμφανίζεται ως ετικέτα για την εισαγωγή του στοιχείου Dropzone.",
+    "string": "Σύρετε και αποθέστε το αρχείο σας εδώ ή κάντε κλικ για μεταφόρτωση."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Ετικέτα ενός κουμπιού ακύρωσης που εμφανίζεται κατά τη μεταφόρτωση αρχείου στο στοιχείο Dropzone.",
+    "string": "Ακύρωση"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Ένα κείμενο που εμφανίζεται κοντά σε μια γραμμή προόδου κατά τη μεταφόρτωση αρχείου στο στοιχείο Dropzone.",
+    "string": "Μεταφόρτωση {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται σε περίπτωση που ανοίξει το μενού αυτόματης πρότασης.",
+    "string": "Κλείστε το μενού επιλογών"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Ένα μήνυμα που εμφανίζεται σε περίπτωση που το μενού αυτόματης πρότασης είναι κλειστό.",
+    "string": "Ανοίξτε το μενού επιλογών"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Μήνυμα προγράμματος ανάγνωσης οθόνης για ειδοποίηση του χρήστη ότι βρίσκονται στο κάτω μέρος του βήματος περιήγησης προϊόντος.",
+    "string": "Κάτω βήματος {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Μήνυμα προγράμματος ανάγνωσης οθόνης για ειδοποίηση του χρήστη ότι βρίσκονται στο κάτω μέρος του βήματος περιήγησης προϊόντος.",
+    "string": "Κορυφή του βήματος {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Κλείστε την ετικέτα για το στοιχείο τοστ",
+    "string": "Κλείσιμο"
+  }
+}

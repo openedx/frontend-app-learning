@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "A message shown when a file with less than minimum allowed size is being uploaded in Dropzone.",
+    "string": "File must be larger than {size}."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "A message shown when a file with more than maximum allowed size is being uploaded in Dropzone.",
+    "string": "File must be less than {size}."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "A message shown when a file with wrong MIME type is being uploaded.",
+    "string": "The file type must be {count, plural, one {{typeString} file} other {one of {typeString} files}}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "A message shown when multiple files are dragged over Dropzone.",
+    "string": "Only one upload permitted."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "A message shown in case file validation in Dropzone component for unknown reason.",
+    "string": "An unexpected problem occured during file validation. Please try again."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "A message shown in case file upload in Dropzone component results in an error.",
+    "string": "A problem occured while uploading your file. Please try again."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Label of a close button on Alert component",
+    "string": "Dismiss"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Accessibility text describing the action for navigating a scrollable carousel to the next element",
+    "string": "Scroll to next"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Accessibility text describing the action for navigating a scrollable carousel to the previous element",
+    "string": "Scroll to previous"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Accessibility text describing the action for navigating a scrollable carousel to the next element",
+    "string": "Scroll to next"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Accessibility text describing the action for navigating a scrollable carousel to the previous element",
+    "string": "Scroll to previous"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Text for all selected label",
+    "string": "All {numSelectedRows} selected"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "A label of clear all selection button.",
+    "string": "Clear selection"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "A label for select all button.",
+    "string": "Select all {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Text for selected label",
+    "string": "{numSelectedRows} selected"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Text for selected label when table is paginated",
+    "string": "{numSelectedRows} selected ({numSelectedRowsOnPage} shown below)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Label of an action button that collapses all expandable rows of DataTable.",
+    "string": "Collapse all"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Label of an action button that expands all expandable rows of DataTable.",
+    "string": "Expand all"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "A text that appears on the `Clear filters` button",
+    "string": "Clear filters"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "A text describing how many rows is shown in the table",
+    "string": "Showing {firstRow} - {lastRow} of {itemCount}."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Title for the sidebar filters component",
+    "string": "Filters"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "A message shown when uploaded file's size must be in given range.",
+    "string": "Between {sizeMin} and {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "A message shown when uploaded file's size must be more than some value.",
+    "string": "Max {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "A message shown when uploaded file's size must be more than some value.",
+    "string": "Min {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "A message shown when uploaded file must be of certain type(s).",
+    "string": "Upload {count, plural, one {{firstPart} files} other {{firstPart} or {secondPart} files}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "A text that appears as a label for input of Dropzone component.",
+    "string": "Drag and drop your file here or click to upload."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Label of a cancel button that is shown during file upload in Dropzone component.",
+    "string": "Cancel"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "A text that is shown near a progress bar during file upload in Dropzone component.",
+    "string": "Uploading {filename}."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "A message shown in case when the autosuggest menu is opened.",
+    "string": "Close the options menu"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "A message shown in case when the autosuggest menu is closed.",
+    "string": "Open the options menu"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Screen-reader message to notify user that they are located at the bottom of the product tour step.",
+    "string": "Bottom of step {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Screen-reader message to notify user that they are located at the bottom of the product tour step.",
+    "string": "Top of step {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Close label for Toast component",
+    "string": "Close"
+  }
+}

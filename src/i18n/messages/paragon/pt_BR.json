@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Uma mensagem exibida quando um arquivo com tamanho menor que o mínimo permitido está sendo carregado no Dropzone.",
+    "string": "O arquivo deve ser maior que {size} ."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Uma mensagem exibida quando um arquivo com tamanho maior que o máximo permitido está sendo carregado no Dropzone.",
+    "string": "O arquivo deve ser menor que {size} ."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Uma mensagem exibida quando um arquivo com tipo MIME errado está sendo carregado.",
+    "string": "O tipo de arquivo deve ser {count, plural, one { {typeString} file} other {one of {typeString} files}}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Uma mensagem exibida quando vários arquivos são arrastados para o Dropzone.",
+    "string": "Apenas um upload é permitido."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Uma mensagem mostrada na validação do arquivo de caso no componente Dropzone por motivo desconhecido.",
+    "string": "Ocorreu um problema inesperado durante a validação do arquivo. Por favor, tente novamente."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Uma mensagem mostrada caso o upload do arquivo no componente Dropzone resulte em erro.",
+    "string": "Ocorreu um problema ao enviar seu arquivo. Por favor, tente novamente."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Rótulo de um botão Fechar no componente Alerta",
+    "string": "Ignorar"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Texto de acessibilidade que descreve a ação para navegar em um carrossel rolável até o próximo elemento",
+    "string": "Role para o próximo"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Texto de acessibilidade que descreve a ação para navegar em um carrossel rolável até o elemento anterior",
+    "string": "Role para o anterior"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Texto de acessibilidade que descreve a ação para navegar em um carrossel rolável até o próximo elemento",
+    "string": "Role para o próximo"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Texto de acessibilidade que descreve a ação para navegar em um carrossel rolável até o elemento anterior",
+    "string": "Role para o anterior"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Texto para todos os rótulos selecionados",
+    "string": "Todos {numSelectedRows} selecionados"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Um rótulo do botão limpar todas as seleções.",
+    "string": "Seleção clara"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Um rótulo para o botão Selecionar tudo.",
+    "string": "Selecionar tudo {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Texto para rótulo selecionado",
+    "string": "{numSelectedRows} selecionado"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Texto para rótulo selecionado quando a tabela é paginada",
+    "string": "{numSelectedRows} selecionado ( {numSelectedRowsOnPage} mostrado abaixo)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Rótulo de um botão de ação que recolhe todas as linhas expansíveis do DataTable.",
+    "string": "contrair tudo"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Rótulo de um botão de ação que expande todas as linhas expansíveis do DataTable.",
+    "string": "expandir tudo"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "Um texto que aparece no botão `Limpar filtros`",
+    "string": "Limpar filtros"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Um texto descrevendo quantas linhas são mostradas na tabela",
+    "string": "Mostrando {firstRow} - {lastRow} de {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Título do componente de filtros da barra lateral",
+    "string": "Filtros"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Uma mensagem exibida quando o tamanho do arquivo enviado deve estar dentro de um determinado intervalo.",
+    "string": "Entre {sizeMin} e {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Uma mensagem exibida quando o tamanho do arquivo enviado deve ser maior que algum valor.",
+    "string": "Máximo {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Uma mensagem exibida quando o tamanho do arquivo enviado deve ser maior que algum valor.",
+    "string": "Mínimo {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Uma mensagem mostrada quando o arquivo é carregado deve ser de determinado(s) tipo(s).",
+    "string": "Carregar {contagem, plural, um {arquivos {firstPart} } outro {arquivos {firstPart} ou {secondPart} }}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Um texto que aparece como um rótulo para entrada do componente Dropzone.",
+    "string": "Arraste e solte seu arquivo aqui ou clique para fazer upload."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Rótulo de um botão de cancelamento mostrado durante o upload do arquivo no componente Dropzone.",
+    "string": "Cancelar"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Um texto mostrado próximo a uma barra de progresso durante o upload do arquivo no componente Dropzone.",
+    "string": "Carregando {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Uma mensagem mostrada quando o menu de sugestão automática é aberto.",
+    "string": "Fechar o menu de opções"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Uma mensagem exibida caso o menu de sugestão automática esteja fechado.",
+    "string": "Abra o menu de opções"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Mensagem do leitor de tela para notificar o usuário de que ele está localizado na parte inferior da etapa do tour do produto.",
+    "string": "Parte inferior da etapa {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Mensagem do leitor de tela para notificar o usuário de que ele está localizado na parte inferior da etapa do tour do produto.",
+    "string": "Início da etapa {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Fechar rótulo para componente Toast",
+    "string": "Fechar"
+  }
+}

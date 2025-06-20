@@ -1,0 +1,156 @@
+{
+  "Hyperlink.externalLinkAltText": {
+    "string": ""
+  },
+  "Hyperlink.externalLinkTitle": {
+    "string": ""
+  },
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "زمانی که فایلی با اندازه کمتر از حداقل مجاز در Dropzone بارگذاری می شود، پیامی نشان داده می‌شود.",
+    "string": "فایل باید بزرگتر از {size} باشد."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "زمانی که فایلی با اندازۀ بیش از حداکثر مجاز در Dropzone بارگذاری می‌شود، پیامی نشان داده می‌شود.",
+    "string": "فایل باید کمتر از {size} باشد."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "زمانی که فایلی با نوع MIME اشتباه در حال بارگذاری است، پیامی نشان داده می‌شود.",
+    "string": "نوع فایل باید {count, plural, one { {typeString} file} other { one of {typeString} files}} باشد."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "پیامی که هنگام کشیدن چندین فایل روی Dropzone نشان داده می‌شود.",
+    "string": "فقط یک دفعه بارگذاری، مجاز است."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "پیامی به‌دلیل نامشخصی در تأیید پرونده در مؤلفۀ Dropzone نشان داده شده‌است.",
+    "string": "مشکل غیرمنتظره ای در حین اعتبارسنجی فایل رخ داد. لطفاً دوباره تلاش کنید."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "پیامی که در بارگذاری فایل موردنظر در مؤلفه Dropzone نشان داده شده‌است منجر به خطا می‌شود.",
+    "string": "هنگام بارگذاری فایل موردنظر شما مشکلی رخ داد. لطفاً دوباره تلاش کنید."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "برچسب دکمۀ بستن در مؤلفه Alert",
+    "string": "رد"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "متن مربوط به دسترس‌پذیری توصیف‌کنندۀ عملکرد پیمایش قابل حرکت برای رفتن به عنصر بعدی را توصیف می‌کند",
+    "string": "برو به بعدی"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "متن مربوط به دسترس‌پذیری توصیف کنندۀ عملکرد پیمایش قابل حرکت، برای رفتن عنصر قبلی را توصیف می‌کند",
+    "string": "برو به قبلی"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "متن مربوط به دسترس‌پذیری توصیف کنندۀ عملکرد پیمایش قابل حرکت، برای رفتن عنصربعدی را توصیف می‌کند",
+    "string": "برو به بعدی"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "متن مربوط به دسترس‌پذیری توصیف کنندۀ عملکرد پیمایش قابل حرکت، برای رفتن عنصر قبلی را توصیف می‌کند",
+    "string": "برو به قبلی"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "متنی برای همۀبرچسب‌های انتخاب‌شده",
+    "string": "همۀ {numSelectedRows} انتخاب شدند"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "برچسبی برای دکمۀ حذف انتخاب همه.",
+    "string": "حذف انتخاب"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "برچسبی برای دکمۀ انتخاب همه.",
+    "string": "انتخاب همه {itemCount} "
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "متنی برای برچسب انتخاب‌شده",
+    "string": "{numSelectedRows} انتخاب شد"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "هنگام صفحه‌‍بندی جدول، متنی برای برچسب انتخاب‌شده",
+    "string": "{numSelectedRows} انتخاب شد ( {numSelectedRowsOnPage} نشان داده شده در زیر)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "برچسب یک دکمه عملگر که تمام ردیف‌های قابل گسترش DataTable را جمع می‌کند.",
+    "string": "همه را جمع کن"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "برچسب یک دکمه عملگر که تمام ردیف‌های قابل گسترش DataTable را گسترش می‌دهد.",
+    "string": "همه را گسترش بده"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "متنی که روی دکمۀ «حذف فیلترها» ظاهر می‌شود",
+    "string": "حذف فیلترها"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "متنی که توضیح می‌دهد چند ردیف در جدول نشان داده شده‌است",
+    "string": "نمایش {firstRow} - {lastRow} از {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "عنوان مولفۀ فیلترهای نوار جانبی",
+    "string": "فیلترها"
+  },
+  "pgn.DataTable.paginationLabel": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "پیامی که هشدار می‌دهد اندازۀ فایل بارگذاری شده باید مقداری در دامنۀ خاص باشد.",
+    "string": "بین {sizeMin} و {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "پیامی حاوی این مطلب که فایل بارگذاری‌شده باید مقداری بیشتر داشته باشد.",
+    "string": "حداکثر {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "پیامی که هشدار می‌دهد اندازۀ فایل بارگذاری شده باید بیشتر از مقداری معین باشد.",
+    "string": "حداقل {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "پیامی که هشدار می‌دهد فایل بارگذاری‌شده باید از نوع(انواع) خاصی باشد.",
+    "string": "بارگذاری {تعداد، جمع، یک { {firstPart} فایل} دیگر { {firstPart} یا {secondPart} فایل}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "متنی که به‌عنوان یک برچسب برای ورودی مولفۀ Dropzone ظاهر می‌شود.",
+    "string": "فایل خود را اینجا بکشید و رها کنید یا برای بارگذاری آن کلیک کنید."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "برچسب دکمۀ لغو که درحین بارگذاری فایل در مؤلفۀ Dropzone نمایش داده ‌می‌شود.",
+    "string": "لغو"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "متنی که درحین بارگذاری فایل در مولفۀ Dropzone در نزدیکی نوار پیشرفت نمایش داده می‌شود.",
+    "string": "درحال بارگذاری {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "پیامی که درصورت بازشدن منوی پیشنهاد خودکار نمایش داده می‌شود.",
+    "string": "بستن منوی گزینه‌ها"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "پیامی که درصورت بستن منوی پیشنهاد خودکار نمایش داده می‌شود.",
+    "string": "بازکردن منوی گزینه‌ها"
+  },
+  "pgn.Modal.closeButon": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "پیام صفحه‌خوان برای اطلاع‌رسانی به کاربر که آن‌ها در قسمت پایین مرحلۀ تور محصول قرار دارند.",
+    "string": "پایین مرحله {step}"
+  },
+  "pgn.ProductTour.Checkpoint.page-index-text": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "پیام صفحه‌خوان برای اطلاع‌رسانی به کاربر که آن‌ها در قسمت پایین مرحلۀ تور محصول قرار دارند.",
+    "string": "بالای مرحلۀ {step}"
+  },
+  "pgn.ProductTour.checkpointHeader.close": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "برچسب بستن برای مولفۀ تُست",
+    "string": "بستن"
+  }
+}

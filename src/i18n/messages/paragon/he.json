@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "הודעה המוצגת כאשר קובץ עם גודל קטן מהמינימום המותר מועלה ב-Dropzone.",
+    "string": "הקובץ חייב להיות גדול מ- {size} ."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "הודעה המוצגת כאשר קובץ עם גודל גדול מהמותר מועלה ב-Dropzone.",
+    "string": "הקובץ חייב להיות קטן מ- {size} ."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "הודעה המוצגת כאשר קובץ עם סוג MIME שגוי מועלה.",
+    "string": "סוג הקובץ חייב להיות {count, plural, one { {typeString} file} other {one of {typeString} files}}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "הודעה המוצגת כאשר קבצים מרובים נגררים מעל Dropzone.",
+    "string": "רק העלאה אחת מותרת."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "הודעה המוצגת באימות קובץ מקרה ברכיב Dropzone מסיבה לא ידועה.",
+    "string": "אירעה בעיה בלתי צפויה במהלך אימות הקובץ. בבקשה נסה שוב."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "הודעה המוצגת במקרה של העלאת קובץ ברכיב Dropzone מביאה לשגיאה.",
+    "string": "אירעה בעיה בעת העלאת הקובץ שלך. בבקשה נסה שוב."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "תווית של לחצן סגירה ברכיב התראה",
+    "string": "ביטול"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "טקסט נגישות המתאר את הפעולה לניווט בקרוסלה ניתנת לגלילה לאלמנט הבא",
+    "string": "גלול להבא"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "טקסט נגישות המתאר את הפעולה לניווט בקרוסלה ניתנת לגלילה לאלמנט הקודם",
+    "string": "גלול לקודם"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "טקסט נגישות המתאר את הפעולה לניווט בקרוסלה ניתנת לגלילה לאלמנט הבא",
+    "string": "גלול להבא"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "טקסט נגישות המתאר את הפעולה לניווט בקרוסלה ניתנת לגלילה לאלמנט הקודם",
+    "string": "גלול לקודם"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "טקסט עבור כל התוויות שנבחרו",
+    "string": "כל {numSelectedRows} נבחרו"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "תווית של לחצן ניקוי הכל.",
+    "string": "נקה בחירה"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "תווית לחצן בחר הכל.",
+    "string": "בחר הכל {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "טקסט עבור התווית שנבחרה",
+    "string": "{numSelectedRows} נבחר"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "טקסט עבור התווית שנבחרה כאשר הטבלה מעופפת",
+    "string": "{numSelectedRows} נבחר ( {numSelectedRowsOnPage} מוצג למטה)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "תווית של לחצן פעולה שמכווץ את כל השורות הניתנות להרחבה של DataTable.",
+    "string": "לכווץ הכול"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "תווית של לחצן פעולה שמרחיב את כל השורות הניתנות להרחבה של DataTable.",
+    "string": "להרחיב הכול"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "טקסט שמופיע על כפתור `נקה מסננים`",
+    "string": "נקה מסננים"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "טקסט המתאר כמה שורות מוצג בטבלה",
+    "string": "מציג {firstRow} - {lastRow} של {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "כותרת עבור רכיב המסננים בסרגל הצד",
+    "string": "מסננים"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "הודעה המוצגת בעת העלאת גודל הקובץ חייבת להיות בטווח נתון.",
+    "string": "בין {sizeMin} ל- {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "הודעה המוצגת בעת העלאת גודל הקובץ חייב להיות יותר מערך כלשהו.",
+    "string": "מקסימום {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "הודעה המוצגת בעת העלאת גודל הקובץ חייב להיות יותר מערך כלשהו.",
+    "string": "מינימום {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "הודעה המוצגת בעת העלאת הקובץ חייבת להיות מסוגים מסוימים.",
+    "string": "העלה {count, plural, one { {firstPart} files} other { {firstPart} or {secondPart} files}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "טקסט המופיע כתווית לקלט של רכיב Dropzone.",
+    "string": "גרור ושחרר את הקובץ שלך כאן או לחץ כדי להעלות."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "תווית של לחצן ביטול שמוצג במהלך העלאת קובץ ברכיב Dropzone.",
+    "string": "ביטול"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "טקסט שמוצג ליד סרגל התקדמות במהלך העלאת קובץ ברכיב Dropzone.",
+    "string": "מעלה {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "הודעה מוצגת למקרה שבו נפתח תפריט ההצעה האוטומטית.",
+    "string": "סגור את תפריט האפשרויות"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "הודעה מוצגת למקרה שבו תפריט ההצעה האוטומטית נסגר.",
+    "string": "פתח את תפריט האפשרויות"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "הודעת קורא מסך להודיע למשתמש שהם נמצאים בתחתית שלב סיור המוצר.",
+    "string": "תחתית שלב {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "הודעת קורא מסך להודיע למשתמש שהם נמצאים בתחתית שלב סיור המוצר.",
+    "string": "ראש שלב {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "סגור תווית עבור רכיב הטוסט",
+    "string": "סגור"
+  }
+}

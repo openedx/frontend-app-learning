@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Un messaggio mostrato quando in Dropzone viene caricato un file con una dimensione inferiore alla dimensione minima consentita.",
+    "string": "Il file deve essere più grande di {size} ."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Un messaggio mostrato quando un file con dimensioni superiori a quelle massime consentite viene caricato in Dropzone.",
+    "string": "Il file deve essere inferiore a {size} ."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Un messaggio mostrato quando viene caricato un file con tipo MIME errato.",
+    "string": "Il tipo di file deve essere {count, plural, one { {typeString} file} other {one of {typeString} files}}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Un messaggio mostrato quando più file vengono trascinati su Dropzone.",
+    "string": "È consentito un solo caricamento."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Un messaggio mostrato nella convalida del file del caso nel componente Dropzone per un motivo sconosciuto.",
+    "string": "Si è verificato un problema imprevisto durante la convalida del file. Per favore riprova."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Un messaggio mostrato nel caso in cui il caricamento del file nel componente Dropzone restituisca un errore.",
+    "string": "Si è verificato un problema durante il caricamento del file. Per favore riprova."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Etichetta di un pulsante di chiusura sul componente Alert",
+    "string": "Chiudi"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Testo di accessibilità che descrive l&#39;azione per navigare in un carosello scorrevole fino all&#39;elemento successivo",
+    "string": "Scorri al successivo"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Testo di accessibilità che descrive l&#39;azione per navigare in un carosello scorrevole fino all&#39;elemento precedente",
+    "string": "Scorri al precedente"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Testo di accessibilità che descrive l&#39;azione per navigare in un carosello scorrevole fino all&#39;elemento successivo",
+    "string": "Scorri al successivo"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Testo di accessibilità che descrive l&#39;azione per navigare in un carosello scorrevole fino all&#39;elemento precedente",
+    "string": "Scorri al precedente"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Testo per tutte le etichette selezionate",
+    "string": "Tutto {numSelectedRows} selezionato"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Un&#39;etichetta del pulsante di selezione Cancella tutto.",
+    "string": "Cancella selezione"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Un&#39;etichetta per il pulsante Seleziona tutto.",
+    "string": "Seleziona tutto {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Testo per l&#39;etichetta selezionata",
+    "string": "{numSelectedRows} selezionato"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Testo per l&#39;etichetta selezionata quando la tabella viene impaginata",
+    "string": "{numSelectedRows} selezionato ( {numSelectedRowsOnPage} mostrato di seguito)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Etichetta di un pulsante di azione che comprime tutte le righe espandibili di DataTable.",
+    "string": "Comprimi tutto "
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Etichetta di un pulsante di azione che espande tutte le righe espandibili di DataTable.",
+    "string": "Espandi tutto "
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "Un testo che appare sul pulsante &quot;Cancella filtri&quot;.",
+    "string": "Cancella filtri"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Un testo che descrive quante righe sono visualizzate nella tabella",
+    "string": "Visualizzazione {firstRow} - {lastRow} di {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Titolo per il componente filtri della barra laterale",
+    "string": "Filtri"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Un messaggio mostrato quando la dimensione del file caricato deve rientrare nell&#39;intervallo specificato.",
+    "string": "Tra {sizeMin} e {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Un messaggio mostrato quando la dimensione del file caricato deve essere superiore a un valore.",
+    "string": "Max {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Un messaggio mostrato quando la dimensione del file caricato deve essere superiore a un valore.",
+    "string": "Min {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Un messaggio mostrato quando il file caricato deve essere di determinati tipi.",
+    "string": "Carica {count, plural, one { {firstPart} file} other { {firstPart} o {secondPart} file}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Un testo che appare come etichetta per l&#39;input del componente Dropzone.",
+    "string": "Trascina e rilascia il tuo file qui o fai clic per caricarlo."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Etichetta di un pulsante Annulla mostrato durante il caricamento del file nel componente Dropzone.",
+    "string": "Annulla"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Un testo che viene mostrato vicino a una barra di avanzamento durante il caricamento del file nel componente Dropzone.",
+    "string": "Caricamento {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Un messaggio mostrato nel caso in cui venga aperto il menu di suggerimento automatico.",
+    "string": "Chiudi il menu delle opzioni"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Un messaggio mostrato nel caso in cui il menu di suggerimento automatico sia chiuso.",
+    "string": "Apri il menu delle opzioni"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Messaggio dell&#39;utilità per la lettura dello schermo per avvisare l&#39;utente che si trova nella parte inferiore del passaggio della presentazione del prodotto.",
+    "string": "Parte inferiore del gradino {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Messaggio dell&#39;utilità per la lettura dello schermo per avvisare l&#39;utente che si trova nella parte inferiore del passaggio della presentazione del prodotto.",
+    "string": "Inizio del passaggio {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Chiudi l&#39;etichetta per il componente Toast",
+    "string": "Chiudi"
+  }
+}

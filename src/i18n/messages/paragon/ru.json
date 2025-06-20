@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Сообщение, отображаемое, когда в Dropzone загружается файл размером меньше минимально допустимого.",
+    "string": "Файл должен быть больше, чем {size} ."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Сообщение, отображаемое, когда в Dropzone загружается файл, размер которого превышает максимально допустимый.",
+    "string": "Файл должен быть меньше {size} ."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Сообщение, отображаемое при загрузке файла с неправильным типом MIME.",
+    "string": "Тип файла должен быть {count, множественное число, один { файл {typeString} } другой {один из файлов {typeString} }}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Сообщение, отображаемое при перетаскивании нескольких файлов в Dropzone.",
+    "string": "Разрешена только одна загрузка."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Сообщение, отображаемое при проверке файла дела в компоненте Dropzone по неизвестной причине.",
+    "string": "Во время проверки файла возникла непредвиденная проблема. Пожалуйста, попробуйте еще раз."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Сообщение, отображаемое в случае, если загрузка файла в компоненте Dropzone приводит к ошибке.",
+    "string": "Возникла проблема при загрузке файла. Пожалуйста, попробуйте еще раз."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Метка кнопки закрытия на компоненте Alert",
+    "string": "Скрыть"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Текст доступности, описывающий действие по переходу прокручиваемой карусели к следующему элементу.",
+    "string": "Перейти к следующему"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Текст специальных возможностей, описывающий действие по переходу прокручиваемой карусели к предыдущему элементу.",
+    "string": "Перейти к предыдущему"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Текст доступности, описывающий действие по переходу прокручиваемой карусели к следующему элементу.",
+    "string": "Перейти к следующему"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Текст специальных возможностей, описывающий действие по переходу прокручиваемой карусели к предыдущему элементу.",
+    "string": "Перейти к предыдущему"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Текст для всех выбранных ярлыков",
+    "string": "Все {numSelectedRows} выбрано"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Ярлык кнопки очистки всего выбора.",
+    "string": "Очистить выбор"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Метка для кнопки «Выбрать все».",
+    "string": "Выбрать все {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Текст для выбранной метки",
+    "string": "{numSelectedRows} выбрано"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Текст для выбранной метки, когда таблица разбита на страницы",
+    "string": "выбран {numSelectedRows} ( {numSelectedRowsOnPage} показан ниже)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Метка кнопки действия, которая сворачивает все расширяемые строки DataTable.",
+    "string": "Свернуть все"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Метка кнопки действия, которая раскрывает все расширяемые строки DataTable.",
+    "string": "Развернуть все"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "Текст, который появляется на кнопке «Очистить фильтры».",
+    "string": "Отменить фильтры"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Текст, описывающий, сколько строк отображается в таблице.",
+    "string": "Показаны {firstRow} - {lastRow} из {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Название компонента фильтров боковой панели",
+    "string": "Фильтры"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Сообщение, отображаемое, когда размер загружаемого файла должен находиться в заданном диапазоне.",
+    "string": "Между {sizeMin} и {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Сообщение, отображаемое, когда размер загружаемого файла должен быть больше некоторого значения.",
+    "string": "Макс {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Сообщение, отображаемое, когда размер загружаемого файла должен быть больше некоторого значения.",
+    "string": "Мин {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Сообщение, отображаемое при загрузке файла, должно относиться к определенному типу(ам).",
+    "string": "Загрузите {count, множественное число, один { файлы {firstPart} } другие { файлы {firstPart} или {secondPart} }}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Текст, который отображается в качестве метки для ввода компонента Dropzone.",
+    "string": "Перетащите файл сюда или нажмите, чтобы загрузить."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Метка кнопки отмены, которая отображается во время загрузки файла в компоненте Dropzone.",
+    "string": "Отмена"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Текст, который отображается рядом с индикатором выполнения во время загрузки файла в компонент Dropzone.",
+    "string": "Загрузка {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Сообщение, отображаемое в случае открытия меню автозаполнения.",
+    "string": "Закрыть меню опций"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Сообщение, отображаемое в случае, если меню автозаполнения закрыто.",
+    "string": "Открыть меню опций"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Сообщение средства чтения с экрана, уведомляющее пользователя о том, что он находится в нижней части этапа обзора продукта.",
+    "string": "Нижняя часть ступени {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Сообщение средства чтения с экрана, уведомляющее пользователя о том, что он находится в нижней части этапа обзора продукта.",
+    "string": "Начало ступени {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Закрыть ярлык для компонента Toast",
+    "string": "Закрыть"
+  }
+}

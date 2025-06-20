@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "当在 Dropzone 中上传小于允许的最小大小的文件时显示的消息。",
+    "string": "文件必须大于{size} 。"
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "当在 Dropzone 中上传的文件超过允许的最大大小时显示的消息。",
+    "string": "文件必须小于{size} 。"
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "上传 MIME 类型错误的文件时显示的消息。",
+    "string": "文件类型必须为 {count,plural, one { {typeString} file} other {one of {typeString} files}}。"
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "将多个文件拖动到 Dropzone 上时显示的消息。",
+    "string": "只允许上传一次。"
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "由于未知原因，Dropzone 组件中的文件验证中显示一条消息。",
+    "string": "文件验证期间出现意外问题。请再试一次。"
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "如果 Dropzone 组件中的文件上传导致错误，则会显示一条消息。",
+    "string": "上传文件时出现问题。请再试一次。"
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Alert 组件上关闭按钮的标签",
+    "string": "忽略"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "描述将可滚动轮播导航到下一个元素的操作的辅助功能文本",
+    "string": "滚动到下一个"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "描述将可滚动轮播导航至上一个元素的操作的辅助功能文本",
+    "string": "滚动到上一个"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "描述将可滚动轮播导航到下一个元素的操作的辅助功能文本",
+    "string": "滚动到下一个"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "描述将可滚动轮播导航至上一个元素的操作的辅助功能文本",
+    "string": "滚动到上一个"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "所有选定标签的文本",
+    "string": "全部选择{numSelectedRows}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "清除所有选择按钮的标签。",
+    "string": "清空选项"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "用于全选按钮的标签。",
+    "string": "选择全部{itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "选定标签的文本",
+    "string": "{numSelectedRows}已选择"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "表格分页时所选标签的文本",
+    "string": "选择了{numSelectedRows} （如下所示的{numSelectedRowsOnPage} ）"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "折叠 DataTable 的所有可展开行的操作按钮的标签。",
+    "string": "折叠全部"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "用于展开 DataTable 的所有可展开行的操作按钮的标签。",
+    "string": "展开全部"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "“清除过滤器”按钮上显示的文本",
+    "string": "清除过滤器"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "描述表中显示的行数的文本",
+    "string": "显示{itemCount}的{firstRow} - {lastRow} 。"
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "侧边栏过滤器组件的标题",
+    "string": "过滤器"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "当上传文件的大小必须在给定范围内时显示的消息。",
+    "string": "{sizeMin}和{sizeMax}之间"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "当上传的文件大小必须大于某个值时显示的消息。",
+    "string": "最大{sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "当上传的文件大小必须大于某个值时显示的消息。",
+    "string": "最小{sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "上传的文件必须属于特定类型时显示的消息。",
+    "string": "上传 {count,plural, one { {firstPart}个文件} other { {firstPart}或{secondPart}个文件}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "显示为 Dropzone 组件输入标签的文本。",
+    "string": "将您的文件拖放到此处或单击上传。"
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Dropzone 组件中文件上传期间显示的取消按钮的标签。",
+    "string": "取消"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "在 Dropzone 组件中上传文件期间，在进度条附近显示的文本。",
+    "string": "正在上传{filename} 。"
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "打开自动建议菜单时显示的消息。",
+    "string": "关闭选项菜单"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "自动建议菜单关闭时显示的消息。",
+    "string": "打开选项菜单"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "屏幕阅读器消息，通知用户他们位于产品浏览步骤的底部。",
+    "string": "步骤底部{step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "屏幕阅读器消息，通知用户他们位于产品浏览步骤的底部。",
+    "string": "步骤顶部{step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Toast 组件的关闭标签",
+    "string": "关闭"
+  }
+}

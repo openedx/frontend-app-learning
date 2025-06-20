@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Повідомлення, яке відображається, коли в Dropzone завантажується файл, розмір якого менший за мінімально допустимий.",
+    "string": "Файл має бути більшим за {size} ."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Повідомлення, яке відображається, коли в Dropzone завантажується файл, розмір якого перевищує максимально допустимий.",
+    "string": "Файл має бути меншим за {size} ."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Повідомлення, яке відображається, коли завантажується файл із неправильним типом MIME.",
+    "string": "Тип файлу має бути {count, plural, one { файл {typeString} } other {один із файлів {typeString} }}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Повідомлення, яке відображається, коли кілька файлів перетягується через Dropzone.",
+    "string": "Дозволено лише одне завантаження."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Повідомлення, яке відображається під час перевірки файлу справи в компоненті Dropzone з невідомої причини.",
+    "string": "Під час перевірки файлу виникла неочікувана проблема. Будь ласка спробуйте ще раз."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Повідомлення, яке відображається під час завантаження файлу випадку в компонент Dropzone, призводить до помилки.",
+    "string": "Під час завантаження файлу виникла проблема. Будь ласка спробуйте ще раз."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Мітка кнопки закриття на компоненті Alert",
+    "string": "Відхилити"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Текст доступності, що описує дію для переходу прокручуваної каруселі до наступного елемента",
+    "string": "Перейдіть до наступного"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Текст доступності, що описує дію для переходу прокручуваної каруселі до попереднього елемента",
+    "string": "Перейти до попереднього"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Текст доступності, що описує дію для переходу прокручуваної каруселі до наступного елемента",
+    "string": "Перейдіть до наступного"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Текст доступності, що описує дію для переходу прокручуваної каруселі до попереднього елемента",
+    "string": "Перейти до попереднього"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Текст для всіх вибраних міток",
+    "string": "Вибрано всі {numSelectedRows}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Позначка кнопки «Очистити весь вибір».",
+    "string": "Очистити вибір"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Мітка для кнопки «Вибрати все».",
+    "string": "Виберіть усі {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Текст для вибраної мітки",
+    "string": "{numSelectedRows} вибрано"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Текст для вибраного мітка, коли таблицю розбивають на сторінки",
+    "string": "{numSelectedRows} вибрано ( {numSelectedRowsOnPage} показано нижче)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Мітка кнопки дії, яка згортає всі розгорнуті рядки DataTable.",
+    "string": "Згорнути всі"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Мітка кнопки дії, яка розгортає всі розгорнуті рядки DataTable.",
+    "string": "Розгорнути всі"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "Текст, який з’являється на кнопці «Очистити фільтри».",
+    "string": "Очистити фільтри"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Текст, що описує, скільки рядків показано в таблиці",
+    "string": "Показано {firstRow} - {lastRow} з {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Заголовок для компонента фільтрів бічної панелі",
+    "string": "Фільтри"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Повідомлення, що відображається під час завантаження, розмір файлу має бути в заданому діапазоні.",
+    "string": "Між {sizeMin} та {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Повідомлення, що відображається під час завантаження розміру файлу, має бути більше певного значення.",
+    "string": "Макс {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Повідомлення, що відображається під час завантаження розміру файлу, має бути більше певного значення.",
+    "string": "Мін. {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Повідомлення, яке відображається під час завантаження файлу, має бути певного типу.",
+    "string": "Завантажте {count, plural, one { {firstPart} files} other { {firstPart} or {secondPart} files}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Текст, який відображається як мітка для введення компонента Dropzone.",
+    "string": "Перетягніть файл сюди або натисніть, щоб завантажити."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Мітка кнопки скасування, яка відображається під час завантаження файлу в компонент Dropzone.",
+    "string": "Скасувати"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Текст, який відображається біля індикатора виконання під час завантаження файлу в компонент Dropzone.",
+    "string": "Завантаження {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Повідомлення, яке відображається у випадку, коли відкрито меню автопропозицій.",
+    "string": "Закрийте меню параметрів"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Повідомлення, яке відображається у випадку, коли меню автопропозицій закрито.",
+    "string": "Відкрийте меню параметрів"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Повідомлення програми зчитування з екрана, щоб сповістити користувача про те, що він розташований у нижній частині кроку ознайомлення з продуктом.",
+    "string": "Нижня частина кроку {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Повідомлення програми зчитування з екрана, щоб сповістити користувача про те, що він розташований у нижній частині кроку ознайомлення з продуктом.",
+    "string": "Верхня частина кроку {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Закрити мітку для компонента Toast",
+    "string": "Закрити"
+  }
+}

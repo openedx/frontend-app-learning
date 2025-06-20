@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "En meddelelse, der vises, når en fil med mindre end den tilladte minimumsstørrelse uploades i Dropzone.",
+    "string": "Filen skal være større end {size} ."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "En besked, der vises, når en fil med mere end maksimal tilladt størrelse uploades i Dropzone.",
+    "string": "Filen skal være mindre end {size} ."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "En meddelelse, der vises, når en fil med forkert MIME-type uploades.",
+    "string": "Filtypen skal være {count, plural, one { {typeString} file} other {one of {typeString} files}}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "En besked, der vises, når flere filer trækkes over Dropzone.",
+    "string": "Kun én upload tilladt."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "En besked vist i sagsfilvalidering i Dropzone-komponent af ukendt årsag.",
+    "string": "Der opstod et uventet problem under filvalidering. Prøv igen."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "En meddelelse vist i tilfælde af filupload i Dropzone-komponenten resulterer i en fejl.",
+    "string": "Der opstod et problem under upload af din fil. Prøv igen."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Etiket på en lukkeknap på Alert-komponent",
+    "string": "Afskedige"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Tilgængelighedstekst, der beskriver handlingen for at navigere en rullebar karrusel til det næste element",
+    "string": "Rul til næste"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Tilgængelighedstekst, der beskriver handlingen for at navigere en rullebar karrusel til det forrige element",
+    "string": "Rul til forrige"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Tilgængelighedstekst, der beskriver handlingen for at navigere en rullebar karrusel til det næste element",
+    "string": "Rul til næste"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Tilgængelighedstekst, der beskriver handlingen for at navigere en rullebar karrusel til det forrige element",
+    "string": "Rul til forrige"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Tekst for alle valgte etiketter",
+    "string": "Alle {numSelectedRows} er valgt"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "En etiket med knappen Ryd alt.",
+    "string": "Ryd markering"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "En etiket til knappen Vælg alle.",
+    "string": "Vælg alle {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Tekst til valgt etiket",
+    "string": "{numSelectedRows} valgt"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Tekst til valgt etiket, når tabellen er pagineret",
+    "string": "{numSelectedRows} valgt ( {numSelectedRowsOnPage} vist nedenfor)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Etiket på en handlingsknap, der skjuler alle udvidelige rækker af DataTable.",
+    "string": "Skjul alle"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Etiket på en handlingsknap, der udvider alle rækker af DataTable, der kan udvides.",
+    "string": "Udvid alle"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "En tekst, der vises på knappen &#39;Ryd filtre&#39;",
+    "string": "Ryd filtre"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "En tekst, der beskriver, hvor mange rækker der er vist i tabellen",
+    "string": "Viser {firstRow} - {lastRow} af {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Titel for sidebjælkefiltre-komponenten",
+    "string": "Filtre"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "En meddelelse, der vises, når den uploadede fils størrelse skal være inden for et givet område.",
+    "string": "Mellem {sizeMin} og {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "En meddelelse, der vises, når den uploadede fils størrelse skal være større end en vis værdi.",
+    "string": "Max {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "En meddelelse, der vises, når den uploadede fils størrelse skal være større end en vis værdi.",
+    "string": "Min {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "En meddelelse, der vises, når filen uploades, skal være af en eller flere typer.",
+    "string": "Upload {count, plural, one { {firstPart} files} other { {firstPart} or {secondPart} files}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "En tekst, der vises som en etiket til input af Dropzone-komponent.",
+    "string": "Træk og slip din fil her, eller klik for at uploade."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Etiket på en annulleringsknap, der vises under filupload i Dropzone-komponenten.",
+    "string": "Afbestille"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "En tekst, der vises nær en statuslinje under filupload i Dropzone-komponenten.",
+    "string": "Uploader {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "En meddelelse vises i tilfælde af, at autoforslagsmenuen åbnes.",
+    "string": "Luk indstillingsmenuen"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "En meddelelse vises i tilfælde af, at autosuggest-menuen er lukket.",
+    "string": "Åbn indstillingsmenuen"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Skærmlæsermeddelelse for at give brugeren besked om, at de er placeret nederst i produktrundvisningstrinnet.",
+    "string": "Nederst i trin {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Skærmlæsermeddelelse for at give brugeren besked om, at de er placeret nederst i produktrundvisningstrinnet.",
+    "string": "Øverst på trin {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Luk etiket til Toast-komponent",
+    "string": "Tæt"
+  }
+}

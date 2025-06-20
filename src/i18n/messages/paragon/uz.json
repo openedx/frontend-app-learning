@@ -1,0 +1,156 @@
+{
+  "Hyperlink.externalLinkAltText": {
+    "string": "yangi tabda"
+  },
+  "Hyperlink.externalLinkTitle": {
+    "string": "Yangi varaqda ochiladi"
+  },
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Minimal ruxsat etilgan hajmdan kichikroq fayl Dropzone-ga yuklanayotganda ko‘rsatiladigan xabar.",
+    "string": "Fayl {size} dan kattaroq boʻlishi kerak."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Dropzone-ga ruxsat etilgan maksimal hajmdan kattaroq fayl yuklanayotganda ko‘rsatiladigan xabar.",
+    "string": "Fayl {size} dan kichik bo‘lishi kerak."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Noto‘g‘ri MIME turiga ega fayl yuklanganda ko‘rsatiladigan xabar.",
+    "string": "Fayl turi {hisob, ko‘plik, bitta { {typeString} fayl} boshqa { {typeString} fayllaridan biri}} bo‘lishi kerak."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Bir nechta fayllar Dropzone orqali sudralganda ko‘rsatiladigan xabar.",
+    "string": "Faqat bitta yuklashga ruxsat berilgan."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Noma'lum sabablarga ko‘ra Dropzone komponentida ish faylini tekshirishda ko‘rsatilgan xabar.",
+    "string": "Faylni tekshirish paytida kutilmagan muammo yuz berdi. Iltimos, qayta urinib ko‘ring."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Dropzone komponentida fayl yuklanganda ko‘rsatilgan xabar xatolikka olib keladi.",
+    "string": "Faylingizni yuklashda muammo yuz berdi. Iltimos, qayta urinib koʻring."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Alert komponentidagi yopish tugmasi yorlig‘i",
+    "string": "Rad etish"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Qaytib olinadigan karuseldan keyingi elementga o‘tish harakatini tavsiflovchi maxsus imkoniyatlar matni",
+    "string": "Keyingisiga o‘ting"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Qaytib olinadigan karuseldan oldingi elementga o‘tish harakatini tavsiflovchi maxsus imkoniyatlar matni",
+    "string": "Oldingisiga o‘ting"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Qaytib olinadigan karuseldan keyingi elementga o‘tish harakatini tavsiflovchi maxsus imkoniyatlar matni",
+    "string": "Keyingisiga o‘ting"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Qaytib olinadigan karuseldan oldingi elementga o‘tish harakatini tavsiflovchi maxsus imkoniyatlar matni",
+    "string": "Oldingisiga o‘ting"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Barcha tanlangan yorliq uchun matn",
+    "string": "Barcha {numSelectedRows} tanlandi"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Barcha tanlovni tozalash tugmasi yorlig‘i.",
+    "string": "Tanlovni tozalash"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Hammasini tanlash tugmasi uchun yorliq.",
+    "string": "Hammasini tanlang {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Tanlangan yorliq uchun matn",
+    "string": "{numSelectedRows} tanlangan"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Jadval sahifalanganda tanlangan yorliq uchun matn",
+    "string": "{numSelectedRows} tanlangan ( {numSelectedRowsOnPage} quyida ko‘rsatilgan)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Ma'lumotlar jadvalining barcha kengaytiriladigan qatorlarini yopib qo‘yadigan amal tugmasi yorlig‘i.",
+    "string": "Hammasini yig‘ish"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Ma'lumotlar jadvalining barcha kengaytiriladigan qatorlarini kengaytiruvchi harakat tugmasi yorlig‘i.",
+    "string": "Hammasini kengaytiring"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "'Filtrlarni tozalash' tugmachasida paydo bo‘ladigan matn",
+    "string": "Filtrlarni tozalash"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Jadvalda nechta qatorni tavsiflovchi matn ko‘rsatilgan",
+    "string": "{itemCount} dan {firstRow} - {lastRow} ko‘rsatilmoqda."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Yon panel filtrlari komponenti sarlavhasi",
+    "string": "Filtrlar"
+  },
+  "pgn.DataTable.paginationLabel": {
+    "developer_comment": "Sahifalar komponentining navigatsiya elementi uchun mavjud nom",
+    "string": "jadvalni sahifalash"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Yuklangan fayl hajmi berilgan oraliqda bo‘lishi kerak.",
+    "string": "{sizeMin} va {sizeMax} orasida"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Yuklangan faylning o‘lchami maʼlum qiymatdan kattaroq boʻlishi kerak.",
+    "string": "Maks {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Yuklangan faylning o‘lchami maʼlum qiymatdan kattaroq boʻlishi kerak.",
+    "string": "Min {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Fayl yuklanganda ko‘rsatiladigan xabar ma'lum turdagi(lar)da bo‘lishi kerak.",
+    "string": "Yuklang {hisoblash, koʻplik, bitta { {firstPart} fayllar} boshqa { {firstPart} yoki {secondPart} fayllar}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Dropzone komponentini kiritish uchun yorliq sifatida paydo bo‘ladigan matn.",
+    "string": "Faylingizni shu yerga sudrab tashlang yoki yuklash uchun bosing."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Dropzone komponentida fayl yuklash paytida ko‘rsatiladigan bekor qilish tugmasi yorlig‘i.",
+    "string": "Bekor qilish"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Dropzone komponentida faylni yuklash vaqtida progress paneli yonida ko‘rsatiladigan matn.",
+    "string": "Yuklanmoqda {filename} ."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Avtomatik taklif menyusi ochilganda ko‘rsatiladigan xabar.",
+    "string": "Variantlar menyusini yoping"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Avtomatik taklif menyusi yopilganda ko‘rsatiladigan xabar.",
+    "string": "Variantlar menyusini oching"
+  },
+  "pgn.Modal.closeButon": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Ekranni o‘quvchi xabari foydalanuvchiga mahsulot sayohati bosqichining pastki qismida joylashganligi haqida xabar beradi.",
+    "string": "{step} qadamining pastki qismi"
+  },
+  "pgn.ProductTour.Checkpoint.page-index-text": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Ekranni o‘quvchi xabari foydalanuvchiga mahsulot sayohati bosqichining pastki qismida joylashganligi haqida xabar beradi.",
+    "string": "Yuqori bosqich {step}"
+  },
+  "pgn.ProductTour.checkpointHeader.close": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Tost komponenti uchun yorliqni yoping",
+    "string": "Yopish"
+  }
+}
