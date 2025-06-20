@@ -1,0 +1,156 @@
+{
+  "Hyperlink.externalLinkAltText": {
+    "string": ""
+  },
+  "Hyperlink.externalLinkTitle": {
+    "string": ""
+  },
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "當在 Dropzone 中上傳小於允許的最小大小的檔案時顯示的訊息。",
+    "string": "檔案必須大於{size} 。"
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "當在 Dropzone 中上傳的檔案超過允許的最大大小時顯示的訊息。",
+    "string": "檔案必須小於{size} 。"
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "上傳 MIME 類型錯誤的檔案時顯示的訊息。",
+    "string": "檔案類型必須為 {count,plural, one { {typeString} file} 其他 {one of {typeString} files}}。"
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "將多個檔案拖曳到 Dropzone 上時顯示的訊息。",
+    "string": "只允許上傳一次。"
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "由於未知原因，Dropzone 元件中的檔案驗證中顯示一則訊息。",
+    "string": "文件驗證期間發生意外問題。請再試一次。"
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "如果 Dropzone 元件中的檔案上傳導致錯誤，則會顯示一則訊息。",
+    "string": "上傳文件時出現問題。請再試一次。"
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Alert 元件上關閉按鈕的標籤",
+    "string": "忽略"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "無障礙功能文字描述導航到可滾動旋轉木馬的下一個元素的操作",
+    "string": "滾動到下一個"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "無障礙性文本描述導航可滾動旋轉木馬至上一個元素的動作",
+    "string": "滾動到上一個"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "無障礙性文本描述導航可滾動旋轉木馬至下一個元素的動作",
+    "string": "滾動到下一個"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "無障礙性文本描述導航可滾動旋轉木馬至上一個元素的動作",
+    "string": "滾動到上一個"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "所有選定標籤的文字",
+    "string": "全部選{numSelectedRows}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "清除所有選擇按鈕的標籤。",
+    "string": "清空選項"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "用於全選按鈕的標籤。",
+    "string": "選擇全部{itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "選定標籤的文字",
+    "string": "{numSelectedRows}已選擇"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "表格分頁時所選標籤的文本",
+    "string": "選擇了{numSelectedRows} （如下所示的{numSelectedRowsOnPage} ）"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "收起 DataTable 的所有可展開行的操作按鈕的標籤。",
+    "string": "全部收起"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "用於展開 DataTable 的所有可展開行的操作按鈕的標籤。",
+    "string": "展開全部"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "“清除篩選器”按鈕上顯示的文本",
+    "string": "清除篩選器"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "描述表中顯示的行數的文本",
+    "string": "顯示{itemCount}的{firstRow} - {lastRow} 。"
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "側邊欄篩選器組件的標題",
+    "string": "篩選器"
+  },
+  "pgn.DataTable.paginationLabel": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "當上傳檔案的大小必須在給定範圍內時顯示的訊息。",
+    "string": "{sizeMin}和{sizeMax}之間"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "當上傳的檔案大小必須大於某個值時顯示的訊息。",
+    "string": "最大{sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "當上傳的檔案大小必須大於某個值時顯示的訊息。",
+    "string": "最小{sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "上傳的文件必須屬於特定類型時顯示的訊息。",
+    "string": "上傳 {count,plural, one { {firstPart} files} 其他 { {firstPart}或{secondPart} files}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "顯示為 Dropzone 元件輸入標籤的文字。",
+    "string": "將您的文件拖放到此處或點擊上傳。"
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Dropzone 元件中檔案上傳期間顯示的取消按鈕的標籤。",
+    "string": "取消"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "在 Dropzone 元件中上傳檔案期間，在進度條附近顯示的文字。",
+    "string": "正在上傳{filename} 。"
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "開啟自動建議選單時顯示的訊息。",
+    "string": "關閉選項選單"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "自動建議選單關閉時顯示的訊息。",
+    "string": "開啟選項選單"
+  },
+  "pgn.Modal.closeButon": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "螢幕閱讀器訊息，通知用户他們位於產品瀏覽步驟的底部。",
+    "string": "步驟底部{step}"
+  },
+  "pgn.ProductTour.Checkpoint.page-index-text": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "螢幕閱讀器訊息，通知用户他們位於產品瀏覽步驟的底部。",
+    "string": "步驟頂部{step}"
+  },
+  "pgn.ProductTour.checkpointHeader.close": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Toast 元件的關閉標籤",
+    "string": "關閉"
+  }
+}

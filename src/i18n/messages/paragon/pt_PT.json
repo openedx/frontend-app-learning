@@ -1,0 +1,156 @@
+{
+  "Hyperlink.externalLinkAltText": {
+    "string": "num novo separador"
+  },
+  "Hyperlink.externalLinkTitle": {
+    "string": "Abrir num novo separador"
+  },
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "Uma mensagem mostrada quando um ficheiro com um tamanho inferior ao mínimo permitido está a ser carregado no Dropzone.",
+    "string": "O ficheiro tem de ser maior do que {size}."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "Uma mensagem mostrada quando um ficheiro com um tamanho superior ao máximo permitido está a ser carregado no Dropzone.",
+    "string": "O ficheiro tem de ser inferior a {size}."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Uma mensagem mostrada quando um ficheiro com o tipo MIME errado está a ser carregado.",
+    "string": "O tipo de ficheiro tem de ser {count, plural, one ficheiro {{typeString}}} outro {um dos ficheiros {typeString}}."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Uma mensagem mostrada quando vários ficheiros são arrastados para a Dropzone.",
+    "string": "Só é permitido um carregamento."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Uma mensagem mostrada na validação do ficheiro de casos no componente Dropzone por uma razão desconhecida.",
+    "string": "Ocorreu um problema inesperado durante a validação do ficheiro. Por favor, tente novamente."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Uma mensagem mostrada no caso de o carregamento de ficheiros no componente Dropzone resultar num erro.",
+    "string": "Ocorreu um problema ao carregar o seu ficheiro. Por favor, tente novamente."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Etiqueta de um botão de fecho no componente Alert",
+    "string": "Ignorar"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Texto de acessibilidade que descreve a ação para navegar num carrossel de deslocação para o elemento seguinte",
+    "string": "Deslocação para o seguinte"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Texto de acessibilidade que descreve a ação para navegar num carrossel de deslocação para o elemento anterior",
+    "string": "Deslocação para o anterior"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Texto de acessibilidade que descreve a ação para navegar num carrossel de deslocação para o elemento seguinte",
+    "string": "Deslocação para o seguinte"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Texto de acessibilidade que descreve a ação para navegar num carrossel de deslocação para o elemento anterior",
+    "string": "Deslocação para o anterior"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Texto para todas as etiquetas selecionadas",
+    "string": "Todas as {numSelectedRows} selecionadas"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Uma etiqueta do botão de seleção Limpar tudo.",
+    "string": "Limpar seleção"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Uma etiqueta para o botão selecionar tudo.",
+    "string": "Selecionar todos os {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Texto da etiqueta selecionada",
+    "string": "{numSelectedRows} selecionado(s)"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Texto da etiqueta selecionada quando a tabela é paginada",
+    "string": "{numSelectedRows} selecionado(s) ({numSelectedRowsOnPage} mostrado abaixo)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Rótulo de um botão de ação que recolhe todas as linhas expansíveis da DataTable.",
+    "string": "Encolher tudo"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Rótulo de um botão de ação que expande todas as linhas expansíveis da DataTable.",
+    "string": "Expandir tudo"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "Um texto que aparece no botão `Clear filters`",
+    "string": "Limpar filtros"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Um texto que descreve o número de linhas apresentadas na tabela",
+    "string": "A mostrar {firstRow} - {lastRow} de {itemCount}."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Título para a componente de filtros da barra lateral",
+    "string": "Filtros"
+  },
+  "pgn.DataTable.paginationLabel": {
+    "developer_comment": "Nome acessível para o elemento de navegação de um componente de paginação",
+    "string": "paginação da tabela"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Uma mensagem mostrada quando o tamanho do ficheiro carregado tem de estar dentro de um determinado intervalo.",
+    "string": "Entre {sizeMin} e {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Uma mensagem apresentada quando o tamanho do ficheiro carregado tem de ser superior a um determinado valor.",
+    "string": "Max {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Uma mensagem apresentada quando o tamanho do ficheiro carregado tem de ser superior a um determinado valor.",
+    "string": "Min {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Uma mensagem mostrada quando o ficheiro carregado tem de ser de determinado(s) tipo(s).",
+    "string": "Carregar {count, plural, one {{firstPart} ficheiros} other {{firstPart} or {secondPart} ficheiros}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Um texto que aparece como uma etiqueta para a entrada do componente Dropzone.",
+    "string": "Arraste e largue o seu ficheiro aqui ou clique para carregar."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Rótulo de um botão de cancelamento que é mostrado durante o carregamento de ficheiros na componente Dropzone.",
+    "string": "Cancelar"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Um texto que é mostrado perto de uma barra de progresso durante o carregamento de ficheiros na componente Dropzone.",
+    "string": "A carregar {filename}."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Uma mensagem mostrada no caso de o menu de sugestões automáticas ser aberto.",
+    "string": "Fechar o menu de opções"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Uma mensagem mostrada no caso de o menu de sugestões automáticas ser fechado.",
+    "string": "Abrir o menu de opções"
+  },
+  "pgn.Modal.closeButon": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Mensagem de leitura de ecrã para informar o utilizador de que se encontra na parte inferior da etapa de visita ao produto.",
+    "string": "Fundo da etapa {step}"
+  },
+  "pgn.ProductTour.Checkpoint.page-index-text": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Mensagem de leitura de ecrã para informar o utilizador de que se encontra na parte inferior da etapa de visita ao produto.",
+    "string": "Topo da etapa {step}"
+  },
+  "pgn.ProductTour.checkpointHeader.close": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Fechar a etiqueta do componente Toast",
+    "string": "Fechar"
+  }
+}

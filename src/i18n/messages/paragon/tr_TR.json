@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "İzin verilen minimum boyuttan daha küçük bir dosya Dropzone&#39;a yüklenirken gösterilen bir mesaj.",
+    "string": "Dosya {size} değerinden büyük olmalıdır."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "İzin verilen maksimum boyuttan daha büyük bir dosya Dropzone&#39;a yüklenirken gösterilen bir mesaj.",
+    "string": "Dosya {size} değerinden küçük olmalıdır."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "Yanlış MIME türüne sahip bir dosya yüklenirken gösterilen mesaj.",
+    "string": "Dosya türü {count, plural, one { {typeString} file} other {one of {typeString} files}} olmalıdır."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "Birden fazla dosya Dropzone&#39;a sürüklendiğinde gösterilen bir mesaj.",
+    "string": "Yalnızca bir yüklemeye izin verilir."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "Bilinmeyen bir nedenden dolayı Dropzone bileşeninde vaka dosyası doğrulamasında gösterilen bir mesaj.",
+    "string": "Dosya doğrulama sırasında beklenmeyen bir sorun oluştu. Lütfen tekrar deneyin."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "Dropzone bileşeninde dosya yükleme işleminin hatayla sonuçlanması durumunda gösterilen mesaj.",
+    "string": "Dosyanız yüklenirken bir sorun oluştu. Lütfen tekrar deneyin."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Uyarı bileşenindeki kapat düğmesinin etiketi",
+    "string": "İptal"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Kaydırılabilir bir döngüde sonraki öğeye gitme eylemini açıklayan erişilebilirlik metni",
+    "string": "Sonrakine kaydır"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Kaydırılabilir bir döngüde önceki öğeye gitme eylemini açıklayan erişilebilirlik metni",
+    "string": "Öncekine kaydır"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Kaydırılabilir bir döngüde sonraki öğeye gitme eylemini açıklayan erişilebilirlik metni",
+    "string": "Sonrakine kaydır"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Kaydırılabilir bir döngüde önceki öğeye gitme eylemini açıklayan erişilebilirlik metni",
+    "string": "Öncekine kaydır"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Seçilen tüm etiketlerin metni",
+    "string": "Tüm {numSelectedRows} seçildi"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "Tüm seçimleri temizle düğmesinin etiketi.",
+    "string": "Seçimi temizle"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "Tümünü seç düğmesi için bir etiket.",
+    "string": "Tümünü seç {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Seçilen etiketin metni",
+    "string": "{numSelectedRows} seçildi"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Tablo sayfalara ayrıldığında seçilen etiketin metni",
+    "string": "{numSelectedRows} seçildi ( {numSelectedRowsOnPage} aşağıda gösterilmiştir)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "DataTable&#39;ın tüm genişletilebilir satırlarını daraltan bir eylem düğmesinin etiketi.",
+    "string": "Tümünü kapa"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "DataTable&#39;ın tüm genişletilebilir satırlarını genişleten bir eylem düğmesinin etiketi.",
+    "string": "Tümünü genişlet"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "&#39;Filtreleri temizle&#39; düğmesinde görünen metin",
+    "string": "Filtreleri temizle"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "Tabloda kaç satırın gösterildiğini açıklayan bir metin",
+    "string": "{itemCount} {firstRow} - {lastRow} gösteriliyor."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Kenar çubuğu filtreleri bileşeninin başlığı",
+    "string": "Filtreler"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "Yüklenen dosyanın boyutu belirtilen aralıkta olduğunda gösterilen mesaj gösterilmelidir.",
+    "string": "{sizeMin} ile {sizeMax} arasında"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "Yüklenen dosyanın boyutu bir değerden büyük olduğunda gösterilen mesaj.",
+    "string": "Maksimum {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "Yüklenen dosyanın boyutu bir değerden büyük olduğunda gösterilen mesaj.",
+    "string": "Min {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "Dosya yüklenirken gösterilen mesaj belirli tür(ler)de olmalıdır.",
+    "string": "{count, plural, one { {firstPart} files} diğer { {firstPart} veya {secondPart} files}} yükleyin"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "Dropzone bileşeninin girişi için etiket olarak görünen metin.",
+    "string": "Dosyanızı buraya sürükleyip bırakın veya yüklemek için tıklayın."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Dropzone bileşeninde dosya yükleme sırasında gösterilen iptal düğmesinin etiketi.",
+    "string": "İptal"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "Dropzone bileşeninde dosya yükleme sırasında ilerleme çubuğunun yanında gösterilen metin.",
+    "string": "{filename} yükleniyor."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "Otomatik öneri menüsünün açılması durumunda gösterilen mesaj.",
+    "string": "Seçenekler menüsünü kapat"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "Otomatik öneri menüsünün kapatılması durumunda gösterilen bir mesaj.",
+    "string": "Seçenekler menüsünü açın"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Kullanıcıya ürün turu adımının alt kısmında bulunduğunu bildiren ekran okuyucu mesajı.",
+    "string": "{step} adımının alt kısmı"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Kullanıcıya ürün turu adımının alt kısmında bulunduğunu bildiren ekran okuyucu mesajı.",
+    "string": "Adımın başı {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Tost bileşeni için etiketi kapat",
+    "string": "Kapat"
+  }
+}
