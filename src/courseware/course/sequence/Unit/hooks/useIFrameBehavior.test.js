@@ -9,10 +9,13 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { fetchCourse } from '@src/courseware/data';
 import { processEvent } from '@src/course-home/data/thunks';
 import { useEventListener } from '@src/generic/hooks';
+import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
 
 import { messageTypes } from '../constants';
 
 import useIFrameBehavior, { stateKeys } from './useIFrameBehavior';
+
+const mockNavigate = jest.fn();
 
 jest.mock('@edx/frontend-platform', () => ({
   getConfig: jest.fn(),
@@ -28,6 +31,7 @@ jest.mock('react', () => ({
 
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
+  useSelector: jest.fn(),
 }));
 
 jest.mock('lodash', () => ({
@@ -50,6 +54,16 @@ jest.mock('@src/course-home/data/thunks', () => ({
 jest.mock('@src/generic/hooks', () => ({
   useEventListener: jest.fn(),
 }));
+jest.mock('@src/generic/model-store', () => ({
+  useModel: () => ({ unitIds: ['unit1', 'unit2'], entranceExamData: { entranceExamPassed: null } }),
+}));
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
+jest.mock('@src/courseware/course/sequence/sequence-navigation/hooks');
+useSequenceNavigationMetadata.mockReturnValue({ isLastUnit: false, nextLink: '/next-unit-link' });
 
 const state = mockUseKeyedState(stateKeys);
 
@@ -371,6 +385,28 @@ describe('useIFrameBehavior hook', () => {
       expect(hook.iframeHeight).toEqual(stateVals.iframeHeight);
       expect(hook.showError).toEqual(stateVals.showError);
       expect(hook.hasLoaded).toEqual(stateVals.hasLoaded);
+    });
+  });
+  describe('navigate link for the next unit on auto advance', () => {
+    it('test for link when it is not last unit', () => {
+      hook = useIFrameBehavior(props);
+      const { cb } = useEventListener.mock.calls[0][1];
+      const autoAdvanceMessage = () => ({
+        data: { type: messageTypes.autoAdvance },
+      });
+      cb(autoAdvanceMessage());
+      expect(mockNavigate).toHaveBeenCalledWith('/next-unit-link');
+    });
+    it('test for link when it is last unit', () => {
+      useSequenceNavigationMetadata.mockReset();
+      useSequenceNavigationMetadata.mockReturnValue({ isLastUnit: true, nextLink: '/next-unit-link' });
+      hook = useIFrameBehavior(props);
+      const { cb } = useEventListener.mock.calls[0][1];
+      const autoAdvanceMessage = () => ({
+        data: { type: messageTypes.autoAdvance },
+      });
+      cb(autoAdvanceMessage());
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 });
