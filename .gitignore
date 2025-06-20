@@ -6,7 +6,6 @@
 node_modules
 npm-debug.log
 coverage
-env.config.*
 
 dist/
 src/i18n/transifex_input.json
@@ -27,5 +26,3 @@ module.config.js
 # Local environment overrides
 .env.private
 
-
-env.config.jsx

@@ -35,11 +35,11 @@
   "dependencies": {
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.2",
     "@edx/browserslist-config": "1.5.0",
-    "@edx/frontend-component-footer": "^14.6.0",
+    "@edx/frontend-component-footer": "github:@dcoa/frontend-component-footer#dcoa/dist-lang-selector",
     "@edx/frontend-component-header": "^6.2.0",
     "@edx/frontend-lib-learning-assistant": "^2.20.0",
     "@edx/frontend-lib-special-exams": "^4.0.0",
-    "@edx/frontend-platform": "^8.3.1",
+    "@edx/frontend-platform": "github:@dcoa/frontend-platform#dcoa/language-manager-dist",
     "@edx/openedx-atlas": "^0.7.0",
     "@edx/react-unit-test-utils": "^4.0.0",
     "@fortawesome/free-brands-svg-icons": "5.15.4",
