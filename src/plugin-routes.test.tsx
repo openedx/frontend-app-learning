@@ -1,5 +1,5 @@
 import { getConfig } from '@edx/frontend-platform';
-import { render } from '@testing-library/react';
+import { render,screen } from '@testing-library/react';
 import React from 'react';
 import { getPluginRoutes } from './plugin-routes';
 
@@ -18,31 +18,33 @@ jest.mock('./decode-page-route', () => ({
 }));
 
 jest.mock('@openedx/frontend-plugin-framework', () => ({
-  PluginSlot: ({ id, pluginProps }: { id: string; pluginProps: Record<string, any> }) => (
-    <div data-testid="plugin-slot" data-route={pluginProps.route}>
-      id: {id}, route: {pluginProps.route}
+  PluginSlot: ({ id }: { id: string }) => (
+    <div data-testid="plugin-slot" data-plugin-id={id}>
+      id: {id}
     </div>
   ),
 }));
 
 describe('getPluginRoutes', () => {
   it('should return a valid route element for each plugin route', () => {
-    const pluginRoutes = ['/route-1', '/route-2'];
+    const pluginRoutes = [
+      {id: 'route-1', route: '/route-1'},
+      {id: 'route-2', route: '/route-2'},
+    ];
     (getConfig as jest.Mock).mockImplementation(() => ({
       PLUGIN_ROUTES: pluginRoutes,
     }));
 
-    const result = getPluginRoutes();
-    const { container } = render(<>{result}</>);
+    const { container } = render(getPluginRoutes());
 
-    pluginRoutes.forEach((route) => {
-      expect(container.querySelector(`[data-route="${route}"]`)).toBeInTheDocument();
+    pluginRoutes.forEach(({id}) => {
+      expect(container.querySelector(`[data-plugin-id="org.openedx.frontend.learning.course_page.${id}.v1"]`)).toBeInTheDocument();
     });
     expect(container.querySelectorAll('[data-testid="plugin-slot"]').length).toBe(pluginRoutes.length);
   });
 
   it('should return null if no plugin routes are configured', () => {
-    (getConfig as jest.Mock).mockImplementation(() => ({}));
+    (getConfig as jest.Mock).mockImplementation(() => ([]));
 
     const result = getPluginRoutes();
     expect(result).toBeNull();
