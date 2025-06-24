@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "ड्रॉपज़ोन में न्यूनतम अनुमत आकार से कम आकार वाली फ़ाइल अपलोड होने पर एक संदेश दिखाया जाता है।",
+    "string": "फ़ाइल {size} से बड़ी होनी चाहिए।"
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "ड्रॉपज़ोन में अधिकतम अनुमत आकार से अधिक आकार वाली फ़ाइल अपलोड होने पर एक संदेश दिखाया जाता है।",
+    "string": "फ़ाइल {size} से कम होनी चाहिए."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "गलत MIME प्रकार वाली फ़ाइल अपलोड होने पर एक संदेश दिखाया जाता है।",
+    "string": "फ़ाइल का प्रकार {गिनती, बहुवचन, एक { {typeString} फ़ाइल} अन्य { {typeString} फ़ाइलों में से एक}} होना चाहिए।"
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "एक संदेश तब दिखाया जाता है जब एकाधिक फ़ाइलें ड्रॉपज़ोन पर खींची जाती हैं।",
+    "string": "केवल एक अपलोड की अनुमति है."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "अज्ञात कारण से ड्रॉपज़ोन घटक में केस फ़ाइल सत्यापन में दिखाया गया एक संदेश।",
+    "string": "फ़ाइल सत्यापन के दौरान एक अप्रत्याशित समस्या उत्पन्न हुई. कृपया पुन: प्रयास करें।"
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "ड्रॉपज़ोन घटक में केस फ़ाइल अपलोड में दिखाए गए संदेश के परिणामस्वरूप त्रुटि होती है।",
+    "string": "आपकी फ़ाइल अपलोड करते समय एक समस्या उत्पन्न हुई. कृपया पुन: प्रयास करें।"
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "अलर्ट घटक पर बंद करें बटन का लेबल",
+    "string": "ख़ारिज करें"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "एक्सेसिबिलिटी टेक्स्ट स्क्रॉल करने योग्य कैरोसेल को अगले तत्व तक ले जाने की क्रिया का वर्णन करता है",
+    "string": "अगले तक स्क्रॉल करें"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "पिछले तत्व पर स्क्रॉल करने योग्य हिंडोला को नेविगेट करने की क्रिया का वर्णन करने वाला अभिगम्यता पाठ",
+    "string": "पिछले तक स्क्रॉल करें"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "एक्सेसिबिलिटी टेक्स्ट स्क्रॉल करने योग्य कैरोसेल को अगले तत्व तक ले जाने की क्रिया का वर्णन करता है",
+    "string": "अगले तक स्क्रॉल करें"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "पिछले तत्व पर स्क्रॉल करने योग्य हिंडोला को नेविगेट करने की क्रिया का वर्णन करने वाला अभिगम्यता पाठ",
+    "string": "पिछले तक स्क्रॉल करें"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "सभी चयनित लेबल के लिए पाठ",
+    "string": "सभी {numSelectedRows} चयनित"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "सभी चयन साफ़ करें बटन का एक लेबल।",
+    "string": "चयन साफ़ करें"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "सभी का चयन करें बटन के लिए एक लेबल।",
+    "string": "सभी {itemCount} चुनें"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "चयनित लेबल के लिए पाठ",
+    "string": "{numSelectedRows} चयनित"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "तालिका पृष्ठांकित होने पर चयनित लेबल के लिए पाठ",
+    "string": "{numSelectedRows} चयनित ( {numSelectedRowsOnPage} नीचे दिखाया गया है)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "एक एक्शन बटन का लेबल जो डेटाटेबल की सभी विस्तार योग्य पंक्तियों को संक्षिप्त करता है।",
+    "string": "সবকিছু সংক্ষিপ্ত করুন "
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "एक एक्शन बटन का लेबल जो डेटाटेबल की सभी विस्तार योग्य पंक्तियों का विस्तार करता है।",
+    "string": "সবকিছু সম্প্রসারণ করুন "
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "एक टेक्स्ट जो `फ़िल्टर साफ़ करें` बटन पर दिखाई देता है",
+    "string": "फ़िल्टर साफ़ करें"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "तालिका में कितनी पंक्तियों का वर्णन करने वाला एक पाठ दिखाया गया है",
+    "string": "{itemCount} का {firstRow} - {lastRow} दिखा रहा है।"
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "साइडबार फ़िल्टर घटक का शीर्षक",
+    "string": "फिल्टर"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "अपलोड की गई फ़ाइल का आकार दिए गए सीमा में होना चाहिए।",
+    "string": "{sizeMin} और {sizeMax} के बीच"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "अपलोड की गई फ़ाइल का आकार कुछ मान से अधिक होना चाहिए।",
+    "string": "अधिकतम {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "अपलोड की गई फ़ाइल का आकार कुछ मान से अधिक होना चाहिए।",
+    "string": "न्यूनतम {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "फ़ाइल अपलोड करते समय दिखाया जाने वाला संदेश निश्चित प्रकार का होना चाहिए।",
+    "string": "अपलोड करें {गिनती, बहुवचन, एक { {firstPart} फ़ाइलें} अन्य { {firstPart} या {secondPart} फ़ाइलें}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "एक टेक्स्ट जो ड्रॉपज़ोन घटक के इनपुट के लिए एक लेबल के रूप में दिखाई देता है।",
+    "string": "अपनी फ़ाइल को यहां खींचें और छोड़ें या अपलोड करने के लिए क्लिक करें।"
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "रद्द करें बटन का लेबल जो ड्रॉपज़ोन घटक में फ़ाइल अपलोड के दौरान दिखाया जाता है।",
+    "string": "रद्द करें"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "एक टेक्स्ट जो ड्रॉपज़ोन घटक में फ़ाइल अपलोड के दौरान प्रगति पट्टी के पास दिखाया जाता है।",
+    "string": "{filename} अपलोड हो रहा है।"
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "स्वतः सुझाव मेनू खुलने पर एक संदेश दिखाया जाता है।",
+    "string": "विकल्प मेनू बंद करें"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "स्वतः सुझाव मेनू बंद होने की स्थिति में एक संदेश दिखाया जाता है।",
+    "string": "विकल्प मेनू खोलें"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "उपयोगकर्ता को सूचित करने के लिए स्क्रीन-रीडर संदेश कि वे उत्पाद भ्रमण चरण के नीचे स्थित हैं।",
+    "string": "चरण के नीचे {step}"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "उपयोगकर्ता को सूचित करने के लिए स्क्रीन-रीडर संदेश कि वे उत्पाद भ्रमण चरण के नीचे स्थित हैं।",
+    "string": "चरण का शीर्ष {step}"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "टोस्ट घटक के लिए लेबल बंद करें",
+    "string": "बंद करना"
+  }
+}

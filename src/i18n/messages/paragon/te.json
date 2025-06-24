@@ -1,0 +1,134 @@
+{
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "డ్రాప్‌జోన్‌లో అనుమతించబడిన కనీస పరిమాణం కంటే తక్కువ పరిమాణం ఉన్న ఫైల్ అప్‌లోడ్ చేయబడుతున్నప్పుడు సందేశం చూపబడుతుంది.",
+    "string": "ఫైల్ తప్పనిసరిగా {size} కంటే పెద్దదిగా ఉండాలి."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "డ్రాప్‌జోన్‌లో అనుమతించబడిన గరిష్ట పరిమాణం కంటే ఎక్కువ ఫైల్ అప్‌లోడ్ చేయబడినప్పుడు సందేశం చూపబడుతుంది.",
+    "string": "ఫైల్ తప్పనిసరిగా {size} కంటే తక్కువగా ఉండాలి."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "తప్పు MIME రకంతో ఫైల్ అప్‌లోడ్ అవుతున్నప్పుడు సందేశం చూపబడుతుంది.",
+    "string": "ఫైల్ రకం తప్పనిసరిగా {count, plural, ఒకటి { {typeString} ఫైల్} మరొకటి { {typeString} ఫైల్‌లలో ఒకటి}} అయి ఉండాలి."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "బహుళ ఫైల్‌లు డ్రాప్‌జోన్‌పైకి లాగబడినప్పుడు చూపబడే సందేశం.",
+    "string": "ఒక అప్‌లోడ్ మాత్రమే అనుమతించబడింది."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "తెలియని కారణంతో డ్రాప్‌జోన్ కాంపోనెంట్‌లో కేస్ ఫైల్ ధ్రువీకరణలో సందేశం చూపబడింది.",
+    "string": "ఫైల్ ప్రామాణీకరణ సమయంలో ఊహించని సమస్య ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "డ్రాప్‌జోన్ కాంపోనెంట్‌లో ఫైల్ అప్‌లోడ్ సందర్భంలో చూపబడిన సందేశం లోపం ఏర్పడుతుంది.",
+    "string": "మీ ఫైల్‌ని అప్‌లోడ్ చేస్తున్నప్పుడు సమస్య ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "హెచ్చరిక భాగంపై క్లోజ్ బటన్ యొక్క లేబుల్",
+    "string": "రద్దుచేసే"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "స్క్రోల్ చేయదగిన రంగులరాట్నం తదుపరి మూలకానికి నావిగేట్ చేయడం కోసం చర్యను వివరించే యాక్సెసిబిలిటీ టెక్స్ట్",
+    "string": "తదుపరి దానికి స్క్రోల్ చేయండి"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "మునుపటి మూలకానికి స్క్రోల్ చేయదగిన రంగులరాట్నం నావిగేట్ చేయడం కోసం చర్యను వివరించే యాక్సెసిబిలిటీ టెక్స్ట్",
+    "string": "మునుపటికి స్క్రోల్ చేయండి"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "స్క్రోల్ చేయదగిన రంగులరాట్నం తదుపరి మూలకానికి నావిగేట్ చేయడం కోసం చర్యను వివరించే యాక్సెసిబిలిటీ టెక్స్ట్",
+    "string": "తదుపరి దానికి స్క్రోల్ చేయండి"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "మునుపటి మూలకానికి స్క్రోల్ చేయదగిన రంగులరాట్నం నావిగేట్ చేయడం కోసం చర్యను వివరించే యాక్సెసిబిలిటీ టెక్స్ట్",
+    "string": "మునుపటికి స్క్రోల్ చేయండి"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "ఎంచుకున్న అన్ని లేబుల్ కోసం వచనం",
+    "string": "మొత్తం {numSelectedRows} ఎంచుకోబడింది"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "మొత్తం ఎంపిక బటన్‌ను క్లియర్ చేసే లేబుల్.",
+    "string": "ఎంపికను క్లియర్ చేయండి"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "అన్నీ ఎంపిక బటన్ కోసం ఒక లేబుల్.",
+    "string": "మొత్తం {itemCount} ని ఎంచుకోండి"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "ఎంచుకున్న లేబుల్ కోసం వచనం",
+    "string": "{numSelectedRows} ఎంచుకోబడింది"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "పట్టిక పేజీలో ఉన్నప్పుడు ఎంచుకున్న లేబుల్ కోసం వచనం",
+    "string": "{numSelectedRows} ఎంచుకోబడింది ( {numSelectedRowsOnPage} క్రింద చూపబడింది)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "డేటా టేబుల్ యొక్క అన్ని విస్తరించదగిన అడ్డు వరుసలను కుదించే చర్య బటన్ యొక్క లేబుల్.",
+    "string": "అన్నింటినీ కుదించు"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "డేటా టేబుల్ యొక్క అన్ని విస్తరించదగిన వరుసలను విస్తరించే చర్య బటన్ యొక్క లేబుల్.",
+    "string": "అన్నింటినీ విస్తరించుట"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "`క్లియర్ ఫిల్టర్‌లు` బటన్‌పై కనిపించే వచనం",
+    "string": "ఫిల్టర్‌లను క్లియర్ చేయండి"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "పట్టికలో ఎన్ని అడ్డు వరుసలు చూపబడిందో వివరించే వచనం",
+    "string": "{itemCount} యొక్క {firstRow} - {lastRow} చూపుతోంది."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "సైడ్‌బార్ ఫిల్టర్‌ల భాగం కోసం శీర్షిక",
+    "string": "ఫిల్టర్లు"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "అప్‌లోడ్ చేయబడినప్పుడు చూపబడే సందేశం ఫైల్ పరిమాణం తప్పనిసరిగా ఇచ్చిన పరిధిలో ఉండాలి.",
+    "string": "{sizeMin} మరియు {sizeMax} మధ్య"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "అప్‌లోడ్ చేయబడినప్పుడు చూపబడే సందేశం ఫైల్ పరిమాణం తప్పనిసరిగా కొంత విలువ కంటే ఎక్కువగా ఉండాలి.",
+    "string": "గరిష్టంగా {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "అప్‌లోడ్ చేయబడినప్పుడు చూపబడే సందేశం ఫైల్ పరిమాణం తప్పనిసరిగా కొంత విలువ కంటే ఎక్కువగా ఉండాలి.",
+    "string": "కనిష్ట {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "ఫైల్‌ని అప్‌లోడ్ చేసినప్పుడు చూపబడే సందేశం తప్పనిసరిగా నిర్దిష్ట రకం(లు)కి చెందినదై ఉండాలి.",
+    "string": "అప్‌లోడ్ {గణన, బహువచనం, ఒకటి { {firstPart} ఫైల్‌లు} ఇతర { {firstPart} లేదా {secondPart} ఫైల్‌లు}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "డ్రాప్‌జోన్ భాగం యొక్క ఇన్‌పుట్ కోసం లేబుల్‌గా కనిపించే వచనం.",
+    "string": "మీ ఫైల్‌ని ఇక్కడకు లాగి వదలండి లేదా అప్‌లోడ్ చేయడానికి క్లిక్ చేయండి."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "డ్రాప్‌జోన్ కాంపోనెంట్‌లో ఫైల్ అప్‌లోడ్ సమయంలో చూపబడే రద్దు బటన్ లేబుల్.",
+    "string": "రద్దు చేయండి"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "డ్రాప్‌జోన్ కాంపోనెంట్‌లో ఫైల్ అప్‌లోడ్ సమయంలో ప్రోగ్రెస్ బార్ దగ్గర చూపబడే వచనం.",
+    "string": "{filename} అప్‌లోడ్ చేస్తోంది."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "స్వీయసూచన మెను తెరిచినప్పుడు ఒక సందేశం చూపబడుతుంది.",
+    "string": "ఎంపికల మెనుని మూసివేయండి"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "స్వీయసూచన మెను మూసివేయబడినప్పుడు సందేశం చూపబడుతుంది.",
+    "string": "ఎంపికల మెనుని తెరవండి"
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "ప్రోడక్ట్ టూర్ స్టెప్ దిగువన ఉన్నారని వినియోగదారుకు తెలియజేయడానికి స్క్రీన్-రీడర్ సందేశం.",
+    "string": "{step} అడుగు దిగువన"
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "ప్రోడక్ట్ టూర్ స్టెప్ దిగువన ఉన్నారని వినియోగదారుకు తెలియజేయడానికి స్క్రీన్-రీడర్ సందేశం.",
+    "string": "{step} యొక్క పైభాగం"
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "టోస్ట్ కాంపోనెంట్ కోసం లేబుల్‌ని మూసివేయండి",
+    "string": "దగ్గరగా"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "Hyperlink.externalLinkAltText": {
+    "string": "in &#39;n nuwe oortjie"
+  },
+  "Hyperlink.externalLinkTitle": {
+    "string": "Maak in &#39;n nuwe oortjie oop"
+  },
+  "dropzone.Dropzone.invalidSizeLessError": {
+    "developer_comment": "&#39;n Boodskap wat gewys word wanneer &#39;n lêer met minder as minimum toegelate grootte in Dropzone opgelaai word.",
+    "string": "Lêer moet groter as {size} wees."
+  },
+  "dropzone.Dropzone.invalidSizeMoreError": {
+    "developer_comment": "&#39;n Boodskap wat gewys word wanneer &#39;n lêer met meer as maksimum toegelate grootte in Dropzone opgelaai word.",
+    "string": "Lêer moet minder as {size} wees."
+  },
+  "dropzone.Dropzone.invalidType": {
+    "developer_comment": "&#39;n Boodskap wat gewys word wanneer &#39;n lêer met verkeerde MIME-tipe opgelaai word.",
+    "string": "Die lêertipe moet {count, plural, one { {typeString} file} ander {een van {typeString} lêers}} wees."
+  },
+  "dropzone.Dropzone.multipleDraggedError": {
+    "developer_comment": "&#39;n Boodskap wat gewys word wanneer veelvuldige lêers oor Dropzone gesleep word.",
+    "string": "Slegs een oplaai word toegelaat."
+  },
+  "dropzone.Dropzone.unexpectedValidationError": {
+    "developer_comment": "&#39;n Boodskap wat om onbekende rede gewys word in gevallêervalidering in Dropzone-komponent.",
+    "string": "&#39;n Onverwagte probleem het tydens lêervalidering voorgekom. Probeer asseblief weer."
+  },
+  "dropzone.Dropzone.uploadError": {
+    "developer_comment": "&#39;n Boodskap wat gewys word indien lêer oplaai in Dropzone-komponent lei tot &#39;n fout.",
+    "string": "&#39;n Probleem het voorgekom tydens die oplaai van jou lêer. Probeer asseblief weer."
+  },
+  "pgn.Alert.closeLabel": {
+    "developer_comment": "Etiket van &#39;n toemaakknoppie op Alert-komponent",
+    "string": "Verwerp"
+  },
+  "pgn.CardCarousel.scrollToNext": {
+    "developer_comment": "Toeganklikheidsteks wat die handeling beskryf om &#39;n rolbare karrousel na die volgende element te navigeer",
+    "string": "Blaai na volgende"
+  },
+  "pgn.CardCarousel.scrollToPrevious": {
+    "developer_comment": "Toeganklikheidsteks wat die handeling beskryf om &#39;n rolbare karrousel na die vorige element te navigeer",
+    "string": "Blaai na vorige"
+  },
+  "pgn.ChipCarousel.scrollToNext": {
+    "developer_comment": "Toeganklikheidsteks wat die handeling beskryf om &#39;n rolbare karrousel na die volgende element te navigeer",
+    "string": "Blaai na volgende"
+  },
+  "pgn.ChipCarousel.scrollToPrevious": {
+    "developer_comment": "Toeganklikheidsteks wat die handeling beskryf om &#39;n rolbare karrousel na die vorige element te navigeer",
+    "string": "Blaai na vorige"
+  },
+  "pgn.DataTable.BaseSelectionStatus.allSelectedText": {
+    "developer_comment": "Teks vir alle geselekteerde etikette",
+    "string": "Alle {numSelectedRows} gekies"
+  },
+  "pgn.DataTable.BaseSelectionStatus.clearSelectionText": {
+    "developer_comment": "&#39;n Etiket van vee alles seleksie-knoppie.",
+    "string": "Vee keuse uit"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectAllText": {
+    "developer_comment": "&#39;n Etiket vir kies alles-knoppie.",
+    "string": "Kies alle {itemCount}"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedText": {
+    "developer_comment": "Teks vir geselekteerde etiket",
+    "string": "{numSelectedRows} gekies"
+  },
+  "pgn.DataTable.BaseSelectionStatus.selectedTextPaginated": {
+    "developer_comment": "Teks vir geselekteerde etiket wanneer tabel gepagineer is",
+    "string": "{numSelectedRows} gekies ( {numSelectedRowsOnPage} hieronder gewys)"
+  },
+  "pgn.DataTable.ExpandAll.collapseAllLabel": {
+    "developer_comment": "Etiket van &#39;n aksieknoppie wat alle uitbreidbare rye van DataTable invou.",
+    "string": "Vou alles in"
+  },
+  "pgn.DataTable.ExpandAll.expandAllLabel": {
+    "developer_comment": "Etiket van &#39;n aksieknoppie wat alle uitbreidbare rye van DataTable uitbrei.",
+    "string": "Brei alles uit"
+  },
+  "pgn.DataTable.FilterStatus.clearFiltersText": {
+    "developer_comment": "&#39;n Teks wat op die `Vee filters`-knoppie verskyn",
+    "string": "Vee filters uit"
+  },
+  "pgn.DataTable.RowStatus.statusText": {
+    "developer_comment": "&#39;n Teks wat beskryf hoeveel rye in die tabel getoon word",
+    "string": "Wys tans {firstRow} - {lastRow} van {itemCount} ."
+  },
+  "pgn.DataTable.SidebarFilters.title": {
+    "developer_comment": "Titel vir die sidebar filters komponent",
+    "string": "Filters"
+  },
+  "pgn.DataTable.paginationLabel": {
+    "developer_comment": "Toeganklike naam vir die navigasie-element van &#39;n pagineringskomponent",
+    "string": "tabelpaginering"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeBetween": {
+    "developer_comment": "&#39;n Boodskap wat gewys word wanneer opgelaaide lêer se grootte moet binne gegewe reeks wees.",
+    "string": "Tussen {sizeMin} en {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMax": {
+    "developer_comment": "&#39;n Boodskap wat gewys word wanneer die lêer opgelaai word, moet groter as &#39;n sekere waarde wees.",
+    "string": "Maksimum {sizeMax}"
+  },
+  "pgn.Dropzone.DefaultContent.fileSizeMin": {
+    "developer_comment": "&#39;n Boodskap wat gewys word wanneer die lêer opgelaai word, moet groter as &#39;n sekere waarde wees.",
+    "string": "Min {sizeMin}"
+  },
+  "pgn.Dropzone.DefaultContent.fileTypeRestriction": {
+    "developer_comment": "&#39;n Boodskap wat gewys word wanneer die lêer opgelaai word, moet van sekere tipe(s) wees.",
+    "string": "Laai {count, plural, one { {firstPart} files} op ander { {firstPart} of {secondPart} lêers}}"
+  },
+  "pgn.Dropzone.DefaultContent.label": {
+    "developer_comment": "&#39;n Teks wat verskyn as &#39;n etiket vir invoer van Dropzone-komponent.",
+    "string": "Sleep en los jou lêer hier of klik om op te laai."
+  },
+  "pgn.Dropzone.UploadProgress.cancelLabel": {
+    "developer_comment": "Etiket van &#39;n kanselleer-knoppie wat tydens lêeroplaai in Dropzone-komponent gewys word.",
+    "string": "Kanselleer"
+  },
+  "pgn.Dropzone.UploadProgress.uploadLabel": {
+    "developer_comment": "&#39;n Teks wat naby &#39;n vorderingsbalk gewys word tydens lêeroplaai in Dropzone-komponent.",
+    "string": "Laai tans {filename} op."
+  },
+  "pgn.FormAutosuggest.iconButtonClosed": {
+    "developer_comment": "&#39;n Boodskap wat gewys word in geval wanneer die outovoorstel-kieslys oopgemaak word.",
+    "string": "Maak die opsiekieslys toe"
+  },
+  "pgn.FormAutosuggest.iconButtonOpened": {
+    "developer_comment": "&#39;n Boodskap wat gewys word in geval wanneer die outovoorstel-kieslys gesluit is.",
+    "string": "Maak die opsiekieslys oop"
+  },
+  "pgn.Modal.closeButon": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.bottom-position-text": {
+    "developer_comment": "Skermleserboodskap om gebruiker in kennis te stel dat hulle onderaan die produktoerstap geleë is.",
+    "string": "Onderaan stap {step}"
+  },
+  "pgn.ProductTour.Checkpoint.page-index-text": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.ProductTour.Checkpoint.top-position-text": {
+    "developer_comment": "Skermleserboodskap om gebruiker in kennis te stel dat hulle onderaan die produktoerstap geleë is.",
+    "string": "Bo aan stap {step}"
+  },
+  "pgn.ProductTour.checkpointHeader.close": {
+    "developer_comment": "",
+    "string": ""
+  },
+  "pgn.Toast.closeLabel": {
+    "developer_comment": "Maak etiket vir Toast-komponent toe",
+    "string": "Naby"
+  }
+}
