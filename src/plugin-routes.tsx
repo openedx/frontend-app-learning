@@ -4,12 +4,12 @@ import { CoursePageSlot } from './plugin-slots/CoursePageSlot';
 import DecodePageRoute from './decode-page-route';
 
 type PluginRoute = {
-    id: string,
-    route: string,
-}
+  id: string,
+  route: string,
+};
 
 export function getPluginRoutes() {
-  return (getConfig()?.PLUGIN_ROUTES as PluginRoute[])?.map(({route, id}) => (
+  return (getConfig()?.PLUGIN_ROUTES as PluginRoute[])?.map(({ route, id }) => (
     <Route
       key={route}
       path={route}
