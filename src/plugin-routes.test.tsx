@@ -28,8 +28,8 @@ jest.mock('@openedx/frontend-plugin-framework', () => ({
 describe('getPluginRoutes', () => {
   it('should return a valid route element for each plugin route', () => {
     const pluginRoutes = [
-      {id: 'route-1', route: '/route-1'},
-      {id: 'route-2', route: '/route-2'},
+      { id: 'route-1', route: '/route-1' },
+      { id: 'route-2', route: '/route-2' },
     ];
     (getConfig as jest.Mock).mockImplementation(() => ({
       PLUGIN_ROUTES: pluginRoutes,
@@ -37,7 +37,7 @@ describe('getPluginRoutes', () => {
 
     const { container } = render(getPluginRoutes());
 
-    pluginRoutes.forEach(({id}) => {
+    pluginRoutes.forEach(({ id }) => {
       expect(container.querySelector(`[data-plugin-id="org.openedx.frontend.learning.course_page.${id}.v1"]`)).toBeInTheDocument();
     });
     expect(container.querySelectorAll('[data-testid="plugin-slot"]').length).toBe(pluginRoutes.length);
