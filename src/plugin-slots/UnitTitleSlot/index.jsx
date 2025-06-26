@@ -15,7 +15,7 @@ const UnitTitleSlot = ({
 
   return (
     <PluginSlot
-      id="org.openedx.frontend.learning.unit_title.v2"
+      id="org.openedx.frontend.learning.unit_title.v1"
       idAliases={['unit_title_slot']}
       pluginProps={{
         unitId,

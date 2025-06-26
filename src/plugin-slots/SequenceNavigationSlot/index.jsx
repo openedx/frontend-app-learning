@@ -10,7 +10,7 @@ const SequenceNavigationSlot = ({
   previousHandler,
 }) => (
   <PluginSlot
-    id="org.openedx.frontend.learning.sequence_navigation.v2"
+    id="org.openedx.frontend.learning.sequence_navigation.v1"
     slotOptions={{
       mergeProps: true,
     }}
