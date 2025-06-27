@@ -202,6 +202,37 @@ describe('Course', () => {
     });
   });
 
+  it('doesn\'t renders course breadcrumbs by default', async () => {
+    const courseMetadata = Factory.build('courseMetadata');
+    const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
+      'block',
+      { type: 'vertical' },
+      { courseId: courseMetadata.id },
+    ));
+    const testStore = await initializeTestStore({
+      courseMetadata, unitBlocks,
+    }, false);
+    const { courseware, models } = testStore.getState();
+    const { courseId, sequenceId } = courseware;
+    const testData = {
+      ...mockData,
+      courseId,
+      sequenceId,
+      unitId: Object.values(models.units)[1].id, // Corner cases are already covered in `Sequence` tests.
+    };
+    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+
+    loadUnit();
+    await waitFor(() => {
+      expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
+    });
+    // expect the section and sequence "titles" not to be loaded in as breadcrumb labels.
+    await waitFor(() => {
+      expect(screen.queryByText(Object.values(models.sections)[0].title)).not.toBeInTheDocument();
+      expect(screen.queryByText(Object.values(models.sequences)[0].title)).not.toBeInTheDocument();
+    });
+  });
+
   it('passes handlers to the sequence', async () => {
     const nextSequenceHandler = jest.fn();
     const previousSequenceHandler = jest.fn();

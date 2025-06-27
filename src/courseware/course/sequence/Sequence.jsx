@@ -47,6 +47,7 @@ const Sequence = ({
   const unit = useModel('units', unitId);
   const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
   const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
+
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
     const newUnitId = sequence.unitIds[nextIndex];
@@ -87,6 +88,30 @@ const Sequence = ({
     }
     sendTrackEvent(eventName, payload);
     sendTrackingLogEvent(eventName, payload);
+  };
+
+  /* istanbul ignore next */
+  const nextHandler = () => {
+    logEvent('edx.ui.lms.sequence.next_selected', 'top');
+    handleNext();
+  };
+
+  /* istanbul ignore next */
+  const previousHandler = () => {
+    logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+    handlePrevious();
+  };
+
+  /* istanbul ignore next */
+  const onNavigate = (destinationUnitId) => {
+    logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+    handleNavigate(destinationUnitId);
+  };
+
+  const sequenceNavProps = {
+    nextHandler,
+    previousHandler,
+    onNavigate,
   };
 
   useSequenceBannerTextAlert(sequenceId);
@@ -170,22 +195,19 @@ const Sequence = ({
         <CourseOutlineSidebarSlot />
         <div className="sequence w-100">
           <div className="sequence-navigation-container">
+            {/**
+             SequenceNavigationSlot renders nothing by default.
+             However, we still pass nextHandler, previousHandler, and onNavigate,
+             because, as per the slot's contract, if this slot is replaced
+             with the default SequenceNavigation component, these props are required.
+             These handlers are excluded from test coverage via istanbul ignore,
+             since they are not used unless the slot is overridden.
+             */}
             <SequenceNavigationSlot
               sequenceId={sequenceId}
               unitId={unitId}
-              nextHandler={() => {
-                logEvent('edx.ui.lms.sequence.next_selected', 'top');
-                handleNext();
-              }}
-              onNavigate={(destinationUnitId) => {
-                logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
-                handleNavigate(destinationUnitId);
-              }}
-              previousHandler={() => {
-                logEvent('edx.ui.lms.sequence.previous_selected', 'top');
-                handlePrevious();
-              }}
               {...{
+                ...sequenceNavProps,
                 nextSequenceHandler,
                 handleNavigate,
               }}

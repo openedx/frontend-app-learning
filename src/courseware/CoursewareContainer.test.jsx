@@ -193,6 +193,15 @@ describe('CoursewareContainer', () => {
       expect(courseHeader.querySelector('.course-title')).toHaveTextContent(courseHomeMetadata.title);
     }
 
+    function assertNoSequenceNavigation(container) {
+      const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation a, nav.sequence-navigation button');
+      expect(sequenceNavButtons).toHaveLength(0);
+
+      expect(container.querySelector('button, a')).not.toHaveTextContent('Previous');
+      expect(container.querySelector('svg.fa-tasks')).toBeNull();
+      expect(container.querySelector('button, a')).not.toHaveTextContent('Next');
+    }
+
     beforeEach(async () => {
       // On page load, SequenceContext attempts to scroll to the top of the page.
       global.scrollTo = jest.fn();
@@ -213,6 +222,7 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
@@ -235,6 +245,7 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
@@ -266,6 +277,7 @@ describe('CoursewareContainer', () => {
           setUrl(sectionTree[1].id);
           const container = await loadContainer();
           assertLoadedHeader(container);
+          assertNoSequenceNavigation(container);
           assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id);
         });
       });
@@ -320,6 +332,7 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
@@ -338,6 +351,7 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
@@ -354,10 +368,22 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
         expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
+      });
+
+      it('should render the sequence_navigation plugin slot correctly', async () => {
+        axiosMock
+          .onPost(`${courseId}/xblock/${sequenceBlock.id}/handler/get_completion`)
+          .reply(200, { complete: true });
+
+        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
+        await loadContainer();
+
+        expect(screen.getByTestId('org.openedx.frontend.learning.sequence_navigation.v1')).toBeInTheDocument();
       });
     });
   });
