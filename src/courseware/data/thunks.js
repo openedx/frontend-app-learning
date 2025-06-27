@@ -176,6 +176,10 @@ export function fetchSequence(sequenceId, isPreview) {
 
 export function checkBlockCompletion(courseId, sequenceId, unitId) {
   return async (dispatch, getState) => {
+    if (!unitId) {
+      return {};
+    }
+
     const { models } = getState();
     if (models.units[unitId]?.complete) {
       return {}; // do nothing. Things don't get uncompleted after they are completed.
