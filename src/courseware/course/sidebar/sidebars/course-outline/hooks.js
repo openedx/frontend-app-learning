@@ -68,6 +68,7 @@ export const useCourseOutlineSidebar = () => {
     } else {
       toggleSidebar(ID);
       window.sessionStorage.removeItem('hideCourseOutlineSidebar');
+      window.sessionStorage.setItem(`notificationTrayStatus.${courseId}`, 'closed');
     }
   };
 

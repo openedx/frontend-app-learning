@@ -48,7 +48,7 @@
     "@fortawesome/react-fontawesome": "^0.1.4",
     "@openedx/frontend-build": "^14.5.0",
     "@openedx/frontend-plugin-framework": "^1.7.0",
-    "@openedx/paragon": "^22.16.0",
+    "@openedx/paragon": "^23.4.5",
     "@popperjs/core": "2.11.8",
     "@reduxjs/toolkit": "1.9.7",
     "buffer": "^6.0.3",
