@@ -74,9 +74,11 @@ export const useCourseOutlineSidebar = () => {
 
   const handleUnitClick = ({ sequenceId, activeUnitId, id }) => {
     const logEvent = (eventName, widgetPlacement) => {
-      const findSequenceByUnitId = (unitId) => {
-        if (!unitId) return null;
-        return Object.values(sequences).find(seq => seq.unitIds.includes(unitId));
+      const findSequenceByUnitId = (searchUnitId) => {
+        if (!searchUnitId) {
+          return null;
+        }
+        return Object.values(sequences).find(seq => seq.unitIds.includes(searchUnitId));
       };
       const activeSequence = findSequenceByUnitId(activeUnitId);
       const targetSequence = findSequenceByUnitId(id);
