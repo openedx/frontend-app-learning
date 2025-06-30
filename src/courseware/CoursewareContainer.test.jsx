@@ -1,7 +1,7 @@
 import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
-import { waitForElementToBeRemoved, fireEvent } from '@testing-library/dom';
+import { waitForElementToBeRemoved } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
@@ -193,15 +193,13 @@ describe('CoursewareContainer', () => {
       expect(courseHeader.querySelector('.course-title')).toHaveTextContent(courseHomeMetadata.title);
     }
 
-    function assertSequenceNavigation(container, expectedUnitCount = 3) {
-      // Ensure we had appropriate sequence navigation buttons.  We should only have one unit.
+    function assertNoSequenceNavigation(container) {
       const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation a, nav.sequence-navigation button');
-      expect(sequenceNavButtons).toHaveLength(expectedUnitCount + 2);
+      expect(sequenceNavButtons).toHaveLength(0);
 
-      expect(sequenceNavButtons[0]).toHaveTextContent('Previous');
-      // Prove this button is rendering an SVG tasks icon, meaning it's a unit/vertical.
-      expect(sequenceNavButtons[1].querySelector('svg')).toHaveClass('fa-tasks');
-      expect(sequenceNavButtons[sequenceNavButtons.length - 1]).toHaveTextContent('Next');
+      expect(container.querySelector('button, a')).not.toHaveTextContent('Previous');
+      expect(container.querySelector('svg.fa-tasks')).toBeNull();
+      expect(container.querySelector('button, a')).not.toHaveTextContent('Next');
     }
 
     beforeEach(async () => {
@@ -224,7 +222,7 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
-        assertSequenceNavigation(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
@@ -247,7 +245,7 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
-        assertSequenceNavigation(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
@@ -274,29 +272,12 @@ describe('CoursewareContainer', () => {
         setUpMockRequests({ courseBlocks });
       });
 
-      // describe('when the URL contains a unit ID', () => {
-      //   it('should ignore the section ID and redirect based on the unit ID', async () => {
-      //     const urlUnit = unitTree[1][1][1];
-      //     setUrl(sectionTree[1].id, urlUnit.id);
-      //     const container = await loadContainer();
-      //     assertLoadedHeader(container);
-      //     assertSequenceNavigation(container, 2);
-      //     assertLocation(container, sequenceTree[1][1].id, urlUnit.id);
-      //   });
-
-      //   it('should ignore invalid unit IDs and redirect to the course root', async () => {
-      //     setUrl(sectionTree[1].id, 'foobar');
-      //     await loadContainer();
-      //     expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
-      //   });
-      // });
-
       describe('when the URL does not contain a unit ID', () => {
         it('should choose a unit within the section\'s first sequence', async () => {
           setUrl(sectionTree[1].id);
           const container = await loadContainer();
           assertLoadedHeader(container);
-          assertSequenceNavigation(container, 2);
+          assertNoSequenceNavigation(container);
           assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id);
         });
       });
@@ -342,27 +323,6 @@ describe('CoursewareContainer', () => {
       });
     });
 
-    // describe('when the URL only contains a unit ID', () => {
-    //   const { courseBlocks, unitTree, sequenceTree } = buildBinaryCourseBlocks(courseId, courseMetadata.name);
-
-    //   beforeEach(async () => {
-    //     setUpMockRequests({ courseBlocks });
-    //   });
-
-    //   it('should insert the sequence ID into the URL', async () => {
-    //     const unit = unitTree[1][0][1];
-    //     history.push(`/course/${courseId}/${unit.id}`);
-    //     const container = await loadContainer();
-
-    //     assertLoadedHeader(container);
-    //     assertSequenceNavigation(container, 2);
-    //     const expectedSequenceId = sequenceTree[1][0].id;
-    //     const expectedUrl = `http://localhost/course/${courseId}/${expectedSequenceId}/${unit.id}`;
-    //     expect(global.location.href).toEqual(expectedUrl);
-    //     expect(container.querySelector('.fake-unit')).toHaveTextContent(unit.id);
-    //   });
-    // });
-
     describe('when the URL contains a course ID and sequence ID', () => {
       const sequenceBlock = defaultSequenceBlock;
       const unitBlocks = defaultUnitBlocks;
@@ -372,7 +332,7 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
-        assertSequenceNavigation(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
@@ -391,7 +351,7 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
-        assertSequenceNavigation(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
@@ -408,44 +368,24 @@ describe('CoursewareContainer', () => {
         const container = await loadContainer();
 
         assertLoadedHeader(container);
-        assertSequenceNavigation(container);
+        assertNoSequenceNavigation(container);
 
         expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
         expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
       });
 
-      it('should navigate between units and check block completion', async () => {
-        axiosMock.onPost(`${courseId}/xblock/${sequenceBlock.id}/handler/get_completion`).reply(200, {
-          complete: true,
-        });
+      it('should render the sequence_navigation plugin slot correctly', async () => {
+        axiosMock
+          .onPost(`${courseId}/xblock/${sequenceBlock.id}/handler/get_completion`)
+          .reply(200, { complete: true });
 
         history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
-        const container = await loadContainer();
+        await loadContainer();
 
-        const sequenceNavButtons = container.querySelectorAll('nav.sequence-navigation a, nav.sequence-navigation button');
-        const sequenceNextButton = sequenceNavButtons[4];
-        expect(sequenceNextButton).toHaveTextContent('Next');
-        fireEvent.click(sequenceNextButton);
-
-        expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${sequenceBlock.id}/${unitBlocks[1].id}`);
+        expect(screen.getByTestId('org.openedx.frontend.learning.sequence_navigation.v1')).toBeInTheDocument();
       });
     });
-
-    // describe('when the current sequence is an exam', () => {
-    //   const { location } = window;
-
-    //   beforeEach(() => {
-    //     delete window.location;
-    //     window.location = {
-    //       assign: jest.fn(),
-    //     };
-    //   });
-
-    //   afterEach(() => {
-    //     window.location = location;
-    //   });
-    // });
   });
 
   describe('when receiving a course_access error_code', () => {

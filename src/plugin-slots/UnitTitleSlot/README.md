@@ -8,12 +8,13 @@
 ### Props:
 * `unitId`
 * `unit`
-* `isEnabledOutlineSidebar`
 * `renderUnitNavigation`
 
 ## Description
 
 This slot is used for adding content before or after the Unit title.
+`isEnabledOutlineSidebar` is no longer used in the default implementation,  
+but is still passed as a plugin prop with a default value of `true` for backward compatibility.
 
 ## Example
 
@@ -34,9 +35,9 @@ const config = {
           widget: {
             id: 'custom_unit_title_content',
             type: DIRECT_PLUGIN,
-            RenderWidget: ({ unitId, unit, isEnabledOutlineSidebar, renderUnitNavigation }) => (
+            RenderWidget: ({ unitId, unit, renderUnitNavigation }) => (
               <>
-                {isEnabledOutlineSidebar && renderUnitNavigation(true)}
+                {renderUnitNavigation(true)}
                 <p>📙: {unit.title}</p>
                 <p>📙: {unitId}</p>
               </>

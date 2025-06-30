@@ -202,7 +202,7 @@ describe('Course', () => {
     });
   });
 
-  it('renders course breadcrumbs as expected', async () => {
+  it('doesn\'t renders course breadcrumbs by default', async () => {
     const courseMetadata = Factory.build('courseMetadata');
     const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
       'block',
@@ -210,7 +210,7 @@ describe('Course', () => {
       { courseId: courseMetadata.id },
     ));
     const testStore = await initializeTestStore({
-      courseMetadata, unitBlocks, enableNavigationSidebar: { enable_navigation_sidebar: false },
+      courseMetadata, unitBlocks,
     }, false);
     const { courseware, models } = testStore.getState();
     const { courseId, sequenceId } = courseware;
@@ -226,10 +226,10 @@ describe('Course', () => {
     await waitFor(() => {
       expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
     });
-    // expect the section and sequence "titles" to be loaded in as breadcrumb labels.
-    waitFor(() => {
-      expect(screen.findByText(Object.values(models.sections)[0].title)).toBeInTheDocument();
-      expect(screen.findByText(Object.values(models.sequences)[0].title)).toBeInTheDocument();
+    // expect the section and sequence "titles" not to be loaded in as breadcrumb labels.
+    await waitFor(() => {
+      expect(screen.queryByText(Object.values(models.sections)[0].title)).not.toBeInTheDocument();
+      expect(screen.queryByText(Object.values(models.sequences)[0].title)).not.toBeInTheDocument();
     });
   });
 
