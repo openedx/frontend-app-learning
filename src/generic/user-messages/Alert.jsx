@@ -39,6 +39,7 @@ const Alert = ({
     dismissible={dismissible}
     onClose={onDismiss}
     stacked={stacked}
+    className={`alert-container-${type}`}
   >
     {children}
   </ParagonAlert>
