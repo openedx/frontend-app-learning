@@ -18,8 +18,8 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import CelebrationMobile from './assets/celebration_456x328.gif';
 import CelebrationDesktop from './assets/celebration_750x540.gif';
-import certificate from '../../../generic/assets/edX_certificate.png';
-import certificateLocked from '../../../generic/assets/edX_locked_certificate.png';
+import certificate from '../../../generic/assets/openedx_certificate.png';
+import certificateLocked from '../../../generic/assets/openedx_locked_certificate.png';
 import { FormattedPricing } from '../../../generic/upgrade-button';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
