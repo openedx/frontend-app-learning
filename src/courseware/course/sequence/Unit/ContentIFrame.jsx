@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import { ErrorPage } from '@edx/frontend-platform/react';
-import { StrictDict } from '@edx/react-unit-test-utils';
 import { ModalDialog } from '@openedx/paragon';
 import { ContentIFrameLoaderSlot } from '../../../../plugin-slots/ContentIFrameLoaderSlot';
 
@@ -22,10 +20,10 @@ export const IFRAME_FEATURE_POLICY = (
   'microphone *; camera *; midi *; geolocation *; encrypted-media *; clipboard-write *; autoplay *'
 );
 
-export const testIDs = StrictDict({
+export const testIDs = {
   contentIFrame: 'content-iframe-test-id',
   modalIFrame: 'modal-iframe-test-id',
-});
+};
 
 const ContentIFrame = ({
   iframeUrl,
