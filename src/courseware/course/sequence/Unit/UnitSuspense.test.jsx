@@ -20,7 +20,6 @@ jest.mock('react', () => ({
 jest.mock('../honor-code', () => jest.fn(() => <div>HonorCode</div>));
 jest.mock('../lock-paywall', () => jest.fn(() => <div>LockPaywall</div>));
 jest.mock('@src/generic/model-store', () => ({ useModel: jest.fn() }));
-// jest.mock('@src/generic/PageLoading', () => 'PageLoading');
 
 jest.mock('./hooks', () => ({
   useShouldDisplayHonorCode: jest.fn(() => false),
