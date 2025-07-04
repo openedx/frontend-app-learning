@@ -1,7 +1,6 @@
-import React from 'react';
 import { useDispatch } from 'react-redux';
+import { renderHook } from '@testing-library/react';
 
-import { getEffects, mockUseKeyedState } from '@edx/react-unit-test-utils';
 import { logError } from '@edx/frontend-platform/logging';
 
 import { getConfig } from '@edx/frontend-platform';
@@ -13,7 +12,7 @@ import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/s
 
 import { messageTypes } from '../constants';
 
-import useIFrameBehavior, { stateKeys } from './useIFrameBehavior';
+import useIFrameBehavior, { iframeBehaviorState } from './useIFrameBehavior';
 
 const mockNavigate = jest.fn();
 
@@ -25,7 +24,6 @@ jest.mock('@edx/frontend-platform/analytics');
 
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
-  useEffect: jest.fn(),
   useCallback: jest.fn((cb, prereqs) => ({ cb, prereqs })),
 }));
 
@@ -33,13 +31,6 @@ jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
   useSelector: jest.fn(),
 }));
-
-jest.mock('lodash', () => ({
-  ...jest.requireActual('lodash'),
-  throttle: jest.fn((fn) => fn),
-}));
-
-jest.mock('./useLoadBearingHook', () => jest.fn());
 
 jest.mock('@edx/frontend-platform/logging', () => ({
   logError: jest.fn(),
@@ -64,8 +55,6 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('@src/courseware/course/sequence/sequence-navigation/hooks');
 useSequenceNavigationMetadata.mockReturnValue({ isLastUnit: false, nextLink: '/next-unit-link' });
-
-const state = mockUseKeyedState(stateKeys);
 
 const props = {
   elementId: 'test-element-id',
@@ -104,82 +93,79 @@ const stateVals = {
   windowTopOffset: 32,
 };
 
+const setIframeHeight = jest.fn();
+const setHasLoaded = jest.fn();
+const setShowError = jest.fn();
+const setWindowTopOffset = jest.fn();
+
+const mockState = (state) => {
+  const { iframeHeight, hasLoaded, showError, windowTopOffset } = state;
+  if ('iframeHeight' in state) jest.spyOn(iframeBehaviorState, 'iframeHeight').mockImplementation(() => [iframeHeight, setIframeHeight]);
+  if ('hasLoaded' in state) jest.spyOn(iframeBehaviorState, 'hasLoaded').mockImplementation(() => [hasLoaded, setHasLoaded]);
+  if ('showError' in state) jest.spyOn(iframeBehaviorState, 'showError').mockImplementation(() => [showError, setShowError]);
+  if ('windowTopOffset' in state) jest.spyOn(iframeBehaviorState, 'windowTopOffset').mockImplementation(() => [windowTopOffset, setWindowTopOffset]);
+};
+
 describe('useIFrameBehavior hook', () => {
-  let hook;
   beforeEach(() => {
     jest.clearAllMocks();
-    state.mock();
     global.document.getElementById = mockGetElementById;
     global.window.addEventListener = jest.fn();
     global.window.removeEventListener = jest.fn();
     global.window.innerHeight = 800;
   });
-  afterEach(() => {
-    state.resetVals();
-  });
   describe('behavior', () => {
     it('initializes iframe height to 0 and error/loaded values to false', () => {
-      hook = useIFrameBehavior(props);
-      state.expectInitializedWith(stateKeys.iframeHeight, 0);
-      state.expectInitializedWith(stateKeys.hasLoaded, false);
-      state.expectInitializedWith(stateKeys.showError, false);
-      state.expectInitializedWith(stateKeys.windowTopOffset, null);
+      mockState(defaultStateVals);
+      const { result } = renderHook(() => useIFrameBehavior(props));
+
+      expect(result.current.iframeHeight).toBe(0);
+      expect(result.current.showError).toBe(false);
+      expect(result.current.hasLoaded).toBe(false);
     });
     describe('effects - on frame change', () => {
       let oldGetElement;
       beforeEach(() => {
         global.window ??= Object.create(window);
         Object.defineProperty(window, 'location', { value: {}, writable: true });
-        state.mockVals(stateVals);
         oldGetElement = document.getElementById;
         document.getElementById = mockGetElementById;
+        mockState(defaultStateVals);
       });
       afterEach(() => {
-        state.resetVals();
+        jest.clearAllMocks();
         document.getElementById = oldGetElement;
       });
       it('does not post url hash if the window does not have one', () => {
-        hook = useIFrameBehavior(props);
-        const cb = getEffects([
-          props.id,
-          props.onLoaded,
-          testIFrameHeight,
-          true,
-        ], React)[0];
-        cb();
+        window.location.hash = '';
+        renderHook(() => useIFrameBehavior(props));
         expect(postMessage).not.toHaveBeenCalled();
       });
       it('posts url hash if the window has one', () => {
         window.location.hash = testHash;
-        hook = useIFrameBehavior(props);
-        const cb = getEffects([
-          props.id,
-          props.onLoaded,
-          testIFrameHeight,
-          true,
-        ], React)[0];
-        cb();
+        renderHook(() => useIFrameBehavior(props));
         expect(postMessage).toHaveBeenCalledWith({ hashName: testHash }, config.LMS_BASE_URL);
       });
     });
     describe('event listener', () => {
       it('calls eventListener with prepared callback', () => {
-        state.mockVals(stateVals);
-        hook = useIFrameBehavior(props);
+        mockState(stateVals);
+        renderHook(() => useIFrameBehavior(props));
         const [call] = useEventListener.mock.calls;
         expect(call[0]).toEqual('message');
         expect(call[1].prereqs).toEqual([
           props.id,
           props.onLoaded,
-          state.values.hasLoaded,
-          state.setState.hasLoaded,
-          state.values.iframeHeight,
-          state.setState.iframeHeight,
-          state.values.windowTopOffset,
-          state.setState.windowTopOffset,
+          stateVals.hasLoaded,
+          setHasLoaded,
+          stateVals.iframeHeight,
+          setIframeHeight,
+          stateVals.windowTopOffset,
+          setWindowTopOffset,
         ]);
       });
       describe('resize message', () => {
+        const height = 23;
         const resizeMessage = (height = 23) => ({
           data: { type: messageTypes.resize, payload: { height } },
         });
@@ -189,63 +175,60 @@ describe('useIFrameBehavior hook', () => {
         const testSetIFrameHeight = (height = 23) => {
           const { cb } = useEventListener.mock.calls[0][1];
           cb(resizeMessage(height));
-          expect(state.setState.iframeHeight).toHaveBeenCalledWith(height);
-        };
-        const testOnlySetsHeight = () => {
-          it('sets iframe height with payload height', () => {
-            testSetIFrameHeight();
-          });
-          it('does not set hasLoaded', () => {
-            expect(state.setState.hasLoaded).not.toHaveBeenCalled();
-          });
+          expect(setIframeHeight).toHaveBeenCalledWith(height);
         };
         describe('hasLoaded', () => {
-          beforeEach(() => {
-            state.mockVals({ ...defaultStateVals, hasLoaded: true });
-            hook = useIFrameBehavior(props);
+          it('sets iframe height with payload height', () => {
+            mockState({ ...defaultStateVals, hasLoaded: true });
+            renderHook(() => useIFrameBehavior(props));
+            const { cb } = useEventListener.mock.calls[0][1];
+            cb(resizeMessage(height));
+            expect(setIframeHeight).toHaveBeenCalledWith(0);
+            expect(setIframeHeight).toHaveBeenCalledWith(height);
           });
-          testOnlySetsHeight();
-        });
-        describe('iframeHeight is not 0', () => {
-          beforeEach(() => {
-            state.mockVals({ ...defaultStateVals, hasLoaded: true });
-            hook = useIFrameBehavior(props);
-          });
-          testOnlySetsHeight();
         });
         describe('payload height is 0', () => {
-          beforeEach(() => { hook = useIFrameBehavior(props); });
-          testOnlySetsHeight(0);
+          it('sets iframe height with payload height', () => {
+            mockState(defaultStateVals);
+            renderHook(() => useIFrameBehavior(props));
+            const { cb } = useEventListener.mock.calls[0][1];
+            cb(resizeMessage(0));
+            expect(setIframeHeight).toHaveBeenCalledWith(0);
+            expect(setIframeHeight).not.toHaveBeenCalledWith(height);
+          });
         });
         describe('payload is present but uninitialized', () => {
+          beforeEach(() => {
+            mockState(defaultStateVals);
+          });
           it('sets iframe height with payload height', () => {
-            hook = useIFrameBehavior(props);
+            renderHook(() => useIFrameBehavior(props));
             testSetIFrameHeight();
           });
           it('sets hasLoaded and calls onLoaded', () => {
-            hook = useIFrameBehavior(props);
+            renderHook(() => useIFrameBehavior(props));
             const { cb } = useEventListener.mock.calls[0][1];
             cb(resizeMessage());
-            expect(state.setState.hasLoaded).toHaveBeenCalledWith(true);
+            expect(setHasLoaded).toHaveBeenCalledWith(true);
             expect(props.onLoaded).toHaveBeenCalled();
           });
           test('onLoaded is optional', () => {
-            hook = useIFrameBehavior({ ...props, onLoaded: undefined });
+            renderHook(() => useIFrameBehavior({ ...props, onLoaded: undefined }));
             const { cb } = useEventListener.mock.calls[0][1];
             cb(resizeMessage());
-            expect(state.setState.hasLoaded).toHaveBeenCalledWith(true);
+            expect(setHasLoaded).toHaveBeenCalledWith(true);
           });
         });
         it('scrolls to current window vertical offset if one is set', () => {
           const windowTopOffset = 32;
-          state.mockVals({ ...defaultStateVals, windowTopOffset });
-          hook = useIFrameBehavior(props);
+          mockState({ ...defaultStateVals, windowTopOffset });
+          renderHook(() => useIFrameBehavior(props));
           const { cb } = useEventListener.mock.calls[0][1];
           cb(videoFullScreenMessage());
           expect(window.scrollTo).toHaveBeenCalledWith(0, windowTopOffset);
         });
         it('does not scroll if towverticalp offset is not set', () => {
-          hook = useIFrameBehavior(props);
+          renderHook(() => useIFrameBehavior(props));
           const { cb } = useEventListener.mock.calls[0][1];
           cb(resizeMessage());
           expect(window.scrollTo).not.toHaveBeenCalled();
@@ -259,16 +242,16 @@ describe('useIFrameBehavior hook', () => {
         });
         beforeEach(() => {
           window.scrollY = scrollY;
-          hook = useIFrameBehavior(props);
+          renderHook(() => useIFrameBehavior(props));
           [[, { cb }]] = useEventListener.mock.calls;
         });
         it('sets window top offset based on window.scrollY if opening the video', () => {
           cb(fullScreenMessage(true));
-          expect(state.setState.windowTopOffset).toHaveBeenCalledWith(scrollY);
+          expect(setWindowTopOffset).toHaveBeenCalledWith(scrollY);
         });
         it('sets window top offset to null if closing the video', () => {
           cb(fullScreenMessage(false));
-          expect(state.setState.windowTopOffset).toHaveBeenCalledWith(null);
+          expect(setWindowTopOffset).toHaveBeenCalledWith(null);
         });
       });
       describe('offset message', () => {
@@ -280,7 +263,7 @@ describe('useIFrameBehavior hook', () => {
           document.getElementById = mockGetEl;
           const oldScrollTo = window.scrollTo;
           window.scrollTo = jest.fn();
-          hook = useIFrameBehavior(props);
+          renderHook(() => useIFrameBehavior(props));
           const { cb } = useEventListener.mock.calls[0][1];
           const offset = 99;
           cb({ data: { offset } });
@@ -293,12 +276,9 @@ describe('useIFrameBehavior hook', () => {
     });
     describe('visibility tracking', () => {
       it('sets up visibility tracking after iframe has loaded', () => {
-        state.mockVals({ ...defaultStateVals, hasLoaded: true });
-        useIFrameBehavior(props);
-
-        const effects = getEffects([true, props.elementId], React);
-        expect(effects.length).toEqual(2);
-        effects[0](); // Execute the visibility tracking effect.
+        mockState({ ...defaultStateVals, hasLoaded: true });
+        
+        renderHook(() => useIFrameBehavior(props));
 
         expect(global.window.addEventListener).toHaveBeenCalledTimes(2);
         expect(global.window.addEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
@@ -316,22 +296,18 @@ describe('useIFrameBehavior hook', () => {
         );
       });
       it('does not set up visibility tracking before iframe has loaded', () => {
-        state.mockVals({ ...defaultStateVals, hasLoaded: false });
-        useIFrameBehavior(props);
-
-        const effects = getEffects([false, props.elementId], React);
-        expect(effects).toBeNull();
+        window.location.hash = ''; // Avoid posting hash message.
+        mockState({ ...defaultStateVals, hasLoaded: false });
+        renderHook(() => useIFrameBehavior(props));
 
         expect(global.window.addEventListener).not.toHaveBeenCalled();
         expect(postMessage).not.toHaveBeenCalled();
       });
       it('cleans up event listeners on unmount', () => {
-        state.mockVals({ ...defaultStateVals, hasLoaded: true });
-        useIFrameBehavior(props);
+        mockState({ ...defaultStateVals, hasLoaded: true });
+        const { unmount } = renderHook(() => useIFrameBehavior(props));
 
-        const effects = getEffects([true, props.elementId], React);
-        const cleanup = effects[0](); // Execute the effect and get the cleanup function.
-        cleanup(); // Call the cleanup function.
+        unmount(); // Call the cleanup function.
 
         expect(global.window.removeEventListener).toHaveBeenCalledTimes(2);
         expect(global.window.removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
@@ -342,14 +318,16 @@ describe('useIFrameBehavior hook', () => {
   describe('output', () => {
     describe('handleIFrameLoad', () => {
       it('sets and logs error if has not loaded', () => {
-        hook = useIFrameBehavior(props);
-        hook.handleIFrameLoad();
-        expect(state.setState.showError).toHaveBeenCalledWith(true);
+        mockState(defaultStateVals);
+        const { result } = renderHook(() => useIFrameBehavior(props));
+        result.current.handleIFrameLoad();
+        expect(setShowError).toHaveBeenCalledWith(true);
         expect(logError).toHaveBeenCalled();
       });
       it('sends track event if has not loaded', () => {
-        hook = useIFrameBehavior(props);
-        hook.handleIFrameLoad();
+        mockState(defaultStateVals);
+        const { result } = renderHook(() => useIFrameBehavior(props));
+        result.current.handleIFrameLoad();
         const eventName = 'edx.bi.error.learning.iframe_load_failed';
         const eventProperties = {
           unitId: props.id,
@@ -358,21 +336,22 @@ describe('useIFrameBehavior hook', () => {
         expect(sendTrackEvent).toHaveBeenCalledWith(eventName, eventProperties);
       });
       it('does not set/log errors if loaded', () => {
-        state.mockVals({ ...defaultStateVals, hasLoaded: true });
-        hook = useIFrameBehavior(props);
-        hook.handleIFrameLoad();
-        expect(state.setState.showError).not.toHaveBeenCalled();
+        mockState({ ...defaultStateVals, hasLoaded: true });
+        const { result } = renderHook(() => useIFrameBehavior(props));
+        result.current.handleIFrameLoad();
+        expect(setShowError).not.toHaveBeenCalled();
         expect(logError).not.toHaveBeenCalled();
       });
       it('does not send track event if loaded', () => {
-        state.mockVals({ ...defaultStateVals, hasLoaded: true });
-        hook = useIFrameBehavior(props);
-        hook.handleIFrameLoad();
+        mockState({ ...defaultStateVals, hasLoaded: true });
+        const { result } = renderHook(() => useIFrameBehavior(props));
+        result.current.handleIFrameLoad();
         expect(sendTrackEvent).not.toHaveBeenCalled();
       });
       it('registers an event handler to process fetchCourse events.', () => {
-        hook = useIFrameBehavior(props);
-        hook.handleIFrameLoad();
+        mockState(defaultStateVals);
+        const { result } = renderHook(() => useIFrameBehavior(props));
+        result.current.handleIFrameLoad();
         const eventName = 'test-event-name';
         const event = { data: { event_name: eventName } };
         window.onmessage(event);
@@ -380,16 +359,17 @@ describe('useIFrameBehavior hook', () => {
       });
     });
     it('forwards handleIframeLoad, showError, and hasLoaded from state fields', () => {
-      state.mockVals(stateVals);
-      hook = useIFrameBehavior(props);
-      expect(hook.iframeHeight).toEqual(stateVals.iframeHeight);
-      expect(hook.showError).toEqual(stateVals.showError);
-      expect(hook.hasLoaded).toEqual(stateVals.hasLoaded);
+      mockState(stateVals);
+      const { result } = renderHook(() => useIFrameBehavior(props));
+      expect(result.current.iframeHeight).toBe(stateVals.iframeHeight);
+      expect(result.current.showError).toBe(stateVals.showError);
+      expect(result.current.hasLoaded).toBe(stateVals.hasLoaded);
     });
   });
   describe('navigate link for the next unit on auto advance', () => {
     it('test for link when it is not last unit', () => {
-      hook = useIFrameBehavior(props);
+      mockState(defaultStateVals);
+      renderHook(() => useIFrameBehavior(props));
       const { cb } = useEventListener.mock.calls[0][1];
       const autoAdvanceMessage = () => ({
         data: { type: messageTypes.autoAdvance },
@@ -398,9 +378,10 @@ describe('useIFrameBehavior hook', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/next-unit-link');
     });
     it('test for link when it is last unit', () => {
+      mockState(defaultStateVals);
       useSequenceNavigationMetadata.mockReset();
       useSequenceNavigationMetadata.mockReturnValue({ isLastUnit: true, nextLink: '/next-unit-link' });
-      hook = useIFrameBehavior(props);
+      renderHook(() => useIFrameBehavior(props));
       const { cb } = useEventListener.mock.calls[0][1];
       const autoAdvanceMessage = () => ({
         data: { type: messageTypes.autoAdvance },
