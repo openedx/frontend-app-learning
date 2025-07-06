@@ -39,6 +39,46 @@ jest.mock('@src/generic/plugin-store', () => ({
   usePluginsCallback: jest.fn((_, cb) => cb),
 }));
 
+/* eslint-disable react/prop-types */
+/* eslint-disable global-require */
+jest.mock('@openedx/paragon', () => {
+  const ReactLib = require('react');
+  const actual = jest.requireActual('@openedx/paragon');
+
+  return {
+    ...actual,
+    Modal: ({
+      isOpen, title, body, children, onClose,
+    }) => {
+      if (!isOpen) {
+        return null;
+      }
+
+      let content = null;
+      if (body) {
+        content = ReactLib.createElement('div', null, body);
+      } else if (title) {
+        content = ReactLib.createElement('iframe', {
+          title,
+          src: 'test-url',
+        });
+      }
+
+      return ReactLib.createElement(
+        'div',
+        { role: 'dialog' },
+        ReactLib.createElement('div', {
+          'data-testid': 'modal-backdrop',
+          onClick: onClose || (() => {}),
+        }),
+        content,
+        children,
+      );
+    },
+  };
+});
+/* eslint-enable react/prop-types */
+
 class MockLoggingService {
   // eslint-disable-next-line no-console
   logInfo = jest.fn(infoString => console.log(infoString));
