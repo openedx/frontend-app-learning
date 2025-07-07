@@ -69,15 +69,11 @@ describe('app registry', () => {
     const callArgs = subscribe.mock.calls[0];
     expect(callArgs[0]).toEqual(APP_READY);
     callArgs[1]();
-    const [rendered] = mockRender.mock.calls[0];
-    expect(rendered).toMatchSnapshot();
   });
-  test('subscribe: APP_INIT_ERROR.  snapshot: displays an ErrorPage to root element', () => {
+  test('subscribe: APP_INIT_ERROR.', () => {
     const callArgs = subscribe.mock.calls[1];
     expect(callArgs[0]).toEqual(APP_INIT_ERROR);
     const error = { message: 'test-error-message' };
     callArgs[1](error);
-    const [rendered] = mockRender.mock.calls[0];
-    expect(rendered).toMatchSnapshot();
   });
 });

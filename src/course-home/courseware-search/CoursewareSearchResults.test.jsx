@@ -7,6 +7,7 @@ import {
 import CoursewareSearchResults from './CoursewareSearchResults';
 import messages from './messages';
 import searchResultsFactory from './test-data/search-results-factory';
+import * as mock from './test-data/mocked-response.json';
 
 jest.mock('react-redux');
 
@@ -34,8 +35,15 @@ describe('CoursewareSearchResults', () => {
       renderComponent({ results });
     });
 
-    it('should match the snapshot', () => {
-      expect(screen.getByTestId('search-results')).toMatchSnapshot();
+    it('should render complete list', () => {
+      const courses = screen.getAllByRole('link');
+      expect(courses.length).toBe(mock.results.length);
+    });
+
+    it('should render correct title for first course', () => {
+      const courses = screen.getAllByRole('link');
+      const firstCourseTitle = courses[0].querySelector('.courseware-search-results__title span');
+      expect(firstCourseTitle.innerHTML).toEqual(mock.results[0].data.content.display_name);
     });
   });
 });

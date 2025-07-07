@@ -5,6 +5,7 @@ import {
   screen,
 } from '../../setupTest';
 import CoursewareSearchEmpty from './CoursewareSearchEmpty';
+import messages from './messages';
 
 function renderComponent() {
   const { container } = render(<CoursewareSearchEmpty />);
@@ -16,9 +17,12 @@ describe('CoursewareSearchEmpty', () => {
     initializeMockApp();
   });
 
-  it('should match the snapshot', () => {
+  it('render empty results text and corresponding classes', () => {
     renderComponent();
-
-    expect(screen.getByTestId('no-results')).toMatchSnapshot();
+    const emptyText = screen.getByText(messages.searchResultsNone.defaultMessage);
+    expect(emptyText).toBeInTheDocument();
+    expect(emptyText).toHaveClass('courseware-search-results__empty');
+    expect(emptyText).toHaveAttribute('data-testid', 'no-results');
+    expect(emptyText.parentElement).toHaveClass('courseware-search-results');
   });
 });
