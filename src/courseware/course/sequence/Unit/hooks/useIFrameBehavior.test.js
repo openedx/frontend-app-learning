@@ -99,11 +99,13 @@ const setShowError = jest.fn();
 const setWindowTopOffset = jest.fn();
 
 const mockState = (state) => {
-  const { iframeHeight, hasLoaded, showError, windowTopOffset } = state;
-  if ('iframeHeight' in state) jest.spyOn(iframeBehaviorState, 'iframeHeight').mockImplementation(() => [iframeHeight, setIframeHeight]);
-  if ('hasLoaded' in state) jest.spyOn(iframeBehaviorState, 'hasLoaded').mockImplementation(() => [hasLoaded, setHasLoaded]);
-  if ('showError' in state) jest.spyOn(iframeBehaviorState, 'showError').mockImplementation(() => [showError, setShowError]);
-  if ('windowTopOffset' in state) jest.spyOn(iframeBehaviorState, 'windowTopOffset').mockImplementation(() => [windowTopOffset, setWindowTopOffset]);
+  const {
+    iframeHeight, hasLoaded, showError, windowTopOffset,
+  } = state;
+  if ('iframeHeight' in state) { jest.spyOn(iframeBehaviorState, 'iframeHeight').mockImplementation(() => [iframeHeight, setIframeHeight]); }
+  if ('hasLoaded' in state) { jest.spyOn(iframeBehaviorState, 'hasLoaded').mockImplementation(() => [hasLoaded, setHasLoaded]); }
+  if ('showError' in state) { jest.spyOn(iframeBehaviorState, 'showError').mockImplementation(() => [showError, setShowError]); }
+  if ('windowTopOffset' in state) { jest.spyOn(iframeBehaviorState, 'windowTopOffset').mockImplementation(() => [windowTopOffset, setWindowTopOffset]); }
 };
 
 describe('useIFrameBehavior hook', () => {
@@ -165,7 +167,7 @@ describe('useIFrameBehavior hook', () => {
         ]);
       });
       describe('resize message', () => {
-        const height = 23;
+        const customHeight = 23;
         const resizeMessage = (height = 23) => ({
           data: { type: messageTypes.resize, payload: { height } },
         });
@@ -182,9 +184,9 @@ describe('useIFrameBehavior hook', () => {
             mockState({ ...defaultStateVals, hasLoaded: true });
             renderHook(() => useIFrameBehavior(props));
             const { cb } = useEventListener.mock.calls[0][1];
-            cb(resizeMessage(height));
+            cb(resizeMessage(customHeight));
             expect(setIframeHeight).toHaveBeenCalledWith(0);
-            expect(setIframeHeight).toHaveBeenCalledWith(height);
+            expect(setIframeHeight).toHaveBeenCalledWith(customHeight);
           });
         });
         describe('payload height is 0', () => {
@@ -194,7 +196,7 @@ describe('useIFrameBehavior hook', () => {
             const { cb } = useEventListener.mock.calls[0][1];
             cb(resizeMessage(0));
             expect(setIframeHeight).toHaveBeenCalledWith(0);
-            expect(setIframeHeight).not.toHaveBeenCalledWith(height);
+            expect(setIframeHeight).not.toHaveBeenCalledWith(customHeight);
           });
         });
         describe('payload is present but uninitialized', () => {
@@ -277,7 +279,7 @@ describe('useIFrameBehavior hook', () => {
     describe('visibility tracking', () => {
       it('sets up visibility tracking after iframe has loaded', () => {
         mockState({ ...defaultStateVals, hasLoaded: true });
-        
+
         renderHook(() => useIFrameBehavior(props));
 
         expect(global.window.addEventListener).toHaveBeenCalledTimes(2);
