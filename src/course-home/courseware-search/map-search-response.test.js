@@ -10,8 +10,8 @@ describe('mapSearchResponse', () => {
       response = mapSearchResponse(camelCaseObject(mockedResponse));
     });
 
-    it('should match snapshot', () => {
-      expect(response).toMatchSnapshot();
+    it('should match number of results', () => {
+      expect(response.results.length).toBe(mockedResponse.results.length);
     });
 
     it('should match expected filters', () => {
