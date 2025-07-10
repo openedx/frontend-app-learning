@@ -22,15 +22,15 @@ describe('Loaded Tab Page', () => {
   let mockData;
   let testStore;
   let axiosMock;
-  const calculateUrl = `${getConfig().ECOMMERCE_BASE_URL}/api/v2/baskets/calculate/?code=ZGY11119949&sku=8CF08E5&username=MockUser`;
+  const calculateUrl = `${getConfig().DISCOUNT_CODE_INFO_URL}?code=ZGY11119949`;
   const courseMetadata = Factory.build('courseMetadata');
   const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
 
   function setDiscount(percent) {
     mockData.streakDiscountCouponEnabled = true;
     axiosMock.onGet(calculateUrl).reply(200, {
-      total_incl_tax: 100 - percent,
-      total_incl_tax_excl_discounts: 100,
+      isApplicable: true,
+      discountPercentage: percent / 100,
     });
   }
 
