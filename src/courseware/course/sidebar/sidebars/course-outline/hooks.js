@@ -74,9 +74,17 @@ export const useCourseOutlineSidebar = () => {
 
   const handleUnitClick = ({ sequenceId, activeUnitId, id }) => {
     const logEvent = (eventName, widgetPlacement) => {
-      const findSequenceByUnitId = () => Object.values(sequences).find(seq => seq.unitIds.includes(activeUnitId));
+      const findSequenceByUnitId = (searchUnitId) => {
+        if (!searchUnitId) {
+          return null;
+        }
+        return Object.values(sequences).find(seq => seq.unitIds.includes(searchUnitId));
+      };
       const activeSequence = findSequenceByUnitId(activeUnitId);
       const targetSequence = findSequenceByUnitId(id);
+      if (!activeSequence || !targetSequence) {
+        return;
+      }
       const payload = {
         id: activeUnitId,
         current_tab: activeSequence.unitIds.indexOf(activeUnitId) + 1,
@@ -95,7 +103,9 @@ export const useCourseOutlineSidebar = () => {
     };
 
     logEvent('edx.ui.lms.sequence.tab_selected', 'left');
-    dispatch(checkBlockCompletion(courseId, sequenceId, activeUnitId));
+    if (activeUnitId) {
+      dispatch(checkBlockCompletion(courseId, sequenceId, activeUnitId));
+    }
 
     // Hide the sidebar after selecting a unit on a mobile device.
     if (shouldDisplayFullScreen) {
