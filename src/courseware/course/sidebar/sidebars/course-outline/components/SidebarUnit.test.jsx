@@ -102,11 +102,11 @@ describe('<SidebarUnit />', () => {
     it('should handle click when activeUnitId is null/undefined (covers findSequenceByUnitId return null)', async () => {
       const user = userEvent.setup();
       await initTestStore();
-      
+
       // Render with activeUnitId as null to trigger the findSequenceByUnitId return null
-      renderWithProvider({ 
+      renderWithProvider({
         activeUnitId: null,
-        unit: { ...unit } 
+        unit: { ...unit },
       });
 
       // Click should not cause errors and should not send tracking events
@@ -120,11 +120,11 @@ describe('<SidebarUnit />', () => {
     it('should handle click when activeUnitId is undefined (covers findSequenceByUnitId return null)', async () => {
       const user = userEvent.setup();
       await initTestStore();
-      
+
       // Render with activeUnitId as undefined to trigger the findSequenceByUnitId return null
-      renderWithProvider({ 
+      renderWithProvider({
         activeUnitId: undefined,
-        unit: { ...unit } 
+        unit: { ...unit },
       });
 
       await user.click(screen.getByText(unit.title));
@@ -137,14 +137,14 @@ describe('<SidebarUnit />', () => {
     it('should handle click when unit id is not found in any sequence (covers early return)', async () => {
       const user = userEvent.setup();
       await initTestStore();
-      
+
       // Use a unit ID that doesn't exist in any sequence
       const nonExistentUnitId = 'non-existent-unit-id';
-      
-      renderWithProvider({ 
+
+      renderWithProvider({
         unit: { ...unit, id: nonExistentUnitId },
         id: nonExistentUnitId,
-        activeUnitId: unit.id // valid activeUnitId but invalid target unit
+        activeUnitId: unit.id, // valid activeUnitId but invalid target unit
       });
 
       await user.click(screen.getByText(unit.title));
@@ -157,14 +157,14 @@ describe('<SidebarUnit />', () => {
     it('should handle click when both activeUnitId and target unit id are invalid', async () => {
       const user = userEvent.setup();
       await initTestStore();
-      
+
       const nonExistentUnitId = 'non-existent-unit-id';
       const anotherNonExistentUnitId = 'another-non-existent-unit-id';
-      
-      renderWithProvider({ 
+
+      renderWithProvider({
         unit: { ...unit, id: nonExistentUnitId },
         id: nonExistentUnitId,
-        activeUnitId: anotherNonExistentUnitId
+        activeUnitId: anotherNonExistentUnitId,
       });
 
       await user.click(screen.getByText(unit.title));
