@@ -13,6 +13,7 @@ import { buildSimpleCourseBlocks } from '../../shared/data/__factories__/courseB
 import { buildOutlineFromBlocks } from './__factories__/learningSequencesOutline.factory';
 import { initializeMockApp } from '../../setupTest';
 import initializeStore from '../../store';
+import { updateModel } from '../../generic/model-store';
 
 const { loggingService } = initializeMockApp();
 
@@ -350,6 +351,56 @@ describe('Data layer integration tests', () => {
         expect(store.getState().courseware.courseOutline.units[unit.id].complete).not.toBeTruthy();
         expect(store.getState().courseware.courseOutline.sequences[sequence.id].complete).not.toBeTruthy();
         expect(store.getState().courseware.courseOutline.sections[section.id].complete).not.toBeTruthy();
+      });
+
+      it('Should return empty object when unitId is not provided', async () => {
+        // Test the first return {} - when unitId is falsy
+        const thunk = thunks.checkBlockCompletion(courseId, sequenceId, null);
+        const result = await thunk(store.dispatch, store.getState);
+        
+        expect(result).toEqual({});
+      });
+
+      it('Should return empty object when unitId is undefined', async () => {
+        // Test the first return {} - when unitId is undefined  
+        const thunk = thunks.checkBlockCompletion(courseId, sequenceId, undefined);
+        const result = await thunk(store.dispatch, store.getState);
+        
+        expect(result).toEqual({});
+      });
+
+      it('Should return empty object when unitId is empty string', async () => {
+        // Test the first return {} - when unitId is empty string
+        const thunk = thunks.checkBlockCompletion(courseId, sequenceId, '');
+        const result = await thunk(store.dispatch, store.getState);
+        
+        expect(result).toEqual({});
+      });
+
+      it('Should return empty object when unit is already complete', async () => {
+        // First, set up the state so that the unit is already marked as complete
+        const testUnitId = 'test-unit-id';
+        
+        // Dispatch an action to mark the unit as complete in the store
+        store.dispatch(updateModel({
+          modelType: 'units',
+          model: {
+            id: testUnitId,
+            complete: true,
+          },
+        }));
+        
+        // Record the current number of API calls before our test
+        const initialRequestCount = axiosMock.history.post.length;
+        
+        // Now call checkBlockCompletion - it should return {} without making API calls
+        const thunk = thunks.checkBlockCompletion(courseId, sequenceId, testUnitId);
+        const result = await thunk(store.dispatch, store.getState);
+        
+        expect(result).toEqual({});
+        
+        // Verify that no new API calls were made (since it should return early)
+        expect(axiosMock.history.post.length).toBe(initialRequestCount);
       });
     });
 

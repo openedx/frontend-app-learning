@@ -98,6 +98,83 @@ describe('<SidebarUnit />', () => {
     expect(screen.getByText(unit.title)).toBeInTheDocument();
   });
 
+  describe('handleUnitClick coverage tests', () => {
+    it('should handle click when activeUnitId is null/undefined (covers findSequenceByUnitId return null)', async () => {
+      const user = userEvent.setup();
+      await initTestStore();
+      
+      // Render with activeUnitId as null to trigger the findSequenceByUnitId return null
+      renderWithProvider({ 
+        activeUnitId: null,
+        unit: { ...unit } 
+      });
+
+      // Click should not cause errors and should not send tracking events
+      await user.click(screen.getByText(unit.title));
+
+      // Since activeSequence will be null, tracking events should not be sent
+      expect(sendTrackEvent).not.toHaveBeenCalled();
+      expect(sendTrackingLogEvent).not.toHaveBeenCalled();
+    });
+
+    it('should handle click when activeUnitId is undefined (covers findSequenceByUnitId return null)', async () => {
+      const user = userEvent.setup();
+      await initTestStore();
+      
+      // Render with activeUnitId as undefined to trigger the findSequenceByUnitId return null
+      renderWithProvider({ 
+        activeUnitId: undefined,
+        unit: { ...unit } 
+      });
+
+      await user.click(screen.getByText(unit.title));
+
+      // Since activeSequence will be null, tracking events should not be sent
+      expect(sendTrackEvent).not.toHaveBeenCalled();
+      expect(sendTrackingLogEvent).not.toHaveBeenCalled();
+    });
+
+    it('should handle click when unit id is not found in any sequence (covers early return)', async () => {
+      const user = userEvent.setup();
+      await initTestStore();
+      
+      // Use a unit ID that doesn't exist in any sequence
+      const nonExistentUnitId = 'non-existent-unit-id';
+      
+      renderWithProvider({ 
+        unit: { ...unit, id: nonExistentUnitId },
+        id: nonExistentUnitId,
+        activeUnitId: unit.id // valid activeUnitId but invalid target unit
+      });
+
+      await user.click(screen.getByText(unit.title));
+
+      // Since targetSequence will be null, tracking events should not be sent
+      expect(sendTrackEvent).not.toHaveBeenCalled();
+      expect(sendTrackingLogEvent).not.toHaveBeenCalled();
+    });
+
+    it('should handle click when both activeUnitId and target unit id are invalid', async () => {
+      const user = userEvent.setup();
+      await initTestStore();
+      
+      const nonExistentUnitId = 'non-existent-unit-id';
+      const anotherNonExistentUnitId = 'another-non-existent-unit-id';
+      
+      renderWithProvider({ 
+        unit: { ...unit, id: nonExistentUnitId },
+        id: nonExistentUnitId,
+        activeUnitId: anotherNonExistentUnitId
+      });
+
+      await user.click(screen.getByText(unit.title));
+
+      // Both sequences will be null, so tracking events should not be sent
+      expect(sendTrackEvent).not.toHaveBeenCalled();
+      expect(sendTrackingLogEvent).not.toHaveBeenCalled();
+    });
+  });
+
   describe('When a unit is clicked', () => {
     it('sends log event correctly', async () => {
       const user = userEvent.setup();
