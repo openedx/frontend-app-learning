@@ -179,6 +179,7 @@ export function checkBlockCompletion(courseId, sequenceId, unitId) {
     if (!unitId) {
       return {};
     }
+
     const { models } = getState();
     if (models.units[unitId]?.complete) {
       return {}; // do nothing. Things don't get uncompleted after they are completed.
