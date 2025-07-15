@@ -22,9 +22,12 @@ describe('Loaded Tab Page', () => {
   let mockData;
   let testStore;
   let axiosMock;
-  const calculateUrl = `${getConfig().DISCOUNT_CODE_INFO_URL}?code=ZGY11119949`;
   const courseMetadata = Factory.build('courseMetadata');
   const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
+  const params = new URLSearchParams();
+  params.append('code', 'ZGY11119949');
+  params.append('course_run_key', courseMetadata.id);
+  const calculateUrl = `${getConfig().DISCOUNT_CODE_INFO_URL}?${params.toString()}`;
 
   function setDiscount(percent) {
     mockData.streakDiscountCouponEnabled = true;

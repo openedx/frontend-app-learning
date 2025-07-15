@@ -42,8 +42,12 @@ function getRandomFactoid(intl, streakLength) {
   return factoids[Math.floor(Math.random() * (factoids.length))];
 }
 
-async function getDiscountCodeInfo(code) {
-  const url = `${getConfig().DISCOUNT_CODE_INFO_URL}?code=${code}`;
+async function getDiscountCodeInfo(code, courseId) {
+  const params = new URLSearchParams();
+  params.append('code', code);
+  params.append('course_run_key', courseId);
+
+  const url = `${getConfig().DISCOUNT_CODE_INFO_URL}?${params.toString()}`;
   return getAuthenticatedHttpClient().get(url)
     .then(res => camelCaseObject(res));
 }
@@ -83,7 +87,7 @@ const StreakModal = ({
   // Ask ecommerce to calculate discount savings
   useEffect(() => {
     if (streakDiscountCouponEnabled && verifiedMode && getConfig().DISCOUNT_CODE_INFO_URL) {
-      getDiscountCodeInfo(discountCode)
+      getDiscountCodeInfo(discountCode, courseId)
         .then(
           (result) => {
             const { isApplicable, discountPercentage } = result.data;
