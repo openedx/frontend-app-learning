@@ -101,10 +101,11 @@ const StreakModal = ({
             const result = await getDiscountCodeInfo(discountCode, courseId);
             const { isApplicable, discountPercentage } = result.data;
             if (isApplicable) {
-              // Just store the percent, because ecommerce doesn't give us
-              // the currency symbol to use, so we want to use the symbol that LMS gives us. And we don't want to assume
-              // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
-              // multiplied by the received percentage.
+              // Just store the percent, because ecommerce doesn't give us the
+              // currency symbol to use, so we want to use the symbol that LMS
+              // gives us. And we don't want to assume ecommerce's currency is
+              // the same as the LMS. So we'll keep using the values in
+              // verifiedMode, just multiplied by the received percentage.
               newDiscountPercentage = discountPercentage;
               sendTrackEvent('edx.bi.course.streak_discount_enabled', {
                 course_id: courseId,
@@ -119,7 +120,7 @@ const StreakModal = ({
               // the currency symbol to use, so we want to use the symbol that LMS gives us. And I don't want to assume
               // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
               // multiplied by the calculated percentage.
-              newDiscountPercentage = (1 - totalInclTax / totalInclTaxExclDiscounts);
+              newDiscountPercentage = 1 - totalInclTax / totalInclTaxExclDiscounts;
               sendTrackEvent('edx.bi.course.streak_discount_enabled', {
                 course_id: courseId,
                 sku: verifiedMode.sku,
