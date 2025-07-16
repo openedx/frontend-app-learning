@@ -93,61 +93,46 @@ const StreakModal = ({
 
   // Ask ecommerce to calculate discount savings
   useEffect(() => {
-    if (streakDiscountCouponEnabled && verifiedMode) {
-      if (getConfig().DISCOUNT_CODE_INFO_URL) {
-        getDiscountCodeInfo(discountCode, courseId)
-          .then(
-            (result) => {
-              const { isApplicable, discountPercentage } = result.data;
-              if (isApplicable) {
-                // Just store the percent, because ecommerce doesn't give us
-                // the currency symbol to use, so we want to use the symbol that LMS gives us. And we don't want to assume
-                // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
-                // multiplied by the received percentage.
-                setDiscountPercent(discountPercentage);
-                sendTrackEvent('edx.bi.course.streak_discount_enabled', {
-                  course_id: courseId,
-                  sku: verifiedMode.sku,
-                });
-              } else {
-                setDiscountPercent(0);
-              }
-            },
-            () => {
-              // ignore any errors - we just won't show the discount to the user then
-              setDiscountPercent(0);
-            },
-          );
-      } else if (getConfig().ECOMMERCE_BASE_URL) {
-        calculateVoucherDiscount(discountCode, verifiedMode.sku, username)
-          .then(
-            (result) => {
-              const { totalInclTax, totalInclTaxExclDiscounts } = result.data;
-              if (totalInclTaxExclDiscounts && totalInclTax !== totalInclTaxExclDiscounts) {
-                // Just store the percent (rather than using these values directly), because ecommerce doesn't give us
-                // the currency symbol to use, so we want to use the symbol that LMS gives us. And I don't want to assume
-                // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
-                // multiplied by the calculated percentage.
-                setDiscountPercent(1 - totalInclTax / totalInclTaxExclDiscounts);
-                sendTrackEvent('edx.bi.course.streak_discount_enabled', {
-                  course_id: courseId,
-                  sku: verifiedMode.sku,
-                });
-              } else {
-                setDiscountPercent(0);
-              }
-            },
-            () => {
-              // ignore any errors - we just won't show the discount to the user then
-              setDiscountPercent(0);
-            },
-          );
-      } else {
-        setDiscountPercent(0);
+    (async () => {
+      let newDiscountPercentage = 0;
+      try {
+        if (streakDiscountCouponEnabled && verifiedMode) {
+          if (getConfig().DISCOUNT_CODE_INFO_URL) {
+            const result = await getDiscountCodeInfo(discountCode, courseId);
+            const { isApplicable, discountPercentage } = result.data;
+            if (isApplicable) {
+              // Just store the percent, because ecommerce doesn't give us
+              // the currency symbol to use, so we want to use the symbol that LMS gives us. And we don't want to assume
+              // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
+              // multiplied by the received percentage.
+              newDiscountPercentage = discountPercentage;
+              sendTrackEvent('edx.bi.course.streak_discount_enabled', {
+                course_id: courseId,
+                sku: verifiedMode.sku,
+              });
+            }
+          } else if (getConfig().ECOMMERCE_BASE_URL) {
+            const result = await calculateVoucherDiscount(discountCode, verifiedMode.sku, username);
+            const { totalInclTax, totalInclTaxExclDiscounts } = result.data;
+            if (totalInclTaxExclDiscounts && totalInclTax !== totalInclTaxExclDiscounts) {
+              // Just store the percent (rather than using these values directly), because ecommerce doesn't give us
+              // the currency symbol to use, so we want to use the symbol that LMS gives us. And I don't want to assume
+              // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
+              // multiplied by the calculated percentage.
+              newDiscountPercentage = (1 - totalInclTax / totalInclTaxExclDiscounts);
+              sendTrackEvent('edx.bi.course.streak_discount_enabled', {
+                course_id: courseId,
+                sku: verifiedMode.sku,
+              });
+            }
+          }
+        }
+      } catch {
+        // ignore any errors - we just won't show the discount to the user then
+      } finally {
+        setDiscountPercent(newDiscountPercentage);
       }
-    } else {
-      setDiscountPercent(0);
-    }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streakDiscountCouponEnabled, username, verifiedMode]);
 
