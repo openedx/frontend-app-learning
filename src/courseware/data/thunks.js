@@ -88,10 +88,11 @@ export function fetchCourse(courseId) {
 
       if (fetchedCoursewareOutlineSidebarTogglesResult) {
         const {
-          enable_navigation_sidebar: enableNavigationSidebar,
-          always_open_auxiliary_sidebar: alwaysOpenAuxiliarySidebar,
+          enable_completion_tracking: enableCompletionTracking,
         } = coursewareOutlineSidebarTogglesResult.value;
-        dispatch(setCoursewareOutlineSidebarToggles({ enableNavigationSidebar, alwaysOpenAuxiliarySidebar }));
+        dispatch(setCoursewareOutlineSidebarToggles(
+          { enableCompletionTracking },
+        ));
       }
 
       // Log errors for each request if needed. Outline failures may occur

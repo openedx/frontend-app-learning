@@ -24,7 +24,6 @@ const CourseOutlineTray = () => {
   const {
     courseId,
     unitId,
-    isEnabledSidebar,
     currentSidebar,
     handleToggleCollapse,
     isActiveEntranceExam,
@@ -78,7 +77,7 @@ const CourseOutlineTray = () => {
     </div>
   );
 
-  if (!isEnabledSidebar || isActiveEntranceExam || currentSidebar !== ID) {
+  if (isActiveEntranceExam || currentSidebar !== ID) {
     return null;
   }
 

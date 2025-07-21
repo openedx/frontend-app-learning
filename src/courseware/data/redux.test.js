@@ -111,8 +111,7 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
       axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
-        enable_navigation_sidebar: true,
-        always_open_auxiliary_sidebar: true,
+        enable_completion_tracking: true,
       });
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
@@ -124,8 +123,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
       expect(state.courseware.coursewareOutlineSidebarSettings).toEqual({
-        enableNavigationSidebar: true,
-        alwaysOpenAuxiliarySidebar: true,
+        enableCompletionTracking: true,
       });
 
       // check that at least one key camel cased, thus course data normalized
@@ -139,8 +137,7 @@ describe('Data layer integration tests', () => {
       axiosMock.onGet(courseUrl).reply(200, courseMetadata);
       axiosMock.onGet(learningSequencesUrlRegExp).reply(200, simpleOutline);
       axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
-        enable_navigation_sidebar: false,
-        always_open_auxiliary_sidebar: false,
+        enable_completion_tracking: false,
       });
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
@@ -152,8 +149,7 @@ describe('Data layer integration tests', () => {
       expect(state.courseware.sequenceStatus).toEqual('loading');
       expect(state.courseware.sequenceId).toEqual(null);
       expect(state.courseware.coursewareOutlineSidebarSettings).toEqual({
-        enableNavigationSidebar: false,
-        alwaysOpenAuxiliarySidebar: false,
+        enableCompletionTracking: false,
       });
 
       // check that at least one key camel cased, thus course data normalized
