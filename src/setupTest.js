@@ -177,8 +177,6 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   courseHomeMetadataUrl = appendBrowserTimezoneToUrl(courseHomeMetadataUrl);
 
   const provider = options?.provider || 'legacy';
-  const enableNavigationSidebar = options.enableNavigationSidebar || { enable_navigation_sidebar: true };
-  const alwaysOpenAuxiliarySidebar = options.alwaysOpenAuxiliarySidebar || { always_open_auxiliary_sidebar: true };
   const enableCompletionTracking = options.enableCompletionTracking || { enable_completion_tracking: true };
 
   axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
@@ -186,8 +184,6 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
   axiosMock.onGet(discussionConfigUrl).reply(200, { provider });
   axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
-    ...enableNavigationSidebar,
-    ...alwaysOpenAuxiliarySidebar,
     ...enableCompletionTracking,
   });
 

@@ -67,15 +67,6 @@ describe('<CourseOutlineTray />', () => {
     expect(screen.queryByRole('button', { name: 'Course outline' })).not.toBeInTheDocument();
   });
 
-  it('doesn\'t render when outline sidebar is disabled', async () => {
-    await initTestStore({ enableNavigationSidebar: { enable_navigation_sidebar: false } });
-    renderWithProvider();
-
-    await expect(screen.queryByText(messages.loading.defaultMessage)).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: section.title })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage })).not.toBeInTheDocument();
-  });
-
   it('renders correctly when course outline is loaded', async () => {
     await initTestStore();
     renderWithProvider();

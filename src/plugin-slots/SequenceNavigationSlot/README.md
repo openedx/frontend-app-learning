@@ -16,9 +16,47 @@ This slot is used to replace/modify/hide the sequence navigation component that 
 ## Example
 
 ### Default content
-![Sequence navigation slot with default content](./screenshot_default.png)
+![screenshot_default.png](screenshot_default.png)
 
-### Replaced with custom component
+### Replace with default sequence navigation component
+You can also inject the default `SequenceNavigation` component explicitly using the slot system, for example to wrap or style it differently.
+![Sequence navigation slot with default content](./screenshot_with_default_nav.png)
+
+```js
+import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
+
+import { SequenceNavigation } from './src/courseware/course/sequence/sequence-navigation';
+
+const config = {
+  pluginSlots: {
+    'org.openedx.frontend.learning.sequence_navigation.v1': {
+      keepDefault: false,
+      plugins: [
+        {
+          op: PLUGIN_OPERATIONS.Insert,
+          widget: {
+            id: 'custom_sequence_navigation',
+            type: DIRECT_PLUGIN,
+            RenderWidget: ({ sequenceId, unitId, nextHandler, onNavigate, previousHandler }) => (
+              <SequenceNavigation
+                sequenceId={sequenceId}
+                unitId={unitId}
+                nextHandler={nextHandler}
+                onNavigate={onNavigate}
+                previousHandler={previousHandler}
+              />
+            ),
+          },
+        },
+      ],
+    },
+  },
+};
+
+export default config;
+```
+
+### Replaced with a custom component
 ![📖 in sequence navigation slot](./screenshot_custom.png)
 
 The following `env.config.jsx` will replace the sequence navigation with a custom implementation that uses all available props.

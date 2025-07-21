@@ -24,7 +24,6 @@ describe('Sequence', () => {
     { type: 'vertical' },
     { courseId: courseMetadata.id },
   ));
-  const enableNavigationSidebar = { enable_navigation_sidebar: false };
 
   beforeAll(async () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
@@ -96,7 +95,6 @@ describe('Sequence', () => {
       unitBlocks,
       sequenceBlocks,
       sequenceMetadata,
-      enableNavigationSidebar: { enable_navigation_sidebar: true },
     }, false);
     const { container } = render(
       <SidebarWrapper overrideData={{ sequenceId: sequenceBlocks[0].id }} />,
@@ -131,7 +129,7 @@ describe('Sequence', () => {
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
     const testStore = await initializeTestStore({
-      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata, enableNavigationSidebar,
+      courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
     }, false);
     render(
       <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
@@ -190,7 +188,7 @@ describe('Sequence', () => {
 
     beforeAll(async () => {
       testStore = await initializeTestStore({
-        courseMetadata, unitBlocks, sequenceBlocks, enableNavigationSidebar,
+        courseMetadata, unitBlocks, sequenceBlocks,
       }, false);
     });
 
@@ -366,7 +364,6 @@ describe('Sequence', () => {
         unitBlocks,
         sequenceBlocks: testSequenceBlocks,
         sequenceMetadata: testSequenceMetadata,
-        enableNavigationSidebar,
       }, false);
       const testData = {
         ...mockData,
