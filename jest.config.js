@@ -22,22 +22,4 @@ const config = createConfig('jest', {
   testEnvironment: 'jsdom',
 });
 
-// delete config.testURL;
-
-config.reporters = [...(config.reporters || []), ["jest-console-group-reporter", {
-  // change this setting if need to see less details for each test
-  // reportType: "summary" | "details",
-  // enable: true | false,
-  afterEachTest: {
-    enable: true,
-    filePaths: false,
-    reportType: "details",
-  },
-  afterAllTests: {
-    reportType: "summary",
-    enable: true,
-    filePaths: true,
-  },
-}]];
-
 module.exports = config;
