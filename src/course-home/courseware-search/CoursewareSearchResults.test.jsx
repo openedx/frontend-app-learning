@@ -40,10 +40,48 @@ describe('CoursewareSearchResults', () => {
       expect(courses.length).toBe(mock.results.length);
     });
 
-    it('should render correct title for first course', () => {
+    it('should render correct link for internal course', () => {
       const courses = screen.getAllByRole('link');
-      const firstCourseTitle = courses[0].querySelector('.courseware-search-results__title span');
+      const firstCourse = courses[0];
+      const firstCourseTitle = firstCourse.querySelector('.courseware-search-results__title span');
       expect(firstCourseTitle.innerHTML).toEqual(mock.results[0].data.content.display_name);
+      expect(firstCourse.href).toContain(mock.results[0].data.url);
+      expect(firstCourse).not.toHaveAttribute('target', '_blank');
+      expect(firstCourse).not.toHaveAttribute('rel', 'nofollow');
+    });
+
+    it('should render correct link if is External url course', () => {
+      const courses = screen.getAllByRole('link');
+      const externalCourse = courses[courses.length - 1];
+      const externalCourseTitle = externalCourse.querySelector('.courseware-search-results__title span');
+      expect(externalCourseTitle.innerHTML).toEqual(mock.results[mock.results.length - 1].data.content.display_name);
+      expect(externalCourse.href).toContain(mock.results[mock.results.length - 1].data.url);
+      expect(externalCourse).toHaveAttribute('target', '_blank');
+      expect(externalCourse).toHaveAttribute('rel', 'nofollow');
+      const icon = externalCourse.querySelector('svg');
+      expect(icon).toBeInTheDocument();
+    });
+
+    it('should render location breadcrumbs', () => {
+      const breadcrumbs = screen.getAllByText(mock.results[0].data.location[0]);
+      expect(breadcrumbs.length).toBeGreaterThan(0);
+      const firstBreadcrumb = breadcrumbs[0].closest('li');
+      expect(firstBreadcrumb).toBeInTheDocument();
+      expect(firstBreadcrumb.querySelector('div').textContent).toBe(mock.results[0].data.location[0]);
+      expect(firstBreadcrumb.nextSibling.querySelector('div').textContent).toBe(mock.results[0].data.location[1]);
+    });
+  });
+
+  describe('when results are provided with content hits', () => {
+    beforeEach(() => {
+      const { results } = searchResultsFactory('Passing');
+      renderComponent({ results });
+    });
+
+    it('should render content hits', () => {
+      const contentHits = screen.getByText('1');
+      expect(contentHits).toBeInTheDocument();
+      expect(contentHits.tagName).toBe('EM');
     });
   });
 });
