@@ -1,19 +1,13 @@
 import React from 'react';
 
 import { logError } from '@edx/frontend-platform/logging';
-import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils';
 import { useExamAccessToken, useFetchExamAccessToken, useIsExam } from '@edx/frontend-lib-special-exams';
-
-export const stateKeys = StrictDict({
-  accessToken: 'accessToken',
-  blockAccess: 'blockAccess',
-});
 
 const useExamAccess = ({
   id,
 }) => {
   const isExam = useIsExam();
-  const [blockAccess, setBlockAccess] = useKeyedState(stateKeys.blockAccess, isExam);
+  const [blockAccess, setBlockAccess] = React.useState(isExam);
 
   const fetchExamAccessToken = useFetchExamAccessToken();
 
