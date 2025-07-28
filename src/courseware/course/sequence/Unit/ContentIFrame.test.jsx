@@ -77,7 +77,7 @@ describe('ContentIFrame Component', () => {
     describe('if shouldShowContent', () => {
       describe('if not hasLoaded', () => {
         it('displays errorPage if showError', () => {
-          hooks.useIFrameBehavior.mockReturnValueOnce({ ...iframeBehavior, showError: true, shouldShowContent: true });
+          hooks.useIFrameBehavior.mockReturnValueOnce({ ...iframeBehavior, showError: true });
           render(<ContentIFrame {...props} />);
           const errorPage = screen.getByText('ErrorPage');
           expect(errorPage).toBeInTheDocument();
@@ -124,6 +124,13 @@ describe('ContentIFrame Component', () => {
       expect(modal).toBeNull();
     });
     describe('if modalOptions.isOpen', () => {
+      const testModalOpenAndHandleClose = () => {
+        it('closes modal on close button click', () => {
+          const closeButton = screen.getByTestId('modal-backdrop');
+          closeButton.click();
+          expect(modalIFrameData.handleModalClose).toHaveBeenCalled();
+        });
+      };
       describe('fullscreen modal', () => {
         describe('body modal', () => {
           beforeEach(() => {
@@ -139,6 +146,7 @@ describe('ContentIFrame Component', () => {
             const modalBody = screen.getByText(modalOptions.withBody.body);
             expect(modalBody).toBeInTheDocument();
           });
+          testModalOpenAndHandleClose();
         });
         describe('url modal', () => {
           beforeEach(() => {
@@ -155,6 +163,7 @@ describe('ContentIFrame Component', () => {
             expect(iframe).toHaveAttribute('allow', IFRAME_FEATURE_POLICY);
             expect(iframe).toHaveAttribute('src', modalOptions.withUrl.url);
           });
+          testModalOpenAndHandleClose();
         });
       });
       describe('body modal', () => {
@@ -168,6 +177,7 @@ describe('ContentIFrame Component', () => {
           const modalBody = screen.getByText(modalOptions.withBody.body);
           expect(modalBody).toBeInTheDocument();
         });
+        testModalOpenAndHandleClose();
       });
       describe('url modal', () => {
         beforeEach(() => {
@@ -180,6 +190,7 @@ describe('ContentIFrame Component', () => {
           expect(iframe).toHaveAttribute('allow', IFRAME_FEATURE_POLICY);
           expect(iframe).toHaveAttribute('src', modalOptions.withUrl.url);
         });
+        testModalOpenAndHandleClose();
       });
     });
   });
