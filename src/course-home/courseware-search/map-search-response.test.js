@@ -24,6 +24,25 @@ describe('mapSearchResponse', () => {
       ];
       expect(response.filters).toEqual(expectedFilters);
     });
+
+    it('should match expected results', () => {
+      const mockFirstResult = mockedResponse.results[0];
+      const expectedFirstResult = {
+        id: mockFirstResult.data.id,
+        title: mockFirstResult.data.content.display_name,
+        type: mockFirstResult.data.content_type.toLowerCase(),
+        location: mockFirstResult.data.location,
+        url: mockFirstResult.data.url,
+        contentHits: 0,
+        score: mockFirstResult.score,
+      };
+      expect(response.results[0]).toEqual(expectedFirstResult);
+    });
+
+    it('should match expected ms and max score', () => {
+      expect(response.maxScore).toBe(mockedResponse.max_score);
+      expect(response.ms).toBe(mockedResponse.took);
+    });
   });
 
   describe('when the a keyword is provided', () => {
