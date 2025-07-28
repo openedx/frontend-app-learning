@@ -167,14 +167,15 @@ describe('useIFrameBehavior hook', () => {
         ]);
       });
       describe('resize message', () => {
-        const customHeight = 23;
-        const resizeMessage = (height = 23) => ({
+        const customHeight = 25;
+        const defaultHeight = 23;
+        const resizeMessage = (height = defaultHeight) => ({
           data: { type: messageTypes.resize, payload: { height } },
         });
         const videoFullScreenMessage = (open = false) => ({
           data: { type: messageTypes.videoFullScreen, payload: { open } },
         });
-        const testSetIFrameHeight = (height = 23) => {
+        const testSetIFrameHeight = (height = defaultHeight) => {
           const { cb } = useEventListener.mock.calls[0][1];
           cb(resizeMessage(height));
           expect(setIframeHeight).toHaveBeenCalledWith(height);
@@ -187,6 +188,7 @@ describe('useIFrameBehavior hook', () => {
             cb(resizeMessage(customHeight));
             expect(setIframeHeight).toHaveBeenCalledWith(0);
             expect(setIframeHeight).toHaveBeenCalledWith(customHeight);
+            expect(setIframeHeight).not.toHaveBeenCalledWith(defaultHeight);
           });
         });
         describe('payload height is 0', () => {
@@ -197,6 +199,7 @@ describe('useIFrameBehavior hook', () => {
             cb(resizeMessage(0));
             expect(setIframeHeight).toHaveBeenCalledWith(0);
             expect(setIframeHeight).not.toHaveBeenCalledWith(customHeight);
+            expect(setIframeHeight).not.toHaveBeenCalledWith(defaultHeight);
           });
         });
         describe('payload is present but uninitialized', () => {
