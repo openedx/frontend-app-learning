@@ -1,11 +1,10 @@
+import React, { useState } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { throttle } from 'lodash';
 
-import { StrictDict, useKeyedState } from '@edx/react-unit-test-utils';
 import { logError } from '@edx/frontend-platform/logging';
 
 import { fetchCourse } from '@src/courseware/data';
@@ -18,13 +17,12 @@ import { messageTypes } from '../constants';
 
 import useLoadBearingHook from './useLoadBearingHook';
 
-export const stateKeys = StrictDict({
-  iframeHeight: 'iframeHeight',
-  hasLoaded: 'hasLoaded',
-  showError: 'showError',
-  windowTopOffset: 'windowTopOffset',
-  sequences: 'sequences',
-});
+export const iframeBehaviorState = {
+    iframeHeight: (val) => useState<number>(val), // eslint-disable-line
+    hasLoaded: (val) => useState<boolean>(val), // eslint-disable-line
+    showError: (val) => useState<boolean>(val), // eslint-disable-line
+    windowTopOffset: (val) => useState<number | null>(val), // eslint-disable-line
+} as const;
 
 const useIFrameBehavior = ({
   elementId,
@@ -38,27 +36,27 @@ const useIFrameBehavior = ({
   const dispatch = useDispatch();
   const activeSequenceId = useSelector(getSequenceId);
   const navigate = useNavigate();
-  const activeSequence = useModel(stateKeys.sequences, activeSequenceId);
+  const activeSequence = useModel('sequences', activeSequenceId);
   const activeUnitId = activeSequence.unitIds.length > 0
     ? activeSequence.unitIds[activeSequence.activeUnitIndex] : null;
   const { isLastUnit, nextLink } = useSequenceNavigationMetadata(activeSequenceId, activeUnitId);
 
-  const [iframeHeight, setIframeHeight] = useKeyedState(stateKeys.iframeHeight, 0);
-  const [hasLoaded, setHasLoaded] = useKeyedState(stateKeys.hasLoaded, false);
-  const [showError, setShowError] = useKeyedState(stateKeys.showError, false);
-  const [windowTopOffset, setWindowTopOffset] = useKeyedState(stateKeys.windowTopOffset, null);
+  const [iframeHeight, setIframeHeight] = iframeBehaviorState.iframeHeight(0);
+  const [hasLoaded, setHasLoaded] = iframeBehaviorState.hasLoaded(false);
+  const [showError, setShowError] = iframeBehaviorState.showError(false);
+  const [windowTopOffset, setWindowTopOffset] = iframeBehaviorState.windowTopOffset(null);
 
   React.useEffect(() => {
-    const frame = document.getElementById(elementId);
+    const frame = document.getElementById(elementId) as HTMLIFrameElement | null;
     const { hash } = window.location;
     if (hash) {
       // The url hash will be sent to LMS-served iframe in order to find the location of the
       // hash within the iframe.
-      frame.contentWindow.postMessage({ hashName: hash }, `${getConfig().LMS_BASE_URL}`);
+      frame?.contentWindow?.postMessage({ hashName: hash }, `${getConfig().LMS_BASE_URL}`);
     }
   }, [id, onLoaded, iframeHeight, hasLoaded]);
 
-  const receiveMessage = React.useCallback(({ data }) => {
+  const receiveMessage = React.useCallback(({ data }: MessageEvent) => {
     const { type, payload } = data;
     if (type === messageTypes.resize) {
       setIframeHeight(payload.height);
@@ -82,11 +80,11 @@ const useIFrameBehavior = ({
     } else if (data.offset) {
       // We listen for this message from LMS to know when the page needs to
       // be scrolled to another location on the page.
-      window.scrollTo(0, data.offset + document.getElementById('unit-iframe').offsetTop);
+      window.scrollTo(0, data.offset + document.getElementById('unit-iframe')!.offsetTop);
     } else if (type === messageTypes.autoAdvance) {
       // We are listening to autoAdvance message to move to next sequence automatically.
       // In case it is the last unit we need not do anything.
-      if (!isLastUnit) {
+      if (!isLastUnit && nextLink) {
         navigate(nextLink);
       }
     }
@@ -109,7 +107,7 @@ const useIFrameBehavior = ({
       return undefined;
     }
 
-    const iframeElement = document.getElementById(elementId);
+    const iframeElement = document.getElementById(elementId) as HTMLIFrameElement | null;
     if (!iframeElement || !iframeElement.contentWindow) {
       return undefined;
     }
@@ -123,7 +121,7 @@ const useIFrameBehavior = ({
           viewportHeight: window.innerHeight,
         },
       };
-      iframeElement.contentWindow.postMessage(
+      iframeElement?.contentWindow?.postMessage(
         visibleInfo,
         `${getConfig().LMS_BASE_URL}`,
       );
