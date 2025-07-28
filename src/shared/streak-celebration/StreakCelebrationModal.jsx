@@ -42,21 +42,34 @@ function getRandomFactoid(intl, streakLength) {
   return factoids[Math.floor(Math.random() * (factoids.length))];
 }
 
-async function calculateVoucherDiscount(voucher, sku, username) {
+async function calculateVoucherDiscountPercentage(voucher, sku, username) {
   const urlBase = `${getConfig().ECOMMERCE_BASE_URL}/api/v2/baskets/calculate`;
   const url = `${urlBase}/?code=${voucher}&sku=${sku}&username=${username}`;
-  return getAuthenticatedHttpClient().get(url)
-    .then(res => camelCaseObject(res));
+
+  const result = await getAuthenticatedHttpClient().get(url);
+  const { totalInclTax, totalInclTaxExclDiscounts } = camelCaseObject(result).data;
+
+  if (totalInclTaxExclDiscounts && totalInclTax !== totalInclTaxExclDiscounts) {
+    // Just store the percent (rather than using these values directly), because ecommerce doesn't give us
+    // the currency symbol to use, so we want to use the symbol that LMS gives us. And I don't want to assume
+    // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
+    // multiplied by the calculated percentage.
+    return 1 - totalInclTax / totalInclTaxExclDiscounts;
+  }
+
+  return 0;
 }
 
-async function getDiscountCodeInfo(code, courseId) {
+async function getDiscountCodePercentage(code, courseId) {
   const params = new URLSearchParams();
   params.append('code', code);
   params.append('course_run_key', courseId);
   const url = `${getConfig().DISCOUNT_CODE_INFO_URL}?${params.toString()}`;
 
-  return getAuthenticatedHttpClient().get(url)
-    .then(res => camelCaseObject(res));
+  const result = await getAuthenticatedHttpClient().get(url);
+  const { isApplicable, discountPercentage } = camelCaseObject(result).data;
+
+  return isApplicable ? +discountPercentage : 0;
 }
 
 const CloseText = ({ intl }) => (
@@ -94,44 +107,34 @@ const StreakModal = ({
   // Ask ecommerce to calculate discount savings
   useEffect(() => {
     (async () => {
-      let newDiscountPercentage = 0;
+      let streakDiscountPercentage = 0;
       try {
         if (streakDiscountCouponEnabled && verifiedMode) {
+          // If the discount service is available, use it to get the discount percentage
           if (getConfig().DISCOUNT_CODE_INFO_URL) {
-            const result = await getDiscountCodeInfo(discountCode, courseId);
-            const { isApplicable, discountPercentage } = result.data;
-            if (isApplicable) {
-              // Just store the percent, because ecommerce doesn't give us the
-              // currency symbol to use, so we want to use the symbol that LMS
-              // gives us. And we don't want to assume ecommerce's currency is
-              // the same as the LMS. So we'll keep using the values in
-              // verifiedMode, just multiplied by the received percentage.
-              newDiscountPercentage = discountPercentage;
-              sendTrackEvent('edx.bi.course.streak_discount_enabled', {
-                course_id: courseId,
-                sku: verifiedMode.sku,
-              });
-            }
+            streakDiscountPercentage = await getDiscountCodePercentage(
+              discountCode,
+              courseId,
+            );
+          // If the discount service is not available, fall back to ecommerce to calculate the discount percentage
           } else if (getConfig().ECOMMERCE_BASE_URL) {
-            const result = await calculateVoucherDiscount(discountCode, verifiedMode.sku, username);
-            const { totalInclTax, totalInclTaxExclDiscounts } = result.data;
-            if (totalInclTaxExclDiscounts && totalInclTax !== totalInclTaxExclDiscounts) {
-              // Just store the percent (rather than using these values directly), because ecommerce doesn't give us
-              // the currency symbol to use, so we want to use the symbol that LMS gives us. And I don't want to assume
-              // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
-              // multiplied by the calculated percentage.
-              newDiscountPercentage = 1 - totalInclTax / totalInclTaxExclDiscounts;
-              sendTrackEvent('edx.bi.course.streak_discount_enabled', {
-                course_id: courseId,
-                sku: verifiedMode.sku,
-              });
-            }
+            streakDiscountPercentage = await calculateVoucherDiscountPercentage(
+              discountCode,
+              verifiedMode.sku,
+              username,
+            );
           }
         }
       } catch {
         // ignore any errors - we just won't show the discount to the user then
       } finally {
-        setDiscountPercent(newDiscountPercentage);
+        if (streakDiscountPercentage) {
+          sendTrackEvent('edx.bi.course.streak_discount_enabled', {
+            course_id: courseId,
+            sku: verifiedMode.sku,
+          });
+        }
+        setDiscountPercent(streakDiscountPercentage);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
