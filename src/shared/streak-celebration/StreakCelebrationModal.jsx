@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { camelCaseObject, getConfig } from '@edx/frontend-platform';
+import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Lightbulb, MoneyFilled } from '@openedx/paragon/icons';
 import {
@@ -16,7 +15,12 @@ import { useModel } from '../../generic/model-store';
 import StreakMobileImage from './assets/Streak_mobile.png';
 import StreakDesktopImage from './assets/Streak_desktop.png';
 import messages from './messages';
-import { recordModalClosing, recordStreakCelebration } from './utils';
+import {
+  calculateVoucherDiscountPercentage,
+  getDiscountCodePercentage,
+  recordModalClosing,
+  recordStreakCelebration,
+} from './utils';
 
 function getRandomFactoid(intl, streakLength) {
   const boldedSectionA = intl.formatMessage(messages.streakFactoidABoldedSection);
@@ -40,36 +44,6 @@ function getRandomFactoid(intl, streakLength) {
     />),
   ];
   return factoids[Math.floor(Math.random() * (factoids.length))];
-}
-
-async function calculateVoucherDiscountPercentage(voucher, sku, username) {
-  const urlBase = `${getConfig().ECOMMERCE_BASE_URL}/api/v2/baskets/calculate`;
-  const url = `${urlBase}/?code=${voucher}&sku=${sku}&username=${username}`;
-
-  const result = await getAuthenticatedHttpClient().get(url);
-  const { totalInclTax, totalInclTaxExclDiscounts } = camelCaseObject(result).data;
-
-  if (totalInclTaxExclDiscounts && totalInclTax !== totalInclTaxExclDiscounts) {
-    // Just store the percent (rather than using these values directly), because ecommerce doesn't give us
-    // the currency symbol to use, so we want to use the symbol that LMS gives us. And I don't want to assume
-    // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
-    // multiplied by the calculated percentage.
-    return 1 - totalInclTax / totalInclTaxExclDiscounts;
-  }
-
-  return 0;
-}
-
-async function getDiscountCodePercentage(code, courseId) {
-  const params = new URLSearchParams();
-  params.append('code', code);
-  params.append('course_run_key', courseId);
-  const url = `${getConfig().DISCOUNT_CODE_INFO_URL}?${params.toString()}`;
-
-  const result = await getAuthenticatedHttpClient().get(url);
-  const { isApplicable, discountPercentage } = camelCaseObject(result).data;
-
-  return isApplicable ? +discountPercentage : 0;
 }
 
 const CloseText = ({ intl }) => (
