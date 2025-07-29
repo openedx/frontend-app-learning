@@ -68,7 +68,7 @@ const ContentIFrame = ({
       {(shouldShowContent && !hasLoaded) && (
         showError ? (
           <ContentIFrameErrorSlot courseId={courseId} />
-         ) : (
+        ) : (
           <ContentIFrameLoaderSlot courseId={courseId} loadingMessage={loadingMessage} />
         )
       )}
