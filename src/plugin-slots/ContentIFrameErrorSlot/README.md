@@ -1,4 +1,4 @@
-# Content iframe Loader Slot
+# Content iFrame Error Slot
 
 ### Slot ID: `org.openedx.frontend.learning.content_iframe_error.v1`
 
@@ -25,7 +25,7 @@ const config = {
           widget: {
             id: 'custom_error_page',
             type: DIRECT_PLUGIN,
-            RenderWidget: (courseId) => (
+            RenderWidget: ({courseId}) => (
               <h1>🚨🤖💥</h1>
             ),
           },
