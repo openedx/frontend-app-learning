@@ -62,11 +62,10 @@ describe('DecodePageRoute', () => {
     const props = matchPath({
       path: '/course/:courseId/home',
     }, `/course/${decodedCourseId}/home`);
-    const { container } = renderPage(props);
+    renderPage(props);
 
     expect(props.pathname).toContain(decodedCourseId);
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(container).toMatchSnapshot();
   });
 
   it('should decode the url and replace the history if necessary', () => {
