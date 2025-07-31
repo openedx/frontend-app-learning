@@ -1,6 +1,6 @@
 import React from 'react';
 import { Factory } from 'rosie';
-import { camelCaseObject, getConfig } from '@edx/frontend-platform';
+import { camelCaseObject, getConfig, mergeConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
@@ -31,6 +31,19 @@ describe('Loaded Tab Page', () => {
     axiosMock.onGet(calculateUrl).reply(200, {
       total_incl_tax: 100 - percent,
       total_incl_tax_excl_discounts: 100,
+    });
+  }
+
+  function setDiscountViaDiscountCodeInfo(percent) {
+    const discountURLParams = new URLSearchParams();
+    discountURLParams.append('code', 'ZGY11119949');
+    discountURLParams.append('course_run_key', courseMetadata.id);
+    const discountURL = `${getConfig().DISCOUNT_CODE_INFO_URL}?${discountURLParams.toString()}`;
+
+    mockData.streakDiscountCouponEnabled = true;
+    axiosMock.onGet(discountURL).reply(200, {
+      isApplicable: true,
+      discountPercentage: percent / 100,
     });
   }
 
@@ -93,6 +106,24 @@ describe('Loaded Tab Page', () => {
   it('shows discount version of streak celebration modal when available', async () => {
     global.innerWidth = breakpoints.extraSmall.maxWidth;
     setDiscount(14);
+    await renderModal();
+
+    const endDateText = `Ends ${new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString({ timeZone: 'UTC' })}.`;
+    expect(screen.getByText('You’ve unlocked a 14% off discount when you upgrade this course for a limited time only.', { exact: false })).toBeInTheDocument();
+    expect(screen.getByText(endDateText, { exact: false })).toBeInTheDocument();
+    expect(screen.getByText('Continue with course')).toBeInTheDocument();
+    expect(screen.queryByText('Keep it up')).not.toBeInTheDocument();
+    expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.course.streak_discount_enabled', {
+      course_id: mockData.courseId,
+      sku: mockData.verifiedMode.sku,
+    });
+  });
+
+  it('shows discount version of streak celebration modal when discount available and info fetched using DISCOUNT_CODE_INFO_URL', async () => {
+    mergeConfig({ DISCOUNT_CODE_INFO_URL: 'http://localhost:8140/lms/discount-code-info/' });
+
+    global.innerWidth = breakpoints.extraSmall.maxWidth;
+    setDiscountViaDiscountCodeInfo(14);
     await renderModal();
 
     const endDateText = `Ends ${new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString({ timeZone: 'UTC' })}.`;

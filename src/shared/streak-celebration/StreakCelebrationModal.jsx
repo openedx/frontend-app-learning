@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { camelCaseObject, getConfig } from '@edx/frontend-platform';
+import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Lightbulb, MoneyFilled } from '@openedx/paragon/icons';
 import {
@@ -16,7 +15,12 @@ import { useModel } from '../../generic/model-store';
 import StreakMobileImage from './assets/Streak_mobile.png';
 import StreakDesktopImage from './assets/Streak_desktop.png';
 import messages from './messages';
-import { recordModalClosing, recordStreakCelebration } from './utils';
+import {
+  calculateVoucherDiscountPercentage,
+  getDiscountCodePercentage,
+  recordModalClosing,
+  recordStreakCelebration,
+} from './utils';
 
 function getRandomFactoid(intl, streakLength) {
   const boldedSectionA = intl.formatMessage(messages.streakFactoidABoldedSection);
@@ -40,13 +44,6 @@ function getRandomFactoid(intl, streakLength) {
     />),
   ];
   return factoids[Math.floor(Math.random() * (factoids.length))];
-}
-
-async function calculateVoucherDiscount(voucher, sku, username) {
-  const urlBase = `${getConfig().ECOMMERCE_BASE_URL}/api/v2/baskets/calculate`;
-  const url = `${urlBase}/?code=${voucher}&sku=${sku}&username=${username}`;
-  return getAuthenticatedHttpClient().get(url)
-    .then(res => camelCaseObject(res));
 }
 
 const CloseText = ({ intl }) => (
@@ -83,34 +80,38 @@ const StreakModal = ({
 
   // Ask ecommerce to calculate discount savings
   useEffect(() => {
-    if (streakDiscountCouponEnabled && verifiedMode && getConfig().ECOMMERCE_BASE_URL) {
-      calculateVoucherDiscount(discountCode, verifiedMode.sku, username)
-        .then(
-          (result) => {
-            const { totalInclTax, totalInclTaxExclDiscounts } = result.data;
-            if (totalInclTaxExclDiscounts && totalInclTax !== totalInclTaxExclDiscounts) {
-              // Just store the percent (rather than using these values directly), because ecommerce doesn't give us
-              // the currency symbol to use, so we want to use the symbol that LMS gives us. And I don't want to assume
-              // ecommerce's currency is the same as the LMS. So we'll keep using the values in verifiedMode, just
-              // multiplied by the calculated percentage.
-              setDiscountPercent(1 - totalInclTax / totalInclTaxExclDiscounts);
-              sendTrackEvent('edx.bi.course.streak_discount_enabled', {
-                course_id: courseId,
-                sku: verifiedMode.sku,
-              });
-            } else {
-              setDiscountPercent(0);
-            }
-          },
-          () => {
-            // ignore any errors - we just won't show the discount to the user then
-            setDiscountPercent(0);
-          },
-        );
-    } else {
-      setDiscountPercent(0);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    (async () => {
+      let streakDiscountPercentage = 0;
+      try {
+        if (streakDiscountCouponEnabled && verifiedMode) {
+          // If the discount service is available, use it to get the discount percentage
+          if (getConfig().DISCOUNT_CODE_INFO_URL) {
+            streakDiscountPercentage = await getDiscountCodePercentage(
+              discountCode,
+              courseId,
+            );
+          // If the discount service is not available, fall back to ecommerce to calculate the discount percentage
+          } else if (getConfig().ECOMMERCE_BASE_URL) {
+            streakDiscountPercentage = await calculateVoucherDiscountPercentage(
+              discountCode,
+              verifiedMode.sku,
+              username,
+            );
+          }
+        }
+      } catch {
+        // ignore any errors - we just won't show the discount to the user then
+      } finally {
+        if (streakDiscountPercentage) {
+          sendTrackEvent('edx.bi.course.streak_discount_enabled', {
+            course_id: courseId,
+            sku: verifiedMode.sku,
+          });
+        }
+        setDiscountPercent(streakDiscountPercentage);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streakDiscountCouponEnabled, username, verifiedMode]);
 
   if (!isStreakCelebrationOpen) {
