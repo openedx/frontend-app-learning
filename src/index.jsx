@@ -166,6 +166,7 @@ subscribe(APP_INIT_ERROR, (error) => {
 initialize({
   handlers: {
     config: () => {
+      /* istanbul ignore next */
       mergeConfig({
         CONTACT_URL: process.env.CONTACT_URL || null,
         CREDENTIALS_BASE_URL: process.env.CREDENTIALS_BASE_URL || null,
