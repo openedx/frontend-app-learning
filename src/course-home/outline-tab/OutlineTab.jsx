@@ -24,7 +24,7 @@ import usePrivateCourseAlert from './alerts/private-course-alert';
 import useScheduledContentAlert from './alerts/scheduled-content-alert';
 import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
-import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
+import { ProctoringInfoPanelSlot } from '../../plugin-slots/ProctoringInfoPanelSlot';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
 import CourseHomeSectionOutlineSlot from '../../plugin-slots/CourseHomeSectionOutlineSlot';
 
@@ -171,7 +171,7 @@ const OutlineTab = () => {
         </div>
         {rootCourseId && (
           <div className="col col-12 col-md-4">
-            <ProctoringInfoPanel />
+            <ProctoringInfoPanelSlot proctoringReviewRequirementsButtonLink="https://support.edx.org/hc/en-us/sections/115004169247-Taking-Timed-and-Proctored-Exams" />
             { /** Defer showing the goal widget until the ProctoringInfoPanel has resolved or has been determined as
              disabled to avoid components bouncing around too much as screen is rendered */ }
             {(!enableProctoredExams || proctoringPanelStatus === 'loaded') && weeklyLearningGoalEnabled && (

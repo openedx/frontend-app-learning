@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import camelCase from 'lodash.camelcase';
+import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Button } from '@openedx/paragon';
@@ -10,7 +11,7 @@ import { getProctoringInfoData } from '../../data/api';
 import { fetchProctoringInfoResolved } from '../../data/slice';
 import { useModel } from '../../../generic/model-store';
 
-const ProctoringInfoPanel = () => {
+const ProctoringInfoPanel = ({ proctoringReviewRequirementsButtonLink }) => {
   const intl = useIntl();
   const {
     courseId,
@@ -207,7 +208,7 @@ const ProctoringInfoPanel = () => {
             {isSubmissionRequired(readableStatus) && (
               onboardingExamButton
             )}
-            <Button variant="outline-primary" block href="https://support.edx.org/hc/en-us/sections/115004169247-Taking-Timed-and-Proctored-Exams">
+            <Button variant="outline-primary" block href={proctoringReviewRequirementsButtonLink}>
               {intl.formatMessage(messages.proctoringReviewRequirementsButton)}
             </Button>
           </div>
@@ -215,6 +216,10 @@ const ProctoringInfoPanel = () => {
       )}
     </>
   );
+};
+
+ProctoringInfoPanel.propTypes = {
+  proctoringReviewRequirementsButtonLink: PropTypes.string.isRequired,
 };
 
 export default ProctoringInfoPanel;
