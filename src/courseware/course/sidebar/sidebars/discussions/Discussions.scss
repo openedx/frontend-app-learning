@@ -2,4 +2,8 @@
     @media (--pgn-size-breakpoint-max-width-xl) {
         max-height: calc(100vh - 65px);
     }
+
+    .pgn__modal-footer .pgn__action-row {
+        gap: 8px;
+    }
 }
