@@ -23,6 +23,7 @@ import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandin
 import DatesTab from './course-home/dates-tab';
 import GoalUnsubscribe from './course-home/goal-unsubscribe';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
+import { getPluginRoutes } from './plugin-routes';
 import { TabContainer } from './tab-page';
 
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
@@ -143,6 +144,7 @@ subscribe(APP_READY, () => {
                       )}
                     />
                   ))}
+                  {getPluginRoutes()}
                 </Routes>
               </div>
             </UserMessagesProvider>
