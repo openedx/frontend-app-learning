@@ -6,4 +6,19 @@
     .pgn__modal-footer .pgn__action-row {
         gap: 8px;
     }
+
+    #post,
+    #reply,
+    #comment.text-primary-500 {
+        color: var(--pgn-color-body-base) !important;
+    }
+
+    button[aria-label="Endorse"].text-dark-500,
+    button[aria-label="Endorse"].text-success-500 {
+        color: var(--pgn-color-primary-base) !important;
+    }
+
+    .alert-content.bg-success-500 .author-name {
+        color: var(--pgn-color-white) !important;
+    }
 }
