@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import camelCase from 'lodash.camelcase';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
+import { getExternalLinkUrl } from '@edx/frontend-platform';
 import { Button } from '@openedx/paragon';
 
 import messages from '../messages';
@@ -207,7 +208,7 @@ const ProctoringInfoPanel = () => {
             {isSubmissionRequired(readableStatus) && (
               onboardingExamButton
             )}
-            <Button variant="outline-primary" block href="https://support.edx.org/hc/en-us/sections/115004169247-Taking-Timed-and-Proctored-Exams">
+            <Button variant="outline-primary" block href={getExternalLinkUrl('https://support.edx.org/hc/en-us/sections/115004169247-Taking-Timed-and-Proctored-Exams')}>
               {intl.formatMessage(messages.proctoringReviewRequirementsButton)}
             </Button>
           </div>
