@@ -166,11 +166,13 @@ subscribe(APP_INIT_ERROR, (error) => {
 initialize({
   handlers: {
     config: () => {
+      /* istanbul ignore next */
       mergeConfig({
         CONTACT_URL: process.env.CONTACT_URL || null,
         CREDENTIALS_BASE_URL: process.env.CREDENTIALS_BASE_URL || null,
         CREDIT_HELP_LINK_URL: process.env.CREDIT_HELP_LINK_URL || null,
         DISCUSSIONS_MFE_BASE_URL: process.env.DISCUSSIONS_MFE_BASE_URL || null,
+        DISCOUNT_CODE_INFO_URL: process.env.DISCOUNT_CODE_INFO_URL || null,
         ENTERPRISE_LEARNER_PORTAL_HOSTNAME: process.env.ENTERPRISE_LEARNER_PORTAL_HOSTNAME || null,
         ENTERPRISE_LEARNER_PORTAL_URL: process.env.ENTERPRISE_LEARNER_PORTAL_URL || null,
         ENABLE_JUMPNAV: process.env.ENABLE_JUMPNAV || null,
