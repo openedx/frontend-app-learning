@@ -24,8 +24,7 @@ describe('Notification Preferences One Click Unsubscribe', () => {
   let component;
   let store;
   const userToken = '1234';
-  const updatePatch = 'abc123';
-  const url = getUnsubscribeUrl(userToken, updatePatch);
+  const url = getUnsubscribeUrl(userToken);
 
   beforeAll(async () => {
     await initializeTestStore();
@@ -39,7 +38,7 @@ describe('Notification Preferences One Click Unsubscribe', () => {
     component = (
       <AppProvider store={store} wrapWithRouter={false}>
         <UserMessagesProvider>
-          <MemoryRouter initialEntries={[`${`/preferences-unsubscribe/${userToken}/${updatePatch}/`}`]}>
+          <MemoryRouter initialEntries={[`${`/preferences-unsubscribe/${userToken}/`}`]}>
             <Routes>
               <Route path={ROUTES.PREFERENCES_UNSUBSCRIBE} element={<PreferencesUnsubscribe />} />
             </Routes>
@@ -69,7 +68,6 @@ describe('Notification Preferences One Click Unsubscribe', () => {
     expect(screen.getByTestId('heading-text')).toHaveTextContent('Error unsubscribing from preference');
     expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.notifications.preferences.unsubscribe', {
       userToken,
-      updatePatch,
     });
   });
 });

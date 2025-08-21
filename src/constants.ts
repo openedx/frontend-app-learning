@@ -22,7 +22,7 @@ export const DECODE_ROUTES = {
 
 export const ROUTES = {
   UNSUBSCRIBE: '/goal-unsubscribe/:token',
-  PREFERENCES_UNSUBSCRIBE: '/preferences-unsubscribe/:userToken/:updatePatch',
+  PREFERENCES_UNSUBSCRIBE: '/preferences-unsubscribe/:userToken/:updatePatch?',
   REDIRECT: '/redirect/*',
   DASHBOARD: 'dashboard',
   ENTERPRISE_LEARNER_DASHBOARD: 'enterprise-learner-dashboard',
