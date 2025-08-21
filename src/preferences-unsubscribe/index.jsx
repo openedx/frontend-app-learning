@@ -17,18 +17,18 @@ import messages from './messages';
 
 const PreferencesUnsubscribe = () => {
   const intl = useIntl();
-  const { userToken, updatePatch } = useParams();
+  const { userToken } = useParams();
   const [status, setStatus] = useState(LOADING);
 
   useEffect(() => {
-    unsubscribeNotificationPreferences(userToken, updatePatch).then(
+    unsubscribeNotificationPreferences(userToken).then(
       () => setStatus(LOADED),
       (error) => {
         setStatus(FAILED);
         logError(error);
       },
     );
-    sendTrackEvent('edx.ui.lms.notifications.preferences.unsubscribe', { userToken, updatePatch });
+    sendTrackEvent('edx.ui.lms.notifications.preferences.unsubscribe', { userToken });
   }, []);
 
   const pageContent = {

@@ -68,7 +68,7 @@ exports[`app registry subscribe: APP_READY.  links App to root element 1`] = `
                     <Preferences Unsubscribe />
                   </PageWrap>
                 }
-                path="/preferences-unsubscribe/:userToken/:updatePatch"
+                path="/preferences-unsubscribe/:userToken/:updatePatch?"
               />
               <Route
                 element={
