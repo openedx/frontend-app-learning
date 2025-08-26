@@ -196,6 +196,7 @@ initialize({
         PRIVACY_POLICY_URL: process.env.PRIVACY_POLICY_URL || null,
         SHOW_UNGRADED_ASSIGNMENT_PROGRESS: process.env.SHOW_UNGRADED_ASSIGNMENT_PROGRESS || false,
         ENABLE_XPERT_AUDIT: process.env.ENABLE_XPERT_AUDIT || false,
+        FEATURE_ENABLE_CHAT_V2_ENDPOINT: process.env.FEATURE_ENABLE_CHAT_V2_ENDPOINT || false,
       }, 'LearnerAppConfig');
     },
   },
