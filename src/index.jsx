@@ -23,6 +23,7 @@ import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandin
 import DatesTab from './course-home/dates-tab';
 import GoalUnsubscribe from './course-home/goal-unsubscribe';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
+import { CoursePageSlot } from './plugin-slots/CoursePageSlot';
 import { TabContainer } from './tab-page';
 
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
@@ -35,7 +36,6 @@ import CourseAccessErrorPage from './generic/CourseAccessErrorPage';
 import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
-import PageNotFound from './generic/PageNotFound';
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
@@ -51,7 +51,7 @@ subscribe(APP_READY, () => {
             <UserMessagesProvider>
               <div className="app-container">
                 <Routes>
-                  <Route path="*" element={<PageWrap><PageNotFound /></PageWrap>} />
+                  <Route path="*" element={(<CoursePageSlot />)} />
                   <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
                   <Route path={ROUTES.REDIRECT} element={<PageWrap><CoursewareRedirectLandingPage /></PageWrap>} />
                   <Route
