@@ -78,7 +78,7 @@ const ContentIFrame = ({
       {modalOptions.isOpen
           && (
           <ModalDialog
-            dialogClassName="modal-lti"
+            className="modal-lti"
             onClose={handleModalClose}
             size={modalOptions.isFullscreen ? 'fullscreen' : 'md'}
             isOpen
