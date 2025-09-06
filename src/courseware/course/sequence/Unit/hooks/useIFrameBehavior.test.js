@@ -280,7 +280,7 @@ describe('useIFrameBehavior hook', () => {
       });
     });
     describe('visibility tracking', () => {
-      it('sets up visibility tracking after iframe has loaded', () => {
+      it('sets up visibility tracking after iframe loads', () => {
         mockState({ ...defaultStateVals, hasLoaded: true });
 
         renderHook(() => useIFrameBehavior(props));
@@ -288,15 +288,9 @@ describe('useIFrameBehavior hook', () => {
         expect(global.window.addEventListener).toHaveBeenCalledTimes(2);
         expect(global.window.addEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
         expect(global.window.addEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
-        // Initial visibility update.
-        expect(postMessage).toHaveBeenCalledWith(
-          {
-            type: 'unit.visibilityStatus',
-            data: {
-              topPosition: 100,
-              viewportHeight: 800,
-            },
-          },
+        // Initial visibility update is handled by the `handleIFrameLoad` method.
+        expect(postMessage).not.toHaveBeenCalledWith(
+          expect.objectContaining({ type: 'unit.visibilityStatus' }),
           config.LMS_BASE_URL,
         );
       });
@@ -361,6 +355,20 @@ describe('useIFrameBehavior hook', () => {
         const event = { data: { event_name: eventName } };
         window.onmessage(event);
         expect(dispatch).toHaveBeenCalledWith(processEvent(event.data, fetchCourse));
+      });
+      it('updates initial iframe visibility on load', () => {
+        const { result } = renderHook(() => useIFrameBehavior(props));
+        result.current.handleIFrameLoad();
+        expect(postMessage).toHaveBeenCalledWith(
+          {
+            type: 'unit.visibilityStatus',
+            data: {
+              topPosition: 100,
+              viewportHeight: 800,
+            },
+          },
+          config.LMS_BASE_URL,
+        );
       });
     });
     it('forwards handleIframeLoad, showError, and hasLoaded from state fields', () => {
