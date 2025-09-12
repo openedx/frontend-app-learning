@@ -379,8 +379,11 @@
 
   // Along with setting the height of modal-content's parent div from react-focus-on, we need to
   // set modal-content's height as well to get the modal to expand to full-screen height.
-  .modal-content, .pgn__modal-body-content {
+  .modal-content {
     height: 80vh;
+  }
+  .pgn__modal-body-content {
+    height: 100%;
   }
 }
 
