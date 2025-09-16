@@ -9,16 +9,20 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 24]
+    continue-on-error: ${{ matrix.node == 24 }}
     steps:
     - uses: actions/checkout@v5
     - uses: actions/setup-node@v4
       with:
-        node-version-file: '.nvmrc'
+        node-version: ${{ matrix.node }}
     - run: make validate.ci
     - name: Archive code coverage results
       uses: actions/upload-artifact@v4
       with:
-        name: code-coverage-report
+        name: code-coverage-report-node-${{ matrix.node }}
         path: coverage/*.*
   coverage:
     runs-on: ubuntu-latest
@@ -28,7 +32,8 @@ jobs:
     - name: Download code coverage results
       uses: actions/download-artifact@v5
       with:
-        name: code-coverage-report
+        pattern: code-coverage-report-node-*
+        merge-multiple: true
     - name: Upload coverage
       uses: codecov/codecov-action@v5
       with:
