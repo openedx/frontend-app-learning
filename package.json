@@ -74,7 +74,6 @@
     "truncate-html": "1.0.4"
   },
   "devDependencies": {
-    "@edx/reactifex": "2.2.0",
     "@pact-foundation/pact": "^13.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
