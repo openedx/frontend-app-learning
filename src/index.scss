@@ -1,7 +1,5 @@
-@import "~@edx/paragon/scss/core/core";
-
 @use "@openedx/paragon/styles/css/core/custom-media-breakpoints" as paragonCustomMediaBreakpoints;
-
+@import "~@edx/paragon/scss/core/core";
 @import "~@edx/frontend-component-footer/dist/footer";
 @import "~@edx/frontend-component-header/dist/index";
 
