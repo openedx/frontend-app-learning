@@ -448,6 +448,63 @@
   }
 }
 
+#courseTabsNavigation.course-tabs-navigation {
+  display: none !important;
+}
+
+section.outline-sidebar.w-100 {
+  display: none !important;
+}
+
+.outline-sidebar-wrapper {
+  display: none !important;
+}
+
+
+header.learning-header {
+  display: none !important;
+}
+
+.unit-container {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  max-width: 100% !important;
+}
+
+.outline-sidebar-heading-wrapper.bg-light-200.collapsed.align-self-start.flex-shrink-0.mr-4.p-2\.5 {
+  display: none !important;
+}
+section#course-sidebar {
+    display: none;
+}
+.bg-primary.text-white {
+    display: none;
+}
+
+.container-xl {
+    max-width: 100% !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+.position-relative.d-flex.align-items-xl-center.mb-4.mt-1.flex-column.flex-xl-row {
+    display: none !important;
+}
+.wrapper.wrapper-footer {
+    display: none !important;
+}
+.text-right.small.py-1 {
+    display: none;
+}
+.sequence-container.d-inline-flex.flex-row.w-100 {
+    margin-bottom: 0px !important;
+}
+a.d-block {
+    display: none !important;
+}
+footer.footer.d-flex.border-top.py-3.px-4 {
+    display: none !important;
+}
+
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
 @import "courseware/course/sidebar/sidebars/discussions/Discussions.scss";
