@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@openedx/paragon';
+import { Lock } from '@openedx/paragon/icons';
 import { useContextId } from '../../../../data/hooks';
 import { useModel } from '../../../../generic/model-store';
 
@@ -10,6 +11,7 @@ import DroppableAssignmentFootnote from './DroppableAssignmentFootnote';
 import GradeSummaryTableFooter from './GradeSummaryTableFooter';
 
 import messages from '../messages';
+import { areAllGradesHiddenForType, areSomeGradesHiddenForType } from '../../utils';
 
 const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
   const intl = useIntl();
@@ -80,13 +82,24 @@ const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
     const locked = !gradesFeatureIsFullyLocked && hasNoAccessToAssignmentsOfType(assignmentType);
     const isLocaleRtl = isRtl(getLocale());
 
+    let weightedGradeDisplay = `${getGradePercent(weightedGrade)}${isLocaleRtl ? '\u200f' : ''}%`;
+    let gradeDisplay = `${getGradePercent(averageGrade)}${isLocaleRtl ? '\u200f' : ''}%`;
+
+    if (areAllGradesHiddenForType(assignmentType, sectionScores)) {
+      gradeDisplay = <Lock data-testid="lock-icon" />;
+      weightedGradeDisplay = <Lock data-testid="lock-icon" />;
+    } else if (areSomeGradesHiddenForType(assignmentType, sectionScores)) {
+      gradeDisplay = `${getGradePercent(averageGrade)}${isLocaleRtl ? '\u200f' : ''}% + ${intl.formatMessage(messages.hiddenScoreLabel)}`;
+      weightedGradeDisplay = `${getGradePercent(weightedGrade)}${isLocaleRtl ? '\u200f' : ''}% + ${intl.formatMessage(messages.hiddenScoreLabel)}`;
+    }
+
     return {
       type: {
         footnoteId, footnoteMarker, type: assignmentType, locked,
       },
       weight: { weight: `${(weight * 100).toFixed(0)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
-      grade: { grade: `${getGradePercent(averageGrade)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
-      weightedGrade: { weightedGrade: `${getGradePercent(weightedGrade)}${isLocaleRtl ? '\u200f' : ''}%`, locked },
+      grade: { grade: gradeDisplay, locked },
+      weightedGrade: { weightedGrade: weightedGradeDisplay, locked },
     };
   });
   const getAssignmentTypeCell = (value) => (
@@ -102,6 +115,16 @@ const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
 
   return (
     <>
+      <ul className="micro mb-3 pl-3 text-gray-700">
+        <li>
+          <b>{intl.formatMessage(messages.hiddenScoreLabel)}: </b>
+          {intl.formatMessage(messages.hiddenScoreInfoText)}
+        </li>
+        <li>
+          <b><Lock style={{ height: '15px' }} />: </b>
+          {` ${intl.formatMessage(messages.hiddenScoreLockInfoText)}`}
+        </li>
+      </ul>
       <DataTable
         data={gradeSummaryData}
         itemCount={gradeSummaryData.length}

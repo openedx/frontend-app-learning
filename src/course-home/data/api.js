@@ -3,25 +3,40 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { logInfo } from '@edx/frontend-platform/logging';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 
-const calculateAssignmentTypeGrades = (points, assignmentWeight, numDroppable) => {
+const calculateAssignmentTypeGrades = (points, visibilities, assignmentWeight, numDroppable) => {
   let dropCount = numDroppable;
   // Drop the lowest grades
   while (dropCount && points.length >= dropCount) {
     const lowestScore = Math.min(...points);
     const lowestScoreIndex = points.indexOf(lowestScore);
     points.splice(lowestScoreIndex, 1);
+    visibilities.splice(lowestScoreIndex, 1);
     dropCount--;
   }
   let averageGrade = 0;
   let weightedGrade = 0;
+  let totalWeightedGrade = 0;
+
   if (points.length) {
-    // Calculate the average grade for the assignment and round it. This rounding is not ideal and does not accurately
-    // reflect what a learner's grade would be, however, we must have parity with the current grading behavior that
-    // exists in edx-platform.
-    averageGrade = (points.reduce((a, b) => a + b, 0) / points.length).toFixed(4);
-    weightedGrade = averageGrade * assignmentWeight;
+    // Scores for visible grades (exclude never_but_include_grade)
+    const visibleScores = points.filter(
+      (_, idx) => visibilities[idx] !== 'never_but_include_grade',
+    );
+
+    // Average all scores (for totalWeightedGrade)
+    const overallAverage = parseFloat(
+      (points.reduce((a, b) => a + b, 0) / points.length).toFixed(4),
+    );
+    totalWeightedGrade = overallAverage * assignmentWeight;
+    if (visibleScores.length) {
+      const visibleAverage = parseFloat(
+        (visibleScores.reduce((a, b) => a + b, 0) / points.length).toFixed(4),
+      );
+      averageGrade = visibleAverage;
+      weightedGrade = averageGrade * assignmentWeight;
+    }
   }
-  return { averageGrade, weightedGrade };
+  return { averageGrade, weightedGrade, totalWeightedGrade };
 };
 
 function normalizeAssignmentPolicies(assignmentPolicies, sectionScores) {
@@ -33,6 +48,7 @@ function normalizeAssignmentPolicies(assignmentPolicies, sectionScores) {
       grades: Array(assignment.numTotal).fill(0),
       numAssignmentsCreated: 0,
       numTotalExpectedAssignments: assignment.numTotal,
+      visibility: Array(assignment.numTotal),
     };
   });
 
@@ -45,6 +61,7 @@ function normalizeAssignmentPolicies(assignmentPolicies, sectionScores) {
         assignmentType,
         numPointsEarned,
         numPointsPossible,
+        showCorrectness,
       } = subsection;
 
       // If a subsection's assignment type does not match an assignment policy in Studio,
@@ -64,17 +81,20 @@ function normalizeAssignmentPolicies(assignmentPolicies, sectionScores) {
         // Remove a placeholder grade so long as the number of recorded created assignments is less than the number
         // of expected assignments
         gradeByAssignmentType[assignmentType].grades.shift();
+        gradeByAssignmentType[assignmentType].visibility.shift();
       }
       // Add the graded assignment to the list
       gradeByAssignmentType[assignmentType].grades.push(numPointsEarned ? numPointsEarned / numPointsPossible : 0);
       // Record the created assignment
       gradeByAssignmentType[assignmentType].numAssignmentsCreated = numAssignmentsCreated;
+      gradeByAssignmentType[assignmentType].visibility.push(showCorrectness);
     });
   });
 
   return assignmentPolicies.map((assignment) => {
-    const { averageGrade, weightedGrade } = calculateAssignmentTypeGrades(
+    const { averageGrade, weightedGrade, totalWeightedGrade } = calculateAssignmentTypeGrades(
       gradeByAssignmentType[assignment.type].grades,
+      gradeByAssignmentType[assignment.type].visibility,
       assignment.weight,
       assignment.numDroppable,
     );
@@ -86,6 +106,7 @@ function normalizeAssignmentPolicies(assignmentPolicies, sectionScores) {
       type: assignment.type,
       weight: assignment.weight,
       weightedGrade,
+      totalWeightedGrade,
     };
   });
 }

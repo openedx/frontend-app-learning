@@ -22,6 +22,7 @@ const DetailedGradesTable = () => {
         (subsection) => !!(
           (showUngradedAssignments() || subsection.hasGradedAssignment)
             && subsection.showGrades
+            && subsection.showCorrectness !== 'never_but_include_grade'
             && (subsection.numPointsPossible > 0 || subsection.numPointsEarned > 0)
         ),
       );

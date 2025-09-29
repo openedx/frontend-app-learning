@@ -21,6 +21,11 @@ const messages = defineMessages({
     defaultMessage: 'Your current grade is {currentGrade}%. A weighted grade of {passingGrade}% is required to pass in this course.',
     description: 'Alt text for the grade chart bar',
   },
+  courseGradeFooterDueDateNotice: {
+    id: 'progress.courseGrade.footer.dueDateNotice',
+    defaultMessage: 'Some assignment scores are not yet included in your total grade. These grades will be released by {dueDate}.',
+    description: 'This shown when there are pending assignments with due date in the future',
+  },
   courseGradeFooterGenericPassing: {
     id: 'progress.courseGrade.footer.generic.passing',
     defaultMessage: 'You’re currently passing this course',
@@ -147,6 +152,21 @@ const messages = defineMessages({
       + 'By multiplying your grade by the weight for that assignment type, your weighted grade is calculated. '
       + "Your weighted grade is what's used to determine if you pass the course.",
     description: 'The content of (tip box) for the grade summary section',
+  },
+  hiddenScoreLabel: {
+    id: 'progress.hiddenScoreLabel',
+    defaultMessage: 'Hidden Scores',
+    description: 'Text to indicate that some scores are hidden',
+  },
+  hiddenScoreInfoText: {
+    id: 'progress.hiddenScoreInfoText',
+    defaultMessage: 'Scores from assignments that count toward your final grade but some are not shown here.',
+    description: 'Information text about hidden score label',
+  },
+  hiddenScoreLockInfoText: {
+    id: 'progress.hiddenScoreLockInfoText',
+    defaultMessage: 'Shown when scores for an assignment type are hidden yet still counted toward the course grade.',
+    description: 'Information text about hidden score label when learner have limited access to grades feature',
   },
   noAccessToAssignmentType: {
     id: 'progress.noAcessToAssignmentType',
