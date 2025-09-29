@@ -697,6 +697,187 @@ describe('Progress Tab', () => {
       // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
       expect(screen.getByRole('row', { name: 'Homework 1 100% 0% 0%' })).toBeInTheDocument();
     });
+
+    it('shows lock icon when all subsections of assignment type are never_but_include_grade', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+        section_scores: [
+          {
+            display_name: 'Section 1',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                display_name: 'Subsection 1',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'never_but_include_grade',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/subsection1',
+              },
+              {
+                assignment_type: 'Homework',
+                display_name: 'Subsection 2',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'never_but_include_grade',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/subsection2',
+              },
+            ],
+          },
+        ],
+      });
+      await fetchAndRender();
+      // Should show lock icon for grade and weighted grade
+      expect(screen.getAllByTestId('lock-icon')).toHaveLength(2);
+    });
+
+    it.only('shows percent plus hidden grades when some subsections of assignment type are never_but_include_grade', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+        section_scores: [
+          {
+            display_name: 'Section 1',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                display_name: 'Subsection 1',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'never_but_include_grade',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/subsection1',
+              },
+              {
+                assignment_type: 'Homework',
+                display_name: 'Subsection 2',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/subsection2',
+              },
+            ],
+          },
+        ],
+      });
+      await fetchAndRender();
+      // Should show percent + hidden scores for grade and weighted grade
+      const hiddenScoresCells = screen.getAllByText(/% \+ Hidden Scores/);
+      expect(hiddenScoresCells).toHaveLength(2);
+      // Only correct visible scores should be shown (from subsection2)
+      // The correct visible score is 1/4 = 0.25 -> 25%
+      expect(hiddenScoresCells[0]).toHaveTextContent('25% + Hidden Scores');
+      expect(hiddenScoresCells[1]).toHaveTextContent('25% + Hidden Scores');
+    });
+
+    it('displays a warning message with the latest due date when not all assignment scores are included in the total grade', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+        section_scores: [
+          {
+            display_name: 'Section 1',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                display_name: 'Subsection 1',
+                due: tomorrow.toISOString(),
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'never_but_include_grade',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/subsection1',
+              },
+              {
+                assignment_type: 'Homework',
+                display_name: 'Subsection 2',
+                due: null,
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/subsection2',
+              },
+            ],
+          },
+        ],
+      });
+
+      await fetchAndRender();
+
+      const formattedDateTime = new Intl.DateTimeFormat('en', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        timeZoneName: 'short',
+      }).format(tomorrow);
+
+      expect(
+        screen.getByText(
+          `Some assignment scores are not yet included in your total grade. These grades will be released by ${formattedDateTime}.`,
+        ),
+      ).toBeInTheDocument();
+    });
+
     it('calculates grades correctly when number of droppable assignments is less than total number of assignments', async () => {
       await fetchAndRender();
       expect(screen.getByText('Grade summary')).toBeInTheDocument();
