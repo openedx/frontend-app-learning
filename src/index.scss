@@ -1,25 +1,19 @@
 @import "~@edx/brand/paragon/fonts";
 @import "~@edx/brand/paragon/variables";
-@import "~@openedx/paragon/scss/core";
+@import "~@openedx/paragon/scss/core/core";
 @import "~@edx/brand/paragon/overrides";
+
 @import "~@edx/frontend-component-footer/dist/footer";
 @import "~@edx/frontend-component-header/dist/index";
 
 
 #root {
-  .app-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100svh;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
   main {
     flex-grow: 1;
-  }
-  #main-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
   }
 
   header {
@@ -50,7 +44,7 @@
   .nav-link {
     border-bottom: 4px solid transparent;
     border-top: 4px solid transparent;
-    color: var(--pgn-color-gray-700);
+    color: $gray-700;
 
     // temporary until we can remove .btn class from dropdowns
     border-left: 0;
@@ -60,9 +54,9 @@
     &:hover,
     &:focus,
     &.active {
-      font-weight: var(--pgn-typography-font-weight-normal);
-      color: var(--pgn-color-primary-500);
-      border-bottom-color: var(--pgn-color-primary-500);
+      font-weight: $font-weight-normal;
+      color: $primary-500;
+      border-bottom-color: $primary-500;
     }
   }
 }
@@ -81,7 +75,7 @@
 }
 
 .sequence {
-  @media (--pgn-size-breakpoint-min-width-sm) {
+  @media (min-width: map-get($grid-breakpoints, "sm")) {
     border: solid 1px #eaeaea;
     border-radius: 4px;
   }
@@ -93,7 +87,7 @@
 }
 
 .notification-btn {
-  @media (--pgn-size-breakpoint-max-width-xs) {
+  @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
     height: 3rem;
   }
 }
@@ -102,15 +96,15 @@
   display: flex;
   flex-grow: 1;
 
-  @media (--pgn-size-breakpoint-max-width-xs) {
+  @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
     max-width: 100%;
   }
 
-  @media (--pgn-size-breakpoint-min-width-sm) {
+  @media (min-width: map-get($grid-breakpoints, "sm")) {
     margin: -1px -1px 0;
   }
 
-  @media (--pgn-size-breakpoint-max-width-xs) {
+  @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
     width: 100% !important;
   }
 
@@ -126,13 +120,13 @@
     height: 3rem;
     justify-content: center;
     align-items: center;
-    color: var(--pgn-color-gray-500);
+    color: $gray-500;
     white-space: nowrap;
 
     &:hover,
     &:focus,
     &.active {
-      color: var(--pgn-color-gray-700);
+      color: $gray-700;
     }
 
     &:focus {
@@ -147,13 +141,13 @@
         left: 0;
         right: 0;
         height: 2px;
-        background: var(--pgn-color-primary-base);
+        background: $primary;
       }
     }
 
     &.complete {
       background-color: #eef7e5;
-      color: var(--pgn-color-success-base);
+      color: $success;
     }
 
     &:first-child {
@@ -217,12 +211,12 @@
         min-width: 0;
         margin: 0 1rem;
         text-overflow: ellipsis;
-        color: var(--pgn-color-gray-700);
+        color: $gray-700;
       }
 
       &.active {
         .unit-icon {
-          color: var(--pgn-color-primary-500);
+          color: $primary-500;
         }
 
         &:after {
@@ -234,7 +228,7 @@
           right: auto;
           width: 2px;
           height: auto;
-          background: var(--pgn-color-primary-base);
+          background: $primary;
         }
       }
     }
@@ -249,18 +243,18 @@
 
   .previous-btn,
   .next-btn {
-    border: 1px solid var(--pgn-color-light-400) !important;
-    color: var(--pgn-color-gray-700);
+    border: 1px solid $light-400 !important;
+    color: $gray-700;
     display: inline-flex;
     justify-content: center;
     align-items: center;
 
-    @media (--pgn-size-breakpoint-max-width-sm) {
+    @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
       padding-top: 1rem;
       padding-bottom: 1rem;
     }
 
-    @media (--pgn-size-breakpoint-min-width-sm) {
+    @media (min-width: map-get($grid-breakpoints, "sm")) {
       min-width: fit-content;
       padding-left: 2rem;
       padding-right: 2rem;
@@ -271,7 +265,7 @@
     border-left-width: 0;
     margin-left: 0;
 
-    @media (--pgn-size-breakpoint-min-width-sm) {
+    @media (min-width: map-get($grid-breakpoints, "sm")) {
       border-left-width: 1px;
       border-top-left-radius: 4px;
     }
@@ -281,7 +275,7 @@
     border-left-width: 1px;
     border-right-width: 0;
 
-    @media (--pgn-size-breakpoint-min-width-sm) {
+    @media (min-width: map-get($grid-breakpoints, "sm")) {
       border-top-right-radius: 4px;
       border-right-width: 1px;
     }
@@ -295,9 +289,9 @@
   margin-left: auto;
   margin-right: auto;
 
-  @media (--pgn-size-breakpoint-min-width-sm) {
-    padding-left: var(--pgn-spacing-grid-gutter-width);
-    padding-right: var(--pgn-spacing-grid-gutter-width);
+  @media (min-width: map-get($grid-breakpoints, "sm")) {
+    padding-left: $grid-gutter-width;
+    padding-right: $grid-gutter-width;
   }
 
   @media (min-width: 830px) {
@@ -315,8 +309,8 @@
   // here we compensate for the padding of the parent div with "container-xl"
   // class to ensure that the viewport width is the same as the width of the
   // iframe.
-  margin-left: calc(var(--pgn-spacing-grid-gutter-width) * -0.5);
-  margin-right: calc(var(--pgn-spacing-grid-gutter-width) * -0.5);
+  margin-left: -$grid-gutter-width * .5;
+  margin-right: -$grid-gutter-width * .5;
 
   margin-bottom: 2rem;
 
@@ -334,13 +328,12 @@
 .unit-navigation {
   display: flex;
   justify-content: center;
-  gap: 5px;
   max-width: 640px;
   margin: 0 auto;
 
-  @media (--pgn-size-breakpoint-max-width-xs) {
+  @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
     flex-direction: column;
-    gap: var(--pgn-spacing-spacer-base);
+    gap: $spacer;
   }
 
   .previous-button,
@@ -351,12 +344,27 @@
       border-radius: 6px;
     }
   }
+
+  .next-button {
+    flex-basis: 75%;
+
+     @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+       flex-basis: 100%;
+     }
+  }
+
+  .previous-button {
+    flex-basis: 25%;
+
+     @media (max-width: -1 + map-get($grid-breakpoints, "sm")) {
+       flex-basis: 100%;
+     }
+  }
 }
 
 .top-unit-navigation {
   display: flex;
   max-width: 100%;
-  gap: 5px;
   justify-content: flex-end;
 
   .next-button,
@@ -410,8 +418,8 @@
 
 .icon-hover {
   &:hover {
-    color: var(--pgn-color-primary-500) !important;
-    background-color: var(--pgn-color-light-300) !important;
+    color: $primary-500 !important;
+    background-color: $light-300 !important;
   }
 }
 
@@ -434,7 +442,7 @@
   height: 56px !important;
 }
 
-@media (--pgn-size-breakpoint-max-width-xs) {
+@include media-breakpoint-down(xs) {
   .course-outline-tab .pgn__card {
     .pgn__card-header {
       display: block;
@@ -448,62 +456,6 @@
       margin-left: 0;
     }
   }
-}
-
-#courseTabsNavigation.course-tabs-navigation {
-  display: none !important;
-}
- 
-section.outline-sidebar.w-100 {
-  display: none !important;
-}
- 
-.outline-sidebar-wrapper {
-  display: none !important;
-}
- 
- 
-header.learning-header {
-  display: none !important;
-}
- 
-.unit-container {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  max-width: 100% !important;
-}
- 
-.outline-sidebar-heading-wrapper.bg-light-200.collapsed.align-self-start.flex-shrink-0.mr-4.p-2\.5 {
-  display: none !important;
-}
-section#course-sidebar {
-    display: none;
-}
-.bg-primary.text-white {
-    display: none;
-}
-.container-xl {
-    max-width: 100% !important;
-    padding-left: 0px !important;
-    padding-right: 0px !important;
-}
-.position-relative.d-flex.align-items-xl-center.mb-4.mt-1.flex-column.flex-xl-row {
-    display: none !important;
-}
-.wrapper.wrapper-footer {
-    display: none !important;
-}
-.text-right.small.py-1 {
-    display: none;
-}
-.sequence-container.d-inline-flex.flex-row.w-100 {
-    margin-bottom: 0px !important;
-}
-a.d-block {
-    display: none !important;
-}
-footer.footer.d-flex.border-top.py-3.px-4 {
-    display: none !important;
 }
 
 // Import component-specific sass files
