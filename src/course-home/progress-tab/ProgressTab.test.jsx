@@ -751,7 +751,7 @@ describe('Progress Tab', () => {
       expect(screen.getAllByTestId('lock-icon')).toHaveLength(2);
     });
 
-    it.only('shows percent plus hidden grades when some subsections of assignment type are never_but_include_grade', async () => {
+    it('shows percent plus hidden grades when some subsections of assignment type are never_but_include_grade', async () => {
       setTabData({
         grading_policy: {
           assignment_policies: [
