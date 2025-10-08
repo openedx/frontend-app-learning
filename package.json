@@ -35,7 +35,7 @@
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.2",
     "@edx/browserslist-config": "1.5.0",
     "@edx/frontend-component-footer": "^14.6.0",
-    "@edx/frontend-component-header": "^6.6.0",
+    "@edx/frontend-component-header": "^8.0.0",
     "@edx/frontend-lib-learning-assistant": "^2.23.0",
     "@edx/frontend-lib-special-exams": "^4.0.0",
     "@edx/frontend-platform": "^8.4.0",
