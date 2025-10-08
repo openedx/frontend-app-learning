@@ -15,7 +15,7 @@ const getSubsectionsOfType = (assignmentType, sectionScores) => (sectionScores |
 }, []);
 
 // Returns True if this subsection is "hidden"
-const isSubsectionHidden = (sub) => sub.showGrades && sub.showCorrectness === 'never_but_include_grade';
+const isSubsectionHidden = (sub) => sub.showCorrectness === 'never_but_include_grade';
 
 // Returns True if all grades are hidden for this assignment type
 export const areAllGradesHiddenForType = (assignmentType, sectionScores) => {
