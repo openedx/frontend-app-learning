@@ -24,7 +24,7 @@ const messages = defineMessages({
   courseGradeFooterDueDateNotice: {
     id: 'progress.courseGrade.footer.dueDateNotice',
     defaultMessage: 'Some assignment scores are not yet included in your total grade. These grades will be released by {dueDate}.',
-    description: 'This shown when there are pending assignments with due date in the future',
+    description: 'This is shown when there are pending assignments with a due date in the future',
   },
   courseGradeFooterGenericPassing: {
     id: 'progress.courseGrade.footer.generic.passing',
@@ -165,8 +165,8 @@ const messages = defineMessages({
   },
   hiddenScoreLockInfoText: {
     id: 'progress.hiddenScoreLockInfoText',
-    defaultMessage: 'Shown when scores for an assignment type are hidden yet still counted toward the course grade.',
-    description: 'Information text about hidden score label when learner have limited access to grades feature',
+    defaultMessage: 'Scores for an assignment type are hidden but still counted toward the course grade.',
+    description: 'Information text about hidden score label when learners have limited access to grades feature',
   },
   noAccessToAssignmentType: {
     id: 'progress.noAcessToAssignmentType',
