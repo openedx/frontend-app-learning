@@ -5,6 +5,7 @@ import { OverlayTrigger, Popover } from '@openedx/paragon';
 import { useContextId } from '../../../../data/hooks';
 
 import { useModel } from '../../../../generic/model-store';
+import { areAllGradesHiddenForType, areSomeGradesHiddenForType } from '../../utils';
 
 import messages from '../messages';
 
@@ -13,10 +14,14 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
   const courseId = useContextId();
 
   const {
+    gradingPolicy: {
+      assignmentPolicies,
+    },
     courseGrade: {
       isPassing,
       percent,
     },
+    sectionScores,
   } = useModel('progress', courseId);
 
   const currentGrade = Number((percent * 100).toFixed(0));
@@ -24,6 +29,11 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
   let currentGradeDirection = currentGrade < 50 ? '' : '-';
 
   const isLocaleRtl = isRtl(getLocale());
+
+  const hasHiddenGrades = assignmentPolicies.some(
+    (assignment) => areSomeGradesHiddenForType(assignment.type, sectionScores)
+     || areAllGradesHiddenForType(assignment.type, sectionScores),
+  );
 
   if (isLocaleRtl) {
     currentGradeDirection = currentGrade < 50 ? '-' : '';
@@ -55,6 +65,15 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
         style={{ transform: `translateX(${currentGradeDirection}3.4em)` }}
       >
         {intl.formatMessage(messages.currentGradeLabel)}
+      </text>
+      <text
+        className="x-small"
+        textAnchor={currentGrade < 50 ? 'start' : 'end'}
+        x={`${Math.min(...[isLocaleRtl ? 100 - currentGrade : currentGrade, 100])}%`}
+        y="35px"
+        style={{ transform: `translateX(${currentGradeDirection}3.4em)` }}
+      >
+        {hasHiddenGrades ? ` + ${intl.formatMessage(messages.hiddenScoreLabel)}` : ''}
       </text>
     </>
   );
