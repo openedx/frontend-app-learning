@@ -5,7 +5,6 @@ import { OverlayTrigger, Popover } from '@openedx/paragon';
 import { useContextId } from '../../../../data/hooks';
 
 import { useModel } from '../../../../generic/model-store';
-import { areAllGradesHiddenForType, areSomeGradesHiddenForType } from '../../utils';
 
 import messages from '../messages';
 
@@ -14,14 +13,11 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
   const courseId = useContextId();
 
   const {
-    gradingPolicy: {
-      assignmentPolicies,
-    },
+    assignmentTypeGradeSummary,
     courseGrade: {
       isPassing,
       percent,
     },
-    sectionScores,
   } = useModel('progress', courseId);
 
   const currentGrade = Number((percent * 100).toFixed(0));
@@ -30,10 +26,7 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
 
   const isLocaleRtl = isRtl(getLocale());
 
-  const hasHiddenGrades = assignmentPolicies.some(
-    (assignment) => areSomeGradesHiddenForType(assignment.type, sectionScores)
-     || areAllGradesHiddenForType(assignment.type, sectionScores),
-  );
+  const hasHiddenGrades = assignmentTypeGradeSummary.some((assignmentType) => assignmentType.hasHiddenContribution !== "none");
 
   if (isLocaleRtl) {
     currentGradeDirection = currentGrade < 50 ? '-' : '';

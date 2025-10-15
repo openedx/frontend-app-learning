@@ -9,6 +9,7 @@ import { useModel } from '../../../../generic/model-store';
 import GradeRangeTooltip from './GradeRangeTooltip';
 import messages from '../messages';
 import { getLatestDueDateInFuture } from '../../utils';
+import { assert } from 'joi';
 
 const ResponsiveText = ({
   wideScreen, children, hasLetterGrades, passingGrade,
@@ -48,12 +49,12 @@ const CourseGradeFooter = ({ passingGrade }) => {
   const courseId = useContextId();
 
   const {
+    assignmentTypeGradeSummary,
     courseGrade: { isPassing, letterGrade },
     gradingPolicy: { gradeRange },
-    sectionScores,
   } = useModel('progress', courseId);
 
-  const latestDueDate = getLatestDueDateInFuture(sectionScores);
+  const latestDueDate = getLatestDueDateInFuture(assignmentTypeGradeSummary);
   const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
   const hasLetterGrades = Object.keys(gradeRange).length > 1;
 

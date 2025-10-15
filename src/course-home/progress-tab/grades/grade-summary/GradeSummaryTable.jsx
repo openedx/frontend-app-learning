@@ -11,16 +11,13 @@ import DroppableAssignmentFootnote from './DroppableAssignmentFootnote';
 import GradeSummaryTableFooter from './GradeSummaryTableFooter';
 
 import messages from '../messages';
-import { areAllGradesHiddenForType, areSomeGradesHiddenForType } from '../../utils';
 
 const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
   const intl = useIntl();
   const courseId = useContextId();
 
   const {
-    gradingPolicy: {
-      assignmentPolicies,
-    },
+    assignmentTypeGradeSummary,
     gradesFeatureIsFullyLocked,
     sectionScores,
   } = useModel('progress', courseId);
@@ -57,7 +54,7 @@ const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
     return false;
   };
 
-  const gradeSummaryData = assignmentPolicies.map((assignment) => {
+  const gradeSummaryData = assignmentTypeGradeSummary.map((assignment) => {
     const {
       averageGrade,
       numDroppable,
@@ -85,10 +82,10 @@ const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
     let weightedGradeDisplay = `${getGradePercent(weightedGrade)}${isLocaleRtl ? '\u200f' : ''}%`;
     let gradeDisplay = `${getGradePercent(averageGrade)}${isLocaleRtl ? '\u200f' : ''}%`;
 
-    if (areAllGradesHiddenForType(assignmentType, sectionScores)) {
+    if (assignment.hasHiddenContribution === 'all') {
       gradeDisplay = <Lock data-testid="lock-icon" />;
       weightedGradeDisplay = <Lock data-testid="lock-icon" />;
-    } else if (areSomeGradesHiddenForType(assignmentType, sectionScores)) {
+    } else if (assignment.hasHiddenContribution === 'some') {
       gradeDisplay = `${getGradePercent(averageGrade)}${isLocaleRtl ? '\u200f' : ''}% + ${intl.formatMessage(messages.hiddenScoreLabel)}`;
       weightedGradeDisplay = `${getGradePercent(weightedGrade)}${isLocaleRtl ? '\u200f' : ''}% + ${intl.formatMessage(messages.hiddenScoreLabel)}`;
     }

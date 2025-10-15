@@ -17,7 +17,11 @@ const GradeSummaryTableFooter = () => {
   const courseId = useContextId();
 
   const {
-    gradingPolicy: { assignmentPolicies },
+    courseGrade: {
+      isPassing,
+      percent,
+    },
+    finalGrades,
   } = useModel('progress', courseId);
 
   const getGradePercent = (grade) => {
@@ -25,19 +29,7 @@ const GradeSummaryTableFooter = () => {
     return Number.isInteger(percent) ? percent.toFixed(0) : percent.toFixed(2);
   };
 
-  let rawGrade = assignmentPolicies.reduce(
-    (sum, { totalWeightedGrade }) => sum + totalWeightedGrade,
-    0,
-  );
-
-  rawGrade = getGradePercent(rawGrade);
-
-  const {
-    courseGrade: {
-      isPassing,
-      percent,
-    },
-  } = useModel('progress', courseId);
+  const rawGrade = getGradePercent(finalGrades);
 
   const bgColor = isPassing ? 'bg-success-100' : 'bg-warning-100';
   const totalGrade = (percent * 100).toFixed(0);
@@ -57,7 +49,7 @@ const GradeSummaryTableFooter = () => {
                 <Tooltip>
                   {intl.formatMessage(
                     messages.weightedGradeSummaryTooltip,
-                    { roundedGrade: totalGrade, rawGrade },
+                    { roundedGrade: totalGrade, rawGrade: rawGrade },
                   )}
                 </Tooltip>
               )}
