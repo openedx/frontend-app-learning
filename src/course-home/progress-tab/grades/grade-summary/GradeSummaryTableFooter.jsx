@@ -1,9 +1,6 @@
-import { useContext } from 'react';
-
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import {
   DataTable,
-  DataTableContext,
   Icon,
   OverlayTrigger,
   Stack,
@@ -17,18 +14,6 @@ import messages from '../messages';
 
 const GradeSummaryTableFooter = () => {
   const intl = useIntl();
-
-  const { data } = useContext(DataTableContext);
-
-  const rawGrade = data.reduce(
-    (grade, currentValue) => {
-      const { weightedGrade } = currentValue.weightedGrade;
-      const percent = weightedGrade.replace(/%/g, '').trim();
-      return grade + parseFloat(percent);
-    },
-    0,
-  ).toFixed(2);
-
   const courseId = useContextId();
 
   const {
@@ -36,7 +21,15 @@ const GradeSummaryTableFooter = () => {
       isPassing,
       percent,
     },
+    finalGrades,
   } = useModel('progress', courseId);
+
+  const getGradePercent = (grade) => {
+    const percentage = grade * 100;
+    return Number.isInteger(percentage) ? percentage.toFixed(0) : percentage.toFixed(2);
+  };
+
+  const rawGrade = getGradePercent(finalGrades);
 
   const bgColor = isPassing ? 'bg-success-100' : 'bg-warning-100';
   const totalGrade = (percent * 100).toFixed(0);

@@ -10,14 +10,12 @@ const GradeSummary = () => {
   const courseId = useContextId();
 
   const {
-    gradingPolicy: {
-      assignmentPolicies,
-    },
+    assignmentTypeGradeSummary,
   } = useModel('progress', courseId);
 
   const [allOfSomeAssignmentTypeIsLocked, setAllOfSomeAssignmentTypeIsLocked] = useState(false);
 
-  if (assignmentPolicies.length === 0) {
+  if (assignmentTypeGradeSummary.length === 0) {
     return null;
   }
 
