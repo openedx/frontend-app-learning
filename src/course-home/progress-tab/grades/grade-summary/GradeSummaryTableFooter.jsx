@@ -25,8 +25,8 @@ const GradeSummaryTableFooter = () => {
   } = useModel('progress', courseId);
 
   const getGradePercent = (grade) => {
-    const percent = grade * 100;
-    return Number.isInteger(percent) ? percent.toFixed(0) : percent.toFixed(2);
+    const percentage = grade * 100;
+    return Number.isInteger(percentage) ? percentage.toFixed(0) : percentage.toFixed(2);
   };
 
   const rawGrade = getGradePercent(finalGrades);
@@ -49,7 +49,7 @@ const GradeSummaryTableFooter = () => {
                 <Tooltip>
                   {intl.formatMessage(
                     messages.weightedGradeSummaryTooltip,
-                    { roundedGrade: totalGrade, rawGrade: rawGrade },
+                    { roundedGrade: totalGrade, rawGrade },
                   )}
                 </Tooltip>
               )}

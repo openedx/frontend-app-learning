@@ -16,8 +16,22 @@ Factory.define('progressTabData')
       letter_grade: 'pass',
       percent: 1,
       is_passing: true,
+      total_weighted_grade: 1,
     },
     credit_course_requirements: null,
+    assignment_type_grade_summary: [
+      {
+        type: 'Homework',
+        short_label: 'HW',
+        weight: 1,
+        average_grade: 1,
+        weighted_grade: 1,
+        num_droppable: 1,
+        num_total: 2,
+        has_hidden_contribution: 'none',
+        last_grade_publish_date: null,
+      },
+    ],
     section_scores: [
       {
         display_name: 'First section',

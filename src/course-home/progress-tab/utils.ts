@@ -6,11 +6,10 @@ export const showUngradedAssignments = () => (
   || getConfig().SHOW_UNGRADED_ASSIGNMENT_PROGRESS === true
 );
 
-
 export const getLatestDueDateInFuture = (assignmentTypeGradeSummary) => {
   let latest = null;
   assignmentTypeGradeSummary.forEach((assignment) => {
-    let assignmentLastGradePublishDate = assignment.lastGradePublishDate;
+    const assignmentLastGradePublishDate = assignment.lastGradePublishDate;
     if (assignmentLastGradePublishDate && (!latest || new Date(assignmentLastGradePublishDate) > new Date(latest))
        && new Date(assignmentLastGradePublishDate) > new Date()) {
       latest = assignmentLastGradePublishDate;

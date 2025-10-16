@@ -26,7 +26,7 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
 
   const isLocaleRtl = isRtl(getLocale());
 
-  const hasHiddenGrades = assignmentTypeGradeSummary.some((assignmentType) => assignmentType.hasHiddenContribution !== "none");
+  const hasHiddenGrades = assignmentTypeGradeSummary.some((assignmentType) => assignmentType.hasHiddenContribution !== 'none');
 
   if (isLocaleRtl) {
     currentGradeDirection = currentGrade < 50 ? '-' : '';

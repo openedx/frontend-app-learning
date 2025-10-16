@@ -148,7 +148,6 @@ export async function getProgressTabData(courseId, targetUserId) {
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     const camelCasedData = camelCaseObject(data);
-    camelCasedData.gradingPolicy.assignmentPolicies = camelCasedData.assignmentTypeGradeSummary;
 
     // We replace gradingPolicy.gradeRange with the original data to preserve the intended casing for the grade.
     // For example, if a grade range key is "A", we do not want it to be camel cased (i.e. "A" would become "a")

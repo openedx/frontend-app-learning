@@ -9,7 +9,6 @@ import { useModel } from '../../../../generic/model-store';
 import GradeRangeTooltip from './GradeRangeTooltip';
 import messages from '../messages';
 import { getLatestDueDateInFuture } from '../../utils';
-import { assert } from 'joi';
 
 const ResponsiveText = ({
   wideScreen, children, hasLetterGrades, passingGrade,
