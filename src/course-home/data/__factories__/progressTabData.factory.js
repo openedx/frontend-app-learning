@@ -16,8 +16,8 @@ Factory.define('progressTabData')
       letter_grade: 'pass',
       percent: 1,
       is_passing: true,
-      total_weighted_grade: 1,
     },
+    final_grades: 0.5,
     credit_course_requirements: null,
     assignment_type_grade_summary: [
       {
