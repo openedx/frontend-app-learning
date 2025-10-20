@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { ErrorPage } from '@edx/frontend-platform/react';
 import { StrictDict } from '@edx/react-unit-test-utils';
 import { ModalDialog } from '@openedx/paragon';
 import { ContentIFrameLoaderSlot } from '../../../../plugin-slots/ContentIFrameLoaderSlot';
+import { ContentIFrameErrorSlot } from '../../../../plugin-slots/ContentIFrameErrorSlot';
 
 import * as hooks from './hooks';
 
@@ -68,7 +68,11 @@ const ContentIFrame = ({
   return (
     <>
       {(shouldShowContent && !hasLoaded) && (
-        showError ? <ErrorPage /> : <ContentIFrameLoaderSlot courseId={courseId} loadingMessage={loadingMessage} />
+        showError ? (
+          <ContentIFrameErrorSlot courseId={courseId} />
+        ) : (
+          <ContentIFrameLoaderSlot courseId={courseId} loadingMessage={loadingMessage} />
+        )
       )}
       {shouldShowContent && (
         <div className="unit-iframe-wrapper">
