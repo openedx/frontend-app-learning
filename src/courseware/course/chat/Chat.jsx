@@ -1,66 +1,37 @@
 import { createPortal } from 'react-dom';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-
-import { Xpert } from '@edx/frontend-lib-learning-assistant';
-import { getConfig } from '@edx/frontend-platform';
-
-import { ALLOW_UPSELL_MODES, VERIFIED_MODES } from '@src/constants';
-import { useModel } from '../../../generic/model-store';
+import { PluginSlot } from '@openedx/frontend-plugin-framework';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 const Chat = ({
   enabled,
   enrollmentMode,
   isStaff,
   courseId,
-  contentToolsEnabled,
   unitId,
 }) => {
-  const {
-    activeAttempt, exam,
-  } = useSelector(state => state.specialExams);
-  const course = useModel('coursewareMeta', courseId);
+  const { userId } = getAuthenticatedUser();
 
-  // If is disabled or taking an exam, we don't show the chat.
-  if (!enabled || activeAttempt?.attempt_id || exam?.id) { return null; }
+  // If chat is disabled, don't show anything
+  if (!enabled) {
+    return null;
+  }
 
-  // If is not staff and doesn't have an enrollment, we don't show the chat.
-  if (!isStaff && !enrollmentMode) { return null; }
+  // Provide minimal, generic context - no feature-specific flags
+  const pluginContext = {
+    courseId,
+    unitId,
+    userId,
+    isStaff,
+    enrollmentMode,
+  };
 
-  const verifiedMode = VERIFIED_MODES.includes(enrollmentMode); // Enrollment verified
-  const auditMode = (
-    !isStaff
-    && !verifiedMode
-    && ALLOW_UPSELL_MODES.includes(enrollmentMode) // Can upgrade course
-    && getConfig().ENABLE_XPERT_AUDIT
-  );
-  // If user has no access, we don't show the chat.
-  if (!isStaff && !(verifiedMode || auditMode)) { return null; }
-
-  // Date validation
-  const {
-    accessExpiration,
-    start,
-    end,
-  } = course;
-
-  const utcDate = (new Date()).toISOString();
-  const expiration = accessExpiration?.expirationDate || utcDate;
-  const validDate = (
-    (start ? start <= utcDate : true)
-    && (end ? end >= utcDate : true)
-    && (auditMode ? expiration >= utcDate : true)
-  );
-  // If date is invalid, we don't show the chat.
-  if (!validDate) { return null; }
-
-  // Use a portal to ensure that component overlay does not compete with learning MFE styles.
+  // Use generic plugin slot ID (location-based, not feature-specific)
+  // Plugins will query their own requirements from Redux/config
   return createPortal(
-    <Xpert
-      courseId={courseId}
-      contentToolsEnabled={contentToolsEnabled}
-      unitId={unitId}
-      isUpgradeEligible={auditMode}
+    <PluginSlot
+      id="learner_tools_slot"
+      pluginProps={pluginContext}
     />,
     document.body,
   );
@@ -71,7 +42,6 @@ Chat.propTypes = {
   enabled: PropTypes.bool.isRequired,
   enrollmentMode: PropTypes.string,
   courseId: PropTypes.string.isRequired,
-  contentToolsEnabled: PropTypes.bool.isRequired,
   unitId: PropTypes.string.isRequired,
 };
 

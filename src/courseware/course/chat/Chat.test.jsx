@@ -1,286 +1,70 @@
-import { BrowserRouter } from 'react-router-dom';
-import React from 'react';
-import { Factory } from 'rosie';
-
-import { getConfig } from '@edx/frontend-platform';
-
-import {
-  initializeMockApp,
-  initializeTestStore,
-  render,
-  screen,
-} from '../../../setupTest';
-
+import { screen, render } from '@testing-library/react';
 import Chat from './Chat';
 
-// We do a partial mock to avoid mocking out other exported values (e.g. the reducer).
-// We mock out the Xpert component, because the Xpert component has its own rules for whether it renders
-// or not, and this includes the results of API calls it makes. We don't want to test those rules here, just
-// whether the Xpert is rendered by the Chat component in certain conditions. Instead of actually rendering
-// Xpert, we render and assert on a mocked component.
-const mockXpertTestId = 'xpert';
-
-jest.mock('@edx/frontend-lib-learning-assistant', () => {
-  const originalModule = jest.requireActual('@edx/frontend-lib-learning-assistant');
-
-  return {
-    __esModule: true,
-    ...originalModule,
-    Xpert: () => (<div data-testid={mockXpertTestId}>mocked Xpert</div>),
-  };
-});
-
-jest.mock('@edx/frontend-platform', () => ({
-  getConfig: jest.fn().mockReturnValue({ ENABLE_XPERT_AUDIT: false }),
+// Mock getAuthenticatedUser to provide a stable userId
+jest.mock('@edx/frontend-platform/auth', () => ({
+  getAuthenticatedUser: () => ({ userId: 'user-123' }),
 }));
 
-initializeMockApp();
+// Capture props passed into PluginSlot for assertions
+const mockPluginSlotSpy = jest.fn(() => null);
+jest.mock('@openedx/frontend-plugin-framework', () => ({
+  // Provide a minimal mock PluginSlot component that records props
+  PluginSlot: (props) => {
+    mockPluginSlotSpy(props);
+    return <div data-testid="plugin-slot-mock" />;
+  },
+}));
 
-const courseId = 'course-v1:edX+DemoX+Demo_Course';
-let testCases = [];
-let enabledTestCases = [];
-let disabledTestCases = [];
-const enabledModes = [
-  'professional', 'verified', 'no-id-professional', 'credit', 'masters', 'executive-education',
-  'paid-executive-education', 'paid-bootcamp',
-];
-const disabledModes = [null, undefined, 'xyz', 'audit', 'honor', 'unpaid-executive-education', 'unpaid-bootcamp'];
+describe('Chat component', () => {
+  const baseProps = {
+    enabled: true,
+    enrollmentMode: 'audit',
+    isStaff: false,
+    courseId: 'course-v1:edX+DemoX+2024',
+    unitId: 'block-v1:edX+DemoX+2024+type@sequential+block@seq123',
+  };
 
-describe('Chat', () => {
-  let store;
+  beforeEach(() => {
+    mockPluginSlotSpy.mockClear();
+  });
 
-  beforeAll(async () => {
-    store = await initializeTestStore({
-      specialExams: {
-        activeAttempt: {
-          attempt_id: null,
-        },
-        exam: {
-          id: null,
-        },
-      },
+  it('renders nothing when disabled', () => {
+    const { container } = render(<Chat {...baseProps} enabled={false} />);
+    // When disabled we expect null render; container firstChild should be null
+    expect(container.firstChild).toBeNull();
+    expect(mockPluginSlotSpy).not.toHaveBeenCalled();
+  });
+
+  it('renders PluginSlot via portal when enabled', () => {
+    render(<Chat {...baseProps} />);
+    // Our mock PluginSlot renders a marker div in document.body via portal
+    expect(screen.getByTestId('plugin-slot-mock')).toBeInTheDocument();
+    expect(mockPluginSlotSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('passes correct pluginProps to PluginSlot', () => {
+    render(<Chat {...baseProps} />);
+    const call = mockPluginSlotSpy.mock.calls[0][0];
+    expect(call.id).toBe('learner_tools_slot');
+    expect(call.pluginProps).toEqual({
+      courseId: baseProps.courseId,
+      unitId: baseProps.unitId,
+      userId: 'user-123',
+      isStaff: baseProps.isStaff,
+      enrollmentMode: baseProps.enrollmentMode,
     });
   });
 
-  // Generate test cases.
-  enabledTestCases = enabledModes.map((mode) => ({ enrollmentMode: mode, isVisible: true }));
-  disabledTestCases = disabledModes.map((mode) => ({ enrollmentMode: mode, isVisible: false }));
-  testCases = enabledTestCases.concat(disabledTestCases);
-
-  testCases.forEach(test => {
-    it(
-      `visibility determined by ${test.enrollmentMode} enrollment mode when enabled and not isStaff`,
-      async () => {
-        render(
-          <BrowserRouter>
-            <Chat
-              enrollmentMode={test.enrollmentMode}
-              isStaff={false}
-              enabled
-              courseId={courseId}
-              contentToolsEnabled={false}
-            />
-          </BrowserRouter>,
-          { store },
-        );
-
-        const chat = screen.queryByTestId(mockXpertTestId);
-        if (test.isVisible) {
-          expect(chat).toBeInTheDocument();
-        } else {
-          expect(chat).not.toBeInTheDocument();
-        }
-      },
-    );
+  it('allows null enrollmentMode (omitted prop) and still passes context', () => {
+    render(<Chat {...baseProps} enrollmentMode={null} />);
+    const call = mockPluginSlotSpy.mock.calls[0][0];
+    expect(call.pluginProps.enrollmentMode).toBeNull();
   });
 
-  // Generate test cases.
-  testCases = enabledModes.concat(disabledModes).map((mode) => ({ enrollmentMode: mode, isVisible: true }));
-  testCases.forEach(test => {
-    it('visibility determined by isStaff when enabled and any enrollment mode', async () => {
-      render(
-        <BrowserRouter>
-          <Chat
-            enrollmentMode={test.enrollmentMode}
-            isStaff
-            enabled
-            courseId={courseId}
-            contentToolsEnabled={false}
-          />
-        </BrowserRouter>,
-        { store },
-      );
-
-      const chat = screen.queryByTestId(mockXpertTestId);
-      if (test.isVisible) {
-        expect(chat).toBeInTheDocument();
-      } else {
-        expect(chat).not.toBeInTheDocument();
-      }
-    });
-  });
-
-  // Generate the map function used for generating test cases by currying the map function.
-  // In this test suite, visibility depends on whether the enrollment mode is a valid or invalid
-  // enrollment mode for enabling the Chat when the user is not a staff member and the Chat is enabled. Instead of
-  // defining two separate map functions that differ in only one case, curry the function.
-  const generateMapFunction = (areEnabledModes) => (
-    (mode) => (
-      [
-        {
-          enrollmentMode: mode, isStaff: true, enabled: true, isVisible: true,
-        },
-        {
-          enrollmentMode: mode, isStaff: true, enabled: false, isVisible: false,
-        },
-        {
-          enrollmentMode: mode, isStaff: false, enabled: true, isVisible: areEnabledModes,
-        },
-        {
-          enrollmentMode: mode, isStaff: false, enabled: false, isVisible: false,
-        },
-      ]
-    )
-  );
-
-  // Generate test cases.
-  enabledTestCases = enabledModes.map(generateMapFunction(true));
-  disabledTestCases = disabledModes.map(generateMapFunction(false));
-  testCases = enabledTestCases.concat(disabledTestCases);
-  testCases = testCases.flat();
-  testCases.forEach(test => {
-    it(
-      `visibility determined by ${test.enabled} enabled when ${test.isStaff} isStaff
-      and ${test.enrollmentMode} enrollment mode`,
-      async () => {
-        render(
-          <BrowserRouter>
-            <Chat
-              enrollmentMode={test.enrollmentMode}
-              isStaff={test.isStaff}
-              enabled={test.enabled}
-              courseId={courseId}
-              contentToolsEnabled={false}
-            />
-          </BrowserRouter>,
-          { store },
-        );
-
-        const chat = screen.queryByTestId(mockXpertTestId);
-        if (test.isVisible) {
-          expect(chat).toBeInTheDocument();
-        } else {
-          expect(chat).not.toBeInTheDocument();
-        }
-      },
-    );
-  });
-
-  it('if course end date has passed, component should not be visible', async () => {
-    store = await initializeTestStore({
-      specialExams: {
-        activeAttempt: {
-          attempt_id: 1,
-        },
-      },
-      courseMetadata: Factory.build('courseMetadata', {
-        start: '2014-02-03T05:00:00Z',
-        end: '2014-02-05T05:00:00Z',
-      }),
-    });
-
-    render(
-      <BrowserRouter>
-        <Chat
-          enrollmentMode="verified"
-          isStaff
-          enabled
-          courseId={courseId}
-          contentToolsEnabled={false}
-        />
-      </BrowserRouter>,
-      { store },
-    );
-
-    const chat = screen.queryByTestId(mockXpertTestId);
-    expect(chat).not.toBeInTheDocument();
-  });
-
-  it('if learner has active exam attempt, component should not be visible', async () => {
-    store = await initializeTestStore({
-      specialExams: {
-        activeAttempt: {
-          attempt_id: 1,
-        },
-      },
-    });
-
-    render(
-      <BrowserRouter>
-        <Chat
-          enrollmentMode="verified"
-          isStaff
-          enabled
-          courseId={courseId}
-          contentToolsEnabled={false}
-        />
-      </BrowserRouter>,
-      { store },
-    );
-
-    const chat = screen.queryByTestId(mockXpertTestId);
-    expect(chat).toBeInTheDocument();
-  });
-
-  it('displays component for audit learner if explicitly enabled', async () => {
-    getConfig.mockImplementation(() => ({ ENABLE_XPERT_AUDIT: true }));
-
-    store = await initializeTestStore({
-      courseMetadata: Factory.build('courseMetadata', {
-        access_expiration: { expiration_date: '' },
-      }),
-    });
-
-    render(
-      <BrowserRouter>
-        <Chat
-          enrollmentMode="audit"
-          isStaff={false}
-          enabled
-          courseId={courseId}
-          contentToolsEnabled={false}
-        />
-      </BrowserRouter>,
-      { store },
-    );
-
-    const chat = screen.queryByTestId(mockXpertTestId);
-    expect(chat).toBeInTheDocument();
-  });
-
-  it('does not display component for audit learner if access deadline has passed', async () => {
-    getConfig.mockImplementation(() => ({ ENABLE_XPERT_AUDIT: true }));
-
-    store = await initializeTestStore({
-      courseMetadata: Factory.build('courseMetadata', {
-        access_expiration: { expiration_date: '2014-02-03T05:00:00Z' },
-      }),
-    });
-
-    render(
-      <BrowserRouter>
-        <Chat
-          enrollmentMode="audit"
-          isStaff={false}
-          enabled
-          courseId={courseId}
-          contentToolsEnabled={false}
-        />
-      </BrowserRouter>,
-      { store },
-    );
-
-    const chat = screen.queryByTestId(mockXpertTestId);
-    expect(chat).not.toBeInTheDocument();
+  it('propagates isStaff=true correctly', () => {
+    render(<Chat {...baseProps} isStaff />);
+    const call = mockPluginSlotSpy.mock.calls[0][0];
+    expect(call.pluginProps.isStaff).toBe(true);
   });
 });
