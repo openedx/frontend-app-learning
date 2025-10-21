@@ -11,6 +11,7 @@
 * [`org.openedx.frontend.learning.course_outline_tab_notifications.v1`](./CourseOutlineTabNotificationsSlot/)
 * [`org.openedx.frontend.learning.course_recommendations.v1`](./CourseRecommendationsSlot/)
 * [`org.openedx.frontend.learning.gated_unit_content_message.v1`](./GatedUnitContentMessageSlot/)
+* [`org.openedx.frontend.learning.learner_tools.v1`](./LearnerToolsSlot/)
 * [`org.openedx.frontend.learning.next_unit_top_nav_trigger.v1`](./NextUnitTopNavTriggerSlot/)
 * [`org.openedx.frontend.learning.notification_tray.v1`](./NotificationTraySlot/)
 * [`org.openedx.frontend.learning.notification_widget.v1`](./NotificationWidgetSlot/)

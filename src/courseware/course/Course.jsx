@@ -9,7 +9,7 @@ import { breakpoints, useWindowSize } from '@openedx/paragon';
 import { AlertList } from '@src/generic/user-messages';
 import { useModel } from '@src/generic/model-store';
 import { getCoursewareOutlineSidebarSettings } from '../data/selectors';
-import Chat from './chat/Chat';
+import { LearnerToolsSlot } from '../../plugin-slots/LearnerToolsSlot';
 import SidebarProvider from './sidebar/SidebarContextProvider';
 import NewSidebarProvider from './new-sidebar/SidebarContextProvider';
 import { NotificationsDiscussionsSidebarTriggerSlot } from '../../plugin-slots/NotificationsDiscussionsSidebarTriggerSlot';
@@ -62,7 +62,7 @@ const Course = ({
   const [weeklyGoalCelebrationOpen, setWeeklyGoalCelebrationOpen] = useState(
     celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal,
   );
-  const shouldDisplayChat = windowWidth >= breakpoints.medium.minWidth;
+  const shouldDisplayLearnerTools = windowWidth >= breakpoints.medium.minWidth;
   const daysPerWeek = course?.courseGoals?.selectedGoal?.daysPerWeek;
 
   useEffect(() => {
@@ -95,17 +95,13 @@ const Course = ({
           />
         </>
         )}
-        {shouldDisplayChat && (
-          <>
-            <Chat
-              enabled={course.learningAssistantEnabled}
-              enrollmentMode={course.enrollmentMode}
-              isStaff={isStaff}
-              courseId={courseId}
-              contentToolsEnabled={course.showCalculator || course.notes.enabled}
-              unitId={unitId}
-            />
-          </>
+        {shouldDisplayLearnerTools && (
+          <LearnerToolsSlot
+            enrollmentMode={course.enrollmentMode}
+            isStaff={isStaff}
+            courseId={courseId}
+            unitId={unitId}
+          />
         )}
         <div className="w-100 d-flex align-items-center">
           <CourseOutlineMobileSidebarTriggerSlot />
