@@ -7,7 +7,7 @@ import { faCheckCircle as farCheckCircle } from '@fortawesome/free-regular-svg-i
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { DisabledVisible } from '@openedx/paragon/icons';
-import SequenceLink from './SequenceLink';
+import SequenceLink from './section-outline/SequenceLink';
 import { useModel } from '../../generic/model-store';
 
 import genericMessages from '../../generic/messages';
