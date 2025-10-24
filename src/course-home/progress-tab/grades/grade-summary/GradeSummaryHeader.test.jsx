@@ -1,13 +1,11 @@
-import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useSelector } from 'react-redux';
 import { IntlProvider } from 'react-intl';
-
-import { fireEvent } from '@testing-library/dom';
 import GradeSummaryHeader from './GradeSummaryHeader';
 import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
+import { initializeMockApp, render } from '../../../../setupTest';
 
 jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
@@ -22,6 +20,10 @@ jest.mock('../../../../data/hooks', () => ({
 }));
 
 describe('GradeSummaryHeader', () => {
+  beforeAll(() => {
+    initializeMockApp();
+  });
+
   beforeEach(() => {
     useSelector.mockImplementation((selector) => selector({
       courseHome: { courseId: 'test-course-id' },
@@ -61,13 +63,13 @@ describe('GradeSummaryHeader', () => {
       name: messages.gradeSummaryTooltipAlt.defaultMessage,
     });
 
-    fireEvent.click(iconButton);
+    await userEvent.click(iconButton);
 
     await waitFor(() => {
       expect(screen.getByText(messages.gradeSummaryTooltipBody.defaultMessage)).toBeVisible();
     });
 
-    fireEvent.click(iconButton);
+    await userEvent.click(iconButton);
 
     await waitFor(() => {
       expect(screen.queryByText(messages.gradeSummaryTooltipBody.defaultMessage)).toBeNull();
@@ -91,9 +93,8 @@ describe('GradeSummaryHeader', () => {
     const blurTarget = document.createElement('button');
     blurTarget.textContent = 'Outside';
     document.body.appendChild(blurTarget);
-    blurTarget.focus();
 
-    await userEvent.unhover(iconButton);
+    await userEvent.click(blurTarget);
 
     await waitFor(() => {
       expect(screen.queryByText(messages.gradeSummaryTooltipBody.defaultMessage)).not.toBeInTheDocument();
@@ -116,9 +117,7 @@ describe('GradeSummaryHeader', () => {
       expect(screen.getByText(messages.gradeSummaryTooltipBody.defaultMessage)).toBeInTheDocument();
     });
 
-    fireEvent.keyDown(iconButton, { key: 'Escape', code: 'Escape' });
-
-    await userEvent.unhover(iconButton);
+    await userEvent.keyboard('{Escape}');
 
     await waitFor(() => {
       expect(screen.queryByText(messages.gradeSummaryTooltipBody.defaultMessage)).not.toBeInTheDocument();

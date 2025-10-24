@@ -1,6 +1,5 @@
-import React from 'react';
-import { render } from '@testing-library/react';
 import { useSelector } from 'react-redux';
+import { render } from 'setupTest';
 import LiveTab from './LiveTab';
 
 jest.mock('react-redux', () => ({
