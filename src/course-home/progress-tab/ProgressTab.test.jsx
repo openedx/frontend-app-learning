@@ -661,143 +661,133 @@ describe('Progress Tab', () => {
       expect(screen.getByText('Grade summary')).toBeInTheDocument();
     });
 
-    it('does not render Grade Summary when assignment policies are not populated', async () => {
+    it('does not render Grade Summary when assignment type grade summary is not populated', async () => {
       setTabData({
-        grading_policy: {
-          assignment_policies: [],
-          grade_range: {
-            pass: 0.75,
-          },
-        },
-        section_scores: [],
+        assignment_type_grade_summary: [],
       });
       await fetchAndRender();
       expect(screen.queryByText('Grade summary')).not.toBeInTheDocument();
     });
 
-    it('calculates grades correctly when number of droppable assignments equals total number of assignments', async () => {
+    it('shows lock icon when all subsections of assignment type are hidden', async () => {
       setTabData({
         grading_policy: {
           assignment_policies: [
-            {
-              num_droppable: 2,
-              num_total: 2,
-              short_label: 'HW',
-              type: 'Homework',
-              weight: 1,
-            },
-          ],
-          grade_range: {
-            pass: 0.75,
-          },
-        },
-      });
-      await fetchAndRender();
-      expect(screen.getByText('Grade summary')).toBeInTheDocument();
-      // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
-      expect(screen.getByRole('row', { name: 'Homework 1 100% 0% 0%' })).toBeInTheDocument();
-    });
-    it('calculates grades correctly when number of droppable assignments is less than total number of assignments', async () => {
-      await fetchAndRender();
-      expect(screen.getByText('Grade summary')).toBeInTheDocument();
-      // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
-      expect(screen.getByRole('row', { name: 'Homework 1 100% 100% 100%' })).toBeInTheDocument();
-    });
-    it('calculates grades correctly when number of droppable assignments is zero', async () => {
-      setTabData({
-        grading_policy: {
-          assignment_policies: [
-            {
-              num_droppable: 0,
-              num_total: 2,
-              short_label: 'HW',
-              type: 'Homework',
-              weight: 1,
-            },
-          ],
-          grade_range: {
-            pass: 0.75,
-          },
-        },
-      });
-      await fetchAndRender();
-      expect(screen.getByText('Grade summary')).toBeInTheDocument();
-      // The row is comprised of "{Assignment type} {weight} {grade} {weighted grade}"
-      expect(screen.getByRole('row', { name: 'Homework 100% 50% 50%' })).toBeInTheDocument();
-    });
-    it('calculates grades correctly when number of total assignments is less than the number of assignments created', async () => {
-      setTabData({
-        grading_policy: {
-          assignment_policies: [
-            {
-              num_droppable: 1,
-              num_total: 1, // two assignments created in the factory, but 1 is expected per Studio settings
-              short_label: 'HW',
-              type: 'Homework',
-              weight: 1,
-            },
-          ],
-          grade_range: {
-            pass: 0.75,
-          },
-        },
-      });
-      await fetchAndRender();
-      expect(screen.getByText('Grade summary')).toBeInTheDocument();
-      // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
-      expect(screen.getByRole('row', { name: 'Homework 1 100% 100% 100%' })).toBeInTheDocument();
-    });
-    it('calculates grades correctly when number of total assignments is greater than the number of assignments created', async () => {
-      setTabData({
-        grading_policy: {
-          assignment_policies: [
-            {
-              num_droppable: 0,
-              num_total: 5, // two assignments created in the factory, but 5 are expected per Studio settings
-              short_label: 'HW',
-              type: 'Homework',
-              weight: 1,
-            },
-          ],
-          grade_range: {
-            pass: 0.75,
-          },
-        },
-      });
-      await fetchAndRender();
-      expect(screen.getByText('Grade summary')).toBeInTheDocument();
-      // The row is comprised of "{Assignment type} {weight} {grade} {weighted grade}"
-      expect(screen.getByRole('row', { name: 'Homework 100% 20% 20%' })).toBeInTheDocument();
-    });
-    it('calculates weighted grades correctly', async () => {
-      setTabData({
-        grading_policy: {
-          assignment_policies: [
-            {
-              num_droppable: 1,
-              num_total: 2,
-              short_label: 'HW',
-              type: 'Homework',
-              weight: 0.5,
-            },
             {
               num_droppable: 0,
               num_total: 1,
-              short_label: 'Ex',
-              type: 'Exam',
-              weight: 0.5,
+              short_label: 'Final',
+              type: 'Final Exam',
+              weight: 1,
             },
           ],
           grade_range: {
             pass: 0.75,
           },
         },
+        assignment_type_grade_summary: [
+          {
+            type: 'Final Exam',
+            weight: 0.4,
+            average_grade: 0.0,
+            weighted_grade: 0.0,
+            last_grade_publish_date: '2025-10-15T14:17:04.368903Z',
+            has_hidden_contribution: 'all',
+            short_label: 'Final',
+            num_droppable: 0,
+          },
+        ],
       });
       await fetchAndRender();
-      expect(screen.getByText('Grade summary')).toBeInTheDocument();
-      // The row is comprised of "{Assignment type} {footnote - optional} {weight} {grade} {weighted grade}"
-      expect(screen.getByRole('row', { name: 'Homework 1 50% 100% 50%' })).toBeInTheDocument();
-      expect(screen.getByRole('row', { name: 'Exam 50% 0% 0%' })).toBeInTheDocument();
+      // Should show lock icon for grade and weighted grade
+      expect(screen.getAllByTestId('lock-icon')).toHaveLength(2);
+    });
+
+    it('shows percent plus hidden grades when some subsections of assignment type are hidden', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+        assignment_type_grade_summary: [
+          {
+            type: 'Homework',
+            weight: 1,
+            average_grade: 0.25,
+            weighted_grade: 0.25,
+            last_grade_publish_date: '2025-10-15T14:17:04.368903Z',
+            has_hidden_contribution: 'some',
+            short_label: 'HW',
+            num_droppable: 0,
+          },
+        ],
+      });
+      await fetchAndRender();
+      // Should show percent + hidden scores for grade and weighted grade
+      const hiddenScoresCells = screen.getAllByText(/% \+ Hidden Scores/);
+      expect(hiddenScoresCells).toHaveLength(2);
+      // Only correct visible scores should be shown (from subsection2)
+      // The correct visible score is 1/4 = 0.25 -> 25%
+      expect(hiddenScoresCells[0]).toHaveTextContent('25% + Hidden Scores');
+      expect(hiddenScoresCells[1]).toHaveTextContent('25% + Hidden Scores');
+    });
+
+    it('displays a warning message with the latest due date when not all assignment scores are included in the total grade', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+        assignment_type_grade_summary: [
+          {
+            type: 'Homework',
+            weight: 1,
+            average_grade: 1,
+            weighted_grade: 1,
+            last_grade_publish_date: tomorrow.toISOString(),
+            has_hidden_contribution: 'none',
+            short_label: 'HW',
+            num_droppable: 0,
+          },
+        ],
+      });
+
+      await fetchAndRender();
+
+      const formattedDateTime = new Intl.DateTimeFormat('en', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        timeZoneName: 'short',
+      }).format(tomorrow);
+
+      expect(
+        screen.getByText(
+          `Some assignment scores are not yet included in your total grade. These grades will be released by ${formattedDateTime}.`,
+        ),
+      ).toBeInTheDocument();
     });
 
     it('renders override notice', async () => {
