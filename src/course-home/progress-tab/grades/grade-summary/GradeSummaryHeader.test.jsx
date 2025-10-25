@@ -1,21 +1,23 @@
-import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useSelector } from 'react-redux';
 import { IntlProvider } from 'react-intl';
+
+import { useModel } from '@src/generic/model-store';
+import {
+  initializeMockApp, render, screen, waitFor,
+} from '@src/setupTest';
 import GradeSummaryHeader from './GradeSummaryHeader';
-import { useModel } from '../../../../generic/model-store';
 import messages from '../messages';
-import { initializeMockApp, render } from '../../../../setupTest';
 
 jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
-jest.mock('../../../../generic/model-store', () => ({
+jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn(),
 }));
 
-jest.mock('../../../../data/hooks', () => ({
+jest.mock('@src/data/hooks', () => ({
   useContextId: () => 'test-course-id',
 }));
 

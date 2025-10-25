@@ -11,9 +11,9 @@ import {
 } from '@openedx/paragon';
 import { InfoOutline, Locked } from '@openedx/paragon/icons';
 
-import { useContextId } from '../../../../data/hooks';
+import { useContextId } from '@src/data/hooks';
+import { useModel } from '@src/generic/model-store';
 import messages from '../messages';
-import { useModel } from '../../../../generic/model-store';
 
 const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
   const intl = useIntl();
@@ -45,8 +45,8 @@ const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
           )}
         >
           <IconButton
-            onClick={() => { setShowTooltip(!showTooltip); }}
-            onBlur={() => { setShowTooltip(false); }}
+            onClick={() => setShowTooltip(!showTooltip)}
+            onBlur={() => setShowTooltip(false)}
             onKeyDown={handleKeyDown}
             alt={intl.formatMessage(messages.gradeSummaryTooltipAlt)}
             iconAs={InfoOutline}
