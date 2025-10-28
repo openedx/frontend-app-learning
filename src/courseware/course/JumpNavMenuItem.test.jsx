@@ -11,6 +11,7 @@ const mockData = {
   sectionId: 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations',
   sequenceId: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions',
 
+  currentSequence: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@basic_questions',
   title: 'Demo Menu Item',
   courseId: 'course-v1:edX+DemoX+Demo_Course',
   currentUnit: 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@interactive_demonstrations',

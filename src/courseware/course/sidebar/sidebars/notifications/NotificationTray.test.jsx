@@ -4,8 +4,8 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 
 import MockAdapter from 'axios-mock-adapter';
-import React from 'react';
 import { Factory } from 'rosie';
+import messages from '../../../messages';
 import {
   fireEvent, initializeMockApp, render, screen, waitFor,
 } from '../../../../../setupTest';
@@ -66,7 +66,9 @@ describe('NotificationTray', () => {
     );
     expect(screen.getByText('Notifications'))
       .toBeInTheDocument();
-    const notificationCloseIconButton = screen.getByRole('button', { name: /Close notification tray/i });
+    const notificationCloseIconButton = screen.getByRole('button', {
+      name: messages.closeNotificationTrigger.defaultMessage,
+    });
     expect(notificationCloseIconButton)
       .toBeInTheDocument();
     expect(notificationCloseIconButton)

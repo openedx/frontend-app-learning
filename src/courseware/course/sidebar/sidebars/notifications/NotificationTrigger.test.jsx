@@ -1,6 +1,7 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
+
+import messages from '../../../messages';
 import {
   fireEvent, initializeTestStore, render, screen,
 } from '../../../../../setupTest';
@@ -62,7 +63,9 @@ describe('Notification Trigger', () => {
     };
     renderWithProvider(testData, toggleNotificationTray);
 
-    const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
+    const notificationTrigger = screen.getByRole('button', {
+      name: messages.openNotificationTrigger.defaultMessage,
+    });
     expect(notificationTrigger).toBeInTheDocument();
     fireEvent.click(notificationTrigger);
     expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
