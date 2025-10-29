@@ -123,19 +123,19 @@ describe('SidebarBase (Refactored)', () => {
     expect(mockHandleClose).toHaveBeenCalledTimes(1);
   });
 
-   it('should call handleKeyDown from hook on standard close button keydown', () => {
-     renderSidebar({ currentSidebar: SIDEBAR_ID });
-     const closeButton = screen.getByRole('button', { name: messages.closeNotificationTrigger.defaultMessage });
-     fireEvent.keyDown(closeButton, { key: 'Tab' });
-     expect(mockHandleKeyDown).toHaveBeenCalledTimes(1);
-   });
+  it('should call handleKeyDown from hook on standard close button keydown', () => {
+    renderSidebar({ currentSidebar: SIDEBAR_ID });
+    const closeButton = screen.getByRole('button', { name: messages.closeNotificationTrigger.defaultMessage });
+    fireEvent.keyDown(closeButton, { key: 'Tab' });
+    expect(mockHandleKeyDown).toHaveBeenCalledTimes(1);
+  });
 
-   it('should call handleBackBtnKeyDown from hook on fullscreen back button keydown', () => {
-     renderSidebar({ currentSidebar: SIDEBAR_ID, shouldDisplayFullScreen: true });
-     const backButton = screen.getByRole('button', { name: messages.responsiveCloseNotificationTray.defaultMessage });
-     fireEvent.keyDown(backButton, { key: 'Enter' });
-     expect(mockHandleBackBtnKeyDown).toHaveBeenCalledTimes(1);
-   });
+  it('should call handleBackBtnKeyDown from hook on fullscreen back button keydown', () => {
+    renderSidebar({ currentSidebar: SIDEBAR_ID, shouldDisplayFullScreen: true });
+    const backButton = screen.getByRole('button', { name: messages.responsiveCloseNotificationTray.defaultMessage });
+    fireEvent.keyDown(backButton, { key: 'Enter' });
+    expect(mockHandleBackBtnKeyDown).toHaveBeenCalledTimes(1);
+  });
 
   it('should call toggleSidebar(null) upon receiving a "close" postMessage event', async () => {
     renderSidebar({ currentSidebar: SIDEBAR_ID });

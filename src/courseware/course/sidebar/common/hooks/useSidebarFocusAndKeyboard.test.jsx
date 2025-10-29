@@ -222,7 +222,7 @@ describe('useSidebarFocusAndKeyboard', () => {
       };
       mockCtaButton = { focus: jest.fn() };
 
-			mockQuerySelector.mockImplementation((selector) => {
+      mockQuerySelector.mockImplementation((selector) => {
         if (selector === '.call-to-action-btn') { return mockCtaButton; }
         if (selector === TRIGGER_SELECTOR) { return triggerButtonMock; }
         return null;
