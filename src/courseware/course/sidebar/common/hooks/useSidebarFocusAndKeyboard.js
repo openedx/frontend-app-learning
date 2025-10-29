@@ -45,6 +45,13 @@ export const useSidebarFocusAndKeyboard = (sidebarId, triggerButtonSelector = '.
     focusSidebarTriggerBtn();
   }, [toggleSidebar, focusSidebarTriggerBtn]);
 
+  /**
+   * Handles Tab key navigation when focus is on the standard sidebar close button.
+   * Implements the logic for moving focus out of the sidebar to specific elements
+   * on the main page in a predefined sequence, or back to the trigger button on Shift+Tab.
+   *
+   * @param {KeyboardEvent} event - The keyboard event object.
+   */
   const handleKeyDown = useCallback((event) => {
     if (event.key !== 'Tab') {
       return;

@@ -1,4 +1,3 @@
-// hooks/useSidebarFocusAndKeyboard.test.js (або .jsx)
 import { renderHook, act } from '@testing-library/react';
 import SidebarContext from '../../SidebarContext';
 import { useSidebarFocusAndKeyboard } from './useSidebarFocusAndKeyboard';
@@ -165,7 +164,6 @@ describe('useSidebarFocusAndKeyboard', () => {
       });
 
       expect(mockEvent.preventDefault).toHaveBeenCalledTimes(1);
-      // Перевіряємо фокус тригера
       act(() => { jest.runAllTimers(); });
       expect(triggerButtonMock.focus).toHaveBeenCalledTimes(1);
       expect(tryFocusAndPreventDefault).not.toHaveBeenCalled();
