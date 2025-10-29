@@ -1,12 +1,11 @@
 import {
-  useContext, useEffect, useState, useRef,
+  useContext, useEffect, useRef,
 } from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
 
 import { WIDGETS } from '@src/constants';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
-import { getSessionStorage, setSessionStorage } from '@src/data/sessionStorage';
 import messages from '../../../messages';
 import SidebarTriggerBase from '../../common/TriggerBase';
 import SidebarContext from '../../SidebarContext';
@@ -28,7 +27,6 @@ const NotificationTrigger = ({
     currentSidebar,
   } = useContext(SidebarContext);
 
-  const [isOpenNotificationStatusBar, toggleNotificationStatusBar] = useState(false);
   const sidebarTriggerBtnRef = useRef(null);
 
   /* Re-show a red dot beside the notification trigger for each of the 7 UpgradeNotification stages
@@ -54,58 +52,37 @@ const NotificationTrigger = ({
 
   useEffect(() => {
     UpdateUpgradeNotificationLastSeen();
-
-    const notificationTrayStatus = getSessionStorage(`notificationTrayStatus.${courseId}`);
-    const isNotificationTrayOpen = notificationTrayStatus === 'open';
-
-    toggleNotificationStatusBar(isNotificationTrayOpen);
-
-    if (isNotificationTrayOpen && !currentSidebar) {
-      if (toggleSidebar) {
-        toggleSidebar(ID);
-      }
-      setSessionStorage(`notificationTrayFocus.${courseId}`, 'false');
-    }
-  }, [courseId, currentSidebar, ID]);
+  });
 
   const handleClick = () => {
-    const newFocusStatus = !isOpenNotificationStatusBar;
-    setSessionStorage(`notificationTrayFocus.${courseId}`, String(newFocusStatus));
-
-    const isNotificationTrayOpen = getSessionStorage(`notificationTrayStatus.${courseId}`) === 'open';
-
-    if (isNotificationTrayOpen) {
-      toggleNotificationStatusBar(false);
-      setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
-    } else {
-      toggleNotificationStatusBar(true);
-      setSessionStorage(`notificationTrayStatus.${courseId}`, 'open');
-      sidebarTriggerBtnRef.current?.focus();
+    if (toggleSidebar) {
+      toggleSidebar(ID);
     }
-
     onClick();
   };
 
   const handleKeyPress = (event) => {
     if (event.key === 'Tab' && !event.shiftKey) {
-      const isNotificationTrayOpen = getSessionStorage(`notificationTrayStatus.${courseId}`) === 'open';
-
-      if (isNotificationTrayOpen) {
+      if (currentSidebar === ID) {
         event.preventDefault();
+        sidebarTriggerBtnRef.current?.blur();
+        sidebarTriggerBtnRef.current?.blur();
+
+        sidebarTriggerBtnRef.current?.blur();
+
+        const targetButton = document.querySelector('.sidebar-close-btn');
+        targetButton?.focus();
       }
-
-      sidebarTriggerBtnRef.current?.blur();
-
-      const targetButton = document.querySelector('.sidebar-close-btn');
-      targetButton?.focus();
     }
   };
+
+  const isOpen = currentSidebar === ID;
 
   return (
     <SidebarTriggerBase
       onClick={handleClick}
       onKeyDown={handleKeyPress}
-      isOpenNotificationStatusBar={isOpenNotificationStatusBar}
+      isOpenNotificationStatusBar={isOpen}
       sectionId={sectionId}
       ref={sidebarTriggerBtnRef}
       ariaLabel={intl.formatMessage(messages.openNotificationTrigger)}
