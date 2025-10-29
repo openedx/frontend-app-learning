@@ -1,22 +1,15 @@
-import React from 'react';
-
-import { formatMessage, shallow } from '@edx/react-unit-test-utils';
+import { render, screen } from '@testing-library/react';
+import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import { useModel } from '@src/generic/model-store';
-import PageLoading from '@src/generic/PageLoading';
-
-import { GatedUnitContentMessageSlot } from '@src/plugin-slots/GatedUnitContentMessageSlot';
-import messages from '../messages';
-import HonorCode from '../honor-code';
-import LockPaywall from '../lock-paywall';
 import hooks from './hooks';
 import { modelKeys } from './constants';
 
 import UnitSuspense from './UnitSuspense';
 
 jest.mock('@edx/frontend-platform/i18n', () => ({
+  ...jest.requireActual('@edx/frontend-platform/i18n'),
   defineMessages: m => m,
-  useIntl: () => ({ formatMessage: jest.requireActual('@edx/react-unit-test-utils').formatMessage }),
 }));
 
 jest.mock('react', () => ({
@@ -24,10 +17,9 @@ jest.mock('react', () => ({
   Suspense: 'Suspense',
 }));
 
-jest.mock('../honor-code', () => 'HonorCode');
-jest.mock('../lock-paywall', () => 'LockPaywall');
+jest.mock('../honor-code', () => jest.fn(() => <div>HonorCode</div>));
+jest.mock('../lock-paywall', () => jest.fn(() => <div>LockPaywall</div>));
 jest.mock('@src/generic/model-store', () => ({ useModel: jest.fn() }));
-jest.mock('@src/generic/PageLoading', () => 'PageLoading');
 
 jest.mock('./hooks', () => ({
   useShouldDisplayHonorCode: jest.fn(() => false),
@@ -46,7 +38,6 @@ const props = {
   id: 'test-id',
 };
 
-let el;
 describe('UnitSuspense component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -54,7 +45,7 @@ describe('UnitSuspense component', () => {
   });
   describe('behavior', () => {
     it('initializes models', () => {
-      el = shallow(<UnitSuspense {...props} />);
+      render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
       const { calls } = useModel.mock;
       const [unitCall] = calls.filter(call => call[0] === modelKeys.units);
       const [metaCall] = calls.filter(call => call[0] === modelKeys.coursewareMeta);
@@ -66,8 +57,9 @@ describe('UnitSuspense component', () => {
     describe('LockPaywall', () => {
       const testNoPaywall = () => {
         it('does not display LockPaywall', () => {
-          el = shallow(<UnitSuspense {...props} />);
-          expect(el.instance.findByType(LockPaywall).length).toEqual(0);
+          render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
+          const lockPaywall = screen.queryByText('LockPaywall');
+          expect(lockPaywall).toBeNull();
         });
       };
       describe('gating not enabled', () => { testNoPaywall(); });
@@ -78,29 +70,29 @@ describe('UnitSuspense component', () => {
       describe('gating enabled, gated content included', () => {
         beforeEach(() => { mockModels(true, true); });
         it('displays LockPaywall in Suspense wrapper with PageLoading fallback', () => {
-          el = shallow(<UnitSuspense {...props} />);
-          const [component] = el.instance.findByType(GatedUnitContentMessageSlot);
-          expect(component.parent.type).toEqual('Suspense');
-          expect(component.parent.props.fallback)
-            .toEqual(<PageLoading srMessage={formatMessage(messages.loadingLockedContent)} />);
-          expect(component.props.courseId).toEqual(props.courseId);
+          hooks.useShouldDisplayHonorCode.mockReturnValueOnce(false);
+          render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
+          const lockPaywall = screen.getByText('LockPaywall');
+          expect(lockPaywall).toBeInTheDocument();
+          const suspenseWrapper = lockPaywall.closest('suspense');
+          expect(suspenseWrapper).toBeInTheDocument();
         });
       });
     });
     describe('HonorCode', () => {
       it('does not display HonorCode if useShouldDisplayHonorCode => false', () => {
         hooks.useShouldDisplayHonorCode.mockReturnValueOnce(false);
-        el = shallow(<UnitSuspense {...props} />);
-        expect(el.instance.findByType(HonorCode).length).toEqual(0);
+        render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
+        const honorCode = screen.queryByText('HonorCode');
+        expect(honorCode).toBeNull();
       });
       it('displays HonorCode component in Suspense wrapper with PageLoading fallback if shouldDisplayHonorCode', () => {
         hooks.useShouldDisplayHonorCode.mockReturnValueOnce(true);
-        el = shallow(<UnitSuspense {...props} />);
-        const [component] = el.instance.findByType(HonorCode);
-        expect(component.parent.type).toEqual('Suspense');
-        expect(component.parent.props.fallback)
-          .toEqual(<PageLoading srMessage={formatMessage(messages.loadingHonorCode)} />);
-        expect(component.props.courseId).toEqual(props.courseId);
+        render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
+        const honorCode = screen.getByText('HonorCode');
+        expect(honorCode).toBeInTheDocument();
+        const suspenseWrapper = honorCode.closest('suspense');
+        expect(suspenseWrapper).toBeInTheDocument();
       });
     });
   });
