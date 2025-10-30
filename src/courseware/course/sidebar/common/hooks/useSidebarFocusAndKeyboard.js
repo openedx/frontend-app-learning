@@ -1,9 +1,19 @@
 import {
   useCallback, useContext, useEffect, useRef,
 } from 'react';
+
 import { tryFocusAndPreventDefault } from '../../utils';
 import SidebarContext from '../../SidebarContext';
 
+/**
+ * Manages accessibility interactions for the SidebarBase component, including:
+ * 1. Setting initial focus when the sidebar opens.
+ * 2. Handling sidebar closing and returning focus to the trigger.
+ * 3. Managing keyboard navigation (Tab/Shift+Tab) for focus trapping/guidance.
+ *
+ * @param {string} sidebarId The unique ID of this sidebar.
+ * @param {string} [triggerButtonSelector] The CSS selector for the trigger button
+ */
 export const useSidebarFocusAndKeyboard = (sidebarId, triggerButtonSelector = '.sidebar-trigger-btn') => {
   const {
     toggleSidebar,
@@ -29,12 +39,10 @@ export const useSidebarFocusAndKeyboard = (sidebarId, triggerButtonSelector = '.
 
   const focusSidebarTriggerBtn = useCallback(() => {
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const sidebarTriggerBtn = document.querySelector(triggerButtonSelector);
-        if (sidebarTriggerBtn) {
-          sidebarTriggerBtn.focus();
-        }
-      });
+      const sidebarTriggerBtn = document.querySelector(triggerButtonSelector);
+      if (sidebarTriggerBtn) {
+        sidebarTriggerBtn.focus();
+      }
     });
   }, [triggerButtonSelector]);
 

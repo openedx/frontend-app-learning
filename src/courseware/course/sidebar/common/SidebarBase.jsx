@@ -8,7 +8,7 @@ import {
 } from 'react';
 
 import { useEventListener } from '@src/generic/hooks';
-import messages from '../../messages';
+import messages from '@src/courseware/course/messages';
 import SidebarContext from '../SidebarContext';
 import { useSidebarFocusAndKeyboard } from './hooks/useSidebarFocusAndKeyboard';
 
@@ -43,7 +43,6 @@ const SidebarBase = ({
     if (type === 'learning.events.sidebar.close') {
       toggleSidebar(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toggleSidebar]);
 
   useEventListener('message', receiveMessage);

@@ -1,5 +1,5 @@
-import React from 'react';
 import { Factory } from 'rosie';
+
 import {
   initializeTestStore,
   render,
@@ -8,9 +8,10 @@ import {
   waitFor,
 } from '@src/setupTest';
 import userEvent from '@testing-library/user-event';
+import { createRef } from 'react';
+import messages from '@src/courseware/course/messages';
 import SidebarContext from '../SidebarContext';
 import SidebarBase from './SidebarBase';
-import messages from '../../messages';
 import { useSidebarFocusAndKeyboard } from './hooks/useSidebarFocusAndKeyboard';
 
 jest.mock('./hooks/useSidebarFocusAndKeyboard');
@@ -19,7 +20,7 @@ const SIDEBAR_ID = 'test-sidebar';
 
 const mockUseSidebarFocusAndKeyboard = useSidebarFocusAndKeyboard;
 
-describe('SidebarBase (Refactored)', () => {
+describe('SidebarBase', () => {
   let mockContextValue;
   const courseMetadata = Factory.build('courseMetadata');
   const user = userEvent.setup();
@@ -61,8 +62,8 @@ describe('SidebarBase (Refactored)', () => {
       currentSidebar: null,
     };
 
-    mockCloseBtnRef = React.createRef();
-    mockBackBtnRef = React.createRef();
+    mockCloseBtnRef = createRef();
+    mockBackBtnRef = createRef();
     mockHandleClose = jest.fn();
     mockHandleKeyDown = jest.fn();
     mockHandleBackBtnKeyDown = jest.fn();

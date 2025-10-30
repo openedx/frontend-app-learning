@@ -1,12 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
+
 import SidebarContext from '../../SidebarContext';
 import { useSidebarFocusAndKeyboard } from './useSidebarFocusAndKeyboard';
-
-import { tryFocusAndPreventDefault } from '../../utils';
-
-jest.mock('../../utils', () => ({
-  tryFocusAndPreventDefault: jest.fn(),
-}));
 
 const SIDEBAR_ID = 'test-sidebar';
 const TRIGGER_SELECTOR = '.sidebar-trigger-btn';
@@ -131,6 +126,9 @@ describe('useSidebarFocusAndKeyboard', () => {
 
   describe('handleKeyDown (Standard Close Button)', () => {
     let mockEvent;
+    let mockOutlineTrigger;
+    let mockPrevButton;
+    let mockNextButton;
 
     beforeEach(() => {
       mockEvent = {
@@ -138,6 +136,10 @@ describe('useSidebarFocusAndKeyboard', () => {
         shiftKey: false,
         preventDefault: jest.fn(),
       };
+
+      mockOutlineTrigger = { focus: jest.fn(), disabled: false };
+      mockPrevButton = { focus: jest.fn(), disabled: false };
+      mockNextButton = { focus: jest.fn(), disabled: false };
     });
 
     it('should do nothing if key is not Tab', () => {
@@ -151,7 +153,6 @@ describe('useSidebarFocusAndKeyboard', () => {
 
       expect(mockEvent.preventDefault).not.toHaveBeenCalled();
       expect(triggerButtonMock.focus).not.toHaveBeenCalled();
-      expect(tryFocusAndPreventDefault).not.toHaveBeenCalled();
     });
 
     it('should call focusSidebarTriggerBtn on Shift+Tab', () => {
@@ -164,46 +165,44 @@ describe('useSidebarFocusAndKeyboard', () => {
       });
 
       expect(mockEvent.preventDefault).toHaveBeenCalledTimes(1);
-      act(() => { jest.runAllTimers(); });
+      act(() => jest.runAllTimers());
       expect(triggerButtonMock.focus).toHaveBeenCalledTimes(1);
-      expect(tryFocusAndPreventDefault).not.toHaveBeenCalled();
     });
 
     it('should attempt to focus elements sequentially on Tab', () => {
       mockContextValue = getMockContext(SIDEBAR_ID);
       const { result } = renderHookWithContext(mockContextValue);
-      mockEvent.shiftKey = false;
 
-      (tryFocusAndPreventDefault).mockImplementation((event, selector) => {
-        if (selector === '.previous-button') {
-          event.preventDefault();
-          return true;
-        }
-        return false;
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '#courseOutlineSidebarTrigger') { return mockOutlineTrigger; }
+        if (selector === '.previous-button') { return mockPrevButton; }
+        if (selector === '.next-button') { return mockNextButton; }
+
+        return null;
       });
 
       act(() => {
         result.current.handleKeyDown(mockEvent);
       });
 
-      expect(tryFocusAndPreventDefault).toHaveBeenCalledWith(mockEvent, '#courseOutlineSidebarTrigger');
-      expect(tryFocusAndPreventDefault).toHaveBeenCalledWith(mockEvent, '.previous-button');
-      expect(tryFocusAndPreventDefault).not.toHaveBeenCalledWith(mockEvent, '.next-button');
       expect(mockEvent.preventDefault).toHaveBeenCalledTimes(1);
+      expect(mockOutlineTrigger.focus).toHaveBeenCalledTimes(1);
+      expect(mockPrevButton.focus).not.toHaveBeenCalled();
     });
 
     it('should allow default Tab if no elements are focused by tryFocusAndPreventDefault', () => {
       mockContextValue = getMockContext(SIDEBAR_ID);
       const { result } = renderHookWithContext(mockContextValue);
-      mockEvent.shiftKey = false;
 
-      (tryFocusAndPreventDefault).mockReturnValue(false);
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === TRIGGER_SELECTOR) { return triggerButtonMock; }
+        return null;
+      });
 
       act(() => {
         result.current.handleKeyDown(mockEvent);
       });
 
-      expect(tryFocusAndPreventDefault).toHaveBeenCalledTimes(3);
       expect(mockEvent.preventDefault).not.toHaveBeenCalled();
     });
   });
@@ -237,7 +236,7 @@ describe('useSidebarFocusAndKeyboard', () => {
       });
 
       expect(mockToggleSidebar).toHaveBeenCalledWith(null);
-      act(() => { jest.runAllTimers(); });
+      act(() => jest.runAllTimers());
       expect(triggerButtonMock.focus).toHaveBeenCalledTimes(1);
     });
 

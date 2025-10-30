@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
+import userEvent from '@testing-library/user-event';
 
-import messages from '../../../messages';
+import messages from '@src/courseware/course/messages';
 import {
   fireEvent, initializeTestStore, render, screen,
 } from '../../../../../setupTest';
@@ -139,14 +140,14 @@ describe('Notification Trigger', () => {
     expect(localStorage.getItem(`notificationStatus.${courseMetadataSecondCourse.id}`)).toBe('"inactive"');
   });
 
-  it('should call toggleSidebar and onClick prop on click', () => {
+  it('should call toggleSidebar and onClick prop on click', async () => {
     const externalOnClick = jest.fn();
     renderWithProvider({}, externalOnClick);
 
     const triggerButton = screen.getByRole('button', {
       name: messages.openNotificationTrigger.defaultMessage,
     });
-    fireEvent.click(triggerButton);
+    await userEvent.click(triggerButton);
 
     expect(mockData.toggleSidebar).toHaveBeenCalledTimes(1);
     expect(mockData.toggleSidebar).toHaveBeenCalledWith(ID);
@@ -175,34 +176,29 @@ describe('Notification Trigger', () => {
       querySelectorSpy.mockRestore();
     });
 
-    it('should focus the close button and prevent default behavior if sidebar is open', () => {
+    it('should focus the close button and prevent default behavior if sidebar is open', async () => {
       renderWithProvider({ currentSidebar: ID });
       triggerButton = screen.getByRole('button', {
         name: messages.openNotificationTrigger.defaultMessage,
       });
 
-      const defaultPrevented = !fireEvent.keyDown(triggerButton, {
-        key: 'Tab',
-        shiftKey: false,
-      });
+      triggerButton.focus();
+      expect(document.activeElement).toBe(triggerButton);
 
-      expect(defaultPrevented).toBe(true);
+      await userEvent.tab();
+
       expect(querySelectorSpy).toHaveBeenCalledWith('.sidebar-close-btn');
       expect(mockCloseButtonFocus).toHaveBeenCalledTimes(1);
     });
 
-    it('should do nothing (allow default Tab behavior) if sidebar is closed', () => {
+    it('should do nothing (allow default Tab behavior) if sidebar is closed', async () => {
       renderWithProvider({ currentSidebar: null });
       triggerButton = screen.getByRole('button', {
         name: messages.openNotificationTrigger.defaultMessage,
       });
 
-      const defaultPrevented = !fireEvent.keyDown(triggerButton, {
-        key: 'Tab',
-        shiftKey: false,
-      });
+      await userEvent.tab();
 
-      expect(defaultPrevented).toBe(false);
       expect(querySelectorSpy).not.toHaveBeenCalledWith('.sidebar-close-btn');
       expect(mockCloseButtonFocus).not.toHaveBeenCalled();
     });

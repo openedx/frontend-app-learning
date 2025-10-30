@@ -5,7 +5,7 @@ import { breakpoints } from '@openedx/paragon';
 
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
-import messages from '../../../messages';
+import messages from '@src/courseware/course/messages';
 import {
   fireEvent, initializeMockApp, render, screen, waitFor,
 } from '../../../../../setupTest';
