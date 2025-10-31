@@ -1,4 +1,6 @@
 import { Factory } from 'rosie';
+import userEvent from '@testing-library/user-event';
+import { createRef } from 'react';
 
 import {
   initializeTestStore,
@@ -7,8 +9,6 @@ import {
   fireEvent,
   waitFor,
 } from '@src/setupTest';
-import userEvent from '@testing-library/user-event';
-import { createRef } from 'react';
 import messages from '@src/courseware/course/messages';
 import SidebarContext from '../SidebarContext';
 import SidebarBase from './SidebarBase';
@@ -31,16 +31,17 @@ describe('SidebarBase', () => {
   let mockHandleKeyDown;
   let mockHandleBackBtnKeyDown;
 
+  const defaultComponentProps = {
+    title: 'Test Sidebar Title',
+    ariaLabel: 'Test Sidebar Aria Label',
+    sidebarId: SIDEBAR_ID,
+    className: 'test-class',
+    children: <div>Sidebar Content</div>,
+  };
+
   const renderSidebar = (contextProps = {}, componentProps = {}) => {
     const fullContextValue = { ...mockContextValue, ...contextProps };
-    const defaultProps = {
-      title: 'Test Sidebar Title',
-      ariaLabel: 'Test Sidebar Aria Label',
-      sidebarId: SIDEBAR_ID,
-      className: 'test-class',
-      children: <div>Sidebar Content</div>,
-      ...componentProps,
-    };
+    const defaultProps = { ...defaultComponentProps, ...componentProps };
     return render(
       <SidebarContext.Provider value={fullContextValue}>
         <SidebarBase {...defaultProps} />
@@ -84,7 +85,7 @@ describe('SidebarBase', () => {
   it('should render children, title, and close button when visible', () => {
     renderSidebar({ currentSidebar: SIDEBAR_ID });
     expect(screen.getByText('Sidebar Content')).toBeInTheDocument();
-    expect(screen.getByText('Test Sidebar Title')).toBeInTheDocument();
+    expect(screen.getByText(defaultComponentProps.title)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: messages.closeNotificationTrigger.defaultMessage })).toBeInTheDocument();
     expect(screen.getByTestId(`sidebar-${SIDEBAR_ID}`)).toBeInTheDocument();
     expect(screen.getByTestId(`sidebar-${SIDEBAR_ID}`)).not.toHaveClass('d-none');
@@ -99,7 +100,7 @@ describe('SidebarBase', () => {
 
   it('should hide title bar when showTitleBar prop is false', () => {
     renderSidebar({ currentSidebar: SIDEBAR_ID }, { showTitleBar: false });
-    expect(screen.queryByText('Test Sidebar Title')).not.toBeInTheDocument();
+    expect(screen.queryByText(defaultComponentProps.title)).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: messages.closeNotificationTrigger.defaultMessage })).not.toBeInTheDocument();
     expect(screen.getByText('Sidebar Content')).toBeInTheDocument();
   });
