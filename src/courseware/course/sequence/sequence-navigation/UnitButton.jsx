@@ -39,6 +39,9 @@ const UnitButton = ({
       variant="link"
       onClick={handleClick}
       title={title}
+      role="tab"
+      aria-selected={isActive}
+      aria-controls={title}
       as={Link}
       to={unitPath}
     >

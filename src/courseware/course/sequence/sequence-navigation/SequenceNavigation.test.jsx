@@ -1,5 +1,7 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import { useWindowSize, breakpoints } from '@openedx/paragon';
+
 import {
   render, screen, fireEvent, getByText, initializeTestStore,
 } from '../../../../setupTest';
@@ -9,6 +11,15 @@ import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastV
 // Mock the hook to avoid relying on its implementation and mocking `getBoundingClientRect`.
 jest.mock('../../../../generic/tabs/useIndexOfLastVisibleChild');
 useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
+
+jest.mock('@openedx/paragon', () => {
+  const original = jest.requireActual('@openedx/paragon');
+  return {
+    ...original,
+    breakpoints: original.breakpoints,
+    useWindowSize: jest.fn(),
+  };
+});
 
 describe('Sequence Navigation', () => {
   let mockData;
@@ -29,6 +40,7 @@ describe('Sequence Navigation', () => {
       onNavigate: () => {},
       nextHandler: () => {},
     };
+    useWindowSize.mockReturnValue({ width: 1024, height: 800 });
   });
 
   it('is empty while loading', async () => {
@@ -76,7 +88,7 @@ describe('Sequence Navigation', () => {
     const onNavigate = jest.fn();
     render(<SequenceNavigation {...mockData} {...{ onNavigate }} />, { wrapWithRouter: true });
 
-    const unitButtons = screen.getAllByRole('link', { name: /\d+/ });
+    const unitButtons = screen.getAllByRole('tab', { name: /\d+/ });
     expect(unitButtons).toHaveLength(unitButtons.length);
     unitButtons.forEach(button => fireEvent.click(button));
     expect(onNavigate).toHaveBeenCalledTimes(unitButtons.length);
@@ -208,5 +220,23 @@ describe('Sequence Navigation', () => {
       { store: testStore, wrapWithRouter: true },
     );
     expect(screen.queryByRole('link', { name: /next/i })).not.toBeInTheDocument();
+  });
+
+  it('shows previous button without label when screen is small', () => {
+    useWindowSize.mockReturnValue({ width: breakpoints.small.minWidth - 1 });
+
+    render(<SequenceNavigation {...mockData} />, { wrapWithRouter: true });
+
+    const prevButton = screen.getByRole('button');
+    expect(prevButton.textContent).toBe('2 of 3');
+  });
+
+  it('does not set width when screen is large', () => {
+    useWindowSize.mockReturnValue({ width: breakpoints.small.minWidth });
+
+    render(<SequenceNavigation {...mockData} />, { wrapWithRouter: true });
+
+    const nav = screen.getByRole('navigation', { name: /course sequence tabs/i });
+    expect(nav).not.toHaveStyle({ width: '90%' });
   });
 });
