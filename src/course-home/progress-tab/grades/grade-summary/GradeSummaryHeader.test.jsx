@@ -1,6 +1,5 @@
 import userEvent from '@testing-library/user-event';
 import { useSelector } from 'react-redux';
-import { IntlProvider } from 'react-intl';
 
 import { useModel } from '@src/generic/model-store';
 import {
@@ -35,12 +34,10 @@ describe('GradeSummaryHeader', () => {
 
   const renderComponent = (props = {}) => {
     render(
-      <IntlProvider locale="en" messages={messages}>
-        <GradeSummaryHeader
-          allOfSomeAssignmentTypeIsLocked={false}
-          {...props}
-        />
-      </IntlProvider>,
+			<GradeSummaryHeader
+				allOfSomeAssignmentTypeIsLocked={false}
+				{...props}
+			/>
     );
   };
 
