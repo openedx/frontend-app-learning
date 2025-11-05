@@ -34,10 +34,10 @@ describe('GradeSummaryHeader', () => {
 
   const renderComponent = (props = {}) => {
     render(
-			<GradeSummaryHeader
-				allOfSomeAssignmentTypeIsLocked={false}
-				{...props}
-			/>
+      <GradeSummaryHeader
+        allOfSomeAssignmentTypeIsLocked={false}
+        {...props}
+      />,
     );
   };
 
