@@ -2,6 +2,8 @@ import React from 'react';
 import { Factory } from 'rosie';
 import { getAllByRole } from '@testing-library/dom';
 import { act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import {
   render, screen, fireEvent, initializeTestStore,
@@ -60,7 +62,7 @@ describe('Sequence Navigation Dropdown', () => {
     });
   });
 
-  it('handles the clicks', () => {
+  it('handles the clicks', async () => {
     const onNavigate = jest.fn();
     const { container } = render(
       <SequenceNavigationDropdown {...mockData} onNavigate={onNavigate} />,
@@ -72,7 +74,13 @@ describe('Sequence Navigation Dropdown', () => {
       fireEvent.click(dropdownToggle);
     });
     const dropdownMenu = container.querySelector('.dropdown-menu');
-    getAllByRole(dropdownMenu, 'tab', { hidden: true }).forEach(button => fireEvent.click(button));
+    const buttons = getAllByRole(dropdownMenu, 'tab', { hidden: true });
+
+    for (const button of buttons) {
+      // eslint-disable-next-line no-await-in-loop
+      await userEvent.click(button);
+    }
+
     expect(onNavigate).toHaveBeenCalledTimes(unitBlocks.length);
     unitBlocks.forEach((unit, index) => {
       expect(onNavigate).toHaveBeenNthCalledWith(index + 1, unit.id);

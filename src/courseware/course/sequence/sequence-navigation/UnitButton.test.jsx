@@ -1,8 +1,10 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import userEvent from '@testing-library/user-event';
+
 import {
-  fireEvent, initializeTestStore, render, screen,
-} from '../../../../setupTest';
+  initializeTestStore, render, screen,
+} from '@src/setupTest';
 import UnitButton from './UnitButton';
 
 jest.mock('react-router-dom', () => {
@@ -89,18 +91,18 @@ describe('Unit Button', () => {
     expect(bookmarkIcon.getAttribute('data-testid')).toBe('bookmark-icon');
   });
 
-  it('handles the click', () => {
+  it('handles the click', async () => {
     const onClick = jest.fn();
     render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
-    fireEvent.click(screen.getByRole('tab'));
+    await userEvent.click(screen.getByRole('tab'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onClick with correct unitId when clicked', () => {
+  it('calls onClick with correct unitId when clicked', async () => {
     const onClick = jest.fn();
     render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
 
-    fireEvent.click(screen.getByRole('tab'));
+    await userEvent.click(screen.getByRole('tab'));
 
     expect(onClick).toHaveBeenCalledWith(mockData.unitId);
   });

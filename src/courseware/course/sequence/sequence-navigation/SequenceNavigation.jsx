@@ -85,6 +85,8 @@ const SequenceNavigation = ({
     } else if (!shouldDisplayNotificationTriggerInSequence) {
       buttonText = intl.formatMessage(messages.nextButton);
     }
+
+    if (!buttonText) { return null; }
     return navigationDisabledNextSequence || (
       <NextUnitTopNavTriggerSlot
         {...{
@@ -106,7 +108,7 @@ const SequenceNavigation = ({
       data-testid="courseware-sequence-navigation"
       className={classNames('sequence-navigation', className, { 'mr-2': shouldDisplayNotificationTriggerInSequence })}
       style={{ width: shouldDisplayNotificationTriggerInSequence ? '90%' : null }}
-      aria-label="course sequence tabs"
+      aria-label={intl.formatMessage(messages.sequenceNavLabel)}
     >
       {renderPreviousButton()}
       {renderUnitButtons()}
