@@ -86,7 +86,6 @@ const SequenceNavigation = ({
       buttonText = intl.formatMessage(messages.nextButton);
     }
 
-    if (!buttonText) { return null; }
     return navigationDisabledNextSequence || (
       <NextUnitTopNavTriggerSlot
         {...{
