@@ -4,7 +4,9 @@ import { ArrowBackIos, Close } from '@openedx/paragon/icons';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useCallback, useContext } from 'react';
+
 import { useEventListener } from '@src/generic/hooks';
+import { setSessionStorage } from '@src/data/sessionStorage';
 import messages from '../../messages';
 import SidebarContext from '../SidebarContext';
 
@@ -19,6 +21,7 @@ const SidebarBase = ({
 }) => {
   const intl = useIntl();
   const {
+    courseId,
     toggleSidebar,
     shouldDisplayFullScreen,
     currentSidebar,
@@ -33,6 +36,11 @@ const SidebarBase = ({
   }, [sidebarId, toggleSidebar]);
 
   useEventListener('message', receiveMessage);
+
+  const handleCloseNotificationTray = () => {
+    toggleSidebar(null);
+    setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
+  };
 
   return (
     <section
@@ -72,7 +80,7 @@ const SidebarBase = ({
                     src={Close}
                     size="sm"
                     iconAs={Icon}
-                    onClick={() => toggleSidebar(null)}
+                    onClick={handleCloseNotificationTray}
                     variant="primary"
                     alt={intl.formatMessage(messages.closeNotificationTrigger)}
                   />

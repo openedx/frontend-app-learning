@@ -26,6 +26,10 @@ jest.mock(
   },
 );
 
+jest.mock('@src/data/sessionStorage', () => ({
+  getSessionStorage: jest.fn().mockReturnValue(null),
+}));
+
 const recordFirstSectionCelebration = jest.fn();
 // eslint-disable-next-line no-import-assign
 celebrationUtils.recordFirstSectionCelebration = recordFirstSectionCelebration;
