@@ -1,12 +1,20 @@
 import React from 'react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { WIDGETS } from '@src/constants';
+import { setSessionStorage } from '@src/data/sessionStorage';
 import SidebarContext from '../SidebarContext';
 import SidebarBase from './SidebarBase';
 
 const mockToggleSidebar = jest.fn();
+const courseId = 'course-test-123';
+
+jest.mock('@src/data/sessionStorage', () => ({
+  setSessionStorage: jest.fn(),
+}));
 
 const defaultContextValue = {
+  courseId,
   toggleSidebar: mockToggleSidebar,
   shouldDisplayFullScreen: false,
   currentSidebar: 'TEST_SIDEBAR',
@@ -80,6 +88,14 @@ describe('SidebarBase', () => {
       fireEvent.click(screen.getByRole('button', { name: /close sidebar/i }));
 
       expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+    });
+
+    it('marks the notification tray as closed when closing the upgrade sidebar', () => {
+      renderSidebarBase({ sidebarId: WIDGETS.NOTIFICATIONS }, { currentSidebar: WIDGETS.NOTIFICATIONS });
+
+      fireEvent.click(screen.getByRole('button', { name: /close sidebar/i }));
+
+      expect(setSessionStorage).toHaveBeenCalledWith(`notificationTrayStatus.${courseId}`, 'closed');
     });
 
     it('does not render the back-to-course button', () => {

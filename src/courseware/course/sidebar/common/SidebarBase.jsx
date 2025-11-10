@@ -4,7 +4,10 @@ import { ArrowBackIos, Close } from '@openedx/paragon/icons';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useCallback, useContext } from 'react';
+
 import { useEventListener } from '@src/generic/hooks';
+import { WIDGETS } from '@src/constants';
+import { setSessionStorage } from '@src/data/sessionStorage';
 import messages from '../../messages';
 import SidebarContext from '../SidebarContext';
 
@@ -19,18 +22,25 @@ const SidebarBase = ({
 }) => {
   const intl = useIntl();
   const {
+    courseId,
     toggleSidebar,
     shouldDisplayFullScreen,
     currentSidebar,
   } = useContext(SidebarContext);
 
+  const handleCloseSidebar = useCallback(() => {
+    toggleSidebar(null);
+    if (sidebarId === WIDGETS.NOTIFICATIONS) {
+      setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
+    }
+  }, [courseId, sidebarId, toggleSidebar]);
+
   const receiveMessage = useCallback(({ data }) => {
     const { type } = data;
     if (type === 'learning.events.sidebar.close') {
-      toggleSidebar(null);
+      handleCloseSidebar();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sidebarId, toggleSidebar]);
+  }, [handleCloseSidebar]);
 
   useEventListener('message', receiveMessage);
 
@@ -49,8 +59,8 @@ const SidebarBase = ({
       {shouldDisplayFullScreen ? (
         <div
           className="pt-2 pb-2.5 border-bottom border-light-400 d-flex align-items-center ml-2"
-          onClick={() => toggleSidebar(null)}
-          onKeyDown={() => toggleSidebar(null)}
+          onClick={handleCloseSidebar}
+          onKeyDown={handleCloseSidebar}
           role="button"
           tabIndex="0"
         >
@@ -71,7 +81,7 @@ const SidebarBase = ({
                   src={Close}
                   size="sm"
                   iconAs={Icon}
-                  onClick={() => toggleSidebar(null)}
+                  onClick={handleCloseSidebar}
                   variant="primary"
                   alt={intl.formatMessage(messages.closeSidebarTrigger)}
                 />

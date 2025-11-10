@@ -7,6 +7,8 @@ import { useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
 import { useModel } from '@src/generic/model-store';
+import { getSessionStorage } from '@src/data/sessionStorage';
+import { WIDGETS } from '@src/constants';
 
 import SidebarContext from './SidebarContext';
 import {
@@ -68,14 +70,15 @@ const SidebarProvider = ({
   }, [getAvailableWidgets]);
 
   // Calculate initial sidebar with priority cascade
-  const initialSidebar = useInitialSidebar({
+  const initialSidebarByPriority = useInitialSidebar({
     courseId,
     shouldDisplayFullScreen,
     isInitiallySidebarOpen,
     getFirstAvailablePanel,
     getAvailableWidgets,
   });
-
+  const isNotificationTrayOpen = getSessionStorage(`notificationTrayStatus.${courseId}`) === 'open';
+  const initialSidebar = isNotificationTrayOpen ? WIDGETS.NOTIFICATIONS : initialSidebarByPriority;
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
 
   // Track if user has manually toggled sidebar within current unit
