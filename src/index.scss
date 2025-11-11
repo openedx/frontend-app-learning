@@ -448,6 +448,114 @@
   }
 }
 
+/* ====== START: custom overrides (paste AFTER all imports) ====== */
+
+/* Card Paragon (mọi nơi) */
+#root .pgn__card {
+  border: 0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,.06) !important;
+  transition: box-shadow .18s ease;
+}
+#root .pgn__card:hover { box-shadow: 0 12px 28px rgba(0,0,0,.08) !important; }
+#root .pgn__card-header { padding-block: 16px !important; }
+#root .pgn__card-header-title { letter-spacing: -0.01em; }
+
+/* Tabs: Course / Progress / Dates – underline animate */
+#root .nav-underline-tabs .nav-link {
+  position: relative;
+  border: 0 !important;
+  color: var(--pgn-color-gray-700);
+}
+#root .nav-underline-tabs .nav-link::after {
+  content: "";
+  position: absolute; left: 0; bottom: -1px;
+  height: 3px; width: 0;
+  background: var(--pgn-color-primary-500);
+  transition: width .18s ease;
+}
+#root .nav-underline-tabs .nav-link:hover,
+#root .nav-underline-tabs .nav-link:focus { color: var(--pgn-color-primary-500); }
+#root .nav-underline-tabs .nav-link:hover::after,
+#root .nav-underline-tabs .nav-link.active::after { width: 100%; }
+
+/* Courseware header (dải tab đơn vị) sticky + glass */
+#root .sequence-navigation-container {
+  position: sticky !important;
+  top: 0; z-index: 4;
+  background: rgba(255,255,255,.92) !important;
+  backdrop-filter: saturate(1.2) blur(6px);
+  border-bottom: 1px solid var(--pgn-color-light-400);
+}
+
+/* Dải tab đơn vị – pill nhẹ, hover rõ */
+#root .sequence-navigation .btn {
+  border-color: var(--pgn-color-light-300) !important;
+  transition: background .12s ease, color .12s ease, box-shadow .12s ease;
+  height: 2.75rem;
+  padding: 0 .875rem;
+  color: var(--pgn-color-gray-600);
+  background: #fff;
+}
+#root .sequence-navigation .btn:hover {
+  background: var(--pgn-color-light-200);
+  color: var(--pgn-color-gray-800);
+}
+/* bỏ gạch chân mặc định khi active (đã có nền) */
+#root .sequence-navigation .btn.active::after { content: none !important; }
+#root .sequence-navigation .btn.active {
+  color: var(--pgn-color-primary-600);
+  background: color-mix(in srgb, var(--pgn-color-primary-100) 60%, #fff 40%);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+/* Mũi tên góc phải trên – tròn + bóng nhẹ */
+#root .top-unit-navigation .next-button,
+#root .top-unit-navigation .previous-button,
+#root .top-unit-navigation [class*="next-"],
+#root .top-unit-navigation [class*="previous-"] {
+  width: 40px; height: 40px;
+  border-radius: 999px !important;
+  border: 1px solid var(--pgn-color-light-400) !important;
+  background: #fff !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+#root .top-unit-navigation .next-button:hover,
+#root .top-unit-navigation .previous-button:hover,
+#root .top-unit-navigation [class*="next-"]:hover,
+#root .top-unit-navigation [class*="previous-"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  background: var(--pgn-color-light-200) !important;
+}
+
+/* Nút Prev/Next ở CUỐI unit – pill + bóng */
+#root .unit-navigation .previous-button,
+#root .unit-navigation .next-button {
+  border-radius: 10px !important;
+  border: 1px solid var(--pgn-color-light-400) !important;
+  background: #fff !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+}
+
+/* Tiêu đề unit */
+#root .unit-container h1 {
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+}
+
+/* Hover item trong Course Outline Tray (bên trái) */
+#root .course-outline-tray .pgn__list-group-item { border-radius: 10px; }
+#root .course-outline-tray .pgn__list-group-item:hover { background: var(--pgn-color-light-200); }
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ====== END: custom overrides ====== */
+
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
 @import "courseware/course/sidebar/sidebars/discussions/Discussions.scss";
@@ -466,3 +574,6 @@
 @import "course-tabs/course-tabs-navigation.scss";
 @import "courseware/course/sidebar/common/SidebarBase.scss";
 @import "courseware/course/sidebar/sidebars/course-outline/CourseOutlineTray.scss";
+
+
+
