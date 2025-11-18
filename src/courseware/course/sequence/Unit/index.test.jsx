@@ -84,6 +84,19 @@ describe('<Unit />', () => {
 
       expect(nextButton).toBeVisible();
     });
+
+    // Test for accessibility compliance: unit title must be an h1 (heading level 1) as the page's primary heading
+    // for screen reader and accessibility compliance.
+    // See: https://edx.readthedocs.io/projects/open-edx-building-and-running-a-course/en/latest/course_components/create_html_component.html#the-visual-editor
+    // JIRA: https://2u-internal.atlassian.net/browse/AU-2135
+    it('renders unit title as h1 heading for accessibility', () => {
+      renderComponent(defaultProps);
+
+      const unitTitle = screen.getByRole('heading', { level: 1 });
+
+      expect(unitTitle).toBeInTheDocument();
+      expect(unitTitle.tagName).toBe('H1');
+    });
   });
 
   describe('UnitSuspense', () => {
