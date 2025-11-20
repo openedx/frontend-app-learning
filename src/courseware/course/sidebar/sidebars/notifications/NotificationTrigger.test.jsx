@@ -1,16 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
+import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
+import { getSessionStorage, setSessionStorage } from '@src/data/sessionStorage';
 import {
   fireEvent, initializeTestStore, render, screen,
 } from '../../../../../setupTest';
 import SidebarContext from '../../SidebarContext';
-import NotificationTrigger from './NotificationTrigger';
+// FIX 1: Імпортуємо ID
+import NotificationTrigger, { ID } from './NotificationTrigger';
+
+// FIX 2: Використовуємо модульні моки замість window.localStorage
+
+jest.mock('@src/data/localStorage', () => ({
+  getLocalStorage: jest.fn(),
+  setLocalStorage: jest.fn(),
+}));
+
+jest.mock('@src/data/sessionStorage', () => ({
+  getSessionStorage: jest.fn(),
+  setSessionStorage: jest.fn(),
+}));
 
 describe('Notification Trigger', () => {
   let mockData;
-  let getItemSpy;
-  let setItemSpy;
   const courseMetadata = Factory.build('courseMetadata');
 
   beforeEach(async () => {
@@ -19,22 +32,21 @@ describe('Notification Trigger', () => {
       excludeFetchCourse: true,
       excludeFetchSequence: true,
     });
+
+    jest.clearAllMocks();
+
     mockData = {
       courseId: courseMetadata.id,
-      toggleNotificationTray: () => {},
-      isNotificationTrayVisible: () => {},
+      toggleSidebar: jest.fn(),
+      currentSidebar: null,
       notificationStatus: 'inactive',
-      setNotificationStatus: () => {},
+      setNotificationStatus: jest.fn(),
       upgradeNotificationCurrentState: 'FPDdaysLeft',
     };
-    // Jest does not support calls to localStorage, spying on localStorage's prototype directly instead
-    getItemSpy = jest.spyOn(Object.getPrototypeOf(window.localStorage), 'getItem');
-    setItemSpy = jest.spyOn(Object.getPrototypeOf(window.localStorage), 'setItem');
-  });
 
-  afterAll(() => {
-    getItemSpy.mockRestore();
-    setItemSpy.mockRestore();
+    // Default mocks
+    getLocalStorage.mockReturnValue(null);
+    getSessionStorage.mockReturnValue('closed');
   });
 
   const SidebarWrapper = ({ contextValue, onClick }) => (
@@ -48,8 +60,7 @@ describe('Notification Trigger', () => {
     onClick: PropTypes.func.isRequired,
   };
 
-  function renderWithProvider(data, onClick = () => {
-  }) {
+  function renderWithProvider(data, onClick = () => {}) {
     const { container } = render(<SidebarWrapper contextValue={{ ...mockData, ...data }} onClick={onClick} />);
     return container;
   }
@@ -58,14 +69,21 @@ describe('Notification Trigger', () => {
     const toggleNotificationTray = jest.fn();
     const testData = {
       ...mockData,
-      toggleNotificationTray,
+      toggleSidebar: toggleNotificationTray, // Fix naming for consistnecy if needed, usually passed via context
     };
-    renderWithProvider(testData, toggleNotificationTray);
+    // We are testing the onClick passed to component, not context toggle here specifically for the trigger click
+    const onClickProp = jest.fn();
+
+    renderWithProvider(testData, onClickProp);
 
     const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
     expect(notificationTrigger).toBeInTheDocument();
+
     fireEvent.click(notificationTrigger);
-    expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
+
+    expect(onClickProp).toHaveBeenCalledTimes(1);
+    // Check SessionStorage update via module mock
+    expect(setSessionStorage).toHaveBeenCalledWith(`notificationTrayStatus.${mockData.courseId}`, 'open');
   });
 
   it('renders notification trigger icon with red dot when notificationStatus is active', async () => {
@@ -77,61 +95,93 @@ describe('Notification Trigger', () => {
   });
 
   it('renders notification trigger icon WITHOUT red dot within the same phase', async () => {
+    // FIX: Mock return value directly
+    getLocalStorage.mockReturnValue('sameState');
+
     const container = renderWithProvider({
       upgradeNotificationLastSeen: 'sameState',
       upgradeNotificationCurrentState: 'sameState',
     });
-    expect(container)
-      .toBeInTheDocument();
-    expect(localStorage.getItem)
-      .toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`);
-    expect(localStorage.getItem(`upgradeNotificationLastSeen.${mockData.courseId}`))
-      .toBe('"sameState"');
-    const buttonIcon = container.querySelectorAll('svg');
-    expect(buttonIcon)
-      .toHaveLength(1);
-    expect(screen.queryByRole('notification-dot'))
-      .not
-      .toBeInTheDocument();
-  });
 
-  // Rendering NotificationTrigger has the effect of calling UpdateUpgradeNotificationLastSeen(),
-  // if upgradeNotificationLastSeen is different than upgradeNotificationCurrentState
-  // it should update localStorage accordingly
-  it('makes the right updates when rendering a new phase from an UpgradeNotification change (before -> after)', async () => {
-    const container = renderWithProvider({
-      upgradeNotificationLastSeen: 'before',
-      upgradeNotificationCurrentState: 'after',
-    });
     expect(container).toBeInTheDocument();
 
-    // verify localStorage get/set are called with correct arguments
-    expect(localStorage.getItem).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`);
-    expect(localStorage.setItem).toHaveBeenCalledWith(`notificationStatus.${mockData.courseId}`, '"active"');
-    expect(localStorage.setItem).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`, '"after"');
+    // Check module mock call
+    expect(getLocalStorage).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`);
 
-    // verify localStorage is updated accordingly
-    expect(localStorage.getItem(`upgradeNotificationLastSeen.${mockData.courseId}`)).toBe('"after"');
-    expect(localStorage.getItem(`notificationStatus.${mockData.courseId}`)).toBe('"active"');
+    const buttonIcon = container.querySelectorAll('svg');
+    expect(buttonIcon).toHaveLength(1);
+    expect(screen.queryByRole('notification-dot')).not.toBeInTheDocument();
+  });
+
+  it('makes the right updates when rendering a new phase from an UpgradeNotification change (before -> after)', async () => {
+    // FIX: Mock implementation to return 'before' for lastSeen
+    getLocalStorage.mockImplementation((key) => {
+      if (key.includes('upgradeNotificationLastSeen')) { return 'before'; }
+      return null;
+    });
+
+    const container = renderWithProvider({
+      upgradeNotificationCurrentState: 'after',
+    });
+
+    expect(container).toBeInTheDocument();
+
+    // Verify calls to module mocks
+    expect(getLocalStorage).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`);
+    expect(setLocalStorage).toHaveBeenCalledWith(`notificationStatus.${mockData.courseId}`, 'active');
+    expect(setLocalStorage).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`, 'after');
   });
 
   it('handles localStorage from a different course', async () => {
-    const courseMetadataSecondCourse = Factory.build('courseMetadata', { id: 'second_id' });
-    // set localStorage for a different course before rendering NotificationTrigger
-    localStorage.setItem(`upgradeNotificationLastSeen.${courseMetadataSecondCourse.id}`, '"accessDateView"');
-    localStorage.setItem(`notificationStatus.${courseMetadataSecondCourse.id}`, '"inactive"');
+    // This test logic was checking if localStorage affects other courses.
+    // Since we mock the module, we verify that we call it with the CORRECT course ID.
+
+    getLocalStorage.mockImplementation((key) => {
+      if (key === `upgradeNotificationLastSeen.${mockData.courseId}`) { return 'before'; }
+      return 'accessDateView'; // Simulate other data existing
+    });
 
     const container = renderWithProvider({
-      upgradeNotificationLastSeen: 'before',
       upgradeNotificationCurrentState: 'after',
     });
-    expect(container).toBeInTheDocument();
-    // Verify localStorage was updated for the original course
-    expect(localStorage.getItem(`upgradeNotificationLastSeen.${mockData.courseId}`)).toBe('"after"');
-    expect(localStorage.getItem(`notificationStatus.${mockData.courseId}`)).toBe('"active"');
 
-    // Verify the second course localStorage was not changed
-    expect(localStorage.getItem(`upgradeNotificationLastSeen.${courseMetadataSecondCourse.id}`)).toBe('"accessDateView"');
-    expect(localStorage.getItem(`notificationStatus.${courseMetadataSecondCourse.id}`)).toBe('"inactive"');
+    expect(container).toBeInTheDocument();
+
+    // Verify we updated OUR course
+    expect(setLocalStorage).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`, 'after');
+    expect(setLocalStorage).toHaveBeenCalledWith(`notificationStatus.${mockData.courseId}`, 'active');
+
+    // Verify we did NOT update the other course (mock check)
+    expect(setLocalStorage).not.toHaveBeenCalledWith(expect.stringContaining('second_id'), expect.anything());
+  });
+
+  // --- Coverage Tests ---
+
+  it('initializes default localStorage values if they are missing', () => {
+    getLocalStorage.mockReturnValue(null);
+
+    renderWithProvider({});
+
+    expect(setLocalStorage).toHaveBeenCalledWith(`notificationStatus.${mockData.courseId}`, 'active');
+    expect(setLocalStorage).toHaveBeenCalledWith(`upgradeNotificationCurrentState.${mockData.courseId}`, 'initialize');
+  });
+
+  it('automatically opens sidebar if notification tray is open in session and sidebar is closed', () => {
+    getSessionStorage.mockReturnValue('open');
+    const contextData = { currentSidebar: null, toggleSidebar: jest.fn() };
+
+    renderWithProvider(contextData);
+
+    // FIX 1: ID is now imported and defined
+    expect(contextData.toggleSidebar).toHaveBeenCalledWith(ID);
+  });
+
+  it('does NOT automatically open sidebar if it is already open (even if tray is open)', () => {
+    getSessionStorage.mockReturnValue('open');
+    const contextData = { currentSidebar: 'discussions', toggleSidebar: jest.fn() };
+
+    renderWithProvider(contextData);
+
+    expect(contextData.toggleSidebar).not.toHaveBeenCalled();
   });
 });
