@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import { WIDGETS } from '@src/constants';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
+import { getSessionStorage, setSessionStorage } from '@src/data/sessionStorage';
 import messages from '../../../messages';
 import SidebarTriggerBase from '../../common/TriggerBase';
 import SidebarContext from '../../SidebarContext';
@@ -19,6 +20,8 @@ const NotificationTrigger = ({
     courseId,
     notificationStatus,
     setNotificationStatus,
+    currentSidebar,
+    toggleSidebar,
     upgradeNotificationCurrentState,
   } = useContext(SidebarContext);
 
@@ -45,10 +48,30 @@ const NotificationTrigger = ({
 
   useEffect(() => {
     UpdateUpgradeNotificationLastSeen();
-  });
+    const notificationTrayStatus = getSessionStorage(`notificationTrayStatus.${courseId}`);
+    const isNotificationTrayOpen = notificationTrayStatus === 'open';
+
+    if (isNotificationTrayOpen && !currentSidebar) {
+      if (toggleSidebar) {
+        toggleSidebar(ID);
+      }
+    }
+  }, [courseId, currentSidebar, ID]);
+
+  const handleClick = () => {
+    const isNotificationTrayOpen = getSessionStorage(`notificationTrayStatus.${courseId}`) === 'open';
+
+    if (isNotificationTrayOpen) {
+      setSessionStorage(`notificationTrayStatus.${courseId}`, 'closed');
+    } else {
+      setSessionStorage(`notificationTrayStatus.${courseId}`, 'open');
+    }
+
+    onClick();
+  };
 
   return (
-    <SidebarTriggerBase onClick={onClick} ariaLabel={intl.formatMessage(messages.openNotificationTrigger)}>
+    <SidebarTriggerBase onClick={handleClick} ariaLabel={intl.formatMessage(messages.openNotificationTrigger)}>
       <NotificationIcon status={notificationStatus} notificationColor="bg-danger-500" />
     </SidebarTriggerBase>
   );
