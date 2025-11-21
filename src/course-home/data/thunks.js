@@ -4,6 +4,7 @@ import {
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
   getDatesTabData,
+  getExamsData,
   getOutlineTabData,
   getProgressTabData,
   postCourseDeadlines,
@@ -26,6 +27,7 @@ import {
   fetchTabRequest,
   fetchTabSuccess,
   setCallToActionToast,
+  setExamsData,
 } from './slice';
 
 import mapSearchResponse from '../courseware-search/map-search-response';
@@ -221,5 +223,21 @@ export function searchCourseContent(courseId, searchKeyword) {
       'Max score': maxScore,
       'Access denied count': accessDeniedCount,
     });
+  };
+}
+
+export function fetchExamAttemptsData(courseId, sequenceIds) {
+  return async (dispatch) => {
+    const results = await Promise.all(sequenceIds.map(async (sequenceId) => {
+      try {
+        const response = await getExamsData(courseId, sequenceId);
+        return response.exam || {};
+      } catch (e) {
+        logError(e);
+        return [sequenceId, {}];
+      }
+    }));
+
+    dispatch(setExamsData(results));
   };
 }
