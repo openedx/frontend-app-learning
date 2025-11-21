@@ -18,6 +18,7 @@ const slice = createSlice({
     toastBodyLink: null,
     toastHeader: '',
     showSearch: false,
+    examsData: null,
   },
   reducers: {
     fetchProctoringInfoResolved: (state) => {
@@ -53,6 +54,9 @@ const slice = createSlice({
     setShowSearch: (state, { payload }) => {
       state.showSearch = payload;
     },
+    setExamsData: (state, { payload }) => {
+      state.examsData = payload;
+    },
   },
 });
 
@@ -64,6 +68,7 @@ export const {
   fetchTabSuccess,
   setCallToActionToast,
   setShowSearch,
+  setExamsData,
 } = slice.actions;
 
 export const {
