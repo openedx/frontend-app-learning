@@ -37,7 +37,9 @@ describe('useSidebarFocusAndKeyboard', () => {
 
     mockQuerySelector = jest.spyOn(document, 'querySelector');
     mockQuerySelector.mockImplementation((selector) => {
-      if (selector === TRIGGER_SELECTOR) { return triggerButtonMock; }
+      if (selector === TRIGGER_SELECTOR) {
+        return triggerButtonMock;
+      }
       return null;
     });
 
@@ -174,9 +176,15 @@ describe('useSidebarFocusAndKeyboard', () => {
       const { result } = renderHookWithContext(mockContextValue);
 
       mockQuerySelector.mockImplementation((selector) => {
-        if (selector === '#courseOutlineSidebarTrigger') { return mockOutlineTrigger; }
-        if (selector === '.previous-button') { return mockPrevButton; }
-        if (selector === '.next-button') { return mockNextButton; }
+        if (selector === '#courseOutlineSidebarTrigger') {
+          return mockOutlineTrigger;
+        }
+        if (selector === '.previous-button') {
+          return mockPrevButton;
+        }
+        if (selector === '.next-button') {
+          return mockNextButton;
+        }
 
         return null;
       });
@@ -195,7 +203,9 @@ describe('useSidebarFocusAndKeyboard', () => {
       const { result } = renderHookWithContext(mockContextValue);
 
       mockQuerySelector.mockImplementation((selector) => {
-        if (selector === TRIGGER_SELECTOR) { return triggerButtonMock; }
+        if (selector === TRIGGER_SELECTOR) {
+          return triggerButtonMock;
+        }
         return null;
       });
 
@@ -220,8 +230,12 @@ describe('useSidebarFocusAndKeyboard', () => {
       mockCtaButton = { focus: jest.fn() };
 
       mockQuerySelector.mockImplementation((selector) => {
-        if (selector === '.call-to-action-btn') { return mockCtaButton; }
-        if (selector === TRIGGER_SELECTOR) { return triggerButtonMock; }
+        if (selector === '.call-to-action-btn') {
+          return mockCtaButton;
+        }
+        if (selector === TRIGGER_SELECTOR) {
+          return triggerButtonMock;
+        }
         return null;
       });
     });

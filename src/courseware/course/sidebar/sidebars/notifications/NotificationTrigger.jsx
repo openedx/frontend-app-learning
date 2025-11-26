@@ -66,10 +66,6 @@ const NotificationTrigger = ({
       if (currentSidebar === ID) {
         event.preventDefault();
         sidebarTriggerBtnRef.current?.blur();
-        sidebarTriggerBtnRef.current?.blur();
-
-        sidebarTriggerBtnRef.current?.blur();
-
         const targetButton = document.querySelector('.sidebar-close-btn');
         targetButton?.focus();
       }
