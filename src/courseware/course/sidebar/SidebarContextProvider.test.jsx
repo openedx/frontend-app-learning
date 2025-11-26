@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useWindowSize } from '@openedx/paragon';
 
@@ -7,6 +6,7 @@ import { useModel } from '@src/generic/model-store';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import { getSessionStorage } from '@src/data/sessionStorage';
 
+import { initializeTestStore, render, screen } from '@src/setupTest';
 import SidebarProvider from './SidebarContextProvider';
 import SidebarContext from './SidebarContext';
 import * as discussionsSidebar from './sidebars/discussions';
@@ -20,9 +20,13 @@ jest.mock('@openedx/paragon', () => ({
   },
 }));
 
-jest.mock('@src/generic/model-store', () => ({
-  useModel: jest.fn(),
-}));
+jest.mock('@src/generic/model-store', () => {
+  const actual = jest.requireActual('@src/generic/model-store');
+  return {
+    ...actual,
+    useModel: jest.fn(),
+  };
+});
 
 jest.mock('@src/data/localStorage', () => ({
   getLocalStorage: jest.fn(),
@@ -65,6 +69,10 @@ describe('SidebarContextProvider', () => {
     courseId: 'course-v1:test',
     unitId: 'unit-1',
   };
+
+  beforeAll(async () => {
+    await initializeTestStore();
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();

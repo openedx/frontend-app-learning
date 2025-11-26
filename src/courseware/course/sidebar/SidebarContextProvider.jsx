@@ -62,6 +62,7 @@ const SidebarProvider = ({
   }, [courseId]);
 
   const toggleSidebar = useCallback((sidebarId) => {
+    // Switch to new sidebar or hide the current sidebar
     const newSidebar = sidebarId === currentSidebar ? null : sidebarId;
     setCurrentSidebar(newSidebar);
     setLocalStorage(`sidebar.${courseId}`, newSidebar);

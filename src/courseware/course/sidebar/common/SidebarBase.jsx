@@ -57,8 +57,8 @@ const SidebarBase = ({
       {shouldDisplayFullScreen ? (
         <div
           className="pt-2 pb-2.5 border-bottom border-light-400 d-flex align-items-center ml-2"
-          onClick={() => toggleSidebar(null)}
-          onKeyDown={() => toggleSidebar(null)}
+          onClick={handleCloseNotificationTray}
+          onKeyDown={handleCloseNotificationTray}
           role="button"
           tabIndex="0"
         >

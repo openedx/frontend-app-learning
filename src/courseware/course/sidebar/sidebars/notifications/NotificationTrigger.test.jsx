@@ -7,10 +7,7 @@ import {
   fireEvent, initializeTestStore, render, screen,
 } from '../../../../../setupTest';
 import SidebarContext from '../../SidebarContext';
-// FIX 1: Імпортуємо ID
 import NotificationTrigger, { ID } from './NotificationTrigger';
-
-// FIX 2: Використовуємо модульні моки замість window.localStorage
 
 jest.mock('@src/data/localStorage', () => ({
   getLocalStorage: jest.fn(),
@@ -44,7 +41,6 @@ describe('Notification Trigger', () => {
       upgradeNotificationCurrentState: 'FPDdaysLeft',
     };
 
-    // Default mocks
     getLocalStorage.mockReturnValue(null);
     getSessionStorage.mockReturnValue('closed');
   });
@@ -69,9 +65,8 @@ describe('Notification Trigger', () => {
     const toggleNotificationTray = jest.fn();
     const testData = {
       ...mockData,
-      toggleSidebar: toggleNotificationTray, // Fix naming for consistnecy if needed, usually passed via context
+      toggleSidebar: toggleNotificationTray,
     };
-    // We are testing the onClick passed to component, not context toggle here specifically for the trigger click
     const onClickProp = jest.fn();
 
     renderWithProvider(testData, onClickProp);
@@ -82,7 +77,6 @@ describe('Notification Trigger', () => {
     fireEvent.click(notificationTrigger);
 
     expect(onClickProp).toHaveBeenCalledTimes(1);
-    // Check SessionStorage update via module mock
     expect(setSessionStorage).toHaveBeenCalledWith(`notificationTrayStatus.${mockData.courseId}`, 'open');
   });
 
@@ -95,7 +89,6 @@ describe('Notification Trigger', () => {
   });
 
   it('renders notification trigger icon WITHOUT red dot within the same phase', async () => {
-    // FIX: Mock return value directly
     getLocalStorage.mockReturnValue('sameState');
 
     const container = renderWithProvider({
@@ -105,7 +98,6 @@ describe('Notification Trigger', () => {
 
     expect(container).toBeInTheDocument();
 
-    // Check module mock call
     expect(getLocalStorage).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`);
 
     const buttonIcon = container.querySelectorAll('svg');
@@ -114,7 +106,6 @@ describe('Notification Trigger', () => {
   });
 
   it('makes the right updates when rendering a new phase from an UpgradeNotification change (before -> after)', async () => {
-    // FIX: Mock implementation to return 'before' for lastSeen
     getLocalStorage.mockImplementation((key) => {
       if (key.includes('upgradeNotificationLastSeen')) { return 'before'; }
       return null;
@@ -126,19 +117,15 @@ describe('Notification Trigger', () => {
 
     expect(container).toBeInTheDocument();
 
-    // Verify calls to module mocks
     expect(getLocalStorage).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`);
     expect(setLocalStorage).toHaveBeenCalledWith(`notificationStatus.${mockData.courseId}`, 'active');
     expect(setLocalStorage).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`, 'after');
   });
 
   it('handles localStorage from a different course', async () => {
-    // This test logic was checking if localStorage affects other courses.
-    // Since we mock the module, we verify that we call it with the CORRECT course ID.
-
     getLocalStorage.mockImplementation((key) => {
       if (key === `upgradeNotificationLastSeen.${mockData.courseId}`) { return 'before'; }
-      return 'accessDateView'; // Simulate other data existing
+      return 'accessDateView';
     });
 
     const container = renderWithProvider({
@@ -147,15 +134,11 @@ describe('Notification Trigger', () => {
 
     expect(container).toBeInTheDocument();
 
-    // Verify we updated OUR course
     expect(setLocalStorage).toHaveBeenCalledWith(`upgradeNotificationLastSeen.${mockData.courseId}`, 'after');
     expect(setLocalStorage).toHaveBeenCalledWith(`notificationStatus.${mockData.courseId}`, 'active');
 
-    // Verify we did NOT update the other course (mock check)
     expect(setLocalStorage).not.toHaveBeenCalledWith(expect.stringContaining('second_id'), expect.anything());
   });
-
-  // --- Coverage Tests ---
 
   it('initializes default localStorage values if they are missing', () => {
     getLocalStorage.mockReturnValue(null);
@@ -172,7 +155,6 @@ describe('Notification Trigger', () => {
 
     renderWithProvider(contextData);
 
-    // FIX 1: ID is now imported and defined
     expect(contextData.toggleSidebar).toHaveBeenCalledWith(ID);
   });
 
