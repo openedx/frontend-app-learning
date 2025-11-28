@@ -30,3 +30,5 @@ module.config.js
 src/i18n/messages/
 
 env.config.jsx
+
+webpack.dev-tutor.config.js
