@@ -27,10 +27,7 @@ const UnitTitleSlot = ({
     >
       <div className="d-flex justify-content-between">
         <div className="mb-0">
-          {/* Unit title must be h1 as the page's primary heading for screen reader and accessibility compliance.
-              See: https://edx.readthedocs.io/projects/open-edx-building-and-running-a-course/en/latest/course_components/create_html_component.html#the-visual-editor
-              JIRA: https://2u-internal.atlassian.net/browse/AU-2135 */}
-          <h1 className="h3">{unit.title}</h1>
+          <h1 className="unit-title">{unit.title}</h1>
         </div>
         {isEnabledOutlineSidebar && renderUnitNavigation(true)}
       </div>
