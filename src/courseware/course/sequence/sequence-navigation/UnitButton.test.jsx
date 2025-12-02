@@ -9,6 +9,7 @@ import {
   waitFor,
 } from '../../../../setupTest';
 import UnitButton from './UnitButton';
+import messages from './messages';
 
 describe('Unit Button', () => {
   let mockData;
@@ -112,7 +113,7 @@ describe('Unit Button', () => {
     const { container } = render(
       <>
         <UnitButton {...mockData} />
-        <button id="bookmark-button" type="button">Bookmark</button>
+        <button id="bookmark-button" type="button">{messages.bookmark.defaultMessage}</button>
       </>,
       { wrapWithRouter: true },
     );
@@ -136,7 +137,7 @@ describe('Unit Button', () => {
     const { container } = render(
       <>
         <UnitButton {...mockData} onClick={onClick} />
-        <button id="bookmark-button" type="button">Bookmark</button>
+        <button id="bookmark-button" type="button">{messages.bookmark.defaultMessage}</button>
       </>,
       { wrapWithRouter: true },
     );

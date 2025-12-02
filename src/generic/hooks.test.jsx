@@ -63,7 +63,7 @@ describe('Hooks', () => {
     test('should scroll to target element and focus', async () => {
       render(<TestComponent />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to content/i });
+      const skipLink = screen.getByRole('link', { name: new RegExp(messages.skipToContent.defaultMessage, 'i') });
       const targetContent = screen.getByTestId('target-content');
 
       targetContent.focus = jest.fn();
@@ -114,7 +114,7 @@ describe('Hooks', () => {
 
       render(<ComponentWithoutTarget />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to content/i });
+      const skipLink = screen.getByRole('link', { name: new RegExp(messages.skipToContent.defaultMessage, 'i') });
 
       await userEvent.click(skipLink);
 

@@ -4,6 +4,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { MAIN_CONTENT_ID } from '@src/constants';
+import { useScrollToContent } from '@src/generic/hooks';
 import messages from './messages';
 import Timeline from './timeline/Timeline';
 
@@ -14,7 +15,6 @@ import SuggestedScheduleHeader from '../suggested-schedule-messaging/SuggestedSc
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpgradeToCompleteAlert from '../suggested-schedule-messaging/UpgradeToCompleteAlert';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
-import { useScrollToContent } from '../../generic/hooks';
 
 const DatesTab = () => {
   const intl = useIntl();
