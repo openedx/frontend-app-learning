@@ -302,6 +302,11 @@
     padding-left: 40px;
     padding-right: 40px;
   }
+
+  // Unit title is styled as an H3
+  .unit-title {
+    font-size: var(--pgn-typography-font-size-h3-base);
+  }
 }
 
 .unit-iframe-wrapper {
