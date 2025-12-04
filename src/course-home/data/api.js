@@ -155,6 +155,7 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           title: block.display_name,
           hideFromTOC: block.hide_from_toc,
           navigationDisabled: block.navigation_disabled,
+          isPreview: block.is_preview,
         };
         break;
 
