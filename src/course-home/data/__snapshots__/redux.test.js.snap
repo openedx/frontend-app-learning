@@ -528,7 +528,7 @@ exports[`Data layer integration tests Test fetchOutlineTab Should fetch, normali
               "hideFromTOC": undefined,
               "icon": null,
               "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@bcdabcdabcdabcdabcdabcdabcdabcd1",
-              "isPreview": undefined,
+              "isPreview": false,
               "navigationDisabled": undefined,
               "sectionId": "block-v1:edX+DemoX+Demo_Course+type@chapter+block@bcdabcdabcdabcdabcdabcdabcdabcd2",
               "showLink": true,

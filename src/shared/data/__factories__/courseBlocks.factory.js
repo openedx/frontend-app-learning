@@ -116,6 +116,7 @@ export function buildMinimalCourseBlocks(courseId, title, options = {}) {
       effort_activities: 2,
       effort_time: 15,
       type: 'sequential',
+      is_preview: false,
     },
     { courseId },
   )];
