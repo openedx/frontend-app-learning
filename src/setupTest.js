@@ -26,13 +26,15 @@ import { getCourseOutlineStructure } from './courseware/data/thunks';
 import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 import { buildOutlineFromBlocks } from './courseware/data/__factories__/learningSequencesOutline.factory';
-import MockedPluginSlot from './tests/MockedPluginSlot';
 
-jest.mock('@openedx/frontend-plugin-framework', () => ({
-  ...jest.requireActual('@openedx/frontend-plugin-framework'),
-  Plugin: () => 'Plugin',
-  PluginSlot: MockedPluginSlot,
-}));
+jest.mock('@openedx/frontend-plugin-framework', () => {
+  const MockedPluginSlot = jest.requireActual('./tests/MockedPluginSlot').default;
+
+  return {
+    Plugin: () => 'Plugin',
+    PluginSlot: jest.fn(MockedPluginSlot),
+  };
+});
 
 jest.mock('@src/generic/plugin-store', () => ({
   ...jest.requireActual('@src/generic/plugin-store'),
