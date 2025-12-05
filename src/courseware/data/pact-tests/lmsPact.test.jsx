@@ -36,6 +36,19 @@ describe('Courseware Service', () => {
     mergeConfig({
       LMS_BASE_URL: 'http://localhost:8081',
     }, 'Custom app config for pact tests');
+
+    // Mock Intl.DateTimeFormat to return a consistent timezone across all environments
+    // This ensures that the browser_timezone query parameter matches the pact file
+    const OriginalDateTimeFormat = Intl.DateTimeFormat;
+    jest.spyOn(Intl, 'DateTimeFormat').mockImplementation((...args) => {
+      const dtf = new OriginalDateTimeFormat(...args);
+      const originalResolvedOptions = dtf.resolvedOptions.bind(dtf);
+      dtf.resolvedOptions = () => ({
+        ...originalResolvedOptions(),
+        timeZone: 'Asia/Karachi',
+      });
+      return dtf;
+    });
   });
 
   describe('When a request to get a learning sequence outline is made', () => {
