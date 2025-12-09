@@ -234,7 +234,7 @@ export function fetchExamAttemptsData(courseId, sequenceIds) {
         return response.exam || {};
       } catch (e) {
         logError(e);
-        return [sequenceId, {}];
+        return {};
       }
     }));
 
