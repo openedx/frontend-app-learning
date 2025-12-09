@@ -58,9 +58,6 @@ describe('Course', () => {
     global.innerWidth = breakpoints.extraLarge.minWidth;
   });
 
-  beforeEach(() => {
-    sessionStorage.clear();
-  });
 
   // This was passing when it shouldn't have been because of improper
   // waitFor use. With the React 18 upgrade it no longer improperly passes
