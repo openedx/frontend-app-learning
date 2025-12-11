@@ -56,7 +56,7 @@
 
 .donut-ring, .donut-segment, .donut-hole {
   &.complete-stroke {
-    stroke: var(--pgn-color-info-500);
+    stroke: var(--pgn-color-primary-500);
   }
 
   &.divider-stroke {
