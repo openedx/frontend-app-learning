@@ -27,6 +27,11 @@ import { buildOutlineFromBlocks } from '../courseware/data/__factories__/learnin
 
 import { UserMessagesProvider } from '../generic/user-messages';
 import { DECODE_ROUTES } from '../constants';
+import {
+  DismissButtonFormattedMessage,
+  NextButtonFormattedMessage,
+  OkayButtonFormattedMessage,
+} from './GenericTourFormattedMessages';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -158,6 +163,18 @@ describe('Course Home Tours', () => {
       expect(await screen.queryByRole('dialog')).not.toBeInTheDocument();
     },
   );
+
+  describe('GenericTourFormattedMessages', () => {
+    it('renders all formatted message components to satisfy coverage', () => {
+      render(<DismissButtonFormattedMessage />);
+      render(<NextButtonFormattedMessage />);
+      render(<OkayButtonFormattedMessage />);
+
+      expect(screen.getByText('Dismiss')).toBeInTheDocument();
+      expect(screen.getByText('Next')).toBeInTheDocument();
+      expect(screen.getByText('Okay')).toBeInTheDocument();
+    });
+  });
 });
 
 jest.mock(
