@@ -1490,4 +1490,287 @@ describe('Progress Tab', () => {
       expect(screen.getByText('Course progress for otherstudent')).toBeInTheDocument();
     });
   });
+
+  describe('Exam data fetching integration', () => {
+    const mockSectionScores = [
+      {
+        display_name: 'Section 1',
+        subsections: [
+          {
+            assignment_type: 'Exam',
+            block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@exam1',
+            display_name: 'Midterm Exam',
+            learner_has_access: true,
+            has_graded_assignment: true,
+            percent_graded: 0.8,
+            show_correctness: 'always',
+            show_grades: true,
+            url: '/mock-url',
+          },
+          {
+            assignment_type: 'Homework',
+            block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@homework1',
+            display_name: 'Homework 1',
+            learner_has_access: true,
+            has_graded_assignment: true,
+            percent_graded: 0.9,
+            show_correctness: 'always',
+            show_grades: true,
+            url: '/mock-url',
+          },
+        ],
+      },
+      {
+        display_name: 'Section 2',
+        subsections: [
+          {
+            assignment_type: 'Exam',
+            block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@final_exam',
+            display_name: 'Final Exam',
+            learner_has_access: true,
+            has_graded_assignment: true,
+            percent_graded: 0.85,
+            show_correctness: 'always',
+            show_grades: true,
+            url: '/mock-url',
+          },
+        ],
+      },
+    ];
+
+    beforeEach(() => {
+      // Reset any existing handlers to avoid conflicts
+      axiosMock.reset();
+
+      // Re-add the base mocks that other tests expect
+      axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
+      axiosMock.onGet(progressUrl).reply(200, defaultTabData);
+      axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
+
+      // Mock exam data endpoints using specific GET handlers
+      axiosMock.onGet(/.*exam1.*/).reply(200, {
+        exam: {
+          id: 1,
+          course_id: courseId,
+          content_id: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@exam1',
+          exam_name: 'Midterm Exam',
+          attempt_status: 'submitted',
+          time_remaining_seconds: 0,
+        },
+      });
+
+      axiosMock.onGet(/.*homework1.*/).reply(404);
+
+      axiosMock.onGet(/.*final_exam.*/).reply(200, {
+        exam: {
+          id: 2,
+          course_id: courseId,
+          content_id: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@final_exam',
+          exam_name: 'Final Exam',
+          attempt_status: 'ready_to_start',
+          time_remaining_seconds: 7200,
+        },
+      });
+    });
+
+    it('should fetch exam data for all subsections when ProgressTab renders', async () => {
+      setTabData({ section_scores: mockSectionScores });
+
+      await fetchAndRender();
+
+      // Verify exam API calls were made for all subsections
+      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(3);
+
+      // Verify the exam data is in the Redux store
+      const state = store.getState();
+      expect(state.courseHome.examsData).toHaveLength(3);
+
+      // Check the exam data structure
+      expect(state.courseHome.examsData[0]).toEqual({
+        id: 1,
+        courseId,
+        contentId: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@exam1',
+        examName: 'Midterm Exam',
+        attemptStatus: 'submitted',
+        timeRemainingSeconds: 0,
+      });
+
+      expect(state.courseHome.examsData[1]).toEqual({}); // 404 response for homework
+
+      expect(state.courseHome.examsData[2]).toEqual({
+        id: 2,
+        courseId,
+        contentId: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@final_exam',
+        examName: 'Final Exam',
+        attemptStatus: 'ready_to_start',
+        timeRemainingSeconds: 7200,
+      });
+    });
+
+    it('should handle empty section scores gracefully', async () => {
+      setTabData({ section_scores: [] });
+
+      await fetchAndRender();
+
+      // Verify no exam API calls were made
+      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(0);
+
+      // Verify empty exam data in Redux store
+      const state = store.getState();
+      expect(state.courseHome.examsData).toEqual([]);
+    });
+
+    it('should re-fetch exam data when section scores change', async () => {
+      // Initial render with limited section scores
+      setTabData({
+        section_scores: [mockSectionScores[0]], // Only first section
+      });
+
+      await fetchAndRender();
+
+      // Verify initial API calls (2 subsections in first section)
+      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(2);
+
+      // Clear axios history to track new calls
+      axiosMock.resetHistory();
+
+      // Update with full section scores and re-render
+      setTabData({ section_scores: mockSectionScores });
+      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
+
+      // Verify additional API calls for all subsections
+      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(3);
+    });
+
+    it('should handle exam API errors gracefully without breaking ProgressTab', async () => {
+      // Clear existing mocks and setup specific error scenario
+      axiosMock.reset();
+
+      // Re-add base mocks
+      axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
+      axiosMock.onGet(progressUrl).reply(200, defaultTabData);
+      axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
+
+      // Mock first exam to return 500 error
+      axiosMock.onGet(/.*exam1.*/).reply(500, { error: 'Server Error' });
+
+      // Mock other exams to succeed
+      axiosMock.onGet(/.*homework1.*/).reply(404, { customAttributes: { httpErrorStatus: 404 } });
+      axiosMock.onGet(/.*final_exam.*/).reply(200, {
+        exam: {
+          id: 2,
+          course_id: courseId,
+          content_id: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@final_exam',
+          exam_name: 'Final Exam',
+          attempt_status: 'ready_to_start',
+          time_remaining_seconds: 7200,
+        },
+      });
+
+      setTabData({ section_scores: mockSectionScores });
+
+      await fetchAndRender();
+
+      // Verify ProgressTab still renders successfully despite API error
+      expect(screen.getByText('Grades')).toBeInTheDocument();
+
+      // Verify the exam data includes error placeholder for failed request
+      const state = store.getState();
+      expect(state.courseHome.examsData).toHaveLength(3);
+      expect(state.courseHome.examsData[0]).toEqual({}); // Failed request returns empty object
+    });
+
+    it('should use EXAMS_BASE_URL when configured for exam API calls', async () => {
+      // Configure EXAMS_BASE_URL
+      const originalConfig = getConfig();
+      setConfig({
+        ...originalConfig,
+        EXAMS_BASE_URL: 'http://localhost:18740',
+      });
+
+      // Override mock to use new base URL
+      const examUrlWithExamsBase = /http:\/\/localhost:18740\/api\/v1\/student\/exam\/attempt\/course_id.*/;
+      axiosMock.onGet(examUrlWithExamsBase).reply(200, {
+        exam: {
+          id: 1,
+          course_id: courseId,
+          exam_name: 'Test Exam',
+          attempt_status: 'created',
+        },
+      });
+
+      setTabData({ section_scores: [mockSectionScores[0]] });
+
+      await fetchAndRender();
+
+      // Verify API calls use EXAMS_BASE_URL
+      const examApiCalls = axiosMock.history.get.filter(req => req.url.includes('localhost:18740'));
+      expect(examApiCalls.length).toBeGreaterThan(0);
+
+      // Restore original config
+      setConfig(originalConfig);
+    });
+
+    it('should extract sequence IDs correctly from nested section scores structure', async () => {
+      const complexSectionScores = [
+        {
+          display_name: 'Introduction',
+          subsections: [
+            {
+              assignment_type: 'Lecture',
+              block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@intro',
+              display_name: 'Course Introduction',
+            },
+          ],
+        },
+        {
+          display_name: 'Assessments',
+          subsections: [
+            {
+              assignment_type: 'Exam',
+              block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@quiz1',
+              display_name: 'Quiz 1',
+            },
+            {
+              assignment_type: 'Exam',
+              block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@quiz2',
+              display_name: 'Quiz 2',
+            },
+          ],
+        },
+      ];
+
+      // Mock all the expected sequence IDs
+      const expectedSequenceIds = [
+        'block-v1:edX+DemoX+Demo_Course+type@sequential+block@intro',
+        'block-v1:edX+DemoX+Demo_Course+type@sequential+block@quiz1',
+        'block-v1:edX+DemoX+Demo_Course+type@sequential+block@quiz2',
+      ];
+
+      expectedSequenceIds.forEach((sequenceId, index) => {
+        const examUrl = new RegExp(`.*/api/v1/student/exam/attempt/course_id/${encodeURIComponent(courseId)}/content_id/${encodeURIComponent(sequenceId)}.*`);
+        axiosMock.onGet(examUrl).reply(index === 0 ? 404 : 200, {
+          exam: {
+            id: index,
+            course_id: courseId,
+            content_id: sequenceId,
+            exam_name: `Test ${index}`,
+          },
+        });
+      });
+
+      setTabData({ section_scores: complexSectionScores });
+
+      await fetchAndRender();
+
+      // Verify API calls were made for all extracted sequence IDs
+      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(3);
+
+      // Verify correct sequence IDs were used in API calls
+      const apiCalls = axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'));
+      expectedSequenceIds.forEach(sequenceId => {
+        expect(apiCalls.some(call => call.url.includes(encodeURIComponent(sequenceId)))).toBe(true);
+      });
+    });
+  });
 });
