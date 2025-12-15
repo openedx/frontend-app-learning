@@ -26,8 +26,8 @@ const SidebarProvider: React.FC<Props> = ({
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
   const topic = useModel('discussionTopics', unitId);
   const windowWidth = useWindowSize().width ?? window.innerWidth;
-  const shouldDisplayFullScreen = windowWidth < breakpoints.large.minWidth;
-  const shouldDisplaySidebarOpen = windowWidth > breakpoints.medium.minWidth;
+  const shouldDisplayFullScreen = windowWidth < (breakpoints.large.minWidth ?? 992);
+  const shouldDisplaySidebarOpen = windowWidth > (breakpoints.medium.minWidth ?? 768);
   const query = new URLSearchParams(window.location.search);
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
   const sidebarKey = `sidebar.${courseId}`;
