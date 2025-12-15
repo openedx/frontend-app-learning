@@ -11,6 +11,7 @@ import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
 import Course from './Course';
 import setupDiscussionSidebar from './test-utils';
+import SidebarProvider from './sidebar/SidebarContextProvider';
 
 jest.mock('@edx/frontend-platform/analytics');
 jest.mock('@edx/frontend-lib-special-exams', () => {
@@ -33,6 +34,10 @@ jest.mock(
     },
   }),
 );
+
+jest.mock('@src/data/sessionStorage', () => ({
+  getSessionStorage: jest.fn().mockReturnValue(null),
+}));
 
 const recordFirstSectionCelebration = jest.fn();
 // eslint-disable-next-line no-import-assign
@@ -159,6 +164,13 @@ describe('Course', () => {
   it('handles click to open/close discussions sidebar', async () => {
     await setupDiscussionSidebar();
 
+    render(
+      <SidebarProvider courseId={mockData.courseId} unitId={mockData.unitId}>
+        <Course {...mockData} />
+      </SidebarProvider>,
+      { wrapWithRouter: true },
+    );
+
     waitFor(() => {
       expect(screen.getByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
       expect(screen.getByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
@@ -188,7 +200,12 @@ describe('Course', () => {
 
     await setupDiscussionSidebar();
 
-    const { rerender } = render(<Course {...testData} />, { store: testStore });
+    const { rerender } = render(
+      <SidebarProvider courseId={courseId} unitId={testData.unitId}>
+        <Course {...testData} />
+      </SidebarProvider>,
+      { store: testStore },
+    );
     loadUnit();
 
     waitFor(() => {
@@ -201,6 +218,13 @@ describe('Course', () => {
 
   it('handles click to open/close notification tray', async () => {
     await setupDiscussionSidebar();
+    render(
+      <SidebarProvider courseId={mockData.courseId} unitId={mockData.unitId}>
+        <Course {...mockData} />
+      </SidebarProvider>,
+      { wrapWithRouter: true },
+    );
+
     waitFor(() => {
       const notificationShowButton = screen.findByRole('button', { name: /Show notification tray/i });
       expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
