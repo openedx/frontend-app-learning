@@ -5,6 +5,7 @@ exports[`Data layer integration tests Test fetchDatesTab Should fetch, normalize
   "courseHome": {
     "courseId": "course-v1:edX+DemoX+Demo_Course",
     "courseStatus": "loaded",
+    "examsData": null,
     "proctoringPanelStatus": "loading",
     "showSearch": false,
     "targetUserId": undefined,
@@ -397,6 +398,7 @@ exports[`Data layer integration tests Test fetchOutlineTab Should fetch, normali
   "courseHome": {
     "courseId": "course-v1:edX+DemoX+Demo_Course",
     "courseStatus": "loaded",
+    "examsData": null,
     "proctoringPanelStatus": "loading",
     "showSearch": false,
     "targetUserId": undefined,
@@ -670,6 +672,7 @@ exports[`Data layer integration tests Test fetchProgressTab Should fetch, normal
   "courseHome": {
     "courseId": "course-v1:edX+DemoX+Demo_Course",
     "courseStatus": "loaded",
+    "examsData": null,
     "proctoringPanelStatus": "loading",
     "showSearch": false,
     "targetUserId": undefined,
