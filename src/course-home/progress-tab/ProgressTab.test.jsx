@@ -5,10 +5,9 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 import MockAdapter from 'axios-mock-adapter';
-import { within } from '@testing-library/react';
 
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act,
+  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act, within
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
