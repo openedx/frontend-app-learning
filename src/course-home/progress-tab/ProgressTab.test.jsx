@@ -7,7 +7,7 @@ import { breakpoints } from '@openedx/paragon';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act, within
+  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act, within,
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
