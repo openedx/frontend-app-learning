@@ -6,6 +6,7 @@ import {
 
 import { useModel } from '@src/generic/model-store';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
+import { getSessionStorage } from '@src/data/sessionStorage';
 
 import * as discussionsSidebar from './sidebars/discussions';
 import * as notificationsSidebar from './sidebars/notifications';
@@ -25,12 +26,20 @@ const SidebarProvider = ({
   const query = new URLSearchParams(window.location.search);
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
 
-  let initialSidebar = shouldDisplayFullScreen ? getLocalStorage(`sidebar.${courseId}`) : null;
-  if (!shouldDisplayFullScreen && isInitiallySidebarOpen) {
-    initialSidebar = isUnitHasDiscussionTopics
-      ? SIDEBARS[discussionsSidebar.ID].ID
-      : verifiedMode && SIDEBARS[notificationsSidebar.ID].ID;
+  const isNotificationTrayOpen = getSessionStorage(`notificationTrayStatus.${courseId}`) === 'open';
+
+  let initialSidebar;
+  if (isNotificationTrayOpen) {
+    initialSidebar = SIDEBARS[notificationsSidebar.ID].ID;
+  } else {
+    initialSidebar = shouldDisplayFullScreen ? getLocalStorage(`sidebar.${courseId}`) : null;
+    if (!shouldDisplayFullScreen && isInitiallySidebarOpen) {
+      initialSidebar = isUnitHasDiscussionTopics
+        ? SIDEBARS[discussionsSidebar.ID].ID
+        : verifiedMode && SIDEBARS[notificationsSidebar.ID].ID;
+    }
   }
+
   const [currentSidebar, setCurrentSidebar] = useState(initialSidebar);
   const [notificationStatus, setNotificationStatus] = useState(getLocalStorage(`notificationStatus.${courseId}`));
   const [upgradeNotificationCurrentState, setUpgradeNotificationCurrentState] = useState(getLocalStorage(`upgradeNotificationCurrentState.${courseId}`));
