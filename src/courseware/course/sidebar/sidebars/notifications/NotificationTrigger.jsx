@@ -1,4 +1,6 @@
-import { useContext, useEffect } from 'react';
+import {
+  useContext, useEffect, useRef,
+} from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
 
@@ -17,10 +19,15 @@ const NotificationTrigger = ({
   const intl = useIntl();
   const {
     courseId,
+    sectionId,
     notificationStatus,
     setNotificationStatus,
     upgradeNotificationCurrentState,
+    toggleSidebar,
+    currentSidebar,
   } = useContext(SidebarContext);
+
+  const sidebarTriggerBtnRef = useRef(null);
 
   /* Re-show a red dot beside the notification trigger for each of the 7 UpgradeNotification stages
    The upgradeNotificationCurrentState prop will be available after UpgradeNotification mounts. Once available,
@@ -47,8 +54,35 @@ const NotificationTrigger = ({
     UpdateUpgradeNotificationLastSeen();
   });
 
+  const handleClick = () => {
+    if (toggleSidebar) {
+      toggleSidebar(ID);
+    }
+    onClick();
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Tab' && !event.shiftKey) {
+      if (currentSidebar === ID) {
+        event.preventDefault();
+        sidebarTriggerBtnRef.current?.blur();
+        const targetButton = document.querySelector('.sidebar-close-btn');
+        targetButton?.focus();
+      }
+    }
+  };
+
+  const isOpen = currentSidebar === ID;
+
   return (
-    <SidebarTriggerBase onClick={onClick} ariaLabel={intl.formatMessage(messages.openNotificationTrigger)}>
+    <SidebarTriggerBase
+      onClick={handleClick}
+      onKeyDown={handleKeyPress}
+      isOpenNotificationStatusBar={isOpen}
+      sectionId={sectionId}
+      ref={sidebarTriggerBtnRef}
+      ariaLabel={intl.formatMessage(messages.openNotificationTrigger)}
+    >
       <NotificationIcon status={notificationStatus} notificationColor="bg-danger-500" />
     </SidebarTriggerBase>
   );
