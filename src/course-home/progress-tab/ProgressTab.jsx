@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useWindowSize } from '@openedx/paragon';
 import { useContextId } from '../../data/hooks';
+import { useModel } from '../../generic/model-store';
 import ProgressTabCertificateStatusSidePanelSlot from '../../plugin-slots/ProgressTabCertificateStatusSidePanelSlot';
 
 import CourseCompletion from './course-completion/CourseCompletion';
@@ -10,11 +11,17 @@ import ProgressTabCertificateStatusMainBodySlot from '../../plugin-slots/Progres
 import ProgressTabCourseGradeSlot from '../../plugin-slots/ProgressTabCourseGradeSlot';
 import ProgressTabGradeBreakdownSlot from '../../plugin-slots/ProgressTabGradeBreakdownSlot';
 import ProgressTabRelatedLinksSlot from '../../plugin-slots/ProgressTabRelatedLinksSlot';
-import { useModel } from '../../generic/model-store';
+import { useGetExamsData } from './hooks';
 
 const ProgressTab = () => {
   const courseId = useContextId();
-  const { disableProgressGraph } = useModel('progress', courseId);
+  const { disableProgressGraph, sectionScores } = useModel('progress', courseId);
+
+  const sequenceIds = useMemo(() => (
+    sectionScores.flatMap((section) => (section.subsections)).map((subsection) => subsection.blockKey)
+  ), [sectionScores]);
+
+  useGetExamsData(courseId, sequenceIds);
 
   const windowWidth = useWindowSize().width;
   if (windowWidth === undefined) {
