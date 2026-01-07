@@ -765,6 +765,19 @@ exports[`Data layer integration tests Test fetchProgressTab Should fetch, normal
     "progress": {
       "course-v1:edX+DemoX+Demo_Course": {
         "accessExpiration": null,
+        "assignmentTypeGradeSummary": [
+          {
+            "averageGrade": 1,
+            "hasHiddenContribution": "none",
+            "lastGradePublishDate": null,
+            "numDroppable": 1,
+            "numTotal": 2,
+            "shortLabel": "HW",
+            "type": "Homework",
+            "weight": 1,
+            "weightedGrade": 1,
+          },
+        ],
         "certificateData": {},
         "completionSummary": {
           "completeCount": 1,
@@ -780,17 +793,17 @@ exports[`Data layer integration tests Test fetchProgressTab Should fetch, normal
         "creditCourseRequirements": null,
         "end": "3027-03-31T00:00:00Z",
         "enrollmentMode": "audit",
+        "finalGrades": 0.5,
         "gradesFeatureIsFullyLocked": false,
         "gradesFeatureIsPartiallyLocked": false,
         "gradingPolicy": {
           "assignmentPolicies": [
             {
-              "averageGrade": "1.0000",
               "numDroppable": 1,
+              "numTotal": 2,
               "shortLabel": "HW",
               "type": "Homework",
               "weight": 1,
-              "weightedGrade": 1,
             },
           ],
           "gradeRange": {

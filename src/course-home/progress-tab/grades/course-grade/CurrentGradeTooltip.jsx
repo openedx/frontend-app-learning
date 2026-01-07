@@ -13,6 +13,7 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
   const courseId = useContextId();
 
   const {
+    assignmentTypeGradeSummary,
     courseGrade: {
       isPassing,
       percent,
@@ -24,6 +25,8 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
   let currentGradeDirection = currentGrade < 50 ? '' : '-';
 
   const isLocaleRtl = isRtl(getLocale());
+
+  const hasHiddenGrades = assignmentTypeGradeSummary.some((assignmentType) => assignmentType.hasHiddenContribution !== 'none');
 
   if (isLocaleRtl) {
     currentGradeDirection = currentGrade < 50 ? '-' : '';
@@ -55,6 +58,15 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
         style={{ transform: `translateX(${currentGradeDirection}3.4em)` }}
       >
         {intl.formatMessage(messages.currentGradeLabel)}
+      </text>
+      <text
+        className="x-small"
+        textAnchor={currentGrade < 50 ? 'start' : 'end'}
+        x={`${Math.min(...[isLocaleRtl ? 100 - currentGrade : currentGrade, 100])}%`}
+        y="35px"
+        style={{ transform: `translateX(${currentGradeDirection}3.4em)` }}
+      >
+        {hasHiddenGrades ? ` + ${intl.formatMessage(messages.hiddenScoreLabel)}` : ''}
       </text>
     </>
   );

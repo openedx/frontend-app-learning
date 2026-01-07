@@ -3,93 +3,6 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { logInfo } from '@edx/frontend-platform/logging';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 
-const calculateAssignmentTypeGrades = (points, assignmentWeight, numDroppable) => {
-  let dropCount = numDroppable;
-  // Drop the lowest grades
-  while (dropCount && points.length >= dropCount) {
-    const lowestScore = Math.min(...points);
-    const lowestScoreIndex = points.indexOf(lowestScore);
-    points.splice(lowestScoreIndex, 1);
-    dropCount--;
-  }
-  let averageGrade = 0;
-  let weightedGrade = 0;
-  if (points.length) {
-    // Calculate the average grade for the assignment and round it. This rounding is not ideal and does not accurately
-    // reflect what a learner's grade would be, however, we must have parity with the current grading behavior that
-    // exists in edx-platform.
-    averageGrade = (points.reduce((a, b) => a + b, 0) / points.length).toFixed(4);
-    weightedGrade = averageGrade * assignmentWeight;
-  }
-  return { averageGrade, weightedGrade };
-};
-
-function normalizeAssignmentPolicies(assignmentPolicies, sectionScores) {
-  const gradeByAssignmentType = {};
-  assignmentPolicies.forEach(assignment => {
-    // Create an array with the number of total assignments and set the scores to 0
-    // as placeholders for assignments that have not yet been released
-    gradeByAssignmentType[assignment.type] = {
-      grades: Array(assignment.numTotal).fill(0),
-      numAssignmentsCreated: 0,
-      numTotalExpectedAssignments: assignment.numTotal,
-    };
-  });
-
-  sectionScores.forEach((chapter) => {
-    chapter.subsections.forEach((subsection) => {
-      if (!(subsection.hasGradedAssignment && subsection.showGrades && subsection.numPointsPossible)) {
-        return;
-      }
-      const {
-        assignmentType,
-        numPointsEarned,
-        numPointsPossible,
-      } = subsection;
-
-      // If a subsection's assignment type does not match an assignment policy in Studio,
-      // we won't be able to include it in this accumulation of grades by assignment type.
-      // This may happen if a course author has removed/renamed an assignment policy in Studio and
-      // neglected to update the subsection's of that assignment type
-      if (!gradeByAssignmentType[assignmentType]) {
-        return;
-      }
-
-      let {
-        numAssignmentsCreated,
-      } = gradeByAssignmentType[assignmentType];
-
-      numAssignmentsCreated++;
-      if (numAssignmentsCreated <= gradeByAssignmentType[assignmentType].numTotalExpectedAssignments) {
-        // Remove a placeholder grade so long as the number of recorded created assignments is less than the number
-        // of expected assignments
-        gradeByAssignmentType[assignmentType].grades.shift();
-      }
-      // Add the graded assignment to the list
-      gradeByAssignmentType[assignmentType].grades.push(numPointsEarned ? numPointsEarned / numPointsPossible : 0);
-      // Record the created assignment
-      gradeByAssignmentType[assignmentType].numAssignmentsCreated = numAssignmentsCreated;
-    });
-  });
-
-  return assignmentPolicies.map((assignment) => {
-    const { averageGrade, weightedGrade } = calculateAssignmentTypeGrades(
-      gradeByAssignmentType[assignment.type].grades,
-      assignment.weight,
-      assignment.numDroppable,
-    );
-
-    return {
-      averageGrade,
-      numDroppable: assignment.numDroppable,
-      shortLabel: assignment.shortLabel,
-      type: assignment.type,
-      weight: assignment.weight,
-      weightedGrade,
-    };
-  });
-}
-
 /**
  * Tweak the metadata for consistency
  * @param metadata the data to normalize
@@ -236,11 +149,6 @@ export async function getProgressTabData(courseId, targetUserId) {
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     const camelCasedData = camelCaseObject(data);
-
-    camelCasedData.gradingPolicy.assignmentPolicies = normalizeAssignmentPolicies(
-      camelCasedData.gradingPolicy.assignmentPolicies,
-      camelCasedData.sectionScores,
-    );
 
     // We replace gradingPolicy.gradeRange with the original data to preserve the intended casing for the grade.
     // For example, if a grade range key is "A", we do not want it to be camel cased (i.e. "A" would become "a")
