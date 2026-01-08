@@ -18,34 +18,4 @@ config.module.rules.push({
   },
 });
 
-// Fix for sass-loader deprecation warnings
-config.module.rules.forEach((rule) => {
-  if (rule.oneOf) {
-    rule.oneOf.forEach((oneOfRule) => {
-      if (oneOfRule.use) {
-        oneOfRule.use.forEach((loaderConfig) => {
-          if (loaderConfig.loader && loaderConfig.loader.includes('sass-loader')) {
-            // eslint-disable-next-line no-param-reassign
-            loaderConfig.options = {
-              ...loaderConfig.options,
-              api: 'modern',
-              implementation: sass,
-              sassOptions: {
-                ...loaderConfig.options?.sassOptions,
-                silenceDeprecations: [
-                  'import',
-                  'abs-percent',
-                  'color-functions',
-                  'global-builtin',
-                  'legacy-js-api',
-                ],
-              },
-            };
-          }
-        });
-      }
-    });
-  }
-});
-
 module.exports = config;
