@@ -8,7 +8,7 @@ import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 import { useModel } from '../../../generic/model-store';
-import { WIDGETS } from '../../../constants';
+import { WIDGETS, BREAKPOINTS } from '../../../constants';
 import SidebarContext from './SidebarContext';
 import { SIDEBARS } from './sidebars';
 
@@ -26,8 +26,8 @@ const SidebarProvider: React.FC<Props> = ({
   const { verifiedMode } = useModel('courseHomeMeta', courseId);
   const topic = useModel('discussionTopics', unitId);
   const windowWidth = useWindowSize().width ?? window.innerWidth;
-  const shouldDisplayFullScreen = windowWidth < breakpoints.large.minWidth;
-  const shouldDisplaySidebarOpen = windowWidth > breakpoints.medium.minWidth;
+  const shouldDisplayFullScreen = windowWidth < (breakpoints.large.minWidth ?? BREAKPOINTS.LARGE);
+  const shouldDisplaySidebarOpen = windowWidth > (breakpoints.medium.minWidth ?? BREAKPOINTS.MEDIUM);
   const query = new URLSearchParams(window.location.search);
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || query.get('sidebar') === 'true';
   const sidebarKey = `sidebar.${courseId}`;

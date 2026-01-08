@@ -7,6 +7,57 @@ jest.mock('@edx/frontend-platform/react', () => ({ ErrorPage: () => <div>ErrorPa
 
 jest.mock('@src/generic/PageLoading', () => jest.fn(() => <div>PageLoading</div>));
 
+jest.mock('@openedx/paragon', () => {
+  const actual = jest.requireActual('@openedx/paragon');
+  const PropTypes = jest.requireActual('prop-types');
+
+  const MockModalDialog = ({ children, isOpen, onClose }) => {
+    if (!isOpen) { return null; }
+
+    return (
+      <div role="dialog" aria-modal="true" className="mock-modal">
+        <button
+          type="button"
+          data-testid="modal-backdrop"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          ✖
+        </button>
+        <div className="mock-modal-content">
+          {children}
+        </div>
+      </div>
+    );
+  };
+
+  MockModalDialog.propTypes = {
+    children: PropTypes.node,
+    isOpen: PropTypes.bool,
+    onClose: PropTypes.func,
+  };
+
+  const createSubComponent = (baseClass) => {
+    const Component = ({ children, className }) => (
+      <div className={`${baseClass} ${className || ''}`}>{children}</div>
+    );
+    Component.propTypes = {
+      children: PropTypes.node,
+      className: PropTypes.string,
+    };
+    return Component;
+  };
+
+  MockModalDialog.Body = createSubComponent('mock-modal-body');
+  MockModalDialog.Header = createSubComponent('mock-modal-header');
+  MockModalDialog.Footer = createSubComponent('mock-modal-footer');
+
+  return {
+    ...actual,
+    ModalDialog: MockModalDialog,
+  };
+});
+
 jest.mock('./hooks', () => ({
   useIFrameBehavior: jest.fn(),
   useModalIFrameData: jest.fn(),

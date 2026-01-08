@@ -159,7 +159,7 @@ describe('Course', () => {
   it('handles click to open/close discussions sidebar', async () => {
     await setupDiscussionSidebar();
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(screen.getByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
       expect(screen.getByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
 
@@ -191,9 +191,9 @@ describe('Course', () => {
     const { rerender } = render(<Course {...testData} />, { store: testStore });
     loadUnit();
 
-    waitFor(() => {
-      expect(screen.findByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
-      expect(screen.findByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
+    await waitFor(() => {
+      expect(screen.getByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
+      expect(screen.getByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
     });
 
     rerender(null);
@@ -201,12 +201,12 @@ describe('Course', () => {
 
   it('handles click to open/close notification tray', async () => {
     await setupDiscussionSidebar();
-    waitFor(() => {
-      const notificationShowButton = screen.findByRole('button', { name: /Show notification tray/i });
+    await waitFor(() => {
+      const notificationShowButton = screen.getByRole('button', { name: /Show notification tray/i });
       expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
       fireEvent.click(notificationShowButton);
-      expect(screen.queryByRole('region', { name: /notification tray/i })).toBeInTheDocument();
-      expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
+      expect(screen.getByRole('region', { name: /notification tray/i })).toBeInTheDocument();
+      expect(screen.getByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
     });
   });
 
@@ -296,7 +296,7 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => expect(screen.findByText('Some random banner text to display.')).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText('Some random banner text to display.')).toBeInTheDocument());
     });
 
     it('renders Entrance Exam alert with passing score', async () => {
@@ -330,7 +330,7 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => expect(screen.findByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument());
     });
 
     it('renders Entrance Exam alert with non-passing score', async () => {
@@ -364,7 +364,7 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => expect(screen.findByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument());
     });
   });
 
@@ -382,8 +382,7 @@ describe('Course', () => {
       unitId: Object.values(models.units)[0].id,
     };
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-    const learnerTools = screen.queryByTestId(mockLearnerToolsTestId);
-    await waitFor(() => expect(learnerTools).toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByTestId(mockLearnerToolsTestId)).toBeInTheDocument());
   });
 
   it('does not display learner tools when screen is too narrow (mobile)', async () => {

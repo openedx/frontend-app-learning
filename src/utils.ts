@@ -15,9 +15,9 @@ export const executeThunk = async (thunk, dispatch, getState = undefined) => {
  */
 export const appendBrowserTimezoneToUrl = (url: string) => {
   const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const urlObject = new URL(url);
+  const urlObject = new URL(url, url.startsWith('http') ? undefined : 'http://localhost');
   if (browserTimezone) {
     urlObject.searchParams.append('browser_timezone', browserTimezone);
   }
-  return urlObject.href;
+  return url.startsWith('http') ? urlObject.href : `${urlObject.pathname}${urlObject.search}`;
 };
