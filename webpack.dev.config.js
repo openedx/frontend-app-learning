@@ -1,6 +1,5 @@
 const path = require('path');
 const { createConfig } = require('@openedx/frontend-build');
-const sass = require('sass');
 
 const config = createConfig('webpack-dev');
 
