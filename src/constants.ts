@@ -1,3 +1,5 @@
+import { breakpoints } from '@openedx/paragon';
+
 export const DECODE_ROUTES = {
   ACCESS_DENIED: '/course/:courseId/access-denied',
   HOME: '/course/:courseId/home',
@@ -74,6 +76,6 @@ export const DENIED = 'denied';
 export type StatusValue = typeof LOADING | typeof LOADED | typeof FAILED | typeof DENIED;
 
 export const BREAKPOINTS = {
-  LARGE: 992,
-  MEDIUM: 768,
+  LARGE: breakpoints.large.minWidth ?? 992,
+  MEDIUM: breakpoints.medium.minWidth ?? 768,
 } as const;
