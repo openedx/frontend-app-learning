@@ -3,11 +3,6 @@ transifex_utils = ./node_modules/.bin/transifex-utils.js
 i18n = ./src/i18n
 transifex_input = $(i18n)/transifex_input.json
 
-# Variables for additional translation sources and imports
-ATLAS_EXTRA_SOURCES =
-ATLAS_EXTRA_INTL_IMPORTS =
-ATLAS_OPTIONS =
-
 # This directory must match .babelrc .
 transifex_temp = ./temp/babel-plugin-formatjs
 
