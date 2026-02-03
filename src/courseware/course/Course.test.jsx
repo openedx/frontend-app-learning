@@ -191,23 +191,22 @@ describe('Course', () => {
     const { rerender } = render(<Course {...testData} />, { store: testStore });
     loadUnit();
 
-    waitFor(() => {
-      expect(screen.findByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
-      expect(screen.findByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
-    });
+    const sidebar = await screen.findByTestId('sidebar-DISCUSSIONS');
+    expect(sidebar).toBeInTheDocument();
+    expect(sidebar).not.toHaveClass('d-none');
 
     rerender(null);
   });
 
   it('handles click to open/close notification tray', async () => {
     await setupDiscussionSidebar();
-    waitFor(() => {
-      const notificationShowButton = screen.findByRole('button', { name: /Show notification tray/i });
-      expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
-      fireEvent.click(notificationShowButton);
-      expect(screen.queryByRole('region', { name: /notification tray/i })).toBeInTheDocument();
-      expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
-    });
+    const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
+    expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
+    fireEvent.click(notificationShowButton);
+
+    const notificationTray = await screen.findByRole('region', { name: /notification tray/i });
+    expect(notificationTray).toBeInTheDocument();
+    expect(notificationTray).not.toHaveClass('d-none');
   });
 
   it('doesn\'t renders course breadcrumbs by default', async () => {
