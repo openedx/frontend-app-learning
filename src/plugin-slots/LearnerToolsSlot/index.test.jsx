@@ -5,10 +5,6 @@ import * as auth from '@edx/frontend-platform/auth';
 
 import { LearnerToolsSlot } from './index';
 
-jest.mock('@openedx/frontend-plugin-framework', () => ({
-  PluginSlot: jest.fn(() => <div data-testid="plugin-slot">Plugin Slot</div>),
-}));
-
 jest.mock('@edx/frontend-platform/auth', () => ({
   getAuthenticatedUser: jest.fn(),
 }));
@@ -98,7 +94,7 @@ describe('LearnerToolsSlot', () => {
 
     render(<LearnerToolsSlot {...defaultProps} />);
 
-    // The portal should render to document.body
-    expect(document.body.querySelector('[data-testid="plugin-slot"]')).toBeInTheDocument();
+    // The portal should render to document.body with the id as testid
+    expect(document.body.querySelector('[data-testid="org.openedx.frontend.learning.learner_tools.v1"]')).toBeInTheDocument();
   });
 });

@@ -8,6 +8,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 
+import { BREAKPOINTS } from '@src/constants';
 import {
   initializeMockApp, render, screen, act, fireEvent, waitFor,
 } from '../../../../../../setupTest';
@@ -44,7 +45,7 @@ describe('NotificationsWidget', () => {
   }
 
   beforeEach(async () => {
-    global.innerWidth = breakpoints.large.minWidth;
+    global.innerWidth = breakpoints.large.minWidth ?? BREAKPOINTS.LARGE;
     store = initializeStore();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
