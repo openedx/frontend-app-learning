@@ -76,7 +76,7 @@ const Course = ({
   const SidebarProviderComponent = isNewDiscussionSidebarViewEnabled ? NewSidebarProvider : SidebarProvider;
 
   return (
-    <SidebarProviderComponent courseId={courseId} unitId={unitId}>
+    <SidebarProviderComponent courseId={courseId} unitId={unitId} sectionId={section ? section.id : null}>
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>

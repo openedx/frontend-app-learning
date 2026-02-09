@@ -32,6 +32,7 @@ const CourseOutlineTrigger = ({ isMobileView }) => {
     >
       <IconButton
         alt={intl.formatMessage(messages.toggleCourseOutlineTrigger)}
+        id="courseOutlineSidebarTrigger"
         className="outline-sidebar-toggle-btn flex-shrink-0 text-dark bg-light-200 rounded-0"
         iconAs={MenuOpenIcon}
         onClick={handleToggleCollapse}

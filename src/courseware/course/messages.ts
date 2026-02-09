@@ -8,7 +8,7 @@ const messages = defineMessages({
   },
   openNotificationTrigger: {
     id: 'notification.open.button',
-    defaultMessage: 'Show notification tray',
+    defaultMessage: 'Notifications tray',
     description: 'Button to open the notification tray and show notifications',
   },
   closeNotificationTrigger: {

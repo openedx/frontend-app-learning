@@ -1,11 +1,13 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
+import userEvent from '@testing-library/user-event';
+
+import messages from '@src/courseware/course/messages';
 import {
   fireEvent, initializeTestStore, render, screen,
 } from '../../../../../setupTest';
 import SidebarContext from '../../SidebarContext';
-import NotificationTrigger from './NotificationTrigger';
+import NotificationTrigger, { ID } from './NotificationTrigger';
 
 describe('Notification Trigger', () => {
   let mockData;
@@ -21,11 +23,12 @@ describe('Notification Trigger', () => {
     });
     mockData = {
       courseId: courseMetadata.id,
-      toggleNotificationTray: () => {},
-      isNotificationTrayVisible: () => {},
+      sectionId: courseMetadata.sectionId,
       notificationStatus: 'inactive',
       setNotificationStatus: () => {},
       upgradeNotificationCurrentState: 'FPDdaysLeft',
+      toggleSidebar: jest.fn(),
+      currentSidebar: null,
     };
     // Jest does not support calls to localStorage, spying on localStorage's prototype directly instead
     getItemSpy = jest.spyOn(Object.getPrototypeOf(window.localStorage), 'getItem');
@@ -62,7 +65,9 @@ describe('Notification Trigger', () => {
     };
     renderWithProvider(testData, toggleNotificationTray);
 
-    const notificationTrigger = screen.getByRole('button', { name: /Show notification tray/i });
+    const notificationTrigger = screen.getByRole('button', {
+      name: messages.openNotificationTrigger.defaultMessage,
+    });
     expect(notificationTrigger).toBeInTheDocument();
     fireEvent.click(notificationTrigger);
     expect(toggleNotificationTray).toHaveBeenCalledTimes(1);
@@ -133,5 +138,81 @@ describe('Notification Trigger', () => {
     // Verify the second course localStorage was not changed
     expect(localStorage.getItem(`upgradeNotificationLastSeen.${courseMetadataSecondCourse.id}`)).toBe('"accessDateView"');
     expect(localStorage.getItem(`notificationStatus.${courseMetadataSecondCourse.id}`)).toBe('"inactive"');
+  });
+
+  it('should call toggleSidebar and onClick prop on click', async () => {
+    const externalOnClick = jest.fn();
+    renderWithProvider({}, externalOnClick);
+
+    const triggerButton = screen.getByRole('button', {
+      name: messages.openNotificationTrigger.defaultMessage,
+    });
+    await userEvent.click(triggerButton);
+
+    expect(mockData.toggleSidebar).toHaveBeenCalledTimes(1);
+    expect(mockData.toggleSidebar).toHaveBeenCalledWith(ID);
+
+    expect(externalOnClick).toHaveBeenCalledTimes(1);
+  });
+
+  describe('when Tab key is pressed without Shift', () => {
+    let triggerButton;
+    let mockCloseButtonFocus;
+    let mockCloseButton;
+    let querySelectorSpy;
+
+    beforeEach(() => {
+      mockCloseButtonFocus = jest.fn();
+      mockCloseButton = { focus: mockCloseButtonFocus };
+      querySelectorSpy = jest.spyOn(document, 'querySelector').mockImplementation(selector => {
+        if (selector === '.sidebar-close-btn') {
+          return mockCloseButton;
+        }
+        return null;
+      });
+    });
+
+    afterEach(() => {
+      querySelectorSpy.mockRestore();
+    });
+
+    it('should focus the close button and prevent default behavior if sidebar is open', async () => {
+      renderWithProvider({ currentSidebar: ID });
+      triggerButton = screen.getByRole('button', {
+        name: messages.openNotificationTrigger.defaultMessage,
+      });
+
+      triggerButton.focus();
+      expect(document.activeElement).toBe(triggerButton);
+
+      await userEvent.tab();
+
+      expect(querySelectorSpy).toHaveBeenCalledWith('.sidebar-close-btn');
+      expect(mockCloseButtonFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('should do nothing (allow default Tab behavior) if sidebar is closed', async () => {
+      renderWithProvider({ currentSidebar: null });
+      triggerButton = screen.getByRole('button', {
+        name: messages.openNotificationTrigger.defaultMessage,
+      });
+
+      await userEvent.tab();
+
+      expect(querySelectorSpy).not.toHaveBeenCalledWith('.sidebar-close-btn');
+      expect(mockCloseButtonFocus).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should have aria-expanded="true" when sidebar is open', () => {
+    renderWithProvider({ currentSidebar: ID });
+    const triggerButton = screen.getByRole('button');
+    expect(triggerButton).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('should have aria-expanded="false" when sidebar is closed', () => {
+    renderWithProvider({ currentSidebar: null });
+    const triggerButton = screen.getByRole('button');
+    expect(triggerButton).toHaveAttribute('aria-expanded', 'false');
   });
 });
