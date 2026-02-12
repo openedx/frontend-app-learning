@@ -6,10 +6,15 @@ import {
   disableCoursewareTour,
   disableNewUserCourseHomeModal,
   setTourData,
+  launchCourseHomeTour,
 } from './slice';
 
 export function closeNewUserCourseHomeModal() {
   return async (dispatch) => dispatch(disableNewUserCourseHomeModal());
+}
+
+export function openCourseHomeTour() {
+  return async (dispatch) => dispatch(launchCourseHomeTour());
 }
 
 export function endCourseHomeTour(username) {

@@ -16,6 +16,7 @@ import {
   endCourseHomeTour,
   endCoursewareTour,
   fetchTourData,
+  openCourseHomeTour,
 } from './data';
 
 const ProductTours = ({
@@ -164,7 +165,7 @@ const ProductTours = ({
             is_staff: administrator,
           });
           dispatch(closeNewUserCourseHomeModal());
-          setIsNewUserCourseHomeTourEnabled(true);
+          dispatch(openCourseHomeTour());
         }}
       />
     </>
