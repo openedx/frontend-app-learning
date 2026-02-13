@@ -1,9 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { PluginSlot } from '@openedx/frontend-plugin-framework';
-import * as auth from '@edx/frontend-platform/auth';
-
-import { LearnerToolsSlot } from './index';
 
 jest.mock('@openedx/frontend-plugin-framework', () => ({
   PluginSlot: jest.fn(() => <div data-testid="plugin-slot">Plugin Slot</div>),
@@ -14,6 +10,10 @@ jest.mock('@edx/frontend-platform/auth', () => ({
 }));
 
 describe('LearnerToolsSlot', () => {
+  let auth;
+  let PluginSlot;
+  let LearnerToolsSlot;
+
   const defaultProps = {
     courseId: 'course-v1:edX+DemoX+Demo_Course',
     unitId: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@unit1',
@@ -21,10 +21,15 @@ describe('LearnerToolsSlot', () => {
     enrollmentMode: 'verified',
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    jest.resetModules();
     jest.clearAllMocks();
     // Mock document.body for createPortal
     document.body.innerHTML = '<div id="root"></div>';
+
+    auth = await import('@edx/frontend-platform/auth');
+    ({ PluginSlot } = await import('@openedx/frontend-plugin-framework'));
+    ({ LearnerToolsSlot } = await import('./index'));
   });
 
   it('renders PluginSlot with correct props when user is authenticated', () => {
