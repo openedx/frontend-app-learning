@@ -1,10 +1,13 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import { breakpoints } from '@openedx/paragon';
+
 import {
   render, screen, fireEvent, getByText, initializeTestStore,
 } from '../../../../setupTest';
 import SequenceNavigation from './SequenceNavigation';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
+import messages from './messages';
 
 // Mock the hook to avoid relying on its implementation and mocking `getBoundingClientRect`.
 jest.mock('../../../../generic/tabs/useIndexOfLastVisibleChild');
@@ -29,6 +32,19 @@ describe('Sequence Navigation', () => {
       onNavigate: () => {},
       nextHandler: () => {},
     };
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
   });
 
   it('is empty while loading', async () => {
@@ -76,7 +92,7 @@ describe('Sequence Navigation', () => {
     const onNavigate = jest.fn();
     render(<SequenceNavigation {...mockData} {...{ onNavigate }} />, { wrapWithRouter: true });
 
-    const unitButtons = screen.getAllByRole('link', { name: /\d+/ });
+    const unitButtons = screen.getAllByRole('tab', { name: /\d+/ });
     expect(unitButtons).toHaveLength(unitButtons.length);
     unitButtons.forEach(button => fireEvent.click(button));
     expect(onNavigate).toHaveBeenCalledTimes(unitButtons.length);
@@ -208,5 +224,31 @@ describe('Sequence Navigation', () => {
       { store: testStore, wrapWithRouter: true },
     );
     expect(screen.queryByRole('link', { name: /next/i })).not.toBeInTheDocument();
+  });
+
+  it('shows previous button without label when screen is small', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: breakpoints.small.minWidth - 1,
+    });
+
+    const { container } = render(<SequenceNavigation {...mockData} />, { wrapWithRouter: true });
+
+    const prevButton = container.querySelector('.previous-btn');
+    expect(prevButton).toBeInTheDocument();
+    expect(screen.queryByText(messages.previousButton.defaultMessage)).not.toBeInTheDocument();
+  });
+
+  it('does not set width when screen is large', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: breakpoints.small.minWidth,
+    });
+    render(<SequenceNavigation {...mockData} />, { wrapWithRouter: true });
+
+    const nav = screen.getByRole('navigation', { name: messages.sequenceNavLabel.defaultMessage });
+    expect(nav).not.toHaveStyle({ width: '90%' });
   });
 });

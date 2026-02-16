@@ -16,6 +16,11 @@ const messages = defineMessages({
     defaultMessage: 'Previous',
     description: 'Button to return to the previous section',
   },
+  sequenceNavLabel: {
+    id: 'learn.sequence.navigation.aria.label',
+    defaultMessage: 'Course sequence tabs',
+    description: 'Accessibility label for the courseware sequence navigation bar',
+  },
 });
 
 export default messages;

@@ -1,13 +1,28 @@
 import React from 'react';
 import { Factory } from 'rosie';
+import userEvent from '@testing-library/user-event';
+
 import {
-  fireEvent, initializeTestStore, render, screen,
-} from '../../../../setupTest';
+  initializeTestStore, render, screen,
+} from '@src/setupTest';
 import UnitButton from './UnitButton';
+
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useLocation: () => ({ pathname: '/preview/anything' }),
+  };
+});
 
 describe('Unit Button', () => {
   let mockData;
   const courseMetadata = Factory.build('courseMetadata');
+
+  afterEach(() => {
+    jest.resetModules();
+  });
+
   const unitBlocks = [Factory.build(
     'block',
     { type: 'problem' },
@@ -33,12 +48,12 @@ describe('Unit Button', () => {
 
   it('hides title by default', () => {
     render(<UnitButton {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByRole('link')).not.toHaveTextContent(unit.display_name);
+    expect(screen.getByRole('tab')).not.toHaveTextContent(unit.display_name);
   });
 
   it('shows title', () => {
     render(<UnitButton {...mockData} showTitle />, { wrapWithRouter: true });
-    expect(screen.getByRole('link')).toHaveTextContent(unit.display_name);
+    expect(screen.getByRole('tab')).toHaveTextContent(unit.display_name);
   });
 
   it('does not show completion for non-completed unit', () => {
@@ -76,10 +91,42 @@ describe('Unit Button', () => {
     expect(bookmarkIcon.getAttribute('data-testid')).toBe('bookmark-icon');
   });
 
-  it('handles the click', () => {
+  it('handles the click', async () => {
     const onClick = jest.fn();
     render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
-    fireEvent.click(screen.getByRole('link'));
+    await userEvent.click(screen.getByRole('tab'));
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onClick with correct unitId when clicked', async () => {
+    const onClick = jest.fn();
+    render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
+
+    await userEvent.click(screen.getByRole('tab'));
+
+    expect(onClick).toHaveBeenCalledWith(mockData.unitId);
+  });
+
+  it('renders with no unitId and does not crash', async () => {
+    render(<UnitButton unitId={undefined} onClick={jest.fn()} contentType="video" title="Unit" />, {
+      wrapWithRouter: true,
+    });
+
+    expect(screen.getByRole('tab')).toBeInTheDocument();
+  });
+
+  it('prepends /preview to the unit path if in preview mode', () => {
+    const onClick = jest.fn();
+
+    render(
+      <UnitButton {...mockData} onClick={onClick} />,
+      {
+        wrapWithRouter: true,
+        initialEntries: ['/preview/some/path'],
+      },
+    );
+
+    const button = screen.getByRole('tab');
+    expect(button.closest('a')).toHaveAttribute('href', expect.stringContaining('/preview/course/'));
   });
 });
