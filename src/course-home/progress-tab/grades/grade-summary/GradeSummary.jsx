@@ -10,8 +10,8 @@ const GradeSummary = () => {
   const courseId = useContextId();
 
   const {
-    assignmentTypeGradeSummary,
-  } = useModel('progress', courseId);
+    assignmentTypeGradeSummary = [],
+  } = useModel('progress', courseId) || {};
 
   const [allOfSomeAssignmentTypeIsLocked, setAllOfSomeAssignmentTypeIsLocked] = useState(false);
 
