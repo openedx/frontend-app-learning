@@ -12,17 +12,25 @@ import setupDiscussionSidebar from './test-utils';
 import messages from './messages';
 
 jest.mock('@edx/frontend-platform/analytics');
-jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
-  ...jest.requireActual('@edx/frontend-lib-special-exams/dist/data/thunks.js'),
-  checkExamEntry: () => jest.fn(),
-}));
-const mockChatTestId = 'fake-chat';
+jest.mock('@edx/frontend-lib-special-exams', () => {
+  const actual = jest.requireActual('@edx/frontend-lib-special-exams');
+  return {
+    ...actual,
+    __esModule: true,
+    // Mock the default export (SequenceExamWrapper) to just render children
+    // eslint-disable-next-line react/prop-types
+    default: ({ children }) => <div data-testid="sequence-exam-wrapper">{children}</div>,
+  };
+});
+const mockLearnerToolsTestId = 'fake-learner-tools';
 jest.mock(
-  './chat/Chat',
-  // eslint-disable-next-line react/prop-types
-  () => function ({ courseId }) {
-    return <div className="fake-chat" data-testid={mockChatTestId}>Chat contents {courseId} </div>;
-  },
+  '../../plugin-slots/LearnerToolsSlot',
+  () => ({
+    // eslint-disable-next-line react/prop-types
+    LearnerToolsSlot({ courseId }) {
+      return <div className="fake-learner-tools" data-testid={mockLearnerToolsTestId}>LearnerTools contents {courseId} </div>;
+    },
+  }),
 );
 
 const recordFirstSectionCelebration = jest.fn();
@@ -182,10 +190,9 @@ describe('Course', () => {
     const { rerender } = render(<Course {...testData} />, { store: testStore });
     loadUnit();
 
-    waitFor(() => {
-      expect(screen.findByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
-      expect(screen.findByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
-    });
+    const sidebar = await screen.findByTestId('sidebar-DISCUSSIONS');
+    expect(sidebar).toBeInTheDocument();
+    expect(sidebar).not.toHaveClass('d-none');
 
     rerender(null);
   });
@@ -201,6 +208,13 @@ describe('Course', () => {
       expect(screen.queryByRole('region', { name: /notification tray/i })).toBeInTheDocument();
       expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
     });
+    const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
+    expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
+    fireEvent.click(notificationShowButton);
+
+    const notificationTray = await screen.findByRole('region', { name: /notification tray/i });
+    expect(notificationTray).toBeInTheDocument();
+    expect(notificationTray).not.toHaveClass('d-none');
   });
 
   it('doesn\'t renders course breadcrumbs by default', async () => {
@@ -361,28 +375,27 @@ describe('Course', () => {
     });
   });
 
-  it('displays chat when screen is wide enough (browser)', async () => {
+  it('displays learner tools when screen is wide enough (browser)', async () => {
     const courseMetadata = Factory.build('courseMetadata', {
-      learning_assistant_enabled: true,
       enrollment: { mode: 'verified' },
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
-    const { courseware } = testStore.getState();
+    const { courseware, models } = testStore.getState();
     const { courseId, sequenceId } = courseware;
     const testData = {
       ...mockData,
       courseId,
       sequenceId,
+      unitId: Object.values(models.units)[0].id,
     };
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-    const chat = screen.queryByTestId(mockChatTestId);
-    waitFor(() => expect(chat).toBeInTheDocument());
+    const learnerTools = screen.queryByTestId(mockLearnerToolsTestId);
+    await waitFor(() => expect(learnerTools).toBeInTheDocument());
   });
 
-  it('does not display chat when screen is too narrow (mobile)', async () => {
+  it('does not display learner tools when screen is too narrow (mobile)', async () => {
     global.innerWidth = breakpoints.extraSmall.minWidth;
     const courseMetadata = Factory.build('courseMetadata', {
-      learning_assistant_enabled: true,
       enrollment: { mode: 'verified' },
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
@@ -394,7 +407,7 @@ describe('Course', () => {
       sequenceId,
     };
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-    const chat = screen.queryByTestId(mockChatTestId);
-    await expect(chat).not.toBeInTheDocument();
+    const learnerTools = screen.queryByTestId(mockLearnerToolsTestId);
+    await expect(learnerTools).not.toBeInTheDocument();
   });
 });
