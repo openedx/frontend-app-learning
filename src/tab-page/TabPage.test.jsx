@@ -33,6 +33,42 @@ describe('Tab Page', () => {
     expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
   });
 
+  it('displays custom error message from courseHome state when available', async () => {
+    const customErrorMessage = 'This course is not currently accessible. The course team has restricted access to this content.';
+    const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
+    // Manually dispatch a failure with the custom error message
+    testStore.dispatch({
+      type: 'course-home/fetchTabFailure',
+      payload: { courseId: 'test-course', errorMessage: customErrorMessage, errorCode: 'not_visible_in_catalog' },
+    });
+    render(<TabPage {...mockData} courseStatus="failed" />, { store: testStore });
+    expect(screen.getByText(customErrorMessage)).toBeInTheDocument();
+    expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
+  });
+
+  it('displays custom error message from courseware state when available', async () => {
+    const customErrorMessage = 'This course is not currently accessible. The course team has restricted access to this content.';
+    const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
+    // Manually dispatch a courseware failure with the custom error message
+    testStore.dispatch({
+      type: 'courseware/fetchCourseFailure',
+      payload: { courseId: 'test-course', errorMessage: customErrorMessage, errorCode: 'not_visible_in_catalog' },
+    });
+    render(<TabPage {...mockData} courseStatus="failed" />, { store: testStore });
+    expect(screen.getByText(customErrorMessage)).toBeInTheDocument();
+    expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
+  });
+
+  it('displays generic error message when no custom error message is available', async () => {
+    const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
+    testStore.dispatch({
+      type: 'course-home/fetchTabFailure',
+      payload: { courseId: 'test-course' },
+    });
+    render(<TabPage {...mockData} courseStatus="failed" />, { store: testStore });
+    expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
+  });
+
   it('displays Learning Toast', async () => {
     const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
     render(<TabPage {...mockData} />, { store: testStore });
