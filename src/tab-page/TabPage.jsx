@@ -29,7 +29,12 @@ const TabPage = (props) => {
     toastBodyLink,
     toastBodyText,
     toastHeader,
+    errorMessage: courseHomeErrorMessage,
   } = useSelector(state => state.courseHome);
+  const {
+    errorMessage: coursewareErrorMessage,
+  } = useSelector(state => state.courseware);
+  const errorMessage = courseHomeErrorMessage || coursewareErrorMessage;
   const dispatch = useDispatch();
   const {
     courseAccess,
@@ -78,7 +83,7 @@ const TabPage = (props) => {
       {/* courseStatus 'failed' and any other unexpected course status. */}
       {(!['loading', 'loaded', 'denied'].includes(courseStatus)) && (
         <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
-          {intl.formatMessage(messages.failure)}
+          {errorMessage || intl.formatMessage(messages.failure)}
         </p>
       )}
       <FooterSlot />

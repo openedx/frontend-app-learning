@@ -81,7 +81,14 @@ export function fetchTab(courseId, tab, getTabData, targetUserId) {
         }));
       }
     } catch (e) {
-      dispatch(fetchTabFailure({ courseId }));
+      // Extract error details from 403 responses
+      let errorMessage = null;
+      let errorCode = null;
+      if (e?.response?.status === 403 && e?.response?.data) {
+        errorMessage = e.response.data.detail || null;
+        errorCode = e.response.data.error_code || null;
+      }
+      dispatch(fetchTabFailure({ courseId, errorMessage, errorCode }));
       logError(e);
     }
   };
