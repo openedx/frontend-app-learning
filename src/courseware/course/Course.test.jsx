@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Factory } from 'rosie';
 
 import { breakpoints } from '@openedx/paragon';
@@ -11,6 +9,7 @@ import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
 import Course from './Course';
 import setupDiscussionSidebar from './test-utils';
+import messages from './messages';
 
 jest.mock('@edx/frontend-platform/analytics');
 jest.mock('@edx/frontend-lib-special-exams', () => {
@@ -200,6 +199,15 @@ describe('Course', () => {
 
   it('handles click to open/close notification tray', async () => {
     await setupDiscussionSidebar();
+    waitFor(() => {
+      const notificationShowButton = screen.findByRole('button', {
+        name: messages.openNotificationTrigger.defaultMessage,
+      });
+      expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
+      fireEvent.click(notificationShowButton);
+      expect(screen.queryByRole('region', { name: /notification tray/i })).toBeInTheDocument();
+      expect(screen.queryByRole('region', { name: /notification tray/i })).not.toHaveClass('d-none');
+    });
     const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
     expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
     fireEvent.click(notificationShowButton);
