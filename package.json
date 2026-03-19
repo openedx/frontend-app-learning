@@ -83,7 +83,8 @@
     "eslint-import-resolver-webpack": "^0.13.9",
     "jest-console-group-reporter": "^1.1.1",
     "jest-when": "^3.6.0",
-    "rosie": "2.1.1"
+    "rosie": "2.1.1",
+    "ts-jest": "^29.4.6"
   },
   "bundlewatch": {
     "files": [
