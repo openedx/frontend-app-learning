@@ -45,7 +45,7 @@ describe('NotificationsWidget', () => {
   }
 
   beforeEach(async () => {
-    global.innerWidth = breakpoints.large.minWidth ?? BREAKPOINTS.LARGE;
+    global.innerWidth = breakpoints.large.minWidth!;
     store = initializeStore();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
