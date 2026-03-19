@@ -8,7 +8,6 @@ import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 
-import { BREAKPOINTS } from '@src/constants';
 import {
   initializeMockApp, render, screen, act, fireEvent, waitFor,
 } from '../../../../../../setupTest';
