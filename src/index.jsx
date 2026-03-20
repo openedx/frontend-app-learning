@@ -25,6 +25,9 @@ import GoalUnsubscribe from './course-home/goal-unsubscribe';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
 
+import LeaderboardTab from './course-home/leaderboard-tab/LeaderboardTab';
+import { fetchLeaderboardTab } from './course-home/data/thunks';
+
 import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import { store } from './store';
@@ -104,6 +107,23 @@ subscribe(APP_READY, () => {
                       </DecodePageRoute>
                     )}
                   />
+                  {DECODE_ROUTES.LEADERBOARD.map((route) => (
+                    <Route
+                      key={route}
+                      path={route}
+                      element={(
+                        <DecodePageRoute>
+                          <TabContainer
+                            tab="leaderboard"
+                            fetch={fetchLeaderboardTab}
+                            slice="courseHome"
+                          >
+                            <LeaderboardTab />
+                          </TabContainer>
+                        </DecodePageRoute>
+                      )}
+                    />
+                  ))}
                   {DECODE_ROUTES.PROGRESS.map((route) => (
                     <Route
                       key={route}

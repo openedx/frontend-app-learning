@@ -32,12 +32,26 @@ const LoadedTabPage = ({
     hasCourseAuthorAccess,
   } = useModel('courseHomeMeta', courseId);
 
-  // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
-  // breadcrumbs when they are visible.
+  let safeTabs = tabs || [];
+
+  const hasLeaderboard = safeTabs.some(tab => tab.slug === 'leaderboard');
+
+  if (!hasLeaderboard) {
+    safeTabs = [
+      ...safeTabs,
+      {
+        slug: 'leaderboard',
+        title: 'Leaderboard',
+        url: `/learning/course/${encodeURIComponent(courseId)}/leaderboard`,
+      },
+    ];
+  }
+
+  const activeTab = safeTabs.find(tab => tab.slug === activeTabSlug);
+
+  // alerts
   const logistrationAlert = useLogistrationAlert(courseId);
   const enrollmentAlert = useEnrollmentAlert(courseId);
-
-  const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
@@ -80,7 +94,13 @@ const LoadedTabPage = ({
             ...logistrationAlert,
           }}
         />
-        <CourseTabsNavigation tabs={tabs} className="mb-3" activeTabSlug={activeTabSlug} />
+
+        <CourseTabsNavigation
+          tabs={safeTabs}
+          className="mb-3"
+          activeTabSlug={activeTabSlug}
+        />
+
         <div id="main-content" className="container-xl">
           {children}
         </div>

@@ -379,3 +379,20 @@ export async function searchCourseContentFromAPI(courseId, searchKeyword, option
 
   return camelCaseObject(response);
 }
+
+export async function getLeaderboardTabData(courseId) {
+  const url = `${getConfig().LMS_BASE_URL}/leaderboard/${courseId}/`;
+
+  try {
+    const { data } = await getAuthenticatedHttpClient().get(url);
+    return camelCaseObject(data);
+  } catch (error) {
+    const httpErrorStatus = error?.response?.status;
+
+    if (httpErrorStatus === 401 || httpErrorStatus === 403) {
+      return {};
+    }
+
+    throw error;
+  }
+}
