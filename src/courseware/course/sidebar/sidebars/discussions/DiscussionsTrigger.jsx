@@ -36,8 +36,7 @@ const DiscussionsTrigger = ({
     if (baseUrl && edxProvider) {
       dispatch(getCourseDiscussionTopics(courseId));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courseId, baseUrl]);
+  }, [courseId, baseUrl, edxProvider, dispatch]);
 
   if (!topic?.id || !topic?.enabledInContext) {
     return null;

@@ -1,0 +1,15 @@
+export const WIDGET_PRIORITIES = {
+  UPGRADE: 20,
+  DISCUSSIONS: 10,
+  DEFAULT_EXTERNAL: 50,
+  COURSE_OUTLINE_FALLBACK: 100,
+};
+
+export const STORAGE_KEYS = {
+  SIDEBAR_ID: 'sidebar',
+  OUTLINE_SIDEBAR_HIDDEN: 'hideCourseOutlineSidebar',
+};
+
+export const WIDGET_CONFIG = {
+  EXTERNAL_WIDGETS_KEY: 'SIDEBAR_WIDGETS',
+};
