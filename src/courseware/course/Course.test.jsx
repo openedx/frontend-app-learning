@@ -198,18 +198,9 @@ describe('Course', () => {
     rerender(null);
   });
 
-  it('handles click to open/close notification tray', async () => {
-    await setupDiscussionSidebar();
-    const notificationShowButton = await screen.findByRole('button', { name: /Show notification tray/i });
-    expect(screen.queryByRole('region', { name: /notification tray/i })).not.toBeInTheDocument();
-    fireEvent.click(notificationShowButton);
-
-    const notificationTray = await screen.findByRole('region', { name: /notification tray/i });
-    expect(notificationTray).toBeInTheDocument();
-    expect(notificationTray).not.toHaveClass('d-none');
-  });
-
   it('doesn\'t renders course breadcrumbs by default', async () => {
+    global.innerWidth = breakpoints.extraLarge.minWidth;
+
     const courseMetadata = Factory.build('courseMetadata');
     const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
       'block',

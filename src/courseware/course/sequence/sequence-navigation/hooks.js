@@ -5,8 +5,6 @@ import { breakpoints, useWindowSize } from '@openedx/paragon';
 import { useModel } from '../../../../generic/model-store';
 import { sequenceIdsSelector } from '../../../data';
 import SidebarContext from '../../sidebar/SidebarContext';
-import NewSidebarContext from '../../new-sidebar/SidebarContext';
-import { WIDGETS } from '../../../../constants';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
   const sequenceIds = useSelector(sequenceIdsSelector);
@@ -99,12 +97,7 @@ export function useIsOnXLDesktop() {
   return windowSize.width >= breakpoints.extraLarge.maxWidth;
 }
 
-export function useIsSidebarOpen(unitId) {
-  const courseId = useSelector(state => state.courseware.courseId);
-  const { isNewDiscussionSidebarViewEnabled } = useModel('courseHomeMeta', courseId);
-  const { currentSidebar } = useContext(isNewDiscussionSidebarViewEnabled ? NewSidebarContext : SidebarContext);
-  const topic = useModel('discussionTopics', unitId);
-
-  return (currentSidebar === WIDGETS.NOTIFICATIONS) || (currentSidebar === 'DISCUSSIONS_NOTIFICATIONS') || (
-    currentSidebar === WIDGETS.DISCUSSIONS && !!(topic?.id || topic?.enabledInContext));
+export function useIsSidebarOpen() {
+  const { currentSidebar, availableSidebarIds } = useContext(SidebarContext);
+  return availableSidebarIds.includes(currentSidebar);
 }
