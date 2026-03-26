@@ -1,0 +1,35 @@
+{
+  "name": "@edx/learning-upgrade-widget",
+  "version": "0.1.0",
+  "description": "Upgrade sidebar widget for the Open edX Learning MFE",
+  "main": "src/index.js",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openedx/frontend-learning-upsell-widgets"
+  },
+  "keywords": [
+    "openedx",
+    "learning-mfe",
+    "sidebar-widget",
+    "upgrade"
+  ],
+  "peerDependencies": {
+    "@edx/frontend-platform": ">=8.0.0",
+    "@openedx/frontend-plugin-framework": ">=2.0.0",
+    "@openedx/paragon": ">=21.0.0",
+    "react": ">=18.0.0",
+    "react-intl": ">=6.0.0"
+  },
+  "devDependencies": {
+    "@edx/frontend-platform": "^8.4.0",
+    "@openedx/paragon": "^22.0.0",
+    "react": "^18.2.0",
+    "react-intl": "^6.6.2"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "lint": "eslint src/",
+    "test": "jest"
+  }
+}

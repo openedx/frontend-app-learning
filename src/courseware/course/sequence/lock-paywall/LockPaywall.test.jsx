@@ -11,7 +11,7 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Lock Paywall', () => {
   let store;
-  const mockData = { notificationTrayVisible: false };
+  const mockData = { currentSidebar: null };
 
   beforeAll(async () => {
     store = await initializeTestStore();
