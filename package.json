@@ -47,7 +47,7 @@
     "@openedx/frontend-plugin-framework": "^1.7.0",
     "@openedx/paragon": "^23.4.5",
     "@popperjs/core": "2.11.8",
-    "@reduxjs/toolkit": "1.9.7",
+    "@reduxjs/toolkit": "2.11.2",
     "buffer": "^6.0.3",
     "classnames": "2.5.1",
     "copy-webpack-plugin": "^12.0.0",
