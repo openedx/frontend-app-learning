@@ -171,9 +171,9 @@ describe('DatesTab', () => {
       await waitFor(() => expect(screen.getByText('We’ve built a suggested schedule to help you stay on track. But don’t worry—it’s flexible so you can learn at your own pace.')).toBeInTheDocument());
     });
 
-    it('renders UpgradeToCompleteAlert', async () => {
+    it('does not render UpgradeToCompleteAlert when contentTypeGatingEnabled is false', async () => {
       datesTabData.datesBannerInfo = {
-        contentTypeGatingEnabled: true,
+        contentTypeGatingEnabled: false,
         missedDeadlines: false,
         missedGatedContent: false,
         verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
@@ -182,8 +182,8 @@ describe('DatesTab', () => {
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
       render(component);
 
-      await waitFor(() => expect(screen.getByText('You are auditing this course, which means that you are unable to participate in graded assignments. To complete graded assignments as part of this course, you can upgrade today.')).toBeInTheDocument());
-      expect(screen.getByRole('button', { name: 'Upgrade now' })).toBeInTheDocument();
+      expect(screen.queryByText('You are auditing this course, which means that you are unable to participate in graded assignments. To complete graded assignments as part of this course, you can upgrade today.')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Upgrade now' })).not.toBeInTheDocument();
     });
 
     it('renders UpgradeToShiftDatesAlert', async () => {

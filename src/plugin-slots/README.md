@@ -2,6 +2,7 @@
 
 * [`org.openedx.frontend.layout.footer.v1`](./FooterSlot/)
 * [`org.openedx.frontend.layout.header_learning.v1`](./HeaderSlot/)
+* [`org.openedx.frontend.learning.banner_dates_upgrade.v1`](./BannerDatesUpgradeSlot/)
 * [`org.openedx.frontend.learning.content_iframe_loader.v1`](./ContentIFrameLoaderSlot/)
 * [`org.openedx.frontend.learning.course_breadcrumbs.v1`](./CourseBreadcrumbsSlot/)
 * [`org.openedx.frontend.learning.course_home_section_outline.v1`](./CourseHomeSectionOutlineSlot/)

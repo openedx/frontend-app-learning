@@ -11,7 +11,7 @@ import { useModel } from '../../generic/model-store';
 
 import SuggestedScheduleHeader from '../suggested-schedule-messaging/SuggestedScheduleHeader';
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
-import UpgradeToCompleteAlert from '../suggested-schedule-messaging/UpgradeToCompleteAlert';
+import { BannerDatesUpgradeSlot } from '../../plugin-slots/BannerDatesUpgradeSlot';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
 
 const DatesTab = () => {
@@ -51,7 +51,7 @@ const DatesTab = () => {
         <>
           <ShiftDatesAlert model="dates" fetch={fetchDatesTab} />
           <SuggestedScheduleHeader />
-          <UpgradeToCompleteAlert logUpgradeLinkClick={logUpgradeLinkClick} />
+          <BannerDatesUpgradeSlot courseId={courseId} logUpgradeLinkClick={logUpgradeLinkClick} />
           <UpgradeToShiftDatesAlert logUpgradeLinkClick={logUpgradeLinkClick} model="dates" />
         </>
       )}
