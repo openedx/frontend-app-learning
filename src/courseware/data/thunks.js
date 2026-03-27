@@ -129,7 +129,17 @@ export function fetchCourse(courseId) {
       }
 
       // Definitely an error happening
-      dispatch(fetchCourseFailure({ courseId }));
+      // Extract error details from 403 responses
+      let errorMessage = null;
+      let errorCode = null;
+      if (!fetchedCourseHomeMetadata) {
+        const error = courseHomeMetadataResult.reason;
+        if (error?.response?.status === 403 && error?.response?.data) {
+          errorMessage = error.response.data.detail || null;
+          errorCode = error.response.data.error_code || null;
+        }
+      }
+      dispatch(fetchCourseFailure({ courseId, errorMessage, errorCode }));
     });
   };
 }
