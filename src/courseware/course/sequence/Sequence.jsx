@@ -16,7 +16,7 @@ import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/a
 import SequenceContainerSlot from '@src/plugin-slots/SequenceContainerSlot';
 import { CourseOutlineSidebarSlot } from '@src/plugin-slots/CourseOutlineSidebarSlot';
 import { CourseOutlineSidebarTriggerSlot } from '@src/plugin-slots/CourseOutlineSidebarTriggerSlot';
-import { NotificationsDiscussionsSidebarSlot } from '@src/plugin-slots/NotificationsDiscussionsSidebarSlot';
+import { RightSidebarSlot } from '@src/plugin-slots/RightSidebarSlot';
 import SequenceNavigationSlot from '@src/plugin-slots/SequenceNavigationSlot';
 
 import CourseLicense from '../course-license';
@@ -227,7 +227,7 @@ const Sequence = ({
             {unitHasLoaded && renderUnitNavigation(false)}
           </div>
         </div>
-        <NotificationsDiscussionsSidebarSlot courseId={courseId} />
+        <RightSidebarSlot courseId={courseId} />
       </div>
       <SequenceContainerSlot courseId={courseId} unitId={unitId} />
     </>
