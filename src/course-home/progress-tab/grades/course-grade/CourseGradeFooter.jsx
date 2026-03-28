@@ -48,10 +48,10 @@ const CourseGradeFooter = ({ passingGrade }) => {
   const courseId = useContextId();
 
   const {
-    assignmentTypeGradeSummary,
-    courseGrade: { isPassing, letterGrade },
-    gradingPolicy: { gradeRange },
-  } = useModel('progress', courseId);
+    assignmentTypeGradeSummary = [],
+    courseGrade: { isPassing, letterGrade } = {},
+    gradingPolicy: { gradeRange = {} } = {},
+  } = useModel('progress', courseId) || { courseGrade: {}, gradingPolicy: {} };
 
   const latestDueDate = getLatestDueDateInFuture(assignmentTypeGradeSummary);
   const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
