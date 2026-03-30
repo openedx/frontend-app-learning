@@ -76,6 +76,37 @@ describe('Data layer integration tests', () => {
       }));
     });
 
+    it('should store errorMessage and errorCode when course_home metadata returns 403', async () => {
+      const errorDetail = 'This course is not currently accessible. The course team has restricted access to this content.';
+      const errorCode = 'not_visible_in_catalog';
+
+      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
+      axiosMock.onGet(courseHomeMetadataUrl).reply(403, { detail: errorDetail, error_code: errorCode });
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
+      axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, { enable_completion_tracking: true });
+
+      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
+
+      const { courseware } = store.getState();
+      expect(courseware.courseStatus).toEqual(FAILED);
+      expect(courseware.errorMessage).toEqual(errorDetail);
+      expect(courseware.errorCode).toEqual(errorCode);
+    });
+
+    it('should not store errorMessage for non-403 network errors', async () => {
+      axiosMock.onGet(courseUrl).networkError();
+      axiosMock.onGet(courseHomeMetadataUrl).networkError();
+      axiosMock.onGet(learningSequencesUrlRegExp).networkError();
+      axiosMock.onGet(coursewareSidebarSettingsUrl).networkError();
+
+      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
+
+      const { courseware } = store.getState();
+      expect(courseware.courseStatus).toEqual(FAILED);
+      expect(courseware.errorMessage).toBeNull();
+      expect(courseware.errorCode).toBeNull();
+    });
+
     it('Should fetch, normalize, and save metadata, but with denied status', async () => {
       const forbiddenCourseMetadata = Factory.build('courseMetadata');
       const forbiddenCourseHomeMetadata = Factory.build('courseHomeMetadata', {

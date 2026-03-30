@@ -55,6 +55,32 @@ describe('Data layer integration tests', () => {
       expect(store.getState().courseHome.courseStatus).toEqual('failed');
     });
 
+    it('should store errorMessage and errorCode from a 403 catalog visibility response', async () => {
+      const errorDetail = 'This course is not currently accessible. The course team has restricted access to this content.';
+      const errorCode = 'not_visible_in_catalog';
+      axiosMock.onGet(courseMetadataUrl).reply(403, { detail: errorDetail, error_code: errorCode });
+      axiosMock.onGet(`${datesBaseUrl}/${courseId}`).reply(200, Factory.build('datesTabData'));
+
+      await executeThunk(thunks.fetchDatesTab(courseId), store.dispatch);
+
+      const { courseHome } = store.getState();
+      expect(courseHome.courseStatus).toEqual('failed');
+      expect(courseHome.errorMessage).toEqual(errorDetail);
+      expect(courseHome.errorCode).toEqual(errorCode);
+    });
+
+    it('should not store errorMessage for non-403 errors', async () => {
+      axiosMock.onGet(courseMetadataUrl).networkError();
+      axiosMock.onGet(`${datesBaseUrl}/${courseId}`).networkError();
+
+      await executeThunk(thunks.fetchDatesTab(courseId), store.dispatch);
+
+      const { courseHome } = store.getState();
+      expect(courseHome.courseStatus).toEqual('failed');
+      expect(courseHome.errorMessage).toBeNull();
+      expect(courseHome.errorCode).toBeNull();
+    });
+
     it('should result in fetch failed if course metadata call errored', async () => {
       const datesTabData = Factory.build('datesTabData');
       const datesUrl = `${datesBaseUrl}/${courseId}`;

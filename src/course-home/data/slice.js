@@ -19,6 +19,8 @@ const slice = createSlice({
     toastHeader: '',
     showSearch: false,
     examsData: null,
+    errorMessage: null,
+    errorCode: null,
   },
   reducers: {
     fetchProctoringInfoResolved: (state) => {
@@ -31,10 +33,14 @@ const slice = createSlice({
     fetchTabFailure: (state, { payload }) => {
       state.courseId = payload.courseId;
       state.courseStatus = FAILED;
+      state.errorMessage = payload.errorMessage || null;
+      state.errorCode = payload.errorCode || null;
     },
     fetchTabRequest: (state, { payload }) => {
       state.courseId = payload.courseId;
       state.courseStatus = LOADING;
+      state.errorMessage = null;
+      state.errorCode = null;
     },
     fetchTabSuccess: (state, { payload }) => {
       state.courseId = payload.courseId;

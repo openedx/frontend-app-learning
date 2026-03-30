@@ -20,11 +20,15 @@ const slice = createSlice({
     coursewareOutlineSidebarSettings: {},
     courseOutlineStatus: LOADING,
     courseOutlineShouldUpdate: false,
+    errorMessage: null,
+    errorCode: null,
   },
   reducers: {
     fetchCourseRequest: (state, { payload }) => {
       state.courseId = payload.courseId;
       state.courseStatus = LOADING;
+      state.errorMessage = null;
+      state.errorCode = null;
     },
     fetchCourseSuccess: (state, { payload }) => {
       state.courseId = payload.courseId;
@@ -33,6 +37,8 @@ const slice = createSlice({
     fetchCourseFailure: (state, { payload }) => {
       state.courseId = payload.courseId;
       state.courseStatus = FAILED;
+      state.errorMessage = payload.errorMessage || null;
+      state.errorCode = payload.errorCode || null;
     },
     fetchCourseDenied: (state, { payload }) => {
       state.courseId = payload.courseId;
