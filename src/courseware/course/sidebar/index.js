@@ -6,9 +6,9 @@ export {
   getEnabledWidgets,
   buildSidebarsRegistry,
   getSidebarOrder,
-  discussionsIsAvailable,
   DEFAULT_WIDGETS,
 } from './defaultWidgets';
+export { discussionsIsAvailable } from '@src/widgets/discussions/widgetConfig';
 export * from './utils/storage';
 export * from './constants';
 export { default as SidebarBase } from './common/SidebarBase';

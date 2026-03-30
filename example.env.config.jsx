@@ -1,5 +1,5 @@
 import UnitTranslationPlugin from '@edx/unit-translation-selector-plugin';
-import { upgradeWidgetConfig } from '@edx/learning-upgrade-widget';
+import { upgradeWidgetConfig } from './src/widgets/upgrade/src/index';
 import { PLUGIN_OPERATIONS, DIRECT_PLUGIN } from '@openedx/frontend-plugin-framework';
 
 // Load environment variables from .env file

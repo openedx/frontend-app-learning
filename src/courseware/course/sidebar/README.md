@@ -2,11 +2,12 @@
 
 ## Overview
 
-The sidebar uses a pluggable widget framework that allows instances to customise which panels appear in the course sidebar. All widgets are external — none are bundled into the core Learning MFE by default (except Discussions).
+The sidebar uses a pluggable widget framework that allows instances to customize which panels appear in the course sidebar.
 
-- **Built-in widget**: Discussions (always enabled)
-- **External widgets**: Installed via npm packages and configured in `env.config.jsx`
-  - Upgrade/upsell panel: `@edx/learning-upsell-widgets`
+Widget implementations live in [`src/widgets/`](../../../widgets/):
+
+- **[discussions](../../../widgets/discussions/README.md)** — built-in right-panel; always enabled
+- **[course-outline](../../../widgets/course-outline/README.md)** — built-in left-panel
 
 ## Architecture
 
@@ -28,25 +29,20 @@ Each widget must provide:
 
 ### The `Provider` field
 
-When a widget's Panel and Trigger components need to share React state (e.g. badge visibility),
-use the optional `Provider` field instead of putting that state in `SidebarContext`.
+An optional hook point for widgets that need to share React state between their `Sidebar` and `Trigger` components. The widget owns the full Provider implementation. The framework simply mounts it.
 
-The `SidebarContextProvider` automatically wraps all children in each registered widget's
-`Provider` (in priority order), so both Panel and Trigger have access to the same widget-level
-context. The widget Provider itself can safely read `courseId` etc from `SidebarContext` since
-it mounts inside it.
+`SidebarContextProvider` wraps all children in each registered widget's `Provider` (in reverse-priority order), so both components have access to the same widget-level context. The Provider itself can safely read `courseId` etc. from `SidebarContext` since it mounts inside it.
 
-Example (from `@edx/learning-upsell-widgets`):
+No built-in widgets use this field — it exists as a generic extension point for custom widgets that need cross-component coordination without polluting `SidebarContext`.
 
 ```javascript
-// widgetConfig.js
-export const upsellWidgetConfig = {
-  id: 'UPSELL',
-  priority: 20,
-  Sidebar: UpsellPanel,
-  Trigger: UpsellTrigger,
-  Provider: UpsellWidgetProvider,  // <-- provides badge state to both Panel and Trigger
-  isAvailable: ({ verifiedMode }) => !!verifiedMode,
+// In your widget's widgetConfig.js
+export const myWidgetConfig = {
+  id: 'MY_WIDGET',
+  Sidebar: MyWidgetPanel,
+  Trigger: MyWidgetTrigger,
+  Provider: MyWidgetProvider,  // optional — omit if Sidebar/Trigger don't share state
+  isAvailable: ({ course }) => !!course?.someField,
   enabled: true,
 };
 ```
@@ -59,74 +55,43 @@ The `isAvailable` function receives a context object with:
 {
   courseId: string,
   unitId: string,
-  topic: object,        // Discussion topic data from model store
-  verifiedMode: object, // Verification/upgrade data from model store
+  course: object,  // Merged coursewareMeta + courseHomeMeta (verifiedMode, enrollmentMode, courseModes, …)
+  unit: object,    // discussionTopics model for the current unit (id, enabledInContext, …)
 }
 ```
 
-## Built-in Widgets
+Widgets pick whatever they need from `course` or `unit` — the sidebar makes no assumptions about which fields any given widget requires.
 
-### Discussions (Core)
+## Adding Widgets
 
-- **ID**: `DISCUSSIONS`
-- **Priority**: 10
-- **Status**: Always enabled
-- **Availability**: Only shows if a discussion topic exists for the unit
+Widgets are registered via the `SIDEBAR_WIDGETS` key in `env.config.jsx`. Any object conforming to the widget structure above can be registered.
 
-> **Note**: The `UPSELL` / upgrade widget is no longer built-in as of v3.0.
-> Install `@edx/learning-upsell-widgets` and add `upsellWidgetConfig` to `SIDEBAR_WIDGETS`
-> in your `env.config.jsx` to restore upgrade panel functionality.
+### Method 1: In-repo widget subdirectory (default approach)
 
-## Adding External Widgets
+The widget lives in `src/widgets/<name>/` alongside the built-in widgets.
 
-### Method 1: Via npm Package (Recommended)
+1. **Create your widget directory** with a `widgetConfig.js` following the widget structure above.
 
-1. **Install the widget package**:
-   ```bash
-   npm install @your-org/custom-sidebar-widget
-   ```
-
-2. **Configure in `env.config.jsx`**:
+2. **Register it in `env.config.jsx`**:
    ```javascript
-   import CustomWidget from '@your-org/custom-sidebar-widget';
+   import { myWidgetConfig } from './src/widgets/my-widget/widgetConfig';
 
-   const config = {
-     SIDEBAR_WIDGETS: [
-       {
-         id: 'CUSTOM_TOOL',
-         priority: 30,
-         Sidebar: CustomWidget.Sidebar,
-         Trigger: CustomWidget.Trigger,
-         isAvailable: (context) => {
-           // Your availability logic
-           return context.courseId && someCondition;
-         },
-         enabled: true,
-       },
-     ],
+   export default {
+     SIDEBAR_WIDGETS: [myWidgetConfig],
    };
    ```
 
-### Method 2: Via Plugin Slots (For complex integrations)
+   _See [`src/widgets/upgrade/`](../../../widgets/upgrade/) for a real example of this pattern._
 
-Use the plugin slot framework to inject widgets:
+### Method 2: Via npm package
+
+If the widget lives in a separate repository, install it as a dependency and import it the same way:
 
 ```javascript
-import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
+import { myWidgetConfig } from '@your-org/custom-sidebar-widget';
 
-const config = {
-  pluginSlots: {
-    'sidebar.widget.slot.v1': {
-      plugins: [{
-        op: PLUGIN_OPERATIONS.Insert,
-        widget: {
-          id: 'my_custom_widget',
-          type: DIRECT_PLUGIN,
-          RenderWidget: MyCustomSidebarWidget,
-        },
-      }],
-    },
-  },
+export default {
+  SIDEBAR_WIDGETS: [myWidgetConfig],
 };
 ```
 
@@ -134,41 +99,59 @@ const config = {
 
 ### Sidebar Component
 
-The main panel component that renders when the widget is active:
+The main panel component that renders when the widget is active. Wrap your content in `SidebarBase` to get the standard close button, fullscreen handling, and show/hide behaviour:
 
 ```javascript
 import { useContext } from 'react';
+import { useIntl } from '@edx/frontend-platform/i18n';
+import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
-import { useModel } from '@src/generic/model-store';
+
+export const ID = 'MY_WIDGET';
 
 const MySidebar = () => {
-  const { courseId, unitId, toggleSidebar } = useContext(SidebarContext);
-  const courseData = useModel('coursewareMeta', courseId);
+  const intl = useIntl();
+  const { courseId } = useContext(SidebarContext);
 
   return (
-    <div className="sidebar-panel">
+    <SidebarBase
+      title="My Widget"
+      ariaLabel="My Widget panel"
+      sidebarId={ID}
+      width="31rem"
+    >
       {/* Your panel content */}
-    </div>
+    </SidebarBase>
   );
 };
+
+export default MySidebar;
 ```
 
 ### Trigger Component
 
-The button that appears in the header to toggle the widget:
+The button that appears in the toolbar to open the widget. Use `SidebarTriggerBase` for consistent styling across all widgets:
 
 ```javascript
+import { Icon } from '@openedx/paragon';
+import { MyIcon } from '@openedx/paragon/icons';
+import PropTypes from 'prop-types';
+import SidebarTriggerBase from '@src/courseware/course/sidebar/common/TriggerBase';
+
 const MyTrigger = ({ onClick }) => (
-  <button
-    type="button"
-    className="btn btn-icon"
-    onClick={onClick}
-    aria-label="Toggle My Widget"
-  >
-    <Icon src={MyIcon} />
-  </button>
+  <SidebarTriggerBase onClick={onClick} ariaLabel="Open My Widget">
+    <Icon src={MyIcon} className="m-0 m-auto" />
+  </SidebarTriggerBase>
 );
+
+MyTrigger.propTypes = {
+  onClick: PropTypes.func.isRequired,
+};
+
+export default MyTrigger;
 ```
+
+The `onClick` prop is injected by the framework — your trigger does not need to call `toggleSidebar` directly.
 
 ## Accessing Course Data
 
@@ -222,59 +205,14 @@ const config = {
       priority: 15,
       Sidebar: PremiumContentWidget,
       Trigger: PremiumContentWidget.Trigger,
-      isAvailable: ({ verifiedMode, courseId }) => {
-        // Only show to verified learners
-        return verifiedMode && verifiedMode.access_expiration_date;
+      isAvailable: ({ course, courseId }) => {
+        // Only show to learners with a verified mode available
+        return !!course?.verifiedMode?.access_expiration_date;
       },
       enabled: true,
     },
   ],
 };
-```
-
-## Upsell Widget
-
-The upsell upgrade widget is no longer built-in. Operators who want upgrade prompts
-must install the external package:
-
-1. **Install**:
-   ```bash
-   npm install @edx/learning-upsell-widgets
-   ```
-
-2. **Configure in env.config.jsx**:
-   ```javascript
-   import { upsellWidgetConfig } from '@edx/learning-upsell-widgets';
-
-   const config = {
-     SIDEBAR_WIDGETS: [upsellWidgetConfig],
-   };
-   ```
-
-## Testing Widgets
-
-When testing widgets:
-
-```javascript
-import { render } from '@testing-library/react';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
-
-test('renders custom widget', () => {
-  const contextValue = {
-    courseId: 'course-v1:test',
-    unitId: 'block-v1:test',
-    currentSidebar: 'MY_WIDGET',
-    toggleSidebar: jest.fn(),
-  };
-
-  render(
-    <SidebarContext.Provider value={contextValue}>
-      <MyWidget />
-    </SidebarContext.Provider>
-  );
-
-  // Your assertions
-});
 ```
 
 ## Best Practices

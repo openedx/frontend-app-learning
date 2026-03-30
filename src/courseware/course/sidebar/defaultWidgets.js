@@ -1,28 +1,12 @@
 import { getConfig } from '@edx/frontend-platform';
-import * as discussions from './sidebars/discussions';
+import { discussionsWidgetConfig } from '@src/widgets/discussions/widgetConfig';
 import { WIDGET_PRIORITIES, WIDGET_CONFIG } from './constants';
 
 /**
- * Check if discussions widget is available for the current unit
- * @param {Object} context - Contains courseId, unitId, topic, courseHomeMeta
- * @returns {boolean} Whether discussions are available
- */
-export const discussionsIsAvailable = ({ topic }) => !!(topic?.id && topic?.enabledInContext);
-
-/**
  * Default built-in widgets for the RIGHT sidebar.
- * The upgrade widget is no longer built-in — configure it via SIDEBAR_WIDGETS
- * in env.config.jsx using the @edx/learning-upgrade-widget package.
  */
 export const DEFAULT_WIDGETS = [
-  {
-    id: discussions.ID,
-    priority: WIDGET_PRIORITIES.DISCUSSIONS,
-    Sidebar: discussions.Sidebar,
-    Trigger: discussions.Trigger,
-    isAvailable: discussionsIsAvailable,
-    enabled: true,
-  },
+  discussionsWidgetConfig,
 ];
 
 /**
@@ -38,8 +22,8 @@ export function getEnabledWidgets() {
 
   // Sort by priority (lower number = higher priority)
   return widgets.sort(
-    (a, b) => (a.priority || WIDGET_PRIORITIES.DEFAULT_EXTERNAL)
-      - (b.priority || WIDGET_PRIORITIES.DEFAULT_EXTERNAL),
+    (a, b) => (a.priority || WIDGET_PRIORITIES.DEFAULT)
+      - (b.priority || WIDGET_PRIORITIES.DEFAULT),
   );
 }
 

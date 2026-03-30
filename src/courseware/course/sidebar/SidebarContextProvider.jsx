@@ -29,7 +29,8 @@ const SidebarProvider = ({
   children,
 }) => {
   const courseHomeMeta = useModel('courseHomeMeta', courseId);
-  const topic = useModel('discussionTopics', unitId);
+  const coursewareMeta = useModel('coursewareMeta', courseId);
+  const unit = useModel('discussionTopics', unitId);
   const { width } = useWindowSize();
   const shouldDisplayFullScreen = width < breakpoints.extraLarge.minWidth;
   const shouldDisplaySidebarOpen = width > breakpoints.extraLarge.minWidth;
@@ -38,17 +39,16 @@ const SidebarProvider = ({
 
   // Build registry of enabled widgets
   const enabledWidgets = useMemo(() => getEnabledWidgets(), []);
-
-  // Build SIDEBARS registry and order from enabled widgets
-  // Note: We include all enabled widgets in the registry.
-  // Individual widget components handle their own availability checks and return null if not available
   const SIDEBARS = useMemo(() => buildSidebarsRegistry(enabledWidgets), [enabledWidgets]);
   const SIDEBAR_ORDER = useMemo(() => getSidebarOrder(enabledWidgets), [enabledWidgets]);
 
   // Helper to get available widgets based on current context
   const getAvailableWidgets = useCallback(() => {
     const context = {
-      courseId, unitId, topic, courseHomeMeta,
+      courseId,
+      unitId,
+      course: { ...coursewareMeta, ...courseHomeMeta },
+      unit,
     };
     return enabledWidgets.filter(widget => {
       if (widget.isAvailable) {
@@ -56,7 +56,7 @@ const SidebarProvider = ({
       }
       return true; // If no isAvailable function, widget is always available
     });
-  }, [enabledWidgets, courseId, unitId, topic, courseHomeMeta]);
+  }, [enabledWidgets, courseId, unitId, coursewareMeta, courseHomeMeta, unit]);
 
   // Helper to get the first available panel based on priority
   const getFirstAvailablePanel = useCallback(() => {
