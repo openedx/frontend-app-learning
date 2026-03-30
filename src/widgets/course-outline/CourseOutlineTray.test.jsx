@@ -6,7 +6,7 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import { initializeTestStore } from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
-import SidebarContext from '../../SidebarContext';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import CourseOutlineTray from './CourseOutlineTray';
 import { ID as outlineSidebarId } from './constants';
 import messages from './messages';

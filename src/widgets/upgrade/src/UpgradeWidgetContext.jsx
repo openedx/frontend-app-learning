@@ -2,7 +2,8 @@ import {
   createContext, useCallback, useContext, useMemo, useState,
 } from 'react';
 import PropTypes from 'prop-types';
-import { SidebarContext, getLocalStorage, setLocalStorage } from '@edx/learning-mfe-widget';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 
 /**
  * @typedef {Object} UpgradeWidgetContextValue

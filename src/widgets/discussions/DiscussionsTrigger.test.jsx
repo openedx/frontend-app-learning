@@ -5,9 +5,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   fireEvent, initializeMockApp, initializeTestStore, render, screen,
-} from '../../../../../setupTest';
-import { buildTopicsFromUnits } from '../../../../data/__factories__/discussionTopics.factory';
-import SidebarContext from '../../SidebarContext';
+} from '@src/setupTest';
+import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsTrigger from './DiscussionsTrigger';
 
 initializeMockApp();

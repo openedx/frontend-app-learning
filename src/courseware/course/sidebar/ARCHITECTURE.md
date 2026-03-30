@@ -25,27 +25,28 @@ The Learning MFE uses a **two-sidebar system** where a left sidebar (Course Outl
   - External widgets registered via `SIDEBAR_WIDGETS` in `env.config.jsx`
   - Example: `@edx/learning-upsell-widgets` provides the upgrade panel at priority 20
 - **Rendering**: Looks up `SIDEBARS[currentSidebar]` from widget registry
-- **Triggers**: `SidebarTriggers` component renders all widget trigger buttons
+- **Triggers**: `SidebarTriggers` component renders all registered widget trigger buttons
 
 ## Shared State Coordination
 
 Both sidebars share a **single** `currentSidebar` state variable managed by `SidebarContext`:
 
 ```javascript
-currentSidebar: 'DISCUSSIONS' | 'COURSE_OUTLINE' | null | string
+currentSidebar: '<widget-id>' | 'COURSE_OUTLINE' | null
 ```
 
 ### State Machine
 
-| `currentSidebar` Value | LEFT Sidebar (Course Outline) | RIGHT Sidebar (Discussions/Upgrade) |
-|------------------------|-------------------------------|-------------------------------------------|
-| `null` | Hidden (returns null) | Hidden (returns null) |
-| `'DISCUSSIONS'` | Hidden | Shows Discussions panel |
-| `'UPGRADE'` | Hidden | Shows Upgrade panel |
-| `'COURSE_OUTLINE'` | Shows Course Outline | Hidden (not in SIDEBARS registry) |
-| External widget ID | Hidden | Shows external widget panel |
+The framework is agnostic about which widgets are registered. The values below use the built-in widgets as examples — `'DISCUSSIONS'` and `'UPGRADE'` have no special meaning to the framework itself.
 
-**Key Principle**: Only ONE sidebar can be active at a time. They never overlap.
+| `currentSidebar` Value | LEFT Sidebar (Course Outline) | RIGHT Sidebar |
+|------------------------|-------------------------------|----------------------------------------|
+| `null` | Hidden | Hidden |
+| `'DISCUSSIONS'` (example) | Hidden | Shows Discussions panel |
+| `'UPGRADE'` (example) | Hidden | Shows that widget's panel |
+| `'COURSE_OUTLINE'` | Shows Course Outline | Hidden (not in SIDEBARS registry) |
+
+**Note**: Only one sidebar is active at a time. This reflects current production behaviour, not a product requirement. The single `currentSidebar` state variable is an implementation choice that makes the behaviour consistent and predictable.
 
 ## Collaboration Pattern
 
@@ -62,7 +63,7 @@ The `initialSidebar` value (calculated by `SidebarContextProvider`) signals whet
 ```javascript
 // In SidebarContextProvider
 if (shouldDisplaySidebarOpen && !shouldDisplayFullScreen) {
-  // Auto-open first available: DISCUSSIONS → UPGRADE → External Widgets
+  // Auto-open first available widget (sorted by priority)
   initialSidebar = getFirstAvailablePanel(); // Returns null if none available
 }
 ```
@@ -81,10 +82,9 @@ useEffect(() => {
 
 ### Priority Cascade (Desktop)
 
-1. **DISCUSSIONS** (Priority 10) - Opens if unit has discussions
-2. **UPGRADE** (Priority 20) - Opens if no discussions but verified mode exists
-3. **External Widgets** (Priority 30+) - Opens if configured and available
-4. **COURSE_OUTLINE** (Fallback) - Opens if NO right sidebar panels available
+1. **Registered widgets** sorted by `priority` (lower number = higher priority) — opens first available widget
+2. **COURSE_OUTLINE** (Fallback) — opens if no right-panel widgets are available for the current unit
+For reference, the built-in widget priorities: Discussions = 10, unset = 50 (default).
 
 ## Use Case Implementation
 
@@ -92,9 +92,9 @@ useEffect(() => {
 
 | Available Panels | `initialSidebar` | `currentSidebar` | Result |
 |-----------------|------------------|------------------|---------|
-| Discussions available | `'DISCUSSIONS'` | `'DISCUSSIONS'` | Discussions opens |
-| Only Upgrade | `'UPGRADE'` | `'UPGRADE'` | Upgrade opens |
-| Neither available | `null` | `'COURSE_OUTLINE'` | Course Outline opens (fallback) |
+| Any widget available | `'<widget-id>'` | `'<widget-id>'` | Highest-priority available widget opens |
+| No widgets available | `null` | `'COURSE_OUTLINE'` | Course Outline opens (fallback) |
+
 
 ### Initial Load (Mobile < 1200px)
 
@@ -102,36 +102,36 @@ useEffect(() => {
 - **localStorage Key**: `sidebar.${courseId}`
 - **User Action**: Must manually tap trigger buttons to open panels
 
-### Unit Shift Behavior (Desktop)
+### Unit Shift Behaviour (Desktop)
 
-**Scenario 1: Previous unit had DISCUSSIONS open**
-- New unit has discussions → **Stays on Discussions**
-- New unit NO discussions, YES upgrade → **Switches to Upgrade**
-- New unit NO discussions, NO upgrade → **Closes right sidebar, Course Outline auto-opens**
+On unit navigation, the framework re-evaluates `getAvailableWidgets()` for the new unit and applies:
 
-**Scenario 2: Previous unit had UPGRADE open**
-- New unit has discussions → **Switches to Discussions** (higher priority)
-- New unit NO discussions, YES upgrade → **Stays on Upgrade**
-- New unit NO discussions, NO upgrade → **Closes right sidebar, Course Outline auto-opens**
+- A higher-priority widget becomes available → switch to it
+- The current widget is still available → stay
+- No widgets available → close right panel, Course Outline auto-opens
+- Course Outline was open → switch to first available widget if any
 
-**Scenario 3: Previous unit had COURSE_OUTLINE open**
-- New unit has discussions → **Switches to Discussions**
-- New unit has upgrade → **Switches to Upgrade**
-- New unit NO discussions, NO upgrade → **Stays on Course Outline**
+_Example with built-in widgets:_
 
-**Scenario 4: Previous unit NO panel open**
-- New unit has panels → **Auto-opens first available panel**
-- New unit NO panels → **Auto-opens Course Outline**
+**Scenario 1: Previous unit had a right-panel widget open**
+- New unit has the same widget available → **Stays**
+- New unit has a higher-priority widget → **Switches to higher-priority widget**
+- New unit has no widgets available → **Closes right panel, Course Outline auto-opens**
+
+**Scenario 2: Previous unit had COURSE_OUTLINE open**
+- New unit has any widget available → **Switches to highest-priority widget**
+- New unit has no widgets available → **Stays on Course Outline**
 
 ### Manual Toggle Behavior
 
 | Action | Current State | Result |
 |--------|---------------|--------|
-| Click Discussions trigger | Discussions open | Closes Discussions |
-| Click Discussions trigger | Upgrade open | Switches to Discussions |
-| Click Discussions trigger | Course Outline open | Switches to Discussions |
+| Click Widget A's trigger | Widget A open | Closes Widget A |
+| Click Widget A's trigger | Widget B open | Switches to Widget A |
+| Click Widget A's trigger | Course Outline open | Switches to Widget A |
 | Click Course Outline trigger | Course Outline open | Closes Course Outline |
-| Click Course Outline trigger | Discussions open | Switches to Course Outline |
+| Click Course Outline trigger | Any widget open | Switches to Course Outline |
+
 
 ### Window Resize
 

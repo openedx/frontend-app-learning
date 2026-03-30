@@ -455,7 +455,7 @@
 
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
-@import "courseware/course/sidebar/sidebars/discussions/Discussions.scss";
+@import "widgets/discussions/Discussions.scss";
 @import "shared/streak-celebration/StreakCelebrationModal.scss";
 @import "courseware/course/content-tools/calculator/calculator.scss";
 @import "courseware/course/content-tools/contentTools.scss";
@@ -469,4 +469,4 @@
 @import "course-home/courseware-search/courseware-search.scss";
 @import "course-tabs/course-tabs-navigation.scss";
 @import "courseware/course/sidebar/common/SidebarBase.scss";
-@import "courseware/course/sidebar/sidebars/course-outline/CourseOutlineTray.scss";
+@import "widgets/course-outline/CourseOutlineTray.scss";

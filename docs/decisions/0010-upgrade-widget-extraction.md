@@ -1,4 +1,4 @@
-# 10. Extract Upgrade Widget to External Package
+# 10. Extract Upgrade Widget from Core MFE
 
 ## Context
 
@@ -25,12 +25,14 @@ All internal code references to "notification" that specifically relate to the u
 - i18n message keys (`notification.*`)
 
 
-### 3. External package `@edx/learning-upgrade-widget` is created
+### 2. Widget moved to `src/widgets/upgrade/`
 
-A standalone npm package is created with the same functionality. Instances that need the upgrade panel:
+Rather than publishing a separate npm package, the widget is kept as a subdirectory of the MFE. This avoids monorepo publishing overhead while maintaining a clean separation from the sidebar framework.
 
-1. Install `@edx/learning-upgrade-widget`
-2. Set `ENABLE_LEGACY_UPGRADE_WIDGET: false`
-3. Add the package widget to `SIDEBAR_WIDGETS` in `env.config.jsx`
+Instances that need the upgrade panel register it via `env.config.jsx`:
 
-The package skeleton lives in `src/external-widgets/learning-upsell-widget/` until promoted to its own repository.
+```js
+import upgradeWidget from './src/widgets/upgrade/src/index';
+
+export const SIDEBAR_WIDGETS = [upgradeWidget];
+```

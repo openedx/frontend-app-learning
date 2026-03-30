@@ -4,8 +4,8 @@ import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { useModel } from '@src/generic/model-store';
-import SidebarBase from '../../common/SidebarBase';
-import SidebarContext from '../../SidebarContext';
+import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import { ID } from './DiscussionsTrigger';
 
 import messages from './messages';
@@ -47,8 +47,5 @@ const DiscussionsSidebar = () => {
     </SidebarBase>
   );
 };
-
-DiscussionsSidebar.Trigger = DiscussionsSidebar;
-DiscussionsSidebar.ID = ID;
 
 export default DiscussionsSidebar;

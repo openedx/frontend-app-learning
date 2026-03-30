@@ -5,11 +5,11 @@ import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import {
   initializeMockApp, initializeTestStore, render, screen,
-} from '../../../../../setupTest';
-import { executeThunk } from '../../../../../utils';
-import { buildTopicsFromUnits } from '../../../../data/__factories__/discussionTopics.factory';
-import { getCourseDiscussionTopics } from '../../../../data/thunks';
-import SidebarContext from '../../SidebarContext';
+} from '@src/setupTest';
+import { executeThunk } from '@src/utils';
+import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
+import { getCourseDiscussionTopics } from '@src/courseware/data/thunks';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsSidebar from './DiscussionsSidebar';
 
 initializeMockApp();

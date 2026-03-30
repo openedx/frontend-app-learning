@@ -13,7 +13,6 @@ const config = createConfig('jest', {
     // See https://stackoverflow.com/questions/72382316/jest-encountered-an-unexpected-token-react-markdown
     'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
     '@src/(.*)': '<rootDir>/src/$1',
-    '@edx/learning-mfe-widget': '<rootDir>/src/sidebar-widget-sdk.js',
     // Explicit mapping to ensure Jest resolves the module correctly
     '@edx/frontend-lib-special-exams': '<rootDir>/node_modules/@edx/frontend-lib-special-exams',
   },

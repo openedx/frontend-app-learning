@@ -7,7 +7,9 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
-import { SidebarContext, SidebarBase, useModel } from '@edx/learning-mfe-widget';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
+import { useModel } from '@src/generic/model-store';
 import { useUpgradeWidgetContext } from './UpgradeWidgetContext';
 import UpgradeTrigger, { ID } from './UpgradeTrigger';
 import messages from './messages';

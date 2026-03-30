@@ -7,9 +7,9 @@ import { useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useModel } from '@src/generic/model-store';
 import { WIDGETS } from '@src/constants';
-import { getCourseDiscussionTopics } from '../../../../data/thunks';
-import SidebarTriggerBase from '../../common/TriggerBase';
-import SidebarContext from '../../SidebarContext';
+import { getCourseDiscussionTopics } from '@src/courseware/data/thunks';
+import SidebarTriggerBase from '@src/courseware/course/sidebar/common/TriggerBase';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import messages from './messages';
 
 ensureConfig(['DISCUSSIONS_MFE_BASE_URL']);

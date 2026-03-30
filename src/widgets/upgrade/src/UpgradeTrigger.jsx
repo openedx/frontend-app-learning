@@ -1,9 +1,9 @@
 import { useContext, useEffect } from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
-import {
-  SidebarContext, SidebarTriggerBase, getLocalStorage, setLocalStorage,
-} from '@edx/learning-mfe-widget';
+import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import SidebarTriggerBase from '@src/courseware/course/sidebar/common/TriggerBase';
+import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import { useUpgradeWidgetContext } from './UpgradeWidgetContext';
 import UpgradeIcon from './UpgradeIcon';
 import messages from './messages';
