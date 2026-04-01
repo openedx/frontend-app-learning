@@ -2,7 +2,7 @@ import React from 'react';
 
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
-import CourseOutlineTray from '../../courseware/course/sidebar/sidebars/course-outline/CourseOutlineTray';
+import CourseOutlineTray from '../../widgets/course-outline/CourseOutlineTray';
 
 export const CourseOutlineSidebarSlot : React.FC = () => (
   <PluginSlot
