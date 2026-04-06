@@ -1,6 +1,4 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const path = require('path');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const { createConfig } = require('@openedx/frontend-build');
 
 const config = createConfig('eslint', {
@@ -17,7 +15,7 @@ const config = createConfig('eslint', {
   settings: {
     'import/resolver': {
       webpack: {
-        config: path.resolve(__dirname, 'webpack.prod.config.js'),
+        config: 'webpack.prod.config.js',
       },
     },
   },
