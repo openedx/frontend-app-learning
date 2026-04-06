@@ -2,7 +2,7 @@ import React from 'react';
 
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
-import CourseOutlineTrigger from '../../widgets/course-outline/CourseOutlineTrigger';
+import CourseOutlineTrigger from '../../courseware/course/sidebar/sidebars/course-outline/CourseOutlineTrigger';
 
 export const CourseOutlineMobileSidebarTriggerSlot : React.FC = () => (
   <PluginSlot

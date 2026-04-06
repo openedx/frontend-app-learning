@@ -21,7 +21,6 @@ function buildParams(overrides = {}) {
     unitId,
     shouldDisplayFullScreen: false,
     hasUserToggledRef: { current: false },
-    previousUnitIdRef: { current: unitId }, // non-null = post-initial-load
     courseOutlineSetByUnitRef: { current: null },
     ...overrides,
   };
@@ -36,13 +35,6 @@ describe('useSidebarSync', () => {
   describe('skip conditions', () => {
     it('skips when shouldDisplayFullScreen is true (mobile)', () => {
       const params = buildParams({ shouldDisplayFullScreen: true });
-      renderHook(() => useSidebarSync(params));
-
-      expect(params.setCurrentSidebar).not.toHaveBeenCalled();
-    });
-
-    it('skips when previousUnitIdRef is null (initial page load)', () => {
-      const params = buildParams({ previousUnitIdRef: { current: null } });
       renderHook(() => useSidebarSync(params));
 
       expect(params.setCurrentSidebar).not.toHaveBeenCalled();

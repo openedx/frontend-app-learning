@@ -4,10 +4,10 @@
 
 The sidebar uses a pluggable widget framework that allows instances to customize which panels appear in the course sidebar.
 
-Widget implementations live in [`src/widgets/`](../../../widgets/):
+Widget implementations:
 
-- **[discussions](../../../widgets/discussions/README.md)** — built-in right-panel; always enabled
-- **[course-outline](../../../widgets/course-outline/README.md)** — built-in left-panel
+- **[discussions](../../../widgets/discussions/README.md)** — built-in right-panel; always enabled (in `src/widgets/`)
+- **[course-outline](sidebars/course-outline/README.md)** — built-in left-panel (in `sidebar/sidebars/`)
 
 ## Architecture
 

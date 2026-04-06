@@ -7,6 +7,7 @@ const SidebarTriggers = () => {
   const {
     toggleSidebar,
     currentSidebar,
+    availableSidebarIds,
     SIDEBAR_ORDER,
     SIDEBARS,
   } = useContext(SidebarContext);
@@ -20,7 +21,7 @@ const SidebarTriggers = () => {
 
   return (
     <div className="d-flex ml-auto">
-      {SIDEBAR_ORDER.map((sidebarId) => {
+      {SIDEBAR_ORDER.filter(id => availableSidebarIds.includes(id)).map((sidebarId) => {
         const { Trigger } = SIDEBARS[sidebarId];
         const isActive = sidebarId === currentSidebar;
         return (

@@ -6,7 +6,7 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 
 import { initializeMockApp, initializeTestStore } from '@src/setupTest';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import SidebarContext from '../../../SidebarContext';
 import SidebarUnit from './SidebarUnit';
 import { ID } from '../constants';
 

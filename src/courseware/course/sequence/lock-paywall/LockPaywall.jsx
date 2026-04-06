@@ -37,15 +37,15 @@ const LockPaywall = ({
 
   // the following variables are set and used for responsive layout to work with
   // whether any sidebar panel is open and if there's an offer with longer text
-  const upgradePanelVisible = availableSidebarIds.includes(currentSidebar);
+  const isSidebarOpen = availableSidebarIds.includes(currentSidebar);
   const { width: windowWidth } = useWindowSize();
   const shouldDisplayBulletPointsBelowCertificate = windowWidth <= breakpoints.large.minWidth;
   const shouldDisplayGatedContentOneColumn = windowWidth <= breakpoints.extraLarge.minWidth
-    && upgradePanelVisible;
+    && isSidebarOpen;
   const shouldDisplayGatedContentTwoColumns = windowWidth < breakpoints.large.minWidth
-    && upgradePanelVisible;
+    && isSidebarOpen;
   const shouldDisplayGatedContentTwoColumnsHalf = windowWidth <= breakpoints.large.minWidth
-    && !upgradePanelVisible;
+    && !isSidebarOpen;
   const shouldWrapTextOnButton = windowWidth > breakpoints.extraSmall.minWidth;
 
   const accessExpirationDate = accessExpiration ? new Date(accessExpiration.expirationDate) : null;
@@ -98,7 +98,7 @@ const LockPaywall = ({
             </div>
           )}
 
-          <div className={classNames('d-inline-flex flex-row', { 'flex-wrap': upgradePanelVisible || shouldDisplayBulletPointsBelowCertificate })}>
+          <div className={classNames('d-inline-flex flex-row', { 'flex-wrap': isSidebarOpen || shouldDisplayBulletPointsBelowCertificate })}>
             <div style={{ float: 'left' }} className="mr-3 mb-2">
               <img
                 alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
@@ -128,7 +128,7 @@ const LockPaywall = ({
             <div
               className={
                 classNames('d-md-flex align-items-md-center text-right', {
-                  'col-md-5 mx-md-0': upgradePanelVisible, 'col-md-4 mx-md-3 justify-content-center': !upgradePanelVisible && !shouldDisplayGatedContentTwoColumnsHalf, 'col-md-11 justify-content-end': shouldDisplayGatedContentOneColumn && !shouldDisplayGatedContentTwoColumns, 'col-md-6 justify-content-center': shouldDisplayGatedContentTwoColumnsHalf,
+                  'col-md-5 mx-md-0': isSidebarOpen, 'col-md-4 mx-md-3 justify-content-center': !isSidebarOpen && !shouldDisplayGatedContentTwoColumnsHalf, 'col-md-11 justify-content-end': shouldDisplayGatedContentOneColumn && !shouldDisplayGatedContentTwoColumns, 'col-md-6 justify-content-center': shouldDisplayGatedContentTwoColumnsHalf,
                 })
               }
             >

@@ -109,7 +109,6 @@ const SidebarProvider = ({
     unitId,
     shouldDisplayFullScreen,
     hasUserToggledRef,
-    previousUnitIdRef,
     courseOutlineSetByUnitRef,
   });
 

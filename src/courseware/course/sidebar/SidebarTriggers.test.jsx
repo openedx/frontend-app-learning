@@ -39,6 +39,7 @@ function buildContext(overrides = {}) {
   return {
     toggleSidebar: mockToggleSidebar,
     currentSidebar: null,
+    availableSidebarIds: ['WIDGET_A', 'WIDGET_B'],
     SIDEBAR_ORDER: ['WIDGET_A', 'WIDGET_B'],
     SIDEBARS: {
       WIDGET_A: { Trigger: MockTriggerA },
@@ -160,6 +161,7 @@ describe('SidebarTriggers - external widget integration', () => {
         <SidebarContext.Provider value={{
           toggleSidebar: jest.fn(),
           currentSidebar: null,
+          availableSidebarIds: SIDEBAR_ORDER,
           SIDEBARS,
           SIDEBAR_ORDER,
         }}
@@ -193,6 +195,7 @@ describe('SidebarTriggers - external widget integration', () => {
         <SidebarContext.Provider value={{
           toggleSidebar: jest.fn(),
           currentSidebar: null,
+          availableSidebarIds: SIDEBAR_ORDER,
           SIDEBARS,
           SIDEBAR_ORDER,
         }}
@@ -230,6 +233,7 @@ describe('SidebarTriggers - external widget integration', () => {
         <SidebarContext.Provider value={{
           toggleSidebar,
           currentSidebar: null,
+          availableSidebarIds: SIDEBAR_ORDER,
           SIDEBARS,
           SIDEBAR_ORDER,
         }}

@@ -169,7 +169,7 @@ describe('useUnitShiftBehavior', () => {
       });
       renderHook(() => useUnitShiftBehavior(params));
 
-      expect(params.setCurrentSidebar).toHaveBeenCalledWith('DISCUSSIONS');
+      expect(params.setCurrentSidebar).not.toHaveBeenCalled();
     });
 
     it('switches to firstAvailable when current panel is no longer in available list', () => {

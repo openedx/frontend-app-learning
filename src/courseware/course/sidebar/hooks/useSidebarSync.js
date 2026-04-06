@@ -20,7 +20,6 @@ import {
  * @param {string} params.unitId - Current unit ID
  * @param {boolean} params.shouldDisplayFullScreen - Whether in mobile view
  * @param {Function} params.hasUserToggledRef - Ref tracking user manual toggles
- * @param {Function} params.previousUnitIdRef - Ref tracking previous unit ID
  * @param {Function} params.courseOutlineSetByUnitRef - Ref tracking COURSE_OUTLINE auto-set
  */
 export function useSidebarSync({
@@ -31,12 +30,11 @@ export function useSidebarSync({
   unitId,
   shouldDisplayFullScreen,
   hasUserToggledRef,
-  previousUnitIdRef,
   courseOutlineSetByUnitRef,
 }) {
   useEffect(() => {
-    // Skip if on mobile or if unit shift effect hasn't run yet
-    if (shouldDisplayFullScreen || previousUnitIdRef.current === null) {
+    // Skip if on mobile
+    if (shouldDisplayFullScreen) {
       return;
     }
 

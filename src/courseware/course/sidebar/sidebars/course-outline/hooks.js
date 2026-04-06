@@ -9,8 +9,6 @@ import { breakpoints } from '@openedx/paragon';
 import { useModel } from '@src/generic/model-store';
 import { LOADED } from '@src/constants';
 import { checkBlockCompletion, getCourseOutlineStructure } from '@src/courseware/data/thunks';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
-import { setOutlineSidebarCollapsed } from '@src/courseware/course/sidebar/utils/storage';
 import {
   getCoursewareOutlineSidebarSettings,
   getCourseOutlineShouldUpdate,
@@ -19,6 +17,8 @@ import {
   getCourseOutline,
   getSequenceStatus,
 } from '@src/courseware/data/selectors';
+import SidebarContext from '../../SidebarContext';
+import { setOutlineSidebarCollapsed } from '../../utils/storage';
 import { ID } from './constants';
 
 // eslint-disable-next-line import/prefer-default-export

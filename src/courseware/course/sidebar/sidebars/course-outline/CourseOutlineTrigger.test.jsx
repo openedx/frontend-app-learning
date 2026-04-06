@@ -4,8 +4,8 @@ import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import { initializeTestStore } from '@src/setupTest';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
-import { ID as discussionSidebarId } from '../discussions/DiscussionsTrigger';
+import { ID as discussionSidebarId } from '@src/widgets/discussions/DiscussionsTrigger';
+import SidebarContext from '../../SidebarContext';
 import CourseOutlineTrigger from './CourseOutlineTrigger';
 import { ID as outlineSidebarId } from './constants';
 import messages from './messages';

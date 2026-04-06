@@ -120,8 +120,7 @@ export function useUnitShiftBehavior({
           setCurrentSidebar(firstAvailable);
           setSidebarId(courseId, firstAvailable);
         } else if (currentWidget) {
-          // Current RIGHT sidebar panel still available and no higher priority - keep it
-          setCurrentSidebar(currentSidebar);
+          // Current sidebar still valid at same priority — no state change needed
         } else {
           // Current panel not available - switch to first available RIGHT sidebar panel
           setCurrentSidebar(firstAvailable);
