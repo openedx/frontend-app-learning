@@ -32,7 +32,7 @@ jest.mock('@openedx/frontend-plugin-framework', () => {
   const MockedPluginSlot = require('./tests/MockedPluginSlot').default;
 
   return {
-    ...jest.requireActual('@openedx/frontend-plugin-framework'),
+    __esModule: true,
     Plugin: () => 'Plugin',
     PluginSlot: MockedPluginSlot,
   };
@@ -42,6 +42,30 @@ jest.mock('@src/generic/plugin-store', () => ({
   ...jest.requireActual('@src/generic/plugin-store'),
   usePluginsCallback: jest.fn((_, cb) => cb),
 }));
+
+// Suppress known React deprecation warnings that originate in third-party
+// packages (Paragon, react-fontawesome) and project components that still use
+// defaultProps / propTypes on function components.  These are informational
+// deprecations scheduled for a future React major version and do not indicate
+// broken behaviour.  Narrow filters ensure real errors are never masked.
+/* eslint-disable no-console */
+const originalConsoleError = console.error;
+beforeAll(() => {
+  console.error = (...args) => {
+    const msg = String(args[0] ?? '');
+    if (
+      msg.includes('forwardRef render functions do not support propTypes or defaultProps')
+      || msg.includes('Support for defaultProps will be removed from function components')
+    ) {
+      return;
+    }
+    originalConsoleError(...args);
+  };
+});
+afterAll(() => {
+  console.error = originalConsoleError;
+});
+/* eslint-enable no-console */
 
 class MockLoggingService {
   // eslint-disable-next-line no-console
