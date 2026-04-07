@@ -10,7 +10,6 @@ import PropTypes from 'prop-types';
 import { render as rtlRender } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import MockAdapter from 'axios-mock-adapter';
-import { reducer as learningAssistantReducer } from '@edx/frontend-lib-learning-assistant';
 import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { reducer as courseHomeReducer } from './course-home/data';
@@ -177,7 +176,6 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
       models: modelsReducer,
       courseware: coursewareReducer,
       courseHome: courseHomeReducer,
-      learningAssistant: learningAssistantReducer,
       specialExams: specialExamsReducer,
       recommendations: recommendationsReducer,
       tours: toursReducer,

@@ -1,4 +1,3 @@
-import { reducer as learningAssistantReducer } from '@edx/frontend-lib-learning-assistant';
 import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams';
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer as courseHomeReducer } from './course-home/data';
@@ -14,7 +13,6 @@ export default function initializeStore() {
       models: modelsReducer,
       courseware: coursewareReducer,
       courseHome: courseHomeReducer,
-      learningAssistant: learningAssistantReducer,
       specialExams: specialExamsReducer,
       recommendations: recommendationsReducer,
       tours: toursReducer,
