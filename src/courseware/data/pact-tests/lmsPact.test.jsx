@@ -227,7 +227,6 @@ describe('Courseware Service', () => {
         linkedinAddToProfileUrl: null,
         relatedPrograms: null,
         userNeedsIntegritySignature: false,
-        learningAssistantEnabled: false,
       };
       setTimeout(() => {
         provider.addInteraction({
@@ -332,7 +331,6 @@ describe('Courseware Service', () => {
               verification_status: string('none'),
               linkedin_add_to_profile_url: null,
               user_needs_integrity_signature: boolean(false),
-              learning_assistant_enabled: boolean(false),
               language: string('en'),
               whole_course_translation_enabled: boolean(false),
             },
