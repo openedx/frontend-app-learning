@@ -35,8 +35,6 @@ describe('Sequence', () => {
       unitNavigationHandler: () => {},
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},
-      toggleNotificationTray: () => {},
-      setNotificationStatus: () => {},
     };
     defaultContextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
   });
@@ -441,27 +439,27 @@ describe('Sequence', () => {
     });
   });
 
-  describe('notification feature', () => {
-    it('renders notification tray in sequence', async () => {
-      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: () => null }} />, { wrapWithRouter: true });
-      waitFor(async () => expect(await screen.findByText('Notifications')).toBeInTheDocument());
+  describe('Upgrade Panel feature', () => {
+    it('renders upgrade panel in sequence', async () => {
+      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'UPGRADE', toggleSidebar: () => null }} />, { wrapWithRouter: true });
+      waitFor(async () => expect(await screen.findByText('Upgrade')).toBeInTheDocument());
     });
 
-    it('handles click on notification tray close button', async () => {
-      const toggleNotificationTray = jest.fn();
-      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'NOTIFICATIONS', toggleSidebar: toggleNotificationTray }} />, { wrapWithRouter: true });
+    it('handles click on upgrade panel close button', async () => {
+      const toggleUpgradePanel = jest.fn();
+      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'UPGRADE', toggleSidebar: toggleUpgradePanel }} />, { wrapWithRouter: true });
       act(async () => {
-        const notificationCloseIconButton = await screen.findByRole('button', { name: /Close notification tray/i });
-        fireEvent.click(notificationCloseIconButton);
-        expect(toggleNotificationTray).toHaveBeenCalled();
+        const upgradeCloseIconButton = await screen.findByRole('button', { name: /Close sidebar/i });
+        fireEvent.click(upgradeCloseIconButton);
+        expect(toggleUpgradePanel).toHaveBeenCalled();
       });
     });
 
-    it('does not render notification tray in sequence by default if in responsive view', async () => {
+    it('does not render upgrade panel in sequence by default if in responsive view', async () => {
       global.innerWidth = breakpoints.medium.maxWidth;
       const { container } = render(<Sequence {...mockData} />, { wrapWithRouter: true });
-      // unable to test the absence of 'Notifications' by finding it by text, using the class of the tray instead:
-      expect(container).not.toHaveClass('notification-tray-container');
+      // unable to test the absence of 'Upgrade' by finding it by text, using the class of the panel instead:
+      expect(container).not.toHaveClass('upgrade-panel-container');
     });
   });
 });

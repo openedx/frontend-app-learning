@@ -2,19 +2,26 @@ import { useContext } from 'react';
 import classNames from 'classnames';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 import SidebarContext from './SidebarContext';
-import { SIDEBAR_ORDER, SIDEBARS } from './sidebars';
 
 const SidebarTriggers = () => {
   const {
     toggleSidebar,
     currentSidebar,
+    availableSidebarIds,
+    SIDEBAR_ORDER,
+    SIDEBARS,
   } = useContext(SidebarContext);
 
-  const isMobileView = useWindowSize().width < breakpoints.small.minWidth;
+  const { width } = useWindowSize();
+  const isMobileView = width < breakpoints.small.minWidth;
+
+  if (!SIDEBAR_ORDER || SIDEBAR_ORDER.length === 0) {
+    return null;
+  }
 
   return (
     <div className="d-flex ml-auto">
-      {SIDEBAR_ORDER.map((sidebarId) => {
+      {SIDEBAR_ORDER.filter(id => availableSidebarIds.includes(id)).map((sidebarId) => {
         const { Trigger } = SIDEBARS[sidebarId];
         const isActive = sidebarId === currentSidebar;
         return (
@@ -23,14 +30,12 @@ const SidebarTriggers = () => {
             style={{ borderBottom: '2px solid', borderColor: isActive ? 'inherit' : 'transparent' }}
             key={sidebarId}
           >
-            <Trigger onClick={() => toggleSidebar(sidebarId)} key={sidebarId} />
+            <Trigger onClick={() => toggleSidebar(sidebarId)} />
           </div>
         );
       })}
     </div>
   );
 };
-
-SidebarTriggers.propTypes = {};
 
 export default SidebarTriggers;

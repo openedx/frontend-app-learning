@@ -10,7 +10,7 @@
     flex-direction: column;
     min-height: 100svh;
   }
-  
+
   main {
     flex-grow: 1;
   }
@@ -90,7 +90,7 @@
   align-items: flex-start;
 }
 
-.notification-btn {
+.sidebar-trigger-btn {
   @media (--pgn-size-breakpoint-max-width-xs) {
     height: 3rem;
   }
@@ -432,16 +432,21 @@
   height: 56px !important;
 }
 
+.icon-container {
+  width: 2.4rem;
+  height: 2rem;
+}
+
 @media (--pgn-size-breakpoint-max-width-xs) {
   .course-outline-tab .pgn__card {
     .pgn__card-header {
       display: block;
-  
+
       .pgn__card-header-content {
         margin-top: 0;
       }
     }
-    
+
     .pgn__card-header-actions {
       margin-left: 0;
     }
@@ -450,8 +455,7 @@
 
 // Import component-specific sass files
 @import "courseware/course/celebration/CelebrationModal.scss";
-@import "courseware/course/sidebar/sidebars/discussions/Discussions.scss";
-@import "courseware/course/sidebar/sidebars/notifications/NotificationIcon.scss";
+@import "widgets/discussions/Discussions.scss";
 @import "shared/streak-celebration/StreakCelebrationModal.scss";
 @import "courseware/course/content-tools/calculator/calculator.scss";
 @import "courseware/course/content-tools/contentTools.scss";

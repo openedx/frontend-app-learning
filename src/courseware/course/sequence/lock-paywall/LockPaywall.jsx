@@ -17,13 +17,13 @@ import {
   UnlockGradedBullet,
   FullAccessBullet,
   SupportMissionBullet,
-} from '../../../../generic/upsell-bullets/UpsellBullets';
+} from '../../../../generic/upgrade-bullets/UpgradeBullets';
 
 const LockPaywall = ({
   courseId,
 }) => {
   const intl = useIntl();
-  const { notificationTrayVisible } = useContext(SidebarContext);
+  const { currentSidebar, availableSidebarIds } = useContext(SidebarContext);
   const course = useModel('coursewareMeta', courseId);
   const {
     accessExpiration,
@@ -35,16 +35,18 @@ const LockPaywall = ({
     org, verifiedMode,
   } = useModel('courseHomeMeta', courseId);
 
-  // the following variables are set and used for resposive layout to work with
-  // whether the NotificationTray is open or not and if there's an offer with longer text
-  const shouldDisplayBulletPointsBelowCertificate = useWindowSize().width <= breakpoints.large.minWidth;
-  const shouldDisplayGatedContentOneColumn = useWindowSize().width <= breakpoints.extraLarge.minWidth
-    && notificationTrayVisible;
-  const shouldDisplayGatedContentTwoColumns = useWindowSize().width < breakpoints.large.minWidth
-    && notificationTrayVisible;
-  const shouldDisplayGatedContentTwoColumnsHalf = useWindowSize().width <= breakpoints.large.minWidth
-    && !notificationTrayVisible;
-  const shouldWrapTextOnButton = useWindowSize().width > breakpoints.extraSmall.minWidth;
+  // the following variables are set and used for responsive layout to work with
+  // whether any sidebar panel is open and if there's an offer with longer text
+  const isSidebarOpen = availableSidebarIds.includes(currentSidebar);
+  const { width: windowWidth } = useWindowSize();
+  const shouldDisplayBulletPointsBelowCertificate = windowWidth <= breakpoints.large.minWidth;
+  const shouldDisplayGatedContentOneColumn = windowWidth <= breakpoints.extraLarge.minWidth
+    && isSidebarOpen;
+  const shouldDisplayGatedContentTwoColumns = windowWidth < breakpoints.large.minWidth
+    && isSidebarOpen;
+  const shouldDisplayGatedContentTwoColumnsHalf = windowWidth <= breakpoints.large.minWidth
+    && !isSidebarOpen;
+  const shouldWrapTextOnButton = windowWidth > breakpoints.extraSmall.minWidth;
 
   const accessExpirationDate = accessExpiration ? new Date(accessExpiration.expirationDate) : null;
   const pastExpirationDeadline = accessExpiration ? new Date(Date.now()) > accessExpirationDate : false;
@@ -96,7 +98,7 @@ const LockPaywall = ({
             </div>
           )}
 
-          <div className={classNames('d-inline-flex flex-row', { 'flex-wrap': notificationTrayVisible || shouldDisplayBulletPointsBelowCertificate })}>
+          <div className={classNames('d-inline-flex flex-row', { 'flex-wrap': isSidebarOpen || shouldDisplayBulletPointsBelowCertificate })}>
             <div style={{ float: 'left' }} className="mr-3 mb-2">
               <img
                 alt={intl.formatMessage(messages['learn.lockPaywall.example.alt'])}
@@ -126,7 +128,7 @@ const LockPaywall = ({
             <div
               className={
                 classNames('d-md-flex align-items-md-center text-right', {
-                  'col-md-5 mx-md-0': notificationTrayVisible, 'col-md-4 mx-md-3 justify-content-center': !notificationTrayVisible && !shouldDisplayGatedContentTwoColumnsHalf, 'col-md-11 justify-content-end': shouldDisplayGatedContentOneColumn && !shouldDisplayGatedContentTwoColumns, 'col-md-6 justify-content-center': shouldDisplayGatedContentTwoColumnsHalf,
+                  'col-md-5 mx-md-0': isSidebarOpen, 'col-md-4 mx-md-3 justify-content-center': !isSidebarOpen && !shouldDisplayGatedContentTwoColumnsHalf, 'col-md-11 justify-content-end': shouldDisplayGatedContentOneColumn && !shouldDisplayGatedContentTwoColumns, 'col-md-6 justify-content-center': shouldDisplayGatedContentTwoColumnsHalf,
                 })
               }
             >

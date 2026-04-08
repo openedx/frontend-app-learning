@@ -41,7 +41,7 @@ const SequenceNavigation = ({
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
 
-  const shouldDisplayNotificationTriggerInSequence = useWindowSize().width < breakpoints.small.minWidth;
+  const isSmallScreen = useWindowSize().width < breakpoints.small.minWidth;
 
   const renderUnitButtons = () => {
     if (isLocked) {
@@ -71,7 +71,7 @@ const SequenceNavigation = ({
       onClick={previousHandler}
       previousLink={previousLink}
       isFirstUnit={isFirstUnit}
-      buttonLabel={shouldDisplayNotificationTriggerInSequence ? null : intl.formatMessage(messages.previousButton)}
+      buttonLabel={isSmallScreen ? null : intl.formatMessage(messages.previousButton)}
     />
   );
 
@@ -82,7 +82,7 @@ const SequenceNavigation = ({
 
     if (isLastUnit && exitText) {
       buttonText = exitText;
-    } else if (!shouldDisplayNotificationTriggerInSequence) {
+    } else if (!isSmallScreen) {
       buttonText = intl.formatMessage(messages.nextButton);
     }
     return navigationDisabledNextSequence || (
@@ -101,7 +101,7 @@ const SequenceNavigation = ({
   };
 
   return sequenceStatus === LOADED ? (
-    <nav id="courseware-sequence-navigation" data-testid="courseware-sequence-navigation" className={classNames('sequence-navigation', className, { 'mr-2': shouldDisplayNotificationTriggerInSequence })}>
+    <nav id="courseware-sequence-navigation" data-testid="courseware-sequence-navigation" className={classNames('sequence-navigation', className, { 'mr-2': isSmallScreen })}>
       {renderPreviousButton()}
       {renderUnitButtons()}
       {renderNextButton()}

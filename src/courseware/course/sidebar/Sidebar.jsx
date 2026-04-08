@@ -1,12 +1,11 @@
 import { useContext } from 'react';
 
 import SidebarContext from './SidebarContext';
-import { SIDEBARS } from './sidebars';
 
 const Sidebar = () => {
-  const { currentSidebar } = useContext(SidebarContext);
+  const { currentSidebar, SIDEBARS } = useContext(SidebarContext);
 
-  if (!currentSidebar || !SIDEBARS[currentSidebar]) {
+  if (!currentSidebar || !SIDEBARS || !SIDEBARS[currentSidebar]) {
     return null;
   }
 
