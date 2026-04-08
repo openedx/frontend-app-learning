@@ -12,13 +12,11 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
   const intl = useIntl();
   const courseId = useContextId();
 
+  const modelData = useModel('progress', courseId);
   const {
-    assignmentTypeGradeSummary,
-    courseGrade: {
-      isPassing,
-      percent,
-    },
-  } = useModel('progress', courseId);
+    assignmentTypeGradeSummary = [],
+    courseGrade: { isPassing, percent } = {},
+  } = modelData || { courseGrade: {} };
 
   const currentGrade = Number((percent * 100).toFixed(0));
 
