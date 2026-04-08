@@ -35,7 +35,6 @@ describe('Sequence', () => {
       unitNavigationHandler: () => {},
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},
-      toggleNotificationTray: () => {},
     };
     defaultContextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
   });

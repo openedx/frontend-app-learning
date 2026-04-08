@@ -63,9 +63,9 @@ describe('Discussions Trigger', () => {
     const clickTrigger = jest.fn();
     renderWithProvider({}, clickTrigger);
 
-    const notificationTrigger = await screen.findByRole('button', { name: /Show discussions tray/i });
-    expect(notificationTrigger).toBeInTheDocument();
-    fireEvent.click(notificationTrigger);
+    const discussionsTrigger = await screen.findByRole('button', { name: /Show discussions tray/i });
+    expect(discussionsTrigger).toBeInTheDocument();
+    fireEvent.click(discussionsTrigger);
     expect(clickTrigger).toHaveBeenCalledTimes(1);
   });
 

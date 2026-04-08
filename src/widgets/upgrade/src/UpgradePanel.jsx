@@ -1,7 +1,7 @@
 import { useIntl } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 import {
-  useContext, useEffect, useMemo, useRef,
+  useContext, useEffect, useMemo,
 } from 'react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -46,8 +46,7 @@ const UpgradePanel = () => {
   const { administrator } = getAuthenticatedUser();
   const activeCourseModes = useMemo(() => courseModes?.map(mode => mode.slug), [courseModes]);
 
-  const eventPropsRef = useRef(null);
-  eventPropsRef.current = {
+  const eventProps = useMemo(() => ({
     course_end: end,
     course_modes: activeCourseModes,
     course_start: start,
@@ -62,10 +61,13 @@ const UpgradePanel = () => {
     verification_status: verificationStatus,
     is_staff: isStaff,
     is_admin: administrator,
-  };
+  }), [
+    end, activeCourseModes, start, courseId, enrollmentEnd, enrollmentMode,
+    enrollmentStart, verifiedMode, org, username, verificationStatus, isStaff, administrator,
+  ]);
 
   useEffect(() => {
-    sendTrackEvent('edx.ui.course.upgrade.sidebar.upgrade.panel', eventPropsRef.current);
+    sendTrackEvent('edx.ui.course.upgrade.sidebar.upgrade.panel', eventProps);
     const timerId = setTimeout(() => onUpgradeWidgetSeen(), 3000);
     return () => clearTimeout(timerId);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional mount-only effect

@@ -11,11 +11,6 @@ const messages = defineMessages({
     defaultMessage: 'Show upgrade panel',
     description: 'Button to open the upgrade panel',
   },
-  closeUpgradeTrigger: {
-    id: 'upgrade.close.button',
-    defaultMessage: 'Close upgrade panel',
-    description: 'Button for the learner to close the upgrade panel',
-  },
   responsiveCloseUpgradePanel: {
     id: 'upgrade.responsive.close.button',
     defaultMessage: 'Back to course',
