@@ -7,6 +7,19 @@ import { MemoryRouter } from 'react-router-dom';
 import SidebarContext from './SidebarContext';
 import SidebarProvider from './SidebarContextProvider';
 
+jest.mock('react-redux', () => ({
+  useDispatch: jest.fn(() => jest.fn()),
+}));
+
+jest.mock('@edx/frontend-platform', () => ({
+  getConfig: jest.fn(() => ({})),
+  ensureConfig: jest.fn(),
+}));
+
+jest.mock('@src/courseware/data/thunks', () => ({
+  getCourseDiscussionTopics: jest.fn(() => ({ type: 'MOCK_ACTION' })),
+}));
+
 jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn(() => null),
 }));

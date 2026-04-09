@@ -7,6 +7,7 @@ import {
   fireEvent, initializeMockApp, initializeTestStore, render, screen,
 } from '@src/setupTest';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
+import { getCourseDiscussionTopics } from '@src/courseware/data/thunks';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsTrigger from './DiscussionsTrigger';
 
@@ -41,6 +42,8 @@ describe('Discussions Trigger', () => {
     );
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
       .reply(200, buildTopicsFromUnits(state.models.units));
+
+    await store.dispatch(getCourseDiscussionTopics(courseId));
   });
 
   const SidebarWrapper = ({ contextValue, onClick }) => (
@@ -63,16 +66,16 @@ describe('Discussions Trigger', () => {
     const clickTrigger = jest.fn();
     renderWithProvider({}, clickTrigger);
 
-    const discussionsTrigger = await screen.findByRole('button', { name: /Show discussions tray/i });
+    const discussionsTrigger = screen.getByRole('button', { name: /Show discussions tray/i });
     expect(discussionsTrigger).toBeInTheDocument();
     fireEvent.click(discussionsTrigger);
     expect(clickTrigger).toHaveBeenCalledTimes(1);
   });
 
-  it('doesn\'t show up if unit has no discussion associated with it', async () => {
+  it('doesn\'t show up if unit has no discussion associated with it', () => {
     const clickTrigger = jest.fn();
     renderWithProvider({ unitId: 'has-no-discussion' }, clickTrigger);
 
-    expect(await screen.queryByRole('button', { name: /Show discussions tray/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Show discussions tray/i })).not.toBeInTheDocument();
   });
 });

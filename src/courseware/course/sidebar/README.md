@@ -24,6 +24,7 @@ Each widget must provide:
   isAvailable: (context) => boolean,  // Optional: check if widget should be shown
   enabled: boolean,                   // Whether widget is enabled
   Provider?: ReactComponent,          // Optional: React Provider for Panel↔Trigger shared state
+  prefetch?: (params) => void,        // Optional: called on mount to preload data into Redux store
 }
 ```
 
@@ -55,12 +56,25 @@ The `isAvailable` function receives a context object with:
 {
   courseId: string,
   unitId: string,
-  course: object,  // Merged coursewareMeta + courseHomeMeta (verifiedMode, enrollmentMode, courseModes, …)
-  unit: object,    // discussionTopics model for the current unit (id, enabledInContext, …)
+  course: object,  // Merged coursewareMeta + courseHomeMeta (verifiedMode, enrollmentMode, courseModes, tabs, …)
 }
 ```
 
-Widgets pick whatever they need from `course` or `unit` — the sidebar makes no assumptions about which fields any given widget requires.
+Widgets pick whatever they need from `course` — the sidebar makes no assumptions about which fields any given widget requires.
+
+### Prefetch
+
+The optional `prefetch` function is called once by `SidebarContextProvider` on mount. It receives:
+
+```javascript
+{
+  courseId: string,
+  course: object,  // Merged coursewareMeta + courseHomeMeta
+  dispatch: Function,  // Redux dispatch
+}
+```
+
+Use this to preload data (e.g., API calls that populate the Redux store) so that your `Sidebar` and `Trigger` components can read from the store without their own side effects.
 
 ## Adding Widgets
 

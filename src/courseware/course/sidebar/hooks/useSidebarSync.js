@@ -19,8 +19,8 @@ import {
  * @param {string} params.courseId - Current course ID
  * @param {string} params.unitId - Current unit ID
  * @param {boolean} params.shouldDisplayFullScreen - Whether in mobile view
- * @param {Function} params.hasUserToggledRef - Ref tracking user manual toggles
- * @param {Function} params.courseOutlineSetByUnitRef - Ref tracking COURSE_OUTLINE auto-set
+ * @param {Object} params.hasUserToggledRef - Ref tracking user manual toggles
+ * @param {Object} params.courseOutlineSetByUnitRef - Ref tracking COURSE_OUTLINE auto-set
  */
 export function useSidebarSync({
   initialSidebar,

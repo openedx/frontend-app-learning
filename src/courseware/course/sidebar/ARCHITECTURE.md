@@ -157,8 +157,10 @@ _Example with built-in widgets:_
 **Responsibilities:**
 - Calculate `initialSidebar` based on available RIGHT sidebar panels
 - Manage `currentSidebar` state (shared by both sidebars)
+- Call `widget.prefetch()` on mount for data preloading
 - Handle unit shift logic for RIGHT sidebar panels
 - Provide context to both left and right sidebar components
+- Wrap children in widget `Provider` components (if defined)
 
 **Key Logic:**
 ```javascript
