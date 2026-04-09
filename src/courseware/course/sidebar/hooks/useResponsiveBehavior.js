@@ -20,7 +20,7 @@ import {
  * @param {Function} params.setCurrentSidebar - Update current sidebar state
  * @param {Function} params.getFirstAvailablePanel - Get first available widget
  * @param {string} params.courseId - Current course ID
- * @param {Function} params.hasUserToggledRef - Ref tracking user manual toggles
+ * @param {Object} params.hasUserToggledRef - Ref tracking user manual toggles
  */
 export function useResponsiveBehavior({
   shouldDisplaySidebarOpen,

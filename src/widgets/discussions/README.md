@@ -8,13 +8,16 @@ Built-in right-sidebar widget that embeds the Discussions MFE in an iframe for t
 |-------|-------|
 | `id` | `DISCUSSIONS` |
 | `priority` | `10` (highest built-in priority) |
-| `isAvailable` | `({ unit }) => !!(unit?.id && unit?.enabledInContext)` |
+| `isAvailable` | `({ course }) => !!(baseUrl && hasDiscussionTab)` |
+| `prefetch` | Dispatches `getCourseDiscussionTopics` when discussion tab exists |
 
 ## Availability
 
-Only shown when the current unit has a discussion topic enabled in context. Both conditions must be true:
-- `topic.id` — a discussion topic exists for the unit
-- `topic.enabledInContext` — discussions are enabled for this context
+The widget is registered as available at **course level** — it appears in the sidebar trigger bar whenever:
+- `DISCUSSIONS_MFE_BASE_URL` is configured
+- The course has a `discussion` tab
+
+At **render time**, the `DiscussionsTrigger` and `DiscussionsSidebar` components additionally check the unit-level discussion topic (`topic?.id && topic?.enabledInContext`). This two-tier approach keeps the trigger visible across the course while gracefully rendering nothing for units without an active discussion topic.
 
 ## Exports
 
@@ -38,3 +41,7 @@ const config = {
   ],
 };
 ```
+
+## Prefetch
+
+The widget defines a `prefetch` function that is called by `SidebarContextProvider` on mount. It dispatches `getCourseDiscussionTopics(courseId)` to preload discussion topic data into the Redux store, so that the `DiscussionsTrigger` and `DiscussionsSidebar` can read per-unit topic availability from the `discussionTopics` model without needing their own data-fetching side effects.
