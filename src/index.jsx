@@ -192,10 +192,8 @@ initialize({
         EXAMS_BASE_URL: process.env.EXAMS_BASE_URL || null,
         PROCTORED_EXAM_FAQ_URL: process.env.PROCTORED_EXAM_FAQ_URL || null,
         PROCTORED_EXAM_RULES_URL: process.env.PROCTORED_EXAM_RULES_URL || null,
-        CHAT_RESPONSE_URL: process.env.CHAT_RESPONSE_URL || null,
         PRIVACY_POLICY_URL: process.env.PRIVACY_POLICY_URL || null,
         SHOW_UNGRADED_ASSIGNMENT_PROGRESS: process.env.SHOW_UNGRADED_ASSIGNMENT_PROGRESS || false,
-        ENABLE_XPERT_AUDIT: process.env.ENABLE_XPERT_AUDIT || false,
       }, 'LearnerAppConfig');
     },
   },
