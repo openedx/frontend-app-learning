@@ -22,6 +22,19 @@ Only shown when the current unit has a discussion topic enabled in context. Both
 |--------|-------------|
 | `discussionsWidgetConfig` | Ready-to-use widget config object |
 | `discussionsIsAvailable` | Availability function, usable standalone for custom configs |
+| `discussionsPrefetch` | Prefetch function that loads discussion topics into the Redux store |
+
+## Data Prefetch
+
+The widget defines a `prefetch` function in its config. The sidebar framework calls this from `SidebarContextProvider` on mount and when course metadata changes, ensuring discussion topics are in the store before `isAvailable` and `DiscussionsTrigger` run:
+
+```javascript
+// Conditions checked before fetching:
+// 1. DISCUSSIONS_MFE_BASE_URL is configured
+// 2. Course has a 'discussion' tab (edxProvider)
+```
+
+The `DiscussionsTrigger` component itself is a pure render component — it reads the `discussionTopics` model but does not dispatch any fetches.
 
 ## Customising Availability
 

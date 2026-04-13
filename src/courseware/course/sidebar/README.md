@@ -22,6 +22,7 @@ Each widget must provide:
   Sidebar: ReactComponent,            // Main panel component
   Trigger: ReactComponent,            // Trigger button component
   isAvailable: (context) => boolean,  // Optional: check if widget should be shown
+  prefetch: ({ courseId, course, dispatch }) => void, // Optional: pre-load data before availability checks
   enabled: boolean,                   // Whether widget is enabled
   Provider?: ReactComponent,          // Optional: React Provider for Panel↔Trigger shared state
 }
@@ -46,6 +47,26 @@ export const myWidgetConfig = {
   enabled: true,
 };
 ```
+
+### The `prefetch` field
+
+An optional function called by `SidebarContextProvider` on mount and when course metadata changes. Use it to dispatch Redux thunks or fetch data that `isAvailable`, `Trigger`, or `Sidebar` depend on. This ensures data is in the store _before_ the framework evaluates widget availability.
+
+```javascript
+export const myWidgetPrefetch = ({ courseId, course, dispatch }) => {
+  if (course?.someCondition) {
+    dispatch(fetchMyWidgetData(courseId));
+  }
+};
+
+export const myWidgetConfig = {
+  id: 'MY_WIDGET',
+  // ...
+  prefetch: myWidgetPrefetch,
+};
+```
+
+The `course` object is a merged view of `coursewareMeta` and `courseHomeMeta` models.
 
 ### Context Object
 
