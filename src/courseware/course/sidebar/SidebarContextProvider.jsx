@@ -85,15 +85,17 @@ const SidebarProvider = ({
   const courseOutlineSetByUnitRef = useRef(null);
   // Track if this is initial page load (to allow data loading switches)
   const isInitialLoadRef = useRef(true);
+  const courseMetaRef = useRef(null);
+  courseMetaRef.current = { ...coursewareMeta, ...courseHomeMeta };
 
-  // Prefetch widget data before availability checks run
+  // Prefetch widget data
   useEffect(() => {
     enabledWidgets.forEach(widget => {
       if (widget.prefetch) {
-        widget.prefetch({ courseId, course: { ...coursewareMeta, ...courseHomeMeta }, dispatch });
+        widget.prefetch({ courseId, course: courseMetaRef.current, dispatch });
       }
     });
-  }, [enabledWidgets, courseId, coursewareMeta, courseHomeMeta, dispatch]);
+  }, [enabledWidgets, courseId, dispatch]);
 
   // Apply unit navigation behavior
   useUnitShiftBehavior({

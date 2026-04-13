@@ -16,7 +16,7 @@ jest.mock('@src/generic/model-store', () => ({
     if (modelType === 'courseHomeMeta') {
       return { tabs: [] };
     }
-    return null;
+    return {};
   }),
 }));
 
@@ -150,7 +150,7 @@ describe('SidebarContextProvider', () => {
 
   describe('Use Case 7: Manual toggle interactions', () => {
     it('UC7a: opens a sidebar panel when none is open', async () => {
-      // Use desktop width so sidebar starts closed (no auto-open)
+      // Use desktop width so the highest-priority available panel auto-opens by default
       jest.requireMock('@openedx/paragon').useWindowSize.mockReturnValue({ width: 1400 });
       renderProvider();
 

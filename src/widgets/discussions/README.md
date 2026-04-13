@@ -26,7 +26,7 @@ Only shown when the current unit has a discussion topic enabled in context. Both
 
 ## Data Prefetch
 
-The widget defines a `prefetch` function in its config. The sidebar framework calls this from `SidebarContextProvider` on mount and when course metadata changes, ensuring discussion topics are in the store before `isAvailable` and `DiscussionsTrigger` run:
+The widget defines a `prefetch` function in its config. The sidebar framework calls this from `SidebarContextProvider` after mount and when course metadata changes to populate or refresh discussion topics in the Redux store. Because this runs from a `useEffect`, initial render-time checks such as `isAvailable` (and initial sidebar computation) may still occur before the prefetch has completed; the framework's sync logic re-evaluates availability once the store updates:
 
 ```javascript
 // Conditions checked before fetching:

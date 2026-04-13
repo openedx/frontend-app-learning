@@ -22,7 +22,7 @@ Each widget must provide:
   Sidebar: ReactComponent,            // Main panel component
   Trigger: ReactComponent,            // Trigger button component
   isAvailable: (context) => boolean,  // Optional: check if widget should be shown
-  prefetch: ({ courseId, course, dispatch }) => void, // Optional: pre-load data before availability checks
+  prefetch: ({ courseId, course, dispatch }) => void, // Optional: pre-load data (runs post-mount; sync logic re-evaluates availability)
   enabled: boolean,                   // Whether widget is enabled
   Provider?: ReactComponent,          // Optional: React Provider for Panel↔Trigger shared state
 }
@@ -50,7 +50,7 @@ export const myWidgetConfig = {
 
 ### The `prefetch` field
 
-An optional function called by `SidebarContextProvider` on mount and when course metadata changes. Use it to dispatch Redux thunks or fetch data that `isAvailable`, `Trigger`, or `Sidebar` depend on. This ensures data is in the store _before_ the framework evaluates widget availability.
+An optional function called by `SidebarContextProvider` after mount (and when `courseId` or the widget list changes). Use it to dispatch Redux thunks or fetch data that `isAvailable`, `Trigger`, or `Sidebar` depend on. The `course` argument always reflects the latest `coursewareMeta` + `courseHomeMeta` values at the time the effect fires. Because this runs post-mount, it does not guarantee the data is present for the initial render-time availability check; widgets that depend on prefetched data may become available after the store updates and the framework sync logic re-evaluates availability.
 
 ```javascript
 export const myWidgetPrefetch = ({ courseId, course, dispatch }) => {

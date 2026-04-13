@@ -151,7 +151,9 @@ The system always follows priority cascade logic:
 │  │ Effects:                                      │  │
 │  │  0. Prefetch Effect                           │  │
 │  │     - Calls widget.prefetch() for each widget │  │
-│  │     - Loads data before availability checks   │  │
+│  │     - Runs post-mount to warm widget data     │  │
+│  │     - Influences subsequent availability/sync │  │
+│  │       behavior                                │  │
 │  │                                               │  │
 │  │  1. Unit Shift Effect                         │  │
 │  │     - Manages transitions on navigation       │  │
