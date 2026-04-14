@@ -159,6 +159,32 @@ _Example with built-in widgets:_
 - Manage `currentSidebar` state (shared by both sidebars)
 - Handle unit shift logic for RIGHT sidebar panels
 - Provide context to both left and right sidebar components
+- **Prefetch widget data** after mount via `widget.prefetch` (sync logic re-evaluates availability once data arrives)
+
+### Widget Prefetch Lifecycle
+
+Widgets can define a `prefetch` function in their config to pre-load data that their `isAvailable` or render logic depends on. The framework calls `prefetch` for every enabled widget on mount (and when `courseId` or the widget list changes):
+
+```javascript
+// In SidebarContextProvider.jsx
+const courseMetaRef = useRef(null);
+courseMetaRef.current = { ...coursewareMeta, ...courseHomeMeta };
+
+useEffect(() => {
+  enabledWidgets.forEach(widget => {
+    if (widget.prefetch) {
+      widget.prefetch({ courseId, course: courseMetaRef.current, dispatch });
+    }
+  });
+}, [enabledWidgets, courseId, dispatch]);
+```
+
+`courseMetaRef` is updated on every render so the effect always reads the latest `coursewareMeta` + `courseHomeMeta` values without `coursewareMeta`/`courseHomeMeta` being reactive dependencies. This means the effect fires once per `courseId` change rather than on every model reference update.
+
+**Why prefetch lives in the provider, not in individual components:**
+- Dispatches data loading post-mount so the sync logic can re-evaluate availability once the store updates
+- Individual Trigger/Sidebar components can remain pure render components
+- Centralises fetch orchestration in one place
 
 **Key Logic:**
 ```javascript

@@ -149,6 +149,12 @@ The system always follows priority cascade logic:
 │                                                     │
 │  ┌───────────────────────────────────────────────┐  │
 │  │ Effects:                                      │  │
+│  │  0. Prefetch Effect                           │  │
+│  │     - Calls widget.prefetch() for each widget │  │
+│  │     - Runs post-mount to warm widget data     │  │
+│  │     - Influences subsequent availability/sync │  │
+│  │       behavior                                │  │
+│  │                                               │  │
 │  │  1. Unit Shift Effect                         │  │
 │  │     - Manages transitions on navigation       │  │
 │  │     - 3 cases: COURSE_OUTLINE / No panels /   │  │

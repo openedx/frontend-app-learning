@@ -7,8 +7,17 @@ import { MemoryRouter } from 'react-router-dom';
 import SidebarContext from './SidebarContext';
 import SidebarProvider from './SidebarContextProvider';
 
+jest.mock('react-redux', () => ({
+  useDispatch: jest.fn(() => jest.fn()),
+}));
+
 jest.mock('@src/generic/model-store', () => ({
-  useModel: jest.fn(() => null),
+  useModel: jest.fn((modelType) => {
+    if (modelType === 'courseHomeMeta') {
+      return { tabs: [] };
+    }
+    return {};
+  }),
 }));
 
 jest.mock('@openedx/paragon', () => {
@@ -141,25 +150,35 @@ describe('SidebarContextProvider', () => {
 
   describe('Use Case 7: Manual toggle interactions', () => {
     it('UC7a: opens a sidebar panel when none is open', async () => {
+      // Use desktop width so the highest-priority available panel auto-opens by default
+      jest.requireMock('@openedx/paragon').useWindowSize.mockReturnValue({ width: 1400 });
       renderProvider();
 
-      expect(screen.getByTestId('current-sidebar').textContent).toBe('null');
+      expect(screen.getByTestId('current-sidebar').textContent).toBe('DISCUSSIONS');
+      // Toggle off, then toggle a different panel on
       await act(async () => {
         fireEvent.click(screen.getByTestId('toggle-discussions'));
       });
-      expect(screen.getByTestId('current-sidebar').textContent).toBe('DISCUSSIONS');
+      expect(screen.getByTestId('current-sidebar').textContent).toBe('null');
+      await act(async () => {
+        fireEvent.click(screen.getByTestId('toggle-notes'));
+      });
+      expect(screen.getByTestId('current-sidebar').textContent).toBe('NOTES');
     });
 
     it('UC7b: closes the currently open panel when the same trigger is clicked', async () => {
       renderProvider();
 
-      // First click: open
+      // Mobile starts with no panel open
+      expect(screen.getByTestId('current-sidebar').textContent).toBe('null');
+
+      // Open DISCUSSIONS
       await act(async () => {
         fireEvent.click(screen.getByTestId('toggle-discussions'));
       });
       expect(screen.getByTestId('current-sidebar').textContent).toBe('DISCUSSIONS');
 
-      // Second click same panel: close
+      // Click same panel again: close
       await act(async () => {
         fireEvent.click(screen.getByTestId('toggle-discussions'));
       });
@@ -169,7 +188,7 @@ describe('SidebarContextProvider', () => {
     it('UC7c: switches to a different panel when a different trigger is clicked', async () => {
       renderProvider();
 
-      // Open DISCUSSIONS
+      // Mobile starts with no panel open, open DISCUSSIONS first
       await act(async () => {
         fireEvent.click(screen.getByTestId('toggle-discussions'));
       });
@@ -186,19 +205,22 @@ describe('SidebarContextProvider', () => {
       const { setSidebarId } = jest.requireMock('./utils/storage');
       renderProvider();
 
+      // Mobile starts closed, toggle to NOTES
       await act(async () => {
-        fireEvent.click(screen.getByTestId('toggle-discussions'));
+        fireEvent.click(screen.getByTestId('toggle-notes'));
       });
-      expect(setSidebarId).toHaveBeenCalledWith(courseId, 'DISCUSSIONS');
+      expect(setSidebarId).toHaveBeenCalledWith(courseId, 'NOTES');
     });
 
     it('UC7e: persists null to localStorage when closing the open panel', async () => {
       const { setSidebarId } = jest.requireMock('./utils/storage');
       renderProvider();
 
+      // Open DISCUSSIONS first
       await act(async () => {
         fireEvent.click(screen.getByTestId('toggle-discussions'));
       });
+      // Close it
       await act(async () => {
         fireEvent.click(screen.getByTestId('toggle-discussions'));
       });
