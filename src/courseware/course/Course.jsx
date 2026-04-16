@@ -10,7 +10,8 @@ import { AlertList } from '@src/generic/user-messages';
 import { useModel } from '@src/generic/model-store';
 import { LearnerToolsSlot } from '../../plugin-slots/LearnerToolsSlot';
 import SidebarProvider from './sidebar/SidebarContextProvider';
-import { RightSidebarTriggerSlot } from '../../plugin-slots/RightSidebarTriggerSlot';
+import NewSidebarProvider from './new-sidebar/SidebarContextProvider';
+import { NotificationsDiscussionsSidebarTriggerSlot } from '../../plugin-slots/NotificationsDiscussionsSidebarTriggerSlot';
 import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
 import ContentTools from './content-tools';
 import Sequence from './sequence';
@@ -30,6 +31,7 @@ const Course = ({
   const {
     celebrations,
     isStaff,
+    isNewDiscussionSidebarViewEnabled,
     originalUserIsStaff,
   } = useModel('courseHomeMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
@@ -71,8 +73,10 @@ const Course = ({
     ));
   }, [sequenceId]);
 
+  const SidebarProviderComponent = isNewDiscussionSidebarViewEnabled ? NewSidebarProvider : SidebarProvider;
+
   return (
-    <SidebarProvider courseId={courseId} unitId={unitId}>
+    <SidebarProviderComponent courseId={courseId} unitId={unitId}>
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
@@ -94,7 +98,7 @@ const Course = ({
         )}
         <div className="w-100 d-flex align-items-center">
           <CourseOutlineMobileSidebarTriggerSlot />
-          <RightSidebarTriggerSlot courseId={courseId} />
+          <NotificationsDiscussionsSidebarTriggerSlot courseId={courseId} />
         </div>
       </div>
 
@@ -119,7 +123,7 @@ const Course = ({
         onClose={() => setWeeklyGoalCelebrationOpen(false)}
       />
       <ContentTools course={course} />
-    </SidebarProvider>
+    </SidebarProviderComponent>
   );
 };
 

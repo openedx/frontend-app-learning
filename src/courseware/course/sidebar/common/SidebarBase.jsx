@@ -56,28 +56,30 @@ const SidebarBase = ({
         >
           <Icon src={ArrowBackIos} />
           <span className="font-weight-bold m-2 d-inline-block">
-            {intl.formatMessage(messages.responsiveCloseSidebarPanel)}
+            {intl.formatMessage(messages.responsiveCloseNotificationTray)}
           </span>
         </div>
       ) : null}
       {showTitleBar && (
-        <div className="d-flex align-items-center mb-2">
-          <strong className="p-2.5 d-inline-block course-sidebar-title">{title}</strong>
-          {shouldDisplayFullScreen
-            ? null
-            : (
-              <div className="d-inline-flex mr-2 ml-auto">
-                <IconButton
-                  src={Close}
-                  size="sm"
-                  iconAs={Icon}
-                  onClick={() => toggleSidebar(null)}
-                  variant="primary"
-                  alt={intl.formatMessage(messages.closeSidebarTrigger)}
-                />
-              </div>
-            )}
-        </div>
+        <>
+          <div className="d-flex align-items-center mb-2">
+            <strong className="p-2.5 d-inline-block course-sidebar-title">{title}</strong>
+            {shouldDisplayFullScreen
+              ? null
+              : (
+                <div className="d-inline-flex mr-2 ml-auto">
+                  <IconButton
+                    src={Close}
+                    size="sm"
+                    iconAs={Icon}
+                    onClick={() => toggleSidebar(null)}
+                    variant="primary"
+                    alt={intl.formatMessage(messages.closeNotificationTrigger)}
+                  />
+                </div>
+              )}
+          </div>
+        </>
       )}
       {children}
     </section>

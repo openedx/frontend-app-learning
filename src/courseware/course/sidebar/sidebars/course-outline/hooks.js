@@ -9,6 +9,8 @@ import { breakpoints } from '@openedx/paragon';
 import { useModel } from '@src/generic/model-store';
 import { LOADED } from '@src/constants';
 import { checkBlockCompletion, getCourseOutlineStructure } from '@src/courseware/data/thunks';
+import OldSidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import NewSidebarContext from '@src/courseware/course/new-sidebar/SidebarContext';
 import {
   getCoursewareOutlineSidebarSettings,
   getCourseOutlineShouldUpdate,
@@ -17,13 +19,12 @@ import {
   getCourseOutline,
   getSequenceStatus,
 } from '@src/courseware/data/selectors';
-import SidebarContext from '../../SidebarContext';
-import { setOutlineSidebarCollapsed } from '../../utils/storage';
 import { ID } from './constants';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
   const dispatch = useDispatch();
+  const isCollapsedOutlineSidebar = window.sessionStorage.getItem('hideCourseOutlineSidebar');
   const {
     enableCompletionTracking: isEnabledCompletionTracking,
   } = useSelector(getCoursewareOutlineSidebarSettings);
@@ -35,16 +36,18 @@ export const useCourseOutlineSidebar = () => {
 
   const { courseId } = useParams();
   const course = useModel('coursewareMeta', courseId);
+  const { isNewDiscussionSidebarViewEnabled } = useModel('courseHomeMeta', courseId);
+  const SidebarContext = isNewDiscussionSidebarViewEnabled ? NewSidebarContext : OldSidebarContext;
 
   const {
     unitId,
+    initialSidebar,
     currentSidebar,
     toggleSidebar,
     shouldDisplayFullScreen,
   } = useContext(SidebarContext);
 
-  // Course outline state is now fully controlled by SidebarContextProvider
-  // This component only renders when currentSidebar === 'COURSE_OUTLINE'
+  const isOpenSidebar = !initialSidebar && !isCollapsedOutlineSidebar;
   const [isOpen, setIsOpen] = useState(true);
 
   const {
@@ -55,7 +58,7 @@ export const useCourseOutlineSidebar = () => {
 
   const collapseSidebar = () => {
     toggleSidebar(null);
-    setOutlineSidebarCollapsed(true);
+    window.sessionStorage.setItem('hideCourseOutlineSidebar', 'true');
   };
 
   const handleToggleCollapse = () => {
@@ -63,7 +66,8 @@ export const useCourseOutlineSidebar = () => {
       collapseSidebar();
     } else {
       toggleSidebar(ID);
-      setOutlineSidebarCollapsed(false);
+      window.sessionStorage.removeItem('hideCourseOutlineSidebar');
+      window.sessionStorage.setItem(`notificationTrayStatus.${courseId}`, 'closed');
     }
   };
 
@@ -98,7 +102,12 @@ export const useCourseOutlineSidebar = () => {
     }
   };
 
-  // Load course outline structure when needed
+  useEffect(() => {
+    if (isOpenSidebar && currentSidebar !== ID) {
+      toggleSidebar(ID);
+    }
+  }, [initialSidebar, unitId]);
+
   useEffect(() => {
     if (courseOutlineStatus !== LOADED || courseOutlineShouldUpdate) {
       dispatch(getCourseOutlineStructure(courseId));
@@ -118,7 +127,7 @@ export const useCourseOutlineSidebar = () => {
     return () => {
       global.removeEventListener('resize', handleResize);
     };
-  }, [currentSidebar]);
+  }, [isOpen]);
 
   return {
     courseId,

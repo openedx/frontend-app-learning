@@ -12,7 +12,7 @@ import {
 const SequenceNavigationTabs = ({
   unitIds, unitId, showCompletion, onNavigate,
 }) => {
-  const isSidebarOpen = useIsSidebarOpen();
+  const isSidebarOpen = useIsSidebarOpen(unitId);
   const [
     indexOfLastVisibleChild,
     containerRef,
