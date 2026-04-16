@@ -1,9 +1,8 @@
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import {
-  useState, useMemo, useCallback, useRef, useEffect,
+  useState, useMemo, useCallback, useRef,
 } from 'react';
-import { useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
 import { useModel } from '@src/generic/model-store';
@@ -32,7 +31,6 @@ const SidebarProvider = ({
   const courseHomeMeta = useModel('courseHomeMeta', courseId);
   const coursewareMeta = useModel('coursewareMeta', courseId);
   const unit = useModel('discussionTopics', unitId);
-  const dispatch = useDispatch();
   const { width } = useWindowSize();
   const shouldDisplayFullScreen = width < breakpoints.extraLarge.minWidth;
   const shouldDisplaySidebarOpen = width > breakpoints.extraLarge.minWidth;
@@ -85,17 +83,6 @@ const SidebarProvider = ({
   const courseOutlineSetByUnitRef = useRef(null);
   // Track if this is initial page load (to allow data loading switches)
   const isInitialLoadRef = useRef(true);
-  const courseMetaRef = useRef(null);
-  courseMetaRef.current = { ...coursewareMeta, ...courseHomeMeta };
-
-  // Prefetch widget data
-  useEffect(() => {
-    enabledWidgets.forEach(widget => {
-      if (widget.prefetch) {
-        widget.prefetch({ courseId, course: courseMetaRef.current, dispatch });
-      }
-    });
-  }, [enabledWidgets, courseId, dispatch]);
 
   // Apply unit navigation behavior
   useUnitShiftBehavior({
