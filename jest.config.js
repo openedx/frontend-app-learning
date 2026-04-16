@@ -24,20 +24,16 @@ const config = createConfig('jest', {
 
 // delete config.testURL;
 
-config.reporters = [...(config.reporters || []), ["jest-console-group-reporter", {
-  // change this setting if need to see less details for each test
-  // reportType: "summary" | "details",
-  // enable: true | false,
-  afterEachTest: {
-    enable: true,
-    filePaths: false,
-    reportType: "details",
-  },
-  afterAllTests: {
-    reportType: "summary",
-    enable: true,
-    filePaths: true,
-  },
-}]];
+// NOTE: jest-console-group-reporter@1.1.1 uses @jest/reporters@^30 internally
+// (via its peer dep resolution) but this project runs Jest 29, whose globalConfig
+// uses testPathPattern (string) not testPathPatterns (object). When any worker
+// exits uncleanly the reporter's SummaryReporter.onRunComplete crashes with
+// "Cannot read properties of undefined (reading 'isSet')", causing a non-zero
+// exit code even when all tests pass. Disabled until the package is updated for
+// Jest 29/30 compatibility.
+// config.reporters = [...(config.reporters || []), ["jest-console-group-reporter", {
+//   afterEachTest: { enable: true, filePaths: false, reportType: "details" },
+//   afterAllTests: { reportType: "summary", enable: true, filePaths: true },
+// }]];
 
 module.exports = config;
