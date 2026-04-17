@@ -28,3 +28,5 @@ module.config.js
 .env.private
 
 src/i18n/messages/
+
+env.config.jsx

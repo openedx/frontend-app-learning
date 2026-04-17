@@ -25,6 +25,17 @@ jest.mock('@src/widgets/discussions/widgetConfig', () => ({
   },
 }));
 
+jest.mock('@src/widgets/upgrade/src/widgetConfig', () => ({
+  upgradeWidgetConfig: {
+    id: 'UPGRADE',
+    priority: 20,
+    Sidebar: () => null,
+    Trigger: () => <button type="button" data-testid="trigger-UPGRADE">Upgrade</button>,
+    isAvailable: jest.fn(),
+    enabled: true,
+  },
+}));
+
 const mockToggleSidebar = jest.fn();
 // eslint-disable-next-line react/prop-types
 const MockTriggerA = ({ onClick }) => (

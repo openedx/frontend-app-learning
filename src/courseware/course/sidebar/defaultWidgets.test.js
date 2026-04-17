@@ -114,6 +114,36 @@ describe('defaultWidgets', () => {
       getConfig.mockReturnValue({});
       expect(() => getEnabledWidgets()).not.toThrow();
     });
+
+    it('gives priority to platform default widgets over external widgets with the same id', () => {
+      // Simulate a platform default and an external widget with the same id
+      getConfig.mockReturnValue({
+        SIDEBAR_WIDGETS: [{
+          id: 'DISCUSSIONS',
+          priority: 99,
+          Sidebar: () => 'External',
+          Trigger: () => null,
+          enabled: true,
+        }],
+      });
+      const widgets = getEnabledWidgets();
+      // Only the platform default should be present
+      expect(widgets.filter(w => w.id === 'DISCUSSIONS')).toHaveLength(1);
+      // It should be the platform default, not the external one
+      expect(widgets.find(w => w.id === 'DISCUSSIONS').priority).toBe(10);
+    });
+
+    it('removes a platform default if an external widget with the same id sets enabled: false', () => {
+      getConfig.mockReturnValue({
+        SIDEBAR_WIDGETS: [{
+          id: 'DISCUSSIONS',
+          enabled: false,
+        }],
+      });
+      const widgets = getEnabledWidgets();
+      // The default should be removed
+      expect(widgets.some(w => w.id === 'DISCUSSIONS')).toBe(false);
+    });
   });
 
   describe('buildSidebarsRegistry', () => {
