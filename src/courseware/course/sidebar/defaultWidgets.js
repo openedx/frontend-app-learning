@@ -16,13 +16,22 @@ export const DEFAULT_WIDGETS = [
  * @returns {Array} Array of widget configurations
  */
 export function getEnabledWidgets() {
-  const widgets = [...DEFAULT_WIDGETS].filter(widget => widget.enabled);
+  const externalWidgets = getConfig()[WIDGET_CONFIG.EXTERNAL_WIDGETS_KEY] || [];
+  const disabledIds = new Set(
+    externalWidgets.filter(w => w.enabled === false).map(w => w.id),
+  );
+  const defaultIds = new Set(DEFAULT_WIDGETS.map(w => w.id));
 
-  // Add external widgets from config if any; respect their enabled flag same as built-ins
-  const externalWidgets = (getConfig()[WIDGET_CONFIG.EXTERNAL_WIDGETS_KEY] || []).filter(w => w.enabled !== false);
-  widgets.push(...externalWidgets);
+  const widgets = [...DEFAULT_WIDGETS].filter(
+    widget => widget.enabled && !disabledIds.has(widget.id),
+  );
 
-  // Sort by priority (lower number = higher priority)
+  widgets.push(
+    ...externalWidgets.filter(
+      w => w.enabled !== false && !defaultIds.has(w.id),
+    ),
+  );
+
   return widgets.sort(
     (a, b) => (a.priority || WIDGET_PRIORITIES.DEFAULT)
       - (b.priority || WIDGET_PRIORITIES.DEFAULT),

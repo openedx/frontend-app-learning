@@ -13,7 +13,7 @@
 * [`org.openedx.frontend.learning.gated_unit_content_message.v1`](./GatedUnitContentMessageSlot/)
 * [`org.openedx.frontend.learning.learner_tools.v1`](./LearnerToolsSlot/)
 * [`org.openedx.frontend.learning.next_unit_top_nav_trigger.v1`](./NextUnitTopNavTriggerSlot/)
-* [`org.openedx.frontend.learning.notification_tray.v1`](./NotificationTraySlot/)
+* ~~`org.openedx.frontend.learning.notification_tray.v1`~~ _(removed; aliased to the upgrade panel — see [ADR 0010](../docs/decisions/0010-upgrade-widget-extraction.md) and [upgrade-widget-migration.md](../docs/upgrade-widget-migration.md))_
 * [`org.openedx.frontend.learning.right_sidebar_trigger.v1`](./RightSidebarTriggerSlot/)
 * [`org.openedx.frontend.learning.right_sidebar.v1`](./RightSidebarSlot/)
 * [`org.openedx.frontend.learning.progress_certificate_status.v1`](./ProgressCertificateStatusSlot/)

@@ -65,6 +65,13 @@ export const ALLOW_UPSELL_MODES = [
 export const WIDGETS = {
   DISCUSSIONS: 'DISCUSSIONS',
   COURSE_OUTLINE: 'COURSE_OUTLINE',
+  /**
+   * @deprecated since ADR 0010. The widget was renamed from 'Notifications' to 'Upgrade'.
+   * This alias maps to the current widget ID 'UPGRADE' so that legacy checks
+   * `currentSidebar === WIDGETS.NOTIFICATIONS` continue to resolve correctly.
+   * Use the upgrade widget's `ID` constant directly for new code.
+   */
+  NOTIFICATIONS: 'UPGRADE',
 } as const satisfies Readonly<{ [k: string]: string }>;
 
 export const LOADING = 'loading';
