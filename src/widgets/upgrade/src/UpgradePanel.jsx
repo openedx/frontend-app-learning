@@ -88,11 +88,14 @@ const UpgradePanel = () => {
         {verifiedMode ? (
           <PluginSlot
             id="org.openedx.frontend.learning.upgrade_panel.v1"
+            idAliases={['org.openedx.frontend.learning.notification_tray.v1', 'notification_tray_slot']}
             pluginProps={{
               courseId,
               model: 'coursewareMeta',
               upgradeCurrentState,
               setUpgradeCurrentState,
+              notificationCurrentState: upgradeCurrentState,
+              setNotificationCurrentState: setUpgradeCurrentState,
             }}
           />
         ) : (

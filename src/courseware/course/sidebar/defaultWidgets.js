@@ -1,5 +1,6 @@
 import { getConfig } from '@edx/frontend-platform';
 import { discussionsWidgetConfig } from '@src/widgets/discussions/widgetConfig';
+import { upgradeWidgetConfig } from '@src/widgets/upgrade/src/widgetConfig';
 import { WIDGET_PRIORITIES, WIDGET_CONFIG } from './constants';
 
 /**
@@ -7,6 +8,7 @@ import { WIDGET_PRIORITIES, WIDGET_CONFIG } from './constants';
  */
 export const DEFAULT_WIDGETS = [
   discussionsWidgetConfig,
+  upgradeWidgetConfig,
 ];
 
 /**
