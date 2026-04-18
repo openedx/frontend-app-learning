@@ -32,12 +32,12 @@
     "url": "https://github.com/openedx/frontend-app-learning/issues"
   },
   "dependencies": {
-    "@edx/brand": "npm:@openedx/brand-openedx@^1.2.2",
+    "@edx/brand": "npm:@openedx/brand-openedx@^2.0.0",
     "@edx/browserslist-config": "1.5.1",
     "@edx/frontend-component-footer": "^14.6.0",
     "@edx/frontend-component-header": "^8.0.0",
     "@edx/frontend-lib-special-exams": "^4.0.0",
-    "@edx/frontend-platform": "^8.4.0",
+    "@edx/frontend-platform": "^8.7.0",
     "@edx/openedx-atlas": "^0.7.0",
     "@fortawesome/free-brands-svg-icons": "5.15.4",
     "@fortawesome/free-regular-svg-icons": "5.15.4",
@@ -72,7 +72,7 @@
     "truncate-html": "1.0.4"
   },
   "devDependencies": {
-    "@openedx/frontend-build": "^14.6.2",
+    "@openedx/frontend-build": "^14.6.6",
     "@pact-foundation/pact": "^13.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
@@ -80,7 +80,6 @@
     "axios-mock-adapter": "2.1.0",
     "bundlewatch": "^0.4.0",
     "eslint-import-resolver-webpack": "^0.13.9",
-    "jest-console-group-reporter": "^1.1.1",
     "jest-when": "^3.6.0",
     "rosie": "2.1.1",
     "ts-jest": "29.1.4"

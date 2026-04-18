@@ -1,6 +1,6 @@
 const { createConfig } = require('@openedx/frontend-build');
 
-const config = createConfig('jest', {
+const mergedConfig = createConfig('jest', {
   setupFilesAfterEnv: [
     '<rootDir>/src/setupTest.js',
   ],
@@ -22,18 +22,15 @@ const config = createConfig('jest', {
   testEnvironment: 'jsdom',
 });
 
-// delete config.testURL;
+// Limit ts-jest diagnostics to test files so type errors in transformed
+// dependencies (included via transformIgnorePatterns) don't fail the run.
+mergedConfig.transform['^.+\\.[tj]sx?$'] = [
+  'ts-jest',
+  {
+    diagnostics: {
+      exclude: ['!**/*.test.*'],
+    },
+  },
+];
 
-// NOTE: jest-console-group-reporter@1.1.1 uses @jest/reporters@^30 internally
-// (via its peer dep resolution) but this project runs Jest 29, whose globalConfig
-// uses testPathPattern (string) not testPathPatterns (object). When any worker
-// exits uncleanly the reporter's SummaryReporter.onRunComplete crashes with
-// "Cannot read properties of undefined (reading 'isSet')", causing a non-zero
-// exit code even when all tests pass. Disabled until the package is updated for
-// Jest 29/30 compatibility.
-// config.reporters = [...(config.reporters || []), ["jest-console-group-reporter", {
-//   afterEachTest: { enable: true, filePaths: false, reportType: "details" },
-//   afterAllTests: { reportType: "summary", enable: true, filePaths: true },
-// }]];
-
-module.exports = config;
+module.exports = mergedConfig;
