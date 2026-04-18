@@ -11,7 +11,7 @@ jest.mock('@edx/frontend-platform', () => ({
   ...jest.requireActual('@edx/frontend-platform'),
   getConfig: jest.fn(),
 }));
-getConfig.mockImplementation(() => originalConfig);
+(getConfig as jest.Mock).mockImplementation(() => originalConfig);
 
 describe('Masquerade Widget Dropdown', () => {
   let courseware;

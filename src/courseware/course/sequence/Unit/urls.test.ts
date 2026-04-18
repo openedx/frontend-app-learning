@@ -5,7 +5,7 @@ jest.mock('@edx/frontend-platform', () => ({
   getConfig: jest.fn(),
 }));
 const config = { LMS_BASE_URL: 'https://test-lms-url' };
-getConfig.mockReturnValue(config);
+(getConfig as jest.Mock).mockReturnValue(config);
 
 const props = {
   id: 'test-id',
