@@ -24,12 +24,12 @@ describe('Tab Page', () => {
   });
 
   it('displays loading message', () => {
-    render(<TabPage {...mockData} courseStatus="loading" />);
+    render(<TabPage {...mockData} courseStatus="loading" />, { wrapWithRouter: true });
     expect(screen.getByText('Loading course page…')).toBeInTheDocument();
   });
 
   it('displays loading failure message', () => {
-    render(<TabPage {...mockData} courseStatus="other" />);
+    render(<TabPage {...mockData} courseStatus="other" />, { wrapWithRouter: true });
     expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
   });
 
@@ -41,7 +41,7 @@ describe('Tab Page', () => {
       type: 'course-home/fetchTabFailure',
       payload: { courseId: 'test-course', errorMessage: customErrorMessage, errorCode: 'not_visible_in_catalog' },
     });
-    render(<TabPage {...mockData} courseStatus="failed" />, { store: testStore });
+    render(<TabPage {...mockData} courseStatus="failed" />, { store: testStore, wrapWithRouter: true });
     expect(screen.getByText(customErrorMessage)).toBeInTheDocument();
     expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
   });
@@ -54,7 +54,7 @@ describe('Tab Page', () => {
       type: 'courseware/fetchCourseFailure',
       payload: { courseId: 'test-course', errorMessage: customErrorMessage, errorCode: 'not_visible_in_catalog' },
     });
-    render(<TabPage {...mockData} courseStatus="failed" />, { store: testStore });
+    render(<TabPage {...mockData} courseStatus="failed" />, { store: testStore, wrapWithRouter: true });
     expect(screen.getByText(customErrorMessage)).toBeInTheDocument();
     expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
   });
@@ -65,13 +65,13 @@ describe('Tab Page', () => {
       type: 'course-home/fetchTabFailure',
       payload: { courseId: 'test-course' },
     });
-    render(<TabPage {...mockData} courseStatus="failed" />, { store: testStore });
+    render(<TabPage {...mockData} courseStatus="failed" />, { store: testStore, wrapWithRouter: true });
     expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
   });
 
   it('displays Learning Toast', async () => {
     const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
-    render(<TabPage {...mockData} />, { store: testStore });
+    render(<TabPage {...mockData} />, { store: testStore, wrapWithRouter: true });
 
     const resetUrl = `${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`;
     const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
@@ -94,7 +94,7 @@ describe('Tab Page', () => {
   });
 
   it('displays Loaded Tab Page', () => {
-    render(<TabPage {...mockData} />);
+    render(<TabPage {...mockData} />, { wrapWithRouter: true });
     expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
   });
 });
