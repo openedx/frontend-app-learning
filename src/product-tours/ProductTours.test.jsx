@@ -60,7 +60,7 @@ describe('Course Home Tours', () => {
   async function fetchAndRender() {
     await executeThunk(courseHomeThunks.fetchOutlineTab(courseId), store.dispatch);
     render(
-      <LoadedTabPage courseId={courseId} activeTabSlug="outline">
+      <LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">
         <OutlineTab />
       </LoadedTabPage>,
       { store, wrapWithRouter: true },
