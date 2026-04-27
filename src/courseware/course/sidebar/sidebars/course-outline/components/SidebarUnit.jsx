@@ -15,15 +15,21 @@ const SidebarUnit = ({
   isActive,
   isLocked,
   activeUnitId,
+  showOutlineEstimatedTime,
 }) => {
   const intl = useIntl();
   const {
     complete,
     title,
     icon = UNIT_ICON_TYPES.other,
+    effortTime,
+    estimatedTimeMinutes,
   } = unit;
 
   const iconType = isLocked ? UNIT_ICON_TYPES.lock : icon;
+  const minuteCount = typeof effortTime === 'number'
+    ? Math.ceil(effortTime / 60)
+    : (typeof estimatedTimeMinutes === 'number' ? Math.ceil(estimatedTimeMinutes) : 0);
 
   return (
     <li className={classNames({ 'bg-info-100': isActive, 'border-top border-light': !isFirst })}>
@@ -41,6 +47,11 @@ const SidebarUnit = ({
         <div className="col-10 p-0 ml-3 text-break">
           <span className="align-middle">
             {title}
+            {showOutlineEstimatedTime && minuteCount > 0 && (
+              <span className="small text-gray-500 font-weight-normal ml-2">
+                {intl.formatMessage(messages.estimatedTimeMinutesAbbreviated, { minuteCount })}
+              </span>
+            )}
           </span>
           <span className="sr-only">
             , {intl.formatMessage(complete ? messages.completedUnit : messages.incompleteUnit)}
@@ -56,6 +67,8 @@ SidebarUnit.propTypes = {
   isFirst: PropTypes.bool.isRequired,
   unit: PropTypes.shape({
     complete: PropTypes.bool,
+    estimatedTimeMinutes: PropTypes.number,
+    effortTime: PropTypes.number,
     icon: PropTypes.string,
     id: PropTypes.string,
     title: PropTypes.string,
@@ -66,6 +79,11 @@ SidebarUnit.propTypes = {
   courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string.isRequired,
   activeUnitId: PropTypes.string.isRequired,
+  showOutlineEstimatedTime: PropTypes.bool,
+};
+
+SidebarUnit.defaultProps = {
+  showOutlineEstimatedTime: true,
 };
 
 export default SidebarUnit;

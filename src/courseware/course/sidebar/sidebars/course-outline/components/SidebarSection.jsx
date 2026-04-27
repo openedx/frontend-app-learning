@@ -7,8 +7,9 @@ import { ChevronRight as ChevronRightIcon } from '@openedx/paragon/icons';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import CompletionIcon from './CompletionIcon';
 import { useCourseOutlineSidebar } from '../hooks';
+import messages from '../messages';
 
-const SidebarSection = ({ section, handleSelectSection }) => {
+const SidebarSection = ({ section, handleSelectSection, showOutlineEstimatedTime }) => {
   const intl = useIntl();
   const {
     id,
@@ -16,10 +17,44 @@ const SidebarSection = ({ section, handleSelectSection }) => {
     title,
     sequenceIds,
     completionStat,
+    effortTime,
   } = section;
 
-  const { activeSequenceId } = useCourseOutlineSidebar();
+  const {
+    activeSequenceId,
+    sequences,
+    units,
+    modelSequences,
+    modelUnits,
+  } = useCourseOutlineSidebar();
   const isActiveSection = sequenceIds.includes(activeSequenceId);
+
+  const getSequenceEffortSeconds = (sequenceId) => {
+    const sequenceEffort = sequences[sequenceId]?.effortTime ?? modelSequences[sequenceId]?.effortTime;
+    if (typeof sequenceEffort === 'number') {
+      return sequenceEffort;
+    }
+
+    const sequenceUnitIds = sequences[sequenceId]?.unitIds || [];
+    return sequenceUnitIds.reduce(
+      (total, unitId) => total + (
+        units[unitId]?.effortTime
+        ?? modelUnits[unitId]?.effortTime
+        ?? (typeof modelUnits[unitId]?.estimatedTimeMinutes === 'number'
+          ? Math.ceil(modelUnits[unitId].estimatedTimeMinutes * 60)
+          : 0)
+      ),
+      0,
+    );
+  };
+
+  const sectionEffortTime = typeof effortTime === 'number'
+    ? effortTime
+    : sequenceIds.reduce(
+      (total, sequenceId) => total + getSequenceEffortSeconds(sequenceId),
+      0,
+    );
+  const minuteCount = sectionEffortTime > 0 ? Math.ceil(sectionEffortTime / 60) : 0;
 
   const sectionTitle = (
     <>
@@ -28,6 +63,11 @@ const SidebarSection = ({ section, handleSelectSection }) => {
       </div>
       <div className="col-10 ml-3 p-0 flex-grow-1 text-dark-500 text-left text-break">
         {title}
+        {showOutlineEstimatedTime && minuteCount > 0 && (
+          <span className="small text-gray-500 font-weight-normal ml-2">
+            {intl.formatMessage(messages.estimatedTimeMinutesAbbreviated, { minuteCount })}
+          </span>
+        )}
         <span className="sr-only">
           , {intl.formatMessage(complete
           ? courseOutlineMessages.completedSection
@@ -60,12 +100,18 @@ SidebarSection.propTypes = {
     id: PropTypes.string,
     title: PropTypes.string,
     sequenceIds: PropTypes.arrayOf(PropTypes.string),
+    effortTime: PropTypes.number,
     completionStat: PropTypes.shape({
       completed: PropTypes.number,
       total: PropTypes.number,
     }),
   }).isRequired,
   handleSelectSection: PropTypes.func.isRequired,
+  showOutlineEstimatedTime: PropTypes.bool,
+};
+
+SidebarSection.defaultProps = {
+  showOutlineEstimatedTime: true,
 };
 
 export default SidebarSection;
