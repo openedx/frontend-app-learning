@@ -47,6 +47,7 @@ const OutlineTab = () => {
     courseBlocks: {
       courses,
       sections,
+      sequences,
     },
     courseGoals: {
       selectedGoal,
@@ -74,6 +75,29 @@ const OutlineTab = () => {
   const scheduledContentAlert = useScheduledContentAlert(courseId);
 
   const rootCourseId = courses && Object.keys(courses)[0];
+
+  // Calculate the total estimated time for the course by summing the effort time for each section and sequence in the course.
+  // The estimated time is displayed in the course outline next to the course title and is also passed down to the SequenceTitle
+  // component to be displayed next to each sequence in the outline
+  const courseMinuteCount = rootCourseId
+    ? (courses[rootCourseId].sectionIds || []).reduce((sectionTotal, sectionId) => {
+      const section = sections[sectionId];
+      if (typeof section?.effortTime === 'number') {
+        return sectionTotal + section.effortTime;
+      }
+      const sequenceTotalSeconds = (section?.sequenceIds || []).reduce(
+        (sequenceTotal, sequenceId) => sequenceTotal + (sequences[sequenceId]?.effortTime || 0),
+        0,
+      );
+      return sectionTotal + sequenceTotalSeconds;
+    }, 0)
+    : 0;
+  const totalEstimatedMinutes = Math.ceil(courseMinuteCount / 60);
+  const totalEstimatedHours = Math.floor(totalEstimatedMinutes / 60);
+  const remainingEstimatedMinutes = totalEstimatedMinutes % 60;
+  const showOutlineEstimatedTime = rootCourseId
+    ? courses[rootCourseId]?.showEstimatedTime !== false
+    : true;
 
   const hasDeadlines = courseDateBlocks && courseDateBlocks.some(x => x.dateType === 'assignment-due-date');
 
@@ -121,6 +145,19 @@ const OutlineTab = () => {
       <div data-learner-type={learnerType} className="row w-100 mx-0 my-3 justify-content-between">
         <div className="col-12 col-sm-auto p-0">
           <div role="heading" aria-level="1" className="h2">{title}</div>
+          {/* Display the estimated time for the course next to the title if showOutlineEstimatedTime is true and estimated time > 0 */}
+          {showOutlineEstimatedTime && courseMinuteCount > 0 && (
+            <div className="small text-primary mt-1">
+              {totalEstimatedMinutes >= 60
+                ? intl.formatMessage(messages.estimatedTimeToCompleteWithHours, {
+                  hourCount: totalEstimatedHours,
+                  minuteCount: remainingEstimatedMinutes,
+                })
+                : intl.formatMessage(messages.estimatedTimeToComplete, {
+                  minuteCount: totalEstimatedMinutes,
+                })}
+            </div>
+          )}
         </div>
       </div>
       <div className="row course-outline-tab">
