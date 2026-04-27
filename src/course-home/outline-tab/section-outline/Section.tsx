@@ -13,8 +13,12 @@ import SequenceLink from './SequenceLink';
 interface Props {
   defaultOpen: boolean;
   expand: boolean;
+  // Added showOutlineEstimatedTime prop to control whether to show the estimated time for sections and sequences in the course outline. 
+  showOutlineEstimatedTime?: boolean;
   section: {
     complete: boolean;
+    // Added effortTime to the section data to store the estimated time for the section
+    effortTime?: number;
     sequenceIds: string[];
     title: string;
     hideFromTOC: boolean;
@@ -24,12 +28,16 @@ interface Props {
 const Section: React.FC<Props> = ({
   defaultOpen,
   expand,
+  // Default showOutlineEstimatedTime to true to maintain existing behavior of 
+  // showing estimated time in the course outline, but allow it to be turned off if needed
+  showOutlineEstimatedTime = true,
   section,
 }) => {
   const intl = useIntl();
   const courseId = useContextId();
   const {
     complete,
+    effortTime,
     sequenceIds,
     title,
     hideFromTOC,
@@ -41,6 +49,12 @@ const Section: React.FC<Props> = ({
   } = useModel('outline', courseId);
 
   const [open, setOpen] = useState(defaultOpen);
+  const sectionEffortTime = typeof effortTime === 'number'
+    ? effortTime
+    : sequenceIds.reduce(
+      (total, sequenceId) => total + (sequences[sequenceId]?.effortTime || 0),
+      0,
+    );
 
   useEffect(() => {
     setOpen(expand);
@@ -56,7 +70,15 @@ const Section: React.FC<Props> = ({
       <Collapsible
         className="mb-2"
         styling="card-lg"
-        title={<SectionTitle {...{ complete, hideFromTOC, title }} />}
+        // Pass the calculated sectionEffortTime to the SectionTitle component to display the estimated time for 
+        // the section in the course outline.
+        title={<SectionTitle {...{
+          complete,
+          hideFromTOC,
+          title,
+          effortTime: sectionEffortTime,
+          showOutlineEstimatedTime,
+        }} />}
         open={open}
         onToggle={() => { setOpen(!open); }}
         iconWhenClosed={(
@@ -82,6 +104,9 @@ const Section: React.FC<Props> = ({
               key={sequenceId}
               id={sequenceId}
               sequence={sequences[sequenceId]}
+              // Pass the showOutlineEstimatedTime prop down to the SequenceLink component to control whether to 
+              // show the estimated time for sequences in the course outline.
+              showOutlineEstimatedTime={showOutlineEstimatedTime}
               first={index === 0}
             />
           ))}

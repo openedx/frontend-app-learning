@@ -9,10 +9,26 @@ interface Props {
   complete: boolean;
   hideFromTOC: boolean;
   title: string;
+  // Added effortTime to the section data to store the estimated time for the section
+  effortTime?: number;
+  showOutlineEstimatedTime?: boolean;
 }
 
-const SectionTitle: React.FC<Props> = ({ complete, hideFromTOC, title }) => {
+// Component to render the section title in the course outline, including the completion status, title, and estimated time (if available and enabled)
+const SectionTitle: React.FC<Props> = ({
+  complete,
+  hideFromTOC,
+  title,
+  effortTime = 0,
+  showOutlineEstimatedTime = true,
+}) => {
   const intl = useIntl();
+  const minuteCount = effortTime > 0 ? Math.ceil(effortTime / 60) : 0;
+  const minutesLabel = showOutlineEstimatedTime
+    ? (minuteCount > 0
+      ? intl.formatMessage(messages.estimatedTimeMinutesAbbreviated, { minuteCount })
+      : 'x min')
+    : null;
   return (
     <div className="d-flex row w-100 m-0">
       <div className="col-auto p-0">
@@ -36,6 +52,11 @@ const SectionTitle: React.FC<Props> = ({ complete, hideFromTOC, title }) => {
       </div>
       <div className="col-7 ml-3 p-0 font-weight-bold text-dark-500">
         <span className="align-middle col-6">{title}</span>
+        {minutesLabel && (
+          <span className="small text-gray-500 ml-2 align-middle font-weight-normal">
+            {minutesLabel}
+          </span>
+        )}
         <span className="sr-only">
           , {intl.formatMessage(complete ? messages.completedSection : messages.incompleteSection)}
         </span>

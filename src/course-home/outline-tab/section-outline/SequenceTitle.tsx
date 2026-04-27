@@ -11,14 +11,22 @@ import { useContextId } from '../../../data/hooks';
 interface Props {
   complete: boolean;
   showLink: boolean;
+  //Added showOutlineEstimatedTime and sequence data to the SequenceTitle component to control whether to show the 
+  // estimated time for sequences in the course outline and to pass the estimated time data down to the component
+  showOutlineEstimatedTime?: boolean;
   title: string;
-  sequence: object;
+  sequence: {
+    effortActivities?: number;
+    effortTime?: number;
+  };
   id: string;
 }
 
 const SequenceTitle: React.FC<Props> = ({
   complete,
   showLink,
+  // Default showOutlineEstimatedTime to true (can be turned off later)
+  showOutlineEstimatedTime = true,
   title,
   sequence,
   id,
@@ -27,6 +35,13 @@ const SequenceTitle: React.FC<Props> = ({
   const courseId = useContextId();
   const coursewareUrl = <Link to={`/course/${courseId}/${id}`}>{title}</Link>;
   const displayTitle = showLink ? coursewareUrl : title;
+  const minuteCount = sequence?.effortTime ? Math.ceil(sequence.effortTime / 60) : 0;
+  // Format of the estimated time for seuqences in the course outline
+  const minutesLabel = showOutlineEstimatedTime
+    ? (minuteCount > 0
+      ? intl.formatMessage(messages.estimatedTimeMinutesAbbreviated, { minuteCount })
+      : 'x min')
+    : null;
 
   return (
     <div className="row w-100 m-0">
@@ -54,7 +69,12 @@ const SequenceTitle: React.FC<Props> = ({
         <span className="sr-only">
           , {intl.formatMessage(complete ? messages.completedAssignment : messages.incompleteAssignment)}
         </span>
-        <EffortEstimate className="ml-3 align-middle" block={sequence} />
+        {minutesLabel && (
+          <span className="ml-3 small text-gray-500 align-middle">
+            {minutesLabel}
+          </span>
+        )}
+        <EffortEstimate className="sr-only" block={sequence} />
       </div>
     </div>
   );
