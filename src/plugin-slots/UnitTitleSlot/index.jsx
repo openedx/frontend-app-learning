@@ -13,6 +13,8 @@ const UnitTitleSlot = ({
 }) => {
   const { formatMessage } = useIntl();
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
+  // Calculate the estimated hours and minutes for the unit based on the estimated time
+  const estimatedMinutes = (unit.estimatedTimeMinutes || 0) % 60;
 
   return (
     <PluginSlot
@@ -28,6 +30,23 @@ const UnitTitleSlot = ({
       <div className="d-flex justify-content-between">
         <div className="mb-0">
           <h3 className="h3">{unit.title}</h3>
+          {/* Display the estimated time for the unit below the title if showEstimatedTime is true and estimatedTimeMinutes > 0 */}
+          {unit.showEstimatedTime && unit.estimatedTimeMinutes > 0 && (
+            <p className="small text-primary-500 mb-2">
+              {unit.estimatedTimeMinutes >= 60 ? (
+                <>
+                  Estimated Time to Complete:{' '}
+                  <em>
+                    {estimatedHours} hour{estimatedHours !== 1 ? 's' : ''} and {estimatedMinutes} minute{estimatedMinutes !== 1 ? 's' : ''}
+                  </em>
+                </>
+              ) : (
+                <>
+                  Estimated Time to Complete: <em>{unit.estimatedTimeMinutes} minute{unit.estimatedTimeMinutes !== 1 ? 's' : ''}</em>
+                </>
+              )}
+            </p>
+          )}
         </div>
         {isEnabledOutlineSidebar && renderUnitNavigation(true)}
       </div>
@@ -48,6 +67,9 @@ UnitTitleSlot.propTypes = {
     bookmarked: PropTypes.bool.isRequired,
     title: PropTypes.string.isRequired,
     bookmarkedUpdateState: PropTypes.string.isRequired,
+    // Added estimatedTimeMinutes and showEstimatedTime to the unit prop types for the estimated time display in the UnitTitleSlot
+    estimatedTimeMinutes: PropTypes.number,
+    showEstimatedTime: PropTypes.bool,
   }).isRequired,
   isEnabledOutlineSidebar: PropTypes.bool.isRequired,
   renderUnitNavigation: PropTypes.func.isRequired,
