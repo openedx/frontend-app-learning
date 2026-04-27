@@ -26,6 +26,12 @@ const messages = defineMessages({
     defaultMessage: 'Incomplete unit',
     description: 'Text used to describe the gray checkmark icon in front of a unit title',
   },
+  // Added message for the estimated time label for sections and sequences in the course outline
+  estimatedTimeMinutesAbbreviated: {
+    id: 'courseOutline.estimatedTimeMinutesAbbreviated',
+    defaultMessage: '{minuteCount, plural, one {# min} other {# min}}',
+    description: 'Compact effort estimate for section or subsection rows in the course outline sidebar',
+  },
 });
 
 export default messages;

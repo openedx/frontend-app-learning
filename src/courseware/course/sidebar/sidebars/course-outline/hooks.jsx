@@ -5,7 +5,7 @@ import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/ana
 
 import { useModel } from '@src/generic/model-store';
 import { LOADED } from '@src/constants';
-import { checkBlockCompletion, getCourseOutlineStructure } from '@src/courseware/data/thunks';
+import { checkBlockCompletion, getCourseOutlineStructure, hydrateOutlineEffortData } from '@src/courseware/data/thunks';
 import OldSidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import NewSidebarContext from '@src/courseware/course/new-sidebar/SidebarContext';
 import {
@@ -27,7 +27,15 @@ export const useCourseOutlineSidebar = () => {
   const courseOutlineStatus = useSelector(getCourseOutlineStatus);
   const sequenceStatus = useSelector(getSequenceStatus);
   const activeSequenceId = useSelector(getSequenceId);
-  const { sections = {}, sequences = {}, units = {} } = useSelector(getCourseOutline);
+  // Selectors to get the course outline data from the store
+  const {
+    courses = {},
+    sections = {},
+    sequences = {},
+    units = {},
+  } = useSelector(getCourseOutline);
+  const modelSequences = useSelector(state => state.models?.sequences || {});
+  const modelUnits = useSelector(state => state.models?.units || {});
 
   const { courseId } = useParams();
   const course = useModel('coursewareMeta', courseId);
@@ -44,12 +52,19 @@ export const useCourseOutlineSidebar = () => {
 
   const isOpenSidebar = !initialSidebar && isEnabledSidebar && !isCollapsedOutlineSidebar;
   const [isOpen, setIsOpen] = useState(true);
+  // Local state to track whether effort data has been hydrated to prevent unnecessary hydration calls
+  const [isEffortHydrated, setIsEffortHydrated] = useState(false);
 
   const {
     entranceExamEnabled,
     entranceExamPassed,
   } = course.entranceExamData || {};
   const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
+  const rootCourseId = Object.keys(courses)[0];
+  // Determine whether to show estimated time in the sidebar based on the course setting, defaulting to true if the setting is not defined
+  const showOutlineEstimatedTime = rootCourseId
+    ? courses[rootCourseId]?.showEstimatedTime !== false
+    : true;
 
   const handleToggleCollapse = () => {
     if (currentSidebar === ID) {
@@ -104,6 +119,29 @@ export const useCourseOutlineSidebar = () => {
     }
   }, [courseId, isEnabledSidebar, courseOutlineShouldUpdate]);
 
+  // Reset effort hydration state when courseId changes to ensure effort data is hydrated for the new course
+  useEffect(() => {
+    setIsEffortHydrated(false);
+  }, [courseId]);
+
+  // Hydrate effort data for the course outline when the outline is loaded and effort data has not yet been hydrated
+  useEffect(() => {
+    if (!isEnabledSidebar || courseOutlineStatus !== LOADED || isEffortHydrated) {
+      return;
+    }
+
+  // Get all sequence IDs from the course outline to hydrate effort data for each sequence.
+    const allSequenceIds = Object.keys(sequences);
+    if (allSequenceIds.length === 0) {
+      setIsEffortHydrated(true);
+      return;
+    }
+
+    // Dispatch the hydrateOutlineEffortData thunk to calculate and store effort data for each sequence in the course outline
+    dispatch(hydrateOutlineEffortData(allSequenceIds));
+    setIsEffortHydrated(true);
+  }, [courseOutlineStatus, dispatch, isEffortHydrated, isEnabledSidebar, sequences]);
+
   return {
     courseId,
     unitId,
@@ -119,6 +157,10 @@ export const useCourseOutlineSidebar = () => {
     sections,
     sequences,
     units,
+    // Pass model data to be accessed in the SidebarSection, SidebarSequence, and SidebarUnit components for effort time calculations
+    showOutlineEstimatedTime,
+    modelSequences,
+    modelUnits,
     handleUnitClick,
     sequenceStatus,
   };

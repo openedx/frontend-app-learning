@@ -33,6 +33,8 @@ const CourseOutlineTray = () => {
     activeSequenceId,
     sections,
     sequences,
+    // Pass showOutlineEstimatedTime down through the sidebar context so it can be accessed in the SidebarSection, SidebarSequence, and SidebarUnit components
+    showOutlineEstimatedTime,
   } = useCourseOutlineSidebar();
 
   const {
@@ -116,6 +118,8 @@ const CourseOutlineTray = () => {
                 sequence={sequences[sequenceId]}
                 defaultOpen={sequenceId === activeSequenceId}
                 activeUnitId={unitId}
+                // Pass showOutlineEstimatedTime down to the SidebarSequence component
+                showOutlineEstimatedTime={showOutlineEstimatedTime}
               />
             ))
             : sectionsIds.map((sectionId) => (
@@ -124,6 +128,8 @@ const CourseOutlineTray = () => {
                 courseId={courseId}
                 section={sections[sectionId]}
                 handleSelectSection={handleSelectSection}
+                // Pass showOutlineEstimatedTime down to the SidebarSection component
+                showOutlineEstimatedTime={showOutlineEstimatedTime}
               />
             ))}
         </ol>
