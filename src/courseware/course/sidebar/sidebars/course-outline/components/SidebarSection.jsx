@@ -29,6 +29,8 @@ const SidebarSection = ({ section, handleSelectSection, showOutlineEstimatedTime
   } = useCourseOutlineSidebar();
   const isActiveSection = sequenceIds.includes(activeSequenceId);
 
+  // Calculate section effort time by first checking if the section has an explicit effort time. 
+  // If not, sum the effort times of the section's sequences
   const getSequenceEffortSeconds = (sequenceId) => {
     const sequenceEffort = sequences[sequenceId]?.effortTime ?? modelSequences[sequenceId]?.effortTime;
     if (typeof sequenceEffort === 'number') {
@@ -54,6 +56,7 @@ const SidebarSection = ({ section, handleSelectSection, showOutlineEstimatedTime
       (total, sequenceId) => total + getSequenceEffortSeconds(sequenceId),
       0,
     );
+  // Convert effort time to minutes, rounding up to ensujre a default time of at least 1 minute
   const minuteCount = sectionEffortTime > 0 ? Math.ceil(sectionEffortTime / 60) : 0;
 
   const sectionTitle = (
@@ -110,6 +113,7 @@ SidebarSection.propTypes = {
   showOutlineEstimatedTime: PropTypes.bool,
 };
 
+// Show the estimated time for sections in the sidebar by default
 SidebarSection.defaultProps = {
   showOutlineEstimatedTime: true,
 };

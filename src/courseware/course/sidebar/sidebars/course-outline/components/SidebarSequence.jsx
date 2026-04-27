@@ -38,6 +38,7 @@ const SidebarSequence = ({
     modelUnits,
   } = useCourseOutlineSidebar();
   const isActiveSequence = id === activeSequenceId;
+  // Calculate section effort time by first checking if the section has an explicit effort time.
   const sequenceEffortTime = typeof effortTime === 'number'
     ? effortTime
     : (typeof modelSequences[id]?.effortTime === 'number'
@@ -88,6 +89,7 @@ const SidebarSequence = ({
         onToggle={() => setOpen(!open)}
       >
         <ol className="list-unstyled">
+          {/* Map over the sequence's units, pulling relevant data from both the outline and model to pass down to the SidebarUnit component */}
           {unitIds.map((unitId, index) => {
             const outlineUnit = units[unitId] || {};
             const modelUnit = modelUnits[unitId] || {};
@@ -144,6 +146,7 @@ SidebarSequence.propTypes = {
   showOutlineEstimatedTime: PropTypes.bool,
 };
 
+// Show the estimated time for sequences in the sidebar by default
 SidebarSequence.defaultProps = {
   showOutlineEstimatedTime: true,
 };
