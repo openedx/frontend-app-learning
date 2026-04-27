@@ -23,7 +23,10 @@ export function normalizeLearningSequencesData(learningSequencesData) {
       return; // Don't let the learner see unreleased sequences
     }
 
+    // Determine which units to show estimated time for in the course outline
     models.sequences[seqId] = {
+      effortActivities: sequence.effort_activities,
+      effortTime: sequence.effort_time,
       id: seqId,
       title: sequence.title,
     };
@@ -44,6 +47,9 @@ export function normalizeLearningSequencesData(learningSequencesData) {
     models.sections[section.id] = {
       id: section.id,
       title: section.title,
+      // Keep the effort data for sections
+      effortActivities: section.effort_activities,
+      effortTime: section.effort_time,
       sequenceIds: availableSequenceIds,
       courseId: learningSequencesData.course_key,
     };
@@ -111,6 +117,9 @@ export function normalizeSequenceMetadata(sequence) {
     sequence: {
       id: sequence.item_id,
       blockType: sequence.tag,
+      // Keep the effort data for sequences
+      effortActivities: sequence.effort_activities,
+      effortTime: sequence.effort_time,
       unitIds: sequence.items.map(unit => unit.id),
       bannerText: sequence.banner_text,
       format: sequence.format,
@@ -144,6 +153,10 @@ export function normalizeSequenceMetadata(sequence) {
       contentType: unit.type,
       graded: unit.graded,
       containsContentTypeGatedContent: unit.contains_content_type_gated_content,
+      // Keep the effort data for units
+      effortTime: unit.effort_time,
+      estimatedTimeMinutes: unit.estimated_time_minutes,
+      showEstimatedTime: unit.show_estimated_time,
     })),
   };
 }
@@ -155,16 +168,49 @@ export function normalizeSequenceMetadata(sequence) {
  * @returns {Object} - An object with normalized sections, sequences, and units.
  */
 export function normalizeOutlineBlocks(courseId, blocks) {
+  // Get the effort time in seconds for a given block, prioritizing effort_time but falling back to estimated_time_minutes if effort_time is not available
+  const getEffortTimeSeconds = (block) => {
+    const payloadBase = {
+      id: block?.id,
+      type: block?.type,
+      effort_time: block?.effort_time,
+      estimated_time_minutes: block?.estimated_time_minutes,
+    };
+
+    if (typeof block.effort_time === 'number') {
+      return block.effort_time;
+    }
+    if (typeof block.estimated_time_minutes === 'number') {
+      const resolvedSeconds = Math.ceil(block.estimated_time_minutes * 60);
+      return resolvedSeconds;
+    }
+
+    return undefined;
+  };
+
   const models = {
+    courses: {},
     sections: {},
     sequences: {},
     units: {},
   };
   Object.values(blocks).forEach(block => {
     switch (block.type) {
+      // If we have a course block, we want to add it to the models with its section children
+      case 'course':
+        models.courses[block.id] = {
+          id: courseId,
+          sectionIds: block.children || [],
+          showEstimatedTime: block.show_estimated_time,
+        };
+        break;
+
       case 'chapter':
         models.sections[block.id] = {
           complete: block.complete,
+          // Keep the effort data for chapters
+          effortActivities: block.effort_activities,
+          effortTime: getEffortTimeSeconds(block),
           id: block.id,
           title: block.display_name,
           sequenceIds: block.children || [],
@@ -179,6 +225,9 @@ export function normalizeOutlineBlocks(courseId, blocks) {
       case 'lock':
         models.sequences[block.id] = {
           complete: block.complete,
+          // Keep the effort data for sequences
+          effortActivities: block.effort_activities,
+          effortTime: getEffortTimeSeconds(block),
           id: block.id,
           title: block.display_name,
           type: block.type,
@@ -194,6 +243,9 @@ export function normalizeOutlineBlocks(courseId, blocks) {
       case 'vertical':
         models.units[block.id] = {
           complete: block.complete,
+          // Keep the effort data for units
+          estimatedTimeMinutes: block.estimated_time_minutes,
+          effortTime: getEffortTimeSeconds(block),
           icon: block.icon,
           id: block.id,
           title: block.display_name,

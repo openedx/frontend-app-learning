@@ -286,3 +286,49 @@ export function getCourseOutlineStructure(courseId) {
     }
   };
 }
+
+/** 
+ * This thunk is used to hydrate the effort data for the course outline. 
+ * It is called when the course outline is loaded and when a sequence is loaded in case the 
+ * effort data was not included in the initial course outline response. 
+ * The effort data is used to display the estimated time for each sequence in the course outline.
+ */ 
+export function hydrateOutlineEffortData(sequenceIds, isPreview = false) {
+  return async (dispatch) => {
+    if (!Array.isArray(sequenceIds) || sequenceIds.length === 0) {
+      return;
+    }
+
+    const preview = isPreview ? '1' : '0';
+
+    await Promise.allSettled(
+      sequenceIds.map(async (sequenceId) => {
+        const { sequence, units } = await getSequenceMetadata(sequenceId, { preview });
+        dispatch(updateModels({
+          modelType: 'units',
+          models: units,
+        }));
+
+        const unitsEffortSeconds = units.reduce(
+          (total, unit) => total + (
+            typeof unit.effortTime === 'number'
+              ? unit.effortTime
+              : (typeof unit.estimatedTimeMinutes === 'number' ? Math.ceil(unit.estimatedTimeMinutes * 60) : 0)
+          ),
+          0,
+        );
+
+        dispatch(updateModel({
+          modelType: 'sequences',
+          model: {
+            id: sequence.id,
+            effortActivities: sequence.effortActivities,
+            effortTime: typeof sequence.effortTime === 'number'
+              ? sequence.effortTime
+              : (unitsEffortSeconds > 0 ? unitsEffortSeconds : undefined),
+          },
+        }));
+      }),
+    );
+  };
+}
