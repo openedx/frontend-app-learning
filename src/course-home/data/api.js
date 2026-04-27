@@ -1,7 +1,9 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { logInfo } from '@edx/frontend-platform/logging';
+import { getSequenceMetadata } from '../../courseware/data/api';
 import { appendBrowserTimezoneToUrl } from '../../utils';
+
 
 const calculateAssignmentTypeGrades = (points, assignmentWeight, numDroppable) => {
   let dropCount = numDroppable;
@@ -113,6 +115,36 @@ function normalizeCourseHomeCourseMetadata(metadata, rootSlug) {
 }
 
 export function normalizeOutlineBlocks(courseId, blocks) {
+  // Helper function to determine the effort time in seconds for a given block, 
+  // using the effort_time field if it's a number, otherwise falling back to the estimated_time 
+  // field (which can be a number or a string in "HH:MM:SS" format).
+  const getTimeSeconds = (block) => {
+    const payloadBase = {
+      id: block?.id,
+      type: block?.type,
+      effort_time: block?.effort_time,
+      estimated_time: block?.estimated_time,
+    };
+
+    if (typeof block.effort_time === 'number') {
+      return block.effort_time;
+    }
+
+    if (typeof block.estimated_time === 'number') {
+      return block.estimated_time;
+    }
+
+    if (typeof block.estimated_time === 'string') {
+      const parts = block.estimated_time.split(':').map(Number);
+      if (parts.length === 3 && parts.every(Number.isFinite)) {
+        const [hours, minutes, seconds] = parts;
+        const resolvedSeconds = (hours * 3600) + (minutes * 60) + seconds;
+        return resolvedSeconds;
+      }
+    }
+    return undefined;
+  };
+
   const models = {
     courses: {},
     sections: {},
@@ -126,12 +158,16 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           title: block.display_name,
           sectionIds: block.children || [],
           hasScheduledContent: block.has_scheduled_content,
+          // Get showEstimatedTime from the course block
+          showEstimatedTime: block.show_estimated_time,
         };
         break;
 
       case 'chapter':
         models.sections[block.id] = {
           complete: block.complete,
+          // Get effortTime in seconds
+          effortTime: getTimeSeconds(block),
           id: block.id,
           title: block.display_name,
           resumeBlock: block.resume_block,
@@ -146,7 +182,8 @@ export function normalizeOutlineBlocks(courseId, blocks) {
           description: block.description,
           due: block.due,
           effortActivities: block.effort_activities,
-          effortTime: block.effort_time,
+          // Get effortTime in seconds
+          effortTime: getTimeSeconds(block),
           icon: block.icon,
           id: block.id,
           // The presence of a URL for the sequence indicates that we want this sequence to be a clickable
@@ -342,6 +379,72 @@ export function getTimeOffsetMillis(headerDate, requestTime, responseTime) {
   return timeOffsetMillis;
 }
 
+// Helper function to format estimated time in minutes, ensuring proper pluralization of "minute".
+async function hydrateMissingOutlineEffort(courseBlocks) {
+  if (!courseBlocks?.sequences) {
+    return courseBlocks;
+  }
+
+  const sequenceIdsNeedingHydration = Object.entries(courseBlocks.sequences)
+    .filter(([, sequence]) => typeof sequence?.effortTime !== 'number')
+    .map(([sequenceId]) => sequenceId);
+
+  if (sequenceIdsNeedingHydration.length === 0) {
+    return courseBlocks;
+  }
+
+  const hydrationResults = await Promise.allSettled(
+    sequenceIdsNeedingHydration.map(async (sequenceId) => {
+      const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: '0' });
+
+      const unitsEffortSeconds = (units || []).reduce(
+        (total, unit) => total + (
+          typeof unit.effortTime === 'number'
+            ? unit.effortTime
+            : (typeof unit.estimatedTimeMinutes === 'number'
+              ? Math.ceil(unit.estimatedTimeMinutes * 60)
+              : 0)
+        ),
+        0,
+      );
+
+      const hydratedEffortTime = typeof sequence?.effortTime === 'number'
+        ? sequence.effortTime
+        : (unitsEffortSeconds > 0 ? unitsEffortSeconds : undefined);
+
+      return {
+        sequenceId,
+        effortTime: hydratedEffortTime,
+      };
+    }),
+  );
+
+  const hydratedCourseBlocks = {
+    ...courseBlocks,
+    sequences: {
+      ...courseBlocks.sequences,
+    },
+  };
+
+  hydrationResults.forEach((result) => {
+    if (result.status !== 'fulfilled') {
+      return;
+    }
+
+    const { sequenceId, effortTime } = result.value;
+    if (typeof effortTime !== 'number') {
+      return;
+    }
+
+    hydratedCourseBlocks.sequences[sequenceId] = {
+      ...hydratedCourseBlocks.sequences[sequenceId],
+      effortTime,
+    };
+  });
+
+  return hydratedCourseBlocks;
+}
+
 export async function getOutlineTabData(courseId) {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   const requestTime = Date.now();
@@ -368,7 +471,9 @@ export async function getOutlineTabData(courseId) {
 
   const accessExpiration = camelCaseObject(data.access_expiration);
   const certData = camelCaseObject(data.cert_data);
-  const courseBlocks = data.course_blocks ? normalizeOutlineBlocks(courseId, data.course_blocks.blocks) : {};
+  // Normalize the course blocks and then hydrate any missing effort times for sequences by summing the effort times of their child units (if available).
+  const normalizedCourseBlocks = data.course_blocks ? normalizeOutlineBlocks(courseId, data.course_blocks.blocks) : {};
+  const courseBlocks = await hydrateMissingOutlineEffort(normalizedCourseBlocks);  
   const courseGoals = camelCaseObject(data.course_goals);
   const courseTools = camelCaseObject(data.course_tools);
   const datesBannerInfo = camelCaseObject(data.dates_banner_info);
