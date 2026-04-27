@@ -351,6 +351,22 @@ const messages = defineMessages({
     defaultMessage: '{description}',
     description: 'Used below an assignment title',
   },
+  // New Estimated time messages that are added for the course outline
+  estimatedTimeToComplete: {
+    id: 'learning.outline.estimated-time-to-complete',
+    defaultMessage: 'Estimated Time to Complete: {minuteCount, plural, one {# minute} other {# minutes}}',
+    description: 'Shown with section, subsection, or course title when an effort estimate is available',
+  },
+  estimatedTimeToCompleteWithHours: {
+    id: 'learning.outline.estimated-time-to-complete-with-hours',
+    defaultMessage: 'Estimated Time to Complete: {hourCount, plural, one {# hour} other {# hours}} and {minuteCount, plural, one {# minute} other {# minutes}}',
+    description: 'Shown with course title when an effort estimate is at least one hour',
+  },
+  estimatedTimeMinutesAbbreviated: {
+    id: 'learning.outline.estimated-time-minutes-abbreviated',
+    defaultMessage: '{minuteCount, plural, one {# min} other {# min}}',
+    description: 'Compact effort estimate shown next to section/module titles in the outline',
+  },
 });
 
 export default messages;
