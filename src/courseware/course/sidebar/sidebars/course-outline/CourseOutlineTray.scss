@@ -13,7 +13,7 @@
 }
 
 .outline-sidebar-heading-wrapper {
-    border: 1px solid #d7d3d1;
+    border: 1px solid var(--pgn-color-light-700);
 
     &.sticky {
         position: sticky;
@@ -29,7 +29,7 @@
 
 .course-sidebar-section {
     background: var(--pgn-color-white);
-    border: 1px solid #d7d3d1;
+    border: 1px solid var(--pgn-color-light-700);
 
     button {
         line-height: 1.75rem;
