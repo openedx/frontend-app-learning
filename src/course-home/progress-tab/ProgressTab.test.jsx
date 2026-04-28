@@ -7,7 +7,7 @@ import { breakpoints } from '@openedx/paragon';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act,
+  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act, within,
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
@@ -1243,6 +1243,11 @@ describe('Progress Tab', () => {
           linkType: 'button',
           pageName: 'progress',
         });
+
+        const certificateStatusComponent = screen.queryByTestId('certificate-status-component');
+        expect(certificateStatusComponent).toBeInTheDocument();
+        const headerElement = within(certificateStatusComponent).getByRole('heading', { level: 2 });
+        expect(headerElement).toBeInTheDocument();
       });
 
       it('Displays nothing if audit only', async () => {
