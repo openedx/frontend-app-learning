@@ -1,26 +1,39 @@
-import { useState } from 'react';
-import classNames from 'classnames';
-import { Button, useToggle, IconButton } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
+import { Button, IconButton, useToggle } from '@openedx/paragon';
+import { LOADING } from '@src/constants';
 import {
   MenuOpen as MenuOpenIcon,
   ChevronLeft as ChevronLeftIcon,
 } from '@openedx/paragon/icons';
-
-import { LOADING } from '@src/constants';
+import {
+  useCourseOutlineData,
+} from '@src/courseware/course/sidebar/sidebars/course-outline/hooks';
 import PageLoading from '@src/generic/PageLoading';
+import classNames from 'classnames';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import SidebarSection from './components/SidebarSection';
 import SidebarSequence from './components/SidebarSequence';
-import { ID } from './constants';
-import { useCourseOutlineData, useCourseOutlineSidebar } from './hooks';
+import SidebarSection from './components/SidebarSection';
 import messages from './messages';
 
-export const CourseOutline = ({ shouldDisplayFullScreen = false, onToggleCollapse = null }) => {
+interface CourseOutlineProps {
+  shouldDisplayFullScreen?: boolean;
+  onToggleCollapse?: () => void;
+}
+
+interface CoursePageParams extends Record<string, string> {
+  courseId: string;
+  unitId: string;
+}
+
+export const CourseOutline = ({
+  shouldDisplayFullScreen = false,
+  onToggleCollapse,
+}: CourseOutlineProps) => {
   const intl = useIntl();
-  const [selectedSection, setSelectedSection] = useState(null);
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
-  const { unitId, courseId } = useParams();
+  const { unitId, courseId } = useParams<CoursePageParams>();
   const {
     courseOutlineStatus,
     activeSequenceId,
@@ -30,19 +43,19 @@ export const CourseOutline = ({ shouldDisplayFullScreen = false, onToggleCollaps
   } = useCourseOutlineData();
 
   const resolvedSectionId = selectedSection
-    || Object.keys(sections).find(
-      (sectionId) => sections[sectionId].sequenceIds.includes(activeSequenceId),
-    );
+        || Object.keys(sections).find(
+          (sectionId):boolean => sections[sectionId].sequenceIds.includes(activeSequenceId),
+        )!;
   const sectionsIds = Object.keys(sections);
-  const sequenceIds = sections[resolvedSectionId]?.sequenceIds || [];
-  const backButtonTitle = sections[resolvedSectionId]?.title;
+  const sequenceIds: string[] = sections[resolvedSectionId]?.sequenceIds || [];
+  const backButtonTitle: string | undefined = sections[resolvedSectionId]?.title;
 
   const handleBackToSectionLevel = () => {
     setDisplaySectionLevel();
     setSelectedSection(null);
   };
 
-  const handleSelectSection = (id) => {
+  const handleSelectSection = (id:string) => {
     setDisplaySequenceLevel();
     setSelectedSection(id);
   };
@@ -62,8 +75,7 @@ export const CourseOutline = ({ shouldDisplayFullScreen = false, onToggleCollaps
           {intl.formatMessage(messages.courseOutlineTitle)}
         </span>
       )}
-      {onToggleCollapse
-      && (
+      {onToggleCollapse && (
       <IconButton
         alt={intl.formatMessage(messages.toggleCourseOutlineTrigger)}
         className="outline-sidebar-toggle-btn flex-shrink-0 text-dark bg-light-200"
@@ -103,19 +115,18 @@ export const CourseOutline = ({ shouldDisplayFullScreen = false, onToggleCollaps
         {sidebarHeading}
         <ol id="outline-sidebar-outline" className="list-unstyled">
           {isDisplaySequenceLevel
-            ? sequenceIds.map((sequenceId) => (
+            ? sequenceIds.map((sequenceId: string) => (
               <SidebarSequence
                 key={sequenceId}
-                courseId={courseId}
+                courseId={courseId!}
                 sequence={sequences[sequenceId]}
                 defaultOpen={sequenceId === activeSequenceId}
-                activeUnitId={unitId}
+                activeUnitId={unitId!}
               />
             ))
             : sectionsIds.map((sectionId) => (
               <SidebarSection
                 key={sectionId}
-                courseId={courseId}
                 section={sections[sectionId]}
                 handleSelectSection={handleSelectSection}
               />
@@ -125,20 +136,3 @@ export const CourseOutline = ({ shouldDisplayFullScreen = false, onToggleCollaps
     </div>
   );
 };
-
-const CourseOutlineTray = () => {
-  const {
-    currentSidebar,
-    shouldDisplayFullScreen,
-    handleToggleCollapse,
-  } = useCourseOutlineSidebar();
-
-  if (currentSidebar !== ID) {
-    return null;
-  }
-  return <CourseOutline shouldDisplayFullScreen={shouldDisplayFullScreen} onToggleCollapse={handleToggleCollapse} />;
-};
-
-CourseOutlineTray.ID = ID;
-
-export default CourseOutlineTray;
