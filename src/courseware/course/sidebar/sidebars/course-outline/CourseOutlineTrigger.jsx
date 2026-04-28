@@ -4,17 +4,17 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { IconButton } from '@openedx/paragon';
 import { MenuOpen as MenuOpenIcon } from '@openedx/paragon/icons';
 
-import { useCourseOutlineSidebar } from './hooks';
+import { useCourseOutlineData, useCourseOutlineSidebar } from './hooks';
 import { ID } from './constants';
 import messages from './messages';
 
 const CourseOutlineTrigger = ({ isMobileView }) => {
   const intl = useIntl();
+  const { isActiveEntranceExam } = useCourseOutlineData();
   const {
     currentSidebar,
     shouldDisplayFullScreen,
     handleToggleCollapse,
-    isActiveEntranceExam,
   } = useCourseOutlineSidebar();
 
   const isDisplayForDesktopView = !isMobileView && !shouldDisplayFullScreen && currentSidebar !== ID;
