@@ -1,6 +1,7 @@
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import CompletionIcon from './CompletionIcon';
+import { CompletionIcon } from './CompletionIcon';
 
 describe('CompletionIcon', () => {
   it('renders check circle icon when completion is equal to total and completion tracking is enabled', () => {
