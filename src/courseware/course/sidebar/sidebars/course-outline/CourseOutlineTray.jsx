@@ -9,29 +9,25 @@ import {
 
 import { LOADING } from '@src/constants';
 import PageLoading from '@src/generic/PageLoading';
+import { useParams } from 'react-router-dom';
 import SidebarSection from './components/SidebarSection';
 import SidebarSequence from './components/SidebarSequence';
 import { ID } from './constants';
-import { useCourseOutlineSidebar } from './hooks';
+import { useCourseOutlineData, useCourseOutlineSidebar } from './hooks';
 import messages from './messages';
 
-const CourseOutlineTray = () => {
+export const CourseOutline = ({ shouldDisplayFullScreen = false, onToggleCollapse = null }) => {
   const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
-
+  const { unitId, courseId } = useParams();
   const {
-    courseId,
-    unitId,
-    currentSidebar,
-    handleToggleCollapse,
-    isActiveEntranceExam,
-    shouldDisplayFullScreen,
     courseOutlineStatus,
     activeSequenceId,
     sections,
     sequences,
-  } = useCourseOutlineSidebar();
+    isActiveEntranceExam,
+  } = useCourseOutlineData();
 
   const resolvedSectionId = selectedSection
     || Object.keys(sections).find(
@@ -50,7 +46,6 @@ const CourseOutlineTray = () => {
     setDisplaySequenceLevel();
     setSelectedSection(id);
   };
-
   const sidebarHeading = (
     <div className="outline-sidebar-heading-wrapper sticky d-flex justify-content-between align-self-start align-items-center bg-light-200 p-2.5 pl-4">
       {isDisplaySequenceLevel && backButtonTitle ? (
@@ -67,19 +62,20 @@ const CourseOutlineTray = () => {
           {intl.formatMessage(messages.courseOutlineTitle)}
         </span>
       )}
+      {onToggleCollapse
+      && (
       <IconButton
         alt={intl.formatMessage(messages.toggleCourseOutlineTrigger)}
         className="outline-sidebar-toggle-btn flex-shrink-0 text-dark bg-light-200"
         iconAs={MenuOpenIcon}
-        onClick={handleToggleCollapse}
+        onClick={onToggleCollapse}
       />
+      )}
     </div>
   );
-
-  if (isActiveEntranceExam || currentSidebar !== ID) {
+  if (isActiveEntranceExam) {
     return null;
   }
-
   if (courseOutlineStatus === LOADING) {
     return (
       <div className={classNames('outline-sidebar-wrapper', {
@@ -128,6 +124,19 @@ const CourseOutlineTray = () => {
       </section>
     </div>
   );
+};
+
+const CourseOutlineTray = () => {
+  const {
+    currentSidebar,
+    shouldDisplayFullScreen,
+    handleToggleCollapse,
+  } = useCourseOutlineSidebar();
+
+  if (currentSidebar !== ID) {
+    return null;
+  }
+  return <CourseOutline shouldDisplayFullScreen={shouldDisplayFullScreen} onToggleCollapse={handleToggleCollapse} />;
 };
 
 CourseOutlineTray.ID = ID;

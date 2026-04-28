@@ -6,7 +6,7 @@ import { ChevronRight as ChevronRightIcon } from '@openedx/paragon/icons';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import CompletionIcon from './CompletionIcon';
-import { useCourseOutlineSidebar } from '../hooks';
+import { useCourseOutlineData } from '../hooks';
 
 const SidebarSection = ({ section, handleSelectSection }) => {
   const intl = useIntl();
@@ -18,7 +18,7 @@ const SidebarSection = ({ section, handleSelectSection }) => {
     completionStat,
   } = section;
 
-  const { activeSequenceId, isEnabledCompletionTracking } = useCourseOutlineSidebar();
+  const { activeSequenceId, isEnabledCompletionTracking } = useCourseOutlineData();
   const isActiveSection = sequenceIds.includes(activeSequenceId);
 
   const sectionTitle = (
