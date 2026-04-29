@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
 
-import UnitIcon, { UNIT_ICON_TYPES } from './UnitIcon';
+import UnitIcon, { UNIT_ICON_TYPES, UnitIconType } from './UnitIcon';
 
 describe('<UnitIcon />', () => {
-  Object.keys(UNIT_ICON_TYPES).forEach((type) => {
+  Object.keys(UNIT_ICON_TYPES).forEach((type:UnitIconType) => {
     it(`renders default ${type} icon correctly`, () => {
       const { container } = render(<UnitIcon type={type} isCompleted={false} />);
       const icon = container.querySelector('svg');
