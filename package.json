@@ -32,7 +32,7 @@
     "url": "https://github.com/openedx/frontend-app-learning/issues"
   },
   "dependencies": {
-    "@edx/brand": "npm:@openedx/brand-openedx@^2.0.0",
+    "@edx/brand": "npm:@openedx/brand-openedx@^1.2.3",
     "@edx/browserslist-config": "1.5.1",
     "@edx/frontend-component-footer": "^14.6.0",
     "@edx/frontend-component-header": "^8.2.1",
