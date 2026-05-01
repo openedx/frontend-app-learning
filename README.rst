@@ -234,6 +234,13 @@ beginning development to maximize the chances of your change being accepted.
 You can start a conversation by creating a new issue on this repo summarizing
 your idea.
 
+AI Contribution Policy
+======================
+
+Note that contributions are expected to follow the Open edX `AI Contribution Policy`_.
+
+.. _AI Contribution Policy: https://github.com/openedx/.github/blob/master/AI_POLICY.md
+
 The Open edX Code of Conduct
 ============================
 
