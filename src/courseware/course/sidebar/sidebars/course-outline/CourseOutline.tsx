@@ -60,25 +60,25 @@ export const CourseOutline = ({
     setSelectedSection(id);
   };
   const sidebarHeading = (
-    <div className="outline-sidebar-heading-wrapper sticky d-flex justify-content-between align-self-start align-items-center bg-light-200 p-2.5 pl-4">
+    <div className="outline-sidebar-heading-wrapper sticky d-flex justify-content-between align-self-start align-items-center p-2.5 pl-4">
       {isDisplaySequenceLevel && backButtonTitle ? (
         <Button
           variant="link"
           iconBefore={ChevronLeftIcon}
-          className="outline-sidebar-heading p-0 mb-0 text-left text-dark-500"
+          className="outline-sidebar-heading p-0 mb-0 text-left"
           onClick={handleBackToSectionLevel}
         >
           {backButtonTitle}
         </Button>
       ) : (
-        <span className="outline-sidebar-heading mb-0 h4 text-dark-500">
+        <span className="outline-sidebar-heading mb-0 h4">
           {intl.formatMessage(messages.courseOutlineTitle)}
         </span>
       )}
       {onToggleCollapse && (
       <IconButton
         alt={intl.formatMessage(messages.toggleCourseOutlineTrigger)}
-        className="outline-sidebar-toggle-btn flex-shrink-0 text-dark bg-light-200"
+        className="outline-sidebar-toggle-btn flex-shrink-0 text-dark"
         iconAs={MenuOpenIcon}
         onClick={onToggleCollapse}
       />
