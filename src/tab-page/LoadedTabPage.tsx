@@ -1,27 +1,35 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 
 import { getConfig } from '@edx/frontend-platform';
 import { useToggle } from '@openedx/paragon';
 
-import { CourseTabsNavigation } from '../course-tabs';
-import { useModel } from '../generic/model-store';
-import { AlertList } from '../generic/user-messages';
-import StreakModal from '../shared/streak-celebration';
-import InstructorToolbar from '../instructor-toolbar';
-import useEnrollmentAlert from '../alerts/enrollment-alert';
-import useLogistrationAlert from '../alerts/logistration-alert';
+import { CourseTabsNavigationSlot } from '@src/plugin-slots/CourseTabsNavigationSlot';
+
+import { useModel } from '@src/generic/model-store';
+import { AlertList } from '@src/generic/user-messages';
+import useEnrollmentAlert from '@src/alerts/enrollment-alert';
+import useLogistrationAlert from '@src/alerts/logistration-alert';
+import StreakModal from '@src/shared/streak-celebration';
+import InstructorToolbar from '@src/instructor-toolbar';
 
 import ProductTours from '../product-tours/ProductTours';
 
+interface LoadedTabPageProps {
+  activeTabSlug: string;
+  children: React.ReactNode;
+  courseId: string;
+  metadataModel: string;
+  unitId: string | null;
+}
+
 const LoadedTabPage = ({
   activeTabSlug,
-  children,
+  children = null,
   courseId,
-  metadataModel,
-  unitId,
-}) => {
+  metadataModel = 'courseHomeMeta',
+  unitId = null,
+}: LoadedTabPageProps) => {
   const {
     celebrations,
     org,
@@ -80,27 +88,13 @@ const LoadedTabPage = ({
             ...logistrationAlert,
           }}
         />
-        <CourseTabsNavigation tabs={tabs} className="mb-3" activeTabSlug={activeTabSlug} />
+        <CourseTabsNavigationSlot tabs={tabs} activeTabSlug={activeTabSlug} />
         <div id="main-content" className="container-xl">
           {children}
         </div>
       </main>
     </>
   );
-};
-
-LoadedTabPage.propTypes = {
-  activeTabSlug: PropTypes.string.isRequired,
-  children: PropTypes.node,
-  courseId: PropTypes.string.isRequired,
-  metadataModel: PropTypes.string,
-  unitId: PropTypes.string,
-};
-
-LoadedTabPage.defaultProps = {
-  children: null,
-  metadataModel: 'courseHomeMeta',
-  unitId: null,
 };
 
 export default LoadedTabPage;

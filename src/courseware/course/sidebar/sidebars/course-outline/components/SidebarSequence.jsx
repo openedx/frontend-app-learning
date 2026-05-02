@@ -1,3 +1,6 @@
+import {
+  CourseOverviewSequenceCompletionIconSlot,
+} from '@src/plugin-slots/CourseOutlineSidebarSequenceCompletionIconSlot';
 import { useState } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -5,8 +8,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Collapsible } from '@openedx/paragon';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
-import { useCourseOutlineSidebar } from '../hooks';
-import CompletionIcon from './CompletionIcon';
+import { useCourseOutlineData } from '../hooks';
 import SidebarUnit from './SidebarUnit';
 import { UNIT_ICON_TYPES } from './UnitIcon';
 
@@ -28,13 +30,17 @@ const SidebarSequence = ({
   } = sequence;
 
   const [open, setOpen] = useState(defaultOpen);
-  const { activeSequenceId, units, isEnabledCompletionTracking } = useCourseOutlineSidebar();
+  const { activeSequenceId, units, isEnabledCompletionTracking } = useCourseOutlineData();
   const isActiveSequence = id === activeSequenceId;
 
   const sectionTitle = (
     <>
       <div className="col-auto p-0" style={{ fontSize: '1.1rem' }}>
-        <CompletionIcon completionStat={completionStat} enabled={isEnabledCompletionTracking} />
+        <CourseOverviewSequenceCompletionIconSlot
+          completionStat={completionStat}
+          enabled={isEnabledCompletionTracking}
+          active={isActiveSequence}
+        />
       </div>
       <div className="col-9 d-flex flex-column flex-grow-1 ml-3 mr-auto p-0 text-left">
         <span className="align-middle text-dark-500">{title}</span>

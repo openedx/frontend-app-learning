@@ -1,9 +1,10 @@
+import { CourseOutlineSidebarUnitIconSlot } from '@src/plugin-slots/CourseOutlineSidebarUnitIconSlot';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from '../messages';
-import UnitIcon, { UNIT_ICON_TYPES } from './UnitIcon';
+import { UNIT_ICON_TYPES } from './UnitIcon';
 import UnitLinkWrapper from './UnitLinkWrapper';
 
 const SidebarUnit = ({
@@ -28,7 +29,7 @@ const SidebarUnit = ({
   const completeAndEnabled = complete && isCompletionTrackingEnabled;
 
   return (
-    <li className={classNames({ 'bg-info-100': isActive, 'border-top border-light': !isFirst })}>
+    <li className={classNames({ 'active-unit bg-info-100': isActive, 'border-top border-light': !isFirst })}>
       <UnitLinkWrapper
         {...{
           sequenceId,
@@ -38,7 +39,7 @@ const SidebarUnit = ({
         }}
       >
         <div className="col-auto p-0">
-          <UnitIcon type={iconType} isCompleted={completeAndEnabled} />
+          <CourseOutlineSidebarUnitIconSlot type={iconType} isCompleted={completeAndEnabled} active={isActive} />
         </div>
         <div className="col-10 p-0 ml-3 text-break">
           <span className="align-middle">
