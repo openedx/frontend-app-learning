@@ -1,14 +1,12 @@
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { Button, IconButton, useToggle } from '@openedx/paragon';
+import { useToggle } from '@openedx/paragon';
 import { LOADING } from '@src/constants';
-import {
-  MenuOpen as MenuOpenIcon,
-  ChevronLeft as ChevronLeftIcon,
-} from '@openedx/paragon/icons';
+
 import {
   useCourseOutlineData,
 } from '@src/courseware/course/sidebar/sidebars/course-outline/hooks';
 import PageLoading from '@src/generic/PageLoading';
+import { CourseOutlineSidebarHeadingSlot } from '@src/plugin-slots/CourseOutlineSidebarHeadingSlot';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -60,30 +58,12 @@ export const CourseOutline = ({
     setSelectedSection(id);
   };
   const sidebarHeading = (
-    <div className="outline-sidebar-heading-wrapper sticky d-flex justify-content-between align-self-start align-items-center p-2.5 pl-4">
-      {isDisplaySequenceLevel && backButtonTitle ? (
-        <Button
-          variant="link"
-          iconBefore={ChevronLeftIcon}
-          className="outline-sidebar-heading p-0 mb-0 text-left"
-          onClick={handleBackToSectionLevel}
-        >
-          {backButtonTitle}
-        </Button>
-      ) : (
-        <span className="outline-sidebar-heading mb-0 h4">
-          {intl.formatMessage(messages.courseOutlineTitle)}
-        </span>
-      )}
-      {onToggleCollapse && (
-      <IconButton
-        alt={intl.formatMessage(messages.toggleCourseOutlineTrigger)}
-        className="outline-sidebar-toggle-btn flex-shrink-0 text-dark"
-        iconAs={MenuOpenIcon}
-        onClick={onToggleCollapse}
-      />
-      )}
-    </div>
+    <CourseOutlineSidebarHeadingSlot
+      onToggleCollapse={onToggleCollapse}
+      isSequenceLevel={isDisplaySequenceLevel}
+      title={backButtonTitle}
+      onClickBack={handleBackToSectionLevel}
+    />
   );
   if (isActiveEntranceExam) {
     return null;
