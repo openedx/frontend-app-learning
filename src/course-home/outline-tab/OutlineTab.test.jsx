@@ -132,13 +132,11 @@ describe('Outline Tab', () => {
       expect(expandedSectionNode).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('displays correct heading for expanded section', async () => {
+    it('exposes expanded section title as a level 2 heading', async () => {
       const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
       setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
       await fetchAndRender();
-      const headingContent = screen.getByText('Title of Section');
-      const { parentElement } = headingContent;
-      expect(parentElement.tagName).toBe('H2');
+      expect(screen.getByRole('heading', { level: 2, name: 'Title of Section' })).toBeInTheDocument();
     });
 
     it('checks that the expanded section is within the correct list', async () => {

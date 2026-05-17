@@ -13,7 +13,6 @@ const LiveTab = () => {
   return (
     <div
       id="live_tab"
-      role="region"
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: liveModel[courseId]?.iframe }}
     />
