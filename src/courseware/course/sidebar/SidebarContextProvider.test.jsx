@@ -4,6 +4,7 @@ import {
   render, screen, fireEvent, act,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { getSessionStorage } from '@src/data/sessionStorage';
 import SidebarContext from './SidebarContext';
 import SidebarProvider from './SidebarContextProvider';
 
@@ -18,6 +19,10 @@ jest.mock('@src/generic/model-store', () => ({
     }
     return {};
   }),
+}));
+
+jest.mock('@src/data/sessionStorage', () => ({
+  getSessionStorage: jest.fn(() => null),
 }));
 
 jest.mock('@openedx/paragon', () => {
@@ -105,6 +110,7 @@ describe('SidebarContextProvider', () => {
     const storage = jest.requireMock('./utils/storage');
     storage.getSidebarId.mockReturnValue(null);
     storage.isOutlineSidebarCollapsed.mockReturnValue(false);
+    getSessionStorage.mockReturnValue(null);
   });
 
   describe('context values provided', () => {
@@ -118,6 +124,14 @@ describe('SidebarContextProvider', () => {
       renderProvider();
 
       expect(screen.getByTestId('available-ids').textContent).toBe('DISCUSSIONS,NOTES');
+    });
+
+    it('opens the legacy notification tray when session storage marks it open', () => {
+      getSessionStorage.mockReturnValue('open');
+
+      renderProvider();
+
+      expect(screen.getByTestId('current-sidebar').textContent).toBe('UPGRADE');
     });
 
     it('excludes a widget from availableSidebarIds when isAvailable returns false', () => {

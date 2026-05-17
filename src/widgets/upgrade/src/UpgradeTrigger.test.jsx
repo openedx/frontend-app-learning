@@ -3,12 +3,18 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import * as localStorageModule from '@src/data/localStorage';
+import * as sessionStorageModule from '@src/data/sessionStorage';
 import { UpgradeWidgetProvider } from './UpgradeWidgetContext';
 import UpgradeTrigger from './UpgradeTrigger';
 
 jest.mock('@src/data/localStorage', () => ({
   getLocalStorage: jest.fn(() => null),
   setLocalStorage: jest.fn(),
+}));
+
+jest.mock('@src/data/sessionStorage', () => ({
+  getSessionStorage: jest.fn(() => null),
+  setSessionStorage: jest.fn(),
 }));
 
 const courseId = 'course-test-123';
@@ -35,6 +41,7 @@ function renderTrigger(sidebarContextOverrides = {}, localStorageOverride = null
 describe('UpgradeTrigger', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    sessionStorageModule.getSessionStorage.mockReturnValue(null);
   });
 
   it('renders a button with the correct aria-label', () => {
@@ -64,6 +71,48 @@ describe('UpgradeTrigger', () => {
     fireEvent.click(screen.getByRole('button', { name: /show upgrade panel/i }));
 
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks the notification tray as open when the trigger opens the panel', () => {
+    const onClick = jest.fn();
+    render(
+      <IntlProvider locale="en">
+        <SidebarContext.Provider value={{ courseId }}>
+          <UpgradeWidgetProvider>
+            <UpgradeTrigger onClick={onClick} />
+          </UpgradeWidgetProvider>
+        </SidebarContext.Provider>
+      </IntlProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /show upgrade panel/i }));
+
+    expect(sessionStorageModule.setSessionStorage).toHaveBeenCalledWith(
+      `notificationTrayStatus.${courseId}`,
+      'open',
+    );
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks the notification tray as closed when the trigger closes the panel', () => {
+    sessionStorageModule.getSessionStorage.mockReturnValue('open');
+    renderTrigger({ currentSidebar: 'UPGRADE' });
+
+    fireEvent.click(screen.getByRole('button', { name: /show upgrade panel/i }));
+
+    expect(sessionStorageModule.setSessionStorage).toHaveBeenCalledWith(
+      `notificationTrayStatus.${courseId}`,
+      'closed',
+    );
+  });
+
+  it('reopens the upgrade panel when notification tray status is open', () => {
+    const toggleSidebar = jest.fn();
+    sessionStorageModule.getSessionStorage.mockReturnValue('open');
+
+    renderTrigger({ currentSidebar: null, toggleSidebar });
+
+    expect(toggleSidebar).toHaveBeenCalledWith('UPGRADE');
   });
 
   it('shows status dot when upgradeWidgetStatus is "active"', () => {
