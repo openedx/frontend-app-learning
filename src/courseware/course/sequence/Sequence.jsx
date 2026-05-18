@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import SequenceBottomNavigationSlot from '@src/plugin-slots/SequenceBottomNavigationSlot';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -91,27 +92,27 @@ const Sequence = ({
   };
 
   /* istanbul ignore next */
-  const nextHandler = () => {
-    logEvent('edx.ui.lms.sequence.next_selected', 'top');
+  const nextHandler = (placement) => () => {
+    logEvent('edx.ui.lms.sequence.next_selected', placement);
     handleNext();
   };
 
   /* istanbul ignore next */
-  const previousHandler = () => {
-    logEvent('edx.ui.lms.sequence.previous_selected', 'top');
+  const previousHandler = (placement) => () => {
+    logEvent('edx.ui.lms.sequence.previous_selected', placement);
     handlePrevious();
   };
 
   /* istanbul ignore next */
-  const onNavigate = (destinationUnitId) => {
-    logEvent('edx.ui.lms.sequence.tab_selected', 'top', destinationUnitId);
+  const onNavigate = (placement) => (destinationUnitId) => {
+    logEvent('edx.ui.lms.sequence.tab_selected', placement, destinationUnitId);
     handleNavigate(destinationUnitId);
   };
 
   const sequenceNavProps = {
-    nextHandler,
-    previousHandler,
-    onNavigate,
+    nextHandler: nextHandler('top'),
+    previousHandler: previousHandler('top'),
+    onNavigate: onNavigate('top'),
   };
 
   useSequenceBannerTextAlert(sequenceId);
@@ -166,20 +167,18 @@ const Sequence = ({
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
 
+  const unitNavigationProps = {
+    courseId,
+    sequenceId,
+    unitId,
+    onClickPrevious: previousHandler('bottom'),
+    onClickNext: nextHandler('bottom'),
+  };
+
   const renderUnitNavigation = (isAtTop) => (
     <UnitNavigation
-      courseId={courseId}
-      sequenceId={sequenceId}
-      unitId={unitId}
       isAtTop={isAtTop}
-      onClickPrevious={() => {
-        logEvent('edx.ui.lms.sequence.previous_selected', 'bottom');
-        handlePrevious();
-      }}
-      onClickNext={() => {
-        logEvent('edx.ui.lms.sequence.next_selected', 'bottom');
-        handleNext();
-      }}
+      {...unitNavigationProps}
     />
   );
 
@@ -224,7 +223,12 @@ const Sequence = ({
               isOriginalUserStaff={originalUserIsStaff}
               renderUnitNavigation={renderUnitNavigation}
             />
-            {unitHasLoaded && renderUnitNavigation(false)}
+            {unitHasLoaded && (
+            <SequenceBottomNavigationSlot
+              {...unitNavigationProps}
+              onNavigate={onNavigate('bottom')}
+            />
+            )}
           </div>
         </div>
         <RightSidebarSlot courseId={courseId} />
