@@ -188,7 +188,7 @@ describe('Course', () => {
 
     await setupDiscussionSidebar();
 
-    const { rerender } = render(<Course {...testData} />, { store: testStore });
+    const { rerender } = render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
     loadUnit();
 
     const sidebar = await screen.findByTestId('sidebar-DISCUSSIONS');
