@@ -39,13 +39,29 @@ RUN npm ci --no-audit --no-fund
 # Now the source.
 COPY . .
 
-# The MFE build reads a JSX-format runtime config at compile time too —
-# upstream ships an `example.env.config.jsx` but no real one. Tutor's
-# build normally generates one from `MFE_CONFIG` / `MFE_CONFIG_OVERRIDES`;
-# since we're outside Tutor here, fall back to the example so webpack
-# has something to import. Tutor injects the REAL config at container
-# runtime via env vars + a generated /static/env.config.js.
-RUN test -f env.config.jsx || cp example.env.config.jsx env.config.jsx
+# The MFE build reads `env.config.jsx` at webpack time. Upstream's
+# .gitignore excludes this file (it's meant to be per-deployment local
+# config) — generate a minimal one inline here so the build is
+# self-contained. Tutor injects the *runtime* config (LMS_BASE_URL etc.)
+# via process.env at container start, completely separate from this
+# build-time file.
+#
+# Upstream's `example.env.config.jsx` is NOT a safe fallback — it
+# imports an optional `@edx/unit-translation-selector-plugin` package
+# that isn't in package.json and breaks the webpack build with a module
+# resolution error.
+#
+# When Rooman adds custom plugin slots (AI tutor sidebar, etc.),
+# replace this inline heredoc with a real env.config.jsx checked into
+# the fork at a non-gitignored path (e.g. config/env.config.jsx, then
+# `COPY config/env.config.jsx ./env.config.jsx` before npm run build).
+RUN cat > env.config.jsx <<'EOF'
+const config = {
+  ...process.env,
+  pluginSlots: {},
+};
+export default config;
+EOF
 
 # fedx-scripts is the OpenEdx-blessed webpack wrapper. APP_NAME tells it
 # which MFE we're building (the same Dockerfile pattern works for every
