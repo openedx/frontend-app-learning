@@ -38,8 +38,10 @@ EOF
 
 ARG APP_NAME=learning
 ENV APP_NAME=${APP_NAME}
+ENV APP_ID=learning
 ENV NODE_ENV=production
 ENV PUBLIC_PATH=/learning/
+ENV MFE_CONFIG_API_URL=/api/mfe_config/v1
 RUN npm run build
 
 # ─── Stage 2: serve the static bundle ───────────────────────────────────────
