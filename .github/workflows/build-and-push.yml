@@ -99,3 +99,60 @@ jobs:
           echo "tutor config save --set MFE_LEARNING_DOCKER_IMAGE=${{ steps.tags.outputs.image }}:latest" >> "$GITHUB_STEP_SUMMARY"
           echo "tutor images pull mfe && tutor local restart mfe" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      # ─────────────────────────────────────────────────────────────────
+      # Cross-repo dispatch: tell ChandanaSRooman/LMS that the MFE source
+      # has new commits, so its `build-mfe-bundle.yml` workflow rebuilds
+      # the unified MFE bundle (all 11 MFEs + the Rooman fork at this sha)
+      # and deploys it to the dev EC2.
+      #
+      # Why dispatch and not just trigger via the image push?
+      # Because the LMS-side build needs to clone the MFE source at a
+      # specific sha, not pull an image. It does its OWN Tutor build
+      # combining 11 MFEs into one container. So we pass the sha + ref
+      # along for reproducibility.
+      #
+      # Requires a PAT in the secret `LMS_MONOREPO_DISPATCH_PAT` with:
+      #   - fine-grained, scoped only to ChandanaSRooman/LMS
+      #   - permission: Repository contents = read, Actions = write
+      # Without the secret, this step prints a warning and exits 0 —
+      # the MFE image push still succeeded, the LMS bundle just won't
+      # auto-rebuild until the secret is set OR someone manually triggers
+      # workflow_dispatch on build-mfe-bundle.yml.
+      # ─────────────────────────────────────────────────────────────────
+      - name: Dispatch bundle rebuild to ChandanaSRooman/LMS
+        # Only fire on real source pushes — skip workflow_dispatch
+        # re-runs so we don't infinite-loop.
+        if: github.event_name == 'push'
+        env:
+          DISPATCH_PAT: ${{ secrets.LMS_MONOREPO_DISPATCH_PAT }}
+          DISPATCH_TARGET: ChandanaSRooman/LMS
+        run: |
+          set -euo pipefail
+          if [[ -z "${DISPATCH_PAT:-}" ]]; then
+            echo "::warning::LMS_MONOREPO_DISPATCH_PAT secret not set on this repo."
+            echo "::warning::MFE image was built+pushed OK, but the LMS-side bundle won't auto-rebuild."
+            echo "::warning::Trigger build-mfe-bundle.yml manually, or set the secret to enable auto-dispatch."
+            exit 0
+          fi
+          HTTP_CODE=$(curl -sS -L -o /tmp/dispatch.body -w '%{http_code}' \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${DISPATCH_PAT}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${DISPATCH_TARGET}/dispatches" \
+            -d "{\"event_type\":\"mfe-source-updated\",\"client_payload\":{\"sha\":\"${GITHUB_SHA}\",\"ref\":\"${GITHUB_REF}\",\"image\":\"${{ steps.tags.outputs.image }}:${{ steps.tags.outputs.branch_tag }}\"}}")
+          if [[ "$HTTP_CODE" != "204" ]]; then
+            echo "::error::Dispatch failed with HTTP $HTTP_CODE"
+            cat /tmp/dispatch.body
+            exit 1
+          fi
+          echo "  -> dispatched mfe-source-updated to ${DISPATCH_TARGET}"
+          echo "     sha=${GITHUB_SHA}"
+          echo "     downstream workflow: https://github.com/${DISPATCH_TARGET}/actions/workflows/build-mfe-bundle.yml"
+          {
+            echo ""
+            echo "### Downstream bundle rebuild dispatched"
+            echo ""
+            echo "[Watch the LMS-side build-mfe-bundle run](https://github.com/${DISPATCH_TARGET}/actions/workflows/build-mfe-bundle.yml)"
+          } >> "$GITHUB_STEP_SUMMARY"
