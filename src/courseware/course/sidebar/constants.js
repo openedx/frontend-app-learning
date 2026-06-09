@@ -6,6 +6,7 @@ export const WIDGET_PRIORITIES = {
 export const STORAGE_KEYS = {
   SIDEBAR_ID: 'sidebar',
   OUTLINE_SIDEBAR_HIDDEN: 'hideCourseOutlineSidebar',
+  SIDEBAR_CLOSED_BY_USER: 'sidebarClosedByUser',
 };
 
 export const WIDGET_CONFIG = {

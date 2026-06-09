@@ -3,6 +3,7 @@ import { WIDGETS } from '@src/constants';
 import {
   getSidebarId,
   isOutlineSidebarCollapsed,
+  isSidebarClosedByUser,
 } from '../utils/storage';
 
 /**
@@ -33,7 +34,7 @@ export function useInitialSidebar({
 
     // MOBILE: Use stored value or null (no auto-open)
     if (shouldDisplayFullScreen) {
-      return getSidebarId(courseId);
+      return isSidebarClosedByUser() ? null : getSidebarId(courseId);
     }
 
     // DESKTOP: Auto-open if screen size allows
@@ -41,38 +42,37 @@ export function useInitialSidebar({
       return null;
     }
 
-    const firstAvailable = getFirstAvailablePanel();
+    // User explicitly closed the sidebar this session — respect that
+    if (isSidebarClosedByUser()) {
+      return null;
+    }
 
-    // If NO RIGHT panels available, return COURSE_OUTLINE (ignore localStorage)
-    if (!firstAvailable) {
+    const storedSidebar = getSidebarId(courseId);
+
+    // Honor a stored RIGHT panel preference even before widget data has loaded.
+    // Keeps initialSidebar stable across the async load window so downstream
+    // effects don't briefly see COURSE_OUTLINE and overwrite storage.
+    if (storedSidebar && storedSidebar !== WIDGETS.COURSE_OUTLINE) {
+      const firstAvailable = getFirstAvailablePanel();
+      if (firstAvailable) {
+        // Data is loaded — apply priority cascade if a higher-priority panel exists
+        const availableWidgets = getAvailableWidgets();
+        const storedWidget = availableWidgets.find(w => w.id === storedSidebar);
+        const firstAvailableWidget = availableWidgets.find(w => w.id === firstAvailable);
+        if (storedWidget && firstAvailableWidget && firstAvailableWidget.priority < storedWidget.priority) {
+          return firstAvailable;
+        }
+      }
+      return storedSidebar;
+    }
+
+    // Stored COURSE_OUTLINE: honor it (suppress only if collapsed this session)
+    if (storedSidebar === WIDGETS.COURSE_OUTLINE) {
       return isCollapsedOutline ? null : WIDGETS.COURSE_OUTLINE;
     }
 
-    // RIGHT panels ARE available - check stored preference
-    const storedSidebar = getSidebarId(courseId);
-    if (storedSidebar) {
-      // Check if stored is a RIGHT panel that's still available
-      const availableWidgets = getAvailableWidgets();
-      const storedWidget = availableWidgets.find(w => w.id === storedSidebar);
-      const firstAvailableWidget = availableWidgets.find(w => w.id === firstAvailable);
-
-      if (storedWidget && storedWidget.id !== WIDGETS.COURSE_OUTLINE) {
-        // Check priority: if a higher priority panel is now available, use it instead
-        if (firstAvailableWidget && firstAvailableWidget.priority < storedWidget.priority) {
-          // Higher priority panel available (lower number = higher priority)
-          return firstAvailable;
-        }
-        // Stored RIGHT panel is still available and no higher priority - use it (sticky)
-        return storedSidebar;
-      }
-      // If stored was COURSE_OUTLINE and not manually collapsed, prefer firstAvailable
-      if (storedSidebar === WIDGETS.COURSE_OUTLINE && !isCollapsedOutline) {
-        return firstAvailable;
-      }
-    }
-
-    // Priority cascade: Use first available RIGHT panel
-    return firstAvailable;
+    // Default: open the navigation sidebar, not a RIGHT panel
+    return isCollapsedOutline ? null : WIDGETS.COURSE_OUTLINE;
   }, [
     shouldDisplayFullScreen,
     isInitiallySidebarOpen,

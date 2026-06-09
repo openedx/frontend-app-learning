@@ -3,6 +3,7 @@ import { WIDGETS } from '@src/constants';
 import {
   setSidebarId,
   isOutlineSidebarCollapsed,
+  isSidebarClosedByUser,
 } from '../utils/storage';
 
 /**
@@ -58,6 +59,11 @@ export function useUnitShiftBehavior({
 
       // MOBILE: Persist state, no auto-switching
       if (shouldDisplayFullScreen) {
+        return;
+      }
+
+      // User explicitly closed the sidebar — don't auto-open/switch on unit nav
+      if (isSidebarClosedByUser()) {
         return;
       }
 

@@ -3,6 +3,7 @@ import { WIDGETS } from '@src/constants';
 import {
   setSidebarId,
   isOutlineSidebarCollapsed,
+  isSidebarClosedByUser,
 } from '../utils/storage';
 
 /**
@@ -33,6 +34,11 @@ export function useResponsiveBehavior({
   useEffect(() => {
     // Skip if user has manually toggled within current unit (respect user action)
     if (hasUserToggledRef.current) {
+      return;
+    }
+
+    // Skip if user has explicitly closed the sidebar this session
+    if (isSidebarClosedByUser()) {
       return;
     }
 
