@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { WIDGETS } from '@src/constants';
 import {
   setSidebarId,
-  isOutlineSidebarCollapsed,
   isSidebarClosedByUser,
 } from '../utils/storage';
 
@@ -49,12 +48,9 @@ export function useResponsiveBehavior({
         setCurrentSidebar(firstAvailable);
         setSidebarId(courseId, firstAvailable);
       } else {
-        // No RIGHT panels, open COURSE_OUTLINE if not manually collapsed
-        const isCollapsedOutline = isOutlineSidebarCollapsed();
-        if (!isCollapsedOutline) {
-          setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
-          setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
-        }
+        // No RIGHT panels — fall back to COURSE_OUTLINE.
+        setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
+        setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
       }
     }
   }, [shouldDisplaySidebarOpen, currentSidebar, getFirstAvailablePanel, courseId]);

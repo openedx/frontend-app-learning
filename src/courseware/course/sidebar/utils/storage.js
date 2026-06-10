@@ -37,26 +37,6 @@ const safeSessionStorage = {
 };
 
 /**
- * Check if the course outline sidebar is manually collapsed
- * @returns {boolean} True if the outline sidebar is hidden
- */
-export function isOutlineSidebarCollapsed() {
-  return safeSessionStorage.getItem(STORAGE_KEYS.OUTLINE_SIDEBAR_HIDDEN) === 'true';
-}
-
-/**
- * Set the course outline sidebar collapsed state
- * @param {boolean} isCollapsed - Whether the sidebar should be collapsed
- */
-export const setOutlineSidebarCollapsed = (isCollapsed) => {
-  if (isCollapsed) {
-    safeSessionStorage.setItem(STORAGE_KEYS.OUTLINE_SIDEBAR_HIDDEN, 'true');
-  } else {
-    safeSessionStorage.removeItem(STORAGE_KEYS.OUTLINE_SIDEBAR_HIDDEN);
-  }
-};
-
-/**
  * Check if the user has explicitly closed the sidebar this session.
  * Session-scoped so we can tell "user closed everything" apart from
  * "first visit / nothing stored" without polluting the per-course

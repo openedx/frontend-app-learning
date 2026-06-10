@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { WIDGETS } from '@src/constants';
 import {
   setSidebarId,
-  isOutlineSidebarCollapsed,
   isSidebarClosedByUser,
 } from '../utils/storage';
 
@@ -69,7 +68,6 @@ export function useUnitShiftBehavior({
 
       // DESKTOP: Apply deterministic unit shift logic
       const firstAvailable = getFirstAvailablePanel();
-      const isCollapsedOutline = isOutlineSidebarCollapsed();
 
       // CASE 1: COURSE_OUTLINE currently open
       if (currentSidebar === WIDGETS.COURSE_OUTLINE) {
@@ -96,15 +94,14 @@ export function useUnitShiftBehavior({
           return;
         }
 
-        // Check if should open COURSE_OUTLINE as fallback
-        if (shouldDisplaySidebarOpen && !isCollapsedOutline) {
+        // Open COURSE_OUTLINE as fallback on desktop; otherwise close
+        if (shouldDisplaySidebarOpen) {
           setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
           setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
           // Only set flag on subsequent navigations, not initial load
           // eslint-disable-next-line no-param-reassign
           courseOutlineSetByUnitRef.current = wasInitialLoad ? null : unitId;
         } else {
-          // Close sidebar (manually collapsed or mobile)
           setCurrentSidebar(null);
           // eslint-disable-next-line no-param-reassign
           courseOutlineSetByUnitRef.current = null;

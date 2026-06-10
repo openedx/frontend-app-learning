@@ -146,9 +146,9 @@ _Example with built-in widgets:_
 - Used on mobile to restore state
 - Used on desktop to restore user preference if still available
 
-**sessionStorage (`hideCourseOutlineSidebar`):**
-- Tracks if user manually collapsed Course Outline
-- Prevents auto-opening when user explicitly hid it
+**sessionStorage (`sidebarClosedByUser`):**
+- Tracks whether the user has explicitly closed the sidebar this session
+- Prevents auto-opening (any panel) until the user opens one via a trigger
 
 ## Implementation Details
 

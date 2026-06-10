@@ -18,7 +18,6 @@ import {
   getSequenceStatus,
 } from '@src/courseware/data/selectors';
 import SidebarContext from '../../SidebarContext';
-import { setOutlineSidebarCollapsed } from '../../utils/storage';
 import { ID } from './constants';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -55,7 +54,6 @@ export const useCourseOutlineSidebar = () => {
 
   const collapseSidebar = () => {
     toggleSidebar(null);
-    setOutlineSidebarCollapsed(true);
   };
 
   const handleToggleCollapse = () => {
@@ -63,7 +61,6 @@ export const useCourseOutlineSidebar = () => {
       collapseSidebar();
     } else {
       toggleSidebar(ID);
-      setOutlineSidebarCollapsed(false);
     }
   };
 
