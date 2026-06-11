@@ -1,12 +1,11 @@
-import React from 'react';
-import { Factory } from 'rosie';
 import { getConfig, snakeCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import MockAdapter from 'axios-mock-adapter';
 import { breakpoints } from '@openedx/paragon';
-import { executeThunk } from '@src/utils';
 import { initializeTestStore, render } from '@src/setupTest';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { executeThunk } from '@src/utils';
+import MockAdapter from 'axios-mock-adapter';
+import React from 'react';
+import { Factory } from 'rosie';
 import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
 import * as thunks from '../data/thunks';
 import Course from './Course';
@@ -43,15 +42,14 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
   mockData.unitId = firstUnitId;
   const [firstSequenceId] = Object.keys(state.models.sequences);
   mockData.sequenceId = firstSequenceId;
-  const contextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
 
-  const wrapper = await render(
-    <SidebarContext.Provider value={contextValue}>
-      <Course {...mockData} />
-    </SidebarContext.Provider>,
-    { store: testStore, wrapWithRouter: true },
+  return render(
+    <Course {...mockData} />,
+    {
+      store: testStore,
+      wrapWithRouter: true,
+    },
   );
-  return wrapper;
 };
 
 export default setupDiscussionSidebar;

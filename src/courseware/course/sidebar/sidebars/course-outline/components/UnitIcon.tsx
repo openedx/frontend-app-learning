@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {
   Locked as LockedIcon,
@@ -10,6 +9,7 @@ import {
   LmsVideocam as LmsVideocamIcon,
   LmsVideocamComplete as LmsVideocamCompleteIcon,
 } from '@openedx/paragon/icons';
+import React, { SVGProps } from 'react';
 
 export const UNIT_ICON_TYPES = {
   video: 'video',
@@ -17,10 +17,30 @@ export const UNIT_ICON_TYPES = {
   vertical: 'vertical',
   lock: 'lock',
   other: 'other',
-};
+} as const;
 
-const UnitIcon = ({ type, isCompleted, ...props }) => {
-  const iconMap = {
+export type UnitIconType = typeof UNIT_ICON_TYPES[keyof typeof UNIT_ICON_TYPES];
+
+export interface UnitIconProps extends SVGProps<SVGSVGElement> {
+  type: UnitIconType;
+  isCompleted: boolean;
+}
+
+type IconType = React.ComponentType<SVGProps<SVGSVGElement>>;
+
+interface IconPair {
+  default: IconType;
+  complete: IconType;
+}
+
+type IconMapVal = IconType | IconPair;
+
+function isIconPair(val: IconMapVal): val is IconPair {
+  return typeof val === 'object' && 'default' in val && 'complete' in val;
+}
+
+const UnitIcon = ({ type, isCompleted, ...props }: UnitIconProps) => {
+  const iconMap: Record<UnitIconType, IconMapVal> = {
     [UNIT_ICON_TYPES.video]: {
       default: LmsVideocamIcon,
       complete: LmsVideocamCompleteIcon,
@@ -37,20 +57,12 @@ const UnitIcon = ({ type, isCompleted, ...props }) => {
     },
   };
 
-  let Icon = iconMap[type || UNIT_ICON_TYPES.other];
-
-  if (typeof Icon === 'object') {
-    Icon = iconMap[type || UNIT_ICON_TYPES.other]?.[isCompleted ? 'complete' : 'default'];
-  }
+  const iconEntry = iconMap[type || UNIT_ICON_TYPES.other];
+  const Icon: IconType = isIconPair(iconEntry) ? iconEntry[isCompleted ? 'complete' : 'default'] : iconEntry;
 
   return (
     <Icon {...props} className={classNames({ 'text-success': isCompleted, 'text-gray-300': !isCompleted })} />
   );
-};
-
-UnitIcon.propTypes = {
-  type: PropTypes.oneOf(Object.keys(UNIT_ICON_TYPES)).isRequired,
-  isCompleted: PropTypes.bool.isRequired,
 };
 
 export default UnitIcon;
