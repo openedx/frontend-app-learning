@@ -131,7 +131,6 @@ const SidebarProvider = ({
     shouldDisplaySidebarOpen,
     currentSidebar,
     setCurrentSidebar,
-    getFirstAvailablePanel,
     courseId,
     hasUserToggledRef,
   });
