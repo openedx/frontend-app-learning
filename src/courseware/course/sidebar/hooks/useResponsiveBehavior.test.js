@@ -16,7 +16,6 @@ function buildParams(overrides = {}) {
     shouldDisplaySidebarOpen: true,
     currentSidebar: null,
     setCurrentSidebar: jest.fn(),
-    getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
     courseId,
     hasUserToggledRef: { current: false },
     ...overrides,
@@ -59,16 +58,8 @@ describe('useResponsiveBehavior', () => {
     expect(params.setCurrentSidebar).not.toHaveBeenCalled();
   });
 
-  it('opens first available right panel on desktop when no sidebar is open', () => {
+  it('opens COURSE_OUTLINE on desktop when no sidebar is open', () => {
     const params = buildParams();
-    renderHook(() => useResponsiveBehavior(params));
-
-    expect(params.setCurrentSidebar).toHaveBeenCalledWith('DISCUSSIONS');
-    expect(setSidebarId).toHaveBeenCalledWith(courseId, 'DISCUSSIONS');
-  });
-
-  it('opens COURSE_OUTLINE when no right panels available', () => {
-    const params = buildParams({ getFirstAvailablePanel: jest.fn(() => null) });
     renderHook(() => useResponsiveBehavior(params));
 
     expect(params.setCurrentSidebar).toHaveBeenCalledWith(WIDGETS.COURSE_OUTLINE);
