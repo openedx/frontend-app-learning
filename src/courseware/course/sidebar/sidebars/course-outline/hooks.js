@@ -1,5 +1,5 @@
 import {
-  useContext, useEffect, useLayoutEffect, useState,
+  useContext, useEffect, useLayoutEffect, useRef, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -103,8 +103,19 @@ export const useCourseOutlineSidebar = () => {
   }, [courseId, courseOutlineShouldUpdate]);
 
   // Collapse sidebar if screen resized to a width that displays the sidebar automatically
+  const lastWindowWidth = useRef(global.innerWidth);
   useLayoutEffect(() => {
     const handleResize = () => {
+      const widthChanged = global.innerWidth !== lastWindowWidth.current;
+      lastWindowWidth.current = global.innerWidth;
+
+      // Only react to actual width changes. Mobile browsers fire `resize` on vertical scroll
+      // (the URL bar showing/hiding changes only the viewport height), and reacting to those
+      // would close the sidebar while the user is simply scrolling its content.
+      if (!widthChanged) {
+        return;
+      }
+
       // breakpoints.large.maxWidth is 1200px and currently the breakpoint for showing the sidebar
       if (currentSidebar === ID && global.innerWidth < breakpoints.large.maxWidth) {
         collapseSidebar();
