@@ -1,8 +1,23 @@
 .outline-sidebar-wrapper {
     width: 32.125rem;
     max-width: 100%;
-    position: relative;
     flex-shrink: 0;
+
+    // The desktop sidebar is positioned relatively. On small screens the sidebar
+    // is rendered as a full-screen overlay via Bootstrap's `fixed-top` utility.
+    &:not(.fixed-top) {
+        position: relative;
+    }
+
+    // The fixed, full-height overlay needs its own scroll context. Height is owned
+    // here instead of Bootstrap's `vh-100`: iOS Safari resolves `100vh` to the large
+    // viewport (URL bar hidden), hiding the bottom of a long outline behind the bar.
+    // `100dvh` tracks the visible height; `100vh` is the fallback for older engines.
+    &.fixed-top {
+        height: 100vh;
+        height: 100dvh;
+        overflow-y: auto;
+    }
 }
 
 .outline-sidebar {
