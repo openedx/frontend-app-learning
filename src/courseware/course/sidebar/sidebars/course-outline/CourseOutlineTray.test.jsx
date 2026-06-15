@@ -20,6 +20,13 @@ describe('<CourseOutlineTray />', () => {
   let courseId;
   let mockData;
 
+  const { innerWidth: originalInnerWidth, innerHeight: originalInnerHeight } = window;
+
+  afterEach(() => {
+    window.innerWidth = originalInnerWidth;
+    window.innerHeight = originalInnerHeight;
+  });
+
   const initTestStore = async (options) => {
     store = await initializeTestStore(options);
     const state = store.getState();
@@ -106,6 +113,55 @@ describe('<CourseOutlineTray />', () => {
     window.dispatchEvent(new Event('resize'));
 
     expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+  });
+
+  it('does not collapse sidebar when only the window height changes', async () => {
+    const mockToggleSidebar = jest.fn();
+    window.innerWidth = 500;
+    window.innerHeight = 800;
+    await initTestStore();
+    renderWithProvider({ toggleSidebar: mockToggleSidebar });
+
+    // Mobile browsers fire `resize` while scrolling, when the URL bar shows/hides. Only the
+    // height changes, and the sidebar must stay open so its content remains scrollable.
+    window.innerHeight = 650;
+    window.dispatchEvent(new Event('resize'));
+
+    expect(mockToggleSidebar).not.toHaveBeenCalled();
+  });
+
+  it('does not collapse sidebar when resized to a width that still displays it', async () => {
+    const mockToggleSidebar = jest.fn();
+    window.innerWidth = 1300;
+    await initTestStore();
+    renderWithProvider({ toggleSidebar: mockToggleSidebar });
+
+    window.innerWidth = 1250;
+    window.dispatchEvent(new Event('resize'));
+
+    expect(mockToggleSidebar).not.toHaveBeenCalled();
+  });
+
+  it('tracks the last window width across resize events', async () => {
+    const mockToggleSidebar = jest.fn();
+    window.innerWidth = 1300;
+    await initTestStore();
+    renderWithProvider({ toggleSidebar: mockToggleSidebar });
+
+    // A width change above the breakpoint is a no-op, but it updates the tracked width.
+    window.innerWidth = 1250;
+    window.dispatchEvent(new Event('resize'));
+    expect(mockToggleSidebar).not.toHaveBeenCalled();
+
+    // A subsequent resize below the breakpoint is still detected as a width change.
+    window.innerWidth = 1100;
+    window.dispatchEvent(new Event('resize'));
+    expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+
+    // Repeating the same width does not trigger another collapse.
+    mockToggleSidebar.mockClear();
+    window.dispatchEvent(new Event('resize'));
+    expect(mockToggleSidebar).not.toHaveBeenCalled();
   });
 
   it('navigates to section or sequence level correctly on click by back/section button', async () => {

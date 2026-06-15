@@ -64,7 +64,7 @@ export const CourseOutline = () => {
     return (
       <div className={classNames('outline-sidebar-wrapper', {
         'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
-        'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
+        'bg-white m-0 fixed-top w-100 dvh-100': shouldDisplayFullScreen,
       })}
       >
         <section className="outline-sidebar w-100">
@@ -80,7 +80,7 @@ export const CourseOutline = () => {
   return (
     <div className={classNames('outline-sidebar-wrapper', {
       'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
-      'bg-white m-0 fixed-top w-100 vh-100': shouldDisplayFullScreen,
+      'bg-white m-0 fixed-top w-100 dvh-100': shouldDisplayFullScreen,
     })}
     >
       <section className="outline-sidebar w-100">
