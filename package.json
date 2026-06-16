@@ -96,5 +96,8 @@
       }
     ],
     "normalizeFilenames": "^.+?(\\..+?)\\.\\w+$"
+  },
+  "overrides": {
+    "axios": "^1.9.1"
   }
 }
