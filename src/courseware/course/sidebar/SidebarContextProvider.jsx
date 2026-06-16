@@ -16,6 +16,7 @@ import {
 } from './defaultWidgets';
 import {
   setSidebarId,
+  setSidebarClosedByUser,
 } from './utils/storage';
 import {
   useInitialSidebar,
@@ -130,7 +131,6 @@ const SidebarProvider = ({
     shouldDisplaySidebarOpen,
     currentSidebar,
     setCurrentSidebar,
-    getFirstAvailablePanel,
     courseId,
     hasUserToggledRef,
   });
@@ -148,6 +148,7 @@ const SidebarProvider = ({
     const newSidebar = sidebarId === currentSidebar ? null : sidebarId;
     setCurrentSidebar(newSidebar);
     setSidebarId(courseId, newSidebar);
+    setSidebarClosedByUser(newSidebar === null);
   }, [currentSidebar, courseId]);
 
   const contextValue = useMemo(() => ({
