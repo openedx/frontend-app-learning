@@ -3,9 +3,10 @@ import React from 'react';
 import { Factory } from 'rosie';
 
 import { breakpoints } from '@openedx/paragon';
+import userEvent from '@testing-library/user-event';
 
 import {
-  fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
+  cleanup, fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
 import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
@@ -156,46 +157,136 @@ describe('Course', () => {
     });
   });
 
-  it('handles click to open/close discussions sidebar', async () => {
-    await setupDiscussionSidebar();
+  describe('sidebar behavior', () => {
+    let testStore;
+    let testData;
 
-    waitFor(() => {
-      expect(screen.getByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
-      expect(screen.getByTestId('sidebar-DISCUSSIONS')).not.toHaveClass('d-none');
-
-      const discussionsTrigger = screen.getByRole('button', { name: /Show discussions tray/i });
-      expect(discussionsTrigger).toBeInTheDocument();
-      fireEvent.click(discussionsTrigger);
-
-      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
-
-      fireEvent.click(discussionsTrigger);
-
-      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
+    beforeEach(async () => {
+      // setupDiscussionSidebar configures the discussion topics mock + loads
+      // topics into a testStore. The render it does is incidental — clean it up
+      // so we can render fresh against per-test seeded storage.
+      const { testStore: setupStore } = await setupDiscussionSidebar();
+      cleanup();
+      testStore = setupStore;
+      const { courseware, models } = testStore.getState();
+      testData = {
+        ...mockData,
+        courseId: courseware.courseId,
+        sequenceId: courseware.sequenceId,
+        unitId: Object.values(models.units)[0].id,
+      };
+      global.innerWidth = breakpoints.extraExtraLarge.minWidth;
+      window.localStorage.clear();
+      window.sessionStorage.clear();
     });
-  });
 
-  it('displays discussions sidebar when unit changes', async () => {
-    const testStore = await initializeTestStore();
-    const { courseware, models } = testStore.getState();
-    const { courseId, sequenceId } = courseware;
-    const testData = {
-      ...mockData,
-      courseId,
-      sequenceId,
-      unitId: Object.values(models.units)[0].id,
-    };
+    it('opens the course outline on render when no preference is stored and the user has not closed the sidebar', async () => {
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
 
-    await setupDiscussionSidebar();
+      await waitFor(() => {
+        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
+    });
 
-    const { rerender } = render(<Course {...testData} />, { store: testStore });
-    loadUnit();
+    it('keeps the sidebar closed on render when the user previously closed it', async () => {
+      window.sessionStorage.setItem('sidebarClosedByUser', 'true');
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
 
-    const sidebar = await screen.findByTestId('sidebar-DISCUSSIONS');
-    expect(sidebar).toBeInTheDocument();
-    expect(sidebar).not.toHaveClass('d-none');
+      await waitFor(() => {
+        // Discussions prefetch resolves; assert nothing has opened in response.
+        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
+      });
+      expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+    });
 
-    rerender(null);
+    it('opens discussions on render when it is the stored preference', async () => {
+      window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
+      });
+      expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+    });
+
+    it('opens the course outline on render when it is the stored preference', async () => {
+      window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('COURSE_OUTLINE'));
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
+
+      await waitFor(() => {
+        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
+    });
+
+    it('closes the course outline when the user clicks its trigger', async () => {
+      const user = userEvent.setup();
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
+      await waitFor(() => {
+        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /Toggle course outline tray/i }));
+
+      await waitFor(() => {
+        expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+      });
+    });
+
+    it('opens the course outline when the user clicks its trigger, closing discussions if open', async () => {
+      const user = userEvent.setup();
+      window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
+      await waitFor(() => {
+        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /Toggle course outline tray/i }));
+
+      await waitFor(() => {
+        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
+    });
+
+    it('opens discussions when the user clicks its trigger, closing the outline', async () => {
+      const user = userEvent.setup();
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
+      await waitFor(() => {
+        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /Show discussions tray/i }));
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
+      });
+      expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+    });
+
+    it('closes discussions when the user clicks its trigger', async () => {
+      const user = userEvent.setup();
+      window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
+      await waitFor(() => {
+        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /Show discussions tray/i }));
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
+      });
+    });
   });
 
   it('doesn\'t renders course breadcrumbs by default', async () => {

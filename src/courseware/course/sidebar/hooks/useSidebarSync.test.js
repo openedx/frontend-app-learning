@@ -2,11 +2,11 @@ import { renderHook } from '@testing-library/react';
 import { WIDGETS } from '@src/constants';
 import { useSidebarSync } from './useSidebarSync';
 
-import { setSidebarId, isOutlineSidebarCollapsed } from '../utils/storage';
+import { setSidebarId, isSidebarClosedByUser } from '../utils/storage';
 
 jest.mock('../utils/storage', () => ({
   setSidebarId: jest.fn(),
-  isOutlineSidebarCollapsed: jest.fn(),
+  isSidebarClosedByUser: jest.fn(),
 }));
 
 const courseId = 'course-123';
@@ -29,7 +29,7 @@ function buildParams(overrides = {}) {
 describe('useSidebarSync', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    isOutlineSidebarCollapsed.mockReturnValue(false);
+    isSidebarClosedByUser.mockReturnValue(false);
   });
 
   describe('skip conditions', () => {
@@ -81,8 +81,8 @@ describe('useSidebarSync', () => {
       expect(setSidebarId).toHaveBeenCalledWith(courseId, WIDGETS.COURSE_OUTLINE);
     });
 
-    it('does not open COURSE_OUTLINE when currentSidebar is null and outline is collapsed', () => {
-      isOutlineSidebarCollapsed.mockReturnValue(true);
+    it('does not open COURSE_OUTLINE when currentSidebar is null and sidebar was closed by user', () => {
+      isSidebarClosedByUser.mockReturnValue(true);
       const params = buildParams({
         initialSidebar: WIDGETS.COURSE_OUTLINE,
         currentSidebar: null,
@@ -92,7 +92,7 @@ describe('useSidebarSync', () => {
       expect(params.setCurrentSidebar).not.toHaveBeenCalled();
     });
 
-    it('switches a right panel to COURSE_OUTLINE when no right panels available and not collapsed', () => {
+    it('switches a right panel to COURSE_OUTLINE when no right panels available', () => {
       const params = buildParams({
         initialSidebar: WIDGETS.COURSE_OUTLINE,
         currentSidebar: 'DISCUSSIONS',
@@ -103,8 +103,8 @@ describe('useSidebarSync', () => {
       expect(setSidebarId).toHaveBeenCalledWith(courseId, WIDGETS.COURSE_OUTLINE);
     });
 
-    it('closes sidebar when right panel is open but outline is collapsed', () => {
-      isOutlineSidebarCollapsed.mockReturnValue(true);
+    it('closes sidebar when a right panel is open but the sidebar was closed by user', () => {
+      isSidebarClosedByUser.mockReturnValue(true);
       const params = buildParams({
         initialSidebar: WIDGETS.COURSE_OUTLINE,
         currentSidebar: 'DISCUSSIONS',
@@ -139,7 +139,7 @@ describe('useSidebarSync', () => {
   });
 
   describe('no right panels fallback (initialSidebar is null)', () => {
-    it('opens COURSE_OUTLINE when current is a right panel and outline is not collapsed', () => {
+    it('opens COURSE_OUTLINE when current is a right panel', () => {
       const params = buildParams({
         initialSidebar: null,
         currentSidebar: 'DISCUSSIONS',
@@ -150,8 +150,8 @@ describe('useSidebarSync', () => {
       expect(setSidebarId).toHaveBeenCalledWith(courseId, WIDGETS.COURSE_OUTLINE);
     });
 
-    it('closes sidebar when right panel is current and outline is collapsed', () => {
-      isOutlineSidebarCollapsed.mockReturnValue(true);
+    it('closes sidebar when a right panel is current and sidebar was closed by user', () => {
+      isSidebarClosedByUser.mockReturnValue(true);
       const params = buildParams({
         initialSidebar: null,
         currentSidebar: 'DISCUSSIONS',

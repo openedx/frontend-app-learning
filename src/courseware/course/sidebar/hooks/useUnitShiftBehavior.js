@@ -2,16 +2,19 @@ import { useEffect } from 'react';
 import { WIDGETS } from '@src/constants';
 import {
   setSidebarId,
-  isOutlineSidebarCollapsed,
+  isSidebarClosedByUser,
 } from '../utils/storage';
 
 /**
  * Handle sidebar behavior when navigating between units
  *
- * Three scenarios:
- * 1. COURSE_OUTLINE currently open → Switch to RIGHT panel if available, else keep open
- * 2. No RIGHT panels available → Open COURSE_OUTLINE (if not collapsed) or keep current provisionally
- * 3. RIGHT panels available → Switch based on priority cascade, maintaining sticky behavior
+ * Three scenarios (after the mobile + closed-by-user gates):
+ * 1. COURSE_OUTLINE currently open → Keep it open (#2: nav stays open on advance)
+ * 2. No RIGHT panels available → Keep the current RIGHT panel provisionally (data may
+ *    still be loading); on a wide viewport with nothing open, recover to COURSE_OUTLINE
+ * 3. RIGHT panels available → Apply priority cascade / fallback when current is stale;
+ *    on a wide viewport with nothing open, recover to COURSE_OUTLINE (default);
+ *    on a narrow viewport with nothing open, preserve null
  *
  * @param {Object} params
  * @param {string} params.unitId - Current unit ID
@@ -61,23 +64,18 @@ export function useUnitShiftBehavior({
         return;
       }
 
+      // User explicitly closed the sidebar — don't auto-open/switch on unit nav
+      if (isSidebarClosedByUser()) {
+        return;
+      }
+
       // DESKTOP: Apply deterministic unit shift logic
       const firstAvailable = getFirstAvailablePanel();
-      const isCollapsedOutline = isOutlineSidebarCollapsed();
 
-      // CASE 1: COURSE_OUTLINE currently open
+      // CASE 1: COURSE_OUTLINE currently open — keep it open across unit nav
       if (currentSidebar === WIDGETS.COURSE_OUTLINE) {
-        if (firstAvailable) {
-          // RIGHT panel available - switch from COURSE_OUTLINE to it (priority cascade)
-          setCurrentSidebar(firstAvailable);
-          setSidebarId(courseId, firstAvailable);
-          // eslint-disable-next-line no-param-reassign
-          courseOutlineSetByUnitRef.current = null; // Clear flag
-        } else {
-          // Keep COURSE_OUTLINE open, mark that this unit has it
-          // eslint-disable-next-line no-param-reassign
-          courseOutlineSetByUnitRef.current = wasInitialLoad ? null : unitId;
-        }
+        // eslint-disable-next-line no-param-reassign
+        courseOutlineSetByUnitRef.current = wasInitialLoad ? null : unitId;
         return;
       }
 
@@ -90,15 +88,14 @@ export function useUnitShiftBehavior({
           return;
         }
 
-        // Check if should open COURSE_OUTLINE as fallback
-        if (shouldDisplaySidebarOpen && !isCollapsedOutline) {
+        // Open COURSE_OUTLINE as fallback on desktop; otherwise close
+        if (shouldDisplaySidebarOpen) {
           setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
           setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
           // Only set flag on subsequent navigations, not initial load
           // eslint-disable-next-line no-param-reassign
           courseOutlineSetByUnitRef.current = wasInitialLoad ? null : unitId;
         } else {
-          // Close sidebar (manually collapsed or mobile)
           setCurrentSidebar(null);
           // eslint-disable-next-line no-param-reassign
           courseOutlineSetByUnitRef.current = null;
@@ -107,9 +104,9 @@ export function useUnitShiftBehavior({
       }
 
       // CASE 3: RIGHT panels ARE available
-      // eslint-disable-next-line no-param-reassign
-      courseOutlineSetByUnitRef.current = null; // Clear flag when RIGHT panels available
       if (currentSidebar) {
+        // eslint-disable-next-line no-param-reassign
+        courseOutlineSetByUnitRef.current = null; // RIGHT panel current, no outline auto-set
         const availableWidgets = getAvailableWidgets();
         const currentWidget = availableWidgets.find(w => w.id === currentSidebar);
         const firstAvailableWidget = availableWidgets.find(w => w.id === firstAvailable);
@@ -127,10 +124,15 @@ export function useUnitShiftBehavior({
           setSidebarId(courseId, firstAvailable);
         }
       } else if (shouldDisplaySidebarOpen) {
-        // No panel was open on desktop - auto-open first available
-        setCurrentSidebar(firstAvailable);
-        setSidebarId(courseId, firstAvailable);
+        // currentSidebar=null on a wide viewport (and user hasn't explicitly closed) is
+        // state drift — recover to the default (COURSE_OUTLINE) rather than auto-opening
+        // a RIGHT panel.
+        setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
+        setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
+        // eslint-disable-next-line no-param-reassign
+        courseOutlineSetByUnitRef.current = wasInitialLoad ? null : unitId;
       }
+      // currentSidebar=null on a narrow viewport: preserve null.
     }
   }, [
     unitId,

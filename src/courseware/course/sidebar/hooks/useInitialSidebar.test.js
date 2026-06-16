@@ -2,11 +2,14 @@ import { renderHook } from '@testing-library/react';
 import { WIDGETS } from '@src/constants';
 import { useInitialSidebar } from './useInitialSidebar';
 
-import { getSidebarId, isOutlineSidebarCollapsed } from '../utils/storage';
+import {
+  getSidebarId,
+  isSidebarClosedByUser,
+} from '../utils/storage';
 
 jest.mock('../utils/storage', () => ({
   getSidebarId: jest.fn(),
-  isOutlineSidebarCollapsed: jest.fn(),
+  isSidebarClosedByUser: jest.fn(),
 }));
 
 const courseId = 'course-123';
@@ -26,7 +29,7 @@ describe('useInitialSidebar', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     getSidebarId.mockReturnValue(null);
-    isOutlineSidebarCollapsed.mockReturnValue(false);
+    isSidebarClosedByUser.mockReturnValue(false);
   });
 
   describe('mobile (shouldDisplayFullScreen=true)', () => {
@@ -42,78 +45,93 @@ describe('useInitialSidebar', () => {
 
       expect(result.current).toBeNull();
     });
+
+    it('returns null when sidebar was closed by user', () => {
+      getSidebarId.mockReturnValue('DISCUSSIONS');
+      isSidebarClosedByUser.mockReturnValue(true);
+      const { result } = renderHook(() => useInitialSidebar(buildParams({ shouldDisplayFullScreen: true })));
+
+      expect(result.current).toBeNull();
+    });
   });
 
   describe('desktop (shouldDisplayFullScreen=false)', () => {
-    it('returns null when sidebar is not initially open', () => {
+    it('returns null when isInitiallySidebarOpen is false', () => {
       const { result } = renderHook(() => useInitialSidebar(buildParams({ isInitiallySidebarOpen: false })));
 
       expect(result.current).toBeNull();
     });
 
-    it('returns COURSE_OUTLINE when no right panels and outline is not collapsed', () => {
-      const { result } = renderHook(() => useInitialSidebar(buildParams({
-        getFirstAvailablePanel: jest.fn(() => null),
-        getAvailableWidgets: jest.fn(() => []),
-      })));
-
-      expect(result.current).toBe(WIDGETS.COURSE_OUTLINE);
-    });
-
-    it('returns null when no right panels and outline is collapsed', () => {
-      isOutlineSidebarCollapsed.mockReturnValue(true);
-      const { result } = renderHook(() => useInitialSidebar(buildParams({
-        getFirstAvailablePanel: jest.fn(() => null),
-        getAvailableWidgets: jest.fn(() => []),
-      })));
+    it('returns null when sidebar was closed by user', () => {
+      getSidebarId.mockReturnValue('DISCUSSIONS');
+      isSidebarClosedByUser.mockReturnValue(true);
+      const { result } = renderHook(() => useInitialSidebar(buildParams()));
 
       expect(result.current).toBeNull();
     });
 
-    it('returns the first available right panel when no stored preference', () => {
-      const { result } = renderHook(() => useInitialSidebar(buildParams()));
+    describe('when isInitiallySidebarOpen is true and the sidebar has not been closed by the user', () => {
+      describe('with no stored preference', () => {
+        it('returns COURSE_OUTLINE', () => {
+          const { result } = renderHook(() => useInitialSidebar(buildParams()));
 
-      expect(result.current).toBe('DISCUSSIONS');
-    });
+          expect(result.current).toBe(WIDGETS.COURSE_OUTLINE);
+        });
+      });
 
-    it('returns stored right panel when still available and not outranked', () => {
-      getSidebarId.mockReturnValue('DISCUSSIONS');
-      const { result } = renderHook(() => useInitialSidebar(buildParams({
-        getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-        getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
-      })));
+      describe('with stored RIGHT panel', () => {
+        it('returns stored RIGHT panel when still available and not outranked', () => {
+          getSidebarId.mockReturnValue('DISCUSSIONS');
+          const { result } = renderHook(() => useInitialSidebar(buildParams({
+            getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
+            getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
+          })));
 
-      expect(result.current).toBe('DISCUSSIONS');
-    });
+          expect(result.current).toBe('DISCUSSIONS');
+        });
 
-    it('returns higher-priority panel instead of stored lower-priority panel', () => {
-      getSidebarId.mockReturnValue('NOTES');
-      const { result } = renderHook(() => useInitialSidebar(buildParams({
-        getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-        getAvailableWidgets: jest.fn(() => [
-          { id: 'DISCUSSIONS', priority: 10 },
-          { id: 'NOTES', priority: 20 },
-        ]),
-      })));
+        it('returns stored RIGHT panel even before widget data has loaded', () => {
+          getSidebarId.mockReturnValue('DISCUSSIONS');
+          const { result } = renderHook(() => useInitialSidebar(buildParams({
+            getFirstAvailablePanel: jest.fn(() => null),
+            getAvailableWidgets: jest.fn(() => []),
+          })));
 
-      expect(result.current).toBe('DISCUSSIONS');
-    });
+          expect(result.current).toBe('DISCUSSIONS');
+        });
 
-    it('returns firstAvailable when stored sidebar was COURSE_OUTLINE and outline is not collapsed', () => {
-      getSidebarId.mockReturnValue(WIDGETS.COURSE_OUTLINE);
-      const { result } = renderHook(() => useInitialSidebar(buildParams()));
+        it('returns higher-priority panel instead of stored lower-priority panel', () => {
+          getSidebarId.mockReturnValue('NOTES');
+          const { result } = renderHook(() => useInitialSidebar(buildParams({
+            getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
+            getAvailableWidgets: jest.fn(() => [
+              { id: 'DISCUSSIONS', priority: 10 },
+              { id: 'NOTES', priority: 20 },
+            ]),
+          })));
 
-      expect(result.current).toBe('DISCUSSIONS');
-    });
+          expect(result.current).toBe('DISCUSSIONS');
+        });
 
-    it('returns firstAvailable when stored panel is no longer in available widgets', () => {
-      getSidebarId.mockReturnValue('NOTES');
-      const { result } = renderHook(() => useInitialSidebar(buildParams({
-        getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-        getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
-      })));
+        it('returns firstAvailable when stored panel is no longer in available widgets', () => {
+          getSidebarId.mockReturnValue('NOTES');
+          const { result } = renderHook(() => useInitialSidebar(buildParams({
+            getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
+            getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
+          })));
 
-      expect(result.current).toBe('DISCUSSIONS');
+          expect(result.current).toBe('DISCUSSIONS');
+        });
+      });
+
+      describe('with stored COURSE_OUTLINE', () => {
+        it('returns COURSE_OUTLINE', () => {
+          getSidebarId.mockReturnValue(WIDGETS.COURSE_OUTLINE);
+          const { result } = renderHook(() => useInitialSidebar(buildParams()));
+
+          expect(result.current).toBe(WIDGETS.COURSE_OUTLINE);
+        });
+      });
     });
   });
 });

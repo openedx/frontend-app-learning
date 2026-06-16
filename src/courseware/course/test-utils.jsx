@@ -51,7 +51,7 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
     </SidebarContext.Provider>,
     { store: testStore, wrapWithRouter: true },
   );
-  return wrapper;
+  return { ...wrapper, testStore };
 };
 
 export default setupDiscussionSidebar;

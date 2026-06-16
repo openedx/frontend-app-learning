@@ -125,7 +125,6 @@ describe('<SidebarUnit />', () => {
       await user.click(screen.getByText(unit.title));
 
       expect(defaultSidebarContext.toggleSidebar).not.toHaveBeenCalled();
-      expect(window.sessionStorage.getItem('hideCourseOutlineSidebar')).toBeNull();
     });
 
     it('closes sidebar on mobile devices', async () => {
@@ -136,7 +135,6 @@ describe('<SidebarUnit />', () => {
 
       expect(defaultSidebarContext.toggleSidebar).toHaveBeenCalledTimes(1);
       expect(defaultSidebarContext.toggleSidebar).toHaveBeenCalledWith(null);
-      expect(window.sessionStorage.getItem('hideCourseOutlineSidebar')).toEqual('true');
     });
   });
 
