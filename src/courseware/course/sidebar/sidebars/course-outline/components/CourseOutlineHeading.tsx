@@ -7,31 +7,32 @@ import {
 import messages from '../messages';
 
 export interface CourseOutlineHeadingProps {
-  isSequenceLevel: boolean;
-  title?: string;
-  onClickBack: () => void;
+  isDisplaySequenceLevel: boolean;
+  backButton?: {
+    title: string;
+    onClick: () => void;
+  }
   onToggleCollapse?: () => void;
 }
 
 export const CourseOutlineHeading = ({
-  isSequenceLevel,
-  title,
-  onClickBack,
+  isDisplaySequenceLevel,
+  backButton,
   onToggleCollapse,
-}:CourseOutlineHeadingProps) => {
+}: CourseOutlineHeadingProps) => {
   const intl = useIntl();
   return (
     <div
       className="outline-sidebar-heading-wrapper sticky d-flex justify-content-between align-self-start align-items-center p-2.5 pl-4"
     >
-      {isSequenceLevel && title ? (
+      {isDisplaySequenceLevel && backButton ? (
         <Button
           variant="link"
           iconBefore={ChevronLeftIcon}
           className="outline-sidebar-heading p-0 mb-0 text-left"
-          onClick={onClickBack}
+          onClick={backButton.onClick}
         >
-          {title}
+          {backButton.title}
         </Button>
       ) : (
         <span className="outline-sidebar-heading mb-0 h4">

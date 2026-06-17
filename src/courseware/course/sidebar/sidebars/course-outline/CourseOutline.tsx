@@ -60,9 +60,8 @@ export const CourseOutline = ({
   const sidebarHeading = (
     <CourseOutlineSidebarHeadingSlot
       onToggleCollapse={onToggleCollapse}
-      isSequenceLevel={isDisplaySequenceLevel}
-      title={backButtonTitle}
-      onClickBack={handleBackToSectionLevel}
+      isDisplaySequenceLevel={isDisplaySequenceLevel}
+      backButton={{ title: backButtonTitle!, onClick: handleBackToSectionLevel }}
     />
   );
   if (isActiveEntranceExam) {
