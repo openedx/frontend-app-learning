@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { WIDGETS } from '@src/constants';
 import {
   getSidebarId,
-  isOutlineSidebarCollapsed,
+  isSidebarClosedByUser,
 } from '../utils/storage';
 
 /**
@@ -15,7 +15,9 @@ import {
  * @param {Object} params
  * @param {string} params.courseId - Current course ID
  * @param {boolean} params.shouldDisplayFullScreen - Whether in mobile view
- * @param {boolean} params.isInitiallySidebarOpen - Whether sidebar should be open
+ * @param {boolean} params.isInitiallySidebarOpen - Whether the viewport / URL
+ *   permits auto-opening the sidebar on initial render. False on viewports
+ *   below the extra-large breakpoint unless the URL has `?sidebar=true`.
  * @param {Function} params.getFirstAvailablePanel - Get first available widget
  * @param {Function} params.getAvailableWidgets - Get all available widgets
  * @returns {string|null} Initial sidebar ID
@@ -28,12 +30,9 @@ export function useInitialSidebar({
   getAvailableWidgets,
 }) {
   return useMemo(() => {
-    // Check if course outline is manually collapsed
-    const isCollapsedOutline = isOutlineSidebarCollapsed();
-
     // MOBILE: Use stored value or null (no auto-open)
     if (shouldDisplayFullScreen) {
-      return getSidebarId(courseId);
+      return isSidebarClosedByUser() ? null : getSidebarId(courseId);
     }
 
     // DESKTOP: Auto-open if screen size allows
@@ -41,38 +40,35 @@ export function useInitialSidebar({
       return null;
     }
 
-    const firstAvailable = getFirstAvailablePanel();
-
-    // If NO RIGHT panels available, return COURSE_OUTLINE (ignore localStorage)
-    if (!firstAvailable) {
-      return isCollapsedOutline ? null : WIDGETS.COURSE_OUTLINE;
+    // User explicitly closed the sidebar this session — respect that
+    if (isSidebarClosedByUser()) {
+      return null;
     }
 
-    // RIGHT panels ARE available - check stored preference
     const storedSidebar = getSidebarId(courseId);
-    if (storedSidebar) {
-      // Check if stored is a RIGHT panel that's still available
-      const availableWidgets = getAvailableWidgets();
-      const storedWidget = availableWidgets.find(w => w.id === storedSidebar);
-      const firstAvailableWidget = availableWidgets.find(w => w.id === firstAvailable);
 
-      if (storedWidget && storedWidget.id !== WIDGETS.COURSE_OUTLINE) {
-        // Check priority: if a higher priority panel is now available, use it instead
-        if (firstAvailableWidget && firstAvailableWidget.priority < storedWidget.priority) {
-          // Higher priority panel available (lower number = higher priority)
+    // Honor a stored RIGHT panel preference even before widget data has loaded.
+    // Keeps initialSidebar stable across the async load window so downstream
+    // effects don't briefly see COURSE_OUTLINE and overwrite storage.
+    if (storedSidebar && storedSidebar !== WIDGETS.COURSE_OUTLINE) {
+      const firstAvailable = getFirstAvailablePanel();
+      if (firstAvailable) {
+        const availableWidgets = getAvailableWidgets();
+        const storedWidget = availableWidgets.find(w => w.id === storedSidebar);
+        const firstAvailableWidget = availableWidgets.find(w => w.id === firstAvailable);
+        if (!storedWidget) {
+          // Stored widget no longer registered; fall back to first available.
           return firstAvailable;
         }
-        // Stored RIGHT panel is still available and no higher priority - use it (sticky)
-        return storedSidebar;
+        if (firstAvailableWidget && firstAvailableWidget.priority < storedWidget.priority) {
+          return firstAvailable;
+        }
       }
-      // If stored was COURSE_OUTLINE and not manually collapsed, prefer firstAvailable
-      if (storedSidebar === WIDGETS.COURSE_OUTLINE && !isCollapsedOutline) {
-        return firstAvailable;
-      }
+      return storedSidebar;
     }
 
-    // Priority cascade: Use first available RIGHT panel
-    return firstAvailable;
+    // Stored COURSE_OUTLINE or no stored preference: open the navigation sidebar.
+    return WIDGETS.COURSE_OUTLINE;
   }, [
     shouldDisplayFullScreen,
     isInitiallySidebarOpen,

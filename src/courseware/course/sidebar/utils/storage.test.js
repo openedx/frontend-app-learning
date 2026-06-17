@@ -1,8 +1,8 @@
 import { logError } from '@edx/frontend-platform/logging';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import {
-  isOutlineSidebarCollapsed,
-  setOutlineSidebarCollapsed,
+  isSidebarClosedByUser,
+  setSidebarClosedByUser,
   getSidebarId,
   setSidebarId,
 } from './storage';
@@ -23,21 +23,21 @@ describe('sidebar storage utils', () => {
     sessionStorage.clear();
   });
 
-  describe('isOutlineSidebarCollapsed', () => {
+  describe('isSidebarClosedByUser', () => {
     it('returns true when sessionStorage contains "true"', () => {
-      sessionStorage.setItem(STORAGE_KEYS.OUTLINE_SIDEBAR_HIDDEN, 'true');
+      sessionStorage.setItem(STORAGE_KEYS.SIDEBAR_CLOSED_BY_USER, 'true');
 
-      expect(isOutlineSidebarCollapsed()).toBe(true);
+      expect(isSidebarClosedByUser()).toBe(true);
     });
 
     it('returns false when sessionStorage key is absent', () => {
-      expect(isOutlineSidebarCollapsed()).toBe(false);
+      expect(isSidebarClosedByUser()).toBe(false);
     });
 
     it('returns false when sessionStorage contains "false"', () => {
-      sessionStorage.setItem(STORAGE_KEYS.OUTLINE_SIDEBAR_HIDDEN, 'false');
+      sessionStorage.setItem(STORAGE_KEYS.SIDEBAR_CLOSED_BY_USER, 'false');
 
-      expect(isOutlineSidebarCollapsed()).toBe(false);
+      expect(isSidebarClosedByUser()).toBe(false);
     });
 
     it('returns false and logs error when sessionStorage.getItem throws', () => {
@@ -45,24 +45,24 @@ describe('sidebar storage utils', () => {
         throw new Error('Storage error');
       });
 
-      expect(isOutlineSidebarCollapsed()).toBe(false);
+      expect(isSidebarClosedByUser()).toBe(false);
       expect(logError).toHaveBeenCalled();
       spy.mockRestore();
     });
   });
 
-  describe('setOutlineSidebarCollapsed', () => {
-    it('sets the storage key to "true" when collapsed=true', () => {
-      setOutlineSidebarCollapsed(true);
+  describe('setSidebarClosedByUser', () => {
+    it('sets the storage key to "true" when closed=true', () => {
+      setSidebarClosedByUser(true);
 
-      expect(sessionStorage.getItem(STORAGE_KEYS.OUTLINE_SIDEBAR_HIDDEN)).toBe('true');
+      expect(sessionStorage.getItem(STORAGE_KEYS.SIDEBAR_CLOSED_BY_USER)).toBe('true');
     });
 
-    it('removes the storage key when collapsed=false', () => {
-      sessionStorage.setItem(STORAGE_KEYS.OUTLINE_SIDEBAR_HIDDEN, 'true');
-      setOutlineSidebarCollapsed(false);
+    it('removes the storage key when closed=false', () => {
+      sessionStorage.setItem(STORAGE_KEYS.SIDEBAR_CLOSED_BY_USER, 'true');
+      setSidebarClosedByUser(false);
 
-      expect(sessionStorage.getItem(STORAGE_KEYS.OUTLINE_SIDEBAR_HIDDEN)).toBeNull();
+      expect(sessionStorage.getItem(STORAGE_KEYS.SIDEBAR_CLOSED_BY_USER)).toBeNull();
     });
 
     it('does not throw and logs error when sessionStorage.setItem throws', () => {
@@ -70,7 +70,7 @@ describe('sidebar storage utils', () => {
         throw new Error('Storage error');
       });
 
-      expect(() => setOutlineSidebarCollapsed(true)).not.toThrow();
+      expect(() => setSidebarClosedByUser(true)).not.toThrow();
       expect(logError).toHaveBeenCalled();
       spy.mockRestore();
     });
@@ -80,7 +80,7 @@ describe('sidebar storage utils', () => {
         throw new Error('Storage error');
       });
 
-      expect(() => setOutlineSidebarCollapsed(false)).not.toThrow();
+      expect(() => setSidebarClosedByUser(false)).not.toThrow();
       expect(logError).toHaveBeenCalled();
       spy.mockRestore();
     });

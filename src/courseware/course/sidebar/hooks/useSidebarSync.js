@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { WIDGETS } from '@src/constants';
 import {
   setSidebarId,
-  isOutlineSidebarCollapsed,
+  isSidebarClosedByUser,
 } from '../utils/storage';
 
 /**
@@ -56,19 +56,16 @@ export function useSidebarSync({
     if (initialSidebar && currentSidebar !== initialSidebar) {
       // Handle COURSE_OUTLINE separately
       if (initialSidebar === WIDGETS.COURSE_OUTLINE) {
-        // COURSE_OUTLINE should be open (no RIGHT panels available)
+        // initialSidebar is COURSE_OUTLINE because storage says so (or nothing is stored)
         if (currentSidebar === null) {
-          // Nothing open - open COURSE_OUTLINE if not manually collapsed
-          const isCollapsedOutline = isOutlineSidebarCollapsed();
-          if (!isCollapsedOutline) {
+          // Nothing open - open COURSE_OUTLINE unless the user has explicitly closed
+          if (!isSidebarClosedByUser()) {
             setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
             setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
           }
         } else if (currentSidebar && currentSidebar !== WIDGETS.COURSE_OUTLINE) {
-          // A RIGHT panel is currently open, but initialSidebar says COURSE_OUTLINE should be open
-          // This means NO RIGHT panels are available - switch to COURSE_OUTLINE
-          const isCollapsedOutline = isOutlineSidebarCollapsed();
-          if (!isCollapsedOutline) {
+          // A RIGHT panel is currently open, but storage now says COURSE_OUTLINE — sync to it.
+          if (!isSidebarClosedByUser()) {
             setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
             setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
           } else {
@@ -82,10 +79,9 @@ export function useSidebarSync({
         setSidebarId(courseId, initialSidebar);
       }
     } else if (!initialSidebar && currentSidebar && currentSidebar !== WIDGETS.COURSE_OUTLINE) {
-      // If initialSidebar is now null (no RIGHT panels) and current is a RIGHT panel
-      // Open COURSE_OUTLINE as fallback
-      const isCollapsedOutline = isOutlineSidebarCollapsed();
-      if (!isCollapsedOutline) {
+      // initialSidebar is null but a RIGHT panel is currently open — sync by opening
+      // COURSE_OUTLINE, or closing if the user has explicitly closed the sidebar.
+      if (!isSidebarClosedByUser()) {
         setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
         setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
       } else {
