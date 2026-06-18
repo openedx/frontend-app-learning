@@ -14,32 +14,41 @@ export interface CourseTabsNavigationProps {
     slug: string;
     url: string;
   }>;
+  showNavbar?: boolean;
+  showSearchButton?: boolean;
 }
 
 const CourseTabsNavigation = ({
   activeTabSlug = undefined,
   tabs,
-}:CourseTabsNavigationProps) => {
+  showNavbar = true,
+  showSearchButton = true,
+}: CourseTabsNavigationProps) => {
   const intl = useIntl();
   const { show } = useCoursewareSearchState();
 
   return (
     <div id="courseTabsNavigation" className="mb-3 course-tabs-navigation">
-      <div className="container-xl">
-        <div className="nav-bar">
-          <div className="nav-menu">
-            <Tabs
-              className="nav-underline-tabs"
-              aria-label={intl.formatMessage(messages.courseMaterial)}
-            >
-              <CourseTabLinksSlot tabs={tabs} activeTabSlug={activeTabSlug} />
-            </Tabs>
-          </div>
-          <div className="search-toggle">
-            <CoursewareSearchToggle />
+      {showNavbar && (
+        <div className="container-xl">
+          <div className="nav-bar">
+
+            <div className="nav-menu">
+              <Tabs
+                className="nav-underline-tabs"
+                aria-label={intl.formatMessage(messages.courseMaterial)}
+              >
+                <CourseTabLinksSlot tabs={tabs} activeTabSlug={activeTabSlug} />
+              </Tabs>
+            </div>
+            { showSearchButton && (
+              <div className="search-toggle">
+                <CoursewareSearchToggle />
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      )}
       {show && <CoursewareSearch />}
     </div>
   );

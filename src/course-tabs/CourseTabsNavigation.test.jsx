@@ -3,7 +3,7 @@ import { AppProvider } from '@edx/frontend-platform/react';
 import {
   initializeMockApp, render, screen,
 } from '../setupTest';
-import { useCoursewareSearchState, useCoursewareSearchParams } from '../course-home/courseware-search/hooks';
+import { useCoursewareSearchState, useCoursewareSearchParams, useCoursewareSearchFeatureFlag } from '../course-home/courseware-search/hooks';
 import { CourseTabsNavigation } from './index';
 import initializeStore from '../store';
 
@@ -41,6 +41,7 @@ describe('Course Tabs Navigation', () => {
   beforeEach(() => {
     useCoursewareSearchState.mockImplementation(() => ({ show: false }));
     useCoursewareSearchParams.mockReturnValue(coursewareSearch);
+    useCoursewareSearchFeatureFlag.mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -73,13 +74,66 @@ describe('Course Tabs Navigation', () => {
   it('should NOT render CoursewareSearch if the flag is off', () => {
     renderComponent();
 
-    expect(screen.queryByTestId('courseware-search-dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('should render CoursewareSearch if the flag is on', () => {
     useCoursewareSearchState.mockImplementation(() => ({ show: true }));
     renderComponent();
 
-    expect(screen.queryByTestId('courseware-search-dialog')).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).toBeInTheDocument();
+  });
+
+  describe('showNavbar prop', () => {
+    it('should render the nav bar by default', () => {
+      const tabs = [
+        { url: 'http://test-url1', title: 'Item 1', slug: 'test1' },
+      ];
+      renderComponent({ tabs });
+
+      expect(screen.getByRole('navigation')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Item 1' })).toBeInTheDocument();
+    });
+
+    it('should hide the nav bar when showNavbar is false', () => {
+      const tabs = [
+        { url: 'http://test-url1', title: 'Item 1', slug: 'test1' },
+      ];
+      renderComponent({ tabs, showNavbar: false });
+
+      expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Item 1' })).not.toBeInTheDocument();
+    });
+
+    it('should still render CoursewareSearch when showNavbar is false and search flag is on', () => {
+      useCoursewareSearchState.mockImplementation(() => ({ show: true }));
+      renderComponent({ tabs: [], showNavbar: false });
+
+      expect(screen.queryByRole('dialog')).toBeInTheDocument();
+    });
+  });
+
+  describe('showSearchButton prop', () => {
+    it('should render the search toggle button by default', () => {
+      renderComponent({ tabs: [] });
+
+      expect(screen.getByRole('button', { name: /search within this course/i })).toBeInTheDocument();
+    });
+
+    it('should hide the search toggle button when showSearchButton is false', () => {
+      renderComponent({ tabs: [], showSearchButton: false });
+
+      expect(screen.queryByRole('button', { name: /search within this course/i })).not.toBeInTheDocument();
+    });
+
+    it('should still render tab links when showSearchButton is false', () => {
+      const tabs = [
+        { url: 'http://test-url1', title: 'Item 1', slug: 'test1' },
+      ];
+      renderComponent({ tabs, showSearchButton: false });
+
+      expect(screen.getByRole('link', { name: 'Item 1' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /search within this course/i })).not.toBeInTheDocument();
+    });
   });
 });
