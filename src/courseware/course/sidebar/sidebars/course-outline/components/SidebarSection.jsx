@@ -47,10 +47,13 @@ const SidebarSection = ({ section, handleSelectSection }) => {
   );
 
   return (
-    <li className={classNames('course-sidebar-section', { 'active-section': isActiveSection })}>
+    <li className="mb-2 course-sidebar-section">
       <Button
         variant="tertiary"
-        className="d-flex align-items-center w-100 rounded-0 justify-content-start"
+        className={classNames(
+          'd-flex align-items-center w-100 px-4 py-3.5 rounded-0 justify-content-start',
+          { 'bg-info-100': isActiveSection },
+        )}
         onClick={() => handleSelectSection(id)}
       >
         {sectionTitle}

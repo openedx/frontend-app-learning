@@ -58,7 +58,7 @@ export const CourseOutline = ({
     <CourseOutlineSidebarHeadingSlot
       onToggleCollapse={onToggleCollapse}
       isDisplaySequenceLevel={isDisplaySequenceLevel}
-      backButton={{ title: backButtonTitle!, onClick: handleBackToSectionLevel }}
+      backButton={backButtonTitle ? { title: backButtonTitle, onClick: handleBackToSectionLevel } : undefined}
     />
   );
 
