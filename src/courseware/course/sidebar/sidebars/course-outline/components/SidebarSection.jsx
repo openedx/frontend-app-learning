@@ -1,6 +1,6 @@
 import {
-  CourseOverviewSectionCompletionIconSlot,
-} from '@src/plugin-slots/CourseOutlineSidebarSectionCompletionIconSlot';
+  CourseOutlineSidebarCompletionIconSlot,
+} from '@src/plugin-slots/CourseOutlineSidebarCompletionIconSlot';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -26,7 +26,8 @@ const SidebarSection = ({ section, handleSelectSection }) => {
   const sectionTitle = (
     <>
       <div className="col-auto p-0">
-        <CourseOverviewSectionCompletionIconSlot
+        <CourseOutlineSidebarCompletionIconSlot
+          variant="section"
           completionStat={completionStat}
           enabled={isEnabledCompletionTracking}
           active={isActiveSection}

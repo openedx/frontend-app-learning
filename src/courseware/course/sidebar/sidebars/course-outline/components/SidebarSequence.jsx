@@ -1,6 +1,6 @@
 import {
-  CourseOverviewSequenceCompletionIconSlot,
-} from '@src/plugin-slots/CourseOutlineSidebarSequenceCompletionIconSlot';
+  CourseOutlineSidebarCompletionIconSlot,
+} from '@src/plugin-slots/CourseOutlineSidebarCompletionIconSlot';
 import { useState } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -36,7 +36,8 @@ const SidebarSequence = ({
   const sectionTitle = (
     <>
       <div className="col-auto p-0" style={{ fontSize: '1.1rem' }}>
-        <CourseOverviewSequenceCompletionIconSlot
+        <CourseOutlineSidebarCompletionIconSlot
+          variant="sequence"
           completionStat={completionStat}
           enabled={isEnabledCompletionTracking}
           active={isActiveSequence}
