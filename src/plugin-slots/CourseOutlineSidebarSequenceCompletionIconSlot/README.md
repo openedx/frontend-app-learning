@@ -9,6 +9,7 @@ This slot is used to replace/modify/hide the completion icon for sequences in th
 ### Props:
 * `completionStat: { completed, total }`: Object containing the completion status of the sequence
 * `enabled`: Boolean indicating if completion tracking is enabled for the sequence
+* `active`: Boolean indicating if the sequence is currently active
 
 ## Example
 
@@ -32,9 +33,9 @@ const config = {
           widget: {
             id: 'custom_icon',
             type: DIRECT_PLUGIN,
-            RenderWidget: ({completionStat, enabled}) => (
-              <Bubble>
-                {completionStat.completed}/{completionStat.total}
+            RenderWidget: ({completionStat, enabled, active}) => (
+              <Bubble variant={active ? 'success' : 'primary'}>
+                {enabled && <>{completionStat.completed}/{completionStat.total}</>}
               </Bubble>
             ),
           },

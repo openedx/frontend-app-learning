@@ -9,6 +9,7 @@ This slot is used to replace/modify/hide the completion icon for sections in the
 ### Props:
 * `completionStat: { completed, total }`: Object containing the completion status of the section
 * `enabled`: Boolean indicating if completion tracking is enabled for the section
+* `active`: Boolean indicating if the section is currently active
 
 ## Example
 
@@ -35,9 +36,9 @@ const config = {
           widget: {
             id: 'custom_icon',
             type: DIRECT_PLUGIN,
-            RenderWidget: ({completionStat, enabled}) => (
-              <Bubble>
-                {completionStat.completed}/{completionStat.total}
+            RenderWidget: ({completionStat, enabled, active}) => (
+              <Bubble variant={active ? 'success' : 'primary'}>
+                {enabled && <>{completionStat.completed}/{completionStat.total}</>}
               </Bubble>
             ),
           },
