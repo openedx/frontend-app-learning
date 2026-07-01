@@ -1,3 +1,6 @@
+import {
+  CourseOutlineSidebarCompletionIconSlot,
+} from '@src/plugin-slots/CourseOutlineSidebarCompletionIconSlot';
 import { useState } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -6,7 +9,6 @@ import { Collapsible } from '@openedx/paragon';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { useCourseOutlineSidebar } from '../hooks';
-import CompletionIcon from './CompletionIcon';
 import SidebarUnit from './SidebarUnit';
 import { UNIT_ICON_TYPES } from './UnitIcon';
 
@@ -34,7 +36,12 @@ const SidebarSequence = ({
   const sectionTitle = (
     <>
       <div className="col-auto p-0" style={{ fontSize: '1.1rem' }}>
-        <CompletionIcon completionStat={completionStat} enabled={isEnabledCompletionTracking} />
+        <CourseOutlineSidebarCompletionIconSlot
+          variant="sequence"
+          completionStat={completionStat}
+          enabled={isEnabledCompletionTracking}
+          active={isActiveSequence}
+        />
       </div>
       <div className="col-9 d-flex flex-column flex-grow-1 ml-3 mr-auto p-0 text-left">
         <span className="align-middle text-dark-500">{title}</span>
@@ -53,7 +60,7 @@ const SidebarSequence = ({
   return (
     <li>
       <Collapsible
-        className={classNames('mb-2', { 'active-section': isActiveSequence, 'bg-info-100': isActiveSequence && !open })}
+        className={classNames('mb-2', { 'bg-info-100': isActiveSequence && !open })}
         styling="card-lg text-break"
         title={sectionTitle}
         open={open}

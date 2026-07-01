@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import {
   CheckCircle as CheckCircleIcon,
   LmsCompletionSolid as LmsCompletionSolidIcon,
@@ -6,7 +5,15 @@ import {
 
 import { DashedCircleIcon } from '../icons';
 
-const CompletionIcon = ({ completionStat: { completed = 0, total = 0 }, enabled }) => {
+export interface CompletionIconProps {
+  completionStat: {
+    completed: number;
+    total: number;
+  };
+  enabled: boolean;
+}
+
+export const CompletionIcon = ({ completionStat: { completed = 0, total = 0 }, enabled }: CompletionIconProps) => {
   const percentage = total !== 0 ? Math.min((completed / total) * 100, 100) : 0;
   const remainder = 100 - percentage;
 
@@ -18,14 +25,6 @@ const CompletionIcon = ({ completionStat: { completed = 0, total = 0 }, enabled 
     default:
       return <DashedCircleIcon percentage={percentage} remainder={remainder} data-testid="dashed-circle-icon" />;
   }
-};
-
-CompletionIcon.propTypes = {
-  completionStat: PropTypes.shape({
-    completed: PropTypes.number,
-    total: PropTypes.number,
-  }).isRequired,
-  enabled: PropTypes.bool.isRequired,
 };
 
 export default CompletionIcon;

@@ -1,32 +1,35 @@
-import { useState } from 'react';
-import classNames from 'classnames';
-import { Button, useToggle, IconButton } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import {
-  MenuOpen as MenuOpenIcon,
-  ChevronLeft as ChevronLeftIcon,
-} from '@openedx/paragon/icons';
-
+import { useToggle } from '@openedx/paragon';
 import { LOADING } from '@src/constants';
+
 import PageLoading from '@src/generic/PageLoading';
+import { CourseOutlineSidebarHeadingSlot } from '@src/plugin-slots/CourseOutlineSidebarHeadingSlot';
+import classNames from 'classnames';
+import { useState } from 'react';
 import SidebarSection from './components/SidebarSection';
 import SidebarSequence from './components/SidebarSequence';
 import { ID } from './constants';
 import { useCourseOutlineSidebar } from './hooks';
 import messages from './messages';
 
-const CourseOutlineTray = () => {
+interface CourseOutlineProps {
+  shouldDisplayFullScreen?: boolean;
+  onToggleCollapse?: () => void;
+}
+
+export const CourseOutline = ({
+  shouldDisplayFullScreen = false,
+  onToggleCollapse,
+}: CourseOutlineProps) => {
   const intl = useIntl();
-  const [selectedSection, setSelectedSection] = useState(null);
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
 
   const {
     courseId,
     unitId,
     currentSidebar,
-    handleToggleCollapse,
     isActiveEntranceExam,
-    shouldDisplayFullScreen,
     courseOutlineStatus,
     activeSequenceId,
     sections,
@@ -34,46 +37,29 @@ const CourseOutlineTray = () => {
   } = useCourseOutlineSidebar();
 
   const resolvedSectionId = selectedSection
-    || Object.keys(sections).find(
-      (sectionId) => sections[sectionId].sequenceIds.includes(activeSequenceId),
-    );
+        || Object.keys(sections).find(
+          (sectionId):boolean => sections[sectionId].sequenceIds.includes(activeSequenceId),
+        )!;
   const sectionsIds = Object.keys(sections);
-  const sequenceIds = sections[resolvedSectionId]?.sequenceIds || [];
-  const backButtonTitle = sections[resolvedSectionId]?.title;
+  const sequenceIds: string[] = sections[resolvedSectionId]?.sequenceIds || [];
+  const backButtonTitle: string | undefined = sections[resolvedSectionId]?.title;
 
   const handleBackToSectionLevel = () => {
     setDisplaySectionLevel();
     setSelectedSection(null);
   };
 
-  const handleSelectSection = (id) => {
+  const handleSelectSection = (id:string) => {
     setDisplaySequenceLevel();
     setSelectedSection(id);
   };
 
   const sidebarHeading = (
-    <div className="outline-sidebar-heading-wrapper sticky d-flex justify-content-between align-self-start align-items-center bg-light-200 p-2.5 pl-4">
-      {isDisplaySequenceLevel && backButtonTitle ? (
-        <Button
-          variant="link"
-          iconBefore={ChevronLeftIcon}
-          className="outline-sidebar-heading p-0 mb-0 text-left text-dark-500"
-          onClick={handleBackToSectionLevel}
-        >
-          {backButtonTitle}
-        </Button>
-      ) : (
-        <span className="outline-sidebar-heading mb-0 h4 text-dark-500">
-          {intl.formatMessage(messages.courseOutlineTitle)}
-        </span>
-      )}
-      <IconButton
-        alt={intl.formatMessage(messages.toggleCourseOutlineTrigger)}
-        className="outline-sidebar-toggle-btn flex-shrink-0 text-dark bg-light-200"
-        iconAs={MenuOpenIcon}
-        onClick={handleToggleCollapse}
-      />
-    </div>
+    <CourseOutlineSidebarHeadingSlot
+      onToggleCollapse={onToggleCollapse}
+      isDisplaySequenceLevel={isDisplaySequenceLevel}
+      backButton={backButtonTitle ? { title: backButtonTitle, onClick: handleBackToSectionLevel } : undefined}
+    />
   );
 
   if (isActiveEntranceExam || currentSidebar !== ID) {
@@ -107,19 +93,18 @@ const CourseOutlineTray = () => {
         {sidebarHeading}
         <ol id="outline-sidebar-outline" className="list-unstyled">
           {isDisplaySequenceLevel
-            ? sequenceIds.map((sequenceId) => (
+            ? sequenceIds.map((sequenceId: string) => (
               <SidebarSequence
                 key={sequenceId}
-                courseId={courseId}
+                courseId={courseId!}
                 sequence={sequences[sequenceId]}
                 defaultOpen={sequenceId === activeSequenceId}
-                activeUnitId={unitId}
+                activeUnitId={unitId!}
               />
             ))
             : sectionsIds.map((sectionId) => (
               <SidebarSection
                 key={sectionId}
-                courseId={courseId}
                 section={sections[sectionId]}
                 handleSelectSection={handleSelectSection}
               />
@@ -130,6 +115,4 @@ const CourseOutlineTray = () => {
   );
 };
 
-CourseOutlineTray.ID = ID;
-
-export default CourseOutlineTray;
+export default CourseOutline;

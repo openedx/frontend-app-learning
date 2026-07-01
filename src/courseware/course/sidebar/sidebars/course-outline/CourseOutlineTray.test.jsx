@@ -74,7 +74,7 @@ describe('<CourseOutlineTray />', () => {
     await expect(screen.queryByText(messages.loading.defaultMessage)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: section.title })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: new RegExp(`${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}`) })).toBeInTheDocument();
     expect(screen.getByText(unit.title)).toBeInTheDocument();
   });
 
@@ -115,13 +115,13 @@ describe('<CourseOutlineTray />', () => {
 
     const sidebarBackBtn = screen.queryByRole('button', { name: section.title });
     expect(sidebarBackBtn).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: `${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}` })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: new RegExp(`${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}`) })).toBeInTheDocument();
 
     await user.click(sidebarBackBtn);
     expect(sidebarBackBtn).not.toBeInTheDocument();
     expect(screen.queryByText(messages.courseOutlineTitle.defaultMessage)).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: `${section.title} , ${courseOutlineMessages.incompleteSection.defaultMessage}` }));
+    await user.click(screen.getByRole('button', { name: new RegExp(`${section.title} , ${courseOutlineMessages.incompleteSection.defaultMessage}`) }));
     expect(screen.queryByRole('button', { name: section.title })).toBeInTheDocument();
   });
 });
