@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import { useCourseOutlineSidebar } from '../hooks';
+import { useCourseOutlineData, useCourseOutlineSidebar } from '../hooks';
 
 interface Props {
   courseId: string;
@@ -26,17 +26,25 @@ const UnitLinkWrapper: React.FC<Props> = ({
   courseId,
   children,
 }) => {
-  const { handleUnitClick } = useCourseOutlineSidebar();
+  const { handleUnitClick } = useCourseOutlineData();
+  const { shouldDisplayFullScreen, handleToggleCollapse } = useCourseOutlineSidebar();
   const { pathname } = useLocation();
   const isPreview = pathname.startsWith('/preview');
   const baseUrl = `/course/${courseId}/${sequenceId}/${id}`;
   const link = isPreview ? `/preview${baseUrl}` : baseUrl;
+  const handleClick = React.useCallback(() => {
+    // Hide the sidebar after selecting a unit on a mobile device.
+    if (shouldDisplayFullScreen) {
+      handleToggleCollapse();
+    }
+    handleUnitClick({ sequenceId, activeUnitId, id });
+  }, [handleUnitClick, sequenceId, activeUnitId, id]);
 
   return (
     <Link
       to={link}
       className="row w-100 m-0 d-flex align-items-center text-gray-700"
-      onClick={() => handleUnitClick({ sequenceId, activeUnitId, id })}
+      onClick={handleClick}
     >
       {children}
     </Link>
