@@ -1,17 +1,14 @@
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import SidebarUnitContent from '@src/courseware/course/sidebar/sidebars/course-outline/components/SidebarUnitContent';
-import {
-  type UnitIconType,
-} from '@src/courseware/course/sidebar/sidebars/course-outline/components/UnitIcon';
 import React from 'react';
 
 export interface Props {
   unit: {
-    complete: boolean;
-    icon: UnitIconType;
-    id: string;
-    title: string;
-    type: string;
+    complete?: boolean;
+    icon?: string;
+    id?: string;
+    title?: string;
+    type?: string;
   };
   icon: React.ReactNode;
   isLocked: boolean;
@@ -34,7 +31,8 @@ export const CourseOutlineSidebarUnitSlot = ({
     }}
   >
     <SidebarUnitContent
-      unit={unit}
+      title={unit.title}
+      isComplete={unit.complete}
       isCompletionTrackingEnabled={isCompletionTrackingEnabled}
       icon={icon}
     />

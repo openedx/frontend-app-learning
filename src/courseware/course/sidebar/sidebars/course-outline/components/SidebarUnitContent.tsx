@@ -3,27 +3,19 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import messages from '../messages';
 
 interface SidebarUnitContentProps {
-  unit: {
-    complete: boolean;
-    icon: string;
-    id: string;
-    title: string;
-    type: string;
-  };
+  title?: string;
+  isComplete?: boolean;
   isCompletionTrackingEnabled: boolean;
   icon: React.ReactNode;
 }
 
 const SidebarUnitContent = ({
-  unit,
+  title,
+  isComplete,
   isCompletionTrackingEnabled,
   icon,
 }: SidebarUnitContentProps) => {
   const intl = useIntl();
-  const {
-    complete,
-    title,
-  } = unit;
   return (
     <>
       <div className="col-auto p-0">
@@ -35,7 +27,7 @@ const SidebarUnitContent = ({
         </span>
         {isCompletionTrackingEnabled && (
           <span className="sr-only">
-            , {intl.formatMessage(complete ? messages.completedUnit : messages.incompleteUnit)}
+            , {intl.formatMessage(isComplete ? messages.completedUnit : messages.incompleteUnit)}
           </span>
         )}
       </div>

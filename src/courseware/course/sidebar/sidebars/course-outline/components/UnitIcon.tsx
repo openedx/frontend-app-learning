@@ -22,7 +22,7 @@ export const UNIT_ICON_TYPES = {
 export type UnitIconType = typeof UNIT_ICON_TYPES[keyof typeof UNIT_ICON_TYPES];
 
 export interface UnitIconProps extends SVGProps<SVGSVGElement> {
-  type: UnitIconType;
+  type?: string;
   isCompleted: boolean;
 }
 
@@ -57,7 +57,7 @@ const UnitIcon = ({ type, isCompleted, ...props }: UnitIconProps) => {
     },
   };
 
-  const iconEntry = iconMap[type || UNIT_ICON_TYPES.other];
+  const iconEntry = iconMap[type || UNIT_ICON_TYPES.other] ?? iconMap[UNIT_ICON_TYPES.other];
   const Icon: IconType = isIconPair(iconEntry) ? iconEntry[isCompleted ? 'complete' : 'default'] : iconEntry;
 
   return (

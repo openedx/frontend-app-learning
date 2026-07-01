@@ -1,6 +1,5 @@
 import UnitIcon, {
   UNIT_ICON_TYPES,
-  UnitIconType,
 } from '@src/courseware/course/sidebar/sidebars/course-outline/components/UnitIcon';
 import classNames from 'classnames';
 
@@ -13,11 +12,11 @@ interface SidebarUnitProps {
   sequenceId: string;
   isFirst: boolean;
   unit: {
-    complete: boolean;
-    icon: UnitIconType;
-    id: string;
-    title: string;
-    type: string;
+    complete?: boolean;
+    icon?: string;
+    id?: string;
+    title?: string;
+    type?: string;
   };
   isActive: boolean;
   isLocked: boolean;
@@ -42,7 +41,7 @@ const SidebarUnit = ({
   } = unit;
 
   const iconType = isLocked ? UNIT_ICON_TYPES.lock : icon;
-  const completeAndEnabled = complete && isCompletionTrackingEnabled;
+  const completeAndEnabled = Boolean(isCompletionTrackingEnabled && complete);
   const unitIcon = <UnitIcon type={iconType} isCompleted={completeAndEnabled} />;
   return (
     <li className={classNames({
