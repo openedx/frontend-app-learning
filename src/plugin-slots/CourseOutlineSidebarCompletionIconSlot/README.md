@@ -27,6 +27,7 @@ The following `env.config.jsx` will replace the course outline sidebar completio
 ```js
 import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
 import { Bubble } from '@openedx/paragon';
+import { CompletionIcon } from '@src/courseware/course/sidebar/sidebars/course-outline/components/CompletionIcon';
 
 
 const config = {
@@ -44,7 +45,7 @@ const config = {
                 <Bubble variant={active ? 'success' : 'primary'}>
                   {enabled && <>{completionStat.completed}/{completionStat.total}</>}
                 </Bubble>
-              ) : null
+              ) : <CompletionIcon completionStat={completionStat} enabled={enabled} />
             ),
           },
         },
@@ -64,7 +65,7 @@ The following `env.config.jsx` will replace the course outline sidebar completio
 ```js
 import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
 import { Bubble } from '@openedx/paragon';
-
+import { CompletionIcon } from '@src/courseware/course/sidebar/sidebars/course-outline/components/CompletionIcon';
 
 const config = {
   pluginSlots: {
@@ -81,7 +82,7 @@ const config = {
                 <Bubble variant={active ? 'success' : 'primary'}>
                   {enabled && <>{completionStat.completed}/{completionStat.total}</>}
                 </Bubble>
-              ) : null
+              ) : <CompletionIcon completionStat={completionStat} enabled={enabled} />
             ),
           },
         },

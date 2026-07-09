@@ -12,15 +12,7 @@ import { ID } from './constants';
 import { useCourseOutlineSidebar } from './hooks';
 import messages from './messages';
 
-interface CourseOutlineProps {
-  shouldDisplayFullScreen?: boolean;
-  onToggleCollapse?: () => void;
-}
-
-export const CourseOutline = ({
-  shouldDisplayFullScreen = false,
-  onToggleCollapse,
-}: CourseOutlineProps) => {
+export const CourseOutline = () => {
   const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
@@ -34,6 +26,8 @@ export const CourseOutline = ({
     activeSequenceId,
     sections,
     sequences,
+    shouldDisplayFullScreen,
+    handleToggleCollapse,
   } = useCourseOutlineSidebar();
 
   const resolvedSectionId = selectedSection
@@ -56,7 +50,7 @@ export const CourseOutline = ({
 
   const sidebarHeading = (
     <CourseOutlineSidebarHeadingSlot
-      onToggleCollapse={onToggleCollapse}
+      onToggleCollapse={handleToggleCollapse}
       isDisplaySequenceLevel={isDisplaySequenceLevel}
       backButton={backButtonTitle ? { title: backButtonTitle, onClick: handleBackToSectionLevel } : undefined}
     />

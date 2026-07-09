@@ -7,8 +7,8 @@ import { DashedCircleIcon } from '../icons';
 
 export interface CompletionIconProps {
   completionStat: {
-    completed: number;
-    total: number;
+    completed?: number;
+    total?: number;
   };
   enabled: boolean;
 }
