@@ -79,7 +79,7 @@ const LoadedTabPage = ({
         streakDiscountCouponEnabled={streakDiscountCouponEnabled}
         verifiedMode={verifiedMode}
       />
-      <main className="d-flex flex-column flex-grow-1">
+      <main className={`d-flex flex-column flex-grow-1 ${activeTabSlug}-tab-page`}>
         <AlertList
           topic="outline"
           className="mx-5 mt-3"
