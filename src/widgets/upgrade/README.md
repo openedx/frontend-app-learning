@@ -1,45 +1,54 @@
 # Learning Upgrade Widget
 
-Optional upgrade sidebar widget for the [Open edX Learning MFE](https://github.com/openedx/frontend-app-learning).
+Built-in upgrade sidebar widget for the [Open edX Learning MFE](https://github.com/openedx/frontend-app-learning).
 
-The widget lives in `src/widgets/upgrade/` alongside the other built-in widgets. Instances that need the upgrade panel register it via `env.config.jsx`; instances that don't simply omit it.
+The widget lives in `src/widgets/upgrade/` alongside the other built-in widgets. It is currently included in `DEFAULT_WIDGETS` and enabled by default. Its availability check only displays it for courses with a verified mode.
 
 > **Future extraction**: If this widget is ever moved to its own repository it can be published as an npm package. The `widgetConfig` shape and `isAvailable` contract are designed to be compatible with that transition.
 
 ## Usage
 
-### 1. Register the widget
+### Default behavior
+
+No `SIDEBAR_WIDGETS` configuration is required to enable the Upgrade widget. Adding `upgradeWidgetConfig` to `SIDEBAR_WIDGETS` while it remains a default is safe, but the duplicate entry is ignored in favor of the default configuration.
+
+### Disable the widget
+
+Add a disabled entry with the Upgrade widget's ID to `env.config.jsx`:
+
+```jsx
+export default {
+  SIDEBAR_WIDGETS: [{ id: 'UPGRADE', enabled: false }],
+};
+```
+
+### Explicit registration for future default removal (optional)
+
+The Upgrade widget is expected to be removed from `DEFAULT_WIDGETS` in a future release. Instances that want to retain it after that change can register it explicitly now. The entry will be ignored as a duplicate until the default is removed.
 
 In your `env.config.jsx`:
 
 ```jsx
 import { upgradeWidgetConfig } from './src/widgets/upgrade/src/index';
 
-const config = {
-  SIDEBAR_WIDGETS: [
-    {
-      ...upgradeWidgetConfig,
-      // Only show in specific courses, or add custom logic
-      isAvailable: ({ course, courseId }) =>
-        upgradeIsAvailable({ course }) && myCustomCoursePredicate(courseId),
-    },
-  ],
+export default {
+  SIDEBAR_WIDGETS: [upgradeWidgetConfig],
 };
 ```
 
-### 3. Inject custom upgrade content (optional)
+See [ADR 0010](../../../docs/decisions/0010-upgrade-widget-extraction.md) for the default-behavior migration plan.
 
-Use the `UpgradePanelSlot` plugin slot (public API, stable ID):
+### Inject custom upgrade content (optional)
+
+Use the Upgrade Panel plugin slot's stable ID:
 
 ```jsx
-import { upgradeWidgetConfig } from './src/widgets/upgrade/src/index';
 import { PLUGIN_OPERATIONS, DIRECT_PLUGIN } from '@openedx/frontend-plugin-framework';
 import MyCustomUpgradeContent from './MyCustomUpgradeContent';
 
 const config = {
-  SIDEBAR_WIDGETS: [upgradeWidgetConfig],
   pluginSlots: {
-    'upgrade_panel_slot': {
+    'org.openedx.frontend.learning.upgrade_panel.v1': {
       plugins: [{
         op: PLUGIN_OPERATIONS.Insert,
         widget: {
@@ -51,6 +60,8 @@ const config = {
     },
   },
 };
+
+export default config;
 ```
 
 ## API
@@ -82,4 +93,3 @@ const config = {
 ## Context Requirements
 
 The widget reads `courseId` and `shouldDisplayFullScreen` from the global `SidebarContext`. All other widget-level state (`upgradeWidgetStatus`, `onUpgradeWidgetSeen`, etc.) is managed internally by `UpgradeWidgetContext` — the widget's own Provider — and is never written to `SidebarContext`.
-
