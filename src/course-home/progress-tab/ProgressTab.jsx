@@ -1,23 +1,22 @@
 import React, { useMemo } from 'react';
 import { useWindowSize } from '@openedx/paragon';
+import { useModel } from '@src/generic/model-store';
 import { useParams } from 'react-router-dom';
 
-import ProgressTabCertificateStatusSidePanelSlot from '../../plugin-slots/ProgressTabCertificateStatusSidePanelSlot';
-
-import CourseCompletion from './course-completion/CourseCompletion';
+import ProgressTabCertificateStatusMainBodySlot from '@src/plugin-slots/ProgressTabCertificateStatusMainBodySlot';
+import ProgressTabCertificateStatusSidePanelSlot from '@src/plugin-slots/ProgressTabCertificateStatusSidePanelSlot';
+import ProgressTabCourseCompletionSlot from '@src/plugin-slots/ProgressTabCourseCompletionSlot';
+import ProgressTabCourseGradeSlot from '@src/plugin-slots/ProgressTabCourseGradeSlot';
+import ProgressTabGradeBreakdownSlot from '@src/plugin-slots/ProgressTabGradeBreakdownSlot';
+import ProgressTabRelatedLinksSlot from '@src/plugin-slots/ProgressTabRelatedLinksSlot';
 import ProgressHeader from './ProgressHeader';
-
-import ProgressTabCertificateStatusMainBodySlot from '../../plugin-slots/ProgressTabCertificateStatusMainBodySlot';
-import ProgressTabCourseGradeSlot from '../../plugin-slots/ProgressTabCourseGradeSlot';
-import ProgressTabGradeBreakdownSlot from '../../plugin-slots/ProgressTabGradeBreakdownSlot';
-import ProgressTabRelatedLinksSlot from '../../plugin-slots/ProgressTabRelatedLinksSlot';
 import { useGetExamsData, useProgressData } from './hooks';
 import { useCourseHomeMeta, useProgressTabData } from '../data/apiHooks';
 import { TabWithTimer } from '../../tab-page';
 
 const ProgressTabContent = () => {
   const { courseId } = useParams();
-  const { disableProgressGraph, sectionScores } = useProgressData();
+  const { sectionScores, disableProgressGraph } = useProgressData();
 
   const sequenceIds = useMemo(() => (
     sectionScores.flatMap((section) => (section.subsections)).map((subsection) => subsection.blockKey)
@@ -39,7 +38,7 @@ const ProgressTabContent = () => {
       <div className="row w-100 m-0">
         {/* Main body */}
         <div className="col-12 col-md-8 p-0">
-          {!disableProgressGraph && <CourseCompletion />}
+          <ProgressTabCourseCompletionSlot enableProgressGraph={!disableProgressGraph} />
           <ProgressTabCertificateStatusMainBodySlot />
           <ProgressTabCourseGradeSlot />
           <ProgressTabGradeBreakdownSlot />
