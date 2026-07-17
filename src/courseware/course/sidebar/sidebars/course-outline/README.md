@@ -29,4 +29,5 @@ Unlike right-sidebar widgets, the course outline is **not** registered in the `S
 | `CourseOutlineTray` | Main tray panel component |
 | `CourseOutlineTrigger` | Collapse/expand trigger button |
 | `ID` | Widget sentinel ID: `'COURSE_OUTLINE'` |
-| `useCourseOutlineSidebar` | Hook providing all tray state and handlers |
+| `useCourseOutlineData` | Hook providing course outline data (sections, sequences, units, status) and unit-click tracking; usable outside a sidebar context |
+| `useCourseOutlineSidebar` | Hook providing sidebar open/collapse state and handlers (reads `SidebarContext`) |
