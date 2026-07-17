@@ -45,7 +45,7 @@ const SidebarUnit = ({
   const unitIcon = <UnitIcon type={iconType} isCompleted={completeAndEnabled} />;
   return (
     <li className={classNames({
-      'bg-info-100': isActive,
+      'active-unit bg-info-100': isActive,
       'border-top border-light': !isFirst,
     })}
     >
