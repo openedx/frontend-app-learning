@@ -2,33 +2,43 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { useToggle } from '@openedx/paragon';
 import { LOADING } from '@src/constants';
 
+import {
+  useCourseOutlineData,
+} from '@src/courseware/course/sidebar/sidebars/course-outline/hooks';
 import PageLoading from '@src/generic/PageLoading';
 import { CourseOutlineSidebarHeadingSlot } from '@src/plugin-slots/CourseOutlineSidebarHeadingSlot';
 import classNames from 'classnames';
 import { useState } from 'react';
-import SidebarSection from './components/SidebarSection';
+import { useParams } from 'react-router-dom';
 import SidebarSequence from './components/SidebarSequence';
-import { ID } from './constants';
-import { useCourseOutlineSidebar } from './hooks';
+import SidebarSection from './components/SidebarSection';
 import messages from './messages';
 
-export const CourseOutline = () => {
+interface CourseOutlineProps {
+  shouldDisplayFullScreen?: boolean;
+  onToggleCollapse?: () => void;
+}
+
+interface CoursePageParams extends Record<string, string> {
+  courseId: string;
+  unitId: string;
+}
+
+export const CourseOutline = ({
+  shouldDisplayFullScreen = false,
+  onToggleCollapse,
+}: CourseOutlineProps) => {
   const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
-
+  const { unitId, courseId } = useParams<CoursePageParams>();
   const {
-    courseId,
-    unitId,
-    currentSidebar,
-    isActiveEntranceExam,
     courseOutlineStatus,
     activeSequenceId,
     sections,
     sequences,
-    shouldDisplayFullScreen,
-    handleToggleCollapse,
-  } = useCourseOutlineSidebar();
+    isActiveEntranceExam,
+  } = useCourseOutlineData();
 
   const resolvedSectionId = selectedSection
         || Object.keys(sections).find(
@@ -47,19 +57,16 @@ export const CourseOutline = () => {
     setDisplaySequenceLevel();
     setSelectedSection(id);
   };
-
   const sidebarHeading = (
     <CourseOutlineSidebarHeadingSlot
-      onToggleCollapse={handleToggleCollapse}
+      onToggleCollapse={onToggleCollapse}
       isDisplaySequenceLevel={isDisplaySequenceLevel}
       backButton={backButtonTitle ? { title: backButtonTitle, onClick: handleBackToSectionLevel } : undefined}
     />
   );
-
-  if (isActiveEntranceExam || currentSidebar !== ID) {
+  if (isActiveEntranceExam) {
     return null;
   }
-
   if (courseOutlineStatus === LOADING) {
     return (
       <div className={classNames('outline-sidebar-wrapper', {
@@ -108,5 +115,3 @@ export const CourseOutline = () => {
     </div>
   );
 };
-
-export default CourseOutline;
