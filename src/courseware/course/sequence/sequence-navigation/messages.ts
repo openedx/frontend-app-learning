@@ -16,6 +16,11 @@ const messages = defineMessages({
     defaultMessage: 'Previous',
     description: 'Button to return to the previous section',
   },
+  bookmark: {
+    id: 'learning.generic.bookmark',
+    defaultMessage: 'Bookmark',
+    description: 'Button text for bookmarking',
+  },
 });
 
 export default messages;
