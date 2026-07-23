@@ -28,7 +28,7 @@ const SidebarUnit = ({
   const completeAndEnabled = complete && isCompletionTrackingEnabled;
 
   return (
-    <li className={classNames({ 'bg-info-100': isActive, 'border-top border-light': !isFirst })}>
+    <li className={classNames({ 'active-unit bg-info-100': isActive, 'border-top border-light': !isFirst })}>
       <UnitLinkWrapper
         {...{
           sequenceId,

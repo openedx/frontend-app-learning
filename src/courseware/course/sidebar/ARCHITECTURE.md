@@ -8,9 +8,9 @@ The Learning MFE uses a **two-sidebar system** where a left sidebar (Course Outl
 
 ### LEFT SIDEBAR (Course Outline)
 - **Location**: Left side of screen, adjacent to course content
-- **Component**: `CourseOutlineTray` (rendered via `CourseOutlineSidebarSlot`)
+- **Component**: `CourseOutlineTray` (rendered via `CourseOutlineSidebarSlot`). This is now a thin wrapper (`CourseOutlineTray.tsx`) that gates on sidebar state and renders the presentational `CourseOutline` (`CourseOutline.tsx`).
 - **Purpose**: Navigation - displays course structure, sequences, and units
-- **State Management**: Uses `useCourseOutlineSidebar()` hook
+- **State Management**: Split across two hooks — `useCourseOutlineData()` (course data + unit-click tracking) and `useCourseOutlineSidebar()` (sidebar open/collapse state)
 - **ID**: `WIDGETS.COURSE_OUTLINE`
 - **Rendering**: Only renders when `currentSidebar === 'COURSE_OUTLINE'`
 - **Trigger**: `CourseOutlineTrigger` (separate location in mobile/desktop toolbar)
@@ -200,22 +200,36 @@ if (!firstAvailable) {
 }
 ```
 
-### useCourseOutlineSidebar Hook
+### Course Outline Hooks (`hooks.js`)
+
+The former single `useCourseOutlineSidebar` hook is split into two, separating
+course data from sidebar context so the outline can be reused outside a sidebar:
+
+#### `useCourseOutlineData()`
 
 **Responsibilities:**
-- Detect when RIGHT sidebar has no available panels (`!initialSidebar`)
-- Auto-open Course Outline as fallback (unless manually collapsed)
-- Handle Course Outline specific interactions (unit clicks, toggle, resize)
+- Provide course outline data from Redux: `sections`, `sequences`, `units`, `courseOutlineStatus`, `activeSequenceId`, `sequenceStatus`
+- Provide `isEnabledCompletionTracking` and `isActiveEntranceExam`
+- Provide `handleUnitClick` (analytics + `checkBlockCompletion`) and trigger the outline-structure load effect
+- Reads Redux + `useParams` only — **does not** read `SidebarContext`, so it is reusable outside a sidebar
+
+#### `useCourseOutlineSidebar()`
+
+**Responsibilities:**
+- Expose sidebar context state: `currentSidebar`, `shouldDisplayFullScreen`, `handleToggleCollapse`
+- Handle the resize → collapse behaviour when the viewport drops below the desktop breakpoint
 
 **Key Logic:**
 ```javascript
-const isOpenSidebar = !initialSidebar && !isCollapsedOutlineSidebar;
-
-useEffect(() => {
-  if (isOpenSidebar && currentSidebar !== ID) {
-    toggleSidebar('COURSE_OUTLINE');
-  }
-}, [initialSidebar, unitId]);
+useLayoutEffect(() => {
+  const handleResize = () => {
+    if (currentSidebar === ID && global.innerWidth < breakpoints.large.maxWidth) {
+      collapseSidebar();
+    }
+  };
+  global.addEventListener('resize', handleResize);
+  return () => global.removeEventListener('resize', handleResize);
+}, [currentSidebar]);
 ```
 
 ### Sidebar.jsx (RIGHT Sidebar Renderer)
@@ -231,15 +245,44 @@ if (!currentSidebar || !SIDEBARS || !SIDEBARS[currentSidebar]) {
 }
 ```
 
-### CourseOutlineTray.jsx (LEFT Sidebar Renderer)
+### CourseOutlineTray.tsx / CourseOutline.tsx (LEFT Sidebar Renderer)
 
-**Responsibilities:**
-- Render course outline navigation
-- Only show when `currentSidebar === 'COURSE_OUTLINE'`
+The renderer is split into a sidebar-aware wrapper and a presentational component:
 
-**Key Logic:**
+**`CourseOutlineTray.tsx` (wrapper):**
+- Reads `useCourseOutlineSidebar()`
+- Only renders when `currentSidebar === 'COURSE_OUTLINE'`, otherwise `null`
+- Renders `<CourseOutline>`, passing `shouldDisplayFullScreen` and `onToggleCollapse`
+- Still carries `CourseOutlineTray.ID` and is the component registered in the slot
+
 ```javascript
-if (isActiveEntranceExam || currentSidebar !== ID) {
+if (currentSidebar !== ID) {
   return null;
 }
+return <CourseOutline shouldDisplayFullScreen={shouldDisplayFullScreen} onToggleCollapse={handleToggleCollapse} />;
 ```
+
+**`CourseOutline.tsx` (presentational):**
+- Reads course data via `useCourseOutlineData()` + `useParams()`
+- Returns `null` only when `isActiveEntranceExam`
+- Renders the heading through `CourseOutlineSidebarHeadingSlot` (see Extension Points below)
+
+### Course Outline Extension Points (Plugin Slots)
+
+The refactor extracts the heading and completion icon into standalone components
+exposed through plugin slots, so operators can customise them via `env.config.jsx`:
+
+- **`CourseOutlineSidebarHeadingSlot`** — ID `org.openedx.frontend.learning.course_outline_sidebar_heading.v1`. Wraps the extracted `components/CourseOutlineHeading.tsx`. Props: `isDisplaySequenceLevel`, `backButton?`, `onToggleCollapse?`. See `src/plugin-slots/CourseOutlineSidebarHeadingSlot/README.md`.
+- **`CourseOutlineSidebarCompletionIconSlot`** — ID `org.openedx.frontend.learning.course_outline_sidebar_completion_icon.v1`. Wraps `CompletionIcon.tsx` (now TypeScript, exporting `CompletionIconProps`). Consumed by **both** `SidebarSection` and `SidebarSequence`; the `variant` prop (`'section' | 'sequence'`) tells a plugin which location it is rendering, and `active` reflects whether that section/sequence is current. See `src/plugin-slots/CourseOutlineSidebarCompletionIconSlot/README.md`.
+
+The mobile "collapse the outline after selecting a unit" behaviour now lives in
+`components/UnitLinkWrapper.tsx`, which consumes both hooks (data for the click
+handler, sidebar for `shouldDisplayFullScreen`/`handleToggleCollapse`).
+
+### Styling
+
+The outline sidebar styling (`CourseOutlineTray.scss`) uses Paragon theme tokens
+rather than hard-coded colours — e.g. borders use `var(--pgn-color-light-700)`.
+The active-section highlight is driven by an `.active-section` class on
+`.course-sidebar-section` (`background-color: var(--pgn-color-info-100)`) instead
+of an inline `bg-info-100` class on the button.
