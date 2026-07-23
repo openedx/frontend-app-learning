@@ -244,7 +244,7 @@ const CertificateStatus = () => {
       <Card className="bg-light-200 raised-card">
         <ProgressCertificateStatusSlot courseId={courseId}>
           <div id={`${certCase}_certificate_status`}>
-            <Card.Header title={header} />
+            <Card.Header title={<h2>{header}</h2>} />
             <Card.Section className="small text-gray-700">
               {body}
             </Card.Section>
