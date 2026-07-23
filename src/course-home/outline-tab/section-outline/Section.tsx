@@ -4,7 +4,6 @@ import { Collapsible, IconButton } from '@openedx/paragon';
 import { Minus, Plus } from '@openedx/paragon/icons';
 
 import { useModel } from '../../../generic/model-store';
-import genericMessages from '../../../generic/messages';
 import { useContextId } from '../../../data/hooks';
 import messages from '../messages';
 import SectionTitle from './SectionTitle';
@@ -61,7 +60,7 @@ const Section: React.FC<Props> = ({
         onToggle={() => { setOpen(!open); }}
         iconWhenClosed={(
           <IconButton
-            alt={intl.formatMessage(messages.openSection)}
+            alt={`${intl.formatMessage(messages.openSection)} ${title}`}
             iconAs={Plus}
             onClick={() => { setOpen(true); }}
             size="sm"
@@ -69,7 +68,7 @@ const Section: React.FC<Props> = ({
         )}
         iconWhenOpen={(
           <IconButton
-            alt={intl.formatMessage(genericMessages.close)}
+            alt={`${intl.formatMessage(messages.closeSection)} ${title}`}
             iconAs={Minus}
             onClick={() => { setOpen(false); }}
             size="sm"
