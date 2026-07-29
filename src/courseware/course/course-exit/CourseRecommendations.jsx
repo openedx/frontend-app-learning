@@ -1,20 +1,19 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
   FormattedMessage, useIntl, defineMessages,
 } from '@edx/frontend-platform/i18n';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Hyperlink, DataTable, CardView, Card,
 } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import truncate from 'truncate-html';
-import { FAILED, LOADED, LOADING } from '@src/constants';
 import { useModel } from '../../../generic/model-store';
-import fetchCourseRecommendations from './data/thunks';
+import { useCourseRecommendations } from './data/apiHooks';
+import { trackRecommendationsViewed } from './track';
 import CatalogSuggestion from './CatalogSuggestion';
 import PageLoading from '../../../generic/PageLoading';
 import { logClick } from './utils';
@@ -133,34 +132,28 @@ const IntlCard = CourseCard;
 
 const CourseRecommendations = ({ variant }) => {
   const intl = useIntl();
-  const { courseId, recommendationsStatus } = useSelector(state => ({ ...state.recommendations, ...state.courseware }));
-  const { recommendations } = useModel('coursewareMeta', courseId);
+  const courseId = useSelector(state => state.courseware.courseId);
   const { org, number } = useModel('courseHomeMeta', courseId);
-  const dispatch = useDispatch();
 
   const courseKey = `${org}+${number}`;
   const { administrator } = getAuthenticatedUser();
 
-  useEffect(() => {
-    dispatch(fetchCourseRecommendations(courseKey, courseId));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+  const {
+    data: recommendations = [],
+    isPending,
+    isError,
+    isSuccess,
+  } = useCourseRecommendations(courseKey);
 
-  const recommendationsLength = recommendations ? recommendations.length : 0;
-
-  if (recommendationsStatus && recommendationsStatus !== LOADING) {
-    sendTrackEvent('edx.ui.lms.course_exit.recommendations.viewed', {
-      course_key: courseKey,
-      recommendations_status: recommendationsStatus,
-      recommendations_length: recommendationsLength,
-    });
+  if (!isPending) {
+    trackRecommendationsViewed({ courseKey, isError, length: recommendations.length });
   }
 
-  if (recommendationsStatus === FAILED || (recommendationsStatus === LOADED && recommendationsLength < 2)) {
+  if (isError || (isSuccess && recommendations.length < 2)) {
     return (<CatalogSuggestion variant={variant} />);
   }
 
-  if (recommendationsStatus === LOADING) {
+  if (isPending) {
     return <PageLoading srMessage={intl.formatMessage(messages.loadingRecommendations)} />;
   }
 
@@ -182,7 +175,7 @@ const CourseRecommendations = ({ variant }) => {
       <div className="mb-2 mt-3">
         <DataTable
           isPaginated
-          itemCount={recommendationsLength}
+          itemCount={recommendations.length}
           data={recommendationData}
           columns={[{ Header: 'Title', accessor: 'title' }]}
           initialState={{

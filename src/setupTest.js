@@ -9,12 +9,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { render as rtlRender } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
-import { reducer as recommendationsReducer } from './courseware/course/course-exit/data/slice';
 import { reducer as toursReducer } from './product-tours/data';
 import { reducer as modelsReducer } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
@@ -177,7 +177,6 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
       courseware: coursewareReducer,
       courseHome: courseHomeReducer,
       specialExams: specialExamsReducer,
-      recommendations: recommendationsReducer,
       tours: toursReducer,
     },
   });
@@ -245,6 +244,15 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   return store;
 }
 
+export function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+}
+
 function render(
   ui,
   {
@@ -253,13 +261,16 @@ function render(
     ...renderOptions
   } = {},
 ) {
+  const testQueryClient = createTestQueryClient();
   const Wrapper = ({ children }) => (
     // eslint-disable-next-line react/jsx-filename-extension
     <IntlProvider locale="en">
       <AppProvider store={store || globalStore} wrapWithRouter={wrapWithRouter}>
-        <UserMessagesProvider>
-          {children}
-        </UserMessagesProvider>
+        <QueryClientProvider client={testQueryClient}>
+          <UserMessagesProvider>
+            {children}
+          </UserMessagesProvider>
+        </QueryClientProvider>
       </AppProvider>
     </IntlProvider>
   );
