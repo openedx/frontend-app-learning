@@ -1,3 +1,5 @@
+export const appId = 'learning';
+
 export const DECODE_ROUTES = {
   ACCESS_DENIED: '/course/:courseId/access-denied',
   HOME: '/course/:courseId/home',
