@@ -1,6 +1,7 @@
 import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
@@ -13,7 +14,7 @@ import MockAdapter from 'axios-mock-adapter';
 
 import { UserMessagesProvider } from '../generic/user-messages';
 import tabMessages from '../tab-page/messages';
-import { initializeMockApp, waitFor } from '../setupTest';
+import { createTestQueryClient, initializeMockApp, waitFor } from '../setupTest';
 import { DECODE_ROUTES } from '../constants';
 
 import CoursewareContainer, {
@@ -92,17 +93,19 @@ describe('CoursewareContainer', () => {
 
     component = (
       <AppProvider store={store} wrapWithRouter={false}>
-        <UserMessagesProvider>
-          <Routes>
-            {DECODE_ROUTES.COURSEWARE.map((route) => (
-              <Route
-                key={route}
-                path={route}
-                element={<CoursewareContainer />}
-              />
-            ))}
-          </Routes>
-        </UserMessagesProvider>
+        <QueryClientProvider client={createTestQueryClient()}>
+          <UserMessagesProvider>
+            <Routes>
+              {DECODE_ROUTES.COURSEWARE.map((route) => (
+                <Route
+                  key={route}
+                  path={route}
+                  element={<CoursewareContainer />}
+                />
+              ))}
+            </Routes>
+          </UserMessagesProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
   });

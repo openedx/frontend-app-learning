@@ -22,6 +22,7 @@ import initializeStore from '../../store';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 import OutlineTab from './OutlineTab';
 import LoadedTabPage from '../../tab-page/LoadedTabPage';
+import { TourProvider } from '../../product-tours/TourContext';
 
 const mockCoursewareSearchParams = jest.fn();
 
@@ -74,7 +75,9 @@ describe('Outline Tab', () => {
     await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
     await act(async () => render(
       <MemoryRouter initialEntries={[path]}>
-        <OutlineTab />
+        <TourProvider>
+          <OutlineTab />
+        </TourProvider>
       </MemoryRouter>,
       { store },
     ));
@@ -638,7 +641,7 @@ describe('Outline Tab', () => {
           },
         });
         await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-        await act(async () => render(<LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">...</LoadedTabPage>, { store }));
+        await act(async () => render(<TourProvider><LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">...</LoadedTabPage></TourProvider>, { store }));
         const instructorToolbar = await screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
@@ -654,7 +657,7 @@ describe('Outline Tab', () => {
           },
         });
         await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-        await act(async () => render(<LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">...</LoadedTabPage>, { store }));
+        await act(async () => render(<TourProvider><LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">...</LoadedTabPage></TourProvider>, { store }));
         const instructorToolbar = await screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();

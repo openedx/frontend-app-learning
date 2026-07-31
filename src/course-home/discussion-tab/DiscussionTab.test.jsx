@@ -1,6 +1,7 @@
 import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
@@ -8,7 +9,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { UserMessagesProvider } from '../../generic/user-messages';
 import {
-  initializeMockApp, messageEvent, screen, waitFor,
+  createTestQueryClient, initializeMockApp, messageEvent, screen, waitFor,
 } from '../../setupTest';
 import initializeStore from '../../store';
 import { TabContainer } from '../../tab-page';
@@ -29,18 +30,20 @@ describe('DiscussionTab', () => {
     store = initializeStore();
     component = (
       <AppProvider store={store}>
-        <UserMessagesProvider>
-          <Routes>
-            <Route
-              path="/course/:courseId/discussion"
-              element={(
-                <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
-                  <DiscussionTab />
-                </TabContainer>
-              )}
-            />
-          </Routes>
-        </UserMessagesProvider>
+        <QueryClientProvider client={createTestQueryClient()}>
+          <UserMessagesProvider>
+            <Routes>
+              <Route
+                path="/course/:courseId/discussion"
+                element={(
+                  <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
+                    <DiscussionTab />
+                  </TabContainer>
+                )}
+              />
+            </Routes>
+          </UserMessagesProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
   });

@@ -15,7 +15,6 @@ import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams'
 import { AppProvider } from '@edx/frontend-platform/react';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
-import { reducer as toursReducer } from './product-tours/data';
 import { reducer as modelsReducer } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
 
@@ -177,7 +176,6 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
       courseware: coursewareReducer,
       courseHome: courseHomeReducer,
       specialExams: specialExamsReducer,
-      tours: toursReducer,
     },
   });
   if (overrideStore) {

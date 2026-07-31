@@ -6,10 +6,12 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig, history } from '@edx/frontend-platform';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
 import MockAdapter from 'axios-mock-adapter';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 import * as popper from '@popperjs/core';
 
 import {
@@ -20,6 +22,8 @@ import { appendBrowserTimezoneToUrl, executeThunk } from '../utils';
 
 import CoursewareContainer from '../courseware/CoursewareContainer';
 import LoadedTabPage from '../tab-page/LoadedTabPage';
+import { TourProvider } from './TourContext';
+import ProductTours from './ProductTours';
 import OutlineTab from '../course-home/outline-tab/OutlineTab';
 import * as courseHomeThunks from '../course-home/data/thunks';
 import { buildSimpleCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
@@ -60,15 +64,18 @@ describe('Course Home Tours', () => {
   async function fetchAndRender() {
     await executeThunk(courseHomeThunks.fetchOutlineTab(courseId), store.dispatch);
     render(
-      <LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">
-        <OutlineTab />
-      </LoadedTabPage>,
+      <TourProvider>
+        <LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">
+          <OutlineTab />
+        </LoadedTabPage>
+      </TourProvider>,
       { store, wrapWithRouter: true },
     );
   }
 
   beforeEach(async () => {
     popperMock.mockImplementation(jest.fn());
+    sendTrackEvent.mockClear();
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
@@ -108,6 +115,43 @@ describe('Course Home Tours', () => {
 
       expect(await screen.findByRole('dialog', { name: 'Take the course!' }));
     });
+
+    it('dismisses the modal and runs the abandon tour on "Skip for now"', async () => {
+      const user = userEvent.setup();
+      await user.click(await screen.findByRole('button', { name: 'Skip for now' }));
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.new_user_modal.dismissed', expect.any(Object));
+
+      // Dismissing the modal enables the abandon tour; ending it clears that flag.
+      await user.click(await screen.findByRole('button', { name: 'Okay' }));
+    });
+
+    it('dismisses the new-user tour on escape', async () => {
+      const user = userEvent.setup();
+      await user.click(await screen.findByRole('button', { name: 'Begin tour' }));
+      await screen.findByRole('dialog', { name: 'Take the course!' });
+
+      // The tour's onEscape handler is its onDismiss.
+      await user.keyboard('{Escape}');
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.new_user_tour.dismissed', expect.any(Object));
+    });
+
+    it('completes the new-user tour', async () => {
+      const user = userEvent.setup();
+      await user.click(await screen.findByRole('button', { name: 'Begin tour' }));
+      await screen.findByRole('dialog', { name: 'Take the course!' });
+
+      // Advance through each checkpoint, then finish on the last one.
+      const advanceToEnd = async () => {
+        const next = screen.queryByRole('button', { name: 'Next' });
+        if (!next) { return; }
+        await user.click(next);
+        await advanceToEnd();
+      };
+      await advanceToEnd();
+
+      await user.click(screen.getByRole('button', { name: 'Okay' }));
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.new_user_tour.completed', expect.any(Object));
+    });
   });
 
   describe('for eligible existing users', () => {
@@ -120,6 +164,18 @@ describe('Course Home Tours', () => {
 
       expect(await screen.findByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('We’ve recently added a few new features to the course experience.', { exact: false })).toBeInTheDocument();
+    });
+
+    it('completes the existing-user tour', async () => {
+      setTourData({
+        course_home_tour_status: 'show-existing-user-tour',
+        show_courseware_tour: false,
+      });
+      await fetchAndRender();
+      const user = userEvent.setup();
+
+      await user.click(await screen.findByRole('button', { name: 'Okay' }));
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.existing_user_tour.completed', expect.any(Object));
     });
   });
 
@@ -206,6 +262,7 @@ describe('Courseware Tour', () => {
 
   beforeEach(() => {
     popperMock.mockImplementation(jest.fn());
+    sendTrackEvent.mockClear();
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
@@ -297,5 +354,38 @@ describe('Courseware Tour', () => {
         expect(checkpoint).toHaveLength(showCoursewareTour ? 1 : 0);
       },
     );
+
+    it('completes the courseware tour', async () => {
+      axiosMock.onGet(tourDataUrl).reply(200, {
+        course_home_tour_status: 'no-tour',
+        show_courseware_tour: true,
+      });
+      await loadContainer();
+      const user = userEvent.setup();
+
+      await user.click(await screen.findByRole('button', { name: 'Okay' }));
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.courseware_tour.completed', expect.any(Object));
+    });
+  });
+});
+
+describe('ProductTours guards', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+
+  const renderTours = (props) => render(
+    <TourProvider>
+      <ProductTours courseId={courseId} org="edX" {...props} />
+    </TourProvider>,
+    { store: initializeStore() },
+  );
+
+  it('renders nothing during a streak celebration', () => {
+    renderTours({ activeTab: 'outline', isStreakCelebrationOpen: true });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('does not show a tour on non-tour tabs', () => {
+    renderTours({ activeTab: 'dates', isStreakCelebrationOpen: false });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
