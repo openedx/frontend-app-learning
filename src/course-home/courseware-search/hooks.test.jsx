@@ -1,18 +1,15 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { fetchCoursewareSearchSettings } from '../data/thunks';
 import {
   useCoursewareSearchFeatureFlag,
   useCoursewareSearchParams,
-  useCoursewareSearchState,
   useElementBoundingBox,
   useLockScroll,
 } from './hooks';
+import { useCoursewareSearchEnabled } from './data/apiHooks';
 
-jest.mock('react-redux');
 jest.mock('react-router-dom');
-jest.mock('../data/thunks');
+jest.mock('./data/apiHooks');
 
 describe('CoursewareSearch Hooks', () => {
   const courses = {
@@ -21,7 +18,7 @@ describe('CoursewareSearch Hooks', () => {
   };
 
   beforeEach(() => {
-    fetchCoursewareSearchSettings.mockImplementation((courseId) => Promise.resolve(courses[courseId]));
+    useCoursewareSearchEnabled.mockImplementation((courseId) => ({ data: courses[courseId] }));
   });
 
   afterEach(() => {
@@ -38,45 +35,14 @@ describe('CoursewareSearch Hooks', () => {
 
     it('should return true if feature is enabled', async () => {
       const hook = await renderTestHook();
-      await waitFor(() => expect(fetchCoursewareSearchSettings).toBeCalledTimes(1));
+      await waitFor(() => expect(useCoursewareSearchEnabled).toBeCalledTimes(1));
       expect(hook.result.current).toBe(true);
     });
 
     it('should return false if feature is disabled', async () => {
       const hook = await renderTestHook(false);
-      await waitFor(() => expect(fetchCoursewareSearchSettings).toBeCalledTimes(1));
+      await waitFor(() => expect(useCoursewareSearchEnabled).toBeCalledTimes(1));
       expect(hook.result.current).toBe(false);
-    });
-  });
-
-  describe('useCoursewareSearchState', () => {
-    const renderTestHook = async ({ enabled, showSearch }) => {
-      useParams.mockImplementation(() => ({ courseId: enabled ? 123 : 456 }));
-      const mockedStoreState = { courseHome: { showSearch } };
-      useSelector.mockImplementation(selector => selector(mockedStoreState));
-
-      let hook;
-      await act(async () => { (hook = renderHook(() => useCoursewareSearchState())); });
-      return hook;
-    };
-
-    it('should return show: true if feature is enabled and showSearch is true', async () => {
-      const hook = await renderTestHook({ enabled: true, showSearch: true });
-
-      expect(hook.result.current).toEqual({ show: true });
-    });
-
-    it('should return show: false in any other case', async () => {
-      let hook;
-
-      hook = await renderTestHook({ enabled: true, showSearch: false });
-      expect(hook.result.current).toEqual({ show: false });
-
-      hook = await renderTestHook({ enabled: false, showSearch: true });
-      expect(hook.result.current).toEqual({ show: false });
-
-      hook = await renderTestHook({ enabled: false, showSearch: false });
-      expect(hook.result.current).toEqual({ show: false });
     });
   });
 

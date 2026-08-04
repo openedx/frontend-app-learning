@@ -12,7 +12,6 @@ describe('course home data slice', () => {
         toastBodyText: '',
         toastBodyLink: null,
         toastHeader: '',
-        showSearch: false,
         examsData: null,
       };
 
@@ -51,7 +50,6 @@ describe('course home data slice', () => {
         toastBodyText: '',
         toastBodyLink: null,
         toastHeader: '',
-        showSearch: false,
         examsData: [{ id: 1, examName: 'Old Exam' }],
       };
 
@@ -81,7 +79,6 @@ describe('course home data slice', () => {
         toastBodyText: '',
         toastBodyLink: null,
         toastHeader: '',
-        showSearch: false,
         examsData: [{ id: 1, examName: 'Some Exam' }],
       };
 
@@ -101,7 +98,6 @@ describe('course home data slice', () => {
         toastBodyText: '',
         toastBodyLink: null,
         toastHeader: '',
-        showSearch: false,
         examsData: [{ id: 1, examName: 'Some Exam' }],
       };
 
@@ -121,7 +117,6 @@ describe('course home data slice', () => {
         toastBodyText: 'Toast message',
         toastBodyLink: 'http://example.com',
         toastHeader: 'Toast Header',
-        showSearch: true,
         examsData: null,
       };
 
@@ -138,7 +133,6 @@ describe('course home data slice', () => {
       // Verify other properties remain unchanged
       expect(newState.courseStatus).toBe(initialState.courseStatus);
       expect(newState.courseId).toBe(initialState.courseId);
-      expect(newState.showSearch).toBe(initialState.showSearch);
       expect(newState.toastBodyText).toBe(initialState.toastBodyText);
     });
   });

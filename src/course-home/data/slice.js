@@ -17,7 +17,6 @@ const slice = createSlice({
     toastBodyText: null,
     toastBodyLink: null,
     toastHeader: '',
-    showSearch: false,
     examsData: null,
     errorMessage: null,
     errorCode: null,
@@ -57,9 +56,6 @@ const slice = createSlice({
       state.toastBodyText = linkText;
       state.toastHeader = header;
     },
-    setShowSearch: (state, { payload }) => {
-      state.showSearch = payload;
-    },
     setExamsData: (state, { payload }) => {
       state.examsData = payload;
     },
@@ -73,7 +69,6 @@ export const {
   fetchTabRequest,
   fetchTabSuccess,
   setCallToActionToast,
-  setShowSearch,
   setExamsData,
 } = slice.actions;
 

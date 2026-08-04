@@ -12,35 +12,24 @@ import {
   within,
 } from '../../setupTest';
 import { CoursewareSearch } from './index';
-import { useElementBoundingBox, useLockScroll, useCoursewareSearchParams } from './hooks';
+import {
+  useCoursewareSearchFeatureFlag, useElementBoundingBox, useLockScroll, useCoursewareSearchParams,
+} from './hooks';
+import { useCoursewareSearch } from './CoursewareSearchContext';
+import { useCoursewareSearchResults } from './data/apiHooks';
 import initializeStore from '../../store';
-import { searchCourseContent } from '../data/thunks';
-import { setShowSearch } from '../data/slice';
-import { updateModel, useModel } from '../../generic/model-store';
+import { useModel } from '../../generic/model-store';
 
 jest.mock('./hooks');
+jest.mock('./CoursewareSearchContext');
+jest.mock('./data/apiHooks');
 jest.mock('../../generic/model-store', () => ({
   ...jest.requireActual('../../generic/model-store'),
-  updateModel: jest.fn(),
   useModel: jest.fn(),
 }));
 
 jest.mock('@edx/frontend-platform/analytics', () => ({
   sendTrackingLogEvent: jest.fn(),
-}));
-
-jest.mock('../data/thunks', () => ({
-  searchCourseContent: jest.fn(),
-}));
-
-jest.mock('../data/slice', () => ({
-  setShowSearch: jest.fn(),
-}));
-
-const mockDispatch = jest.fn();
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
 }));
 
 const decodedCourseId = 'course-v1:edX+DemoX+Demo_Course';
@@ -50,13 +39,8 @@ const pathname = `/course/${decodedCourseId}/${decodedSequenceId}/${decodedUnitI
 
 const tabsTopPosition = 128;
 
-const defaultProps = {
-  org: 'edX',
-  loading: false,
-  searchKeyword: '',
-  errors: undefined,
-  total: 0,
-};
+const org = 'edX';
+const mockClose = jest.fn();
 
 const defaultSearchParams = {
   query: '',
@@ -83,20 +67,9 @@ function renderComponent(props = {}) {
   return container;
 }
 
-const mockModels = ((props = defaultProps) => {
-  useModel.mockReturnValue({
-    ...defaultProps,
-    ...props,
-  });
-
-  updateModel.mockReturnValue({
-    type: 'MOCK_ACTION',
-    payload: {
-      modelType: 'contentSearchResults',
-      model: defaultProps,
-    },
-  });
-});
+const mockResults = ({ data, isLoading = false, isError = false } = {}) => {
+  useCoursewareSearchResults.mockReturnValue({ data, isLoading, isError });
+};
 
 const mockSearchParams = ((params) => {
   const props = { ...defaultSearchParams, ...params };
@@ -107,7 +80,10 @@ describe('CoursewareSearch', () => {
   beforeAll(() => initializeMockApp());
 
   beforeEach(() => {
-    mockModels();
+    useModel.mockReturnValue({ org });
+    useCoursewareSearchFeatureFlag.mockReturnValue(true);
+    useCoursewareSearch.mockReturnValue({ show: true, close: mockClose });
+    mockResults();
     mockSearchParams();
   });
 
@@ -145,7 +121,7 @@ describe('CoursewareSearch', () => {
       });
 
       expect(HTMLDialogElement.prototype.close).toHaveBeenCalled();
-      expect(setShowSearch).toHaveBeenCalledWith(false);
+      expect(mockClose).toHaveBeenCalled();
     });
   });
 
@@ -170,7 +146,7 @@ describe('CoursewareSearch', () => {
   });
 
   describe('when submitting an empty search', () => {
-    it('should clear the search by dispatch updateModel', async () => {
+    it('should clear the search params', async () => {
       renderComponent();
 
       await waitFor(() => {
@@ -178,30 +154,19 @@ describe('CoursewareSearch', () => {
         fireEvent.click(submit);
       });
 
-      expect(updateModel).toHaveBeenCalledWith({
-        modelType: 'contentSearchResults',
-        model: {
-          id: decodedCourseId,
-          searchKeyword: '',
-          results: [],
-          errors: undefined,
-          loading: false,
-        },
-      });
+      expect(defaultSearchParams.clearSearchParams).toHaveBeenCalled();
     });
   });
 
   describe('when submitting a search', () => {
     it('should show a loading state', () => {
-      mockModels({
-        loading: true,
-      });
+      mockResults({ isLoading: true });
       renderComponent();
 
       expect(screen.queryByTestId('courseware-search-spinner')).toBeInTheDocument();
     });
 
-    it('should call searchCourseContent', async () => {
+    it('should update the search query on submit', async () => {
       renderComponent();
 
       const searchKeyword = 'course';
@@ -217,38 +182,31 @@ describe('CoursewareSearch', () => {
       });
 
       expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.course.home.courseware_search.submit', {
-        org_key: defaultProps.org,
+        org_key: org,
         courserun_key: decodedCourseId,
         event_type: 'searchKeyword',
         keyword: searchKeyword,
       });
-      expect(searchCourseContent).toHaveBeenCalledWith(decodedCourseId, searchKeyword);
+      expect(defaultSearchParams.setQuery).toHaveBeenCalledWith(searchKeyword);
     });
 
     it('should show an error state if any', () => {
-      mockModels({
-        errors: ['foo'],
-      });
+      mockResults({ isError: true });
       renderComponent();
 
       expect(screen.queryByTestId('courseware-search-error')).toBeInTheDocument();
     });
 
     it('should not show a summary if there are no results', () => {
-      mockModels({
-        searchKeyword: 'test',
-        total: 0,
-      });
+      mockResults({ data: { total: 0 } });
       renderComponent();
 
       expect(screen.queryByTestId('courseware-search-summary')).not.toBeInTheDocument();
     });
 
     it('should show a summary for the results within a container with aria-live="polite"', () => {
-      mockModels({
-        searchKeyword: 'fubar',
-        total: 1,
-      });
+      mockSearchParams({ query: 'fubar' });
+      mockResults({ data: { total: 1 } });
       renderComponent();
 
       const results = screen.queryByTestId('courseware-search-results');
@@ -259,12 +217,9 @@ describe('CoursewareSearch', () => {
   });
 
   describe('when clearing the search input', () => {
-    it('should clear the search by dispatch updateModel', async () => {
+    it('should clear the search params', async () => {
       mockSearchParams({ query: 'fubar' });
-      mockModels({
-        searchKeyword: 'fubar',
-        total: 2,
-      });
+      mockResults({ data: { total: 2 } });
       renderComponent();
 
       await waitFor(() => {
@@ -272,16 +227,7 @@ describe('CoursewareSearch', () => {
         fireEvent.change(input, { target: { value: '' } });
       });
 
-      expect(updateModel).toHaveBeenCalledWith({
-        modelType: 'contentSearchResults',
-        model: {
-          id: decodedCourseId,
-          searchKeyword: '',
-          results: [],
-          errors: undefined,
-          loading: false,
-        },
-      });
+      expect(defaultSearchParams.clearSearchParams).toHaveBeenCalled();
     });
   });
 });

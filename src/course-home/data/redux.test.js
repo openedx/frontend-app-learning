@@ -268,38 +268,6 @@ describe('Data layer integration tests', () => {
     });
   });
 
-  describe('Test fetchCoursewareSearchSettings', () => {
-    it('Should return enabled as true when enabled', async () => {
-      const apiUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-search/enabled/`;
-      axiosMock.onGet(apiUrl).reply(200, { enabled: true });
-
-      const { enabled } = await thunks.fetchCoursewareSearchSettings(courseId);
-
-      expect(axiosMock.history.get[0].url).toEqual(apiUrl);
-      expect(enabled).toBe(true);
-    });
-
-    it('Should return enabled as false when disabled', async () => {
-      const apiUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-search/enabled/`;
-      axiosMock.onGet(apiUrl).reply(200, { enabled: false });
-
-      const { enabled } = await thunks.fetchCoursewareSearchSettings(courseId);
-
-      expect(axiosMock.history.get[0].url).toEqual(apiUrl);
-      expect(enabled).toBe(false);
-    });
-
-    it('Should return enabled as false on error', async () => {
-      const apiUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-search/enabled/`;
-      axiosMock.onGet(apiUrl).networkError();
-
-      const { enabled } = await thunks.fetchCoursewareSearchSettings(courseId);
-
-      expect(axiosMock.history.get[0].url).toEqual(apiUrl);
-      expect(enabled).toBe(false);
-    });
-  });
-
   describe('Test fetchExamAttemptsData', () => {
     const sequenceIds = [
       'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
