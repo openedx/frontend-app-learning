@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getConfig } from '@edx/frontend-platform';
+import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,8 @@ import { throttle } from 'lodash';
 import { logError } from '@edx/frontend-platform/logging';
 
 import { fetchCourse } from '@src/courseware/data';
-import { processEvent } from '@src/course-home/data/thunks';
+import { usePostEvent } from '@src/course-home/data/apiHooks';
+import { eventTypes } from '@src/course-home/data/thunks';
 import { useEventListener } from '@src/generic/hooks';
 import { getSequenceId } from '@src/courseware/data/selectors';
 import { useModel } from '@src/generic/model-store';
@@ -34,6 +35,7 @@ const useIFrameBehavior = ({
   useLoadBearingHook(id);
 
   const dispatch = useDispatch();
+  const postEvent = usePostEvent();
   const activeSequenceId = useSelector(getSequenceId);
   const navigate = useNavigate();
   const activeSequence = useModel('sequences', activeSequenceId);
@@ -150,6 +152,22 @@ const useIFrameBehavior = ({
   * could have given us a 4xx or 5xx response.
   */
 
+  const handlePostMessageEvent = (e: MessageEvent) => {
+    if (!e.data?.event_name) {
+      return;
+    }
+    // Pull this out before camelCasing so it stays in the shape the backend expects.
+    const { research_event_data: researchEventData } = e.data;
+    const event = camelCaseObject(e.data);
+    if (event.eventName !== eventTypes.POST_EVENT) {
+      return;
+    }
+    postEvent.mutate(
+      { postData: event.postData, researchEventData },
+      { onSuccess: () => dispatch(fetchCourse(event.postData.bodyParams.courseId)) },
+    );
+  };
+
   const handleIFrameLoad = () => {
     if (!hasLoaded) {
       setShowError(true);
@@ -161,11 +179,7 @@ const useIFrameBehavior = ({
         iframeUrl,
       });
     }
-    window.onmessage = (e) => {
-      if (e.data.event_name) {
-        dispatch(processEvent(e.data, fetchCourse));
-      }
-    };
+    window.onmessage = handlePostMessageEvent;
 
     // Update the visibility of the iframe in case the element is already visible.
     updateIframeVisibility();

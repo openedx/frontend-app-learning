@@ -14,9 +14,6 @@ const slice = createSlice({
     courseStatus: 'loading',
     courseId: null,
     proctoringPanelStatus: 'loading',
-    toastBodyText: null,
-    toastBodyLink: null,
-    toastHeader: '',
     examsData: null,
     errorMessage: null,
     errorCode: null,
@@ -46,16 +43,6 @@ const slice = createSlice({
       state.targetUserId = payload.targetUserId;
       state.courseStatus = LOADED;
     },
-    setCallToActionToast: (state, { payload }) => {
-      const {
-        header,
-        link,
-        linkText,
-      } = payload;
-      state.toastBodyLink = link;
-      state.toastBodyText = linkText;
-      state.toastHeader = header;
-    },
     setExamsData: (state, { payload }) => {
       state.examsData = payload;
     },
@@ -68,7 +55,6 @@ export const {
   fetchTabFailure,
   fetchTabRequest,
   fetchTabSuccess,
-  setCallToActionToast,
   setExamsData,
 } = slice.actions;
 

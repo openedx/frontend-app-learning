@@ -8,6 +8,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { UserMessagesProvider } from '../../generic/user-messages';
+import { ToastProvider } from '../../generic/ToastContext';
 import {
   createTestQueryClient, initializeMockApp, messageEvent, screen, waitFor,
 } from '../../setupTest';
@@ -32,16 +33,18 @@ describe('DiscussionTab', () => {
       <AppProvider store={store}>
         <QueryClientProvider client={createTestQueryClient()}>
           <UserMessagesProvider>
-            <Routes>
-              <Route
-                path="/course/:courseId/discussion"
-                element={(
-                  <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
-                    <DiscussionTab />
-                  </TabContainer>
-                )}
-              />
-            </Routes>
+            <ToastProvider>
+              <Routes>
+                <Route
+                  path="/course/:courseId/discussion"
+                  element={(
+                    <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
+                      <DiscussionTab />
+                    </TabContainer>
+                  )}
+                />
+              </Routes>
+            </ToastProvider>
           </UserMessagesProvider>
         </QueryClientProvider>
       </AppProvider>

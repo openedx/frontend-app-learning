@@ -17,6 +17,7 @@ import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
 import { reducer as modelsReducer } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
+import { ToastProvider } from './generic/ToastContext';
 
 import messages from './i18n';
 import { fetchCourse, fetchSequence } from './courseware/data';
@@ -266,7 +267,9 @@ function render(
       <AppProvider store={store || globalStore} wrapWithRouter={wrapWithRouter}>
         <QueryClientProvider client={testQueryClient}>
           <UserMessagesProvider>
-            {children}
+            <ToastProvider>
+              {children}
+            </ToastProvider>
           </UserMessagesProvider>
         </QueryClientProvider>
       </AppProvider>
