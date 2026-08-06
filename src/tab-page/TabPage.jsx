@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
 import { Toast } from '@openedx/paragon';
@@ -10,11 +10,11 @@ import HeaderSlot from '../plugin-slots/HeaderSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
 import { useModel } from '../generic/model-store';
+import { useToast } from '../generic/ToastContext';
 
 import genericMessages from '../generic/messages';
 import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
-import { setCallToActionToast } from '../course-home/data/slice';
 import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 import { TourProvider } from '../product-tours/TourContext';
 
@@ -27,16 +27,13 @@ const TabPage = (props) => {
     metadataModel,
   } = props;
   const {
-    toastBodyLink,
-    toastBodyText,
-    toastHeader,
     errorMessage: courseHomeErrorMessage,
   } = useSelector(state => state.courseHome);
   const {
     errorMessage: coursewareErrorMessage,
   } = useSelector(state => state.courseware);
   const errorMessage = courseHomeErrorMessage || coursewareErrorMessage;
-  const dispatch = useDispatch();
+  const { toastContent, isToastOpen, closeToast } = useToast();
   const {
     courseAccess,
     number,
@@ -57,15 +54,12 @@ const TabPage = (props) => {
       {['loaded', 'denied'].includes(courseStatus) && (
         <>
           <Toast
-            action={toastBodyText ? {
-              label: toastBodyText,
-              href: toastBodyLink,
-            } : null}
+            action={toastContent?.action ?? null}
             closeLabel={intl.formatMessage(genericMessages.close)}
-            onClose={() => dispatch(setCallToActionToast({ header: '', link: null, link_text: null }))}
-            show={!!(toastHeader)}
+            onClose={closeToast}
+            show={isToastOpen}
           >
-            {toastHeader}
+            {toastContent?.message}
           </Toast>
           {metadataModel === 'courseHomeMeta' && (<LaunchCourseHomeTourButton srOnly />)}
         </>

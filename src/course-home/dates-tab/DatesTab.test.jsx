@@ -20,6 +20,7 @@ import initializeStore from '../../store';
 import { TabContainer } from '../../tab-page';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import { UserMessagesProvider } from '../../generic/user-messages';
+import { ToastProvider } from '../../generic/ToastContext';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -36,16 +37,18 @@ describe('DatesTab', () => {
       <AppProvider store={store}>
         <QueryClientProvider client={createTestQueryClient()}>
           <UserMessagesProvider>
-            <Routes>
-              <Route
-                path="/course/:courseId/dates"
-                element={(
-                  <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-                    <DatesTab />
-                  </TabContainer>
-                )}
-              />
-            </Routes>
+            <ToastProvider>
+              <Routes>
+                <Route
+                  path="/course/:courseId/dates"
+                  element={(
+                    <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
+                      <DatesTab />
+                    </TabContainer>
+                  )}
+                />
+              </Routes>
+            </ToastProvider>
           </UserMessagesProvider>
         </QueryClientProvider>
       </AppProvider>
