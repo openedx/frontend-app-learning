@@ -50,7 +50,7 @@
     "@tanstack/react-query": "^5.90.19",
     "buffer": "^6.0.3",
     "classnames": "2.5.1",
-    "copy-webpack-plugin": "^12.0.0",
+    "copy-webpack-plugin": "^14.0.0",
     "joi": "^17.11.0",
     "js-cookie": "3.0.5",
     "lodash": "^4.17.21",
@@ -73,7 +73,7 @@
     "truncate-html": "1.0.4"
   },
   "devDependencies": {
-    "@openedx/frontend-build": "^14.6.6",
+    "@openedx/frontend-build": "^14.6.13",
     "@pact-foundation/pact": "^13.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
