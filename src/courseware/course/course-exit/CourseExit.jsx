@@ -7,7 +7,7 @@ import CourseCelebration from './CourseCelebration';
 import CourseInProgress from './CourseInProgress';
 import CourseNonPassing from './CourseNonPassing';
 import { COURSE_EXIT_MODES, getCourseExitMode } from './utils';
-import { unsubscribeFromGoalReminders } from './data/thunks';
+import { postUnsubscribeFromGoalReminders } from './data/api';
 import { CourseExitViewCoursesPluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
 import { useModel } from '../../../generic/model-store';
@@ -43,7 +43,7 @@ const CourseExit = () => {
   // to avoid spamming them with goal reminder emails
   if (courseGoals && enrollmentMode === 'audit' && !isMasquerading) {
     useEffect(() => {
-      unsubscribeFromGoalReminders(courseId);
+      postUnsubscribeFromGoalReminders(courseId);
     }, []);
   }
 
