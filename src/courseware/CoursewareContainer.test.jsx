@@ -13,6 +13,7 @@ import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
 import { UserMessagesProvider } from '../generic/user-messages';
+import { ToastProvider } from '../generic/ToastContext';
 import tabMessages from '../tab-page/messages';
 import { createTestQueryClient, initializeMockApp, waitFor } from '../setupTest';
 import { DECODE_ROUTES } from '../constants';
@@ -95,15 +96,17 @@ describe('CoursewareContainer', () => {
       <AppProvider store={store} wrapWithRouter={false}>
         <QueryClientProvider client={createTestQueryClient()}>
           <UserMessagesProvider>
-            <Routes>
-              {DECODE_ROUTES.COURSEWARE.map((route) => (
-                <Route
-                  key={route}
-                  path={route}
-                  element={<CoursewareContainer />}
-                />
-              ))}
-            </Routes>
+            <ToastProvider>
+              <Routes>
+                {DECODE_ROUTES.COURSEWARE.map((route) => (
+                  <Route
+                    key={route}
+                    path={route}
+                    element={<CoursewareContainer />}
+                  />
+                ))}
+              </Routes>
+            </ToastProvider>
           </UserMessagesProvider>
         </QueryClientProvider>
       </AppProvider>

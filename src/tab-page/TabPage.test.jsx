@@ -1,17 +1,25 @@
 import React from 'react';
-import { getConfig } from '@edx/frontend-platform';
-import MockAdapter from 'axios-mock-adapter';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
-  initializeTestStore, logUnhandledRequests, render, screen,
+  initializeTestStore, render, screen,
 } from '../setupTest';
 import { TabPage } from './index';
-import { executeThunk } from '../utils';
-import * as thunks from '../course-home/data/thunks';
+import { useToast } from '../generic/ToastContext';
 
 // We should not test `LoadedTabPage` page here, as `TabPage` is used only for passing `passthroughProps`.
 jest.mock('./LoadedTabPage', () => function () {
   return <div data-testid="LoadedTabPage" />;
+});
+
+jest.mock('../generic/ToastContext', () => ({
+  ...jest.requireActual('../generic/ToastContext'),
+  useToast: jest.fn(),
+}));
+
+const mockUseToast = (overrides = {}) => useToast.mockReturnValue({
+  toastContent: null,
+  isToastOpen: false,
+  closeToast: jest.fn(),
+  ...overrides,
 });
 
 describe('Tab Page', () => {
@@ -21,6 +29,10 @@ describe('Tab Page', () => {
 
   beforeAll(async () => {
     await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+  });
+
+  beforeEach(() => {
+    mockUseToast();
   });
 
   it('displays loading message', () => {
@@ -69,26 +81,12 @@ describe('Tab Page', () => {
     expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
   });
 
-  it('displays Learning Toast', async () => {
-    const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
-    render(<TabPage {...mockData} />, { store: testStore, wrapWithRouter: true });
-
-    const resetUrl = `${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`;
-    const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    axiosMock.onPost(resetUrl).reply(201, {
-      link: 'test-toast-link',
-      link_text: 'test-toast-body',
-      header: 'test-toast-header',
+  it('renders a toast from the toast context', () => {
+    mockUseToast({
+      toastContent: { message: 'test-toast-header', action: { label: 'test-toast-body', href: 'test-toast-link' } },
+      isToastOpen: true,
     });
-    logUnhandledRequests(axiosMock);
-
-    const getTabDataMock = jest.fn(() => ({
-      type: 'MOCK_ACTION',
-    }));
-    const model = 'outline';
-
-    await executeThunk(thunks.resetDeadlines('courseId', model, getTabDataMock), testStore.dispatch);
-
+    render(<TabPage {...mockData} />, { wrapWithRouter: true });
     expect(screen.getByText('test-toast-header')).toBeInTheDocument();
     expect(screen.getByText('test-toast-body')).toBeInTheDocument();
   });

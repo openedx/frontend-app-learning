@@ -10,7 +10,7 @@ import {
   Col,
 } from '@openedx/paragon';
 
-import { resetDeadlines } from '../data';
+import { useResetDeadlines } from '../data/apiHooks';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
@@ -31,6 +31,7 @@ const ShiftDatesAlert = ({ fetch, model }) => {
   } = datesBannerInfo;
 
   const dispatch = useDispatch();
+  const resetDeadlines = useResetDeadlines();
 
   if (!missedDeadlines || missedGatedContent || hasEnded) {
     return null;
@@ -48,7 +49,10 @@ const ShiftDatesAlert = ({ fetch, model }) => {
             variant="primary"
             size="sm"
             className="w-xs-100 w-md-auto"
-            onClick={() => dispatch(resetDeadlines(courseId, model, fetch))}
+            onClick={() => resetDeadlines.mutate(
+              { courseId, model },
+              { onSuccess: () => dispatch(fetch(courseId)) },
+            )}
           >
             {intl.formatMessage(messages.shiftDatesButton)}
           </Button>
