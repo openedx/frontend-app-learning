@@ -6,13 +6,16 @@ import { getConfig, history } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import DatesTab from './DatesTab';
 import { fetchDatesTab } from '../data';
-import { fireEvent, initializeMockApp, waitFor } from '../../setupTest';
+import {
+  createTestQueryClient, fireEvent, initializeMockApp, waitFor,
+} from '../../setupTest';
 import initializeStore from '../../store';
 import { TabContainer } from '../../tab-page';
 import { appendBrowserTimezoneToUrl } from '../../utils';
@@ -31,18 +34,20 @@ describe('DatesTab', () => {
     store = initializeStore();
     component = (
       <AppProvider store={store}>
-        <UserMessagesProvider>
-          <Routes>
-            <Route
-              path="/course/:courseId/dates"
-              element={(
-                <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-                  <DatesTab />
-                </TabContainer>
-              )}
-            />
-          </Routes>
-        </UserMessagesProvider>
+        <QueryClientProvider client={createTestQueryClient()}>
+          <UserMessagesProvider>
+            <Routes>
+              <Route
+                path="/course/:courseId/dates"
+                element={(
+                  <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
+                    <DatesTab />
+                  </TabContainer>
+                )}
+              />
+            </Routes>
+          </UserMessagesProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
   });

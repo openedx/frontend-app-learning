@@ -2,7 +2,6 @@ import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams'
 import { configureStore } from '@reduxjs/toolkit';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { reducer as coursewareReducer } from './courseware/data/slice';
-import { reducer as toursReducer } from './product-tours/data';
 import { reducer as modelsReducer } from './generic/model-store';
 import { reducer as pluginsReducer } from './generic/plugin-store';
 
@@ -13,7 +12,6 @@ export default function initializeStore() {
       courseware: coursewareReducer,
       courseHome: courseHomeReducer,
       specialExams: specialExamsReducer,
-      tours: toursReducer,
       plugins: pluginsReducer,
     },
     // temporarily solutions to disable serializable check for plugin actions

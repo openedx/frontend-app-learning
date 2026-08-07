@@ -16,6 +16,7 @@ import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
 import { setCallToActionToast } from '../course-home/data/slice';
 import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
+import { TourProvider } from '../product-tours/TourContext';
 
 const TabPage = (props) => {
   const intl = useIntl();
@@ -52,7 +53,7 @@ const TabPage = (props) => {
   }
 
   return (
-    <>
+    <TourProvider>
       {['loaded', 'denied'].includes(courseStatus) && (
         <>
           <Toast
@@ -87,7 +88,7 @@ const TabPage = (props) => {
         </p>
       )}
       <FooterSlot />
-    </>
+    </TourProvider>
   );
 };
 
