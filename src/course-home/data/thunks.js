@@ -13,12 +13,10 @@ import {
   postDismissWelcomeMessage,
   postRequestCert,
   getLiveTabIframe,
-  getCoursewareSearchEnabled,
-  searchCourseContentFromAPI,
 } from './api';
 
 import {
-  addModel, updateModel,
+  addModel,
 } from '../../generic/model-store';
 
 import {
@@ -29,8 +27,6 @@ import {
   setCallToActionToast,
   setExamsData,
 } from './slice';
-
-import mapSearchResponse from '../courseware-search/map-search-response';
 
 const eventTypes = {
   POST_EVENT: 'post_event',
@@ -163,73 +159,6 @@ export function processEvent(eventData, getTabData) {
         dispatch(setCallToActionToast({ header, link, linkText }));
       });
     }
-  };
-}
-
-export async function fetchCoursewareSearchSettings(courseId) {
-  try {
-    const { enabled } = await getCoursewareSearchEnabled(courseId);
-    return { enabled };
-  } catch (e) {
-    return { enabled: false };
-  }
-}
-
-export function searchCourseContent(courseId, searchKeyword) {
-  return async (dispatch) => {
-    const start = new Date();
-
-    dispatch(addModel({
-      modelType: 'contentSearchResults',
-      model: {
-        id: courseId,
-        searchKeyword,
-        results: [],
-        errors: undefined,
-        loading: true,
-      },
-    }));
-
-    let data;
-    let curatedResponse;
-    let errors;
-    try {
-      ({ data } = await searchCourseContentFromAPI(courseId, searchKeyword));
-      curatedResponse = mapSearchResponse(data, searchKeyword);
-    } catch (e) {
-      // TODO: Remove when publishing to prod. Just temporary for performance debugging.
-      // eslint-disable-next-line no-console
-      console.error('Error on Courseware Search: ', e.message);
-      errors = e.message;
-    }
-
-    dispatch(updateModel({
-      modelType: 'contentSearchResults',
-      model: {
-        ...curatedResponse,
-        id: courseId,
-        searchKeyword,
-        errors,
-        loading: false,
-      },
-    }));
-
-    const end = new Date();
-    const clientMs = (end - start);
-    const {
-      took, total, maxScore, accessDeniedCount,
-    } = data;
-
-    // TODO: Remove when publishing to prod. Just temporary for performance debugging.
-    // eslint-disable-next-line no-console
-    console.table({
-      'Search Keyword': searchKeyword,
-      'Client time (ms)': clientMs,
-      'Server time (ms)': took,
-      'Total matches': total,
-      'Max score': maxScore,
-      'Access denied count': accessDeniedCount,
-    });
   };
 }
 

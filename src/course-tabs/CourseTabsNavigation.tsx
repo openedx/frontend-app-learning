@@ -2,7 +2,6 @@ import React from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { CoursewareSearch, CoursewareSearchToggle } from '@src/course-home/courseware-search';
-import { useCoursewareSearchState } from '@src/course-home/courseware-search/hooks';
 import { CourseTabLinksSlot } from '@src/plugin-slots/CourseTabLinksSlot';
 import Tabs from '@src/generic/tabs/Tabs';
 import messages from './messages';
@@ -21,7 +20,6 @@ const CourseTabsNavigation = ({
   tabs,
 }:CourseTabsNavigationProps) => {
   const intl = useIntl();
-  const { show } = useCoursewareSearchState();
 
   return (
     <div id="courseTabsNavigation" className="mb-3 course-tabs-navigation">
@@ -40,7 +38,7 @@ const CourseTabsNavigation = ({
           </div>
         </div>
       </div>
-      {show && <CoursewareSearch />}
+      <CoursewareSearch />
     </div>
   );
 };

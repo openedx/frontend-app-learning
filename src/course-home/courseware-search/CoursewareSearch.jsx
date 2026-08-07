@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
-import { useDispatch } from 'react-redux';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -9,27 +8,27 @@ import {
 import {
   Close,
 } from '@openedx/paragon/icons';
-import { setShowSearch } from '../data/slice';
-import { useCoursewareSearchParams, useElementBoundingBox, useLockScroll } from './hooks';
+import { useCoursewareSearch } from './CoursewareSearchContext';
+import {
+  useCoursewareSearchFeatureFlag, useCoursewareSearchParams, useElementBoundingBox, useLockScroll,
+} from './hooks';
 import messages from './messages';
 
 import CoursewareSearchForm from './CoursewareSearchForm';
 import CoursewareSearchResultsFilterContainer from './CoursewareResultsFilter';
-import { updateModel, useModel } from '../../generic/model-store';
-import { searchCourseContent } from '../data/thunks';
+import { useModel } from '../../generic/model-store';
+import { useCoursewareSearchResults } from './data/apiHooks';
 
-const CoursewareSearch = ({ ...sectionProps }) => {
+const CoursewareSearchModal = ({ ...sectionProps }) => {
   const { formatMessage } = useIntl();
   const { courseId } = useParams();
   const { query: searchKeyword, setQuery, clearSearchParams } = useCoursewareSearchParams();
-  const dispatch = useDispatch();
+  const { close: closeSearch } = useCoursewareSearch();
   const { org } = useModel('courseHomeMeta', courseId);
   const {
-    loading,
-    searchKeyword: lastSearchKeyword,
-    errors,
-    total,
-  } = useModel('contentSearchResults', courseId);
+    data, isLoading, isError,
+  } = useCoursewareSearchResults(courseId, searchKeyword);
+  const total = data?.total;
   const dialogRef = useRef();
 
   useLockScroll();
@@ -39,17 +38,6 @@ const CoursewareSearch = ({ ...sectionProps }) => {
 
   const clearSearch = () => {
     clearSearchParams();
-    dispatch(updateModel({
-      modelType: 'contentSearchResults',
-      model: {
-        id: courseId,
-        searchKeyword: '',
-        results: [],
-        errors: undefined,
-        loading:
-        false,
-      },
-    }));
   };
 
   const handleSubmit = (value) => {
@@ -65,7 +53,6 @@ const CoursewareSearch = ({ ...sectionProps }) => {
       keyword: value,
     });
 
-    dispatch(searchCourseContent(courseId, value));
     setQuery(value);
   };
 
@@ -76,7 +63,7 @@ const CoursewareSearch = ({ ...sectionProps }) => {
 
   const close = () => {
     clearSearch();
-    dispatch(setShowSearch(false));
+    closeSearch();
   };
 
   const handlePopState = () => close();
@@ -110,11 +97,11 @@ const CoursewareSearch = ({ ...sectionProps }) => {
   const handleSearchClose = () => close();
 
   let status = 'idle';
-  if (loading) {
+  if (isLoading) {
     status = 'loading';
-  } else if (errors) {
+  } else if (isError) {
     status = 'error';
-  } else if (lastSearchKeyword) {
+  } else if (data) {
     status = 'results';
   }
 
@@ -160,7 +147,7 @@ const CoursewareSearch = ({ ...sectionProps }) => {
                     aria-relevant="all"
                     aria-atomic="true"
                     data-testid="courseware-search-summary"
-                  >{formatMessage(messages.searchResultsLabel, { total, keyword: lastSearchKeyword })}
+                  >{formatMessage(messages.searchResultsLabel, { total, keyword: searchKeyword })}
                   </div>
                 ) : null}
                 <CoursewareSearchResultsFilterContainer />
@@ -171,6 +158,15 @@ const CoursewareSearch = ({ ...sectionProps }) => {
       </div>
     </dialog>
   );
+};
+
+const CoursewareSearch = (props) => {
+  const { show } = useCoursewareSearch();
+  const enabled = useCoursewareSearchFeatureFlag();
+
+  if (!enabled || !show) { return null; }
+
+  return <CoursewareSearchModal {...props} />;
 };
 
 export default CoursewareSearch;
