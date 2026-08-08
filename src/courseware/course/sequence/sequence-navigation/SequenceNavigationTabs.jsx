@@ -40,13 +40,14 @@ const SequenceNavigationTabs = ({
           style={shouldDisplayDropdown ? invisibleStyle : null}
           ref={containerRef}
         >
-          {unitIds.map(buttonUnitId => (
+          {unitIds.map((buttonUnitId, idx) => (
             <UnitButton
               key={buttonUnitId}
               unitId={buttonUnitId}
               isActive={unitId === buttonUnitId}
               showCompletion={showCompletion}
               onClick={onNavigate}
+              unitIdx={idx}
             />
           ))}
         </div>

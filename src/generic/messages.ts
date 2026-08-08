@@ -36,6 +36,16 @@ const messages = defineMessages({
     defaultMessage: 'homepage',
     description: 'Text for url, telling them the page they will be navigated to',
   },
+  skipToContent: {
+    id: 'learning.generic.skipToContent',
+    defaultMessage: 'Skip to content',
+    description: 'Link text to skip to the main content of the page for accessibility',
+  },
+  mainContent: {
+    id: 'learning.generic.mainContent',
+    defaultMessage: 'Main Content',
+    description: 'Label for the main content area',
+  },
 });
 
 export default messages;

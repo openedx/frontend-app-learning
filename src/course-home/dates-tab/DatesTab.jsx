@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
+import { MAIN_CONTENT_ID } from '@src/constants';
+import { useScrollToContent } from '@src/generic/hooks';
 import messages from './messages';
 import Timeline from './timeline/Timeline';
 
@@ -19,6 +21,8 @@ const DatesTab = () => {
   const {
     courseId,
   } = useSelector(state => state.courseHome);
+
+  useScrollToContent(MAIN_CONTENT_ID);
 
   const {
     isSelfPaced,
@@ -44,7 +48,13 @@ const DatesTab = () => {
 
   return (
     <>
-      <div role="heading" aria-level="1" className="h2 my-3">
+      <div
+        id={MAIN_CONTENT_ID}
+        tabIndex="-1"
+        role="heading"
+        aria-level="1"
+        className="h2 my-3"
+      >
         {intl.formatMessage(messages.title)}
       </div>
       {isSelfPaced && hasDeadlines && (
