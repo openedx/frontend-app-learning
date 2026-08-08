@@ -14,6 +14,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { reducer as courseHomeReducer } from './course-home/data';
+import { createAppQueryCache } from './queryClient';
 import { reducer as coursewareReducer } from './courseware/data/slice';
 import { reducer as modelsReducer } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
@@ -243,12 +244,13 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   return store;
 }
 
-export function createTestQueryClient() {
+export function createTestQueryClient(store) {
   return new QueryClient({
     defaultOptions: {
       queries: { retry: false },
       mutations: { retry: false },
     },
+    ...(store ? { queryCache: createAppQueryCache(store) } : {}),
   });
 }
 

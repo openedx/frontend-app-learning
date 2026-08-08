@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {
   FormattedDate,
   FormattedTime,
@@ -23,9 +23,7 @@ const Day = ({
   last,
 }) => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
   const {
     userTimezone,
   } = useModel('courseHomeMeta', courseId);

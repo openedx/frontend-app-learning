@@ -1,5 +1,7 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -11,14 +13,15 @@ import {
 } from '@openedx/paragon';
 
 import { useResetDeadlines } from '../data/apiHooks';
+import { courseHomeQueryKeys } from '../data/queryKeys';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
 const ShiftDatesAlert = ({ fetch, model }) => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
+  const queryClient = useQueryClient();
+  const dispatch = useDispatch();
 
   const {
     datesBannerInfo,
@@ -30,12 +33,18 @@ const ShiftDatesAlert = ({ fetch, model }) => {
     missedGatedContent,
   } = datesBannerInfo;
 
-  const dispatch = useDispatch();
   const resetDeadlines = useResetDeadlines();
 
   if (!missedDeadlines || missedGatedContent || hasEnded) {
     return null;
   }
+
+  const refreshTabData = () => {
+    queryClient.invalidateQueries({ queryKey: courseHomeQueryKeys.datesTab(courseId) });
+    if (fetch) {
+      dispatch(fetch(courseId));
+    }
+  };
 
   return (
     <Alert variant="warning">
@@ -51,7 +60,7 @@ const ShiftDatesAlert = ({ fetch, model }) => {
             className="w-xs-100 w-md-auto"
             onClick={() => resetDeadlines.mutate(
               { courseId, model },
-              { onSuccess: () => dispatch(fetch(courseId)) },
+              { onSuccess: refreshTabData },
             )}
           >
             {intl.formatMessage(messages.shiftDatesButton)}
@@ -63,8 +72,12 @@ const ShiftDatesAlert = ({ fetch, model }) => {
 };
 
 ShiftDatesAlert.propTypes = {
-  fetch: PropTypes.func.isRequired,
+  fetch: PropTypes.func,
   model: PropTypes.string.isRequired,
+};
+
+ShiftDatesAlert.defaultProps = {
+  fetch: undefined,
 };
 
 export default ShiftDatesAlert;

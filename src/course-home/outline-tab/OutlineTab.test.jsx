@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
@@ -73,10 +73,13 @@ describe('Outline Tab', () => {
 
   async function fetchAndRender(path = '') {
     await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
+    const search = path.includes('?') ? path.slice(path.indexOf('?')) : '';
     await act(async () => render(
-      <MemoryRouter initialEntries={[path]}>
+      <MemoryRouter initialEntries={[`/course/${courseId}/home${search}`]}>
         <TourProvider>
-          <OutlineTab />
+          <Routes>
+            <Route path="/course/:courseId/home" element={<OutlineTab />} />
+          </Routes>
         </TourProvider>
       </MemoryRouter>,
       { store },
@@ -196,6 +199,18 @@ describe('Outline Tab', () => {
   });
 
   describe('Suggested schedule alerts', () => {
+    const dateBlocks = [
+      {
+        assignment_type: 'Homework',
+        date: '2010-08-20T05:59:40.942669Z',
+        date_type: 'assignment-due-date',
+        description: '',
+        learner_has_access: true,
+        title: 'Missed assignment',
+        extra_info: null,
+      },
+    ];
+
     beforeEach(() => {
       setMetadata({ is_enrolled: true, is_self_paced: true });
       setTabData({
@@ -205,19 +220,7 @@ describe('Outline Tab', () => {
           missed_gated_content: true,
           verified_upgrade_link: 'http://localhost:18130/basket/add/?sku=8CF08E5',
         },
-      }, {
-        date_blocks: [
-          {
-            assignment_type: 'Homework',
-            date: '2010-08-20T05:59:40.942669Z',
-            date_type: 'assignment-due-date',
-            description: '',
-            learner_has_access: true,
-            title: 'Missed assignment',
-            extra_info: null,
-          },
-        ],
-      });
+      }, { date_blocks: dateBlocks });
     });
 
     it('renders UpgradeToShiftDatesAlert', async () => {
@@ -244,6 +247,28 @@ describe('Outline Tab', () => {
         linkType: 'button',
         pageName: 'course_home',
       });
+    });
+
+    it('handles shift due dates click', async () => {
+      const user = userEvent.setup();
+      setTabData(
+        { dates_banner_info: { missed_deadlines: true, missed_gated_content: false } },
+        { date_blocks: dateBlocks },
+      );
+      await fetchAndRender();
+
+      const button = await screen.findByRole('button', { name: 'Shift due dates' });
+
+      axiosMock.onPost(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`)
+        .reply(200, { header: 'Dates shifted' });
+      setTabData(
+        { dates_banner_info: { missed_deadlines: false, missed_gated_content: false } },
+        { date_blocks: dateBlocks },
+      );
+
+      await user.click(button);
+
+      await waitFor(() => expect(screen.queryByRole('button', { name: 'Shift due dates' })).not.toBeInTheDocument());
     });
   });
 

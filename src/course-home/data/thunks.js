@@ -1,7 +1,6 @@
 import { logError } from '@edx/frontend-platform/logging';
 import {
   getCourseHomeCourseMetadata,
-  getDatesTabData,
   getExamsData,
   getOutlineTabData,
   getProgressTabData,
@@ -84,10 +83,6 @@ export function fetchTab(courseId, tab, getTabData, targetUserId) {
       logError(e);
     }
   };
-}
-
-export function fetchDatesTab(courseId) {
-  return fetchTab(courseId, 'dates', getDatesTabData);
 }
 
 export function fetchProgressTab(courseId, targetUserId) {
