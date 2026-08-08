@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -6,12 +7,13 @@ import {
   OverlayTrigger,
   Stack,
   Tooltip,
+  IconButton,
 } from '@openedx/paragon';
 import { InfoOutline, Locked } from '@openedx/paragon/icons';
-import { useContextId } from '../../../../data/hooks';
 
+import { useContextId } from '@src/data/hooks';
+import { useModel } from '@src/generic/model-store';
 import messages from '../messages';
-import { useModel } from '../../../../generic/model-store';
 
 const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
   const intl = useIntl();
@@ -20,24 +22,36 @@ const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
     verifiedMode,
     gradesFeatureIsFullyLocked,
   } = useModel('progress', courseId);
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      setShowTooltip(false);
+    }
+  };
 
   return (
     <Stack gap={2} className="mb-3">
       <Stack direction="horizontal" gap={2}>
         <h3 className="h4 m-0">{intl.formatMessage(messages.gradeSummary)}</h3>
         <OverlayTrigger
-          trigger="hover"
+          trigger="click"
           placement="top"
+          show={showTooltip}
           overlay={(
             <Tooltip>
               {intl.formatMessage(messages.gradeSummaryTooltipBody)}
             </Tooltip>
           )}
         >
-          <Icon
+          <IconButton
+            onClick={() => setShowTooltip(!showTooltip)}
+            onBlur={() => setShowTooltip(false)}
+            onKeyDown={handleKeyDown}
             alt={intl.formatMessage(messages.gradeSummaryTooltipAlt)}
-            src={InfoOutline}
+            iconAs={InfoOutline}
             size="sm"
+            disabled={gradesFeatureIsFullyLocked}
           />
         </OverlayTrigger>
       </Stack>
