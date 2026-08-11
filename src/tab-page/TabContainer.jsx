@@ -39,7 +39,6 @@ const TabContainer = (props) => {
       activeTabSlug={tab}
       courseId={courseId}
       courseStatus={courseStatus}
-      metadataModel={`${slice}Meta`}
     >
       {children}
     </TabWithTimer>

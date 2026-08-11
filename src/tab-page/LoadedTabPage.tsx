@@ -19,7 +19,6 @@ interface LoadedTabPageProps {
   activeTabSlug: string;
   children?: React.ReactNode;
   courseId: string;
-  metadataModel: string;
   unitId?: string | null;
 }
 
@@ -27,7 +26,6 @@ const LoadedTabPage = ({
   activeTabSlug,
   children = null,
   courseId,
-  metadataModel,
   unitId = null,
 }: LoadedTabPageProps) => {
   const {
@@ -72,7 +70,6 @@ const LoadedTabPage = ({
       )}
       <StreakModal
         courseId={courseId}
-        metadataModel={metadataModel}
         streakLengthToCelebrate={streakLengthToCelebrate}
         isStreakCelebrationOpen={!!isStreakCelebrationOpen}
         closeStreakCelebration={closeStreakCelebration}

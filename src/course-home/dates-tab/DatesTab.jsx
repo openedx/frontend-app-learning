@@ -49,7 +49,6 @@ const DatesTab = () => {
       activeTabSlug="dates"
       courseId={courseId}
       courseStatus={{ metadataQuery, tabDataQuery }}
-      metadataModel="courseHomeMeta"
     >
       <div role="heading" aria-level="1" className="h2 my-3">
         {intl.formatMessage(messages.title)}

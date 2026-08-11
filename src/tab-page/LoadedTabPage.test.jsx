@@ -17,7 +17,7 @@ jest.mock('../product-tours/ProductTours', () => function () {
 });
 
 describe('Loaded Tab Page', () => {
-  const mockData = { activeTabSlug: 'courseware', metadataModel: 'coursewareMeta' };
+  const mockData = { activeTabSlug: 'courseware' };
 
   beforeAll(async () => {
     const store = await initializeTestStore({ excludeFetchSequence: true });

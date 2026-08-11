@@ -666,7 +666,7 @@ describe('Outline Tab', () => {
           },
         });
         await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-        await act(async () => render(<TourProvider><LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">...</LoadedTabPage></TourProvider>, { store }));
+        await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="outline">...</LoadedTabPage></TourProvider>, { store }));
         const instructorToolbar = await screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
@@ -682,7 +682,7 @@ describe('Outline Tab', () => {
           },
         });
         await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-        await act(async () => render(<TourProvider><LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">...</LoadedTabPage></TourProvider>, { store }));
+        await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="outline">...</LoadedTabPage></TourProvider>, { store }));
         const instructorToolbar = await screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();

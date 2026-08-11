@@ -34,7 +34,6 @@ export interface TabPageProps {
   activeTabSlug: string;
   courseId?: string;
   courseStatus: CourseStatus;
-  metadataModel: string;
   unitId?: string;
   children?: ReactNode;
 }
@@ -71,7 +70,6 @@ const TabPage = ({
   activeTabSlug,
   courseId,
   courseStatus,
-  metadataModel,
   unitId,
   children,
 }: TabPageProps) => {
@@ -116,8 +114,12 @@ const TabPage = ({
     </Toast>
   );
 
-  const renderTourButton = () => {
-    if (metadataModel !== 'courseHomeMeta') { return null; }
+  // The outline page renders a visible "launch tour" button deep in the DOM; no other tab
+  // renders it. For screen-reader users we render a screen-reader-only copy above the header,
+  // where it won't be buried (a11y rationale:
+  // https://github.com/openedx/frontend-app-learning/pull/750#discussion_r755536879).
+  const renderSrOnlyTourButton = () => {
+    if (activeTabSlug !== 'outline') { return null; }
     return (<LaunchCourseHomeTourButton srOnly />);
   };
 
@@ -131,7 +133,6 @@ const TabPage = ({
       <LoadedTabPage
         activeTabSlug={activeTabSlug}
         courseId={courseId}
-        metadataModel={metadataModel}
         unitId={unitId}
       >
         {children}
@@ -148,7 +149,7 @@ const TabPage = ({
   return (
     <TourProvider>
       {shouldRenderContent && renderToast()}
-      {shouldRenderContent && renderTourButton()}
+      {shouldRenderContent && renderSrOnlyTourButton()}
       <HeaderSlot courseOrg={org} courseNumber={number} courseTitle={title} />
       {isLoading && renderLoading()}
       {shouldRenderContent && renderLoadedTabPage()}
