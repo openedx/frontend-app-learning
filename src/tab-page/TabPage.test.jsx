@@ -24,6 +24,7 @@ const mockUseToast = (overrides = {}) => useToast.mockReturnValue({
 
 describe('Tab Page', () => {
   const mockData = {
+    courseId: 'test-course',
     courseStatus: 'loaded',
   };
 
