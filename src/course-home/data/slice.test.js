@@ -9,9 +9,6 @@ describe('course home data slice', () => {
         metadataModel: 'courseHomeCourseMetadata',
         proctoringPanelStatus: 'loading',
         tabFetchStates: {},
-        toastBodyText: '',
-        toastBodyLink: null,
-        toastHeader: '',
         examsData: null,
       };
 
@@ -47,9 +44,6 @@ describe('course home data slice', () => {
         metadataModel: 'courseHomeCourseMetadata',
         proctoringPanelStatus: 'loading',
         tabFetchStates: {},
-        toastBodyText: '',
-        toastBodyLink: null,
-        toastHeader: '',
         examsData: [{ id: 1, examName: 'Old Exam' }],
       };
 
@@ -76,9 +70,6 @@ describe('course home data slice', () => {
         metadataModel: 'courseHomeCourseMetadata',
         proctoringPanelStatus: 'loading',
         tabFetchStates: {},
-        toastBodyText: '',
-        toastBodyLink: null,
-        toastHeader: '',
         examsData: [{ id: 1, examName: 'Some Exam' }],
       };
 
@@ -95,9 +86,6 @@ describe('course home data slice', () => {
         metadataModel: 'courseHomeCourseMetadata',
         proctoringPanelStatus: 'loading',
         tabFetchStates: {},
-        toastBodyText: '',
-        toastBodyLink: null,
-        toastHeader: '',
         examsData: [{ id: 1, examName: 'Some Exam' }],
       };
 
@@ -114,9 +102,6 @@ describe('course home data slice', () => {
         metadataModel: 'courseHomeCourseMetadata',
         proctoringPanelStatus: 'complete',
         tabFetchStates: { progress: 'loaded' },
-        toastBodyText: 'Toast message',
-        toastBodyLink: 'http://example.com',
-        toastHeader: 'Toast Header',
         examsData: null,
       };
 
@@ -133,7 +118,6 @@ describe('course home data slice', () => {
       // Verify other properties remain unchanged
       expect(newState.courseStatus).toBe(initialState.courseStatus);
       expect(newState.courseId).toBe(initialState.courseId);
-      expect(newState.toastBodyText).toBe(initialState.toastBodyText);
     });
   });
 });

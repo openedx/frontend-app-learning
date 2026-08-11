@@ -6,7 +6,6 @@ import { logError } from '@edx/frontend-platform/logging';
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { fetchCourse } from '@src/courseware/data';
-import { processEvent } from '@src/course-home/data/thunks';
 import { useEventListener } from '@src/generic/hooks';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
 
@@ -15,8 +14,10 @@ import { messageTypes } from '../constants';
 import useIFrameBehavior, { iframeBehaviorState } from './useIFrameBehavior';
 
 const mockNavigate = jest.fn();
+const mockMutate = jest.fn();
 
 jest.mock('@edx/frontend-platform', () => ({
+  ...jest.requireActual('@edx/frontend-platform'),
   getConfig: jest.fn(),
 }));
 
@@ -40,7 +41,10 @@ jest.mock('@src/courseware/data', () => ({
   fetchCourse: jest.fn(),
 }));
 jest.mock('@src/course-home/data/thunks', () => ({
-  processEvent: jest.fn((...args) => ({ processEvent: args })),
+  eventTypes: { POST_EVENT: 'post_event' },
+}));
+jest.mock('@src/course-home/data/apiHooks', () => ({
+  usePostEvent: () => ({ mutate: mockMutate }),
 }));
 jest.mock('@src/generic/hooks', () => ({
   useEventListener: jest.fn(),
@@ -349,12 +353,30 @@ describe('useIFrameBehavior hook', () => {
       });
       it('registers an event handler to process fetchCourse events.', () => {
         mockState(defaultStateVals);
+        fetchCourse.mockReturnValue('fetch-course-action');
         const { result } = renderHook(() => useIFrameBehavior(props));
         result.current.handleIFrameLoad();
-        const eventName = 'test-event-name';
-        const event = { data: { event_name: eventName } };
+        const event = {
+          data: {
+            event_name: 'post_event',
+            post_data: { url: 'post-url', body_params: { course_id: 'course-1' } },
+            research_event_data: { location: 'unit' },
+          },
+        };
         window.onmessage(event);
-        expect(dispatch).toHaveBeenCalledWith(processEvent(event.data, fetchCourse));
+
+        expect(mockMutate).toHaveBeenCalledWith(
+          {
+            postData: { url: 'post-url', bodyParams: { courseId: 'course-1' } },
+            researchEventData: { location: 'unit' },
+          },
+          { onSuccess: expect.any(Function) },
+        );
+
+        const { onSuccess } = mockMutate.mock.calls[0][1];
+        onSuccess();
+        expect(fetchCourse).toHaveBeenCalledWith('course-1');
+        expect(dispatch).toHaveBeenCalledWith('fetch-course-action');
       });
       it('updates initial iframe visibility on load', () => {
         const { result } = renderHook(() => useIFrameBehavior(props));
