@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
@@ -10,7 +9,7 @@ import { useContextId } from '../../../data/hooks';
 import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
-import { requestCert } from '../../data/thunks';
+import { useRequestCert } from '../../data/apiHooks';
 import messages from './messages';
 import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertificateStatusSlot';
 
@@ -62,7 +61,7 @@ const CertificateStatus = () => {
     courserun_key: courseId,
   };
 
-  const dispatch = useDispatch();
+  const requestCert = useRequestCert();
   const { administrator } = getAuthenticatedUser();
 
   let certStatus;
@@ -110,7 +109,7 @@ const CertificateStatus = () => {
     switch (certStatus) {
       case 'requesting':
         certCase = 'requestable';
-        buttonAction = () => { dispatch(requestCert(courseId)); };
+        buttonAction = () => { requestCert.mutate({ courseId }); };
         body = intl.formatMessage(messages[`${certCase}Body`]);
         buttonText = intl.formatMessage(messages[`${certCase}Button`]);
         break;

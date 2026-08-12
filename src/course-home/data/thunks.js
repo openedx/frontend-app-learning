@@ -7,7 +7,6 @@ import {
   deprecatedPostCourseGoals,
   postWeeklyLearningGoal,
   postDismissWelcomeMessage,
-  postRequestCert,
   getLiveTabIframe,
 } from './api';
 
@@ -103,10 +102,6 @@ export function fetchDiscussionTab(courseId) {
 
 export function dismissWelcomeMessage(courseId) {
   return async () => postDismissWelcomeMessage(courseId);
-}
-
-export function requestCert(courseId) {
-  return async () => postRequestCert(courseId);
 }
 
 export async function deprecatedSaveCourseGoal(courseId, goalKey) {

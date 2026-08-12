@@ -6,7 +6,6 @@ import {
   useIntl,
 } from '@edx/frontend-platform/i18n';
 import { Alert, Button } from '@openedx/paragon';
-import { useDispatch } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +14,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import certMessages from './messages';
 import certStatusMessages from '../../../progress-tab/certificate-status/messages';
-import { requestCert } from '../../../data/thunks';
+import { useRequestCert } from '../../../data/apiHooks';
 
 export const CERT_STATUS_TYPE = {
   EARNED_NOT_AVAILABLE: 'earned_but_not_available',
@@ -26,7 +25,7 @@ export const CERT_STATUS_TYPE = {
 
 const CertificateStatusAlert = ({ payload }) => {
   const intl = useIntl();
-  const dispatch = useDispatch();
+  const requestCert = useRequestCert();
   const {
     certificateAvailableDate,
     certStatus,
@@ -91,7 +90,7 @@ const CertificateStatusAlert = ({ payload }) => {
       alertProps.buttonLink = '';
       alertProps.buttonAction = () => {
         sendAlertClickTracking('edx.ui.lms.course_outline.certificate_alert_request_cert_button.clicked');
-        dispatch(requestCert(courseId));
+        requestCert.mutate({ courseId });
       };
     }
     return alertProps;

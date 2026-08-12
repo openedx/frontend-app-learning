@@ -4,7 +4,7 @@ import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Helmet } from 'react-helmet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Alert,
   breakpoints,
@@ -23,7 +23,7 @@ import certificateLocked from '../../../generic/assets/openedx_locked_certificat
 import { FormattedPricing } from '../../../generic/upgrade-button';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
-import { requestCert } from '../../../course-home/data/thunks';
+import { useRequestCert } from '../../../course-home/data/apiHooks';
 import ProgramCompletion from './ProgramCompletion';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
@@ -38,7 +38,7 @@ const CourseCelebration = () => {
   const intl = useIntl();
   const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
   const { courseId } = useSelector(state => state.courseware);
-  const dispatch = useDispatch();
+  const requestCert = useRequestCert();
   const {
     certificateData,
     end,
@@ -153,7 +153,7 @@ const CourseCelebration = () => {
           variant={buttonVariant}
           onClick={() => {
             logClick(org, courseId, administrator, buttonEvent);
-            dispatch(requestCert(courseId));
+            requestCert.mutate({ courseId });
           }}
         >
           {intl.formatMessage(messages.requestCertificateButton)}
