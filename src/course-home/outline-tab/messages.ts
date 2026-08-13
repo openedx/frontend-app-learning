@@ -106,8 +106,13 @@ const messages = defineMessages({
   },
   openSection: {
     id: 'learning.outline.altText.openSection',
-    defaultMessage: 'Open',
+    defaultMessage: 'Open Section',
     description: 'A button to open the given section of the course outline',
+  },
+  closeSection: {
+    id: 'learning.outline.altText.closeSection',
+    defaultMessage: 'Close Section',
+    description: 'A button to close the given section of the course outline',
   },
   proctoringInfoPanel: {
     id: 'learning.proctoringPanel.header',
