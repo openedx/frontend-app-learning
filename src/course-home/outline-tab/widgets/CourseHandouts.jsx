@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 
@@ -9,9 +9,7 @@ import { useModel } from '../../../generic/model-store';
 
 const CourseHandouts = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
   const {
     handoutsHtml,
   } = useModel('outline', courseId);

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import PropTypes from 'prop-types';
@@ -17,11 +16,10 @@ import { courseHomeQueryKeys } from '../data/queryKeys';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
-const ShiftDatesAlert = ({ fetch, model }) => {
+const ShiftDatesAlert = ({ model }) => {
   const intl = useIntl();
   const { courseId } = useParams();
   const queryClient = useQueryClient();
-  const dispatch = useDispatch();
 
   const {
     datesBannerInfo,
@@ -41,9 +39,7 @@ const ShiftDatesAlert = ({ fetch, model }) => {
 
   const refreshTabData = () => {
     queryClient.invalidateQueries({ queryKey: courseHomeQueryKeys.datesTab(courseId) });
-    if (fetch) {
-      dispatch(fetch(courseId));
-    }
+    queryClient.invalidateQueries({ queryKey: courseHomeQueryKeys.outlineTab(courseId) });
   };
 
   return (
@@ -72,12 +68,7 @@ const ShiftDatesAlert = ({ fetch, model }) => {
 };
 
 ShiftDatesAlert.propTypes = {
-  fetch: PropTypes.func,
   model: PropTypes.string.isRequired,
-};
-
-ShiftDatesAlert.defaultProps = {
-  fetch: undefined,
 };
 
 export default ShiftDatesAlert;

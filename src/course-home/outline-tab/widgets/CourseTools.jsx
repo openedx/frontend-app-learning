@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -16,9 +16,7 @@ import LaunchCourseHomeTourButton from '../../../product-tours/newUserCourseHome
 
 const CourseTools = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
   const { org } = useModel('courseHomeMeta', courseId);
   const {
     courseTools,

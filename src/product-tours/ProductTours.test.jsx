@@ -3,29 +3,28 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig, history } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import * as popper from '@popperjs/core';
 
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen,
+  act, createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, render, screen, waitFor,
 } from '../setupTest';
 import initializeStore from '../store';
-import { appendBrowserTimezoneToUrl, executeThunk } from '../utils';
+import { appendBrowserTimezoneToUrl } from '../utils';
 
 import CoursewareContainer from '../courseware/CoursewareContainer';
-import LoadedTabPage from '../tab-page/LoadedTabPage';
 import { TourProvider } from './TourContext';
 import ProductTours from './ProductTours';
 import OutlineTab from '../course-home/outline-tab/OutlineTab';
-import * as courseHomeThunks from '../course-home/data/thunks';
 import { buildSimpleCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from '../courseware/data/__factories__/learningSequencesOutline.factory';
 
@@ -62,15 +61,17 @@ describe('Course Home Tours', () => {
   }
 
   async function fetchAndRender() {
-    await executeThunk(courseHomeThunks.fetchOutlineTab(courseId), store.dispatch);
-    render(
-      <TourProvider>
-        <LoadedTabPage courseId={courseId} activeTabSlug="outline">
-          <OutlineTab />
-        </LoadedTabPage>
-      </TourProvider>,
-      { store, wrapWithRouter: true },
-    );
+    await act(async () => render(
+      <MemoryRouter initialEntries={[`/course/${courseId}/home`]}>
+        <QueryClientProvider client={createTestQueryClient(store)}>
+          <Routes>
+            <Route path="/course/:courseId/home" element={<OutlineTab />} />
+          </Routes>
+        </QueryClientProvider>
+      </MemoryRouter>,
+      { store },
+    ));
+    await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
   }
 
   beforeEach(async () => {
@@ -193,7 +194,8 @@ describe('Course Home Tours', () => {
     });
 
     it('launches tour on button click', async () => {
-      const launchTourButton = await screen.findByRole('button', { name: 'Launch tour' });
+      const buttons = await screen.findAllByRole('button', { name: 'Launch tour' });
+      const launchTourButton = buttons.find((button) => !button.classList.contains('sr-only'));
       expect(launchTourButton).toBeInTheDocument();
 
       fireEvent.click(launchTourButton);

@@ -3,7 +3,14 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { useToast, ToastContent } from '@src/generic/ToastContext';
 import {
-  executePostFromPostEvent, getCourseHomeCourseMetadata, getDatesTabData, postCourseDeadlines, postRequestCert,
+  executePostFromPostEvent,
+  getCourseHomeCourseMetadata,
+  getDatesTabData,
+  getOutlineTabData,
+  postCourseDeadlines,
+  postDismissWelcomeMessage,
+  postRequestCert,
+  postWeeklyLearningGoal,
 } from './api';
 import { courseHomeQueryKeys } from './queryKeys';
 
@@ -61,7 +68,25 @@ export const useDatesTabData = (courseId: string) => useQuery({
   meta: { modelType: 'dates', courseId },
 });
 
+export const useOutlineTabData = (courseId: string) => useQuery({
+  queryKey: courseHomeQueryKeys.outlineTab(courseId),
+  queryFn: () => getOutlineTabData(courseId),
+  meta: { modelType: 'outline', courseId },
+});
+
 export const useRequestCert = () => useMutation({
   mutationFn: ({ courseId }: { courseId: string }) => postRequestCert(courseId),
+  onError: (error) => logError(error),
+});
+
+export const useDismissWelcomeMessage = () => useMutation({
+  mutationFn: ({ courseId }: { courseId: string }) => postDismissWelcomeMessage(courseId),
+  onError: (error) => logError(error),
+});
+
+export const useSaveWeeklyLearningGoal = () => useMutation({
+  mutationFn: ({ courseId, daysPerWeek, subscribedToReminders }: {
+    courseId: string; daysPerWeek: number; subscribedToReminders: boolean;
+  }) => postWeeklyLearningGoal(courseId, daysPerWeek, subscribedToReminders),
   onError: (error) => logError(error),
 });

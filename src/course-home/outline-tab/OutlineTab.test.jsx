@@ -5,24 +5,26 @@ import React from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
+import { AppProvider } from '@edx/frontend-platform/react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import Cookies from 'js-cookie';
 import userEvent from '@testing-library/user-event';
+import { render } from '@testing-library/react';
 import messages from './messages';
 
 import { buildMinimalCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, waitFor, act,
+  createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, waitFor, act,
 } from '../../setupTest';
-import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
-import * as thunks from '../data/thunks';
+import { appendBrowserTimezoneToUrl } from '../../utils';
 import initializeStore from '../../store';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 import OutlineTab from './OutlineTab';
-import LoadedTabPage from '../../tab-page/LoadedTabPage';
-import { TourProvider } from '../../product-tours/TourContext';
+import { UserMessagesProvider } from '../../generic/user-messages';
+import { ToastProvider } from '../../generic/ToastContext';
 
 const mockCoursewareSearchParams = jest.fn();
 
@@ -71,19 +73,26 @@ describe('Outline Tab', () => {
     axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
   }
 
-  async function fetchAndRender(path = '') {
-    await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
+  async function fetchAndRender(path = '', { renderStore = store, waitForLoaded = true } = {}) {
     const search = path.includes('?') ? path.slice(path.indexOf('?')) : '';
     await act(async () => render(
-      <MemoryRouter initialEntries={[`/course/${courseId}/home${search}`]}>
-        <TourProvider>
-          <Routes>
-            <Route path="/course/:courseId/home" element={<OutlineTab />} />
-          </Routes>
-        </TourProvider>
-      </MemoryRouter>,
-      { store },
+      <AppProvider store={renderStore} wrapWithRouter={false}>
+        <MemoryRouter initialEntries={[`/course/${courseId}/home${search}`]}>
+          <QueryClientProvider client={createTestQueryClient(renderStore)}>
+            <UserMessagesProvider>
+              <ToastProvider>
+                <Routes>
+                  <Route path="/course/:courseId/home" element={<OutlineTab />} />
+                </Routes>
+              </ToastProvider>
+            </UserMessagesProvider>
+          </QueryClientProvider>
+        </MemoryRouter>
+      </AppProvider>,
     ));
+    if (waitForLoaded) {
+      await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
+    }
   }
 
   beforeEach(async () => {
@@ -109,6 +118,23 @@ describe('Outline Tab', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('Access denied', () => {
+    it('waits for the outline data before rendering for a denied learner (no crash)', async () => {
+      const testStore = initializeStore();
+      setMetadata({ course_access: { has_access: false, error_code: 'authentication_required' }, is_enrolled: false });
+      let resolveOutline;
+      axiosMock.onGet(outlineUrl).reply(() => new Promise((resolve) => { resolveOutline = resolve; }));
+
+      await fetchAndRender('', { renderStore: testStore, waitForLoaded: false });
+
+      await waitFor(() => expect(testStore.getState().models.courseHomeMeta?.[courseId]).toBeDefined());
+      expect(screen.getByRole('status')).toBeInTheDocument();
+
+      await act(async () => { resolveOutline([200, Factory.build('outlineTabData')]); });
+      expect(await screen.findByTestId('private-course-alert')).toBeInTheDocument();
+    });
   });
 
   describe('Course Outline', () => {
@@ -429,12 +455,10 @@ describe('Outline Tab', () => {
           weekly_learning_goal_enabled: true,
         },
       });
-      const spy = jest.spyOn(thunks, 'saveWeeklyLearningGoal');
-
       await fetchAndRender();
-      const button = await screen.getByTestId('weekly-learning-goal-input-Regular');
+      const button = screen.getByTestId('weekly-learning-goal-input-Regular');
       fireEvent.click(button);
-      expect(spy).toHaveBeenCalledTimes(0);
+      expect(axiosMock.history.post.some(req => req.url.includes('save_course_goal'))).toBe(false);
     });
 
     it('post goal via query param', async () => {
@@ -443,11 +467,12 @@ describe('Outline Tab', () => {
           weekly_learning_goal_enabled: true,
         },
       });
-      const spy = jest.spyOn(thunks, 'saveWeeklyLearningGoal');
       sendTrackEvent.mockClear();
 
       await fetchAndRender('http://localhost/?weekly_goal=3');
-      expect(spy).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(
+        axiosMock.history.post.filter(req => req.url.includes('save_course_goal')),
+      ).toHaveLength(1));
       expect(sendTrackEvent).toHaveBeenCalledWith('enrollment.email.clicked.setgoal', {});
     });
 
@@ -665,9 +690,8 @@ describe('Outline Tab', () => {
             masquerading_expired_course: true,
           },
         });
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-        await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="outline">...</LoadedTabPage></TourProvider>, { store }));
-        const instructorToolbar = await screen.getByTestId('instructor-toolbar');
+        await fetchAndRender();
+        const instructorToolbar = screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
         expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
@@ -681,9 +705,8 @@ describe('Outline Tab', () => {
             masquerading_expired_course: false,
           },
         });
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-        await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="outline">...</LoadedTabPage></TourProvider>, { store }));
-        const instructorToolbar = await screen.getByTestId('instructor-toolbar');
+        await fetchAndRender();
+        const instructorToolbar = screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
       });

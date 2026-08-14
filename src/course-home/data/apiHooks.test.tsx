@@ -6,7 +6,10 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 import { initializeMockApp } from '../../setupTest';
 import { ToastProvider, useToast } from '../../generic/ToastContext';
-import { useResetDeadlines, usePostEvent, useRequestCert } from './apiHooks';
+import {
+  useOutlineTabData, useResetDeadlines, usePostEvent, useRequestCert, useDismissWelcomeMessage,
+  useSaveWeeklyLearningGoal,
+} from './apiHooks';
 
 const { loggingService } = initializeMockApp();
 
@@ -137,6 +140,83 @@ describe('course-home apiHooks', () => {
 
       await act(async () => {
         await result.current.mutateAsync({ courseId: 'course-1' }).catch(() => {});
+      });
+
+      await waitFor(() => expect(loggingService.logError).toHaveBeenCalled());
+    });
+  });
+
+  describe('useDismissWelcomeMessage', () => {
+    const dismissUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dismiss_welcome_message`;
+
+    it('POSTs to the dismiss url', async () => {
+      axiosMock.onPost(dismissUrl).reply(201);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useDismissWelcomeMessage(), { wrapper });
+
+      await act(async () => { await result.current.mutateAsync({ courseId: 'course-1' }); });
+
+      expect(axiosMock.history.post[0].url).toEqual(dismissUrl);
+    });
+
+    it('logs the error when the POST fails', async () => {
+      axiosMock.onPost(dismissUrl).reply(500);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useDismissWelcomeMessage(), { wrapper });
+
+      await act(async () => {
+        await result.current.mutateAsync({ courseId: 'course-1' }).catch(() => {});
+      });
+
+      await waitFor(() => expect(loggingService.logError).toHaveBeenCalled());
+    });
+  });
+
+  describe('useOutlineTabData', () => {
+    const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/course-1`;
+
+    it('resolves to an empty object on a 403 (access is handled via the metadata request)', async () => {
+      axiosMock.onGet(outlineUrl).reply(403, {});
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useOutlineTabData('course-1'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual({});
+    });
+
+    it('surfaces the error on a non-403 failure', async () => {
+      axiosMock.onGet(outlineUrl).reply(500);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useOutlineTabData('course-1'), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+  });
+
+  describe('useSaveWeeklyLearningGoal', () => {
+    const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
+
+    it('POSTs the weekly learning goal', async () => {
+      axiosMock.onPost(goalUrl).reply(200, {});
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useSaveWeeklyLearningGoal(), { wrapper });
+
+      await act(async () => {
+        await result.current.mutateAsync({ courseId: 'course-1', daysPerWeek: 3, subscribedToReminders: true });
+      });
+
+      expect(axiosMock.history.post[0].url).toEqual(goalUrl);
+    });
+
+    it('logs the error when the POST fails', async () => {
+      axiosMock.onPost(goalUrl).reply(500);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useSaveWeeklyLearningGoal(), { wrapper });
+
+      await act(async () => {
+        await result.current.mutateAsync(
+          { courseId: 'course-1', daysPerWeek: 3, subscribedToReminders: true },
+        ).catch(() => {});
       });
 
       await waitFor(() => expect(loggingService.logError).toHaveBeenCalled());

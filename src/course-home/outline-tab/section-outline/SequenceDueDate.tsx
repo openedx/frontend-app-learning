@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormattedTime, useIntl } from '@edx/frontend-platform/i18n';
+import { useParams } from 'react-router-dom';
 import { useModel } from '../../../generic/model-store';
 
-import { useContextId } from '../../../data/hooks';
 import messages from '../messages';
 
 interface Props {
@@ -17,7 +17,7 @@ const SequenceDueDate: React.FC<Props> = ({
   description,
 }) => {
   const intl = useIntl();
-  const courseId = useContextId();
+  const { courseId } = useParams();
   let dueDateMessage: string | React.ReactNode = intl.formatMessage(
     messages.sequenceNoDueDate,
     { description: description || '' },

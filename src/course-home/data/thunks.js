@@ -2,11 +2,8 @@ import { logError } from '@edx/frontend-platform/logging';
 import {
   getCourseHomeCourseMetadata,
   getExamsData,
-  getOutlineTabData,
   getProgressTabData,
   deprecatedPostCourseGoals,
-  postWeeklyLearningGoal,
-  postDismissWelcomeMessage,
   getLiveTabIframe,
 } from './api';
 
@@ -88,10 +85,6 @@ export function fetchProgressTab(courseId, targetUserId) {
   return fetchTab(courseId, 'progress', getProgressTabData, parseInt(targetUserId, 10) || targetUserId);
 }
 
-export function fetchOutlineTab(courseId) {
-  return fetchTab(courseId, 'outline', getOutlineTabData);
-}
-
 export function fetchLiveTab(courseId) {
   return fetchTab(courseId, 'live', getLiveTabIframe);
 }
@@ -100,16 +93,8 @@ export function fetchDiscussionTab(courseId) {
   return fetchTab(courseId, 'discussion');
 }
 
-export function dismissWelcomeMessage(courseId) {
-  return async () => postDismissWelcomeMessage(courseId);
-}
-
 export async function deprecatedSaveCourseGoal(courseId, goalKey) {
   return deprecatedPostCourseGoals(courseId, goalKey);
-}
-
-export async function saveWeeklyLearningGoal(courseId, daysPerWeek, subscribedToReminders) {
-  return postWeeklyLearningGoal(courseId, daysPerWeek, subscribedToReminders);
 }
 
 export function fetchExamAttemptsData(courseId, sequenceIds) {
