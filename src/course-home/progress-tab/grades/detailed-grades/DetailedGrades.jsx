@@ -3,8 +3,9 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Locked } from '@openedx/paragon/icons';
 import { Icon, Hyperlink } from '@openedx/paragon';
-import { useContextId } from '../../../../data/hooks';
+import { useParams } from 'react-router-dom';
 import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 import { showUngradedAssignments } from '../../utils';
 
 import DetailedGradesTable from './DetailedGradesTable';
@@ -14,7 +15,7 @@ import messages from '../messages';
 const DetailedGrades = () => {
   const intl = useIntl();
   const { administrator } = getAuthenticatedUser();
-  const courseId = useContextId();
+  const { courseId } = useParams();
   const {
     org,
     tabs,
@@ -23,7 +24,7 @@ const DetailedGrades = () => {
     gradesFeatureIsFullyLocked,
     gradesFeatureIsPartiallyLocked,
     sectionScores,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const hasSectionScores = sectionScores.length > 0;
   const emptyTableMsg = showUngradedAssignments()

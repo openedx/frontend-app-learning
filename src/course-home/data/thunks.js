@@ -2,7 +2,6 @@ import { logError } from '@edx/frontend-platform/logging';
 import {
   getCourseHomeCourseMetadata,
   getExamsData,
-  getProgressTabData,
   deprecatedPostCourseGoals,
   getLiveTabIframe,
 } from './api';
@@ -79,10 +78,6 @@ export function fetchTab(courseId, tab, getTabData, targetUserId) {
       logError(e);
     }
   };
-}
-
-export function fetchProgressTab(courseId, targetUserId) {
-  return fetchTab(courseId, 'progress', getProgressTabData, parseInt(targetUserId, 10) || targetUserId);
 }
 
 export function fetchLiveTab(courseId) {

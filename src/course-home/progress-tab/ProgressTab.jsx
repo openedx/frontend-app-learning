@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useWindowSize } from '@openedx/paragon';
-import { useContextId } from '../../data/hooks';
-import { useModel } from '../../generic/model-store';
+import { useParams } from 'react-router-dom';
+
 import ProgressTabCertificateStatusSidePanelSlot from '../../plugin-slots/ProgressTabCertificateStatusSidePanelSlot';
 
 import CourseCompletion from './course-completion/CourseCompletion';
@@ -11,11 +11,13 @@ import ProgressTabCertificateStatusMainBodySlot from '../../plugin-slots/Progres
 import ProgressTabCourseGradeSlot from '../../plugin-slots/ProgressTabCourseGradeSlot';
 import ProgressTabGradeBreakdownSlot from '../../plugin-slots/ProgressTabGradeBreakdownSlot';
 import ProgressTabRelatedLinksSlot from '../../plugin-slots/ProgressTabRelatedLinksSlot';
-import { useGetExamsData } from './hooks';
+import { useGetExamsData, useProgressData } from './hooks';
+import { useCourseHomeMeta, useProgressTabData } from '../data/apiHooks';
+import { TabWithTimer } from '../../tab-page';
 
-const ProgressTab = () => {
-  const courseId = useContextId();
-  const { disableProgressGraph, sectionScores } = useModel('progress', courseId);
+const ProgressTabContent = () => {
+  const { courseId } = useParams();
+  const { disableProgressGraph, sectionScores } = useProgressData();
 
   const sequenceIds = useMemo(() => (
     sectionScores.flatMap((section) => (section.subsections)).map((subsection) => subsection.blockKey)
@@ -50,6 +52,22 @@ const ProgressTab = () => {
         </div>
       </div>
     </>
+  );
+};
+
+const ProgressTab = () => {
+  const { courseId, targetUserId } = useParams();
+  const metadataQuery = useCourseHomeMeta(courseId);
+  const tabDataQuery = useProgressTabData(courseId, targetUserId);
+
+  return (
+    <TabWithTimer
+      activeTabSlug="progress"
+      courseId={courseId}
+      courseStatus={{ metadataQuery, tabDataQuery }}
+    >
+      <ProgressTabContent />
+    </TabWithTimer>
   );
 };
 

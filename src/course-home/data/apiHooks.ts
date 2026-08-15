@@ -7,6 +7,7 @@ import {
   getCourseHomeCourseMetadata,
   getDatesTabData,
   getOutlineTabData,
+  getProgressTabData,
   postCourseDeadlines,
   postDismissWelcomeMessage,
   postRequestCert,
@@ -72,6 +73,12 @@ export const useOutlineTabData = (courseId: string) => useQuery({
   queryKey: courseHomeQueryKeys.outlineTab(courseId),
   queryFn: () => getOutlineTabData(courseId),
   meta: { modelType: 'outline', courseId },
+});
+
+export const useProgressTabData = (courseId: string, targetUserId?: string) => useQuery({
+  queryKey: courseHomeQueryKeys.progressTab(courseId, targetUserId),
+  queryFn: () => getProgressTabData(courseId, targetUserId),
+  meta: { modelType: 'progress', courseId },
 });
 
 export const useRequestCert = () => useMutation({

@@ -1,20 +1,23 @@
 import React from 'react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig, setConfig } from '@edx/frontend-platform';
+import { AppProvider } from '@edx/frontend-platform/react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { render } from '@testing-library/react';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act, waitFor,
+  createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, within, act, waitFor,
 } from '../../setupTest';
-import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
-import * as thunks from '../data/thunks';
+import { appendBrowserTimezoneToUrl } from '../../utils';
 import initializeStore from '../../store';
 import ProgressTab from './ProgressTab';
-import LoadedTabPage from '../../tab-page/LoadedTabPage';
-import { TourProvider } from '../../product-tours/TourContext';
+import { UserMessagesProvider } from '../../generic/user-messages';
+import { ToastProvider } from '../../generic/ToastContext';
 import messages from './grades/messages';
 
 const mockCoursewareSearchParams = jest.fn();
@@ -64,9 +67,25 @@ describe('Progress Tab', () => {
     axiosMock.onGet(progressUrl).reply(200, progressTabData);
   }
 
-  async function fetchAndRender() {
-    await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-    await act(async () => render(<ProgressTab />, { store }));
+  async function fetchAndRender(initialEntry = `/course/${courseId}/progress`) {
+    const queryClient = createTestQueryClient(store);
+    await act(async () => render(
+      <AppProvider store={store} wrapWithRouter={false}>
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <QueryClientProvider client={queryClient}>
+            <UserMessagesProvider>
+              <ToastProvider>
+                <Routes>
+                  <Route path="/course/:courseId/progress/:targetUserId?" element={<ProgressTab />} />
+                </Routes>
+              </ToastProvider>
+            </UserMessagesProvider>
+          </QueryClientProvider>
+        </MemoryRouter>
+      </AppProvider>,
+    ));
+    await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
+    return queryClient;
   }
 
   beforeEach(async () => {
@@ -96,7 +115,8 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       sendTrackEvent.mockClear();
 
-      const datesTabLink = screen.getByRole('link', { name: 'Dates' });
+      const relatedLinks = within(screen.getByRole('heading', { name: 'Related links' }).closest('section'));
+      const datesTabLink = relatedLinks.getByRole('link', { name: 'Dates' });
       fireEvent.click(datesTabLink);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -320,7 +340,7 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       expect(screen.getByText('locked feature')).toBeInTheDocument();
       expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
-      expect(screen.getAllByRole('link', 'Unlock now')).toHaveLength(3);
+      expect(screen.getAllByRole('link', { name: 'Upgrade now' })).toHaveLength(1);
     });
 
     it('sends events on click of upgrade button in locked content header (CourseGradeHeader)', async () => {
@@ -364,7 +384,7 @@ describe('Progress Tab', () => {
       expect(screen.getByText('locked feature')).toBeInTheDocument();
       expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
 
-      const upgradeButton = screen.getAllByRole('link', 'Unlock now')[0];
+      const upgradeButton = screen.getAllByRole('link', { name: 'Upgrade now' })[0];
       fireEvent.click(upgradeButton);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(2);
@@ -1435,8 +1455,7 @@ describe('Progress Tab', () => {
           masquerading_expired_course: true,
         },
       });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
+      await fetchAndRender();
       expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
@@ -1449,8 +1468,7 @@ describe('Progress Tab', () => {
           masquerading_expired_course: false,
         },
       });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
+      await fetchAndRender();
       expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
       expect(screen.queryByText('1/1/2020', { exact: false })).not.toBeInTheDocument();
     });
@@ -1464,8 +1482,7 @@ describe('Progress Tab', () => {
         is_staff: false,
         start: '2999-01-01T00:00:00Z',
       });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
+      await fetchAndRender();
       expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(screen.getByText('This learner does not yet have access to this course. The course starts on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2999', { exact: false })).toBeInTheDocument();
@@ -1477,8 +1494,7 @@ describe('Progress Tab', () => {
         is_staff: true,
         start: '2999-01-01T00:00:00Z',
       });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
+      await fetchAndRender();
       expect(screen.queryByText('This learner does not yet have access to this course. The course starts on', { exact: false })).not.toBeInTheDocument();
       expect(screen.queryByText('1/1/2999', { exact: false })).not.toBeInTheDocument();
     });
@@ -1489,8 +1505,7 @@ describe('Progress Tab', () => {
       setMetadata({ is_enrolled: true });
       setTabData({ username: 'otherstudent' });
 
-      await executeThunk(thunks.fetchProgressTab(courseId, 10), store.dispatch);
-      await act(async () => render(<ProgressTab />, { store }));
+      await fetchAndRender(`/course/${courseId}/progress/10/`);
 
       expect(screen.getByText('Course progress for otherstudent')).toBeInTheDocument();
     });
@@ -1631,7 +1646,7 @@ describe('Progress Tab', () => {
         section_scores: [mockSectionScores[0]], // Only first section
       });
 
-      await fetchAndRender();
+      const queryClient = await fetchAndRender();
 
       // Verify initial API calls (2 subsections in first section)
       expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(2);
@@ -1639,12 +1654,14 @@ describe('Progress Tab', () => {
       // Clear axios history to track new calls
       axiosMock.resetHistory();
 
-      // Update with full section scores and re-render
+      // Update with full section scores and refetch the tab query
       setTabData({ section_scores: mockSectionScores });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
+      await act(async () => { await queryClient.invalidateQueries(); });
 
       // Verify additional API calls for all subsections
-      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(3);
+      await waitFor(() => expect(
+        axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/')),
+      ).toHaveLength(3));
     });
 
     it('should handle exam API errors gracefully without breaking ProgressTab', async () => {

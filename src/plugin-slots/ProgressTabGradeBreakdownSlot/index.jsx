@@ -1,13 +1,11 @@
-import { useModel } from '@src/generic/model-store';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import React from 'react';
 import DetailedGrades from '../../course-home/progress-tab/grades/detailed-grades/DetailedGrades';
 import GradeSummary from '../../course-home/progress-tab/grades/grade-summary/GradeSummary';
-import { useContextId } from '../../data/hooks';
+import { useProgressData } from '../../course-home/progress-tab/hooks';
 
 const ProgressTabGradeBreakdownSlot = () => {
-  const courseId = useContextId();
-  const { gradesFeatureIsFullyLocked } = useModel('progress', courseId);
+  const { gradesFeatureIsFullyLocked } = useProgressData();
   const applyLockedOverlay = gradesFeatureIsFullyLocked ? 'locked-overlay' : '';
   return (
     <PluginSlot

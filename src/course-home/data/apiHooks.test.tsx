@@ -1,5 +1,6 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
@@ -7,8 +8,8 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { initializeMockApp } from '../../setupTest';
 import { ToastProvider, useToast } from '../../generic/ToastContext';
 import {
-  useOutlineTabData, useResetDeadlines, usePostEvent, useRequestCert, useDismissWelcomeMessage,
-  useSaveWeeklyLearningGoal,
+  useOutlineTabData, useProgressTabData, useResetDeadlines, usePostEvent, useRequestCert,
+  useDismissWelcomeMessage, useSaveWeeklyLearningGoal,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
@@ -188,6 +189,68 @@ describe('course-home apiHooks', () => {
       axiosMock.onGet(outlineUrl).reply(500);
       const { wrapper } = buildWrapper();
       const { result } = renderHook(() => useOutlineTabData('course-1'), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+  });
+
+  describe('useProgressTabData', () => {
+    const progressUrl = `${getConfig().LMS_BASE_URL}/api/course_home/progress/course-1`;
+
+    it('transforms the server response', async () => {
+      axiosMock.onGet(progressUrl).reply(200, Factory.build('progressTabData'));
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useProgressTabData('course-1'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data.studioUrl).toEqual('http://studio.edx.org/settings/grading/course-v1:edX+Test+run');
+      expect(result.current.data.gradesFeatureIsFullyLocked).toBe(false);
+    });
+
+    it('appends the targetUserId to the request URL', async () => {
+      axiosMock.onGet(`${progressUrl}/7/`).reply(200, Factory.build('progressTabData'));
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useProgressTabData('course-1', '7'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(axiosMock.history.get[0].url).toEqual(`${progressUrl}/7/`);
+    });
+
+    it.each([401, 403])(
+      'resolves to an empty object on a %s (access is handled via the metadata request)',
+      async (status) => {
+        axiosMock.onGet(progressUrl).reply(status, {});
+        const { wrapper } = buildWrapper();
+        const { result } = renderHook(() => useProgressTabData('course-1'), { wrapper });
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+        expect(result.current.data).toEqual({});
+      },
+    );
+
+    it('redirects to the legacy progress page and resolves to an empty object on a 404', async () => {
+      // jsdom's location.replace is non-configurable, so we swap the whole location for the
+      // duration of this test (restored in finally so it can never bleed into another test).
+      const originalLocation = window.location;
+      const replace = jest.fn();
+      Object.defineProperty(window, 'location', { configurable: true, value: { replace } });
+      try {
+        axiosMock.onGet(progressUrl).reply(404, {});
+        const { wrapper } = buildWrapper();
+        const { result } = renderHook(() => useProgressTabData('course-1'), { wrapper });
+
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+        expect(result.current.data).toEqual({});
+        expect(replace).toHaveBeenCalledWith(`${getConfig().LMS_BASE_URL}/courses/course-1/progress`);
+      } finally {
+        Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
+      }
+    });
+
+    it('surfaces the error on a non-handled failure', async () => {
+      axiosMock.onGet(progressUrl).reply(500);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useProgressTabData('course-1'), { wrapper });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
     });

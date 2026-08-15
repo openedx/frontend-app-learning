@@ -42,61 +42,6 @@ describe('Data layer integration tests', () => {
     store = initializeStore();
   });
 
-  describe('Test fetchProgressTab', () => {
-    const progressBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/progress`;
-
-    it('Should result in fetch failure if error occurs', async () => {
-      axiosMock.onGet(courseMetadataUrl).networkError();
-      axiosMock.onGet(`${progressBaseUrl}/${courseId}`).networkError();
-
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-
-      expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseHome.courseStatus).toEqual('failed');
-    });
-
-    it('Should fetch, normalize, and save metadata', async () => {
-      const progressTabData = Factory.build('progressTabData', { courseId });
-
-      const progressUrl = `${progressBaseUrl}/${courseId}`;
-
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(progressUrl).reply(200, progressTabData);
-
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-
-      const state = store.getState();
-      expect(state.courseHome.courseStatus).toEqual('loaded');
-    });
-
-    it('Should handle the url including a targetUserId', async () => {
-      const progressTabData = Factory.build('progressTabData', { courseId });
-      const targetUserId = 2;
-      const progressUrl = `${progressBaseUrl}/${courseId}/${targetUserId}/`;
-
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(progressUrl).reply(200, progressTabData);
-
-      await executeThunk(thunks.fetchProgressTab(courseId, 2), store.dispatch);
-
-      const state = store.getState();
-      expect(state.courseHome.targetUserId).toEqual(2);
-    });
-
-    it.each([401, 403, 404])(
-      'should result in fetch denied for expected errors and failed for all others',
-      async (errorStatus) => {
-        const progressUrl = `${progressBaseUrl}/${courseId}`;
-        axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeAccessDeniedMetadata);
-        axiosMock.onGet(progressUrl).reply(errorStatus, {});
-
-        await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-
-        expect(store.getState().courseHome.courseStatus).toEqual('denied');
-      },
-    );
-  });
-
   describe('Test saveCourseGoal', () => {
     it('Should save course goal', async () => {
       const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
@@ -280,6 +225,47 @@ describe('Data layer integration tests', () => {
 
       // Verify error was logged for the 500 error (may be called more than once due to multiple URL patterns)
       expect(loggingService.logError).toHaveBeenCalled();
+    });
+  });
+
+  describe('Test fetchTab', () => {
+    const liveUrl = `${getConfig().LMS_BASE_URL}/api/course_live/iframe/${courseId}/`;
+
+    it('Should fetch metadata + tab data and mark the tab loaded', async () => {
+      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
+      axiosMock.onGet(liveUrl).reply(200, { iframe: 'https://example.com/live' });
+
+      await executeThunk(thunks.fetchLiveTab(courseId), store.dispatch);
+
+      expect(store.getState().courseHome.courseStatus).toEqual('loaded');
+    });
+
+    it('Should result in denied when the learner lacks course access', async () => {
+      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeAccessDeniedMetadata);
+      axiosMock.onGet(liveUrl).reply(200, {});
+
+      await executeThunk(thunks.fetchLiveTab(courseId), store.dispatch);
+
+      expect(store.getState().courseHome.courseStatus).toEqual('denied');
+    });
+
+    it('Should result in failure when the metadata request errors', async () => {
+      axiosMock.onGet(courseMetadataUrl).networkError();
+      axiosMock.onGet(liveUrl).reply(200, {});
+
+      await executeThunk(thunks.fetchLiveTab(courseId), store.dispatch);
+
+      expect(loggingService.logError).toHaveBeenCalled();
+      expect(store.getState().courseHome.courseStatus).toEqual('failed');
+    });
+
+    it('Should result in failure when the tab data request errors', async () => {
+      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
+      axiosMock.onGet(liveUrl).reply(500);
+
+      await executeThunk(thunks.fetchLiveTab(courseId), store.dispatch);
+
+      expect(store.getState().courseHome.courseStatus).toEqual('failed');
     });
   });
 });

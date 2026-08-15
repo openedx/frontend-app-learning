@@ -51,32 +51,4 @@ describe('Tab Container', () => {
     expect(mockDispatch).toHaveBeenCalledWith(courseId);
     expect(screen.getByTestId('TabPage')).toBeInTheDocument();
   });
-
-  it('Should handle passing in a targetUserId', () => {
-    const targetUserId = '1';
-
-    render(
-      <MemoryRouter initialEntries={[`/course/${courseId}/progress/${targetUserId}/`]}>
-        <Routes>
-          <Route
-            path="/course/:courseId/progress/:targetUserId/"
-            element={(
-              <TabContainer
-                fetch={mockFetch}
-                tab="dummy"
-                slice="courseHome"
-                isProgressTab
-              >
-                children={[]}
-              </TabContainer>
-            )}
-          />
-        </Routes>
-      </MemoryRouter>,
-    );
-
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    expect(mockFetch).toHaveBeenCalledWith(courseId, targetUserId);
-    expect(screen.getByTestId('TabPage')).toBeInTheDocument();
-  });
 });

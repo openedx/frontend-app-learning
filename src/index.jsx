@@ -26,7 +26,6 @@ import GoalUnsubscribe from './course-home/goal-unsubscribe';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
 
-import { fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import { store } from './store';
 import { createQueryClient } from './queryClient';
@@ -113,14 +112,7 @@ subscribe(APP_READY, () => {
                           path={route}
                           element={(
                             <DecodePageRoute>
-                              <TabContainer
-                                tab="progress"
-                                fetch={fetchProgressTab}
-                                slice="courseHome"
-                                isProgressTab
-                              >
-                                <ProgressTab />
-                              </TabContainer>
+                              <ProgressTab />
                             </DecodePageRoute>
                         )}
                         />
