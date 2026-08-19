@@ -6,7 +6,7 @@ import { getConfig } from '@edx/frontend-platform';
 
 import * as thunks from './thunks';
 
-import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
+import { executeThunk } from '../../utils';
 
 import { initializeMockApp } from '../../setupTest';
 import initializeStore from '../../store';
@@ -18,20 +18,6 @@ const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 describe('Data layer integration tests', () => {
   const courseHomeMetadata = Factory.build('courseHomeMetadata');
   const { id: courseId } = courseHomeMetadata;
-  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
-  courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-
-  const courseHomeAccessDeniedMetadata = Factory.build(
-    'courseHomeMetadata',
-    {
-      id: courseId,
-      course_access: {
-        has_access: false,
-        error_code: 'bad codes',
-        additional_context_user_message: 'your Codes Are BAD',
-      },
-    },
-  );
 
   let store;
 
@@ -225,47 +211,6 @@ describe('Data layer integration tests', () => {
 
       // Verify error was logged for the 500 error (may be called more than once due to multiple URL patterns)
       expect(loggingService.logError).toHaveBeenCalled();
-    });
-  });
-
-  describe('Test fetchTab', () => {
-    const liveUrl = `${getConfig().LMS_BASE_URL}/api/course_live/iframe/${courseId}/`;
-
-    it('Should fetch metadata + tab data and mark the tab loaded', async () => {
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(liveUrl).reply(200, { iframe: 'https://example.com/live' });
-
-      await executeThunk(thunks.fetchLiveTab(courseId), store.dispatch);
-
-      expect(store.getState().courseHome.courseStatus).toEqual('loaded');
-    });
-
-    it('Should result in denied when the learner lacks course access', async () => {
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeAccessDeniedMetadata);
-      axiosMock.onGet(liveUrl).reply(200, {});
-
-      await executeThunk(thunks.fetchLiveTab(courseId), store.dispatch);
-
-      expect(store.getState().courseHome.courseStatus).toEqual('denied');
-    });
-
-    it('Should result in failure when the metadata request errors', async () => {
-      axiosMock.onGet(courseMetadataUrl).networkError();
-      axiosMock.onGet(liveUrl).reply(200, {});
-
-      await executeThunk(thunks.fetchLiveTab(courseId), store.dispatch);
-
-      expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseHome.courseStatus).toEqual('failed');
-    });
-
-    it('Should result in failure when the tab data request errors', async () => {
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(liveUrl).reply(500);
-
-      await executeThunk(thunks.fetchLiveTab(courseId), store.dispatch);
-
-      expect(store.getState().courseHome.courseStatus).toEqual('failed');
     });
   });
 });

@@ -8,7 +8,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { initializeMockApp } from '../../setupTest';
 import { ToastProvider, useToast } from '../../generic/ToastContext';
 import {
-  useOutlineTabData, useProgressTabData, useResetDeadlines, usePostEvent, useRequestCert,
+  useOutlineTabData, useLiveTabData, useProgressTabData, useResetDeadlines, usePostEvent, useRequestCert,
   useDismissWelcomeMessage, useSaveWeeklyLearningGoal,
 } from './apiHooks';
 
@@ -189,6 +189,46 @@ describe('course-home apiHooks', () => {
       axiosMock.onGet(outlineUrl).reply(500);
       const { wrapper } = buildWrapper();
       const { result } = renderHook(() => useOutlineTabData('course-1'), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+  });
+
+  describe('useLiveTabData', () => {
+    const liveUrl = `${getConfig().LMS_BASE_URL}/api/course_live/iframe/course-1/`;
+
+    it('resolves to the iframe payload', async () => {
+      axiosMock.onGet(liveUrl).reply(200, { iframe: 'https://example.com/live' });
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useLiveTabData('course-1'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual({ iframe: 'https://example.com/live' });
+    });
+
+    it('resolves to an empty object on a 404', async () => {
+      axiosMock.onGet(liveUrl).reply(() => Promise.reject(
+        Object.assign(new Error('Request failed with status code 404'), {
+          response: { status: 404, data: {} },
+          customAttributes: { httpErrorStatus: 404 },
+        }),
+      ));
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useLiveTabData('course-1'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual({});
+    });
+
+    it('surfaces the error on a non-404 failure', async () => {
+      axiosMock.onGet(liveUrl).reply(() => Promise.reject(
+        Object.assign(new Error('Request failed with status code 500'), {
+          response: { status: 500, data: {} },
+          customAttributes: { httpErrorStatus: 500 },
+        }),
+      ));
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useLiveTabData('course-1'), { wrapper });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
     });
