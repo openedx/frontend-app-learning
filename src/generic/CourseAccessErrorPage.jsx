@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { FooterSlot } from '@edx/frontend-component-footer';
-import { LOADED, LOADING } from '@src/constants';
 import HeaderSlot from '../plugin-slots/HeaderSlot';
 import useActiveEnterpriseAlert from '../alerts/active-enteprise-alert';
 import { AlertList } from './user-messages';
-import { fetchDiscussionTab } from '../course-home/data/thunks';
+import { useCourseHomeMeta } from '../course-home/data/apiHooks';
 import PageLoading from './PageLoading';
 import messages from '../tab-page/messages';
 
@@ -15,18 +13,10 @@ const CourseAccessErrorPage = () => {
   const intl = useIntl();
   const { courseId } = useParams();
 
-  const dispatch = useDispatch();
   const activeEnterpriseAlert = useActiveEnterpriseAlert(courseId);
-  useEffect(() => {
-    dispatch(fetchDiscussionTab(courseId));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courseId]);
+  const metadataQuery = useCourseHomeMeta(courseId);
 
-  const {
-    courseStatus,
-  } = useSelector(state => state.courseHome);
-
-  if (courseStatus === LOADING) {
+  if (metadataQuery.isPending) {
     return (
       <>
         <HeaderSlot />
@@ -37,7 +27,7 @@ const CourseAccessErrorPage = () => {
       </>
     );
   }
-  if (courseStatus === LOADED) {
+  if (metadataQuery.data?.courseAccess?.hasAccess) {
     return <Navigate to={`/redirect/home/${courseId}`} replace />;
   }
   return (

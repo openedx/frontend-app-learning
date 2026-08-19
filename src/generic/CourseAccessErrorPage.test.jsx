@@ -4,22 +4,14 @@ import { Routes, Route } from 'react-router-dom';
 import { initializeTestStore, render, screen } from '../setupTest';
 import CourseAccessErrorPage from './CourseAccessErrorPage';
 
-const mockDispatch = jest.fn();
-const mockNavigate = jest.fn();
-let mockCourseStatus;
+let mockMetadataQuery;
 
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
-  useSelector: () => ({ courseStatus: mockCourseStatus }),
+jest.mock('../course-home/data/apiHooks', () => ({
+  useCourseHomeMeta: () => mockMetadataQuery,
 }));
 jest.mock('./PageLoading', () => function () {
   return <div data-testid="page-loading" />;
 });
-jest.mock('react-router-dom', () => ({
-  ...(jest.requireActual('react-router-dom')),
-  useNavigate: () => mockNavigate,
-}));
 
 describe('CourseAccessErrorPage', () => {
   let courseId;
@@ -32,7 +24,7 @@ describe('CourseAccessErrorPage', () => {
   });
 
   it('Displays loading in start on page rendering', () => {
-    mockCourseStatus = 'loading';
+    mockMetadataQuery = { isPending: true, data: undefined };
     render(
       <Routes>
         <Route path="/course/:courseId/access-denied" element={<CourseAccessErrorPage />} />
@@ -44,7 +36,7 @@ describe('CourseAccessErrorPage', () => {
   });
 
   it('Redirect user to homepage if user has access', () => {
-    mockCourseStatus = 'loaded';
+    mockMetadataQuery = { isPending: false, data: { courseAccess: { hasAccess: true } } };
     render(
       <Routes>
         <Route path="/course/:courseId/access-denied" element={<CourseAccessErrorPage />} />
@@ -55,7 +47,20 @@ describe('CourseAccessErrorPage', () => {
   });
 
   it('For access denied it should render access denied page', () => {
-    mockCourseStatus = 'denied';
+    mockMetadataQuery = { isPending: false, data: { courseAccess: { hasAccess: false } } };
+
+    render(
+      <Routes>
+        <Route path="/course/:courseId/access-denied" element={<CourseAccessErrorPage />} />
+      </Routes>,
+      { wrapWithRouter: true },
+    );
+    expect(screen.getByTestId('access-denied-main')).toBeInTheDocument();
+    expect(window.location.pathname).toBe(accessDeniedUrl);
+  });
+
+  it('For a failed metadata query it should render access denied page', () => {
+    mockMetadataQuery = { isPending: false, isError: true, data: undefined };
 
     render(
       <Routes>

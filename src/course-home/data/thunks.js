@@ -84,10 +84,6 @@ export function fetchLiveTab(courseId) {
   return fetchTab(courseId, 'live', getLiveTabIframe);
 }
 
-export function fetchDiscussionTab(courseId) {
-  return fetchTab(courseId, 'discussion');
-}
-
 export async function deprecatedSaveCourseGoal(courseId, goalKey) {
   return deprecatedPostCourseGoals(courseId, goalKey);
 }

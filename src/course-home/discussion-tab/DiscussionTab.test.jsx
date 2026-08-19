@@ -13,9 +13,7 @@ import {
   createTestQueryClient, initializeMockApp, messageEvent, screen, waitFor,
 } from '../../setupTest';
 import initializeStore from '../../store';
-import { TabContainer } from '../../tab-page';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import { fetchDiscussionTab } from '../data/thunks';
 import DiscussionTab from './DiscussionTab';
 
 initializeMockApp();
@@ -31,17 +29,13 @@ describe('DiscussionTab', () => {
     store = initializeStore();
     component = (
       <AppProvider store={store}>
-        <QueryClientProvider client={createTestQueryClient()}>
+        <QueryClientProvider client={createTestQueryClient(store)}>
           <UserMessagesProvider>
             <ToastProvider>
               <Routes>
                 <Route
                   path="/course/:courseId/discussion"
-                  element={(
-                    <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
-                      <DiscussionTab />
-                    </TabContainer>
-                  )}
+                  element={<DiscussionTab />}
                 />
               </Routes>
             </ToastProvider>
