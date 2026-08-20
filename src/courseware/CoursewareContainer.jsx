@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { createSelector } from '@reduxjs/toolkit';
 import { defaultMemoize as memoize } from 'reselect';
 
@@ -16,9 +16,8 @@ import { TabPage } from '../tab-page';
 
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
-import withParamsAndNavigation from './utils';
 
-// Look at where this is called in componentDidUpdate for more info about its usage
+// Look at where this is called in the render effect for more info about its usage
 export const checkResumeRedirect = memoize(
   (courseStatus, courseId, sequenceId, firstSequenceId, navigate, isPreview) => {
     if (courseStatus === 'loaded' && !sequenceId) {
@@ -37,7 +36,7 @@ export const checkResumeRedirect = memoize(
   },
 );
 
-// Look at where this is called in componentDidUpdate for more info about its usage
+// Look at where this is called in the render effect for more info about its usage
 export const checkSectionUnitToUnitRedirect = memoize((
   courseStatus,
   courseId,
@@ -54,7 +53,7 @@ export const checkSectionUnitToUnitRedirect = memoize((
   }
 });
 
-// Look at where this is called in componentDidUpdate for more info about its usage
+// Look at where this is called in the render effect for more info about its usage
 export const checkSectionToSequenceRedirect = memoize(
   (courseStatus, courseId, sequenceStatus, section, unitId, navigate) => {
     if (courseStatus === 'loaded' && sequenceStatus === 'failed' && section && !unitId) {
@@ -69,7 +68,7 @@ export const checkSectionToSequenceRedirect = memoize(
   },
 );
 
-// Look at where this is called in componentDidUpdate for more info about its usage
+// Look at where this is called in the render effect for more info about its usage
 export const checkUnitToSequenceUnitRedirect = memoize((
   courseStatus,
   courseId,
@@ -107,7 +106,7 @@ export const checkUnitToSequenceUnitRedirect = memoize((
   }
 });
 
-// Look at where this is called in componentDidUpdate for more info about its usage
+// Look at where this is called in the render effect for more info about its usage
 export const checkSequenceToSequenceUnitRedirect = memoize(
   (courseId, sequenceStatus, sequence, unitId, navigate, isPreview) => {
     if (sequenceStatus === 'loaded' && sequence.id && !unitId) {
@@ -122,7 +121,7 @@ export const checkSequenceToSequenceUnitRedirect = memoize(
   },
 );
 
-// Look at where this is called in componentDidUpdate for more info about its usage
+// Look at where this is called in the render effect for more info about its usage
 export const checkSequenceUnitMarkerToSequenceUnitRedirect = memoize(
   (courseId, sequenceStatus, sequence, unitId, navigate, isPreview) => {
     if (sequenceStatus !== 'loaded' || !sequence.id) {
@@ -148,63 +147,135 @@ export const checkSequenceUnitMarkerToSequenceUnitRedirect = memoize(
   },
 );
 
-class CoursewareContainer extends Component {
-  checkSaveSequencePosition = memoize((unitId) => {
-    const {
-      courseId,
-      sequenceId,
-      sequenceStatus,
-      sequence,
-    } = this.props;
-    if (sequenceStatus === 'loaded' && sequence.saveUnitPosition && unitId) {
-      const activeUnitIndex = sequence.unitIds.indexOf(unitId);
-      this.props.saveSequencePosition(courseId, sequenceId, activeUnitIndex);
+const currentCourseSelector = createSelector(
+  (state) => state.models.coursewareMeta || {},
+  (state) => state.courseware.courseId,
+  (coursesById, courseId) => (coursesById[courseId] ? coursesById[courseId] : null),
+);
+
+const currentSequenceSelector = createSelector(
+  (state) => state.models.sequences || {},
+  (state) => state.courseware.sequenceId,
+  (sequencesById, sequenceId) => (sequencesById[sequenceId] ? sequencesById[sequenceId] : null),
+);
+
+const sequenceIdsSelector = createSelector(
+  (state) => state.courseware.courseStatus,
+  currentCourseSelector,
+  (state) => state.models.sections,
+  (courseStatus, course, sectionsById) => {
+    if (courseStatus !== 'loaded') {
+      return [];
     }
-  });
+    const { sectionIds = [] } = course;
+    return sectionIds.flatMap(sectionId => sectionsById[sectionId].sequenceIds);
+  },
+);
 
-  checkFetchCourse = memoize((courseId) => {
-    this.props.fetchCourse(courseId);
-  });
-
-  checkFetchSequence = memoize((sequenceId) => {
-    if (sequenceId) {
-      this.props.fetchSequence(sequenceId, this.props.isPreview);
+const nextSequenceSelector = createSelector(
+  sequenceIdsSelector,
+  (state) => state.models.sequences || {},
+  (state) => state.courseware.sequenceId,
+  (sequenceIds, sequencesById, sequenceId) => {
+    if (!sequenceId || sequenceIds.length === 0) {
+      return null;
     }
-  });
+    const sequenceIndex = sequenceIds.indexOf(sequenceId);
+    const nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
+    return nextSequenceId !== null ? sequencesById[nextSequenceId] : null;
+  },
+);
 
-  componentDidMount() {
-    const {
-      routeCourseId,
-      routeSequenceId,
-    } = this.props;
-    // Load data whenever the course or sequence ID changes.
-    this.checkFetchCourse(routeCourseId);
-    this.checkFetchSequence(routeSequenceId);
+const firstSequenceIdSelector = createSelector(
+  (state) => state.courseware.courseStatus,
+  currentCourseSelector,
+  (state) => state.models.sections || {},
+  (courseStatus, course, sectionsById) => {
+    if (courseStatus !== 'loaded') {
+      return null;
+    }
+    const { sectionIds = [] } = course;
+
+    if (sectionIds.length === 0) {
+      return null;
+    }
+
+    return sectionsById[sectionIds[0]].sequenceIds[0];
+  },
+);
+
+const sectionViaSequenceIdSelector = createSelector(
+  (state) => state.models.sections || {},
+  (state) => state.courseware.sequenceId,
+  (sectionsById, sequenceId) => (sectionsById[sequenceId] ? sectionsById[sequenceId] : null),
+);
+
+const CoursewareContainer = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const {
+    courseId: routeCourseId,
+    sequenceId: routeSequenceId,
+    unitId: routeUnitId,
+  } = useParams();
+  const isPreview = pathname.startsWith('/preview');
+
+  const courseId = useSelector((state) => state.courseware.courseId);
+  const sequenceId = useSelector((state) => state.courseware.sequenceId);
+  const courseStatus = useSelector((state) => state.courseware.courseStatus);
+  const sequenceStatus = useSelector((state) => state.courseware.sequenceStatus);
+  const sequenceMightBeUnit = useSelector((state) => state.courseware.sequenceMightBeUnit);
+  const course = useSelector(currentCourseSelector);
+  const sequence = useSelector(currentSequenceSelector);
+  const nextSequence = useSelector(nextSequenceSelector);
+  const firstSequenceId = useSelector(firstSequenceIdSelector);
+  const sectionViaSequenceId = useSelector(sectionViaSequenceIdSelector);
+
+  const latest = useRef();
+
+  const guards = useRef();
+  if (!guards.current) {
+    guards.current = {
+      checkFetchCourse: memoize((id) => {
+        dispatch(fetchCourse(id));
+      }),
+      checkFetchSequence: memoize((id) => {
+        if (id) {
+          dispatch(fetchSequence(id, latest.current.isPreview));
+        }
+      }),
+      checkSaveSequencePosition: memoize((unitId) => {
+        const {
+          courseId: cId,
+          sequenceId: sId,
+          sequenceStatus: sStatus,
+          sequence: seq,
+        } = latest.current;
+        if (sStatus === 'loaded' && seq.saveUnitPosition && unitId) {
+          const activeUnitIndex = seq.unitIds.indexOf(unitId);
+          dispatch(saveSequencePosition(cId, sId, activeUnitIndex));
+        }
+      }),
+    };
   }
 
-  componentDidUpdate() {
-    const {
+  useEffect(() => {
+    latest.current = {
       courseId,
       sequenceId,
-      courseStatus,
       sequenceStatus,
-      sequenceMightBeUnit,
       sequence,
-      firstSequenceId,
-      sectionViaSequenceId,
-      routeCourseId,
-      routeSequenceId,
-      routeUnitId,
-      navigate,
       isPreview,
-    } = this.props;
+    };
+    const { checkFetchCourse, checkFetchSequence, checkSaveSequencePosition } = guards.current;
 
     // Load data whenever the course or sequence ID changes.
-    this.checkFetchCourse(routeCourseId);
-    this.checkFetchSequence(routeSequenceId);
+    checkFetchCourse(routeCourseId);
+    checkFetchSequence(routeSequenceId);
 
     // Check if we should save our sequence position.  Only do this when the route unit ID changes.
-    this.checkSaveSequencePosition(routeUnitId);
+    checkSaveSequencePosition(routeUnitId);
 
     // Coerce the route ids into null here because they can be undefined, but the redux ids would be null instead.
     if (courseId !== (routeCourseId || null) || sequenceId !== (routeSequenceId || null)) {
@@ -301,26 +372,13 @@ class CoursewareContainer extends Component {
       navigate,
       isPreview,
     );
-  }
+  });
 
-  handleUnitNavigationClick = () => {
-    const {
-      courseId,
-      sequenceId,
-      routeUnitId,
-    } = this.props;
-
-    this.props.checkBlockCompletion(courseId, sequenceId, routeUnitId);
+  const handleUnitNavigationClick = () => {
+    dispatch(checkBlockCompletion(courseId, sequenceId, routeUnitId));
   };
 
-  handleNextSequenceClick = () => {
-    const {
-      course,
-      nextSequence,
-      sequence,
-      sequenceId,
-    } = this.props;
-
+  const handleNextSequenceClick = () => {
     if (nextSequence !== null) {
       const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
       if (celebrateFirstSection && sequence.sectionId !== nextSequence.sectionId) {
@@ -329,194 +387,25 @@ class CoursewareContainer extends Component {
     }
   };
 
-  handlePreviousSequenceClick = () => {};
+  const handlePreviousSequenceClick = () => {};
 
-  render() {
-    const {
-      courseStatus,
-      courseId,
-      sequenceId,
-      routeUnitId,
-    } = this.props;
-
-    return (
-      <TabPage
-        activeTabSlug="courseware"
+  return (
+    <TabPage
+      activeTabSlug="courseware"
+      courseId={courseId}
+      unitId={routeUnitId}
+      courseStatus={courseStatus}
+    >
+      <Course
         courseId={courseId}
+        sequenceId={sequenceId}
         unitId={routeUnitId}
-        courseStatus={courseStatus}
-      >
-        <Course
-          courseId={courseId}
-          sequenceId={sequenceId}
-          unitId={routeUnitId}
-          nextSequenceHandler={this.handleNextSequenceClick}
-          previousSequenceHandler={this.handlePreviousSequenceClick}
-          unitNavigationHandler={this.handleUnitNavigationClick}
-        />
-      </TabPage>
-    );
-  }
-}
-
-const sequenceShape = PropTypes.shape({
-  id: PropTypes.string.isRequired,
-  unitIds: PropTypes.arrayOf(PropTypes.string),
-  sectionId: PropTypes.string.isRequired,
-  saveUnitPosition: PropTypes.any, // eslint-disable-line
-});
-
-const sectionShape = PropTypes.shape({
-  id: PropTypes.string.isRequired,
-  sequenceIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-});
-
-const courseShape = PropTypes.shape({
-  celebrations: PropTypes.shape({
-    firstSection: PropTypes.bool,
-  }),
-});
-
-CoursewareContainer.propTypes = {
-  routeCourseId: PropTypes.string.isRequired,
-  routeSequenceId: PropTypes.string,
-  routeUnitId: PropTypes.string,
-  courseId: PropTypes.string,
-  sequenceId: PropTypes.string,
-  firstSequenceId: PropTypes.string,
-  courseStatus: PropTypes.oneOf(['loaded', 'loading', 'failed', 'denied']).isRequired,
-  sequenceStatus: PropTypes.oneOf(['loaded', 'loading', 'failed']).isRequired,
-  sequenceMightBeUnit: PropTypes.bool.isRequired,
-  nextSequence: sequenceShape,
-  previousSequence: sequenceShape,
-  sectionViaSequenceId: sectionShape,
-  course: courseShape,
-  sequence: sequenceShape,
-  saveSequencePosition: PropTypes.func.isRequired,
-  checkBlockCompletion: PropTypes.func.isRequired,
-  fetchCourse: PropTypes.func.isRequired,
-  fetchSequence: PropTypes.func.isRequired,
-  navigate: PropTypes.func.isRequired,
-  isPreview: PropTypes.bool.isRequired,
+        nextSequenceHandler={handleNextSequenceClick}
+        previousSequenceHandler={handlePreviousSequenceClick}
+        unitNavigationHandler={handleUnitNavigationClick}
+      />
+    </TabPage>
+  );
 };
 
-CoursewareContainer.defaultProps = {
-  courseId: null,
-  sequenceId: null,
-  routeSequenceId: null,
-  routeUnitId: null,
-  firstSequenceId: null,
-  nextSequence: null,
-  previousSequence: null,
-  sectionViaSequenceId: null,
-  course: null,
-  sequence: null,
-};
-
-const currentCourseSelector = createSelector(
-  (state) => state.models.coursewareMeta || {},
-  (state) => state.courseware.courseId,
-  (coursesById, courseId) => (coursesById[courseId] ? coursesById[courseId] : null),
-);
-
-const currentSequenceSelector = createSelector(
-  (state) => state.models.sequences || {},
-  (state) => state.courseware.sequenceId,
-  (sequencesById, sequenceId) => (sequencesById[sequenceId] ? sequencesById[sequenceId] : null),
-);
-
-const sequenceIdsSelector = createSelector(
-  (state) => state.courseware.courseStatus,
-  currentCourseSelector,
-  (state) => state.models.sections,
-  (courseStatus, course, sectionsById) => {
-    if (courseStatus !== 'loaded') {
-      return [];
-    }
-    const { sectionIds = [] } = course;
-    return sectionIds.flatMap(sectionId => sectionsById[sectionId].sequenceIds);
-  },
-);
-
-const previousSequenceSelector = createSelector(
-  sequenceIdsSelector,
-  (state) => state.models.sequences || {},
-  (state) => state.courseware.sequenceId,
-  (sequenceIds, sequencesById, sequenceId) => {
-    if (!sequenceId || sequenceIds.length === 0) {
-      return null;
-    }
-    const sequenceIndex = sequenceIds.indexOf(sequenceId);
-    const previousSequenceId = sequenceIndex > 0 ? sequenceIds[sequenceIndex - 1] : null;
-    return previousSequenceId !== null ? sequencesById[previousSequenceId] : null;
-  },
-);
-
-const nextSequenceSelector = createSelector(
-  sequenceIdsSelector,
-  (state) => state.models.sequences || {},
-  (state) => state.courseware.sequenceId,
-  (sequenceIds, sequencesById, sequenceId) => {
-    if (!sequenceId || sequenceIds.length === 0) {
-      return null;
-    }
-    const sequenceIndex = sequenceIds.indexOf(sequenceId);
-    const nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
-    return nextSequenceId !== null ? sequencesById[nextSequenceId] : null;
-  },
-);
-
-const firstSequenceIdSelector = createSelector(
-  (state) => state.courseware.courseStatus,
-  currentCourseSelector,
-  (state) => state.models.sections || {},
-  (courseStatus, course, sectionsById) => {
-    if (courseStatus !== 'loaded') {
-      return null;
-    }
-    const { sectionIds = [] } = course;
-
-    if (sectionIds.length === 0) {
-      return null;
-    }
-
-    return sectionsById[sectionIds[0]].sequenceIds[0];
-  },
-);
-
-const sectionViaSequenceIdSelector = createSelector(
-  (state) => state.models.sections || {},
-  (state) => state.courseware.sequenceId,
-  (sectionsById, sequenceId) => (sectionsById[sequenceId] ? sectionsById[sequenceId] : null),
-);
-
-const mapStateToProps = (state) => {
-  const {
-    courseId,
-    sequenceId,
-    courseStatus,
-    sequenceStatus,
-    sequenceMightBeUnit,
-  } = state.courseware;
-
-  return {
-    courseId,
-    sequenceId,
-    courseStatus,
-    sequenceStatus,
-    sequenceMightBeUnit,
-    course: currentCourseSelector(state),
-    sequence: currentSequenceSelector(state),
-    previousSequence: previousSequenceSelector(state),
-    nextSequence: nextSequenceSelector(state),
-    firstSequenceId: firstSequenceIdSelector(state),
-    sectionViaSequenceId: sectionViaSequenceIdSelector(state),
-  };
-};
-
-export default connect(mapStateToProps, {
-  checkBlockCompletion,
-  saveSequencePosition,
-  fetchCourse,
-  fetchSequence,
-})(withParamsAndNavigation(CoursewareContainer));
+export default CoursewareContainer;
