@@ -97,10 +97,10 @@ export const CourseOutline = ({
             ? sequenceIds.map((sequenceId: string) => (
               <SidebarSequence
                 key={sequenceId}
-                courseId={courseId!}
+                courseId={courseId}
                 sequence={sequences[sequenceId]}
                 defaultOpen={sequenceId === activeSequenceId}
-                activeUnitId={unitId!}
+                activeUnitId={unitId}
               />
             ))
             : sectionsIds.map((sectionId) => (
