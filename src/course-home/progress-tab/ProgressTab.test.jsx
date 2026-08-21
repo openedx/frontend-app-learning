@@ -1432,7 +1432,7 @@ describe('Progress Tab', () => {
         },
       });
       await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<TourProvider><LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
+      await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
       expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
@@ -1446,7 +1446,7 @@ describe('Progress Tab', () => {
         },
       });
       await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<TourProvider><LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
+      await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
       expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
       expect(screen.queryByText('1/1/2020', { exact: false })).not.toBeInTheDocument();
     });
@@ -1461,7 +1461,7 @@ describe('Progress Tab', () => {
         start: '2999-01-01T00:00:00Z',
       });
       await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<TourProvider><LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
+      await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
       expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(screen.getByText('This learner does not yet have access to this course. The course starts on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2999', { exact: false })).toBeInTheDocument();
@@ -1474,7 +1474,7 @@ describe('Progress Tab', () => {
         start: '2999-01-01T00:00:00Z',
       });
       await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<TourProvider><LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
+      await act(async () => render(<TourProvider><LoadedTabPage courseId={courseId} activeTabSlug="progress">...</LoadedTabPage></TourProvider>, { store }));
       expect(screen.queryByText('This learner does not yet have access to this course. The course starts on', { exact: false })).not.toBeInTheDocument();
       expect(screen.queryByText('1/1/2999', { exact: false })).not.toBeInTheDocument();
     });

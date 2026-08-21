@@ -54,7 +54,7 @@ const CloseText = ({ intl }) => (
 );
 
 const StreakModal = ({
-  courseId, metadataModel, streakLengthToCelebrate, isStreakCelebrationOpen,
+  courseId, streakLengthToCelebrate, isStreakCelebrationOpen,
   closeStreakCelebration, streakDiscountCouponEnabled, verifiedMode, ...rest
 }) => {
   const intl = useIntl();
@@ -247,7 +247,6 @@ StreakModal.defaultProps = {
 
 StreakModal.propTypes = {
   courseId: PropTypes.string.isRequired,
-  metadataModel: PropTypes.string.isRequired,
   streakLengthToCelebrate: PropTypes.number,
   isStreakCelebrationOpen: PropTypes.bool,
   closeStreakCelebration: PropTypes.func.isRequired,

@@ -61,7 +61,6 @@ describe('Loaded Tab Page', () => {
       closeStreakCelebration: jest.fn(),
       courseId: courseMetadata.id,
       isStreakCelebrationOpen: true,
-      metadataModel: 'coursewareMeta',
       streakLengthToCelebrate: 3,
       verifiedMode: camelCaseObject(courseHomeMetadata.verified_mode),
     };

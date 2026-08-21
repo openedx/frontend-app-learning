@@ -11,6 +11,10 @@ jest.mock('./LoadedTabPage', () => function () {
   return <div data-testid="LoadedTabPage" />;
 });
 
+jest.mock('../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton', () => function () {
+  return <div data-testid="sr-tour-button" />;
+});
+
 jest.mock('../generic/ToastContext', () => ({
   ...jest.requireActual('../generic/ToastContext'),
   useToast: jest.fn(),
@@ -96,6 +100,16 @@ describe('Tab Page', () => {
   it('displays Loaded Tab Page', () => {
     render(<TabPage {...mockData} />, { wrapWithRouter: true });
     expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
+  });
+
+  it('renders the screen-reader tour button on the outline tab', () => {
+    render(<TabPage {...mockData} activeTabSlug="outline" />, { wrapWithRouter: true });
+    expect(screen.getByTestId('sr-tour-button')).toBeInTheDocument();
+  });
+
+  it('does not render the tour button on other tabs', () => {
+    render(<TabPage {...mockData} activeTabSlug="dates" />, { wrapWithRouter: true });
+    expect(screen.queryByTestId('sr-tour-button')).not.toBeInTheDocument();
   });
 
   describe('React Query courseStatus', () => {
