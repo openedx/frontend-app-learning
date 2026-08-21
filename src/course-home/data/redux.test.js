@@ -42,45 +42,6 @@ describe('Data layer integration tests', () => {
     store = initializeStore();
   });
 
-  describe('Test fetchOutlineTab', () => {
-    const outlineBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline`;
-    const outlineUrl = `${outlineBaseUrl}/${courseId}`;
-
-    it('Should result in fetch failure if error occurs', async () => {
-      axiosMock.onGet(courseMetadataUrl).networkError();
-      axiosMock.onGet(outlineUrl).networkError();
-
-      await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-      expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseHome.courseStatus).toEqual('failed');
-    });
-
-    it('Should fetch, normalize, and save metadata', async () => {
-      const outlineTabData = Factory.build('outlineTabData', { courseId });
-
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
-
-      await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-      const state = store.getState();
-      expect(state.courseHome.courseStatus).toEqual('loaded');
-    });
-
-    it.each([401, 403, 404])(
-      'should result in fetch denied if course access is denied, regardless of outline API status',
-      async (errorStatus) => {
-        axiosMock.onGet(courseMetadataUrl).reply(200, courseHomeAccessDeniedMetadata);
-        axiosMock.onGet(outlineUrl).reply(errorStatus, {});
-
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-
-        expect(store.getState().courseHome.courseStatus).toEqual('denied');
-      },
-    );
-  });
-
   describe('Test fetchProgressTab', () => {
     const progressBaseUrl = `${getConfig().LMS_BASE_URL}/api/course_home/progress`;
 
@@ -145,18 +106,6 @@ describe('Data layer integration tests', () => {
 
       expect(axiosMock.history.post[0].url).toEqual(goalUrl);
       expect(axiosMock.history.post[0].data).toEqual(`{"course_id":"${courseId}","goal_key":"unsure"}`);
-    });
-  });
-
-  describe('Test dismissWelcomeMessage', () => {
-    it('Should dismiss welcome message', async () => {
-      const dismissUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dismiss_welcome_message`;
-      axiosMock.onPost(dismissUrl).reply(201);
-
-      await executeThunk(thunks.dismissWelcomeMessage(courseId), store.dispatch);
-
-      expect(axiosMock.history.post[0].url).toEqual(dismissUrl);
-      expect(axiosMock.history.post[0].data).toEqual(`{"course_id":"${courseId}"}`);
     });
   });
 

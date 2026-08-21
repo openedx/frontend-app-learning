@@ -60,9 +60,9 @@ const deriveView = (courseStatus: CourseStatus): TabView => {
   const { metadataQuery, tabDataQuery } = courseStatus;
   if (metadataQuery.isError) { return { ...view, isError: true }; }
   if (metadataQuery.isPending) { return { ...view, isLoading: true }; }
+  if (tabDataQuery.isPending) { return { ...view, isLoading: true }; }
   if (!metadataQuery.data?.courseAccess?.hasAccess) { return { ...view, isDenied: true }; }
   if (tabDataQuery.isError) { return { ...view, isError: true }; }
-  if (tabDataQuery.isPending) { return { ...view, isLoading: true }; }
   return view;
 };
 

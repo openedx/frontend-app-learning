@@ -5,11 +5,10 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Alert, Button, TransitionReplace } from '@openedx/paragon';
 import truncate from 'truncate-html';
 
-import { useDispatch } from 'react-redux';
 import LmsHtmlFragment from '../LmsHtmlFragment';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
-import { dismissWelcomeMessage } from '../../data/thunks';
+import { useDismissWelcomeMessage } from '../../data/apiHooks';
 
 const WelcomeMessage = ({ courseId, nextElementRef }) => {
   const intl = useIntl();
@@ -37,7 +36,7 @@ const WelcomeMessage = ({ courseId, nextElementRef }) => {
   );
 
   const [showShortMessage, setShowShortMessage] = useState(messageCanBeShortened);
-  const dispatch = useDispatch();
+  const dismissWelcomeMessage = useDismissWelcomeMessage();
 
   if (!welcomeMessageHtml) {
     return null;
@@ -53,7 +52,7 @@ const WelcomeMessage = ({ courseId, nextElementRef }) => {
       onClose={() => {
         nextElementRef.current?.focus();
         setDisplay(false);
-        dispatch(dismissWelcomeMessage(courseId));
+        dismissWelcomeMessage.mutate({ courseId });
       }}
       className="raised-card"
       actions={messageCanBeShortened ? [

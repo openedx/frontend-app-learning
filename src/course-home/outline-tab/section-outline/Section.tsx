@@ -3,9 +3,9 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Collapsible, IconButton } from '@openedx/paragon';
 import { Minus, Plus } from '@openedx/paragon/icons';
 
+import { useParams } from 'react-router-dom';
 import { useModel } from '../../../generic/model-store';
 import genericMessages from '../../../generic/messages';
-import { useContextId } from '../../../data/hooks';
 import messages from '../messages';
 import SectionTitle from './SectionTitle';
 import SequenceLink from './SequenceLink';
@@ -27,7 +27,7 @@ const Section: React.FC<Props> = ({
   section,
 }) => {
   const intl = useIntl();
-  const courseId = useContextId();
+  const { courseId } = useParams();
   const {
     complete,
     sequenceIds,

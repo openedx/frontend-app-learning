@@ -167,6 +167,22 @@ describe('Tab Page', () => {
       expect(screen.queryByTestId('LoadedTabPage')).not.toBeInTheDocument();
     });
 
+    it('shows loading when access is denied but the tab-data query is still pending', () => {
+      render(
+        <TabPage
+          {...mockData}
+          activeTabSlug="outline"
+          courseStatus={{
+            metadataQuery: { data: { courseAccess: { hasAccess: false } } },
+            tabDataQuery: { isPending: true },
+          }}
+        />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByText('Loading course page…')).toBeInTheDocument();
+      expect(screen.queryByTestId('LoadedTabPage')).not.toBeInTheDocument();
+    });
+
     it('does not render tab content when access is denied', async () => {
       const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
       testStore.dispatch(addModel({

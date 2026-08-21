@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -13,7 +13,7 @@ import CourseHandouts from './widgets/CourseHandouts';
 import StartOrResumeCourseCard from './widgets/StartOrResumeCourseCard';
 import WeeklyLearningGoalCard from './widgets/WeeklyLearningGoalCard';
 import CourseTools from './widgets/CourseTools';
-import { fetchOutlineTab } from '../data';
+import { useCourseHomeMeta, useOutlineTabData } from '../data/apiHooks';
 import messages from './messages';
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
@@ -27,13 +27,12 @@ import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
 import CourseHomeSectionOutlineSlot from '../../plugin-slots/CourseHomeSectionOutlineSlot';
+import { TabWithTimer } from '../../tab-page';
 
-const OutlineTab = () => {
+const OutlineTabContent = () => {
   const intl = useIntl();
-  const {
-    courseId,
-    proctoringPanelStatus,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
+  const { proctoringPanelStatus } = useSelector(state => state.courseHome);
 
   const {
     isSelfPaced,
@@ -146,7 +145,7 @@ const OutlineTab = () => {
           />
           {isSelfPaced && hasDeadlines && (
             <>
-              <ShiftDatesAlert model="outline" fetch={fetchOutlineTab} />
+              <ShiftDatesAlert model="outline" />
               <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
             </>
           )}
@@ -188,6 +187,22 @@ const OutlineTab = () => {
         )}
       </div>
     </>
+  );
+};
+
+const OutlineTab = () => {
+  const { courseId } = useParams();
+  const metadataQuery = useCourseHomeMeta(courseId);
+  const tabDataQuery = useOutlineTabData(courseId);
+
+  return (
+    <TabWithTimer
+      activeTabSlug="outline"
+      courseId={courseId}
+      courseStatus={{ metadataQuery, tabDataQuery }}
+    >
+      <OutlineTabContent />
+    </TabWithTimer>
   );
 };
 

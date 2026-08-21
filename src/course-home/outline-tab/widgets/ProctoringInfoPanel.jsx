@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import camelCase from 'lodash.camelcase';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -13,9 +14,7 @@ import { useModel } from '../../../generic/model-store';
 
 const ProctoringInfoPanel = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
   const {
     username,
   } = useModel('courseHomeMeta', courseId);

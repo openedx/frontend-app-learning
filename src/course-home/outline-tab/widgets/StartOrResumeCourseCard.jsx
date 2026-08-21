@@ -2,16 +2,14 @@ import React from 'react';
 import { Button, Card } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
 
 const StartOrResumeCourseCard = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
 
   const {
     org,
