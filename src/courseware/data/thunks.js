@@ -1,25 +1,16 @@
-import { logError, logInfo } from '@edx/frontend-platform/logging';
-import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
-import {
-  addModel, addModelsMap, updateModel, updateModels, updateModelsMap,
-} from '../../generic/model-store';
+import { logError } from '@edx/frontend-platform/logging';
+import { updateModel, updateModels } from '../../generic/model-store';
 import {
   getBlockCompletion,
   getCourseDiscussionConfig,
-  getCourseMetadata,
   getCourseOutline,
   getCourseTopics,
   getCoursewareOutlineSidebarToggles,
-  getLearningSequencesOutline,
   getSequenceMetadata,
   postIntegritySignature,
   postSequencePosition,
 } from './api';
 import {
-  fetchCourseDenied,
-  fetchCourseFailure,
-  fetchCourseRequest,
-  fetchCourseSuccess,
   fetchSequenceFailure,
   fetchSequenceRequest,
   fetchSequenceSuccess,
@@ -30,117 +21,23 @@ import {
   updateCourseOutlineCompletion,
 } from './slice';
 
+// Transitional — `fetchCourse` is being dismantled; its work is moving to React Query.
+// What it used to do, and what replaced it:
+//   - metadata / outline / courseHomeMeta fetches → the `useCoursewareMetadata` /
+//     `useCoursewareOutline` / `useCourseHomeMeta` query hooks (+ the model-store bridge)
+//   - deriving/dispatching `courseStatus` → `useCourseStatusBridge`
+// Only the sidebar-toggles fetch is left; it stays on Redux until #2013 converts it and
+// deletes `fetchCourse`.
 export function fetchCourse(courseId) {
   return async (dispatch) => {
-    dispatch(fetchCourseRequest({ courseId }));
-    Promise.allSettled([
-      getCourseMetadata(courseId),
-      getLearningSequencesOutline(courseId),
-      getCourseHomeCourseMetadata(courseId, 'courseware'),
-      getCoursewareOutlineSidebarToggles(courseId),
-    ]).then(([
-      courseMetadataResult,
-      learningSequencesOutlineResult,
-      courseHomeMetadataResult,
-      coursewareOutlineSidebarTogglesResult]) => {
-      const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
-      const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
-      const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
-      const fetchedCoursewareOutlineSidebarTogglesResult = coursewareOutlineSidebarTogglesResult.status === 'fulfilled';
-
-      if (fetchedMetadata) {
-        dispatch(addModel({
-          modelType: 'coursewareMeta',
-          model: courseMetadataResult.value,
-        }));
-      }
-
-      if (fetchedCourseHomeMetadata) {
-        dispatch(addModel({
-          modelType: 'courseHomeMeta',
-          model: {
-            id: courseId,
-            ...courseHomeMetadataResult.value,
-          },
-        }));
-      }
-
-      if (fetchedOutline) {
-        const {
-          courses, sections, sequences,
-        } = learningSequencesOutlineResult.value;
-
-        // This updates the course with a sectionIds array from the Learning Sequence data.
-        dispatch(updateModelsMap({
-          modelType: 'coursewareMeta',
-          modelsMap: courses,
-        }));
-        dispatch(addModelsMap({
-          modelType: 'sections',
-          modelsMap: sections,
-        }));
-        // We update for sequences because the sequence metadata may have come back first.
-        dispatch(updateModelsMap({
-          modelType: 'sequences',
-          modelsMap: sequences,
-        }));
-      }
-
-      if (fetchedCoursewareOutlineSidebarTogglesResult) {
-        const {
-          enable_completion_tracking: enableCompletionTracking,
-        } = coursewareOutlineSidebarTogglesResult.value;
-        dispatch(setCoursewareOutlineSidebarToggles(
-          { enableCompletionTracking },
-        ));
-      }
-
-      // Log errors for each request if needed. Outline failures may occur
-      // even if the course metadata request is successful
-      if (!fetchedOutline) {
-        const { response } = learningSequencesOutlineResult.reason;
-        if (response && response.status === 403) {
-          // 403 responses are normal - they happen when the learner is logged out.
-          // We'll redirect them in a moment to the outline tab by calling fetchCourseDenied() below.
-          logInfo(learningSequencesOutlineResult.reason);
-        } else {
-          logError(learningSequencesOutlineResult.reason);
-        }
-      }
-      if (!fetchedMetadata) {
-        logError(courseMetadataResult.reason);
-      }
-      if (!fetchedCourseHomeMetadata) {
-        logError(courseHomeMetadataResult.reason);
-      }
-      if (!fetchedCoursewareOutlineSidebarTogglesResult) {
-        logError(coursewareOutlineSidebarTogglesResult.reason);
-      }
-      if (fetchedMetadata && fetchedCourseHomeMetadata) {
-        if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedOutline) {
-          // User has access
-          dispatch(fetchCourseSuccess({ courseId }));
-          return;
-        }
-        // User either doesn't have access or only has partial access
-        // (can't access course blocks)
-        dispatch(fetchCourseDenied({ courseId }));
-        return;
-      }
-
-      // Definitely an error happening
-      // Extract error details from 403 responses
-      let errorMessage = null;
-      let errorCode = null;
-      if (!fetchedCourseHomeMetadata) {
-        const error = courseHomeMetadataResult.reason;
-        if (error?.response?.status === 403 && error?.response?.data) {
-          errorMessage = error.response.data.detail || null;
-          errorCode = error.response.data.error_code || null;
-        }
-      }
-      dispatch(fetchCourseFailure({ courseId, errorMessage, errorCode }));
-    });
+    try {
+      const {
+        enable_completion_tracking: enableCompletionTracking,
+      } = await getCoursewareOutlineSidebarToggles(courseId);
+      dispatch(setCoursewareOutlineSidebarToggles({ enableCompletionTracking }));
+    } catch (error) {
+      logError(error);
+    }
   };
 }
 

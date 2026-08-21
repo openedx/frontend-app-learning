@@ -94,6 +94,31 @@ describe('modelStoreBridge', () => {
     expect(units.u2).toEqual({ id: 'u2', complete: false });
   });
 
+  it('updateModel merges a single model by id (via source)', async () => {
+    store.dispatch(addModelsMap({
+      modelType: 'coursewareMeta',
+      modelsMap: { 'course-1': { id: 'course-1', title: 'Old', tabs: ['outline'] } },
+    }));
+
+    await runQuery(
+      queryClient,
+      () => ({ course: { id: 'course-1', title: 'New' } }),
+      { models: [{ modelType: 'coursewareMeta', strategy: 'updateModel', source: 'course' }] },
+    );
+
+    expect(modelsOf(store).coursewareMeta['course-1']).toEqual({ id: 'course-1', title: 'New', tabs: ['outline'] });
+  });
+
+  it('ignores an unrecognized strategy', async () => {
+    await runQuery(
+      queryClient,
+      () => ({ id: 'course-1' }),
+      { models: [{ modelType: 'coursewareMeta', strategy: 'nope' }] },
+    );
+
+    expect(store.getState().models).toEqual({});
+  });
+
   it('does nothing when a query has no model-store meta', async () => {
     await runQuery(queryClient, () => ({ foo: 'bar' }), {});
 

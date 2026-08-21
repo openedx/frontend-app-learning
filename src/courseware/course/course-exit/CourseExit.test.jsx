@@ -1,19 +1,24 @@
 import React from 'react';
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
-import { getConfig } from '@edx/frontend-platform';
+import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { waitFor } from '@testing-library/react';
+import { waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
 
-import { fetchCourse } from '../../data';
+import { getCourseMetadata } from '../../data/api';
+import { getCourseHomeCourseMetadata } from '../../../course-home/data/api';
+import { fetchCourseSuccess } from '../../data/slice';
+import { addModel } from '../../../generic/model-store';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from '../../data/__factories__/learningSequencesOutline.factory';
 import {
-  initializeMockApp, logUnhandledRequests, render, screen,
+  createTestQueryClient, initializeMockApp, logUnhandledRequests, render, screen,
 } from '../../../setupTest';
 import initializeStore from '../../../store';
-import { appendBrowserTimezoneToUrl, executeThunk } from '../../../utils';
+import { appendBrowserTimezoneToUrl } from '../../../utils';
 import CourseCelebration from './CourseCelebration';
 import CourseExit from './CourseExit';
 import CourseInProgress from './CourseInProgress';
@@ -51,8 +56,27 @@ describe('Course Exit Pages', () => {
   }
 
   async function fetchAndRender(component) {
-    await executeThunk(fetchCourse(courseId), store.dispatch);
-    render(component, { store, wrapWithRouter: true });
+    const [metadata, homeMetadata] = await Promise.all([
+      getCourseMetadata(courseId),
+      getCourseHomeCourseMetadata(courseId, 'courseware'),
+    ]);
+    store.dispatch(addModel({ modelType: 'coursewareMeta', model: metadata }));
+    store.dispatch(addModel({ modelType: 'courseHomeMeta', model: { id: courseId, ...homeMetadata } }));
+    store.dispatch(fetchCourseSuccess({ courseId }));
+    history.push(`/course/${courseId}`);
+    render(
+      <QueryClientProvider client={createTestQueryClient(store)}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/course/:courseId" element={component} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>,
+      { store, wrapWithRouter: false },
+    );
+    if (screen.queryByRole('status')) {
+      await waitForElementToBeRemoved(() => screen.queryByRole('status'));
+    }
   }
 
   beforeEach(() => {
@@ -99,6 +123,24 @@ describe('Course Exit Pages', () => {
       expect(screen.getByText('You’ve reached the end of the course!')).toBeInTheDocument();
     });
 
+    it('Routes to in-progress experience when the course has scheduled content', async () => {
+      setMetadata({
+        enrollment: { is_active: true },
+        user_has_passing_grade: false,
+      });
+      const { courseBlocks } = buildSimpleCourseBlocks(courseId, courseHomeMetadata.title);
+      // buildOutlineFromBlocks releases every sequence; mark one unreleased so the normalized
+      // outline reports hasScheduledContent (see isReleased in ../../data/utils.js).
+      const outline = buildOutlineFromBlocks(courseBlocks);
+      const [scheduledSequenceId] = Object.keys(outline.outline.sequences);
+      outline.outline.sequences[scheduledSequenceId].accessible = false;
+      outline.outline.sequences[scheduledSequenceId].effective_start = tomorrow.toISOString();
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, outline);
+
+      await fetchAndRender(<CourseExit />);
+      expect(await screen.findByText('More content is coming soon!')).toBeInTheDocument();
+    });
+
     it('Redirects if it does not match any statuses', async () => {
       setMetadata({
         certificate_data: {
@@ -107,6 +149,24 @@ describe('Course Exit Pages', () => {
       });
       await fetchAndRender(<CourseExit />);
       expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+    });
+  });
+
+  describe('Course Exit access error', () => {
+    it('surfaces the 403 access detail instead of the generic error', async () => {
+      axiosMock.onGet(courseHomeMetadataUrl).reply(403, { detail: 'You are not enrolled', error_code: 'not_enrolled' });
+      history.push(`/course/${courseId}`);
+      render(
+        <QueryClientProvider client={createTestQueryClient(store)}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/course/:courseId" element={<CourseExit />} />
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>,
+        { store, wrapWithRouter: false },
+      );
+      expect(await screen.findByText('You are not enrolled')).toBeInTheDocument();
     });
   });
 

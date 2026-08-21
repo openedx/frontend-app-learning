@@ -8,6 +8,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { initializeMockApp } from '../../setupTest';
 import { ToastProvider, useToast } from '../../generic/ToastContext';
 import {
+  useCourseHomeMeta,
   useOutlineTabData, useLiveTabData, useProgressTabData, useResetDeadlines, usePostEvent, useRequestCert,
   useDismissWelcomeMessage, useSaveWeeklyLearningGoal,
 } from './apiHooks';
@@ -323,6 +324,48 @@ describe('course-home apiHooks', () => {
       });
 
       await waitFor(() => expect(loggingService.logError).toHaveBeenCalled());
+    });
+  });
+
+  describe('useCourseHomeMeta', () => {
+    const courseId = 'course-1';
+    const metadataUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/`);
+    const tabSlugs = (data: unknown) => (data as { tabs: Array<{ slug: string }> }).tabs.map(tab => tab.slug);
+
+    beforeEach(() => {
+      axiosMock.onGet(metadataUrl).reply(200, Factory.build('courseHomeMetadata'));
+    });
+
+    it('labels the shared courseware/outline tab "courseware" (the rootSlug CoursewareContainer + CourseExit pass)', async () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCourseHomeMeta(courseId, 'courseware'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(tabSlugs(result.current.data)).toContain('courseware');
+      expect(tabSlugs(result.current.data)).not.toContain('outline');
+    });
+
+    it('labels the shared courseware/outline tab "outline" (the rootSlug the course-home tabs pass)', async () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCourseHomeMeta(courseId, 'outline'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(tabSlugs(result.current.data)).toContain('outline');
+      expect(tabSlugs(result.current.data)).not.toContain('courseware');
+    });
+
+    it('keys the query by rootSlug so the two contexts do not share a cache entry', async () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => ({
+        courseware: useCourseHomeMeta(courseId, 'courseware'),
+        outline: useCourseHomeMeta(courseId, 'outline'),
+      }), { wrapper });
+
+      await waitFor(() => expect(
+        result.current.courseware.isSuccess && result.current.outline.isSuccess,
+      ).toBe(true));
+      expect(tabSlugs(result.current.courseware.data)).toContain('courseware');
+      expect(tabSlugs(result.current.outline.data)).toContain('outline');
     });
   });
 });

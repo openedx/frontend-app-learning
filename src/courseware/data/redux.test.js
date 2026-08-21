@@ -4,14 +4,15 @@ import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
 
-import { FAILED, LOADING } from '@src/constants';
 import * as thunks from './thunks';
 
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 
 import { buildSimpleCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from './__factories__/learningSequencesOutline.factory';
-import { initializeMockApp } from '../../setupTest';
+import { initializeMockApp, seedCoursewareModels } from '../../setupTest';
+import { getCourseMetadata } from './api';
+import { addModel } from '../../generic/model-store';
 import initializeStore from '../../store';
 
 const { loggingService } = initializeMockApp();
@@ -33,7 +34,6 @@ describe('Data layer integration tests', () => {
     {},
     { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
   );
-  const simpleOutline = buildOutlineFromBlocks(courseBlocks);
 
   let courseUrl = `${courseBaseUrl}/${courseId}`;
   courseUrl = appendBrowserTimezoneToUrl(courseUrl);
@@ -44,7 +44,6 @@ describe('Data layer integration tests', () => {
   const sequenceUrl = `${sequenceBaseUrl}/${sequenceMetadata.item_id}`;
   const sequenceId = sequenceBlocks[0].id;
   const unitId = unitBlocks[0].id;
-  const coursewareSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-navigation-sidebar/toggles/`;
 
   let store;
 
@@ -56,165 +55,25 @@ describe('Data layer integration tests', () => {
   });
 
   describe('Test fetchCourse', () => {
-    it('Should fail to fetch course and blocks if request error happens', async () => {
-      axiosMock.onGet(courseUrl).networkError();
-      axiosMock.onGet(learningSequencesUrlRegExp).networkError();
-      axiosMock.onGet(coursewareSidebarSettingsUrl).networkError();
+    const sidebarTogglesUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-navigation-sidebar/toggles/`;
+
+    it('Should store the sidebar toggles on success', async () => {
+      axiosMock.onGet(sidebarTogglesUrl).reply(200, { enable_completion_tracking: true });
+
+      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
+
+      expect(store.getState().courseware.coursewareOutlineSidebarSettings).toEqual({
+        enableCompletionTracking: true,
+      });
+    });
+
+    it('Should log an error and leave the toggles unset on failure', async () => {
+      axiosMock.onGet(sidebarTogglesUrl).networkError();
 
       await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
 
       expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseware).toEqual(expect.objectContaining({
-        courseId,
-        courseOutline: {},
-        courseStatus: FAILED,
-        coursewareOutlineSidebarSettings: {},
-        courseOutlineStatus: LOADING,
-        sequenceId: null,
-        sequenceMightBeUnit: false,
-        sequenceStatus: LOADING,
-      }));
-    });
-
-    it('should store errorMessage and errorCode when course_home metadata returns 403', async () => {
-      const errorDetail = 'This course is not currently accessible. The course team has restricted access to this content.';
-      const errorCode = 'not_visible_in_catalog';
-
-      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
-      axiosMock.onGet(courseHomeMetadataUrl).reply(403, { detail: errorDetail, error_code: errorCode });
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
-      axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, { enable_completion_tracking: true });
-
-      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
-
-      const { courseware } = store.getState();
-      expect(courseware.courseStatus).toEqual(FAILED);
-      expect(courseware.errorMessage).toEqual(errorDetail);
-      expect(courseware.errorCode).toEqual(errorCode);
-    });
-
-    it('should not store errorMessage for non-403 network errors', async () => {
-      axiosMock.onGet(courseUrl).networkError();
-      axiosMock.onGet(courseHomeMetadataUrl).networkError();
-      axiosMock.onGet(learningSequencesUrlRegExp).networkError();
-      axiosMock.onGet(coursewareSidebarSettingsUrl).networkError();
-
-      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
-
-      const { courseware } = store.getState();
-      expect(courseware.courseStatus).toEqual(FAILED);
-      expect(courseware.errorMessage).toBeNull();
-      expect(courseware.errorCode).toBeNull();
-    });
-
-    it('Should fetch, normalize, and save metadata, but with denied status', async () => {
-      const forbiddenCourseMetadata = Factory.build('courseMetadata');
-      const forbiddenCourseHomeMetadata = Factory.build('courseHomeMetadata', {
-        course_access: {
-          has_access: false,
-        },
-      });
-      const forbiddenCourseHomeUrl = appendBrowserTimezoneToUrl(
-        `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`,
-      );
-      const forbiddenCourseBlocks = Factory.build('courseBlocks', {
-        courseId: forbiddenCourseMetadata.id,
-      });
-      let forbiddenCourseUrl = `${courseBaseUrl}/${forbiddenCourseMetadata.id}`;
-      forbiddenCourseUrl = appendBrowserTimezoneToUrl(forbiddenCourseUrl);
-
-      axiosMock.onGet(forbiddenCourseHomeUrl).reply(200, forbiddenCourseHomeMetadata);
-      axiosMock.onGet(forbiddenCourseUrl).reply(200, forbiddenCourseMetadata);
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(forbiddenCourseBlocks));
-
-      await executeThunk(thunks.fetchCourse(forbiddenCourseMetadata.id), store.dispatch);
-
-      const state = store.getState();
-
-      expect(state.courseware.courseStatus).toEqual('denied');
-
-      // check that at least one key camel cased, thus course data normalized
-      expect(state.models.courseHomeMeta[forbiddenCourseMetadata.id].courseAccess).not.toBeUndefined();
-    });
-
-    it('Should fetch, normalize, and save metadata', async () => {
-      axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
-      axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
-        enable_completion_tracking: true,
-      });
-
-      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
-
-      const state = store.getState();
-
-      expect(state.courseware.courseStatus).toEqual('loaded');
-      expect(state.courseware.courseId).toEqual(courseId);
-      expect(state.courseware.sequenceStatus).toEqual('loading');
-      expect(state.courseware.sequenceId).toEqual(null);
-      expect(state.courseware.coursewareOutlineSidebarSettings).toEqual({
-        enableCompletionTracking: true,
-      });
-
-      // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
-    });
-
-    it('Should fetch, normalize, and save metadata; filtering has no effect', async () => {
-      // Very similar to previous test, but pass back an outline for filtering
-      // (even though it won't actually filter down in this case).
-      axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, simpleOutline);
-      axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
-        enable_completion_tracking: false,
-      });
-
-      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
-
-      const state = store.getState();
-
-      expect(state.courseware.courseStatus).toEqual('loaded');
-      expect(state.courseware.courseId).toEqual(courseId);
-      expect(state.courseware.sequenceStatus).toEqual('loading');
-      expect(state.courseware.sequenceId).toEqual(null);
-      expect(state.courseware.coursewareOutlineSidebarSettings).toEqual({
-        enableCompletionTracking: false,
-      });
-
-      // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
-      expect(state.models.sequences.length === 1);
-
-      Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 1));
-    });
-
-    it('Should fetch, normalize, and save metadata; filtering removes sequence', async () => {
-      // Very similar to previous test, but pass back an outline for filtering
-      // (even though it won't actually filter down in this case).
-      axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
-      axiosMock.onGet(courseUrl).reply(200, courseMetadata);
-
-      // Create an outline with basic matching metadata, but then empty it out...
-      const emptyOutline = buildOutlineFromBlocks(courseBlocks);
-      emptyOutline.sequences = {};
-      emptyOutline.sections = [];
-      axiosMock.onGet(learningSequencesUrlRegExp).reply(200, emptyOutline);
-      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
-
-      const state = store.getState();
-
-      expect(state.courseware.courseStatus).toEqual('loaded');
-      expect(state.courseware.courseId).toEqual(courseId);
-      expect(state.courseware.sequenceStatus).toEqual('loading');
-      expect(state.courseware.sequenceId).toEqual(null);
-
-      // check that at least one key camel cased, thus course data normalized
-      expect(state.models.coursewareMeta[courseId].marketingUrl).not.toBeUndefined();
-      expect(state.models.sequences === null);
-
-      Object.values(state.models.sections).forEach(section => expect(section.sequenceIds.length === 0));
+      expect(store.getState().courseware.coursewareOutlineSidebarSettings).toEqual({});
     });
   });
 
@@ -252,7 +111,7 @@ describe('Data layer integration tests', () => {
 
       // setting course with blocks before sequence to check that blocks receive
       // additional information after fetchSequence call.
-      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
+      await seedCoursewareModels(store, courseId);
 
       // ensure that initial state has no additional sequence info
       let state = store.getState();
@@ -425,7 +284,10 @@ describe('Data layer integration tests', () => {
 
       axiosMock.onGet(courseUrlNeedSignature).reply(200, courseMetadataNeedSignature);
 
-      await executeThunk(thunks.fetchCourse(courseMetadataNeedSignature.id), store.dispatch);
+      store.dispatch(addModel({
+        modelType: 'coursewareMeta',
+        model: await getCourseMetadata(courseMetadataNeedSignature.id),
+      }));
       expect(
         store.getState().models.coursewareMeta[courseMetadataNeedSignature.id].userNeedsIntegritySignature,
       ).toEqual(true);

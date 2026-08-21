@@ -12,6 +12,7 @@ import {
   getSequenceForUnitDeprecated,
   saveSequencePosition,
 } from './data';
+import { useCourseStatusBridge } from './data/statusBridge';
 import { TabPage } from '../tab-page';
 import type { CourseStatus } from '../tab-page/TabPage';
 import type { RootState } from '../store';
@@ -233,6 +234,8 @@ const CoursewareContainer = () => {
   const nextSequence = useSelector(nextSequenceSelector);
   const firstSequenceId = useSelector(firstSequenceIdSelector);
   const sectionViaSequenceId = useSelector(sectionViaSequenceIdSelector);
+
+  useCourseStatusBridge(routeCourseId);
 
   const latest = useRef<any>();
 

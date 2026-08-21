@@ -8,7 +8,6 @@ export const useTourData = (username: string, enabled: boolean) => useQuery({
   queryKey: tourQueryKeys.user(username),
   queryFn: () => getTourData(username),
   enabled,
-  refetchOnWindowFocus: false,
 });
 
 export const useEndCourseHomeTour = () => {

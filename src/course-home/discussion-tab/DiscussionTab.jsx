@@ -32,7 +32,7 @@ const DiscussionTabContent = () => {
 const DiscussionTab = () => {
   const { courseId } = useParams();
 
-  const metadataQuery = useCourseHomeMeta(courseId);
+  const metadataQuery = useCourseHomeMeta(courseId, 'outline');
 
   return (
     <TabWithTimer

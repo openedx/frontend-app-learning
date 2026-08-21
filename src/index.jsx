@@ -23,9 +23,7 @@ import CoursewareRedirectLandingPage from './courseware/CoursewareRedirectLandin
 import DatesTab from './course-home/dates-tab';
 import GoalUnsubscribe from './course-home/goal-unsubscribe';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
-import { TabContainer } from './tab-page';
 
-import { fetchCourse } from './courseware/data';
 import { store } from './store';
 import { createQueryClient } from './queryClient';
 import NoticesProvider from './generic/notices';
@@ -116,9 +114,7 @@ subscribe(APP_READY, () => {
                         path={DECODE_ROUTES.COURSE_END}
                         element={(
                           <DecodePageRoute>
-                            <TabContainer tab="courseware" fetch={fetchCourse} slice="courseware">
-                              <CourseExit />
-                            </TabContainer>
+                            <CourseExit />
                           </DecodePageRoute>
                       )}
                       />

@@ -15,14 +15,18 @@ import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams'
 import { AppProvider } from '@edx/frontend-platform/react';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { createAppQueryCache } from './queryClient';
-import { reducer as coursewareReducer } from './courseware/data/slice';
-import { reducer as modelsReducer } from './generic/model-store';
+import { reducer as coursewareReducer, fetchCourseSuccess } from './courseware/data/slice';
+import {
+  reducer as modelsReducer, addModel, addModelsMap, updateModelsMap,
+} from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
 import { ToastProvider } from './generic/ToastContext';
 
 import messages from './i18n';
 import { fetchCourse, fetchSequence } from './courseware/data';
 import { getCourseOutlineStructure } from './courseware/data/thunks';
+import { getCourseMetadata, getLearningSequencesOutline } from './courseware/data/api';
+import { getCourseHomeCourseMetadata } from './course-home/data/api';
 import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 import { buildOutlineFromBlocks } from './courseware/data/__factories__/learningSequencesOutline.factory';
@@ -171,6 +175,21 @@ export function logUnhandledRequests(axiosMock) {
 
 let globalStore;
 
+export async function seedCoursewareModels(store, courseId) {
+  const [metadata, outline, homeMetadata] = await Promise.all([
+    getCourseMetadata(courseId),
+    getLearningSequencesOutline(courseId),
+    getCourseHomeCourseMetadata(courseId, 'courseware'),
+  ]);
+  store.dispatch(addModel({ modelType: 'coursewareMeta', model: metadata }));
+  store.dispatch(addModel({ modelType: 'courseHomeMeta', model: { id: courseId, ...homeMetadata } }));
+  store.dispatch(updateModelsMap({ modelType: 'coursewareMeta', modelsMap: outline.courses }));
+  store.dispatch(addModelsMap({ modelType: 'sections', modelsMap: outline.sections }));
+  store.dispatch(updateModelsMap({ modelType: 'sequences', modelsMap: outline.sequences }));
+  store.dispatch(fetchCourseSuccess({ courseId }));
+  await executeThunk(fetchCourse(courseId), store.dispatch);
+}
+
 export async function initializeTestStore(options = {}, overrideStore = true) {
   const store = configureStore({
     reducer: {
@@ -227,8 +246,9 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
 
   logUnhandledRequests(axiosMock);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  !options.excludeFetchCourse && await executeThunk(fetchCourse(courseMetadata.id), store.dispatch);
+  if (!options.excludeFetchCourse) {
+    await seedCoursewareModels(store, courseMetadata.id);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   !options.excludeFetchOutlineSidebar && await executeThunk(
@@ -247,7 +267,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
 export function createTestQueryClient(store) {
   return new QueryClient({
     defaultOptions: {
-      queries: { retry: false },
+      queries: { retry: false, refetchOnWindowFocus: false },
       mutations: { retry: false },
     },
     ...(store ? { queryCache: createAppQueryCache(store) } : {}),

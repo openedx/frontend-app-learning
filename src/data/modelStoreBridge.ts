@@ -22,11 +22,11 @@ interface ModelMirror {
   source?: string;
 }
 
-interface ModelStoreMeta {
+export type ModelStoreMeta = {
   modelType?: string;
   courseId?: string;
   models?: ModelMirror[];
-}
+};
 
 // Transitional (#1977): bridge a React Query result into the model store so existing
 // `useModel(...)` readers (the shared TabPage/LoadedTabPage and not-yet-converted tabs)
@@ -37,7 +37,7 @@ interface ModelStoreMeta {
 // This is wired as the app QueryCache's `onSuccess` (see src/queryClient.ts), so it runs
 // before observers re-render.
 export const bridgeToModelStore = (store: Store, data: unknown, query: Query<unknown, unknown>) => {
-  const { modelType, courseId, models } = (query.meta ?? {}) as ModelStoreMeta;
+  const { modelType, courseId, models } = query.meta ?? {};
 
   if (modelType) {
     store.dispatch(addModel({ modelType, model: { id: courseId, ...(data as Record<string, unknown>) } }));

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { throttle } from 'lodash';
 
 import { logError } from '@edx/frontend-platform/logging';
 
-import { fetchCourse } from '@src/courseware/data';
 import { usePostEvent } from '@src/course-home/data/apiHooks';
+import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
+import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
 import { eventTypes } from '@src/course-home/data/thunks';
 import { useEventListener } from '@src/generic/hooks';
 import { getSequenceId } from '@src/courseware/data/selectors';
@@ -34,7 +36,7 @@ const useIFrameBehavior = ({
   // Do not remove this hook.  See function description.
   useLoadBearingHook(id);
 
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const postEvent = usePostEvent();
   const activeSequenceId = useSelector(getSequenceId);
   const navigate = useNavigate();
@@ -164,7 +166,14 @@ const useIFrameBehavior = ({
     }
     postEvent.mutate(
       { postData: event.postData, researchEventData },
-      { onSuccess: () => dispatch(fetchCourse(event.postData.bodyParams.courseId)) },
+      {
+        onSuccess: () => {
+          const eventCourseId = event.postData.bodyParams.courseId;
+          queryClient.invalidateQueries({ queryKey: coursewareQueryKeys.metadata(eventCourseId) });
+          queryClient.invalidateQueries({ queryKey: coursewareQueryKeys.outline(eventCourseId) });
+          queryClient.invalidateQueries({ queryKey: courseHomeQueryKeys.metadata(eventCourseId, 'courseware') });
+        },
+      },
     );
   };
 

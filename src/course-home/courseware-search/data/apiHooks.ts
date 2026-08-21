@@ -7,7 +7,6 @@ import { coursewareSearchQueryKeys } from './queryKeys';
 export const useCoursewareSearchEnabled = (courseId: string) => useQuery({
   queryKey: coursewareSearchQueryKeys.enabled(courseId),
   queryFn: () => getCoursewareSearchEnabled(courseId),
-  retry: false,
 });
 
 export const useCoursewareSearchResults = (courseId: string, keyword: string) => useQuery({
