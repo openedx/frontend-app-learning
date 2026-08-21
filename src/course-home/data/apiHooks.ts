@@ -1,8 +1,11 @@
 import { logError } from '@edx/frontend-platform/logging';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { useToast, ToastContent } from '@src/generic/ToastContext';
-import { executePostFromPostEvent, postCourseDeadlines } from './api';
+import {
+  executePostFromPostEvent, getCourseHomeCourseMetadata, getDatesTabData, postCourseDeadlines,
+} from './api';
+import { courseHomeQueryKeys } from './queryKeys';
 
 interface CallToActionResponse {
   header: string;
@@ -45,3 +48,15 @@ export const usePostEvent = () => {
     onError: (error) => logError(error),
   });
 };
+
+export const useCourseHomeMeta = (courseId: string) => useQuery({
+  queryKey: courseHomeQueryKeys.metadata(courseId),
+  queryFn: () => getCourseHomeCourseMetadata(courseId, 'outline'),
+  meta: { modelType: 'courseHomeMeta', courseId },
+});
+
+export const useDatesTabData = (courseId: string) => useQuery({
+  queryKey: courseHomeQueryKeys.datesTab(courseId),
+  queryFn: () => getDatesTabData(courseId),
+  meta: { modelType: 'dates', courseId },
+});

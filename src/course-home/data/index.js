@@ -1,5 +1,4 @@
 export {
-  fetchDatesTab,
   fetchOutlineTab,
   fetchProgressTab,
   deprecatedSaveCourseGoal,

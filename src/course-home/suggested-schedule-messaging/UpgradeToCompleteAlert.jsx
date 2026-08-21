@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -14,9 +14,7 @@ import messages from './messages';
 
 const UpgradeToCompleteAlert = ({ logUpgradeLinkClick }) => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
 
   const {
     datesBannerInfo,

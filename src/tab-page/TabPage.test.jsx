@@ -4,6 +4,7 @@ import {
 } from '../setupTest';
 import { TabPage } from './index';
 import { useToast } from '../generic/ToastContext';
+import { addModel } from '../generic/model-store';
 
 // We should not test `LoadedTabPage` page here, as `TabPage` is used only for passing `passthroughProps`.
 jest.mock('./LoadedTabPage', () => function () {
@@ -95,5 +96,78 @@ describe('Tab Page', () => {
   it('displays Loaded Tab Page', () => {
     render(<TabPage {...mockData} />, { wrapWithRouter: true });
     expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
+  });
+
+  describe('React Query courseStatus', () => {
+    const metaWithAccess = { data: { courseAccess: { hasAccess: true } } };
+
+    it('renders the Loaded Tab Page when both queries resolve with access', () => {
+      render(
+        <TabPage {...mockData} courseStatus={{ metadataQuery: metaWithAccess, tabDataQuery: {} }} />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
+    });
+
+    it('displays loading while the metadata query is loading', () => {
+      render(
+        <TabPage {...mockData} courseStatus={{ metadataQuery: { isPending: true }, tabDataQuery: {} }} />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByText('Loading course page…')).toBeInTheDocument();
+    });
+
+    it('displays loading while the tab-data query is loading', () => {
+      render(
+        <TabPage {...mockData} courseStatus={{ metadataQuery: metaWithAccess, tabDataQuery: { isPending: true } }} />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByText('Loading course page…')).toBeInTheDocument();
+    });
+
+    it('displays the error message when the metadata query fails', () => {
+      render(
+        <TabPage {...mockData} courseStatus={{ metadataQuery: { isError: true }, tabDataQuery: {} }} />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
+    });
+
+    it('displays the error message when the tab-data query fails', () => {
+      render(
+        <TabPage {...mockData} courseStatus={{ metadataQuery: metaWithAccess, tabDataQuery: { isError: true } }} />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
+    });
+
+    it('renders no tab content when courseId is missing', () => {
+      render(
+        <TabPage
+          {...mockData}
+          courseId={undefined}
+          courseStatus={{ metadataQuery: metaWithAccess, tabDataQuery: {} }}
+        />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.queryByTestId('LoadedTabPage')).not.toBeInTheDocument();
+    });
+
+    it('does not render tab content when access is denied', async () => {
+      const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
+      testStore.dispatch(addModel({
+        modelType: 'courseHomeMeta',
+        model: { id: 'test-course', courseAccess: { hasAccess: false } },
+      }));
+      render(
+        <TabPage
+          {...mockData}
+          activeTabSlug="dates"
+          courseStatus={{ metadataQuery: { data: { courseAccess: { hasAccess: false } } }, tabDataQuery: {} }}
+        />,
+        { store: testStore, wrapWithRouter: true },
+      );
+      expect(screen.queryByTestId('LoadedTabPage')).not.toBeInTheDocument();
+    });
   });
 });

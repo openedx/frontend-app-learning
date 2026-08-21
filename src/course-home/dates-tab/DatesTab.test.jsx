@@ -12,12 +12,10 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import DatesTab from './DatesTab';
-import { fetchDatesTab } from '../data';
 import {
   createTestQueryClient, fireEvent, initializeMockApp, waitFor,
 } from '../../setupTest';
 import initializeStore from '../../store';
-import { TabContainer } from '../../tab-page';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import { UserMessagesProvider } from '../../generic/user-messages';
 import { ToastProvider } from '../../generic/ToastContext';
@@ -35,17 +33,13 @@ describe('DatesTab', () => {
     store = initializeStore();
     component = (
       <AppProvider store={store}>
-        <QueryClientProvider client={createTestQueryClient()}>
+        <QueryClientProvider client={createTestQueryClient(store)}>
           <UserMessagesProvider>
             <ToastProvider>
               <Routes>
                 <Route
                   path="/course/:courseId/dates"
-                  element={(
-                    <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-                      <DatesTab />
-                    </TabContainer>
-                  )}
+                  element={<DatesTab />}
                 />
               </Routes>
             </ToastProvider>

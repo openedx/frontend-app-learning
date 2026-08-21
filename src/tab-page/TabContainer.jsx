@@ -2,9 +2,8 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { OuterExamTimer } from '@edx/frontend-lib-special-exams';
 
-import TabPage from './TabPage';
+import TabWithTimer from './TabWithTimer';
 
 const TabContainer = (props) => {
   const {
@@ -36,15 +35,14 @@ const TabContainer = (props) => {
   } = useSelector(state => state[slice]);
 
   return (
-    <TabPage
+    <TabWithTimer
       activeTabSlug={tab}
       courseId={courseId}
       courseStatus={courseStatus}
       metadataModel={`${slice}Meta`}
     >
-      {courseId && <OuterExamTimer courseId={courseId} />}
       {children}
-    </TabPage>
+    </TabWithTimer>
   );
 };
 

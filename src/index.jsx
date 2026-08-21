@@ -4,7 +4,7 @@ import {
   getConfig,
 } from '@edx/frontend-platform';
 import { AppProvider, ErrorPage, PageWrap } from '@edx/frontend-platform/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Routes, Route } from 'react-router-dom';
@@ -26,9 +26,10 @@ import GoalUnsubscribe from './course-home/goal-unsubscribe';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 import { TabContainer } from './tab-page';
 
-import { fetchDatesTab, fetchOutlineTab, fetchProgressTab } from './course-home/data';
+import { fetchOutlineTab, fetchProgressTab } from './course-home/data';
 import { fetchCourse } from './courseware/data';
 import { store } from './store';
+import { createQueryClient } from './queryClient';
 import NoticesProvider from './generic/notices';
 import PathFixesProvider from './generic/path-fixes';
 import { ToastProvider } from './generic/ToastContext';
@@ -39,7 +40,7 @@ import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
 
-const queryClient = new QueryClient();
+const queryClient = createQueryClient(store);
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
@@ -94,9 +95,7 @@ subscribe(APP_READY, () => {
                         path={DECODE_ROUTES.DATES}
                         element={(
                           <DecodePageRoute>
-                            <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-                              <DatesTab />
-                            </TabContainer>
+                            <DatesTab />
                           </DecodePageRoute>
                       )}
                       />

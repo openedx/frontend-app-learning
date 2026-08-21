@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { useModel } from '../../../generic/model-store';
 
@@ -7,9 +7,7 @@ import Day from './Day';
 import { daycmp, isLearnerAssignment } from '../utils';
 
 const Timeline = () => {
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
 
   const {
     courseDateBlocks,
