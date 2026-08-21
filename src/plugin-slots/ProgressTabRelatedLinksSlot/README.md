@@ -19,7 +19,7 @@ The following `env.config.jsx` will render the `course_id` of the course as a `<
 
 ```js
 import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
-import { useContextId } from './src/data/hooks';
+import { useParams } from 'react-router-dom';
 
 const config = {
   pluginSlots: {
@@ -32,7 +32,7 @@ const config = {
             id: 'custom_related_links_content',
             type: DIRECT_PLUGIN,
             RenderWidget: () => {
-              const courseId = useContextId();
+              const { courseId } = useParams();
               return (
                 <div>
                   <p>📚: {courseId}</p>

@@ -1,19 +1,17 @@
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@openedx/paragon';
-import { useContextId } from '../../../../data/hooks';
 
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 import messages from '../messages';
 import SubsectionTitleCell from './SubsectionTitleCell';
 import { showUngradedAssignments } from '../../utils';
 
 const DetailedGradesTable = () => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     sectionScores,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const isLocaleRtl = isRtl(getLocale());
   return (

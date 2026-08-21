@@ -1,7 +1,6 @@
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useContextId } from '../../../../data/hooks';
 
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 
 import CourseGradeFooter from './CourseGradeFooter';
 import CourseGradeHeader from './CourseGradeHeader';
@@ -12,7 +11,6 @@ import messages from '../messages';
 
 const CourseGrade = () => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     creditCourseRequirements,
@@ -21,7 +19,7 @@ const CourseGrade = () => {
     gradingPolicy: {
       gradeRange,
     },
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const passingGrade = Number((Math.min(...Object.values(gradeRange)) * 100).toFixed(0));
 

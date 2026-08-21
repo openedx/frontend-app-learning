@@ -1,6 +1,3 @@
-export {
-  fetchProgressTab,
-  deprecatedSaveCourseGoal,
-} from './thunks';
+export { deprecatedSaveCourseGoal } from './thunks';
 
 export { reducer } from './slice';

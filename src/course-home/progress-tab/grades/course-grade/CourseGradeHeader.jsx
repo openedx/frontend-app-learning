@@ -3,21 +3,22 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Locked } from '@openedx/paragon/icons';
 import { Button, Icon } from '@openedx/paragon';
-import { useContextId } from '../../../../data/hooks';
+import { useParams } from 'react-router-dom';
 
 import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 import messages from '../messages';
 
 const CourseGradeHeader = () => {
   const intl = useIntl();
-  const courseId = useContextId();
+  const { courseId } = useParams();
   const {
     org,
   } = useModel('courseHomeMeta', courseId);
   const {
     verifiedMode,
     gradesFeatureIsFullyLocked,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const eventProperties = {
     org_key: org,

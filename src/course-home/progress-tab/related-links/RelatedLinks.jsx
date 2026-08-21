@@ -2,14 +2,14 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@openedx/paragon';
-import { useContextId } from '../../../data/hooks';
+import { useParams } from 'react-router-dom';
 
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 
 const RelatedLinks = () => {
   const intl = useIntl();
-  const courseId = useContextId();
+  const { courseId } = useParams();
   const {
     org,
     tabs,

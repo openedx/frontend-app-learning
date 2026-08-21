@@ -5,17 +5,18 @@ import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform
 
 import { Button, Card } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
-import { useContextId } from '../../../data/hooks';
+import { useParams } from 'react-router-dom';
 import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import { useRequestCert } from '../../data/apiHooks';
+import { useProgressData } from '../hooks';
 import messages from './messages';
 import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertificateStatusSlot';
 
 const CertificateStatus = () => {
   const intl = useIntl();
-  const courseId = useContextId();
+  const { courseId } = useParams();
 
   const {
     entranceExamData,
@@ -39,7 +40,7 @@ const CertificateStatus = () => {
     userHasPassingGrade,
     verificationData,
     verifiedMode,
-  } = useModel('progress', courseId);
+  } = useProgressData();
   const {
     certificateAvailableDate,
   } = certificateData || {};
