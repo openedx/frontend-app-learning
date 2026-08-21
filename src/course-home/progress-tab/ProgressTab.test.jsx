@@ -7,7 +7,7 @@ import { breakpoints } from '@openedx/paragon';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act,
+  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act, waitFor,
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
 import * as thunks from '../data/thunks';
@@ -1020,6 +1020,10 @@ describe('Progress Tab', () => {
           is_staff: false,
           certificate_status_variant: 'requesting',
         });
+
+        await waitFor(() => expect(
+          axiosMock.history.post.some(req => req.url.includes('generate_user_cert')),
+        ).toBe(true));
       });
 
       it('Displays verify identity link', async () => {

@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { useToast, ToastContent } from '@src/generic/ToastContext';
 import {
-  executePostFromPostEvent, getCourseHomeCourseMetadata, getDatesTabData, postCourseDeadlines,
+  executePostFromPostEvent, getCourseHomeCourseMetadata, getDatesTabData, postCourseDeadlines, postRequestCert,
 } from './api';
 import { courseHomeQueryKeys } from './queryKeys';
 
@@ -59,4 +59,9 @@ export const useDatesTabData = (courseId: string) => useQuery({
   queryKey: courseHomeQueryKeys.datesTab(courseId),
   queryFn: () => getDatesTabData(courseId),
   meta: { modelType: 'dates', courseId },
+});
+
+export const useRequestCert = () => useMutation({
+  mutationFn: ({ courseId }: { courseId: string }) => postRequestCert(courseId),
+  onError: (error) => logError(error),
 });

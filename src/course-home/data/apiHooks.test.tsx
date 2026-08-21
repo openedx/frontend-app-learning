@@ -6,7 +6,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 import { initializeMockApp } from '../../setupTest';
 import { ToastProvider, useToast } from '../../generic/ToastContext';
-import { useResetDeadlines, usePostEvent } from './apiHooks';
+import { useResetDeadlines, usePostEvent, useRequestCert } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
 
@@ -111,6 +111,32 @@ describe('course-home apiHooks', () => {
           postData: { url: postUrl, bodyParams: { courseId: 'course-1' } },
           researchEventData: { location: 'unit' },
         }).catch(() => {});
+      });
+
+      await waitFor(() => expect(loggingService.logError).toHaveBeenCalled());
+    });
+  });
+
+  describe('useRequestCert', () => {
+    const certUrl = `${getConfig().LMS_BASE_URL}/courses/course-1/generate_user_cert`;
+
+    it('POSTs to the request-cert url', async () => {
+      axiosMock.onPost(certUrl).reply(200);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useRequestCert(), { wrapper });
+
+      await act(async () => { await result.current.mutateAsync({ courseId: 'course-1' }); });
+
+      expect(axiosMock.history.post[0].url).toEqual(certUrl);
+    });
+
+    it('logs the error when the POST fails', async () => {
+      axiosMock.onPost(certUrl).reply(500);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useRequestCert(), { wrapper });
+
+      await act(async () => {
+        await result.current.mutateAsync({ courseId: 'course-1' }).catch(() => {});
       });
 
       await waitFor(() => expect(loggingService.logError).toHaveBeenCalled());

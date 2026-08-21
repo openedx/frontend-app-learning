@@ -4,6 +4,7 @@ import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { fetchCourse } from '../../data';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
@@ -137,6 +138,15 @@ describe('Course Exit Pages', () => {
       setMetadata({ certificate_data: { cert_status: 'requesting' } });
       await fetchAndRender(<CourseCelebration />);
       expect(screen.getByRole('button', { name: 'Request certificate' })).toBeInTheDocument();
+    });
+
+    it('requests the certificate when the request certificate link is clicked', async () => {
+      setMetadata({ certificate_data: { cert_status: 'requesting' } });
+      await fetchAndRender(<CourseCelebration />);
+      await userEvent.click(screen.getByRole('button', { name: 'Request certificate' }));
+      await waitFor(() => expect(
+        axiosMock.history.post.some(req => req.url.includes('generate_user_cert')),
+      ).toBe(true));
     });
 
     it('Displays social share icons', async () => {
