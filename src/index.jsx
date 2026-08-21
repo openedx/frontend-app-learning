@@ -10,7 +10,7 @@ import { createRoot } from 'react-dom/client';
 import { Routes, Route } from 'react-router-dom';
 
 import { Helmet } from 'react-helmet';
-import { fetchDiscussionTab, fetchLiveTab } from './course-home/data/thunks';
+import { fetchLiveTab } from './course-home/data/thunks';
 import DiscussionTab from './course-home/discussion-tab/DiscussionTab';
 
 import messages from './i18n';
@@ -100,9 +100,7 @@ subscribe(APP_READY, () => {
                         path={DECODE_ROUTES.DISCUSSION}
                         element={(
                           <DecodePageRoute>
-                            <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
-                              <DiscussionTab />
-                            </TabContainer>
+                            <DiscussionTab />
                           </DecodePageRoute>
                       )}
                       />

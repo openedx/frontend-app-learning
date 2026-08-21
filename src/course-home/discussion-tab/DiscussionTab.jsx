@@ -1,12 +1,12 @@
 import { getConfig } from '@edx/frontend-platform';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams, generatePath, useNavigate } from 'react-router-dom';
 import { useIFrameHeight, useIFramePluginEvents } from '../../generic/hooks';
+import { useCourseHomeMeta } from '../data/apiHooks';
+import { TabWithTimer } from '../../tab-page';
 
-const DiscussionTab = () => {
-  const { courseId } = useSelector(state => state.courseHome);
-  const { path } = useParams();
+const DiscussionTabContent = () => {
+  const { courseId, path } = useParams();
   const [originalPath] = useState(path);
   const navigate = useNavigate();
 
@@ -26,6 +26,22 @@ const DiscussionTab = () => {
       style={{ minHeight: '60rem' }}
       title="discussion"
     />
+  );
+};
+
+const DiscussionTab = () => {
+  const { courseId } = useParams();
+
+  const metadataQuery = useCourseHomeMeta(courseId);
+
+  return (
+    <TabWithTimer
+      activeTabSlug="discussion"
+      courseId={courseId}
+      courseStatus={{ metadataQuery }}
+    >
+      <DiscussionTabContent />
+    </TabWithTimer>
   );
 };
 
