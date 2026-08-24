@@ -39,7 +39,7 @@ const useIFrameBehavior = ({
   const activeSequenceId = useSelector(getSequenceId);
   const navigate = useNavigate();
   const activeSequence = useModel('sequences', activeSequenceId);
-  const activeUnitId = activeSequence.unitIds.length > 0
+  const activeUnitId = activeSequence.unitIds?.length > 0
     ? activeSequence.unitIds[activeSequence.activeUnitIndex] : null;
   const { isLastUnit, nextLink } = useSequenceNavigationMetadata(activeSequenceId, activeUnitId);
 

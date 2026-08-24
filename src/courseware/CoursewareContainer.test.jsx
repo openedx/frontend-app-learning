@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import {
   BrowserRouter, MemoryRouter, Route, Routes,
@@ -38,11 +39,17 @@ import { getSequenceForUnitDeprecatedUrl } from './data/api';
 // proves that the component is rendered and receives the correct props.  We probably COULD render
 // Unit.jsx and its iframe in this test, but it's already complex enough.
 
+let mockRenderUnitNav = false;
 jest.mock(
   './course/sequence/Unit',
   // eslint-disable-next-line react/prop-types
-  () => function ({ courseId, id }) {
-    return <div className="fake-unit">Unit Contents {courseId} {id}</div>;
+  () => function ({ courseId, id, renderUnitNavigation }) {
+    return (
+      <div className="fake-unit">
+        Unit Contents {courseId} {id}
+        {mockRenderUnitNav && renderUnitNavigation ? renderUnitNavigation() : null}
+      </div>
+    );
   },
 );
 
@@ -111,6 +118,10 @@ describe('CoursewareContainer', () => {
         </QueryClientProvider>
       </AppProvider>
     );
+  });
+
+  afterEach(() => {
+    mockRenderUnitNav = false;
   });
 
   function setUpMockRequests(options = {}) {
@@ -391,6 +402,50 @@ describe('CoursewareContainer', () => {
 
         expect(screen.getByTestId('org.openedx.frontend.learning.sequence_navigation.v1')).toBeInTheDocument();
       });
+
+      it('marks the current unit complete when navigating to the next unit', async () => {
+        const completionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceBlock.id}/handler/get_completion`;
+        axiosMock.onPost(completionUrl).reply(200, { complete: true });
+
+        mockRenderUnitNav = true;
+        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
+        await loadContainer();
+
+        const user = userEvent.setup();
+        await user.click(screen.getByRole('link', { name: /next/i }));
+
+        await waitFor(() => {
+          expect(axiosMock.history.post.filter(request => request.url === completionUrl)).toHaveLength(1);
+        });
+      });
+    });
+  });
+
+  describe('when the course has no sections', () => {
+    it('does not resume-redirect (there is no first sequence to pick)', async () => {
+      global.scrollTo = jest.fn();
+      const courseId = defaultCourseId;
+      const emptyCourseBlocks = {
+        courseId,
+        title: defaultCourseHomeMetadata.title,
+        blocks: {
+          [courseId]: {
+            id: courseId,
+            type: 'course',
+            display_name: defaultCourseHomeMetadata.title,
+            children: [],
+          },
+        },
+        root: courseId,
+      };
+      setUpMockRequests({ courseBlocks: emptyCourseBlocks });
+      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {});
+
+      history.push(`/course/${courseId}`);
+      const container = await loadContainer();
+
+      expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+      expect(container.querySelector('.fake-unit')).toBeNull();
     });
   });
 
