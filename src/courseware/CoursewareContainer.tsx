@@ -13,6 +13,8 @@ import {
   saveSequencePosition,
 } from './data';
 import { TabPage } from '../tab-page';
+import type { CourseStatus } from '../tab-page/TabPage';
+import type { RootState } from '../store';
 
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
@@ -221,20 +223,20 @@ const CoursewareContainer = () => {
   } = useParams();
   const isPreview = pathname.startsWith('/preview');
 
-  const courseId = useSelector((state) => state.courseware.courseId);
-  const sequenceId = useSelector((state) => state.courseware.sequenceId);
-  const courseStatus = useSelector((state) => state.courseware.courseStatus);
-  const sequenceStatus = useSelector((state) => state.courseware.sequenceStatus);
-  const sequenceMightBeUnit = useSelector((state) => state.courseware.sequenceMightBeUnit);
+  const courseId = useSelector((state: RootState) => state.courseware.courseId);
+  const sequenceId = useSelector((state: RootState) => state.courseware.sequenceId);
+  const courseStatus = useSelector((state: RootState) => state.courseware.courseStatus) as CourseStatus;
+  const sequenceStatus = useSelector((state: RootState) => state.courseware.sequenceStatus);
+  const sequenceMightBeUnit = useSelector((state: RootState) => state.courseware.sequenceMightBeUnit);
   const course = useSelector(currentCourseSelector);
   const sequence = useSelector(currentSequenceSelector);
   const nextSequence = useSelector(nextSequenceSelector);
   const firstSequenceId = useSelector(firstSequenceIdSelector);
   const sectionViaSequenceId = useSelector(sectionViaSequenceIdSelector);
 
-  const latest = useRef();
+  const latest = useRef<any>();
 
-  const guards = useRef();
+  const guards = useRef<any>();
   if (!guards.current) {
     guards.current = {
       checkFetchCourse: memoize((id) => {
@@ -392,7 +394,7 @@ const CoursewareContainer = () => {
   return (
     <TabPage
       activeTabSlug="courseware"
-      courseId={courseId}
+      courseId={courseId ?? undefined}
       unitId={routeUnitId}
       courseStatus={courseStatus}
     >
