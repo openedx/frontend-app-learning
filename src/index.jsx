@@ -10,7 +10,6 @@ import { createRoot } from 'react-dom/client';
 import { Routes, Route } from 'react-router-dom';
 
 import { Helmet } from 'react-helmet';
-import { fetchLiveTab } from './course-home/data/thunks';
 import DiscussionTab from './course-home/discussion-tab/DiscussionTab';
 
 import messages from './i18n';
@@ -82,9 +81,7 @@ subscribe(APP_READY, () => {
                         path={DECODE_ROUTES.LIVE}
                         element={(
                           <DecodePageRoute>
-                            <TabContainer tab="lti_live" fetch={fetchLiveTab} slice="courseHome">
-                              <LiveTab />
-                            </TabContainer>
+                            <LiveTab />
                           </DecodePageRoute>
                       )}
                       />

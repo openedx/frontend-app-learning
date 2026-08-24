@@ -6,6 +6,7 @@ import {
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
   getDatesTabData,
+  getLiveTabIframe,
   getOutlineTabData,
   getProgressTabData,
   postCourseDeadlines,
@@ -73,6 +74,12 @@ export const useOutlineTabData = (courseId: string) => useQuery({
   queryKey: courseHomeQueryKeys.outlineTab(courseId),
   queryFn: () => getOutlineTabData(courseId),
   meta: { modelType: 'outline', courseId },
+});
+
+export const useLiveTabData = (courseId: string) => useQuery({
+  queryKey: courseHomeQueryKeys.liveTab(courseId),
+  queryFn: () => getLiveTabIframe(courseId),
+  refetchOnWindowFocus: false,
 });
 
 export const useProgressTabData = (courseId: string, targetUserId?: string) => useQuery({
