@@ -62,9 +62,10 @@ describe('CoursewareSearchToggle', () => {
   });
 
   it('should not render a visually-hidden duplicate "Search" label', async () => {
-    await act(async () => renderComponent(placeholderText, onSubmitHandlerMock, onChangeHandlerMock, 'external-id'));
+    let container;
+    await act(async () => { container = renderComponent(placeholderText, onSubmitHandlerMock, onChangeHandlerMock, 'external-id'); });
     // Guards against re-introducing <SearchField.Label />, which renders an sr-only duplicate label.
-    expect(document.querySelector('label .sr-only')).toBeNull();
+    expect(container.querySelector('label.sr-only, label .sr-only')).toBeNull();
   });
 
   afterEach(() => {
