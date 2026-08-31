@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { NonRetryableError } = require('../../data/http-error');
 
 const endpointSchema = Joi.object({
   took: Joi.number().required(),
@@ -24,7 +25,7 @@ export default function mapSearchResponse(response, searchKeywords = '') {
   const { error, value: data } = endpointSchema.validate(response);
 
   if (error) {
-    throw new Error('Error in server response:', error);
+    throw new NonRetryableError('Error in server response:', { cause: error });
   }
 
   const keywords = searchKeywords ? searchKeywords.toLowerCase().split(' ') : [];

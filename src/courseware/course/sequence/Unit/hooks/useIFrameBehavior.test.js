@@ -1,11 +1,11 @@
-import { useDispatch } from 'react-redux';
 import { renderHook } from '@testing-library/react';
 
 import { logError } from '@edx/frontend-platform/logging';
 
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { fetchCourse } from '@src/courseware/data';
+import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
+import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
 import { useEventListener } from '@src/generic/hooks';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
 
@@ -15,6 +15,7 @@ import useIFrameBehavior, { iframeBehaviorState } from './useIFrameBehavior';
 
 const mockNavigate = jest.fn();
 const mockMutate = jest.fn();
+const mockInvalidateQueries = jest.fn();
 
 jest.mock('@edx/frontend-platform', () => ({
   ...jest.requireActual('@edx/frontend-platform'),
@@ -29,7 +30,6 @@ jest.mock('react', () => ({
 }));
 
 jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(),
   useSelector: jest.fn(),
 }));
 
@@ -37,8 +37,9 @@ jest.mock('@edx/frontend-platform/logging', () => ({
   logError: jest.fn(),
 }));
 
-jest.mock('@src/courseware/data', () => ({
-  fetchCourse: jest.fn(),
+jest.mock('@tanstack/react-query', () => ({
+  ...jest.requireActual('@tanstack/react-query'),
+  useQueryClient: () => ({ invalidateQueries: mockInvalidateQueries }),
 }));
 jest.mock('@src/course-home/data/thunks', () => ({
   eventTypes: { POST_EVENT: 'post_event' },
@@ -71,9 +72,6 @@ const testIFrameHeight = 42;
 
 const config = { LMS_BASE_URL: 'test-base-url' };
 getConfig.mockReturnValue(config);
-
-const dispatch = jest.fn();
-useDispatch.mockReturnValue(dispatch);
 
 const postMessage = jest.fn();
 const frame = {
@@ -351,9 +349,8 @@ describe('useIFrameBehavior hook', () => {
         result.current.handleIFrameLoad();
         expect(sendTrackEvent).not.toHaveBeenCalled();
       });
-      it('registers an event handler to process fetchCourse events.', () => {
+      it('invalidates the courseware queries on a post event.', () => {
         mockState(defaultStateVals);
-        fetchCourse.mockReturnValue('fetch-course-action');
         const { result } = renderHook(() => useIFrameBehavior(props));
         result.current.handleIFrameLoad();
         const event = {
@@ -375,8 +372,9 @@ describe('useIFrameBehavior hook', () => {
 
         const { onSuccess } = mockMutate.mock.calls[0][1];
         onSuccess();
-        expect(fetchCourse).toHaveBeenCalledWith('course-1');
-        expect(dispatch).toHaveBeenCalledWith('fetch-course-action');
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: coursewareQueryKeys.metadata('course-1') });
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: coursewareQueryKeys.outline('course-1') });
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: courseHomeQueryKeys.metadata('course-1', 'courseware') });
       });
       it('updates initial iframe visibility on load', () => {
         const { result } = renderHook(() => useIFrameBehavior(props));

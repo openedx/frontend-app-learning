@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 
-import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 import CourseCelebration from './CourseCelebration';
 import CourseInProgress from './CourseInProgress';
@@ -11,9 +10,13 @@ import { postUnsubscribeFromGoalReminders } from './data/api';
 import { CourseExitViewCoursesPluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
 import { useModel } from '../../../generic/model-store';
+import { TabWithTimer } from '../../../tab-page';
+import { useCoursewareMetadata, useCoursewareOutline } from '../../data/apiHooks';
+import { useCourseExitStatusBridge } from '../../data/statusBridge';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
-const CourseExit = () => {
-  const { courseId } = useSelector(state => state.courseware);
+const CourseExitContent = () => {
+  const { courseId } = useParams();
   const {
     certificateData,
     courseExitPageIsActive,
@@ -63,6 +66,24 @@ const CourseExit = () => {
       <CourseExitViewCoursesPluginSlot />
       {body}
     </>
+  );
+};
+
+const CourseExit = () => {
+  const { courseId } = useParams();
+  const metadataQuery = useCoursewareMetadata(courseId);
+  const courseHomeMetaQuery = useCourseHomeMeta(courseId, 'courseware');
+  useCoursewareOutline(courseId);
+  useCourseExitStatusBridge(courseId, metadataQuery, courseHomeMetaQuery);
+
+  return (
+    <TabWithTimer
+      activeTabSlug="courseware"
+      courseId={courseId}
+      courseStatus={{ metadataQuery: courseHomeMetaQuery, tabDataQuery: metadataQuery }}
+    >
+      <CourseExitContent />
+    </TabWithTimer>
   );
 };
 

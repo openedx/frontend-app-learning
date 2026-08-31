@@ -14,7 +14,7 @@ const CourseAccessErrorPage = () => {
   const { courseId } = useParams();
 
   const activeEnterpriseAlert = useActiveEnterpriseAlert(courseId);
-  const metadataQuery = useCourseHomeMeta(courseId);
+  const metadataQuery = useCourseHomeMeta(courseId, 'outline');
 
   if (metadataQuery.isPending) {
     return (

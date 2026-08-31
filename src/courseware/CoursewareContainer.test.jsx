@@ -101,7 +101,7 @@ describe('CoursewareContainer', () => {
 
     component = (
       <AppProvider store={store} wrapWithRouter={false}>
-        <QueryClientProvider client={createTestQueryClient()}>
+        <QueryClientProvider client={createTestQueryClient(store)}>
           <UserMessagesProvider>
             <ToastProvider>
               <Routes>

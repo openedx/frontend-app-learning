@@ -1,6 +1,7 @@
 import { logError } from '@edx/frontend-platform/logging';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
+import type { RequestError } from '@src/data/http-error';
 import { useToast, ToastContent } from '@src/generic/ToastContext';
 import {
   executePostFromPostEvent,
@@ -58,9 +59,15 @@ export const usePostEvent = () => {
   });
 };
 
-export const useCourseHomeMeta = (courseId: string) => useQuery({
-  queryKey: courseHomeQueryKeys.metadata(courseId),
-  queryFn: () => getCourseHomeCourseMetadata(courseId, 'outline'),
+// Typed to only what we read off this query, not the whole (untyped) endpoint shape;
+// other course-home fields are read via `useModel`/the bridge (until #1977).
+export const useCourseHomeMeta = (courseId: string | undefined, rootSlug: string) => useQuery<
+{ courseAccess?: { hasAccess: boolean } },
+RequestError
+>({
+  queryKey: courseHomeQueryKeys.metadata(courseId!, rootSlug),
+  queryFn: () => getCourseHomeCourseMetadata(courseId, rootSlug),
+  enabled: !!courseId,
   meta: { modelType: 'courseHomeMeta', courseId },
 });
 
@@ -79,7 +86,6 @@ export const useOutlineTabData = (courseId: string) => useQuery({
 export const useLiveTabData = (courseId: string) => useQuery({
   queryKey: courseHomeQueryKeys.liveTab(courseId),
   queryFn: () => getLiveTabIframe(courseId),
-  refetchOnWindowFocus: false,
 });
 
 export const useProgressTabData = (courseId: string, targetUserId?: string) => useQuery({

@@ -272,17 +272,19 @@ describe('Courseware Tour', () => {
 
     component = (
       <AppProvider store={store}>
-        <UserMessagesProvider>
-          <Routes>
-            {DECODE_ROUTES.COURSEWARE.map((route) => (
-              <Route
-                key={route}
-                path={route}
-                element={<CoursewareContainer />}
-              />
-            ))}
-          </Routes>
-        </UserMessagesProvider>
+        <QueryClientProvider client={createTestQueryClient(store)}>
+          <UserMessagesProvider>
+            <Routes>
+              {DECODE_ROUTES.COURSEWARE.map((route) => (
+                <Route
+                  key={route}
+                  path={route}
+                  element={<CoursewareContainer />}
+                />
+              ))}
+            </Routes>
+          </UserMessagesProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
   });
