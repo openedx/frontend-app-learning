@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { PageWrap } from '@edx/frontend-platform/react';
 import React from 'react';
 import {
-  generatePath, useMatch, Navigate,
+  generatePath, matchPath, useLocation, Navigate,
 } from 'react-router-dom';
 
 import { DECODE_ROUTES } from '../constants';
@@ -20,10 +20,11 @@ export const decodeUrl = (encodedUrl) => {
 };
 
 const DecodePageRoute = ({ children }) => {
+  const location = useLocation();
   let computedMatch = null;
 
   ROUTES.forEach((route) => {
-    const matchedRoute = useMatch(route);
+    const matchedRoute = matchPath(route, location.pathname);
     if (matchedRoute) { computedMatch = matchedRoute; }
   });
 
