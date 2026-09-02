@@ -1,3 +1,4 @@
+import { getConfig } from '@edx/frontend-platform';
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import { useProgressData } from '../hooks';
 
@@ -17,10 +18,14 @@ const CompletionDonutChart = () => {
     },
   } = useProgressData();
 
+  const precision = Number(getConfig().COMPLETION_PERCENTAGE_PRECISION) || 0;
+  const toPercentage = (count, total) => Number(((count / total) * 100).toFixed(precision));
+  const formatPercentage = (percentage) => intl.formatNumber(percentage, { maximumFractionDigits: precision });
+
   const numTotalUnits = completeCount + incompleteCount + lockedCount;
-  const completePercentage = completeCount ? Number(((completeCount / numTotalUnits) * 100).toFixed(0)) : 0;
-  const lockedPercentage = lockedCount ? Number(((lockedCount / numTotalUnits) * 100).toFixed(0)) : 0;
-  const incompletePercentage = 100 - completePercentage - lockedPercentage;
+  const completePercentage = completeCount ? toPercentage(completeCount, numTotalUnits) : 0;
+  const lockedPercentage = lockedCount ? toPercentage(lockedCount, numTotalUnits) : 0;
+  const incompletePercentage = Number((100 - completePercentage - lockedPercentage).toFixed(precision));
 
   const isLocaleRtl = isRtl(getLocale());
 
@@ -33,7 +38,7 @@ const CompletionDonutChart = () => {
         <circle className="donut-hole" fill="#fff" cx="21" cy="21" r="15.91549430918954" />
         <g className="donut-chart-text">
           <text x="50%" y="50%" className="donut-chart-number">
-            {completePercentage}{isLocaleRtl && '\u200f'}%
+            {formatPercentage(completePercentage)}{isLocaleRtl && '\u200f'}%
           </text>
           <text x="50%" y="50%" className="donut-chart-label">
             {intl.formatMessage(messages.donutLabel)}
@@ -44,11 +49,11 @@ const CompletionDonutChart = () => {
         <CompleteDonutSegment completePercentage={completePercentage} lockedPercentage={lockedPercentage} />
       </svg>
       <div className="sr-only">
-        {intl.formatMessage(messages.percentComplete, { percent: completePercentage })}
-        {intl.formatMessage(messages.percentIncomplete, { percent: incompletePercentage })}
+        {intl.formatMessage(messages.percentComplete, { percent: formatPercentage(completePercentage) })}
+        {intl.formatMessage(messages.percentIncomplete, { percent: formatPercentage(incompletePercentage) })}
         {lockedPercentage > 0 && (
           <>
-            {intl.formatMessage(messages.percentLocked, { percent: lockedPercentage })}
+            {intl.formatMessage(messages.percentLocked, { percent: formatPercentage(lockedPercentage) })}
           </>
         )}
       </div>
