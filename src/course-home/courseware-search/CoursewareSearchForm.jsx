@@ -8,6 +8,7 @@ const CoursewareSearchForm = ({
   onSubmit,
   onChange,
   placeholder,
+  labelledBy,
 }) => {
   const { formatMessage } = useIntl();
 
@@ -25,8 +26,8 @@ const CoursewareSearchForm = ({
       }}
     >
       <div className="pgn__searchfield_wrapper" data-testid="courseware-search-form">
-        <SearchField.Label />
-        <SearchField.Input placeholder={placeholder} autoFocus />
+        {/* The visible "Search this course" heading is the accessible label via aria-labelledby. */}
+        <SearchField.Input placeholder={placeholder} aria-labelledby={labelledBy} autoFocus />
         <SearchField.ClearButton />
       </div>
       <SearchField.SubmitButton
@@ -43,6 +44,7 @@ CoursewareSearchForm.propTypes = {
   onSubmit: PropTypes.func,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
+  labelledBy: PropTypes.string,
 };
 
 CoursewareSearchForm.defaultProps = {
@@ -50,6 +52,7 @@ CoursewareSearchForm.defaultProps = {
   onSubmit: undefined,
   onChange: undefined,
   placeholder: undefined,
+  labelledBy: undefined,
 };
 
 export default CoursewareSearchForm;
