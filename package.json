@@ -51,7 +51,7 @@
     "buffer": "^6.0.3",
     "classnames": "2.5.1",
     "copy-webpack-plugin": "^14.0.0",
-    "joi": "^17.11.0",
+    "joi": "^18.0.0",
     "js-cookie": "3.0.8",
     "lodash": "^4.17.21",
     "lodash.camelcase": "4.3.0",
