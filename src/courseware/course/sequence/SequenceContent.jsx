@@ -24,6 +24,19 @@ const SequenceContent = ({
   // Go back to the top of the page whenever the unit or sequence changes.
   useEffect(() => {
     global.scrollTo(0, 0);
+    // Move focus after every unit navigation so keyboard and screen-reader users
+    // are not left stranded on the next/previous button that triggered it.
+    // Targets div.app-container (the MFE root), which is always present regardless of
+    // plugin slot customization.
+    const mainContainer = global.document.querySelector('div.app-container');
+    if (mainContainer) {
+      if (!mainContainer.hasAttribute('tabindex')) {
+        mainContainer.setAttribute('tabindex', '-1');
+      }
+      mainContainer.focus();
+    } else {
+      global.document.body.focus();
+    }
   }, [sequenceId, unitId]);
 
   if (gated) {
