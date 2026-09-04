@@ -1,4 +1,5 @@
 import { MemoryRouter } from 'react-router-dom';
+import { Routes, Route } from 'react-router';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AppProvider } from '@edx/frontend-platform/react';
@@ -18,6 +19,7 @@ describe('<CourseOutlineTray />', () => {
   let unit;
   let unitId;
   let courseId;
+  let sequenceId;
   let mockData;
 
   const initTestStore = async (options) => {
@@ -27,8 +29,8 @@ describe('<CourseOutlineTray />', () => {
     [unitId] = Object.keys(state.models.units);
 
     if (Object.keys(state.courseware.courseOutline).length) {
-      const [activeSequenceId] = Object.keys(state.courseware.courseOutline.sequences);
-      sequence = state.courseware.courseOutline.sequences[activeSequenceId];
+      [sequenceId] = Object.keys(state.courseware.courseOutline.sequences);
+      sequence = state.courseware.courseOutline.sequences[sequenceId];
       const activeSectionId = Object.keys(state.courseware.courseOutline.sections)[0];
       section = state.courseware.courseOutline.sections[activeSectionId];
       [unitId] = sequence.unitIds;
@@ -36,20 +38,21 @@ describe('<CourseOutlineTray />', () => {
     }
 
     mockData = {
-      courseId,
-      unitId,
       currentSidebar: outlineSidebarId,
       toggleSidebar: jest.fn(),
     };
   };
 
   function renderWithProvider(testData = {}) {
+    const path = `/course/${courseId}/${sequenceId}/${unitId}`;
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
         <IntlProvider locale="en">
           <SidebarContext.Provider value={{ ...mockData, ...testData }}>
-            <MemoryRouter>
-              <CourseOutlineTray />
+            <MemoryRouter initialEntries={[path]}>
+              <Routes>
+                <Route path="/course/:courseId/:sequenceId/:unitId" element={<CourseOutlineTray />} />
+              </Routes>
             </MemoryRouter>
           </SidebarContext.Provider>
         </IntlProvider>
@@ -123,5 +126,15 @@ describe('<CourseOutlineTray />', () => {
 
     await user.click(screen.getByRole('button', { name: new RegExp(`${section.title} , ${courseOutlineMessages.incompleteSection.defaultMessage}`) }));
     expect(screen.queryByRole('button', { name: section.title })).toBeInTheDocument();
+  });
+
+  it('highlights the unit matching teh current unitId', async () => {
+    await initTestStore();
+    renderWithProvider();
+    // Check that there is only one link with the highlight class and it's
+    // the one with the active unit title.
+    const highlightedItems = screen.getAllByRole('listitem').filter(li => li.classList.contains('bg-info-100'));
+    expect(highlightedItems).toHaveLength(1);
+    expect(highlightedItems[0]).toHaveTextContent(unit.title);
   });
 });
