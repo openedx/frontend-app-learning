@@ -48,4 +48,16 @@ describe('CoursewareRedirectLandingPage', () => {
 
     expect(redirectUrl).toHaveBeenCalledWith('http://localhost:8734');
   });
+
+  it('Redirects to the embargo blocked-message page', () => {
+    render(
+      <Router initialEntries={['/embargo']}>
+        <CoursewareRedirectLandingPage />
+      </Router>,
+    );
+
+    // generatePath() strips the trailing slash for a static pattern; Django's APPEND_SLASH
+    // restores it with a redirect, one harmless extra hop on a full-page navigation.
+    expect(redirectUrl).toHaveBeenCalledWith('http://localhost:18000/embargo/blocked-message/courseware/default');
+  });
 });
