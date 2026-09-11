@@ -31,12 +31,14 @@ const UnitLinkWrapper: React.FC<Props> = ({
   const isPreview = pathname.startsWith('/preview');
   const baseUrl = `/course/${courseId}/${sequenceId}/${id}`;
   const link = isPreview ? `/preview${baseUrl}` : baseUrl;
+  const isActiveUnit = id === activeUnitId;
 
   return (
     <Link
       to={link}
       className="row w-100 m-0 d-flex align-items-center text-gray-700"
       onClick={() => handleUnitClick({ sequenceId, activeUnitId, id })}
+      aria-current={isActiveUnit ? 'page' : undefined}
     >
       {children}
     </Link>
