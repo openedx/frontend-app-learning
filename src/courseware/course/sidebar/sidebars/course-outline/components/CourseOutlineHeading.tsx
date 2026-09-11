@@ -45,6 +45,8 @@ export const CourseOutlineHeading = ({
           className="outline-sidebar-toggle-btn flex-shrink-0 text-dark bg-light-200"
           iconAs={MenuOpenIcon}
           onClick={onToggleCollapse}
+          aria-expanded
+          aria-controls="outline-sidebar-outline"
         />
       )}
     </div>
