@@ -7,12 +7,11 @@ import { defaultMemoize as memoize } from 'reselect';
 import {
   checkBlockCompletion,
   fetchCourse,
-  fetchSequence,
   getResumeBlock,
   getSequenceForUnitDeprecated,
   saveSequencePosition,
 } from './data';
-import { useCourseStatusBridge } from './data/statusBridge';
+import { useCourseStatusBridge, useSequenceStatusBridge } from './data/statusBridge';
 import { TabPage } from '../tab-page';
 import type { CourseStatus } from '../tab-page/TabPage';
 import type { RootState } from '../store';
@@ -236,6 +235,7 @@ const CoursewareContainer = () => {
   const sectionViaSequenceId = useSelector(sectionViaSequenceIdSelector);
 
   useCourseStatusBridge(routeCourseId);
+  useSequenceStatusBridge(routeSequenceId, isPreview);
 
   const latest = useRef<any>();
 
@@ -244,11 +244,6 @@ const CoursewareContainer = () => {
     guards.current = {
       checkFetchCourse: memoize((id) => {
         dispatch(fetchCourse(id));
-      }),
-      checkFetchSequence: memoize((id) => {
-        if (id) {
-          dispatch(fetchSequence(id, latest.current.isPreview));
-        }
       }),
       checkSaveSequencePosition: memoize((unitId) => {
         const {
@@ -271,13 +266,11 @@ const CoursewareContainer = () => {
       sequenceId,
       sequenceStatus,
       sequence,
-      isPreview,
     };
-    const { checkFetchCourse, checkFetchSequence, checkSaveSequencePosition } = guards.current;
+    const { checkFetchCourse, checkSaveSequencePosition } = guards.current;
 
-    // Load data whenever the course or sequence ID changes.
+    // Load course data whenever the course ID changes.
     checkFetchCourse(routeCourseId);
-    checkFetchSequence(routeSequenceId);
 
     // Check if we should save our sequence position.  Only do this when the route unit ID changes.
     checkSaveSequencePosition(routeUnitId);

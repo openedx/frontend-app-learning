@@ -6,14 +6,10 @@ import {
   getCourseOutline,
   getCourseTopics,
   getCoursewareOutlineSidebarToggles,
-  getSequenceMetadata,
   postIntegritySignature,
   postSequencePosition,
 } from './api';
 import {
-  fetchSequenceFailure,
-  fetchSequenceRequest,
-  fetchSequenceSuccess,
   fetchCourseOutlineRequest,
   fetchCourseOutlineSuccess,
   fetchCourseOutlineFailure,
@@ -37,44 +33,6 @@ export function fetchCourse(courseId) {
       dispatch(setCoursewareOutlineSidebarToggles({ enableCompletionTracking }));
     } catch (error) {
       logError(error);
-    }
-  };
-}
-
-export function fetchSequence(sequenceId, isPreview) {
-  return async (dispatch) => {
-    dispatch(fetchSequenceRequest({ sequenceId }));
-    try {
-      const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
-      if (sequence.blockType !== 'sequential') {
-        // Some other block types (particularly 'chapter') can be returned
-        // by this API. We want to error in that case, since downstream
-        // courseware code is written to render Sequences of Units.
-        logError(
-          `Requested sequence '${sequenceId}' `
-          + `has block type '${sequence.blockType}'; expected block type 'sequential'.`,
-        );
-        dispatch(fetchSequenceFailure({ sequenceId }));
-      } else {
-        dispatch(updateModel({
-          modelType: 'sequences',
-          model: sequence,
-        }));
-        dispatch(updateModels({
-          modelType: 'units',
-          models: units,
-        }));
-        dispatch(fetchSequenceSuccess({ sequenceId }));
-      }
-    } catch (error) {
-      // Some errors are expected - for example, CoursewareContainer may request sequence metadata for a unit and rely
-      // on the request failing to notice that it actually does have a unit (mostly so it doesn't have to know anything
-      // about the opaque key structure). In such cases, the backend gives us a 422.
-      const sequenceMightBeUnit = error?.response?.status === 422;
-      if (!sequenceMightBeUnit) {
-        logError(error);
-      }
-      dispatch(fetchSequenceFailure({ sequenceId, sequenceMightBeUnit }));
     }
   };
 }
