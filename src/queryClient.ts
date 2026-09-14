@@ -5,8 +5,14 @@ import { Store } from 'redux';
 import { bridgeToModelStore, type ModelStoreMeta } from './data/modelStoreBridge';
 import { getResponseStatus, isNonRetryable } from './data/http-error';
 
-const loggers = { error: logError, info: logInfo };
-export type LogLevel = keyof typeof loggers;
+// frontend-platform doesn't type its log functions, so name the shape here.
+type Logger = (error: string | Error) => void;
+export type LogLevel = 'error' | 'info' | 'silent';
+const loggers: Record<LogLevel, Logger> = {
+  error: logError,
+  info: logInfo,
+  silent: () => {},
+};
 
 declare module '@tanstack/react-query' {
   interface Register {

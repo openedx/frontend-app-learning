@@ -1,14 +1,17 @@
 import { renderHook } from '@testing-library/react';
 
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { useCoursewareMetadata, useCoursewareOutline } from './apiHooks';
+import { useCoursewareMetadata, useCoursewareOutline, useSequenceMetadata } from './apiHooks';
 import {
   fetchCourseDenied,
   fetchCourseFailure,
   fetchCourseRequest,
   fetchCourseSuccess,
+  fetchSequenceFailure,
+  fetchSequenceRequest,
+  fetchSequenceSuccess,
 } from './slice';
-import { useCourseExitStatusBridge, useCourseStatusBridge } from './statusBridge';
+import { useCourseExitStatusBridge, useCourseStatusBridge, useSequenceStatusBridge } from './statusBridge';
 
 const mockDispatch = jest.fn();
 jest.mock('react-redux', () => ({
@@ -23,6 +26,7 @@ const courseId = 'course-v1:edX+Demo+2020';
 type MetaQuery = ReturnType<typeof useCoursewareMetadata>;
 type OutlineQuery = ReturnType<typeof useCoursewareOutline>;
 type HomeMetaQuery = ReturnType<typeof useCourseHomeMeta>;
+type SequenceQuery = ReturnType<typeof useSequenceMetadata>;
 
 const pending = { isPending: true, isSuccess: false, isError: false };
 const success = (data?: unknown) => ({
@@ -95,6 +99,41 @@ describe('useCourseStatusBridge', () => {
     mockDispatch.mockClear();
     rerender();
     expect(mockDispatch).not.toHaveBeenCalled();
+  });
+});
+
+describe('useSequenceStatusBridge', () => {
+  const sequenceId = 'block-v1:edX+Demo+2020+type@sequential+block@abc123';
+  const render = (query: object, id: string | undefined = sequenceId) => {
+    jest.mocked(useSequenceMetadata).mockReturnValue(query as SequenceQuery);
+    renderHook(() => useSequenceStatusBridge(id, false));
+  };
+
+  beforeEach(() => { mockDispatch.mockClear(); });
+
+  it('dispatches nothing without a sequenceId', () => {
+    render(pending, '');
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
+
+  it('requests while the query is pending', () => {
+    render(pending);
+    expect(mockDispatch).toHaveBeenCalledWith(fetchSequenceRequest({ sequenceId }));
+  });
+
+  it('succeeds when the query resolves', () => {
+    render(success());
+    expect(mockDispatch).toHaveBeenCalledWith(fetchSequenceSuccess({ sequenceId }));
+  });
+
+  it('marks a 422 failure as a possible unit', () => {
+    render(errored({ response: { status: 422 } }));
+    expect(mockDispatch).toHaveBeenCalledWith(fetchSequenceFailure({ sequenceId, sequenceMightBeUnit: true }));
+  });
+
+  it('marks a non-422 failure as not a unit', () => {
+    render(errored({ response: { status: 500 } }));
+    expect(mockDispatch).toHaveBeenCalledWith(fetchSequenceFailure({ sequenceId, sequenceMightBeUnit: false }));
   });
 });
 

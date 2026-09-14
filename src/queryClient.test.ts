@@ -46,6 +46,18 @@ describe('app query cache', () => {
     expect(loggingService.logError).not.toHaveBeenCalled();
   });
 
+  it('does not log a status mapped to `silent`', async () => {
+    const error = { response: { status: 422 } };
+    await queryClient.fetchQuery({
+      queryKey: ['maybe-unit'],
+      queryFn: () => Promise.reject(error),
+      meta: { logStatusAs: { 422: 'silent' } },
+    }).catch(() => {});
+
+    expect(loggingService.logError).not.toHaveBeenCalled();
+    expect(loggingService.logInfo).not.toHaveBeenCalled();
+  });
+
   it('bridges successful results into the model store through onSuccess', async () => {
     await queryClient.fetchQuery({
       queryKey: ['ok'],

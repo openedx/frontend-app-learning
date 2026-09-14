@@ -1,6 +1,5 @@
 export {
   fetchCourse,
-  fetchSequence,
   checkBlockCompletion,
   saveIntegritySignature,
   saveSequencePosition,

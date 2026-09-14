@@ -15,17 +15,17 @@ import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams'
 import { AppProvider } from '@edx/frontend-platform/react';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { createAppQueryCache } from './queryClient';
-import { reducer as coursewareReducer, fetchCourseSuccess } from './courseware/data/slice';
+import { reducer as coursewareReducer, fetchCourseSuccess, fetchSequenceSuccess } from './courseware/data/slice';
 import {
-  reducer as modelsReducer, addModel, addModelsMap, updateModelsMap,
+  reducer as modelsReducer, addModel, addModelsMap, updateModel, updateModels, updateModelsMap,
 } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
 import { ToastProvider } from './generic/ToastContext';
 
 import messages from './i18n';
-import { fetchCourse, fetchSequence } from './courseware/data';
+import { fetchCourse } from './courseware/data';
 import { getCourseOutlineStructure } from './courseware/data/thunks';
-import { getCourseMetadata, getLearningSequencesOutline } from './courseware/data/api';
+import { getCourseMetadata, getLearningSequencesOutline, getSequenceMetadata } from './courseware/data/api';
 import { getCourseHomeCourseMetadata } from './course-home/data/api';
 import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
@@ -190,6 +190,15 @@ export async function seedCoursewareModels(store, courseId) {
   await executeThunk(fetchCourse(courseId), store.dispatch);
 }
 
+export async function seedSequenceModels(store, sequenceIds, { isPreview = false } = {}) {
+  await Promise.all(sequenceIds.map(async (sequenceId) => {
+    const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
+    store.dispatch(updateModel({ modelType: 'sequences', model: sequence }));
+    store.dispatch(updateModels({ modelType: 'units', models: units }));
+    store.dispatch(fetchSequenceSuccess({ sequenceId }));
+  }));
+}
+
 export async function initializeTestStore(options = {}, overrideStore = true) {
   const store = configureStore({
     reducer: {
@@ -257,8 +266,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   );
 
   if (!options.excludeFetchSequence) {
-    await Promise.all(sequenceBlocks
-      .map(block => executeThunk(fetchSequence(block.id), store.dispatch)));
+    await seedSequenceModels(store, sequenceBlocks.map(block => block.id));
   }
 
   return store;

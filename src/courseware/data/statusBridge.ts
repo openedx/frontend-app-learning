@@ -1,13 +1,17 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { getResponseStatus } from '@src/data/http-error';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { useCoursewareMetadata, useCoursewareOutline } from './apiHooks';
+import { useCoursewareMetadata, useCoursewareOutline, useSequenceMetadata } from './apiHooks';
 import {
   fetchCourseDenied,
   fetchCourseFailure,
   fetchCourseRequest,
   fetchCourseSuccess,
+  fetchSequenceFailure,
+  fetchSequenceRequest,
+  fetchSequenceSuccess,
 } from './slice';
 
 // Transitional: bridges the courseware query state into the Redux `courseStatus` field so
@@ -48,6 +52,31 @@ export const useCourseStatusBridge = (courseId: string | undefined) => {
     }
   }, [courseId, metadataPending, outlinePending, courseHomePending,
     metadataSuccess, courseHomeSuccess, outlineSuccess, hasAccess, courseHomeError, dispatch]);
+};
+
+// Transitional: mirrors the sequence query state into the Redux `sequenceStatus` /
+// `sequenceId` / `sequenceMightBeUnit` fields so the still-Redux readers (the container's
+// redirect helpers, Sequence, breadcrumbs, sequence-navigation, sequence-alerts, the
+// outline sidebar) keep working; removed when those readers move to React Query.
+export const useSequenceStatusBridge = (sequenceId: string | undefined, isPreview: boolean) => {
+  const dispatch = useDispatch();
+  const query = useSequenceMetadata(sequenceId, isPreview);
+
+  useEffect(() => {
+    if (!sequenceId) {
+      return;
+    }
+    if (query.isPending) {
+      dispatch(fetchSequenceRequest({ sequenceId }));
+      return;
+    }
+    if (query.isSuccess) {
+      dispatch(fetchSequenceSuccess({ sequenceId }));
+      return;
+    }
+    const sequenceMightBeUnit = getResponseStatus(query.error) === 422;
+    dispatch(fetchSequenceFailure({ sequenceId, sequenceMightBeUnit }));
+  }, [sequenceId, query, dispatch]);
 };
 
 // The CourseExit variant: no outline query, and it takes its queries as params because
