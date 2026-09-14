@@ -348,7 +348,7 @@ describe('Course', () => {
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
     loadUnit();
-    waitFor(() => {
+    await waitFor(() => {
       expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
       screen.getAllByRole('link', { name: /previous/i }).forEach(link => fireEvent.click(link));
       screen.getAllByRole('link', { name: /next/i }).forEach(link => fireEvent.click(link));
@@ -377,7 +377,7 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => expect(screen.findByText('Some random banner text to display.')).toBeInTheDocument());
+      expect(await screen.findByText('Some random banner text to display.')).toBeInTheDocument();
     });
 
     it('renders Entrance Exam alert with passing score', async () => {
@@ -411,7 +411,7 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => expect(screen.findByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument());
+      expect(await screen.findByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument();
     });
 
     it('renders Entrance Exam alert with non-passing score', async () => {
@@ -445,7 +445,7 @@ describe('Course', () => {
         sequenceId: sequenceBlocks[0].id,
       };
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => expect(screen.findByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument());
+      expect(await screen.findByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument();
     });
   });
 
