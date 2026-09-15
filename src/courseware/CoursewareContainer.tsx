@@ -5,12 +5,12 @@ import { createSelector } from '@reduxjs/toolkit';
 import { defaultMemoize as memoize } from 'reselect';
 
 import {
-  checkBlockCompletion,
   fetchCourse,
   getResumeBlock,
   getSequenceForUnitDeprecated,
   saveSequencePosition,
 } from './data';
+import { useCheckBlockCompletion } from './data/apiHooks';
 import { useCourseStatusBridge, useSequenceStatusBridge } from './data/statusBridge';
 import { TabPage } from '../tab-page';
 import type { CourseStatus } from '../tab-page/TabPage';
@@ -223,6 +223,8 @@ const CoursewareContainer = () => {
   } = useParams();
   const isPreview = pathname.startsWith('/preview');
 
+  const checkBlockCompletion = useCheckBlockCompletion();
+
   const courseId = useSelector((state: RootState) => state.courseware.courseId);
   const sequenceId = useSelector((state: RootState) => state.courseware.sequenceId);
   const courseStatus = useSelector((state: RootState) => state.courseware.courseStatus) as CourseStatus;
@@ -373,7 +375,7 @@ const CoursewareContainer = () => {
   });
 
   const handleUnitNavigationClick = () => {
-    dispatch(checkBlockCompletion(courseId, sequenceId, routeUnitId));
+    checkBlockCompletion(courseId, sequenceId, routeUnitId);
   };
 
   const handleNextSequenceClick = () => {

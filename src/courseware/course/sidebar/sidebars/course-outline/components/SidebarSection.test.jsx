@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { AppProvider } from '@edx/frontend-platform/react';
 
-import { initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, initializeTestStore } from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import SidebarContext from '../../../SidebarContext';
 import SidebarSection from './SidebarSection';
@@ -26,15 +27,17 @@ describe('<SidebarSection />', () => {
 
     return (
       <AppProvider store={store} wrapWithRouter={false}>
-        <IntlProvider locale="en">
-          <SidebarContext.Provider value={mockData}>
-            <SidebarSection
-              section={section}
-              handleSelectSection={mockHandleSelectSection}
-              {...props}
-            />
-          </SidebarContext.Provider>
-        </IntlProvider>
+        <QueryClientProvider client={createTestQueryClient(store)}>
+          <IntlProvider locale="en">
+            <SidebarContext.Provider value={mockData}>
+              <SidebarSection
+                section={section}
+                handleSelectSection={mockHandleSelectSection}
+                {...props}
+              />
+            </SidebarContext.Provider>
+          </IntlProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
   };

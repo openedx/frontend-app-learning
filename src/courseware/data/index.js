@@ -1,6 +1,5 @@
 export {
   fetchCourse,
-  checkBlockCompletion,
   saveIntegritySignature,
   saveSequencePosition,
 } from './thunks';

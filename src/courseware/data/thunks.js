@@ -1,7 +1,6 @@
 import { logError } from '@edx/frontend-platform/logging';
 import { updateModel, updateModels } from '../../generic/model-store';
 import {
-  getBlockCompletion,
   getCourseDiscussionConfig,
   getCourseOutline,
   getCourseTopics,
@@ -14,7 +13,6 @@ import {
   fetchCourseOutlineSuccess,
   fetchCourseOutlineFailure,
   setCoursewareOutlineSidebarToggles,
-  updateCourseOutlineCompletion,
 } from './slice';
 
 // Transitional — `fetchCourse` is being dismantled; its work is moving to React Query.
@@ -34,31 +32,6 @@ export function fetchCourse(courseId) {
     } catch (error) {
       logError(error);
     }
-  };
-}
-
-export function checkBlockCompletion(courseId, sequenceId, unitId) {
-  return async (dispatch, getState) => {
-    const { models } = getState();
-    if (models.units[unitId]?.complete) {
-      return {}; // do nothing. Things don't get uncompleted after they are completed.
-    }
-
-    try {
-      const isComplete = await getBlockCompletion(courseId, sequenceId, unitId);
-      dispatch(updateModel({
-        modelType: 'units',
-        model: {
-          id: unitId,
-          complete: isComplete,
-        },
-      }));
-      dispatch(updateCourseOutlineCompletion({ sequenceId, unitId, isComplete }));
-      return isComplete;
-    } catch (error) {
-      logError(error);
-    }
-    return {};
   };
 }
 

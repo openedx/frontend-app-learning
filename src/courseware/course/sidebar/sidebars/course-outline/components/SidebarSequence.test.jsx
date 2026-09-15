@@ -1,11 +1,12 @@
 import { MemoryRouter } from 'react-router-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
-import { initializeMockApp, initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, initializeMockApp, initializeTestStore } from '@src/setupTest';
 import SidebarContext from '../../../SidebarContext';
 import messages from '../messages';
 import SidebarSequence from './SidebarSequence';
@@ -38,19 +39,21 @@ describe('<SidebarSequence />', () => {
   function renderWithProvider(props = {}) {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
-        <IntlProvider locale="en">
-          <SidebarContext.Provider value={{ ...mockData }}>
-            <MemoryRouter>
-              <SidebarSequence
-                courseId={courseId}
-                defaultOpen={false}
-                sequence={sequence}
-                activeUnitId={sequence.unitIds[0]}
-                {...props}
-              />
-            </MemoryRouter>
-          </SidebarContext.Provider>
-        </IntlProvider>
+        <QueryClientProvider client={createTestQueryClient(store)}>
+          <IntlProvider locale="en">
+            <SidebarContext.Provider value={{ ...mockData }}>
+              <MemoryRouter>
+                <SidebarSequence
+                  courseId={courseId}
+                  defaultOpen={false}
+                  sequence={sequence}
+                  activeUnitId={sequence.unitIds[0]}
+                  {...props}
+                />
+              </MemoryRouter>
+            </SidebarContext.Provider>
+          </IntlProvider>
+        </QueryClientProvider>
       </AppProvider>,
     );
     return container;
