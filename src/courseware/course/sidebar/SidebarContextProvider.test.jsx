@@ -1,15 +1,12 @@
 import React, { useContext } from 'react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   render, screen, fireEvent, act,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import SidebarContext from './SidebarContext';
 import SidebarProvider from './SidebarContextProvider';
-
-jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(() => jest.fn()),
-}));
 
 jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn((modelType) => {
@@ -88,11 +85,13 @@ const ContextConsumer = () => {
 function renderProvider(props = {}) {
   return render(
     <IntlProvider locale="en">
-      <MemoryRouter>
-        <SidebarProvider courseId={courseId} unitId={unitId} {...props}>
-          <ContextConsumer />
-        </SidebarProvider>
-      </MemoryRouter>
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoryRouter>
+          <SidebarProvider courseId={courseId} unitId={unitId} {...props}>
+            <ContextConsumer />
+          </SidebarProvider>
+        </MemoryRouter>
+      </QueryClientProvider>
     </IntlProvider>,
   );
 }

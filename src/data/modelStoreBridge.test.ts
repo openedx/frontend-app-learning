@@ -94,6 +94,18 @@ describe('modelStoreBridge', () => {
     expect(units.u2).toEqual({ id: 'u2', complete: false });
   });
 
+  it('updateModels keys models by idField instead of id', async () => {
+    await runQuery(
+      queryClient,
+      () => [{ id: 'topic-1', usageKey: 'unit-1' }, { id: 'topic-2', usageKey: 'unit-2' }],
+      { models: [{ modelType: 'discussionTopics', strategy: 'updateModels', idField: 'usageKey' }] },
+    );
+
+    const { discussionTopics } = modelsOf(store);
+    expect(discussionTopics['unit-1']).toEqual({ id: 'topic-1', usageKey: 'unit-1' });
+    expect(discussionTopics['unit-2']).toEqual({ id: 'topic-2', usageKey: 'unit-2' });
+  });
+
   it('updateModel merges a single model by id (via source)', async () => {
     store.dispatch(addModelsMap({
       modelType: 'coursewareMeta',

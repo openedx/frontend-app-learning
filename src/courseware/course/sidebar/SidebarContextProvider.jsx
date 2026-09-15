@@ -1,9 +1,9 @@
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 import PropTypes from 'prop-types';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   useState, useMemo, useCallback, useRef, useEffect,
 } from 'react';
-import { useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
 import { useModel } from '@src/generic/model-store';
@@ -33,7 +33,7 @@ const SidebarProvider = ({
   const courseHomeMeta = useModel('courseHomeMeta', courseId);
   const coursewareMeta = useModel('coursewareMeta', courseId);
   const unit = useModel('discussionTopics', unitId);
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const { width } = useWindowSize();
   const shouldDisplayFullScreen = width < breakpoints.extraLarge.minWidth;
   const shouldDisplaySidebarOpen = width > breakpoints.extraLarge.minWidth;
@@ -93,10 +93,10 @@ const SidebarProvider = ({
   useEffect(() => {
     enabledWidgets.forEach(widget => {
       if (widget.prefetch) {
-        widget.prefetch({ courseId, course: courseMetaRef.current, dispatch });
+        widget.prefetch({ courseId, course: courseMetaRef.current, queryClient });
       }
     });
-  }, [enabledWidgets, courseId, dispatch]);
+  }, [enabledWidgets, courseId, queryClient]);
 
   // Apply unit navigation behavior
   useUnitShiftBehavior({

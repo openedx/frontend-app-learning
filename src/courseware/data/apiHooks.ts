@@ -1,12 +1,15 @@
 import { useCallback } from 'react';
 import { logError } from '@edx/frontend-platform/logging';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  noop, useMutation, useQuery, useQueryClient, type QueryClient,
+} from '@tanstack/react-query';
 import { useDispatch, useStore } from 'react-redux';
 
 import { updateModel } from '@src/generic/model-store';
 import {
-  getBlockCompletion, getCourseMetadata, getCourseOutline, getCoursewareOutlineSidebarToggles,
-  getLearningSequencesOutline, getSequenceMetadata, postIntegritySignature, postSequencePosition,
+  getBlockCompletion, getCourseDiscussionConfig, getCourseMetadata, getCourseOutline,
+  getCoursewareOutlineSidebarToggles, getCourseTopics, getLearningSequencesOutline, getSequenceMetadata,
+  postIntegritySignature, postSequencePosition,
 } from './api';
 import { applyUnitCompletion, type CourseOutlineData } from './courseOutline';
 import { coursewareQueryKeys } from './queryKeys';
@@ -74,6 +77,25 @@ export const useCoursewareOutlineSidebarToggles = (courseId: string | undefined)
   // Observed by every outline row and never changes mid-session:
   staleTime: Infinity,
 });
+
+// Not a hook: the sole consumer is the widget-registry prefetch effect in
+// SidebarContextProvider, which passes its own queryClient.
+export const prefetchDiscussionTopics = (queryClient: QueryClient, courseId: string) => (
+  queryClient.query({
+    queryKey: coursewareQueryKeys.discussionTopics(courseId),
+    queryFn: async () => {
+      const config: { provider: string } = await getCourseDiscussionConfig(courseId);
+      // Only load topics for the openedx provider, the legacy provider uses
+      // the xblock
+      if (config.provider !== 'openedx') {
+        return [];
+      }
+      const topics: { usageKey: string | null }[] = await getCourseTopics(courseId);
+      return topics.filter(topic => topic.usageKey);
+    },
+    meta: { models: [{ modelType: 'discussionTopics', strategy: 'updateModels', idField: 'usageKey' }] },
+  }).catch(noop)
+);
 
 // courseId / sequenceId come from the still-untyped Redux slice at both call sites, so
 // they are nullable here until those readers convert (#1976).
