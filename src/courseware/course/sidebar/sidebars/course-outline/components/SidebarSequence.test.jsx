@@ -1,4 +1,4 @@
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -6,7 +6,11 @@ import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
-import { createTestQueryClient, initializeMockApp, initializeTestStore } from '@src/setupTest';
+import {
+  createTestQueryClient, initializeMockApp, initializeTestStore, seedQueryData,
+} from '@src/setupTest';
+import { getCourseOutline } from '@src/courseware/data/api';
+import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
 import SidebarContext from '../../../SidebarContext';
 import messages from '../messages';
 import SidebarSequence from './SidebarSequence';
@@ -16,20 +20,22 @@ initializeMockApp();
 describe('<SidebarSequence />', () => {
   let courseId;
   let store;
+  let outline;
   let sequence;
   let unit;
   const sequenceDescription = 'sequence test description';
   let mockData;
 
-  const initTestStore = async (options) => {
+  const initTestData = async (options) => {
     store = await initializeTestStore(options);
     const state = store.getState();
     courseId = state.courseware.courseId;
+    outline = await getCourseOutline(courseId);
     let activeSequenceId = '';
-    [activeSequenceId] = Object.keys(state.courseware.courseOutline.sequences);
-    sequence = state.courseware.courseOutline.sequences[activeSequenceId];
+    [activeSequenceId] = Object.keys(outline.sequences);
+    sequence = outline.sequences[activeSequenceId];
     const unitId = sequence.unitIds[0];
-    unit = state.courseware.courseOutline.units[unitId];
+    unit = outline.units[unitId];
 
     mockData = {
       toggleSidebar: jest.fn(),
@@ -37,19 +43,29 @@ describe('<SidebarSequence />', () => {
   };
 
   function renderWithProvider(props = {}) {
+    const queryClient = createTestQueryClient(store);
+    seedQueryData(queryClient, coursewareQueryKeys.courseOutline(courseId), outline);
+    seedQueryData(queryClient, coursewareQueryKeys.sidebarToggles(courseId), { enableCompletionTracking: true });
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={queryClient}>
           <IntlProvider locale="en">
             <SidebarContext.Provider value={{ ...mockData }}>
-              <MemoryRouter>
-                <SidebarSequence
-                  courseId={courseId}
-                  defaultOpen={false}
-                  sequence={sequence}
-                  activeUnitId={sequence.unitIds[0]}
-                  {...props}
-                />
+              <MemoryRouter initialEntries={[`/course/${courseId}`]}>
+                <Routes>
+                  <Route
+                    path="/course/:courseId"
+                    element={(
+                      <SidebarSequence
+                        courseId={courseId}
+                        defaultOpen={false}
+                        sequence={sequence}
+                        activeUnitId={sequence.unitIds[0]}
+                        {...props}
+                      />
+                    )}
+                  />
+                </Routes>
               </MemoryRouter>
             </SidebarContext.Provider>
           </IntlProvider>
@@ -60,7 +76,7 @@ describe('<SidebarSequence />', () => {
   }
 
   it('renders correctly when sequence is collapsed and incomplete', async () => {
-    await initTestStore();
+    await initTestData();
     renderWithProvider();
 
     expect(screen.getByText(sequence.title)).toBeInTheDocument();
@@ -71,7 +87,7 @@ describe('<SidebarSequence />', () => {
 
   it('renders correctly when sequence is not collapsed and complete and completion tracking enabled', async () => {
     const user = userEvent.setup();
-    await initTestStore();
+    await initTestData();
     renderWithProvider({
       defaultOpen: true,
       sequence: {

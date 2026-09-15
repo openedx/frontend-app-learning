@@ -1,12 +1,16 @@
 import { AppProvider } from '@edx/frontend-platform/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 
-import { createTestQueryClient, initializeMockApp, initializeTestStore } from '@src/setupTest';
+import {
+  createTestQueryClient, initializeMockApp, initializeTestStore, seedQueryData,
+} from '@src/setupTest';
+import { getCourseOutline } from '@src/courseware/data/api';
+import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
 import SidebarContext from '../../../SidebarContext';
 import SidebarUnit from './SidebarUnit';
 import { ID } from '../constants';
@@ -20,16 +24,19 @@ initializeMockApp();
 
 describe('<SidebarUnit />', () => {
   let store = {};
+  let courseId;
+  let outline;
   let unit;
   let sequenceId;
   let defaultSidebarContext;
 
-  const initTestStore = async (options) => {
+  const initTestData = async (options) => {
     store = await initializeTestStore(options);
-    const state = store.getState();
-    [sequenceId] = Object.keys(state.courseware.courseOutline.sequences);
-    const sequence = state.courseware.courseOutline.sequences[sequenceId];
-    unit = state.courseware.courseOutline.units[sequence.unitIds[0]];
+    courseId = store.getState().courseware.courseId;
+    outline = await getCourseOutline(courseId);
+    [sequenceId] = Object.keys(outline.sequences);
+    const sequence = outline.sequences[sequenceId];
+    unit = outline.units[sequence.unitIds[0]];
 
     defaultSidebarContext = {
       toggleSidebar: jest.fn(),
@@ -37,24 +44,33 @@ describe('<SidebarUnit />', () => {
     };
   };
 
-  function renderWithProvider(props = {}, sidebarContext = defaultSidebarContext, pathname = '/course') {
+  function renderWithProvider(props = {}, sidebarContext = defaultSidebarContext, pathname = undefined) {
+    const queryClient = createTestQueryClient(store);
+    seedQueryData(queryClient, coursewareQueryKeys.courseOutline(courseId), outline);
+    seedQueryData(queryClient, coursewareQueryKeys.sidebarToggles(courseId), { enableCompletionTracking: true });
+    const sidebarUnit = (
+      <SidebarUnit
+        isFirst
+        id={unit.id}
+        courseId="course123"
+        sequenceId={sequenceId}
+        unit={{ ...unit, icon: 'video', isLocked: false }}
+        isActive={false}
+        activeUnitId={unit.id}
+        isCompletionTrackingEnabled
+        {...props}
+      />
+    );
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={queryClient}>
           <IntlProvider locale="en">
             <SidebarContext.Provider value={{ ...sidebarContext }}>
-              <MemoryRouter initialEntries={[{ pathname }]}>
-                <SidebarUnit
-                  isFirst
-                  id={unit.id}
-                  courseId="course123"
-                  sequenceId={sequenceId}
-                  unit={{ ...unit, icon: 'video', isLocked: false }}
-                  isActive={false}
-                  activeUnitId={unit.id}
-                  isCompletionTrackingEnabled
-                  {...props}
-                />
+              <MemoryRouter initialEntries={[{ pathname: pathname ?? `/course/${courseId}` }]}>
+                <Routes>
+                  <Route path="/course/:courseId" element={sidebarUnit} />
+                  <Route path="/preview/course/:courseId" element={sidebarUnit} />
+                </Routes>
               </MemoryRouter>
             </SidebarContext.Provider>
           </IntlProvider>
@@ -65,7 +81,7 @@ describe('<SidebarUnit />', () => {
   }
 
   it('renders correctly when unit is incomplete', async () => {
-    await initTestStore();
+    await initTestData();
     const container = renderWithProvider();
 
     expect(screen.getByText(unit.title)).toBeInTheDocument();
@@ -73,7 +89,7 @@ describe('<SidebarUnit />', () => {
   });
 
   it('renders correctly when unit is complete and tracking enabled', async () => {
-    await initTestStore();
+    await initTestData();
     const container = renderWithProvider({ unit: { ...unit, complete: true } });
 
     expect(screen.getByText(unit.title)).toBeInTheDocument();
@@ -82,7 +98,7 @@ describe('<SidebarUnit />', () => {
   });
 
   it('renders correctly when unit is not first and icon is not set', async () => {
-    await initTestStore();
+    await initTestData();
     const container = renderWithProvider({
       isFirst: false,
       unit: { ...unit, icon: null },
@@ -93,7 +109,7 @@ describe('<SidebarUnit />', () => {
   });
 
   it('renders correctly when unit is locked', async () => {
-    await initTestStore();
+    await initTestData();
     renderWithProvider({
       unit: { ...unit, isLocked: true },
     });
@@ -104,7 +120,7 @@ describe('<SidebarUnit />', () => {
   describe('When a unit is clicked', () => {
     it('sends log event correctly', async () => {
       const user = userEvent.setup();
-      await initTestStore();
+      await initTestData();
       renderWithProvider({ unit: { ...unit } });
       const logData = {
         id: unit.id,
@@ -123,7 +139,7 @@ describe('<SidebarUnit />', () => {
 
     it('leaves sidebar open in desktop mode', async () => {
       const user = userEvent.setup();
-      await initTestStore();
+      await initTestData();
       renderWithProvider({ unit: { ...unit } });
       await user.click(screen.getByText(unit.title));
 
@@ -132,7 +148,7 @@ describe('<SidebarUnit />', () => {
 
     it('closes sidebar on mobile devices', async () => {
       const user = userEvent.setup();
-      await initTestStore();
+      await initTestData();
       renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true });
       await user.click(screen.getByText(unit.title));
 
@@ -144,8 +160,8 @@ describe('<SidebarUnit />', () => {
   describe('UnitLinkWrapper', () => {
     describe('course in preview mode', () => {
       beforeEach(async () => {
-        await initTestStore();
-        renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true }, '/preview/course');
+        await initTestData();
+        renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true }, `/preview/course/${courseId}`);
       });
 
       it('href includes /preview', async () => {
@@ -158,7 +174,7 @@ describe('<SidebarUnit />', () => {
 
     describe('course in live mode', () => {
       beforeEach(async () => {
-        await initTestStore();
+        await initTestData();
         renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true });
       });
 

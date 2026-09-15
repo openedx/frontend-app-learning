@@ -23,11 +23,9 @@ import { UserMessagesProvider } from './generic/user-messages';
 import { ToastProvider } from './generic/ToastContext';
 
 import messages from './i18n';
-import { fetchCourse } from './courseware/data';
-import { getCourseOutlineStructure } from './courseware/data/thunks';
 import { getCourseMetadata, getLearningSequencesOutline, getSequenceMetadata } from './courseware/data/api';
 import { getCourseHomeCourseMetadata } from './course-home/data/api';
-import { appendBrowserTimezoneToUrl, executeThunk } from './utils';
+import { appendBrowserTimezoneToUrl } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 import { buildOutlineFromBlocks } from './courseware/data/__factories__/learningSequencesOutline.factory';
 
@@ -187,7 +185,6 @@ export async function seedCoursewareModels(store, courseId) {
   store.dispatch(addModelsMap({ modelType: 'sections', modelsMap: outline.sections }));
   store.dispatch(updateModelsMap({ modelType: 'sequences', modelsMap: outline.sequences }));
   store.dispatch(fetchCourseSuccess({ courseId }));
-  await executeThunk(fetchCourse(courseId), store.dispatch);
 }
 
 export async function seedSequenceModels(store, sequenceIds, { isPreview = false } = {}) {
@@ -240,11 +237,16 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
     ...enableCompletionTracking,
   });
 
-  axiosMock.onGet(outlineSidebarUrl).reply(200, {
-    ...courseBlocks,
-    ...sequenceBlocks,
-    ...unitBlocks,
-  });
+  if (options.preventOutlineSidebarLoad) {
+    // Hold the sidebar-outline query in its pending state (the request never resolves).
+    axiosMock.onGet(outlineSidebarUrl).reply(() => new Promise(() => {}));
+  } else {
+    axiosMock.onGet(outlineSidebarUrl).reply(200, {
+      ...courseBlocks,
+      ...sequenceBlocks,
+      ...unitBlocks,
+    });
+  }
 
   sequenceMetadata.forEach(metadata => {
     const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${metadata.item_id}`;
@@ -258,12 +260,6 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   if (!options.excludeFetchCourse) {
     await seedCoursewareModels(store, courseMetadata.id);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  !options.excludeFetchOutlineSidebar && await executeThunk(
-    getCourseOutlineStructure(courseMetadata.id),
-    store.dispatch,
-  );
 
   if (!options.excludeFetchSequence) {
     await seedSequenceModels(store, sequenceBlocks.map(block => block.id));
@@ -280,6 +276,13 @@ export function createTestQueryClient(store) {
     },
     ...(store ? { queryCache: createAppQueryCache(store) } : {}),
   });
+}
+
+// Seed a query result so components under test render as loaded without fetching.
+// The seeded entry is marked never-stale so mounting observers don't refetch over it.
+export function seedQueryData(queryClient, queryKey, data) {
+  queryClient.setQueryDefaults(queryKey, { staleTime: Infinity });
+  queryClient.setQueryData(queryKey, data);
 }
 
 function render(

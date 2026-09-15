@@ -5,7 +5,6 @@ import { createSelector } from '@reduxjs/toolkit';
 import { defaultMemoize as memoize } from 'reselect';
 
 import {
-  fetchCourse,
   getResumeBlock,
   getSequenceForUnitDeprecated,
   saveSequencePosition,
@@ -244,9 +243,6 @@ const CoursewareContainer = () => {
   const guards = useRef<any>();
   if (!guards.current) {
     guards.current = {
-      checkFetchCourse: memoize((id) => {
-        dispatch(fetchCourse(id));
-      }),
       checkSaveSequencePosition: memoize((unitId) => {
         const {
           courseId: cId,
@@ -269,10 +265,7 @@ const CoursewareContainer = () => {
       sequenceStatus,
       sequence,
     };
-    const { checkFetchCourse, checkSaveSequencePosition } = guards.current;
-
-    // Load course data whenever the course ID changes.
-    checkFetchCourse(routeCourseId);
+    const { checkSaveSequencePosition } = guards.current;
 
     // Check if we should save our sequence position.  Only do this when the route unit ID changes.
     checkSaveSequencePosition(routeUnitId);

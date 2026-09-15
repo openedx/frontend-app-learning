@@ -44,29 +44,6 @@ describe('Data layer integration tests', () => {
     store = initializeStore();
   });
 
-  describe('Test fetchCourse', () => {
-    const sidebarTogglesUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-navigation-sidebar/toggles/`;
-
-    it('Should store the sidebar toggles on success', async () => {
-      axiosMock.onGet(sidebarTogglesUrl).reply(200, { enable_completion_tracking: true });
-
-      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
-
-      expect(store.getState().courseware.coursewareOutlineSidebarSettings).toEqual({
-        enableCompletionTracking: true,
-      });
-    });
-
-    it('Should log an error and leave the toggles unset on failure', async () => {
-      axiosMock.onGet(sidebarTogglesUrl).networkError();
-
-      await executeThunk(thunks.fetchCourse(courseId), store.dispatch);
-
-      expect(loggingService.logError).toHaveBeenCalled();
-      expect(store.getState().courseware.coursewareOutlineSidebarSettings).toEqual({});
-    });
-  });
-
   describe('Thunks that require fetched sequences', () => {
     beforeEach(async () => {
       // thunks tested in this block rely on fact, that store already has

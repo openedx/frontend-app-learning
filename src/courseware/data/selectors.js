@@ -12,12 +12,4 @@ export function sequenceIdsSelector(state) {
 
 export const getSequenceId = state => state.courseware.sequenceId;
 
-export const getCourseOutline = state => state.courseware.courseOutline;
-
-export const getCourseOutlineStatus = state => state.courseware.courseOutlineStatus;
-
 export const getSequenceStatus = state => state.courseware.sequenceStatus;
-
-export const getCoursewareOutlineSidebarSettings = state => state.courseware.coursewareOutlineSidebarSettings;
-
-export const getCourseOutlineShouldUpdate = state => state.courseware.courseOutlineShouldUpdate;

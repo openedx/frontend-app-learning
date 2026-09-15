@@ -2,38 +2,10 @@ import { logError } from '@edx/frontend-platform/logging';
 import { updateModel, updateModels } from '../../generic/model-store';
 import {
   getCourseDiscussionConfig,
-  getCourseOutline,
   getCourseTopics,
-  getCoursewareOutlineSidebarToggles,
   postIntegritySignature,
   postSequencePosition,
 } from './api';
-import {
-  fetchCourseOutlineRequest,
-  fetchCourseOutlineSuccess,
-  fetchCourseOutlineFailure,
-  setCoursewareOutlineSidebarToggles,
-} from './slice';
-
-// Transitional — `fetchCourse` is being dismantled; its work is moving to React Query.
-// What it used to do, and what replaced it:
-//   - metadata / outline / courseHomeMeta fetches → the `useCoursewareMetadata` /
-//     `useCoursewareOutline` / `useCourseHomeMeta` query hooks (+ the model-store bridge)
-//   - deriving/dispatching `courseStatus` → `useCourseStatusBridge`
-// Only the sidebar-toggles fetch is left; it stays on Redux until #2013 converts it and
-// deletes `fetchCourse`.
-export function fetchCourse(courseId) {
-  return async (dispatch) => {
-    try {
-      const {
-        enable_completion_tracking: enableCompletionTracking,
-      } = await getCoursewareOutlineSidebarToggles(courseId);
-      dispatch(setCoursewareOutlineSidebarToggles({ enableCompletionTracking }));
-    } catch (error) {
-      logError(error);
-    }
-  };
-}
 
 export function saveSequencePosition(courseId, sequenceId, activeUnitIndex) {
   return async (dispatch, getState) => {
@@ -109,19 +81,6 @@ export function getCourseDiscussionTopics(courseId) {
       }
     } catch (error) {
       logError(error);
-    }
-  };
-}
-
-export function getCourseOutlineStructure(courseId) {
-  return async (dispatch) => {
-    dispatch(fetchCourseOutlineRequest());
-    try {
-      const courseOutline = await getCourseOutline(courseId);
-      dispatch(fetchCourseOutlineSuccess({ courseOutline }));
-    } catch (error) {
-      logError(error);
-      dispatch(fetchCourseOutlineFailure());
     }
   };
 }
