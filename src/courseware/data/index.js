@@ -1,8 +1,4 @@
 export {
-  saveIntegritySignature,
-  saveSequencePosition,
-} from './thunks';
-export {
   getResumeBlock,
   getSequenceForUnitDeprecated,
   sendActivationEmail,

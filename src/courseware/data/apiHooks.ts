@@ -6,7 +6,7 @@ import { useDispatch, useStore } from 'react-redux';
 import { updateModel } from '@src/generic/model-store';
 import {
   getBlockCompletion, getCourseMetadata, getCourseOutline, getCoursewareOutlineSidebarToggles,
-  getLearningSequencesOutline, getSequenceMetadata,
+  getLearningSequencesOutline, getSequenceMetadata, postIntegritySignature, postSequencePosition,
 } from './api';
 import { applyUnitCompletion, type CourseOutlineData } from './courseOutline';
 import { coursewareQueryKeys } from './queryKeys';
@@ -117,4 +117,76 @@ export const useCheckBlockCompletion = () => {
     }
     mutate({ courseId, sequenceId, unitId });
   }, [store, mutate]);
+};
+
+// courseId / sequenceId come from the still-untyped Redux slice at the call site, so
+// they are nullable here until that reader converts (#1976).
+interface SaveSequencePositionVars {
+  courseId: string | null;
+  sequenceId: string | null;
+  activeUnitIndex: number;
+}
+
+export const useSaveSequencePosition = () => {
+  const store = useStore();
+  const dispatch = useDispatch();
+  const setPosition = (sequenceId: string | null, activeUnitIndex: number) => {
+    dispatch(updateModel({ modelType: 'sequences', model: { id: sequenceId, activeUnitIndex } }));
+  };
+  const { mutate } = useMutation({
+    mutationFn: ({ courseId, sequenceId, activeUnitIndex }: SaveSequencePositionVars) => (
+      postSequencePosition(courseId, sequenceId, activeUnitIndex)
+    ),
+    onMutate: ({ sequenceId, activeUnitIndex }) => {
+      const { models } = store.getState() as { models: { sequences: Record<string, { activeUnitIndex: number }> } };
+      const initialActiveUnitIndex = models.sequences[sequenceId!].activeUnitIndex;
+      // Optimistically update the position.
+      setPosition(sequenceId, activeUnitIndex);
+      return { initialActiveUnitIndex };
+    },
+    onSuccess: (_data, { sequenceId, activeUnitIndex }) => {
+      // Update again under the assumption that the above call succeeded, since it doesn't return a
+      // meaningful response.
+      setPosition(sequenceId, activeUnitIndex);
+    },
+    onError: (error, { sequenceId }, context) => {
+      logError(error);
+      setPosition(sequenceId, context!.initialActiveUnitIndex);
+    },
+  });
+
+  return useCallback((courseId: string | null, sequenceId: string | null, activeUnitIndex: number) => {
+    mutate({ courseId, sequenceId, activeUnitIndex });
+  }, [mutate]);
+};
+
+interface SaveIntegritySignatureVars {
+  courseId: string;
+  isMasquerading: boolean;
+}
+
+export const useSaveIntegritySignature = () => {
+  const dispatch = useDispatch();
+  const { mutate } = useMutation({
+    // If the request is made by a staff user masquerading as a specific learner,
+    // don't actually create a signature for them on the backend,
+    // only the modal dialog will be dismissed
+    mutationFn: async ({ courseId, isMasquerading }: SaveIntegritySignatureVars) => (
+      isMasquerading ? null : postIntegritySignature(courseId)
+    ),
+    onSuccess: (_data, { courseId }) => {
+      dispatch(updateModel({
+        modelType: 'coursewareMeta',
+        model: {
+          id: courseId,
+          userNeedsIntegritySignature: false,
+        },
+      }));
+    },
+    onError: (error) => logError(error),
+  });
+
+  return useCallback((courseId: string, isMasquerading: boolean) => {
+    mutate({ courseId, isMasquerading });
+  }, [mutate]);
 };
