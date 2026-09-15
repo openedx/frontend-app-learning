@@ -1,4 +1,5 @@
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { Factory } from 'rosie';
 import {
   fireEvent, initializeTestStore, render, screen,
@@ -7,6 +8,8 @@ import UnitButton from './UnitButton';
 
 describe('Unit Button', () => {
   let mockData;
+  let courseId;
+  let sequenceId;
   const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = [Factory.build(
     'block',
@@ -24,7 +27,8 @@ describe('Unit Button', () => {
   const [unit, completedUnit, bookmarkedUnit] = unitBlocks;
 
   beforeAll(async () => {
-    await initializeTestStore({ courseMetadata, unitBlocks });
+    const store = await initializeTestStore({ courseMetadata, unitBlocks });
+    ({ courseId, sequenceId } = store.getState().courseware);
     mockData = {
       unitId: unit.id,
       onClick: () => {},
@@ -81,5 +85,26 @@ describe('Unit Button', () => {
     render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
     fireEvent.click(screen.getByRole('link'));
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls back to the passed title and contentType when the unit has no model entry', () => {
+    const { container } = render(
+      <UnitButton {...mockData} unitId="block-without-model-entry" title="" contentType="lock" />,
+      { wrapWithRouter: true },
+    );
+    const buttonIcons = container.querySelectorAll('svg');
+    expect(buttonIcons).toHaveLength(1);
+    expect(buttonIcons[0]).toHaveClass('fa-lock');
+    expect(screen.queryByTestId('bookmark-icon')).toBeNull();
+  });
+
+  it('prefixes the unit link with /preview on a preview route', () => {
+    const unitPath = `/course/${courseId}/${sequenceId}/${unit.id}`;
+    render(
+      <MemoryRouter initialEntries={[`/preview${unitPath}`]}>
+        <UnitButton {...mockData} />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('link')).toHaveAttribute('href', `/preview${unitPath}`);
   });
 });

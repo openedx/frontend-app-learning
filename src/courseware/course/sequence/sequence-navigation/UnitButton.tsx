@@ -1,27 +1,43 @@
 import { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { Button, Icon } from '@openedx/paragon';
 import { Bookmark } from '@openedx/paragon/icons';
 
+import { useModel } from '../../../../generic/model-store';
+import type { RootState } from '../../../../store';
 import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
 
+interface Props {
+  onClick: (unitId: string) => void;
+  unitId: string;
+  title?: string;
+  contentType?: string;
+  isActive?: boolean;
+  showCompletion?: boolean;
+  showTitle?: boolean;
+  className?: string;
+}
+
 const UnitButton = ({
   onClick,
-  title,
-  contentType,
-  isActive,
-  bookmarked,
-  complete,
-  showCompletion,
+  title: fallbackTitle,
+  contentType: fallbackContentType,
+  isActive = false,
+  showCompletion = true,
   unitId,
   className,
-  showTitle,
-}) => {
-  const { courseId, sequenceId } = useSelector(state => state.courseware);
+  showTitle = false,
+}: Props) => {
+  const {
+    title = fallbackTitle,
+    contentType = fallbackContentType,
+    bookmarked = false,
+    complete = false,
+  } = useModel('units', unitId);
+  const { courseId, sequenceId } = useSelector((state: RootState) => state.courseware);
   const { pathname } = useLocation();
   const basePath = `/course/${courseId}/${sequenceId}/${unitId}`;
   const unitPath = pathname.startsWith('/preview') ? `/preview${basePath}` : basePath;
@@ -57,35 +73,4 @@ const UnitButton = ({
   );
 };
 
-UnitButton.propTypes = {
-  bookmarked: PropTypes.bool,
-  className: PropTypes.string,
-  complete: PropTypes.bool,
-  contentType: PropTypes.string.isRequired,
-  isActive: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
-  showCompletion: PropTypes.bool,
-  showTitle: PropTypes.bool,
-  title: PropTypes.string.isRequired,
-  unitId: PropTypes.string.isRequired,
-};
-
-UnitButton.defaultProps = {
-  className: undefined,
-  isActive: false,
-  bookmarked: false,
-  complete: false,
-  showTitle: false,
-  showCompletion: true,
-};
-
-const mapStateToProps = (state, props) => {
-  if (props.unitId) {
-    return {
-      ...state.models.units[props.unitId],
-    };
-  }
-  return {};
-};
-
-export default connect(mapStateToProps)(UnitButton);
+export default UnitButton;
