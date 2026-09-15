@@ -148,6 +148,10 @@ as documented in the Open edX Developer Guide under
 
 The learning micro-frontend also supports the following additional variables:
 
+COMPLETION_PERCENTAGE_PRECISION
+  The number of decimal places used when rounding the percentages shown in the
+  completion donut chart on the progress tab. Defaults to ``0``.
+
 CREDIT_HELP_LINK_URL
   A link to resources to help explain what course credit is and how to earn it.
 
