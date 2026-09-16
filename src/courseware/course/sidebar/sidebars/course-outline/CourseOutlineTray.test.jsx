@@ -5,7 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { createTestQueryClient, initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, getTestStoreIds, initializeTestStore } from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { getCourseOutline } from '@src/courseware/data/api';
 import SidebarContext from '../../SidebarContext';
@@ -33,8 +33,7 @@ describe('<CourseOutlineTray />', () => {
   const initTestData = async (options) => {
     store = await initializeTestStore(options);
     const state = store.getState();
-    courseId = state.courseware.courseId;
-    [activeSequenceId] = Object.keys(state.models.sequences);
+    ({ courseId, sequenceId: activeSequenceId } = getTestStoreIds(store));
     [unitId] = Object.keys(state.models.units);
 
     if (!options?.preventOutlineSidebarLoad) {

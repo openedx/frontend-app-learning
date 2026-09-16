@@ -1,6 +1,5 @@
 import React, { type ReactNode } from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import type { UseQueryResult } from '@tanstack/react-query';
 
@@ -9,13 +8,9 @@ import { FooterSlot } from '@edx/frontend-component-footer';
 import HeaderSlot from '../plugin-slots/HeaderSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
-import { getErrorDetail } from '../data/http-error';
+import { getErrorDetail, type RequestError } from '../data/http-error';
 import { useModel } from '../generic/model-store';
 import { useToast } from '../generic/ToastContext';
-import type { RootState } from '../store';
-import {
-  LOADING, LOADED, DENIED, type StatusValue,
-} from '../constants';
 
 import genericMessages from '../generic/messages';
 import messages from './messages';
@@ -23,11 +18,11 @@ import LoadedTabPage from './LoadedTabPage';
 import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 import { TourProvider } from '../product-tours/TourContext';
 
-// A converted tab hands TabPage its metadata + tab-data queries and lets TabPage derive
-// the view; not-yet-converted (Redux) callers still pass a plain status string. The
-// metadata query is typed to only the field this file reads, not the whole (untyped) shape.
-export type CourseStatus = StatusValue | {
-  metadataQuery: UseQueryResult<{ courseAccess?: { hasAccess: boolean } }>;
+// A tab hands TabPage its metadata + tab-data queries and lets TabPage derive the view.
+// The metadata query is typed to only the field this file reads, not the whole
+// (untyped) shape.
+export type CourseStatus = {
+  metadataQuery: UseQueryResult<{ courseAccess?: { hasAccess: boolean } }, RequestError>;
   tabDataQuery?: UseQueryResult;
 };
 
@@ -46,18 +41,8 @@ interface TabView {
   errorDetail?: string;
 }
 
-const deriveView = (courseStatus: CourseStatus, sliceError?: string): TabView => {
+const deriveView = (courseStatus: CourseStatus): TabView => {
   const view = { isLoading: false, isError: false, isDenied: false };
-
-  // Transitional: legacy Redux callers pass a resolved status string and report failure
-  // details through the slices (`sliceError`). This branch, the StatusValue union
-  // member, and the param go when courseware — the last string caller — converts.
-  if (typeof courseStatus === 'string') {
-    if (courseStatus === LOADING) { return { ...view, isLoading: true }; }
-    if (courseStatus === DENIED) { return { ...view, isDenied: true }; }
-    if (courseStatus === LOADED) { return view; }
-    return { ...view, isError: true, errorDetail: sliceError };
-  }
 
   // Access is read from the metadata query, resolved before tabData is considered.
   const { metadataQuery, tabDataQuery } = courseStatus;
@@ -81,17 +66,6 @@ const TabPage = ({
   children,
 }: TabPageProps) => {
   const intl = useIntl();
-
-  // Transitional: string callers report failures through the Redux slices; these reads
-  // go when courseware — the last string caller — converts.
-  const {
-    errorMessage: courseHomeErrorMessage,
-  } = useSelector((state: RootState) => state.courseHome);
-  const {
-    errorMessage: coursewareErrorMessage,
-  } = useSelector((state: RootState) => state.courseware);
-  const sliceError = courseHomeErrorMessage || coursewareErrorMessage || undefined;
-
   const { toastContent, isToastOpen, closeToast } = useToast();
   const {
     courseAccess,
@@ -103,7 +77,7 @@ const TabPage = ({
 
   const {
     isLoading, isError, isDenied, errorDetail,
-  } = deriveView(courseStatus, sliceError);
+  } = deriveView(courseStatus);
 
   if (isDenied) {
     const redirectUrl = getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start);

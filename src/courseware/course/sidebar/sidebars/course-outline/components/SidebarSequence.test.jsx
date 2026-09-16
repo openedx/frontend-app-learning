@@ -7,7 +7,7 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import {
-  createTestQueryClient, initializeMockApp, initializeTestStore, seedQueryData,
+  createTestQueryClient, initializeMockApp, getTestStoreIds, initializeTestStore, seedQueryData,
 } from '@src/setupTest';
 import { getCourseOutline } from '@src/courseware/data/api';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
@@ -28,8 +28,7 @@ describe('<SidebarSequence />', () => {
 
   const initTestData = async (options) => {
     store = await initializeTestStore(options);
-    const state = store.getState();
-    courseId = state.courseware.courseId;
+    courseId = getTestStoreIds(store).courseId;
     outline = await getCourseOutline(courseId);
     let activeSequenceId = '';
     [activeSequenceId] = Object.keys(outline.sequences);

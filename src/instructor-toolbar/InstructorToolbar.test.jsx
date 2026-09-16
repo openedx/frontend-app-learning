@@ -3,6 +3,7 @@ import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
+  getTestStoreIds,
   initializeTestStore, render, screen, waitFor, getByText, logUnhandledRequests,
 } from '../setupTest';
 import InstructorToolbar from './index';
@@ -15,7 +16,7 @@ jest.mock('@edx/frontend-platform', () => ({
 getConfig.mockImplementation(() => originalConfig);
 
 describe('Instructor Toolbar', () => {
-  let courseware;
+  let courseId;
   let models;
   let mockData;
   let axiosMock;
@@ -23,16 +24,16 @@ describe('Instructor Toolbar', () => {
 
   beforeAll(async () => {
     const store = await initializeTestStore();
-    courseware = store.getState().courseware;
     models = store.getState().models;
+    courseId = getTestStoreIds(store).courseId;
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseware.courseId}/masquerade`;
+    masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
   });
 
   beforeEach(() => {
     mockData = {
-      courseId: courseware.courseId,
+      courseId,
       unitId: Object.values(models.units)[0].id,
     };
     axiosMock.reset();

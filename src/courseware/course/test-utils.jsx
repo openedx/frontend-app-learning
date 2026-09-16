@@ -4,7 +4,9 @@ import { getConfig, snakeCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import { breakpoints } from '@openedx/paragon';
-import { createTestQueryClient, initializeTestStore, render } from '@src/setupTest';
+import {
+  createTestQueryClient, getTestStoreIds, initializeTestStore, render,
+} from '@src/setupTest';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
 import { prefetchDiscussionTopics } from '../data/apiHooks';
@@ -32,8 +34,8 @@ const seedDiscussionTopics = async (testStore, courseId, enabledInContext) => {
 const setupDiscussionSidebar = async (HomeMetaParams) => {
   const params = { verifiedMode: null, enabledInContext: true, ...HomeMetaParams };
   const store = await initializeTestStore();
-  const { courseware, models } = store.getState();
-  const { courseId, sequenceId } = courseware;
+  const { models } = store.getState();
+  const { courseId, sequenceId } = getTestStoreIds(store);
   Object.assign(mockData, {
     courseId,
     sequenceId,
@@ -47,8 +49,7 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
   await seedDiscussionTopics(testStore, courseId, params.enabledInContext);
   const [firstUnitId] = Object.keys(state.models.units);
   mockData.unitId = firstUnitId;
-  const [firstSequenceId] = Object.keys(state.models.sequences);
-  mockData.sequenceId = firstSequenceId;
+  mockData.sequenceId = getTestStoreIds(testStore).sequenceId;
   const contextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
 
   const wrapper = await render(

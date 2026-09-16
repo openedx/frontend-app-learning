@@ -1,6 +1,8 @@
 import React from 'react';
 import { Factory } from 'rosie';
-import { initializeTestStore, render, screen } from '../setupTest';
+import {
+  getTestStoreIds, initializeTestStore, render, screen,
+} from '../setupTest';
 import LoadedTabPage from './LoadedTabPage';
 
 jest.mock('../course-tabs/CourseTabsNavigation', () => function () {
@@ -21,7 +23,7 @@ describe('Loaded Tab Page', () => {
 
   beforeAll(async () => {
     const store = await initializeTestStore({ excludeFetchSequence: true });
-    mockData.courseId = store.getState().courseware.courseId;
+    mockData.courseId = getTestStoreIds(store).courseId;
   });
 
   it('renders correctly', () => {

@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import userEvent from '@testing-library/user-event';
 import {
-  render, screen, initializeTestStore, waitFor,
+  render, screen, getTestStoreIds, initializeTestStore, waitFor,
 } from '../../../../setupTest';
 import UnitNavigation from './UnitNavigation';
 
@@ -25,11 +25,11 @@ describe('Unit Navigation', () => {
 
   beforeEach(async () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    const { courseware } = store.getState();
+    const { courseId, sequenceId } = getTestStoreIds(store);
     mockData = {
-      courseId: courseware.courseId,
+      courseId,
       unitId: unitBlocks[1].id,
-      sequenceId: courseware.sequenceId,
+      sequenceId,
       onClickPrevious: () => {},
       onClickNext: () => {},
     };
@@ -114,8 +114,7 @@ describe('Unit Navigation', () => {
     const testCourseMetadata = { ...courseMetadata, certificate_data: { cert_status: 'bogus_status' }, user_has_passing_grade: true };
     const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
-    const { courseware } = testStore.getState();
-    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
 
     renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
 
@@ -134,8 +133,7 @@ describe('Unit Navigation', () => {
     };
     const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
-    const { courseware } = testStore.getState();
-    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
 
     renderNav({ ...testData, unitId: unitBlocks[0].id }, { store: testStore });
 
@@ -153,8 +151,7 @@ describe('Unit Navigation', () => {
     };
     const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
-    const { courseware } = testStore.getState();
-    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
 
     renderNav({ ...testData, unitId: unitBlocks[0].id }, { store: testStore });
 
@@ -166,8 +163,7 @@ describe('Unit Navigation', () => {
     const testCourseMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' }, enrollment: { is_active: true } };
     const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
-    const { courseware } = testStore.getState();
-    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
 
     renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
 
@@ -184,8 +180,7 @@ describe('Unit Navigation', () => {
     };
     const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
-    const { courseware } = testStore.getState();
-    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
 
     renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
 
