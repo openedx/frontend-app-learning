@@ -235,7 +235,7 @@ const CoursewareContainer = () => {
   const sectionViaSequenceId = useSelector(sectionViaSequenceIdSelector);
 
   useCourseStatusBridge(routeCourseId);
-  useSequenceStatusBridge(routeSequenceId, isPreview);
+  useSequenceStatusBridge(routeSequenceId);
 
   const latest = useRef<any>();
 

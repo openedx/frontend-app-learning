@@ -1,4 +1,5 @@
 import React from 'react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import {
   render, screen, fireEvent, getByText, initializeTestStore,
@@ -19,7 +20,7 @@ describe('Sequence Navigation', () => {
     { courseId: courseMetadata.id },
   ));
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
     const { courseware } = store.getState();
     mockData = {
@@ -31,15 +32,31 @@ describe('Sequence Navigation', () => {
     };
   });
 
+  const renderNav = (props = {}, { store } = {}) => {
+    const sequenceId = props.sequenceId ?? mockData.sequenceId;
+    return render(
+      <MemoryRouter initialEntries={[`/course/${courseMetadata.id}/${sequenceId}`]}>
+        <Routes>
+          <Route
+            path="/course/:courseId/:sequenceId/*"
+            element={<SequenceNavigation {...mockData} {...props} />}
+          />
+        </Routes>
+      </MemoryRouter>,
+      { store },
+    );
+  };
+
   it('is empty while loading', async () => {
     const testStore = await initializeTestStore({ excludeFetchSequence: true }, false);
-    render(<SequenceNavigation {...mockData} />, { store: testStore, wrapWithRouter: true });
+    renderNav({}, { store: testStore });
 
     expect(screen.queryByTestId('courseware-sequence-navigation')).not.toBeInTheDocument();
   });
 
-  it('renders empty div without unitId', () => {
-    const { container } = render(<SequenceNavigation {...mockData} unitId={undefined} />, { wrapWithRouter: true });
+  it('renders empty div without unitId', async () => {
+    const { container } = renderNav({ unitId: undefined });
+    await screen.findByTestId('courseware-sequence-navigation');
     expect(getByText(container, (content, element) => (
       element.tagName.toLowerCase() === 'div' && element.getAttribute('style')))).toBeEmptyDOMElement();
   });
@@ -61,7 +78,8 @@ describe('Sequence Navigation', () => {
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    render(<SequenceNavigation {...testData} />, { store: testStore, wrapWithRouter: true });
+    renderNav(testData, { store: testStore });
+    await screen.findByTestId('courseware-sequence-navigation');
 
     const unitButton = screen.getByTitle(unitBlocks[1].display_name);
     fireEvent.click(unitButton);
@@ -72,9 +90,10 @@ describe('Sequence Navigation', () => {
     expect(unitButton.firstChild).toHaveClass('fa-tasks');
   });
 
-  it('renders correctly and handles unit button clicks', () => {
+  it('renders correctly and handles unit button clicks', async () => {
     const onNavigate = jest.fn();
-    render(<SequenceNavigation {...mockData} {...{ onNavigate }} />, { wrapWithRouter: true });
+    renderNav({ onNavigate });
+    await screen.findByTestId('courseware-sequence-navigation');
 
     const unitButtons = screen.getAllByRole('link', { name: /\d+/ });
     expect(unitButtons).toHaveLength(unitButtons.length);
@@ -82,16 +101,18 @@ describe('Sequence Navigation', () => {
     expect(onNavigate).toHaveBeenCalledTimes(unitButtons.length);
   });
 
-  it('has both navigation buttons enabled for a non-corner unit of the sequence', () => {
-    render(<SequenceNavigation {...mockData} />, { wrapWithRouter: true });
+  it('has both navigation buttons enabled for a non-corner unit of the sequence', async () => {
+    renderNav();
+    await screen.findByTestId('courseware-sequence-navigation');
 
     screen.getAllByRole('link', { name: /previous|next/i }).forEach(button => {
       expect(button).toBeEnabled();
     });
   });
 
-  it('has the "Previous" button disabled for the first unit of the sequence', () => {
-    render(<SequenceNavigation {...mockData} unitId={unitBlocks[0].id} />, { wrapWithRouter: true });
+  it('has the "Previous" button disabled for the first unit of the sequence', async () => {
+    renderNav({ unitId: unitBlocks[0].id });
+    await screen.findByTestId('courseware-sequence-navigation');
 
     expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
     expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
@@ -104,10 +125,8 @@ describe('Sequence Navigation', () => {
     const { courseware } = testStore.getState();
     const testData = { ...mockData, sequenceId: courseware.sequenceId };
 
-    render(
-      <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore, wrapWithRouter: true },
-    );
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    await screen.findByTestId('courseware-sequence-navigation');
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
@@ -120,10 +139,8 @@ describe('Sequence Navigation', () => {
     const { courseware } = testStore.getState();
     const testData = { ...mockData, sequenceId: courseware.sequenceId };
 
-    render(
-      <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore, wrapWithRouter: true },
-    );
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    await screen.findByTestId('courseware-sequence-navigation');
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
     expect(screen.getByRole('link', { name: /next \(end of course\)/i })).toBeEnabled();
@@ -141,19 +158,18 @@ describe('Sequence Navigation', () => {
     const { courseware } = testStore.getState();
     const testData = { ...mockData, sequenceId: courseware.sequenceId };
 
-    render(
-      <SequenceNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore, wrapWithRouter: true },
-    );
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    await screen.findByTestId('courseware-sequence-navigation');
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
     expect(screen.getByRole('link', { name: /Complete the course/i })).toBeEnabled();
   });
 
-  it('handles "Previous" and "Next" click', () => {
+  it('handles "Previous" and "Next" click', async () => {
     const previousHandler = jest.fn();
     const nextHandler = jest.fn();
-    render(<SequenceNavigation {...mockData} {...{ previousHandler, nextHandler }} />, { wrapWithRouter: true });
+    renderNav({ previousHandler, nextHandler });
+    await screen.findByTestId('courseware-sequence-navigation');
 
     fireEvent.click(screen.getByRole('link', { name: /previous/i }));
     expect(previousHandler).toHaveBeenCalledTimes(1);
@@ -179,7 +195,8 @@ describe('Sequence Navigation', () => {
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    render(<SequenceNavigation {...testData} unitId={unitBlocks[0].id} />, { store: testStore, wrapWithRouter: true });
+    renderNav({ ...testData, unitId: unitBlocks[0].id }, { store: testStore });
+    await screen.findByTestId('courseware-sequence-navigation');
     expect(screen.queryByRole('link', { name: /previous/i })).not.toBeInTheDocument();
   });
 
@@ -200,13 +217,8 @@ describe('Sequence Navigation', () => {
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    render(
-      <SequenceNavigation
-        {...testData}
-        unitId={unitBlocks[unitBlocks.length - 1].id}
-      />,
-      { store: testStore, wrapWithRouter: true },
-    );
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    await screen.findByTestId('courseware-sequence-navigation');
     expect(screen.queryByRole('link', { name: /next/i })).not.toBeInTheDocument();
   });
 });

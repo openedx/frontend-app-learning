@@ -6,6 +6,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { MemoryRouter } from 'react-router-dom';
 
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import { buildSimpleCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
@@ -20,9 +21,9 @@ import { sequenceIdsSelector } from './selectors';
 import { coursewareQueryKeys } from './queryKeys';
 import type { CourseOutlineData } from './courseOutline';
 import {
-  prefetchDiscussionTopics, useCheckBlockCompletion, useCourseOutlineStructure, useCoursewareMetadata,
-  useCoursewareOutline, useCoursewareOutlineSidebarToggles, useSaveIntegritySignature, useSaveSequencePosition,
-  useSequenceMetadata,
+  prefetchDiscussionTopics, sequenceMightBeUnit, useCheckBlockCompletion, useCourseOutlineStructure,
+  useCoursewareMetadata, useCoursewareOutline, useCoursewareOutlineSidebarToggles, useSaveIntegritySignature,
+  useSaveSequencePosition, useSequenceMetadata,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
@@ -102,12 +103,20 @@ describe('courseware apiHooks — useSequenceMetadata', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
   });
 
-  const renderSequence = (client: QueryClient) => {
-    const wrapper = ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+  const makeWrapper = (client: QueryClient, pathname: string) => function Wrapper(
+    { children }: { children: ReactNode },
+  ) {
+    return (
+      <MemoryRouter initialEntries={[pathname]}>
+        <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      </MemoryRouter>
     );
-    return renderHook(() => useSequenceMetadata(sequenceId, false), { wrapper });
   };
+
+  const renderSequence = (
+    client: QueryClient = createTestQueryClient(),
+    pathname = `/course/${courseId}/${sequenceId}`,
+  ) => renderHook(() => useSequenceMetadata(sequenceId), { wrapper: makeWrapper(client, pathname) });
 
   it('fetches and normalizes the sequence and its units', async () => {
     axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
@@ -146,6 +155,46 @@ describe('courseware apiHooks — useSequenceMetadata', () => {
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(axiosMock.history.get.filter(req => req.url === sequenceUrl)).toHaveLength(1);
+  });
+
+  it('stays pending without a sequenceId, without fetching', () => {
+    const { result } = renderHook(
+      () => useSequenceMetadata(undefined),
+      { wrapper: makeWrapper(createTestQueryClient(), `/course/${courseId}`) },
+    );
+    expect(result.current.isPending).toBe(true);
+    expect(axiosMock.history.get).toHaveLength(0);
+  });
+
+  it('requests preview metadata on a preview route', async () => {
+    axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
+    const { result } = renderSequence(createTestQueryClient(), `/preview/course/${courseId}/${sequenceId}`);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(axiosMock.history.get[0].params).toEqual({ preview: '1' });
+  });
+
+  describe('sequenceMightBeUnit', () => {
+    it('is true for a 422 failure', async () => {
+      axiosMock.onGet(sequenceUrl).reply(422, {});
+      const { result } = renderSequence();
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(sequenceMightBeUnit(result.current)).toBe(true);
+    });
+
+    it('is false for a non-422 failure', async () => {
+      axiosMock.onGet(sequenceUrl).reply(500, {});
+      const { result } = renderSequence();
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(sequenceMightBeUnit(result.current)).toBe(false);
+    });
+
+    it('is false while pending and after success', async () => {
+      axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
+      const { result } = renderSequence();
+      expect(sequenceMightBeUnit(result.current)).toBe(false);
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(sequenceMightBeUnit(result.current)).toBe(false);
+    });
   });
 });
 

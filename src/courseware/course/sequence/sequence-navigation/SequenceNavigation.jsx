@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 import classNames from 'classnames';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
-import { LOADED } from '@src/constants';
+import { useSequenceMetadata } from '@src/courseware/data/apiHooks';
 import { GetCourseExitNavigation } from '../../course-exit';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
@@ -33,11 +33,10 @@ const SequenceNavigation = ({
     navigationDisabledPrevSequence,
     navigationDisabledNextSequence,
   } = useSequenceNavigationMetadata(sequenceId, unitId);
-  const {
-    courseId,
-    sequenceStatus,
-  } = useSelector(state => state.courseware);
-  const isLocked = sequenceStatus === LOADED ? (
+  const { courseId } = useParams();
+  const sequenceQuery = useSequenceMetadata(sequenceId);
+  const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
+  const isLocked = sequenceQuery.isSuccess ? (
     sequence.gatedContent !== undefined && sequence.gatedContent.gated
   ) : undefined;
 
@@ -77,7 +76,6 @@ const SequenceNavigation = ({
 
   const renderNextButton = () => {
     let buttonText;
-    const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
     const disabled = isLastUnit && !exitActive;
 
     if (isLastUnit && exitText) {
@@ -100,7 +98,7 @@ const SequenceNavigation = ({
     );
   };
 
-  return sequenceStatus === LOADED ? (
+  return sequenceQuery.isSuccess ? (
     <nav id="courseware-sequence-navigation" data-testid="courseware-sequence-navigation" className={classNames('sequence-navigation', className, { 'mr-2': isSmallScreen })}>
       {renderPreviousButton()}
       {renderUnitButtons()}
