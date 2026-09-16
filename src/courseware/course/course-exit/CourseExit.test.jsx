@@ -10,7 +10,6 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import { getCourseMetadata } from '../../data/api';
 import { getCourseHomeCourseMetadata } from '../../../course-home/data/api';
-import { fetchCourseSuccess } from '../../data/slice';
 import { addModel } from '../../../generic/model-store';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from '../../data/__factories__/learningSequencesOutline.factory';
@@ -62,7 +61,6 @@ describe('Course Exit Pages', () => {
     ]);
     store.dispatch(addModel({ modelType: 'coursewareMeta', model: metadata }));
     store.dispatch(addModel({ modelType: 'courseHomeMeta', model: { id: courseId, ...homeMetadata } }));
-    store.dispatch(fetchCourseSuccess({ courseId }));
     history.push(`/course/${courseId}`);
     render(
       <QueryClientProvider client={createTestQueryClient(store)}>

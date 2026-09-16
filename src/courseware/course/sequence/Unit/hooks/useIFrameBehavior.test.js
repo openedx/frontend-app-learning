@@ -29,10 +29,6 @@ jest.mock('react', () => ({
   useCallback: jest.fn((cb, prereqs) => ({ cb, prereqs })),
 }));
 
-jest.mock('react-redux', () => ({
-  useSelector: jest.fn(),
-}));
-
 jest.mock('@edx/frontend-platform/logging', () => ({
   logError: jest.fn(),
 }));
@@ -56,6 +52,7 @@ jest.mock('@src/generic/model-store', () => ({
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
+  useParams: () => ({ sequenceId: 'test-sequence-id' }),
 }));
 
 jest.mock('@src/courseware/course/sequence/sequence-navigation/hooks');

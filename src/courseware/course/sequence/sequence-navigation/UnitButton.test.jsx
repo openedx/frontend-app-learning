@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import {
   fireEvent, initializeTestStore, render, screen,
@@ -102,7 +102,9 @@ describe('Unit Button', () => {
     const unitPath = `/course/${courseId}/${sequenceId}/${unit.id}`;
     render(
       <MemoryRouter initialEntries={[`/preview${unitPath}`]}>
-        <UnitButton {...mockData} />
+        <Routes>
+          <Route path="/preview/course/:courseId/:sequenceId/:unitId" element={<UnitButton {...mockData} />} />
+        </Routes>
       </MemoryRouter>,
     );
     expect(screen.getByRole('link')).toHaveAttribute('href', `/preview${unitPath}`);

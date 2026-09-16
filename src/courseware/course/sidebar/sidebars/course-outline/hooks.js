@@ -1,7 +1,6 @@
 import {
   useContext, useLayoutEffect, useRef, useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { breakpoints } from '@openedx/paragon';
@@ -12,20 +11,14 @@ import {
   useCourseOutlineStructure,
   useCoursewareOutlineSidebarToggles,
 } from '@src/courseware/data/apiHooks';
-import {
-  getSequenceId,
-  getSequenceStatus,
-} from '@src/courseware/data/selectors';
 import SidebarContext from '../../SidebarContext';
 import { ID } from './constants';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
   const checkBlockCompletion = useCheckBlockCompletion();
-  const sequenceStatus = useSelector(getSequenceStatus);
-  const activeSequenceId = useSelector(getSequenceId);
 
-  const { courseId } = useParams();
+  const { courseId, sequenceId: activeSequenceId } = useParams();
   const { data: sidebarToggles } = useCoursewareOutlineSidebarToggles(courseId);
   const isEnabledCompletionTracking = sidebarToggles?.enableCompletionTracking;
   const outlineQuery = useCourseOutlineStructure(courseId);
@@ -134,6 +127,5 @@ export const useCourseOutlineSidebar = () => {
     sequences,
     units,
     handleUnitClick,
-    sequenceStatus,
   };
 };

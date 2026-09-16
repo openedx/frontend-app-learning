@@ -5,7 +5,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
   FormattedMessage, useIntl, defineMessages,
 } from '@edx/frontend-platform/i18n';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {
   Hyperlink, DataTable, CardView, Card,
 } from '@openedx/paragon';
@@ -132,7 +132,7 @@ const IntlCard = CourseCard;
 
 const CourseRecommendations = ({ variant }) => {
   const intl = useIntl();
-  const courseId = useSelector(state => state.courseware.courseId);
+  const { courseId } = useParams();
   const { org, number } = useModel('courseHomeMeta', courseId);
 
   const courseKey = `${org}+${number}`;

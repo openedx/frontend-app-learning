@@ -20,6 +20,7 @@ describe('<CourseOutlineTray />', () => {
   let unit;
   let unitId;
   let courseId;
+  let activeSequenceId;
   let mockData;
 
   const { innerWidth: originalInnerWidth, innerHeight: originalInnerHeight } = window;
@@ -33,11 +34,12 @@ describe('<CourseOutlineTray />', () => {
     store = await initializeTestStore(options);
     const state = store.getState();
     courseId = state.courseware.courseId;
+    [activeSequenceId] = Object.keys(state.models.sequences);
     [unitId] = Object.keys(state.models.units);
 
     if (!options?.preventOutlineSidebarLoad) {
       const outline = await getCourseOutline(courseId);
-      const [activeSequenceId] = Object.keys(outline.sequences);
+      [activeSequenceId] = Object.keys(outline.sequences);
       sequence = outline.sequences[activeSequenceId];
       const activeSectionId = Object.keys(outline.sections)[0];
       section = outline.sections[activeSectionId];
@@ -59,9 +61,9 @@ describe('<CourseOutlineTray />', () => {
         <QueryClientProvider client={createTestQueryClient(store)}>
           <IntlProvider locale="en">
             <SidebarContext.Provider value={{ ...mockData, ...testData }}>
-              <MemoryRouter initialEntries={[`/course/${courseId}`]}>
+              <MemoryRouter initialEntries={[`/course/${courseId}/${activeSequenceId}/${unitId}`]}>
                 <Routes>
-                  <Route path="/course/:courseId" element={<CourseOutlineTray />} />
+                  <Route path="/course/:courseId/:sequenceId/:unitId" element={<CourseOutlineTray />} />
                 </Routes>
               </MemoryRouter>
             </SidebarContext.Provider>

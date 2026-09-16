@@ -29,10 +29,9 @@ export const CourseOutline = () => {
     handleToggleCollapse,
   } = useCourseOutlineSidebar();
 
-  const resolvedSectionId = selectedSection
-        || Object.keys(sections).find(
-          (sectionId):boolean => sections[sectionId].sequenceIds.includes(activeSequenceId),
-        )!;
+  const activeSectionId = activeSequenceId && Object.keys(sections)
+    .find((sectionId) => sections[sectionId].sequenceIds.includes(activeSequenceId));
+  const resolvedSectionId = (selectedSection || activeSectionId)!;
   const sectionsIds = Object.keys(sections);
   const sequenceIds: string[] = sections[resolvedSectionId]?.sequenceIds || [];
   const backButtonTitle: string | undefined = sections[resolvedSectionId]?.title;
