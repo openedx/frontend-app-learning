@@ -1,7 +1,9 @@
 import React from 'react';
 import { history } from '@edx/frontend-platform';
 import { Routes, Route } from 'react-router-dom';
-import { initializeTestStore, render, screen } from '../setupTest';
+import {
+  getTestStoreIds, initializeTestStore, render, screen,
+} from '../setupTest';
 import CourseAccessErrorPage from './CourseAccessErrorPage';
 
 let mockMetadataQuery;
@@ -18,7 +20,7 @@ describe('CourseAccessErrorPage', () => {
   let accessDeniedUrl;
   beforeEach(async () => {
     const store = await initializeTestStore({ excludeFetchSequence: true });
-    courseId = store.getState().courseware.courseId;
+    courseId = getTestStoreIds(store).courseId;
     accessDeniedUrl = `/course/${courseId}/access-denied`;
     history.push(accessDeniedUrl);
   });

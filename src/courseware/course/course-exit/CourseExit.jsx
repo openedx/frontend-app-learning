@@ -12,7 +12,6 @@ import { CourseExitViewCoursesPluginSlot } from '../../../plugin-slots/CourseExi
 import { useModel } from '../../../generic/model-store';
 import { TabWithTimer } from '../../../tab-page';
 import { useCoursewareMetadata, useCoursewareOutline } from '../../data/apiHooks';
-import { useCourseExitStatusBridge } from '../../data/statusBridge';
 import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 const CourseExitContent = () => {
@@ -74,7 +73,6 @@ const CourseExit = () => {
   const metadataQuery = useCoursewareMetadata(courseId);
   const courseHomeMetaQuery = useCourseHomeMeta(courseId, 'courseware');
   useCoursewareOutline(courseId);
-  useCourseExitStatusBridge(courseId, metadataQuery, courseHomeMetaQuery);
 
   return (
     <TabWithTimer

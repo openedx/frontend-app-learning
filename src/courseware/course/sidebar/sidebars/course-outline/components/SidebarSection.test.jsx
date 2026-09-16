@@ -6,7 +6,9 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { AppProvider } from '@edx/frontend-platform/react';
 
-import { createTestQueryClient, initializeTestStore, seedQueryData } from '@src/setupTest';
+import {
+  createTestQueryClient, getTestStoreIds, initializeTestStore, seedQueryData,
+} from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { getCourseOutline } from '@src/courseware/data/api';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
@@ -22,7 +24,7 @@ describe('<SidebarSection />', () => {
 
   const initTestData = async (options) => {
     store = await initializeTestStore(options);
-    courseId = store.getState().courseware.courseId;
+    courseId = getTestStoreIds(store).courseId;
     outline = await getCourseOutline(courseId);
     const [activeSectionId] = Object.keys(outline.sections);
     section = outline.sections[activeSectionId];

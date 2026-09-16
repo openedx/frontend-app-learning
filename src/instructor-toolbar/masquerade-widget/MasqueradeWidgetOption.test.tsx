@@ -3,7 +3,7 @@ import { act } from '@testing-library/react';
 import { getConfig } from '@edx/frontend-platform';
 import { MasqueradeWidgetOption } from './MasqueradeWidgetOption';
 import {
-  render, fireEvent, initializeTestStore,
+  render, fireEvent, getTestStoreIds, initializeTestStore,
 } from '../../setupTest';
 
 const originalConfig = jest.requireActual('@edx/frontend-platform').getConfig();
@@ -14,16 +14,16 @@ jest.mock('@edx/frontend-platform', () => ({
 (getConfig as jest.Mock).mockImplementation(() => originalConfig);
 
 describe('Masquerade Widget Dropdown', () => {
-  let courseware;
+  let courseId: string;
   let mockDataStaff;
   let mockDataStudent;
   let active;
 
   beforeAll(async () => {
     const store = await initializeTestStore();
-    courseware = store.getState().courseware;
+    courseId = getTestStoreIds(store).courseId;
     active = {
-      courseKey: courseware.courseId,
+      courseKey: courseId,
       groupId: null,
       role: 'staff',
       userName: null,

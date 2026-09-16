@@ -1,10 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
-import {
-  LOADED,
-  FAILED,
-} from '@src/constants';
+import { LOADED } from '@src/constants';
 
 const slice = createSlice({
   name: 'course-home',
@@ -20,12 +17,6 @@ const slice = createSlice({
     fetchProctoringInfoResolved: (state) => {
       state.proctoringPanelStatus = LOADED;
     },
-    fetchTabFailure: (state, { payload }) => {
-      state.courseId = payload.courseId;
-      state.courseStatus = FAILED;
-      state.errorMessage = payload.errorMessage || null;
-      state.errorCode = payload.errorCode || null;
-    },
     setExamsData: (state, { payload }) => {
       state.examsData = payload;
     },
@@ -34,7 +25,6 @@ const slice = createSlice({
 
 export const {
   fetchProctoringInfoResolved,
-  fetchTabFailure,
   setExamsData,
 } = slice.actions;
 

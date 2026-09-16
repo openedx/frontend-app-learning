@@ -4,7 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { createTestQueryClient, initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, getTestStoreIds, initializeTestStore } from '@src/setupTest';
 import { ID as discussionSidebarId } from '@src/widgets/discussions/DiscussionsTrigger';
 import SidebarContext from '../../SidebarContext';
 import CourseOutlineTrigger from './CourseOutlineTrigger';
@@ -20,7 +20,7 @@ describe('<CourseOutlineTrigger />', () => {
   const initTestStore = async (options) => {
     store = await initializeTestStore(options);
     const state = store.getState();
-    courseId = state.courseware.courseId;
+    courseId = getTestStoreIds(store).courseId;
     [unitId] = Object.keys(state.models.units);
 
     mockData = {

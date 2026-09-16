@@ -5,7 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 
 import {
-  authenticatedUser, fireEvent, initializeMockApp, initializeTestStore, render, screen, waitFor,
+  authenticatedUser, fireEvent, initializeMockApp, getTestStoreIds, initializeTestStore, render, screen, waitFor,
 } from '../../../../setupTest';
 import HonorCode from './HonorCode';
 
@@ -30,9 +30,8 @@ describe('Honor Code', () => {
     } else {
       store = await initializeTestStore();
     }
-    const storeState = store.getState();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    mockData.courseId = storeState.courseware.courseId;
+    mockData.courseId = getTestStoreIds(store).courseId;
     honorCodePostUrl = `${getConfig().LMS_BASE_URL}/api/agreements/v1/integrity_signature/${mockData.courseId}`;
   }
 
