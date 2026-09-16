@@ -1,21 +1,21 @@
 import { useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { useModel } from '../../../../generic/model-store';
-import { sequenceIdsSelector } from '../../../data';
+import { useIsCourseLoaded, useSequenceIds, useSequenceMetadata } from '../../../data/apiHooks';
 import SidebarContext from '../../sidebar/SidebarContext';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
-  const sequenceIds = useSelector(sequenceIdsSelector);
+  const { courseId } = useParams();
+  const sequenceIds = useSequenceIds(courseId);
   const sequence = useModel('sequences', currentSequenceId);
-  const courseId = useSelector(state => state.courseware.courseId);
-  const courseStatus = useSelector(state => state.courseware.courseStatus);
-  const { entranceExamData: { entranceExamPassed } } = useModel('coursewareMeta', courseId);
-  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const isCourseLoaded = useIsCourseLoaded(courseId);
+  const { entranceExamData: { entranceExamPassed } = {} } = useModel('coursewareMeta', courseId);
+  const sequenceQuery = useSequenceMetadata(currentSequenceId);
 
   // If we don't know the sequence and unit yet, then assume no.
-  if (courseStatus !== 'loaded' || sequenceStatus !== 'loaded' || !currentSequenceId || !currentUnitId) {
+  if (!isCourseLoaded || !sequenceQuery.isSuccess || !currentSequenceId || !currentUnitId) {
     return {
       isFirstUnit: false,
       isLastUnit: false,

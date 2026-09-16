@@ -16,20 +16,19 @@ import { createTestQueryClient, initializeMockApp, seedSequenceModels } from '..
 import initializeStore from '../../store';
 import { addModel, updateModel } from '../../generic/model-store';
 import { normalizeLearningSequencesData, normalizeOutlineBlocks, normalizeSequenceMetadata } from './utils';
-import { fetchCourseSuccess } from './slice';
-import { sequenceIdsSelector } from './selectors';
 import { coursewareQueryKeys } from './queryKeys';
 import type { CourseOutlineData } from './courseOutline';
 import {
   prefetchDiscussionTopics, sequenceMightBeUnit, useCheckBlockCompletion, useCourseOutlineStructure,
-  useCoursewareMetadata, useCoursewareOutline, useCoursewareOutlineSidebarToggles, useSaveIntegritySignature,
-  useSaveSequencePosition, useSequenceMetadata,
+  useCoursewareOutlineSidebarToggles, useIsCourseLoaded, useSaveIntegritySignature, useSaveSequencePosition,
+  useSequenceIds, useSequenceMetadata,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
 
 describe('courseware apiHooks — coursewareMeta bridge', () => {
   const courseMetadata = Factory.build('courseMetadata');
+  const courseHomeMetadata = Factory.build('courseHomeMetadata');
   const courseId = courseMetadata.id;
   const { courseBlocks } = buildSimpleCourseBlocks(courseId);
   const outlineResponse = buildOutlineFromBlocks(courseBlocks);
@@ -43,6 +42,9 @@ describe('courseware apiHooks — coursewareMeta bridge', () => {
   let store: ReturnType<typeof initializeStore>;
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/${courseId}`;
   const metadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
+  const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(
+    `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`,
+  );
 
   const coursewareMetaFor = (id: string) => (
     store.getState().models as { coursewareMeta?: Record<string, { sectionIds?: string[]; title?: string }> }
@@ -56,31 +58,110 @@ describe('courseware apiHooks — coursewareMeta bridge', () => {
   it('keeps coursewareMeta.sectionIds (and the sequence order nav needs) when metadata resolves after the outline', async () => {
     let resolveMetadata: () => void = () => {};
     axiosMock.onGet(outlineUrl).reply(200, outlineResponse);
+    axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
     axiosMock.onGet(metadataUrl).reply(() => new Promise((resolve) => {
       resolveMetadata = () => resolve([200, courseMetadata]);
     }));
 
     const queryClient = createTestQueryClient(store);
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <AppProvider store={store} wrapWithRouter={false}>
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      </AppProvider>
     );
-    renderHook(
-      () => ({ meta: useCoursewareMetadata(courseId), outline: useCoursewareOutline(courseId) }),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useSequenceIds(courseId), { wrapper });
 
-    // The outline resolves first and populates sectionIds.
+    // The outline resolves first and populates sectionIds; the loaded gate still
+    // waits on metadata, so no ids yet.
     await waitFor(() => expect(coursewareMetaFor(courseId)?.sectionIds).toEqual(expectedSectionIds));
-    store.dispatch(fetchCourseSuccess({ courseId }));
-    expect(sequenceIdsSelector(store.getState())).toEqual(expectedSequenceIds);
+    expect(result.current).toEqual([]);
 
     // Now let the metadata mirror land last.
     resolveMetadata();
-    await waitFor(() => expect(coursewareMetaFor(courseId)?.title).toBe(courseMetadata.name));
+    await waitFor(() => expect(result.current).toEqual(expectedSequenceIds));
 
-    // sectionIds must survive.
+    // sectionIds must survive the late metadata write.
+    expect(coursewareMetaFor(courseId)?.title).toBe(courseMetadata.name);
     expect(coursewareMetaFor(courseId)?.sectionIds).toEqual(expectedSectionIds);
-    expect(sequenceIdsSelector(store.getState())).toEqual(expectedSequenceIds);
+  });
+});
+
+describe('courseware apiHooks — useIsCourseLoaded', () => {
+  const courseMetadata = Factory.build('courseMetadata');
+  const courseId = courseMetadata.id;
+  const { courseBlocks } = buildSimpleCourseBlocks(courseId);
+  const outlineResponse = buildOutlineFromBlocks(courseBlocks);
+
+  let axiosMock: MockAdapter;
+  const outlineUrl = `${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/${courseId}`;
+  const metadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
+  const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(
+    `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`,
+  );
+
+  beforeEach(() => {
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+  });
+
+  const mockHappyPath = () => {
+    axiosMock.onGet(outlineUrl).reply(200, outlineResponse);
+    axiosMock.onGet(metadataUrl).reply(200, courseMetadata);
+    axiosMock.onGet(courseHomeMetadataUrl).reply(200, Factory.build('courseHomeMetadata'));
+  };
+
+  const renderLoaded = (id: string | undefined) => {
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={createTestQueryClient()}>{children}</QueryClientProvider>
+    );
+    return renderHook(() => useIsCourseLoaded(id), { wrapper });
+  };
+
+  it('is true once all three queries resolve and the learner has access', async () => {
+    mockHappyPath();
+    const { result } = renderLoaded(courseId);
+    expect(result.current).toBe(false); // pending
+    await waitFor(() => expect(result.current).toBe(true));
+  });
+
+  it('is false while any query is pending', async () => {
+    axiosMock.onGet(metadataUrl).reply(() => new Promise(() => {}));
+    mockHappyPath();
+    const { result } = renderLoaded(courseId);
+    await waitFor(() => expect(axiosMock.history.get.length).toBeGreaterThanOrEqual(3));
+    expect(result.current).toBe(false);
+  });
+
+  it('is false when the learner lacks access', async () => {
+    axiosMock.onGet(courseHomeMetadataUrl).reply(
+      200,
+      Factory.build('courseHomeMetadata', { course_access: { has_access: false } }),
+    );
+    mockHappyPath();
+    const { result } = renderLoaded(courseId);
+    await waitFor(() => expect(axiosMock.history.get.length).toBeGreaterThanOrEqual(3));
+    expect(result.current).toBe(false);
+  });
+
+  it('is false when the outline fails', async () => {
+    axiosMock.onGet(outlineUrl).reply(403, {});
+    mockHappyPath();
+    const { result } = renderLoaded(courseId);
+    await waitFor(() => expect(axiosMock.history.get.length).toBeGreaterThanOrEqual(3));
+    expect(result.current).toBe(false);
+  });
+
+  it('is false when a query fails', async () => {
+    axiosMock.onGet(metadataUrl).reply(500, {});
+    mockHappyPath();
+    const { result } = renderLoaded(courseId);
+    await waitFor(() => expect(axiosMock.history.get.length).toBeGreaterThanOrEqual(3));
+    expect(result.current).toBe(false);
+  });
+
+  it('is false without a courseId, without fetching', () => {
+    const { result } = renderLoaded(undefined);
+    expect(result.current).toBe(false);
+    expect(axiosMock.history.get).toHaveLength(0);
   });
 });
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import EffortEstimate from '../../../../shared/effort-estimate';
-import { sequenceIdsSelector } from '../../../data';
+import { useSequenceIds } from '../../../data/apiHooks';
 import { useModel } from '../../../../generic/model-store';
 
 import messages from './messages';
@@ -28,7 +28,8 @@ const UnitNavigationEffortEstimate = ({
   unitId,
 }) => {
   const intl = useIntl();
-  const sequenceIds = useSelector(sequenceIdsSelector);
+  const { courseId } = useParams();
+  const sequenceIds = useSequenceIds(courseId);
   const sequenceIndex = sequenceIds.indexOf(sequenceId);
   const nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
   const sequence = useModel('sequences', sequenceId);
