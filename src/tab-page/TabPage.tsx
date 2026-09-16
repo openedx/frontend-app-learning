@@ -9,6 +9,7 @@ import { FooterSlot } from '@edx/frontend-component-footer';
 import HeaderSlot from '../plugin-slots/HeaderSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
+import { getErrorDetail } from '../data/http-error';
 import { useModel } from '../generic/model-store';
 import { useToast } from '../generic/ToastContext';
 import type { RootState } from '../store';
@@ -42,27 +43,33 @@ interface TabView {
   isLoading: boolean;
   isError: boolean;
   isDenied: boolean;
+  errorDetail?: string;
 }
 
-const deriveView = (courseStatus: CourseStatus): TabView => {
+const deriveView = (courseStatus: CourseStatus, sliceError?: string): TabView => {
   const view = { isLoading: false, isError: false, isDenied: false };
 
-  // Transitional: legacy Redux callers pass a resolved status string. This branch and the
-  // StatusValue union member go when courseware — the last string caller — converts.
+  // Transitional: legacy Redux callers pass a resolved status string and report failure
+  // details through the slices (`sliceError`). This branch, the StatusValue union
+  // member, and the param go when courseware — the last string caller — converts.
   if (typeof courseStatus === 'string') {
     if (courseStatus === LOADING) { return { ...view, isLoading: true }; }
     if (courseStatus === DENIED) { return { ...view, isDenied: true }; }
     if (courseStatus === LOADED) { return view; }
-    return { ...view, isError: true };
+    return { ...view, isError: true, errorDetail: sliceError };
   }
 
   // Access is read from the metadata query, resolved before tabData is considered.
   const { metadataQuery, tabDataQuery } = courseStatus;
-  if (metadataQuery.isError) { return { ...view, isError: true }; }
+  if (metadataQuery.isError) {
+    return { ...view, isError: true, errorDetail: getErrorDetail(metadataQuery.error) };
+  }
   if (metadataQuery.isPending) { return { ...view, isLoading: true }; }
   if (tabDataQuery?.isPending) { return { ...view, isLoading: true }; }
   if (!metadataQuery.data?.courseAccess?.hasAccess) { return { ...view, isDenied: true }; }
-  if (tabDataQuery?.isError) { return { ...view, isError: true }; }
+  if (tabDataQuery?.isError) {
+    return { ...view, isError: true, errorDetail: getErrorDetail(tabDataQuery.error) };
+  }
   return view;
 };
 
@@ -74,13 +81,17 @@ const TabPage = ({
   children,
 }: TabPageProps) => {
   const intl = useIntl();
+
+  // Transitional: string callers report failures through the Redux slices; these reads
+  // go when courseware — the last string caller — converts.
   const {
     errorMessage: courseHomeErrorMessage,
   } = useSelector((state: RootState) => state.courseHome);
   const {
     errorMessage: coursewareErrorMessage,
   } = useSelector((state: RootState) => state.courseware);
-  const errorMessage = courseHomeErrorMessage || coursewareErrorMessage;
+  const sliceError = courseHomeErrorMessage || coursewareErrorMessage || undefined;
+
   const { toastContent, isToastOpen, closeToast } = useToast();
   const {
     courseAccess,
@@ -90,7 +101,9 @@ const TabPage = ({
     title,
   } = useModel('courseHomeMeta', courseId);
 
-  const { isLoading, isError, isDenied } = deriveView(courseStatus);
+  const {
+    isLoading, isError, isDenied, errorDetail,
+  } = deriveView(courseStatus, sliceError);
 
   if (isDenied) {
     const redirectUrl = getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start);
@@ -142,7 +155,7 @@ const TabPage = ({
 
   const renderError = () => (
     <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
-      {errorMessage || intl.formatMessage(messages.failure)}
+      {errorDetail || intl.formatMessage(messages.failure)}
     </p>
   );
 
