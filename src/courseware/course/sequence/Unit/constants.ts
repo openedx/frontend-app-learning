@@ -17,9 +17,14 @@ export const messageTypes = {
   autoAdvance: 'plugin.autoAdvance',
 } as const;
 
+export const eventTypes = {
+  POST_EVENT: 'post_event',
+} as const;
+
 export default {
   modelKeys,
   views,
   loadingState,
   messageTypes,
+  eventTypes,
 };

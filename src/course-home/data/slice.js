@@ -9,7 +9,6 @@ const slice = createSlice({
     courseStatus: 'loading',
     courseId: null,
     proctoringPanelStatus: 'loading',
-    examsData: null,
     errorMessage: null,
     errorCode: null,
   },
@@ -17,15 +16,11 @@ const slice = createSlice({
     fetchProctoringInfoResolved: (state) => {
       state.proctoringPanelStatus = LOADED;
     },
-    setExamsData: (state, { payload }) => {
-      state.examsData = payload;
-    },
   },
 });
 
 export const {
   fetchProctoringInfoResolved,
-  setExamsData,
 } = slice.actions;
 
 export const {

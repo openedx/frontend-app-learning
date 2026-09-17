@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useWindowSize } from '@openedx/paragon';
 import { useParams } from 'react-router-dom';
 
@@ -9,19 +9,12 @@ import ProgressTabCourseGradeSlot from '@src/plugin-slots/ProgressTabCourseGrade
 import ProgressTabGradeBreakdownSlot from '@src/plugin-slots/ProgressTabGradeBreakdownSlot';
 import ProgressTabRelatedLinksSlot from '@src/plugin-slots/ProgressTabRelatedLinksSlot';
 import ProgressHeader from './ProgressHeader';
-import { useGetExamsData, useProgressData } from './hooks';
+import { useProgressData } from './hooks';
 import { useCourseHomeMeta, useProgressTabData } from '../data/apiHooks';
 import { TabWithTimer } from '../../tab-page';
 
 const ProgressTabContent = () => {
-  const { courseId } = useParams();
-  const { sectionScores, disableProgressGraph } = useProgressData();
-
-  const sequenceIds = useMemo(() => (
-    sectionScores.flatMap((section) => (section.subsections)).map((subsection) => subsection.blockKey)
-  ), [sectionScores]);
-
-  useGetExamsData(courseId, sequenceIds);
+  const { disableProgressGraph } = useProgressData();
 
   const windowWidth = useWindowSize().width;
   if (windowWidth === undefined) {
