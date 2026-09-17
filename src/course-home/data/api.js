@@ -121,16 +121,10 @@ export async function getDatesTabData(courseId) {
     return camelCaseObject(data);
   } catch (error) {
     const httpErrorStatus = error?.response?.status;
-    if (httpErrorStatus === 401) {
-      // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
-      // courseAccess in the metadata call, so just ignore this status for now.
-      return {};
-    }
-    if (httpErrorStatus === 403) {
-      // The backend sends this if there is a course access error and the user should be redirected. The redirect
-      // info is included in the course metadata request and will be handled there as long as this call returns
-      // without an error
-      return {};
+    if (httpErrorStatus === 401 || httpErrorStatus === 403) {
+      // The dates endpoint can be unavailable before course access is resolved.
+      // Return a loaded empty model so the Progress card does not stay in loading state.
+      return { courseDateBlocks: [] };
     }
     throw error;
   }

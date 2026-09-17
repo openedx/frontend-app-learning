@@ -5,12 +5,12 @@ import { useModel } from '../../generic/model-store';
 import ProgressTabCertificateStatusSidePanelSlot from '../../plugin-slots/ProgressTabCertificateStatusSidePanelSlot';
 
 import CourseCompletion from './course-completion/CourseCompletion';
+import ImportantDates from './important-dates/ImportantDates';
 import ProgressHeader from './ProgressHeader';
 
 import ProgressTabCertificateStatusMainBodySlot from '../../plugin-slots/ProgressTabCertificateStatusMainBodySlot';
 import ProgressTabCourseGradeSlot from '../../plugin-slots/ProgressTabCourseGradeSlot';
 import ProgressTabGradeBreakdownSlot from '../../plugin-slots/ProgressTabGradeBreakdownSlot';
-import ProgressTabRelatedLinksSlot from '../../plugin-slots/ProgressTabRelatedLinksSlot';
 import { useGetExamsData } from './hooks';
 
 const ProgressTab = () => {
@@ -46,7 +46,7 @@ const ProgressTab = () => {
         {/* Side panel */}
         <div className="col-12 col-md-4 p-0 px-md-4">
           <ProgressTabCertificateStatusSidePanelSlot />
-          <ProgressTabRelatedLinksSlot />
+          <ImportantDates />
         </div>
       </div>
     </>
