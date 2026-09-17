@@ -1,168 +1,95 @@
-import { renderHook } from '@testing-library/react';
-import { useDispatch } from 'react-redux';
-import { useGetExamsData } from './hooks';
-import { fetchExamAttemptsData } from '../data/thunks';
+import React from 'react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react';
+import { camelCaseObject } from '@edx/frontend-platform';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { Factory } from 'rosie';
+import MockAdapter from 'axios-mock-adapter';
 
-// Mock the dependencies
-jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(),
-}));
+import { createTestQueryClient, initializeMockApp, seedQueryData } from '../../setupTest';
+import { courseHomeQueryKeys } from '../data/queryKeys';
+import { useExamsData } from './hooks';
 
-jest.mock('../data/thunks', () => ({
-  fetchExamAttemptsData: jest.fn(),
-}));
+initializeMockApp();
 
-describe('useGetExamsData hook', () => {
-  const mockDispatch = jest.fn();
-  const mockFetchExamAttemptsData = jest.fn();
+describe('useExamsData', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  const blockKey = (name) => `block-v1:edX+DemoX+Demo_Course+type@sequential+block@${name}`;
+  const sectionScores = [
+    { display_name: 'Section 1', subsections: [{ block_key: blockKey('exam1') }, { block_key: blockKey('homework1') }] },
+    { display_name: 'Section 2', subsections: [{ block_key: blockKey('final_exam') }] },
+  ];
+  const examFor = (name) => ({
+    exam: {
+      id: name.length, course_id: courseId, content_id: blockKey(name), exam_name: `Exam ${name}`,
+    },
+  });
+
+  let axiosMock;
+  let queryClient;
+
+  const wrapper = ({ children }) => (
+    <MemoryRouter initialEntries={[`/course/${courseId}/progress`]}>
+      <QueryClientProvider client={queryClient}>
+        <Routes>
+          <Route path="/course/:courseId/progress/:targetUserId?" element={children} />
+        </Routes>
+      </QueryClientProvider>
+    </MemoryRouter>
+  );
+
+  const seedProgress = (scores) => seedQueryData(
+    queryClient,
+    courseHomeQueryKeys.progressTab(courseId, undefined),
+    camelCaseObject(Factory.build('progressTabData', { section_scores: scores })),
+  );
+
+  const attemptRequests = () => axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'));
+  const notFound = () => Promise.reject(Object.assign(new Error('Request failed with status code 404'), {
+    response: { status: 404, data: {} },
+    customAttributes: { httpErrorStatus: 404 },
+  }));
 
   beforeEach(() => {
-    useDispatch.mockReturnValue(mockDispatch);
-    fetchExamAttemptsData.mockReturnValue(mockFetchExamAttemptsData);
-    jest.clearAllMocks();
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+    queryClient = createTestQueryClient();
+    axiosMock.onGet(/exam1/).reply(200, examFor('exam1'));
+    axiosMock.onGet(/homework1/).reply(notFound);
+    axiosMock.onGet(/final_exam/).reply(200, examFor('final_exam'));
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  it('is null and requests nothing until the progress data is present', () => {
+    const { result } = renderHook(() => useExamsData(), { wrapper });
+
+    expect(result.current).toBeNull();
+    expect(attemptRequests()).toHaveLength(0);
   });
 
-  it('should dispatch fetchExamAttemptsData on mount', () => {
-    const courseId = 'course-v1:edX+DemoX+Demo_Course';
-    const sequenceIds = [
-      'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
-      'block-v1:edX+DemoX+Demo_Course+type@sequential+block@67890',
-    ];
+  it('fetches one attempt per subsection, in sectionScores order, with {} where there is none', async () => {
+    seedProgress(sectionScores);
+    const { result } = renderHook(() => useExamsData(), { wrapper });
 
-    renderHook(() => useGetExamsData(courseId, sequenceIds));
+    expect(result.current).toBeNull();
+    await waitFor(() => expect(result.current).not.toBeNull());
 
-    expect(fetchExamAttemptsData).toHaveBeenCalledWith(courseId, sequenceIds);
-    expect(mockDispatch).toHaveBeenCalledWith(mockFetchExamAttemptsData);
-  });
-
-  it('should re-dispatch when courseId changes', () => {
-    const initialCourseId = 'course-v1:edX+DemoX+Demo_Course';
-    const newCourseId = 'course-v1:edX+NewCourse+Demo';
-    const sequenceIds = ['block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345'];
-
-    const { rerender } = renderHook(
-      ({ courseId: cId, sequenceIds: sIds }) => useGetExamsData(cId, sIds),
-      {
-        initialProps: { courseId: initialCourseId, sequenceIds },
-      },
+    expect(attemptRequests().map((req) => decodeURIComponent(req.url).split('/content_id/')[1])).toEqual(
+      [blockKey('exam1'), blockKey('homework1'), blockKey('final_exam')],
     );
-
-    // Verify initial call
-    expect(fetchExamAttemptsData).toHaveBeenCalledWith(initialCourseId, sequenceIds);
-    expect(mockDispatch).toHaveBeenCalledWith(mockFetchExamAttemptsData);
-
-    // Clear mocks to isolate the re-render call
-    jest.clearAllMocks();
-
-    // Re-render with new courseId
-    rerender({ courseId: newCourseId, sequenceIds });
-
-    expect(fetchExamAttemptsData).toHaveBeenCalledWith(newCourseId, sequenceIds);
-    expect(mockDispatch).toHaveBeenCalledWith(mockFetchExamAttemptsData);
+    expect(result.current).toEqual([
+      camelCaseObject(examFor('exam1').exam),
+      {},
+      camelCaseObject(examFor('final_exam').exam),
+    ]);
   });
 
-  it('should re-dispatch when sequenceIds changes', () => {
-    const courseId = 'course-v1:edX+DemoX+Demo_Course';
-    const initialSequenceIds = ['block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345'];
-    const newSequenceIds = [
-      'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
-      'block-v1:edX+DemoX+Demo_Course+type@sequential+block@67890',
-    ];
+  it('fetches again when the progress data changes the subsection list', async () => {
+    seedProgress([sectionScores[0]]);
+    const { result } = renderHook(() => useExamsData(), { wrapper });
+    await waitFor(() => expect(result.current).toHaveLength(2));
 
-    const { rerender } = renderHook(
-      ({ courseId: cId, sequenceIds: sIds }) => useGetExamsData(cId, sIds),
-      {
-        initialProps: { courseId, sequenceIds: initialSequenceIds },
-      },
-    );
-
-    // Verify initial call
-    expect(fetchExamAttemptsData).toHaveBeenCalledWith(courseId, initialSequenceIds);
-    expect(mockDispatch).toHaveBeenCalledWith(mockFetchExamAttemptsData);
-
-    // Clear mocks to isolate the re-render call
-    jest.clearAllMocks();
-
-    // Re-render with new sequenceIds
-    rerender({ courseId, sequenceIds: newSequenceIds });
-
-    expect(fetchExamAttemptsData).toHaveBeenCalledWith(courseId, newSequenceIds);
-    expect(mockDispatch).toHaveBeenCalledWith(mockFetchExamAttemptsData);
-  });
-
-  it('should not re-dispatch when neither courseId nor sequenceIds changes', () => {
-    const courseId = 'course-v1:edX+DemoX+Demo_Course';
-    const sequenceIds = ['block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345'];
-
-    const { rerender } = renderHook(
-      ({ courseId: cId, sequenceIds: sIds }) => useGetExamsData(cId, sIds),
-      {
-        initialProps: { courseId, sequenceIds },
-      },
-    );
-
-    // Verify initial call
-    expect(fetchExamAttemptsData).toHaveBeenCalledTimes(1);
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
-
-    // Clear mocks to isolate the re-render call
-    jest.clearAllMocks();
-
-    // Re-render with same props
-    rerender({ courseId, sequenceIds });
-
-    // Should not dispatch again
-    expect(fetchExamAttemptsData).not.toHaveBeenCalled();
-    expect(mockDispatch).not.toHaveBeenCalled();
-  });
-
-  it('should handle empty sequenceIds array', () => {
-    const courseId = 'course-v1:edX+DemoX+Demo_Course';
-    const sequenceIds = [];
-
-    renderHook(() => useGetExamsData(courseId, sequenceIds));
-
-    expect(fetchExamAttemptsData).toHaveBeenCalledWith(courseId, []);
-    expect(mockDispatch).toHaveBeenCalledWith(mockFetchExamAttemptsData);
-  });
-
-  it('should handle null/undefined courseId', () => {
-    const sequenceIds = ['block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345'];
-
-    renderHook(() => useGetExamsData(null, sequenceIds));
-
-    expect(fetchExamAttemptsData).toHaveBeenCalledWith(null, sequenceIds);
-    expect(mockDispatch).toHaveBeenCalledWith(mockFetchExamAttemptsData);
-  });
-
-  it('should handle sequenceIds reference change but same content', () => {
-    const courseId = 'course-v1:edX+DemoX+Demo_Course';
-    const sequenceIds1 = ['block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345'];
-    const sequenceIds2 = ['block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345']; // Same content, different reference
-
-    const { rerender } = renderHook(
-      ({ courseId: cId, sequenceIds: sIds }) => useGetExamsData(cId, sIds),
-      {
-        initialProps: { courseId, sequenceIds: sequenceIds1 },
-      },
-    );
-
-    // Verify initial call
-    expect(fetchExamAttemptsData).toHaveBeenCalledTimes(1);
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
-
-    // Clear mocks to isolate the re-render call
-    jest.clearAllMocks();
-
-    // Re-render with different reference but same content
-    rerender({ courseId, sequenceIds: sequenceIds2 });
-
-    // Should dispatch again because the reference changed (useEffect dependency)
-    expect(fetchExamAttemptsData).toHaveBeenCalledWith(courseId, sequenceIds2);
-    expect(mockDispatch).toHaveBeenCalledWith(mockFetchExamAttemptsData);
+    seedProgress(sectionScores);
+    await waitFor(() => expect(result.current).toHaveLength(3));
+    expect(attemptRequests()).toHaveLength(5);
   });
 });

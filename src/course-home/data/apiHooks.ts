@@ -7,6 +7,7 @@ import {
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
   getDatesTabData,
+  getExamsData,
   getLiveTabIframe,
   getOutlineTabData,
   getProgressTabData,
@@ -92,6 +93,21 @@ export const useProgressTabData = (courseId: string, targetUserId?: string) => u
   queryKey: courseHomeQueryKeys.progressTab(courseId, targetUserId),
   queryFn: () => getProgressTabData(courseId, targetUserId),
   meta: { modelType: 'progress', courseId },
+});
+
+export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: string[] | undefined) => useQuery<
+Record<string, unknown>[]
+>({
+  queryKey: courseHomeQueryKeys.examAttempts(courseId!, sequenceIds ?? []),
+  queryFn: () => Promise.all((sequenceIds ?? []).map(async (sequenceId) => {
+    try {
+      return (await getExamsData(courseId, sequenceId)).exam || {};
+    } catch (error) {
+      logError(error as Error);
+      return {};
+    }
+  })),
+  enabled: !!courseId && !!sequenceIds,
 });
 
 export const useRequestCert = () => useMutation({

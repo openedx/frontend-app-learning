@@ -7,4 +7,7 @@ export const courseHomeQueryKeys = {
   outlineTab: (courseId: string) => [...courseHomeQueryKeys.all, 'outlineTab', courseId] as const,
   liveTab: (courseId: string) => [...courseHomeQueryKeys.all, 'liveTab', courseId] as const,
   progressTab: (courseId: string, targetUserId?: string) => [...courseHomeQueryKeys.all, 'progressTab', courseId, targetUserId] as const,
+  examAttempts: (courseId: string, sequenceIds: string[]) => (
+    [...courseHomeQueryKeys.all, 'examAttempts', courseId, sequenceIds] as const
+  ),
 };
