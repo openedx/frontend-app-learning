@@ -2,10 +2,11 @@ import { AppProvider } from '@edx/frontend-platform/react';
 import { MemoryRouter } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 
-import { initializeMockApp, initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, initializeMockApp, initializeTestStore } from '@src/setupTest';
 import SidebarContext from '../../../SidebarContext';
 import SidebarUnit from './SidebarUnit';
 import { ID } from '../constants';
@@ -39,23 +40,25 @@ describe('<SidebarUnit />', () => {
   function renderWithProvider(props = {}, sidebarContext = defaultSidebarContext, pathname = '/course') {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
-        <IntlProvider locale="en">
-          <SidebarContext.Provider value={{ ...sidebarContext }}>
-            <MemoryRouter initialEntries={[{ pathname }]}>
-              <SidebarUnit
-                isFirst
-                id={unit.id}
-                courseId="course123"
-                sequenceId={sequenceId}
-                unit={{ ...unit, icon: 'video', isLocked: false }}
-                isActive={false}
-                activeUnitId={unit.id}
-                isCompletionTrackingEnabled
-                {...props}
-              />
-            </MemoryRouter>
-          </SidebarContext.Provider>
-        </IntlProvider>
+        <QueryClientProvider client={createTestQueryClient(store)}>
+          <IntlProvider locale="en">
+            <SidebarContext.Provider value={{ ...sidebarContext }}>
+              <MemoryRouter initialEntries={[{ pathname }]}>
+                <SidebarUnit
+                  isFirst
+                  id={unit.id}
+                  courseId="course123"
+                  sequenceId={sequenceId}
+                  unit={{ ...unit, icon: 'video', isLocked: false }}
+                  isActive={false}
+                  activeUnitId={unit.id}
+                  isCompletionTrackingEnabled
+                  {...props}
+                />
+              </MemoryRouter>
+            </SidebarContext.Provider>
+          </IntlProvider>
+        </QueryClientProvider>
       </AppProvider>,
     );
     return container;

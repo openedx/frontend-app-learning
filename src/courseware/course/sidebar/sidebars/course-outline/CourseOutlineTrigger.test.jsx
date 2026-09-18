@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, initializeTestStore } from '@src/setupTest';
 import { ID as discussionSidebarId } from '@src/widgets/discussions/DiscussionsTrigger';
 import SidebarContext from '../../SidebarContext';
 import CourseOutlineTrigger from './CourseOutlineTrigger';
@@ -32,11 +33,13 @@ describe('<CourseOutlineTrigger />', () => {
   function renderWithProvider(testData = {}, props = {}) {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
-        <IntlProvider locale="en">
-          <SidebarContext.Provider value={{ ...mockData, ...testData }}>
-            <CourseOutlineTrigger {...props} />
-          </SidebarContext.Provider>
-        </IntlProvider>
+        <QueryClientProvider client={createTestQueryClient(store)}>
+          <IntlProvider locale="en">
+            <SidebarContext.Provider value={{ ...mockData, ...testData }}>
+              <CourseOutlineTrigger {...props} />
+            </SidebarContext.Provider>
+          </IntlProvider>
+        </QueryClientProvider>
       </AppProvider>,
     );
     return container;

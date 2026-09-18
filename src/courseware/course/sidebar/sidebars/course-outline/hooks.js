@@ -8,7 +8,8 @@ import { breakpoints } from '@openedx/paragon';
 
 import { useModel } from '@src/generic/model-store';
 import { LOADED } from '@src/constants';
-import { checkBlockCompletion, getCourseOutlineStructure } from '@src/courseware/data/thunks';
+import { useCheckBlockCompletion } from '@src/courseware/data/apiHooks';
+import { getCourseOutlineStructure } from '@src/courseware/data/thunks';
 import {
   getCoursewareOutlineSidebarSettings,
   getCourseOutlineShouldUpdate,
@@ -23,6 +24,7 @@ import { ID } from './constants';
 // eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
   const dispatch = useDispatch();
+  const checkBlockCompletion = useCheckBlockCompletion();
   const {
     enableCompletionTracking: isEnabledCompletionTracking,
   } = useSelector(getCoursewareOutlineSidebarSettings);
@@ -87,7 +89,7 @@ export const useCourseOutlineSidebar = () => {
     };
 
     logEvent('edx.ui.lms.sequence.tab_selected', 'left');
-    dispatch(checkBlockCompletion(courseId, sequenceId, activeUnitId));
+    checkBlockCompletion(courseId, sequenceId, activeUnitId);
 
     // Hide the sidebar after selecting a unit on a mobile device.
     if (shouldDisplayFullScreen) {
