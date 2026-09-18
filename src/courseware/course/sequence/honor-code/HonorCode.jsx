@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
@@ -8,13 +7,13 @@ import { ActionRow, Alert, Button } from '@openedx/paragon';
 
 import { useNavigate } from 'react-router-dom';
 import { useModel } from '../../../../generic/model-store';
-import { saveIntegritySignature } from '../../../data';
+import { useSaveIntegritySignature } from '../../../data/apiHooks';
 import messages from './messages';
 
 const HonorCode = ({ courseId }) => {
   const intl = useIntl();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const saveIntegritySignature = useSaveIntegritySignature();
   const {
     isMasquerading,
     username,
@@ -25,15 +24,13 @@ const HonorCode = ({ courseId }) => {
 
   const handleCancel = () => navigate(`/course/${courseId}/home`);
 
-  const handleAgree = () => dispatch(
+  const handleAgree = () => saveIntegritySignature(
     // If the request is made by a staff user masquerading as a specific learner,
     // don't actually create a signature for them on the backend.
     // Only the modal dialog will be dismissed.
     // Otherwise, even for staff users, we want to record the signature.
-    saveIntegritySignature(
-      courseId,
-      isMasquerading && username !== authUser.username,
-    ),
+    courseId,
+    isMasquerading && username !== authUser.username,
   );
 
   return (

@@ -13,7 +13,7 @@ import { buildOutlineFromBlocks } from './__factories__/learningSequencesOutline
 import { getResponseStatus } from '../../data/http-error';
 import { createTestQueryClient, initializeMockApp, seedSequenceModels } from '../../setupTest';
 import initializeStore from '../../store';
-import { updateModel } from '../../generic/model-store';
+import { addModel, updateModel } from '../../generic/model-store';
 import { normalizeLearningSequencesData, normalizeOutlineBlocks, normalizeSequenceMetadata } from './utils';
 import { fetchCourseSuccess } from './slice';
 import { sequenceIdsSelector } from './selectors';
@@ -21,7 +21,7 @@ import { coursewareQueryKeys } from './queryKeys';
 import type { CourseOutlineData } from './courseOutline';
 import {
   useCheckBlockCompletion, useCourseOutlineStructure, useCoursewareMetadata, useCoursewareOutline,
-  useCoursewareOutlineSidebarToggles, useSequenceMetadata,
+  useCoursewareOutlineSidebarToggles, useSaveIntegritySignature, useSaveSequencePosition, useSequenceMetadata,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
@@ -439,5 +439,156 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
     expect(outline().sections['section-1'].complete).toBe(false);
     expect(outline().sections['section-1'].completionStat.completed).toBe(1);
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: outlineQueryKey });
+  });
+});
+
+describe('courseware apiHooks — useSaveSequencePosition', () => {
+  const courseMetadata = Factory.build('courseMetadata');
+  const courseId = courseMetadata.id;
+  const { unitBlocks, sequenceBlocks } = buildSimpleCourseBlocks(courseId);
+  const sequenceMetadata = Factory.build(
+    'sequenceMetadata',
+    {},
+    { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
+  );
+  const sequenceId = sequenceBlocks[0].id;
+  const sequenceUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
+  const gotoPositionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/goto_position`;
+
+  let axiosMock: MockAdapter;
+  let store: ReturnType<typeof initializeStore>;
+  let queryClient: QueryClient;
+
+  const activeUnitIndex = () => (
+    store.getState().models as { sequences: Record<string, { activeUnitIndex: number }> }
+  ).sequences[sequenceId].activeUnitIndex;
+
+  const renderSaveSequencePosition = () => {
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <AppProvider store={store} wrapWithRouter={false}>
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      </AppProvider>
+    );
+    return renderHook(() => useSaveSequencePosition(), { wrapper });
+  };
+
+  beforeEach(async () => {
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+    store = initializeStore();
+    queryClient = createTestQueryClient(store);
+    loggingService.logError.mockReset();
+    // The rollback pre-read needs the sequence model loaded, which callers always
+    // have (the save only fires from a rendered sequence).
+    axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
+    await seedSequenceModels(store, [sequenceMetadata.item_id]);
+  });
+
+  it('updates the sequence model activeUnitIndex and posts the 1-indexed position', async () => {
+    axiosMock.onPost(gotoPositionUrl).reply(201, {});
+    const newPosition = 123;
+
+    const { result } = renderSaveSequencePosition();
+    act(() => { result.current(courseId, sequenceId, newPosition); });
+
+    await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    expect(axiosMock.history.post[0].url).toEqual(gotoPositionUrl);
+    // Position is 1-indexed on the server and 0-indexed in this app.
+    expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({ position: newPosition + 1 });
+    expect(activeUnitIndex()).toEqual(newPosition);
+  });
+
+  it('changes and reverts the sequence model activeUnitIndex in case of error', async () => {
+    axiosMock.onPost(gotoPositionUrl).networkError();
+    const oldPosition = activeUnitIndex();
+    const newPosition = 123;
+
+    const { result } = renderSaveSequencePosition();
+    act(() => { result.current(courseId, sequenceId, newPosition); });
+
+    await waitFor(() => expect(loggingService.logError).toHaveBeenCalledTimes(1));
+    expect(axiosMock.history.post[0].url).toEqual(gotoPositionUrl);
+    expect(activeUnitIndex()).toEqual(oldPosition);
+  });
+
+  it('applies the optimistic position before the request resolves', async () => {
+    let resolvePost: () => void = () => {};
+    axiosMock.onPost(gotoPositionUrl).reply(() => new Promise((resolve) => {
+      resolvePost = () => resolve([201, {}]);
+    }));
+    const newPosition = 123;
+
+    const { result } = renderSaveSequencePosition();
+    act(() => { result.current(courseId, sequenceId, newPosition); });
+
+    await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    expect(activeUnitIndex()).toEqual(newPosition);
+
+    await act(async () => { resolvePost(); });
+    expect(activeUnitIndex()).toEqual(newPosition);
+  });
+});
+
+describe('courseware apiHooks — useSaveIntegritySignature', () => {
+  const courseMetadata = Factory.build('courseMetadata');
+  const courseId = courseMetadata.id;
+  const integritySignatureUrl = `${getConfig().LMS_BASE_URL}/api/agreements/v1/integrity_signature/${courseId}`;
+
+  let axiosMock: MockAdapter;
+  let store: ReturnType<typeof initializeStore>;
+  let queryClient: QueryClient;
+
+  const needsSignature = () => (
+    store.getState().models as { coursewareMeta: Record<string, { userNeedsIntegritySignature?: boolean }> }
+  ).coursewareMeta[courseId].userNeedsIntegritySignature;
+
+  const renderSaveIntegritySignature = () => {
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <AppProvider store={store} wrapWithRouter={false}>
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      </AppProvider>
+    );
+    return renderHook(() => useSaveIntegritySignature(), { wrapper });
+  };
+
+  beforeEach(() => {
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+    store = initializeStore();
+    queryClient = createTestQueryClient(store);
+    loggingService.logError.mockReset();
+    // Seed the normalized model directly; the user_needs_integrity_signature
+    // normalization itself is covered by the metadata query and pact tests.
+    store.dispatch(addModel({
+      modelType: 'coursewareMeta',
+      model: { id: courseId, userNeedsIntegritySignature: true },
+    }));
+  });
+
+  it('updates userNeedsIntegritySignature upon success', async () => {
+    axiosMock.onPost(integritySignatureUrl).reply(200, {});
+
+    const { result } = renderSaveIntegritySignature();
+    act(() => { result.current(courseId, false); });
+
+    await waitFor(() => expect(needsSignature()).toEqual(false));
+    expect(axiosMock.history.post[0].url).toEqual(integritySignatureUrl);
+  });
+
+  it('dismisses the prompt without a request when masquerading as a specific learner', async () => {
+    const { result } = renderSaveIntegritySignature();
+    act(() => { result.current(courseId, true); });
+
+    await waitFor(() => expect(needsSignature()).toEqual(false));
+    expect(axiosMock.history.post).toHaveLength(0);
+  });
+
+  it('logs the error and leaves the prompt in place when the request fails', async () => {
+    axiosMock.onPost(integritySignatureUrl).networkError();
+
+    const { result } = renderSaveIntegritySignature();
+    act(() => { result.current(courseId, false); });
+
+    await waitFor(() => expect(loggingService.logError).toHaveBeenCalledTimes(1));
+    expect(axiosMock.history.post[0].url).toEqual(integritySignatureUrl);
+    expect(needsSignature()).toEqual(true);
   });
 });

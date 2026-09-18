@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { createSelector } from '@reduxjs/toolkit';
 import { defaultMemoize as memoize } from 'reselect';
@@ -7,9 +7,8 @@ import { defaultMemoize as memoize } from 'reselect';
 import {
   getResumeBlock,
   getSequenceForUnitDeprecated,
-  saveSequencePosition,
 } from './data';
-import { useCheckBlockCompletion } from './data/apiHooks';
+import { useCheckBlockCompletion, useSaveSequencePosition } from './data/apiHooks';
 import { useCourseStatusBridge, useSequenceStatusBridge } from './data/statusBridge';
 import { TabPage } from '../tab-page';
 import type { CourseStatus } from '../tab-page/TabPage';
@@ -212,7 +211,6 @@ const sectionViaSequenceIdSelector = createSelector(
 );
 
 const CoursewareContainer = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const {
@@ -223,6 +221,7 @@ const CoursewareContainer = () => {
   const isPreview = pathname.startsWith('/preview');
 
   const checkBlockCompletion = useCheckBlockCompletion();
+  const saveSequencePosition = useSaveSequencePosition();
 
   const courseId = useSelector((state: RootState) => state.courseware.courseId);
   const sequenceId = useSelector((state: RootState) => state.courseware.sequenceId);
@@ -252,7 +251,7 @@ const CoursewareContainer = () => {
         } = latest.current;
         if (sStatus === 'loaded' && seq.saveUnitPosition && unitId) {
           const activeUnitIndex = seq.unitIds.indexOf(unitId);
-          dispatch(saveSequencePosition(cId, sId, activeUnitIndex));
+          saveSequencePosition(cId, sId, activeUnitIndex);
         }
       }),
     };
