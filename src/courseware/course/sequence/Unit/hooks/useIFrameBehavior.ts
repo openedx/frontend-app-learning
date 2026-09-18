@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { throttle } from 'lodash';
 
@@ -13,7 +12,6 @@ import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
 import { eventTypes } from '@src/course-home/data/thunks';
 import { useEventListener } from '@src/generic/hooks';
-import { getSequenceId } from '@src/courseware/data/selectors';
 import { useModel } from '@src/generic/model-store';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
 import { messageTypes } from '../constants';
@@ -38,7 +36,7 @@ const useIFrameBehavior = ({
 
   const queryClient = useQueryClient();
   const postEvent = usePostEvent();
-  const activeSequenceId = useSelector(getSequenceId);
+  const { sequenceId: activeSequenceId } = useParams();
   const navigate = useNavigate();
   const activeSequence = useModel('sequences', activeSequenceId);
   const activeUnitId = activeSequence.unitIds?.length > 0

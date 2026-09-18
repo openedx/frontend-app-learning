@@ -4,7 +4,7 @@ import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Helmet } from 'react-helmet';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {
   Alert,
   breakpoints,
@@ -37,7 +37,7 @@ const LINKEDIN_BLUE = '#2867B2';
 const CourseCelebration = () => {
   const intl = useIntl();
   const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
-  const { courseId } = useSelector(state => state.courseware);
+  const { courseId } = useParams();
   const requestCert = useRequestCert();
   const {
     certificateData,

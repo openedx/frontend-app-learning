@@ -1,12 +1,10 @@
 import { useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import classNames from 'classnames';
 import { Button, Icon } from '@openedx/paragon';
 import { Bookmark } from '@openedx/paragon/icons';
 
 import { useModel } from '../../../../generic/model-store';
-import type { RootState } from '../../../../store';
 import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
 
@@ -37,7 +35,7 @@ const UnitButton = ({
     bookmarked = false,
     complete = false,
   } = useModel('units', unitId);
-  const { courseId, sequenceId } = useSelector((state: RootState) => state.courseware);
+  const { courseId, sequenceId } = useParams();
   const { pathname } = useLocation();
   const basePath = `/course/${courseId}/${sequenceId}/${unitId}`;
   const unitPath = pathname.startsWith('/preview') ? `/preview${basePath}` : basePath;

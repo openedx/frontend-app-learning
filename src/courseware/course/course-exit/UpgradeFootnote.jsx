@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -14,7 +14,7 @@ import { useModel } from '../../../generic/model-store';
 
 const UpgradeFootnote = ({ deadline, href }) => {
   const intl = useIntl();
-  const { courseId } = useSelector(state => state.courseware);
+  const { courseId } = useParams();
   const { org } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
 

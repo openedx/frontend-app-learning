@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -16,7 +16,7 @@ import { logClick } from './utils';
 
 const CatalogSuggestion = ({ variant }) => {
   const intl = useIntl();
-  const { courseId } = useSelector(state => state.courseware);
+  const { courseId } = useParams();
   const { org } = useModel('courseHomeMeta', courseId);
   const { administrator } = getAuthenticatedUser();
 
