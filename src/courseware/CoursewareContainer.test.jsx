@@ -175,6 +175,12 @@ describe('CoursewareContainer', () => {
 
     const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
     axiosMock.onGet(discussionConfigUrl).reply(200, { provider: 'legacy' });
+
+    // The outline sidebar (rendered via its trigger) fetches these at render.
+    const navigationUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/*`);
+    axiosMock.onGet(navigationUrlRegExp).reply(200, courseBlocks);
+    const sidebarTogglesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/courses/.*/courseware-navigation-sidebar/toggles/`);
+    axiosMock.onGet(sidebarTogglesUrlRegExp).reply(200, { enable_completion_tracking: true });
   }
 
   async function loadContainer() {

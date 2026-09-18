@@ -7,4 +7,6 @@ export const coursewareQueryKeys = {
   sequence: (sequenceId: string, isPreview: boolean) => (
     [...coursewareQueryKeys.all, 'sequence', sequenceId, isPreview] as const
   ),
+  courseOutline: (courseId: string) => [...coursewareQueryKeys.all, 'courseOutline', courseId] as const,
+  sidebarToggles: (courseId: string) => [...coursewareQueryKeys.all, 'sidebarToggles', courseId] as const,
 };

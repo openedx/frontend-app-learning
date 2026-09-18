@@ -354,8 +354,9 @@ describe('Courseware Tour', () => {
         });
 
         const container = await loadContainer();
-        const checkpoint = container.querySelectorAll('#pgn__checkpoint');
-        expect(checkpoint).toHaveLength(showCoursewareTour ? 1 : 0);
+        await waitFor(() => {
+          expect(container.querySelectorAll('#pgn__checkpoint')).toHaveLength(showCoursewareTour ? 1 : 0);
+        });
       },
     );
 

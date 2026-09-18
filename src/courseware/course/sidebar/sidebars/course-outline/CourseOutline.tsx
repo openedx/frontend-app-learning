@@ -1,6 +1,5 @@
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { useToggle } from '@openedx/paragon';
-import { LOADING } from '@src/constants';
 
 import PageLoading from '@src/generic/PageLoading';
 import { CourseOutlineSidebarHeadingSlot } from '@src/plugin-slots/CourseOutlineSidebarHeadingSlot';
@@ -22,7 +21,7 @@ export const CourseOutline = () => {
     unitId,
     currentSidebar,
     isActiveEntranceExam,
-    courseOutlineStatus,
+    isOutlinePending,
     activeSequenceId,
     sections,
     sequences,
@@ -60,7 +59,7 @@ export const CourseOutline = () => {
     return null;
   }
 
-  if (courseOutlineStatus === LOADING) {
+  if (isOutlinePending) {
     return (
       <div className={classNames('outline-sidebar-wrapper', {
         'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,

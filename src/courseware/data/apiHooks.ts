@@ -1,14 +1,15 @@
 import { useCallback } from 'react';
 import { logError } from '@edx/frontend-platform/logging';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDispatch, useStore } from 'react-redux';
 
 import { updateModel } from '@src/generic/model-store';
 import {
-  getBlockCompletion, getCourseMetadata, getLearningSequencesOutline, getSequenceMetadata,
+  getBlockCompletion, getCourseMetadata, getCourseOutline, getCoursewareOutlineSidebarToggles,
+  getLearningSequencesOutline, getSequenceMetadata,
 } from './api';
+import { applyUnitCompletion, type CourseOutlineData } from './courseOutline';
 import { coursewareQueryKeys } from './queryKeys';
-import { updateCourseOutlineCompletion } from './slice';
 
 export const useCoursewareMetadata = (courseId: string | undefined) => useQuery({
   queryKey: coursewareQueryKeys.metadata(courseId!),
@@ -53,6 +54,27 @@ export const useSequenceMetadata = (sequenceId: string | undefined, isPreview: b
   },
 });
 
+export const useCourseOutlineStructure = (courseId: string | undefined) => useQuery<CourseOutlineData | null>({
+  queryKey: coursewareQueryKeys.courseOutline(courseId!),
+  queryFn: () => getCourseOutline(courseId!),
+  enabled: !!courseId,
+  // Observed by every outline row; only invalidation should refetch:
+  staleTime: Infinity,
+});
+
+export const useCoursewareOutlineSidebarToggles = (courseId: string | undefined) => useQuery({
+  queryKey: coursewareQueryKeys.sidebarToggles(courseId!),
+  queryFn: async () => {
+    const {
+      enable_completion_tracking: enableCompletionTracking,
+    } = await getCoursewareOutlineSidebarToggles(courseId!);
+    return { enableCompletionTracking };
+  },
+  enabled: !!courseId,
+  // Observed by every outline row and never changes mid-session:
+  staleTime: Infinity,
+});
+
 // courseId / sequenceId come from the still-untyped Redux slice at both call sites, so
 // they are nullable here until those readers convert (#1976).
 interface CheckBlockCompletionVars {
@@ -64,16 +86,25 @@ interface CheckBlockCompletionVars {
 export const useCheckBlockCompletion = () => {
   const store = useStore();
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: ({ courseId, sequenceId, unitId }: CheckBlockCompletionVars) => (
       getBlockCompletion(courseId, sequenceId, unitId)
     ),
-    onSuccess: (isComplete: boolean, { sequenceId, unitId }) => {
+    onSuccess: (isComplete: boolean, { courseId, unitId }) => {
       dispatch(updateModel({ modelType: 'units', model: { id: unitId, complete: isComplete } }));
-      try {
-        dispatch(updateCourseOutlineCompletion({ sequenceId, unitId, isComplete }));
-      } catch (error) {
-        logError(error as Error); // the reducer throws when the sidebar outline isn't loaded
+      if (!isComplete || !unitId || !courseId) {
+        return;
+      }
+      const queryKey = coursewareQueryKeys.courseOutline(courseId);
+      const cachedOutline = queryClient.getQueryData<CourseOutlineData | null>(queryKey);
+      if (!cachedOutline) {
+        return; // sidebar outline never fetched (e.g. never opened)
+      }
+      const { outline, refetchNeeded } = applyUnitCompletion(cachedOutline, unitId);
+      queryClient.setQueryData(queryKey, outline);
+      if (refetchNeeded) {
+        queryClient.invalidateQueries({ queryKey });
       }
     },
     onError: (error) => logError(error),

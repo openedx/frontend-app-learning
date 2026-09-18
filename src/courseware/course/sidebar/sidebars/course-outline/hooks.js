@@ -1,21 +1,19 @@
 import {
-  useContext, useEffect, useLayoutEffect, useRef, useState,
+  useContext, useLayoutEffect, useRef, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { breakpoints } from '@openedx/paragon';
 
 import { useModel } from '@src/generic/model-store';
-import { LOADED } from '@src/constants';
-import { useCheckBlockCompletion } from '@src/courseware/data/apiHooks';
-import { getCourseOutlineStructure } from '@src/courseware/data/thunks';
 import {
-  getCoursewareOutlineSidebarSettings,
-  getCourseOutlineShouldUpdate,
-  getCourseOutlineStatus,
+  useCheckBlockCompletion,
+  useCourseOutlineStructure,
+  useCoursewareOutlineSidebarToggles,
+} from '@src/courseware/data/apiHooks';
+import {
   getSequenceId,
-  getCourseOutline,
   getSequenceStatus,
 } from '@src/courseware/data/selectors';
 import SidebarContext from '../../SidebarContext';
@@ -23,18 +21,15 @@ import { ID } from './constants';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
-  const dispatch = useDispatch();
   const checkBlockCompletion = useCheckBlockCompletion();
-  const {
-    enableCompletionTracking: isEnabledCompletionTracking,
-  } = useSelector(getCoursewareOutlineSidebarSettings);
-  const courseOutlineShouldUpdate = useSelector(getCourseOutlineShouldUpdate);
-  const courseOutlineStatus = useSelector(getCourseOutlineStatus);
   const sequenceStatus = useSelector(getSequenceStatus);
   const activeSequenceId = useSelector(getSequenceId);
-  const { sections = {}, sequences = {}, units = {} } = useSelector(getCourseOutline);
 
   const { courseId } = useParams();
+  const { data: sidebarToggles } = useCoursewareOutlineSidebarToggles(courseId);
+  const isEnabledCompletionTracking = sidebarToggles?.enableCompletionTracking;
+  const outlineQuery = useCourseOutlineStructure(courseId);
+  const { sections = {}, sequences = {}, units = {} } = outlineQuery.data ?? {};
   const course = useModel('coursewareMeta', courseId);
 
   const {
@@ -97,13 +92,6 @@ export const useCourseOutlineSidebar = () => {
     }
   };
 
-  // Load course outline structure when needed
-  useEffect(() => {
-    if (courseOutlineStatus !== LOADED || courseOutlineShouldUpdate) {
-      dispatch(getCourseOutlineStructure(courseId));
-    }
-  }, [courseId, courseOutlineShouldUpdate]);
-
   // Collapse sidebar if screen resized to a width that displays the sidebar automatically
   const lastWindowWidth = useRef(global.innerWidth);
   useLayoutEffect(() => {
@@ -140,7 +128,7 @@ export const useCourseOutlineSidebar = () => {
     setIsOpen,
     handleToggleCollapse,
     isActiveEntranceExam,
-    courseOutlineStatus,
+    isOutlinePending: outlineQuery.isPending,
     activeSequenceId,
     sections,
     sequences,
