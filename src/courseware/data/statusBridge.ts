@@ -58,9 +58,9 @@ export const useCourseStatusBridge = (courseId: string | undefined) => {
 // `sequenceId` / `sequenceMightBeUnit` fields so the still-Redux readers (the container's
 // redirect helpers, Sequence, breadcrumbs, sequence-navigation, sequence-alerts, the
 // outline sidebar) keep working; removed when those readers move to React Query.
-export const useSequenceStatusBridge = (sequenceId: string | undefined, isPreview: boolean) => {
+export const useSequenceStatusBridge = (sequenceId: string | undefined) => {
   const dispatch = useDispatch();
-  const query = useSequenceMetadata(sequenceId, isPreview);
+  const query = useSequenceMetadata(sequenceId);
 
   useEffect(() => {
     if (!sequenceId) {

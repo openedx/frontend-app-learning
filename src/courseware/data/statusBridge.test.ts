@@ -106,7 +106,7 @@ describe('useSequenceStatusBridge', () => {
   const sequenceId = 'block-v1:edX+Demo+2020+type@sequential+block@abc123';
   const render = (query: object, id: string | undefined = sequenceId) => {
     jest.mocked(useSequenceMetadata).mockReturnValue(query as SequenceQuery);
-    renderHook(() => useSequenceStatusBridge(id, false));
+    renderHook(() => useSequenceStatusBridge(id));
   };
 
   beforeEach(() => { mockDispatch.mockClear(); });

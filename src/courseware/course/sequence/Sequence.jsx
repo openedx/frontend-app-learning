@@ -8,10 +8,10 @@ import {
   sendTrackingLogEvent,
 } from '@edx/frontend-platform/analytics';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 
 import PageLoading from '@src/generic/PageLoading';
+import { sequenceMightBeUnit, useSequenceMetadata } from '@src/courseware/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
 import SequenceContainerSlot from '@src/plugin-slots/SequenceContainerSlot';
@@ -46,8 +46,7 @@ const Sequence = ({
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
   const unit = useModel('units', unitId);
-  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
-  const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
+  const sequenceQuery = useSequenceMetadata(sequenceId);
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -147,7 +146,7 @@ const Sequence = ({
 
   // If sequence might be a unit, we want to keep showing a spinner - the courseware container will redirect us when
   // it knows which sequence to actually go to.
-  const loading = sequenceStatus === 'loading' || (sequenceStatus === 'failed' && sequenceMightBeUnit);
+  const loading = sequenceQuery.isPending || sequenceMightBeUnit(sequenceQuery);
   if (loading) {
     if (!sequenceId) {
       return (<div> {intl.formatMessage(messages.noContent)} </div>);
@@ -159,7 +158,7 @@ const Sequence = ({
     );
   }
 
-  if (sequenceStatus === 'loaded' && sequence.isHiddenAfterDue) {
+  if (sequenceQuery.isSuccess && sequence.isHiddenAfterDue) {
     // Shouldn't even be here - these sequences are normally stripped out of the navigation.
     // But we are here, so render a notice instead of the normal content.
     return <HiddenAfterDue courseId={courseId} />;
@@ -237,7 +236,7 @@ const Sequence = ({
     </>
   );
 
-  if (sequenceStatus === 'loaded') {
+  if (sequenceQuery.isSuccess) {
     return (
       <>
         <div className="d-flex flex-column flex-grow-1 justify-content-center">

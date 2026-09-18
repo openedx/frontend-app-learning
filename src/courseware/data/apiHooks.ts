@@ -1,10 +1,12 @@
 import { useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { logError } from '@edx/frontend-platform/logging';
 import {
   noop, useMutation, useQuery, useQueryClient, type QueryClient,
 } from '@tanstack/react-query';
 import { useDispatch, useStore } from 'react-redux';
 
+import { getResponseStatus } from '@src/data/http-error';
 import { updateModel } from '@src/generic/model-store';
 import {
   getBlockCompletion, getCourseDiscussionConfig, getCourseMetadata, getCourseOutline,
@@ -35,27 +37,35 @@ export const useCoursewareOutline = (courseId: string | undefined) => useQuery({
   },
 });
 
-export const useSequenceMetadata = (sequenceId: string | undefined, isPreview: boolean) => useQuery({
-  queryKey: coursewareQueryKeys.sequence(sequenceId!, isPreview),
-  queryFn: async () => {
-    const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
-    if (sequence.blockType !== 'sequential') {
-      throw new Error(
-        `Requested sequence '${sequenceId}' has block type '${sequence.blockType}'; expected block type 'sequential'.`,
-      );
-    }
-    return { sequence, units };
-  },
-  enabled: !!sequenceId,
-  retry: false,
-  meta: {
-    logStatusAs: { 422: 'silent' },
-    models: [
-      { modelType: 'sequences', strategy: 'updateModel', source: 'sequence' },
-      { modelType: 'units', strategy: 'updateModels', source: 'units' },
-    ],
-  },
-});
+export const useSequenceMetadata = (sequenceId: string | undefined) => {
+  const isPreview = useLocation().pathname.startsWith('/preview');
+  return useQuery({
+    queryKey: coursewareQueryKeys.sequence(sequenceId!, isPreview),
+    queryFn: async () => {
+      const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
+      if (sequence.blockType !== 'sequential') {
+        throw new Error(
+          `Requested sequence '${sequenceId}' has block type '${sequence.blockType}'; expected block type 'sequential'.`,
+        );
+      }
+      return { sequence, units };
+    },
+    enabled: !!sequenceId,
+    retry: false,
+    meta: {
+      logStatusAs: { 422: 'silent' },
+      models: [
+        { modelType: 'sequences', strategy: 'updateModel', source: 'sequence' },
+        { modelType: 'units', strategy: 'updateModels', source: 'units' },
+      ],
+    },
+  });
+};
+
+// A 422 from the sequence query means the requested id is not a sequence — it may be a unit id.
+export const sequenceMightBeUnit = (sequenceQuery: { error: unknown }): boolean => (
+  getResponseStatus(sequenceQuery.error) === 422
+);
 
 export const useCourseOutlineStructure = (courseId: string | undefined) => useQuery<CourseOutlineData | null>({
   queryKey: coursewareQueryKeys.courseOutline(courseId!),

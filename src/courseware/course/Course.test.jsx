@@ -10,6 +10,7 @@ import {
 } from '../../setupTest';
 import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
+import { testIDs } from './sequence/Unit/ContentIFrame';
 import Course from './Course';
 import setupDiscussionSidebar from './test-utils';
 
@@ -311,6 +312,8 @@ describe('Course', () => {
     };
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
+    // loadUnit()'s window message is lost unless the unit's listener is registered first.
+    await screen.findByTestId(testIDs.contentIFrame);
     loadUnit();
     await waitFor(() => {
       expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
@@ -347,6 +350,7 @@ describe('Course', () => {
     };
     render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
 
+    await screen.findByTestId(testIDs.contentIFrame);
     loadUnit();
     await waitFor(() => {
       expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();

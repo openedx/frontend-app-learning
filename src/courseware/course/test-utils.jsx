@@ -16,6 +16,19 @@ const mockData = {
   unitNavigationHandler: () => {},
 };
 
+// Seed the discussionTopics model through the real prefetch path, against
+// temporary mocks of the two discussion endpoints.
+const seedDiscussionTopics = async (testStore, courseId, enabledInContext) => {
+  const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+  axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(200, { provider: 'openedx' });
+  const topicsResponse = buildTopicsFromUnits(testStore.getState().models.units, enabledInContext);
+  axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
+    .reply(200, topicsResponse);
+
+  await prefetchDiscussionTopics(createTestQueryClient(testStore), courseId);
+  axiosMock.restore(); // put the previous adapter back
+};
+
 const setupDiscussionSidebar = async (HomeMetaParams) => {
   const params = { verifiedMode: null, enabledInContext: true, ...HomeMetaParams };
   const store = await initializeTestStore();
@@ -31,13 +44,7 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
   const courseHomeMetadata = Factory.build('courseHomeMetadata', { ...snakeCaseObject(params) });
   const testStore = await initializeTestStore({ provider: 'openedx', courseHomeMetadata });
   const state = testStore.getState();
-  const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-  axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(200, { provider: 'openedx' });
-  const topicsResponse = buildTopicsFromUnits(state.models.units, params.enabledInContext);
-  axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
-    .reply(200, topicsResponse);
-
-  await prefetchDiscussionTopics(createTestQueryClient(testStore), courseId);
+  await seedDiscussionTopics(testStore, courseId, params.enabledInContext);
   const [firstUnitId] = Object.keys(state.models.units);
   mockData.unitId = firstUnitId;
   const [firstSequenceId] = Object.keys(state.models.sequences);

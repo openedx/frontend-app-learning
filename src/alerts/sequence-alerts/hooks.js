@@ -1,5 +1,4 @@
-import { useSelector } from 'react-redux';
-
+import { useSequenceMetadata } from '../../courseware/data/apiHooks';
 import { useModel } from '../../generic/model-store';
 import { ALERT_TYPES, useAlert } from '../../generic/user-messages';
 
@@ -7,10 +6,10 @@ import messages from './messages';
 
 function useSequenceBannerTextAlert(sequenceId) {
   const sequence = useModel('sequences', sequenceId);
-  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const sequenceQuery = useSequenceMetadata(sequenceId);
 
   // Show Alert that comes along with the sequence
-  useAlert(sequenceStatus === 'loaded' && sequence.bannerText, {
+  useAlert(sequenceQuery.isSuccess && sequence.bannerText, {
     code: null,
     dismissible: false,
     text: sequence.bannerText,
@@ -22,7 +21,7 @@ function useSequenceBannerTextAlert(sequenceId) {
 function useSequenceEntranceExamAlert(courseId, sequenceId, intl) {
   const course = useModel('coursewareMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
-  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const sequenceQuery = useSequenceMetadata(sequenceId);
   const {
     entranceExamCurrentScore,
     entranceExamEnabled,
@@ -30,7 +29,8 @@ function useSequenceEntranceExamAlert(courseId, sequenceId, intl) {
     entranceExamMinimumScorePct,
     entranceExamPassed,
   } = course.entranceExamData || {};
-  const entranceExamAlertVisible = sequenceStatus === 'loaded' && entranceExamEnabled && entranceExamId === sequence.sectionId;
+  const entranceExamAlertVisible = sequenceQuery.isSuccess && entranceExamEnabled
+    && entranceExamId === sequence.sectionId;
   let entranceExamText;
 
   if (entranceExamPassed) {
