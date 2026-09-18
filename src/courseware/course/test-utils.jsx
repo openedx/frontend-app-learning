@@ -4,11 +4,10 @@ import { getConfig, snakeCaseObject } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import { breakpoints } from '@openedx/paragon';
-import { executeThunk } from '@src/utils';
-import { initializeTestStore, render } from '@src/setupTest';
+import { createTestQueryClient, initializeTestStore, render } from '@src/setupTest';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
-import * as thunks from '../data/thunks';
+import { prefetchDiscussionTopics } from '../data/apiHooks';
 import Course from './Course';
 
 const mockData = {
@@ -38,7 +37,7 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
   axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
     .reply(200, topicsResponse);
 
-  await executeThunk(thunks.getCourseDiscussionTopics(courseId), testStore.dispatch);
+  await prefetchDiscussionTopics(createTestQueryClient(testStore), courseId);
   const [firstUnitId] = Object.keys(state.models.units);
   mockData.unitId = firstUnitId;
   const [firstSequenceId] = Object.keys(state.models.sequences);

@@ -4,11 +4,10 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import {
-  initializeMockApp, initializeTestStore, render, screen,
+  createTestQueryClient, initializeMockApp, initializeTestStore, render, screen,
 } from '@src/setupTest';
-import { executeThunk } from '@src/utils';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
-import { getCourseDiscussionTopics } from '@src/courseware/data/thunks';
+import { prefetchDiscussionTopics } from '@src/courseware/data/apiHooks';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsSidebar from './DiscussionsSidebar';
 
@@ -44,7 +43,7 @@ describe('Discussions Trigger', () => {
     );
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
       .reply(200, buildTopicsFromUnits(state.models.units));
-    await executeThunk(getCourseDiscussionTopics(courseId), store.dispatch);
+    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
   });
 
   function renderWithProvider(testData = {}) {

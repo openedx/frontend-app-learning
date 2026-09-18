@@ -173,16 +173,16 @@ courseMetaRef.current = { ...coursewareMeta, ...courseHomeMeta };
 useEffect(() => {
   enabledWidgets.forEach(widget => {
     if (widget.prefetch) {
-      widget.prefetch({ courseId, course: courseMetaRef.current, dispatch });
+      widget.prefetch({ courseId, course: courseMetaRef.current, queryClient });
     }
   });
-}, [enabledWidgets, courseId, dispatch]);
+}, [enabledWidgets, courseId, queryClient]);
 ```
 
 `courseMetaRef` is updated on every render so the effect always reads the latest `coursewareMeta` + `courseHomeMeta` values without `coursewareMeta`/`courseHomeMeta` being reactive dependencies. This means the effect fires once per `courseId` change rather than on every model reference update.
 
 **Why prefetch lives in the provider, not in individual components:**
-- Dispatches data loading post-mount so the sync logic can re-evaluate availability once the store updates
+- Starts data loading post-mount so the sync logic can re-evaluate availability once the data arrives
 - Individual Trigger/Sidebar components can remain pure render components
 - Centralises fetch orchestration in one place
 

@@ -8,5 +8,6 @@ export const coursewareQueryKeys = {
     [...coursewareQueryKeys.all, 'sequence', sequenceId, isPreview] as const
   ),
   courseOutline: (courseId: string) => [...coursewareQueryKeys.all, 'courseOutline', courseId] as const,
+  discussionTopics: (courseId: string) => [...coursewareQueryKeys.all, 'discussionTopics', courseId] as const,
   sidebarToggles: (courseId: string) => [...coursewareQueryKeys.all, 'sidebarToggles', courseId] as const,
 };

@@ -4,11 +4,10 @@ import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  fireEvent, initializeMockApp, initializeTestStore, render, screen,
+  createTestQueryClient, fireEvent, initializeMockApp, initializeTestStore, render, screen,
 } from '@src/setupTest';
-import { executeThunk } from '@src/utils';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
-import { getCourseDiscussionTopics } from '@src/courseware/data/thunks';
+import { prefetchDiscussionTopics } from '@src/courseware/data/apiHooks';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsTrigger from './DiscussionsTrigger';
 
@@ -45,7 +44,7 @@ describe('Discussions Trigger', () => {
       .reply(200, buildTopicsFromUnits(state.models.units));
 
     // Pre-fetch discussion topics since prefetch is now in widgetConfig, not in the Trigger
-    await executeThunk(getCourseDiscussionTopics(courseId), store.dispatch);
+    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
   });
 
   const SidebarWrapper = ({ contextValue, onClick }) => (

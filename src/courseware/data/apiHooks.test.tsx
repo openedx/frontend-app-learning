@@ -20,8 +20,9 @@ import { sequenceIdsSelector } from './selectors';
 import { coursewareQueryKeys } from './queryKeys';
 import type { CourseOutlineData } from './courseOutline';
 import {
-  useCheckBlockCompletion, useCourseOutlineStructure, useCoursewareMetadata, useCoursewareOutline,
-  useCoursewareOutlineSidebarToggles, useSaveIntegritySignature, useSaveSequencePosition, useSequenceMetadata,
+  prefetchDiscussionTopics, useCheckBlockCompletion, useCourseOutlineStructure, useCoursewareMetadata,
+  useCoursewareOutline, useCoursewareOutlineSidebarToggles, useSaveIntegritySignature, useSaveSequencePosition,
+  useSequenceMetadata,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
@@ -222,6 +223,59 @@ describe('courseware apiHooks — useCoursewareOutlineSidebarToggles', () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(loggingService.logError).toHaveBeenCalled();
     expect(result.current.data).toBeUndefined();
+  });
+});
+
+describe('courseware apiHooks — prefetchDiscussionTopics', () => {
+  const courseMetadata = Factory.build('courseMetadata');
+  const courseId = courseMetadata.id;
+  const configUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`;
+  const topicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`;
+
+  let axiosMock: MockAdapter;
+  let store: ReturnType<typeof initializeStore>;
+
+  const discussionTopicModels = () => (
+    store.getState().models as { discussionTopics?: Record<string, { id: string }> }
+  ).discussionTopics;
+
+  beforeEach(() => {
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+    store = initializeStore();
+    loggingService.logError.mockReset();
+  });
+
+  it('loads openedx-provider topics into the discussionTopics model, keyed by usage key', async () => {
+    axiosMock.onGet(configUrl).reply(200, { provider: 'openedx' });
+    axiosMock.onGet(topicsUrl).reply(200, [
+      { id: 'topic-1', usage_key: 'unit-1', enabled_in_context: true },
+      { id: 'course-wide-topic', usage_key: null, enabled_in_context: true },
+    ]);
+
+    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
+
+    expect(discussionTopicModels()).toEqual({
+      'unit-1': { id: 'topic-1', usageKey: 'unit-1', enabledInContext: true },
+      // the course-wide topic has no usage key, so it is dropped
+    });
+  });
+
+  it('skips the topics request entirely for a legacy provider', async () => {
+    axiosMock.onGet(configUrl).reply(200, { provider: 'legacy' });
+
+    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
+
+    expect(axiosMock.history.get.map(request => request.url)).toEqual([configUrl]);
+    expect(discussionTopicModels()).toBeUndefined();
+  });
+
+  it('logs the error and writes nothing when the config request fails', async () => {
+    axiosMock.onGet(configUrl).networkError();
+
+    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
+
+    expect(loggingService.logError).toHaveBeenCalled();
+    expect(discussionTopicModels()).toBeUndefined();
   });
 });
 

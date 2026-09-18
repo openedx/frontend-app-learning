@@ -20,6 +20,7 @@ interface ModelMirror {
   modelType: string;
   strategy: MirrorStrategy;
   source?: string;
+  idField?: string;
 }
 
 export type ModelStoreMeta = {
@@ -32,8 +33,9 @@ export type ModelStoreMeta = {
 // `useModel(...)` readers (the shared TabPage/LoadedTabPage and not-yet-converted tabs)
 // keep working until the model store is dissolved. A query opts in via `meta`, either:
 //   `{ modelType, courseId }`            — the whole result as one model keyed by courseId
-//   `{ models: [{ modelType, strategy, source? }] }` — one or more mirrors, each running a
-//     model-store action (`source` selects a key of the result; omitted = the whole result)
+//   `{ models: [{ modelType, strategy, source?, idField? }] }` — one or more mirrors, each
+//     running a model-store action (`source` selects a key of the result; omitted = the whole
+//     result; `idField` is the field the store keys models by, defaulting to `id`)
 // This is wired as the app QueryCache's `onSuccess` (see src/queryClient.ts), so it runs
 // before observers re-render.
 export const bridgeToModelStore = (store: Store, data: unknown, query: Query<unknown, unknown>) => {
@@ -43,14 +45,16 @@ export const bridgeToModelStore = (store: Store, data: unknown, query: Query<unk
     store.dispatch(addModel({ modelType, model: { id: courseId, ...(data as Record<string, unknown>) } }));
   }
 
-  models?.forEach(({ modelType: type, strategy, source }) => {
+  models?.forEach(({
+    modelType: type, strategy, source, idField,
+  }) => {
     const payload = source ? (data as Record<string, unknown>)[source] : data;
     switch (strategy) {
-      case 'addModel': store.dispatch(addModel({ modelType: type, model: payload })); break;
-      case 'updateModel': store.dispatch(updateModel({ modelType: type, model: payload })); break;
-      case 'addModelsMap': store.dispatch(addModelsMap({ modelType: type, modelsMap: payload })); break;
-      case 'updateModelsMap': store.dispatch(updateModelsMap({ modelType: type, modelsMap: payload })); break;
-      case 'updateModels': store.dispatch(updateModels({ modelType: type, models: payload })); break;
+      case 'addModel': store.dispatch(addModel({ modelType: type, model: payload, idField })); break;
+      case 'updateModel': store.dispatch(updateModel({ modelType: type, model: payload, idField })); break;
+      case 'addModelsMap': store.dispatch(addModelsMap({ modelType: type, modelsMap: payload, idField })); break;
+      case 'updateModelsMap': store.dispatch(updateModelsMap({ modelType: type, modelsMap: payload, idField })); break;
+      case 'updateModels': store.dispatch(updateModels({ modelType: type, models: payload, idField })); break;
       default: break;
     }
   });

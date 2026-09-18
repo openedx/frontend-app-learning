@@ -22,11 +22,11 @@ Only shown when the current unit has a discussion topic enabled in context. Both
 |--------|-------------|
 | `discussionsWidgetConfig` | Ready-to-use widget config object |
 | `discussionsIsAvailable` | Availability function, usable standalone for custom configs |
-| `discussionsPrefetch` | Prefetch function that loads discussion topics into the Redux store |
+| `discussionsPrefetch` | Prefetch function that loads discussion topics into the React Query cache |
 
 ## Data Prefetch
 
-The widget defines a `prefetch` function in its config. The sidebar framework calls this from `SidebarContextProvider` after mount and when course metadata changes to populate or refresh discussion topics in the Redux store. Because this runs from a `useEffect`, initial render-time checks such as `isAvailable` (and initial sidebar computation) may still occur before the prefetch has completed; the framework's sync logic re-evaluates availability once the store updates:
+The widget defines a `prefetch` function in its config. The sidebar framework calls this from `SidebarContextProvider` after mount and when course metadata changes to populate or refresh the discussion-topics query (bridged into the `discussionTopics` model for its `useModel` readers — transitional, #1977). Because this runs from a `useEffect`, initial render-time checks such as `isAvailable` (and initial sidebar computation) may still occur before the prefetch has completed; the framework's sync logic re-evaluates availability once the store updates:
 
 ```javascript
 // Conditions checked before fetching:
