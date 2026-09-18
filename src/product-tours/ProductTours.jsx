@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -13,6 +12,8 @@ import newUserCourseHomeTour from './newUserCourseHomeTour/NewUserCourseHomeTour
 import NewUserCourseHomeTourModal from './newUserCourseHomeTour/NewUserCourseHomeTourModal';
 import { useEndCourseHomeTour, useEndCoursewareTour, useTourData } from './data/apiHooks';
 import { useTourState } from './TourContext';
+import { useProctoringInfoData } from '../course-home/data/apiHooks';
+import { useModel } from '../generic/model-store';
 
 const ProductTours = ({
   activeTab,
@@ -20,9 +21,7 @@ const ProductTours = ({
   isStreakCelebrationOpen,
   org,
 }) => {
-  const {
-    proctoringPanelStatus,
-  } = useSelector(state => state.courseHome);
+  const courseHomeMeta = useModel('courseHomeMeta', courseId);
 
   const {
     showCoursewareTour,
@@ -46,6 +45,7 @@ const ProductTours = ({
   } = getAuthenticatedUser() || {};
   const coursewareTabActive = activeTab === 'courseware';
   const outlineTabActive = activeTab === 'outline';
+  const proctoringInfoQuery = useProctoringInfoData(courseId, courseHomeMeta.username, outlineTabActive);
 
   const endCoursewareTourMutation = useEndCoursewareTour();
   const endCourseHomeTourMutation = useEndCourseHomeTour();
@@ -75,7 +75,7 @@ const ProductTours = ({
     // On the outline tab the tour anchors to the weekly-goal widget, which only
     // renders once the proctoring panel has loaded; wait for it so the tour's
     // target elements exist before we start.
-    if (outlineTabActive && proctoringPanelStatus !== 'loaded') {
+    if (outlineTabActive && proctoringInfoQuery.isPending) {
       return false;
     }
 

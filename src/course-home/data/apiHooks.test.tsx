@@ -10,7 +10,7 @@ import { ToastProvider, useToast } from '../../generic/ToastContext';
 import {
   useCourseHomeMeta,
   useOutlineTabData, useLiveTabData, useProgressTabData, useResetDeadlines, usePostEvent, useRequestCert,
-  useDismissWelcomeMessage, useSaveWeeklyLearningGoal, useExamAttemptsData,
+  useDismissWelcomeMessage, useSaveWeeklyLearningGoal, useExamAttemptsData, useProctoringInfoData,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
@@ -355,6 +355,51 @@ describe('course-home apiHooks', () => {
       expect(result.current.fetchStatus).toBe('idle');
       expect(result.current.data).toBeUndefined();
       expect(attemptRequests()).toHaveLength(0);
+    });
+  });
+
+  describe('useProctoringInfoData', () => {
+    const onboardingRequests = () => axiosMock.history.get.filter((req) => req.url?.includes('/onboarding'));
+    const rejectWith = (status: number) => () => Promise.reject(Object.assign(new Error(`Request failed with status code ${status}`), {
+      response: { status, data: {} },
+      customAttributes: { httpErrorStatus: status },
+    }));
+
+    it('resolves to the onboarding payload for the given user', async () => {
+      axiosMock.onGet(/onboarding/).reply(200, { onboarding_status: 'verified', onboarding_link: 'test' });
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useProctoringInfoData('course-1', 'learner'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual({ onboarding_status: 'verified', onboarding_link: 'test' });
+      expect(onboardingRequests()[0].url).toContain('username=learner');
+    });
+
+    it('resolves to an empty object on a 404 (no proctoring in the course)', async () => {
+      axiosMock.onGet(/onboarding/).reply(rejectWith(404));
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useProctoringInfoData('course-1', 'learner'), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual({});
+    });
+
+    it('settles as an error on a non-404 failure after a single request', async () => {
+      axiosMock.onGet(/onboarding/).reply(rejectWith(500));
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useProctoringInfoData('course-1', 'learner'), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(result.current.isPending).toBe(false);
+      expect(onboardingRequests()).toHaveLength(1);
+    });
+
+    it('stays idle with no request when disabled', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useProctoringInfoData('course-1', 'learner', false), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(onboardingRequests()).toHaveLength(0);
     });
   });
 

@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import camelCase from 'lodash.camelcase';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { getExternalLinkUrl } from '@edx/frontend-platform';
 import { Button } from '@openedx/paragon';
 
 import messages from '../messages';
-import { getProctoringInfoData } from '../../data/api';
-import { fetchProctoringInfoResolved } from '../../data/slice';
+import { useProctoringInfoData } from '../../data/apiHooks';
+import { getReadableProctoringStatus, readableProctoringStatuses } from '../utils';
 import { useModel } from '../../../generic/model-store';
 
 const ProctoringInfoPanel = () => {
@@ -18,43 +15,14 @@ const ProctoringInfoPanel = () => {
   const {
     username,
   } = useModel('courseHomeMeta', courseId);
-  const dispatch = useDispatch();
+  const { data: proctoringInfo } = useProctoringInfoData(courseId, username);
 
-  const [link, setLink] = useState('');
-  const [onboardingPastDue, setOnboardingPastDue] = useState(false);
-  const [showInfoPanel, setShowInfoPanel] = useState(false);
-  const [status, setStatus] = useState('');
-  const [readableStatus, setReadableStatus] = useState('');
-  const [releaseDate, setReleaseDate] = useState(null);
-
-  const readableStatuses = {
-    notStarted: 'notStarted',
-    started: 'started',
-    submitted: 'submitted',
-    verified: 'verified',
-    rejected: 'rejected',
-    error: 'error',
-    otherCourseApproved: 'otherCourseApproved',
-    expiringSoon: 'expiringSoon',
-    expired: 'expired',
-  };
-
-  function getReadableStatusClass(examStatus) {
-    let readableClass = '';
-    if (['created', 'download_software_clicked', 'ready_to_start'].includes(examStatus) || !examStatus) {
-      readableClass = readableStatuses.notStarted;
-    } else if (['started', 'ready_to_submit'].includes(examStatus)) {
-      readableClass = readableStatuses.started;
-    } else if (['second_review_required', 'submitted'].includes(examStatus)) {
-      readableClass = readableStatuses.submitted;
-    } else {
-      const examStatusCamelCase = camelCase(examStatus);
-      if (examStatusCamelCase in readableStatuses) {
-        readableClass = readableStatuses[examStatusCamelCase];
-      }
-    }
-    return readableClass;
-  }
+  const link = proctoringInfo?.onboarding_link;
+  const onboardingPastDue = proctoringInfo?.onboarding_past_due;
+  const showInfoPanel = !!proctoringInfo && Object.keys(proctoringInfo).length > 0;
+  const status = proctoringInfo?.onboarding_status;
+  const readableStatus = proctoringInfo ? getReadableProctoringStatus(proctoringInfo) : '';
+  const releaseDate = proctoringInfo ? new Date(proctoringInfo.onboarding_release_date) : null;
 
   function isCurrentlySubmitted(examStatus) {
     const SUBMITTED_STATES = ['submitted', 'second_review_required'];
@@ -62,7 +30,7 @@ const ProctoringInfoPanel = () => {
   }
 
   function isSubmissionRequired(examStatus) {
-    const OK_STATES = [readableStatuses.submitted, readableStatuses.verified];
+    const OK_STATES = [readableProctoringStatuses.submitted, readableProctoringStatuses.verified];
     return !OK_STATES.includes(examStatus);
   }
 
@@ -76,61 +44,15 @@ const ProctoringInfoPanel = () => {
 
   function getBorderClass() {
     let borderClass = '';
-    if ([readableStatuses.submitted, readableStatuses.expiringSoon].includes(readableStatus)) {
+    if ([readableProctoringStatuses.submitted, readableProctoringStatuses.expiringSoon].includes(readableStatus)) {
       borderClass = 'proctoring-onboarding-submitted';
-    } else if ([readableStatuses.verified, readableStatuses.otherCourseApproved].includes(readableStatus)) {
+    } else if (
+      [readableProctoringStatuses.verified, readableProctoringStatuses.otherCourseApproved].includes(readableStatus)
+    ) {
       borderClass = 'proctoring-onboarding-success';
     }
     return borderClass;
   }
-
-  function isExpired(dateString) {
-    // Returns true if the expiration date has passed
-    const today = new Date();
-    const expirationDateObject = new Date(dateString);
-    return today >= expirationDateObject.getTime();
-  }
-
-  function isExpiringSoon(dateString) {
-    // Returns true if the expiration date is within 28 days
-    const twentyeightDays = 28 * 24 * 60 * 60 * 1000;
-    const today = new Date();
-    const expirationDateObject = new Date(dateString);
-    return today > expirationDateObject.getTime() - twentyeightDays;
-  }
-
-  useEffect(() => {
-    getProctoringInfoData(courseId, username)
-      .then(
-        response => {
-          if (response) {
-            if (Object.keys(response).length > 0) {
-              setShowInfoPanel(true);
-            }
-
-            setStatus(response.onboarding_status);
-            setLink(response.onboarding_link);
-            const expirationDate = response.expiration_date;
-            if (expirationDate && isExpired(expirationDate)) {
-              setReadableStatus(getReadableStatusClass('expired'));
-            } else if (expirationDate && isExpiringSoon(expirationDate)) {
-              setReadableStatus(getReadableStatusClass('expiringSoon'));
-            } else {
-              setReadableStatus(getReadableStatusClass(response.onboarding_status));
-            }
-            setReleaseDate(new Date(response.onboarding_release_date));
-            setOnboardingPastDue(response.onboarding_past_due);
-          }
-        },
-      )
-      .catch(() => {
-        /* Do nothing. API throws 404 when class does not have proctoring */
-      })
-      .finally(() => {
-        dispatch(fetchProctoringInfoResolved());
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   let onboardingExamButton = null;
 
@@ -156,13 +78,13 @@ const ProctoringInfoPanel = () => {
       </Button>
     );
   } else if (!isNotYetReleased(releaseDate)) {
-    if (readableStatus === readableStatuses.otherCourseApproved) {
+    if (readableStatus === readableProctoringStatuses.otherCourseApproved) {
       onboardingExamButton = (
         <Button variant="primary" block href={link}>
           {intl.formatMessage(messages.proctoringOnboardingPracticeButton)}
         </Button>
       );
-    } else if (readableStatus !== readableStatuses.otherCourseApproved) {
+    } else if (readableStatus !== readableProctoringStatuses.otherCourseApproved) {
       onboardingExamButton = (
         <Button variant="primary" block href={link}>
           {intl.formatMessage(messages.proctoringOnboardingButton)}
@@ -187,11 +109,12 @@ const ProctoringInfoPanel = () => {
                   {intl.formatMessage(messages[`${readableStatus}ProctoringMessage`])}
                 </p>
                 <p>
-                  {readableStatus === readableStatuses.otherCourseApproved && intl.formatMessage(messages[`${readableStatus}ProctoringDetail`])}
+                  {readableStatus === readableProctoringStatuses.otherCourseApproved && intl.formatMessage(messages[`${readableStatus}ProctoringDetail`])}
                 </p>
               </>
             )}
-            {![readableStatuses.verified, readableStatuses.otherCourseApproved].includes(readableStatus) && (
+            {![readableProctoringStatuses.verified, readableProctoringStatuses.otherCourseApproved]
+              .includes(readableStatus) && (
               <>
                 <p>
                   {!isCurrentlySubmitted(status) && (

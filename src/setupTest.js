@@ -13,7 +13,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams';
 import { AppProvider } from '@edx/frontend-platform/react';
-import { reducer as courseHomeReducer } from './course-home/data';
 import { createAppQueryCache } from './queryClient';
 import {
   reducer as modelsReducer, addModel, addModelsMap, updateModel, updateModels, updateModelsMap,
@@ -207,7 +206,6 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   const store = configureStore({
     reducer: {
       models: modelsReducer,
-      courseHome: courseHomeReducer,
       specialExams: specialExamsReducer,
     },
   });
