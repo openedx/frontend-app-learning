@@ -1,7 +1,9 @@
 import React from 'react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
+import userEvent from '@testing-library/user-event';
 import {
-  render, screen, fireEvent, initializeTestStore,
+  render, screen, initializeTestStore, waitFor,
 } from '../../../../setupTest';
 import UnitNavigation from './UnitNavigation';
 
@@ -21,7 +23,7 @@ describe('Unit Navigation', () => {
     { courseId: courseMetadata.id },
   ));
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
     const { courseware } = store.getState();
     mockData = {
@@ -33,68 +35,78 @@ describe('Unit Navigation', () => {
     };
   });
 
+  const renderNav = (props = {}, { store } = {}) => {
+    const sequenceId = props.sequenceId ?? mockData.sequenceId;
+    return render(
+      <MemoryRouter initialEntries={[`/course/${courseMetadata.id}/${sequenceId || 'no-sequence'}`]}>
+        <Routes>
+          <Route
+            path="/course/:courseId/:sequenceId/*"
+            element={<UnitNavigation {...mockData} {...props} />}
+          />
+        </Routes>
+      </MemoryRouter>,
+      { store },
+    );
+  };
+
   it('renders correctly without units', () => {
-    render(<UnitNavigation
-      {...mockData}
-      sequenceId=""
-      unitId=""
-      onClickPrevious={() => {}}
-      onClickNext={() => {}}
-    />, { wrapWithRouter: true });
+    renderNav({
+      sequenceId: '',
+      unitId: '',
+      onClickPrevious: () => {},
+      onClickNext: () => {},
+    });
 
     // Only "Previous" and "Next" buttons should be rendered.
     expect(screen.getAllByRole('link')).toHaveLength(2);
   });
 
-  it('handles the clicks', () => {
+  it('handles the clicks', async () => {
+    const user = userEvent.setup();
     const onClickPrevious = jest.fn();
     const onClickNext = jest.fn();
 
-    render(<UnitNavigation
-      {...mockData}
-      onClickPrevious={onClickPrevious}
-      onClickNext={onClickNext}
-    />, { wrapWithRouter: true });
+    renderNav({ onClickPrevious, onClickNext });
 
-    fireEvent.click(screen.getByRole('link', { name: /previous/i }));
+    await waitFor(() => expect(screen.getByRole('link', { name: /previous/i })).toHaveAttribute('href'));
+    await user.click(screen.getByRole('link', { name: /previous/i }));
     expect(onClickPrevious).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByRole('link', { name: /next/i }));
+    await user.click(screen.getByRole('link', { name: /next/i }));
     expect(onClickNext).toHaveBeenCalledTimes(1);
   });
 
-  it('when clicked it calls navigate when is at the top', () => {
+  it('when clicked it calls navigate when is at the top', async () => {
+    const user = userEvent.setup();
     const onClickPrevious = jest.fn();
     const onClickNext = jest.fn();
 
-    render(<UnitNavigation
-      {...mockData}
-      onClickPrevious={onClickPrevious}
-      onClickNext={onClickNext}
-      isAtTop
-    />, { wrapWithRouter: true });
+    renderNav({ onClickPrevious, onClickNext, isAtTop: true });
 
-    fireEvent.click(screen.getByRole('button', { name: /previous/i }));
+    await waitFor(() => expect(screen.getByRole('button', { name: /previous/i })).toBeEnabled());
+    await user.click(screen.getByRole('button', { name: /previous/i }));
     expect(onClickPrevious).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    await user.click(screen.getByRole('button', { name: /next/i }));
     expect(onClickNext).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledTimes(2);
   });
 
-  it('has the navigation buttons enabled for the non-corner unit in the sequence', () => {
-    render(<UnitNavigation {...mockData} />, { wrapWithRouter: true });
+  it('has the navigation buttons enabled for the non-corner unit in the sequence', async () => {
+    renderNav();
 
+    await waitFor(() => expect(screen.getByRole('link', { name: /previous/i })).toHaveAttribute('href'));
     screen.getAllByRole('link').forEach(button => {
       expect(button).toBeEnabled();
     });
   });
 
-  it('has the "Previous" button disabled for the first unit in the sequence', () => {
-    render(<UnitNavigation {...mockData} unitId={unitBlocks[0].id} />, { wrapWithRouter: true });
+  it('has the "Previous" button disabled for the first unit in the sequence', async () => {
+    renderNav({ unitId: unitBlocks[0].id });
 
-    expect(screen.getByRole('button', { name: /previous/i })).toBeDisabled();
+    expect(await screen.findByRole('button', { name: /previous/i })).toBeDisabled();
     expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
   });
 
@@ -105,13 +117,10 @@ describe('Unit Navigation', () => {
     const { courseware } = testStore.getState();
     const testData = { ...mockData, sequenceId: courseware.sequenceId };
 
-    render(
-      <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore, wrapWithRouter: true },
-    );
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
 
+    expect(await screen.findByRole('button', { name: /next/i })).toBeDisabled();
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });
 
   it('has the "Next" button disabled for entrance exam failed', async () => {
@@ -128,12 +137,9 @@ describe('Unit Navigation', () => {
     const { courseware } = testStore.getState();
     const testData = { ...mockData, sequenceId: courseware.sequenceId };
 
-    render(
-      <UnitNavigation {...testData} unitId={unitBlocks[0].id} />,
-      { store: testStore, wrapWithRouter: true },
-    );
+    renderNav({ ...testData, unitId: unitBlocks[0].id }, { store: testStore });
 
-    expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
+    expect(await screen.findByRole('button', { name: /next/i })).toBeDisabled();
   });
 
   it('has the "Next" button enabled for entrance exam pass', async () => {
@@ -150,11 +156,9 @@ describe('Unit Navigation', () => {
     const { courseware } = testStore.getState();
     const testData = { ...mockData, sequenceId: courseware.sequenceId };
 
-    render(
-      <UnitNavigation {...testData} unitId={unitBlocks[0].id} />,
-      { store: testStore, wrapWithRouter: true },
-    );
+    renderNav({ ...testData, unitId: unitBlocks[0].id }, { store: testStore });
 
+    await waitFor(() => expect(screen.getByRole('link', { name: /next/i })).toHaveAttribute('href'));
     expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
   });
 
@@ -165,13 +169,10 @@ describe('Unit Navigation', () => {
     const { courseware } = testStore.getState();
     const testData = { ...mockData, sequenceId: courseware.sequenceId };
 
-    render(
-      <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore, wrapWithRouter: true },
-    );
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
 
+    expect(await screen.findByRole('link', { name: /next \(end of course\)/i })).toBeEnabled();
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('link', { name: /next \(end of course\)/i })).toBeEnabled();
   });
 
   it('displays complete course message instead of the "Next" button as needed', async () => {
@@ -186,12 +187,9 @@ describe('Unit Navigation', () => {
     const { courseware } = testStore.getState();
     const testData = { ...mockData, sequenceId: courseware.sequenceId };
 
-    render(
-      <UnitNavigation {...testData} unitId={unitBlocks[unitBlocks.length - 1].id} />,
-      { store: testStore, wrapWithRouter: true },
-    );
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
 
+    expect(await screen.findByRole('link', { name: /Complete the course/i })).toBeEnabled();
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
-    expect(screen.getByRole('link', { name: /Complete the course/i })).toBeEnabled();
   });
 });

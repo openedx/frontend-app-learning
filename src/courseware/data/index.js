@@ -3,7 +3,4 @@ export {
   getSequenceForUnitDeprecated,
   sendActivationEmail,
 } from './api';
-export {
-  sequenceIdsSelector,
-} from './selectors';
 export { reducer } from './slice';

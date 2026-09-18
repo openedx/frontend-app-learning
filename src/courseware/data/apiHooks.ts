@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { logError } from '@edx/frontend-platform/logging';
 import {
@@ -7,7 +7,8 @@ import {
 import { useDispatch, useStore } from 'react-redux';
 
 import { getResponseStatus } from '@src/data/http-error';
-import { updateModel } from '@src/generic/model-store';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { updateModel, useModel, useModels } from '@src/generic/model-store';
 import {
   getBlockCompletion, getCourseDiscussionConfig, getCourseMetadata, getCourseOutline,
   getCoursewareOutlineSidebarToggles, getCourseTopics, getLearningSequencesOutline, getSequenceMetadata,
@@ -36,6 +37,24 @@ export const useCoursewareOutline = (courseId: string | undefined) => useQuery({
     ],
   },
 });
+
+export const useIsCourseLoaded = (courseId: string | undefined): boolean => {
+  const metadataQuery = useCoursewareMetadata(courseId);
+  const outlineQuery = useCoursewareOutline(courseId);
+  const courseHomeMetaQuery = useCourseHomeMeta(courseId, 'courseware');
+  return metadataQuery.isSuccess && courseHomeMetaQuery.isSuccess
+    && !!courseHomeMetaQuery.data?.courseAccess?.hasAccess && outlineQuery.isSuccess;
+};
+
+export const useSequenceIds = (courseId: string | undefined): string[] => {
+  const isCourseLoaded = useIsCourseLoaded(courseId);
+  const { sectionIds = [] } = useModel('coursewareMeta', courseId);
+  const sections = useModels('sections', isCourseLoaded ? sectionIds : []);
+  return useMemo(
+    () => sections.flatMap((section: { sequenceIds: string[] }) => section.sequenceIds),
+    [sections],
+  );
+};
 
 export const useSequenceMetadata = (sequenceId: string | undefined) => {
   const isPreview = useLocation().pathname.startsWith('/preview');
