@@ -49,6 +49,12 @@ const LoadedTabPage = ({
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
   const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(streakLengthToCelebrate);
 
+  // The courseware tab renders its own <main id="main-content"> landmark inside <Sequence>
+  // so the sidebar navigation stays outside of it. All other tabs render the <main>
+  // landmark below, wrapping only the page children (not the alerts or tab navigation).
+  const isCourseware = activeTabSlug === 'courseware';
+  const ContentWrapper = isCourseware ? 'div' : 'main';
+
   return (
     <>
       <ProductTours
@@ -76,7 +82,7 @@ const LoadedTabPage = ({
         streakDiscountCouponEnabled={streakDiscountCouponEnabled}
         verifiedMode={verifiedMode}
       />
-      <main className="d-flex flex-column flex-grow-1">
+      <div className="d-flex flex-column flex-grow-1">
         <AlertList
           topic="outline"
           className="mx-5 mt-3"
@@ -86,10 +92,13 @@ const LoadedTabPage = ({
           }}
         />
         <CourseTabsNavigationSlot tabs={tabs} activeTabSlug={activeTabSlug} />
-        <div id="main-content" className="container-xl">
+        <ContentWrapper
+          id={isCourseware ? undefined : 'main-content'}
+          className="container-xl d-flex flex-column flex-grow-1"
+        >
           {children}
-        </div>
-      </main>
+        </ContentWrapper>
+      </div>
     </>
   );
 };
