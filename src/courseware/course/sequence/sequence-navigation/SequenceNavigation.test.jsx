@@ -2,7 +2,7 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import {
-  render, screen, fireEvent, getByText, initializeTestStore,
+  render, screen, fireEvent, getByText, getTestStoreIds, initializeTestStore,
 } from '../../../../setupTest';
 import SequenceNavigation from './SequenceNavigation';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
@@ -22,10 +22,9 @@ describe('Sequence Navigation', () => {
 
   beforeEach(async () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    const { courseware } = store.getState();
     mockData = {
       unitId: unitBlocks[1].id,
-      sequenceId: courseware.sequenceId,
+      sequenceId: getTestStoreIds(store).sequenceId,
       previousHandler: () => {},
       onNavigate: () => {},
       nextHandler: () => {},
@@ -122,8 +121,7 @@ describe('Sequence Navigation', () => {
     const testMetadata = { ...courseMetadata, certificate_data: { cert_status: 'bogus_status' }, user_has_passing_grade: true };
     const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
-    const { courseware } = testStore.getState();
-    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
 
     renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
     await screen.findByTestId('courseware-sequence-navigation');
@@ -136,8 +134,7 @@ describe('Sequence Navigation', () => {
     const testMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' }, enrollment: { is_active: true } };
     const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
-    const { courseware } = testStore.getState();
-    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
 
     renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
     await screen.findByTestId('courseware-sequence-navigation');
@@ -155,8 +152,7 @@ describe('Sequence Navigation', () => {
     };
     const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
     // Have to refetch the sequenceId since the new store generates new sequences
-    const { courseware } = testStore.getState();
-    const testData = { ...mockData, sequenceId: courseware.sequenceId };
+    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
 
     renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
     await screen.findByTestId('courseware-sequence-navigation');

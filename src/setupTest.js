@@ -15,7 +15,6 @@ import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams'
 import { AppProvider } from '@edx/frontend-platform/react';
 import { reducer as courseHomeReducer } from './course-home/data';
 import { createAppQueryCache } from './queryClient';
-import { reducer as coursewareReducer, fetchCourseSuccess, fetchSequenceSuccess } from './courseware/data/slice';
 import {
   reducer as modelsReducer, addModel, addModelsMap, updateModel, updateModels, updateModelsMap,
 } from './generic/model-store';
@@ -184,7 +183,6 @@ export async function seedCoursewareModels(store, courseId) {
   store.dispatch(updateModelsMap({ modelType: 'coursewareMeta', modelsMap: outline.courses }));
   store.dispatch(addModelsMap({ modelType: 'sections', modelsMap: outline.sections }));
   store.dispatch(updateModelsMap({ modelType: 'sequences', modelsMap: outline.sequences }));
-  store.dispatch(fetchCourseSuccess({ courseId }));
 }
 
 export async function seedSequenceModels(store, sequenceIds, { isPreview = false } = {}) {
@@ -192,15 +190,23 @@ export async function seedSequenceModels(store, sequenceIds, { isPreview = false
     const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
     store.dispatch(updateModel({ modelType: 'sequences', model: sequence }));
     store.dispatch(updateModels({ modelType: 'units', models: units }));
-    store.dispatch(fetchSequenceSuccess({ sequenceId }));
   }));
+}
+
+// The test factories build a single course with a single sequence, so the ids they
+// generated are the sole keys of these model maps.
+export function getTestStoreIds(store) {
+  const { models } = store.getState();
+  return {
+    courseId: Object.keys(models.coursewareMeta)[0],
+    sequenceId: Object.keys(models.sequences)[0],
+  };
 }
 
 export async function initializeTestStore(options = {}, overrideStore = true) {
   const store = configureStore({
     reducer: {
       models: modelsReducer,
-      courseware: coursewareReducer,
       courseHome: courseHomeReducer,
       specialExams: specialExamsReducer,
     },

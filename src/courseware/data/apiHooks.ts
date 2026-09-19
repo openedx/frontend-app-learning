@@ -126,11 +126,9 @@ export const prefetchDiscussionTopics = (queryClient: QueryClient, courseId: str
   }).catch(noop)
 );
 
-// courseId / sequenceId come from the still-untyped Redux slice at both call sites, so
-// they are nullable here until those readers convert (#1976).
 interface CheckBlockCompletionVars {
-  courseId: string | null;
-  sequenceId: string | null;
+  courseId: string | undefined;
+  sequenceId: string | undefined;
   unitId?: string;
 }
 
@@ -161,7 +159,7 @@ export const useCheckBlockCompletion = () => {
     onError: (error) => logError(error),
   });
 
-  return useCallback((courseId: string | null, sequenceId: string | null, unitId?: string) => {
+  return useCallback((courseId: string | undefined, sequenceId: string | undefined, unitId?: string) => {
     const { units } = (store.getState() as { models: { units?: Record<string, { complete?: boolean }> } }).models;
     if (unitId && units?.[unitId]?.complete) {
       return; // things don't get uncompleted after they are completed
@@ -170,18 +168,16 @@ export const useCheckBlockCompletion = () => {
   }, [store, mutate]);
 };
 
-// courseId / sequenceId come from the still-untyped Redux slice at the call site, so
-// they are nullable here until that reader converts (#1976).
 interface SaveSequencePositionVars {
-  courseId: string | null;
-  sequenceId: string | null;
+  courseId: string | undefined;
+  sequenceId: string | undefined;
   activeUnitIndex: number;
 }
 
 export const useSaveSequencePosition = () => {
   const store = useStore();
   const dispatch = useDispatch();
-  const setPosition = (sequenceId: string | null, activeUnitIndex: number) => {
+  const setPosition = (sequenceId: string | undefined, activeUnitIndex: number) => {
     dispatch(updateModel({ modelType: 'sequences', model: { id: sequenceId, activeUnitIndex } }));
   };
   const { mutate } = useMutation({
@@ -206,7 +202,7 @@ export const useSaveSequencePosition = () => {
     },
   });
 
-  return useCallback((courseId: string | null, sequenceId: string | null, activeUnitIndex: number) => {
+  return useCallback((courseId: string | undefined, sequenceId: string | undefined, activeUnitIndex: number) => {
     mutate({ courseId, sequenceId, activeUnitIndex });
   }, [mutate]);
 };

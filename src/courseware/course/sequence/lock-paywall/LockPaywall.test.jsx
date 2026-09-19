@@ -3,7 +3,7 @@ import { Factory } from 'rosie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 
 import {
-  fireEvent, initializeTestStore, render, screen,
+  fireEvent, getTestStoreIds, initializeTestStore, render, screen,
 } from '../../../../setupTest';
 import LockPaywall from './LockPaywall';
 
@@ -15,9 +15,8 @@ describe('Lock Paywall', () => {
 
   beforeAll(async () => {
     store = await initializeTestStore();
-    const { courseware } = store.getState();
     Object.assign(mockData, {
-      courseId: courseware.courseId,
+      courseId: getTestStoreIds(store).courseId,
     });
   });
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import {
-  fireEvent, initializeTestStore, render, screen,
+  fireEvent, getTestStoreIds, initializeTestStore, render, screen,
 } from '../../../../setupTest';
 import UnitButton from './UnitButton';
 
@@ -28,7 +28,7 @@ describe('Unit Button', () => {
 
   beforeAll(async () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    ({ courseId, sequenceId } = store.getState().courseware);
+    ({ courseId, sequenceId } = getTestStoreIds(store));
     mockData = {
       unitId: unit.id,
       onClick: () => {},

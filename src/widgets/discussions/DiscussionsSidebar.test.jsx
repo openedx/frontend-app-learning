@@ -4,7 +4,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import {
-  createTestQueryClient, initializeMockApp, initializeTestStore, render, screen,
+  createTestQueryClient, initializeMockApp, getTestStoreIds, initializeTestStore, render, screen,
 } from '@src/setupTest';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
 import { prefetchDiscussionTopics } from '@src/courseware/data/apiHooks';
@@ -26,7 +26,7 @@ describe('Discussions Trigger', () => {
     });
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     const state = store.getState();
-    courseId = state.courseware.courseId;
+    courseId = getTestStoreIds(store).courseId;
     [unitId] = Object.keys(state.models.units);
 
     mockData = {
