@@ -1,10 +1,11 @@
 import { Factory } from 'rosie';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { initializeMockApp, initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, initializeMockApp, initializeTestStore } from '@src/setupTest';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 
 const props = {
@@ -43,11 +44,13 @@ describe('CourseBreadcrumbs', () => {
   function renderWithProvider(pathname = '/course') {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
-        <IntlProvider locale="en">
-          <MemoryRouter initialEntries={[{ pathname }]}>
-            <CourseBreadcrumbs {...props} />
-          </MemoryRouter>
-        </IntlProvider>
+        <QueryClientProvider client={createTestQueryClient()}>
+          <IntlProvider locale="en">
+            <MemoryRouter initialEntries={[{ pathname }]}>
+              <CourseBreadcrumbs {...props} />
+            </MemoryRouter>
+          </IntlProvider>
+        </QueryClientProvider>
       </AppProvider>,
     );
     return container;
@@ -63,13 +66,13 @@ describe('CourseBreadcrumbs', () => {
 
       expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
 
-      expect(screen.queryAllByTestId('breadcrumb-item')).toHaveLength(2);
+      expect(await screen.findAllByTestId('breadcrumb-item')).toHaveLength(2);
     });
 
     it('section link does not include /preview/', async () => {
       await initTestStore();
       renderWithProvider();
-      const sectionBreadcrumb = screen.getByText(sectionBlocks[0].block_id);
+      const sectionBreadcrumb = await screen.findByText(sectionBlocks[0].block_id);
       const sectionLink = sectionBreadcrumb.closest('a').href;
 
       expect(sectionLink.includes('/preview/')).toBeFalsy();
@@ -86,13 +89,13 @@ describe('CourseBreadcrumbs', () => {
 
       expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
 
-      expect(screen.queryAllByTestId('breadcrumb-item')).toHaveLength(2);
+      expect(await screen.findAllByTestId('breadcrumb-item')).toHaveLength(2);
     });
 
     it('section link does includes /preview/', async () => {
       await initTestStore();
       renderWithProvider('/preview/courses');
-      const sectionBreadcrumb = screen.getByText(sectionBlocks[0].block_id);
+      const sectionBreadcrumb = await screen.findByText(sectionBlocks[0].block_id);
       const sectionLink = sectionBreadcrumb.closest('a').href;
 
       expect(sectionLink.includes('/preview/')).toBeTruthy();
