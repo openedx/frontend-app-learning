@@ -678,8 +678,7 @@ describe('Course redirect functions', () => {
     describe('checkUnitToSequenceUnitRedirect', () => {
       const { href: apiUrl } = getSequenceForUnitDeprecatedUrl('courseId');
 
-      it('calls navigate with parentId and sequenceId', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
+      it('calls navigate with parentId and sequenceId', async () => {
         axiosMock.onGet(apiUrl).reply(200, {
           blocks: [{
             id: 'sequence_1',
@@ -699,16 +698,15 @@ describe('Course redirect functions', () => {
           navigate,
           true,
         );
-        const expectedUrl = '/course/courseId/sequence_1';
+        const expectedUrl = '/preview/course/courseId/sequence_1/unit_1';
 
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
+        await waitFor(() => {
+          expect(axiosMock.history.get.map((req) => req.url)).toContain(apiUrl);
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
 
-      it('calls navigate to course page when getSequenceForUnitDeprecated errors', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
+      it('calls navigate to course page when getSequenceForUnitDeprecated errors', async () => {
         axiosMock.onGet(apiUrl).reply(404);
 
         checkUnitToSequenceUnitRedirect(
@@ -724,14 +722,13 @@ describe('Course redirect functions', () => {
         );
         const expectedUrl = '/course/courseId';
 
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
+        await waitFor(() => {
+          expect(axiosMock.history.get.map((req) => req.url)).toContain(apiUrl);
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
 
-      it('calls navigate to course page when no parent id is returned', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
+      it('calls navigate to course page when no parent id is returned', async () => {
         axiosMock.onGet(apiUrl).reply(200, {
           blocks: [{
             id: 'sequence_1',
@@ -753,15 +750,13 @@ describe('Course redirect functions', () => {
         );
         const expectedUrl = '/course/courseId';
 
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
+        await waitFor(() => {
+          expect(axiosMock.history.get.map((req) => req.url)).toContain(apiUrl);
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
 
-      it('calls navigate to course page when sequnce is not unit', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
-
+      it('calls navigate to course page when sequnce is not unit', async () => {
         checkUnitToSequenceUnitRedirect(
           'loaded',
           'courseId',
@@ -775,8 +770,8 @@ describe('Course redirect functions', () => {
         );
         const expectedUrl = '/course/courseId';
 
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).not.toHaveBeenCalled();
+        await waitFor(() => {
+          expect(axiosMock.history.get).toHaveLength(0);
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
@@ -920,7 +915,7 @@ describe('Course redirect functions', () => {
     });
 
     describe('checkResumeRedirect', () => {
-      it('calls navigate with unitId', () => {
+      it('calls navigate with unitId', async () => {
         axiosMock.onGet(
           `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
         ).reply(200, {
@@ -937,12 +932,12 @@ describe('Course redirect functions', () => {
         );
         const expectedUrl = '/preview/course/courseId/section_1/unit_1';
 
-        waitFor(() => {
+        await waitFor(() => {
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
 
-      it('calls navigate with firstSequenceId', () => {
+      it('calls navigate with firstSequenceId', async () => {
         axiosMock.onGet(
           `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
         ).reply(200, {
@@ -959,13 +954,12 @@ describe('Course redirect functions', () => {
         );
         const expectedUrl = '/course/courseId/sequence_1';
 
-        waitFor(() => {
+        await waitFor(() => {
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
 
-      it('returns after calling getResumeBlock', () => {
-        const getResumeBlock = jest.fn();
+      it('returns after calling getResumeBlock', async () => {
         axiosMock.onGet(
           `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
         ).reply(200, {
@@ -975,15 +969,16 @@ describe('Course redirect functions', () => {
           'loaded',
           'courseId',
           null,
-          'sequence_1',
+          null,
           navigate,
           true,
         );
 
-        waitFor(() => {
-          expect(getResumeBlock).toHaveBeenCalled();
-          expect(navigate).not.toHaveBeenCalled();
+        await waitFor(() => {
+          expect(axiosMock.history.get.map((req) => req.url)).toContain(`${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`);
         });
+        await new Promise((resolve) => { setTimeout(resolve, 0); });
+        expect(navigate).not.toHaveBeenCalled();
       });
 
       it('returns when course status is loading', () => {
@@ -1012,8 +1007,7 @@ describe('Course redirect functions', () => {
         expect(navigate).not.toHaveBeenCalled();
       });
 
-      it('returns when getResumeBlock throws error', () => {
-        const getResumeBlock = jest.fn();
+      it('returns when getResumeBlock throws error', async () => {
         axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`).reply(404);
         checkResumeRedirect(
           'loaded',
@@ -1024,10 +1018,11 @@ describe('Course redirect functions', () => {
           true,
         );
 
-        waitFor(() => {
-          expect(getResumeBlock).toHaveBeenCalled();
-          expect(navigate).not.toHaveBeenCalled();
+        await waitFor(() => {
+          expect(axiosMock.history.get.map((req) => req.url)).toContain(`${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`);
         });
+        await new Promise((resolve) => { setTimeout(resolve, 0); });
+        expect(navigate).not.toHaveBeenCalled();
       });
     });
   });
@@ -1116,7 +1111,7 @@ describe('Course redirect functions', () => {
     });
 
     describe('checkResumeRedirect', () => {
-      it('calls navigate with unitId', () => {
+      it('calls navigate with unitId', async () => {
         axiosMock.onGet(
           `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
         ).reply(200, {
@@ -1131,14 +1126,14 @@ describe('Course redirect functions', () => {
           navigate,
           false,
         );
-        const expectedUrl = '/preview/course/courseId/section_1/unit_1';
+        const expectedUrl = '/course/courseId/section_1/unit_1';
 
-        waitFor(() => {
+        await waitFor(() => {
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
 
-      it('calls navigate with firstSequenceId', () => {
+      it('calls navigate with firstSequenceId', async () => {
         axiosMock.onGet(
           `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
         ).reply(200, {
@@ -1155,7 +1150,7 @@ describe('Course redirect functions', () => {
         );
         const expectedUrl = '/course/courseId/sequence_1';
 
-        waitFor(() => {
+        await waitFor(() => {
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
@@ -1222,11 +1217,15 @@ describe('Course redirect functions', () => {
     });
 
     describe('checkUnitToSequenceUnitRedirect', () => {
-      const apiUrl = getSequenceForUnitDeprecatedUrl('courseId');
+      const { href: apiUrl } = getSequenceForUnitDeprecatedUrl('courseId');
 
-      it('calls navigate with parentId and sequenceId', () => {
+      it('calls navigate with parentId and sequenceId', async () => {
         axiosMock.onGet(apiUrl).reply(200, {
-          parent: { id: 'sequence_1' },
+          blocks: [{
+            id: 'sequence_1',
+            type: 'sequential',
+            children: ['unit_1'],
+          }],
         });
         checkUnitToSequenceUnitRedirect(
           'loaded',
@@ -1237,17 +1236,16 @@ describe('Course redirect functions', () => {
           false,
           null,
           navigate,
-          true,
+          false,
         );
-        const expectedUrl = '/course/courseId/sequence_1';
+        const expectedUrl = '/course/courseId/sequence_1/unit_1';
 
-        waitFor(() => {
+        await waitFor(() => {
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
 
-      it('calls navigate to course page when getSequenceForUnitDeprecated errors', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
+      it('calls navigate to course page when getSequenceForUnitDeprecated errors', async () => {
         axiosMock.onGet(apiUrl).reply(404);
         checkUnitToSequenceUnitRedirect(
           'loaded',
@@ -1258,20 +1256,23 @@ describe('Course redirect functions', () => {
           false,
           null,
           navigate,
-          true,
+          false,
         );
         const expectedUrl = '/course/courseId';
 
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
+        await waitFor(() => {
+          expect(axiosMock.history.get.map((req) => req.url)).toContain(apiUrl);
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
 
-      it('calls navigate to course page when no parent id is returned', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
+      it('calls navigate to course page when no parent id is returned', async () => {
         axiosMock.onGet(apiUrl).reply(200, {
-          parent: { children: ['block_1'] },
+          blocks: [{
+            id: 'sequence_1',
+            type: 'sequential',
+            children: ['block_1'],
+          }],
         });
         checkUnitToSequenceUnitRedirect(
           'loaded',
@@ -1282,12 +1283,12 @@ describe('Course redirect functions', () => {
           false,
           null,
           navigate,
-          true,
+          false,
         );
         const expectedUrl = '/course/courseId';
 
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
+        await waitFor(() => {
+          expect(axiosMock.history.get.map((req) => req.url)).toContain(apiUrl);
           expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
         });
       });
