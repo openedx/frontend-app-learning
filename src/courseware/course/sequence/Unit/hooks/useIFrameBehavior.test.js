@@ -37,9 +37,6 @@ jest.mock('@tanstack/react-query', () => ({
   ...jest.requireActual('@tanstack/react-query'),
   useQueryClient: () => ({ invalidateQueries: mockInvalidateQueries }),
 }));
-jest.mock('@src/course-home/data/thunks', () => ({
-  eventTypes: { POST_EVENT: 'post_event' },
-}));
 jest.mock('@src/course-home/data/apiHooks', () => ({
   usePostEvent: () => ({ mutate: mockMutate }),
 }));

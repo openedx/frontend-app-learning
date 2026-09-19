@@ -10,7 +10,7 @@ import { ToastProvider, useToast } from '../../generic/ToastContext';
 import {
   useCourseHomeMeta,
   useOutlineTabData, useLiveTabData, useProgressTabData, useResetDeadlines, usePostEvent, useRequestCert,
-  useDismissWelcomeMessage, useSaveWeeklyLearningGoal,
+  useDismissWelcomeMessage, useSaveWeeklyLearningGoal, useExamAttemptsData,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
@@ -294,6 +294,67 @@ describe('course-home apiHooks', () => {
       const { result } = renderHook(() => useProgressTabData('course-1'), { wrapper });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+  });
+
+  describe('useExamAttemptsData', () => {
+    const courseId = 'course-1';
+    const sequenceIds = ['seq-exam1', 'seq-homework1', 'seq-final'];
+    const exam = (name: string) => ({ id: name.length, course_id: courseId, exam_name: name });
+    const attemptRequests = () => axiosMock.history.get.filter((req) => req.url?.includes('/exam/attempt/'));
+    const rejectWith = (status: number) => () => {
+      const error = Object.assign(new Error(`Request failed with status code ${status}`), {
+        response: { status, data: {} },
+        customAttributes: { httpErrorStatus: status },
+      });
+      return Promise.reject(error);
+    };
+
+    it('resolves to one entry per sequence id, in order, with {} for a 404', async () => {
+      axiosMock.onGet(/seq-exam1/).reply(200, { exam: exam('Midterm') });
+      axiosMock.onGet(/seq-homework1/).reply(rejectWith(404));
+      axiosMock.onGet(/seq-final/).reply(200, { exam: exam('Final') });
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useExamAttemptsData(courseId, sequenceIds), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual([
+        { id: 7, courseId, examName: 'Midterm' },
+        {},
+        { id: 5, courseId, examName: 'Final' },
+      ]);
+      expect(attemptRequests()).toHaveLength(3);
+    });
+
+    it('logs a failed request, keeps {} in its slot, and still resolves the others', async () => {
+      axiosMock.onGet(/seq-exam1/).reply(rejectWith(500));
+      axiosMock.onGet(/seq-homework1/).reply(rejectWith(404));
+      axiosMock.onGet(/seq-final/).reply(200, { exam: exam('Final') });
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useExamAttemptsData(courseId, sequenceIds), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual([{}, {}, { id: 5, courseId, examName: 'Final' }]);
+      expect(loggingService.logError).toHaveBeenCalledTimes(1);
+      expect(loggingService.logError.mock.calls[0][0].customAttributes.httpErrorStatus).toBe(500);
+    });
+
+    it('resolves to [] with no requests for an empty sequence list', async () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useExamAttemptsData(courseId, []), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual([]);
+      expect(attemptRequests()).toHaveLength(0);
+    });
+
+    it('does not run until the sequence ids are known', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useExamAttemptsData(courseId, undefined), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(attemptRequests()).toHaveLength(0);
     });
   });
 
