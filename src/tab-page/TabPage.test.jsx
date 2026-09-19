@@ -167,6 +167,72 @@ describe('Tab Page', () => {
       expect(screen.queryByTestId('LoadedTabPage')).not.toBeInTheDocument();
     });
 
+    it('displays the 403 detail from the metadata query error', () => {
+      const detail = 'This course is not currently accessible to you.';
+      render(
+        <TabPage
+          {...mockData}
+          courseStatus={{
+            metadataQuery: {
+              isError: true,
+              error: { response: { status: 403, data: { detail, error_code: 'course_access_redirect' } } },
+            },
+            tabDataQuery: {},
+          }}
+        />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByText(detail)).toBeInTheDocument();
+      expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
+    });
+
+    it('displays the 403 detail from the tab-data query error', () => {
+      const detail = 'Progress data is not available for this learner.';
+      render(
+        <TabPage
+          {...mockData}
+          courseStatus={{
+            metadataQuery: metaWithAccess,
+            tabDataQuery: {
+              isError: true,
+              error: { response: { status: 403, data: { detail } } },
+            },
+          }}
+        />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByText(detail)).toBeInTheDocument();
+      expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
+    });
+
+    it('displays the generic message for a non-403 metadata error', () => {
+      render(
+        <TabPage
+          {...mockData}
+          courseStatus={{
+            metadataQuery: { isError: true, error: { response: { status: 500 } } },
+            tabDataQuery: {},
+          }}
+        />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
+    });
+
+    it('displays the generic message for a 403 without a body', () => {
+      render(
+        <TabPage
+          {...mockData}
+          courseStatus={{
+            metadataQuery: { isError: true, error: { response: { status: 403 } } },
+            tabDataQuery: {},
+          }}
+        />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
+    });
+
     it('shows loading when access is denied but the tab-data query is still pending', () => {
       render(
         <TabPage
