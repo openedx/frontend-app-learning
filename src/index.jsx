@@ -29,6 +29,7 @@ import { createQueryClient } from './queryClient';
 import NoticesProvider from './generic/notices';
 import PathFixesProvider from './generic/path-fixes';
 import { ToastProvider } from './generic/ToastContext';
+import { PluginOverridesProvider } from './generic/plugin-overrides';
 import LiveTab from './course-home/live-tab/LiveTab';
 import CourseAccessErrorPage from './generic/CourseAccessErrorPage';
 import DecodePageRoute from './decode-page-route';
@@ -53,83 +54,88 @@ subscribe(APP_READY, () => {
               <UserMessagesProvider>
                 <div className="app-container">
                   <ToastProvider>
-                    <Routes>
-                      <Route path="*" element={<PageWrap><PageNotFound /></PageWrap>} />
-                      <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
-                      <Route path={ROUTES.REDIRECT} element={<PageWrap><CoursewareRedirectLandingPage /></PageWrap>} />
-                      <Route
-                        path={ROUTES.PREFERENCES_UNSUBSCRIBE}
-                        element={
-                          <PageWrap><PreferencesUnsubscribe /></PageWrap>
+                    <PluginOverridesProvider>
+                      <Routes>
+                        <Route path="*" element={<PageWrap><PageNotFound /></PageWrap>} />
+                        <Route path={ROUTES.UNSUBSCRIBE} element={<PageWrap><GoalUnsubscribe /></PageWrap>} />
+                        <Route
+                          path={ROUTES.REDIRECT}
+                          element={<PageWrap><CoursewareRedirectLandingPage /></PageWrap>}
+                        />
+                        <Route
+                          path={ROUTES.PREFERENCES_UNSUBSCRIBE}
+                          element={
+                            <PageWrap><PreferencesUnsubscribe /></PageWrap>
                       }
-                      />
-                      <Route
-                        path={DECODE_ROUTES.ACCESS_DENIED}
-                        element={<DecodePageRoute><CourseAccessErrorPage /></DecodePageRoute>}
-                      />
-                      <Route
-                        path={DECODE_ROUTES.HOME}
-                        element={(
-                          <DecodePageRoute>
-                            <OutlineTab />
-                          </DecodePageRoute>
-                      )}
-                      />
-                      <Route
-                        path={DECODE_ROUTES.LIVE}
-                        element={(
-                          <DecodePageRoute>
-                            <LiveTab />
-                          </DecodePageRoute>
-                      )}
-                      />
-                      <Route
-                        path={DECODE_ROUTES.DATES}
-                        element={(
-                          <DecodePageRoute>
-                            <DatesTab />
-                          </DecodePageRoute>
-                      )}
-                      />
-                      <Route
-                        path={DECODE_ROUTES.DISCUSSION}
-                        element={(
-                          <DecodePageRoute>
-                            <DiscussionTab />
-                          </DecodePageRoute>
-                      )}
-                      />
-                      {DECODE_ROUTES.PROGRESS.map((route) => (
+                        />
                         <Route
-                          key={route}
-                          path={route}
+                          path={DECODE_ROUTES.ACCESS_DENIED}
+                          element={<DecodePageRoute><CourseAccessErrorPage /></DecodePageRoute>}
+                        />
+                        <Route
+                          path={DECODE_ROUTES.HOME}
                           element={(
                             <DecodePageRoute>
-                              <ProgressTab />
+                              <OutlineTab />
                             </DecodePageRoute>
-                        )}
-                        />
-                      ))}
-                      <Route
-                        path={DECODE_ROUTES.COURSE_END}
-                        element={(
-                          <DecodePageRoute>
-                            <CourseExit />
-                          </DecodePageRoute>
                       )}
-                      />
-                      {DECODE_ROUTES.COURSEWARE.map((route) => (
+                        />
                         <Route
-                          key={route}
-                          path={route}
+                          path={DECODE_ROUTES.LIVE}
                           element={(
                             <DecodePageRoute>
-                              <CoursewareContainer />
+                              <LiveTab />
                             </DecodePageRoute>
-                        )}
+                      )}
                         />
-                      ))}
-                    </Routes>
+                        <Route
+                          path={DECODE_ROUTES.DATES}
+                          element={(
+                            <DecodePageRoute>
+                              <DatesTab />
+                            </DecodePageRoute>
+                      )}
+                        />
+                        <Route
+                          path={DECODE_ROUTES.DISCUSSION}
+                          element={(
+                            <DecodePageRoute>
+                              <DiscussionTab />
+                            </DecodePageRoute>
+                      )}
+                        />
+                        {DECODE_ROUTES.PROGRESS.map((route) => (
+                          <Route
+                            key={route}
+                            path={route}
+                            element={(
+                              <DecodePageRoute>
+                                <ProgressTab />
+                              </DecodePageRoute>
+                        )}
+                          />
+                        ))}
+                        <Route
+                          path={DECODE_ROUTES.COURSE_END}
+                          element={(
+                            <DecodePageRoute>
+                              <CourseExit />
+                            </DecodePageRoute>
+                      )}
+                        />
+                        {DECODE_ROUTES.COURSEWARE.map((route) => (
+                          <Route
+                            key={route}
+                            path={route}
+                            element={(
+                              <DecodePageRoute>
+                                <CoursewareContainer />
+                              </DecodePageRoute>
+                        )}
+                          />
+                        ))}
+                      </Routes>
+                    </PluginOverridesProvider>
                   </ToastProvider>
                 </div>
               </UserMessagesProvider>

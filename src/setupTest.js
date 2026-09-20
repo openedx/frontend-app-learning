@@ -19,6 +19,7 @@ import {
 } from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
 import { ToastProvider } from './generic/ToastContext';
+import { PluginOverridesProvider } from './generic/plugin-overrides';
 
 import messages from './i18n';
 import { getCourseMetadata, getLearningSequencesOutline, getSequenceMetadata } from './courseware/data/api';
@@ -37,11 +38,6 @@ jest.mock('@openedx/frontend-plugin-framework', () => {
     PluginSlot: MockedPluginSlot,
   };
 });
-
-jest.mock('@src/generic/plugin-store', () => ({
-  ...jest.requireActual('@src/generic/plugin-store'),
-  usePluginsCallback: jest.fn((_, cb) => cb),
-}));
 
 // Suppress known React deprecation warnings that originate in third-party
 // packages (Paragon, react-fontawesome) and project components that still use
@@ -305,7 +301,9 @@ function render(
         <QueryClientProvider client={testQueryClient}>
           <UserMessagesProvider>
             <ToastProvider>
-              {children}
+              <PluginOverridesProvider>
+                {children}
+              </PluginOverridesProvider>
             </ToastProvider>
           </UserMessagesProvider>
         </QueryClientProvider>
