@@ -2,13 +2,13 @@
 import React, { useContext } from 'react';
 import { AppContext } from '@edx/frontend-platform/react';
 import { ALERT_TYPES, useAlert } from '../../generic/user-messages';
-import { useModel } from '../../generic/model-store';
+import { useOutlineTabData } from '../../course-home/data/apiHooks';
 
 const LogistrationAlert = React.lazy(() => import('./LogistrationAlert'));
 
 export function useLogistrationAlert(courseId) {
   const { authenticatedUser } = useContext(AppContext);
-  const outline = useModel('outline', courseId);
+  const outline = useOutlineTabData(courseId, { enabled: false }).data;
   const privateOutline = outline && outline.courseBlocks && !outline.courseBlocks.courses;
   /**
    * This alert should render if

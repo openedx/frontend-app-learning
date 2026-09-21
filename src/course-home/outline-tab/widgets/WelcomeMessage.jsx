@@ -7,14 +7,13 @@ import truncate from 'truncate-html';
 
 import LmsHtmlFragment from '../LmsHtmlFragment';
 import messages from '../messages';
-import { useModel } from '../../../generic/model-store';
-import { useDismissWelcomeMessage } from '../../data/apiHooks';
+import { useDismissWelcomeMessage, useOutlineTabData } from '../../data/apiHooks';
 
 const WelcomeMessage = ({ courseId, nextElementRef }) => {
   const intl = useIntl();
   const {
     welcomeMessageHtml,
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   const messageBodyRef = useRef();
   const [display, setDisplay] = useState(true);

@@ -54,8 +54,10 @@ const OutlineTabContent = () => {
     datesWidget: {
       courseDateBlocks,
     },
+    datesBannerInfo,
     enableProctoredExams,
-  } = useModel('outline', courseId);
+    hasEnded,
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   const [expandAll, setExpandAll] = useState(false);
   const navigate = useNavigate();
@@ -145,8 +147,12 @@ const OutlineTabContent = () => {
           />
           {isSelfPaced && hasDeadlines && (
             <>
-              <ShiftDatesAlert model="outline" />
-              <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
+              <ShiftDatesAlert model="outline" datesBannerInfo={datesBannerInfo} hasEnded={hasEnded} />
+              <UpgradeToShiftDatesAlert
+                logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick}
+                datesBannerInfo={datesBannerInfo}
+                hasEnded={hasEnded}
+              />
             </>
           )}
           <StartOrResumeCourseCard />

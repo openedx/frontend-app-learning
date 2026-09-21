@@ -6,6 +6,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import DateSummary from '../DateSummary';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
+import { useOutlineTabData } from '../../data/apiHooks';
 
 const CourseDates = () => {
   const intl = useIntl();
@@ -18,7 +19,7 @@ const CourseDates = () => {
       courseDateBlocks,
       datesTabLink,
     },
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   if (courseDateBlocks.length === 0) {
     return null;

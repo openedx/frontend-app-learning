@@ -12,6 +12,7 @@ import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
 
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
+import { useOutlineTabData } from '../../data/apiHooks';
 import LaunchCourseHomeTourButton from '../../../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 
 const CourseTools = () => {
@@ -20,7 +21,7 @@ const CourseTools = () => {
   const { org } = useModel('courseHomeMeta', courseId);
   const {
     courseTools,
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   if (courseTools.length === 0) {
     return null;
