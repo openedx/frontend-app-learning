@@ -10,11 +10,10 @@ import { logError } from '@edx/frontend-platform/logging';
 import { usePostEvent } from '@src/course-home/data/apiHooks';
 import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
-import { eventTypes } from '@src/course-home/data/thunks';
 import { useEventListener } from '@src/generic/hooks';
 import { useModel } from '@src/generic/model-store';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
-import { messageTypes } from '../constants';
+import { eventTypes, messageTypes } from '../constants';
 
 import useLoadBearingHook from './useLoadBearingHook';
 
