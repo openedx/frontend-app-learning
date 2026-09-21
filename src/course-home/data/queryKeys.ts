@@ -10,4 +10,7 @@ export const courseHomeQueryKeys = {
   examAttempts: (courseId: string, sequenceIds: string[]) => (
     [...courseHomeQueryKeys.all, 'examAttempts', courseId, sequenceIds] as const
   ),
+  proctoringInfo: (courseId: string, username?: string) => (
+    [...courseHomeQueryKeys.all, 'proctoringInfo', courseId, username] as const
+  ),
 };

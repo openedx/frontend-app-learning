@@ -10,6 +10,7 @@ import {
   getExamsData,
   getLiveTabIframe,
   getOutlineTabData,
+  getProctoringInfoData,
   getProgressTabData,
   postCourseDeadlines,
   postDismissWelcomeMessage,
@@ -108,6 +109,13 @@ Record<string, unknown>[]
     }
   })),
   enabled: !!courseId && !!sequenceIds,
+});
+
+export const useProctoringInfoData = (courseId: string, username?: string, enabled = true) => useQuery({
+  queryKey: courseHomeQueryKeys.proctoringInfo(courseId, username),
+  queryFn: () => getProctoringInfoData(courseId, username),
+  enabled,
+  retry: false,
 });
 
 export const useRequestCert = () => useMutation({

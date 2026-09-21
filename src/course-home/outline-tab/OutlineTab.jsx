@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -13,7 +12,7 @@ import CourseHandouts from './widgets/CourseHandouts';
 import StartOrResumeCourseCard from './widgets/StartOrResumeCourseCard';
 import WeeklyLearningGoalCard from './widgets/WeeklyLearningGoalCard';
 import CourseTools from './widgets/CourseTools';
-import { useCourseHomeMeta, useOutlineTabData } from '../data/apiHooks';
+import { useCourseHomeMeta, useOutlineTabData, useProctoringInfoData } from '../data/apiHooks';
 import messages from './messages';
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
@@ -32,13 +31,14 @@ import { TabWithTimer } from '../../tab-page';
 const OutlineTabContent = () => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const { proctoringPanelStatus } = useSelector(state => state.courseHome);
 
   const {
     isSelfPaced,
     org,
     title,
+    username,
   } = useModel('courseHomeMeta', courseId);
+  const { isPending: isProctoringInfoPending } = useProctoringInfoData(courseId, username);
 
   const expandButtonRef = useRef();
 
@@ -173,7 +173,7 @@ const OutlineTabContent = () => {
             <ProctoringInfoPanel />
             { /** Defer showing the goal widget until the ProctoringInfoPanel has resolved or has been determined as
              disabled to avoid components bouncing around too much as screen is rendered */ }
-            {(!enableProctoredExams || proctoringPanelStatus === 'loaded') && weeklyLearningGoalEnabled && (
+            {(!enableProctoredExams || !isProctoringInfoPending) && weeklyLearningGoalEnabled && (
               <WeeklyLearningGoalCard
                 daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
                 subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}

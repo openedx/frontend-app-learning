@@ -1058,6 +1058,24 @@ describe('Outline Tab', () => {
   describe('Proctoring Info Panel', () => {
     const onboardingReleaseDate = new Date();
     onboardingReleaseDate.setDate(new Date().getDate() - 7);
+
+    it('defers the weekly learning goal card until the proctoring info has settled', async () => {
+      let resolveProctoringInfo;
+      axiosMock.onGet(proctoringInfoUrl).reply(() => new Promise((resolve) => { resolveProctoringInfo = resolve; }));
+      setTabData({
+        enable_proctored_exams: true,
+        course_goals: { weekly_learning_goal_enabled: true },
+      });
+      await fetchAndRender();
+
+      expect(screen.queryByTestId('weekly-learning-goal-card')).not.toBeInTheDocument();
+
+      await act(async () => { resolveProctoringInfo([200, {}]); });
+
+      expect(await screen.findByTestId('weekly-learning-goal-card')).toBeInTheDocument();
+      expect(screen.queryByText('This course contains proctored exams')).not.toBeInTheDocument();
+    });
+
     it('appears', async () => {
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -1092,6 +1110,20 @@ describe('Outline Tab', () => {
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
       expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).toBeInTheDocument();
       expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
+    });
+
+    it('appears for started', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'started',
+        onboarding_link: 'test',
+        expiration_date: null,
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Current Onboarding Status: Started')).toBeInTheDocument();
+      expect(screen.queryByText('You have started your onboarding exam.')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
     });
 
     it('appears for submitted', async () => {
