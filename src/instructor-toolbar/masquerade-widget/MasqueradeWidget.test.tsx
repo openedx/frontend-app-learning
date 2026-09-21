@@ -6,6 +6,7 @@ import { MasqueradeWidget } from './MasqueradeWidget';
 import {
   fireEvent,
   getAllByRole,
+  getTestStoreIds,
   initializeTestStore,
   render,
   screen,
@@ -15,7 +16,7 @@ import {
 
 describe('Masquerade Widget Dropdown', () => {
   let mockData;
-  let courseware;
+  let courseId: string;
   let mockResponse;
   let axiosMock: MockAdapter;
   let masqueradeUrl: string;
@@ -39,11 +40,11 @@ describe('Masquerade Widget Dropdown', () => {
 
   beforeAll(async () => {
     const store = await initializeTestStore();
-    courseware = store.getState().courseware;
+    courseId = getTestStoreIds(store).courseId;
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseware.courseId}/masquerade`;
+    masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
     mockData = {
-      courseId: courseware.courseId,
+      courseId,
       onError: jest.fn(),
     };
   });
@@ -52,7 +53,7 @@ describe('Masquerade Widget Dropdown', () => {
     mockResponse = {
       success: true,
       active: {
-        course_key: courseware.courseId,
+        course_key: courseId,
         group_id: null,
         role: 'staff',
         user_name: null,
@@ -74,7 +75,7 @@ describe('Masquerade Widget Dropdown', () => {
   masqueradeOptions.forEach((option) => {
     it(`marks role ${option.role} as active`, async () => {
       const active = {
-        course_key: courseware.courseId,
+        course_key: courseId,
         group_id: option.group_id ?? null,
         role: option.role,
         user_name: option.user_name ?? null,

@@ -1,13 +1,15 @@
 import PropTypes from 'prop-types';
+import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
+import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 import {
-  loadUnit, render, screen, fireEvent, waitFor, initializeTestStore, act,
+  loadUnit, render, screen, fireEvent, waitFor, getTestStoreIds, initializeTestStore, act,
 } from '../../../setupTest';
 import SidebarContext from '../sidebar/SidebarContext';
 import Sequence from './Sequence';
-import { fetchSequenceFailure } from '../../data/slice';
 
 jest.mock('@edx/frontend-platform/analytics');
 jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
@@ -27,11 +29,11 @@ describe('Sequence', () => {
 
   beforeAll(async () => {
     const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    const { courseware } = store.getState();
+    const { courseId, sequenceId } = getTestStoreIds(store);
     mockData = {
       unitId: unitBlocks[0].id,
-      sequenceId: courseware.sequenceId,
-      courseId: courseware.courseId,
+      sequenceId,
+      courseId,
       unitNavigationHandler: () => {},
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},
@@ -147,10 +149,12 @@ describe('Sequence', () => {
 
   it('displays error message on sequence load failure', async () => {
     const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
-    testStore.dispatch(fetchSequenceFailure({ sequenceId: mockData.sequenceId }));
+    const failingMock = new MockAdapter(getAuthenticatedHttpClient());
+    failingMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${mockData.sequenceId}`).reply(500);
     render(<Sequence {...mockData} />, { store: testStore, wrapWithRouter: true });
 
     await screen.findByText('There was an error loading this course.');
+    failingMock.restore();
   });
 
   it('handles loading unit', async () => {

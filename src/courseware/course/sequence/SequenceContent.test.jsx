@@ -1,5 +1,7 @@
 import React from 'react';
-import { initializeTestStore, render, screen } from '../../../setupTest';
+import {
+  getTestStoreIds, initializeTestStore, render, screen,
+} from '../../../setupTest';
 import SequenceContent from './SequenceContent';
 
 describe('Sequence Content', () => {
@@ -8,12 +10,13 @@ describe('Sequence Content', () => {
 
   beforeAll(async () => {
     store = await initializeTestStore();
-    const { models, courseware } = store.getState();
+    const { models } = store.getState();
+    const { courseId, sequenceId } = getTestStoreIds(store);
     mockData = {
       gated: false,
-      courseId: courseware.courseId,
-      sequenceId: courseware.sequenceId,
-      unitId: models.sequences[courseware.sequenceId].unitIds[0],
+      courseId,
+      sequenceId,
+      unitId: models.sequences[sequenceId].unitIds[0],
       unitLoadedHandler: () => { },
       renderUnitNavigation: () => { },
     };

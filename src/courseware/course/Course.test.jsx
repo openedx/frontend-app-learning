@@ -6,7 +6,7 @@ import { breakpoints } from '@openedx/paragon';
 import userEvent from '@testing-library/user-event';
 
 import {
-  cleanup, fireEvent, getByRole, initializeTestStore, loadUnit, render, screen, waitFor,
+  cleanup, fireEvent, getByRole, getTestStoreIds, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
 import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
@@ -50,8 +50,8 @@ describe('Course', () => {
 
   beforeAll(async () => {
     store = await initializeTestStore();
-    const { courseware, models } = store.getState();
-    const { courseId, sequenceId } = courseware;
+    const { models } = store.getState();
+    const { courseId, sequenceId } = getTestStoreIds(store);
     Object.assign(mockData, {
       courseId,
       sequenceId,
@@ -115,8 +115,8 @@ describe('Course', () => {
   it.skip('displays first section celebration modal', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { firstSection: true } });
     const testStore = await initializeTestStore({ courseHomeMetadata }, false);
-    const { courseware, models } = testStore.getState();
-    const { courseId, sequenceId } = courseware;
+    const { models } = testStore.getState();
+    const { courseId, sequenceId } = getTestStoreIds(testStore);
     const testData = {
       ...mockData,
       courseId,
@@ -141,8 +141,8 @@ describe('Course', () => {
   it.skip('displays weekly goal celebration modal', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { weeklyGoal: true } });
     const testStore = await initializeTestStore({ courseHomeMetadata }, false);
-    const { courseware, models } = testStore.getState();
-    const { courseId, sequenceId } = courseware;
+    const { models } = testStore.getState();
+    const { courseId, sequenceId } = getTestStoreIds(testStore);
     const testData = {
       ...mockData,
       courseId,
@@ -169,11 +169,12 @@ describe('Course', () => {
       const { testStore: setupStore } = await setupDiscussionSidebar();
       cleanup();
       testStore = setupStore;
-      const { courseware, models } = testStore.getState();
+      const { models } = testStore.getState();
+      const { courseId, sequenceId } = getTestStoreIds(testStore);
       testData = {
         ...mockData,
-        courseId: courseware.courseId,
-        sequenceId: courseware.sequenceId,
+        courseId,
+        sequenceId,
         unitId: Object.values(models.units)[0].id,
       };
       global.innerWidth = breakpoints.extraExtraLarge.minWidth;
@@ -302,8 +303,8 @@ describe('Course', () => {
     const testStore = await initializeTestStore({
       courseMetadata, unitBlocks,
     }, false);
-    const { courseware, models } = testStore.getState();
-    const { courseId, sequenceId } = courseware;
+    const { models } = testStore.getState();
+    const { courseId, sequenceId } = getTestStoreIds(testStore);
     const testData = {
       ...mockData,
       courseId,
@@ -337,8 +338,8 @@ describe('Course', () => {
       { courseId: courseMetadata.id },
     ));
     const testStore = await initializeTestStore({ courseMetadata, unitBlocks }, false);
-    const { courseware, models } = testStore.getState();
-    const { courseId, sequenceId } = courseware;
+    const { models } = testStore.getState();
+    const { courseId, sequenceId } = getTestStoreIds(testStore);
     const testData = {
       ...mockData,
       courseId,
@@ -458,8 +459,8 @@ describe('Course', () => {
       enrollment: { mode: 'verified' },
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
-    const { courseware, models } = testStore.getState();
-    const { courseId, sequenceId } = courseware;
+    const { models } = testStore.getState();
+    const { courseId, sequenceId } = getTestStoreIds(testStore);
     const testData = {
       ...mockData,
       courseId,
@@ -477,8 +478,7 @@ describe('Course', () => {
       enrollment: { mode: 'verified' },
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
-    const { courseware } = testStore.getState();
-    const { courseId, sequenceId } = courseware;
+    const { courseId, sequenceId } = getTestStoreIds(testStore);
     const testData = {
       ...mockData,
       courseId,
