@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { MemoryRouter } from 'react-router';
 import { Factory } from 'rosie';
 
 import {
-  initializeMockApp, initializeTestStore, render, screen,
+  initializeMockApp, initializeTestStore, render, screen, waitFor,
 } from '../../../../setupTest';
+import { usePluginOverrides } from '../../../../generic/plugin-overrides';
 import { getIFrameUrl } from './urls';
 import { views } from './constants';
 import Unit from '.';
@@ -108,6 +110,34 @@ describe('<Unit />', () => {
         jumpToId: null,
         preview: 0,
       }));
+    });
+  });
+
+  describe('getIFrameUrl override', () => {
+    const IFrameUrlOverridePlugin = () => {
+      const { registerOverrideMethod } = usePluginOverrides();
+      useEffect(() => {
+        registerOverrideMethod({
+          pluginName: 'test-plugin',
+          methodName: 'getIFrameUrl',
+          method: (iframeUrl) => `${iframeUrl}&overridden=1`,
+        });
+      }, [registerOverrideMethod]);
+      return null;
+    };
+
+    it('applies a registered override to the iframe src', async () => {
+      render(
+        <MemoryRouter initialEntries={[{ pathname: `/course/${defaultProps.courseId}` }]}>
+          <IFrameUrlOverridePlugin />
+          <Unit {...defaultProps} />
+        </MemoryRouter>,
+        { store, wrapWithRouter: false },
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('content-iframe-test-id').getAttribute('src')).toMatch(/&overridden=1$/);
+      });
     });
   });
 });

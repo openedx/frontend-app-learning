@@ -6,7 +6,7 @@ import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { useModel } from '@src/generic/model-store';
-import { usePluginsCallback } from '@src/generic/plugin-store';
+import { usePluginsCallback } from '@src/generic/plugin-overrides';
 
 import messages from '../messages';
 import ContentIFrame from './ContentIFrame';
