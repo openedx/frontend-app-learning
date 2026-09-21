@@ -57,12 +57,12 @@ describe('Course Tabs Navigation', () => {
 
   it('renders with tabs', () => {
     const tabs = [
-      { url: 'http://test-url1', title: 'Item 1', slug: 'test1' },
-      { url: 'http://test-url2', title: 'Item 2', slug: 'test2' },
+      { url: 'http://test-url1', title: 'Item 1', tabId: 'test1' },
+      { url: 'http://test-url2', title: 'Item 2', tabId: 'test2' },
     ];
     const mockData = {
       tabs,
-      activeTabSlug: tabs[0].slug,
+      activeTabSlug: tabs[0].tabId,
     };
     renderComponent(mockData);
 

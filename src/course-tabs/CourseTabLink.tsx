@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import React from 'react';
 
+import { isActiveTab } from './utils';
+
 interface CourseTabLinkProps {
   slug: string;
   activeTabSlug?: string;
@@ -13,7 +15,7 @@ export const CourseTabLink = ({
 }: CourseTabLinkProps) => (
   <a
     href={url}
-    className={classNames('nav-item flex-shrink-0 nav-link', { active: slug === activeTabSlug })}
+    className={classNames('nav-item flex-shrink-0 nav-link', { active: isActiveTab(slug, activeTabSlug) })}
   >
     {title}
   </a>

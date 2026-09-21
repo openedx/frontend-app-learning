@@ -6,21 +6,12 @@ import { appendBrowserTimezoneToUrl } from '../../utils';
 /**
  * Tweak the metadata for consistency
  * @param metadata the data to normalize
- * @param rootSlug either 'courseware' or 'outline' depending on the context
  * @returns {Object} The normalized metadata
  */
-function normalizeCourseHomeCourseMetadata(metadata, rootSlug) {
+function normalizeCourseHomeCourseMetadata(metadata) {
   const data = camelCaseObject(metadata);
   return {
     ...data,
-    tabs: data.tabs.map(tab => ({
-      // The API uses "courseware" as a slug for both courseware and the outline tab.
-      // If needed, we switch it to "outline" here for
-      // use within the MFE to differentiate between course home and courseware.
-      slug: tab.tabId === 'courseware' ? rootSlug : tab.tabId,
-      title: tab.title,
-      url: tab.url,
-    })),
     isMasquerading: data.originalUserIsStaff && !data.isStaff,
   };
 }
@@ -102,11 +93,11 @@ export function normalizeOutlineBlocks(courseId, blocks) {
   return models;
 }
 
-export async function getCourseHomeCourseMetadata(courseId, rootSlug) {
+export async function getCourseHomeCourseMetadata(courseId) {
   let url = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   url = appendBrowserTimezoneToUrl(url);
   const { data } = await getAuthenticatedHttpClient().get(url);
-  return normalizeCourseHomeCourseMetadata(data, rootSlug);
+  return normalizeCourseHomeCourseMetadata(data);
 }
 
 // For debugging purposes, you might like to see a fully loaded dates tab.

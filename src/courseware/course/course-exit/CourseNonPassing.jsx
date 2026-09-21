@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import { Alert, Button } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 
+import { getProgressTabUrl } from '../../../course-tabs/utils';
 import { useModel } from '../../../generic/model-store';
 
 import CatalogSuggestion from './CatalogSuggestion';
@@ -25,8 +26,7 @@ const CourseNonPassing = () => {
   const { administrator } = getAuthenticatedUser();
 
   // Get progress tab link for 'view grades' button
-  const progressTab = tabs.find(tab => tab.slug === 'progress');
-  const progressLink = progressTab && progressTab.url;
+  const progressLink = getProgressTabUrl(tabs);
 
   useEffect(() => logVisit(org, courseId, administrator, 'nonpassing'), [org, courseId, administrator]);
 

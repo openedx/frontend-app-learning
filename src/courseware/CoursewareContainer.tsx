@@ -30,7 +30,7 @@ const CoursewareContainer = () => {
   const saveSequencePosition = useSaveSequencePosition();
 
   const metadataQuery = useCoursewareMetadata(courseId);
-  const courseHomeMetaQuery = useCourseHomeMeta(courseId, 'courseware');
+  const courseHomeMetaQuery = useCourseHomeMeta(courseId);
   const sequenceQuery = useSequenceMetadata(sequenceId);
   const isSequenceLoaded = sequenceQuery.isSuccess;
 

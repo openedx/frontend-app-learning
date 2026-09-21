@@ -5,6 +5,7 @@ import { Locked } from '@openedx/paragon/icons';
 import { Icon, Hyperlink } from '@openedx/paragon';
 import { useParams } from 'react-router-dom';
 import { useModel } from '../../../../generic/model-store';
+import { getCourseOutlineUrl } from '../../../../course-tabs/utils';
 import { useProgressData } from '../../hooks';
 import { showUngradedAssignments } from '../../utils';
 
@@ -38,14 +39,13 @@ const DetailedGrades = () => {
     });
   };
 
-  const overviewTab = tabs.find(tab => tab.slug === 'outline');
-  const overviewTabUrl = overviewTab && overviewTab.url;
+  const courseOutlineUrl = getCourseOutlineUrl(tabs);
 
-  const outlineLink = overviewTabUrl && (
+  const outlineLink = courseOutlineUrl && (
     <Hyperlink
       variant="muted"
       isInline
-      destination={overviewTabUrl}
+      destination={courseOutlineUrl}
       onClick={logOutlineLinkClick}
       tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
     >
@@ -78,7 +78,7 @@ const DetailedGrades = () => {
       {!hasSectionScores && (
         <p className="small">{intl.formatMessage(emptyTableMsg)}</p>
       )}
-      {overviewTabUrl && !showUngradedAssignments() && (
+      {courseOutlineUrl && !showUngradedAssignments() && (
         <p className="x-small m-0">
           {intl.formatMessage(messages.ungradedAlert, { outlineLink })}
         </p>

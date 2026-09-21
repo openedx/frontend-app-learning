@@ -67,12 +67,12 @@ export const usePostEvent = () => {
 
 // Typed to only what we read off this query, not the whole (untyped) endpoint shape;
 // other course-home fields are read via `useModel`/the bridge (until #1977).
-export const useCourseHomeMeta = (courseId: string | undefined, rootSlug: string) => useQuery<
+export const useCourseHomeMeta = (courseId: string | undefined) => useQuery<
 { courseAccess?: { hasAccess: boolean } },
 RequestError
 >({
-  queryKey: courseHomeQueryKeys.metadata(courseId!, rootSlug),
-  queryFn: () => getCourseHomeCourseMetadata(courseId, rootSlug),
+  queryKey: courseHomeQueryKeys.metadata(courseId!),
+  queryFn: () => getCourseHomeCourseMetadata(courseId),
   enabled: !!courseId,
   meta: { modelType: 'courseHomeMeta', courseId },
 });

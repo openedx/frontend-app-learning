@@ -247,7 +247,7 @@ export const useCoursewareRedirects = () => {
 
   const isCourseLoaded = useIsCourseLoaded(courseId);
   const outlineQuery = useCoursewareOutline(courseId);
-  const courseHomeMetaQuery = useCourseHomeMeta(courseId, 'courseware');
+  const courseHomeMetaQuery = useCourseHomeMeta(courseId);
   const sequenceQuery = useSequenceMetadata(sequenceId);
   const isSequenceLoaded = sequenceQuery.isSuccess;
   const isSequenceFailed = sequenceQuery.isError;

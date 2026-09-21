@@ -198,7 +198,7 @@ const OutlineTabContent = () => {
 
 const OutlineTab = () => {
   const { courseId } = useParams();
-  const metadataQuery = useCourseHomeMeta(courseId, 'outline');
+  const metadataQuery = useCourseHomeMeta(courseId);
   const tabDataQuery = useOutlineTabData(courseId);
 
   return (

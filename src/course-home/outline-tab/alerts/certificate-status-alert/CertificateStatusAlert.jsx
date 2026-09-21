@@ -14,6 +14,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import certMessages from './messages';
 import certStatusMessages from '../../../progress-tab/certificate-status/messages';
+import { getProgressTabUrl } from '../../../../course-tabs/utils';
 import { useRequestCert } from '../../../data/apiHooks';
 
 export const CERT_STATUS_TYPE = {
@@ -115,8 +116,7 @@ const CertificateStatusAlert = ({ payload }) => {
   };
 
   const renderNotPassingCourseEnded = () => {
-    const progressTab = tabs.find(tab => tab.slug === 'progress');
-    const progressLink = progressTab && progressTab.url;
+    const progressLink = getProgressTabUrl(tabs);
 
     const alertProps = {
       header: intl.formatMessage(certMessages.certStatusNotPassingHeader),
@@ -201,7 +201,7 @@ CertificateStatusAlert.propTypes = {
     org: PropTypes.string,
     notPassingCourseEnded: PropTypes.bool,
     tabs: PropTypes.arrayOf(PropTypes.shape({
-      tab_id: PropTypes.string,
+      tabId: PropTypes.string,
       title: PropTypes.string,
       url: PropTypes.string,
     })),
