@@ -1,6 +1,5 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -13,7 +12,12 @@ import {
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
-const UpgradeToShiftDatesAlert = ({ logUpgradeLinkClick, model }) => {
+interface Props {
+  logUpgradeLinkClick?: () => void;
+  model: string;
+}
+
+const UpgradeToShiftDatesAlert = ({ logUpgradeLinkClick = () => {}, model }: Props) => {
   const intl = useIntl();
   const { courseId } = useParams();
 
@@ -56,15 +60,6 @@ const UpgradeToShiftDatesAlert = ({ logUpgradeLinkClick, model }) => {
       </Row>
     </Alert>
   );
-};
-
-UpgradeToShiftDatesAlert.propTypes = {
-  logUpgradeLinkClick: PropTypes.func,
-  model: PropTypes.string.isRequired,
-};
-
-UpgradeToShiftDatesAlert.defaultProps = {
-  logUpgradeLinkClick: () => {},
 };
 
 export default UpgradeToShiftDatesAlert;
