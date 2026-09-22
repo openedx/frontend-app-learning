@@ -1,7 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -16,7 +15,11 @@ import { courseHomeQueryKeys } from '../data/queryKeys';
 import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
-const ShiftDatesAlert = ({ model }) => {
+interface Props {
+  model: string;
+}
+
+const ShiftDatesAlert = ({ model }: Props) => {
   const intl = useIntl();
   const { courseId } = useParams();
   const queryClient = useQueryClient();
@@ -33,7 +36,7 @@ const ShiftDatesAlert = ({ model }) => {
 
   const resetDeadlines = useResetDeadlines();
 
-  if (!missedDeadlines || missedGatedContent || hasEnded) {
+  if (!courseId || !missedDeadlines || missedGatedContent || hasEnded) {
     return null;
   }
 
@@ -65,10 +68,6 @@ const ShiftDatesAlert = ({ model }) => {
       </Row>
     </Alert>
   );
-};
-
-ShiftDatesAlert.propTypes = {
-  model: PropTypes.string.isRequired,
 };
 
 export default ShiftDatesAlert;
