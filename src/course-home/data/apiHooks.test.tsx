@@ -396,7 +396,7 @@ describe('course-home apiHooks', () => {
 
     it('stays idle with no request when disabled', () => {
       const { wrapper } = buildWrapper();
-      const { result } = renderHook(() => useProctoringInfoData('course-1', 'learner', false), { wrapper });
+      const { result } = renderHook(() => useProctoringInfoData('course-1', 'learner', { enabled: false }), { wrapper });
 
       expect(result.current.fetchStatus).toBe('idle');
       expect(onboardingRequests()).toHaveLength(0);

@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import messages from '../messages';
 import { useModel } from '../../../generic/model-store';
+import { useOutlineTabData } from '../../data/apiHooks';
 
 const StartOrResumeCourseCard = () => {
   const intl = useIntl();
@@ -25,7 +26,7 @@ const StartOrResumeCourseCard = () => {
       hasVisitedCourse,
       url: resumeCourseUrl,
     },
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   if (!resumeCourseUrl) {
     return null;

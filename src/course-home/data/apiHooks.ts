@@ -25,6 +25,10 @@ interface CallToActionResponse {
   link_text: string;
 }
 
+interface QueryOptions {
+  enabled?: boolean;
+}
+
 interface PostData {
   url: string;
   bodyParams: { courseId: string };
@@ -73,15 +77,48 @@ RequestError
   meta: { modelType: 'courseHomeMeta', courseId },
 });
 
-export const useDatesTabData = (courseId: string) => useQuery({
+export const useDatesTabData = (courseId: string, { enabled = true }: QueryOptions = {}) => useQuery({
   queryKey: courseHomeQueryKeys.datesTab(courseId),
   queryFn: () => getDatesTabData(courseId),
+  enabled,
+  // Transitional (#1999): the access-expiration masquerade banner still reads this model,
+  // via useModel(tab, courseId). Dropped when that reader converts.
   meta: { modelType: 'dates', courseId },
 });
 
-export const useOutlineTabData = (courseId: string) => useQuery({
-  queryKey: courseHomeQueryKeys.outlineTab(courseId),
+export interface OutlineSequence {
+  complete: boolean;
+  description: string;
+  due: string;
+  showLink: boolean;
+  title: string;
+  hideFromTOC: boolean;
+  effortActivities?: number;
+  effortTime?: number;
+}
+
+// Names only the fields this repo's TypeScript readers need; the endpoint returns many more,
+// left reachable as `unknown` so plugins importing these hooks are not limited to our list.
+// The full shape is openedx-platform's to describe — a copy of it here would drift — so this
+// stays partial until the platform ships types we can import. Every field is optional because
+// the endpoint's 403 branch returns `{}`.
+interface OutlineTabData {
+  courseBlocks?: {
+    sequences?: Record<string, OutlineSequence>;
+  };
+  userTimezone?: string;
+  [key: string]: unknown;
+}
+
+export const useOutlineTabData = (
+  courseId: string | undefined,
+  { enabled = true }: QueryOptions = {},
+) => useQuery<OutlineTabData>({
+  queryKey: courseHomeQueryKeys.outlineTab(courseId!),
   queryFn: () => getOutlineTabData(courseId),
+  enabled: enabled && !!courseId,
+  // Transitional (#1999): the access-expiration masquerade banner still reads this model,
+  // via useModel(tab, courseId). Dropped when that reader converts.
   meta: { modelType: 'outline', courseId },
 });
 
@@ -111,7 +148,11 @@ Record<string, unknown>[]
   enabled: !!courseId && !!sequenceIds,
 });
 
-export const useProctoringInfoData = (courseId: string, username?: string, enabled = true) => useQuery({
+export const useProctoringInfoData = (
+  courseId: string,
+  username?: string,
+  { enabled = true }: QueryOptions = {},
+) => useQuery({
   queryKey: courseHomeQueryKeys.proctoringInfo(courseId, username),
   queryFn: () => getProctoringInfoData(courseId, username),
   enabled,

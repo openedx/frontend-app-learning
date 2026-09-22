@@ -4,7 +4,7 @@ import { Collapsible, IconButton } from '@openedx/paragon';
 import { Minus, Plus } from '@openedx/paragon/icons';
 
 import { useParams } from 'react-router-dom';
-import { useModel } from '../../../generic/model-store';
+import { useOutlineTabData } from '../../data/apiHooks';
 import genericMessages from '../../../generic/messages';
 import messages from '../messages';
 import SectionTitle from './SectionTitle';
@@ -34,11 +34,7 @@ const Section: React.FC<Props> = ({
     title,
     hideFromTOC,
   } = section;
-  const {
-    courseBlocks: {
-      sequences,
-    },
-  } = useModel('outline', courseId);
+  const sequences = useOutlineTabData(courseId, { enabled: false }).data?.courseBlocks?.sequences;
 
   const [open, setOpen] = useState(defaultOpen);
 
@@ -50,6 +46,10 @@ const Section: React.FC<Props> = ({
     setOpen(defaultOpen);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (!sequences) {
+    throw new Error(`Section "${title}" rendered without outline data for ${courseId}`);
+  }
 
   return (
     <li>

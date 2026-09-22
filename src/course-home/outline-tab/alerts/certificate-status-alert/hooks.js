@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { useAlert } from '../../../../generic/user-messages';
 import { useModel } from '../../../../generic/model-store';
+import { useOutlineTabData } from '../../../data/apiHooks';
 
 import { CERT_STATUS_TYPE } from './CertificateStatusAlert';
 
@@ -45,7 +46,7 @@ function useCertificateStatusAlert(courseId) {
     userHasPassingGrade,
     userTimezone,
     enrollmentMode,
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   const {
     certStatus,

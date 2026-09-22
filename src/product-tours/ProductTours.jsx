@@ -45,7 +45,7 @@ const ProductTours = ({
   } = getAuthenticatedUser() || {};
   const coursewareTabActive = activeTab === 'courseware';
   const outlineTabActive = activeTab === 'outline';
-  const proctoringInfoQuery = useProctoringInfoData(courseId, courseHomeMeta.username, outlineTabActive);
+  const proctoringInfoQuery = useProctoringInfoData(courseId, courseHomeMeta.username, { enabled: outlineTabActive });
 
   const endCoursewareTourMutation = useEndCoursewareTour();
   const endCourseHomeTourMutation = useEndCourseHomeTour();

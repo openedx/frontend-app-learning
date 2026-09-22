@@ -9,7 +9,7 @@ import {
   Row,
 } from '@openedx/paragon';
 
-import { useModel } from '../../generic/model-store';
+import { useDatesTabData } from '../data/apiHooks';
 import messages from './messages';
 
 const UpgradeToCompleteAlert = ({ logUpgradeLinkClick }) => {
@@ -19,7 +19,7 @@ const UpgradeToCompleteAlert = ({ logUpgradeLinkClick }) => {
   const {
     datesBannerInfo,
     hasEnded,
-  } = useModel('dates', courseId);
+  } = useDatesTabData(courseId, { enabled: false }).data ?? {};
 
   const {
     contentTypeGatingEnabled,

@@ -5,14 +5,14 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 
 import LmsHtmlFragment from '../LmsHtmlFragment';
 import messages from '../messages';
-import { useModel } from '../../../generic/model-store';
+import { useOutlineTabData } from '../../data/apiHooks';
 
 const CourseHandouts = () => {
   const intl = useIntl();
   const { courseId } = useParams();
   const {
     handoutsHtml,
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   if (!handoutsHtml) {
     return null;

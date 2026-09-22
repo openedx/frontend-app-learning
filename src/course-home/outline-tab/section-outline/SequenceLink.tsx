@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import type { OutlineSequence } from '../../data/apiHooks';
 import SequenceDueDate from './SequenceDueDate';
 import HiddenSequenceLink from './HiddenSequenceLink';
 import SequenceTitle from './SequenceTitle';
@@ -8,14 +9,7 @@ import SequenceTitle from './SequenceTitle';
 interface Props {
   id: string;
   first: boolean;
-  sequence: {
-    complete: boolean;
-    description: string;
-    due: string;
-    showLink: boolean;
-    title: string;
-    hideFromTOC: boolean;
-  }
+  sequence: OutlineSequence;
 }
 
 const SequenceLink: React.FC<Props> = ({

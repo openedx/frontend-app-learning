@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-import { useModel } from '../../../generic/model-store';
+import { useDatesTabData } from '../../data/apiHooks';
 
 import Day from './Day';
 import { daycmp, isLearnerAssignment } from '../utils';
@@ -11,7 +11,7 @@ const Timeline = () => {
 
   const {
     courseDateBlocks,
-  } = useModel('dates', courseId);
+  } = useDatesTabData(courseId, { enabled: false }).data ?? {};
 
   // Group date items by day (assuming they are sorted in first place) and add some metadata
   const groupedDates = [];

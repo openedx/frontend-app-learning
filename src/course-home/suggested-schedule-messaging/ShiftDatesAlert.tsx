@@ -12,22 +12,22 @@ import {
 
 import { useResetDeadlines } from '../data/apiHooks';
 import { courseHomeQueryKeys } from '../data/queryKeys';
-import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
 interface Props {
+  // Names the tab the reset was triggered from, for the reset-deadlines research event.
   model: string;
+  datesBannerInfo: {
+    missedDeadlines?: boolean;
+    missedGatedContent?: boolean;
+  };
+  hasEnded?: boolean;
 }
 
-const ShiftDatesAlert = ({ model }: Props) => {
+const ShiftDatesAlert = ({ model, datesBannerInfo, hasEnded = false }: Props) => {
   const intl = useIntl();
   const { courseId } = useParams();
   const queryClient = useQueryClient();
-
-  const {
-    datesBannerInfo,
-    hasEnded,
-  } = useModel(model, courseId);
 
   const {
     missedDeadlines,

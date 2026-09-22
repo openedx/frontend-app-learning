@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react';
 import { useAlert } from '../../../../generic/user-messages';
 import { useModel } from '../../../../generic/model-store';
+import { useOutlineTabData } from '../../../data/apiHooks';
 
 const CourseEndAlert = React.lazy(() => import('./CourseEndAlert'));
 
@@ -17,7 +18,7 @@ export function useCourseEndAlert(courseId) {
       courseDateBlocks,
     },
     userTimezone,
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
   const endDate = endBlock ? new Date(endBlock.date) : null;

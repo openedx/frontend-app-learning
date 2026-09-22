@@ -1,5 +1,4 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -9,22 +8,25 @@ import {
   Col,
 } from '@openedx/paragon';
 
-import { useModel } from '../../generic/model-store';
 import messages from './messages';
 
 interface Props {
   logUpgradeLinkClick?: () => void;
-  model: string;
+  datesBannerInfo: {
+    contentTypeGatingEnabled?: boolean;
+    missedDeadlines?: boolean;
+    missedGatedContent?: boolean;
+    verifiedUpgradeLink?: string;
+  };
+  hasEnded?: boolean;
 }
 
-const UpgradeToShiftDatesAlert = ({ logUpgradeLinkClick = () => {}, model }: Props) => {
+const UpgradeToShiftDatesAlert = ({
+  logUpgradeLinkClick = () => {},
+  datesBannerInfo,
+  hasEnded = false,
+}: Props) => {
   const intl = useIntl();
-  const { courseId } = useParams();
-
-  const {
-    datesBannerInfo,
-    hasEnded,
-  } = useModel(model, courseId);
 
   const {
     contentTypeGatingEnabled,

@@ -29,7 +29,9 @@ const DatesTab = () => {
 
   const {
     courseDateBlocks,
-  } = useModel('dates', courseId);
+    datesBannerInfo,
+    hasEnded,
+  } = tabDataQuery.data ?? {};
 
   const hasDeadlines = courseDateBlocks && courseDateBlocks.some(x => x.dateType === 'assignment-due-date');
 
@@ -55,10 +57,14 @@ const DatesTab = () => {
       </div>
       {isSelfPaced && hasDeadlines && (
         <>
-          <ShiftDatesAlert model="dates" />
+          <ShiftDatesAlert model="dates" datesBannerInfo={datesBannerInfo} hasEnded={hasEnded} />
           <SuggestedScheduleHeader />
           <BannerDatesUpgradeSlot courseId={courseId} logUpgradeLinkClick={logUpgradeLinkClick} />
-          <UpgradeToShiftDatesAlert logUpgradeLinkClick={logUpgradeLinkClick} model="dates" />
+          <UpgradeToShiftDatesAlert
+            logUpgradeLinkClick={logUpgradeLinkClick}
+            datesBannerInfo={datesBannerInfo}
+            hasEnded={hasEnded}
+          />
         </>
       )}
       <Timeline />
