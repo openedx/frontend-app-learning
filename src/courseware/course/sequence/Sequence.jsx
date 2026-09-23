@@ -191,7 +191,7 @@ const Sequence = ({
           unitId={unitId}
         />
         <CourseOutlineSidebarSlot />
-        <div className="sequence w-100">
+        <main id="main-content" className="sequence w-100">
           <div className="sequence-navigation-container">
             {/**
              SequenceNavigationSlot renders nothing by default.
@@ -229,7 +229,7 @@ const Sequence = ({
             />
             )}
           </div>
-        </div>
+        </main>
         <RightSidebarSlot courseId={courseId} />
       </div>
       <SequenceContainerSlot courseId={courseId} unitId={unitId} />

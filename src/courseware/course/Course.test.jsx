@@ -187,9 +187,30 @@ describe('Course', () => {
       loadUnit();
 
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
       expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
+    });
+
+    it('exposes the course outline sidebar as a navigation landmark with an accessible name', async () => {
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
+
+      const outlineNav = await screen.findByRole('navigation', { name: /course outline/i });
+      expect(outlineNav).toHaveClass('outline-sidebar');
+    });
+
+    it('renders the primary content inside <main id="main-content"> with the sidebar navigation kept outside of it', async () => {
+      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      loadUnit();
+
+      const outlineNav = await screen.findByRole('navigation', { name: /course outline/i });
+      const main = document.getElementById('main-content');
+      expect(main).toBeInTheDocument();
+      expect(main.tagName).toBe('MAIN');
+      expect(main).toHaveClass('sequence');
+      // Sidebar landmark must not be nested inside <main>.
+      expect(main).not.toContainElement(outlineNav);
     });
 
     it('keeps the sidebar closed on render when the user previously closed it', async () => {
@@ -201,7 +222,7 @@ describe('Course', () => {
         // Discussions prefetch resolves; assert nothing has opened in response.
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
       });
-      expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+      expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
     });
 
     it('opens discussions on render when it is the stored preference', async () => {
@@ -212,7 +233,7 @@ describe('Course', () => {
       await waitFor(() => {
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
       });
-      expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+      expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
     });
 
     it('opens the course outline on render when it is the stored preference', async () => {
@@ -221,7 +242,7 @@ describe('Course', () => {
       loadUnit();
 
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
       expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
     });
@@ -231,13 +252,13 @@ describe('Course', () => {
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
       loadUnit();
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
 
       await user.click(screen.getByRole('button', { name: /Toggle course outline tray/i }));
 
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
       });
     });
 
@@ -253,7 +274,7 @@ describe('Course', () => {
       await user.click(screen.getByRole('button', { name: /Toggle course outline tray/i }));
 
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
       expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
     });
@@ -263,7 +284,7 @@ describe('Course', () => {
       render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
       loadUnit();
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
 
       await user.click(screen.getByRole('button', { name: /Show discussions tray/i }));
@@ -271,7 +292,7 @@ describe('Course', () => {
       await waitFor(() => {
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
       });
-      expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+      expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
     });
 
     it('closes discussions when the user clicks its trigger', async () => {
