@@ -14,7 +14,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import certMessages from './messages';
 import certStatusMessages from '../../../progress-tab/certificate-status/messages';
-import { getProgressTabUrl } from '../../../../course-tabs/utils';
+import { useProgressTabUrl } from '../../../../course-tabs/hooks';
 import { useRequestCert } from '../../../data/apiHooks';
 
 export const CERT_STATUS_TYPE = {
@@ -27,6 +27,7 @@ export const CERT_STATUS_TYPE = {
 const CertificateStatusAlert = ({ payload }) => {
   const intl = useIntl();
   const requestCert = useRequestCert();
+  const progressTabUrl = useProgressTabUrl();
   const {
     certificateAvailableDate,
     certStatus,
@@ -36,7 +37,6 @@ const CertificateStatusAlert = ({ payload }) => {
     userTimezone,
     org,
     notPassingCourseEnded,
-    tabs,
   } = payload;
 
   // eslint-disable-next-line react/prop-types
@@ -116,14 +116,12 @@ const CertificateStatusAlert = ({ payload }) => {
   };
 
   const renderNotPassingCourseEnded = () => {
-    const progressLink = getProgressTabUrl(tabs);
-
     const alertProps = {
       header: intl.formatMessage(certMessages.certStatusNotPassingHeader),
       buttonMessage: intl.formatMessage(certMessages.certStatusNotPassingButton),
       body: intl.formatMessage(certStatusMessages.notPassingBody),
       buttonVisible: true,
-      buttonLink: progressLink,
+      buttonLink: progressTabUrl,
       buttonAction: () => {
         sendAlertClickTracking('edx.ui.lms.course_outline.certificate_alert_view_grades_button.clicked');
       },
@@ -200,11 +198,6 @@ CertificateStatusAlert.propTypes = {
     userTimezone: PropTypes.string,
     org: PropTypes.string,
     notPassingCourseEnded: PropTypes.bool,
-    tabs: PropTypes.arrayOf(PropTypes.shape({
-      tabId: PropTypes.string,
-      title: PropTypes.string,
-      url: PropTypes.string,
-    })),
   }).isRequired,
 };
 

@@ -53,6 +53,7 @@ describe('CoursewareContainer', () => {
   let store;
   let component;
   let axiosMock;
+  let queryClient;
 
   // This is a standard set of data that can be used in CoursewareContainer tests.
   // By default, `setUpMockRequests()` will configure the mock LMS API to return use this data.
@@ -90,10 +91,11 @@ describe('CoursewareContainer', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
     store = initializeStore();
+    queryClient = createTestQueryClient(store);
 
     component = (
       <AppProvider store={store} wrapWithRouter={false}>
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={queryClient}>
           <UserMessagesProvider>
             <ToastProvider>
               <Routes>
@@ -529,6 +531,18 @@ describe('CoursewareContainer', () => {
       await loadContainer();
 
       expect(global.location.href).toEqual('http://localhost/redirect/enterprise-learner-dashboard');
+    });
+  });
+
+  describe('request count', () => {
+    it('requests the course metadata once per load', async () => {
+      setUpMockRequests();
+      history.push(`/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`);
+      await loadContainer();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${defaultCourseId}`);
+      expect(axiosMock.history.get.filter((req) => req.url === courseHomeMetadataUrl)).toHaveLength(1);
     });
   });
 });

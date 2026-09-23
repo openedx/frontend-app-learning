@@ -5,14 +5,13 @@ import React, {
 import { AppContext } from '@edx/frontend-platform/react';
 
 import { useAlert } from '../../generic/user-messages';
-import { useModel } from '../../generic/model-store';
-import { useOutlineTabData } from '../../course-home/data/apiHooks';
+import { useCourseHomeMeta, useOutlineTabData } from '../../course-home/data/apiHooks';
 
 const EnrollmentAlert = React.lazy(() => import('./EnrollmentAlert'));
 
 export function useEnrollmentAlert(courseId) {
   const { authenticatedUser } = useContext(AppContext);
-  const course = useModel('courseHomeMeta', courseId);
+  const course = useCourseHomeMeta(courseId, { enabled: false }).data;
   const outline = useOutlineTabData(courseId, { enabled: false }).data;
   const enrolledUser = course && course.isEnrolled !== undefined && course.isEnrolled;
   const privateOutline = outline && outline.courseBlocks && !outline.courseBlocks.courses;

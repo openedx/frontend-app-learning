@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
 
 import { useAlert } from '../../../../generic/user-messages';
-import { useModel } from '../../../../generic/model-store';
-import { useOutlineTabData } from '../../../data/apiHooks';
+import { useCourseHomeMeta, useOutlineTabData } from '../../../data/apiHooks';
 
 const ScheduledContentAlert = React.lazy(() => import('./ScheduledCotentAlert'));
 
@@ -20,7 +19,7 @@ const useScheduledContentAlert = (courseId) => {
     !!courses
     && !!Object.values(courses).find(course => course.hasScheduledContent === true)
   );
-  const { isEnrolled } = useModel('courseHomeMeta', courseId);
+  const isEnrolled = useCourseHomeMeta(courseId, { enabled: false }).data?.isEnrolled;
   const payload = useMemo(() => ({
     datesTabLink,
   }), [datesTabLink]);

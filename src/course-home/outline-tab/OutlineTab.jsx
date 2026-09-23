@@ -21,7 +21,6 @@ import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from '../../alerts/course-start-alert';
 import usePrivateCourseAlert from './alerts/private-course-alert';
 import useScheduledContentAlert from './alerts/scheduled-content-alert';
-import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
@@ -37,7 +36,7 @@ const OutlineTabContent = () => {
     org,
     title,
     username,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const { isPending: isProctoringInfoPending } = useProctoringInfoData(courseId, username);
 
   const expandButtonRef = useRef();

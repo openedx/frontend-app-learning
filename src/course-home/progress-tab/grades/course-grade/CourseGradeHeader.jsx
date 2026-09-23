@@ -5,16 +5,14 @@ import { Locked } from '@openedx/paragon/icons';
 import { Button, Icon } from '@openedx/paragon';
 import { useParams } from 'react-router-dom';
 
-import { useModel } from '../../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../data/apiHooks';
 import { useProgressData } from '../../hooks';
 import messages from '../messages';
 
 const CourseGradeHeader = () => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const {
-    org,
-  } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     verifiedMode,
     gradesFeatureIsFullyLocked,

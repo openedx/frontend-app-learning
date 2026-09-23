@@ -16,7 +16,7 @@ import messages from './messages';
 
 import CoursewareSearchForm from './CoursewareSearchForm';
 import CoursewareSearchResultsFilterContainer from './CoursewareResultsFilter';
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../data/apiHooks';
 import { useCoursewareSearchResults } from './data/apiHooks';
 
 const CoursewareSearchModal = ({ ...sectionProps }) => {
@@ -24,7 +24,7 @@ const CoursewareSearchModal = ({ ...sectionProps }) => {
   const { courseId } = useParams();
   const { query: searchKeyword, setQuery, clearSearchParams } = useCoursewareSearchParams();
   const { close: closeSearch } = useCoursewareSearch();
-  const { org } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     data, isLoading, isError,
   } = useCoursewareSearchResults(courseId, searchKeyword);

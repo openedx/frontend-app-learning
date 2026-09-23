@@ -9,7 +9,7 @@ import HeaderSlot from '../plugin-slots/HeaderSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
 import { getErrorDetail, type RequestError } from '../data/http-error';
-import { useModel } from '../generic/model-store';
+import type { CourseHomeMeta } from '../course-home/data/apiHooks';
 import { useToast } from '../generic/ToastContext';
 
 import genericMessages from '../generic/messages';
@@ -19,10 +19,8 @@ import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/L
 import { TourProvider } from '../product-tours/TourContext';
 
 // A tab hands TabPage its metadata + tab-data queries and lets TabPage derive the view.
-// The metadata query is typed to only the field this file reads, not the whole
-// (untyped) shape.
 export type CourseStatus = {
-  metadataQuery: UseQueryResult<{ courseAccess?: { hasAccess: boolean } }, RequestError>;
+  metadataQuery: UseQueryResult<CourseHomeMeta, RequestError>;
   tabDataQuery?: UseQueryResult;
 };
 
@@ -73,7 +71,7 @@ const TabPage = ({
     org,
     start,
     title,
-  } = useModel('courseHomeMeta', courseId);
+  }: Partial<CourseHomeMeta> = courseStatus.metadataQuery.data ?? {};
 
   const {
     isLoading, isError, isDenied, errorDetail,

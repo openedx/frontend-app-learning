@@ -9,7 +9,7 @@ import {
 import { Alert } from '@openedx/paragon';
 import { Info } from '@openedx/paragon/icons';
 
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 
 const DAY_SEC = 24 * 60 * 60; // in seconds
 const DAY_MS = DAY_SEC * 1000; // in ms
@@ -23,7 +23,7 @@ const CourseStartAlert = ({ payload }) => {
   const {
     start: startDate,
     userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 

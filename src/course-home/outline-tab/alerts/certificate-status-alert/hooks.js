@@ -2,8 +2,7 @@ import React, { useMemo } from 'react';
 
 import { getConfig } from '@edx/frontend-platform';
 import { useAlert } from '../../../../generic/user-messages';
-import { useModel } from '../../../../generic/model-store';
-import { useOutlineTabData } from '../../../data/apiHooks';
+import { useCourseHomeMeta, useOutlineTabData } from '../../../data/apiHooks';
 
 import { CERT_STATUS_TYPE } from './CertificateStatusAlert';
 
@@ -34,8 +33,7 @@ function useCertificateStatusAlert(courseId) {
   const {
     isEnrolled,
     org,
-    tabs,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const {
     datesWidget: {
@@ -85,9 +83,8 @@ function useCertificateStatusAlert(courseId) {
     userTimezone,
     org,
     notPassingCourseEnded,
-    tabs,
   }), [certStatus, certURL, certificateAvailableDate, courseId,
-    endBlock, notPassingCourseEnded, org, tabs, userTimezone]);
+    endBlock, notPassingCourseEnded, org, userTimezone]);
 
   useAlert(isVisible || notPassingCourseEnded, {
     code: 'clientCertificateStatusAlert',

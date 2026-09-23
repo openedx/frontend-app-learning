@@ -11,7 +11,7 @@ import { Tooltip, OverlayTrigger } from '@openedx/paragon';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../data/apiHooks';
 
 import { getBadgeListAndColor } from './badgelist';
 import { isLearnerAssignment } from '../utils';
@@ -24,9 +24,7 @@ const Day = ({
 }) => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const {
-    userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 

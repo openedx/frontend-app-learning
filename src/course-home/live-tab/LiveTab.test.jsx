@@ -103,4 +103,14 @@ describe('LiveTab', () => {
     await waitFor(() => expect(screen.getByTitle('live-embed')).toHaveAttribute('src', 'https://example.com/live-b'));
     expect(screen.getByTitle('live-embed')).toHaveClass('vh-100', 'w-100', 'border-0');
   });
+
+  it('requests the course metadata once per load', async () => {
+    axiosMock.onGet(liveUrl).reply(200, {
+      iframe: '<iframe id="lti-tab-embed" title="live-embed" src="https://example.com/live"></iframe>',
+    });
+    render(component);
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+    expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
+  });
 });

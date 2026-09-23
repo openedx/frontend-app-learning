@@ -18,14 +18,14 @@ import {
 import { useCoursewareSearch } from './CoursewareSearchContext';
 import { useCoursewareSearchResults } from './data/apiHooks';
 import initializeStore from '../../store';
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../data/apiHooks';
 
 jest.mock('./hooks');
 jest.mock('./CoursewareSearchContext');
 jest.mock('./data/apiHooks');
-jest.mock('../../generic/model-store', () => ({
-  ...jest.requireActual('../../generic/model-store'),
-  useModel: jest.fn(),
+jest.mock('../data/apiHooks', () => ({
+  ...jest.requireActual('../data/apiHooks'),
+  useCourseHomeMeta: jest.fn(),
 }));
 
 jest.mock('@edx/frontend-platform/analytics', () => ({
@@ -80,7 +80,7 @@ describe('CoursewareSearch', () => {
   beforeAll(() => initializeMockApp());
 
   beforeEach(() => {
-    useModel.mockReturnValue({ org });
+    useCourseHomeMeta.mockReturnValue({ data: { org } });
     useCoursewareSearchFeatureFlag.mockReturnValue(true);
     useCoursewareSearch.mockReturnValue({ show: true, close: mockClose });
     mockResults();

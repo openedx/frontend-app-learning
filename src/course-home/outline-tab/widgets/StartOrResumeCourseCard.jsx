@@ -5,16 +5,13 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { useParams } from 'react-router-dom';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import messages from '../messages';
-import { useModel } from '../../../generic/model-store';
-import { useOutlineTabData } from '../../data/apiHooks';
+import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
 
 const StartOrResumeCourseCard = () => {
   const intl = useIntl();
   const { courseId } = useParams();
 
-  const {
-    org,
-  } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const eventProperties = {
     org_key: org,

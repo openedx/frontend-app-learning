@@ -7,7 +7,7 @@ import { useToggle } from '@openedx/paragon';
 import { CourseTabsNavigationSlot } from '@src/plugin-slots/CourseTabsNavigationSlot';
 import { getActiveTabTitle } from '@src/course-tabs/utils';
 
-import { useModel } from '@src/generic/model-store';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { AlertList } from '@src/generic/user-messages';
 import useEnrollmentAlert from '@src/alerts/enrollment-alert';
 import useLogistrationAlert from '@src/alerts/logistration-alert';
@@ -29,6 +29,20 @@ const LoadedTabPage = ({
   courseId,
   unitId = null,
 }: LoadedTabPageProps) => {
+  const metadataQuery = useCourseHomeMeta(courseId, { enabled: false });
+
+  // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
+  // breadcrumbs when they are visible.
+  const logistrationAlert = useLogistrationAlert(courseId);
+  const enrollmentAlert = useEnrollmentAlert(courseId);
+
+  const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(
+    !!metadataQuery.data?.celebrations?.streakLengthToCelebrate,
+  );
+
+  if (!metadataQuery.isSuccess) {
+    throw new Error(`LoadedTabPage rendered without course metadata for ${courseId}`);
+  }
   const {
     celebrations,
     org,
@@ -37,18 +51,12 @@ const LoadedTabPage = ({
     title,
     verifiedMode,
     hasCourseAuthorAccess,
-  } = useModel('courseHomeMeta', courseId);
-
-  // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
-  // breadcrumbs when they are visible.
-  const logistrationAlert = useLogistrationAlert(courseId);
-  const enrollmentAlert = useEnrollmentAlert(courseId);
+  } = metadataQuery.data;
 
   const activeTabTitle = getActiveTabTitle(tabs, activeTabSlug);
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
-  const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(streakLengthToCelebrate);
 
   return (
     <>

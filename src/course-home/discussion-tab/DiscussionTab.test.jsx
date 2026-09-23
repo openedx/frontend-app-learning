@@ -22,14 +22,16 @@ jest.mock('@edx/frontend-platform/analytics');
 describe('DiscussionTab', () => {
   let axiosMock;
   let store;
+  let queryClient;
   let component;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     store = initializeStore();
+    queryClient = createTestQueryClient(store);
     component = (
       <AppProvider store={store}>
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={queryClient}>
           <UserMessagesProvider>
             <ToastProvider>
               <Routes>
@@ -62,5 +64,11 @@ describe('DiscussionTab', () => {
     window.postMessage({ ...messageEvent, payload: { height: 1234 } }, '*');
     await waitFor(() => expect(screen.getByTitle('discussion'))
       .toHaveAttribute('height', String(1234)));
+  });
+
+  it('requests the course metadata once per load', async () => {
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+    expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
   });
 });

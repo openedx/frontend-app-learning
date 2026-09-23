@@ -62,8 +62,10 @@ describe('Course Exit Pages', () => {
     store.dispatch(addModel({ modelType: 'coursewareMeta', model: metadata }));
     store.dispatch(addModel({ modelType: 'courseHomeMeta', model: { id: courseId, ...homeMetadata } }));
     history.push(`/course/${courseId}`);
+    axiosMock.resetHistory();
+    const queryClient = createTestQueryClient(store);
     render(
-      <QueryClientProvider client={createTestQueryClient(store)}>
+      <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
             <Route path="/course/:courseId" element={component} />
@@ -75,6 +77,7 @@ describe('Course Exit Pages', () => {
     if (screen.queryByRole('status')) {
       await waitForElementToBeRemoved(() => screen.queryByRole('status'));
     }
+    return queryClient;
   }
 
   beforeEach(() => {
@@ -541,5 +544,24 @@ describe('Course Exit Pages', () => {
       expect(axiosMock.history.post[0].url).toMatch(url);
       expect(axiosMock.history.post[0].data).toMatch(`{"course_id":"${courseId}","subscribed_to_reminders":false}`);
     });
+  });
+
+  it('requests the course metadata once per load', async () => {
+    // The default metadata is unenrolled, which redirects with no body; enrol with a certificate
+    // so the celebration page and the readers under it are on the page being counted.
+    setMetadata({
+      certificate_data: {
+        cert_status: 'downloadable',
+        cert_web_view_url: '/certificates/cooluuidgoeshere',
+      },
+      enrollment: {
+        is_active: true,
+      },
+    });
+    const queryClient = await fetchAndRender(<CourseExit />);
+    expect(screen.getByText('Congratulations!')).toBeInTheDocument();
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+    expect(axiosMock.history.get.filter((req) => req.url === courseHomeMetadataUrl)).toHaveLength(1);
   });
 });

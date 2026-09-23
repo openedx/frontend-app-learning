@@ -11,14 +11,13 @@ import {
 import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
 
 import messages from '../messages';
-import { useModel } from '../../../generic/model-store';
-import { useOutlineTabData } from '../../data/apiHooks';
+import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
 import LaunchCourseHomeTourButton from '../../../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 
 const CourseTools = () => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const { org } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     courseTools,
   } = useOutlineTabData(courseId, { enabled: false }).data ?? {};

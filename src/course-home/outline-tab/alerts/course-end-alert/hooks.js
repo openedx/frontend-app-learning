@@ -1,8 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import React, { useMemo } from 'react';
 import { useAlert } from '../../../../generic/user-messages';
-import { useModel } from '../../../../generic/model-store';
-import { useOutlineTabData } from '../../../data/apiHooks';
+import { useCourseHomeMeta, useOutlineTabData } from '../../../data/apiHooks';
 
 const CourseEndAlert = React.lazy(() => import('./CourseEndAlert'));
 
@@ -10,9 +9,7 @@ const CourseEndAlert = React.lazy(() => import('./CourseEndAlert'));
 const WARNING_PERIOD_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 export function useCourseEndAlert(courseId) {
-  const {
-    isEnrolled,
-  } = useModel('courseHomeMeta', courseId);
+  const isEnrolled = useCourseHomeMeta(courseId, { enabled: false }).data?.isEnrolled;
   const {
     datesWidget: {
       courseDateBlocks,
