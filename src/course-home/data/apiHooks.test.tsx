@@ -6,6 +6,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 import { initializeMockApp } from '../../setupTest';
+import { getResponseStatus } from '../../data/http-error';
 import { ToastProvider, useToast } from '../../generic/ToastContext';
 import {
   useCourseHomeMeta,
@@ -269,7 +270,7 @@ describe('course-home apiHooks', () => {
       },
     );
 
-    it('redirects to the legacy progress page and resolves to an empty object on a 404', async () => {
+    it('surfaces a 404 as an error without navigating', async () => {
       // jsdom's location.replace is non-configurable, so we swap the whole location for the
       // duration of this test (restored in finally so it can never bleed into another test).
       const originalLocation = window.location;
@@ -280,9 +281,9 @@ describe('course-home apiHooks', () => {
         const { wrapper } = buildWrapper();
         const { result } = renderHook(() => useProgressTabData('course-1'), { wrapper });
 
-        await waitFor(() => expect(result.current.isSuccess).toBe(true));
-        expect(result.current.data).toEqual({});
-        expect(replace).toHaveBeenCalledWith(`${getConfig().LMS_BASE_URL}/courses/course-1/progress`);
+        await waitFor(() => expect(result.current.isError).toBe(true));
+        expect(getResponseStatus(result.current.error)).toBe(404);
+        expect(replace).not.toHaveBeenCalled();
       } finally {
         Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
       }

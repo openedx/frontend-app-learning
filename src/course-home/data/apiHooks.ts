@@ -133,7 +133,7 @@ export const useLiveTabData = (courseId: string) => useQuery({
 export const useProgressTabData = (courseId: string, targetUserId?: string) => useQuery({
   queryKey: courseHomeQueryKeys.progressTab(courseId, targetUserId),
   queryFn: () => getProgressTabData(courseId, targetUserId),
-  meta: { modelType: 'progress', courseId },
+  meta: { modelType: 'progress', courseId, logStatusAs: { 404: 'silent' } },
 });
 
 export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: string[] | undefined) => useQuery<
