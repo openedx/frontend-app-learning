@@ -4,6 +4,7 @@ import { Factory } from 'rosie';
 import {
   render, screen, fireEvent, getByText, getTestStoreIds, initializeTestStore,
 } from '../../../../setupTest';
+import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import SequenceNavigation from './SequenceNavigation';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
@@ -38,7 +39,12 @@ describe('Sequence Navigation', () => {
         <Routes>
           <Route
             path="/course/:courseId/:sequenceId/*"
-            element={<SequenceNavigation {...mockData} {...props} />}
+            element={(
+              <>
+                <MountCourseQueryHooks courseId={courseMetadata.id} />
+                <SequenceNavigation {...mockData} {...props} />
+              </>
+            )}
           />
         </Routes>
       </MemoryRouter>,

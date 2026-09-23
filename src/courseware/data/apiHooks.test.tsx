@@ -19,10 +19,11 @@ import { normalizeLearningSequencesData, normalizeOutlineBlocks, normalizeSequen
 import { coursewareQueryKeys } from './queryKeys';
 import { courseHomeQueryKeys } from '../../course-home/data/queryKeys';
 import type { CourseOutlineData } from './courseOutline';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import {
   prefetchDiscussionTopics, sequenceMightBeUnit, useCheckBlockCompletion, useCourseOutlineStructure,
-  useCoursewareOutlineSidebarToggles, useIsCourseLoaded, useSaveIntegritySignature, useSaveSequencePosition,
-  useSequenceIds, useSequenceMetadata,
+  useCoursewareMetadata, useCoursewareOutline, useCoursewareOutlineSidebarToggles, useIsCourseLoaded,
+  useSaveIntegritySignature, useSaveSequencePosition, useSequenceIds, useSequenceMetadata,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
@@ -70,7 +71,12 @@ describe('courseware apiHooks — coursewareMeta bridge', () => {
         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
       </AppProvider>
     );
-    const { result } = renderHook(() => useSequenceIds(courseId), { wrapper });
+    const { result } = renderHook(() => {
+      useCoursewareMetadata(courseId);
+      useCoursewareOutline(courseId);
+      useCourseHomeMeta(courseId);
+      return useSequenceIds(courseId);
+    }, { wrapper });
 
     // The outline resolves first and populates sectionIds; the loaded gate still
     // waits on metadata, so no ids yet.
@@ -84,6 +90,22 @@ describe('courseware apiHooks — coursewareMeta bridge', () => {
     // sectionIds must survive the late metadata write.
     expect(coursewareMetaFor(courseId)?.title).toBe(courseMetadata.name);
     expect(coursewareMetaFor(courseId)?.sectionIds).toEqual(expectedSectionIds);
+  });
+
+  it('fetches nothing on its own', () => {
+    axiosMock.onGet(outlineUrl).reply(200, outlineResponse);
+    axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
+    axiosMock.onGet(metadataUrl).reply(200, courseMetadata);
+    const queryClient = createTestQueryClient(store);
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <AppProvider store={store} wrapWithRouter={false}>
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      </AppProvider>
+    );
+    const { result } = renderHook(() => useSequenceIds(courseId), { wrapper });
+
+    expect(result.current).toEqual([]);
+    expect(axiosMock.history.get).toHaveLength(0);
   });
 });
 
@@ -110,12 +132,20 @@ describe('courseware apiHooks — useIsCourseLoaded', () => {
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, Factory.build('courseHomeMetadata'));
   };
 
-  const renderLoaded = (id: string | undefined, queryClient: QueryClient = createTestQueryClient()) => {
-    const wrapper = ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    );
-    return renderHook(() => useIsCourseLoaded(id), { wrapper });
+  const makeWrapper = (client: QueryClient) => function Wrapper(
+    { children }: { children: ReactNode },
+  ) {
+    return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
   };
+
+  const renderLoaded = (id: string | undefined, queryClient: QueryClient = createTestQueryClient()) => (
+    renderHook(() => {
+      useCoursewareMetadata(id);
+      useCoursewareOutline(id);
+      useCourseHomeMeta(id);
+      return useIsCourseLoaded(id);
+    }, { wrapper: makeWrapper(queryClient) })
+  );
 
   const statusOf = (queryClient: QueryClient, queryKey: readonly unknown[]) => (
     queryClient.getQueryState(queryKey)?.status
@@ -184,6 +214,26 @@ describe('courseware apiHooks — useIsCourseLoaded', () => {
     const { result } = renderLoaded(undefined);
     expect(result.current).toBe(false);
     expect(axiosMock.history.get).toHaveLength(0);
+  });
+
+  it('fetches nothing on its own', () => {
+    mockHappyPath();
+    const { result } = renderHook(() => useIsCourseLoaded(courseId), { wrapper: makeWrapper(createTestQueryClient()) });
+    expect(result.current).toBe(false);
+    expect(axiosMock.history.get).toHaveLength(0);
+  });
+
+  it('reads the owner\'s result without fetching again', async () => {
+    mockHappyPath();
+    const queryClient = createTestQueryClient();
+    const owner = renderLoaded(courseId, queryClient);
+    await waitFor(() => expect(owner.result.current).toBe(true));
+    const requestCount = axiosMock.history.get.length;
+
+    const reader = renderHook(() => useIsCourseLoaded(courseId), { wrapper: makeWrapper(queryClient) });
+
+    expect(reader.result.current).toBe(true);
+    expect(axiosMock.history.get).toHaveLength(requestCount);
   });
 });
 
