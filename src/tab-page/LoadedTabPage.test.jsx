@@ -1,18 +1,16 @@
 import React from 'react';
 import { Factory } from 'rosie';
 import {
-  getTestStoreIds, initializeTestStore, render, screen,
+  act, getTestStoreIds, initializeTestStore, render, screen,
 } from '../setupTest';
 import LoadedTabPage from './LoadedTabPage';
 
+jest.mock('@edx/frontend-platform/analytics');
 jest.mock('../course-tabs/CourseTabsNavigation', () => function () {
   return <div data-testid="CourseTabsNavigation" />;
 });
 jest.mock('../instructor-toolbar/InstructorToolbar', () => function () {
   return <div data-testid="InstructorToolbar" />;
-});
-jest.mock('../shared/streak-celebration/StreakCelebrationModal', () => function () {
-  return <div data-testid="StreakModal" />;
 });
 jest.mock('../product-tours/ProductTours', () => function () {
   return <div data-testid="ProductTours" />;
@@ -31,6 +29,7 @@ describe('Loaded Tab Page', () => {
 
     expect(screen.queryByTestId('CourseTabsNavigation')).toBeInTheDocument();
     expect(screen.queryByTestId('InstructorToolbar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('shows Instructor Toolbar if original user is staff', async () => {
@@ -50,9 +49,12 @@ describe('Loaded Tab Page', () => {
   });
 
   it('shows streak celebration modal', async () => {
-    const courseMetadata = Factory.build('courseMetadata', { celebrations: { streakLengthToCelebrate: 3 } });
-    const testStore = await initializeTestStore({ courseMetadata }, false);
-    render(<LoadedTabPage {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-    expect(screen.getByTestId('StreakModal')).toBeInTheDocument();
+    const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
+    const testStore = await initializeTestStore({ courseHomeMetadata }, false);
+    await act(async () => render(
+      <LoadedTabPage {...mockData} courseId={getTestStoreIds(testStore).courseId} />,
+      { store: testStore },
+    ));
+    expect(screen.getByRole('dialog')).toHaveTextContent('3 day streak');
   });
 });
