@@ -9,12 +9,12 @@ import SidebarContext from './SidebarContext';
 import SidebarProvider from './SidebarContextProvider';
 
 jest.mock('@src/generic/model-store', () => ({
-  useModel: jest.fn((modelType) => {
-    if (modelType === 'courseHomeMeta') {
-      return { tabs: [] };
-    }
-    return {};
-  }),
+  useModel: jest.fn(() => ({})),
+}));
+
+jest.mock('@src/course-home/data/apiHooks', () => ({
+  ...jest.requireActual('@src/course-home/data/apiHooks'),
+  useCourseHomeMeta: jest.fn(() => ({ data: { tabs: [] } })),
 }));
 
 jest.mock('@openedx/paragon', () => {

@@ -17,6 +17,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import { useModel } from '../../generic/model-store';
 
 const SocialIcons = ({
@@ -34,7 +35,7 @@ const SocialIcons = ({
   const {
     org,
     title,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   if (!marketingUrl) {
     return null;

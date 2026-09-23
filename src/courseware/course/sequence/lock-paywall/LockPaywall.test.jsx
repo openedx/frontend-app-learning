@@ -5,6 +5,7 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import {
   fireEvent, getTestStoreIds, initializeTestStore, render, screen,
 } from '../../../../setupTest';
+import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import LockPaywall from './LockPaywall';
 
 jest.mock('@edx/frontend-platform/analytics');
@@ -20,15 +21,23 @@ describe('Lock Paywall', () => {
     });
   });
 
-  it('displays unlock link with price', () => {
+  const renderPaywall = (props, options) => render(
+    <>
+      <MountCourseQueryHooks courseId={props.courseId} />
+      <LockPaywall {...props} />
+    </>,
+    options,
+  );
+
+  it('displays unlock link with price', async () => {
     const {
       currencySymbol,
       price,
       upgradeUrl,
     } = store.getState().models.courseHomeMeta[mockData.courseId].verifiedMode;
-    render(<LockPaywall {...mockData} />);
+    renderPaywall(mockData);
 
-    const upgradeLink = screen.getByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
+    const upgradeLink = await screen.findByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
     expect(upgradeLink).toHaveAttribute('href', `${upgradeUrl}`);
   });
 
@@ -44,21 +53,21 @@ describe('Lock Paywall', () => {
       },
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
-    render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+    renderPaywall({ ...mockData, courseId: courseMetadata.id }, { store: testStore });
 
-    expect(screen.getByText(/Upgrade for/).textContent).toMatch('$85 ($100)');
+    expect((await screen.findByText(/Upgrade for/)).textContent).toMatch('$85 ($100)');
   });
 
-  it('sends analytics event onClick of unlock link', () => {
+  it('sends analytics event onClick of unlock link', async () => {
     sendTrackEvent.mockClear();
 
     const {
       currencySymbol,
       price,
     } = store.getState().models.courseHomeMeta[mockData.courseId].verifiedMode;
-    render(<LockPaywall {...mockData} />);
+    renderPaywall(mockData);
 
-    const upgradeLink = screen.getByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
+    const upgradeLink = await screen.findByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
     fireEvent.click(upgradeLink);
 
     expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -75,7 +84,7 @@ describe('Lock Paywall', () => {
   it('does not display anything if course does not have verified mode', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { verified_mode: null });
     const testStore = await initializeTestStore({ courseHomeMetadata, excludeFetchSequence: true }, false);
-    render(<LockPaywall {...mockData} courseId={courseHomeMetadata.id} />, { store: testStore });
+    renderPaywall({ ...mockData, courseId: courseHomeMetadata.id }, { store: testStore });
 
     expect(screen.queryByTestId('lock-paywall-test-id')).not.toBeInTheDocument();
   });
@@ -88,8 +97,8 @@ describe('Lock Paywall', () => {
       marketing_url: 'https://example.com/course-details',
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
-    render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-    expect(screen.getByText('The upgrade deadline for this course passed. To upgrade, enroll in the next available session.')).toBeInTheDocument();
+    renderPaywall({ ...mockData, courseId: courseMetadata.id }, { store: testStore });
+    expect(await screen.findByText('The upgrade deadline for this course passed. To upgrade, enroll in the next available session.')).toBeInTheDocument();
     expect(screen.getByText('View Course Details'))
       .toHaveAttribute('href', 'https://example.com/course-details');
   });
@@ -103,8 +112,8 @@ describe('Lock Paywall', () => {
       marketing_url: 'https://example.com/course-details',
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
-    render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-    const courseDetailsLink = await screen.getByText('View Course Details');
+    renderPaywall({ ...mockData, courseId: courseMetadata.id }, { store: testStore });
+    const courseDetailsLink = await screen.findByText('View Course Details');
     fireEvent.click(courseDetailsLink);
 
     expect(sendTrackEvent).toHaveBeenCalledTimes(1);

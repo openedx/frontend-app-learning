@@ -94,7 +94,6 @@ export const useCourseHomeMeta = (
   queryKey: courseHomeQueryKeys.metadata(courseId!),
   queryFn: () => getCourseHomeCourseMetadata(courseId),
   enabled: enabled && !!courseId,
-  meta: { modelType: 'courseHomeMeta', courseId },
 });
 
 export const useDatesTabData = (courseId: string, { enabled = true }: QueryOptions = {}) => useQuery({

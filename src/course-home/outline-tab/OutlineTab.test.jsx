@@ -21,6 +21,7 @@ import {
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import initializeStore from '../../store';
+import { courseHomeQueryKeys } from '../data/queryKeys';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 import OutlineTab from './OutlineTab';
 import { UserMessagesProvider } from '../../generic/user-messages';
@@ -129,9 +130,9 @@ describe('Outline Tab', () => {
       let resolveOutline;
       axiosMock.onGet(outlineUrl).reply(() => new Promise((resolve) => { resolveOutline = resolve; }));
 
-      await fetchAndRender('', { renderStore: testStore, waitForLoaded: false });
+      const queryClient = await fetchAndRender('', { renderStore: testStore, waitForLoaded: false });
 
-      await waitFor(() => expect(testStore.getState().models.courseHomeMeta?.[courseId]).toBeDefined());
+      await waitFor(() => expect(queryClient.getQueryData(courseHomeQueryKeys.metadata(courseId))).toBeDefined());
       expect(screen.getByRole('status')).toBeInTheDocument();
 
       await act(async () => { resolveOutline([200, Factory.build('outlineTabData')]); });

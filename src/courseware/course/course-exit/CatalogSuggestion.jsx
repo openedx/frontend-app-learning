@@ -9,7 +9,7 @@ import { Hyperlink } from '@openedx/paragon';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 import messages from './messages';
 import { logClick } from './utils';
@@ -17,7 +17,7 @@ import { logClick } from './utils';
 const CatalogSuggestion = ({ variant }) => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const { org } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const { administrator } = getAuthenticatedUser();
 
   const searchOurCatalogLink = (

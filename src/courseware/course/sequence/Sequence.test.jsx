@@ -5,9 +5,11 @@ import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import {
   loadUnit, render, screen, fireEvent, waitFor, getTestStoreIds, initializeTestStore, act,
 } from '../../../setupTest';
+import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import SidebarContext from '../sidebar/SidebarContext';
 import Sequence from './Sequence';
 
@@ -45,11 +47,15 @@ describe('Sequence', () => {
     global.innerWidth = breakpoints.extraLarge.minWidth;
   });
 
-  const SidebarWrapper = ({ contextValue = defaultContextValue, overrideData = {} }) => (
-    <SidebarContext.Provider value={contextValue}>
-      <Sequence {...({ ...mockData, ...overrideData })} />
-    </SidebarContext.Provider>
-  );
+  const SidebarWrapper = ({ contextValue = defaultContextValue, overrideData = {} }) => {
+    const data = { ...mockData, ...overrideData };
+    return (
+      <SidebarContext.Provider value={contextValue}>
+        <MountCourseQueryHooks courseId={data.courseId} />
+        <Sequence {...data} />
+      </SidebarContext.Provider>
+    );
+  };
 
   SidebarWrapper.defaultProps = {
     contextValue: defaultContextValue,
@@ -132,8 +138,20 @@ describe('Sequence', () => {
       courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
     }, false);
     render(
-      <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
-      { store: testStore, wrapWithRouter: true },
+      <MemoryRouter initialEntries={[`/course/${mockData.courseId}/${sequenceBlocks[0].id}`]}>
+        <Routes>
+          <Route
+            path="/course/:courseId/:sequenceId/*"
+            element={(
+              <>
+                <MountCourseQueryHooks courseId={mockData.courseId} />
+                <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />
+              </>
+            )}
+          />
+        </Routes>
+      </MemoryRouter>,
+      { store: testStore },
     );
 
     await waitFor(() => {

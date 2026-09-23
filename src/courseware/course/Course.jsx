@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { useDispatch } from 'react-redux';
+import { useQueryClient } from '@tanstack/react-query';
 import { getConfig } from '@edx/frontend-platform';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '@src/generic/user-messages';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import { LearnerToolsSlot } from '../../plugin-slots/LearnerToolsSlot';
 import SidebarProvider from './sidebar/SidebarContextProvider';
@@ -31,7 +32,7 @@ const Course = ({
     celebrations,
     isStaff,
     originalUserIsStaff,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const Course = ({
   ].filter(element => element != null).map(element => element.title);
 
   // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(false);
   // If streakLengthToCelebrate is populated, that modal takes precedence. Wait til the next load to display
@@ -66,7 +67,7 @@ const Course = ({
       courseId,
       sequenceId,
       celebrateFirstSection,
-      dispatch,
+      queryClient,
       celebrations,
     ));
   }, [sequenceId]);

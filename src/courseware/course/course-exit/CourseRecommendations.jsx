@@ -11,7 +11,7 @@ import {
 } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import truncate from 'truncate-html';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 import { useCourseRecommendations } from './data/apiHooks';
 import { trackRecommendationsViewed } from './track';
 import CatalogSuggestion from './CatalogSuggestion';
@@ -133,7 +133,7 @@ const IntlCard = CourseCard;
 const CourseRecommendations = ({ variant }) => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const { org, number } = useModel('courseHomeMeta', courseId);
+  const { org, number } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const courseKey = `${org}+${number}`;
   const { administrator } = getAuthenticatedUser();

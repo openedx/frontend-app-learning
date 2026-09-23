@@ -1,19 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Alert, Hyperlink } from '@openedx/paragon';
 import { Info } from '@openedx/paragon/icons';
 
-import { getProgressTabUrl } from '../../../../course-tabs/utils';
-import { useModel } from '../../../../generic/model-store';
+import { useProgressTabUrl } from '../../../../course-tabs/hooks';
 
 import messages from './messages';
 
-const HiddenAfterDue = ({ courseId }) => {
+const HiddenAfterDue = () => {
   const intl = useIntl();
-  const { tabs } = useModel('courseHomeMeta', courseId);
 
-  const progressTabUrl = getProgressTabUrl(tabs);
+  const progressTabUrl = useProgressTabUrl();
   const progressLink = progressTabUrl && (
     <Hyperlink
       style={{ textDecoration: 'underline' }}
@@ -43,10 +40,6 @@ const HiddenAfterDue = ({ courseId }) => {
       </p>
     </Alert>
   );
-};
-
-HiddenAfterDue.propTypes = {
-  courseId: PropTypes.string.isRequired,
 };
 
 export default HiddenAfterDue;

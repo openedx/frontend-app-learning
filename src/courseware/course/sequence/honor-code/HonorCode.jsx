@@ -6,7 +6,7 @@ import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { ActionRow, Alert, Button } from '@openedx/paragon';
 
 import { useNavigate } from 'react-router-dom';
-import { useModel } from '../../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../../course-home/data/apiHooks';
 import { useSaveIntegritySignature } from '../../../data/apiHooks';
 import messages from './messages';
 
@@ -17,7 +17,7 @@ const HonorCode = ({ courseId }) => {
   const {
     isMasquerading,
     username,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const authUser = getAuthenticatedUser();
   const siteName = getConfig().SITE_NAME;
   const honorCodeUrl = `${getConfig().TERMS_OF_SERVICE_URL}#honor-code`;

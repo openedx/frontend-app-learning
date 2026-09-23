@@ -17,6 +17,7 @@ import {
   createTestQueryClient, initializeMockApp, logUnhandledRequests, render, screen,
 } from '../../../setupTest';
 import initializeStore from '../../../store';
+import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import { appendBrowserTimezoneToUrl } from '../../../utils';
 import CourseCelebration from './CourseCelebration';
 import CourseExit from './CourseExit';
@@ -64,11 +65,17 @@ describe('Course Exit Pages', () => {
     history.push(`/course/${courseId}`);
     axiosMock.resetHistory();
     const queryClient = createTestQueryClient(store);
+    const element = component.type === CourseExit ? component : (
+      <>
+        <MountCourseQueryHooks courseId={courseId} />
+        {component}
+      </>
+    );
     render(
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
-            <Route path="/course/:courseId" element={component} />
+            <Route path="/course/:courseId" element={element} />
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>,
@@ -77,6 +84,7 @@ describe('Course Exit Pages', () => {
     if (screen.queryByRole('status')) {
       await waitForElementToBeRemoved(() => screen.queryByRole('status'));
     }
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0));
     return queryClient;
   }
 

@@ -12,8 +12,7 @@ import newUserCourseHomeTour from './newUserCourseHomeTour/NewUserCourseHomeTour
 import NewUserCourseHomeTourModal from './newUserCourseHomeTour/NewUserCourseHomeTourModal';
 import { useEndCourseHomeTour, useEndCoursewareTour, useTourData } from './data/apiHooks';
 import { useTourState } from './TourContext';
-import { useProctoringInfoData } from '../course-home/data/apiHooks';
-import { useModel } from '../generic/model-store';
+import { useCourseHomeMeta, useProctoringInfoData } from '../course-home/data/apiHooks';
 
 const ProductTours = ({
   activeTab,
@@ -21,7 +20,7 @@ const ProductTours = ({
   isStreakCelebrationOpen,
   org,
 }) => {
-  const courseHomeMeta = useModel('courseHomeMeta', courseId);
+  const courseHomeMeta = useCourseHomeMeta(courseId, { enabled: false }).data;
 
   const {
     showCoursewareTour,
@@ -45,7 +44,7 @@ const ProductTours = ({
   } = getAuthenticatedUser() || {};
   const coursewareTabActive = activeTab === 'courseware';
   const outlineTabActive = activeTab === 'outline';
-  const proctoringInfoQuery = useProctoringInfoData(courseId, courseHomeMeta.username, { enabled: outlineTabActive });
+  const proctoringInfoQuery = useProctoringInfoData(courseId, courseHomeMeta?.username, { enabled: outlineTabActive });
 
   const endCoursewareTourMutation = useEndCoursewareTour();
   const endCourseHomeTourMutation = useEndCourseHomeTour();

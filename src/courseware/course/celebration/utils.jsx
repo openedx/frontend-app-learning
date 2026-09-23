@@ -2,8 +2,8 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import { postCelebrationComplete } from './data/api';
+import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
 import { clearLocalStorage, getLocalStorage, setLocalStorage } from '../../../data/localStorage';
-import { updateModel } from '../../../generic/model-store';
 
 const CELEBRATION_LOCAL_STORAGE_KEY = 'CelebrationModal.showOnSectionLoad';
 
@@ -15,20 +15,14 @@ function handleNextSectionCelebration(sequenceId, nextSequenceId) {
   });
 }
 
-function recordFirstSectionCelebration(org, courseId, celebrations, dispatch) {
+function recordFirstSectionCelebration(org, courseId, celebrations, queryClient) {
   // Tell the LMS
   postCelebrationComplete(courseId, { first_section: false });
   // Update our local copy of course data from LMS
-  dispatch(updateModel({
-    modelType: 'courseHomeMeta',
-    model: {
-      id: courseId,
-      celebrations: {
-        ...celebrations,
-        firstSection: false,
-      },
-    },
-  }));
+  queryClient.setQueryData(
+    courseHomeQueryKeys.metadata(courseId),
+    (meta) => ({ ...meta, celebrations: { ...celebrations, firstSection: false } }),
+  );
 
   // Tell our analytics
   const { administrator } = getAuthenticatedUser();
@@ -55,7 +49,7 @@ function recordWeeklyGoalCelebration(org, courseId) {
 
 // Looks at local storage to see whether we just came from the end of a section.
 // Note! This does have side effects (will clear some local storage and may start an api call).
-function shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSection, dispatch, celebrations) {
+function shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSection, queryClient, celebrations) {
   const celebrationIds = getLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY);
   if (!celebrationIds) {
     return false;
@@ -81,16 +75,10 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSectio
     clearLocalStorage(CELEBRATION_LOCAL_STORAGE_KEY);
 
     // Update our local copy of course data from LMS
-    dispatch(updateModel({
-      modelType: 'courseHomeMeta',
-      model: {
-        id: courseId,
-        celebrations: {
-          ...celebrations,
-          firstSection: false,
-        },
-      },
-    }));
+    queryClient.setQueryData(
+      courseHomeQueryKeys.metadata(courseId),
+      (meta) => ({ ...meta, celebrations: { ...celebrations, firstSection: false } }),
+    );
   }
 
   return shouldCelebrate;

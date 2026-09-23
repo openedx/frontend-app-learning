@@ -10,6 +10,7 @@ import { Locked } from '@openedx/paragon/icons';
 import SidebarContext from '../../sidebar/SidebarContext';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/openedx_locked_certificate.png';
+import { useCourseHomeMeta } from '../../../../course-home/data/apiHooks';
 import { useModel } from '../../../../generic/model-store';
 import { UpgradeButton } from '../../../../generic/upgrade-button';
 import {
@@ -33,7 +34,7 @@ const LockPaywall = ({
 
   const {
     org, verifiedMode,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   // the following variables are set and used for responsive layout to work with
   // whether any sidebar panel is open and if there's an offer with longer text

@@ -4,6 +4,7 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
   render, screen, act, waitFor, initializeMockApp,
 } from '@src/setupTest';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import * as localStorageModule from '@src/data/localStorage';
 import { useModel } from '@src/generic/model-store';
@@ -25,6 +26,11 @@ jest.mock('@src/data/localStorage', () => ({
 
 jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn(),
+}));
+
+jest.mock('@src/course-home/data/apiHooks', () => ({
+  ...jest.requireActual('@src/course-home/data/apiHooks'),
+  useCourseHomeMeta: jest.fn(),
 }));
 
 initializeMockApp();
@@ -59,11 +65,9 @@ function renderPanel(contextOverrides = {}, modelOverrides = {}) {
     if (modelType === 'coursewareMeta') {
       return buildCoursewareMeta(modelOverrides.coursewareMeta);
     }
-    if (modelType === 'courseHomeMeta') {
-      return buildCourseHomeMeta(modelOverrides.courseHomeMeta);
-    }
     return {};
   });
+  useCourseHomeMeta.mockReturnValue({ data: buildCourseHomeMeta(modelOverrides.courseHomeMeta) });
 
   return render(
     <SidebarContext.Provider value={{

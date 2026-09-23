@@ -9,6 +9,7 @@ import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import { useUpgradeWidgetContext } from './UpgradeWidgetContext';
 import UpgradeTrigger, { ID } from './UpgradeTrigger';
@@ -42,7 +43,7 @@ const UpgradePanel = () => {
     verifiedMode,
     username,
     isStaff,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const { administrator } = getAuthenticatedUser();
   const activeCourseModes = useMemo(() => courseModes?.map(mode => mode.slug), [courseModes]);
 

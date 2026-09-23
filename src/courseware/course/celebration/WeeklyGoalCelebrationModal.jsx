@@ -9,13 +9,13 @@ import { Lightbulb } from '@openedx/paragon/icons';
 import Target from './assets/target.svg';
 import messages from './messages';
 import { recordWeeklyGoalCelebration } from './utils';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 const WeeklyGoalCelebrationModal = ({
   courseId, daysPerWeek, isOpen, onClose, ...rest
 }) => {
   const intl = useIntl();
-  const { org } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   useEffect(() => {
     if (isOpen) {
