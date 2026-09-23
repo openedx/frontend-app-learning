@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { getConfig } from '@edx/frontend-platform';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { useWindowSize } from '@openedx/paragon';
 import { useParams } from 'react-router-dom';
 
@@ -8,6 +10,9 @@ import ProgressTabCourseCompletionSlot from '@src/plugin-slots/ProgressTabCourse
 import ProgressTabCourseGradeSlot from '@src/plugin-slots/ProgressTabCourseGradeSlot';
 import ProgressTabGradeBreakdownSlot from '@src/plugin-slots/ProgressTabGradeBreakdownSlot';
 import ProgressTabRelatedLinksSlot from '@src/plugin-slots/ProgressTabRelatedLinksSlot';
+import { getResponseStatus } from '@src/data/http-error';
+import PageLoading from '@src/generic/PageLoading';
+import tabPageMessages from '@src/tab-page/messages';
 import ProgressHeader from './ProgressHeader';
 import { useProgressData } from './hooks';
 import { useCourseHomeMeta, useProgressTabData } from '../data/apiHooks';
@@ -47,10 +52,21 @@ const ProgressTabContent = () => {
 };
 
 const ProgressTab = () => {
+  const intl = useIntl();
   const { courseId, targetUserId } = useParams();
   const metadataQuery = useCourseHomeMeta(courseId);
   const tabDataQuery = useProgressTabData(courseId, targetUserId);
+  const redirectToLegacyProgress = getResponseStatus(tabDataQuery.error) === 404;
 
+  useEffect(() => {
+    if (redirectToLegacyProgress) {
+      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
+    }
+  }, [redirectToLegacyProgress, courseId]);
+
+  if (redirectToLegacyProgress) {
+    return <PageLoading srMessage={intl.formatMessage(tabPageMessages.loading)} />;
+  }
   return (
     <TabWithTimer
       activeTabSlug="progress"

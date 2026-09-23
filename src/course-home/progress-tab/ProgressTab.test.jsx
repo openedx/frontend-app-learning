@@ -70,7 +70,7 @@ describe('Progress Tab', () => {
     axiosMock.onGet(progressUrl).reply(200, progressTabData);
   }
 
-  async function fetchAndRender(initialEntry = `/course/${courseId}/progress`) {
+  async function fetchAndRender(initialEntry = `/course/${courseId}/progress`, { waitForLoaded = true } = {}) {
     const queryClient = createTestQueryClient(store);
     await act(async () => render(
       <AppProvider store={store} wrapWithRouter={false}>
@@ -87,7 +87,9 @@ describe('Progress Tab', () => {
         </MemoryRouter>
       </AppProvider>,
     ));
-    await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
+    if (waitForLoaded) {
+      await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
+    }
     return queryClient;
   }
 
@@ -1576,6 +1578,27 @@ describe('Progress Tab', () => {
 
       expect(screen.getByText('Grades')).toBeInTheDocument();
       expect(axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'))).toHaveLength(0);
+    });
+  });
+
+  describe('when the progress request 404s', () => {
+    it('redirects to the legacy progress page and shows the loading indicator meanwhile', async () => {
+      // jsdom's location.replace is non-configurable, so we swap the whole location for the
+      // duration of this test (restored in finally so it can never bleed into another test).
+      const originalLocation = window.location;
+      const replace = jest.fn();
+      Object.defineProperty(window, 'location', { configurable: true, value: { replace } });
+      try {
+        axiosMock.onGet(progressUrl).reply(404, {});
+
+        await fetchAndRender(`/course/${courseId}/progress`, { waitForLoaded: false });
+
+        await waitFor(() => expect(replace).toHaveBeenCalledWith(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`));
+        expect(screen.getByRole('status')).toBeInTheDocument();
+        expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
+      } finally {
+        Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
+      }
     });
   });
 });
