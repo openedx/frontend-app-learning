@@ -4,7 +4,7 @@ import { useExamAttemptsData, useProgressTabData } from '../data/apiHooks';
 
 export function useProgressData() {
   const { courseId, targetUserId } = useParams();
-  return useProgressTabData(courseId, targetUserId).data;
+  return useProgressTabData(courseId, targetUserId, { enabled: false }).data;
 }
 
 // Plugin-facing; no in-app caller.

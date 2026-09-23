@@ -296,6 +296,15 @@ describe('course-home apiHooks', () => {
 
       await waitFor(() => expect(result.current.isError).toBe(true));
     });
+
+    it('stays idle with no request when disabled', () => {
+      axiosMock.onGet(progressUrl).reply(200, Factory.build('progressTabData'));
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useProgressTabData('course-1', undefined, { enabled: false }), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(axiosMock.history.get.filter((req) => req.url?.includes('/course_home/progress/'))).toHaveLength(0);
+    });
   });
 
   describe('useExamAttemptsData', () => {

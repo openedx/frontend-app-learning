@@ -2,19 +2,66 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
-import { camelCaseObject } from '@edx/frontend-platform';
+import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
 import { createTestQueryClient, initializeMockApp, seedQueryData } from '../../setupTest';
+import { useProgressTabData } from '../data/apiHooks';
 import { courseHomeQueryKeys } from '../data/queryKeys';
-import { useExamsData } from './hooks';
+import { useExamsData, useProgressData } from './hooks';
 
 initializeMockApp();
 
+const courseId = 'course-v1:edX+DemoX+Demo_Course';
+const progressUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/progress/`);
+
+let axiosMock;
+let queryClient;
+
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={[`/course/${courseId}/progress`]}>
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route path="/course/:courseId/progress/:targetUserId?" element={children} />
+      </Routes>
+    </QueryClientProvider>
+  </MemoryRouter>
+);
+
+const progressRequests = () => axiosMock.history.get.filter((req) => progressUrl.test(req.url));
+
+beforeEach(() => {
+  axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+  queryClient = createTestQueryClient();
+});
+
+describe('useProgressData', () => {
+  beforeEach(() => {
+    axiosMock.onGet(progressUrl).reply(200, Factory.build('progressTabData'));
+  });
+
+  it('fetches nothing on its own', () => {
+    const { result } = renderHook(() => useProgressData(), { wrapper });
+
+    expect(result.current).toBeUndefined();
+    expect(progressRequests()).toHaveLength(0);
+  });
+
+  it('reads the owner\'s result without fetching again', async () => {
+    const owner = renderHook(() => useProgressTabData(courseId), { wrapper });
+    await waitFor(() => expect(owner.result.current.isSuccess).toBe(true));
+    const requestCount = progressRequests().length;
+
+    const reader = renderHook(() => useProgressData(), { wrapper });
+
+    expect(reader.result.current).toBe(owner.result.current.data);
+    expect(progressRequests()).toHaveLength(requestCount);
+  });
+});
+
 describe('useExamsData', () => {
-  const courseId = 'course-v1:edX+DemoX+Demo_Course';
   const blockKey = (name) => `block-v1:edX+DemoX+Demo_Course+type@sequential+block@${name}`;
   const sectionScores = [
     { display_name: 'Section 1', subsections: [{ block_key: blockKey('exam1') }, { block_key: blockKey('homework1') }] },
@@ -25,19 +72,6 @@ describe('useExamsData', () => {
       id: name.length, course_id: courseId, content_id: blockKey(name), exam_name: `Exam ${name}`,
     },
   });
-
-  let axiosMock;
-  let queryClient;
-
-  const wrapper = ({ children }) => (
-    <MemoryRouter initialEntries={[`/course/${courseId}/progress`]}>
-      <QueryClientProvider client={queryClient}>
-        <Routes>
-          <Route path="/course/:courseId/progress/:targetUserId?" element={children} />
-        </Routes>
-      </QueryClientProvider>
-    </MemoryRouter>
-  );
 
   const seedProgress = (scores) => seedQueryData(
     queryClient,
@@ -52,8 +86,6 @@ describe('useExamsData', () => {
   }));
 
   beforeEach(() => {
-    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    queryClient = createTestQueryClient();
     axiosMock.onGet(/exam1/).reply(200, examFor('exam1'));
     axiosMock.onGet(/homework1/).reply(notFound);
     axiosMock.onGet(/final_exam/).reply(200, examFor('final_exam'));
@@ -63,6 +95,7 @@ describe('useExamsData', () => {
     const { result } = renderHook(() => useExamsData(), { wrapper });
 
     expect(result.current).toBeNull();
+    expect(progressRequests()).toHaveLength(0);
     expect(attemptRequests()).toHaveLength(0);
   });
 
