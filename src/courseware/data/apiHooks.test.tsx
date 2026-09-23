@@ -17,6 +17,7 @@ import initializeStore from '../../store';
 import { addModel, updateModel } from '../../generic/model-store';
 import { normalizeLearningSequencesData, normalizeOutlineBlocks, normalizeSequenceMetadata } from './utils';
 import { coursewareQueryKeys } from './queryKeys';
+import { courseHomeQueryKeys } from '../../course-home/data/queryKeys';
 import type { CourseOutlineData } from './courseOutline';
 import {
   prefetchDiscussionTopics, sequenceMightBeUnit, useCheckBlockCompletion, useCourseOutlineStructure,
@@ -109,12 +110,16 @@ describe('courseware apiHooks — useIsCourseLoaded', () => {
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, Factory.build('courseHomeMetadata'));
   };
 
-  const renderLoaded = (id: string | undefined) => {
+  const renderLoaded = (id: string | undefined, queryClient: QueryClient = createTestQueryClient()) => {
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={createTestQueryClient()}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
     return renderHook(() => useIsCourseLoaded(id), { wrapper });
   };
+
+  const statusOf = (queryClient: QueryClient, queryKey: readonly unknown[]) => (
+    queryClient.getQueryState(queryKey)?.status
+  );
 
   it('is true once all three queries resolve and the learner has access', async () => {
     mockHappyPath();
@@ -124,37 +129,54 @@ describe('courseware apiHooks — useIsCourseLoaded', () => {
   });
 
   it('is false while any query is pending', async () => {
-    axiosMock.onGet(metadataUrl).reply(() => new Promise(() => {}));
     mockHappyPath();
-    const { result } = renderLoaded(courseId);
-    await waitFor(() => expect(axiosMock.history.get.length).toBeGreaterThanOrEqual(3));
+    axiosMock.onGet(metadataUrl).reply(() => new Promise(() => {}));
+    const queryClient = createTestQueryClient();
+    const { result } = renderLoaded(courseId, queryClient);
+
+    await waitFor(() => {
+      expect(statusOf(queryClient, coursewareQueryKeys.outline(courseId))).toBe('success');
+      expect(statusOf(queryClient, courseHomeQueryKeys.metadata(courseId))).toBe('success');
+    });
+    expect(statusOf(queryClient, coursewareQueryKeys.metadata(courseId))).toBe('pending');
     expect(result.current).toBe(false);
   });
 
   it('is false when the learner lacks access', async () => {
+    mockHappyPath();
     axiosMock.onGet(courseHomeMetadataUrl).reply(
       200,
       Factory.build('courseHomeMetadata', { course_access: { has_access: false } }),
     );
-    mockHappyPath();
-    const { result } = renderLoaded(courseId);
-    await waitFor(() => expect(axiosMock.history.get.length).toBeGreaterThanOrEqual(3));
+    const queryClient = createTestQueryClient();
+    const { result } = renderLoaded(courseId, queryClient);
+
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+    expect(queryClient.getQueryData<{ courseAccess: { hasAccess: boolean } }>(
+      courseHomeQueryKeys.metadata(courseId),
+    )?.courseAccess.hasAccess).toBe(false);
     expect(result.current).toBe(false);
   });
 
   it('is false when the outline fails', async () => {
-    axiosMock.onGet(outlineUrl).reply(403, {});
     mockHappyPath();
-    const { result } = renderLoaded(courseId);
-    await waitFor(() => expect(axiosMock.history.get.length).toBeGreaterThanOrEqual(3));
+    axiosMock.onGet(outlineUrl).reply(403, {});
+    const queryClient = createTestQueryClient();
+    const { result } = renderLoaded(courseId, queryClient);
+
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+    expect(statusOf(queryClient, coursewareQueryKeys.outline(courseId))).toBe('error');
     expect(result.current).toBe(false);
   });
 
   it('is false when a query fails', async () => {
-    axiosMock.onGet(metadataUrl).reply(500, {});
     mockHappyPath();
-    const { result } = renderLoaded(courseId);
-    await waitFor(() => expect(axiosMock.history.get.length).toBeGreaterThanOrEqual(3));
+    axiosMock.onGet(metadataUrl).reply(500, {});
+    const queryClient = createTestQueryClient();
+    const { result } = renderLoaded(courseId, queryClient);
+
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+    expect(statusOf(queryClient, coursewareQueryKeys.metadata(courseId))).toBe('error');
     expect(result.current).toBe(false);
   });
 
