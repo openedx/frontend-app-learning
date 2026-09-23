@@ -130,9 +130,14 @@ export const useLiveTabData = (courseId: string) => useQuery({
   queryFn: () => getLiveTabIframe(courseId),
 });
 
-export const useProgressTabData = (courseId: string, targetUserId?: string) => useQuery({
+export const useProgressTabData = (
+  courseId: string,
+  targetUserId?: string,
+  { enabled = true }: QueryOptions = {},
+) => useQuery({
   queryKey: courseHomeQueryKeys.progressTab(courseId, targetUserId),
   queryFn: () => getProgressTabData(courseId, targetUserId),
+  enabled,
   meta: { modelType: 'progress', courseId, logStatusAs: { 404: 'silent' } },
 });
 

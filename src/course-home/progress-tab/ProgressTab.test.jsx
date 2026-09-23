@@ -1581,6 +1581,15 @@ describe('Progress Tab', () => {
     });
   });
 
+  describe('request count', () => {
+    it('requests the progress data once per load', async () => {
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => progressUrl.test(req.url))).toHaveLength(1);
+    });
+  });
+
   describe('when the progress request 404s', () => {
     it('redirects to the legacy progress page and shows the loading indicator meanwhile', async () => {
       // jsdom's location.replace is non-configurable, so we swap the whole location for the
