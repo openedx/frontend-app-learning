@@ -168,7 +168,7 @@ const useIFrameBehavior = ({
           const eventCourseId = event.postData.bodyParams.courseId;
           queryClient.invalidateQueries({ queryKey: coursewareQueryKeys.metadata(eventCourseId) });
           queryClient.invalidateQueries({ queryKey: coursewareQueryKeys.outline(eventCourseId) });
-          queryClient.invalidateQueries({ queryKey: courseHomeQueryKeys.metadata(eventCourseId, 'courseware') });
+          queryClient.invalidateQueries({ queryKey: courseHomeQueryKeys.metadata(eventCourseId) });
         },
       },
     );

@@ -436,42 +436,24 @@ describe('course-home apiHooks', () => {
   describe('useCourseHomeMeta', () => {
     const courseId = 'course-1';
     const metadataUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/`);
-    const tabSlugs = (data: unknown) => (data as { tabs: Array<{ slug: string }> }).tabs.map(tab => tab.slug);
+    const metadataRequests = () => axiosMock.history.get.filter((req) => req.url?.includes('/course_metadata/'));
 
     beforeEach(() => {
       axiosMock.onGet(metadataUrl).reply(200, Factory.build('courseHomeMetadata'));
     });
 
-    it('labels the shared courseware/outline tab "courseware" (the rootSlug CoursewareContainer + CourseExit pass)', async () => {
-      const { wrapper } = buildWrapper();
-      const { result } = renderHook(() => useCourseHomeMeta(courseId, 'courseware'), { wrapper });
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(tabSlugs(result.current.data)).toContain('courseware');
-      expect(tabSlugs(result.current.data)).not.toContain('outline');
-    });
-
-    it('labels the shared courseware/outline tab "outline" (the rootSlug the course-home tabs pass)', async () => {
-      const { wrapper } = buildWrapper();
-      const { result } = renderHook(() => useCourseHomeMeta(courseId, 'outline'), { wrapper });
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(tabSlugs(result.current.data)).toContain('outline');
-      expect(tabSlugs(result.current.data)).not.toContain('courseware');
-    });
-
-    it('keys the query by rootSlug so the two contexts do not share a cache entry', async () => {
+    it('serves both contexts from one cache entry', async () => {
       const { wrapper } = buildWrapper();
       const { result } = renderHook(() => ({
-        courseware: useCourseHomeMeta(courseId, 'courseware'),
-        outline: useCourseHomeMeta(courseId, 'outline'),
+        courseware: useCourseHomeMeta(courseId),
+        outline: useCourseHomeMeta(courseId),
       }), { wrapper });
 
       await waitFor(() => expect(
         result.current.courseware.isSuccess && result.current.outline.isSuccess,
       ).toBe(true));
-      expect(tabSlugs(result.current.courseware.data)).toContain('courseware');
-      expect(tabSlugs(result.current.outline.data)).toContain('outline');
+      expect(result.current.courseware.data).toBe(result.current.outline.data);
+      expect(metadataRequests()).toHaveLength(1);
     });
   });
 });

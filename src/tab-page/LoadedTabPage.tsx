@@ -5,6 +5,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { useToggle } from '@openedx/paragon';
 
 import { CourseTabsNavigationSlot } from '@src/plugin-slots/CourseTabsNavigationSlot';
+import { getActiveTabTitle } from '@src/course-tabs/utils';
 
 import { useModel } from '@src/generic/model-store';
 import { AlertList } from '@src/generic/user-messages';
@@ -43,7 +44,7 @@ const LoadedTabPage = ({
   const logistrationAlert = useLogistrationAlert(courseId);
   const enrollmentAlert = useEnrollmentAlert(courseId);
 
-  const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
+  const activeTabTitle = getActiveTabTitle(tabs, activeTabSlug);
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
@@ -58,7 +59,7 @@ const LoadedTabPage = ({
         org={org}
       />
       <Helmet>
-        <title>{`${activeTab ? `${activeTab.title} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
+        <title>{`${activeTabTitle ? `${activeTabTitle} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
       {originalUserIsStaff && (
         <InstructorToolbar

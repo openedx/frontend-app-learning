@@ -4,6 +4,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@openedx/paragon';
 import { useParams } from 'react-router-dom';
 
+import { getCourseOutlineUrl, getDatesTabUrl } from '../../../course-tabs/utils';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
 
@@ -25,10 +26,8 @@ const RelatedLinks = () => {
     });
   };
 
-  const overviewTab = tabs.find(tab => tab.slug === 'outline');
-  const overviewTabUrl = overviewTab && overviewTab.url;
-  const datesTab = tabs.find(tab => tab.slug === 'dates');
-  const datesTabUrl = datesTab && datesTab.url;
+  const courseOutlineUrl = getCourseOutlineUrl(tabs);
+  const datesTabUrl = getDatesTabUrl(tabs);
 
   return (
     <section className="mb-4 x-small">
@@ -42,9 +41,9 @@ const RelatedLinks = () => {
           <p>{intl.formatMessage(messages.datesCardDescription)}</p>
         </li>
         )}
-        {overviewTabUrl && (
+        {courseOutlineUrl && (
         <li>
-          <Hyperlink destination={overviewTabUrl} onClick={() => logLinkClicked('course_outline')}>
+          <Hyperlink destination={courseOutlineUrl} onClick={() => logLinkClicked('course_outline')}>
             {intl.formatMessage(messages.outlineCardLink)}
           </Hyperlink>
           <p>{intl.formatMessage(messages.outlineCardDescription)}</p>

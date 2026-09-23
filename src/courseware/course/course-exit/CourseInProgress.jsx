@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import { Alert, Button } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 
+import { getDatesTabUrl } from '../../../course-tabs/utils';
 import { useModel } from '../../../generic/model-store';
 
 import CatalogSuggestion from './CatalogSuggestion';
@@ -25,8 +26,7 @@ const CourseInProgress = () => {
   const { administrator } = getAuthenticatedUser();
 
   // Get dates tab link for 'view course schedule' button
-  const datesTab = tabs.find(tab => tab.slug === 'dates');
-  const datesTabLink = datesTab && datesTab.url;
+  const datesTabLink = getDatesTabUrl(tabs);
 
   useEffect(() => logVisit(org, courseId, administrator, 'in_progress'), [org, courseId, administrator]);
 

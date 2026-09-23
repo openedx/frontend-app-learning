@@ -48,7 +48,7 @@ const ProgressTabContent = () => {
 
 const ProgressTab = () => {
   const { courseId, targetUserId } = useParams();
-  const metadataQuery = useCourseHomeMeta(courseId, 'outline');
+  const metadataQuery = useCourseHomeMeta(courseId);
   const tabDataQuery = useProgressTabData(courseId, targetUserId);
 
   return (

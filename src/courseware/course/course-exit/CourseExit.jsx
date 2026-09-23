@@ -71,7 +71,7 @@ const CourseExitContent = () => {
 const CourseExit = () => {
   const { courseId } = useParams();
   const metadataQuery = useCoursewareMetadata(courseId);
-  const courseHomeMetaQuery = useCourseHomeMeta(courseId, 'courseware');
+  const courseHomeMetaQuery = useCourseHomeMeta(courseId);
   useCoursewareOutline(courseId);
 
   return (

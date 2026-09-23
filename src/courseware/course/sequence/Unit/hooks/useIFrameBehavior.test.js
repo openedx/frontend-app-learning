@@ -368,7 +368,7 @@ describe('useIFrameBehavior hook', () => {
         onSuccess();
         expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: coursewareQueryKeys.metadata('course-1') });
         expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: coursewareQueryKeys.outline('course-1') });
-        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: courseHomeQueryKeys.metadata('course-1', 'courseware') });
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: courseHomeQueryKeys.metadata('course-1') });
       });
       it('updates initial iframe visibility on load', () => {
         const { result } = renderHook(() => useIFrameBehavior(props));

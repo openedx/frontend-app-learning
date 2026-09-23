@@ -41,7 +41,7 @@ export const useCoursewareOutline = (courseId: string | undefined) => useQuery({
 export const useIsCourseLoaded = (courseId: string | undefined): boolean => {
   const metadataQuery = useCoursewareMetadata(courseId);
   const outlineQuery = useCoursewareOutline(courseId);
-  const courseHomeMetaQuery = useCourseHomeMeta(courseId, 'courseware');
+  const courseHomeMetaQuery = useCourseHomeMeta(courseId);
   return metadataQuery.isSuccess && courseHomeMetaQuery.isSuccess
     && !!courseHomeMetaQuery.data?.courseAccess?.hasAccess && outlineQuery.isSuccess;
 };

@@ -32,7 +32,7 @@ LiveTabContent.defaultProps = {
 const LiveTab = () => {
   const { courseId } = useParams();
 
-  const metadataQuery = useCourseHomeMeta(courseId, 'outline');
+  const metadataQuery = useCourseHomeMeta(courseId);
   const tabDataQuery = useLiveTabData(courseId);
 
   return (
