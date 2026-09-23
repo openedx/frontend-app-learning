@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import {
   render, screen, getTestStoreIds, initializeTestStore, waitFor,
 } from '../../../../setupTest';
+import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import UnitNavigation from './UnitNavigation';
 
 const mockNavigate = jest.fn();
@@ -42,7 +43,12 @@ describe('Unit Navigation', () => {
         <Routes>
           <Route
             path="/course/:courseId/:sequenceId/*"
-            element={<UnitNavigation {...mockData} {...props} />}
+            element={(
+              <>
+                <MountCourseQueryHooks courseId={courseMetadata.id} />
+                <UnitNavigation {...mockData} {...props} />
+              </>
+            )}
           />
         </Routes>
       </MemoryRouter>,

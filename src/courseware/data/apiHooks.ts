@@ -17,17 +17,27 @@ import {
 import { applyUnitCompletion, type CourseOutlineData } from './courseOutline';
 import { coursewareQueryKeys } from './queryKeys';
 
-export const useCoursewareMetadata = (courseId: string | undefined) => useQuery({
+interface QueryOptions {
+  enabled?: boolean;
+}
+
+export const useCoursewareMetadata = (
+  courseId: string | undefined,
+  { enabled = true }: QueryOptions = {},
+) => useQuery({
   queryKey: coursewareQueryKeys.metadata(courseId!),
   queryFn: () => getCourseMetadata(courseId),
-  enabled: !!courseId,
+  enabled: enabled && !!courseId,
   meta: { models: [{ modelType: 'coursewareMeta', strategy: 'updateModel' }] },
 });
 
-export const useCoursewareOutline = (courseId: string | undefined) => useQuery({
+export const useCoursewareOutline = (
+  courseId: string | undefined,
+  { enabled = true }: QueryOptions = {},
+) => useQuery({
   queryKey: coursewareQueryKeys.outline(courseId!),
   queryFn: () => getLearningSequencesOutline(courseId),
-  enabled: !!courseId,
+  enabled: enabled && !!courseId,
   meta: {
     logStatusAs: { 403: 'info' },
     models: [
@@ -39,9 +49,9 @@ export const useCoursewareOutline = (courseId: string | undefined) => useQuery({
 });
 
 export const useIsCourseLoaded = (courseId: string | undefined): boolean => {
-  const metadataQuery = useCoursewareMetadata(courseId);
-  const outlineQuery = useCoursewareOutline(courseId);
-  const courseHomeMetaQuery = useCourseHomeMeta(courseId);
+  const metadataQuery = useCoursewareMetadata(courseId, { enabled: false });
+  const outlineQuery = useCoursewareOutline(courseId, { enabled: false });
+  const courseHomeMetaQuery = useCourseHomeMeta(courseId, { enabled: false });
   return metadataQuery.isSuccess && courseHomeMetaQuery.isSuccess
     && !!courseHomeMetaQuery.data?.courseAccess?.hasAccess && outlineQuery.isSuccess;
 };

@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import { createTestQueryClient, initializeMockApp, initializeTestStore } from '@src/setupTest';
+import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 
 const props = {
@@ -47,6 +48,7 @@ describe('CourseBreadcrumbs', () => {
         <QueryClientProvider client={createTestQueryClient()}>
           <IntlProvider locale="en">
             <MemoryRouter initialEntries={[{ pathname }]}>
+              <MountCourseQueryHooks courseId={props.courseId} />
               <CourseBreadcrumbs {...props} />
             </MemoryRouter>
           </IntlProvider>
