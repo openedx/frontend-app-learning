@@ -4,6 +4,7 @@ import { getAllByRole } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { initializeTestStore, render, screen } from '../../../../setupTest';
+import SidebarContext from '../../sidebar/SidebarContext';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
@@ -40,9 +41,18 @@ describe('Sequence Navigation Tabs', () => {
     };
   });
 
+  const sidebarContextValue = { currentSidebar: null, availableSidebarIds: [] };
+
+  const renderTabs = () => render(
+    <SidebarContext.Provider value={sidebarContextValue}>
+      <SequenceNavigationTabs {...mockData} />
+    </SidebarContext.Provider>,
+    { wrapWithRouter: true },
+  );
+
   it('renders unit buttons', () => {
     useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
-    render(<SequenceNavigationTabs {...mockData} />, { wrapWithRouter: true });
+    renderTabs();
 
     expect(screen.getAllByRole('link')).toHaveLength(unitBlocks.length);
   });
@@ -51,7 +61,7 @@ describe('Sequence Navigation Tabs', () => {
     let container = null;
 
     useIndexOfLastVisibleChild.mockReturnValue([-1, null, null]);
-    const booyah = render(<SequenceNavigationTabs {...mockData} />, { wrapWithRouter: true });
+    const booyah = renderTabs();
 
     // wait for links to appear so we aren't testing an empty div
     await screen.findAllByRole('link');

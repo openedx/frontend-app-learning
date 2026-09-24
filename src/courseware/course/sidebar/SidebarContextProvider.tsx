@@ -1,15 +1,13 @@
 import { breakpoints, useWindowSize } from '@openedx/paragon';
-import PropTypes from 'prop-types';
-import { useQueryClient } from '@tanstack/react-query';
 import {
-  useState, useMemo, useCallback, useRef, useEffect,
+  useState, useMemo, useCallback, useRef, type ReactNode,
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 
-import SidebarContext from './SidebarContext';
+import SidebarContext, { type SidebarContextValue, type SidebarWidget } from './SidebarContext';
 import {
   getEnabledWidgets,
   buildSidebarsRegistry,
@@ -26,23 +24,28 @@ import {
   useResponsiveBehavior,
 } from './hooks';
 
+interface Props {
+  courseId: string;
+  unitId: string;
+  children?: ReactNode;
+}
+
 const SidebarProvider = ({
   courseId,
   unitId,
   children,
-}) => {
+}: Props) => {
   const courseHomeMeta = useCourseHomeMeta(courseId, { enabled: false }).data;
   const coursewareMeta = useModel('coursewareMeta', courseId);
   const unit = useModel('discussionTopics', unitId);
-  const queryClient = useQueryClient();
-  const { width } = useWindowSize();
-  const shouldDisplayFullScreen = width < breakpoints.extraLarge.minWidth;
-  const shouldDisplaySidebarOpen = width > breakpoints.extraLarge.minWidth;
+  const width = useWindowSize().width ?? window.innerWidth;
+  const shouldDisplayFullScreen = width < breakpoints.extraLarge.minWidth!;
+  const shouldDisplaySidebarOpen = width > breakpoints.extraLarge.minWidth!;
   const [searchParams] = useSearchParams();
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || searchParams.get('sidebar') === 'true';
 
   // Build registry of enabled widgets
-  const enabledWidgets = useMemo(() => getEnabledWidgets(), []);
+  const enabledWidgets = useMemo<SidebarWidget[]>(() => getEnabledWidgets(), []);
   const SIDEBARS = useMemo(() => buildSidebarsRegistry(enabledWidgets), [enabledWidgets]);
   const SIDEBAR_ORDER = useMemo(() => getSidebarOrder(enabledWidgets), [enabledWidgets]);
 
@@ -82,22 +85,11 @@ const SidebarProvider = ({
 
   // Track if user has manually toggled sidebar within current unit
   const hasUserToggledRef = useRef(false);
-  const previousUnitIdRef = useRef(null); // Start null so first render triggers unit shift logic
+  const previousUnitIdRef = useRef<string | null>(null); // Start null so first render triggers unit shift logic
   // Track which unit set COURSE_OUTLINE (to prevent immediate switching)
-  const courseOutlineSetByUnitRef = useRef(null);
+  const courseOutlineSetByUnitRef = useRef<string | null>(null);
   // Track if this is initial page load (to allow data loading switches)
   const isInitialLoadRef = useRef(true);
-  const courseMetaRef = useRef(null);
-  courseMetaRef.current = { ...coursewareMeta, ...courseHomeMeta };
-
-  // Prefetch widget data
-  useEffect(() => {
-    enabledWidgets.forEach(widget => {
-      if (widget.prefetch) {
-        widget.prefetch({ courseId, course: courseMetaRef.current, queryClient });
-      }
-    });
-  }, [enabledWidgets, courseId, queryClient]);
 
   // Apply unit navigation behavior
   useUnitShiftBehavior({
@@ -141,7 +133,7 @@ const SidebarProvider = ({
     [getAvailableWidgets],
   );
 
-  const toggleSidebar = useCallback((sidebarId) => {
+  const toggleSidebar = useCallback((sidebarId: string) => {
     // Mark that user has manually interacted with sidebar
     hasUserToggledRef.current = true;
 
@@ -152,7 +144,7 @@ const SidebarProvider = ({
     setSidebarClosedByUser(newSidebar === null);
   }, [currentSidebar, courseId]);
 
-  const contextValue = useMemo(() => ({
+  const contextValue = useMemo<SidebarContextValue>(() => ({
     initialSidebar,
     toggleSidebar,
     currentSidebar,
@@ -175,28 +167,14 @@ const SidebarProvider = ({
     SIDEBAR_ORDER,
     availableSidebarIds,
   ]);
-  const renderWithWidgetProviders = useCallback((content) => enabledWidgets
-    .filter(w => w.Provider)
-    .reduceRight((acc, widget) => {
-      const { Provider } = widget;
-      return <Provider>{acc}</Provider>;
-    }, content), [enabledWidgets]);
+  const renderWithWidgetProviders = useCallback((content: ReactNode) => enabledWidgets
+    .reduceRight((acc, { Provider }) => (Provider ? <Provider>{acc}</Provider> : acc), content), [enabledWidgets]);
 
   return (
     <SidebarContext.Provider value={contextValue}>
       {renderWithWidgetProviders(children)}
     </SidebarContext.Provider>
   );
-};
-
-SidebarProvider.propTypes = {
-  courseId: PropTypes.string.isRequired,
-  unitId: PropTypes.string.isRequired,
-  children: PropTypes.node,
-};
-
-SidebarProvider.defaultProps = {
-  children: null,
 };
 
 export default SidebarProvider;
