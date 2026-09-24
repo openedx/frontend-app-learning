@@ -6,6 +6,7 @@ import {
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 
 import SidebarContext from './SidebarContext';
@@ -30,7 +31,7 @@ const SidebarProvider = ({
   unitId,
   children,
 }) => {
-  const courseHomeMeta = useModel('courseHomeMeta', courseId);
+  const courseHomeMeta = useCourseHomeMeta(courseId, { enabled: false }).data;
   const coursewareMeta = useModel('coursewareMeta', courseId);
   const unit = useModel('discussionTopics', unitId);
   const queryClient = useQueryClient();

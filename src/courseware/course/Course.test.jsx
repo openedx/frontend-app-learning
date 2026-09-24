@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event';
 import {
   cleanup, fireEvent, getByRole, getTestStoreIds, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
+import MountCourseQueryHooks from '../../tests/MountCourseQueryHooks';
 import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
 import { testIDs } from './sequence/Unit/ContentIFrame';
@@ -48,6 +49,14 @@ describe('Course', () => {
     unitNavigationHandler: () => {},
   };
 
+  const renderCourse = (testData, testStore) => render(
+    <>
+      <MountCourseQueryHooks courseId={testData.courseId} />
+      <Course {...testData} />
+    </>,
+    { store: testStore, wrapWithRouter: true },
+  );
+
   beforeAll(async () => {
     store = await initializeTestStore();
     const { models } = store.getState();
@@ -65,7 +74,7 @@ describe('Course', () => {
   // so we are skipping it. See https://github.com/openedx/frontend-app-learning/issues/1669
   // for details.
   it.skip('loads learning sequence', () => {
-    render(<Course {...mockData} />, { wrapWithRouter: true });
+    renderCourse(mockData);
     expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
     waitFor(() => {
       expect(screen.findByText('Loading learning sequence...')).toBeInTheDocument();
@@ -104,7 +113,7 @@ describe('Course', () => {
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    renderCourse(testData, testStore);
     expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
   });
 
@@ -125,7 +134,7 @@ describe('Course', () => {
     };
     // Set up LocalStorage for testing.
     handleNextSectionCelebration(sequenceId, sequenceId, testData.unitId);
-    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    renderCourse(testData, testStore);
 
     waitFor(() => {
       const firstSectionCelebrationModal = screen.getByRole('dialog');
@@ -149,7 +158,7 @@ describe('Course', () => {
       sequenceId,
       unitId: Object.values(models.units)[0].id,
     };
-    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    renderCourse(testData, testStore);
 
     waitFor(() => {
       const weeklyGoalCelebrationModal = screen.getByRole('dialog');
@@ -183,7 +192,7 @@ describe('Course', () => {
     });
 
     it('opens the course outline on render when no preference is stored and the user has not closed the sidebar', async () => {
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       loadUnit();
 
       await waitFor(() => {
@@ -194,7 +203,7 @@ describe('Course', () => {
 
     it('keeps the sidebar closed on render when the user previously closed it', async () => {
       window.sessionStorage.setItem('sidebarClosedByUser', 'true');
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       loadUnit();
 
       await waitFor(() => {
@@ -206,7 +215,7 @@ describe('Course', () => {
 
     it('opens discussions on render when it is the stored preference', async () => {
       window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       loadUnit();
 
       await waitFor(() => {
@@ -217,7 +226,7 @@ describe('Course', () => {
 
     it('opens the course outline on render when it is the stored preference', async () => {
       window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('COURSE_OUTLINE'));
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       loadUnit();
 
       await waitFor(() => {
@@ -228,7 +237,7 @@ describe('Course', () => {
 
     it('closes the course outline when the user clicks its trigger', async () => {
       const user = userEvent.setup();
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       loadUnit();
       await waitFor(() => {
         expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
@@ -244,7 +253,7 @@ describe('Course', () => {
     it('opens the course outline when the user clicks its trigger, closing discussions if open', async () => {
       const user = userEvent.setup();
       window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       loadUnit();
       await waitFor(() => {
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
@@ -260,7 +269,7 @@ describe('Course', () => {
 
     it('opens discussions when the user clicks its trigger, closing the outline', async () => {
       const user = userEvent.setup();
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       loadUnit();
       await waitFor(() => {
         expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
@@ -277,7 +286,7 @@ describe('Course', () => {
     it('closes discussions when the user clicks its trigger', async () => {
       const user = userEvent.setup();
       window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       loadUnit();
       await waitFor(() => {
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
@@ -311,7 +320,7 @@ describe('Course', () => {
       sequenceId,
       unitId: Object.values(models.units)[1].id, // Corner cases are already covered in `Sequence` tests.
     };
-    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    renderCourse(testData, testStore);
 
     // loadUnit()'s window message is lost unless the unit's listener is registered first.
     await screen.findByTestId(testIDs.contentIFrame);
@@ -349,7 +358,7 @@ describe('Course', () => {
       previousSequenceHandler,
       unitNavigationHandler,
     };
-    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    renderCourse(testData, testStore);
 
     await screen.findByTestId(testIDs.contentIFrame);
     loadUnit();
@@ -381,7 +390,7 @@ describe('Course', () => {
         courseId: courseMetadata.id,
         sequenceId: sequenceBlocks[0].id,
       };
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       expect(await screen.findByText('Some random banner text to display.')).toBeInTheDocument();
     });
 
@@ -415,7 +424,7 @@ describe('Course', () => {
         courseId: testCourseMetadata.id,
         sequenceId: sequenceBlocks[0].id,
       };
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       expect(await screen.findByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument();
     });
 
@@ -449,7 +458,7 @@ describe('Course', () => {
         courseId: testCourseMetadata.id,
         sequenceId: sequenceBlocks[0].id,
       };
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData, testStore);
       expect(await screen.findByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument();
     });
   });
@@ -467,7 +476,7 @@ describe('Course', () => {
       sequenceId,
       unitId: Object.values(models.units)[0].id,
     };
-    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    renderCourse(testData, testStore);
     const learnerTools = screen.queryByTestId(mockLearnerToolsTestId);
     await waitFor(() => expect(learnerTools).toBeInTheDocument());
   });
@@ -484,7 +493,7 @@ describe('Course', () => {
       courseId,
       sequenceId,
     };
-    render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+    renderCourse(testData, testStore);
     const learnerTools = screen.queryByTestId(mockLearnerToolsTestId);
     await expect(learnerTools).not.toBeInTheDocument();
   });

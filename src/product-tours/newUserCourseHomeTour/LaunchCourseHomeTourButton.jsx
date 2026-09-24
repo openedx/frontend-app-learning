@@ -8,7 +8,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Button, Icon } from '@openedx/paragon';
 import { Compass } from '@openedx/paragon/icons';
 
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import { useTourData } from '../data/apiHooks';
 import { useTourState } from '../TourContext';
 import messages from '../messages';
@@ -17,9 +17,7 @@ const LaunchCourseHomeTourButton = ({ srOnly }) => {
   const intl = useIntl();
   const { courseId } = useParams();
 
-  const {
-    org,
-  } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const {
     administrator,

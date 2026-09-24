@@ -8,10 +8,10 @@ import { Lightbulb, MoneyFilled } from '@openedx/paragon/icons';
 import {
   Alert, breakpoints, Icon, ModalDialog, Spinner, useWindowSize,
 } from '@openedx/paragon';
-import { useDispatch } from 'react-redux';
+import { useQueryClient } from '@tanstack/react-query';
 import { UpgradeNowButton } from '../../generic/upgrade-button';
 
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import StreakMobileImage from './assets/Streak_mobile.png';
 import StreakDesktopImage from './assets/Streak_desktop.png';
 import messages from './messages';
@@ -58,7 +58,7 @@ const StreakModal = ({
   closeStreakCelebration, streakDiscountCouponEnabled, verifiedMode, ...rest
 }) => {
   const intl = useIntl();
-  const { org, celebrations, username } = useModel('courseHomeMeta', courseId);
+  const { org, celebrations, username } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const factoid = getRandomFactoid(intl, streakLengthToCelebrate);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [randomFactoid, setRandomFactoid] = useState(factoid); // Don't change factoid on re-render
@@ -70,7 +70,7 @@ const StreakModal = ({
   const queryingDiscount = discountPercent < 0;
 
   const wideScreen = useWindowSize().width >= breakpoints.small.minWidth;
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (isStreakCelebrationOpen) {
@@ -149,7 +149,7 @@ const StreakModal = ({
       title={title}
       onClose={() => {
         closeStreakCelebration();
-        recordModalClosing(celebrations, org, courseId, dispatch);
+        recordModalClosing(celebrations, org, courseId, queryClient);
       }}
       isOpen={isStreakCelebrationOpen}
       isFullscreenScroll

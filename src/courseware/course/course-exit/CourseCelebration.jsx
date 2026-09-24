@@ -23,7 +23,7 @@ import certificateLocked from '../../../generic/assets/openedx_locked_certificat
 import { FormattedPricing } from '../../../generic/upgrade-button';
 import messages from './messages';
 import { useModel } from '../../../generic/model-store';
-import { useRequestCert } from '../../../course-home/data/apiHooks';
+import { useCourseHomeMeta, useRequestCert } from '../../../course-home/data/apiHooks';
 import ProgramCompletion from './ProgramCompletion';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
@@ -56,7 +56,7 @@ const CourseCelebration = () => {
     verifiedMode,
     canViewCertificate,
     userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const {
     certStatus,

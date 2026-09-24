@@ -10,12 +10,12 @@ import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import Footnote from './Footnote';
 import { logClick } from './utils';
 import messages from './messages';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 const UpgradeFootnote = ({ deadline, href }) => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const { org } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const { administrator } = getAuthenticatedUser();
 
   const upgradeLink = (

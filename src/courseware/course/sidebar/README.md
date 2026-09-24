@@ -66,7 +66,7 @@ export const myWidgetConfig = {
 };
 ```
 
-The `course` object is a merged view of `coursewareMeta` and `courseHomeMeta` models.
+The `course` object is a merged view of the courseware metadata (`coursewareMeta`) and the course-home metadata.
 
 ### Context Object
 
@@ -176,20 +176,19 @@ The `onClick` prop is injected by the framework — your trigger does not need t
 
 ## Accessing Course Data
 
-Widgets can access course data via the model store:
+The widget config functions, `isAvailable` and `prefetch`, are handed course data as their `course` argument (see the context object above). Widget components get no such argument and read course data with the React Query hooks. `{ enabled: false }` makes the hook read the cached result without requesting it, which is right under the courseware page: the page has already fetched both queries. Anywhere else, `.data` stays `undefined` until something on that page fetches the data, for example by calling `useCourseHomeMeta(courseId)` without the option.
 
 ```javascript
-import { useModel } from '@src/generic/model-store';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 
 // In your component
-const courseData = useModel('coursewareMeta', courseId);
-const { verifiedMode, enrollmentMode } = courseData;
+const { verifiedMode, courseModes } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 ```
 
-Available models:
-- `coursewareMeta` - Course metadata, enrollment, verification
-- `courseHomeMeta` - Course home data, staff status, permissions
-- `discussionTopics` - Discussion topic data per unit
+Available data:
+- `useCourseHomeMeta` (`@src/course-home/data/apiHooks`) - Course home data, staff status, permissions
+- `useCoursewareMetadata` (`@src/courseware/data/apiHooks`) - Course metadata, enrollment, verification
+- `useModel('discussionTopics', unitId)` (`@src/generic/model-store`) - Discussion topic data per unit (moving to a query hook in [#2087](https://github.com/openedx/frontend-app-learning/issues/2087))
 
 ## Examples
 

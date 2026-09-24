@@ -8,6 +8,7 @@ import {
   createTestQueryClient, getTestStoreIds, initializeTestStore, render,
 } from '@src/setupTest';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
 import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
 import { prefetchDiscussionTopics } from '../data/apiHooks';
 import Course from './Course';
@@ -54,6 +55,7 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
 
   const wrapper = await render(
     <SidebarContext.Provider value={contextValue}>
+      <MountCourseQueryHooks courseId={mockData.courseId} />
       <Course {...mockData} />
     </SidebarContext.Provider>,
     { store: testStore, wrapWithRouter: true },

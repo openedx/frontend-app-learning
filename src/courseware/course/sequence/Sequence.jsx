@@ -11,6 +11,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 
 import PageLoading from '@src/generic/PageLoading';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { sequenceMightBeUnit, useSequenceMetadata } from '@src/courseware/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
@@ -42,7 +43,7 @@ const Sequence = ({
   const {
     isStaff,
     originalUserIsStaff,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
   const unit = useModel('units', unitId);
@@ -161,7 +162,7 @@ const Sequence = ({
   if (sequenceQuery.isSuccess && sequence.isHiddenAfterDue) {
     // Shouldn't even be here - these sequences are normally stripped out of the navigation.
     // But we are here, so render a notice instead of the normal content.
-    return <HiddenAfterDue courseId={courseId} />;
+    return <HiddenAfterDue />;
   }
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;

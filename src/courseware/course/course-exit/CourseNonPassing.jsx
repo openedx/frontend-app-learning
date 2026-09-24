@@ -7,8 +7,8 @@ import { useParams } from 'react-router-dom';
 import { Alert, Button } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 
-import { getProgressTabUrl } from '../../../course-tabs/utils';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
+import { useProgressTabUrl } from '../../../course-tabs/hooks';
 
 import CatalogSuggestion from './CatalogSuggestion';
 import DashboardFootnote from './DashboardFootnote';
@@ -20,13 +20,12 @@ const CourseNonPassing = () => {
   const { courseId } = useParams();
   const {
     org,
-    tabs,
     title,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const { administrator } = getAuthenticatedUser();
 
   // Get progress tab link for 'view grades' button
-  const progressLink = getProgressTabUrl(tabs);
+  const progressLink = useProgressTabUrl();
 
   useEffect(() => logVisit(org, courseId, administrator, 'nonpassing'), [org, courseId, administrator]);
 

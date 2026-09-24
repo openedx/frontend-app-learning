@@ -23,7 +23,7 @@ jest.mock('../product-tours/ProductTours', () => function () {
 describe('Loaded Tab Page', () => {
   const mockData = { activeTabSlug: 'courseware' };
 
-  function renderWithMetadata(courseHomeMetadata, { store } = {}) {
+  function renderWithMetadata(courseHomeMetadata) {
     const queryClient = createTestQueryClient();
     seedQueryData(
       queryClient,
@@ -34,7 +34,6 @@ describe('Loaded Tab Page', () => {
       <QueryClientProvider client={queryClient}>
         <LoadedTabPage {...mockData} courseId={courseHomeMetadata.id} />
       </QueryClientProvider>,
-      { store },
     );
   }
 
@@ -58,8 +57,7 @@ describe('Loaded Tab Page', () => {
 
   it('shows streak celebration modal', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
-    const testStore = await initializeTestStore({ courseHomeMetadata }, false);
-    await act(async () => renderWithMetadata(courseHomeMetadata, { store: testStore }));
+    await act(async () => renderWithMetadata(courseHomeMetadata));
     expect(screen.getByRole('dialog')).toHaveTextContent('3 day streak');
   });
 

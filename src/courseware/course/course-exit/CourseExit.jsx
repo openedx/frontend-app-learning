@@ -29,7 +29,7 @@ const CourseExitContent = () => {
   const {
     isMasquerading,
     canViewCertificate,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const mode = getCourseExitMode(
     certificateData,
