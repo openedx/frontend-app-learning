@@ -1,16 +1,15 @@
 import React from 'react';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
-import { render, screen, fireEvent } from '@testing-library/react';
-import SidebarContext from '../SidebarContext';
+import userEvent from '@testing-library/user-event';
+import { breakpoints } from '@openedx/paragon';
+import {
+  fireEvent, initializeTestStore, render, screen,
+} from '@src/setupTest';
+import SidebarState from '@src/tests/SidebarState';
+import { SidebarProvider } from '../SidebarContext';
 import SidebarBase from './SidebarBase';
 
-const mockToggleSidebar = jest.fn();
-
-const defaultContextValue = {
-  toggleSidebar: mockToggleSidebar,
-  shouldDisplayFullScreen: false,
-  currentSidebar: 'TEST_SIDEBAR',
-};
+const courseId = 'course-v1:edX+Test+2024';
+const unitId = 'unit-1';
 
 const defaultProps = {
   title: 'Test Sidebar Title',
@@ -20,20 +19,45 @@ const defaultProps = {
   children: <div>Sidebar child content</div>,
 };
 
-function renderSidebarBase(props = {}, contextValue = {}) {
-  const mergedContext = { ...defaultContextValue, ...contextValue };
+const stubWidget = (id) => ({
+  id,
+  priority: 10,
+  Sidebar: () => null,
+  Trigger: () => null,
+  isAvailable: () => true,
+  enabled: true,
+});
+
+// The base renders under the provider with the stored sidebar open; the viewport decides the
+// desktop or full-screen layout.
+function renderSidebarBase(props = {}, { storedSidebar = 'TEST_SIDEBAR' } = {}) {
+  window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify(storedSidebar));
   return render(
-    <IntlProvider locale="en">
-      <SidebarContext.Provider value={mergedContext}>
-        <SidebarBase {...defaultProps} {...props} />
-      </SidebarContext.Provider>
-    </IntlProvider>,
+    <SidebarProvider courseId={courseId} unitId={unitId} widgets={[stubWidget('TEST_SIDEBAR'), stubWidget('OTHER_SIDEBAR')]}>
+      <SidebarBase {...defaultProps} {...props} />
+      <SidebarState />
+    </SidebarProvider>,
+    { wrapWithRouter: true },
   );
 }
 
+const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
+
 describe('SidebarBase', () => {
+  const { innerWidth: originalInnerWidth } = window;
+
+  beforeAll(async () => {
+    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+  });
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    window.innerWidth = breakpoints.extraExtraLarge.minWidth;
+  });
+
+  afterEach(() => {
+    window.innerWidth = originalInnerWidth;
+    window.localStorage.clear();
+    window.sessionStorage.clear();
   });
 
   it('renders children when currentSidebar matches sidebarId', () => {
@@ -49,7 +73,7 @@ describe('SidebarBase', () => {
   });
 
   it('adds d-none class when currentSidebar does not match sidebarId', () => {
-    const { container } = renderSidebarBase({}, { currentSidebar: 'OTHER_SIDEBAR' });
+    const { container } = renderSidebarBase({}, { storedSidebar: 'OTHER_SIDEBAR' });
     const section = container.querySelector('[data-testid="sidebar-TEST_SIDEBAR"]');
 
     expect(section).toHaveClass('d-none');
@@ -62,7 +86,7 @@ describe('SidebarBase', () => {
     expect(section).not.toHaveClass('d-none');
   });
 
-  describe('desktop mode (shouldDisplayFullScreen=false)', () => {
+  describe('desktop mode', () => {
     it('renders the sidebar title', () => {
       renderSidebarBase();
 
@@ -75,11 +99,14 @@ describe('SidebarBase', () => {
       expect(screen.getByRole('button', { name: /close sidebar/i })).toBeInTheDocument();
     });
 
-    it('calls toggleSidebar(null) when close button is clicked', () => {
+    it('closes the sidebar when the close button is clicked', async () => {
+      const user = userEvent.setup();
       renderSidebarBase();
-      fireEvent.click(screen.getByRole('button', { name: /close sidebar/i }));
+      expect(currentSidebar()).toBe('TEST_SIDEBAR');
 
-      expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+      await user.click(screen.getByRole('button', { name: /close sidebar/i }));
+
+      expect(currentSidebar()).toBe('null');
     });
 
     it('does not render the back-to-course button', () => {
@@ -89,22 +116,29 @@ describe('SidebarBase', () => {
     });
   });
 
-  describe('mobile mode (shouldDisplayFullScreen=true)', () => {
+  describe('mobile mode', () => {
+    beforeEach(() => {
+      window.innerWidth = breakpoints.medium.maxWidth;
+    });
+
     it('renders the "Back to course" back-navigation button', () => {
-      renderSidebarBase({}, { shouldDisplayFullScreen: true });
+      renderSidebarBase();
 
       expect(screen.getByText(/back to course/i)).toBeInTheDocument();
     });
 
-    it('calls toggleSidebar(null) when back-navigation button is clicked', () => {
-      renderSidebarBase({}, { shouldDisplayFullScreen: true });
-      fireEvent.click(screen.getByRole('button', { name: /back to course/i }));
+    it('closes the sidebar when the back-navigation button is clicked', async () => {
+      const user = userEvent.setup();
+      renderSidebarBase();
+      expect(currentSidebar()).toBe('TEST_SIDEBAR');
 
-      expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+      await user.click(screen.getByRole('button', { name: /back to course/i }));
+
+      expect(currentSidebar()).toBe('null');
     });
 
     it('does not render the desktop close button', () => {
-      renderSidebarBase({}, { shouldDisplayFullScreen: true });
+      renderSidebarBase();
 
       expect(screen.queryByRole('button', { name: /close sidebar/i })).not.toBeInTheDocument();
     });
@@ -126,24 +160,27 @@ describe('SidebarBase', () => {
   });
 
   describe('postMessage event handling', () => {
-    it('calls toggleSidebar(null) when receiving learning.events.sidebar.close message', () => {
+    it('closes the sidebar when receiving learning.events.sidebar.close message', () => {
       renderSidebarBase();
+      expect(currentSidebar()).toBe('TEST_SIDEBAR');
+
       fireEvent(
         window,
         new MessageEvent('message', { data: { type: 'learning.events.sidebar.close' } }),
       );
 
-      expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+      expect(currentSidebar()).toBe('null');
     });
 
-    it('does not call toggleSidebar for unrelated message types', () => {
+    it('ignores unrelated message types', () => {
       renderSidebarBase();
+
       fireEvent(
         window,
         new MessageEvent('message', { data: { type: 'some.other.event' } }),
       );
 
-      expect(mockToggleSidebar).not.toHaveBeenCalled();
+      expect(currentSidebar()).toBe('TEST_SIDEBAR');
     });
   });
 

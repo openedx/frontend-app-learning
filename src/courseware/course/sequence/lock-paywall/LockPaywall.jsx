@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
@@ -7,7 +7,7 @@ import {
   Alert, Hyperlink, breakpoints, useWindowSize,
 } from '@openedx/paragon';
 import { Locked } from '@openedx/paragon/icons';
-import SidebarContext from '../../sidebar/SidebarContext';
+import { useSidebar } from '../../sidebar/SidebarContext';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/openedx_locked_certificate.png';
 import { useCourseHomeMeta } from '../../../../course-home/data/apiHooks';
@@ -24,7 +24,7 @@ const LockPaywall = ({
   courseId,
 }) => {
   const intl = useIntl();
-  const { currentSidebar, availableSidebarIds } = useContext(SidebarContext);
+  const { currentSidebar, availableSidebarIds } = useSidebar();
   const course = useModel('coursewareMeta', courseId);
   const {
     accessExpiration,

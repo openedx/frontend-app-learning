@@ -79,7 +79,7 @@ export default config;
 
 ### Widget config shape
 
-`upgradeWidgetConfig` is a `SidebarWidget` (`src/courseware/course/sidebar/SidebarContext.ts`):
+`upgradeWidgetConfig` is a `SidebarWidget` (`src/courseware/course/sidebar/SidebarContext.tsx`):
 
 ```javascript
 {

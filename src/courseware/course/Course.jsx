@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useQueryClient } from '@tanstack/react-query';
@@ -10,7 +10,8 @@ import { AlertList } from '@src/generic/user-messages';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import { LearnerToolsSlot } from '../../plugin-slots/LearnerToolsSlot';
-import SidebarProvider from './sidebar/SidebarContextProvider';
+import { SidebarProvider } from './sidebar/SidebarContext';
+import { getEnabledWidgets } from './sidebar/defaultWidgets';
 import { RightSidebarTriggerSlot } from '../../plugin-slots/RightSidebarTriggerSlot';
 import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
 import ContentTools from './content-tools';
@@ -49,7 +50,7 @@ const Course = ({
     course,
   ].filter(element => element != null).map(element => element.title);
 
-  // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
+  const widgets = useMemo(() => getEnabledWidgets(), []);
   const queryClient = useQueryClient();
 
   const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(false);
@@ -73,7 +74,7 @@ const Course = ({
   }, [sequenceId]);
 
   return (
-    <SidebarProvider courseId={courseId} unitId={unitId}>
+    <SidebarProvider courseId={courseId} unitId={unitId} widgets={widgets}>
       <Helmet>
         <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>

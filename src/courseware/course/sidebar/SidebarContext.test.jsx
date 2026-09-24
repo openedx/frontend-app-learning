@@ -1,11 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import {
-  render, screen, fireEvent, act,
+  render, renderHook, screen, fireEvent, act,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import SidebarContext from './SidebarContext';
-import SidebarProvider from './SidebarContextProvider';
+import {
+  SidebarProvider, buildSidebarsRegistry, getSidebarOrder, useSidebar,
+} from './SidebarContext';
 
 jest.mock('@src/generic/model-store', () => ({
   useModel: jest.fn(() => ({})),
@@ -24,29 +25,6 @@ jest.mock('@openedx/paragon', () => {
   };
 });
 
-jest.mock('./defaultWidgets', () => ({
-  getEnabledWidgets: jest.fn(() => [
-    {
-      id: 'DISCUSSIONS',
-      priority: 10,
-      Sidebar: () => null,
-      Trigger: () => null,
-      isAvailable: () => true,
-      enabled: true,
-    },
-    {
-      id: 'NOTES',
-      priority: 20,
-      Sidebar: () => null,
-      Trigger: () => null,
-      isAvailable: () => true,
-      enabled: true,
-    },
-  ]),
-  buildSidebarsRegistry: jest.requireActual('./defaultWidgets').buildSidebarsRegistry,
-  getSidebarOrder: jest.requireActual('./defaultWidgets').getSidebarOrder,
-}));
-
 jest.mock('./utils/storage', () => ({
   setSidebarId: jest.fn(),
   getSidebarId: jest.fn(() => null),
@@ -57,8 +35,20 @@ jest.mock('./utils/storage', () => ({
 const courseId = 'course-test-123';
 const unitId = 'unit-test-456';
 
+const stubWidget = (id, priority, overrides = {}) => ({
+  id,
+  priority,
+  Sidebar: () => null,
+  Trigger: () => null,
+  isAvailable: () => true,
+  enabled: true,
+  ...overrides,
+});
+
+const defaultWidgets = [stubWidget('DISCUSSIONS', 10), stubWidget('NOTES', 20)];
+
 const ContextConsumer = () => {
-  const { currentSidebar, toggleSidebar, availableSidebarIds } = useContext(SidebarContext);
+  const { currentSidebar, toggleSidebar, availableSidebarIds } = useSidebar();
   return (
     <div>
       <span data-testid="current-sidebar">{currentSidebar ?? 'null'}</span>
@@ -85,7 +75,7 @@ function renderProvider(props = {}) {
   return render(
     <IntlProvider locale="en">
       <MemoryRouter>
-        <SidebarProvider courseId={courseId} unitId={unitId} {...props}>
+        <SidebarProvider courseId={courseId} unitId={unitId} widgets={defaultWidgets} {...props}>
           <ContextConsumer />
         </SidebarProvider>
       </MemoryRouter>
@@ -93,7 +83,7 @@ function renderProvider(props = {}) {
   );
 }
 
-describe('SidebarContextProvider', () => {
+describe('SidebarProvider', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.requireMock('@openedx/paragon').useWindowSize.mockReturnValue({ width: 600 });
@@ -117,26 +107,12 @@ describe('SidebarContextProvider', () => {
     });
 
     it('excludes a widget from availableSidebarIds when isAvailable returns false', () => {
-      const { getEnabledWidgets } = jest.requireMock('./defaultWidgets');
-      getEnabledWidgets.mockReturnValueOnce([
-        {
-          id: 'DISCUSSIONS',
-          priority: 10,
-          Sidebar: () => null,
-          Trigger: () => null,
-          isAvailable: () => true,
-          enabled: true,
-        },
-        {
-          id: 'UNAVAILABLE_WIDGET',
-          priority: 20,
-          Sidebar: () => null,
-          Trigger: () => null,
-          isAvailable: () => false,
-          enabled: true,
-        },
-      ]);
-      renderProvider();
+      renderProvider({
+        widgets: [
+          stubWidget('DISCUSSIONS', 10),
+          stubWidget('UNAVAILABLE_WIDGET', 20, { isAvailable: () => false }),
+        ],
+      });
 
       const availableIds = screen.getByTestId('available-ids').textContent;
       expect(availableIds).toContain('DISCUSSIONS');
@@ -144,17 +120,7 @@ describe('SidebarContextProvider', () => {
     });
 
     it('treats a widget without isAvailable as always available', () => {
-      const { getEnabledWidgets } = jest.requireMock('./defaultWidgets');
-      getEnabledWidgets.mockReturnValueOnce([
-        {
-          id: 'ALWAYS_ON',
-          priority: 10,
-          Sidebar: () => null,
-          Trigger: () => null,
-          enabled: true,
-        },
-      ]);
-      renderProvider();
+      renderProvider({ widgets: [stubWidget('ALWAYS_ON', 10, { isAvailable: undefined })] });
 
       expect(screen.getByTestId('available-ids').textContent).toBe('ALWAYS_ON');
     });
@@ -241,18 +207,64 @@ describe('SidebarContextProvider', () => {
 
     it('wraps children with widget Providers when widgets define one', () => {
       const ProviderCallCheck = jest.fn(({ children }) => children);
-      const { getEnabledWidgets } = jest.requireMock('./defaultWidgets');
-      getEnabledWidgets.mockReturnValueOnce([{
-        id: 'DISCUSSIONS',
-        priority: 10,
-        Sidebar: () => null,
-        Trigger: () => null,
-        isAvailable: () => true,
-        enabled: true,
-        Provider: ProviderCallCheck,
-      }]);
-      renderProvider();
+      renderProvider({ widgets: [stubWidget('DISCUSSIONS', 10, { Provider: ProviderCallCheck })] });
+
       expect(ProviderCallCheck).toHaveBeenCalled();
     });
+  });
+});
+
+describe('useSidebar', () => {
+  it('throws outside a SidebarProvider', () => {
+    expect(() => renderHook(() => useSidebar()))
+      .toThrow('useSidebar must be used within a SidebarProvider');
+  });
+});
+
+describe('buildSidebarsRegistry', () => {
+  it('builds a registry keyed by widget id', () => {
+    const MockSidebar = () => null;
+    const MockTrigger = () => null;
+    const mockIsAvailable = jest.fn();
+    const widgets = [{
+      id: 'DISCUSSIONS',
+      Sidebar: MockSidebar,
+      Trigger: MockTrigger,
+      isAvailable: mockIsAvailable,
+    }];
+    const registry = buildSidebarsRegistry(widgets);
+    expect(registry.DISCUSSIONS).toBeDefined();
+    expect(registry.DISCUSSIONS.ID).toBe('DISCUSSIONS');
+    expect(registry.DISCUSSIONS.Sidebar).toBe(MockSidebar);
+    expect(registry.DISCUSSIONS.Trigger).toBe(MockTrigger);
+    expect(registry.DISCUSSIONS.isAvailable).toBe(mockIsAvailable);
+  });
+
+  it('returns an empty object for an empty widget list', () => {
+    expect(buildSidebarsRegistry([])).toEqual({});
+  });
+
+  it('registers multiple widgets', () => {
+    const widgets = [
+      { id: 'DISCUSSIONS', Sidebar: () => null, Trigger: () => null },
+      { id: 'CUSTOM_WIDGET', Sidebar: () => null, Trigger: () => null },
+    ];
+    const registry = buildSidebarsRegistry(widgets);
+    expect(Object.keys(registry)).toHaveLength(2);
+    expect(registry.CUSTOM_WIDGET).toBeDefined();
+  });
+});
+
+describe('getSidebarOrder', () => {
+  it('returns an array of widget IDs in the given order', () => {
+    const widgets = [
+      { id: 'DISCUSSIONS', priority: 10 },
+      { id: 'CUSTOM_WIDGET', priority: 20 },
+    ];
+    expect(getSidebarOrder(widgets)).toEqual(['DISCUSSIONS', 'CUSTOM_WIDGET']);
+  });
+
+  it('returns an empty array for empty input', () => {
+    expect(getSidebarOrder([])).toEqual([]);
   });
 });

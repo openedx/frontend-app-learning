@@ -7,7 +7,6 @@ import { breakpoints } from '@openedx/paragon';
 import {
   createTestQueryClient, getTestStoreIds, initializeTestStore, render,
 } from '@src/setupTest';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
 import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
 import { discussionTopicsQuery } from '../data/apiHooks';
@@ -51,13 +50,11 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
   const [firstUnitId] = Object.keys(state.models.units);
   mockData.unitId = firstUnitId;
   mockData.sequenceId = getTestStoreIds(testStore).sequenceId;
-  const contextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
-
   const wrapper = await render(
-    <SidebarContext.Provider value={contextValue}>
+    <>
       <MountCourseQueryHooks courseId={mockData.courseId} />
       <Course {...mockData} />
-    </SidebarContext.Provider>,
+    </>,
     { store: testStore, wrapWithRouter: true },
   );
   return { ...wrapper, testStore };

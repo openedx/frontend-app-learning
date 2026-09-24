@@ -1,18 +1,11 @@
 import React from 'react';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { getConfig } from '@edx/frontend-platform';
-import SidebarContext from './SidebarContext';
+import userEvent from '@testing-library/user-event';
+import { mergeConfig } from '@edx/frontend-platform';
+import { initializeTestStore, render, screen } from '@src/setupTest';
+import SidebarState from '@src/tests/SidebarState';
+import { getEnabledWidgets } from './defaultWidgets';
+import { SidebarProvider } from './SidebarContext';
 import SidebarTriggers from './SidebarTriggers';
-import {
-  getEnabledWidgets,
-  buildSidebarsRegistry,
-  getSidebarOrder,
-} from './defaultWidgets';
-
-jest.mock('@edx/frontend-platform', () => ({
-  getConfig: jest.fn(() => ({})),
-}));
 
 jest.mock('@src/widgets/discussions/widgetConfig', () => ({
   discussionsWidgetConfig: {
@@ -36,7 +29,9 @@ jest.mock('@src/widgets/upgrade/src/widgetConfig', () => ({
   },
 }));
 
-const mockToggleSidebar = jest.fn();
+const courseId = 'course-v1:edX+Test+2024';
+const unitId = 'unit-1';
+
 // eslint-disable-next-line react/prop-types
 const MockTriggerA = ({ onClick }) => (
   <button type="button" onClick={onClick} data-testid="trigger-A">Trigger A</button>
@@ -46,72 +41,89 @@ const MockTriggerB = ({ onClick }) => (
   <button type="button" onClick={onClick} data-testid="trigger-B">Trigger B</button>
 );
 
-function buildContext(overrides = {}) {
-  return {
-    toggleSidebar: mockToggleSidebar,
-    currentSidebar: null,
-    availableSidebarIds: ['WIDGET_A', 'WIDGET_B'],
-    SIDEBAR_ORDER: ['WIDGET_A', 'WIDGET_B'],
-    SIDEBARS: {
-      WIDGET_A: { Trigger: MockTriggerA },
-      WIDGET_B: { Trigger: MockTriggerB },
-    },
-    ...overrides,
-  };
-}
+const stubWidget = (id, priority, Trigger, overrides = {}) => ({
+  id,
+  priority,
+  Sidebar: () => null,
+  Trigger,
+  isAvailable: () => true,
+  enabled: true,
+  ...overrides,
+});
 
-function renderTriggers(contextOverrides = {}) {
+const defaultWidgets = [stubWidget('WIDGET_A', 10, MockTriggerA), stubWidget('WIDGET_B', 20, MockTriggerB)];
+
+function renderTriggers(widgets = defaultWidgets) {
   return render(
-    <IntlProvider locale="en">
-      <SidebarContext.Provider value={buildContext(contextOverrides)}>
-        <SidebarTriggers />
-      </SidebarContext.Provider>
-    </IntlProvider>,
+    <SidebarProvider courseId={courseId} unitId={unitId} widgets={widgets}>
+      <SidebarTriggers />
+      <SidebarState />
+    </SidebarProvider>,
+    { wrapWithRouter: true },
   );
 }
 
+const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
+
 describe('SidebarTriggers', () => {
+  beforeAll(async () => {
+    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
+  afterEach(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
   describe('rendering', () => {
-    it('renders a trigger for each widget in SIDEBAR_ORDER', () => {
+    it('renders a trigger for each available widget', () => {
       renderTriggers();
 
       expect(screen.getByTestId('trigger-A')).toBeInTheDocument();
       expect(screen.getByTestId('trigger-B')).toBeInTheDocument();
     });
 
-    it('renders nothing when SIDEBAR_ORDER is empty', () => {
-      const { container } = renderTriggers({ SIDEBAR_ORDER: [], SIDEBARS: {} });
+    it('renders no trigger for a widget that is not available', () => {
+      renderTriggers([
+        stubWidget('WIDGET_A', 10, MockTriggerA),
+        stubWidget('WIDGET_B', 20, MockTriggerB, { isAvailable: () => false }),
+      ]);
 
-      expect(container.firstChild).toBeNull();
+      expect(screen.getByTestId('trigger-A')).toBeInTheDocument();
+      expect(screen.queryByTestId('trigger-B')).not.toBeInTheDocument();
     });
 
-    it('renders nothing when SIDEBAR_ORDER is null', () => {
-      const { container } = renderTriggers({ SIDEBAR_ORDER: null, SIDEBARS: {} });
-      expect(container.firstChild).toBeNull();
+    it('renders nothing when no widgets are registered', () => {
+      renderTriggers([]);
+
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
     });
   });
 
   describe('active state styling', () => {
     it('applies active class to the currently open sidebar trigger', () => {
-      const { container } = renderTriggers({ currentSidebar: 'WIDGET_A' });
+      window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('WIDGET_A'));
+      const { container } = renderTriggers();
       const triggerWrappers = container.querySelectorAll('[class*="sidebar-active"]');
 
       expect(triggerWrappers).toHaveLength(1);
+      expect(screen.getByTestId('trigger-A').closest('[class*="sidebar-active"]')).toBeInTheDocument();
     });
 
     it('applies no active class when no sidebar is open', () => {
-      const { container } = renderTriggers({ currentSidebar: null });
+      const { container } = renderTriggers();
       const activeWrappers = container.querySelectorAll('[class*="sidebar-active"]');
 
       expect(activeWrappers).toHaveLength(0);
     });
 
     it('applies active class to WIDGET_B when WIDGET_B is open', () => {
-      renderTriggers({ currentSidebar: 'WIDGET_B' });
+      window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('WIDGET_B'));
+      renderTriggers();
 
       const triggerB = screen.getByTestId('trigger-B');
       expect(triggerB.closest('[class*="sidebar-active"]')).toBeInTheDocument();
@@ -119,40 +131,55 @@ describe('SidebarTriggers', () => {
   });
 
   describe('click interactions (Use Case 7: Manual Toggle)', () => {
-    it('calls toggleSidebar with the widget ID when a trigger is clicked', () => {
+    it('opens the widget whose trigger is clicked', async () => {
+      const user = userEvent.setup();
       renderTriggers();
+      expect(currentSidebar()).toBe('null');
 
-      fireEvent.click(screen.getByTestId('trigger-A'));
-      expect(mockToggleSidebar).toHaveBeenCalledWith('WIDGET_A');
+      await user.click(screen.getByTestId('trigger-A'));
+
+      expect(currentSidebar()).toBe('WIDGET_A');
     });
 
-    it('calls toggleSidebar with correct ID for each trigger', () => {
+    it('switches to the widget whose trigger is clicked', async () => {
+      const user = userEvent.setup();
+      window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('WIDGET_A'));
       renderTriggers();
 
-      fireEvent.click(screen.getByTestId('trigger-B'));
-      expect(mockToggleSidebar).toHaveBeenCalledWith('WIDGET_B');
+      await user.click(screen.getByTestId('trigger-B'));
+
+      expect(currentSidebar()).toBe('WIDGET_B');
     });
 
-    it('calls toggleSidebar even when that sidebar is already open (toggle-to-close)', () => {
-      renderTriggers({ currentSidebar: 'WIDGET_A' });
+    it('closes the open widget when its own trigger is clicked (toggle-to-close)', async () => {
+      const user = userEvent.setup();
+      window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('WIDGET_A'));
+      renderTriggers();
+      expect(currentSidebar()).toBe('WIDGET_A');
 
-      fireEvent.click(screen.getByTestId('trigger-A'));
-      expect(mockToggleSidebar).toHaveBeenCalledWith('WIDGET_A');
+      await user.click(screen.getByTestId('trigger-A'));
+
+      expect(currentSidebar()).toBe('null');
     });
   });
 });
 
 describe('SidebarTriggers - external widget integration', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    getConfig.mockReturnValue({});
+  beforeAll(async () => {
+    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+  });
+
+  afterEach(() => {
+    mergeConfig({ SIDEBAR_WIDGETS: [] });
+    window.localStorage.clear();
+    window.sessionStorage.clear();
   });
 
   it('registers an external widget and renders its trigger on screen', () => {
     const ExternalTrigger = () => (
       <button type="button" data-testid="trigger-DUMMY_WIDGET">Dummy Widget</button>
     );
-    getConfig.mockReturnValue({
+    mergeConfig({
       SIDEBAR_WIDGETS: [{
         id: 'DUMMY_WIDGET',
         priority: 30,
@@ -163,31 +190,14 @@ describe('SidebarTriggers - external widget integration', () => {
       }],
     });
 
-    const widgets = getEnabledWidgets();
-    const SIDEBARS = buildSidebarsRegistry(widgets);
-    const SIDEBAR_ORDER = getSidebarOrder(widgets);
-
-    render(
-      <IntlProvider locale="en">
-        <SidebarContext.Provider value={{
-          toggleSidebar: jest.fn(),
-          currentSidebar: null,
-          availableSidebarIds: SIDEBAR_ORDER,
-          SIDEBARS,
-          SIDEBAR_ORDER,
-        }}
-        >
-          <SidebarTriggers />
-        </SidebarContext.Provider>
-      </IntlProvider>,
-    );
+    renderTriggers(getEnabledWidgets());
 
     expect(screen.getByTestId('trigger-DUMMY_WIDGET')).toBeInTheDocument();
     expect(screen.getByText('Dummy Widget')).toBeVisible();
   });
 
   it('does not render a trigger for an external widget with enabled: false', () => {
-    getConfig.mockReturnValue({
+    mergeConfig({
       SIDEBAR_WIDGETS: [{
         id: 'HIDDEN_WIDGET',
         priority: 30,
@@ -197,35 +207,18 @@ describe('SidebarTriggers - external widget integration', () => {
       }],
     });
 
-    const widgets = getEnabledWidgets();
-    const SIDEBARS = buildSidebarsRegistry(widgets);
-    const SIDEBAR_ORDER = getSidebarOrder(widgets);
-
-    render(
-      <IntlProvider locale="en">
-        <SidebarContext.Provider value={{
-          toggleSidebar: jest.fn(),
-          currentSidebar: null,
-          availableSidebarIds: SIDEBAR_ORDER,
-          SIDEBARS,
-          SIDEBAR_ORDER,
-        }}
-        >
-          <SidebarTriggers />
-        </SidebarContext.Provider>
-      </IntlProvider>,
-    );
+    renderTriggers(getEnabledWidgets());
 
     expect(screen.queryByTestId('trigger-HIDDEN_WIDGET')).not.toBeInTheDocument();
   });
 
-  it('clicking an external widget trigger calls toggleSidebar with its ID', () => {
-    const toggleSidebar = jest.fn();
+  it('clicking an external widget trigger opens it', async () => {
+    const user = userEvent.setup();
     // eslint-disable-next-line react/prop-types
     const ExternalTrigger = ({ onClick }) => (
       <button type="button" data-testid="trigger-DUMMY_WIDGET" onClick={onClick}>Dummy Widget</button>
     );
-    getConfig.mockReturnValue({
+    mergeConfig({
       SIDEBAR_WIDGETS: [{
         id: 'DUMMY_WIDGET',
         priority: 30,
@@ -235,26 +228,9 @@ describe('SidebarTriggers - external widget integration', () => {
       }],
     });
 
-    const widgets = getEnabledWidgets();
-    const SIDEBARS = buildSidebarsRegistry(widgets);
-    const SIDEBAR_ORDER = getSidebarOrder(widgets);
+    renderTriggers(getEnabledWidgets());
+    await user.click(screen.getByTestId('trigger-DUMMY_WIDGET'));
 
-    render(
-      <IntlProvider locale="en">
-        <SidebarContext.Provider value={{
-          toggleSidebar,
-          currentSidebar: null,
-          availableSidebarIds: SIDEBAR_ORDER,
-          SIDEBARS,
-          SIDEBAR_ORDER,
-        }}
-        >
-          <SidebarTriggers />
-        </SidebarContext.Provider>
-      </IntlProvider>,
-    );
-
-    fireEvent.click(screen.getByTestId('trigger-DUMMY_WIDGET'));
-    expect(toggleSidebar).toHaveBeenCalledWith('DUMMY_WIDGET');
+    expect(currentSidebar()).toBe('DUMMY_WIDGET');
   });
 });

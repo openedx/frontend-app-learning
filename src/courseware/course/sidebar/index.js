@@ -1,13 +1,12 @@
-export { default as SidebarProvider } from './SidebarContextProvider';
-export { default as Sidebar } from './Sidebar';
-export { default as SidebarTriggers } from './SidebarTriggers';
-export { default as SidebarContext } from './SidebarContext';
 export {
-  getEnabledWidgets,
+  SidebarProvider,
+  useSidebar,
   buildSidebarsRegistry,
   getSidebarOrder,
-  DEFAULT_WIDGETS,
-} from './defaultWidgets';
+} from './SidebarContext';
+export { default as Sidebar } from './Sidebar';
+export { default as SidebarTriggers } from './SidebarTriggers';
+export { getEnabledWidgets, DEFAULT_WIDGETS } from './defaultWidgets';
 export { discussionsIsAvailable } from '@src/widgets/discussions/widgetConfig';
 export * from './utils/storage';
 export * from './constants';

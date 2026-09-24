@@ -18,7 +18,7 @@ Unlike right-sidebar widgets, the course outline is **not** registered in the `S
 
 - Auto-opens on desktop when no right-panel widgets are available for the current unit
 - Collapses when window width drops below the Paragon `lg` breakpoint
-- Closed state persists across navigation via the shared `sidebarClosedByUser` sessionStorage flag managed by `SidebarContextProvider`
+- Closed state persists across navigation via the shared `sidebarClosedByUser` sessionStorage flag managed by `SidebarProvider`
 - Clicking a unit navigates via react-router and fires tracking events
 - Hidden while an entrance exam is active
 

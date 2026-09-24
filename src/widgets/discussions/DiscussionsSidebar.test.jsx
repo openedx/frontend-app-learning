@@ -8,7 +8,7 @@ import {
 } from '@src/setupTest';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
 import { discussionTopicsQuery } from '@src/courseware/data/apiHooks';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { SidebarProvider } from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsSidebar from './DiscussionsSidebar';
 
 initializeMockApp();
@@ -32,7 +32,6 @@ describe('Discussions Trigger', () => {
     mockData = {
       courseId,
       unitId,
-      currentSidebar: 'DISCUSSIONS',
     };
 
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(
@@ -48,9 +47,10 @@ describe('Discussions Trigger', () => {
 
   function renderWithProvider(testData = {}) {
     const { container } = render(
-      <SidebarContext.Provider value={{ ...mockData, ...testData }}>
+      <SidebarProvider courseId={courseId} unitId={testData.unitId ?? mockData.unitId} widgets={[]}>
         <DiscussionsSidebar />
-      </SidebarContext.Provider>,
+      </SidebarProvider>,
+      { wrapWithRouter: true },
     );
     return container;
   }

@@ -1,11 +1,10 @@
-import { useContext } from 'react';
 import classNames from 'classnames';
 import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { useModel } from '@src/generic/model-store';
 import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { useSidebar } from '@src/courseware/course/sidebar/SidebarContext';
 import { ID } from './DiscussionsTrigger';
 
 import messages from './messages';
@@ -18,7 +17,7 @@ const DiscussionsSidebar = () => {
     unitId,
     courseId,
     shouldDisplayFullScreen,
-  } = useContext(SidebarContext);
+  } = useSidebar();
   const topic = useModel('discussionTopics', unitId);
   const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/category/${unitId}`;
 

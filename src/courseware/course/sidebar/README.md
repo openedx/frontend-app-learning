@@ -13,11 +13,11 @@ Widget implementations:
 
 ### Widget Structure
 
-Each widget is a `SidebarWidget`, declared in [`SidebarContext.ts`](SidebarContext.ts).
+Each widget is a `SidebarWidget`, declared in [`SidebarContext.tsx`](SidebarContext.tsx).
 
 ### The `Provider` field
 
-An optional component the widget supplies, taking `children`. `SidebarContextProvider` wraps all children in each registered widget's `Provider` (in reverse-priority order), whether or not the widget is currently available, and the Provider can read `courseId` etc. from `SidebarContext` since it mounts inside it. That gives the widget one component that is mounted for as long as the sidebar is, where it can run hooks and hold state that its `Sidebar` and `Trigger` both read. The two built-in widgets use it for the two things it is for:
+An optional component the widget supplies, taking `children`. `SidebarProvider` wraps all children in each registered widget's `Provider` (in reverse-priority order), whether or not the widget is currently available, and the Provider can read `courseId` etc. through `useSidebar()` since it mounts inside the provider. That gives the widget one component that is mounted for as long as the sidebar is, where it can run hooks and hold state that its `Sidebar` and `Trigger` both read. The two built-in widgets use it for the two things it is for:
 
 - **Shared state.** The upgrade widget's `UpgradeWidgetProvider` keeps the seen/unseen status and the upgrade stage in a context of its own, which `UpgradeTrigger` and `UpgradePanel` read.
 - **Loading the data `isAvailable` depends on.** A widget's trigger is mounted only once the widget is available, so a fetch the availability check needs cannot live in the trigger. The discussions widget's `DiscussionsProvider` runs one `useQuery`, with the conditions for fetching in `enabled`, and renders its children unchanged. The request goes out once when the sidebar mounts; the first availability check runs before the data arrives, and when the query resolves the framework re-evaluates availability and the trigger appears.
@@ -49,7 +49,7 @@ export const myWidgetConfig = {
 
 ### Context Object
 
-The `isAvailable` function receives a `SidebarWidgetContext`, declared in [`SidebarContext.ts`](SidebarContext.ts). Widgets pick whatever they need from its `course` or `unit` — the sidebar makes no assumptions about which fields any given widget requires.
+The `isAvailable` function receives a `SidebarWidgetContext`, declared in [`SidebarContext.tsx`](SidebarContext.tsx). Widgets pick whatever they need from its `course` or `unit` — the sidebar makes no assumptions about which fields any given widget requires.
 
 ## Adding Widgets
 
