@@ -1,5 +1,6 @@
 import React from 'react';
 
+import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
 
 import { breakpoints } from '@openedx/paragon';
@@ -8,6 +9,7 @@ import userEvent from '@testing-library/user-event';
 import {
   cleanup, fireEvent, getByRole, getTestStoreIds, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import MountCourseQueryHooks from '../../tests/MountCourseQueryHooks';
 import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
@@ -49,10 +51,20 @@ describe('Course', () => {
     unitNavigationHandler: () => {},
   };
 
+  // LoadedTabPage renders the courseware only once the course-home metadata query has succeeded;
+  // Course reads `celebrations` from it on first render, so the tests mount it behind the same gate.
+  const LoadedCourse = ({ courseId, ...props }) => (
+    useCourseHomeMeta(courseId).isSuccess ? <Course courseId={courseId} {...props} /> : null
+  );
+
+  LoadedCourse.propTypes = {
+    courseId: PropTypes.string.isRequired,
+  };
+
   const renderCourse = (testData, testStore) => render(
     <>
       <MountCourseQueryHooks courseId={testData.courseId} />
-      <Course {...testData} />
+      <LoadedCourse {...testData} />
     </>,
     { store: testStore, wrapWithRouter: true },
   );
@@ -66,34 +78,34 @@ describe('Course', () => {
       sequenceId,
       unitId: Object.values(models.units)[0].id,
     });
+  });
+
+  beforeEach(() => {
     global.innerWidth = breakpoints.extraLarge.minWidth;
   });
 
-  // This was passing when it shouldn't have been because of improper
-  // waitFor use. With the React 18 upgrade it no longer improperly passes
-  // so we are skipping it. See https://github.com/openedx/frontend-app-learning/issues/1669
-  // for details.
-  it.skip('loads learning sequence', () => {
+  it('loads learning sequence', async () => {
     renderCourse(mockData);
     expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
-    waitFor(() => {
-      expect(screen.findByText('Loading learning sequence...')).toBeInTheDocument();
+    expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Learn About Verified Certificates' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Learn About Verified Certificates' })).not.toBeInTheDocument();
 
-      loadUnit();
+    const { models } = store.getState();
+    await screen.findByRole('heading', { name: models.units[mockData.unitId].title });
+    loadUnit();
+    await waitFor(() => {
       expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
-
-      const { models } = store.getState();
-      const sequence = models.sequences[mockData.sequenceId];
-      const section = models.sections[sequence.sectionId];
-      const course = models.coursewareMeta[mockData.courseId];
-      expect(document.title).toMatch(
-        `${sequence.title} | ${section.title} | ${course.title} | edX`,
-      );
     });
+
+    const sequence = models.sequences[mockData.sequenceId];
+    const section = models.sections[sequence.sectionId];
+    const course = models.coursewareMeta[mockData.courseId];
+    expect(document.title).toMatch(
+      `${sequence.title} | ${section.title} | ${course.title} | edX`,
+    );
   });
 
   it('removes breadcrumbs when navigation is disabled', async () => {
@@ -117,11 +129,7 @@ describe('Course', () => {
     expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
   });
 
-  // This was passing when it shouldn't have been because of improper
-  // waitFor use. With the React 18 upgrade it no longer improperly passes
-  // so we are skipping it. See https://github.com/openedx/frontend-app-learning/issues/1669
-  // for details.
-  it.skip('displays first section celebration modal', async () => {
+  it('displays first section celebration modal', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { firstSection: true } });
     const testStore = await initializeTestStore({ courseHomeMetadata }, false);
     const { models } = testStore.getState();
@@ -136,18 +144,11 @@ describe('Course', () => {
     handleNextSectionCelebration(sequenceId, sequenceId, testData.unitId);
     renderCourse(testData, testStore);
 
-    waitFor(() => {
-      const firstSectionCelebrationModal = screen.getByRole('dialog');
-      expect(firstSectionCelebrationModal).toBeInTheDocument();
-      expect(getByRole(firstSectionCelebrationModal, 'heading', { name: 'Congratulations!' })).toBeInTheDocument();
-    });
+    const firstSectionCelebrationModal = await screen.findByRole('dialog');
+    expect(getByRole(firstSectionCelebrationModal, 'heading', { name: 'Congratulations!' })).toBeInTheDocument();
   });
 
-  // This was passing when it shouldn't have been because of improper
-  // waitFor use. With the React 18 upgrade it no longer improperly passes
-  // so we are skipping it. See https://github.com/openedx/frontend-app-learning/issues/1669
-  // for details.
-  it.skip('displays weekly goal celebration modal', async () => {
+  it('displays weekly goal celebration modal', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { weeklyGoal: true } });
     const testStore = await initializeTestStore({ courseHomeMetadata }, false);
     const { models } = testStore.getState();
@@ -160,11 +161,8 @@ describe('Course', () => {
     };
     renderCourse(testData, testStore);
 
-    waitFor(() => {
-      const weeklyGoalCelebrationModal = screen.getByRole('dialog');
-      expect(weeklyGoalCelebrationModal).toBeInTheDocument();
-      expect(getByRole(weeklyGoalCelebrationModal, 'heading', { name: 'You met your goal!' })).toBeInTheDocument();
-    });
+    const weeklyGoalCelebrationModal = await screen.findByRole('dialog');
+    expect(getByRole(weeklyGoalCelebrationModal, 'heading', { name: 'You met your goal!' })).toBeInTheDocument();
   });
 
   describe('sidebar behavior', () => {
@@ -477,24 +475,27 @@ describe('Course', () => {
       unitId: Object.values(models.units)[0].id,
     };
     renderCourse(testData, testStore);
-    const learnerTools = screen.queryByTestId(mockLearnerToolsTestId);
-    await waitFor(() => expect(learnerTools).toBeInTheDocument());
+
+    expect(await screen.findByTestId(mockLearnerToolsTestId)).toBeInTheDocument();
   });
 
   it('does not display learner tools when screen is too narrow (mobile)', async () => {
-    global.innerWidth = breakpoints.extraSmall.minWidth;
+    global.innerWidth = breakpoints.extraSmall.maxWidth;
     const courseMetadata = Factory.build('courseMetadata', {
       enrollment: { mode: 'verified' },
     });
     const testStore = await initializeTestStore({ courseMetadata }, false);
+    const { models } = testStore.getState();
     const { courseId, sequenceId } = getTestStoreIds(testStore);
     const testData = {
       ...mockData,
       courseId,
       sequenceId,
+      unitId: Object.values(models.units)[0].id,
     };
     renderCourse(testData, testStore);
-    const learnerTools = screen.queryByTestId(mockLearnerToolsTestId);
-    await expect(learnerTools).not.toBeInTheDocument();
+    await screen.findByText('Loading learning sequence...');
+
+    expect(screen.queryByTestId(mockLearnerToolsTestId)).not.toBeInTheDocument();
   });
 });
