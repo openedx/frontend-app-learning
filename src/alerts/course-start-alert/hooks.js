@@ -1,14 +1,12 @@
 import React, { useMemo } from 'react';
 import { useAlert } from '../../generic/user-messages';
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 
 const CourseStartAlert = React.lazy(() => import('./CourseStartAlert'));
 const CourseStartMasqueradeBanner = React.lazy(() => import('./CourseStartMasqueradeBanner'));
 
 function IsStartDateInFuture(courseId) {
-  const {
-    start,
-  } = useModel('courseHomeMeta', courseId);
+  const start = useCourseHomeMeta(courseId, { enabled: false }).data?.start;
 
   const today = new Date();
   const startDate = new Date(start);
@@ -16,9 +14,7 @@ function IsStartDateInFuture(courseId) {
 }
 
 function useCourseStartAlert(courseId) {
-  const {
-    isEnrolled,
-  } = useModel('courseHomeMeta', courseId);
+  const isEnrolled = useCourseHomeMeta(courseId, { enabled: false }).data?.isEnrolled;
 
   const isVisible = isEnrolled && IsStartDateInFuture(courseId);
 
@@ -38,9 +34,7 @@ function useCourseStartAlert(courseId) {
 }
 
 export function useCourseStartMasqueradeBanner(courseId, tab) {
-  const {
-    isMasquerading,
-  } = useModel('courseHomeMeta', courseId);
+  const isMasquerading = useCourseHomeMeta(courseId, { enabled: false }).data?.isMasquerading;
 
   const isVisible = isMasquerading && tab === 'progress' && IsStartDateInFuture(courseId);
 

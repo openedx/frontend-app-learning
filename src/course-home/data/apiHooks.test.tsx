@@ -465,5 +465,13 @@ describe('course-home apiHooks', () => {
       expect(result.current.courseware.data).toBe(result.current.outline.data);
       expect(metadataRequests()).toHaveLength(1);
     });
+
+    it('stays idle with no request when disabled', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCourseHomeMeta(courseId, { enabled: false }), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(metadataRequests()).toHaveLength(0);
+    });
   });
 });

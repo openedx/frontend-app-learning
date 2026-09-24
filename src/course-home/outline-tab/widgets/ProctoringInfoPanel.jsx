@@ -5,16 +5,13 @@ import { getExternalLinkUrl } from '@edx/frontend-platform';
 import { Button } from '@openedx/paragon';
 
 import messages from '../messages';
-import { useProctoringInfoData } from '../../data/apiHooks';
+import { useCourseHomeMeta, useProctoringInfoData } from '../../data/apiHooks';
 import { getReadableProctoringStatus, readableProctoringStatuses } from '../utils';
-import { useModel } from '../../../generic/model-store';
 
 const ProctoringInfoPanel = () => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const {
-    username,
-  } = useModel('courseHomeMeta', courseId);
+  const username = useCourseHomeMeta(courseId, { enabled: false }).data?.username;
   const { data: proctoringInfo } = useProctoringInfoData(courseId, username);
 
   const link = proctoringInfo?.onboarding_link;

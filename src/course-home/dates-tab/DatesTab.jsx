@@ -7,7 +7,6 @@ import messages from './messages';
 import Timeline from './timeline/Timeline';
 
 import { useCourseHomeMeta, useDatesTabData } from '../data/apiHooks';
-import { useModel } from '../../generic/model-store';
 import { TabWithTimer } from '../../tab-page';
 
 import SuggestedScheduleHeader from '../suggested-schedule-messaging/SuggestedScheduleHeader';
@@ -25,7 +24,7 @@ const DatesTab = () => {
   const {
     isSelfPaced,
     org,
-  } = useModel('courseHomeMeta', courseId);
+  } = metadataQuery.data ?? {};
 
   const {
     courseDateBlocks,

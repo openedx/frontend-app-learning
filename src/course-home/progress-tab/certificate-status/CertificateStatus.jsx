@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
-import { useRequestCert } from '../../data/apiHooks';
+import { useCourseHomeMeta, useRequestCert } from '../../data/apiHooks';
 import { useProgressData } from '../hooks';
 import messages from './messages';
 import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertificateStatusSlot';
@@ -27,7 +27,7 @@ const CertificateStatus = () => {
     org,
     canViewCertificate,
     userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const {
     certificateData,

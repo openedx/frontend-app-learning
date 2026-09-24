@@ -5,7 +5,7 @@ import { FormattedDate } from '@edx/frontend-platform/i18n';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../data/apiHooks';
 import { isLearnerAssignment } from '../dates-tab/utils';
 import './DateSummary.scss';
 
@@ -14,9 +14,7 @@ const DateSummary = ({
   userTimezone,
 }) => {
   const { courseId } = useParams();
-  const {
-    org,
-  } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const linkedTitle = dateBlock.link && isLearnerAssignment(dateBlock);
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};

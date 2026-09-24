@@ -2,14 +2,13 @@
 import React, { useContext, useMemo } from 'react';
 import { AppContext } from '@edx/frontend-platform/react';
 import { ALERT_TYPES, useAlert } from '../../../../generic/user-messages';
-import { useModel } from '../../../../generic/model-store';
-import { useOutlineTabData } from '../../../data/apiHooks';
+import { useCourseHomeMeta, useOutlineTabData } from '../../../data/apiHooks';
 
 const PrivateCourseAlert = React.lazy(() => import('./PrivateCourseAlert'));
 
 export function usePrivateCourseAlert(courseId) {
   const { authenticatedUser } = useContext(AppContext);
-  const course = useModel('courseHomeMeta', courseId);
+  const course = useCourseHomeMeta(courseId, { enabled: false }).data;
   const outline = useOutlineTabData(courseId, { enabled: false }).data;
   const enrolledUser = course && course.isEnrolled !== undefined && course.isEnrolled;
   const privateOutline = outline && outline.courseBlocks && !outline.courseBlocks.courses;

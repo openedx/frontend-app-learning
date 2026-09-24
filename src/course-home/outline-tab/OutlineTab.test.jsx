@@ -75,10 +75,11 @@ describe('Outline Tab', () => {
 
   async function fetchAndRender(path = '', { renderStore = store, waitForLoaded = true } = {}) {
     const search = path.includes('?') ? path.slice(path.indexOf('?')) : '';
+    const queryClient = createTestQueryClient(renderStore);
     await act(async () => render(
       <AppProvider store={renderStore} wrapWithRouter={false}>
         <MemoryRouter initialEntries={[`/course/${courseId}/home${search}`]}>
-          <QueryClientProvider client={createTestQueryClient(renderStore)}>
+          <QueryClientProvider client={queryClient}>
             <UserMessagesProvider>
               <ToastProvider>
                 <Routes>
@@ -93,6 +94,7 @@ describe('Outline Tab', () => {
     if (waitForLoaded) {
       await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
     }
+    return queryClient;
   }
 
   beforeEach(async () => {
@@ -1409,6 +1411,15 @@ describe('Outline Tab', () => {
 
       expect(iconHiddenFromTocSequenceLink).not.toBeInTheDocument();
       expect(textHiddenFromTocSequenceLink).not.toBeInTheDocument();
+    });
+  });
+
+  describe('request count', () => {
+    it('requests the course metadata once per load', async () => {
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
     });
   });
 });

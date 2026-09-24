@@ -4,7 +4,6 @@ import {
 } from '../setupTest';
 import { TabPage } from './index';
 import { useToast } from '../generic/ToastContext';
-import { addModel } from '../generic/model-store';
 
 // We should not test `LoadedTabPage` page here, as `TabPage` is used only for passing `passthroughProps`.
 jest.mock('./LoadedTabPage', () => function () {
@@ -202,19 +201,14 @@ describe('Tab Page', () => {
       expect(screen.queryByTestId('LoadedTabPage')).not.toBeInTheDocument();
     });
 
-    it('does not render tab content when access is denied', async () => {
-      const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
-      testStore.dispatch(addModel({
-        modelType: 'courseHomeMeta',
-        model: { id: 'test-course', courseAccess: { hasAccess: false } },
-      }));
+    it('does not render tab content when access is denied', () => {
       render(
         <TabPage
           {...mockData}
           activeTabSlug="dates"
           courseStatus={{ metadataQuery: { data: { courseAccess: { hasAccess: false } } }, tabDataQuery: {} }}
         />,
-        { store: testStore, wrapWithRouter: true },
+        { wrapWithRouter: true },
       );
       expect(screen.queryByTestId('LoadedTabPage')).not.toBeInTheDocument();
     });

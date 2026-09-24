@@ -4,8 +4,8 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Locked } from '@openedx/paragon/icons';
 import { Icon, Hyperlink } from '@openedx/paragon';
 import { useParams } from 'react-router-dom';
-import { useModel } from '../../../../generic/model-store';
-import { getCourseOutlineUrl } from '../../../../course-tabs/utils';
+import { useCourseHomeMeta } from '../../../data/apiHooks';
+import { useCourseOutlineUrl } from '../../../../course-tabs/hooks';
 import { useProgressData } from '../../hooks';
 import { showUngradedAssignments } from '../../utils';
 
@@ -17,10 +17,7 @@ const DetailedGrades = () => {
   const intl = useIntl();
   const { administrator } = getAuthenticatedUser();
   const { courseId } = useParams();
-  const {
-    org,
-    tabs,
-  } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     gradesFeatureIsFullyLocked,
     gradesFeatureIsPartiallyLocked,
@@ -39,7 +36,7 @@ const DetailedGrades = () => {
     });
   };
 
-  const courseOutlineUrl = getCourseOutlineUrl(tabs);
+  const courseOutlineUrl = useCourseOutlineUrl();
 
   const outlineLink = courseOutlineUrl && (
     <Hyperlink

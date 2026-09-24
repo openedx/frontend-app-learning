@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useAlert } from '../../generic/user-messages';
 import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 
 const AccessExpirationAlert = React.lazy(() => import('./AccessExpirationAlert'));
 const AccessExpirationMasqueradeBanner = React.lazy(() => import('./AccessExpirationMasqueradeBanner'));
@@ -25,9 +26,7 @@ function useAccessExpirationAlert(accessExpiration, courseId, org, userTimezone,
 }
 
 export function useAccessExpirationMasqueradeBanner(courseId, tab) {
-  const {
-    userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
   const {
     accessExpiration,
   } = useModel(tab, courseId);

@@ -10,8 +10,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Email } from '@openedx/paragon/icons';
 import messages from '../messages';
 import LearningGoalButton from './LearningGoalButton';
-import { useSaveWeeklyLearningGoal } from '../../data/apiHooks';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta, useSaveWeeklyLearningGoal } from '../../data/apiHooks';
 import './FlagButton.scss';
 
 const WeeklyLearningGoalCard = ({
@@ -24,7 +23,7 @@ const WeeklyLearningGoalCard = ({
   const {
     isMasquerading,
     org,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const { administrator } = getAuthenticatedUser();
   const saveWeeklyLearningGoal = useSaveWeeklyLearningGoal();

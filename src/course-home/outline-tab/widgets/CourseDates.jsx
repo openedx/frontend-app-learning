@@ -5,15 +5,12 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 
 import DateSummary from '../DateSummary';
 import messages from '../messages';
-import { useModel } from '../../../generic/model-store';
-import { useOutlineTabData } from '../../data/apiHooks';
+import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
 
 const CourseDates = () => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const {
-    userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
   const {
     datesWidget: {
       courseDateBlocks,

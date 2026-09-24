@@ -1588,6 +1588,13 @@ describe('Progress Tab', () => {
 
       expect(axiosMock.history.get.filter((req) => progressUrl.test(req.url))).toHaveLength(1);
     });
+
+    it('requests the course metadata once per load', async () => {
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
+    });
   });
 
   describe('when the progress request 404s', () => {

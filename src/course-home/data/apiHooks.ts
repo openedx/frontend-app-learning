@@ -1,6 +1,7 @@
 import { logError } from '@edx/frontend-platform/logging';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
+import type { TabMetadata } from '@src/course-tabs/utils';
 import type { RequestError } from '@src/data/http-error';
 import { useToast, ToastContent } from '@src/generic/ToastContext';
 import {
@@ -65,15 +66,31 @@ export const usePostEvent = () => {
   });
 };
 
-// Typed to only what we read off this query, not the whole (untyped) endpoint shape;
-// other course-home fields are read via `useModel`/the bridge (until #1977).
+// Names only the fields this repo's TypeScript readers need; the endpoint returns many more,
+// left reachable as `unknown` so plugins importing this hook are not limited to our list.
+// The full shape is openedx-platform's to describe — a copy of it here would drift — so this
+// stays partial until the platform ships types we can import.
+export interface CourseHomeMeta {
+  celebrations: {
+    streakLengthToCelebrate?: number | null;
+    streakDiscountEnabled?: boolean;
+  } | null;
+  courseAccess: { hasAccess: boolean };
+  hasCourseAuthorAccess: boolean;
+  number: string;
+  org: string;
+  originalUserIsStaff: boolean;
+  start: string;
+  tabs: TabMetadata[];
+  title: string;
+  verifiedMode: Record<string, unknown> | null;
+  [key: string]: unknown;
+}
+
 export const useCourseHomeMeta = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
-) => useQuery<
-{ courseAccess?: { hasAccess: boolean } },
-RequestError
->({
+) => useQuery<CourseHomeMeta, RequestError>({
   queryKey: courseHomeQueryKeys.metadata(courseId!),
   queryFn: () => getCourseHomeCourseMetadata(courseId),
   enabled: enabled && !!courseId,

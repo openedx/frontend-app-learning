@@ -26,14 +26,16 @@ jest.mock('@edx/frontend-platform/analytics');
 describe('DatesTab', () => {
   let axiosMock;
   let store;
+  let queryClient;
   let component;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     store = initializeStore();
+    queryClient = createTestQueryClient(store);
     component = (
       <AppProvider store={store}>
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={queryClient}>
           <UserMessagesProvider>
             <ToastProvider>
               <Routes>
@@ -357,6 +359,18 @@ describe('DatesTab', () => {
     it('redirects to the home page when unenrolled', async () => {
       await renderDenied('enrollment_required');
       expect(global.location.href).toEqual(`http://localhost/course/${courseMetadata.id}/home`);
+    });
+  });
+
+  describe('request count', () => {
+    it('requests the course metadata once per load', async () => {
+      axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
+      history.push(`/course/${courseId}/dates`);
+      render(component);
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
     });
   });
 });

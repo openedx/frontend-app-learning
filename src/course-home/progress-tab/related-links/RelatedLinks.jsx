@@ -4,17 +4,14 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@openedx/paragon';
 import { useParams } from 'react-router-dom';
 
-import { getCourseOutlineUrl, getDatesTabUrl } from '../../../course-tabs/utils';
+import { useCourseOutlineUrl, useDatesTabUrl } from '../../../course-tabs/hooks';
 import messages from './messages';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../data/apiHooks';
 
 const RelatedLinks = () => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const {
-    org,
-    tabs,
-  } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const { administrator } = getAuthenticatedUser();
   const logLinkClicked = (linkName) => {
@@ -26,8 +23,8 @@ const RelatedLinks = () => {
     });
   };
 
-  const courseOutlineUrl = getCourseOutlineUrl(tabs);
-  const datesTabUrl = getDatesTabUrl(tabs);
+  const courseOutlineUrl = useCourseOutlineUrl();
+  const datesTabUrl = useDatesTabUrl();
 
   return (
     <section className="mb-4 x-small">

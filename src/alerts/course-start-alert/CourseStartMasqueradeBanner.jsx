@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, FormattedDate } from '@edx/frontend-platform/i18n';
 import { PageBanner } from '@openedx/paragon';
 
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 
 const CourseStartMasqueradeBanner = ({ payload }) => {
   const {
@@ -13,7 +13,7 @@ const CourseStartMasqueradeBanner = ({ payload }) => {
   const {
     start,
     userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 
