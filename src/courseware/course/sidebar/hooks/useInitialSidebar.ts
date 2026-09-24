@@ -4,6 +4,15 @@ import {
   getSidebarId,
   isSidebarClosedByUser,
 } from '../utils/storage';
+import type { SidebarWidget } from '../SidebarContext';
+
+interface Params {
+  courseId: string;
+  shouldDisplayFullScreen: boolean;
+  isInitiallySidebarOpen: boolean;
+  getFirstAvailablePanel: () => string | null;
+  getAvailableWidgets: () => SidebarWidget[];
+}
 
 /**
  * Calculate initial sidebar based on screen size and available widgets
@@ -11,16 +20,6 @@ import {
  * Manages ALL panels: DISCUSSIONS, UPGRADE, and COURSE_OUTLINE
  * DESKTOP (>1200px): Auto-opens panels with priority cascade
  * MOBILE (<1200px): Respects localStorage, no auto-open
- *
- * @param {Object} params
- * @param {string} params.courseId - Current course ID
- * @param {boolean} params.shouldDisplayFullScreen - Whether in mobile view
- * @param {boolean} params.isInitiallySidebarOpen - Whether the viewport / URL
- *   permits auto-opening the sidebar on initial render. False on viewports
- *   below the extra-large breakpoint unless the URL has `?sidebar=true`.
- * @param {Function} params.getFirstAvailablePanel - Get first available widget
- * @param {Function} params.getAvailableWidgets - Get all available widgets
- * @returns {string|null} Initial sidebar ID
  */
 export function useInitialSidebar({
   courseId,
@@ -28,8 +27,8 @@ export function useInitialSidebar({
   isInitiallySidebarOpen,
   getFirstAvailablePanel,
   getAvailableWidgets,
-}) {
-  return useMemo(() => {
+}: Params) {
+  return useMemo<string | null>(() => {
     // MOBILE: Use stored value or null (no auto-open)
     if (shouldDisplayFullScreen) {
       return isSidebarClosedByUser() ? null : getSidebarId(courseId);

@@ -1,9 +1,25 @@
-import { useEffect } from 'react';
+import { useEffect, type MutableRefObject } from 'react';
 import { WIDGETS } from '@src/constants';
 import {
   setSidebarId,
   isSidebarClosedByUser,
 } from '../utils/storage';
+import type { SidebarWidget } from '../SidebarContext';
+
+interface Params {
+  unitId: string;
+  currentSidebar: string | null;
+  setCurrentSidebar: (sidebarId: string | null) => void;
+  getFirstAvailablePanel: () => string | null;
+  getAvailableWidgets: () => SidebarWidget[];
+  courseId: string;
+  shouldDisplayFullScreen: boolean;
+  shouldDisplaySidebarOpen: boolean;
+  hasUserToggledRef: MutableRefObject<boolean>;
+  previousUnitIdRef: MutableRefObject<string | null>;
+  courseOutlineSetByUnitRef: MutableRefObject<string | null>;
+  isInitialLoadRef: MutableRefObject<boolean>;
+}
 
 /**
  * Handle sidebar behavior when navigating between units
@@ -15,20 +31,6 @@ import {
  * 3. RIGHT panels available → Apply priority cascade / fallback when current is stale;
  *    on a wide viewport with nothing open, recover to COURSE_OUTLINE (default);
  *    on a narrow viewport with nothing open, preserve null
- *
- * @param {Object} params
- * @param {string} params.unitId - Current unit ID
- * @param {string|null} params.currentSidebar - Currently active sidebar
- * @param {Function} params.setCurrentSidebar - Update current sidebar state
- * @param {Function} params.getFirstAvailablePanel - Get first available widget
- * @param {Function} params.getAvailableWidgets - Get all available widgets
- * @param {string} params.courseId - Current course ID
- * @param {boolean} params.shouldDisplayFullScreen - Whether in mobile view
- * @param {boolean} params.shouldDisplaySidebarOpen - Whether sidebar can be open
- * @param {Object} params.hasUserToggledRef - Ref tracking user manual toggles
- * @param {Object} params.previousUnitIdRef - Ref tracking previous unit ID
- * @param {Object} params.courseOutlineSetByUnitRef - Ref tracking COURSE_OUTLINE auto-set
- * @param {Object} params.isInitialLoadRef - Ref tracking if this is initial load
  */
 export function useUnitShiftBehavior({
   unitId,
@@ -43,7 +45,7 @@ export function useUnitShiftBehavior({
   previousUnitIdRef,
   courseOutlineSetByUnitRef,
   isInitialLoadRef,
-}) {
+}: Params) {
   useEffect(() => {
     // Detect unit change
     if (previousUnitIdRef.current !== unitId) {

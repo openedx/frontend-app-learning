@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   render, screen, fireEvent, act,
 } from '@testing-library/react';
@@ -85,13 +84,11 @@ const ContextConsumer = () => {
 function renderProvider(props = {}) {
   return render(
     <IntlProvider locale="en">
-      <QueryClientProvider client={new QueryClient()}>
-        <MemoryRouter>
-          <SidebarProvider courseId={courseId} unitId={unitId} {...props}>
-            <ContextConsumer />
-          </SidebarProvider>
-        </MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter>
+        <SidebarProvider courseId={courseId} unitId={unitId} {...props}>
+          <ContextConsumer />
+        </SidebarProvider>
+      </MemoryRouter>
     </IntlProvider>,
   );
 }
@@ -144,6 +141,22 @@ describe('SidebarContextProvider', () => {
       const availableIds = screen.getByTestId('available-ids').textContent;
       expect(availableIds).toContain('DISCUSSIONS');
       expect(availableIds).not.toContain('UNAVAILABLE_WIDGET');
+    });
+
+    it('treats a widget without isAvailable as always available', () => {
+      const { getEnabledWidgets } = jest.requireMock('./defaultWidgets');
+      getEnabledWidgets.mockReturnValueOnce([
+        {
+          id: 'ALWAYS_ON',
+          priority: 10,
+          Sidebar: () => null,
+          Trigger: () => null,
+          enabled: true,
+        },
+      ]);
+      renderProvider();
+
+      expect(screen.getByTestId('available-ids').textContent).toBe('ALWAYS_ON');
     });
   });
 

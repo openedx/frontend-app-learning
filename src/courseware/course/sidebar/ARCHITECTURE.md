@@ -159,32 +159,35 @@ _Example with built-in widgets:_
 - Manage `currentSidebar` state (shared by both sidebars)
 - Handle unit shift logic for RIGHT sidebar panels
 - Provide context to both left and right sidebar components
-- **Prefetch widget data** after mount via `widget.prefetch` (sync logic re-evaluates availability once data arrives)
+- **Mount each widget's `Provider`** around the sidebar children, whether or not the widget is available (sync logic re-evaluates availability once its data arrives)
 
-### Widget Prefetch Lifecycle
+### Widget Data Lifecycle
 
-Widgets can define a `prefetch` function in their config to pre-load data that their `isAvailable` or render logic depends on. The framework calls `prefetch` for every enabled widget on mount (and when `courseId` or the widget list changes):
+A widget whose `isAvailable` depends on fetched data loads it in its `Provider` as a React Query observer gated with `enabled`. The framework mounts every enabled widget's `Provider` inside `SidebarContext`, so the observer runs before the widget is available and independently of whether its trigger or panel render:
 
 ```javascript
-// In SidebarContextProvider.jsx
-const courseMetaRef = useRef(null);
-courseMetaRef.current = { ...coursewareMeta, ...courseHomeMeta };
+// In SidebarContextProvider.tsx
+const renderWithWidgetProviders = useCallback((content) => enabledWidgets
+  .reduceRight((acc, { Provider }) => (Provider ? <Provider>{acc}</Provider> : acc), content), [enabledWidgets]);
 
-useEffect(() => {
-  enabledWidgets.forEach(widget => {
-    if (widget.prefetch) {
-      widget.prefetch({ courseId, course: courseMetaRef.current, queryClient });
-    }
+// In widgets/discussions/DiscussionsProvider.tsx
+const DiscussionsProvider = ({ children }) => {
+  const { courseId } = useSidebar();
+  const tabs = useCourseHomeMeta(courseId, { enabled: false }).data?.tabs;
+  useQuery({
+    ...discussionTopicsQuery(courseId),
+    enabled: !!getConfig().DISCUSSIONS_MFE_BASE_URL && hasDiscussionTab(tabs),
   });
-}, [enabledWidgets, courseId, queryClient]);
+  return <>{children}</>;
+};
 ```
 
-`courseMetaRef` is updated on every render so the effect always reads the latest `coursewareMeta` + `courseHomeMeta` values without `coursewareMeta`/`courseHomeMeta` being reactive dependencies. This means the effect fires once per `courseId` change rather than on every model reference update.
+An observer fetches when it mounts and when its query key changes, not when the metadata it reads re-renders, so one sidebar mount is one request even as `courseHomeMeta` updates (celebration writes, refetches).
 
-**Why prefetch lives in the provider, not in individual components:**
-- Starts data loading post-mount so the sync logic can re-evaluate availability once the data arrives
-- Individual Trigger/Sidebar components can remain pure render components
-- Centralises fetch orchestration in one place
+**Why data loading lives in the widget's `Provider`, not in its Trigger/Sidebar components:**
+- The trigger is mounted only when the widget is available, and availability depends on the data — a component cannot load the data its own mounting waits for
+- Starts loading post-mount so the sync logic can re-evaluate availability once the data arrives
+- Individual Trigger/Sidebar components remain pure render components
 
 **Key Logic:**
 ```javascript
