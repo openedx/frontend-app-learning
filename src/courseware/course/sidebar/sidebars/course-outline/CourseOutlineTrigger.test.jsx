@@ -82,6 +82,30 @@ describe('<CourseOutlineTrigger />', () => {
     expect(mockToggleSidebar).toHaveBeenCalledWith(outlineSidebarId);
   });
 
+  it('exposes aria-expanded=false when the outline sidebar is collapsed', async () => {
+    await initTestStore();
+    renderWithProvider({ currentSidebar: discussionSidebarId }, { isMobileView: false });
+
+    const toggleButton = screen.getByRole('button', {
+      name: messages.toggleCourseOutlineTrigger.defaultMessage,
+    });
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+    expect(toggleButton).toHaveAttribute('aria-controls', 'outline-sidebar-outline');
+  });
+
+  it('exposes aria-expanded=true when the outline sidebar is open', async () => {
+    await initTestStore();
+    renderWithProvider({
+      currentSidebar: outlineSidebarId,
+      shouldDisplayFullScreen: true,
+    }, { isMobileView: true });
+
+    const toggleButton = screen.getByRole('button', {
+      name: messages.toggleCourseOutlineTrigger.defaultMessage,
+    });
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+  });
+
   it('changes current sidebar value on click', async () => {
     const user = userEvent.setup();
     const mockToggleSidebar = jest.fn();

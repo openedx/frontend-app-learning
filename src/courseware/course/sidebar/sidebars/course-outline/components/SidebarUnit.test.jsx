@@ -185,5 +185,23 @@ describe('<SidebarUnit />', () => {
         expect(linkHref.includes('/preview/')).toBeFalsy();
       });
     });
+
+    describe('aria-current', () => {
+      it('marks the active unit link with aria-current="page"', async () => {
+        await initTestStore();
+        renderWithProvider({ unit: { ...unit }, activeUnitId: unit.id });
+
+        const unitLink = screen.getByText(unit.title).closest('a');
+        expect(unitLink).toHaveAttribute('aria-current', 'page');
+      });
+
+      it('does not set aria-current on a non-active unit link', async () => {
+        await initTestStore();
+        renderWithProvider({ unit: { ...unit }, activeUnitId: 'some-other-unit-id' });
+
+        const unitLink = screen.getByText(unit.title).closest('a');
+        expect(unitLink).not.toHaveAttribute('aria-current');
+      });
+    });
   });
 });

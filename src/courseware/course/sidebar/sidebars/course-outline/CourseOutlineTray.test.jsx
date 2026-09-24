@@ -98,6 +98,15 @@ describe('<CourseOutlineTray />', () => {
     expect(screen.getByText(unit.title)).toBeInTheDocument();
   });
 
+  it('exposes aria-expanded=true on the in-tray toggle button', async () => {
+    await initTestStore();
+    renderWithProvider();
+
+    const collapseBtn = screen.getByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage });
+    expect(collapseBtn).toHaveAttribute('aria-expanded', 'true');
+    expect(collapseBtn).toHaveAttribute('aria-controls', 'outline-sidebar-outline');
+  });
+
   it('collapses sidebar correctly when toggle button is clicked', async () => {
     const user = userEvent.setup();
     const mockToggleSidebar = jest.fn();
