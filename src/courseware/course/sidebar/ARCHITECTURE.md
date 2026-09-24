@@ -19,7 +19,7 @@ The Learning MFE uses a **two-sidebar system** where a left sidebar (Course Outl
 - **Location**: Right side of screen
 - **Component**: `Sidebar` (rendered via `RightSidebarSlot`)
 - **Purpose**: Contextual tools and information panels
-- **State Management**: `SidebarContextProvider` + widget registry system
+- **State Management**: `SidebarProvider` + widget registry system
 - **Widgets**:
   - `DISCUSSIONS` (priority 10) — Inline discussions for the current unit
   - External widgets registered via `SIDEBAR_WIDGETS` in `env.config.jsx`
@@ -52,7 +52,7 @@ The framework is agnostic about which widgets are registered. The values below u
 
 ### Signal: `initialSidebar`
 
-The `initialSidebar` value (calculated by `SidebarContextProvider`) signals whether any RIGHT sidebar panels are available:
+The `initialSidebar` value (calculated by `SidebarProvider`) signals whether any RIGHT sidebar panels are available:
 
 - `initialSidebar !== null` → RIGHT sidebar has available panels
 - `initialSidebar === null` → NO right sidebar panels available → Course Outline should open as fallback
@@ -61,7 +61,7 @@ The `initialSidebar` value (calculated by `SidebarContextProvider`) signals whet
 
 **RIGHT Sidebar (Desktop):**
 ```javascript
-// In SidebarContextProvider
+// In SidebarProvider
 if (shouldDisplaySidebarOpen && !shouldDisplayFullScreen) {
   // Auto-open first available widget (sorted by priority)
   initialSidebar = getFirstAvailablePanel(); // Returns null if none available
@@ -152,7 +152,7 @@ _Example with built-in widgets:_
 
 ## Implementation Details
 
-### SidebarContextProvider.jsx
+### SidebarContext.tsx
 
 **Responsibilities:**
 - Calculate `initialSidebar` based on available RIGHT sidebar panels
@@ -163,12 +163,12 @@ _Example with built-in widgets:_
 
 ### Widget Data Lifecycle
 
-A widget whose `isAvailable` depends on fetched data loads it in its `Provider` as a React Query observer gated with `enabled`. The framework mounts every enabled widget's `Provider` inside `SidebarContext`, so the observer runs before the widget is available and independently of whether its trigger or panel render:
+A widget whose `isAvailable` depends on fetched data loads it in its `Provider` as a React Query observer gated with `enabled`. The framework mounts every enabled widget's `Provider` inside `SidebarProvider`, so the observer runs before the widget is available and independently of whether its trigger or panel render:
 
 ```javascript
-// In SidebarContextProvider.tsx
-const renderWithWidgetProviders = useCallback((content) => enabledWidgets
-  .reduceRight((acc, { Provider }) => (Provider ? <Provider>{acc}</Provider> : acc), content), [enabledWidgets]);
+// In SidebarContext.tsx
+const renderWithWidgetProviders = useCallback((content) => widgets
+  .reduceRight((acc, { Provider }) => (Provider ? <Provider>{acc}</Provider> : acc), content), [widgets]);
 
 // In widgets/discussions/DiscussionsProvider.tsx
 const DiscussionsProvider = ({ children }) => {

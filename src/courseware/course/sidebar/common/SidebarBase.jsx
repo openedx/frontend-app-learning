@@ -3,10 +3,10 @@ import { Icon, IconButton } from '@openedx/paragon';
 import { ArrowBackIos, Close } from '@openedx/paragon/icons';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import { useEventListener } from '@src/generic/hooks';
 import messages from '../../messages';
-import SidebarContext from '../SidebarContext';
+import { useSidebar } from '../SidebarContext';
 
 const SidebarBase = ({
   title,
@@ -22,7 +22,7 @@ const SidebarBase = ({
     toggleSidebar,
     shouldDisplayFullScreen,
     currentSidebar,
-  } = useContext(SidebarContext);
+  } = useSidebar();
 
   const receiveMessage = useCallback(({ data }) => {
     const { type } = data;

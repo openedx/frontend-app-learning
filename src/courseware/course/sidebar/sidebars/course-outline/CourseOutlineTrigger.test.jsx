@@ -1,43 +1,52 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { breakpoints } from '@openedx/paragon';
 
 import { createTestQueryClient, getTestStoreIds, initializeTestStore } from '@src/setupTest';
-import { ID as discussionSidebarId } from '@src/widgets/discussions/DiscussionsTrigger';
-import SidebarContext from '../../SidebarContext';
+import SidebarState from '@src/tests/SidebarState';
+import { SidebarProvider } from '../../SidebarContext';
 import CourseOutlineTrigger from './CourseOutlineTrigger';
 import { ID as outlineSidebarId } from './constants';
 import messages from './messages';
 
 describe('<CourseOutlineTrigger />', () => {
-  let mockData;
   let courseId;
   let unitId;
   let store;
+
+  const { innerWidth: originalInnerWidth } = window;
+
+  afterEach(() => {
+    window.innerWidth = originalInnerWidth;
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
 
   const initTestStore = async (options) => {
     store = await initializeTestStore(options);
     const state = store.getState();
     courseId = getTestStoreIds(store).courseId;
     [unitId] = Object.keys(state.models.units);
-
-    mockData = {
-      courseId,
-      unitId,
-      currentSidebar: discussionSidebarId,
-    };
   };
 
-  function renderWithProvider(testData = {}, props = {}) {
+  const toggleButton = () => screen.queryByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage });
+  const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
+
+  function renderWithProvider(props = {}) {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
         <QueryClientProvider client={createTestQueryClient(store)}>
           <IntlProvider locale="en">
-            <SidebarContext.Provider value={{ ...mockData, ...testData }}>
-              <CourseOutlineTrigger {...props} />
-            </SidebarContext.Provider>
+            <MemoryRouter>
+              <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>
+                <CourseOutlineTrigger {...props} />
+                <SidebarState />
+              </SidebarProvider>
+            </MemoryRouter>
           </IntlProvider>
         </QueryClientProvider>
       </AppProvider>,
@@ -47,59 +56,45 @@ describe('<CourseOutlineTrigger />', () => {
 
   it('renders correctly for desktop when sidebar is enabled', async () => {
     const user = userEvent.setup();
-    const mockToggleSidebar = jest.fn();
+    // A desktop viewport with the sidebar closed by the user: the outline is not open, so the
+    // trigger shows; clicking it opens the outline, which hides the trigger.
+    window.innerWidth = breakpoints.extraExtraLarge.minWidth;
+    window.sessionStorage.setItem('sidebarClosedByUser', 'true');
     await initTestStore();
-    renderWithProvider({ toggleSidebar: mockToggleSidebar }, { isMobileView: false });
+    renderWithProvider({ isMobileView: false });
 
-    const toggleButton = await screen.getByRole('button', {
-      name: messages.toggleCourseOutlineTrigger.defaultMessage,
-    });
-    expect(toggleButton).toBeInTheDocument();
+    expect(toggleButton()).toBeInTheDocument();
+    expect(currentSidebar()).toBe('null');
 
-    await user.click(toggleButton);
+    await user.click(toggleButton());
 
-    expect(mockToggleSidebar).toHaveBeenCalled();
-    expect(mockToggleSidebar).toHaveBeenCalledWith(outlineSidebarId);
+    expect(currentSidebar()).toBe(outlineSidebarId);
+    expect(toggleButton()).not.toBeInTheDocument();
   });
 
   it('renders correctly for mobile when sidebar is enabled', async () => {
     const user = userEvent.setup();
-    const mockToggleSidebar = jest.fn();
     await initTestStore();
-    renderWithProvider({
-      toggleSidebar: mockToggleSidebar,
-      shouldDisplayFullScreen: true,
-    }, { isMobileView: true });
+    renderWithProvider({ isMobileView: true });
 
-    const toggleButton = await screen.getByRole('button', {
-      name: messages.toggleCourseOutlineTrigger.defaultMessage,
-    });
-    expect(toggleButton).toBeInTheDocument();
+    expect(toggleButton()).toBeInTheDocument();
+    expect(currentSidebar()).toBe('null');
 
-    await user.click(toggleButton);
+    await user.click(toggleButton());
 
-    expect(mockToggleSidebar).toHaveBeenCalled();
-    expect(mockToggleSidebar).toHaveBeenCalledWith(outlineSidebarId);
+    expect(currentSidebar()).toBe(outlineSidebarId);
   });
 
   it('changes current sidebar value on click', async () => {
     const user = userEvent.setup();
-    const mockToggleSidebar = jest.fn();
     await initTestStore();
-    renderWithProvider({
-      toggleSidebar: mockToggleSidebar,
-      shouldDisplayFullScreen: true,
-      currentSidebar: outlineSidebarId,
-    }, { isMobileView: true });
+    window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify(outlineSidebarId));
+    renderWithProvider({ isMobileView: true });
 
-    const toggleButton = await screen.getByRole('button', {
-      name: messages.toggleCourseOutlineTrigger.defaultMessage,
-    });
-    expect(toggleButton).toBeInTheDocument();
+    expect(currentSidebar()).toBe(outlineSidebarId);
 
-    await user.click(toggleButton);
+    await user.click(toggleButton());
 
-    expect(mockToggleSidebar).toHaveBeenCalledTimes(1);
-    expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+    expect(currentSidebar()).toBe('null');
   });
 });

@@ -1,15 +1,20 @@
 import { act, render } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
+import { MemoryRouter } from 'react-router-dom';
 import { getConfig, mergeConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
-import SidebarContext, { type SidebarContextValue } from '@src/courseware/course/sidebar/SidebarContext';
+import { SidebarProvider } from '@src/courseware/course/sidebar/SidebarContext';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
 import { createTestQueryClient, initializeMockApp, seedQueryData } from '@src/setupTest';
 
 import DiscussionsProvider from './DiscussionsProvider';
+
+jest.mock('@src/generic/model-store', () => ({
+  useModel: jest.fn(() => ({})),
+}));
 
 initializeMockApp();
 
@@ -19,19 +24,6 @@ const topicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/$
 const datesTab = { tabId: 'dates', title: 'Dates', url: 'http://localhost/dates' };
 const discussionTab = { tabId: 'discussion', title: 'Discussion', url: 'http://localhost/discussion' };
 const topicsQueryKey = coursewareQueryKeys.discussionTopics(courseId);
-
-const sidebarContextValue: SidebarContextValue = {
-  currentSidebar: null,
-  initialSidebar: null,
-  toggleSidebar: () => {},
-  shouldDisplaySidebarOpen: false,
-  shouldDisplayFullScreen: false,
-  courseId,
-  unitId: 'unit-1',
-  SIDEBARS: {},
-  SIDEBAR_ORDER: [],
-  availableSidebarIds: [],
-};
 
 describe('DiscussionsProvider', () => {
   let axiosMock: MockAdapter;
@@ -45,11 +37,13 @@ describe('DiscussionsProvider', () => {
     }
     return render(
       <QueryClientProvider client={queryClient}>
-        <SidebarContext.Provider value={sidebarContextValue}>
-          <DiscussionsProvider>
-            <div>child</div>
-          </DiscussionsProvider>
-        </SidebarContext.Provider>
+        <MemoryRouter>
+          <SidebarProvider courseId={courseId} unitId="unit-1" widgets={[]}>
+            <DiscussionsProvider>
+              <div>child</div>
+            </DiscussionsProvider>
+          </SidebarProvider>
+        </MemoryRouter>
       </QueryClientProvider>,
     );
   };

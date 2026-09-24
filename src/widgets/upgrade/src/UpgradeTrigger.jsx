@@ -1,7 +1,7 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import PropTypes from 'prop-types';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { useSidebar } from '@src/courseware/course/sidebar/SidebarContext';
 import SidebarTriggerBase from '@src/courseware/course/sidebar/common/TriggerBase';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import { useUpgradeWidgetContext } from './UpgradeWidgetContext';
@@ -12,7 +12,7 @@ export const ID = 'UPGRADE';
 
 const UpgradeTrigger = ({ onClick }) => {
   const intl = useIntl();
-  const { courseId } = useContext(SidebarContext);
+  const { courseId } = useSidebar();
   const {
     upgradeWidgetStatus,
     setUpgradeWidgetStatus,
