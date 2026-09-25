@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 
@@ -16,14 +15,23 @@ import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
 import UnitTitleSlot from '../../../../plugin-slots/UnitTitleSlot';
 
+interface Props {
+  courseId: string;
+  format?: string | null;
+  onLoaded?: () => void;
+  id: string;
+  isOriginalUserStaff: boolean;
+  renderUnitNavigation: (isAtTop: boolean) => React.ReactNode;
+}
+
 const Unit = ({
   courseId,
-  format,
+  format = null,
   onLoaded,
   id,
   isOriginalUserStaff,
   renderUnitNavigation,
-}) => {
+}: Props) => {
   const { formatMessage } = useIntl();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
@@ -39,8 +47,8 @@ const Unit = ({
     view,
     format,
     examAccess,
-    jumpToId: searchParams.get('jumpToId'),
-    preview: shouldDisplayUnitPreview ? '1' : '0',
+    jumpToId: searchParams.get('jumpToId') ?? undefined,
+    preview: shouldDisplayUnitPreview,
   }));
 
   const iframeUrl = getUrl();
@@ -61,20 +69,6 @@ const Unit = ({
       />
     </div>
   );
-};
-
-Unit.propTypes = {
-  courseId: PropTypes.string.isRequired,
-  format: PropTypes.string,
-  id: PropTypes.string.isRequired,
-  onLoaded: PropTypes.func,
-  isOriginalUserStaff: PropTypes.bool.isRequired,
-  renderUnitNavigation: PropTypes.func.isRequired,
-};
-
-Unit.defaultProps = {
-  format: null,
-  onLoaded: undefined,
 };
 
 export default Unit;

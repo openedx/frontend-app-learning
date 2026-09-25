@@ -28,9 +28,9 @@ const unit = {
 
 let store;
 
-const renderComponent = (props) => {
+const renderComponent = (props, search = '') => {
   render(
-    <MemoryRouter initialEntries={[{ pathname: `/course/${props.courseID}` }]}>
+    <MemoryRouter initialEntries={[{ pathname: `/course/${props.courseID}`, search }]}>
       <Unit {...props} />
     </MemoryRouter>,
     { store, wrapWithRouter: false },
@@ -108,8 +108,20 @@ describe('<Unit />', () => {
           blockAccess: false,
         },
         jumpToId: null,
-        preview: 0,
+        preview: false,
       }));
+    });
+  });
+
+  describe('iframe url parameters', () => {
+    it('omits format from the iframe url when the unit has none', () => {
+      renderComponent({ ...defaultProps, format: undefined });
+      expect(screen.getByTestId('content-iframe-test-id').getAttribute('src')).not.toContain('format=');
+    });
+
+    it('passes jumpToId from the search params into the iframe url', () => {
+      renderComponent(defaultProps, '?jumpToId=some-block-id');
+      expect(screen.getByTestId('content-iframe-test-id').getAttribute('src')).toContain('jumpToId=some-block-id');
     });
   });
 
