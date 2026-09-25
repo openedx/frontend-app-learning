@@ -319,6 +319,31 @@ describe('courseware apiHooks — useSequenceMetadata', () => {
     expect(axiosMock.history.get).toHaveLength(0);
   });
 
+  it('fetches nothing on its own when disabled', () => {
+    axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
+    const { result } = renderHook(
+      () => useSequenceMetadata(sequenceId, { enabled: false }),
+      { wrapper: makeWrapper(createTestQueryClient(), `/course/${courseId}/${sequenceId}`) },
+    );
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(axiosMock.history.get).toHaveLength(0);
+  });
+
+  it('reads the owner\'s result without fetching again', async () => {
+    axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
+    const queryClient = createTestQueryClient();
+    const owner = renderSequence(queryClient);
+    await waitFor(() => expect(owner.result.current.isSuccess).toBe(true));
+
+    const reader = renderHook(
+      () => useSequenceMetadata(sequenceId, { enabled: false }),
+      { wrapper: makeWrapper(queryClient, `/course/${courseId}/${sequenceId}`) },
+    );
+    expect(reader.result.current.isSuccess).toBe(true);
+    expect(reader.result.current.data).toEqual({ sequence: normalizedSequence, units: normalizedUnits });
+    expect(axiosMock.history.get).toHaveLength(1);
+  });
+
   it('requests preview metadata on a preview route', async () => {
     axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
     const { result } = renderSequence(createTestQueryClient(), `/preview/course/${courseId}/${sequenceId}`);
