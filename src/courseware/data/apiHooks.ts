@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { logError } from '@edx/frontend-platform/logging';
 import {
-  noop, useMutation, useQuery, useQueryClient, type QueryClient,
+  queryOptions, useMutation, useQuery, useQueryClient,
 } from '@tanstack/react-query';
 import { useDispatch, useStore } from 'react-redux';
 
@@ -21,10 +21,15 @@ interface QueryOptions {
   enabled?: boolean;
 }
 
+// No TypeScript reader names a field yet; #2089 adds them as its readers convert.
+export interface CoursewareMeta {
+  [key: string]: unknown;
+}
+
 export const useCoursewareMetadata = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
-) => useQuery({
+) => useQuery<CoursewareMeta>({
   queryKey: coursewareQueryKeys.metadata(courseId!),
   queryFn: () => getCourseMetadata(courseId),
   enabled: enabled && !!courseId,
@@ -117,24 +122,32 @@ export const useCoursewareOutlineSidebarToggles = (courseId: string | undefined)
   staleTime: Infinity,
 });
 
-// Not a hook: the sole consumer is the widget-registry prefetch effect in
-// SidebarContextProvider, which passes its own queryClient.
-export const prefetchDiscussionTopics = (queryClient: QueryClient, courseId: string) => (
-  queryClient.query({
-    queryKey: coursewareQueryKeys.discussionTopics(courseId),
-    queryFn: async () => {
-      const config: { provider: string } = await getCourseDiscussionConfig(courseId);
-      // Only load topics for the openedx provider, the legacy provider uses
-      // the xblock
-      if (config.provider !== 'openedx') {
-        return [];
-      }
-      const topics: { usageKey: string | null }[] = await getCourseTopics(courseId);
-      return topics.filter(topic => topic.usageKey);
-    },
-    meta: { models: [{ modelType: 'discussionTopics', strategy: 'updateModels', idField: 'usageKey' }] },
-  }).catch(noop)
-);
+// Names only the fields this repo's TypeScript readers need; the endpoint returns many more,
+// left reachable as `unknown` so plugins importing this type are not limited to our list.
+// The full shape is openedx-platform's to describe — a copy of it here would drift — so this
+// stays partial until the platform ships types we can import.
+export interface DiscussionTopic {
+  id: string;
+  usageKey: string | null;
+  enabledInContext: boolean;
+  [key: string]: unknown;
+}
+
+// Observed by DiscussionsProvider, which owns the fetch.
+export const discussionTopicsQuery = (courseId: string) => queryOptions({
+  queryKey: coursewareQueryKeys.discussionTopics(courseId),
+  queryFn: async () => {
+    const config: { provider: string } = await getCourseDiscussionConfig(courseId);
+    // Only load topics for the openedx provider, the legacy provider uses
+    // the xblock
+    if (config.provider !== 'openedx') {
+      return [];
+    }
+    const topics: DiscussionTopic[] = await getCourseTopics(courseId);
+    return topics.filter(topic => topic.usageKey);
+  },
+  meta: { models: [{ modelType: 'discussionTopics', strategy: 'updateModels', idField: 'usageKey' }] },
+});
 
 interface CheckBlockCompletionVars {
   courseId: string | undefined;

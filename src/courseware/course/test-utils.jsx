@@ -10,7 +10,7 @@ import {
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
 import { buildTopicsFromUnits } from '../data/__factories__/discussionTopics.factory';
-import { prefetchDiscussionTopics } from '../data/apiHooks';
+import { discussionTopicsQuery } from '../data/apiHooks';
 import Course from './Course';
 
 const mockData = {
@@ -19,7 +19,7 @@ const mockData = {
   unitNavigationHandler: () => {},
 };
 
-// Seed the discussionTopics model through the real prefetch path, against
+// Seed the discussionTopics model through the real query, against
 // temporary mocks of the two discussion endpoints.
 const seedDiscussionTopics = async (testStore, courseId, enabledInContext) => {
   const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
@@ -28,7 +28,7 @@ const seedDiscussionTopics = async (testStore, courseId, enabledInContext) => {
   axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
     .reply(200, topicsResponse);
 
-  await prefetchDiscussionTopics(createTestQueryClient(testStore), courseId);
+  await createTestQueryClient(testStore).query(discussionTopicsQuery(courseId));
   axiosMock.restore(); // put the previous adapter back
 };
 

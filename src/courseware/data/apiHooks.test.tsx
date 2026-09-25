@@ -21,7 +21,7 @@ import { courseHomeQueryKeys } from '../../course-home/data/queryKeys';
 import type { CourseOutlineData } from './courseOutline';
 import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import {
-  prefetchDiscussionTopics, sequenceMightBeUnit, useCheckBlockCompletion, useCourseOutlineStructure,
+  discussionTopicsQuery, sequenceMightBeUnit, useCheckBlockCompletion, useCourseOutlineStructure,
   useCoursewareMetadata, useCoursewareOutline, useCoursewareOutlineSidebarToggles, useIsCourseLoaded,
   useSaveIntegritySignature, useSaveSequencePosition, useSequenceIds, useSequenceMetadata,
 } from './apiHooks';
@@ -428,7 +428,7 @@ describe('courseware apiHooks — useCoursewareOutlineSidebarToggles', () => {
   });
 });
 
-describe('courseware apiHooks — prefetchDiscussionTopics', () => {
+describe('courseware apiHooks — discussionTopicsQuery', () => {
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
   const configUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`;
@@ -454,7 +454,7 @@ describe('courseware apiHooks — prefetchDiscussionTopics', () => {
       { id: 'course-wide-topic', usage_key: null, enabled_in_context: true },
     ]);
 
-    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
+    await createTestQueryClient(store).query(discussionTopicsQuery(courseId));
 
     expect(discussionTopicModels()).toEqual({
       'unit-1': { id: 'topic-1', usageKey: 'unit-1', enabledInContext: true },
@@ -465,7 +465,7 @@ describe('courseware apiHooks — prefetchDiscussionTopics', () => {
   it('skips the topics request entirely for a legacy provider', async () => {
     axiosMock.onGet(configUrl).reply(200, { provider: 'legacy' });
 
-    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
+    await createTestQueryClient(store).query(discussionTopicsQuery(courseId));
 
     expect(axiosMock.history.get.map(request => request.url)).toEqual([configUrl]);
     expect(discussionTopicModels()).toBeUndefined();
@@ -474,7 +474,7 @@ describe('courseware apiHooks — prefetchDiscussionTopics', () => {
   it('logs the error and writes nothing when the config request fails', async () => {
     axiosMock.onGet(configUrl).networkError();
 
-    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
+    await expect(createTestQueryClient(store).query(discussionTopicsQuery(courseId))).rejects.toThrow();
 
     expect(loggingService.logError).toHaveBeenCalled();
     expect(discussionTopicModels()).toBeUndefined();

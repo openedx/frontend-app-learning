@@ -1,9 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, type MutableRefObject } from 'react';
 import { WIDGETS } from '@src/constants';
 import {
   setSidebarId,
   isSidebarClosedByUser,
 } from '../utils/storage';
+
+interface Params {
+  shouldDisplaySidebarOpen: boolean;
+  currentSidebar: string | null;
+  setCurrentSidebar: (sidebarId: string | null) => void;
+  courseId: string;
+  hasUserToggledRef: MutableRefObject<boolean>;
+}
 
 /**
  * Handle sidebar behavior when window resizes between mobile/desktop
@@ -11,13 +19,6 @@ import {
  * When resizing to desktop and no sidebar open, recover to COURSE_OUTLINE (the default).
  *
  * Respects user actions: Only applies auto-behavior if user hasn't manually toggled.
- *
- * @param {Object} params
- * @param {boolean} params.shouldDisplaySidebarOpen - Whether sidebar can be open
- * @param {string|null} params.currentSidebar - Currently active sidebar
- * @param {Function} params.setCurrentSidebar - Update current sidebar state
- * @param {string} params.courseId - Current course ID
- * @param {Function} params.hasUserToggledRef - Ref tracking user manual toggles
  */
 export function useResponsiveBehavior({
   shouldDisplaySidebarOpen,
@@ -25,7 +26,7 @@ export function useResponsiveBehavior({
   setCurrentSidebar,
   courseId,
   hasUserToggledRef,
-}) {
+}: Params) {
   useEffect(() => {
     // Skip if user has manually toggled within current unit (respect user action)
     if (hasUserToggledRef.current) {

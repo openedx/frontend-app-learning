@@ -79,14 +79,17 @@ export default config;
 
 ### Widget config shape
 
+`upgradeWidgetConfig` is a `SidebarWidget` (`src/courseware/course/sidebar/SidebarContext.ts`):
+
 ```javascript
 {
-  id: 'UPGRADE',         // string
-  priority: 20,           // number (lower = shown first; discussions = 10)
-  Sidebar: UpgradePanel,  // React component
-  Trigger: UpgradeTrigger, // React component
-  isAvailable: Function,  // ({ course }) => boolean  — receives merged coursewareMeta + courseHomeMeta
-  enabled: true,          // boolean
+  id: 'UPGRADE',
+  priority: 20, // lower = shown first; discussions = 10
+  Sidebar: UpgradePanel,
+  Trigger: UpgradeTrigger,
+  Provider: UpgradeWidgetProvider,
+  isAvailable: upgradeIsAvailable,
+  enabled: true,
 }
 ```
 

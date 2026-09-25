@@ -1,9 +1,20 @@
-import { useEffect } from 'react';
+import { useEffect, type MutableRefObject } from 'react';
 import { WIDGETS } from '@src/constants';
 import {
   setSidebarId,
   isSidebarClosedByUser,
 } from '../utils/storage';
+
+interface Params {
+  initialSidebar: string | null;
+  currentSidebar: string | null;
+  setCurrentSidebar: (sidebarId: string | null) => void;
+  courseId: string;
+  unitId: string;
+  shouldDisplayFullScreen: boolean;
+  hasUserToggledRef: MutableRefObject<boolean>;
+  courseOutlineSetByUnitRef: MutableRefObject<string | null>;
+}
 
 /**
  * Sync currentSidebar with initialSidebar when async data loads
@@ -11,16 +22,6 @@ import {
  * sync currentSidebar with the updated initialSidebar (priority cascade).
  *
  * Respects user actions: Only syncs if user hasn't manually toggled in current unit.
- *
- * @param {Object} params
- * @param {string|null} params.initialSidebar - Calculated initial sidebar
- * @param {string|null} params.currentSidebar - Currently active sidebar
- * @param {Function} params.setCurrentSidebar - Update current sidebar state
- * @param {string} params.courseId - Current course ID
- * @param {string} params.unitId - Current unit ID
- * @param {boolean} params.shouldDisplayFullScreen - Whether in mobile view
- * @param {Function} params.hasUserToggledRef - Ref tracking user manual toggles
- * @param {Function} params.courseOutlineSetByUnitRef - Ref tracking COURSE_OUTLINE auto-set
  */
 export function useSidebarSync({
   initialSidebar,
@@ -31,7 +32,7 @@ export function useSidebarSync({
   shouldDisplayFullScreen,
   hasUserToggledRef,
   courseOutlineSetByUnitRef,
-}) {
+}: Params) {
   useEffect(() => {
     // Skip if on mobile
     if (shouldDisplayFullScreen) {

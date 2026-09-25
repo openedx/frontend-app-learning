@@ -7,7 +7,7 @@ import {
   createTestQueryClient, initializeMockApp, getTestStoreIds, initializeTestStore, render, screen,
 } from '@src/setupTest';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
-import { prefetchDiscussionTopics } from '@src/courseware/data/apiHooks';
+import { discussionTopicsQuery } from '@src/courseware/data/apiHooks';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsSidebar from './DiscussionsSidebar';
 
@@ -43,7 +43,7 @@ describe('Discussions Trigger', () => {
     );
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
       .reply(200, buildTopicsFromUnits(state.models.units));
-    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
+    await createTestQueryClient(store).query(discussionTopicsQuery(courseId));
   });
 
   function renderWithProvider(testData = {}) {
