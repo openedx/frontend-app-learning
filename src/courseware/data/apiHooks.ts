@@ -71,7 +71,10 @@ export const useSequenceIds = (courseId: string | undefined): string[] => {
   );
 };
 
-export const useSequenceMetadata = (sequenceId: string | undefined) => {
+export const useSequenceMetadata = (
+  sequenceId: string | undefined,
+  { enabled = true }: QueryOptions = {},
+) => {
   const isPreview = useLocation().pathname.startsWith('/preview');
   return useQuery({
     queryKey: coursewareQueryKeys.sequence(sequenceId!, isPreview),
@@ -84,7 +87,7 @@ export const useSequenceMetadata = (sequenceId: string | undefined) => {
       }
       return { sequence, units };
     },
-    enabled: !!sequenceId,
+    enabled: enabled && !!sequenceId,
     retry: false,
     meta: {
       logStatusAs: { 422: 'silent' },

@@ -34,7 +34,7 @@ const SequenceNavigation = ({
     navigationDisabledNextSequence,
   } = useSequenceNavigationMetadata(sequenceId, unitId);
   const { courseId } = useParams();
-  const sequenceQuery = useSequenceMetadata(sequenceId);
+  const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
   const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
   const isLocked = sequenceQuery.isSuccess ? (
     sequence.gatedContent !== undefined && sequence.gatedContent.gated

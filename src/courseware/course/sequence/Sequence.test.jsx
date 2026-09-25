@@ -54,7 +54,7 @@ describe('Sequence', () => {
             path="/course/:courseId/:sequenceId/*"
             element={(
               <SidebarProvider courseId={data.courseId} unitId={data.unitId} widgets={widgets}>
-                <MountCourseQueryHooks courseId={data.courseId} />
+                <MountCourseQueryHooks courseId={data.courseId} sequenceId={data.sequenceId} />
                 <Sequence {...data} />
               </SidebarProvider>
             )}
@@ -149,7 +149,7 @@ describe('Sequence', () => {
             path="/course/:courseId/:sequenceId/*"
             element={(
               <>
-                <MountCourseQueryHooks courseId={mockData.courseId} />
+                <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={sequenceBlocks[0].id} />
                 <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />
               </>
             )}
@@ -174,7 +174,13 @@ describe('Sequence', () => {
     const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
     const failingMock = new MockAdapter(getAuthenticatedHttpClient());
     failingMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${mockData.sequenceId}`).reply(500);
-    render(<Sequence {...mockData} />, { store: testStore, wrapWithRouter: true });
+    render(
+      <>
+        <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
+        <Sequence {...mockData} />
+      </>,
+      { store: testStore, wrapWithRouter: true },
+    );
 
     await screen.findByText('There was an error loading this course.');
     failingMock.restore();
@@ -448,7 +454,7 @@ describe('Sequence', () => {
               path="/course/:courseId/:sequenceId/*"
               element={(
                 <SidebarProvider courseId={mockData.courseId} unitId={mockData.unitId} widgets={getEnabledWidgets()}>
-                  <MountCourseQueryHooks courseId={mockData.courseId} />
+                  <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={sequenceId} />
                   <Sequence {...mockData} sequenceId={sequenceId} />
                 </SidebarProvider>
               )}
