@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 
@@ -12,10 +11,15 @@ import HonorCode from '../honor-code';
 import * as hooks from './hooks';
 import { modelKeys } from './constants';
 
+interface Props {
+  courseId: string;
+  id: string;
+}
+
 const UnitSuspense = ({
   courseId,
   id,
-}) => {
+}: Props) => {
   const { formatMessage } = useIntl();
   const shouldDisplayHonorCode = hooks.useShouldDisplayHonorCode({ courseId, id });
   const unit = useModel(modelKeys.units, id);
@@ -38,11 +42,6 @@ const UnitSuspense = ({
       )}
     </>
   );
-};
-
-UnitSuspense.propTypes = {
-  courseId: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
 };
 
 export default UnitSuspense;
