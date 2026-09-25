@@ -1,19 +1,40 @@
 import React from 'react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { render, screen, fireEvent } from '@testing-library/react';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { MemoryRouter } from 'react-router-dom';
+import { SidebarProvider } from '@src/courseware/course/sidebar/SidebarContext';
 import * as localStorageModule from '@src/data/localStorage';
-import { UpgradeWidgetProvider } from './UpgradeWidgetContext';
 import UpgradeTrigger from './UpgradeTrigger';
+import { upgradeWidgetConfig } from './widgetConfig';
 
 jest.mock('@src/data/localStorage', () => ({
   getLocalStorage: jest.fn(() => null),
   setLocalStorage: jest.fn(),
 }));
 
+jest.mock('@src/generic/model-store', () => ({
+  useModel: jest.fn(() => ({})),
+}));
+
+jest.mock('@src/course-home/data/apiHooks', () => ({
+  ...jest.requireActual('@src/course-home/data/apiHooks'),
+  useCourseHomeMeta: jest.fn(() => ({ data: {} })),
+}));
+
 const courseId = 'course-test-123';
 
-function renderTrigger(sidebarContextOverrides = {}, localStorageOverride = null) {
+// The sidebar provider mounts the upgrade widget config's Provider, which the trigger reads.
+const renderWithSidebar = (ui) => render(
+  <IntlProvider locale="en">
+    <MemoryRouter>
+      <SidebarProvider courseId={courseId} unitId="unit-test-456" widgets={[upgradeWidgetConfig]}>
+        {ui}
+      </SidebarProvider>
+    </MemoryRouter>
+  </IntlProvider>,
+);
+
+function renderTrigger(localStorageOverride = null) {
   localStorageModule.getLocalStorage.mockImplementation((key) => {
     if (localStorageOverride) {
       return localStorageOverride(key);
@@ -21,15 +42,7 @@ function renderTrigger(sidebarContextOverrides = {}, localStorageOverride = null
     return null;
   });
 
-  return render(
-    <IntlProvider locale="en">
-      <SidebarContext.Provider value={{ courseId, ...sidebarContextOverrides }}>
-        <UpgradeWidgetProvider>
-          <UpgradeTrigger onClick={jest.fn()} />
-        </UpgradeWidgetProvider>
-      </SidebarContext.Provider>
-    </IntlProvider>,
-  );
+  return renderWithSidebar(<UpgradeTrigger onClick={jest.fn()} />);
 }
 
 describe('UpgradeTrigger', () => {
@@ -52,15 +65,7 @@ describe('UpgradeTrigger', () => {
 
   it('calls the onClick prop when the button is clicked', () => {
     const onClick = jest.fn();
-    render(
-      <IntlProvider locale="en">
-        <SidebarContext.Provider value={{ courseId }}>
-          <UpgradeWidgetProvider>
-            <UpgradeTrigger onClick={onClick} />
-          </UpgradeWidgetProvider>
-        </SidebarContext.Provider>
-      </IntlProvider>,
-    );
+    renderWithSidebar(<UpgradeTrigger onClick={onClick} />);
     fireEvent.click(screen.getByRole('button', { name: /show upgrade panel/i }));
 
     expect(onClick).toHaveBeenCalledTimes(1);
@@ -74,7 +79,7 @@ describe('UpgradeTrigger', () => {
   });
 
   it('does not show status dot when upgradeWidgetStatus is "inactive" from localStorage', () => {
-    renderTrigger({}, (key) => {
+    renderTrigger((key) => {
       if (key === `upgradeWidget.${courseId}`) { return 'inactive'; }
       return null;
     });
@@ -83,7 +88,7 @@ describe('UpgradeTrigger', () => {
   });
 
   it('sets status to active and updates lastSeen when upgradeCurrentState differs from last seen', () => {
-    renderTrigger({}, (key) => {
+    renderTrigger((key) => {
       if (key === `upgradeWidget.${courseId}`) { return 'inactive'; }
       if (key === `upgradeWidgetState.${courseId}`) { return 'new-state'; }
       if (key === `upgradeWidgetLastSeen.${courseId}`) { return 'old-state'; }
@@ -101,7 +106,7 @@ describe('UpgradeTrigger', () => {
   });
 
   it('does not update status when upgradeCurrentState matches last seen', () => {
-    renderTrigger({}, (key) => {
+    renderTrigger((key) => {
       if (key === `upgradeWidget.${courseId}`) { return 'inactive'; }
       if (key === `upgradeWidgetState.${courseId}`) { return 'same-state'; }
       if (key === `upgradeWidgetLastSeen.${courseId}`) { return 'same-state'; }

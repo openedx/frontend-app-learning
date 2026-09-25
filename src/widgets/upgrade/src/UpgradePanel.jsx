@@ -1,13 +1,13 @@
 import { useIntl } from '@edx/frontend-platform/i18n';
 import classNames from 'classnames';
 import {
-  useContext, useEffect, useMemo,
+  useEffect, useMemo,
 } from 'react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { useSidebar } from '@src/courseware/course/sidebar/SidebarContext';
 import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
@@ -20,7 +20,7 @@ const UpgradePanel = () => {
   const {
     courseId,
     shouldDisplayFullScreen,
-  } = useContext(SidebarContext);
+  } = useSidebar();
   const {
     onUpgradeWidgetSeen,
     upgradeCurrentState,

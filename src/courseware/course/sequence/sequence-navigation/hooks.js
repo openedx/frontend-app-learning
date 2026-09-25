@@ -1,10 +1,9 @@
-import { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { useModel } from '../../../../generic/model-store';
 import { useIsCourseLoaded, useSequenceIds, useSequenceMetadata } from '../../../data/apiHooks';
-import SidebarContext from '../../sidebar/SidebarContext';
+import { useSidebar } from '../../sidebar/SidebarContext';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
   const { courseId } = useParams();
@@ -98,6 +97,6 @@ export function useIsOnXLDesktop() {
 }
 
 export function useIsSidebarOpen() {
-  const { currentSidebar, availableSidebarIds } = useContext(SidebarContext);
+  const { currentSidebar, availableSidebarIds } = useSidebar();
   return availableSidebarIds.includes(currentSidebar);
 }

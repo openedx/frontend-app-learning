@@ -1,18 +1,13 @@
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 import {
-  useState, useMemo, useCallback, useRef, type ReactNode,
+  createContext, useContext, useState, useMemo, useCallback, useRef, type ComponentType, type ReactNode,
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { useCourseHomeMeta, type CourseHomeMeta } from '@src/course-home/data/apiHooks';
+import type { CoursewareMeta, DiscussionTopic } from '@src/courseware/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 
-import SidebarContext, { type SidebarContextValue, type SidebarWidget } from './SidebarContext';
-import {
-  getEnabledWidgets,
-  buildSidebarsRegistry,
-  getSidebarOrder,
-} from './defaultWidgets';
 import {
   setSidebarId,
   setSidebarClosedByUser,
@@ -24,15 +19,67 @@ import {
   useResponsiveBehavior,
 } from './hooks';
 
+export interface SidebarWidgetContext {
+  courseId: string;
+  unitId: string;
+  course: CourseHomeMeta & CoursewareMeta;
+  unit: Partial<DiscussionTopic>;
+}
+
+export interface SidebarWidget {
+  id: string;
+  priority: number;
+  Sidebar: ComponentType;
+  Trigger: ComponentType<{ onClick: () => void }>;
+  Provider?: ComponentType<{ children: ReactNode }>;
+  isAvailable?: (context: SidebarWidgetContext) => boolean;
+  enabled?: boolean;
+}
+
+export interface SidebarRegistryEntry {
+  ID: string;
+  Sidebar: ComponentType;
+  Trigger: ComponentType<{ onClick: () => void }>;
+  isAvailable?: (context: SidebarWidgetContext) => boolean;
+}
+
+export interface SidebarContextValue {
+  currentSidebar: string | null;
+  initialSidebar: string | null;
+  toggleSidebar: (sidebarId: string | null) => void;
+  shouldDisplaySidebarOpen: boolean;
+  shouldDisplayFullScreen: boolean;
+  courseId: string;
+  unitId: string;
+  SIDEBARS: Record<string, SidebarRegistryEntry>;
+  SIDEBAR_ORDER: string[];
+  availableSidebarIds: string[];
+}
+
+export const buildSidebarsRegistry = (widgets: SidebarWidget[]): Record<string, SidebarRegistryEntry> => (
+  Object.fromEntries(widgets.map(widget => [widget.id, {
+    ID: widget.id,
+    Sidebar: widget.Sidebar,
+    Trigger: widget.Trigger,
+    isAvailable: widget.isAvailable,
+  }]))
+);
+
+export const getSidebarOrder = (widgets: SidebarWidget[]): string[] => widgets.map(widget => widget.id);
+
+const SidebarContext = createContext<SidebarContextValue | null>(null);
+
 interface Props {
   courseId: string;
   unitId: string;
+  widgets: SidebarWidget[];
   children?: ReactNode;
 }
 
-const SidebarProvider = ({
+export const SidebarProvider = ({
   courseId,
   unitId,
+  widgets,
   children,
 }: Props) => {
   const courseHomeMeta = useCourseHomeMeta(courseId, { enabled: false }).data;
@@ -44,10 +91,8 @@ const SidebarProvider = ({
   const [searchParams] = useSearchParams();
   const isInitiallySidebarOpen = shouldDisplaySidebarOpen || searchParams.get('sidebar') === 'true';
 
-  // Build registry of enabled widgets
-  const enabledWidgets = useMemo<SidebarWidget[]>(() => getEnabledWidgets(), []);
-  const SIDEBARS = useMemo(() => buildSidebarsRegistry(enabledWidgets), [enabledWidgets]);
-  const SIDEBAR_ORDER = useMemo(() => getSidebarOrder(enabledWidgets), [enabledWidgets]);
+  const SIDEBARS = useMemo(() => buildSidebarsRegistry(widgets), [widgets]);
+  const SIDEBAR_ORDER = useMemo(() => getSidebarOrder(widgets), [widgets]);
 
   // Helper to get available widgets based on current context
   const getAvailableWidgets = useCallback(() => {
@@ -57,13 +102,13 @@ const SidebarProvider = ({
       course: { ...coursewareMeta, ...courseHomeMeta },
       unit,
     };
-    return enabledWidgets.filter(widget => {
+    return widgets.filter(widget => {
       if (widget.isAvailable) {
         return widget.isAvailable(context);
       }
       return true; // If no isAvailable function, widget is always available
     });
-  }, [enabledWidgets, courseId, unitId, coursewareMeta, courseHomeMeta, unit]);
+  }, [widgets, courseId, unitId, coursewareMeta, courseHomeMeta, unit]);
 
   // Helper to get the first available panel based on priority
   const getFirstAvailablePanel = useCallback(() => {
@@ -133,7 +178,7 @@ const SidebarProvider = ({
     [getAvailableWidgets],
   );
 
-  const toggleSidebar = useCallback((sidebarId: string) => {
+  const toggleSidebar = useCallback((sidebarId: string | null) => {
     // Mark that user has manually interacted with sidebar
     hasUserToggledRef.current = true;
 
@@ -167,8 +212,8 @@ const SidebarProvider = ({
     SIDEBAR_ORDER,
     availableSidebarIds,
   ]);
-  const renderWithWidgetProviders = useCallback((content: ReactNode) => enabledWidgets
-    .reduceRight((acc, { Provider }) => (Provider ? <Provider>{acc}</Provider> : acc), content), [enabledWidgets]);
+  const renderWithWidgetProviders = useCallback((content: ReactNode) => widgets
+    .reduceRight((acc, { Provider }) => (Provider ? <Provider>{acc}</Provider> : acc), content), [widgets]);
 
   return (
     <SidebarContext.Provider value={contextValue}>
@@ -177,4 +222,10 @@ const SidebarProvider = ({
   );
 };
 
-export default SidebarProvider;
+export const useSidebar = (): SidebarContextValue => {
+  const context = useContext(SidebarContext);
+  if (!context) {
+    throw new Error('useSidebar must be used within a SidebarProvider');
+  }
+  return context;
+};

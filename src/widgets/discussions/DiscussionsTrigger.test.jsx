@@ -8,7 +8,7 @@ import {
 } from '@src/setupTest';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
 import { discussionTopicsQuery } from '@src/courseware/data/apiHooks';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { SidebarProvider } from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsTrigger from './DiscussionsTrigger';
 
 initializeMockApp();
@@ -46,19 +46,22 @@ describe('Discussions Trigger', () => {
     await createTestQueryClient(store).query(discussionTopicsQuery(courseId));
   });
 
-  const SidebarWrapper = ({ contextValue, onClick }) => (
-    <SidebarContext.Provider value={contextValue}>
+  const SidebarWrapper = ({ unitId: renderedUnitId, onClick }) => (
+    <SidebarProvider courseId={courseId} unitId={renderedUnitId} widgets={[]}>
       <DiscussionsTrigger onClick={onClick} />
-    </SidebarContext.Provider>
+    </SidebarProvider>
   );
 
   SidebarWrapper.propTypes = {
-    contextValue: PropTypes.shape({}).isRequired,
+    unitId: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
   };
 
   function renderWithProvider(testData = {}, onClick = () => null) {
-    const { container } = render(<SidebarWrapper contextValue={{ ...mockData, ...testData }} onClick={onClick} />);
+    const { container } = render(
+      <SidebarWrapper unitId={testData.unitId ?? mockData.unitId} onClick={onClick} />,
+      { wrapWithRouter: true },
+    );
     return container;
   }
 

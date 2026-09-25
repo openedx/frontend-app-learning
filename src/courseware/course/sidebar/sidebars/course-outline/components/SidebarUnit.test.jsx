@@ -5,13 +5,15 @@ import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { breakpoints } from '@openedx/paragon';
 
 import {
   createTestQueryClient, initializeMockApp, getTestStoreIds, initializeTestStore, seedQueryData,
 } from '@src/setupTest';
 import { getCourseOutline } from '@src/courseware/data/api';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
-import SidebarContext from '../../../SidebarContext';
+import SidebarState from '@src/tests/SidebarState';
+import { SidebarProvider } from '../../../SidebarContext';
 import SidebarUnit from './SidebarUnit';
 import { ID } from '../constants';
 
@@ -28,7 +30,14 @@ describe('<SidebarUnit />', () => {
   let outline;
   let unit;
   let sequenceId;
-  let defaultSidebarContext;
+
+  const { innerWidth: originalInnerWidth } = window;
+
+  afterEach(() => {
+    window.innerWidth = originalInnerWidth;
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
 
   const initTestData = async (options) => {
     store = await initializeTestStore(options);
@@ -38,13 +47,13 @@ describe('<SidebarUnit />', () => {
     const sequence = outline.sequences[sequenceId];
     unit = outline.units[sequence.unitIds[0]];
 
-    defaultSidebarContext = {
-      toggleSidebar: jest.fn(),
-      currentSidebar: ID,
-    };
+    // The outline is the stored sidebar, so it is open on any viewport.
+    window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify(ID));
   };
 
-  function renderWithProvider(props = {}, sidebarContext = defaultSidebarContext, pathname = undefined) {
+  const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
+
+  function renderWithProvider(props = {}, pathname = undefined) {
     const queryClient = createTestQueryClient(store);
     seedQueryData(queryClient, coursewareQueryKeys.courseOutline(courseId), outline);
     seedQueryData(queryClient, coursewareQueryKeys.sidebarToggles(courseId), { enableCompletionTracking: true });
@@ -65,14 +74,15 @@ describe('<SidebarUnit />', () => {
       <AppProvider store={store} wrapWithRouter={false}>
         <QueryClientProvider client={queryClient}>
           <IntlProvider locale="en">
-            <SidebarContext.Provider value={{ ...sidebarContext }}>
-              <MemoryRouter initialEntries={[{ pathname: pathname ?? `/course/${courseId}` }]}>
+            <MemoryRouter initialEntries={[{ pathname: pathname ?? `/course/${courseId}` }]}>
+              <SidebarProvider courseId={courseId} unitId={unit.id} widgets={[]}>
                 <Routes>
                   <Route path="/course/:courseId" element={sidebarUnit} />
                   <Route path="/preview/course/:courseId" element={sidebarUnit} />
                 </Routes>
-              </MemoryRouter>
-            </SidebarContext.Provider>
+                <SidebarState />
+              </SidebarProvider>
+            </MemoryRouter>
           </IntlProvider>
         </QueryClientProvider>
       </AppProvider>,
@@ -139,21 +149,23 @@ describe('<SidebarUnit />', () => {
 
     it('leaves sidebar open in desktop mode', async () => {
       const user = userEvent.setup();
+      window.innerWidth = breakpoints.extraExtraLarge.minWidth;
       await initTestData();
       renderWithProvider({ unit: { ...unit } });
       await user.click(screen.getByText(unit.title));
 
-      expect(defaultSidebarContext.toggleSidebar).not.toHaveBeenCalled();
+      expect(currentSidebar()).toBe(ID);
     });
 
     it('closes sidebar on mobile devices', async () => {
       const user = userEvent.setup();
       await initTestData();
-      renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true });
+      renderWithProvider({ unit: { ...unit } });
+      expect(currentSidebar()).toBe(ID);
+
       await user.click(screen.getByText(unit.title));
 
-      expect(defaultSidebarContext.toggleSidebar).toHaveBeenCalledTimes(1);
-      expect(defaultSidebarContext.toggleSidebar).toHaveBeenCalledWith(null);
+      expect(currentSidebar()).toBe('null');
     });
   });
 
@@ -161,7 +173,7 @@ describe('<SidebarUnit />', () => {
     describe('course in preview mode', () => {
       beforeEach(async () => {
         await initTestData();
-        renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true }, `/preview/course/${courseId}`);
+        renderWithProvider({ unit: { ...unit } }, `/preview/course/${courseId}`);
       });
 
       it('href includes /preview', async () => {
@@ -175,7 +187,7 @@ describe('<SidebarUnit />', () => {
     describe('course in live mode', () => {
       beforeEach(async () => {
         await initTestData();
-        renderWithProvider({ unit: { ...unit } }, { ...defaultSidebarContext, shouldDisplayFullScreen: true });
+        renderWithProvider({ unit: { ...unit } });
       });
 
       it('href does not include /preview/', async () => {

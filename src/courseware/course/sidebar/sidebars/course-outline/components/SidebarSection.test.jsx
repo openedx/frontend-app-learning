@@ -12,7 +12,7 @@ import {
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { getCourseOutline } from '@src/courseware/data/api';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
-import SidebarContext from '../../../SidebarContext';
+import { SidebarProvider } from '../../../SidebarContext';
 import SidebarSection from './SidebarSection';
 
 describe('<SidebarSection />', () => {
@@ -31,7 +31,6 @@ describe('<SidebarSection />', () => {
   };
 
   const RootWrapper = (props) => {
-    const mockData = useMemo(() => ({ toggleSidebar: jest.fn() }), []);
     const queryClient = useMemo(() => {
       const client = createTestQueryClient(store);
       seedQueryData(client, coursewareQueryKeys.courseOutline(courseId), outline);
@@ -43,8 +42,8 @@ describe('<SidebarSection />', () => {
       <AppProvider store={store} wrapWithRouter={false}>
         <QueryClientProvider client={queryClient}>
           <IntlProvider locale="en">
-            <SidebarContext.Provider value={mockData}>
-              <MemoryRouter initialEntries={[`/course/${courseId}`]}>
+            <MemoryRouter initialEntries={[`/course/${courseId}`]}>
+              <SidebarProvider courseId={courseId} unitId="unit-1" widgets={[]}>
                 <Routes>
                   <Route
                     path="/course/:courseId"
@@ -57,8 +56,8 @@ describe('<SidebarSection />', () => {
                     )}
                   />
                 </Routes>
-              </MemoryRouter>
-            </SidebarContext.Provider>
+              </SidebarProvider>
+            </MemoryRouter>
           </IntlProvider>
         </QueryClientProvider>
       </AppProvider>
