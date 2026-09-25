@@ -12,7 +12,7 @@ import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 
 import PageLoading from '@src/generic/PageLoading';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { sequenceMightBeUnit, useSequenceMetadata } from '@src/courseware/data/apiHooks';
+import { sequenceMightBeUnit, useSequenceMetadata, useUnit } from '@src/courseware/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
 import SequenceContainerSlot from '@src/plugin-slots/SequenceContainerSlot';
@@ -26,6 +26,26 @@ import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+
+export const logSequenceEvent = (eventName, {
+  sequence, unitId, widgetPlacement, targetUnitId,
+}) => {
+  // Note: tabs are tracked with a 1-indexed position
+  // as opposed to a 0-index used throughout this MFE
+  const currentIndex = sequence.unitIds.length > 0 ? sequence.unitIds.indexOf(unitId) : 0;
+  const payload = {
+    current_tab: currentIndex + 1,
+    id: unitId,
+    tab_count: sequence.unitIds.length,
+    widget_placement: widgetPlacement,
+  };
+  if (targetUnitId) {
+    const targetIndex = sequence.unitIds.indexOf(targetUnitId);
+    payload.target_tab = targetIndex + 1;
+  }
+  sendTrackEvent(eventName, payload);
+  sendTrackingLogEvent(eventName, payload);
+};
 
 const Sequence = ({
   unitId,
@@ -46,7 +66,7 @@ const Sequence = ({
   } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const unit = useModel('units', unitId);
+  const unit = useUnit(sequenceId, unitId).data;
   const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
 
   const handleNext = () => {
@@ -73,23 +93,9 @@ const Sequence = ({
     unitNavigationHandler(destinationUnitId);
   };
 
-  const logEvent = (eventName, widgetPlacement, targetUnitId) => {
-    // Note: tabs are tracked with a 1-indexed position
-    // as opposed to a 0-index used throughout this MFE
-    const currentIndex = sequence.unitIds.length > 0 ? sequence.unitIds.indexOf(unitId) : 0;
-    const payload = {
-      current_tab: currentIndex + 1,
-      id: unitId,
-      tab_count: sequence.unitIds.length,
-      widget_placement: widgetPlacement,
-    };
-    if (targetUnitId) {
-      const targetIndex = sequence.unitIds.indexOf(targetUnitId);
-      payload.target_tab = targetIndex + 1;
-    }
-    sendTrackEvent(eventName, payload);
-    sendTrackingLogEvent(eventName, payload);
-  };
+  const logEvent = (eventName, widgetPlacement, targetUnitId) => logSequenceEvent(eventName, {
+    sequence, unitId, widgetPlacement, targetUnitId,
+  });
 
   /* istanbul ignore next */
   const nextHandler = (placement) => () => {

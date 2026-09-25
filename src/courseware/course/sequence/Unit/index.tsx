@@ -4,13 +4,13 @@ import { useSearchParams, useLocation } from 'react-router-dom';
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
-import { useModel } from '@src/generic/model-store';
+import { useUnit } from '@src/courseware/data/apiHooks';
 import { usePluginsCallback } from '@src/generic/plugin-overrides';
 
 import messages from '../messages';
 import ContentIFrame from './ContentIFrame';
 import UnitSuspense from './UnitSuspense';
-import { modelKeys, views } from './constants';
+import { views } from './constants';
 import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
 import UnitTitleSlot from '../../../../plugin-slots/UnitTitleSlot';
@@ -20,6 +20,7 @@ interface Props {
   format?: string | null;
   onLoaded?: () => void;
   id: string;
+  sequenceId: string;
   isOriginalUserStaff: boolean;
   renderUnitNavigation: (isAtTop: boolean) => React.ReactNode;
 }
@@ -29,6 +30,7 @@ const Unit = ({
   format = null,
   onLoaded,
   id,
+  sequenceId,
   isOriginalUserStaff,
   renderUnitNavigation,
 }: Props) => {
@@ -37,8 +39,8 @@ const Unit = ({
   const { pathname } = useLocation();
   const { authenticatedUser } = React.useContext(AppContext);
   const examAccess = useExamAccess({ id });
-  const shouldDisplayHonorCode = useShouldDisplayHonorCode({ courseId, id });
-  const unit = useModel(modelKeys.units, id);
+  const shouldDisplayHonorCode = useShouldDisplayHonorCode({ courseId, sequenceId, id });
+  const unit = useUnit(sequenceId, id).data;
   const view = authenticatedUser ? views.student : views.public;
   const shouldDisplayUnitPreview = pathname.startsWith('/preview') && isOriginalUserStaff;
 
@@ -53,10 +55,14 @@ const Unit = ({
 
   const iframeUrl = getUrl();
 
+  if (!unit) {
+    return null;
+  }
+
   return (
     <div className="unit">
       <UnitTitleSlot unitId={id} {...{ unit, renderUnitNavigation }} />
-      <UnitSuspense {...{ courseId, id }} />
+      <UnitSuspense {...{ courseId, sequenceId, id }} />
       <ContentIFrame
         elementId="unit-iframe"
         id={id}

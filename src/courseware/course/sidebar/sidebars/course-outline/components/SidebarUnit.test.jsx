@@ -1,3 +1,6 @@
+import MockAdapter from 'axios-mock-adapter';
+import { getConfig } from '@edx/frontend-platform';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
@@ -8,7 +11,8 @@ import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/ana
 import { breakpoints } from '@openedx/paragon';
 
 import {
-  createTestQueryClient, initializeMockApp, getTestStoreIds, initializeTestStore, seedQueryData,
+  createTestQueryClient, initializeMockApp, getTestStoreIds, initializeTestStore, logUnhandledRequests, seedQueryData,
+  waitFor,
 } from '@src/setupTest';
 import { getCourseOutline } from '@src/courseware/data/api';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
@@ -78,6 +82,7 @@ describe('<SidebarUnit />', () => {
               <SidebarProvider courseId={courseId} unitId={unit.id} widgets={[]}>
                 <Routes>
                   <Route path="/course/:courseId" element={sidebarUnit} />
+                  <Route path="/course/:courseId/:sequenceId/:unitId" element={sidebarUnit} />
                   <Route path="/preview/course/:courseId" element={sidebarUnit} />
                 </Routes>
                 <SidebarState />
@@ -145,6 +150,25 @@ describe('<SidebarUnit />', () => {
 
       expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);
       expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', logData);
+    });
+
+    it('sends the completion check for the unit navigated away from to its own sequence, not the one navigated to', async () => {
+      const user = userEvent.setup();
+      await initTestData();
+      const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+      const completionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/get_completion`;
+      axiosMock.onPost(completionUrl).reply(201, { complete: true });
+      logUnhandledRequests(axiosMock);
+      renderWithProvider(
+        { sequenceId: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@another' },
+        `/course/${courseId}/${sequenceId}/${unit.id}`,
+      );
+
+      await user.click(screen.getByText(unit.title));
+
+      await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+      expect(axiosMock.history.post[0].url).toEqual(completionUrl);
+      expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({ usage_key: unit.id });
     });
 
     it('leaves sidebar open in desktop mode', async () => {

@@ -1,16 +1,21 @@
 import React from 'react';
 import MockAdapter from 'axios-mock-adapter';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { Factory } from 'rosie';
 import {
   render, screen, fireEvent, initializeTestStore, waitFor, authenticatedUser, logUnhandledRequests,
+  createTestQueryClient, getTestStoreIds,
 } from '../../../setupTest';
+import { sequenceMetadataQuery } from '../../data/apiHooks';
+import { coursewareQueryKeys } from '../../data/queryKeys';
 import { BookmarkButton } from './index';
 import { getBookmarksBaseUrl } from './data/api';
 
 describe('Bookmark Button', () => {
   let axiosMock;
-  let store;
+  let queryClient;
+  let sequenceId;
   const courseMetadata = Factory.build('courseMetadata');
   const mockData = {
     isProcessing: false,
@@ -27,9 +32,23 @@ describe('Bookmark Button', () => {
   );
   const unitBlocks = [nonBookmarkedUnitBlock, bookmarkedUnitBlock];
 
+  const cachedUnit = (unitId) => (
+    queryClient.getQueryData(coursewareQueryKeys.sequence(sequenceId, false)).units.find((unit) => unit.id === unitId)
+  );
+
+  const renderButton = (props = {}) => render(
+    <QueryClientProvider client={queryClient}>
+      <BookmarkButton {...mockData} sequenceId={sequenceId} {...props} />
+    </QueryClientProvider>,
+    { wrapWithRouter: true },
+  );
+
   beforeEach(async () => {
-    store = await initializeTestStore({ courseMetadata, unitBlocks });
+    const store = await initializeTestStore({ courseMetadata, unitBlocks });
+    ({ sequenceId } = getTestStoreIds(store));
     mockData.unitId = nonBookmarkedUnitBlock.id;
+    queryClient = createTestQueryClient();
+    await queryClient.fetchQuery(sequenceMetadataQuery(sequenceId, false));
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     const bookmarkUrl = getBookmarksBaseUrl();
@@ -42,7 +61,7 @@ describe('Bookmark Button', () => {
   });
 
   it('handles adding bookmark', async () => {
-    render(<BookmarkButton {...mockData} />);
+    renderButton();
 
     const button = screen.getByRole('button', { name: 'Bookmark this page' });
     expect(button).not.toHaveClass('disabled');
@@ -50,11 +69,11 @@ describe('Bookmark Button', () => {
     fireEvent.click(button);
     await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
     expect(axiosMock.history.post[0].data).toEqual(JSON.stringify({ usage_id: nonBookmarkedUnitBlock.id }));
-    expect(store.getState().models.units[nonBookmarkedUnitBlock.id].bookmarked).toBeTruthy();
+    expect(cachedUnit(nonBookmarkedUnitBlock.id).bookmarked).toBeTruthy();
   });
 
   it('does not handle adding bookmark when processing', async () => {
-    render(<BookmarkButton {...mockData} isProcessing />);
+    renderButton({ isProcessing: true });
 
     const button = screen.getByRole('button', { name: 'Bookmark this page' });
     expect(button).toHaveClass('disabled');
@@ -65,21 +84,21 @@ describe('Bookmark Button', () => {
       () => expect(axiosMock.history.post).toHaveLength(1),
       { timeout: 100 },
     )).rejects.toThrowError(/expect.*toHaveLength.*/);
-    expect(store.getState().models.units[nonBookmarkedUnitBlock.id].bookmarked).toBeFalsy();
+    expect(cachedUnit(nonBookmarkedUnitBlock.id).bookmarked).toBeFalsy();
   });
 
   it('handles removing bookmark', async () => {
-    render(<BookmarkButton {...mockData} unitId={bookmarkedUnitBlock.id} isBookmarked />);
+    renderButton({ unitId: bookmarkedUnitBlock.id, isBookmarked: true });
     const button = screen.getByRole('button', { name: 'Bookmarked' });
 
     fireEvent.click(button);
     await waitFor(() => expect(axiosMock.history.delete).toHaveLength(1));
     expect(axiosMock.history.delete[0].url).toContain(`${authenticatedUser.username},${bookmarkedUnitBlock.id}`);
-    expect(store.getState().models.units[bookmarkedUnitBlock.id].bookmarked).toBeFalsy();
+    expect(cachedUnit(bookmarkedUnitBlock.id).bookmarked).toBeFalsy();
   });
 
   it('does not handle removing bookmark when processing', async () => {
-    render(<BookmarkButton {...mockData} unitId={bookmarkedUnitBlock.id} isBookmarked isProcessing />);
+    renderButton({ unitId: bookmarkedUnitBlock.id, isBookmarked: true, isProcessing: true });
 
     const button = screen.getByRole('button', { name: 'Bookmarked' });
     expect(button).toHaveClass('disabled');
@@ -90,6 +109,6 @@ describe('Bookmark Button', () => {
       () => expect(axiosMock.history.delete).toHaveLength(1),
       { timeout: 100 },
     )).rejects.toThrowError(/expect.*toHaveLength.*/);
-    expect(store.getState().models.units[bookmarkedUnitBlock.id].bookmarked).toBeTruthy();
+    expect(cachedUnit(bookmarkedUnitBlock.id).bookmarked).toBeTruthy();
   });
 });

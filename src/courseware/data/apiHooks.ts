@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { logError } from '@edx/frontend-platform/logging';
 import {
-  queryOptions, useMutation, useQuery, useQueryClient,
+  type QueryClient, queryOptions, useMutation, useQuery, useQueryClient,
 } from '@tanstack/react-query';
 import { useDispatch, useStore } from 'react-redux';
 
@@ -71,33 +71,80 @@ export const useSequenceIds = (courseId: string | undefined): string[] => {
   );
 };
 
+export interface SequenceUnit {
+  id: string;
+  sequenceId: string;
+  bookmarked: boolean;
+  complete: boolean | null;
+  title: string;
+  contentType: string;
+  graded: boolean;
+  containsContentTypeGatedContent: boolean;
+  bookmarkedUpdateState?: 'loading' | 'loaded' | 'failed';
+}
+
+// No TypeScript reader names a field yet; #2088's sequences layer adds them as its readers convert.
+export interface SequenceMetadata {
+  [key: string]: unknown;
+}
+
+export interface SequenceMetadataData {
+  sequence: SequenceMetadata;
+  units: SequenceUnit[];
+}
+
+export const useIsPreview = () => useLocation().pathname.startsWith('/preview');
+
+export const sequenceMetadataQuery = (sequenceId: string, isPreview: boolean) => queryOptions({
+  queryKey: coursewareQueryKeys.sequence(sequenceId, isPreview),
+  queryFn: async (): Promise<SequenceMetadataData> => {
+    const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
+    if (sequence.blockType !== 'sequential') {
+      throw new Error(
+        `Requested sequence '${sequenceId}' has block type '${sequence.blockType}'; expected block type 'sequential'.`,
+      );
+    }
+    return { sequence, units };
+  },
+  retry: false,
+  meta: {
+    logStatusAs: { 422: 'silent' },
+    models: [
+      { modelType: 'sequences', strategy: 'updateModel', source: 'sequence' },
+    ],
+  },
+});
+
 export const useSequenceMetadata = (
   sequenceId: string | undefined,
   { enabled = true }: QueryOptions = {},
 ) => {
-  const isPreview = useLocation().pathname.startsWith('/preview');
+  const isPreview = useIsPreview();
   return useQuery({
-    queryKey: coursewareQueryKeys.sequence(sequenceId!, isPreview),
-    queryFn: async () => {
-      const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
-      if (sequence.blockType !== 'sequential') {
-        throw new Error(
-          `Requested sequence '${sequenceId}' has block type '${sequence.blockType}'; expected block type 'sequential'.`,
-        );
-      }
-      return { sequence, units };
-    },
+    ...sequenceMetadataQuery(sequenceId!, isPreview),
     enabled: enabled && !!sequenceId,
-    retry: false,
-    meta: {
-      logStatusAs: { 422: 'silent' },
-      models: [
-        { modelType: 'sequences', strategy: 'updateModel', source: 'sequence' },
-        { modelType: 'units', strategy: 'updateModels', source: 'units' },
-      ],
-    },
   });
 };
+
+// Reads the unit from the sequence CoursewareContainer loaded; never fetches.
+export const useUnit = (sequenceId: string | undefined, unitId: string | undefined) => {
+  const isPreview = useIsPreview();
+  return useQuery({
+    ...sequenceMetadataQuery(sequenceId!, isPreview),
+    enabled: false,
+    select: ({ units }) => units.find(unit => unit.id === unitId),
+  });
+};
+
+export const updateSequenceUnit = (
+  queryClient: QueryClient,
+  queryKey: ReturnType<typeof coursewareQueryKeys.sequence>,
+  unitId: string | undefined,
+  patch: Partial<SequenceUnit>,
+) => queryClient.setQueryData<SequenceMetadataData>(queryKey, (data) => data && ({
+  ...data,
+  units: data.units.map(unit => (unit.id === unitId ? { ...unit, ...patch } : unit)),
+}));
 
 // A 422 from the sequence query means the requested id is not a sequence — it may be a unit id.
 export const sequenceMightBeUnit = (sequenceQuery: { error: unknown }): boolean => (
@@ -165,15 +212,19 @@ interface CheckBlockCompletionVars {
 }
 
 export const useCheckBlockCompletion = () => {
-  const store = useStore();
-  const dispatch = useDispatch();
+  const isPreview = useIsPreview();
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: ({ courseId, sequenceId, unitId }: CheckBlockCompletionVars) => (
       getBlockCompletion(courseId, sequenceId, unitId)
     ),
-    onSuccess: (isComplete: boolean, { courseId, unitId }) => {
-      dispatch(updateModel({ modelType: 'units', model: { id: unitId, complete: isComplete } }));
+    onSuccess: (isComplete: boolean, { courseId, sequenceId, unitId }) => {
+      updateSequenceUnit(
+        queryClient,
+        coursewareQueryKeys.sequence(sequenceId!, isPreview),
+        unitId,
+        { complete: isComplete },
+      );
       if (!isComplete || !unitId || !courseId) {
         return;
       }
@@ -192,12 +243,13 @@ export const useCheckBlockCompletion = () => {
   });
 
   return useCallback((courseId: string | undefined, sequenceId: string | undefined, unitId?: string) => {
-    const { units } = (store.getState() as { models: { units?: Record<string, { complete?: boolean }> } }).models;
-    if (unitId && units?.[unitId]?.complete) {
+    const sequenceKey = coursewareQueryKeys.sequence(sequenceId!, isPreview);
+    const unit = queryClient.getQueryData<SequenceMetadataData>(sequenceKey)?.units.find(({ id }) => id === unitId);
+    if (unit?.complete) {
       return; // things don't get uncompleted after they are completed
     }
     mutate({ courseId, sequenceId, unitId });
-  }, [store, mutate]);
+  }, [queryClient, isPreview, mutate]);
 };
 
 interface SaveSequencePositionVars {

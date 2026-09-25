@@ -2,6 +2,7 @@ import React from 'react';
 import {
   getTestStoreIds, initializeTestStore, render, screen,
 } from '../../../setupTest';
+import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import SequenceContent from './SequenceContent';
 
 describe('Sequence Content', () => {
@@ -22,14 +23,22 @@ describe('Sequence Content', () => {
     };
   });
 
-  it('displays loading message', () => {
-    render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
+  const renderContent = (props = {}) => render(
+    <>
+      <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
+      <SequenceContent {...mockData} {...props} />
+    </>,
+    { wrapWithRouter: true },
+  );
+
+  it('displays loading message', async () => {
+    renderContent();
+    expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
   });
 
   it('displays messages for the locked content', async () => {
     const { gatedContent } = store.getState().models.sequences[mockData.sequenceId];
-    const { container } = render(<SequenceContent {...mockData} gated />, { wrapWithRouter: true });
+    const { container } = renderContent({ gated: true });
 
     expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
     expect(await screen.findByText('Content Locked')).toBeInTheDocument();
@@ -42,7 +51,7 @@ describe('Sequence Content', () => {
   });
 
   it('displays message for no content', () => {
-    render(<SequenceContent {...mockData} unitId="" />, { wrapWithRouter: true });
+    renderContent({ unitId: '' });
     expect(screen.getByText('There is no content here.')).toBeInTheDocument();
   });
 });
