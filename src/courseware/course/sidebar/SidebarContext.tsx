@@ -5,7 +5,7 @@ import {
 import { useSearchParams } from 'react-router-dom';
 
 import { useCourseHomeMeta, type CourseHomeMeta } from '@src/course-home/data/apiHooks';
-import type { CoursewareMeta, DiscussionTopic } from '@src/courseware/data/apiHooks';
+import { useDiscussionTopic, type CoursewareMeta, type DiscussionTopic } from '@src/courseware/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 
 import {
@@ -23,7 +23,7 @@ export interface SidebarWidgetContext {
   courseId: string;
   unitId: string;
   course: CourseHomeMeta & CoursewareMeta;
-  unit: Partial<DiscussionTopic>;
+  unit?: DiscussionTopic;
 }
 
 export interface SidebarWidget {
@@ -84,7 +84,7 @@ export const SidebarProvider = ({
 }: Props) => {
   const courseHomeMeta = useCourseHomeMeta(courseId, { enabled: false }).data;
   const coursewareMeta = useModel('coursewareMeta', courseId);
-  const unit = useModel('discussionTopics', unitId);
+  const unit = useDiscussionTopic(courseId, unitId).data;
   const width = useWindowSize().width ?? window.innerWidth;
   const shouldDisplayFullScreen = width < breakpoints.extraLarge.minWidth!;
   const shouldDisplaySidebarOpen = width > breakpoints.extraLarge.minWidth!;
