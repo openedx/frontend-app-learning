@@ -1,14 +1,18 @@
 import React from 'react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getAllByRole } from '@testing-library/dom';
 import { act } from '@testing-library/react';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import {
-  render, screen, fireEvent, initializeTestStore,
+  render, screen, fireEvent, getTestStoreIds, initializeTestStore,
 } from '../../../../setupTest';
+import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 
 describe('Sequence Navigation Dropdown', () => {
   let mockData;
+  let courseId;
+  let sequenceId;
   const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
     'block',
@@ -17,7 +21,8 @@ describe('Sequence Navigation Dropdown', () => {
   ));
 
   beforeAll(async () => {
-    await initializeTestStore({ courseMetadata, unitBlocks });
+    const store = await initializeTestStore({ courseMetadata, unitBlocks });
+    ({ courseId, sequenceId } = getTestStoreIds(store));
     mockData = {
       unitId: unitBlocks[1].id,
       unitIds: unitBlocks.map(block => block.id),
@@ -41,13 +46,25 @@ describe('Sequence Navigation Dropdown', () => {
   unitBlocks.forEach((unit, index) => {
     it(`marks unit ${index + 1} as active`, async () => {
       const { container } = render(
-        <SequenceNavigationDropdown {...mockData} unitId={unit.id} />,
-        { wrapWithRouter: true },
+        <MemoryRouter initialEntries={[`/course/${courseId}/${sequenceId}/${unit.id}`]}>
+          <Routes>
+            <Route
+              path="/course/:courseId/:sequenceId/:unitId"
+              element={(
+                <>
+                  <MountCourseQueryHooks courseId={courseId} sequenceId={sequenceId} />
+                  <SequenceNavigationDropdown {...mockData} unitId={unit.id} />
+                </>
+              )}
+            />
+          </Routes>
+        </MemoryRouter>,
       );
       const dropdownToggle = container.querySelector('.dropdown-toggle');
       await act(async () => {
         await fireEvent.click(dropdownToggle);
       });
+      await screen.findByText(unit.display_name);
       const dropdownMenu = container.querySelector('.dropdown-menu');
       // Only the current unit should be marked as active.
       getAllByRole(dropdownMenu, 'link', { hidden: true }).forEach(button => {

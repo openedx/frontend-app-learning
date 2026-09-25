@@ -4,6 +4,7 @@ import { Factory } from 'rosie';
 import {
   fireEvent, getTestStoreIds, initializeTestStore, render, screen,
 } from '../../../../setupTest';
+import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import UnitButton from './UnitButton';
 
 describe('Unit Button', () => {
@@ -35,44 +36,70 @@ describe('Unit Button', () => {
     };
   });
 
-  it('hides title by default', () => {
-    render(<UnitButton {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByRole('link')).not.toHaveTextContent(unit.display_name);
+  // Renders the button at its unit route, as SequenceNavigation does: it reads the course and
+  // sequence from the route params, and the unit from the sequence the container fetched.
+  const renderButton = (props = {}, { preview = false } = {}) => {
+    const unitPath = `/course/${courseId}/${sequenceId}/${props.unitId ?? mockData.unitId}`;
+    return render(
+      <MemoryRouter initialEntries={[preview ? `/preview${unitPath}` : unitPath]}>
+        <Routes>
+          <Route
+            path={`${preview ? '/preview' : ''}/course/:courseId/:sequenceId/:unitId`}
+            element={(
+              <>
+                <MountCourseQueryHooks courseId={courseId} sequenceId={sequenceId} />
+                <UnitButton {...mockData} {...props} />
+              </>
+            )}
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+  };
+
+  it('hides title by default', async () => {
+    renderButton();
+    expect(await screen.findByTitle(unit.display_name)).not.toHaveTextContent(unit.display_name);
   });
 
-  it('shows title', () => {
-    render(<UnitButton {...mockData} showTitle />, { wrapWithRouter: true });
-    expect(screen.getByRole('link')).toHaveTextContent(unit.display_name);
+  it('shows title', async () => {
+    renderButton({ showTitle: true });
+    expect(await screen.findByTitle(unit.display_name)).toHaveTextContent(unit.display_name);
   });
 
-  it('does not show completion for non-completed unit', () => {
-    const { container } = render(<UnitButton {...mockData} />);
+  it('does not show completion for non-completed unit', async () => {
+    const { container } = renderButton();
+    await screen.findByTitle(unit.display_name);
     container.querySelectorAll('svg').forEach(icon => {
       expect(icon).not.toHaveClass('fa-check');
     });
   });
 
-  it('shows completion for completed unit', () => {
-    const { container } = render(<UnitButton {...mockData} unitId={completedUnit.id} />, { wrapWithRouter: true });
+  it('shows completion for completed unit', async () => {
+    const { container } = renderButton({ unitId: completedUnit.id });
+    await screen.findByTitle(completedUnit.display_name);
     const buttonIcons = container.querySelectorAll('svg');
     expect(buttonIcons).toHaveLength(2);
     expect(buttonIcons[1]).toHaveClass('fa-check');
   });
 
-  it('hides completion', () => {
-    const { container } = render(<UnitButton {...mockData} unitId={completedUnit.id} showCompletion={false} />);
+  it('hides completion', async () => {
+    const { container } = renderButton({ unitId: completedUnit.id, showCompletion: false });
+    await screen.findByTitle(completedUnit.display_name);
     container.querySelectorAll('svg').forEach(icon => {
       expect(icon).not.toHaveClass('fa-check');
     });
   });
 
-  it('does not show bookmark', () => {
-    const { queryByTestId } = render(<UnitButton {...mockData} />);
-    expect(queryByTestId('bookmark-icon')).toBeNull();
+  it('does not show bookmark', async () => {
+    renderButton();
+    await screen.findByTitle(unit.display_name);
+    expect(screen.queryByTestId('bookmark-icon')).toBeNull();
   });
 
-  it('shows bookmark', () => {
-    const { container } = render(<UnitButton {...mockData} unitId={bookmarkedUnit.id} />, { wrapWithRouter: true });
+  it('shows bookmark', async () => {
+    const { container } = renderButton({ unitId: bookmarkedUnit.id });
+    await screen.findByTitle(bookmarkedUnit.display_name);
     const buttonIcons = container.querySelectorAll('svg');
     expect(buttonIcons).toHaveLength(3);
 
@@ -80,33 +107,25 @@ describe('Unit Button', () => {
     expect(bookmarkIcon.getAttribute('data-testid')).toBe('bookmark-icon');
   });
 
-  it('handles the click', () => {
+  it('handles the click', async () => {
     const onClick = jest.fn();
-    render(<UnitButton {...mockData} onClick={onClick} />, { wrapWithRouter: true });
-    fireEvent.click(screen.getByRole('link'));
+    renderButton({ onClick });
+    fireEvent.click(await screen.findByRole('link'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
-  it('falls back to the passed title and contentType when the unit has no model entry', () => {
-    const { container } = render(
-      <UnitButton {...mockData} unitId="block-without-model-entry" title="" contentType="lock" />,
-      { wrapWithRouter: true },
-    );
+  it('falls back to the passed title and contentType when the unit is not in the sequence', async () => {
+    const { container } = renderButton({ unitId: 'block-without-an-entry', title: '', contentType: 'lock' });
+    await screen.findByRole('link');
     const buttonIcons = container.querySelectorAll('svg');
     expect(buttonIcons).toHaveLength(1);
     expect(buttonIcons[0]).toHaveClass('fa-lock');
     expect(screen.queryByTestId('bookmark-icon')).toBeNull();
   });
 
-  it('prefixes the unit link with /preview on a preview route', () => {
+  it('prefixes the unit link with /preview on a preview route', async () => {
     const unitPath = `/course/${courseId}/${sequenceId}/${unit.id}`;
-    render(
-      <MemoryRouter initialEntries={[`/preview${unitPath}`]}>
-        <Routes>
-          <Route path="/preview/course/:courseId/:sequenceId/:unitId" element={<UnitButton {...mockData} />} />
-        </Routes>
-      </MemoryRouter>,
-    );
-    expect(screen.getByRole('link')).toHaveAttribute('href', `/preview${unitPath}`);
+    renderButton({}, { preview: true });
+    expect(await screen.findByRole('link')).toHaveAttribute('href', `/preview${unitPath}`);
   });
 });

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Button, Icon } from '@openedx/paragon';
 import { Bookmark } from '@openedx/paragon/icons';
 
-import { useModel } from '../../../../generic/model-store';
+import { useUnit } from '../../../data/apiHooks';
 import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
 
@@ -29,13 +29,12 @@ const UnitButton = ({
   className,
   showTitle = false,
 }: Props) => {
-  const {
-    title = fallbackTitle,
-    contentType = fallbackContentType,
-    bookmarked = false,
-    complete = false,
-  } = useModel('units', unitId);
   const { courseId, sequenceId } = useParams();
+  const unit = useUnit(sequenceId, unitId).data;
+  const title = unit?.title ?? fallbackTitle;
+  const contentType = unit?.contentType ?? fallbackContentType;
+  const bookmarked = unit?.bookmarked ?? false;
+  const complete = unit?.complete ?? false;
   const { pathname } = useLocation();
   const basePath = `/course/${courseId}/${sequenceId}/${unitId}`;
   const unitPath = pathname.startsWith('/preview') ? `/preview${basePath}` : basePath;

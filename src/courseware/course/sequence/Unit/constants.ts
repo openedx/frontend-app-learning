@@ -1,5 +1,4 @@
 export const modelKeys = {
-  units: 'units',
   coursewareMeta: 'coursewareMeta',
 } as const;
 

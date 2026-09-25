@@ -14,17 +14,19 @@ import { buildOutlineFromBlocks } from './__factories__/learningSequencesOutline
 import { getResponseStatus } from '../../data/http-error';
 import { createTestQueryClient, initializeMockApp, seedSequenceModels } from '../../setupTest';
 import initializeStore from '../../store';
-import { addModel, updateModel } from '../../generic/model-store';
+import { addModel } from '../../generic/model-store';
 import { normalizeLearningSequencesData, normalizeOutlineBlocks, normalizeSequenceMetadata } from './utils';
 import { coursewareQueryKeys } from './queryKeys';
 import { courseHomeQueryKeys } from '../../course-home/data/queryKeys';
 import type { CourseOutlineData } from './courseOutline';
 import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import {
-  discussionTopicsQuery, sequenceMightBeUnit, useCheckBlockCompletion, useCourseOutlineStructure,
-  useCoursewareMetadata, useCoursewareOutline, useCoursewareOutlineSidebarToggles, useDiscussionTopic,
-  useIsCourseLoaded, useSaveIntegritySignature, useSaveSequencePosition, useSequenceIds, useSequenceMetadata,
+  discussionTopicsQuery, sequenceMetadataQuery, sequenceMightBeUnit, updateSequenceUnit, useCheckBlockCompletion,
+  useCourseOutlineStructure, useCoursewareMetadata, useCoursewareOutline, useCoursewareOutlineSidebarToggles,
+  useDiscussionTopic, useIsCourseLoaded, useSaveIntegritySignature, useSaveSequencePosition, useSequenceIds,
+  useSequenceMetadata, useUnit,
 } from './apiHooks';
+import type { SequenceMetadataData } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
 
@@ -577,6 +579,64 @@ describe('courseware apiHooks — useDiscussionTopic', () => {
   });
 });
 
+describe('courseware apiHooks — useUnit', () => {
+  const courseMetadata = Factory.build('courseMetadata');
+  const courseId = courseMetadata.id;
+  const { unitBlocks, sequenceBlocks } = buildSimpleCourseBlocks(courseId);
+  const sequenceMetadata = Factory.build(
+    'sequenceMetadata',
+    {},
+    { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
+  );
+  const sequenceId = sequenceBlocks[0].id;
+  const unitId = unitBlocks[0].id;
+  const { units: normalizedUnits } = normalizeSequenceMetadata(sequenceMetadata);
+  const sequenceUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
+
+  let axiosMock: MockAdapter;
+
+  beforeEach(() => {
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+    axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
+  });
+
+  const makeWrapper = (client: QueryClient) => function Wrapper(
+    { children }: { children: ReactNode },
+  ) {
+    return (
+      <MemoryRouter initialEntries={[`/course/${courseId}/${sequenceId}/${unitId}`]}>
+        <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      </MemoryRouter>
+    );
+  };
+
+  it('fetches nothing on its own', () => {
+    const { result } = renderHook(() => useUnit(sequenceId, unitId), { wrapper: makeWrapper(createTestQueryClient()) });
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(result.current.data).toBeUndefined();
+    expect(axiosMock.history.get).toHaveLength(0);
+  });
+
+  it('returns the unit from the sequence the owner loaded', async () => {
+    const { result } = renderHook(() => {
+      useSequenceMetadata(sequenceId);
+      return useUnit(sequenceId, unitId);
+    }, { wrapper: makeWrapper(createTestQueryClient()) });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual(normalizedUnits.find((unit) => unit.id === unitId));
+    expect(axiosMock.history.get).toHaveLength(1);
+  });
+
+  it('returns undefined for a unit that is not in the sequence', async () => {
+    const { result } = renderHook(() => {
+      useSequenceMetadata(sequenceId);
+      return useUnit(sequenceId, 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@not_in_this_sequence');
+    }, { wrapper: makeWrapper(createTestQueryClient()) });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBeUndefined();
+  });
+});
+
 describe('courseware apiHooks — useCheckBlockCompletion', () => {
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
@@ -592,12 +652,15 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
   const completionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/get_completion`;
   const outlineQueryKey = coursewareQueryKeys.courseOutline(courseId);
 
+  const sequenceKey = coursewareQueryKeys.sequence(sequenceId, false);
+
   let axiosMock: MockAdapter;
-  let store: ReturnType<typeof initializeStore>;
   let queryClient: QueryClient;
 
   const outline = () => queryClient.getQueryData<CourseOutlineData>(outlineQueryKey)!;
-  const unitModels = () => (store.getState().models as { units?: Record<string, { complete?: boolean }> }).units;
+  const cachedUnit = (id: string) => (
+    queryClient.getQueryData<SequenceMetadataData>(sequenceKey)?.units.find((unit) => unit.id === id)
+  );
 
   const seedOutline = () => {
     queryClient.setQueryData(outlineQueryKey, normalizeOutlineBlocks(courseId, courseBlocks.blocks));
@@ -605,23 +668,22 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
 
   const renderCheckBlockCompletion = () => {
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <AppProvider store={store} wrapWithRouter={false}>
+      <MemoryRouter initialEntries={[`/course/${courseId}/${sequenceId}`]}>
         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </AppProvider>
+      </MemoryRouter>
     );
     return renderHook(() => useCheckBlockCompletion(), { wrapper });
   };
 
   beforeEach(async () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    store = initializeStore();
-    queryClient = createTestQueryClient(store);
+    queryClient = createTestQueryClient();
     loggingService.logError.mockReset();
     axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
-    await seedSequenceModels(store, [sequenceMetadata.item_id]);
+    await queryClient.fetchQuery(sequenceMetadataQuery(sequenceId, false));
   });
 
-  it('marks the unit complete in the units model and rolls the outline up', async () => {
+  it('marks the unit complete in the cached sequence and rolls the outline up', async () => {
     axiosMock.onPost(completionUrl).reply(201, { complete: true });
     seedOutline();
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
@@ -636,7 +698,7 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
     const { result } = renderCheckBlockCompletion();
     act(() => { result.current(courseId, sequenceId, unit.id); });
 
-    await waitFor(() => expect(unitModels()?.[unit.id]?.complete).toBe(true));
+    await waitFor(() => expect(cachedUnit(unit.id)?.complete).toBe(true));
     expect(outline().units[unit.id].complete).toBe(true);
     expect(outline().sequences[sequence.id].complete).toBe(true);
     expect(outline().sections[section.id].complete).toBe(true);
@@ -644,7 +706,7 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
     expect(invalidateSpy).not.toHaveBeenCalled();
   });
 
-  it('writes complete: false to the units model and leaves the outline untouched', async () => {
+  it('writes complete: false to the cached sequence and leaves the outline untouched', async () => {
     axiosMock.onPost(completionUrl).reply(201, { complete: false });
     seedOutline();
 
@@ -655,7 +717,7 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
     const { result } = renderCheckBlockCompletion();
     act(() => { result.current(courseId, sequenceId, unit.id); });
 
-    await waitFor(() => expect(unitModels()?.[unit.id]?.complete).toBe(false));
+    await waitFor(() => expect(cachedUnit(unit.id)?.complete).toBe(false));
     expect(outline().units[unit.id].complete).not.toBeTruthy();
     expect(outline().sequences[sequence.id].complete).not.toBeTruthy();
     expect(outline().sections[section.id].complete).not.toBeTruthy();
@@ -669,11 +731,11 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
 
     await waitFor(() => expect(loggingService.logError).toHaveBeenCalledTimes(1));
     expect(axiosMock.history.post[0].url).toEqual(completionUrl);
-    expect(unitModels()?.[unitId]?.complete).not.toBe(true);
+    expect(cachedUnit(unitId)?.complete).not.toBe(true);
   });
 
   it('skips the request entirely when the unit is already complete', async () => {
-    store.dispatch(updateModel({ modelType: 'units', model: { id: unitId, complete: true } }));
+    updateSequenceUnit(queryClient, sequenceKey, unitId, { complete: true });
 
     const { result } = renderCheckBlockCompletion();
     await act(async () => { result.current(courseId, sequenceId, unitId); });
@@ -681,14 +743,16 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
     expect(axiosMock.history.post).toHaveLength(0);
   });
 
-  it('proceeds to the request when no unit model has been written yet', async () => {
-    store = initializeStore();
+  it('proceeds to the request when the sequence is not cached, and writes nothing', async () => {
+    queryClient.removeQueries({ queryKey: sequenceKey });
     axiosMock.onPost(completionUrl).reply(201, { complete: true });
 
     const { result } = renderCheckBlockCompletion();
     act(() => { result.current(courseId, sequenceId, unitId); });
 
-    await waitFor(() => expect(unitModels()?.[unitId]?.complete).toBe(true));
+    await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    await act(async () => {});
+    expect(queryClient.getQueryData(sequenceKey)).toBeUndefined();
   });
 
   it('still writes completion when the caller unmounts before the response arrives', async () => {
@@ -709,7 +773,7 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
     unmount();
     resolveCompletion();
 
-    await waitFor(() => expect(unitModels()?.[unit.id]?.complete).toBe(true));
+    await waitFor(() => expect(cachedUnit(unit.id)?.complete).toBe(true));
     expect(outline().units[unit.id].complete).toBe(true);
   });
 
@@ -719,7 +783,7 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
     const { result } = renderCheckBlockCompletion();
     act(() => { result.current(courseId, sequenceId, unitId); });
 
-    await waitFor(() => expect(unitModels()?.[unitId]?.complete).toBe(true));
+    await waitFor(() => expect(cachedUnit(unitId)?.complete).toBe(true));
     expect(loggingService.logError).not.toHaveBeenCalled();
     expect(queryClient.getQueryData(outlineQueryKey)).toBeUndefined();
   });
@@ -735,7 +799,8 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
     const { result } = renderCheckBlockCompletion();
     act(() => { result.current(courseId, sequenceId, foreignUnitId); });
 
-    await waitFor(() => expect(unitModels()?.[foreignUnitId]?.complete).toBe(true));
+    await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    await act(async () => {});
     expect(outline()).toEqual(normalizeOutlineBlocks(courseId, courseBlocks.blocks));
     expect(invalidateSpy).not.toHaveBeenCalled();
     expect(loggingService.logError).not.toHaveBeenCalled();
@@ -783,8 +848,8 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
     const { result } = renderCheckBlockCompletion();
     act(() => { result.current(courseId, sequenceId, 'unit-1'); });
 
-    await waitFor(() => expect(unitModels()?.['unit-1']?.complete).toBe(true));
-    expect(outline().units['unit-1'].complete).toBe(true);
+    // 'unit-1' belongs to the hand-built outline only, so the sequence write is a no-op here.
+    await waitFor(() => expect(outline().units['unit-1'].complete).toBe(true));
     expect(outline().sequences['seq-1'].complete).toBe(true);
     expect(outline().sequences['seq-1'].completionStat.completed).toBe(1);
     // The locked sequence keeps its section incomplete; the refetch will reveal it unlocked.

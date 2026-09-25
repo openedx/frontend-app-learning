@@ -54,7 +54,7 @@ export const useCourseOutlineSidebar = () => {
     }
   };
 
-  const handleUnitClick = ({ sequenceId, activeUnitId, id }) => {
+  const handleUnitClick = ({ activeUnitId, id }) => {
     const logEvent = (eventName, widgetPlacement) => {
       const findSequenceByUnitId = () => Object.values(sequences).find(seq => seq.unitIds.includes(activeUnitId));
       const activeSequence = findSequenceByUnitId(activeUnitId);
@@ -77,7 +77,7 @@ export const useCourseOutlineSidebar = () => {
     };
 
     logEvent('edx.ui.lms.sequence.tab_selected', 'left');
-    checkBlockCompletion(courseId, sequenceId, activeUnitId);
+    checkBlockCompletion(courseId, activeSequenceId, activeUnitId);
 
     // Hide the sidebar after selecting a unit on a mobile device.
     if (shouldDisplayFullScreen) {
