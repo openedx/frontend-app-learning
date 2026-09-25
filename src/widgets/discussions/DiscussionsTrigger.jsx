@@ -3,7 +3,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon } from '@openedx/paragon';
 import { QuestionAnswer } from '@openedx/paragon/icons';
 import PropTypes from 'prop-types';
-import { useModel } from '@src/generic/model-store';
+import { useDiscussionTopic } from '@src/courseware/data/apiHooks';
 import { WIDGETS } from '@src/constants';
 import SidebarTriggerBase from '@src/courseware/course/sidebar/common/TriggerBase';
 import { useSidebar } from '@src/courseware/course/sidebar/SidebarContext';
@@ -16,8 +16,8 @@ const DiscussionsTrigger = ({
   onClick,
 }) => {
   const intl = useIntl();
-  const { unitId } = useSidebar();
-  const topic = useModel('discussionTopics', unitId);
+  const { courseId, unitId } = useSidebar();
+  const topic = useDiscussionTopic(courseId, unitId).data;
 
   if (!topic?.id || !topic?.enabledInContext) {
     return null;

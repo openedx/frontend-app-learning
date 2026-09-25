@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ensureConfig, getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
-import { useModel } from '@src/generic/model-store';
+import { useDiscussionTopic } from '@src/courseware/data/apiHooks';
 import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
 import { useSidebar } from '@src/courseware/course/sidebar/SidebarContext';
 import { ID } from './DiscussionsTrigger';
@@ -18,7 +18,7 @@ const DiscussionsSidebar = () => {
     courseId,
     shouldDisplayFullScreen,
   } = useSidebar();
-  const topic = useModel('discussionTopics', unitId);
+  const topic = useDiscussionTopic(courseId, unitId).data;
   const discussionsUrl = `${getConfig().DISCUSSIONS_MFE_BASE_URL}/${courseId}/category/${unitId}`;
 
   if (!topic?.id || !topic?.enabledInContext) {
