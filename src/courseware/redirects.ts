@@ -20,6 +20,7 @@ import {
 import {
   sequenceMightBeUnit, useMinimalCourseOutline, useIsCourseLoaded, useSequenceMetadata,
 } from './data/apiHooks';
+import type { SequenceMetadata } from './data/sequenceMetadata';
 import { useCourseHomeMeta } from '../course-home/data/apiHooks';
 import { readModels } from './data/modelReader';
 import type { RootState } from '../store';
@@ -60,7 +61,7 @@ interface OutlineFailureRedirectArgs extends RedirectArgsBase {
 
 interface SequenceRedirectArgs extends RedirectArgsBase {
   isSequenceLoaded: boolean;
-  sequence: any; // untyped model-store object; null until isSequenceLoaded (store dissolves in #1977)
+  sequence: SequenceMetadata | null;
   unitId?: string | null;
 }
 
@@ -173,8 +174,8 @@ export const sequenceToSequenceUnitRedirect = memoize(
   ({
     courseId, isSequenceLoaded, sequence, unitId, navigate, isPreview,
   }: SequenceRedirectArgs) => {
-    if (isSequenceLoaded && sequence.id && !unitId) {
-      if (sequence.unitIds !== undefined && sequence.unitIds.length > 0) {
+    if (isSequenceLoaded && sequence && !unitId) {
+      if (sequence.unitIds.length > 0) {
         const baseUrl = `/course/${courseId}/${sequence.id}`;
         const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
         const nextUnitId = sequence.unitIds[sequence.activeUnitIndex];
@@ -195,12 +196,12 @@ export const sequenceUnitMarkerToSequenceUnitRedirect = memoize(
   ({
     courseId, isSequenceLoaded, sequence, unitId, navigate, isPreview,
   }: SequenceRedirectArgs) => {
-    if (!isSequenceLoaded || !sequence.id) {
+    if (!isSequenceLoaded || !sequence) {
       return;
     }
 
     const baseUrl = `/course/${courseId}/${sequence.id}`;
-    const hasUnits = sequence.unitIds?.length > 0;
+    const hasUnits = sequence.unitIds.length > 0;
 
     if (hasUnits) {
       const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
@@ -253,9 +254,7 @@ export const useCoursewareRedirects = () => {
   const isSequenceFailed = sequenceQuery.isError;
   const mightBeUnit = sequenceMightBeUnit(sequenceQuery);
 
-  const sequence = useSelector(
-    (state: RootState) => (sequenceId ? readModels(state).sequences?.[sequenceId] : null) ?? null,
-  );
+  const sequence = sequenceQuery.data?.sequence ?? null;
   const sectionViaSequenceId = useSelector(
     (state: RootState) => (sequenceId ? readModels(state).sections?.[sequenceId] : null) ?? null,
   );

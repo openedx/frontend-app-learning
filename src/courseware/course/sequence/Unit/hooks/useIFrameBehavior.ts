@@ -11,7 +11,7 @@ import { usePostEvent } from '@src/course-home/data/apiHooks';
 import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
 import { useEventListener } from '@src/generic/hooks';
-import { useModel } from '@src/generic/model-store';
+import { useSequenceMetadata } from '@src/courseware/data/apiHooks';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
 import { eventTypes, messageTypes } from '../constants';
 
@@ -37,8 +37,8 @@ const useIFrameBehavior = ({
   const postEvent = usePostEvent();
   const { sequenceId: activeSequenceId } = useParams();
   const navigate = useNavigate();
-  const activeSequence = useModel('sequences', activeSequenceId);
-  const activeUnitId = activeSequence.unitIds?.length > 0
+  const activeSequence = useSequenceMetadata(activeSequenceId, { enabled: false }).data?.sequence;
+  const activeUnitId = activeSequence && activeSequence.unitIds.length > 0
     ? activeSequence.unitIds[activeSequence.activeUnitIndex] : null;
   const { isLastUnit, nextLink } = useSequenceNavigationMetadata(activeSequenceId, activeUnitId);
 

@@ -241,7 +241,7 @@ describe('CoursewareContainer', () => {
         assertLoadedHeader(container);
         assertNoSequenceNavigation(container);
 
-        expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
+        await waitFor(() => expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents'));
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
         expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[1].id);
       });
@@ -264,7 +264,7 @@ describe('CoursewareContainer', () => {
         assertLoadedHeader(container);
         assertNoSequenceNavigation(container);
 
-        expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
+        await waitFor(() => expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents'));
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
         expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
       });
@@ -322,6 +322,32 @@ describe('CoursewareContainer', () => {
           setUrl(sectionTree[1].id);
           await loadContainer();
           expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+        });
+      });
+
+      describe('when next leaves the first section', () => {
+        const celebrationKey = 'CelebrationModal.showOnSectionLoad';
+
+        beforeEach(() => {
+          global.localStorage.removeItem(celebrationKey);
+          setUpMockRequests({
+            courseBlocks,
+            courseMetadata: Factory.build('courseMetadata', { celebrations: { first_section: true } }),
+          });
+        });
+
+        it('records the section change for the first-section celebration', async () => {
+          mockRenderUnitNav = true;
+          setUrl(sequenceTree[0][1].id, unitTree[0][1][1].id);
+          await loadContainer();
+
+          const user = userEvent.setup();
+          await user.click(screen.getByRole('link', { name: /next/i }));
+
+          expect(JSON.parse(global.localStorage.getItem(celebrationKey))).toEqual({
+            prevSequenceId: sequenceTree[0][1].id,
+            nextSequenceId: sequenceTree[1][0].id,
+          });
         });
       });
     });
@@ -417,6 +443,29 @@ describe('CoursewareContainer', () => {
         await waitFor(() => {
           expect(axiosMock.history.post.filter(request => request.url === completionUrl)).toHaveLength(1);
         });
+      });
+
+      it('saves the position on each unit change', async () => {
+        const positionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceBlock.id}/handler/goto_position`;
+        axiosMock.onPost(positionUrl).reply(200, {});
+        const savedPositions = () => axiosMock.history.post
+          .filter(request => request.url === positionUrl)
+          .map(request => JSON.parse(request.data).position);
+
+        mockRenderUnitNav = true;
+        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
+        const container = await loadContainer();
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[0].id);
+        expect(savedPositions()).toEqual([]);
+
+        const user = userEvent.setup();
+        await user.click(screen.getByRole('link', { name: /next/i }));
+        await waitFor(() => expect(savedPositions()).toEqual([2]));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[1].id);
+
+        await user.click(screen.getByRole('link', { name: /next/i }));
+        await waitFor(() => expect(savedPositions()).toEqual([2, 3]));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
       });
     });
   });

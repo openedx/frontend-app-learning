@@ -8,10 +8,10 @@ import { useSidebar } from '../../sidebar/SidebarContext';
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
   const { courseId } = useParams();
   const sequenceIds = useSequenceIds(courseId);
-  const sequence = useModel('sequences', currentSequenceId);
   const isCourseLoaded = useIsCourseLoaded(courseId);
   const { entranceExamData: { entranceExamPassed } = {} } = useModel('coursewareMeta', courseId);
   const sequenceQuery = useSequenceMetadata(currentSequenceId, { enabled: false });
+  const sequence = sequenceQuery.data?.sequence;
 
   // If we don't know the sequence and unit yet, then assume no.
   if (!isCourseLoaded || !sequenceQuery.isSuccess || !currentSequenceId || !currentUnitId) {

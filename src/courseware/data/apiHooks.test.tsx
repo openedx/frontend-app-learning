@@ -12,7 +12,7 @@ import { appendBrowserTimezoneToUrl } from '../../utils';
 import { buildSimpleCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from './__factories__/learningSequencesOutline.factory';
 import { getResponseStatus } from '../../data/http-error';
-import { createTestQueryClient, initializeMockApp, seedSequenceModels } from '../../setupTest';
+import { createTestQueryClient, initializeMockApp } from '../../setupTest';
 import initializeStore from '../../store';
 import { addModel } from '../../generic/model-store';
 import { normalizeMinimalCourseOutline } from './minimalCourseOutline';
@@ -871,38 +871,35 @@ describe('courseware apiHooks — useSaveSequencePosition', () => {
     { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
   );
   const sequenceId = sequenceBlocks[0].id;
+  const sequenceKey = coursewareQueryKeys.sequence(sequenceId, false);
   const sequenceUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
   const gotoPositionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/goto_position`;
 
   let axiosMock: MockAdapter;
-  let store: ReturnType<typeof initializeStore>;
   let queryClient: QueryClient;
 
-  const activeUnitIndex = () => (
-    store.getState().models as { sequences: Record<string, { activeUnitIndex: number }> }
-  ).sequences[sequenceId].activeUnitIndex;
+  const activeUnitIndex = () => queryClient.getQueryData<SequenceMetadataData>(sequenceKey)?.sequence.activeUnitIndex;
 
   const renderSaveSequencePosition = () => {
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <AppProvider store={store} wrapWithRouter={false}>
+      <MemoryRouter initialEntries={[`/course/${courseId}/${sequenceId}`]}>
         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </AppProvider>
+      </MemoryRouter>
     );
     return renderHook(() => useSaveSequencePosition(), { wrapper });
   };
 
   beforeEach(async () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    store = initializeStore();
-    queryClient = createTestQueryClient(store);
+    queryClient = createTestQueryClient();
     loggingService.logError.mockReset();
-    // The rollback pre-read needs the sequence model loaded, which callers always
+    // The rollback pre-read needs the cached sequence, which callers always
     // have (the save only fires from a rendered sequence).
     axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
-    await seedSequenceModels(store, [sequenceMetadata.item_id]);
+    await queryClient.fetchQuery(sequenceMetadataQuery(sequenceId, false));
   });
 
-  it('updates the sequence model activeUnitIndex and posts the 1-indexed position', async () => {
+  it('updates the cached activeUnitIndex and posts the 1-indexed position', async () => {
     axiosMock.onPost(gotoPositionUrl).reply(201, {});
     const newPosition = 123;
 
@@ -916,7 +913,7 @@ describe('courseware apiHooks — useSaveSequencePosition', () => {
     expect(activeUnitIndex()).toEqual(newPosition);
   });
 
-  it('changes and reverts the sequence model activeUnitIndex in case of error', async () => {
+  it('changes and reverts the cached activeUnitIndex in case of error', async () => {
     axiosMock.onPost(gotoPositionUrl).networkError();
     const oldPosition = activeUnitIndex();
     const newPosition = 123;
@@ -944,6 +941,18 @@ describe('courseware apiHooks — useSaveSequencePosition', () => {
 
     await act(async () => { resolvePost(); });
     expect(activeUnitIndex()).toEqual(newPosition);
+  });
+
+  it('writes nothing for a sequence with no cache entry', async () => {
+    queryClient.removeQueries({ queryKey: sequenceKey });
+    axiosMock.onPost(gotoPositionUrl).reply(201, {});
+
+    const { result } = renderSaveSequencePosition();
+    act(() => { result.current(courseId, sequenceId, 2); });
+
+    await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    await act(async () => {});
+    expect(queryClient.getQueryData(sequenceKey)).toBeUndefined();
   });
 });
 

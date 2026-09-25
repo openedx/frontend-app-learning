@@ -43,8 +43,8 @@ jest.mock('@src/course-home/data/apiHooks', () => ({
 jest.mock('@src/generic/hooks', () => ({
   useEventListener: jest.fn(),
 }));
-jest.mock('@src/generic/model-store', () => ({
-  useModel: () => ({ unitIds: ['unit1', 'unit2'], entranceExamData: { entranceExamPassed: null } }),
+jest.mock('@src/courseware/data/apiHooks', () => ({
+  useSequenceMetadata: () => ({ data: { sequence: { unitIds: ['unit1', 'unit2'], activeUnitIndex: 0 } } }),
 }));
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

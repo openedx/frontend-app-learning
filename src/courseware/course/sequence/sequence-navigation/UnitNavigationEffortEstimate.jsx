@@ -4,8 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import EffortEstimate from '../../../../shared/effort-estimate';
-import { useSequenceIds } from '../../../data/apiHooks';
-import { useModel } from '../../../../generic/model-store';
+import { useMinimalCourseOutline, useSequenceIds, useSequenceMetadata } from '../../../data/apiHooks';
 
 import messages from './messages';
 
@@ -32,10 +31,10 @@ const UnitNavigationEffortEstimate = ({
   const sequenceIds = useSequenceIds(courseId);
   const sequenceIndex = sequenceIds.indexOf(sequenceId);
   const nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
-  const sequence = useModel('sequences', sequenceId);
-  const nextSequence = useModel('sequences', nextSequenceId);
+  const sequence = useSequenceMetadata(sequenceId, { enabled: false }).data?.sequence;
+  const nextSequence = useMinimalCourseOutline(courseId, { enabled: false }).data?.sequences[nextSequenceId];
 
-  if (!sequence || Object.keys(sequence).length === 0 || !nextSequence || Object.keys(nextSequence).length === 0) {
+  if (!sequence || !nextSequence) {
     return children;
   }
 

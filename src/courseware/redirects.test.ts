@@ -13,8 +13,29 @@ import {
   sequenceUnitMarkerToSequenceUnitRedirect,
   unitToSequenceUnitRedirect,
 } from './redirects';
+import type { SequenceMetadata } from './data/sequenceMetadata';
 
 initializeMockApp();
+
+const buildSequence = (overrides: Partial<SequenceMetadata> = {}): SequenceMetadata => ({
+  id: 'sequence_1',
+  blockType: 'sequential',
+  unitIds: ['unit_1'],
+  bannerText: null,
+  format: null,
+  title: 'Sequence 1',
+  gatedContent: {
+    gated: false, prereqId: null, prereqUrl: null, prereqSectionName: null, gatedSectionName: 'Sequence 1',
+  },
+  isTimeLimited: false,
+  isProctored: false,
+  isHiddenAfterDue: false,
+  activeUnitIndex: 0,
+  saveUnitPosition: false,
+  showCompletion: false,
+  navigationDisabled: false,
+  ...overrides,
+});
 
 describe('courseware redirect rules', () => {
   let navigate: jest.Mock;
@@ -31,20 +52,7 @@ describe('courseware redirect rules', () => {
         sequenceUnitMarkerToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: false,
-          sequence: { id: 'sequence_1', unitIds: ['unit_1'] },
-          unitId: 'first',
-          navigate,
-          isPreview: true,
-        });
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('return when sequence id is null', () => {
-        sequenceUnitMarkerToSequenceUnitRedirect({
-          courseId: 'courseId',
-          isSequenceLoaded: true,
-          sequence: { id: null, unitIds: ['unit_1'] },
+          sequence: buildSequence({ unitIds: ['unit_1'] }),
           unitId: 'first',
           navigate,
           isPreview: true,
@@ -57,7 +65,7 @@ describe('courseware redirect rules', () => {
         sequenceUnitMarkerToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: true,
-          sequence: { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'] },
+          sequence: buildSequence({ unitIds: ['unit_1', 'unit_2'] }),
           unitId: 'first',
           navigate,
           isPreview: true,
@@ -71,7 +79,7 @@ describe('courseware redirect rules', () => {
         sequenceUnitMarkerToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: true,
-          sequence: { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'] },
+          sequence: buildSequence({ unitIds: ['unit_1', 'unit_2'] }),
           unitId: 'last',
           navigate,
           isPreview: true,
@@ -87,7 +95,7 @@ describe('courseware redirect rules', () => {
         sequenceToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: true,
-          sequence: { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
+          sequence: buildSequence({ unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 }),
           unitId: null,
           navigate,
           isPreview: true,
@@ -101,20 +109,7 @@ describe('courseware redirect rules', () => {
         sequenceToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: false,
-          sequence: { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
-          unitId: null,
-          navigate,
-          isPreview: true,
-        });
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when sequence id is null', () => {
-        sequenceToSequenceUnitRedirect({
-          courseId: 'courseId',
-          isSequenceLoaded: false,
-          sequence: { unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
+          sequence: buildSequence({ unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 }),
           unitId: null,
           navigate,
           isPreview: true,
@@ -127,21 +122,8 @@ describe('courseware redirect rules', () => {
         sequenceToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: true,
-          sequence: { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
+          sequence: buildSequence({ unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 }),
           unitId: 'unit_2',
-          navigate,
-          isPreview: true,
-        });
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when unit ids are undefiend', () => {
-        sequenceToSequenceUnitRedirect({
-          courseId: 'courseId',
-          isSequenceLoaded: true,
-          sequence: { id: 'sequence_1', activeUnitIndex: 0 },
-          unitId: null,
           navigate,
           isPreview: true,
         });
@@ -680,7 +662,7 @@ describe('courseware redirect rules', () => {
         sequenceUnitMarkerToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: true,
-          sequence: { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'] },
+          sequence: buildSequence({ unitIds: ['unit_1', 'unit_2'] }),
           unitId: 'first',
           navigate,
           isPreview: false,
@@ -694,7 +676,7 @@ describe('courseware redirect rules', () => {
         sequenceUnitMarkerToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: true,
-          sequence: { id: 'sequence_1', unitIds: [] },
+          sequence: buildSequence({ unitIds: [] }),
           unitId: 'first',
           navigate,
           isPreview: true,
@@ -708,7 +690,7 @@ describe('courseware redirect rules', () => {
         sequenceUnitMarkerToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: true,
-          sequence: { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'] },
+          sequence: buildSequence({ unitIds: ['unit_1', 'unit_2'] }),
           unitId: 'last',
           navigate,
           isPreview: false,
@@ -724,7 +706,7 @@ describe('courseware redirect rules', () => {
         sequenceToSequenceUnitRedirect({
           courseId: 'courseId',
           isSequenceLoaded: true,
-          sequence: { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
+          sequence: buildSequence({ unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 }),
           unitId: null,
           navigate,
           isPreview: false,
