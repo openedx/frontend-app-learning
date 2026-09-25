@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 
+import { useUnit } from '@src/courseware/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import PageLoading from '@src/generic/PageLoading';
 import { GatedUnitContentMessageSlot } from '../../../../plugin-slots/GatedUnitContentMessageSlot';
@@ -13,19 +14,21 @@ import { modelKeys } from './constants';
 
 interface Props {
   courseId: string;
+  sequenceId: string;
   id: string;
 }
 
 const UnitSuspense = ({
   courseId,
+  sequenceId,
   id,
 }: Props) => {
   const { formatMessage } = useIntl();
-  const shouldDisplayHonorCode = hooks.useShouldDisplayHonorCode({ courseId, id });
-  const unit = useModel(modelKeys.units, id);
+  const shouldDisplayHonorCode = hooks.useShouldDisplayHonorCode({ courseId, sequenceId, id });
+  const unit = useUnit(sequenceId, id).data;
   const meta = useModel(modelKeys.coursewareMeta, courseId);
   const shouldDisplayContentGating = (
-    meta.contentTypeGatingEnabled && unit.containsContentTypeGatedContent
+    meta.contentTypeGatingEnabled && unit?.containsContentTypeGatedContent
   );
 
   return (

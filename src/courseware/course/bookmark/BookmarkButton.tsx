@@ -20,19 +20,20 @@ const hasBookmarkLabel = (
 );
 
 interface Props {
+  sequenceId: string;
   unitId: string;
   isBookmarked?: boolean;
   isProcessing: boolean;
 }
 
 const BookmarkButton = ({
-  isBookmarked = false, isProcessing, unitId,
+  isBookmarked = false, isProcessing, sequenceId, unitId,
 }: Props) => {
   const bookmarkState = isBookmarked ? 'bookmarked' : 'default';
   const state = isProcessing ? `${bookmarkState}Processing` : bookmarkState;
 
   const setBookmarked = useSetBookmarked();
-  const toggleBookmark = () => setBookmarked(unitId, !isBookmarked);
+  const toggleBookmark = () => setBookmarked(sequenceId, unitId, !isBookmarked);
 
   return (
     <StatefulButton

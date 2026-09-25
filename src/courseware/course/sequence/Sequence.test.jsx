@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -13,7 +13,7 @@ import {
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import { getEnabledWidgets } from '../sidebar/defaultWidgets';
 import { SidebarProvider } from '../sidebar/SidebarContext';
-import Sequence from './Sequence';
+import Sequence, { logSequenceEvent } from './Sequence';
 
 jest.mock('@edx/frontend-platform/analytics');
 
@@ -84,6 +84,19 @@ describe('Sequence', () => {
     expect(screen.getByText('There is no content here.')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it('displays the no-content message for a unit that is not in the sequence', async () => {
+    const testStore = await initializeTestStore({ courseMetadata, unitBlocks }, false);
+    const { sequenceId } = getTestStoreIds(testStore);
+    render(
+      <SidebarWrapper overrideData={{ sequenceId, unitId: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@not_in_this_sequence' }} />,
+      { store: testStore },
+    );
+
+    expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
+    expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('content-iframe-test-id')).not.toBeInTheDocument();
   });
 
   it('renders correctly for gated content', async () => {
@@ -363,8 +376,7 @@ describe('Sequence', () => {
       expect(sendTrackEvent).not.toHaveBeenCalled();
     });
 
-    it('handles the navigation buttons for empty sequence', async () => {
-      const user = userEvent.setup();
+    it('shows the no-content message for a sequence with no units', async () => {
       const testSequenceBlocks = [Factory.build(
         'block',
         { type: 'sequential', children: unitBlocks.map(block => block.id) },
@@ -372,10 +384,6 @@ describe('Sequence', () => {
       ), Factory.build(
         'block',
         { type: 'sequential', children: [] },
-        { courseId: courseMetadata.id },
-      ), Factory.build(
-        'block',
-        { type: 'sequential', children: unitBlocks.map(block => block.id) },
         { courseId: courseMetadata.id },
       )];
       const testSequenceMetadata = testSequenceBlocks.map(block => Factory.build(
@@ -391,49 +399,49 @@ describe('Sequence', () => {
       }, false);
       const testData = {
         ...mockData,
-        unitId: unitBlocks[0].id,
+        unitId: undefined,
         sequenceId: testSequenceBlocks[1].id,
-        unitNavigationHandler: jest.fn(),
-        previousSequenceHandler: jest.fn(),
-        nextSequenceHandler: jest.fn(),
       };
 
       render(<SidebarWrapper overrideData={testData} />, { store: innerTestStore });
-      await screen.findByRole('button', { name: /previous/i });
-      loadUnit();
-      await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
-      await user.click(screen.getByRole('button', { name: /previous/i }));
-      await user.click(screen.getByRole('link', { name: /previous/i }));
-      expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(2);
+      expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
+      expect(screen.queryByTestId('content-iframe-test-id')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /previous|next/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: /previous|next/i })).not.toBeInTheDocument();
+    });
+  });
 
-      await user.click(screen.getByRole('button', { name: /next/i }));
-      await user.click(screen.getByRole('link', { name: /next/i }));
-      expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
-      expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(4);
+  describe('logSequenceEvent', () => {
+    const unitIds = ['unit-1', 'unit-2', 'unit-3'];
 
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(1, 'edx.ui.lms.sequence.previous_selected', {
-        current_tab: 1,
-        id: testData.unitId,
-        tab_count: 0,
-        widget_placement: 'bottom',
+    beforeEach(() => {
+      sendTrackEvent.mockClear();
+      sendTrackingLogEvent.mockClear();
+    });
+
+    it('reports the 1-indexed current and target tabs', () => {
+      logSequenceEvent('edx.ui.lms.sequence.tab_selected', {
+        sequence: { unitIds }, unitId: 'unit-2', widgetPlacement: 'top', targetUnitId: 'unit-3',
       });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.previous_selected', {
-        current_tab: 1,
-        id: testData.unitId,
-        tab_count: 0,
-        widget_placement: 'bottom',
+      const payload = {
+        current_tab: 2,
+        id: 'unit-2',
+        tab_count: 3,
+        widget_placement: 'top',
+        target_tab: 3,
+      };
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', payload);
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', payload);
+    });
+
+    it('reports tab 1 of 0 for a sequence with no units', () => {
+      logSequenceEvent('edx.ui.lms.sequence.next_selected', {
+        sequence: { unitIds: [] }, unitId: null, widgetPlacement: 'bottom',
       });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.next_selected', {
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.next_selected', {
         current_tab: 1,
-        id: testData.unitId,
-        tab_count: 0,
-        widget_placement: 'bottom',
-      });
-      expect(sendTrackEvent).toHaveBeenNthCalledWith(4, 'edx.ui.lms.sequence.next_selected', {
-        current_tab: 1,
-        id: testData.unitId,
+        id: null,
         tab_count: 0,
         widget_placement: 'bottom',
       });
