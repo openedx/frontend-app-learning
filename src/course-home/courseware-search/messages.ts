@@ -33,8 +33,8 @@ const messages = defineMessages({
   },
   searchBarPlaceholderText: {
     id: 'learn.coursewareSearch.searchBarPlaceholderText',
-    defaultMessage: 'Search',
-    description: 'Placeholder text for the Courseware Search input control',
+    defaultMessage: 'Find topics across this course',
+    description: 'Placeholder hint shown inside the Courseware Search input describing what can be searched.',
   },
   loading: {
     id: 'learn.coursewareSearch.loading',

@@ -109,6 +109,12 @@ describe('CoursewareSearch', () => {
       const section = screen.getByTestId('courseware-search-dialog');
       expect(section.style.getPropertyValue('--modal-top-position')).toBe(`${tabsTopPosition}px`);
     });
+
+    it('should expose the visible heading as the search input\'s accessible name', async () => {
+      renderComponent();
+      const input = await screen.findByRole('searchbox', { name: /search this course/i });
+      expect(input).toBeInTheDocument();
+    });
   });
 
   describe('when clicking on the "Close" button', () => {
