@@ -205,7 +205,7 @@ describe('Course', () => {
       loadUnit();
 
       await waitFor(() => {
-        // Discussions prefetch resolves; assert nothing has opened in response.
+        // The Provider's topics query resolves; assert nothing has opened in response.
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
       });
       expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();

@@ -17,6 +17,11 @@ jest.mock('@src/course-home/data/apiHooks', () => ({
   useCourseHomeMeta: jest.fn(() => ({ data: { tabs: [] } })),
 }));
 
+jest.mock('@src/courseware/data/apiHooks', () => ({
+  ...jest.requireActual('@src/courseware/data/apiHooks'),
+  useDiscussionTopic: jest.fn(() => ({ data: undefined })),
+}));
+
 jest.mock('@openedx/paragon', () => {
   const actual = jest.requireActual('@openedx/paragon');
   return {

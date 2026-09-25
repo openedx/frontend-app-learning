@@ -27,6 +27,7 @@ import { getCourseHomeCourseMetadata } from './course-home/data/api';
 import { appendBrowserTimezoneToUrl } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 import { buildOutlineFromBlocks } from './courseware/data/__factories__/learningSequencesOutline.factory';
+import { buildTopicsFromUnits } from './courseware/data/__factories__/discussionTopics.factory';
 
 jest.mock('@openedx/frontend-plugin-framework', () => {
   // eslint-disable-next-line global-require
@@ -222,17 +223,20 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
   let courseHomeMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseMetadata.id}`;
   const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
+  const discussionTopicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseMetadata.id}`;
   const coursewareSidebarSettingsUrl = `${getConfig().LMS_BASE_URL}/courses/${courseMetadata.id}/courseware-navigation-sidebar/toggles/`;
   const outlineSidebarUrl = `${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/${courseMetadata.id}`;
   courseHomeMetadataUrl = appendBrowserTimezoneToUrl(courseHomeMetadataUrl);
 
   const provider = options?.provider || 'legacy';
+  const enabledInContext = options.enabledInContext ?? true;
   const enableCompletionTracking = options.enableCompletionTracking || { enable_completion_tracking: true };
 
   axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
   axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
   axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(courseBlocks));
   axiosMock.onGet(discussionConfigUrl).reply(200, { provider });
+  axiosMock.onGet(discussionTopicsUrl).reply(200, buildTopicsFromUnits(unitBlocks, enabledInContext));
   axiosMock.onGet(coursewareSidebarSettingsUrl).reply(200, {
     ...enableCompletionTracking,
   });
