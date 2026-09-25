@@ -42,7 +42,7 @@ describe('Sequence Navigation', () => {
             path="/course/:courseId/:sequenceId/*"
             element={(
               <SidebarProvider courseId={courseMetadata.id} unitId={mockData.unitId} widgets={[]}>
-                <MountCourseQueryHooks courseId={courseMetadata.id} />
+                <MountCourseQueryHooks courseId={courseMetadata.id} sequenceId={sequenceId} />
                 <SequenceNavigation {...mockData} {...props} />
               </SidebarProvider>
             )}

@@ -45,7 +45,7 @@ describe('Unit Navigation', () => {
             path="/course/:courseId/:sequenceId/*"
             element={(
               <>
-                <MountCourseQueryHooks courseId={courseMetadata.id} />
+                <MountCourseQueryHooks courseId={courseMetadata.id} sequenceId={sequenceId} />
                 <UnitNavigation {...mockData} {...props} />
               </>
             )}

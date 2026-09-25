@@ -18,7 +18,7 @@ const CourseBreadcrumbs = ({
 }) => {
   const course = useModel('coursewareMeta', courseId);
   const isCourseLoaded = useIsCourseLoaded(courseId);
-  const sequenceQuery = useSequenceMetadata(sequenceId);
+  const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
 
   const allSequencesInSections = Object.fromEntries(
     useModels('sections', course.sectionIds)?.map((section) => [

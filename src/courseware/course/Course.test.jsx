@@ -69,7 +69,7 @@ describe('Course', () => {
           path="/course/:courseId/:sequenceId/*"
           element={(
             <>
-              <MountCourseQueryHooks courseId={testData.courseId} />
+              <MountCourseQueryHooks courseId={testData.courseId} sequenceId={testData.sequenceId} />
               <LoadedCourse {...testData} />
             </>
           )}
@@ -283,7 +283,7 @@ describe('Course', () => {
         expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /Show discussions tray/i }));
+      await user.click(await screen.findByRole('button', { name: /Show discussions tray/i }));
 
       await waitFor(() => {
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();

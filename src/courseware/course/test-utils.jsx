@@ -34,7 +34,7 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
   mockData.sequenceId = getTestStoreIds(testStore).sequenceId;
   const wrapper = await render(
     <>
-      <MountCourseQueryHooks courseId={mockData.courseId} />
+      <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
       <Course {...mockData} />
     </>,
     { store: testStore, wrapWithRouter: true },

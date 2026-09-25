@@ -11,7 +11,7 @@ export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) 
   const sequence = useModel('sequences', currentSequenceId);
   const isCourseLoaded = useIsCourseLoaded(courseId);
   const { entranceExamData: { entranceExamPassed } = {} } = useModel('coursewareMeta', courseId);
-  const sequenceQuery = useSequenceMetadata(currentSequenceId);
+  const sequenceQuery = useSequenceMetadata(currentSequenceId, { enabled: false });
 
   // If we don't know the sequence and unit yet, then assume no.
   if (!isCourseLoaded || !sequenceQuery.isSuccess || !currentSequenceId || !currentUnitId) {
