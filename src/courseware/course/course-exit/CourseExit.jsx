@@ -11,7 +11,7 @@ import { CourseExitViewCoursesPluginSlot } from '../../../plugin-slots/CourseExi
 
 import { useModel } from '../../../generic/model-store';
 import { TabWithTimer } from '../../../tab-page';
-import { useCoursewareMetadata, useCoursewareOutline } from '../../data/apiHooks';
+import { useCoursewareMetadata, useMinimalCourseOutline } from '../../data/apiHooks';
 import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 const CourseExitContent = () => {
@@ -72,7 +72,7 @@ const CourseExit = () => {
   const { courseId } = useParams();
   const metadataQuery = useCoursewareMetadata(courseId);
   const courseHomeMetaQuery = useCourseHomeMeta(courseId);
-  useCoursewareOutline(courseId);
+  useMinimalCourseOutline(courseId);
 
   return (
     <TabWithTimer

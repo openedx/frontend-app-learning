@@ -1,9 +1,10 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import {
-  normalizeLearningSequencesData, normalizeMetadata, normalizeOutlineBlocks, normalizeSequenceMetadata,
-} from './utils';
+import { normalizeCourseNavigationOutline } from './courseNavigationOutline';
+import { normalizeCoursewareMeta } from './coursewareMeta';
+import { normalizeMinimalCourseOutline } from './minimalCourseOutline';
+import { normalizeSequenceMetadata } from './sequenceMetadata';
 
 // Do not add further calls to this API - we don't like making use of the modulestore if we can help it
 export const getSequenceForUnitDeprecatedUrl = (courseId) => {
@@ -26,14 +27,14 @@ export async function getSequenceForUnitDeprecated(courseId, unitId) {
 export async function getLearningSequencesOutline(courseId) {
   const outlineUrl = new URL(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/${courseId}`);
   const { data } = await getAuthenticatedHttpClient().get(outlineUrl.href, {});
-  return normalizeLearningSequencesData(data);
+  return normalizeMinimalCourseOutline(data);
 }
 
 export async function getCourseMetadata(courseId) {
   let url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
   url = appendBrowserTimezoneToUrl(url);
   const metadata = await getAuthenticatedHttpClient().get(url);
-  return normalizeMetadata(metadata);
+  return normalizeCoursewareMeta(metadata);
 }
 
 export async function getSequenceMetadata(sequenceId, params) {
@@ -100,7 +101,7 @@ export async function getCourseOutline(courseId) {
   const { data } = await getAuthenticatedHttpClient()
     .get(`${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/${courseId}`);
 
-  return data.blocks ? normalizeOutlineBlocks(courseId, data.blocks) : null;
+  return data.blocks ? normalizeCourseNavigationOutline(data.blocks) : null;
 }
 
 /**

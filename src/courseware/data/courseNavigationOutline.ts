@@ -1,6 +1,9 @@
-// Types for the navigation-sidebar outline as produced by `normalizeOutlineBlocks`.
+import { logInfo } from '@edx/frontend-platform/logging';
 
-export interface CourseOutlineUnit {
+// The navigation sidebar's outline (GET /api/course_home/v1/navigation/), as
+// `normalizeCourseNavigationOutline` shapes it.
+
+export interface CourseNavigationUnit {
   complete: boolean;
   icon?: string | null;
   id: string;
@@ -8,7 +11,7 @@ export interface CourseOutlineUnit {
   type: string;
 }
 
-export interface CourseOutlineSequence {
+export interface CourseNavigationSequence {
   complete: boolean;
   id: string;
   title: string;
@@ -21,7 +24,7 @@ export interface CourseOutlineSequence {
   };
 }
 
-export interface CourseOutlineSection {
+export interface CourseNavigationSection {
   complete: boolean;
   id: string;
   title: string;
@@ -32,10 +35,82 @@ export interface CourseOutlineSection {
   };
 }
 
-export interface CourseOutlineData {
-  units: Record<string, CourseOutlineUnit>;
-  sequences: Record<string, CourseOutlineSequence>;
-  sections: Record<string, CourseOutlineSection>;
+export interface CourseNavigationOutline {
+  units: Record<string, CourseNavigationUnit>;
+  sequences: Record<string, CourseNavigationSequence>;
+  sections: Record<string, CourseNavigationSection>;
+}
+
+// Names only the fields `normalizeCourseNavigationOutline` reads; the endpoint returns more, left
+// reachable as `unknown`.
+// One entry of the response's `blocks`.
+interface CourseNavigationBlockResponse {
+  id: string;
+  type: string;
+  display_name: string;
+  complete: boolean;
+  children: string[];
+  icon: string | null;
+  completion_stat: { completion: number; completable_children: number };
+  special_exam_info?: string;
+  [key: string]: unknown;
+}
+
+export function normalizeCourseNavigationOutline(
+  blocks: Record<string, CourseNavigationBlockResponse>,
+): CourseNavigationOutline {
+  const models: CourseNavigationOutline = {
+    sections: {},
+    sequences: {},
+    units: {},
+  };
+  Object.values(blocks).forEach(block => {
+    switch (block.type) {
+      case 'chapter':
+        models.sections[block.id] = {
+          complete: block.complete,
+          id: block.id,
+          title: block.display_name,
+          sequenceIds: block.children || [],
+          completionStat: {
+            completed: block.completion_stat?.completion,
+            total: block.completion_stat?.completable_children,
+          },
+        };
+        break;
+
+      case 'sequential':
+      case 'lock':
+        models.sequences[block.id] = {
+          complete: block.complete,
+          id: block.id,
+          title: block.display_name,
+          type: block.type,
+          specialExamInfo: block.special_exam_info,
+          unitIds: block.children || [],
+          completionStat: {
+            completed: block.completion_stat?.completion,
+            total: block.completion_stat?.completable_children,
+          },
+        };
+        break;
+
+      case 'vertical':
+        models.units[block.id] = {
+          complete: block.complete,
+          icon: block.icon,
+          id: block.id,
+          title: block.display_name,
+          type: block.type,
+        };
+        break;
+
+      default:
+        logInfo(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, and sequential.`);
+    }
+  });
+
+  return models;
 }
 
 /**
@@ -44,8 +119,8 @@ export interface CourseOutlineData {
  * completing the sequence may unlock a prerequisite-gated sibling (the section holds
  * a locked sequence), meaning the outline should be refetched from the server.
  */
-export function applyUnitCompletion(outline: CourseOutlineData, unitId: string): {
-  outline: CourseOutlineData;
+export function applyUnitCompletion(outline: CourseNavigationOutline, unitId: string): {
+  outline: CourseNavigationOutline;
   refetchNeeded: boolean;
 } {
   // The containing sequence is found by scanning unitIds: the outline tree is the

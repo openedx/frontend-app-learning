@@ -5,7 +5,8 @@ import {
 import { useSearchParams } from 'react-router-dom';
 
 import { useCourseHomeMeta, type CourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { useDiscussionTopic, type CoursewareMeta, type DiscussionTopic } from '@src/courseware/data/apiHooks';
+import { useDiscussionTopic, type DiscussionTopic } from '@src/courseware/data/apiHooks';
+import type { CoursewareMeta } from '@src/courseware/data/coursewareMeta';
 import { useModel } from '@src/generic/model-store';
 
 import {

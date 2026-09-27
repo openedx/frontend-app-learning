@@ -18,7 +18,7 @@ import {
   getSequenceForUnitDeprecated,
 } from './data';
 import {
-  sequenceMightBeUnit, useCoursewareOutline, useIsCourseLoaded, useSequenceMetadata,
+  sequenceMightBeUnit, useMinimalCourseOutline, useIsCourseLoaded, useSequenceMetadata,
 } from './data/apiHooks';
 import { useCourseHomeMeta } from '../course-home/data/apiHooks';
 import { readModels } from './data/modelReader';
@@ -246,7 +246,7 @@ export const useCoursewareRedirects = () => {
   const isPreview = pathname.startsWith('/preview');
 
   const isCourseLoaded = useIsCourseLoaded(courseId);
-  const outlineQuery = useCoursewareOutline(courseId);
+  const outlineQuery = useMinimalCourseOutline(courseId);
   const courseHomeMetaQuery = useCourseHomeMeta(courseId);
   const sequenceQuery = useSequenceMetadata(sequenceId);
   const isSequenceLoaded = sequenceQuery.isSuccess;
