@@ -14,16 +14,14 @@ import {
   getCoursewareOutlineSidebarToggles, getCourseTopics, getLearningSequencesOutline, getSequenceMetadata,
   postIntegritySignature, postSequencePosition,
 } from './api';
-import { applyUnitCompletion, type CourseOutlineData } from './courseOutline';
+import { applyUnitCompletion, type CourseNavigationOutline } from './courseNavigationOutline';
+import type { CoursewareMeta } from './coursewareMeta';
+import type { MinimalCourseOutline } from './minimalCourseOutline';
 import { coursewareQueryKeys } from './queryKeys';
+import type { SequenceMetadataData, SequenceUnit } from './sequenceMetadata';
 
 interface QueryOptions {
   enabled?: boolean;
-}
-
-// No TypeScript reader names a field yet; #2089 adds them as its readers convert.
-export interface CoursewareMeta {
-  [key: string]: unknown;
 }
 
 export const useCoursewareMetadata = (
@@ -36,10 +34,10 @@ export const useCoursewareMetadata = (
   meta: { models: [{ modelType: 'coursewareMeta', strategy: 'updateModel' }] },
 });
 
-export const useCoursewareOutline = (
+export const useMinimalCourseOutline = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
-) => useQuery({
+) => useQuery<MinimalCourseOutline>({
   queryKey: coursewareQueryKeys.outline(courseId!),
   queryFn: () => getLearningSequencesOutline(courseId),
   enabled: enabled && !!courseId,
@@ -55,7 +53,7 @@ export const useCoursewareOutline = (
 
 export const useIsCourseLoaded = (courseId: string | undefined): boolean => {
   const metadataQuery = useCoursewareMetadata(courseId, { enabled: false });
-  const outlineQuery = useCoursewareOutline(courseId, { enabled: false });
+  const outlineQuery = useMinimalCourseOutline(courseId, { enabled: false });
   const courseHomeMetaQuery = useCourseHomeMeta(courseId, { enabled: false });
   return metadataQuery.isSuccess && courseHomeMetaQuery.isSuccess
     && !!courseHomeMetaQuery.data?.courseAccess?.hasAccess && outlineQuery.isSuccess;
@@ -70,28 +68,6 @@ export const useSequenceIds = (courseId: string | undefined): string[] => {
     [sections],
   );
 };
-
-export interface SequenceUnit {
-  id: string;
-  sequenceId: string;
-  bookmarked: boolean;
-  complete: boolean | null;
-  title: string;
-  contentType: string;
-  graded: boolean;
-  containsContentTypeGatedContent: boolean;
-  bookmarkedUpdateState?: 'loading' | 'loaded' | 'failed';
-}
-
-// No TypeScript reader names a field yet; #2088's sequences layer adds them as its readers convert.
-export interface SequenceMetadata {
-  [key: string]: unknown;
-}
-
-export interface SequenceMetadataData {
-  sequence: SequenceMetadata;
-  units: SequenceUnit[];
-}
 
 export const useIsPreview = () => useLocation().pathname.startsWith('/preview');
 
@@ -151,7 +127,7 @@ export const sequenceMightBeUnit = (sequenceQuery: { error: unknown }): boolean 
   getResponseStatus(sequenceQuery.error) === 422
 );
 
-export const useCourseOutlineStructure = (courseId: string | undefined) => useQuery<CourseOutlineData | null>({
+export const useCourseOutlineStructure = (courseId: string | undefined) => useQuery<CourseNavigationOutline | null>({
   queryKey: coursewareQueryKeys.courseOutline(courseId!),
   queryFn: () => getCourseOutline(courseId!),
   enabled: !!courseId,
@@ -229,7 +205,7 @@ export const useCheckBlockCompletion = () => {
         return;
       }
       const queryKey = coursewareQueryKeys.courseOutline(courseId);
-      const cachedOutline = queryClient.getQueryData<CourseOutlineData | null>(queryKey);
+      const cachedOutline = queryClient.getQueryData<CourseNavigationOutline | null>(queryKey);
       if (!cachedOutline) {
         return; // sidebar outline never fetched (e.g. never opened)
       }

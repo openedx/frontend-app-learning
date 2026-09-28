@@ -139,7 +139,7 @@ describe('Course Exit Pages', () => {
       });
       const { courseBlocks } = buildSimpleCourseBlocks(courseId, courseHomeMetadata.title);
       // buildOutlineFromBlocks releases every sequence; mark one unreleased so the normalized
-      // outline reports hasScheduledContent (see isReleased in ../../data/utils.js).
+      // outline reports hasScheduledContent (see isReleased in ../../data/minimalCourseOutline.ts).
       const outline = buildOutlineFromBlocks(courseBlocks);
       const [scheduledSequenceId] = Object.keys(outline.outline.sequences);
       outline.outline.sequences[scheduledSequenceId].accessible = false;

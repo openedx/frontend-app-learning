@@ -3,7 +3,7 @@ import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { BookmarkButton } from '@src/courseware/course/bookmark';
-import type { SequenceUnit } from '@src/courseware/data/apiHooks';
+import type { SequenceUnit } from '@src/courseware/data/sequenceMetadata';
 import messages from '@src/courseware/course/sequence/messages';
 
 interface Props {

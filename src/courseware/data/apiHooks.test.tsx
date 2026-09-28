@@ -15,18 +15,20 @@ import { getResponseStatus } from '../../data/http-error';
 import { createTestQueryClient, initializeMockApp, seedSequenceModels } from '../../setupTest';
 import initializeStore from '../../store';
 import { addModel } from '../../generic/model-store';
-import { normalizeLearningSequencesData, normalizeOutlineBlocks, normalizeSequenceMetadata } from './utils';
+import { normalizeMinimalCourseOutline } from './minimalCourseOutline';
+import { normalizeCourseNavigationOutline } from './courseNavigationOutline';
+import { normalizeSequenceMetadata } from './sequenceMetadata';
 import { coursewareQueryKeys } from './queryKeys';
 import { courseHomeQueryKeys } from '../../course-home/data/queryKeys';
-import type { CourseOutlineData } from './courseOutline';
+import type { CourseNavigationOutline } from './courseNavigationOutline';
 import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import {
   discussionTopicsQuery, sequenceMetadataQuery, sequenceMightBeUnit, updateSequenceUnit, useCheckBlockCompletion,
-  useCourseOutlineStructure, useCoursewareMetadata, useCoursewareOutline, useCoursewareOutlineSidebarToggles,
+  useCourseOutlineStructure, useCoursewareMetadata, useMinimalCourseOutline, useCoursewareOutlineSidebarToggles,
   useDiscussionTopic, useIsCourseLoaded, useSaveIntegritySignature, useSaveSequencePosition, useSequenceIds,
   useSequenceMetadata, useUnit,
 } from './apiHooks';
-import type { SequenceMetadataData } from './apiHooks';
+import type { SequenceMetadataData } from './sequenceMetadata';
 
 const { loggingService } = initializeMockApp();
 
@@ -36,7 +38,7 @@ describe('courseware apiHooks — coursewareMeta bridge', () => {
   const courseId = courseMetadata.id;
   const { courseBlocks } = buildSimpleCourseBlocks(courseId);
   const outlineResponse = buildOutlineFromBlocks(courseBlocks);
-  const normalizedOutline = normalizeLearningSequencesData(outlineResponse);
+  const normalizedOutline = normalizeMinimalCourseOutline(outlineResponse);
   const expectedSectionIds = normalizedOutline.courses[courseId].sectionIds;
   const expectedSequenceIds = expectedSectionIds.flatMap(
     (id: string) => normalizedOutline.sections[id].sequenceIds,
@@ -75,7 +77,7 @@ describe('courseware apiHooks — coursewareMeta bridge', () => {
     );
     const { result } = renderHook(() => {
       useCoursewareMetadata(courseId);
-      useCoursewareOutline(courseId);
+      useMinimalCourseOutline(courseId);
       useCourseHomeMeta(courseId);
       return useSequenceIds(courseId);
     }, { wrapper });
@@ -143,7 +145,7 @@ describe('courseware apiHooks — useIsCourseLoaded', () => {
   const renderLoaded = (id: string | undefined, queryClient: QueryClient = createTestQueryClient()) => (
     renderHook(() => {
       useCoursewareMetadata(id);
-      useCoursewareOutline(id);
+      useMinimalCourseOutline(id);
       useCourseHomeMeta(id);
       return useIsCourseLoaded(id);
     }, { wrapper: makeWrapper(queryClient) })
@@ -403,7 +405,7 @@ describe('courseware apiHooks — useCourseOutlineStructure', () => {
     const { result } = renderOutline();
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual(normalizeOutlineBlocks(courseId, courseBlocks.blocks));
+    expect(result.current.data).toEqual(normalizeCourseNavigationOutline(courseBlocks.blocks));
   });
 
   it('returns null when the response has no blocks', async () => {
@@ -657,13 +659,13 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
   let axiosMock: MockAdapter;
   let queryClient: QueryClient;
 
-  const outline = () => queryClient.getQueryData<CourseOutlineData>(outlineQueryKey)!;
+  const outline = () => queryClient.getQueryData<CourseNavigationOutline>(outlineQueryKey)!;
   const cachedUnit = (id: string) => (
     queryClient.getQueryData<SequenceMetadataData>(sequenceKey)?.units.find((unit) => unit.id === id)
   );
 
   const seedOutline = () => {
-    queryClient.setQueryData(outlineQueryKey, normalizeOutlineBlocks(courseId, courseBlocks.blocks));
+    queryClient.setQueryData(outlineQueryKey, normalizeCourseNavigationOutline(courseBlocks.blocks));
   };
 
   const renderCheckBlockCompletion = () => {
@@ -801,14 +803,14 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
 
     await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
     await act(async () => {});
-    expect(outline()).toEqual(normalizeOutlineBlocks(courseId, courseBlocks.blocks));
+    expect(outline()).toEqual(normalizeCourseNavigationOutline(courseBlocks.blocks));
     expect(invalidateSpy).not.toHaveBeenCalled();
     expect(loggingService.logError).not.toHaveBeenCalled();
   });
 
   it('invalidates the outline query when completing a sequence in a section with a locked sequence', async () => {
     axiosMock.onPost(completionUrl).reply(201, { complete: true });
-    const lockedOutline: CourseOutlineData = {
+    const lockedOutline: CourseNavigationOutline = {
       units: {
         'unit-1': {
           id: 'unit-1', complete: false, title: 'Unit 1', type: 'vertical',

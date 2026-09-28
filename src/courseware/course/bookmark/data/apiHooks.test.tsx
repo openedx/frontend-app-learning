@@ -6,7 +6,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
-import type { SequenceMetadataData } from '@src/courseware/data/apiHooks';
+import type { SequenceMetadataData } from '@src/courseware/data/sequenceMetadata';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
 import { createTestQueryClient, initializeMockApp } from '../../../../setupTest';
 import { useSetBookmarked } from './apiHooks';
