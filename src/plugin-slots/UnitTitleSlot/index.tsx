@@ -1,15 +1,26 @@
-import PropTypes from 'prop-types';
+import React from 'react';
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { BookmarkButton } from '@src/courseware/course/bookmark';
 import messages from '@src/courseware/course/sequence/messages';
 
+interface Props {
+  unitId: string;
+  unit: {
+    id: string;
+    bookmarked: boolean;
+    title: string;
+    bookmarkedUpdateState?: string;
+  };
+  renderUnitNavigation: (isAtTop: boolean) => React.ReactNode;
+}
+
 const UnitTitleSlot = ({
   unitId,
   unit,
   renderUnitNavigation,
-}) => {
+}: Props) => {
   const { formatMessage } = useIntl();
   const isProcessing = unit.bookmarkedUpdateState === 'loading';
 
@@ -38,17 +49,6 @@ const UnitTitleSlot = ({
       />
     </PluginSlot>
   );
-};
-
-UnitTitleSlot.propTypes = {
-  unitId: PropTypes.string.isRequired,
-  unit: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    bookmarked: PropTypes.bool.isRequired,
-    title: PropTypes.string.isRequired,
-    bookmarkedUpdateState: PropTypes.string.isRequired,
-  }).isRequired,
-  renderUnitNavigation: PropTypes.func.isRequired,
 };
 
 export default UnitTitleSlot;
