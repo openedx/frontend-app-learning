@@ -5,6 +5,7 @@ import {
   render, screen, fireEvent, getByText, getTestStoreIds, initializeTestStore,
 } from '../../../../setupTest';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
+import SidebarContext from '../../sidebar/SidebarContext';
 import SequenceNavigation from './SequenceNavigation';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
@@ -32,6 +33,8 @@ describe('Sequence Navigation', () => {
     };
   });
 
+  const sidebarContextValue = { currentSidebar: null, availableSidebarIds: [] };
+
   const renderNav = (props = {}, { store } = {}) => {
     const sequenceId = props.sequenceId ?? mockData.sequenceId;
     return render(
@@ -40,10 +43,10 @@ describe('Sequence Navigation', () => {
           <Route
             path="/course/:courseId/:sequenceId/*"
             element={(
-              <>
+              <SidebarContext.Provider value={sidebarContextValue}>
                 <MountCourseQueryHooks courseId={courseMetadata.id} />
                 <SequenceNavigation {...mockData} {...props} />
-              </>
+              </SidebarContext.Provider>
             )}
           />
         </Routes>

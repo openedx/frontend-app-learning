@@ -1,37 +1,36 @@
 import {
-  createContext, useCallback, useContext, useMemo, useState,
+  createContext, useCallback, useContext, useMemo, useState, type ReactNode,
 } from 'react';
-import PropTypes from 'prop-types';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+
+import { useSidebar } from '@src/courseware/course/sidebar/SidebarContext';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 
-/**
- * @typedef {Object} UpgradeWidgetContextValue
- * @property {string|null} upgradeWidgetStatus - 'active' | 'inactive' | null
- * @property {(status: string) => void} setUpgradeWidgetStatus
- * @property {string|null} upgradeCurrentState - Current upgrade stage
- * @property {(state: string) => void} setUpgradeCurrentState
- * @property {() => void} onUpgradeWidgetSeen - Mark widget as seen (hides red dot)
- */
+interface UpgradeWidgetContextValue {
+  upgradeWidgetStatus: string | null; // 'active' | 'inactive' | null
+  setUpgradeWidgetStatus: (status: string) => void;
+  upgradeCurrentState: string | null; // Current upgrade stage
+  setUpgradeCurrentState: (state: string) => void;
+  onUpgradeWidgetSeen: () => void; // Mark widget as seen (hides red dot)
+}
 
-const UpgradeWidgetContext = createContext(null);
+const UpgradeWidgetContext = createContext<UpgradeWidgetContextValue | null>(null);
 
-export const UpgradeWidgetProvider = ({ children }) => {
-  const { courseId } = useContext(SidebarContext);
+export const UpgradeWidgetProvider = ({ children }: { children: ReactNode }) => {
+  const { courseId } = useSidebar();
 
-  const [upgradeWidgetStatus, setUpgradeWidgetStatusState] = useState(
+  const [upgradeWidgetStatus, setUpgradeWidgetStatusState] = useState<string | null>(
     () => getLocalStorage(`upgradeWidget.${courseId}`) || 'active',
   );
-  const [upgradeCurrentState, setUpgradeCurrentStateRaw] = useState(
+  const [upgradeCurrentState, setUpgradeCurrentStateRaw] = useState<string | null>(
     () => getLocalStorage(`upgradeWidgetState.${courseId}`) || null,
   );
 
-  const setUpgradeWidgetStatus = useCallback((status) => {
+  const setUpgradeWidgetStatus = useCallback((status: string) => {
     setUpgradeWidgetStatusState(status);
     setLocalStorage(`upgradeWidget.${courseId}`, status);
   }, [courseId]);
 
-  const setUpgradeCurrentState = useCallback((state) => {
+  const setUpgradeCurrentState = useCallback((state: string) => {
     setUpgradeCurrentStateRaw(state);
     setLocalStorage(`upgradeWidgetState.${courseId}`, state);
   }, [courseId]);
@@ -40,7 +39,7 @@ export const UpgradeWidgetProvider = ({ children }) => {
     setUpgradeWidgetStatus('inactive');
   }, [setUpgradeWidgetStatus]);
 
-  const value = useMemo(() => ({
+  const value = useMemo<UpgradeWidgetContextValue>(() => ({
     upgradeWidgetStatus,
     setUpgradeWidgetStatus,
     upgradeCurrentState,
@@ -61,11 +60,7 @@ export const UpgradeWidgetProvider = ({ children }) => {
   );
 };
 
-UpgradeWidgetProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-export function useUpgradeWidgetContext() {
+export function useUpgradeWidgetContext(): UpgradeWidgetContextValue {
   const ctx = useContext(UpgradeWidgetContext);
   if (!ctx) {
     throw new Error('useUpgradeWidgetContext must be used inside UpgradeWidgetProvider');

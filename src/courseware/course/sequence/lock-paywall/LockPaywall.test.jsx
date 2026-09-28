@@ -6,6 +6,7 @@ import {
   fireEvent, getTestStoreIds, initializeTestStore, render, screen,
 } from '../../../../setupTest';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
+import SidebarContext from '../../sidebar/SidebarContext';
 import LockPaywall from './LockPaywall';
 
 jest.mock('@edx/frontend-platform/analytics');
@@ -13,6 +14,7 @@ jest.mock('@edx/frontend-platform/analytics');
 describe('Lock Paywall', () => {
   let store;
   const mockData = { currentSidebar: null };
+  const sidebarContextValue = { currentSidebar: null, availableSidebarIds: [] };
 
   beforeAll(async () => {
     store = await initializeTestStore();
@@ -22,10 +24,10 @@ describe('Lock Paywall', () => {
   });
 
   const renderPaywall = (props, options) => render(
-    <>
+    <SidebarContext.Provider value={sidebarContextValue}>
       <MountCourseQueryHooks courseId={props.courseId} />
       <LockPaywall {...props} />
-    </>,
+    </SidebarContext.Provider>,
     options,
   );
 

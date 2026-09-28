@@ -149,9 +149,9 @@ The system always follows priority cascade logic:
 │                                                     │
 │  ┌───────────────────────────────────────────────┐  │
 │  │ Effects:                                      │  │
-│  │  0. Prefetch Effect                           │  │
-│  │     - Calls widget.prefetch() for each widget │  │
-│  │     - Runs post-mount to warm widget data     │  │
+│  │  0. Widget Providers                          │  │
+│  │     - Each widget's Provider loads its data   │  │
+│  │       as a React Query observer               │  │
 │  │     - Influences subsequent availability/sync │  │
 │  │       behavior                                │  │
 │  │                                               │  │

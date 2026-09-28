@@ -7,7 +7,7 @@ import {
   createTestQueryClient, fireEvent, initializeMockApp, getTestStoreIds, initializeTestStore, render, screen,
 } from '@src/setupTest';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
-import { prefetchDiscussionTopics } from '@src/courseware/data/apiHooks';
+import { discussionTopicsQuery } from '@src/courseware/data/apiHooks';
 import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsTrigger from './DiscussionsTrigger';
 
@@ -43,8 +43,7 @@ describe('Discussions Trigger', () => {
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
       .reply(200, buildTopicsFromUnits(state.models.units));
 
-    // Pre-fetch discussion topics since prefetch is now in widgetConfig, not in the Trigger
-    await prefetchDiscussionTopics(createTestQueryClient(store), courseId);
+    await createTestQueryClient(store).query(discussionTopicsQuery(courseId));
   });
 
   const SidebarWrapper = ({ contextValue, onClick }) => (
