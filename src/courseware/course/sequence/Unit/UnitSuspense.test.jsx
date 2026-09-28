@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
+import { useUnit } from '@src/courseware/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import hooks from './hooks';
 import { modelKeys } from './constants';
@@ -19,6 +20,7 @@ jest.mock('react', () => ({
 
 jest.mock('../honor-code', () => jest.fn(() => <div>HonorCode</div>));
 jest.mock('../lock-paywall', () => jest.fn(() => <div>LockPaywall</div>));
+jest.mock('@src/courseware/data/apiHooks', () => ({ useUnit: jest.fn() }));
 jest.mock('@src/generic/model-store', () => ({ useModel: jest.fn() }));
 
 jest.mock('./hooks', () => ({
@@ -26,15 +28,13 @@ jest.mock('./hooks', () => ({
 }));
 
 const mockModels = (enabled, containsContent) => {
-  useModel.mockImplementation((key) => (
-    key === modelKeys.units
-      ? { containsContentTypeGatedContent: containsContent }
-      : { contentTypeGatingEnabled: enabled }
-  ));
+  useUnit.mockReturnValue({ data: { containsContentTypeGatedContent: containsContent } });
+  useModel.mockReturnValue({ contentTypeGatingEnabled: enabled });
 };
 
 const props = {
   courseId: 'test-course-id',
+  sequenceId: 'test-sequence-id',
   id: 'test-id',
 };
 
@@ -44,13 +44,10 @@ describe('UnitSuspense component', () => {
     mockModels(false, false);
   });
   describe('behavior', () => {
-    it('initializes models', () => {
+    it('reads the unit from its sequence and the courseware metadata model', () => {
       render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
-      const { calls } = useModel.mock;
-      const [unitCall] = calls.filter(call => call[0] === modelKeys.units);
-      const [metaCall] = calls.filter(call => call[0] === modelKeys.coursewareMeta);
-      expect(unitCall[1]).toEqual(props.id);
-      expect(metaCall[1]).toEqual(props.courseId);
+      expect(useUnit).toHaveBeenCalledWith('test-sequence-id', props.id);
+      expect(useModel).toHaveBeenCalledWith(modelKeys.coursewareMeta, props.courseId);
     });
   });
   describe('output', () => {

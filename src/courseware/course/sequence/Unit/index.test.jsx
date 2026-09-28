@@ -3,15 +3,18 @@ import { MemoryRouter } from 'react-router';
 import { Factory } from 'rosie';
 
 import {
-  initializeMockApp, initializeTestStore, render, screen, waitFor,
+  getTestStoreIds, initializeMockApp, initializeTestStore, render, screen, waitFor,
 } from '../../../../setupTest';
+import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import { usePluginOverrides } from '../../../../generic/plugin-overrides';
 import { getIFrameUrl } from './urls';
 import { views } from './constants';
 import Unit from '.';
 
+const courseMetadata = Factory.build('courseMetadata');
+
 const defaultProps = {
-  courseId: 'test-course-id',
+  courseId: courseMetadata.id,
   format: 'test-format',
   onLoaded: jest.fn().mockName('props.onLoaded'),
   id: 'unit-id',
@@ -27,11 +30,14 @@ const unit = {
 };
 
 let store;
+let sequenceId;
 
-const renderComponent = (props, search = '') => {
+const renderComponent = (props, { children = null, search = '' } = {}) => {
   render(
-    <MemoryRouter initialEntries={[{ pathname: `/course/${props.courseID}`, search }]}>
-      <Unit {...props} />
+    <MemoryRouter initialEntries={[{ pathname: `/course/${props.courseId}/${sequenceId}/${props.id}`, search }]}>
+      <MountCourseQueryHooks courseId={props.courseId} sequenceId={sequenceId} />
+      {children}
+      <Unit sequenceId={sequenceId} {...props} />
     </MemoryRouter>,
     { store, wrapWithRouter: false },
   );
@@ -40,7 +46,6 @@ const renderComponent = (props, search = '') => {
 initializeMockApp();
 
 async function setupStoreState() {
-  const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = [Factory.build(
     'block',
     { type: 'vertical', ...unit },
@@ -48,6 +53,7 @@ async function setupStoreState() {
   )];
 
   store = await initializeTestStore({ courseMetadata, unitBlocks });
+  ({ sequenceId } = getTestStoreIds(store));
 }
 
 describe('<Unit />', () => {
@@ -56,42 +62,42 @@ describe('<Unit />', () => {
   });
 
   describe('unit title', () => {
-    it('has two children', () => {
+    it('has two children', async () => {
       renderComponent(defaultProps);
-      const unitTitleWrapper = screen.getByTestId('org.openedx.frontend.learning.unit_title.v1').children[0];
+      const unitTitleWrapper = (await screen.findByTestId('org.openedx.frontend.learning.unit_title.v1')).children[0];
 
       expect(unitTitleWrapper.children).toHaveLength(3);
     });
 
-    it('renders bookmark button', () => {
+    it('renders bookmark button', async () => {
       renderComponent(defaultProps);
 
-      expect(screen.getByText('Bookmark this page')).toBeInTheDocument();
+      expect(await screen.findByText('Bookmark this page')).toBeInTheDocument();
     });
 
-    it('renders unit navigation buttons', () => {
+    it('renders unit navigation buttons', async () => {
       const props = { ...defaultProps };
       renderComponent(props);
 
-      const nextButton = screen.getByText('UnitNaviagtion');
+      const nextButton = await screen.findByText('UnitNaviagtion');
 
       expect(nextButton).toBeVisible();
     });
   });
 
   describe('UnitSuspense', () => {
-    it('renders loading message', () => {
+    it('renders loading message', async () => {
       renderComponent(defaultProps);
 
-      expect(screen.getByText('Loading', { exact: false })).toBeInTheDocument();
+      expect(await screen.findByText('Loading', { exact: false })).toBeInTheDocument();
     });
   });
 
   describe('ContentIFrame', () => {
     let iframe;
-    beforeEach(() => {
+    beforeEach(async () => {
       renderComponent(defaultProps);
-      iframe = screen.getByTestId('content-iframe-test-id');
+      iframe = await screen.findByTestId('content-iframe-test-id');
     });
 
     it('renders content iframe', () => {
@@ -114,14 +120,14 @@ describe('<Unit />', () => {
   });
 
   describe('iframe url parameters', () => {
-    it('omits format from the iframe url when the unit has none', () => {
+    it('omits format from the iframe url when the unit has none', async () => {
       renderComponent({ ...defaultProps, format: undefined });
-      expect(screen.getByTestId('content-iframe-test-id').getAttribute('src')).not.toContain('format=');
+      expect((await screen.findByTestId('content-iframe-test-id')).getAttribute('src')).not.toContain('format=');
     });
 
-    it('passes jumpToId from the search params into the iframe url', () => {
-      renderComponent(defaultProps, '?jumpToId=some-block-id');
-      expect(screen.getByTestId('content-iframe-test-id').getAttribute('src')).toContain('jumpToId=some-block-id');
+    it('passes jumpToId from the search params into the iframe url', async () => {
+      renderComponent(defaultProps, { search: '?jumpToId=some-block-id' });
+      expect((await screen.findByTestId('content-iframe-test-id')).getAttribute('src')).toContain('jumpToId=some-block-id');
     });
   });
 
@@ -139,13 +145,7 @@ describe('<Unit />', () => {
     };
 
     it('applies a registered override to the iframe src', async () => {
-      render(
-        <MemoryRouter initialEntries={[{ pathname: `/course/${defaultProps.courseId}` }]}>
-          <IFrameUrlOverridePlugin />
-          <Unit {...defaultProps} />
-        </MemoryRouter>,
-        { store, wrapWithRouter: false },
-      );
+      renderComponent(defaultProps, { children: <IFrameUrlOverridePlugin /> });
 
       await waitFor(() => {
         expect(screen.getByTestId('content-iframe-test-id').getAttribute('src')).toMatch(/&overridden=1$/);

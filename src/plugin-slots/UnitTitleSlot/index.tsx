@@ -3,16 +3,12 @@ import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { BookmarkButton } from '@src/courseware/course/bookmark';
+import type { SequenceUnit } from '@src/courseware/data/apiHooks';
 import messages from '@src/courseware/course/sequence/messages';
 
 interface Props {
   unitId: string;
-  unit: {
-    id: string;
-    bookmarked: boolean;
-    title: string;
-    bookmarkedUpdateState?: string;
-  };
+  unit: SequenceUnit;
   renderUnitNavigation: (isAtTop: boolean) => React.ReactNode;
 }
 
@@ -43,6 +39,7 @@ const UnitTitleSlot = ({
       </div>
       <p className="sr-only">{formatMessage(messages.headerPlaceholder)}</p>
       <BookmarkButton
+        sequenceId={unit.sequenceId}
         unitId={unit.id}
         isBookmarked={unit.bookmarked}
         isProcessing={isProcessing}
