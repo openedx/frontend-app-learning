@@ -11,7 +11,7 @@ import {
 } from '@src/setupTest';
 import { getCourseOutline } from '@src/courseware/data/api';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
-import SidebarContext from '../../../SidebarContext';
+import { SidebarProvider } from '../../../SidebarContext';
 import messages from '../messages';
 import SidebarSequence from './SidebarSequence';
 
@@ -24,7 +24,6 @@ describe('<SidebarSequence />', () => {
   let sequence;
   let unit;
   const sequenceDescription = 'sequence test description';
-  let mockData;
 
   const initTestData = async (options) => {
     store = await initializeTestStore(options);
@@ -35,10 +34,6 @@ describe('<SidebarSequence />', () => {
     sequence = outline.sequences[activeSequenceId];
     const unitId = sequence.unitIds[0];
     unit = outline.units[unitId];
-
-    mockData = {
-      toggleSidebar: jest.fn(),
-    };
   };
 
   function renderWithProvider(props = {}) {
@@ -49,8 +44,8 @@ describe('<SidebarSequence />', () => {
       <AppProvider store={store} wrapWithRouter={false}>
         <QueryClientProvider client={queryClient}>
           <IntlProvider locale="en">
-            <SidebarContext.Provider value={{ ...mockData }}>
-              <MemoryRouter initialEntries={[`/course/${courseId}`]}>
+            <MemoryRouter initialEntries={[`/course/${courseId}`]}>
+              <SidebarProvider courseId={courseId} unitId={unit.id} widgets={[]}>
                 <Routes>
                   <Route
                     path="/course/:courseId"
@@ -65,8 +60,8 @@ describe('<SidebarSequence />', () => {
                     )}
                   />
                 </Routes>
-              </MemoryRouter>
-            </SidebarContext.Provider>
+              </SidebarProvider>
+            </MemoryRouter>
           </IntlProvider>
         </QueryClientProvider>
       </AppProvider>,

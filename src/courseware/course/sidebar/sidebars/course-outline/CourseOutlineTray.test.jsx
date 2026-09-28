@@ -1,5 +1,5 @@
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from '@edx/frontend-platform/react';
@@ -8,7 +8,7 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { createTestQueryClient, getTestStoreIds, initializeTestStore } from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { getCourseOutline } from '@src/courseware/data/api';
-import SidebarContext from '../../SidebarContext';
+import { SidebarProvider } from '../../SidebarContext';
 import CourseOutlineTray from './CourseOutlineTray';
 import { ID as outlineSidebarId } from './constants';
 import messages from './messages';
@@ -21,13 +21,14 @@ describe('<CourseOutlineTray />', () => {
   let unitId;
   let courseId;
   let activeSequenceId;
-  let mockData;
 
   const { innerWidth: originalInnerWidth, innerHeight: originalInnerHeight } = window;
 
   afterEach(() => {
     window.innerWidth = originalInnerWidth;
     window.innerHeight = originalInnerHeight;
+    window.localStorage.clear();
+    window.sessionStorage.clear();
   });
 
   const initTestData = async (options) => {
@@ -46,26 +47,24 @@ describe('<CourseOutlineTray />', () => {
       unit = outline.units[unitId];
     }
 
-    mockData = {
-      courseId,
-      unitId,
-      currentSidebar: outlineSidebarId,
-      toggleSidebar: jest.fn(),
-    };
+    // The outline is the stored sidebar, so it is open on any viewport.
+    window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify(outlineSidebarId));
   };
 
-  function renderWithProvider(testData = {}) {
+  const collapseButton = () => screen.queryByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage });
+
+  function renderWithProvider() {
     const { container } = render(
       <AppProvider store={store} wrapWithRouter={false}>
         <QueryClientProvider client={createTestQueryClient(store)}>
           <IntlProvider locale="en">
-            <SidebarContext.Provider value={{ ...mockData, ...testData }}>
-              <MemoryRouter initialEntries={[`/course/${courseId}/${activeSequenceId}/${unitId}`]}>
+            <MemoryRouter initialEntries={[`/course/${courseId}/${activeSequenceId}/${unitId}`]}>
+              <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>
                 <Routes>
                   <Route path="/course/:courseId/:sequenceId/:unitId" element={<CourseOutlineTray />} />
                 </Routes>
-              </MemoryRouter>
-            </SidebarContext.Provider>
+              </SidebarProvider>
+            </MemoryRouter>
           </IntlProvider>
         </QueryClientProvider>
       </AppProvider>,
@@ -100,86 +99,63 @@ describe('<CourseOutlineTray />', () => {
 
   it('collapses sidebar correctly when toggle button is clicked', async () => {
     const user = userEvent.setup();
-    const mockToggleSidebar = jest.fn();
     await initTestData();
-    renderWithProvider({ toggleSidebar: mockToggleSidebar });
+    renderWithProvider();
     await waitForOutlineLoaded();
 
-    const collapseBtn = screen.getByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage });
     const sidebarBackBtn = screen.queryByRole('button', { name: section.title });
     expect(sidebarBackBtn).toBeInTheDocument();
-    expect(collapseBtn).toBeInTheDocument();
+    expect(collapseButton()).toBeInTheDocument();
 
-    await user.click(collapseBtn);
-    expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+    await user.click(collapseButton());
+
+    expect(collapseButton()).not.toBeInTheDocument();
   });
 
   it('collapses sidebar correctly when screen is resized', async () => {
-    const mockToggleSidebar = jest.fn();
     await initTestData();
-    renderWithProvider({ toggleSidebar: mockToggleSidebar });
+    renderWithProvider();
     await waitForOutlineLoaded();
-
-    const collapseBtn = screen.getByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage });
-    expect(collapseBtn).toBeInTheDocument();
+    expect(collapseButton()).toBeInTheDocument();
 
     // Simulate screen resize
-    window.innerWidth = 500;
-    window.dispatchEvent(new Event('resize'));
+    await act(async () => {
+      window.innerWidth = 500;
+      window.dispatchEvent(new Event('resize'));
+    });
 
-    expect(mockToggleSidebar).toHaveBeenCalledWith(null);
+    expect(collapseButton()).not.toBeInTheDocument();
   });
 
   it('does not collapse sidebar when only the window height changes', async () => {
-    const mockToggleSidebar = jest.fn();
     window.innerWidth = 500;
     window.innerHeight = 800;
     await initTestData();
-    renderWithProvider({ toggleSidebar: mockToggleSidebar });
+    renderWithProvider();
     await waitForOutlineLoaded();
 
     // Mobile browsers fire `resize` while scrolling, when the URL bar shows/hides. Only the
     // height changes, and the sidebar must stay open so its content remains scrollable.
-    window.innerHeight = 650;
-    window.dispatchEvent(new Event('resize'));
+    await act(async () => {
+      window.innerHeight = 650;
+      window.dispatchEvent(new Event('resize'));
+    });
 
-    expect(mockToggleSidebar).not.toHaveBeenCalled();
+    expect(collapseButton()).toBeInTheDocument();
   });
 
   it('does not collapse sidebar when resized to a width that still displays it', async () => {
-    const mockToggleSidebar = jest.fn();
     window.innerWidth = 1300;
     await initTestData();
-    renderWithProvider({ toggleSidebar: mockToggleSidebar });
+    renderWithProvider();
     await waitForOutlineLoaded();
 
-    window.innerWidth = 1250;
-    window.dispatchEvent(new Event('resize'));
+    await act(async () => {
+      window.innerWidth = 1250;
+      window.dispatchEvent(new Event('resize'));
+    });
 
-    expect(mockToggleSidebar).not.toHaveBeenCalled();
-  });
-
-  it('tracks the last window width across resize events', async () => {
-    const mockToggleSidebar = jest.fn();
-    window.innerWidth = 1300;
-    await initTestData();
-    renderWithProvider({ toggleSidebar: mockToggleSidebar });
-    await waitForOutlineLoaded();
-
-    // A width change above the breakpoint is a no-op, but it updates the tracked width.
-    window.innerWidth = 1250;
-    window.dispatchEvent(new Event('resize'));
-    expect(mockToggleSidebar).not.toHaveBeenCalled();
-
-    // A subsequent resize below the breakpoint is still detected as a width change.
-    window.innerWidth = 1100;
-    window.dispatchEvent(new Event('resize'));
-    expect(mockToggleSidebar).toHaveBeenCalledWith(null);
-
-    // Repeating the same width does not trigger another collapse.
-    mockToggleSidebar.mockClear();
-    window.dispatchEvent(new Event('resize'));
-    expect(mockToggleSidebar).not.toHaveBeenCalled();
+    expect(collapseButton()).toBeInTheDocument();
   });
 
   it('navigates to section or sequence level correctly on click by back/section button', async () => {

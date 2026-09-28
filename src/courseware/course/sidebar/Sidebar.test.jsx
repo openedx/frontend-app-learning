@@ -1,143 +1,100 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { initializeTestStore, render, screen } from '@src/setupTest';
 import Sidebar from './Sidebar';
-import SidebarContext from './SidebarContext';
+import { SidebarProvider } from './SidebarContext';
+import SidebarTriggers from './SidebarTriggers';
 
-const MockDiscussionsPanel = () => <div data-testid="discussions-panel">Discussions Content</div>;
-const MockNotesPanel = () => <div data-testid="notes-panel">Notes Content</div>;
+const courseId = 'course-v1:edX+Test+2024';
+const unitId = 'unit-1';
 
-const defaultContextValue = {
-  currentSidebar: null,
-  initialSidebar: null,
-  toggleSidebar: jest.fn(),
-  shouldDisplaySidebarOpen: false,
-  shouldDisplayFullScreen: false,
-  courseId: 'course-v1:edX+Test+2024',
-  unitId: 'unit-1',
-  SIDEBARS: {
-    DISCUSSIONS: { Sidebar: MockDiscussionsPanel },
-    NOTES: { Sidebar: MockNotesPanel },
-  },
-  SIDEBAR_ORDER: ['DISCUSSIONS', 'NOTES'],
-  availableSidebarIds: ['DISCUSSIONS', 'NOTES'],
-};
+const stubWidget = (id) => ({
+  id,
+  priority: id === 'DISCUSSIONS' ? 10 : 20,
+  Sidebar: () => <div data-testid={`${id.toLowerCase()}-panel`}>{id} Content</div>,
+  // eslint-disable-next-line react/prop-types
+  Trigger: ({ onClick }) => <button type="button" onClick={onClick}>{`Open ${id}`}</button>,
+  isAvailable: () => true,
+  enabled: true,
+});
 
-function renderSidebar(contextOverrides = {}) {
-  const contextValue = { ...defaultContextValue, ...contextOverrides };
+const widgets = [stubWidget('DISCUSSIONS'), stubWidget('NOTES')];
+
+// The panel a widget renders is chosen by the provider's current sidebar; the tests drive it the
+// way a learner does, through a stored preference or the triggers.
+function renderSidebar() {
   return render(
-    <SidebarContext.Provider value={contextValue}>
+    <SidebarProvider courseId={courseId} unitId={unitId} widgets={widgets}>
+      <SidebarTriggers />
       <Sidebar />
-    </SidebarContext.Provider>,
+    </SidebarProvider>,
+    { wrapWithRouter: true },
   );
 }
 
 describe('Sidebar', () => {
-  describe('Unit tests: rendering logic', () => {
-    it('renders null when currentSidebar is null', () => {
-      const { container } = renderSidebar({ currentSidebar: null });
-      expect(container.innerHTML).toBe('');
-    });
-
-    it('renders null when SIDEBARS is null', () => {
-      const { container } = renderSidebar({ currentSidebar: 'DISCUSSIONS', SIDEBARS: null });
-      expect(container.innerHTML).toBe('');
-    });
-
-    it('renders null when SIDEBARS is undefined', () => {
-      const { container } = renderSidebar({ currentSidebar: 'DISCUSSIONS', SIDEBARS: undefined });
-      expect(container.innerHTML).toBe('');
-    });
-
-    it('renders null when SIDEBARS is an empty object', () => {
-      const { container } = renderSidebar({ currentSidebar: 'DISCUSSIONS', SIDEBARS: {} });
-      expect(container.innerHTML).toBe('');
-    });
-
-    it('renders null when currentSidebar does not exist in SIDEBARS', () => {
-      const { container } = renderSidebar({ currentSidebar: 'NONEXISTENT' });
-      expect(container.innerHTML).toBe('');
-    });
-
-    it('renders the correct sidebar component when currentSidebar matches a key in SIDEBARS', () => {
-      renderSidebar({ currentSidebar: 'DISCUSSIONS' });
-      expect(screen.getByTestId('discussions-panel')).toBeInTheDocument();
-      expect(screen.getByText('Discussions Content')).toBeInTheDocument();
-    });
-
-    it('renders a different sidebar when currentSidebar changes', () => {
-      renderSidebar({ currentSidebar: 'NOTES' });
-      expect(screen.getByTestId('notes-panel')).toBeInTheDocument();
-      expect(screen.getByText('Notes Content')).toBeInTheDocument();
-    });
+  beforeAll(async () => {
+    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
   });
 
-  describe('Functional tests: widget switching', () => {
-    it('switches from one sidebar to another on re-render', () => {
-      const { rerender } = render(
-        <SidebarContext.Provider value={{ ...defaultContextValue, currentSidebar: 'DISCUSSIONS' }}>
-          <Sidebar />
-        </SidebarContext.Provider>,
-      );
+  afterEach(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
 
-      expect(screen.getByTestId('discussions-panel')).toBeInTheDocument();
-      expect(screen.queryByTestId('notes-panel')).not.toBeInTheDocument();
+  it('renders no panel when nothing is open', () => {
+    renderSidebar();
 
-      rerender(
-        <SidebarContext.Provider value={{ ...defaultContextValue, currentSidebar: 'NOTES' }}>
-          <Sidebar />
-        </SidebarContext.Provider>,
-      );
+    expect(screen.queryByTestId('discussions-panel')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('notes-panel')).not.toBeInTheDocument();
+  });
 
-      expect(screen.getByTestId('notes-panel')).toBeInTheDocument();
-      expect(screen.queryByTestId('discussions-panel')).not.toBeInTheDocument();
-    });
+  it('renders the stored panel', () => {
+    window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('NOTES'));
+    renderSidebar();
 
-    it('hides sidebar when currentSidebar changes from a valid value to null', () => {
-      const { rerender } = render(
-        <SidebarContext.Provider value={{ ...defaultContextValue, currentSidebar: 'DISCUSSIONS' }}>
-          <Sidebar />
-        </SidebarContext.Provider>,
-      );
+    expect(screen.getByTestId('notes-panel')).toHaveTextContent('NOTES Content');
+    expect(screen.queryByTestId('discussions-panel')).not.toBeInTheDocument();
+  });
 
-      expect(screen.getByTestId('discussions-panel')).toBeInTheDocument();
+  it('renders no panel when the stored preference names a widget that is no longer registered', () => {
+    window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('COURSE_OUTLINE'));
+    const { container } = renderSidebar();
 
-      rerender(
-        <SidebarContext.Provider value={{ ...defaultContextValue, currentSidebar: null }}>
-          <Sidebar />
-        </SidebarContext.Provider>,
-      );
+    expect(container.querySelector('[data-testid$="-panel"]')).not.toBeInTheDocument();
+  });
 
-      expect(screen.queryByTestId('discussions-panel')).not.toBeInTheDocument();
-    });
+  it('switches panels when another trigger is clicked', async () => {
+    const user = userEvent.setup();
+    window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('DISCUSSIONS'));
+    renderSidebar();
+    expect(screen.getByTestId('discussions-panel')).toBeInTheDocument();
 
-    it('shows sidebar when currentSidebar changes from null to a valid value', () => {
-      const { container, rerender } = render(
-        <SidebarContext.Provider value={{ ...defaultContextValue, currentSidebar: null }}>
-          <Sidebar />
-        </SidebarContext.Provider>,
-      );
+    await user.click(screen.getByRole('button', { name: 'Open NOTES' }));
 
-      expect(container.innerHTML).toBe('');
+    expect(screen.getByTestId('notes-panel')).toBeInTheDocument();
+    expect(screen.queryByTestId('discussions-panel')).not.toBeInTheDocument();
+  });
 
-      rerender(
-        <SidebarContext.Provider value={{ ...defaultContextValue, currentSidebar: 'NOTES' }}>
-          <Sidebar />
-        </SidebarContext.Provider>,
-      );
+  it('hides the panel when its own trigger is clicked again', async () => {
+    const user = userEvent.setup();
+    window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('DISCUSSIONS'));
+    renderSidebar();
+    expect(screen.getByTestId('discussions-panel')).toBeInTheDocument();
 
-      expect(screen.getByTestId('notes-panel')).toBeInTheDocument();
-    });
+    await user.click(screen.getByRole('button', { name: 'Open DISCUSSIONS' }));
 
-    it('renders COURSE_OUTLINE as null when it is not in SIDEBARS registry', () => {
-      const { container } = renderSidebar({ currentSidebar: 'COURSE_OUTLINE' });
-      expect(container.innerHTML).toBe('');
-    });
+    expect(screen.queryByTestId('discussions-panel')).not.toBeInTheDocument();
+  });
 
-    it('only renders one sidebar at a time', () => {
-      renderSidebar({ currentSidebar: 'DISCUSSIONS' });
+  it('shows a panel when its trigger is clicked with nothing open', async () => {
+    const user = userEvent.setup();
+    renderSidebar();
+    expect(screen.queryByTestId('notes-panel')).not.toBeInTheDocument();
 
-      expect(screen.getByTestId('discussions-panel')).toBeInTheDocument();
-      expect(screen.queryByTestId('notes-panel')).not.toBeInTheDocument();
-    });
+    await user.click(screen.getByRole('button', { name: 'Open NOTES' }));
+
+    expect(screen.getByTestId('notes-panel')).toBeInTheDocument();
+    expect(screen.queryByTestId('discussions-panel')).not.toBeInTheDocument();
   });
 });

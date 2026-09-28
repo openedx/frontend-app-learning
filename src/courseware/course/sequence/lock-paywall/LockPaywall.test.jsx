@@ -6,29 +6,30 @@ import {
   fireEvent, getTestStoreIds, initializeTestStore, render, screen,
 } from '../../../../setupTest';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
-import SidebarContext from '../../sidebar/SidebarContext';
+import { SidebarProvider } from '../../sidebar/SidebarContext';
 import LockPaywall from './LockPaywall';
 
 jest.mock('@edx/frontend-platform/analytics');
 
 describe('Lock Paywall', () => {
   let store;
+  let unitId;
   const mockData = { currentSidebar: null };
-  const sidebarContextValue = { currentSidebar: null, availableSidebarIds: [] };
 
   beforeAll(async () => {
     store = await initializeTestStore();
     Object.assign(mockData, {
       courseId: getTestStoreIds(store).courseId,
     });
+    [unitId] = Object.keys(store.getState().models.units);
   });
 
   const renderPaywall = (props, options) => render(
-    <SidebarContext.Provider value={sidebarContextValue}>
+    <SidebarProvider courseId={props.courseId} unitId={unitId} widgets={[]}>
       <MountCourseQueryHooks courseId={props.courseId} />
       <LockPaywall {...props} />
-    </SidebarContext.Provider>,
-    options,
+    </SidebarProvider>,
+    { wrapWithRouter: true, ...options },
   );
 
   it('displays unlock link with price', async () => {

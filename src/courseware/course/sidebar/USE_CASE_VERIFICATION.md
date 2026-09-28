@@ -137,7 +137,7 @@ The system always follows priority cascade logic:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│         SidebarContextProvider (Single Source)      │
+│            SidebarProvider (Single Source)          │
 │                                                     │
 │  ┌───────────────────────────────────────────────┐  │
 │  │ State: currentSidebar                         │  │
@@ -242,7 +242,7 @@ COURSE_OUTLINE (fallback)
 - Keeps RIGHT panels temporarily during data load
 - Sync effect verifies availability and corrects if needed
 
-**Code Location**: [SidebarContextProvider.jsx](src/courseware/course/sidebar/SidebarContextProvider.jsx#L172-L178)
+**Code Location**: [useUnitShiftBehavior.ts](hooks/useUnitShiftBehavior.ts)
 
 ---
 
@@ -253,7 +253,7 @@ COURSE_OUTLINE (fallback)
 - Prevents system from overriding user intent
 - All 6 toggle scenarios now work correctly
 
-**Code Location**: [SidebarContextProvider.jsx](src/courseware/course/sidebar/SidebarContextProvider.jsx#L98-L99)
+**Code Location**: [SidebarContext.tsx](SidebarContext.tsx)
 
 ---
 
@@ -269,7 +269,7 @@ COURSE_OUTLINE (fallback)
 }
 ```
 
-**Code Location**: [SidebarContextProvider.jsx](src/courseware/course/sidebar/SidebarContextProvider.jsx#L188-L192)
+**Code Location**: [useUnitShiftBehavior.ts](hooks/useUnitShiftBehavior.ts)
 
 ---
 
@@ -284,7 +284,7 @@ const shouldKeepOpen = (
 );
 ```
 
-**Code Location**: [SidebarContextProvider.jsx](src/courseware/course/sidebar/SidebarContextProvider.jsx#L163-L166)
+**Code Location**: [useUnitShiftBehavior.ts](hooks/useUnitShiftBehavior.ts)
 
 ---
 
@@ -293,7 +293,7 @@ const shouldKeepOpen = (
 **Root Cause**: Sync effect running on initial render before data loaded
 **Fix**: Added `isInitialLoadRef` flag to skip sync on first render
 
-**Code Location**: [SidebarContextProvider.jsx](src/courseware/course/sidebar/SidebarContextProvider.jsx#L240-L246)
+**Code Location**: [useUnitShiftBehavior.ts](hooks/useUnitShiftBehavior.ts)
 
 ---
 
@@ -333,7 +333,7 @@ return firstAvailable;
 - ✅ Higher priority panels always open (even over stored preference)
 - ✅ Priority cascade works when panel becomes unavailable
 
-**Code Location**: [SidebarContextProvider.jsx](src/courseware/course/sidebar/SidebarContextProvider.jsx#L83-L106)
+**Code Location**: [useInitialSidebar.ts](hooks/useInitialSidebar.ts)
 
 ---
 
@@ -342,7 +342,7 @@ return firstAvailable;
 **Root Cause**: Resize effect didn't check manual close state
 **Fix**: Added `hasUserToggledRef` check in resize effect
 
-**Code Location**: [SidebarContextProvider.jsx](src/courseware/course/sidebar/SidebarContextProvider.jsx#L300+)
+**Code Location**: [useResponsiveBehavior.ts](hooks/useResponsiveBehavior.ts)
 
 ---
 
@@ -351,17 +351,17 @@ return firstAvailable;
 **Root Cause**: No tracking of unit-driven panel state
 **Fix**: Added `courseOutlineSetByUnitRef` flag
 
-**Code Location**: [SidebarContextProvider.jsx](src/courseware/course/sidebar/SidebarContextProvider.jsx#L101)
+**Code Location**: [SidebarContext.tsx](SidebarContext.tsx)
 
 ---
 
 ### Protection Flags Summary
 
-| Flag | Purpose | Reset Trigger | Lines |
+| Flag | Purpose | Reset Trigger | Declared in |
 |------|---------|---------------|-------|
-| `hasUserToggledRef` | Tracks manual user actions | Unit navigation | 98-99 |
-| `courseOutlineSetByUnitRef` | Tracks unit-driven COURSE_OUTLINE | RIGHT panel open | 101 |
-| `isInitialLoadRef` | Prevents sync on page load | After first render | 102 |
+| `hasUserToggledRef` | Tracks manual user actions | Unit navigation | `SidebarContext.tsx` |
+| `courseOutlineSetByUnitRef` | Tracks unit-driven COURSE_OUTLINE | RIGHT panel open | `SidebarContext.tsx` |
+| `isInitialLoadRef` | Prevents sync on page load | After first render | `SidebarContext.tsx` |
 
 ---
 

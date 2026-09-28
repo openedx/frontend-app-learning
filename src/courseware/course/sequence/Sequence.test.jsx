@@ -11,15 +11,14 @@ import {
   loadUnit, render, screen, waitFor, getTestStoreIds, initializeTestStore,
 } from '../../../setupTest';
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
-import SidebarContext from '../sidebar/SidebarContext';
-import SidebarProvider from '../sidebar/SidebarContextProvider';
+import { getEnabledWidgets } from '../sidebar/defaultWidgets';
+import { SidebarProvider } from '../sidebar/SidebarContext';
 import Sequence from './Sequence';
 
 jest.mock('@edx/frontend-platform/analytics');
 
 describe('Sequence', () => {
   let mockData;
-  let defaultContextValue;
   const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
     'block',
@@ -38,7 +37,6 @@ describe('Sequence', () => {
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},
     };
-    defaultContextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
   });
 
   beforeEach(() => {
@@ -47,7 +45,7 @@ describe('Sequence', () => {
 
   // Renders the sequence at its course route, as CoursewareContainer does: the navigation reads
   // `courseId` from the route params.
-  const SidebarWrapper = ({ contextValue = defaultContextValue, overrideData = {} }) => {
+  const SidebarWrapper = ({ overrideData = {}, widgets = [] }) => {
     const data = { ...mockData, ...overrideData };
     return (
       <MemoryRouter initialEntries={[`/course/${data.courseId}/${data.sequenceId}/${data.unitId}`]}>
@@ -55,10 +53,10 @@ describe('Sequence', () => {
           <Route
             path="/course/:courseId/:sequenceId/*"
             element={(
-              <SidebarContext.Provider value={contextValue}>
+              <SidebarProvider courseId={data.courseId} unitId={data.unitId} widgets={widgets}>
                 <MountCourseQueryHooks courseId={data.courseId} />
                 <Sequence {...data} />
-              </SidebarContext.Provider>
+              </SidebarProvider>
             )}
           />
         </Routes>
@@ -67,13 +65,13 @@ describe('Sequence', () => {
   };
 
   SidebarWrapper.defaultProps = {
-    contextValue: defaultContextValue,
     overrideData: {},
+    widgets: [],
   };
 
   SidebarWrapper.propTypes = {
-    contextValue: PropTypes.shape({}),
     overrideData: PropTypes.shape({}),
+    widgets: PropTypes.arrayOf(PropTypes.shape({})),
   };
 
   it('renders correctly without data', async () => {
@@ -449,7 +447,7 @@ describe('Sequence', () => {
             <Route
               path="/course/:courseId/:sequenceId/*"
               element={(
-                <SidebarProvider courseId={mockData.courseId} unitId={mockData.unitId}>
+                <SidebarProvider courseId={mockData.courseId} unitId={mockData.unitId} widgets={getEnabledWidgets()}>
                   <MountCourseQueryHooks courseId={mockData.courseId} />
                   <Sequence {...mockData} sequenceId={sequenceId} />
                 </SidebarProvider>

@@ -1,5 +1,5 @@
 import {
-  useContext, useLayoutEffect, useRef, useState,
+  useLayoutEffect, useRef, useState,
 } from 'react';
 import { useParams } from 'react-router-dom';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
@@ -11,7 +11,7 @@ import {
   useCourseOutlineStructure,
   useCoursewareOutlineSidebarToggles,
 } from '@src/courseware/data/apiHooks';
-import SidebarContext from '../../SidebarContext';
+import { useSidebar } from '../../SidebarContext';
 import { ID } from './constants';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -30,9 +30,9 @@ export const useCourseOutlineSidebar = () => {
     currentSidebar,
     toggleSidebar,
     shouldDisplayFullScreen,
-  } = useContext(SidebarContext);
+  } = useSidebar();
 
-  // Course outline state is now fully controlled by SidebarContextProvider
+  // Course outline state is now fully controlled by SidebarProvider
   // This component only renders when currentSidebar === 'COURSE_OUTLINE'
   const [isOpen, setIsOpen] = useState(true);
 

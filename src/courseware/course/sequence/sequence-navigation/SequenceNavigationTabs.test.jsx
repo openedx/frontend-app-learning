@@ -4,7 +4,7 @@ import { getAllByRole } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { initializeTestStore, render, screen } from '../../../../setupTest';
-import SidebarContext from '../../sidebar/SidebarContext';
+import { SidebarProvider } from '../../sidebar/SidebarContext';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
@@ -41,12 +41,10 @@ describe('Sequence Navigation Tabs', () => {
     };
   });
 
-  const sidebarContextValue = { currentSidebar: null, availableSidebarIds: [] };
-
   const renderTabs = () => render(
-    <SidebarContext.Provider value={sidebarContextValue}>
+    <SidebarProvider courseId={courseMetadata.id} unitId={mockData.unitId} widgets={[]}>
       <SequenceNavigationTabs {...mockData} />
-    </SidebarContext.Provider>,
+    </SidebarProvider>,
     { wrapWithRouter: true },
   );
 

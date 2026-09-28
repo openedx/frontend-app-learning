@@ -1,6 +1,7 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { MemoryRouter } from 'react-router-dom';
+import { SidebarProvider } from '@src/courseware/course/sidebar/SidebarContext';
 import * as localStorageModule from '@src/data/localStorage';
 import { UpgradeWidgetProvider, useUpgradeWidgetContext } from './UpgradeWidgetContext';
 
@@ -9,17 +10,28 @@ jest.mock('@src/data/localStorage', () => ({
   setLocalStorage: jest.fn(),
 }));
 
+jest.mock('@src/generic/model-store', () => ({
+  useModel: jest.fn(() => ({})),
+}));
+
+jest.mock('@src/course-home/data/apiHooks', () => ({
+  ...jest.requireActual('@src/course-home/data/apiHooks'),
+  useCourseHomeMeta: jest.fn(() => ({ data: {} })),
+}));
+
 const courseId = 'course-test-123';
 
-function makeWrapper(contextValue = { courseId }) {
+function makeWrapper() {
   // eslint-disable-next-line react/prop-types
   return function Wrapper({ children }) {
     return (
-      <SidebarContext.Provider value={contextValue}>
-        <UpgradeWidgetProvider>
-          {children}
-        </UpgradeWidgetProvider>
-      </SidebarContext.Provider>
+      <MemoryRouter>
+        <SidebarProvider courseId={courseId} unitId="unit-test-456" widgets={[]}>
+          <UpgradeWidgetProvider>
+            {children}
+          </UpgradeWidgetProvider>
+        </SidebarProvider>
+      </MemoryRouter>
     );
   };
 }
