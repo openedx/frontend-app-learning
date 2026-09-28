@@ -22,8 +22,8 @@ import type { CourseOutlineData } from './courseOutline';
 import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import {
   discussionTopicsQuery, sequenceMightBeUnit, useCheckBlockCompletion, useCourseOutlineStructure,
-  useCoursewareMetadata, useCoursewareOutline, useCoursewareOutlineSidebarToggles, useIsCourseLoaded,
-  useSaveIntegritySignature, useSaveSequencePosition, useSequenceIds, useSequenceMetadata,
+  useCoursewareMetadata, useCoursewareOutline, useCoursewareOutlineSidebarToggles, useDiscussionTopic,
+  useIsCourseLoaded, useSaveIntegritySignature, useSaveSequencePosition, useSequenceIds, useSequenceMetadata,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
@@ -433,51 +433,122 @@ describe('courseware apiHooks — discussionTopicsQuery', () => {
   const courseId = courseMetadata.id;
   const configUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`;
   const topicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`;
+  const topicsQueryKey = coursewareQueryKeys.discussionTopics(courseId);
 
   let axiosMock: MockAdapter;
-  let store: ReturnType<typeof initializeStore>;
-
-  const discussionTopicModels = () => (
-    store.getState().models as { discussionTopics?: Record<string, { id: string }> }
-  ).discussionTopics;
+  let queryClient: QueryClient;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    store = initializeStore();
+    // The app QueryCache (whose onError logs) still takes a store until #1977 removes the bridge.
+    queryClient = createTestQueryClient(initializeStore());
     loggingService.logError.mockReset();
   });
 
-  it('loads openedx-provider topics into the discussionTopics model, keyed by usage key', async () => {
+  it('loads openedx-provider topics that have a usage key', async () => {
     axiosMock.onGet(configUrl).reply(200, { provider: 'openedx' });
     axiosMock.onGet(topicsUrl).reply(200, [
       { id: 'topic-1', usage_key: 'unit-1', enabled_in_context: true },
       { id: 'course-wide-topic', usage_key: null, enabled_in_context: true },
     ]);
 
-    await createTestQueryClient(store).query(discussionTopicsQuery(courseId));
+    await queryClient.query(discussionTopicsQuery(courseId));
 
-    expect(discussionTopicModels()).toEqual({
-      'unit-1': { id: 'topic-1', usageKey: 'unit-1', enabledInContext: true },
+    expect(queryClient.getQueryData(topicsQueryKey)).toEqual([
+      { id: 'topic-1', usageKey: 'unit-1', enabledInContext: true },
       // the course-wide topic has no usage key, so it is dropped
-    });
+    ]);
   });
 
   it('skips the topics request entirely for a legacy provider', async () => {
     axiosMock.onGet(configUrl).reply(200, { provider: 'legacy' });
 
-    await createTestQueryClient(store).query(discussionTopicsQuery(courseId));
+    await queryClient.query(discussionTopicsQuery(courseId));
 
     expect(axiosMock.history.get.map(request => request.url)).toEqual([configUrl]);
-    expect(discussionTopicModels()).toBeUndefined();
+    expect(queryClient.getQueryData(topicsQueryKey)).toEqual([]);
   });
 
-  it('logs the error and writes nothing when the config request fails', async () => {
+  it('logs the error and caches nothing when the config request fails', async () => {
     axiosMock.onGet(configUrl).networkError();
 
-    await expect(createTestQueryClient(store).query(discussionTopicsQuery(courseId))).rejects.toThrow();
+    await expect(queryClient.query(discussionTopicsQuery(courseId))).rejects.toThrow();
 
     expect(loggingService.logError).toHaveBeenCalled();
-    expect(discussionTopicModels()).toBeUndefined();
+    expect(queryClient.getQueryData(topicsQueryKey)).toBeUndefined();
+  });
+});
+
+describe('courseware apiHooks — useDiscussionTopic', () => {
+  const courseMetadata = Factory.build('courseMetadata');
+  const courseId = courseMetadata.id;
+  const configUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`;
+  const topicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`;
+  const topic = { id: 'topic-1', usageKey: 'unit-1', enabledInContext: true };
+
+  let axiosMock: MockAdapter;
+
+  const makeWrapper = (client: QueryClient) => function Wrapper(
+    { children }: { children: ReactNode },
+  ) {
+    return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  };
+
+  const mockTopics = () => {
+    axiosMock.onGet(configUrl).reply(200, { provider: 'openedx' });
+    axiosMock.onGet(topicsUrl).reply(200, [{ id: 'topic-1', usage_key: 'unit-1', enabled_in_context: true }]);
+  };
+
+  const renderTopic = (unitId: string, queryClient: QueryClient) => (
+    renderHook(() => useDiscussionTopic(courseId, unitId), { wrapper: makeWrapper(queryClient) })
+  );
+
+  beforeEach(() => {
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+  });
+
+  it('returns the topic for its unit', async () => {
+    mockTopics();
+    const queryClient = createTestQueryClient();
+    await queryClient.query(discussionTopicsQuery(courseId));
+
+    const { result } = renderTopic('unit-1', queryClient);
+
+    expect(result.current.data).toEqual(topic);
+  });
+
+  it('returns undefined for a unit with no topic', async () => {
+    mockTopics();
+    const queryClient = createTestQueryClient();
+    await queryClient.query(discussionTopicsQuery(courseId));
+
+    const { result } = renderTopic('unit-2', queryClient);
+
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it('fetches nothing on its own', async () => {
+    mockTopics();
+
+    const { result } = renderTopic('unit-1', createTestQueryClient());
+    await act(async () => {});
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(result.current.data).toBeUndefined();
+    expect(axiosMock.history.get).toHaveLength(0);
+  });
+
+  it('sees the topics when the query resolves after it mounted', async () => {
+    mockTopics();
+    const queryClient = createTestQueryClient();
+    const { result } = renderTopic('unit-1', queryClient);
+    expect(result.current.data).toBeUndefined();
+
+    await act(async () => {
+      await queryClient.query(discussionTopicsQuery(courseId));
+    });
+
+    await waitFor(() => expect(result.current.data).toEqual(topic));
   });
 });
 

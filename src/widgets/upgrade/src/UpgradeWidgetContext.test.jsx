@@ -19,6 +19,11 @@ jest.mock('@src/course-home/data/apiHooks', () => ({
   useCourseHomeMeta: jest.fn(() => ({ data: {} })),
 }));
 
+jest.mock('@src/courseware/data/apiHooks', () => ({
+  ...jest.requireActual('@src/courseware/data/apiHooks'),
+  useDiscussionTopic: jest.fn(() => ({ data: undefined })),
+}));
+
 const courseId = 'course-test-123';
 
 function makeWrapper() {

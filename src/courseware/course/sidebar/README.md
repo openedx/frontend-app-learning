@@ -155,7 +155,7 @@ const { verifiedMode, courseModes } = useCourseHomeMeta(courseId, { enabled: fal
 Available data:
 - `useCourseHomeMeta` (`@src/course-home/data/apiHooks`) - Course home data, staff status, permissions
 - `useCoursewareMetadata` (`@src/courseware/data/apiHooks`) - Course metadata, enrollment, verification
-- `useModel('discussionTopics', unitId)` (`@src/generic/model-store`) - Discussion topic data per unit (moving to a query hook in [#2087](https://github.com/openedx/frontend-app-learning/issues/2087))
+- `useDiscussionTopic` (`@src/courseware/data/apiHooks`) - Discussion topic data per unit
 
 ## Examples
 

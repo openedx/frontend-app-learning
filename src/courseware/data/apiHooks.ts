@@ -146,7 +146,13 @@ export const discussionTopicsQuery = (courseId: string) => queryOptions({
     const topics: DiscussionTopic[] = await getCourseTopics(courseId);
     return topics.filter(topic => topic.usageKey);
   },
-  meta: { models: [{ modelType: 'discussionTopics', strategy: 'updateModels', idField: 'usageKey' }] },
+});
+
+// Reads the topic DiscussionsProvider loaded for the unit; never fetches.
+export const useDiscussionTopic = (courseId: string, unitId: string) => useQuery({
+  ...discussionTopicsQuery(courseId),
+  enabled: false,
+  select: (topics) => topics.find(topic => topic.usageKey === unitId),
 });
 
 interface CheckBlockCompletionVars {

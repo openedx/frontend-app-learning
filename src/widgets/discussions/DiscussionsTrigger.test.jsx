@@ -1,5 +1,6 @@
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -15,9 +16,12 @@ initializeMockApp();
 
 describe('Discussions Trigger', () => {
   let axiosMock;
+  let queryClient;
   let mockData;
   let courseId;
   let unitId;
+  let configUrl;
+  let topicsUrl;
 
   beforeEach(async () => {
     const store = await initializeTestStore({
@@ -34,22 +38,21 @@ describe('Discussions Trigger', () => {
       unitId,
     };
 
-    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(
-      200,
-      {
-        provider: 'openedx',
-      },
-    );
-    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
-      .reply(200, buildTopicsFromUnits(state.models.units));
-
-    await createTestQueryClient(store).query(discussionTopicsQuery(courseId));
+    configUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`;
+    topicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`;
+    axiosMock.onGet(configUrl).reply(200, { provider: 'openedx' });
+    axiosMock.onGet(topicsUrl).reply(200, buildTopicsFromUnits(state.models.units));
+    // Load the topics into the client the render uses; the trigger reads them without fetching.
+    queryClient = createTestQueryClient();
+    await queryClient.query(discussionTopicsQuery(courseId));
   });
 
   const SidebarWrapper = ({ unitId: renderedUnitId, onClick }) => (
-    <SidebarProvider courseId={courseId} unitId={renderedUnitId} widgets={[]}>
-      <DiscussionsTrigger onClick={onClick} />
-    </SidebarProvider>
+    <QueryClientProvider client={queryClient}>
+      <SidebarProvider courseId={courseId} unitId={renderedUnitId} widgets={[]}>
+        <DiscussionsTrigger onClick={onClick} />
+      </SidebarProvider>
+    </QueryClientProvider>
   );
 
   SidebarWrapper.propTypes = {
@@ -80,5 +83,13 @@ describe('Discussions Trigger', () => {
     renderWithProvider({ unitId: 'has-no-discussion' }, clickTrigger);
 
     expect(await screen.queryByRole('button', { name: /Show discussions tray/i })).not.toBeInTheDocument();
+  });
+
+  it('reads the topics without requesting them', async () => {
+    renderWithProvider();
+    expect(await screen.findByRole('button', { name: /Show discussions tray/i })).toBeInTheDocument();
+
+    // Only the seed's two requests; the trigger's read added none.
+    expect(axiosMock.history.get.map(request => request.url)).toEqual([configUrl, topicsUrl]);
   });
 });

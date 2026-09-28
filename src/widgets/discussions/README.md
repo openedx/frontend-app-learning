@@ -27,9 +27,9 @@ Only shown when the current unit has a discussion topic enabled in context. Both
 
 ## Data Loading
 
-The widget's `Provider`, `DiscussionsProvider`, observes the course's discussion-topics query (`discussionTopicsQuery` in `courseware/data/apiHooks.ts`), enabled only when `DISCUSSIONS_MFE_BASE_URL` is configured and the course has a `discussion` tab. The sidebar framework mounts it around the sidebar children whether or not the widget is available, so the topics load once per sidebar mount and not again when course metadata changes. The query is bridged into the `discussionTopics` model for the widget's `useModel` readers (transitional, #1977). Because the fetch starts after mount, the initial `isAvailable` check (and initial sidebar computation) runs before the topics arrive; the framework's sync logic re-evaluates availability once the query resolves.
+The widget's `Provider`, `DiscussionsProvider`, observes the course's discussion-topics query (`discussionTopicsQuery` in `courseware/data/apiHooks.ts`), enabled only when `DISCUSSIONS_MFE_BASE_URL` is configured and the course has a `discussion` tab. The sidebar framework mounts it around the sidebar children whether or not the widget is available, so the topics load once per sidebar mount and not again when course metadata changes. Because the fetch starts after mount, the initial `isAvailable` check (and initial sidebar computation) runs before the topics arrive; the framework's sync logic re-evaluates availability once the query resolves.
 
-The `DiscussionsTrigger` component itself is a pure render component — it reads the `discussionTopics` model and fetches nothing.
+The `DiscussionsTrigger` component itself is a pure render component — it reads the current unit's topic through `useDiscussionTopic(courseId, unitId)` (`courseware/data/apiHooks.ts`) and fetches nothing.
 
 ## Customising Availability
 
