@@ -8,6 +8,7 @@ import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '@src/generic/user-messages';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { useMinimalCourseOutline } from '@src/courseware/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import { LearnerToolsSlot } from '../../plugin-slots/LearnerToolsSlot';
 import { SidebarProvider } from './sidebar/SidebarContext';
@@ -34,8 +35,8 @@ const Course = ({
     isStaff,
     originalUserIsStaff,
   } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
-  const sequence = useModel('sequences', sequenceId);
-  const section = useModel('sections', sequence ? sequence.sectionId : null);
+  const minimalSequenceMetadata = useMinimalCourseOutline(courseId, { enabled: false }).data?.sequences[sequenceId];
+  const section = useModel('sections', minimalSequenceMetadata ? minimalSequenceMetadata.sectionId : null);
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -45,7 +46,7 @@ const Course = ({
   }
 
   const pageTitleBreadCrumbs = [
-    sequence,
+    minimalSequenceMetadata,
     section,
     course,
   ].filter(element => element != null).map(element => element.title);

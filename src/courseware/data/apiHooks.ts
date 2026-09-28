@@ -4,7 +4,7 @@ import { logError } from '@edx/frontend-platform/logging';
 import {
   type QueryClient, queryOptions, useMutation, useQuery, useQueryClient,
 } from '@tanstack/react-query';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { getResponseStatus } from '@src/data/http-error';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
@@ -46,7 +46,6 @@ export const useMinimalCourseOutline = (
     models: [
       { modelType: 'coursewareMeta', strategy: 'updateModelsMap', source: 'courses' },
       { modelType: 'sections', strategy: 'addModelsMap', source: 'sections' },
-      { modelType: 'sequences', strategy: 'updateModelsMap', source: 'sequences' },
     ],
   },
 });
@@ -83,12 +82,7 @@ export const sequenceMetadataQuery = (sequenceId: string, isPreview: boolean) =>
     return { sequence, units };
   },
   retry: false,
-  meta: {
-    logStatusAs: { 422: 'silent' },
-    models: [
-      { modelType: 'sequences', strategy: 'updateModel', source: 'sequence' },
-    ],
-  },
+  meta: { logStatusAs: { 422: 'silent' } },
 });
 
 export const useSequenceMetadata = (
@@ -235,21 +229,24 @@ interface SaveSequencePositionVars {
 }
 
 export const useSaveSequencePosition = () => {
-  const store = useStore();
-  const dispatch = useDispatch();
+  const isPreview = useIsPreview();
+  const queryClient = useQueryClient();
+  const sequenceKey = (sequenceId: string | undefined) => coursewareQueryKeys.sequence(sequenceId!, isPreview);
   const setPosition = (sequenceId: string | undefined, activeUnitIndex: number) => {
-    dispatch(updateModel({ modelType: 'sequences', model: { id: sequenceId, activeUnitIndex } }));
+    queryClient.setQueryData<SequenceMetadataData>(sequenceKey(sequenceId), (data) => data && ({
+      ...data,
+      sequence: { ...data.sequence, activeUnitIndex },
+    }));
   };
   const { mutate } = useMutation({
     mutationFn: ({ courseId, sequenceId, activeUnitIndex }: SaveSequencePositionVars) => (
       postSequencePosition(courseId, sequenceId, activeUnitIndex)
     ),
     onMutate: ({ sequenceId, activeUnitIndex }) => {
-      const { models } = store.getState() as { models: { sequences: Record<string, { activeUnitIndex: number }> } };
-      const initialActiveUnitIndex = models.sequences[sequenceId!].activeUnitIndex;
+      const previous = queryClient.getQueryData<SequenceMetadataData>(sequenceKey(sequenceId));
       // Optimistically update the position.
       setPosition(sequenceId, activeUnitIndex);
-      return { initialActiveUnitIndex };
+      return { previous };
     },
     onSuccess: (_data, { sequenceId, activeUnitIndex }) => {
       // Update again under the assumption that the above call succeeded, since it doesn't return a
@@ -258,7 +255,7 @@ export const useSaveSequencePosition = () => {
     },
     onError: (error, { sequenceId }, context) => {
       logError(error);
-      setPosition(sequenceId, context!.initialActiveUnitIndex);
+      queryClient.setQueryData(sequenceKey(sequenceId), context?.previous);
     },
   });
 

@@ -12,7 +12,9 @@ import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 
 import PageLoading from '@src/generic/PageLoading';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { sequenceMightBeUnit, useSequenceMetadata, useUnit } from '@src/courseware/data/apiHooks';
+import {
+  sequenceMightBeUnit, useMinimalCourseOutline, useSequenceMetadata, useUnit,
+} from '@src/courseware/data/apiHooks';
 import { useModel } from '@src/generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
 import SequenceContainerSlot from '@src/plugin-slots/SequenceContainerSlot';
@@ -64,10 +66,11 @@ const Sequence = ({
     isStaff,
     originalUserIsStaff,
   } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
-  const sequence = useModel('sequences', sequenceId);
-  const section = useModel('sections', sequence ? sequence.sectionId : null);
+  const minimalSequenceMetadata = useMinimalCourseOutline(courseId, { enabled: false }).data?.sequences[sequenceId];
+  const section = useModel('sections', minimalSequenceMetadata?.sectionId ?? null);
   const unit = useUnit(sequenceId, unitId).data;
   const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
+  const sequence = sequenceQuery.data?.sequence;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;

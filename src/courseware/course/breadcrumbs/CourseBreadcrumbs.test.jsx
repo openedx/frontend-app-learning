@@ -28,7 +28,7 @@ const sectionBlocks = [Factory.build(
     type: 'chapter',
     id: props.sectionId,
     title: 'Section',
-    children: [{ id: props.sequenceId }],
+    children: [props.sequenceId],
   },
   { courseId: props.courseId },
 )];

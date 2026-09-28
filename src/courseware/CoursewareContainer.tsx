@@ -7,6 +7,7 @@ import { useCourseHomeMeta } from '../course-home/data/apiHooks';
 import {
   useCheckBlockCompletion,
   useCoursewareMetadata,
+  useMinimalCourseOutline,
   useSaveSequencePosition,
   useSequenceIds,
   useSequenceMetadata,
@@ -39,9 +40,9 @@ const CoursewareContainer = () => {
   const course = useSelector(
     (state: RootState) => (courseId ? readModels(state).coursewareMeta?.[courseId] : null) ?? null,
   );
-  const sequence = useSelector(
-    (state: RootState) => (sequenceId ? readModels(state).sequences?.[sequenceId] : null) ?? null,
-  );
+  const sequence = sequenceQuery.data?.sequence ?? null;
+  const minimalCourseOutline = useMinimalCourseOutline(courseId, { enabled: false }).data;
+  const sectionId = sequenceId ? minimalCourseOutline?.sequences[sequenceId]?.sectionId : undefined;
 
   const sequenceIds = useSequenceIds(courseId);
   let nextSequenceId: string | null = null;
@@ -49,9 +50,7 @@ const CoursewareContainer = () => {
     const sequenceIndex = sequenceIds.indexOf(sequenceId);
     nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
   }
-  const nextSequence = useSelector(
-    (state: RootState) => (nextSequenceId ? readModels(state).sequences?.[nextSequenceId] : null) ?? null,
-  );
+  const nextSectionId = nextSequenceId ? minimalCourseOutline?.sequences[nextSequenceId]?.sectionId : undefined;
 
   const latest = useRef<any>();
 
@@ -91,10 +90,10 @@ const CoursewareContainer = () => {
   };
 
   const handleNextSequenceClick = () => {
-    if (nextSequence !== null) {
+    if (nextSequenceId && nextSectionId) {
       const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
-      if (celebrateFirstSection && sequence.sectionId !== nextSequence.sectionId) {
-        handleNextSectionCelebration(sequenceId, nextSequence.id);
+      if (celebrateFirstSection && sectionId !== nextSectionId) {
+        handleNextSectionCelebration(sequenceId, nextSequenceId);
       }
     }
   };

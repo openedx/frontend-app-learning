@@ -9,7 +9,6 @@ import { GetCourseExitNavigation } from '../../course-exit';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
-import { useModel } from '../../../../generic/model-store';
 
 import messages from './messages';
 import PreviousButton from './generic/PreviousButton';
@@ -24,7 +23,6 @@ const SequenceNavigation = ({
   previousHandler,
 }) => {
   const intl = useIntl();
-  const sequence = useModel('sequences', sequenceId);
   const {
     isFirstUnit,
     isLastUnit,
@@ -35,6 +33,7 @@ const SequenceNavigation = ({
   } = useSequenceNavigationMetadata(sequenceId, unitId);
   const { courseId } = useParams();
   const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
+  const sequence = sequenceQuery.data?.sequence;
   const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
   const isLocked = sequenceQuery.isSuccess ? (
     sequence.gatedContent !== undefined && sequence.gatedContent.gated

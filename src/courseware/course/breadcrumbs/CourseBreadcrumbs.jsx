@@ -5,7 +5,7 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 
-import { useIsCourseLoaded, useSequenceMetadata } from '../../data/apiHooks';
+import { useMinimalCourseOutline, useIsCourseLoaded, useSequenceMetadata } from '../../data/apiHooks';
 import { useModel, useModels } from '../../../generic/model-store';
 import BreadcrumbItem from './BreadcrumbItem';
 
@@ -19,6 +19,7 @@ const CourseBreadcrumbs = ({
   const course = useModel('coursewareMeta', courseId);
   const isCourseLoaded = useIsCourseLoaded(courseId);
   const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
+  const { sequences = {} } = useMinimalCourseOutline(courseId, { enabled: false }).data ?? {};
 
   const allSequencesInSections = Object.fromEntries(
     useModels('sections', course.sectionIds)?.map((section) => [
@@ -26,7 +27,7 @@ const CourseBreadcrumbs = ({
       {
         default: section.id === sectionId,
         title: section.title,
-        sequences: useModels('sequences', section.sequenceIds),
+        sequences: section.sequenceIds.map((id) => sequences[id]),
       },
     ]),
   );

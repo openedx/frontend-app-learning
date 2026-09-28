@@ -1,8 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   getTestStoreIds, initializeTestStore, render, screen,
 } from '../../../setupTest';
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
+import { useSequenceMetadata } from '../../data/apiHooks';
 import SequenceContent from './SequenceContent';
 
 describe('Sequence Content', () => {
@@ -23,10 +25,19 @@ describe('Sequence Content', () => {
     };
   });
 
+  // Sequence renders SequenceContent only once the sequence query has succeeded.
+  const LoadedSequenceContent = (props) => (
+    useSequenceMetadata(props.sequenceId, { enabled: false }).isSuccess ? <SequenceContent {...props} /> : null
+  );
+
+  LoadedSequenceContent.propTypes = {
+    sequenceId: PropTypes.string.isRequired,
+  };
+
   const renderContent = (props = {}) => render(
     <>
       <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
-      <SequenceContent {...mockData} {...props} />
+      <LoadedSequenceContent {...mockData} {...props} />
     </>,
     { wrapWithRouter: true },
   );
@@ -40,7 +51,7 @@ describe('Sequence Content', () => {
     const { gatedContent } = store.getState().models.sequences[mockData.sequenceId];
     const { container } = renderContent({ gated: true });
 
-    expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
+    await screen.findByText('Loading locked content messaging...');
     expect(await screen.findByText('Content Locked')).toBeInTheDocument();
     expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
     expect(container.querySelector('svg')).toHaveClass('fa-lock');
@@ -50,8 +61,8 @@ describe('Sequence Content', () => {
     expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
   });
 
-  it('displays message for no content', () => {
+  it('displays message for no content', async () => {
     renderContent({ unitId: '' });
-    expect(screen.getByText('There is no content here.')).toBeInTheDocument();
+    expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
   });
 });
