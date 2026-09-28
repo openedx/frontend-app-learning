@@ -48,7 +48,7 @@ describe('CourseBreadcrumbs', () => {
         <QueryClientProvider client={createTestQueryClient()}>
           <IntlProvider locale="en">
             <MemoryRouter initialEntries={[{ pathname }]}>
-              <MountCourseQueryHooks courseId={props.courseId} />
+              <MountCourseQueryHooks courseId={props.courseId} sequenceId={props.sequenceId} />
               <CourseBreadcrumbs {...props} />
             </MemoryRouter>
           </IntlProvider>

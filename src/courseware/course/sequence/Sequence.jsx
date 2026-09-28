@@ -47,7 +47,7 @@ const Sequence = ({
   const sequence = useModel('sequences', sequenceId);
   const section = useModel('sections', sequence ? sequence.sectionId : null);
   const unit = useModel('units', unitId);
-  const sequenceQuery = useSequenceMetadata(sequenceId);
+  const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;

@@ -6,7 +6,7 @@ import messages from './messages';
 
 function useSequenceBannerTextAlert(sequenceId) {
   const sequence = useModel('sequences', sequenceId);
-  const sequenceQuery = useSequenceMetadata(sequenceId);
+  const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
 
   // Show Alert that comes along with the sequence
   useAlert(sequenceQuery.isSuccess && sequence.bannerText, {
@@ -21,7 +21,7 @@ function useSequenceBannerTextAlert(sequenceId) {
 function useSequenceEntranceExamAlert(courseId, sequenceId, intl) {
   const course = useModel('coursewareMeta', courseId);
   const sequence = useModel('sequences', sequenceId);
-  const sequenceQuery = useSequenceMetadata(sequenceId);
+  const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
   const {
     entranceExamCurrentScore,
     entranceExamEnabled,

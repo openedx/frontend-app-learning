@@ -544,5 +544,15 @@ describe('CoursewareContainer', () => {
       const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${defaultCourseId}`);
       expect(axiosMock.history.get.filter((req) => req.url === courseHomeMetadataUrl)).toHaveLength(1);
     });
+
+    it('requests the sequence metadata once per load', async () => {
+      setUpMockRequests();
+      history.push(`/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`);
+      await loadContainer();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${defaultSequenceBlock.id}`;
+      expect(axiosMock.history.get.filter((req) => req.url === sequenceMetadataUrl)).toHaveLength(1);
+    });
   });
 });
