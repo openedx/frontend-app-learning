@@ -3,12 +3,14 @@ import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { act, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import { getCourseMetadata } from '../../data/api';
+import { coursewareQueryKeys } from '../../data/queryKeys';
+import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
 import { getCourseHomeCourseMetadata } from '../../../course-home/data/api';
 import { addModel } from '../../../generic/model-store';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
@@ -23,6 +25,7 @@ import CourseCelebration from './CourseCelebration';
 import CourseExit from './CourseExit';
 import CourseInProgress from './CourseInProgress';
 import CourseNonPassing from './CourseNonPassing';
+import messages from './messages';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
@@ -101,6 +104,112 @@ describe('Course Exit Pages', () => {
     axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(defaultCourseBlocks));
 
     logUnhandledRequests(axiosMock);
+  });
+
+  describe('when the outline is loading', () => {
+    const courseEndPath = `/course/${courseId}/course-end`;
+
+    // Holds the outline request, as a slow outline would; the page's mode depends on
+    // `hasScheduledContent`, which only the outline carries.
+    const holdOutline = () => {
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(() => new Promise(() => {}));
+    };
+
+    const renderCourseEnd = () => {
+      const queryClient = createTestQueryClient(store);
+      history.push(courseEndPath);
+      render(
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/course/:courseId/course-end" element={<CourseExit />} />
+              <Route path="/course/:courseId" element={<div>Courseware</div>} />
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>,
+        { store, wrapWithRouter: false },
+      );
+      return queryClient;
+    };
+
+    const waitForMetadataWithOutlinePending = async (queryClient) => {
+      await waitFor(() => {
+        expect(queryClient.getQueryState(coursewareQueryKeys.metadata(courseId))?.status).toBe('success');
+        expect(queryClient.getQueryState(courseHomeQueryKeys.metadata(courseId))?.status).toBe('success');
+      });
+      await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
+    };
+
+    const itWaitsForTheOutline = () => {
+      it('does not redirect', async () => {
+        holdOutline();
+        await waitForMetadataWithOutlinePending(renderCourseEnd());
+
+        expect(global.location.pathname).toBe(courseEndPath);
+      });
+
+      it('does not render any course-end content', async () => {
+        holdOutline();
+        await waitForMetadataWithOutlinePending(renderCourseEnd());
+
+        expect(screen.queryByText(messages.congratulationsHeader.defaultMessage)).not.toBeInTheDocument();
+        expect(screen.queryByText(messages.endOfCourseHeader.defaultMessage)).not.toBeInTheDocument();
+        expect(screen.queryByText(messages.courseInProgressHeader.defaultMessage)).not.toBeInTheDocument();
+      });
+    };
+
+    describe('for an audit learner who is not passing and cannot view a certificate', () => {
+      beforeEach(() => {
+        setMetadata(
+          { enrollment: { is_active: true }, user_has_passing_grade: false, certificate_data: { cert_status: 'audit_notpassing' } },
+          { can_view_certificate: false },
+        );
+      });
+
+      itWaitsForTheOutline();
+    });
+
+    describe('for an audit learner who is not passing and can view a certificate', () => {
+      beforeEach(() => {
+        setMetadata(
+          { enrollment: { is_active: true }, user_has_passing_grade: false, certificate_data: { cert_status: 'audit_notpassing' } },
+          { can_view_certificate: true },
+        );
+      });
+
+      itWaitsForTheOutline();
+    });
+
+    describe('for a learner who is not passing, has no certificate data and cannot view a certificate', () => {
+      beforeEach(() => {
+        setMetadata(
+          { enrollment: { is_active: true }, user_has_passing_grade: false, certificate_data: null },
+          { can_view_certificate: false },
+        );
+      });
+
+      itWaitsForTheOutline();
+    });
+  });
+
+  describe('when the outline fails', () => {
+    it('redirects to the course home', async () => {
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(500);
+      history.push(`/course/${courseId}/course-end`);
+      render(
+        <QueryClientProvider client={createTestQueryClient(store)}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/course/:courseId/course-end" element={<CourseExit />} />
+              <Route path="/course/:courseId/home" element={<div>Course home</div>} />
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>,
+        { store, wrapWithRouter: false },
+      );
+
+      await waitFor(() => expect(global.location.pathname).toBe(`/course/${courseId}/home`));
+    });
   });
 
   describe('Course Exit routing', () => {
