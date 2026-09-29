@@ -72,13 +72,17 @@ const CourseExit = () => {
   const { courseId } = useParams();
   const metadataQuery = useCoursewareMetadata(courseId);
   const courseHomeMetaQuery = useCourseHomeMeta(courseId);
-  useMinimalCourseOutline(courseId);
+  const outlineQuery = useMinimalCourseOutline(courseId);
+
+  if (outlineQuery.isError && courseHomeMetaQuery.data?.courseAccess?.hasAccess) {
+    return (<Navigate to={`/course/${courseId}/home`} replace />);
+  }
 
   return (
     <TabWithTimer
       activeTabSlug="courseware"
       courseId={courseId}
-      courseStatus={{ metadataQuery: courseHomeMetaQuery, tabDataQuery: metadataQuery }}
+      courseStatus={{ metadataQuery: courseHomeMetaQuery, tabDataQueries: [metadataQuery, outlineQuery] }}
     >
       <CourseExitContent />
     </TabWithTimer>

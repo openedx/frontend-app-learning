@@ -75,7 +75,7 @@ const SequenceNavigation = ({
 
   const renderNextButton = () => {
     let buttonText;
-    const disabled = isLastUnit && !exitActive;
+    const disabled = !nextLink || (isLastUnit && !exitActive);
 
     if (isLastUnit && exitText) {
       buttonText = exitText;

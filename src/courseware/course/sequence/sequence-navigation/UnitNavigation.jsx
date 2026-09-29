@@ -41,7 +41,7 @@ const UnitNavigation = ({
   const renderNextButton = () => {
     const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
     const buttonText = (isLastUnit && exitText) ? exitText : intl.formatMessage(messages.nextButton);
-    const disabled = isLastUnit && !exitActive;
+    const disabled = !nextLink || (isLastUnit && !exitActive);
     const variant = 'outline-primary';
     const buttonStyle = `next-button ${isAtTop ? 'text-dark' : 'justify-content-center'}`;
 

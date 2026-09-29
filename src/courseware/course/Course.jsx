@@ -35,7 +35,8 @@ const Course = ({
     isStaff,
     originalUserIsStaff,
   } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
-  const minimalSequenceMetadata = useMinimalCourseOutline(courseId, { enabled: false }).data?.sequences[sequenceId];
+  const minimalCourseOutlineQuery = useMinimalCourseOutline(courseId, { enabled: false });
+  const minimalSequenceMetadata = minimalCourseOutlineQuery.data?.sequences[sequenceId];
   const section = useModel('sections', minimalSequenceMetadata ? minimalSequenceMetadata.sectionId : null);
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -76,9 +77,11 @@ const Course = ({
 
   return (
     <SidebarProvider courseId={courseId} unitId={unitId} widgets={widgets}>
-      <Helmet>
-        <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
-      </Helmet>
+      {minimalCourseOutlineQuery.isSuccess && (
+        <Helmet>
+          <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
+        </Helmet>
+      )}
       <div className="position-relative d-flex align-items-xl-center mb-4 mt-1 flex-column flex-xl-row">
         <CourseBreadcrumbsSlot
           courseId={courseId}
