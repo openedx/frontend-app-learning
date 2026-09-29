@@ -650,5 +650,25 @@ describe('CoursewareContainer', () => {
       const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${defaultSequenceBlock.id}`;
       expect(axiosMock.history.get.filter((req) => req.url === sequenceMetadataUrl)).toHaveLength(1);
     });
+
+    it('requests the courseware metadata once per load', async () => {
+      setUpMockRequests();
+      history.push(`/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`);
+      await loadContainer();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      const coursewareMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultCourseId}`);
+      expect(axiosMock.history.get.filter((req) => req.url === coursewareMetadataUrl)).toHaveLength(1);
+    });
+
+    it('requests the learning-sequences outline once per load', async () => {
+      setUpMockRequests();
+      history.push(`/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`);
+      await loadContainer();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      const outlineUrl = new URL(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/${defaultCourseId}`).href;
+      expect(axiosMock.history.get.filter((req) => req.url === outlineUrl)).toHaveLength(1);
+    });
   });
 });

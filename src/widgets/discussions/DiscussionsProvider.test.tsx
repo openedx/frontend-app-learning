@@ -12,10 +12,6 @@ import { createTestQueryClient, initializeMockApp, seedQueryData } from '@src/se
 
 import DiscussionsProvider from './DiscussionsProvider';
 
-jest.mock('@src/generic/model-store', () => ({
-  useModel: jest.fn(() => ({})),
-}));
-
 initializeMockApp();
 
 const courseId = 'course-v1:edX+DemoX+Demo_Course';

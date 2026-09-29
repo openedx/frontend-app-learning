@@ -9,7 +9,6 @@ import { COURSE_EXIT_MODES, getCourseExitMode } from './utils';
 import { postUnsubscribeFromGoalReminders } from './data/api';
 import { CourseExitViewCoursesPluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
-import { useModel } from '../../../generic/model-store';
 import { TabWithTimer } from '../../../tab-page';
 import { useCoursewareMetadata, useMinimalCourseOutline } from '../../data/apiHooks';
 import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
@@ -21,10 +20,12 @@ const CourseExitContent = () => {
     courseExitPageIsActive,
     courseGoals,
     enrollmentMode,
-    hasScheduledContent,
     isEnrolled,
     userHasPassingGrade,
-  } = useModel('coursewareMeta', courseId);
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
+  const hasScheduledContent = (
+    useMinimalCourseOutline(courseId, { enabled: false }).data?.courses[courseId].hasScheduledContent
+  );
 
   const {
     isMasquerading,

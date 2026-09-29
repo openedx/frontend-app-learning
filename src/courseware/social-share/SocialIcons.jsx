@@ -18,7 +18,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
-import { useModel } from '../../generic/model-store';
+import { useCoursewareMetadata } from '../data/apiHooks';
 
 const SocialIcons = ({
   analyticsId,
@@ -30,7 +30,7 @@ const SocialIcons = ({
   socialMessage,
 }) => {
   const intl = useIntl();
-  const { marketingUrl } = useModel('coursewareMeta', courseId);
+  const marketingUrl = useCoursewareMetadata(courseId, { enabled: false }).data?.marketingUrl;
 
   const {
     org,

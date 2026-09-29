@@ -6,8 +6,8 @@ import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform
 import { Button, Card } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 import { useParams } from 'react-router-dom';
-import { useModel } from '../../../generic/model-store';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
+import { useCoursewareMetadata } from '../../../courseware/data/apiHooks';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import { useCourseHomeMeta, useRequestCert } from '../../data/apiHooks';
 import { useProgressData } from '../hooks';
@@ -20,7 +20,7 @@ const CertificateStatus = () => {
 
   const {
     entranceExamData,
-  } = useModel('coursewareMeta', courseId);
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
 
   const {
     isEnrolled,

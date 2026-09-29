@@ -1,6 +1,5 @@
 import React from 'react';
 
-import PropTypes from 'prop-types';
 import { Factory } from 'rosie';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
@@ -10,13 +9,11 @@ import userEvent from '@testing-library/user-event';
 import {
   cleanup, fireEvent, getByRole, getTestStoreIds, initializeTestStore, loadUnit, render, screen, waitFor,
 } from '../../setupTest';
-import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import MountCourseQueryHooks from '../../tests/MountCourseQueryHooks';
 import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
 import { testIDs } from './sequence/Unit/ContentIFrame';
-import Course from './Course';
-import setupDiscussionSidebar from './test-utils';
+import setupDiscussionSidebar, { LoadedCourse } from './test-utils';
 
 jest.mock('@edx/frontend-platform/analytics');
 jest.mock('@edx/frontend-lib-special-exams', () => {
@@ -50,16 +47,6 @@ describe('Course', () => {
     nextSequenceHandler: () => {},
     previousSequenceHandler: () => {},
     unitNavigationHandler: () => {},
-  };
-
-  // LoadedTabPage renders the courseware only once the course-home metadata query has succeeded;
-  // Course reads `celebrations` from it on first render, so the tests mount it behind the same gate.
-  const LoadedCourse = ({ courseId, ...props }) => (
-    useCourseHomeMeta(courseId).isSuccess ? <Course courseId={courseId} {...props} /> : null
-  );
-
-  LoadedCourse.propTypes = {
-    courseId: PropTypes.string.isRequired,
   };
 
   const renderCourse = (testData, testStore) => render(

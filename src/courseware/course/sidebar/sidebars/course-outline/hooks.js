@@ -5,10 +5,10 @@ import { useParams } from 'react-router-dom';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { breakpoints } from '@openedx/paragon';
 
-import { useModel } from '@src/generic/model-store';
 import {
   useCheckBlockCompletion,
   useCourseOutlineStructure,
+  useCoursewareMetadata,
   useCoursewareOutlineSidebarToggles,
 } from '@src/courseware/data/apiHooks';
 import { useSidebar } from '../../SidebarContext';
@@ -23,7 +23,7 @@ export const useCourseOutlineSidebar = () => {
   const isEnabledCompletionTracking = sidebarToggles?.enableCompletionTracking;
   const outlineQuery = useCourseOutlineStructure(courseId);
   const { sections = {}, sequences = {}, units = {} } = outlineQuery.data ?? {};
-  const course = useModel('coursewareMeta', courseId);
+  const coursewareMetadata = useCoursewareMetadata(courseId, { enabled: false }).data;
 
   const {
     unitId,
@@ -39,7 +39,7 @@ export const useCourseOutlineSidebar = () => {
   const {
     entranceExamEnabled,
     entranceExamPassed,
-  } = course.entranceExamData || {};
+  } = coursewareMetadata?.entranceExamData || {};
   const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
 
   const collapseSidebar = () => {

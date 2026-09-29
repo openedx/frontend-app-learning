@@ -4,13 +4,10 @@ import {
   render, renderHook, screen, fireEvent, act,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { upgradeIsAvailable } from '@src/widgets/upgrade/src/utils';
 import {
   SidebarProvider, buildSidebarsRegistry, getSidebarOrder, useSidebar,
 } from './SidebarContext';
-
-jest.mock('@src/generic/model-store', () => ({
-  useModel: jest.fn(() => ({})),
-}));
 
 jest.mock('@src/course-home/data/apiHooks', () => ({
   ...jest.requireActual('@src/course-home/data/apiHooks'),
@@ -19,7 +16,9 @@ jest.mock('@src/course-home/data/apiHooks', () => ({
 
 jest.mock('@src/courseware/data/apiHooks', () => ({
   ...jest.requireActual('@src/courseware/data/apiHooks'),
+  useCoursewareMetadata: jest.fn(() => ({ data: {} })),
   useDiscussionTopic: jest.fn(() => ({ data: undefined })),
+  useMinimalCourseOutline: jest.fn(() => ({ data: undefined })),
 }));
 
 jest.mock('@openedx/paragon', () => {
@@ -128,6 +127,36 @@ describe('SidebarProvider', () => {
       renderProvider({ widgets: [stubWidget('ALWAYS_ON', 10, { isAvailable: undefined })] });
 
       expect(screen.getByTestId('available-ids').textContent).toBe('ALWAYS_ON');
+    });
+  });
+
+  describe('when a metadata query has no data', () => {
+    const widgets = [
+      stubWidget('ALWAYS_ON', 10, { isAvailable: undefined }),
+      stubWidget('COURSE_LIST', 20, { isAvailable: (context) => context.courseId === courseId }),
+      stubWidget('UPGRADE', 30, { isAvailable: upgradeIsAvailable }),
+    ];
+
+    afterEach(() => {
+      jest.requireMock('@src/course-home/data/apiHooks').useCourseHomeMeta.mockReturnValue({ data: { tabs: [] } });
+      jest.requireMock('@src/courseware/data/apiHooks').useCoursewareMetadata.mockReturnValue({ data: {} });
+    });
+
+    it('still asks every widget when the course-home metadata has no data', () => {
+      jest.requireMock('@src/course-home/data/apiHooks').useCourseHomeMeta.mockReturnValue({ data: undefined });
+      renderProvider({ widgets });
+
+      expect(screen.getByTestId('available-ids').textContent).toBe('ALWAYS_ON,COURSE_LIST');
+    });
+
+    it('still asks every widget when the courseware metadata has no data', () => {
+      jest.requireMock('@src/course-home/data/apiHooks').useCourseHomeMeta.mockReturnValue(
+        { data: { tabs: [], verifiedMode: { price: 10 } } },
+      );
+      jest.requireMock('@src/courseware/data/apiHooks').useCoursewareMetadata.mockReturnValue({ data: undefined });
+      renderProvider({ widgets });
+
+      expect(screen.getByTestId('available-ids').textContent).toBe('ALWAYS_ON,COURSE_LIST,UPGRADE');
     });
   });
 

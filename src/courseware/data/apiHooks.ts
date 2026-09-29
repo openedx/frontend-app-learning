@@ -4,11 +4,9 @@ import { logError } from '@edx/frontend-platform/logging';
 import {
   type QueryClient, queryOptions, useMutation, useQuery, useQueryClient,
 } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
 
 import { getResponseStatus } from '@src/data/http-error';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { updateModel, useModel, useModels } from '@src/generic/model-store';
 import {
   getBlockCompletion, getCourseDiscussionConfig, getCourseMetadata, getCourseOutline,
   getCoursewareOutlineSidebarToggles, getCourseTopics, getLearningSequencesOutline, getSequenceMetadata,
@@ -34,19 +32,32 @@ export const useCoursewareMetadata = (
   meta: { models: [{ modelType: 'coursewareMeta', strategy: 'updateModel' }] },
 });
 
-export const useMinimalCourseOutline = (
-  courseId: string | undefined,
-  { enabled = true }: QueryOptions = {},
-) => useQuery<MinimalCourseOutline>({
-  queryKey: coursewareQueryKeys.outline(courseId!),
-  queryFn: () => getLearningSequencesOutline(courseId),
-  enabled: enabled && !!courseId,
+export const minimalCourseOutlineQuery = (courseId: string) => queryOptions({
+  queryKey: coursewareQueryKeys.outline(courseId),
+  queryFn: (): Promise<MinimalCourseOutline> => getLearningSequencesOutline(courseId),
   meta: {
     logStatusAs: { 403: 'info' },
     models: [
       { modelType: 'coursewareMeta', strategy: 'updateModelsMap', source: 'courses' },
       { modelType: 'sections', strategy: 'addModelsMap', source: 'sections' },
     ],
+  },
+});
+
+export const useMinimalCourseOutline = (
+  courseId: string | undefined,
+  { enabled = true }: QueryOptions = {},
+) => useQuery({
+  ...minimalCourseOutlineQuery(courseId!),
+  enabled: enabled && !!courseId,
+});
+
+export const useCourseSections = (courseId: string | undefined) => useQuery({
+  ...minimalCourseOutlineQuery(courseId!),
+  enabled: false,
+  select: ({ courses, sections }) => {
+    const { sectionIds } = courses[courseId!];
+    return sectionIds.map((sectionId) => sections[sectionId]);
   },
 });
 
@@ -60,10 +71,10 @@ export const useIsCourseLoaded = (courseId: string | undefined): boolean => {
 
 export const useSequenceIds = (courseId: string | undefined): string[] => {
   const isCourseLoaded = useIsCourseLoaded(courseId);
-  const { sectionIds = [] } = useModel('coursewareMeta', courseId);
-  const sections = useModels('sections', isCourseLoaded ? sectionIds : []);
+  const courseSections = useCourseSections(courseId).data;
+  const sections = isCourseLoaded ? courseSections : undefined;
   return useMemo(
-    () => sections.flatMap((section: { sequenceIds: string[] }) => section.sequenceIds),
+    () => sections?.flatMap((section) => section.sequenceIds) ?? [],
     [sections],
   );
 };
@@ -270,7 +281,7 @@ interface SaveIntegritySignatureVars {
 }
 
 export const useSaveIntegritySignature = () => {
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const { mutate } = useMutation({
     // If the request is made by a staff user masquerading as a specific learner,
     // don't actually create a signature for them on the backend,
@@ -279,13 +290,10 @@ export const useSaveIntegritySignature = () => {
       isMasquerading ? null : postIntegritySignature(courseId)
     ),
     onSuccess: (_data, { courseId }) => {
-      dispatch(updateModel({
-        modelType: 'coursewareMeta',
-        model: {
-          id: courseId,
-          userNeedsIntegritySignature: false,
-        },
-      }));
+      queryClient.setQueryData<CoursewareMeta>(
+        coursewareQueryKeys.metadata(courseId),
+        (data) => data && ({ ...data, userNeedsIntegritySignature: false }),
+      );
     },
     onError: (error) => logError(error),
   });

@@ -7,8 +7,8 @@ import {
 import { breakpoints } from '@openedx/paragon';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { SidebarProvider } from '@src/courseware/course/sidebar/SidebarContext';
+import { useCoursewareMetadata } from '@src/courseware/data/apiHooks';
 import * as localStorageModule from '@src/data/localStorage';
-import { useModel } from '@src/generic/model-store';
 import UpgradePanel from './UpgradePanel';
 import { upgradeWidgetConfig } from './widgetConfig';
 
@@ -25,13 +25,14 @@ jest.mock('@src/data/localStorage', () => ({
   setLocalStorage: jest.fn(),
 }));
 
-jest.mock('@src/generic/model-store', () => ({
-  useModel: jest.fn(),
-}));
-
 jest.mock('@src/course-home/data/apiHooks', () => ({
   ...jest.requireActual('@src/course-home/data/apiHooks'),
   useCourseHomeMeta: jest.fn(),
+}));
+
+jest.mock('@src/courseware/data/apiHooks', () => ({
+  ...jest.requireActual('@src/courseware/data/apiHooks'),
+  useCoursewareMetadata: jest.fn(),
 }));
 
 initializeMockApp();
@@ -64,12 +65,7 @@ function buildCourseHomeMeta(overrides = {}) {
 // The panel is the stored sidebar on a desktop viewport; the widget's own Provider comes from
 // the sidebar provider mounting the upgrade widget config.
 function renderPanel(modelOverrides = {}) {
-  useModel.mockImplementation((modelType) => {
-    if (modelType === 'coursewareMeta') {
-      return buildCoursewareMeta(modelOverrides.coursewareMeta);
-    }
-    return {};
-  });
+  useCoursewareMetadata.mockReturnValue({ data: buildCoursewareMeta(modelOverrides.coursewareMeta) });
   useCourseHomeMeta.mockReturnValue({ data: buildCourseHomeMeta(modelOverrides.courseHomeMeta) });
   localStorageModule.getLocalStorage.mockImplementation((key) => (key === `sidebar.${courseId}` ? 'UPGRADE' : null));
   global.innerWidth = breakpoints.extraExtraLarge.minWidth;

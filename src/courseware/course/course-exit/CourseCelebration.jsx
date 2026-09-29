@@ -22,8 +22,8 @@ import certificate from '../../../generic/assets/openedx_certificate.png';
 import certificateLocked from '../../../generic/assets/openedx_locked_certificate.png';
 import { FormattedPricing } from '../../../generic/upgrade-button';
 import messages from './messages';
-import { useModel } from '../../../generic/model-store';
 import { useCourseHomeMeta, useRequestCert } from '../../../course-home/data/apiHooks';
+import { useCoursewareMetadata, useMinimalCourseOutline } from '../../data/apiHooks';
 import ProgramCompletion from './ProgramCompletion';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
@@ -46,10 +46,10 @@ const CourseCelebration = () => {
     marketingUrl,
     offer,
     relatedPrograms,
-    title,
     verifyIdentityUrl,
     verificationStatus,
-  } = useModel('coursewareMeta', courseId);
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
+  const title = useMinimalCourseOutline(courseId, { enabled: false }).data?.courses[courseId].title;
 
   const {
     org,

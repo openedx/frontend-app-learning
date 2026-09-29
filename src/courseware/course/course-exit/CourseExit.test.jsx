@@ -663,9 +663,9 @@ describe('Course Exit Pages', () => {
     });
   });
 
-  it('requests the course metadata once per load', async () => {
-    // The default metadata is unenrolled, which redirects with no body; enrol with a certificate
-    // so the celebration page and the readers under it are on the page being counted.
+  // The default metadata is unenrolled, which redirects with no body; enrol with a certificate
+  // so the celebration page and the readers under it are on the page being counted.
+  const loadCelebrationPage = async () => {
     setMetadata({
       certificate_data: {
         cert_status: 'downloadable',
@@ -678,7 +678,24 @@ describe('Course Exit Pages', () => {
     const queryClient = await fetchAndRender(<CourseExit />);
     expect(screen.getByText('Congratulations!')).toBeInTheDocument();
     await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+  };
+
+  it('requests the course metadata once per load', async () => {
+    await loadCelebrationPage();
 
     expect(axiosMock.history.get.filter((req) => req.url === courseHomeMetadataUrl)).toHaveLength(1);
+  });
+
+  it('requests the courseware metadata once per load', async () => {
+    await loadCelebrationPage();
+
+    expect(axiosMock.history.get.filter((req) => req.url === coursewareMetadataUrl)).toHaveLength(1);
+  });
+
+  it('requests the learning-sequences outline once per load', async () => {
+    await loadCelebrationPage();
+
+    const outlineUrl = new URL(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/${courseId}`).href;
+    expect(axiosMock.history.get.filter((req) => req.url === outlineUrl)).toHaveLength(1);
   });
 });

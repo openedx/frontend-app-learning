@@ -1,5 +1,4 @@
-import { useMinimalCourseOutline, useSequenceMetadata } from '../../courseware/data/apiHooks';
-import { useModel } from '../../generic/model-store';
+import { useCoursewareMetadata, useMinimalCourseOutline, useSequenceMetadata } from '../../courseware/data/apiHooks';
 import { ALERT_TYPES, useAlert } from '../../generic/user-messages';
 
 import messages from './messages';
@@ -21,7 +20,7 @@ function useSequenceBannerTextAlert(sequenceId) {
 }
 
 function useSequenceEntranceExamAlert(courseId, sequenceId, intl) {
-  const course = useModel('coursewareMeta', courseId);
+  const coursewareMetadata = useCoursewareMetadata(courseId, { enabled: false }).data;
   const outlineSequence = useMinimalCourseOutline(courseId, { enabled: false }).data?.sequences[sequenceId];
   const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
   const {
@@ -30,7 +29,7 @@ function useSequenceEntranceExamAlert(courseId, sequenceId, intl) {
     entranceExamId,
     entranceExamMinimumScorePct,
     entranceExamPassed,
-  } = course.entranceExamData || {};
+  } = coursewareMetadata?.entranceExamData || {};
   const entranceExamAlertVisible = sequenceQuery.isSuccess && entranceExamEnabled
     && entranceExamId === outlineSequence?.sectionId;
   let entranceExamText;
