@@ -22,7 +22,7 @@ export interface CoursewareMeta {
   showCalculator: boolean;
   notes: unknown;
   marketingUrl: string | null;
-  celebrations: unknown;
+  celebrations: { firstSection: boolean };
   userHasPassingGrade: boolean;
   courseExitPageIsActive: boolean;
   certificateData: unknown;
@@ -56,7 +56,7 @@ interface CoursewareMetadataResponse {
     show_calculator: boolean;
     notes: unknown;
     marketing_url: string | null;
-    celebrations: unknown;
+    celebrations: { first_section: boolean };
     user_has_passing_grade: boolean;
     course_exit_page_is_active: boolean;
     certificate_data: unknown;

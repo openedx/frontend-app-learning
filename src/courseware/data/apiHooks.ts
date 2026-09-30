@@ -29,19 +29,12 @@ export const useCoursewareMetadata = (
   queryKey: coursewareQueryKeys.metadata(courseId!),
   queryFn: () => getCourseMetadata(courseId),
   enabled: enabled && !!courseId,
-  meta: { models: [{ modelType: 'coursewareMeta', strategy: 'updateModel' }] },
 });
 
 export const minimalCourseOutlineQuery = (courseId: string) => queryOptions({
   queryKey: coursewareQueryKeys.outline(courseId),
   queryFn: (): Promise<MinimalCourseOutline> => getLearningSequencesOutline(courseId),
-  meta: {
-    logStatusAs: { 403: 'info' },
-    models: [
-      { modelType: 'coursewareMeta', strategy: 'updateModelsMap', source: 'courses' },
-      { modelType: 'sections', strategy: 'addModelsMap', source: 'sections' },
-    ],
-  },
+  meta: { logStatusAs: { 403: 'info' } },
 });
 
 export const useMinimalCourseOutline = (

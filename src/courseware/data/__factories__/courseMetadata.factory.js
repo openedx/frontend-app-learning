@@ -41,7 +41,12 @@ Factory.define('courseMetadata')
     marketing_url: null,
     language: 'en',
     whole_course_translation_enabled: false,
-    celebrations: null,
+    celebrations: {
+      first_section: false,
+      streak_length_to_celebrate: null,
+      streak_discount_enabled: false,
+      weekly_goal: false,
+    },
     enroll_alert: null,
     course_exit_page_is_active: true,
     user_has_passing_grade: false,
