@@ -15,10 +15,9 @@ import { useSidebar } from '../../SidebarContext';
 import { ID } from './constants';
 
 // eslint-disable-next-line import/prefer-default-export
-export const useCourseOutlineSidebar = () => {
+export const useCourseOutlineData = () => {
   const checkBlockCompletion = useCheckBlockCompletion();
-
-  const { courseId, sequenceId: activeSequenceId } = useParams();
+  const { courseId, sequenceId: activeSequenceId, unitId } = useParams();
   const { data: sidebarToggles } = useCoursewareOutlineSidebarToggles(courseId);
   const isEnabledCompletionTracking = sidebarToggles?.enableCompletionTracking;
   const outlineQuery = useCourseOutlineStructure(courseId);
@@ -26,33 +25,10 @@ export const useCourseOutlineSidebar = () => {
   const coursewareMetadata = useCoursewareMetadata(courseId, { enabled: false }).data;
 
   const {
-    unitId,
-    currentSidebar,
-    toggleSidebar,
-    shouldDisplayFullScreen,
-  } = useSidebar();
-
-  // Course outline state is now fully controlled by SidebarProvider
-  // This component only renders when currentSidebar === 'COURSE_OUTLINE'
-  const [isOpen, setIsOpen] = useState(true);
-
-  const {
     entranceExamEnabled,
     entranceExamPassed,
   } = coursewareMetadata?.entranceExamData || {};
   const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
-
-  const collapseSidebar = () => {
-    toggleSidebar(null);
-  };
-
-  const handleToggleCollapse = () => {
-    if (currentSidebar === ID) {
-      collapseSidebar();
-    } else {
-      toggleSidebar(ID);
-    }
-  };
 
   const handleUnitClick = ({ activeUnitId, id }) => {
     const logEvent = (eventName, widgetPlacement) => {
@@ -78,10 +54,44 @@ export const useCourseOutlineSidebar = () => {
 
     logEvent('edx.ui.lms.sequence.tab_selected', 'left');
     checkBlockCompletion(courseId, activeSequenceId, activeUnitId);
+  };
 
-    // Hide the sidebar after selecting a unit on a mobile device.
-    if (shouldDisplayFullScreen) {
-      handleToggleCollapse();
+  return {
+    courseId,
+    unitId,
+    isEnabledCompletionTracking,
+    isActiveEntranceExam,
+    isOutlinePending: outlineQuery.isPending,
+    activeSequenceId,
+    sections,
+    sequences,
+    units,
+    handleUnitClick,
+  };
+};
+
+// eslint-disable-next-line import/prefer-default-export
+export const useCourseOutlineSidebar = () => {
+  const {
+    unitId,
+    currentSidebar,
+    toggleSidebar,
+    shouldDisplayFullScreen,
+  } = useSidebar();
+
+  // Course outline state is now fully controlled by SidebarProvider
+  // This component only renders when currentSidebar === 'COURSE_OUTLINE'
+  const [isOpen, setIsOpen] = useState(true);
+
+  const collapseSidebar = () => {
+    toggleSidebar(null);
+  };
+
+  const handleToggleCollapse = () => {
+    if (currentSidebar === ID) {
+      collapseSidebar();
+    } else {
+      toggleSidebar(ID);
     }
   };
 
@@ -112,20 +122,11 @@ export const useCourseOutlineSidebar = () => {
   }, [currentSidebar]);
 
   return {
-    courseId,
     unitId,
     currentSidebar,
     shouldDisplayFullScreen,
-    isEnabledCompletionTracking,
     isOpen,
     setIsOpen,
     handleToggleCollapse,
-    isActiveEntranceExam,
-    isOutlinePending: outlineQuery.isPending,
-    activeSequenceId,
-    sections,
-    sequences,
-    units,
-    handleUnitClick,
   };
 };
