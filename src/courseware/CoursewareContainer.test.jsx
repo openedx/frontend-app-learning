@@ -8,7 +8,7 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import {
-  BrowserRouter, MemoryRouter, Route, Routes,
+  BrowserRouter, Link, MemoryRouter, Route, Routes,
 } from 'react-router-dom';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
@@ -20,6 +20,7 @@ import { createTestQueryClient, initializeMockApp, waitFor } from '../setupTest'
 import { DECODE_ROUTES } from '../constants';
 
 import CoursewareContainer from './CoursewareContainer';
+import { getSequenceForUnitDeprecatedUrl } from './data/api';
 import { coursewareQueryKeys } from './data/queryKeys';
 import { courseHomeQueryKeys } from '../course-home/data/queryKeys';
 import { buildSimpleCourseBlocks, buildBinaryCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
@@ -271,6 +272,147 @@ describe('CoursewareContainer', () => {
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
         expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
       });
+
+      it('should ask for the resume block again on a later visit to the course root', async () => {
+        const resumeUrl = `${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`;
+        const resumeRequests = () => axiosMock.history.get.filter((req) => req.url === resumeUrl);
+        axiosMock.onGet(resumeUrl).reply(200, { sectionId: sequenceBlock.id, unitId: unitBlocks[0].id });
+
+        history.push(`/course/${courseId}`);
+        // An in-app link back to the course root, as the fallbacks to it navigate.
+        const { container } = render(
+          <BrowserRouter>
+            <Link to={`/course/${courseId}`}>course root</Link>
+            {component}
+          </BrowserRouter>,
+        );
+        await waitForElementToBeRemoved(screen.getByRole('status'));
+        await waitFor(() => expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[0].id));
+        expect(resumeRequests()).toHaveLength(1);
+
+        // The learner has moved on since; the next visit to the root must not reuse the first answer.
+        axiosMock.onGet(resumeUrl).reply(200, { sectionId: sequenceBlock.id, unitId: unitBlocks[2].id });
+        const user = userEvent.setup();
+        await user.click(screen.getByRole('link', { name: 'course root' }));
+
+        await waitFor(() => expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id));
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
+        expect(resumeRequests()).toHaveLength(2);
+      });
+
+      it('should stay on the course root when the resume block request fails', async () => {
+        const resumeUrl = `${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`;
+        axiosMock.onGet(resumeUrl).reply(500);
+
+        history.push(`/course/${courseId}`);
+        const container = await loadContainer();
+
+        assertLoadedHeader(container);
+        await waitFor(() => expect(axiosMock.history.get.filter((req) => req.url === resumeUrl)).toHaveLength(1));
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+        expect(container.querySelector('.fake-unit')).toBeNull();
+      });
+    });
+
+    describe('when the URL contains a unit ID instead of a sequence ID', () => {
+      const { href: blocksUrl } = getSequenceForUnitDeprecatedUrl(courseId);
+      const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
+      const unitBlock = defaultUnitBlocks[1];
+      const savedBlocksRequests = () => axiosMock.history.get.filter((req) => req.url === blocksUrl);
+
+      it('should redirect to the unit within its parent sequence', async () => {
+        history.push(`/course/${courseId}/${unitBlock.id}`);
+        const container = await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(
+          `http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlock.id}`,
+        ));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlock.id);
+        expect(savedBlocksRequests()).toHaveLength(1);
+      });
+
+      it('should redirect to the course root when no sequence holds the unit', async () => {
+        axiosMock.onGet(courseBlocksUrlRegExp).reply(200, {
+          ...defaultCourseBlocks,
+          blocks: {
+            ...defaultCourseBlocks.blocks,
+            [defaultSequenceBlock.id]: { ...defaultSequenceBlock, children: [] },
+          },
+        });
+
+        history.push(`/course/${courseId}/${unitBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}`));
+        expect(savedBlocksRequests()).toHaveLength(1);
+      });
+
+      it('should redirect to the course root when the blocks request fails', async () => {
+        axiosMock.onGet(courseBlocksUrlRegExp).reply(500);
+
+        history.push(`/course/${courseId}/${unitBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}`));
+        expect(savedBlocksRequests()).toHaveLength(1);
+      });
+    });
+
+    describe('when the URL has the /preview prefix', () => {
+      const unitPath = `/course/${courseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`;
+
+      it('should send a user who is not staff to the same URL without the prefix', async () => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        history.push(`/preview${unitPath}`);
+        const container = await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost${unitPath}`));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(defaultUnitBlocks[0].id);
+        expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('You should call navigate() in a React.useEffect()'));
+        warn.mockRestore();
+      });
+
+      it('should keep staff on the preview URL', async () => {
+        setUpMockRequests({ courseHomeMetadata: Factory.build('courseHomeMetadata', { original_user_is_staff: true }) });
+
+        history.push(`/preview${unitPath}`);
+        const container = await loadContainer();
+
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(defaultUnitBlocks[0].id);
+        expect(global.location.href).toEqual(`http://localhost/preview${unitPath}`);
+      });
+
+      it('should send a user who is not staff from a unit ID in the sequence slot to the unit without the prefix', async () => {
+        const unitBlock = defaultUnitBlocks[1];
+        const { href: blocksUrl } = getSequenceForUnitDeprecatedUrl(courseId);
+
+        history.push(`/preview/course/${courseId}/${unitBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(
+          `http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlock.id}`,
+        ));
+        expect(axiosMock.history.get.filter((req) => req.url === blocksUrl)).toHaveLength(1);
+      });
+
+      it('should keep the prefix when redirecting staff from a section to its first sequence', async () => {
+        setUpMockRequests({ courseHomeMetadata: Factory.build('courseHomeMetadata', { original_user_is_staff: true }) });
+
+        history.push(`/preview/course/${courseId}/${defaultSectionBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/preview${unitPath}`));
+      });
+
+      it('should drop the prefix when redirecting staff to the course root', async () => {
+        setUpMockRequests({ courseHomeMetadata: Factory.build('courseHomeMetadata', { original_user_is_staff: true }) });
+
+        history.push(`/preview/course/${courseId}/block-v1:edX+DemoX+Demo_Course+type@sequential+block@unknown`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}`));
+      });
     });
 
     describe('when the URL contains a section ID instead of a sequence ID', () => {
@@ -298,7 +440,8 @@ describe('CoursewareContainer', () => {
           const container = await loadContainer();
           assertLoadedHeader(container);
           assertNoSequenceNavigation(container);
-          assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id);
+          // Two redirects, the second after the sequence request comes back.
+          await waitFor(() => assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id));
         });
       });
 
@@ -352,6 +495,90 @@ describe('CoursewareContainer', () => {
             nextSequenceId: sequenceTree[1][0].id,
           });
         });
+      });
+    });
+
+    describe('when the URL contains a section ID and a unit ID', () => {
+      it('should redirect to the unit within its parent sequence', async () => {
+        const unitBlock = defaultUnitBlocks[1];
+        history.push(`/course/${courseId}/${defaultSectionBlock.id}/${unitBlock.id}`);
+        const container = await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(
+          `http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlock.id}`,
+        ));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlock.id);
+      });
+    });
+
+    describe('when the URL contains an ID that is not a sequence, section or unit', () => {
+      it('should redirect to the course root', async () => {
+        history.push(`/course/${courseId}/block-v1:edX+DemoX+Demo_Course+type@sequential+block@unknown`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}`));
+        expect(axiosMock.history.get.map(({ url }) => url)).not.toContainEqual(expect.stringContaining('/api/courses/v2/blocks/'));
+      });
+
+      it('should stay put when a unit ID follows it', async () => {
+        const path = `/course/${courseId}/block-v1:edX+DemoX+Demo_Course+type@sequential+block@unknown/${defaultUnitBlocks[0].id}`;
+        history.push(path);
+        await loadContainer();
+
+        expect(global.location.href).toEqual(`http://localhost${path}`);
+      });
+    });
+
+    describe('when the sequence has no units', () => {
+      beforeEach(() => {
+        const sequenceMetadata = Factory.build(
+          'sequenceMetadata',
+          {},
+          { courseId, sequenceBlock: defaultSequenceBlock, unitBlocks: [] },
+        );
+        setUpMockRequests({ sequenceMetadatas: [sequenceMetadata] });
+      });
+
+      it('should redirect a unit marker to the sequence', async () => {
+        history.push(`/course/${courseId}/${defaultSequenceBlock.id}/first`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}`));
+      });
+
+      it('should stay on the sequence without a redirect to it', async () => {
+        history.push(`/course/${courseId}/${defaultSequenceBlock.id}`);
+        const replaceState = jest.spyOn(global.history, 'replaceState');
+        await loadContainer();
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}`);
+        // React Router stamps the initial entry with replaceState(state, '') on start-up; a redirect
+        // passes a URL.
+        expect(replaceState.mock.calls.filter(([, , url]) => url)).toHaveLength(0);
+        replaceState.mockRestore();
+      });
+    });
+
+    describe('when the learning-sequences outline fails', () => {
+      const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
+
+      beforeEach(() => {
+        axiosMock.onGet(learningSequencesUrlRegExp).reply(500);
+      });
+
+      it('should go to the course home', async () => {
+        history.push(`/course/${courseId}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}/home`));
+      });
+
+      it('should go to the course home rather than the sequence\'s unit', async () => {
+        history.push(`/course/${courseId}/${defaultSequenceBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}/home`));
       });
     });
 
