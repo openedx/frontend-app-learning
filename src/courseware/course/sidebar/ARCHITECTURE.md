@@ -10,7 +10,7 @@ The Learning MFE uses a **two-sidebar system** where a left sidebar (Course Outl
 - **Location**: Left side of screen, adjacent to course content
 - **Component**: `CourseOutlineTray` (rendered via `CourseOutlineSidebarSlot`)
 - **Purpose**: Navigation - displays course structure, sequences, and units
-- **State Management**: Uses `useCourseOutlineSidebar()` hook
+- **State Management**: Data (sections/sequences/units, load state, unit-click handling) via `useCourseOutlineData()`; sidebar open/collapse state via `useCourseOutlineSidebar()`
 - **ID**: `WIDGETS.COURSE_OUTLINE`
 - **Rendering**: Only renders when `currentSidebar === 'COURSE_OUTLINE'`
 - **Trigger**: `CourseOutlineTrigger` (separate location in mobile/desktop toolbar)
@@ -203,23 +203,20 @@ if (!firstAvailable) {
 }
 ```
 
-### useCourseOutlineSidebar Hook
+### useCourseOutlineData / useCourseOutlineSidebar Hooks
 
-**Responsibilities:**
-- Detect when RIGHT sidebar has no available panels (`!initialSidebar`)
-- Auto-open Course Outline as fallback (unless manually collapsed)
-- Handle Course Outline specific interactions (unit clicks, toggle, resize)
+`src/courseware/course/sidebar/sidebars/course-outline/hooks.js` splits course-outline state into two hooks so the outline's data can be read independently of the sidebar UI (e.g. by a consumer outside the sidebar tray):
 
-**Key Logic:**
-```javascript
-const isOpenSidebar = !initialSidebar && !isCollapsedOutlineSidebar;
+**`useCourseOutlineData`** — pure data, no dependency on `SidebarContext`:
+- Fetches the outline structure and completion-tracking toggles (React Query)
+- Derives `sections`/`sequences`/`units`, entrance-exam gating, and load state
+- Exposes `handleUnitClick`, which fires tracking events and checks block completion for the unit being navigated away from
 
-useEffect(() => {
-  if (isOpenSidebar && currentSidebar !== ID) {
-    toggleSidebar('COURSE_OUTLINE');
-  }
-}, [initialSidebar, unitId]);
-```
+**`useCourseOutlineSidebar`** — sidebar UI state, reads `useSidebar()`:
+- Exposes `currentSidebar`, `shouldDisplayFullScreen`, and `handleToggleCollapse`
+- Collapses the outline on resize below the `lg` breakpoint, ignoring resize events that only change window height (mobile browser URL-bar show/hide)
+
+Consumers that need both (e.g. `UnitLinkWrapper`, which collapses the sidebar after a unit click on mobile) call both hooks.
 
 ### Sidebar.jsx (RIGHT Sidebar Renderer)
 
@@ -237,12 +234,14 @@ if (!currentSidebar || !SIDEBARS || !SIDEBARS[currentSidebar]) {
 ### CourseOutlineTray.jsx (LEFT Sidebar Renderer)
 
 **Responsibilities:**
-- Render course outline navigation
+- Render `CourseOutline`, passing down `shouldDisplayFullScreen`/`handleToggleCollapse` from `useCourseOutlineSidebar`
 - Only show when `currentSidebar === 'COURSE_OUTLINE'`
 
 **Key Logic:**
 ```javascript
-if (isActiveEntranceExam || currentSidebar !== ID) {
+if (currentSidebar !== ID) {
   return null;
 }
 ```
+
+`CourseOutline` itself separately hides while an entrance exam is active (`isActiveEntranceExam`, from `useCourseOutlineData`), so it can be reused outside the sidebar tray without depending on `currentSidebar`.
