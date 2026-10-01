@@ -9,7 +9,7 @@ import HeaderSlot from '../plugin-slots/HeaderSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
 import { getErrorDetail, type RequestError } from '../data/http-error';
-import type { CourseHomeMeta } from '../course-home/data/apiHooks';
+import type { CourseHomeMeta } from '../course-home/data/api';
 import { useToast } from '../generic/ToastContext';
 
 import genericMessages from '../generic/messages';

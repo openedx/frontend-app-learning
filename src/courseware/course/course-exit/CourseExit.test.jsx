@@ -61,7 +61,7 @@ describe('Course Exit Pages', () => {
   async function fetchAndRender(component) {
     const [metadata, homeMetadata] = await Promise.all([
       getCourseMetadata(courseId),
-      getCourseHomeCourseMetadata(courseId, 'courseware'),
+      getCourseHomeCourseMetadata(courseId),
     ]);
     store.dispatch(addModel({ modelType: 'coursewareMeta', model: metadata }));
     store.dispatch(addModel({ modelType: 'courseHomeMeta', model: { id: courseId, ...homeMetadata } }));
