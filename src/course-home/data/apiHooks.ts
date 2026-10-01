@@ -83,6 +83,7 @@ export interface CourseHomeMeta {
   start: string;
   tabs: TabMetadata[];
   title: string;
+  userTimezone: string | null;
   verifiedMode: Record<string, unknown> | null;
   [key: string]: unknown;
 }
