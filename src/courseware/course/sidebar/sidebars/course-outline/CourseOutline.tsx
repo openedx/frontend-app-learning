@@ -65,12 +65,12 @@ export const CourseOutline = () => {
         'bg-white m-0 fixed-top w-100 dvh-100': shouldDisplayFullScreen,
       })}
       >
-        <section className="outline-sidebar w-100">
+        <nav aria-label={intl.formatMessage(messages.courseOutlineTitle)} className="outline-sidebar w-100">
           {sidebarHeading}
           <PageLoading
             srMessage={intl.formatMessage(messages.loading)}
           />
-        </section>
+        </nav>
       </div>
     );
   }
@@ -81,7 +81,7 @@ export const CourseOutline = () => {
       'bg-white m-0 fixed-top w-100 dvh-100': shouldDisplayFullScreen,
     })}
     >
-      <section className="outline-sidebar w-100">
+      <nav aria-label={intl.formatMessage(messages.courseOutlineTitle)} className="outline-sidebar w-100">
         {sidebarHeading}
         <ol id="outline-sidebar-outline" className="list-unstyled">
           {isDisplaySequenceLevel
@@ -102,7 +102,7 @@ export const CourseOutline = () => {
               />
             ))}
         </ol>
-      </section>
+      </nav>
     </div>
   );
 };
