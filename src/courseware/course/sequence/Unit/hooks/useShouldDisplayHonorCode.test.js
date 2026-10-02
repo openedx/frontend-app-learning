@@ -1,14 +1,10 @@
 import { renderHook } from '@testing-library/react';
-import { useUnit } from '@src/courseware/data/apiHooks';
-import { useModel } from '@src/generic/model-store';
+import { useCoursewareMetadata, useUnit } from '@src/courseware/data/apiHooks';
 import useShouldDisplayHonorCode from './useShouldDisplayHonorCode';
-import { modelKeys } from '../constants';
 
 jest.mock('@src/courseware/data/apiHooks', () => ({
+  useCoursewareMetadata: jest.fn(),
   useUnit: jest.fn(),
-}));
-jest.mock('@src/generic/model-store', () => ({
-  useModel: jest.fn(),
 }));
 
 const props = {
@@ -19,7 +15,7 @@ const props = {
 
 const mockModels = (graded, userNeedsIntegritySignature) => {
   useUnit.mockReturnValue({ data: { graded } });
-  useModel.mockReturnValue({ userNeedsIntegritySignature });
+  useCoursewareMetadata.mockReturnValue({ data: { userNeedsIntegritySignature } });
 };
 
 describe('useShouldDisplayHonorCode', () => {
@@ -27,12 +23,12 @@ describe('useShouldDisplayHonorCode', () => {
     jest.clearAllMocks();
   });
 
-  it('reads the unit from its sequence and the courseware metadata model', () => {
+  it('reads the unit from its sequence and the courseware metadata query', () => {
     mockModels(true, true);
 
     renderHook(() => useShouldDisplayHonorCode(props));
     expect(useUnit).toHaveBeenCalledWith('test-sequence-id', props.id);
-    expect(useModel).toHaveBeenCalledWith(modelKeys.coursewareMeta, props.courseId);
+    expect(useCoursewareMetadata).toHaveBeenCalledWith(props.courseId, { enabled: false });
   });
 
   it('should return false when userNeedsIntegritySignature is false', () => {
@@ -51,7 +47,7 @@ describe('useShouldDisplayHonorCode', () => {
 
   it('does not display while the unit is not loaded', () => {
     useUnit.mockReturnValue({ data: undefined });
-    useModel.mockReturnValue({ userNeedsIntegritySignature: true });
+    useCoursewareMetadata.mockReturnValue({ data: { userNeedsIntegritySignature: true } });
 
     const { result } = renderHook(() => useShouldDisplayHonorCode(props));
     expect(result.current).toBeUndefined();

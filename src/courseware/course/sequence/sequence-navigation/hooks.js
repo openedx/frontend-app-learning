@@ -1,15 +1,18 @@
 import { useParams } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
-import { useModel } from '../../../../generic/model-store';
-import { useIsCourseLoaded, useSequenceIds, useSequenceMetadata } from '../../../data/apiHooks';
+import {
+  useCoursewareMetadata, useIsCourseLoaded, useSequenceIds, useSequenceMetadata,
+} from '../../../data/apiHooks';
 import { useSidebar } from '../../sidebar/SidebarContext';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
   const { courseId } = useParams();
   const sequenceIds = useSequenceIds(courseId);
   const isCourseLoaded = useIsCourseLoaded(courseId);
-  const { entranceExamData: { entranceExamPassed } = {} } = useModel('coursewareMeta', courseId);
+  const {
+    entranceExamData: { entranceExamPassed } = {},
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
   const sequenceQuery = useSequenceMetadata(currentSequenceId, { enabled: false });
   const sequence = sequenceQuery.data?.sequence;
 

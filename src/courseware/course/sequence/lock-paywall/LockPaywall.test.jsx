@@ -64,11 +64,12 @@ describe('Lock Paywall', () => {
   it('sends analytics event onClick of unlock link', async () => {
     sendTrackEvent.mockClear();
 
+    const testStore = await initializeTestStore({}, false);
     const {
       currencySymbol,
       price,
-    } = store.getState().models.courseHomeMeta[mockData.courseId].verifiedMode;
-    renderPaywall(mockData);
+    } = testStore.getState().models.courseHomeMeta[mockData.courseId].verifiedMode;
+    renderPaywall(mockData, { store: testStore });
 
     const upgradeLink = await screen.findByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
     fireEvent.click(upgradeLink);

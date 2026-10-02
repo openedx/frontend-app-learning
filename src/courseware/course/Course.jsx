@@ -8,8 +8,7 @@ import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '@src/generic/user-messages';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { useMinimalCourseOutline } from '@src/courseware/data/apiHooks';
-import { useModel } from '@src/generic/model-store';
+import { useCoursewareMetadata, useMinimalCourseOutline } from '@src/courseware/data/apiHooks';
 import { LearnerToolsSlot } from '../../plugin-slots/LearnerToolsSlot';
 import { SidebarProvider } from './sidebar/SidebarContext';
 import { getEnabledWidgets } from './sidebar/defaultWidgets';
@@ -29,15 +28,17 @@ const Course = ({
   unitNavigationHandler,
   windowWidth,
 }) => {
-  const course = useModel('coursewareMeta', courseId);
+  const coursewareMetadata = useCoursewareMetadata(courseId, { enabled: false }).data;
   const {
     celebrations,
     isStaff,
     originalUserIsStaff,
   } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const minimalCourseOutlineQuery = useMinimalCourseOutline(courseId, { enabled: false });
-  const minimalSequenceMetadata = minimalCourseOutlineQuery.data?.sequences[sequenceId];
-  const section = useModel('sections', minimalSequenceMetadata ? minimalSequenceMetadata.sectionId : null);
+  const minimalCourseOutline = minimalCourseOutlineQuery.data;
+  const minimalCourseMetadata = minimalCourseOutline?.courses[courseId];
+  const minimalSequenceMetadata = minimalCourseOutline?.sequences[sequenceId];
+  const section = minimalSequenceMetadata && minimalCourseOutline.sections[minimalSequenceMetadata.sectionId];
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -49,7 +50,7 @@ const Course = ({
   const pageTitleBreadCrumbs = [
     minimalSequenceMetadata,
     section,
-    course,
+    minimalCourseMetadata,
   ].filter(element => element != null).map(element => element.title);
 
   const widgets = useMemo(() => getEnabledWidgets(), []);
@@ -62,7 +63,7 @@ const Course = ({
     celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal,
   );
   const shouldDisplayLearnerTools = windowWidth >= breakpoints.medium.minWidth;
-  const daysPerWeek = course?.courseGoals?.selectedGoal?.daysPerWeek;
+  const daysPerWeek = coursewareMetadata?.courseGoals?.selectedGoal?.daysPerWeek;
 
   useEffect(() => {
     const celebrateFirstSection = celebrations && celebrations.firstSection;
@@ -92,7 +93,7 @@ const Course = ({
         />
         {shouldDisplayLearnerTools && (
           <LearnerToolsSlot
-            enrollmentMode={course.enrollmentMode}
+            enrollmentMode={coursewareMetadata.enrollmentMode}
             isStaff={isStaff}
             courseId={courseId}
             unitId={unitId}
@@ -124,7 +125,7 @@ const Course = ({
         isOpen={weeklyGoalCelebrationOpen}
         onClose={() => setWeeklyGoalCelebrationOpen(false)}
       />
-      <ContentTools course={course} />
+      <ContentTools course={coursewareMetadata} />
     </SidebarProvider>
   );
 };

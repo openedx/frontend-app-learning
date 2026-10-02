@@ -10,7 +10,6 @@ export interface CoursewareMeta {
   contentTypeGatingEnabled: boolean;
   courseGoals: unknown;
   id: string;
-  title: string;
   offer: unknown;
   enrollmentStart: string | null;
   enrollmentEnd: string | null;
@@ -46,7 +45,6 @@ interface CoursewareMetadataResponse {
     content_type_gating_enabled: boolean;
     course_goals: unknown;
     id: string;
-    name: string;
     offer: unknown;
     enrollment_start: string | null;
     enrollment_end: string | null;
@@ -84,7 +82,7 @@ export function normalizeCoursewareMeta(metadata: CoursewareMetadataResponse): C
     contentTypeGatingEnabled: data.content_type_gating_enabled,
     courseGoals: camelCaseObject(data.course_goals),
     id: data.id,
-    title: data.name,
+    // `name` is no longer mapped to `title` here; see https://github.com/openedx/frontend-app-learning/issues/2137.
     offer: camelCaseObject(data.offer),
     enrollmentStart: data.enrollment_start,
     enrollmentEnd: data.enrollment_end,

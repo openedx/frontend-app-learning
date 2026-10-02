@@ -10,7 +10,7 @@ import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { useSidebar } from '@src/courseware/course/sidebar/SidebarContext';
 import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { useModel } from '@src/generic/model-store';
+import { useCoursewareMetadata } from '@src/courseware/data/apiHooks';
 import { useUpgradeWidgetContext } from './UpgradeWidgetContext';
 import UpgradeTrigger, { ID } from './UpgradeTrigger';
 import messages from './messages';
@@ -26,8 +26,6 @@ const UpgradePanel = () => {
     upgradeCurrentState,
     setUpgradeCurrentState,
   } = useUpgradeWidgetContext();
-  const course = useModel('coursewareMeta', courseId);
-
   const {
     end,
     enrollmentEnd,
@@ -35,7 +33,7 @@ const UpgradePanel = () => {
     enrollmentStart,
     start,
     verificationStatus,
-  } = course;
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
 
   const {
     courseModes,

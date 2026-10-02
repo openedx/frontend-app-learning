@@ -4,6 +4,7 @@ import { Factory } from 'rosie';
 import {
   render, screen, fireEvent, getByText, getTestStoreIds, initializeTestStore,
 } from '../../../../setupTest';
+import CourseQueryGate from '../../../../tests/CourseQueryGate';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import { SidebarProvider } from '../../sidebar/SidebarContext';
 import SequenceNavigation from './SequenceNavigation';
@@ -33,7 +34,7 @@ describe('Sequence Navigation', () => {
     };
   });
 
-  const renderNav = (props = {}, { store } = {}) => {
+  const renderNav = (props = {}, { store, states } = {}) => {
     const sequenceId = props.sequenceId ?? mockData.sequenceId;
     return render(
       <MemoryRouter initialEntries={[`/course/${courseMetadata.id}/${sequenceId}`]}>
@@ -43,7 +44,9 @@ describe('Sequence Navigation', () => {
             element={(
               <SidebarProvider courseId={courseMetadata.id} unitId={mockData.unitId} widgets={[]}>
                 <MountCourseQueryHooks courseId={courseMetadata.id} sequenceId={sequenceId} />
-                <SequenceNavigation {...mockData} {...props} />
+                <CourseQueryGate courseId={courseMetadata.id} sequenceId={sequenceId} states={states}>
+                  <SequenceNavigation {...mockData} {...props} />
+                </CourseQueryGate>
               </SidebarProvider>
             )}
           />
@@ -54,9 +57,10 @@ describe('Sequence Navigation', () => {
   };
 
   it('is empty while loading', async () => {
-    const testStore = await initializeTestStore({ excludeFetchSequence: true }, false);
-    renderNav({}, { store: testStore });
+    const testStore = await initializeTestStore({ excludeFetchSequence: true, preventSequenceLoad: true }, false);
+    renderNav({ sequenceId: getTestStoreIds(testStore).sequenceId }, { store: testStore, states: { sequence: 'pending' } });
 
+    await screen.findByTestId('course-query-gate-open');
     expect(screen.queryByTestId('courseware-sequence-navigation')).not.toBeInTheDocument();
   });
 

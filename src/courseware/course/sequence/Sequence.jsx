@@ -13,9 +13,8 @@ import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
 import PageLoading from '@src/generic/PageLoading';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import {
-  sequenceMightBeUnit, useMinimalCourseOutline, useSequenceMetadata, useUnit,
+  sequenceMightBeUnit, useCoursewareMetadata, useMinimalCourseOutline, useSequenceMetadata, useUnit,
 } from '@src/courseware/data/apiHooks';
-import { useModel } from '@src/generic/model-store';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
 import SequenceContainerSlot from '@src/plugin-slots/SequenceContainerSlot';
 import { CourseOutlineSidebarSlot } from '@src/plugin-slots/CourseOutlineSidebarSlot';
@@ -61,13 +60,14 @@ const Sequence = ({
   const {
     canAccessProctoredExams,
     license,
-  } = useModel('coursewareMeta', courseId);
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
   const {
     isStaff,
     originalUserIsStaff,
   } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
-  const minimalSequenceMetadata = useMinimalCourseOutline(courseId, { enabled: false }).data?.sequences[sequenceId];
-  const section = useModel('sections', minimalSequenceMetadata?.sectionId ?? null);
+  const minimalCourseOutline = useMinimalCourseOutline(courseId, { enabled: false }).data;
+  const minimalSequenceMetadata = minimalCourseOutline?.sequences[sequenceId];
+  const section = minimalSequenceMetadata && minimalCourseOutline.sections[minimalSequenceMetadata.sectionId];
   const unit = useUnit(sequenceId, unitId).data;
   const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
   const sequence = sequenceQuery.data?.sequence;

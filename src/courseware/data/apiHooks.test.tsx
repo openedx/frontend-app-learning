@@ -14,7 +14,6 @@ import { buildOutlineFromBlocks } from './__factories__/learningSequencesOutline
 import { getResponseStatus } from '../../data/http-error';
 import { createTestQueryClient, initializeMockApp } from '../../setupTest';
 import initializeStore from '../../store';
-import { addModel } from '../../generic/model-store';
 import { normalizeMinimalCourseOutline } from './minimalCourseOutline';
 import { normalizeCourseNavigationOutline } from './courseNavigationOutline';
 import { normalizeSequenceMetadata } from './sequenceMetadata';
@@ -53,7 +52,7 @@ describe('courseware apiHooks — coursewareMeta bridge', () => {
   );
 
   const coursewareMetaFor = (id: string) => (
-    store.getState().models as { coursewareMeta?: Record<string, { sectionIds?: string[]; title?: string }> }
+    store.getState().models as { coursewareMeta?: Record<string, { sectionIds?: string[]; language?: string }> }
   ).coursewareMeta?.[id];
 
   beforeEach(() => {
@@ -92,7 +91,7 @@ describe('courseware apiHooks — coursewareMeta bridge', () => {
     await waitFor(() => expect(result.current).toEqual(expectedSequenceIds));
 
     // sectionIds must survive the late metadata write.
-    expect(coursewareMetaFor(courseId)?.title).toBe(courseMetadata.name);
+    expect(coursewareMetaFor(courseId)?.language).toBe(courseMetadata.language);
     expect(coursewareMetaFor(courseId)?.sectionIds).toEqual(expectedSectionIds);
   });
 
@@ -960,35 +959,29 @@ describe('courseware apiHooks — useSaveIntegritySignature', () => {
   const courseMetadata = Factory.build('courseMetadata');
   const courseId = courseMetadata.id;
   const integritySignatureUrl = `${getConfig().LMS_BASE_URL}/api/agreements/v1/integrity_signature/${courseId}`;
+  const metadataKey = coursewareQueryKeys.metadata(courseId);
 
   let axiosMock: MockAdapter;
-  let store: ReturnType<typeof initializeStore>;
   let queryClient: QueryClient;
 
   const needsSignature = () => (
-    store.getState().models as { coursewareMeta: Record<string, { userNeedsIntegritySignature?: boolean }> }
-  ).coursewareMeta[courseId].userNeedsIntegritySignature;
+    queryClient.getQueryData<{ userNeedsIntegritySignature: boolean }>(metadataKey)?.userNeedsIntegritySignature
+  );
 
   const renderSaveIntegritySignature = () => {
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <AppProvider store={store} wrapWithRouter={false}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </AppProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
     return renderHook(() => useSaveIntegritySignature(), { wrapper });
   };
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    store = initializeStore();
-    queryClient = createTestQueryClient(store);
+    queryClient = createTestQueryClient();
     loggingService.logError.mockReset();
-    // Seed the normalized model directly; the user_needs_integrity_signature
-    // normalization itself is covered by the metadata query and pact tests.
-    store.dispatch(addModel({
-      modelType: 'coursewareMeta',
-      model: { id: courseId, userNeedsIntegritySignature: true },
-    }));
+    // The hook patches only `userNeedsIntegritySignature`; the field's normalization is covered by
+    // the metadata query and pact tests.
+    queryClient.setQueryData(metadataKey, { userNeedsIntegritySignature: true });
   });
 
   it('updates userNeedsIntegritySignature upon success', async () => {
@@ -1018,5 +1011,17 @@ describe('courseware apiHooks — useSaveIntegritySignature', () => {
     await waitFor(() => expect(loggingService.logError).toHaveBeenCalledTimes(1));
     expect(axiosMock.history.post[0].url).toEqual(integritySignatureUrl);
     expect(needsSignature()).toEqual(true);
+  });
+
+  it('writes nothing for a course with no cache entry', async () => {
+    queryClient.removeQueries({ queryKey: metadataKey });
+    axiosMock.onPost(integritySignatureUrl).reply(200, {});
+
+    const { result } = renderSaveIntegritySignature();
+    act(() => { result.current(courseId, false); });
+
+    await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    await act(async () => {});
+    expect(queryClient.getQueryData(metadataKey)).toBeUndefined();
   });
 });

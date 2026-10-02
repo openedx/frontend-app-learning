@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import {
   render, screen, getTestStoreIds, initializeTestStore, waitFor,
 } from '../../../../setupTest';
+import CourseQueryGate from '../../../../tests/CourseQueryGate';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import UnitNavigation from './UnitNavigation';
 
@@ -46,7 +47,9 @@ describe('Unit Navigation', () => {
             element={(
               <>
                 <MountCourseQueryHooks courseId={courseMetadata.id} sequenceId={sequenceId} />
-                <UnitNavigation {...mockData} {...props} />
+                <CourseQueryGate courseId={courseMetadata.id} sequenceId={sequenceId}>
+                  <UnitNavigation {...mockData} {...props} />
+                </CourseQueryGate>
               </>
             )}
           />
@@ -56,7 +59,7 @@ describe('Unit Navigation', () => {
     );
   };
 
-  it('renders correctly without units', () => {
+  it('renders correctly without units', async () => {
     renderNav({
       sequenceId: '',
       unitId: '',
@@ -65,7 +68,7 @@ describe('Unit Navigation', () => {
     });
 
     // Only "Previous" and "Next" buttons should be rendered, disabled: there is no sequence to navigate in.
-    expect(screen.getAllByRole('button')).toHaveLength(2);
+    expect(await screen.findAllByRole('button')).toHaveLength(2);
     expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
   });

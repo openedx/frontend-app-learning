@@ -49,7 +49,7 @@ export const myWidgetConfig = {
 
 ### Context Object
 
-The `isAvailable` function receives a `SidebarWidgetContext`, declared in [`SidebarContext.tsx`](SidebarContext.tsx). Widgets pick whatever they need from its `course` or `unit` — the sidebar makes no assumptions about which fields any given widget requires.
+The `isAvailable` function receives the parameter of `SidebarWidget['isAvailable']`, declared in [`SidebarContext.tsx`](SidebarContext.tsx): `courseId`, `unitId`, `course` and `unit`, with every field of `course` optional, since the first availability check can run before the data it reads has arrived. Widgets pick whatever they need from `course` or `unit` — the sidebar makes no assumptions about which fields any given widget requires.
 
 ## Adding Widgets
 

@@ -5,9 +5,11 @@ import {
 import { useSearchParams } from 'react-router-dom';
 
 import { useCourseHomeMeta, type CourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { useDiscussionTopic, type DiscussionTopic } from '@src/courseware/data/apiHooks';
+import {
+  useCoursewareMetadata, useDiscussionTopic, useMinimalCourseOutline, type DiscussionTopic,
+} from '@src/courseware/data/apiHooks';
 import type { CoursewareMeta } from '@src/courseware/data/coursewareMeta';
-import { useModel } from '@src/generic/model-store';
+import type { MinimalCourseMetadata } from '@src/courseware/data/minimalCourseOutline';
 
 import {
   setSidebarId,
@@ -23,9 +25,19 @@ import {
 export interface SidebarWidgetContext {
   courseId: string;
   unitId: string;
-  course: CourseHomeMeta & CoursewareMeta;
+  course: CourseHomeMeta & CoursewareMeta & Partial<MinimalCourseMetadata>;
   unit?: DiscussionTopic;
 }
+
+const buildWidgetCourse = (
+  coursewareMetadata?: CoursewareMeta,
+  minimalCourseMetadata?: MinimalCourseMetadata,
+  courseHomeMeta?: CourseHomeMeta,
+) => ({ ...coursewareMetadata, ...minimalCourseMetadata, ...courseHomeMeta });
+
+type SidebarAvailabilityContext = Omit<SidebarWidgetContext, 'course'> & {
+  course: ReturnType<typeof buildWidgetCourse>;
+};
 
 export interface SidebarWidget {
   id: string;
@@ -33,7 +45,7 @@ export interface SidebarWidget {
   Sidebar: ComponentType;
   Trigger: ComponentType<{ onClick: () => void }>;
   Provider?: ComponentType<{ children: ReactNode }>;
-  isAvailable?: (context: SidebarWidgetContext) => boolean;
+  isAvailable?: (context: SidebarAvailabilityContext) => boolean;
   enabled?: boolean;
 }
 
@@ -41,7 +53,7 @@ export interface SidebarRegistryEntry {
   ID: string;
   Sidebar: ComponentType;
   Trigger: ComponentType<{ onClick: () => void }>;
-  isAvailable?: (context: SidebarWidgetContext) => boolean;
+  isAvailable?: (context: SidebarAvailabilityContext) => boolean;
 }
 
 export interface SidebarContextValue {
@@ -84,7 +96,8 @@ export const SidebarProvider = ({
   children,
 }: Props) => {
   const courseHomeMeta = useCourseHomeMeta(courseId, { enabled: false }).data;
-  const coursewareMeta = useModel('coursewareMeta', courseId);
+  const coursewareMetadata = useCoursewareMetadata(courseId, { enabled: false }).data;
+  const minimalCourseMetadata = useMinimalCourseOutline(courseId, { enabled: false }).data?.courses[courseId];
   const unit = useDiscussionTopic(courseId, unitId).data;
   const width = useWindowSize().width ?? window.innerWidth;
   const shouldDisplayFullScreen = width < breakpoints.extraLarge.minWidth!;
@@ -100,7 +113,7 @@ export const SidebarProvider = ({
     const context = {
       courseId,
       unitId,
-      course: { ...coursewareMeta, ...courseHomeMeta },
+      course: buildWidgetCourse(coursewareMetadata, minimalCourseMetadata, courseHomeMeta),
       unit,
     };
     return widgets.filter(widget => {
@@ -109,7 +122,7 @@ export const SidebarProvider = ({
       }
       return true; // If no isAvailable function, widget is always available
     });
-  }, [widgets, courseId, unitId, coursewareMeta, courseHomeMeta, unit]);
+  }, [widgets, courseId, unitId, coursewareMetadata, minimalCourseMetadata, courseHomeMeta, unit]);
 
   // Helper to get the first available panel based on priority
   const getFirstAvailablePanel = useCallback(() => {

@@ -11,7 +11,7 @@ import { useSidebar } from '../../sidebar/SidebarContext';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/openedx_locked_certificate.png';
 import { useCourseHomeMeta } from '../../../../course-home/data/apiHooks';
-import { useModel } from '../../../../generic/model-store';
+import { useCoursewareMetadata } from '../../../data/apiHooks';
 import { UpgradeButton } from '../../../../generic/upgrade-button';
 import {
   VerifiedCertBullet,
@@ -25,12 +25,11 @@ const LockPaywall = ({
 }) => {
   const intl = useIntl();
   const { currentSidebar, availableSidebarIds } = useSidebar();
-  const course = useModel('coursewareMeta', courseId);
   const {
     accessExpiration,
     marketingUrl,
     offer,
-  } = course;
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
 
   const {
     org, verifiedMode,

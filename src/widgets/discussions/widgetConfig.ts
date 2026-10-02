@@ -1,9 +1,11 @@
-import type { SidebarWidget, SidebarWidgetContext } from '@src/courseware/course/sidebar/SidebarContext';
+import type { SidebarWidget } from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsProvider from './DiscussionsProvider';
 import DiscussionsSidebar from './DiscussionsSidebar';
 import DiscussionsTrigger, { ID } from './DiscussionsTrigger';
 
-export const discussionsIsAvailable = ({ unit }: SidebarWidgetContext) => !!(unit?.id && unit?.enabledInContext);
+export const discussionsIsAvailable: NonNullable<SidebarWidget['isAvailable']> = ({ unit }) => (
+  !!(unit?.id && unit?.enabledInContext)
+);
 
 export const discussionsWidgetConfig: SidebarWidget = {
   id: ID,

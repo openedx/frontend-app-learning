@@ -1,10 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { useUnit } from '@src/courseware/data/apiHooks';
-import { useModel } from '@src/generic/model-store';
+import { useCoursewareMetadata, useUnit } from '@src/courseware/data/apiHooks';
 import hooks from './hooks';
-import { modelKeys } from './constants';
 
 import UnitSuspense from './UnitSuspense';
 
@@ -20,8 +18,7 @@ jest.mock('react', () => ({
 
 jest.mock('../honor-code', () => jest.fn(() => <div>HonorCode</div>));
 jest.mock('../lock-paywall', () => jest.fn(() => <div>LockPaywall</div>));
-jest.mock('@src/courseware/data/apiHooks', () => ({ useUnit: jest.fn() }));
-jest.mock('@src/generic/model-store', () => ({ useModel: jest.fn() }));
+jest.mock('@src/courseware/data/apiHooks', () => ({ useCoursewareMetadata: jest.fn(), useUnit: jest.fn() }));
 
 jest.mock('./hooks', () => ({
   useShouldDisplayHonorCode: jest.fn(() => false),
@@ -29,7 +26,7 @@ jest.mock('./hooks', () => ({
 
 const mockModels = (enabled, containsContent) => {
   useUnit.mockReturnValue({ data: { containsContentTypeGatedContent: containsContent } });
-  useModel.mockReturnValue({ contentTypeGatingEnabled: enabled });
+  useCoursewareMetadata.mockReturnValue({ data: { contentTypeGatingEnabled: enabled } });
 };
 
 const props = {
@@ -44,10 +41,10 @@ describe('UnitSuspense component', () => {
     mockModels(false, false);
   });
   describe('behavior', () => {
-    it('reads the unit from its sequence and the courseware metadata model', () => {
+    it('reads the unit from its sequence and the courseware metadata query', () => {
       render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
       expect(useUnit).toHaveBeenCalledWith('test-sequence-id', props.id);
-      expect(useModel).toHaveBeenCalledWith(modelKeys.coursewareMeta, props.courseId);
+      expect(useCoursewareMetadata).toHaveBeenCalledWith(props.courseId, { enabled: false });
     });
   });
   describe('output', () => {

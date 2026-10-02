@@ -1,7 +1,3 @@
-export const modelKeys = {
-  coursewareMeta: 'coursewareMeta',
-} as const;
-
 export const views = {
   student: 'student_view',
   public: 'public_view',
@@ -21,7 +17,6 @@ export const eventTypes = {
 } as const;
 
 export default {
-  modelKeys,
   views,
   loadingState,
   messageTypes,

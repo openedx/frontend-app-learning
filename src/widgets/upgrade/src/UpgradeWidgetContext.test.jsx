@@ -10,10 +10,6 @@ jest.mock('@src/data/localStorage', () => ({
   setLocalStorage: jest.fn(),
 }));
 
-jest.mock('@src/generic/model-store', () => ({
-  useModel: jest.fn(() => ({})),
-}));
-
 jest.mock('@src/course-home/data/apiHooks', () => ({
   ...jest.requireActual('@src/course-home/data/apiHooks'),
   useCourseHomeMeta: jest.fn(() => ({ data: {} })),
@@ -21,7 +17,9 @@ jest.mock('@src/course-home/data/apiHooks', () => ({
 
 jest.mock('@src/courseware/data/apiHooks', () => ({
   ...jest.requireActual('@src/courseware/data/apiHooks'),
+  useCoursewareMetadata: jest.fn(() => ({ data: {} })),
   useDiscussionTopic: jest.fn(() => ({ data: undefined })),
+  useMinimalCourseOutline: jest.fn(() => ({ data: undefined })),
 }));
 
 const courseId = 'course-test-123';
