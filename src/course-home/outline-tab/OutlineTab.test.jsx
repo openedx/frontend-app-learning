@@ -1440,5 +1440,15 @@ describe('Outline Tab', () => {
 
       expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
     });
+
+    it('requests the outline once per load with the instructor toolbar mounted', async () => {
+      setMetadata({ original_user_is_staff: true });
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(axiosMock.history.get.filter((req) => req.url === outlineUrl)).toHaveLength(1);
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/api/course_home/progress/'))).toHaveLength(0);
+    });
   });
 });
