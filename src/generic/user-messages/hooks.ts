@@ -1,11 +1,15 @@
 /* eslint-disable import/prefer-default-export */
 import { useContext, useEffect } from 'react';
-import UserMessagesContext from './UserMessagesContext';
+import UserMessagesContext, { type UserMessage } from './UserMessagesContext';
 
-export function useAlert(isVisible, {
+export function useAlert(isVisible: boolean | null | undefined, {
   code, text, topic, type, payload, dismissible,
-}) {
-  const { add, remove } = useContext(UserMessagesContext);
+}: UserMessage) {
+  const context = useContext(UserMessagesContext);
+  if (!context) {
+    throw new Error('useAlert must be used within a UserMessagesProvider');
+  }
+  const { add, remove } = context;
 
   // Please note:
   // The deps list [isVisible, code, ... etc.] in this `useEffect` call prevents the
