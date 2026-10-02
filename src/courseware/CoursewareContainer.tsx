@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { defaultMemoize as memoize } from 'reselect';
 
@@ -12,10 +11,8 @@ import {
   useSequenceIds,
   useSequenceMetadata,
 } from './data/apiHooks';
-import { readModels } from './data/modelReader';
 import { useCoursewareRedirects } from './redirects';
 import { TabPage } from '../tab-page';
-import type { RootState } from '../store';
 
 import Course from './course';
 import { handleNextSectionCelebration } from './course/celebration';
@@ -30,16 +27,13 @@ const CoursewareContainer = () => {
   const checkBlockCompletion = useCheckBlockCompletion();
   const saveSequencePosition = useSaveSequencePosition();
 
-  const metadataQuery = useCoursewareMetadata(courseId);
+  const coursewareMetadataQuery = useCoursewareMetadata(courseId);
   const courseHomeMetaQuery = useCourseHomeMeta(courseId);
   const sequenceQuery = useSequenceMetadata(sequenceId);
   const isSequenceLoaded = sequenceQuery.isSuccess;
 
   useCoursewareRedirects();
 
-  const course = useSelector(
-    (state: RootState) => (courseId ? readModels(state).coursewareMeta?.[courseId] : null) ?? null,
-  );
   const sequence = sequenceQuery.data?.sequence ?? null;
   const minimalCourseOutline = useMinimalCourseOutline(courseId, { enabled: false }).data;
   const sectionId = sequenceId ? minimalCourseOutline?.sequences[sequenceId]?.sectionId : undefined;
@@ -91,7 +85,7 @@ const CoursewareContainer = () => {
 
   const handleNextSequenceClick = () => {
     if (nextSequenceId && nextSectionId) {
-      const celebrateFirstSection = course && course.celebrations && course.celebrations.firstSection;
+      const celebrateFirstSection = coursewareMetadataQuery.data?.celebrations.firstSection;
       if (celebrateFirstSection && sectionId !== nextSectionId) {
         handleNextSectionCelebration(sequenceId, nextSequenceId);
       }
@@ -105,7 +99,7 @@ const CoursewareContainer = () => {
       activeTabSlug="courseware"
       courseId={courseId}
       unitId={routeUnitId}
-      courseStatus={{ metadataQuery: courseHomeMetaQuery, tabDataQuery: metadataQuery }}
+      courseStatus={{ metadataQuery: courseHomeMetaQuery, tabDataQuery: coursewareMetadataQuery }}
     >
       <Course
         courseId={courseId}

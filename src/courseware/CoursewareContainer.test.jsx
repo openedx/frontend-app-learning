@@ -83,6 +83,7 @@ describe('CoursewareContainer', () => {
   const {
     courseBlocks: defaultCourseBlocks,
     sequenceBlocks: [defaultSequenceBlock],
+    sectionBlocks: [defaultSectionBlock],
   } = buildSimpleCourseBlocks(
     defaultCourseId,
     defaultCourseHomeMetadata.title,
@@ -627,6 +628,28 @@ describe('CoursewareContainer', () => {
       await waitForMetadataWithOutlinePending();
 
       expect(document.title).not.toMatch(/^\s*\||\|\s*\|/);
+    });
+
+    it('does not resume-redirect from the course root', async () => {
+      const resumeUrl = `${getConfig().LMS_BASE_URL}/api/courseware/resume/${defaultCourseId}`;
+      axiosMock.onGet(resumeUrl).reply(200, { sectionId: defaultSectionBlock.id, unitId: defaultUnitBlocks[1].id });
+      holdOutline();
+      history.push(`/course/${defaultCourseId}`);
+      render(<BrowserRouter>{component}</BrowserRouter>);
+      await waitForMetadataWithOutlinePending();
+
+      expect(global.location.href).toEqual(`http://localhost/course/${defaultCourseId}`);
+      expect(axiosMock.history.get.map(({ url }) => url)).not.toContain(resumeUrl);
+    });
+
+    it('does not redirect a section URL', async () => {
+      holdOutline();
+      history.push(`/course/${defaultCourseId}/${defaultSectionBlock.id}`);
+      render(<BrowserRouter>{component}</BrowserRouter>);
+      await waitForMetadataWithOutlinePending();
+
+      expect(global.location.href).toEqual(`http://localhost/course/${defaultCourseId}/${defaultSectionBlock.id}`);
+      expect(axiosMock.history.get.map(({ url }) => url)).not.toContainEqual(expect.stringContaining('/api/courses/v2/blocks/'));
     });
   });
 

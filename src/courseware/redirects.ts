@@ -8,7 +8,7 @@
  * a per-render fresh literal, or the rule runs on every render.
  */
 import { useEffect } from 'react';
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual } from 'react-redux';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { NavigateFunction } from 'react-router-dom';
 import { defaultMemoize as memoize } from 'reselect';
@@ -22,8 +22,6 @@ import {
 } from './data/apiHooks';
 import type { SequenceMetadata } from './data/sequenceMetadata';
 import { useCourseHomeMeta } from '../course-home/data/apiHooks';
-import { readModels } from './data/modelReader';
-import type { RootState } from '../store';
 
 interface RedirectArgsBase {
   courseId?: string;
@@ -255,16 +253,10 @@ export const useCoursewareRedirects = () => {
   const mightBeUnit = sequenceMightBeUnit(sequenceQuery);
 
   const sequence = sequenceQuery.data?.sequence ?? null;
-  const sectionViaSequenceId = useSelector(
-    (state: RootState) => (sequenceId ? readModels(state).sections?.[sequenceId] : null) ?? null,
-  );
-  const course = useSelector(
-    (state: RootState) => (courseId ? readModels(state).coursewareMeta?.[courseId] : null) ?? null,
-  );
-  const firstSectionId = isCourseLoaded ? (course?.sectionIds ?? [])[0] : undefined;
-  const firstSection = useSelector(
-    (state: RootState) => (firstSectionId ? readModels(state).sections?.[firstSectionId] : null) ?? null,
-  );
+  const sectionViaSequenceId = (sequenceId ? outlineQuery.data?.sections[sequenceId] : null) ?? null;
+  const minimalCourseMetadata = (courseId ? outlineQuery.data?.courses[courseId] : null) ?? null;
+  const firstSectionId = isCourseLoaded ? (minimalCourseMetadata?.sectionIds ?? [])[0] : undefined;
+  const firstSection = (firstSectionId ? outlineQuery.data?.sections[firstSectionId] : null) ?? null;
   const firstSequenceId = firstSection ? firstSection.sequenceIds[0] : null;
 
   useEffect(() => {
