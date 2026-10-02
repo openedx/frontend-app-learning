@@ -71,7 +71,7 @@ describe('Progress Tab', () => {
   }
 
   async function fetchAndRender(initialEntry = `/course/${courseId}/progress`, { waitForLoaded = true } = {}) {
-    const queryClient = createTestQueryClient(store);
+    const queryClient = createTestQueryClient();
     await act(async () => render(
       <AppProvider store={store} wrapWithRouter={false}>
         <MemoryRouter initialEntries={[initialEntry]}>

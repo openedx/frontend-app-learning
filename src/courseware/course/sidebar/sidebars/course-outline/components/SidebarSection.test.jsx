@@ -7,7 +7,7 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { AppProvider } from '@edx/frontend-platform/react';
 
 import {
-  createTestQueryClient, getTestStoreIds, initializeTestStore, seedQueryData,
+  createTestQueryClient, mockCourseRequests, seedQueryData,
 } from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { getCourseOutline } from '@src/courseware/data/api';
@@ -17,14 +17,12 @@ import SidebarSection from './SidebarSection';
 
 describe('<SidebarSection />', () => {
   let mockHandleSelectSection;
-  let store;
   let courseId;
   let outline;
   let section;
 
   const initTestData = async (options) => {
-    store = await initializeTestStore(options);
-    courseId = getTestStoreIds(store).courseId;
+    courseId = mockCourseRequests(options).courseId;
     outline = await getCourseOutline(courseId);
     const [activeSectionId] = Object.keys(outline.sections);
     section = outline.sections[activeSectionId];
@@ -32,14 +30,14 @@ describe('<SidebarSection />', () => {
 
   const RootWrapper = (props) => {
     const queryClient = useMemo(() => {
-      const client = createTestQueryClient(store);
+      const client = createTestQueryClient();
       seedQueryData(client, coursewareQueryKeys.courseOutline(courseId), outline);
       seedQueryData(client, coursewareQueryKeys.sidebarToggles(courseId), { enableCompletionTracking: true });
       return client;
     }, []);
 
     return (
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <QueryClientProvider client={queryClient}>
           <IntlProvider locale="en">
             <MemoryRouter initialEntries={[`/course/${courseId}`]}>

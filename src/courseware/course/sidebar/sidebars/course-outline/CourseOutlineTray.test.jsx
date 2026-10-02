@@ -5,7 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { createTestQueryClient, getTestStoreIds, initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, mockCourseRequests } from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { getCourseOutline } from '@src/courseware/data/api';
 import { SidebarProvider } from '../../SidebarContext';
@@ -14,7 +14,6 @@ import { ID as outlineSidebarId } from './constants';
 import messages from './messages';
 
 describe('<CourseOutlineTray />', () => {
-  let store;
   let section = {};
   let sequence = {};
   let unit;
@@ -32,10 +31,7 @@ describe('<CourseOutlineTray />', () => {
   });
 
   const initTestData = async (options) => {
-    store = await initializeTestStore(options);
-    const state = store.getState();
-    ({ courseId, sequenceId: activeSequenceId } = getTestStoreIds(store));
-    [unitId] = Object.keys(state.models.units);
+    ({ courseId, sequenceId: activeSequenceId, unitId } = mockCourseRequests(options));
 
     if (!options?.preventOutlineSidebarLoad) {
       const outline = await getCourseOutline(courseId);
@@ -55,8 +51,8 @@ describe('<CourseOutlineTray />', () => {
 
   function renderWithProvider() {
     const { container } = render(
-      <AppProvider store={store} wrapWithRouter={false}>
-        <QueryClientProvider client={createTestQueryClient(store)}>
+      <AppProvider wrapWithRouter={false}>
+        <QueryClientProvider client={createTestQueryClient()}>
           <IntlProvider locale="en">
             <MemoryRouter initialEntries={[`/course/${courseId}/${activeSequenceId}/${unitId}`]}>
               <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>

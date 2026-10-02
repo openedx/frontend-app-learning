@@ -95,7 +95,7 @@ describe('CoursewareContainer', () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
     store = initializeStore();
-    queryClient = createTestQueryClient(store);
+    queryClient = createTestQueryClient();
 
     component = (
       <AppProvider store={store} wrapWithRouter={false}>

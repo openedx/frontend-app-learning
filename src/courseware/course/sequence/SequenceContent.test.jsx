@@ -1,25 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  getTestStoreIds, initializeTestStore, render, screen,
+  mockCourseRequests, render, screen,
 } from '../../../setupTest';
+import initializeStore from '../../../store';
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import { useSequenceMetadata } from '../../data/apiHooks';
 import SequenceContent from './SequenceContent';
 
 describe('Sequence Content', () => {
   let mockData;
-  let store;
+  let gatedContent;
+  const store = initializeStore();
 
-  beforeAll(async () => {
-    store = await initializeTestStore();
-    const { models } = store.getState();
-    const { courseId, sequenceId } = getTestStoreIds(store);
+  beforeAll(() => {
+    const {
+      courseId, sequenceId, unitId, sequenceMetadata,
+    } = mockCourseRequests();
+    [{ gated_content: gatedContent }] = sequenceMetadata;
     mockData = {
       gated: false,
       courseId,
       sequenceId,
-      unitId: models.sequences[sequenceId].unitIds[0],
+      unitId,
       unitLoadedHandler: () => { },
       renderUnitNavigation: () => { },
     };
@@ -39,7 +42,7 @@ describe('Sequence Content', () => {
       <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
       <LoadedSequenceContent {...mockData} {...props} />
     </>,
-    { wrapWithRouter: true },
+    { store, wrapWithRouter: true },
   );
 
   it('displays loading message', async () => {
@@ -48,7 +51,6 @@ describe('Sequence Content', () => {
   });
 
   it('displays messages for the locked content', async () => {
-    const { gatedContent } = store.getState().models.sequences[mockData.sequenceId];
     const { container } = renderContent({ gated: true });
 
     await screen.findByText('Loading locked content messaging...');
@@ -56,7 +58,7 @@ describe('Sequence Content', () => {
     expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
     expect(container.querySelector('svg')).toHaveClass('fa-lock');
     expect(screen.getByText(
-      `You must complete the prerequisite: '${gatedContent.prereqSectionName}' to access this content.`,
+      `You must complete the prerequisite: '${gatedContent.prereq_section_name}' to access this content.`,
     )).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
   });

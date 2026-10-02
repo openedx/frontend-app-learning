@@ -8,11 +8,8 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 
-import { getCourseMetadata } from '../../data/api';
 import { coursewareQueryKeys } from '../../data/queryKeys';
 import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
-import { getCourseHomeCourseMetadata } from '../../../course-home/data/api';
-import { addModel } from '../../../generic/model-store';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from '../../data/__factories__/learningSequencesOutline.factory';
 import {
@@ -32,7 +29,7 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Course Exit Pages', () => {
   let axiosMock;
-  let store;
+  const store = initializeStore();
   const coursewareMetadata = Factory.build('courseMetadata', {
     user_has_passing_grade: true,
     end: '2014-02-05T05:00:00Z',
@@ -59,15 +56,9 @@ describe('Course Exit Pages', () => {
   }
 
   async function fetchAndRender(component) {
-    const [metadata, homeMetadata] = await Promise.all([
-      getCourseMetadata(courseId),
-      getCourseHomeCourseMetadata(courseId),
-    ]);
-    store.dispatch(addModel({ modelType: 'coursewareMeta', model: metadata }));
-    store.dispatch(addModel({ modelType: 'courseHomeMeta', model: { id: courseId, ...homeMetadata } }));
     history.push(`/course/${courseId}`);
     axiosMock.resetHistory();
-    const queryClient = createTestQueryClient(store);
+    const queryClient = createTestQueryClient();
     const element = component.type === CourseExit ? component : (
       <>
         <MountCourseQueryHooks courseId={courseId} />
@@ -92,7 +83,6 @@ describe('Course Exit Pages', () => {
   }
 
   beforeEach(() => {
-    store = initializeStore();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(coursewareMetadataUrl).reply(200, coursewareMetadata);
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
@@ -116,7 +106,7 @@ describe('Course Exit Pages', () => {
     };
 
     const renderCourseEnd = () => {
-      const queryClient = createTestQueryClient(store);
+      const queryClient = createTestQueryClient();
       history.push(courseEndPath);
       render(
         <QueryClientProvider client={queryClient}>
@@ -197,7 +187,7 @@ describe('Course Exit Pages', () => {
       axiosMock.onGet(learningSequencesUrlRegExp).reply(500);
       history.push(`/course/${courseId}/course-end`);
       render(
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={createTestQueryClient()}>
           <BrowserRouter>
             <Routes>
               <Route path="/course/:courseId/course-end" element={<CourseExit />} />
@@ -275,7 +265,7 @@ describe('Course Exit Pages', () => {
       axiosMock.onGet(courseHomeMetadataUrl).reply(403, { detail: 'You are not enrolled', error_code: 'not_enrolled' });
       history.push(`/course/${courseId}`);
       render(
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={createTestQueryClient()}>
           <BrowserRouter>
             <Routes>
               <Route path="/course/:courseId" element={<CourseExit />} />

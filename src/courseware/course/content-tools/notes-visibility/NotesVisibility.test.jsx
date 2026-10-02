@@ -4,7 +4,7 @@ import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
-  fireEvent, initializeTestStore, logUnhandledRequests, render, screen,
+  fireEvent, mockCourseRequests, logUnhandledRequests, render, screen,
 } from '../../../../setupTest';
 import NotesVisibility from './NotesVisibility';
 
@@ -27,7 +27,7 @@ describe('Notes Visibility', () => {
   };
 
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
 
     // Mock `targetOrigin` of the `postMessage`.
     getConfig.mockImplementation(() => originalConfig);
