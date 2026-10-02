@@ -63,7 +63,7 @@ describe('Course Home Tours', () => {
   async function fetchAndRender() {
     await act(async () => render(
       <MemoryRouter initialEntries={[`/course/${courseId}/home`]}>
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={createTestQueryClient()}>
           <Routes>
             <Route path="/course/:courseId/home" element={<OutlineTab />} />
           </Routes>
@@ -272,7 +272,7 @@ describe('Courseware Tour', () => {
 
     component = (
       <AppProvider store={store}>
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={createTestQueryClient()}>
           <UserMessagesProvider>
             <Routes>
               {DECODE_ROUTES.COURSEWARE.map((route) => (
@@ -381,7 +381,6 @@ describe('ProductTours guards', () => {
     <TourProvider>
       <ProductTours courseId={courseId} org="edX" {...props} />
     </TourProvider>,
-    { store: initializeStore() },
   );
 
   it('renders nothing during a streak celebration', () => {

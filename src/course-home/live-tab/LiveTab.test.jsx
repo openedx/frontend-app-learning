@@ -35,7 +35,7 @@ describe('LiveTab', () => {
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     store = initializeStore();
-    queryClient = createTestQueryClient(store);
+    queryClient = createTestQueryClient();
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
     component = (
       <AppProvider store={store}>

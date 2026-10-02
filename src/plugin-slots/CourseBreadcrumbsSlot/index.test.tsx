@@ -20,7 +20,6 @@ import { useCoursewareMetadata, useMinimalCourseOutline } from '@src/courseware/
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
 import { createTestQueryClient, initializeMockApp } from '@src/setupTest';
 import { buildSimpleCourseBlocks } from '@src/shared/data/__factories__/courseBlocks.factory';
-import initializeStore from '@src/store';
 import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
 import { appendBrowserTimezoneToUrl } from '@src/utils';
 
@@ -43,7 +42,6 @@ describe('CourseBreadcrumbsSlot', () => {
   let axiosMock: MockAdapter;
   let originalConfig: ReturnType<typeof getConfig>;
   let queryClient: QueryClient;
-  let store: ReturnType<typeof initializeStore>;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
@@ -52,8 +50,7 @@ describe('CourseBreadcrumbsSlot', () => {
     axiosMock.onGet(appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`))
       .reply(200, courseHomeMetadata);
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceBlock.id}`).reply(200, sequenceMetadata);
-    store = initializeStore();
-    queryClient = createTestQueryClient(store);
+    queryClient = createTestQueryClient();
 
     // The default breadcrumbs inserted as the slot's README shows.
     originalConfig = getConfig();
@@ -97,7 +94,7 @@ describe('CourseBreadcrumbsSlot', () => {
   };
 
   const renderSlot = ({ waitForOutline = true }: { waitForOutline?: boolean } = {}) => render(
-    <AppProvider store={store} wrapWithRouter={false}>
+    <AppProvider wrapWithRouter={false}>
       <QueryClientProvider client={queryClient}>
         <IntlProvider locale="en">
           <MemoryRouter>

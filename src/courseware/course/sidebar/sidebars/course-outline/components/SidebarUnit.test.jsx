@@ -11,7 +11,7 @@ import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/ana
 import { breakpoints } from '@openedx/paragon';
 
 import {
-  createTestQueryClient, initializeMockApp, getTestStoreIds, initializeTestStore, logUnhandledRequests, seedQueryData,
+  createTestQueryClient, initializeMockApp, logUnhandledRequests, mockCourseRequests, seedQueryData,
   waitFor,
 } from '@src/setupTest';
 import { getCourseOutline } from '@src/courseware/data/api';
@@ -29,7 +29,6 @@ jest.mock('@edx/frontend-platform/analytics', () => ({
 initializeMockApp();
 
 describe('<SidebarUnit />', () => {
-  let store = {};
   let courseId;
   let outline;
   let unit;
@@ -44,8 +43,7 @@ describe('<SidebarUnit />', () => {
   });
 
   const initTestData = async (options) => {
-    store = await initializeTestStore(options);
-    courseId = getTestStoreIds(store).courseId;
+    courseId = mockCourseRequests(options).courseId;
     outline = await getCourseOutline(courseId);
     [sequenceId] = Object.keys(outline.sequences);
     const sequence = outline.sequences[sequenceId];
@@ -58,7 +56,7 @@ describe('<SidebarUnit />', () => {
   const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
 
   function renderWithProvider(props = {}, pathname = undefined) {
-    const queryClient = createTestQueryClient(store);
+    const queryClient = createTestQueryClient();
     seedQueryData(queryClient, coursewareQueryKeys.courseOutline(courseId), outline);
     seedQueryData(queryClient, coursewareQueryKeys.sidebarToggles(courseId), { enableCompletionTracking: true });
     const sidebarUnit = (
@@ -75,7 +73,7 @@ describe('<SidebarUnit />', () => {
       />
     );
     const { container } = render(
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <QueryClientProvider client={queryClient}>
           <IntlProvider locale="en">
             <MemoryRouter initialEntries={[{ pathname: pathname ?? `/course/${courseId}` }]}>

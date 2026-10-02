@@ -5,7 +5,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { createTestQueryClient, initializeMockApp, initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, initializeMockApp, mockCourseRequests } from '@src/setupTest';
 import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 
@@ -36,15 +36,13 @@ const sectionBlocks = [Factory.build(
 initializeMockApp();
 
 describe('CourseBreadcrumbs', () => {
-  let store = {};
-
-  const initTestStore = async () => {
-    store = await initializeTestStore({ courseMetadata, sectionBlocks, sequenceBlocks });
+  const initTestStore = () => {
+    mockCourseRequests({ courseMetadata, sectionBlocks, sequenceBlocks });
   };
 
   function renderWithProvider(pathname = '/course') {
     const { container } = render(
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <QueryClientProvider client={createTestQueryClient()}>
           <IntlProvider locale="en">
             <MemoryRouter initialEntries={[{ pathname }]}>
