@@ -8,22 +8,14 @@ import { configure as configureAuth, getAuthenticatedHttpClient, MockAuthService
 import React from 'react';
 import PropTypes from 'prop-types';
 import { render as rtlRender } from '@testing-library/react';
-import { configureStore } from '@reduxjs/toolkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
-import { reducer as specialExamsReducer } from '@edx/frontend-lib-special-exams';
 import { AppProvider } from '@edx/frontend-platform/react';
-import { createAppQueryCache } from './queryClient';
-import {
-  reducer as modelsReducer, addModel, addModelsMap, updateModel, updateModels, updateModelsMap,
-} from './generic/model-store';
 import { UserMessagesProvider } from './generic/user-messages';
 import { ToastProvider } from './generic/ToastContext';
 import { PluginOverridesProvider } from './generic/plugin-overrides';
 
 import messages from './i18n';
-import { getCourseMetadata, getLearningSequencesOutline, getSequenceMetadata } from './courseware/data/api';
-import { getCourseHomeCourseMetadata } from './course-home/data/api';
 import { appendBrowserTimezoneToUrl } from './utils';
 import buildSimpleCourseAndSequenceMetadata from './courseware/data/__factories__/sequenceMetadata.factory';
 import { buildOutlineFromBlocks } from './courseware/data/__factories__/learningSequencesOutline.factory';
@@ -166,56 +158,21 @@ export function logUnhandledRequests(axiosMock) {
   });
 }
 
-let globalStore;
-
-export async function seedCoursewareModels(store, courseId) {
-  const [metadata, outline, homeMetadata] = await Promise.all([
-    getCourseMetadata(courseId),
-    getLearningSequencesOutline(courseId),
-    getCourseHomeCourseMetadata(courseId),
-  ]);
-  store.dispatch(addModel({ modelType: 'coursewareMeta', model: metadata }));
-  store.dispatch(addModel({ modelType: 'courseHomeMeta', model: { id: courseId, ...homeMetadata } }));
-  store.dispatch(updateModelsMap({ modelType: 'coursewareMeta', modelsMap: outline.courses }));
-  store.dispatch(addModelsMap({ modelType: 'sections', modelsMap: outline.sections }));
-  store.dispatch(updateModelsMap({ modelType: 'sequences', modelsMap: outline.sequences }));
-}
-
-export async function seedSequenceModels(store, sequenceIds, { isPreview = false } = {}) {
-  await Promise.all(sequenceIds.map(async (sequenceId) => {
-    const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
-    store.dispatch(updateModel({ modelType: 'sequences', model: sequence }));
-    store.dispatch(updateModels({ modelType: 'units', models: units }));
-  }));
-}
-
-// The test factories build a single course with a single sequence, so the ids they
-// generated are the sole keys of these model maps.
-export function getTestStoreIds(store) {
-  const { models } = store.getState();
-  return {
-    courseId: Object.keys(models.coursewareMeta)[0],
-    sequenceId: Object.keys(models.sequences)[0],
-  };
-}
-
-export async function initializeTestStore(options = {}, overrideStore = true) {
-  const store = configureStore({
-    reducer: {
-      models: modelsReducer,
-      specialExams: specialExamsReducer,
-    },
-  });
-  if (overrideStore) {
-    globalStore = store;
-  }
+// Mock the requests a course page makes (course and course-home metadata, the learning-sequences
+// outline, the sequence metadata, discussion config and topics, the sidebar toggles and outline)
+// for a factory-built course, one section with one sequence and one unit unless `options` supplies
+// the blocks or payloads, and return the built payloads with the ids a test needs. `options` are
+// passed through to `buildSimpleCourseAndSequenceMetadata`, plus `preventSequenceLoad` /
+// `preventOutlineSidebarLoad` to hold those requests pending.
+export function mockCourseRequests(options = {}) {
   initializeMockApp();
   const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
   axiosMock.reset();
 
+  const fixtures = buildSimpleCourseAndSequenceMetadata(options);
   const {
     courseBlocks, sequenceBlocks, unitBlocks, courseMetadata, sequenceMetadata, courseHomeMetadata,
-  } = buildSimpleCourseAndSequenceMetadata(options);
+  } = fixtures;
 
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseMetadata.id}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
@@ -255,8 +212,7 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
   sequenceMetadata.forEach(metadata => {
     const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${metadata.item_id}`;
     if (options.preventSequenceLoad) {
-      // Hold the sequence metadata query in its pending state (the request never resolves);
-      // pair with `excludeFetchSequence`, whose seeding would otherwise wait on it.
+      // Hold the sequence metadata query in its pending state (the request never resolves).
       axiosMock.onGet(sequenceMetadataUrl).reply(() => new Promise(() => {}));
     } else {
       axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);
@@ -267,24 +223,20 @@ export async function initializeTestStore(options = {}, overrideStore = true) {
 
   logUnhandledRequests(axiosMock);
 
-  if (!options.excludeFetchCourse) {
-    await seedCoursewareModels(store, courseMetadata.id);
-  }
-
-  if (!options.excludeFetchSequence) {
-    await seedSequenceModels(store, sequenceBlocks.map(block => block.id));
-  }
-
-  return store;
+  return {
+    ...fixtures,
+    courseId: courseMetadata.id,
+    sequenceId: sequenceBlocks[0].id,
+    unitId: unitBlocks[0].id,
+  };
 }
 
-export function createTestQueryClient(store) {
+export function createTestQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: { retry: false, refetchOnWindowFocus: false },
       mutations: { retry: false },
     },
-    ...(store ? { queryCache: createAppQueryCache(store) } : {}),
   });
 }
 
@@ -295,6 +247,9 @@ export function seedQueryData(queryClient, queryKey, data) {
   queryClient.setQueryData(queryKey, data);
 }
 
+// `store`: pass the app's `initializeStore()` when the tree reaches `@edx/frontend-lib-special-exams`
+// (`Sequence`, `Unit`, `TabWithTimer`), whose components select from the Redux store; `AppProvider`
+// renders a react-redux `Provider` only when given one.
 function render(
   ui,
   {
@@ -307,7 +262,7 @@ function render(
   const Wrapper = ({ children }) => (
     // eslint-disable-next-line react/jsx-filename-extension
     <IntlProvider locale="en">
-      <AppProvider store={store || globalStore} wrapWithRouter={wrapWithRouter}>
+      <AppProvider store={store} wrapWithRouter={wrapWithRouter}>
         <QueryClientProvider client={testQueryClient}>
           <UserMessagesProvider>
             <ToastProvider>

@@ -5,7 +5,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
-  createTestQueryClient, initializeTestStore, render, screen, seedQueryData, waitFor,
+  createTestQueryClient, mockCourseRequests, render, screen, seedQueryData, waitFor,
 } from '../../../setupTest';
 import type { CourseHomeMeta } from '../../../course-home/data/api';
 import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
@@ -31,7 +31,7 @@ describe('CelebrationModal', () => {
   }
 
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
   });
 
   beforeEach(() => {

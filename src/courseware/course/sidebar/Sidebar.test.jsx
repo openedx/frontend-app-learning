@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { initializeTestStore, render, screen } from '@src/setupTest';
+import { mockCourseRequests, render, screen } from '@src/setupTest';
 import Sidebar from './Sidebar';
 import { SidebarProvider } from './SidebarContext';
 import SidebarTriggers from './SidebarTriggers';
@@ -34,7 +34,7 @@ function renderSidebar() {
 
 describe('Sidebar', () => {
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
   });
 
   afterEach(() => {

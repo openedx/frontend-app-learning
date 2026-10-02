@@ -3,8 +3,9 @@ import { MemoryRouter } from 'react-router';
 import { Factory } from 'rosie';
 
 import {
-  getTestStoreIds, initializeMockApp, initializeTestStore, render, screen, waitFor,
+  initializeMockApp, mockCourseRequests, render, screen, waitFor,
 } from '../../../../setupTest';
+import initializeStore from '../../../../store';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import { usePluginOverrides } from '../../../../generic/plugin-overrides';
 import { getIFrameUrl } from './urls';
@@ -29,8 +30,8 @@ const unit = {
   bookmarkedUpdateState: 'pending',
 };
 
-let store;
 let sequenceId;
+const store = initializeStore();
 
 const renderComponent = (props, { children = null, search = '' } = {}) => {
   render(
@@ -52,8 +53,7 @@ async function setupStoreState() {
     { courseId: courseMetadata.id },
   )];
 
-  store = await initializeTestStore({ courseMetadata, unitBlocks });
-  ({ sequenceId } = getTestStoreIds(store));
+  ({ sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks }));
 }
 
 describe('<Unit />', () => {

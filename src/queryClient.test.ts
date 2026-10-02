@@ -1,24 +1,18 @@
 import { QueryClient } from '@tanstack/react-query';
-import { configureStore } from '@reduxjs/toolkit';
 
-import { reducer as modelsReducer } from './generic/model-store';
 import { createAppQueryCache, createQueryClient, shouldRetryQuery } from './queryClient';
 import { NonRetryableError } from './data/http-error';
 import { initializeMockApp } from './setupTest';
 
 const { loggingService } = initializeMockApp();
 
-const makeStore = () => configureStore({ reducer: { models: modelsReducer } });
-
 describe('app query cache', () => {
-  let store: ReturnType<typeof makeStore>;
   let queryClient: QueryClient;
 
   beforeEach(() => {
-    store = makeStore();
     queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
-      queryCache: createAppQueryCache(store),
+      queryCache: createAppQueryCache(),
     });
     loggingService.logError.mockReset();
     loggingService.logInfo.mockReset();
@@ -57,17 +51,6 @@ describe('app query cache', () => {
     expect(loggingService.logError).not.toHaveBeenCalled();
     expect(loggingService.logInfo).not.toHaveBeenCalled();
   });
-
-  it('bridges successful results into the model store through onSuccess', async () => {
-    await queryClient.fetchQuery({
-      queryKey: ['ok'],
-      queryFn: () => Promise.resolve({ value: 42 }),
-      meta: { modelType: 'widget', courseId: 'course-1' },
-    });
-
-    const models = store.getState().models as Record<string, Record<string, unknown>>;
-    expect(models.widget['course-1']).toEqual({ id: 'course-1', value: 42 });
-  });
 });
 
 describe('shouldRetryQuery', () => {
@@ -95,16 +78,14 @@ describe('shouldRetryQuery', () => {
   });
 
   it('is wired in as the default query retry policy on createQueryClient', () => {
-    const store = configureStore({ reducer: { models: modelsReducer } });
-    expect(createQueryClient(store).getDefaultOptions().queries?.retry).toBe(shouldRetryQuery);
+    expect(createQueryClient().getDefaultOptions().queries?.retry).toBe(shouldRetryQuery);
   });
 });
 
 describe('createQueryClient retry behavior (integration)', () => {
   const attemptsFor = async (error: unknown): Promise<number> => {
-    const store = configureStore({ reducer: { models: modelsReducer } });
     const queryFn = jest.fn().mockRejectedValue(error);
-    await createQueryClient(store).fetchQuery({
+    await createQueryClient().fetchQuery({
       queryKey: ['retry-test'], queryFn, retryDelay: 0,
     }).catch(() => {});
     return queryFn.mock.calls.length;
@@ -129,7 +110,6 @@ describe('createQueryClient retry behavior (integration)', () => {
 
 describe('createQueryClient defaults', () => {
   it('disables refetchOnWindowFocus (parity with the pre-RQ no-focus-refetch behavior)', () => {
-    const store = configureStore({ reducer: { models: modelsReducer } });
-    expect(createQueryClient(store).getDefaultOptions().queries?.refetchOnWindowFocus).toBe(false);
+    expect(createQueryClient().getDefaultOptions().queries?.refetchOnWindowFocus).toBe(false);
   });
 });

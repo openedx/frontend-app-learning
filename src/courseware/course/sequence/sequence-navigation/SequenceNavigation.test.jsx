@@ -2,7 +2,7 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import {
-  render, screen, fireEvent, getByText, getTestStoreIds, initializeTestStore,
+  render, screen, fireEvent, getByText, mockCourseRequests,
 } from '../../../../setupTest';
 import CourseQueryGate from '../../../../tests/CourseQueryGate';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
@@ -24,17 +24,17 @@ describe('Sequence Navigation', () => {
   ));
 
   beforeEach(async () => {
-    const store = await initializeTestStore({ courseMetadata, unitBlocks });
+    const { sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
     mockData = {
       unitId: unitBlocks[1].id,
-      sequenceId: getTestStoreIds(store).sequenceId,
+      sequenceId,
       previousHandler: () => {},
       onNavigate: () => {},
       nextHandler: () => {},
     };
   });
 
-  const renderNav = (props = {}, { store, states } = {}) => {
+  const renderNav = (props = {}, { states } = {}) => {
     const sequenceId = props.sequenceId ?? mockData.sequenceId;
     return render(
       <MemoryRouter initialEntries={[`/course/${courseMetadata.id}/${sequenceId}`]}>
@@ -52,13 +52,12 @@ describe('Sequence Navigation', () => {
           />
         </Routes>
       </MemoryRouter>,
-      { store },
     );
   };
 
   it('is empty while loading', async () => {
-    const testStore = await initializeTestStore({ excludeFetchSequence: true, preventSequenceLoad: true }, false);
-    renderNav({ sequenceId: getTestStoreIds(testStore).sequenceId }, { store: testStore, states: { sequence: 'pending' } });
+    const { sequenceId } = mockCourseRequests({ preventSequenceLoad: true });
+    renderNav({ sequenceId }, { states: { sequence: 'pending' } });
 
     await screen.findByTestId('course-query-gate-open');
     expect(screen.queryByTestId('courseware-sequence-navigation')).not.toBeInTheDocument();
@@ -82,13 +81,13 @@ describe('Sequence Navigation', () => {
       { gated_content: { gated: true } },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore({ unitBlocks, sequenceBlocks, sequenceMetadata }, false);
+    mockCourseRequests({ unitBlocks, sequenceBlocks, sequenceMetadata });
     const testData = {
       ...mockData,
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    renderNav(testData, { store: testStore });
+    renderNav(testData);
     await screen.findByTestId('courseware-sequence-navigation');
 
     const unitButton = screen.getByTitle(unitBlocks[1].display_name);
@@ -130,11 +129,11 @@ describe('Sequence Navigation', () => {
 
   it('has the "Next" button disabled for the last unit of the sequence if there is no Exit page', async () => {
     const testMetadata = { ...courseMetadata, certificate_data: { cert_status: 'bogus_status' }, user_has_passing_grade: true };
-    const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
-    // Have to refetch the sequenceId since the new store generates new sequences
-    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
+    // The new build generates a new sequence, so take its id.
+    const { sequenceId } = mockCourseRequests({ courseMetadata: testMetadata, unitBlocks });
+    const testData = { ...mockData, sequenceId };
 
-    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id });
     await screen.findByTestId('courseware-sequence-navigation');
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -143,11 +142,11 @@ describe('Sequence Navigation', () => {
 
   it('displays end of course message instead of the "Next" button as needed', async () => {
     const testMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' }, enrollment: { is_active: true } };
-    const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
-    // Have to refetch the sequenceId since the new store generates new sequences
-    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
+    // The new build generates a new sequence, so take its id.
+    const { sequenceId } = mockCourseRequests({ courseMetadata: testMetadata, unitBlocks });
+    const testData = { ...mockData, sequenceId };
 
-    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id });
     await screen.findByTestId('courseware-sequence-navigation');
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -161,11 +160,11 @@ describe('Sequence Navigation', () => {
       enrollment: { is_active: true },
       user_has_passing_grade: true,
     };
-    const testStore = await initializeTestStore({ courseMetadata: testMetadata, unitBlocks }, false);
-    // Have to refetch the sequenceId since the new store generates new sequences
-    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
+    // The new build generates a new sequence, so take its id.
+    const { sequenceId } = mockCourseRequests({ courseMetadata: testMetadata, unitBlocks });
+    const testData = { ...mockData, sequenceId };
 
-    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id });
     await screen.findByTestId('courseware-sequence-navigation');
 
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -196,13 +195,13 @@ describe('Sequence Navigation', () => {
       { navigation_disabled: true },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore({ unitBlocks, sequenceBlocks, sequenceMetadata }, false);
+    mockCourseRequests({ unitBlocks, sequenceBlocks, sequenceMetadata });
     const testData = {
       ...mockData,
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    renderNav({ ...testData, unitId: unitBlocks[0].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[0].id });
     await screen.findByTestId('courseware-sequence-navigation');
     expect(screen.queryByRole('link', { name: /previous/i })).not.toBeInTheDocument();
   });
@@ -218,13 +217,13 @@ describe('Sequence Navigation', () => {
       { navigation_disabled: true },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore({ unitBlocks, sequenceBlocks, sequenceMetadata }, false);
+    mockCourseRequests({ unitBlocks, sequenceBlocks, sequenceMetadata });
     const testData = {
       ...mockData,
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id });
     await screen.findByTestId('courseware-sequence-navigation');
     expect(screen.queryByRole('link', { name: /next/i })).not.toBeInTheDocument();
   });

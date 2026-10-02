@@ -4,8 +4,8 @@ import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { QueryClientProvider } from '@tanstack/react-query';
 import {
-  createTestQueryClient, getTestStoreIds,
-  initializeTestStore, render, screen, seedQueryData, waitFor, getByText, logUnhandledRequests,
+  createTestQueryClient,
+  mockCourseRequests, render, screen, seedQueryData, waitFor, getByText, logUnhandledRequests,
 } from '../setupTest';
 import { courseHomeQueryKeys } from '../course-home/data/queryKeys';
 import { coursewareQueryKeys } from '../courseware/data/queryKeys';
@@ -20,15 +20,13 @@ getConfig.mockImplementation(() => originalConfig);
 
 describe('Instructor Toolbar', () => {
   let courseId;
-  let models;
+  let unitId;
   let mockData;
   let axiosMock;
   let masqueradeUrl;
 
   beforeAll(async () => {
-    const store = await initializeTestStore();
-    models = store.getState().models;
-    courseId = getTestStoreIds(store).courseId;
+    ({ courseId, unitId } = mockCourseRequests());
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
@@ -37,7 +35,7 @@ describe('Instructor Toolbar', () => {
   beforeEach(() => {
     mockData = {
       courseId,
-      unitId: Object.values(models.units)[0].id,
+      unitId,
     };
     axiosMock.reset();
     axiosMock.onGet(masqueradeUrl).reply(200, { success: true });

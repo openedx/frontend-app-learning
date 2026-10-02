@@ -37,7 +37,7 @@ import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
 
-const queryClient = createQueryClient(store);
+const queryClient = createQueryClient();
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
