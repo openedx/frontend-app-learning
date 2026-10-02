@@ -4,7 +4,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getResponseStatus } from '@src/data/http-error';
 import type { TabMetadata } from '@src/course-tabs/utils';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import { type CourseHomeOutline, normalizeCourseHomeOutline } from './courseHomeOutline';
+import { type CourseHomeAccessExpiration, type CourseHomeOutline, normalizeCourseHomeOutline } from './courseHomeOutline';
 
 // The result types below name only the fields this repo's readers use; each endpoint returns more,
 // left reachable as `unknown` so plugins importing the hooks are not limited to our list. The full
@@ -149,6 +149,7 @@ export interface CourseHomeProgressAssignmentTypeGradeSummary {
 
 // GET /api/course_home/v1/progress/. Every field is optional because the 401 and 403 branches return `{}`.
 export interface CourseHomeProgress {
+  accessExpiration?: CourseHomeAccessExpiration | null;
   assignmentTypeGradeSummary?: CourseHomeProgressAssignmentTypeGradeSummary[];
   certificateData?: {
     certStatus: string;

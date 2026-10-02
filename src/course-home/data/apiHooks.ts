@@ -70,9 +70,6 @@ export const useDatesTabData = (courseId: string, { enabled = true }: QueryOptio
   queryKey: courseHomeQueryKeys.datesTab(courseId),
   queryFn: () => getDatesTabData(courseId),
   enabled,
-  // Transitional (#1999): the access-expiration masquerade banner still reads this model,
-  // via useModel(tab, courseId). Dropped when that reader converts.
-  meta: { modelType: 'dates', courseId },
 });
 
 export const useOutlineTabData = (
@@ -82,9 +79,6 @@ export const useOutlineTabData = (
   queryKey: courseHomeQueryKeys.outlineTab(courseId!),
   queryFn: () => getOutlineTabData(courseId!),
   enabled: enabled && !!courseId,
-  // Transitional (#1999): the access-expiration masquerade banner still reads this model,
-  // via useModel(tab, courseId). Dropped when that reader converts.
-  meta: { modelType: 'outline', courseId },
 });
 
 export const useLiveTabData = (courseId: string) => useQuery({
@@ -100,7 +94,7 @@ export const useProgressTabData = (
   queryKey: courseHomeQueryKeys.progressTab(courseId, targetUserId),
   queryFn: () => getProgressTabData(courseId, targetUserId),
   enabled,
-  meta: { modelType: 'progress', courseId, logStatusAs: { 404: 'silent' } },
+  meta: { logStatusAs: { 404: 'silent' } },
 });
 
 export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: string[] | undefined) => useQuery({

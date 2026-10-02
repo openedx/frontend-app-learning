@@ -2,10 +2,13 @@ import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { QueryClientProvider } from '@tanstack/react-query';
 import {
-  getTestStoreIds,
-  initializeTestStore, render, screen, waitFor, getByText, logUnhandledRequests,
+  createTestQueryClient, getTestStoreIds,
+  initializeTestStore, render, screen, seedQueryData, waitFor, getByText, logUnhandledRequests,
 } from '../setupTest';
+import { courseHomeQueryKeys } from '../course-home/data/queryKeys';
+import { coursewareQueryKeys } from '../courseware/data/queryKeys';
 import InstructorToolbar from './index';
 
 const originalConfig = jest.requireActual('@edx/frontend-platform').getConfig();
@@ -76,5 +79,38 @@ describe('Instructor Toolbar', () => {
     render(<InstructorToolbar {...mockData} unitId={null} />);
 
     expect(screen.queryByText('View course in:')).not.toBeInTheDocument();
+  });
+
+  describe('access-expiration masquerade banner', () => {
+    const bannerText = 'This learner no longer has access to this course. Their access expired on';
+    const expiredAccess = { expirationDate: '2020-01-01T12:00:00Z', masqueradingExpiredCourse: true };
+
+    function renderWithQueries(tab, seeds) {
+      const queryClient = createTestQueryClient();
+      seedQueryData(queryClient, courseHomeQueryKeys.metadata(courseId), { userTimezone: 'America/New_York' });
+      seeds.forEach(([queryKey, data]) => seedQueryData(queryClient, queryKey, data));
+      return render(
+        <QueryClientProvider client={queryClient}>
+          <InstructorToolbar {...mockData} tab={tab} />
+        </QueryClientProvider>,
+      );
+    }
+
+    it('renders the banner from the outline query on the outline tab', async () => {
+      renderWithQueries('outline', [[courseHomeQueryKeys.outlineTab(courseId), { accessExpiration: expiredAccess }]]);
+
+      expect(await screen.findByText(bannerText, { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
+    });
+
+    it('does not render the banner on the courseware tab even when the courseware metadata carries the flag', async () => {
+      renderWithQueries('courseware', [
+        [coursewareQueryKeys.metadata(courseId), { accessExpiration: expiredAccess }],
+        [courseHomeQueryKeys.outlineTab(courseId), { accessExpiration: expiredAccess }],
+      ]);
+
+      await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
+      expect(screen.queryByText(bannerText, { exact: false })).not.toBeInTheDocument();
+    });
   });
 });
