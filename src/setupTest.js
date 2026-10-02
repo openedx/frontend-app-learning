@@ -172,7 +172,7 @@ export async function seedCoursewareModels(store, courseId) {
   const [metadata, outline, homeMetadata] = await Promise.all([
     getCourseMetadata(courseId),
     getLearningSequencesOutline(courseId),
-    getCourseHomeCourseMetadata(courseId, 'courseware'),
+    getCourseHomeCourseMetadata(courseId),
   ]);
   store.dispatch(addModel({ modelType: 'coursewareMeta', model: metadata }));
   store.dispatch(addModel({ modelType: 'courseHomeMeta', model: { id: courseId, ...homeMetadata } }));

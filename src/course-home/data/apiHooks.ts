@@ -1,10 +1,12 @@
 import { logError } from '@edx/frontend-platform/logging';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import type { TabMetadata } from '@src/course-tabs/utils';
 import type { RequestError } from '@src/data/http-error';
 import { useToast, ToastContent } from '@src/generic/ToastContext';
 import {
+  type CallToActionResponse,
+  type CourseHomeMeta,
+  type PostEventData,
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
   getDatesTabData,
@@ -20,19 +22,8 @@ import {
 } from './api';
 import { courseHomeQueryKeys } from './queryKeys';
 
-interface CallToActionResponse {
-  header: string;
-  link: string;
-  link_text: string;
-}
-
 interface QueryOptions {
   enabled?: boolean;
-}
-
-interface PostData {
-  url: string;
-  bodyParams: { courseId: string };
 }
 
 const toastFrom = ({ header, link, link_text: linkText }: CallToActionResponse): ToastContent => ({
@@ -55,7 +46,7 @@ export const useResetDeadlines = () => {
 export const usePostEvent = () => {
   const { setToastContent, openToast } = useToast();
   return useMutation({
-    mutationFn: ({ postData, researchEventData }: { postData: PostData; researchEventData: unknown }) => (
+    mutationFn: ({ postData, researchEventData }: { postData: PostEventData; researchEventData: unknown }) => (
       executePostFromPostEvent(postData, researchEventData)
     ),
     onSuccess: ({ data }) => {
@@ -66,34 +57,12 @@ export const usePostEvent = () => {
   });
 };
 
-// Names only the fields this repo's TypeScript readers need; the endpoint returns many more,
-// left reachable as `unknown` so plugins importing this hook are not limited to our list.
-// The full shape is openedx-platform's to describe — a copy of it here would drift — so this
-// stays partial until the platform ships types we can import.
-export interface CourseHomeMeta {
-  celebrations: {
-    streakLengthToCelebrate?: number | null;
-    streakDiscountEnabled?: boolean;
-  } | null;
-  courseAccess: { hasAccess: boolean };
-  hasCourseAuthorAccess: boolean;
-  number: string;
-  org: string;
-  originalUserIsStaff: boolean;
-  start: string;
-  tabs: TabMetadata[];
-  title: string;
-  userTimezone: string | null;
-  verifiedMode: Record<string, unknown> | null;
-  [key: string]: unknown;
-}
-
 export const useCourseHomeMeta = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
 ) => useQuery<CourseHomeMeta, RequestError>({
   queryKey: courseHomeQueryKeys.metadata(courseId!),
-  queryFn: () => getCourseHomeCourseMetadata(courseId),
+  queryFn: () => getCourseHomeCourseMetadata(courseId!),
   enabled: enabled && !!courseId,
 });
 
@@ -106,36 +75,12 @@ export const useDatesTabData = (courseId: string, { enabled = true }: QueryOptio
   meta: { modelType: 'dates', courseId },
 });
 
-export interface OutlineSequence {
-  complete: boolean;
-  description: string;
-  due: string;
-  showLink: boolean;
-  title: string;
-  hideFromTOC: boolean;
-  effortActivities?: number;
-  effortTime?: number;
-}
-
-// Names only the fields this repo's TypeScript readers need; the endpoint returns many more,
-// left reachable as `unknown` so plugins importing these hooks are not limited to our list.
-// The full shape is openedx-platform's to describe — a copy of it here would drift — so this
-// stays partial until the platform ships types we can import. Every field is optional because
-// the endpoint's 403 branch returns `{}`.
-interface OutlineTabData {
-  courseBlocks?: {
-    sequences?: Record<string, OutlineSequence>;
-  };
-  userTimezone?: string;
-  [key: string]: unknown;
-}
-
 export const useOutlineTabData = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
-) => useQuery<OutlineTabData>({
+) => useQuery({
   queryKey: courseHomeQueryKeys.outlineTab(courseId!),
-  queryFn: () => getOutlineTabData(courseId),
+  queryFn: () => getOutlineTabData(courseId!),
   enabled: enabled && !!courseId,
   // Transitional (#1999): the access-expiration masquerade banner still reads this model,
   // via useModel(tab, courseId). Dropped when that reader converts.
@@ -158,13 +103,11 @@ export const useProgressTabData = (
   meta: { modelType: 'progress', courseId, logStatusAs: { 404: 'silent' } },
 });
 
-export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: string[] | undefined) => useQuery<
-Record<string, unknown>[]
->({
+export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: string[] | undefined) => useQuery({
   queryKey: courseHomeQueryKeys.examAttempts(courseId!, sequenceIds ?? []),
   queryFn: () => Promise.all((sequenceIds ?? []).map(async (sequenceId) => {
     try {
-      return (await getExamsData(courseId, sequenceId)).exam || {};
+      return (await getExamsData(courseId!, sequenceId)).exam || {};
     } catch (error) {
       logError(error as Error);
       return {};
