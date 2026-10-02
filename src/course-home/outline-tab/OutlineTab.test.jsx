@@ -225,6 +225,24 @@ describe('Outline Tab', () => {
       const sequenceLink = screen.getByText('Title of Sequence');
       expect(sequenceLink.getAttribute('href')).toContain(`/course/${courseId}`);
     });
+
+    it('formats a sequence due date in the user_timezone from the course metadata', async () => {
+      // Tests run in UTC (global-setup.js), so a non-UTC preference distinguishes the
+      // preference from the browser fallback.
+      setMetadata({ user_timezone: 'Asia/Tokyo' });
+      const sequenceBlocks = [Factory.build(
+        'block',
+        { display_name: 'Title of Sequence', due: '2030-04-01T12:00:00Z', type: 'sequential' },
+        { courseId },
+      )];
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true, sequenceBlocks });
+      setTabData({
+        course_blocks: { blocks: courseBlocks.blocks },
+      });
+      await fetchAndRender();
+
+      expect(screen.getByText('due Apr 1, 2030, 9:00 PM GMT+9')).toBeInTheDocument();
+    });
   });
 
   describe('Suggested schedule alerts', () => {

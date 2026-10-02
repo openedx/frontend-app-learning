@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedTime, useIntl } from '@edx/frontend-platform/i18n';
 import { useParams } from 'react-router-dom';
-import { useOutlineTabData } from '../../data/apiHooks';
+import { useCourseHomeMeta } from '../../data/apiHooks';
 
 import messages from '../messages';
 
@@ -22,7 +22,7 @@ const SequenceDueDate: React.FC<Props> = ({
     messages.sequenceNoDueDate,
     { description: description || '' },
   );
-  const userTimezone = useOutlineTabData(courseId, { enabled: false }).data?.userTimezone;
+  const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
 
   if (due) {
     const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
