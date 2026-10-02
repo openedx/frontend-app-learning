@@ -4,7 +4,7 @@ import { AppProvider } from '@edx/frontend-platform/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import {
@@ -20,6 +20,8 @@ import { createTestQueryClient, initializeMockApp, waitFor } from '../setupTest'
 import { DECODE_ROUTES } from '../constants';
 
 import CoursewareContainer from './CoursewareContainer';
+import { coursewareQueryKeys } from './data/queryKeys';
+import { courseHomeQueryKeys } from '../course-home/data/queryKeys';
 import { buildSimpleCourseBlocks, buildBinaryCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
 import initializeStore from '../store';
 import { appendBrowserTimezoneToUrl } from '../utils';
@@ -580,6 +582,51 @@ describe('CoursewareContainer', () => {
       await loadContainer();
 
       expect(global.location.href).toEqual('http://localhost/redirect/enterprise-learner-dashboard');
+    });
+  });
+
+  describe('while the learning-sequences outline is pending', () => {
+    const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
+    const unitPath = `/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[1].id}`;
+
+    // Holds the outline request, as a slow outline would.
+    const holdOutline = () => {
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(() => new Promise(() => {}));
+    };
+
+    // Both metadata queries have succeeded, and the page has had a render with the outline still held.
+    const waitForMetadataWithOutlinePending = async () => {
+      await waitFor(() => {
+        expect(queryClient.getQueryState(coursewareQueryKeys.metadata(defaultCourseId))?.status).toBe('success');
+        expect(queryClient.getQueryState(courseHomeQueryKeys.metadata(defaultCourseId))?.status).toBe('success');
+      });
+      await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
+    };
+
+    const renderUnit = () => {
+      history.push(unitPath);
+      render(<BrowserRouter>{component}</BrowserRouter>);
+    };
+
+    beforeEach(() => {
+      setUpMockRequests();
+    });
+
+    it('disables the Next control', async () => {
+      mockRenderUnitNav = true;
+      holdOutline();
+      renderUnit();
+      await waitForMetadataWithOutlinePending();
+
+      expect(screen.getByText(/^next$/i).closest('a, button')).toBeDisabled();
+    });
+
+    it('does not show a page title with an empty segment', async () => {
+      holdOutline();
+      renderUnit();
+      await waitForMetadataWithOutlinePending();
+
+      expect(document.title).not.toMatch(/^\s*\||\|\s*\|/);
     });
   });
 

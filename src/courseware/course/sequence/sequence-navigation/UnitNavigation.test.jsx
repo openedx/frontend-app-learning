@@ -64,8 +64,10 @@ describe('Unit Navigation', () => {
       onClickNext: () => {},
     });
 
-    // Only "Previous" and "Next" buttons should be rendered.
-    expect(screen.getAllByRole('link')).toHaveLength(2);
+    // Only "Previous" and "Next" buttons should be rendered, disabled: there is no sequence to navigate in.
+    expect(screen.getAllByRole('button')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
   });
 
   it('handles the clicks', async () => {

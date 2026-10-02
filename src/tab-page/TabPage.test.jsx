@@ -107,6 +107,61 @@ describe('Tab Page', () => {
       expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
     });
 
+    describe('with several tab-data queries', () => {
+      const forbidden = (detail) => ({
+        isError: true,
+        error: { response: { status: 403, data: { detail } } },
+      });
+
+      it('renders the Loaded Tab Page when every tab-data query resolves', () => {
+        render(
+          <TabPage {...mockData} courseStatus={{ metadataQuery: metaWithAccess, tabDataQueries: [{}, {}] }} />,
+          { wrapWithRouter: true },
+        );
+        expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
+      });
+
+      it('displays loading while any tab-data query is loading', () => {
+        render(
+          <TabPage
+            {...mockData}
+            courseStatus={{ metadataQuery: metaWithAccess, tabDataQueries: [{}, { isPending: true }] }}
+          />,
+          { wrapWithRouter: true },
+        );
+        expect(screen.getByText('Loading course page…')).toBeInTheDocument();
+      });
+
+      it('displays the 403 detail of every failed tab-data query', () => {
+        render(
+          <TabPage
+            {...mockData}
+            courseStatus={{
+              metadataQuery: metaWithAccess,
+              tabDataQueries: [forbidden('The first detail.'), forbidden('The second detail.')],
+            }}
+          />,
+          { wrapWithRouter: true },
+        );
+        expect(screen.getByText('The first detail.')).toBeInTheDocument();
+        expect(screen.getByText('The second detail.')).toBeInTheDocument();
+      });
+
+      it('displays a detail shared by several failed tab-data queries once', () => {
+        render(
+          <TabPage
+            {...mockData}
+            courseStatus={{
+              metadataQuery: metaWithAccess,
+              tabDataQueries: [forbidden('The same detail.'), forbidden('The same detail.')],
+            }}
+          />,
+          { wrapWithRouter: true },
+        );
+        expect(screen.getAllByText('The same detail.')).toHaveLength(1);
+      });
+    });
+
     it('renders no tab content when courseId is missing', () => {
       render(
         <TabPage

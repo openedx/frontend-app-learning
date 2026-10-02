@@ -18,11 +18,14 @@ import LoadedTabPage from './LoadedTabPage';
 import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 import { TourProvider } from '../product-tours/TourContext';
 
-// A tab hands TabPage its metadata + tab-data queries and lets TabPage derive the view.
+// A tab hands TabPage its metadata + tab-data queries and lets TabPage derive the view; a tab
+// whose data comes from more than one query passes them as `tabDataQueries`.
 export type CourseStatus = {
   metadataQuery: UseQueryResult<CourseHomeMeta, RequestError>;
-  tabDataQuery?: UseQueryResult;
-};
+} & (
+  | { tabDataQuery?: UseQueryResult; tabDataQueries?: never }
+  | { tabDataQuery?: never; tabDataQueries: UseQueryResult[] }
+);
 
 export interface TabPageProps {
   activeTabSlug: string;
@@ -36,22 +39,32 @@ interface TabView {
   isLoading: boolean;
   isError: boolean;
   isDenied: boolean;
-  errorDetail?: string;
+  errorDetails?: string[];
 }
+
+const getErrorDetails = (queries: { error: unknown }[]): string[] => {
+  const details = queries.flatMap((query) => getErrorDetail(query.error) || []);
+  return [...new Set(details)];
+};
 
 const deriveView = (courseStatus: CourseStatus): TabView => {
   const view = { isLoading: false, isError: false, isDenied: false };
 
   // Access is read from the metadata query, resolved before tabData is considered.
-  const { metadataQuery, tabDataQuery } = courseStatus;
+  const {
+    metadataQuery,
+    tabDataQuery,
+    tabDataQueries = tabDataQuery ? [tabDataQuery] : [],
+  } = courseStatus;
   if (metadataQuery.isError) {
-    return { ...view, isError: true, errorDetail: getErrorDetail(metadataQuery.error) };
+    return { ...view, isError: true, errorDetails: getErrorDetails([metadataQuery]) };
   }
   if (metadataQuery.isPending) { return { ...view, isLoading: true }; }
-  if (tabDataQuery?.isPending) { return { ...view, isLoading: true }; }
+  if (tabDataQueries.some((query) => query.isPending)) { return { ...view, isLoading: true }; }
   if (!metadataQuery.data?.courseAccess?.hasAccess) { return { ...view, isDenied: true }; }
-  if (tabDataQuery?.isError) {
-    return { ...view, isError: true, errorDetail: getErrorDetail(tabDataQuery.error) };
+  const failedQueries = tabDataQueries.filter((query) => query.isError);
+  if (failedQueries.length > 0) {
+    return { ...view, isError: true, errorDetails: getErrorDetails(failedQueries) };
   }
   return view;
 };
@@ -74,7 +87,7 @@ const TabPage = ({
   }: Partial<CourseHomeMeta> = courseStatus.metadataQuery.data ?? {};
 
   const {
-    isLoading, isError, isDenied, errorDetail,
+    isLoading, isError, isDenied, errorDetails,
   } = deriveView(courseStatus);
 
   if (isDenied) {
@@ -125,11 +138,14 @@ const TabPage = ({
     );
   };
 
-  const renderError = () => (
-    <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
-      {errorDetail || intl.formatMessage(messages.failure)}
-    </p>
-  );
+  const renderError = () => {
+    const errorMessages = errorDetails?.length ? errorDetails : [intl.formatMessage(messages.failure)];
+    return (
+      <div className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
+        {errorMessages.map((errorMessage) => <p key={errorMessage}>{errorMessage}</p>)}
+      </div>
+    );
+  };
 
   return (
     <TourProvider>

@@ -19,7 +19,7 @@ const PreviousButton = ({
   isAtTop,
 }) => {
   const navigate = useNavigate();
-  const disabled = isFirstUnit;
+  const disabled = isFirstUnit || !previousLink;
   const { pathname } = useLocation();
   const navLink = pathname.startsWith('/preview') ? `/preview${previousLink}` : previousLink;
 

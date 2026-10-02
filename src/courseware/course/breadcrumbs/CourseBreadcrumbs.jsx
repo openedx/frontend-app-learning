@@ -22,7 +22,7 @@ const CourseBreadcrumbs = ({
   const { sequences = {} } = useMinimalCourseOutline(courseId, { enabled: false }).data ?? {};
 
   const allSequencesInSections = Object.fromEntries(
-    useModels('sections', course.sectionIds)?.map((section) => [
+    useModels('sections', course.sectionIds ?? [])?.map((section) => [
       section.id,
       {
         default: section.id === sectionId,
