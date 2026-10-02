@@ -9,8 +9,8 @@ import { getResponseStatus } from '@src/data/http-error';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import {
   getBlockCompletion, getCourseDiscussionConfig, getCourseMetadata, getCourseOutline,
-  getCoursewareOutlineSidebarToggles, getCourseTopics, getLearningSequencesOutline, getSequenceMetadata,
-  postIntegritySignature, postSequencePosition,
+  getCoursewareOutlineSidebarToggles, getCourseTopics, getLearningSequencesOutline, getResumeBlock,
+  getSequenceForUnitDeprecated, getSequenceMetadata, postIntegritySignature, postSequencePosition,
 } from './api';
 import { applyUnitCompletion, type CourseNavigationOutline } from './courseNavigationOutline';
 import type { CoursewareMeta } from './coursewareMeta';
@@ -124,6 +124,24 @@ export const updateSequenceUnit = (
 export const sequenceMightBeUnit = (sequenceQuery: { error: unknown }): boolean => (
   getResponseStatus(sequenceQuery.error) === 422
 );
+
+export interface ResumeBlock {
+  sectionId?: string;
+  unitId?: string;
+  [key: string]: unknown;
+}
+
+export const resumeBlockQuery = (courseId: string, visitKey: string) => queryOptions({
+  queryKey: coursewareQueryKeys.resume(courseId, visitKey),
+  queryFn: (): Promise<ResumeBlock> => getResumeBlock(courseId),
+});
+
+export const parentSequenceQuery = (courseId: string, unitId: string) => queryOptions({
+  queryKey: coursewareQueryKeys.parentSequence(courseId, unitId),
+  queryFn: (): Promise<string | null> => getSequenceForUnitDeprecated(courseId, unitId),
+  // Re-enabled whenever its rule applies again, and a unit's parent never changes mid-session:
+  staleTime: Infinity,
+});
 
 export const useCourseOutlineStructure = (courseId: string | undefined) => useQuery<CourseNavigationOutline | null>({
   queryKey: coursewareQueryKeys.courseOutline(courseId!),

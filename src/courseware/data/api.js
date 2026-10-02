@@ -21,7 +21,7 @@ export async function getSequenceForUnitDeprecated(courseId, unitId) {
   const url = getSequenceForUnitDeprecatedUrl(courseId);
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
   const parent = Object.values(data.blocks).find(block => block.type === 'sequential' && block.children.includes(unitId));
-  return parent?.id;
+  return parent?.id ?? null;
 }
 
 export async function getLearningSequencesOutline(courseId) {

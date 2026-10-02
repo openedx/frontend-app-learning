@@ -7,6 +7,10 @@ export const coursewareQueryKeys = {
   sequence: (sequenceId: string, isPreview: boolean) => (
     [...coursewareQueryKeys.all, 'sequence', sequenceId, isPreview] as const
   ),
+  resume: (courseId: string, visitKey: string) => [...coursewareQueryKeys.all, 'resume', courseId, visitKey] as const,
+  parentSequence: (courseId: string, unitId: string) => (
+    [...coursewareQueryKeys.all, 'parentSequence', courseId, unitId] as const
+  ),
   courseOutline: (courseId: string) => [...coursewareQueryKeys.all, 'courseOutline', courseId] as const,
   discussionTopics: (courseId: string) => [...coursewareQueryKeys.all, 'discussionTopics', courseId] as const,
   sidebarToggles: (courseId: string) => [...coursewareQueryKeys.all, 'sidebarToggles', courseId] as const,

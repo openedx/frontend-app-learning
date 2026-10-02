@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { defaultMemoize as memoize } from 'reselect';
 
 import { useCourseHomeMeta } from '../course-home/data/apiHooks';
 import {
@@ -11,7 +10,7 @@ import {
   useSequenceIds,
   useSequenceMetadata,
 } from './data/apiHooks';
-import { useCoursewareRedirects } from './redirects';
+import CoursewareRedirects from './CoursewareRedirects';
 import { TabPage } from '../tab-page';
 
 import Course from './course';
@@ -32,10 +31,8 @@ const CoursewareContainer = () => {
   const sequenceQuery = useSequenceMetadata(sequenceId);
   const isSequenceLoaded = sequenceQuery.isSuccess;
 
-  useCoursewareRedirects();
-
   const sequence = sequenceQuery.data?.sequence ?? null;
-  const minimalCourseOutline = useMinimalCourseOutline(courseId, { enabled: false }).data;
+  const minimalCourseOutline = useMinimalCourseOutline(courseId).data;
   const sectionId = sequenceId ? minimalCourseOutline?.sequences[sequenceId]?.sectionId : undefined;
 
   const sequenceIds = useSequenceIds(courseId);
@@ -46,38 +43,11 @@ const CoursewareContainer = () => {
   }
   const nextSectionId = nextSequenceId ? minimalCourseOutline?.sequences[nextSequenceId]?.sectionId : undefined;
 
-  const latest = useRef<any>();
-
-  const guards = useRef<any>();
-  if (!guards.current) {
-    guards.current = {
-      checkSaveSequencePosition: memoize((unitId) => {
-        const {
-          courseId: cId,
-          sequenceId: sId,
-          isSequenceLoaded: sLoaded,
-          sequence: seq,
-        } = latest.current;
-        if (sLoaded && seq.saveUnitPosition && unitId) {
-          const activeUnitIndex = seq.unitIds.indexOf(unitId);
-          saveSequencePosition(cId, sId, activeUnitIndex);
-        }
-      }),
-    };
-  }
-
   useEffect(() => {
-    latest.current = {
-      courseId,
-      sequenceId,
-      isSequenceLoaded,
-      sequence,
-    };
-    const { checkSaveSequencePosition } = guards.current;
-
-    // Check if we should save our sequence position.  Only do this when the route unit ID changes.
-    checkSaveSequencePosition(routeUnitId);
-  });
+    if (isSequenceLoaded && sequence?.saveUnitPosition && routeUnitId) {
+      saveSequencePosition(courseId, sequenceId, sequence.unitIds.indexOf(routeUnitId));
+    }
+  }, [routeUnitId]); // only when the route's unit changes; the sequence loading later must not save
 
   const handleUnitNavigationClick = () => {
     checkBlockCompletion(courseId, sequenceId, routeUnitId);
@@ -95,21 +65,24 @@ const CoursewareContainer = () => {
   const handlePreviousSequenceClick = () => {};
 
   return (
-    <TabPage
-      activeTabSlug="courseware"
-      courseId={courseId}
-      unitId={routeUnitId}
-      courseStatus={{ metadataQuery: courseHomeMetaQuery, tabDataQuery: coursewareMetadataQuery }}
-    >
-      <Course
+    <>
+      <CoursewareRedirects />
+      <TabPage
+        activeTabSlug="courseware"
         courseId={courseId}
-        sequenceId={sequenceId}
         unitId={routeUnitId}
-        nextSequenceHandler={handleNextSequenceClick}
-        previousSequenceHandler={handlePreviousSequenceClick}
-        unitNavigationHandler={handleUnitNavigationClick}
-      />
-    </TabPage>
+        courseStatus={{ metadataQuery: courseHomeMetaQuery, tabDataQuery: coursewareMetadataQuery }}
+      >
+        <Course
+          courseId={courseId}
+          sequenceId={sequenceId}
+          unitId={routeUnitId}
+          nextSequenceHandler={handleNextSequenceClick}
+          previousSequenceHandler={handlePreviousSequenceClick}
+          unitNavigationHandler={handleUnitNavigationClick}
+        />
+      </TabPage>
+    </>
   );
 };
 

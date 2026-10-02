@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useQueryClient } from '@tanstack/react-query';
 import { getConfig } from '@edx/frontend-platform';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '@src/generic/user-messages';
@@ -32,20 +31,12 @@ const Course = ({
   const {
     celebrations,
     isStaff,
-    originalUserIsStaff,
   } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const minimalCourseOutlineQuery = useMinimalCourseOutline(courseId, { enabled: false });
   const minimalCourseOutline = minimalCourseOutlineQuery.data;
   const minimalCourseMetadata = minimalCourseOutline?.courses[courseId];
   const minimalSequenceMetadata = minimalCourseOutline?.sequences[sequenceId];
   const section = minimalSequenceMetadata && minimalCourseOutline.sections[minimalSequenceMetadata.sectionId];
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-
-  if (!originalUserIsStaff && pathname.startsWith('/preview')) {
-    const courseUrl = pathname.replace('/preview', '');
-    navigate(courseUrl, { replace: true });
-  }
 
   const pageTitleBreadCrumbs = [
     minimalSequenceMetadata,
