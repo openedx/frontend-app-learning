@@ -313,7 +313,11 @@ export function getCourseOutlineStructure(courseId) {
     }
     if (pending.has(courseId)) {
       const existing = pending.get(courseId);
+      const reclaimingOutline = latestOutlineRequests.get(dispatch) !== existing;
       latestOutlineRequests.set(dispatch, existing);
+      if (reclaimingOutline) {
+        dispatch(fetchCourseOutlineRequest());
+      }
       return existing;
     }
     // Install the flight before dispatch so synchronous subscribers can also join it.

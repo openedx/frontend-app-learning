@@ -80,6 +80,61 @@ describe('Native courseware recovery', () => {
     expect(store.getState().courseware.courseOutlineStatus).toBe('loaded');
   });
 
+  it.each([[200, 200], [200, 503], [503, 200], [503, 503]])(
+    'rejoins the selected outline after another course settles (%s), then settles (%s)',
+    async (otherStatus, selectedStatus) => {
+      const gate = deferred();
+      const chapter = (id, title) => ({
+        blocks: {
+          [id]: {
+            id, type: 'chapter', display_name: title, children: [],
+          },
+        },
+      });
+      http.onGet(navigationUrl(courseId)).reply(() => gate.promise);
+      http.onGet(navigationUrl('other-course')).reply(otherStatus, chapter('other', 'Other course'));
+      const first = store.dispatch(getCourseOutlineStructure(courseId));
+      await Promise.resolve();
+      await store.dispatch(getCourseOutlineStructure('other-course'));
+      expect(store.getState().courseware.courseOutlineStatus).toBe(otherStatus === 200 ? 'loaded' : 'failed');
+      if (otherStatus === 200) {
+        expect(store.getState().courseware.courseOutline.sections.other.title).toBe('Other course');
+      }
+
+      let subscriberJoin;
+      let loadingTransitions = 0;
+      const unsubscribe = store.subscribe(() => {
+        if (store.getState().courseware.courseOutlineStatus === 'loading') {
+          loadingTransitions += 1;
+          if (loadingTransitions > 1) {
+            throw new Error('Rejoining a pending outline repeatedly reset its loading state');
+          }
+          subscriberJoin = store.dispatch(getCourseOutlineStructure(courseId));
+        }
+      });
+      try {
+        const joined = store.dispatch(getCourseOutlineStructure(courseId));
+        expect(joined).toBe(first);
+        expect(subscriberJoin).toBe(first);
+        expect(loadingTransitions).toBe(1);
+        expect(store.getState().courseware.courseOutlineStatus).toBe('loading');
+        expect(store.getState().courseware.courseOutline).toEqual({});
+        expect(http.history.get.filter(request => request.url === navigationUrl(courseId))).toHaveLength(1);
+      } finally {
+        unsubscribe();
+        gate.resolve([selectedStatus, chapter('selected', 'Selected course')]);
+        await first;
+      }
+      expect(store.getState().courseware.courseOutlineStatus).toBe(selectedStatus === 200 ? 'loaded' : 'failed');
+      if (selectedStatus === 200) {
+        expect(Object.keys(store.getState().courseware.courseOutline.sections)).toEqual(['selected']);
+        expect(store.getState().courseware.courseOutline.sections.selected.title).toBe('Selected course');
+      } else {
+        expect(store.getState().courseware.courseOutline).toEqual({});
+      }
+    },
+  );
+
   it('does not share an in-flight request between Redux stores', async () => {
     const gate = deferred();
     const other = initializeStore();
