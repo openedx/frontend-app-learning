@@ -11,16 +11,50 @@ export const getSequenceForUnitDeprecatedUrl = (courseId) => {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/`);
   url.searchParams.append('course_id', courseId);
   url.searchParams.append('username', authenticatedUser ? authenticatedUser.username : '');
-  url.searchParams.append('depth', 3);
+  url.searchParams.append('depth', 'all');
   url.searchParams.append('requested_fields', 'children,discussions_url');
 
   return url;
 };
-export async function getSequenceForUnitDeprecated(courseId, unitId) {
+export async function getSequenceForBlockDeprecated(courseId, blockId) {
   const url = getSequenceForUnitDeprecatedUrl(courseId);
   const { data } = await getAuthenticatedHttpClient().get(url.href, {});
-  const parent = Object.values(data.blocks).find(block => block.type === 'sequential' && block.children.includes(unitId));
-  return parent?.id;
+  const blocks = new Map(Object.values(data.blocks || {}).map(block => [block.id, block]));
+  const parents = new Map();
+  const ambiguous = new Set();
+  blocks.forEach(block => {
+    (block.children || []).forEach(childId => {
+      if (parents.has(childId) && parents.get(childId) !== block.id) {
+        ambiguous.add(childId);
+      }
+      parents.set(childId, block.id);
+    });
+  });
+  const visited = new Set();
+  let currentId = blockId;
+  let unitId = null;
+  while (currentId && !visited.has(currentId) && !ambiguous.has(currentId)) {
+    visited.add(currentId);
+    const block = blocks.get(currentId);
+    if (block?.type === 'vertical') {
+      unitId = currentId;
+    }
+    const parent = blocks.get(parents.get(currentId));
+    if (parent?.type === 'sequential') {
+      // Older blocks responses can omit the unit itself, but include its parent.
+      if (unitId || !block) {
+        return { sequenceId: parent.id, unitId: unitId || currentId };
+      }
+      return null;
+    }
+    currentId = parent?.id;
+  }
+  return null;
+}
+
+export async function getSequenceForUnitDeprecated(courseId, unitId) {
+  const resolved = await getSequenceForBlockDeprecated(courseId, unitId);
+  return resolved?.sequenceId;
 }
 
 export async function getLearningSequencesOutline(courseId) {
@@ -32,7 +66,23 @@ export async function getLearningSequencesOutline(courseId) {
 export async function getCourseMetadata(courseId) {
   let url = `${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`;
   url = appendBrowserTimezoneToUrl(url);
-  const metadata = await getAuthenticatedHttpClient().get(url);
+  let metadata;
+  const retryDelays = [500, 1500];
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      metadata = await getAuthenticatedHttpClient().get(url);
+      break;
+    } catch (error) {
+      const status = error?.response?.status;
+      if ((status && status < 500) || attempt >= retryDelays.length) {
+        throw error;
+      }
+      // Only transient transport/server failures qualify. Never retry access denials.
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise(resolve => { setTimeout(resolve, retryDelays[attempt]); });
+    }
+  }
   return normalizeMetadata(metadata);
 }
 
