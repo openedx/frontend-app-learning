@@ -253,3 +253,35 @@ Reporting Security Issues
 =========================
 
 Please do not report security issues in public. Please email security@openedx.org.
+
+Courseware recovery
+===================
+
+Course metadata retries transient network and server failures twice (after
+500 and 1500 milliseconds); access denials are never retried automatically.
+The courseware error view offers Retry through the native data thunks. Fresh
+metadata, outline and course access remain required, and only the latest
+course/sequence request can update the current store. Optional sidebar
+preferences do not delay required bootstrap data. No browser metadata cache
+is introduced.
+
+Concurrent navigation-sidebar outline requests join one pending request per
+course and Redux store. A settled failure releases it for a later retry.
+The deprecated blocks fallback retrieves the complete graph to resolve an
+old leaf link to its sequence and containing vertical unit. Missing, cyclic,
+ambiguous or non-unit ancestry falls back to course home; an obsolete route
+cannot redirect a newer route. Normal unit links and Studio preview retain
+their native routing behavior.
+
+Run the focused native regression suites with::
+
+    npm ci --ignore-scripts --no-audit --no-fund
+    npm test -- --runInBand --coverage=false --runTestsByPath \
+      src/courseware/data/recovery.test.jsx \
+      src/courseware/data/redux.test.js \
+      src/courseware/CoursewareContainer.test.jsx \
+      src/tab-page/TabPage.test.jsx
+
+These tests exercise native HTTP normalization, Redux and mounted courseware
+components with isolated HTTP responses. They do not establish deployed
+browser acceptance.
