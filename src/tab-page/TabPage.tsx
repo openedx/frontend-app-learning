@@ -6,6 +6,7 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { Toast } from '@openedx/paragon';
 import { FooterSlot } from '@edx/frontend-component-footer';
 import HeaderSlot from '../plugin-slots/HeaderSlot';
+import { CoursePathwaysStripSlot } from '../plugin-slots/CoursePathwaysStripSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
 import { getErrorDetail, type RequestError } from '../data/http-error';
@@ -151,6 +152,7 @@ const TabPage = ({
     <TourProvider>
       {shouldRenderContent && renderToast()}
       {shouldRenderContent && renderSrOnlyTourButton()}
+      {shouldRenderContent && <CoursePathwaysStripSlot courseId={courseId} />}
       <HeaderSlot courseOrg={org} courseNumber={number} courseTitle={title} />
       {isLoading && renderLoading()}
       {shouldRenderContent && renderLoadedTabPage()}

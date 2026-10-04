@@ -14,6 +14,10 @@ jest.mock('../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton', (
   return <div data-testid="sr-tour-button" />;
 });
 
+jest.mock('../plugin-slots/CoursePathwaysStripSlot', () => ({
+  CoursePathwaysStripSlot: ({ courseId }) => <div data-testid="CoursePathwaysStripSlot">{courseId}</div>,
+}));
+
 jest.mock('../generic/ToastContext', () => ({
   ...jest.requireActual('../generic/ToastContext'),
   useToast: jest.fn(),
@@ -54,6 +58,19 @@ describe('Tab Page', () => {
   it('displays Loaded Tab Page', () => {
     render(<TabPage {...mockData} />, { wrapWithRouter: true });
     expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
+  });
+
+  it('renders the course pathways strip slot', () => {
+    render(<TabPage {...mockData} />, { wrapWithRouter: true });
+    expect(screen.getByTestId('CoursePathwaysStripSlot')).toHaveTextContent('test-course');
+  });
+
+  it('does not render the course pathways strip slot while the course is loading', () => {
+    render(
+      <TabPage {...mockData} courseStatus={{ metadataQuery: { isPending: true }, tabDataQuery: {} }} />,
+      { wrapWithRouter: true },
+    );
+    expect(screen.queryByTestId('CoursePathwaysStripSlot')).not.toBeInTheDocument();
   });
 
   it('renders the screen-reader tour button on the outline tab', () => {
