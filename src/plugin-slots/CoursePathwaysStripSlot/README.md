@@ -14,6 +14,12 @@ not included in any of the learner's pathways.
 
 ## Example
 
+### Default content
+![Course pathways strip slot with default content](./screenshot_default.png)
+
+### Replaced with a custom strip
+![Course pathways strip slot with a custom strip](./screenshot_custom.png)
+
 The following `env.config.jsx` will replace the default strip with a custom one.
 
 ```js
