@@ -35,7 +35,12 @@ export const useVisiblePathways = (pathways: PathwayData[]) => {
       // A label is visible if it starts early enough to show at least the minimum width
       const limit = available - COUNTER_RESERVED_WIDTH - MIN_TRUNCATED_LABEL_WIDTH;
       const labels = Array.from(measure.children) as HTMLElement[];
-      setVisibleCount(labels.filter((label) => label.offsetLeft <= limit).length);
+      // In RTL the labels start at the right edge, so their start is measured from there
+      const isRtl = getComputedStyle(measure).direction === 'rtl';
+      const startOf = (label: HTMLElement) => (
+        isRtl ? measure.offsetWidth - label.offsetLeft - label.offsetWidth : label.offsetLeft
+      );
+      setVisibleCount(labels.filter((label) => startOf(label) <= limit).length);
     };
 
     calculate();
