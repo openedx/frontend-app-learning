@@ -23,30 +23,35 @@ const mockLayoutProperty = (property: 'clientWidth' | 'offsetWidth' | 'offsetLef
 let resizeCallback: () => void;
 const disconnect = jest.fn();
 
+const observe = jest.fn();
+
 class MockResizeObserver {
   constructor(callback: () => void) {
     resizeCallback = callback;
   }
 
-  observe = jest.fn();
+  observe = observe;
 
   disconnect = disconnect;
 }
 
 interface HarnessProps {
+  items?: PathwayData[];
   containerWidth: number;
   labelOffsets: number[];
   labelsWidth: number;
 }
 
-const Harness = ({ containerWidth, labelOffsets, labelsWidth }: HarnessProps) => {
+const Harness = ({
+  items = pathways, containerWidth, labelOffsets, labelsWidth,
+}: HarnessProps) => {
   const {
     containerRef, measureRef, visiblePathways, hiddenPathways,
-  } = useVisiblePathways(pathways);
+  } = useVisiblePathways(items);
   return (
     <>
       <div ref={containerRef} data-testid="container" data-client-width={containerWidth} />
-      <div ref={measureRef} data-offset-width={labelsWidth}>
+      <div ref={measureRef} data-testid="measure" data-offset-width={labelsWidth}>
         {labelOffsets.map((offset) => <span key={offset} data-offset-left={offset} />)}
       </div>
       <div data-testid="visible">{visiblePathways.map(({ pathway }) => pathway.id).join(',')}</div>
@@ -94,6 +99,41 @@ describe('useVisiblePathways', () => {
 
     expect(screen.getByTestId('visible')).toHaveTextContent('1');
     expect(screen.getByTestId('hidden')).toHaveTextContent('2,3');
+  });
+
+  it('recalculates the split when the labels are resized', () => {
+    renderComponent({ containerWidth: 1000, labelsWidth: 900, labelOffsets: [0, 300, 600] });
+    expect(observe).toHaveBeenCalledWith(screen.getByTestId('measure'));
+    expect(screen.getByTestId('visible')).toHaveTextContent('1,2,3');
+
+    // e.g. the web font loads and every label gets wider
+    const measure = screen.getByTestId('measure');
+    measure.dataset.offsetWidth = '1300';
+    const labels = Array.from(measure.children) as HTMLElement[];
+    [0, 400, 900].forEach((offset, index) => { labels[index].dataset.offsetLeft = String(offset); });
+    act(() => resizeCallback());
+
+    expect(screen.getByTestId('visible')).toHaveTextContent('1,2');
+    expect(screen.getByTestId('hidden')).toHaveTextContent('3');
+  });
+
+  it('recalculates the split when the pathways change but not their count', () => {
+    const props = { containerWidth: 1000, labelsWidth: 900, labelOffsets: [0, 300, 600] };
+    const { rerender } = renderComponent(props);
+    expect(screen.getByTestId('visible')).toHaveTextContent('1,2,3');
+
+    // Same count, but longer names
+    rerender(
+      <Harness
+        {...props}
+        items={['4', '5', '6'].map(buildPathway)}
+        labelsWidth={1300}
+        labelOffsets={[0, 400, 900]}
+      />,
+    );
+
+    expect(screen.getByTestId('visible')).toHaveTextContent('4,5');
+    expect(screen.getByTestId('hidden')).toHaveTextContent('6');
   });
 
   it('shows every pathway when ResizeObserver is not available', () => {

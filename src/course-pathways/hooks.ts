@@ -41,8 +41,10 @@ export const useVisiblePathways = (pathways: PathwayData[]) => {
     calculate();
     const observer = new ResizeObserver(calculate);
     observer.observe(container);
+    // The labels change width without resizing the container, e.g. when the web font loads
+    observer.observe(measure);
     return () => observer.disconnect();
-  }, [pathways.length]);
+  }, [pathways]);
 
   return {
     containerRef,
