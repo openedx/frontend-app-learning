@@ -1,7 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { mergeConfig } from '@edx/frontend-platform';
-import { initializeTestStore, render, screen } from '@src/setupTest';
+import { mockCourseRequests, render, screen } from '@src/setupTest';
 import SidebarState from '@src/tests/SidebarState';
 import { getEnabledWidgets } from './defaultWidgets';
 import { SidebarProvider } from './SidebarContext';
@@ -67,7 +67,7 @@ const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
 
 describe('SidebarTriggers', () => {
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
   });
 
   beforeEach(() => {
@@ -166,7 +166,7 @@ describe('SidebarTriggers', () => {
 
 describe('SidebarTriggers - external widget integration', () => {
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
   });
 
   afterEach(() => {

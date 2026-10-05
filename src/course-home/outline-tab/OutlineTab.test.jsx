@@ -74,11 +74,11 @@ describe('Outline Tab', () => {
     axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
   }
 
-  async function fetchAndRender(path = '', { renderStore = store, waitForLoaded = true } = {}) {
+  async function fetchAndRender(path = '', { waitForLoaded = true } = {}) {
     const search = path.includes('?') ? path.slice(path.indexOf('?')) : '';
-    const queryClient = createTestQueryClient(renderStore);
+    const queryClient = createTestQueryClient();
     await act(async () => render(
-      <AppProvider store={renderStore} wrapWithRouter={false}>
+      <AppProvider store={store} wrapWithRouter={false}>
         <MemoryRouter initialEntries={[`/course/${courseId}/home${search}`]}>
           <QueryClientProvider client={queryClient}>
             <UserMessagesProvider>
@@ -125,12 +125,11 @@ describe('Outline Tab', () => {
 
   describe('Access denied', () => {
     it('waits for the outline data before rendering for a denied learner (no crash)', async () => {
-      const testStore = initializeStore();
       setMetadata({ course_access: { has_access: false, error_code: 'authentication_required' }, is_enrolled: false });
       let resolveOutline;
       axiosMock.onGet(outlineUrl).reply(() => new Promise((resolve) => { resolveOutline = resolve; }));
 
-      const queryClient = await fetchAndRender('', { renderStore: testStore, waitForLoaded: false });
+      const queryClient = await fetchAndRender('', { waitForLoaded: false });
 
       await waitFor(() => expect(queryClient.getQueryData(courseHomeQueryKeys.metadata(courseId))).toBeDefined());
       expect(screen.getByRole('status')).toBeInTheDocument();

@@ -7,7 +7,7 @@ import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import {
-  createTestQueryClient, initializeMockApp, getTestStoreIds, initializeTestStore, seedQueryData,
+  createTestQueryClient, initializeMockApp, mockCourseRequests, seedQueryData,
 } from '@src/setupTest';
 import { getCourseOutline } from '@src/courseware/data/api';
 import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
@@ -19,15 +19,13 @@ initializeMockApp();
 
 describe('<SidebarSequence />', () => {
   let courseId;
-  let store;
   let outline;
   let sequence;
   let unit;
   const sequenceDescription = 'sequence test description';
 
   const initTestData = async (options) => {
-    store = await initializeTestStore(options);
-    courseId = getTestStoreIds(store).courseId;
+    courseId = mockCourseRequests(options).courseId;
     outline = await getCourseOutline(courseId);
     let activeSequenceId = '';
     [activeSequenceId] = Object.keys(outline.sequences);
@@ -37,11 +35,11 @@ describe('<SidebarSequence />', () => {
   };
 
   function renderWithProvider(props = {}) {
-    const queryClient = createTestQueryClient(store);
+    const queryClient = createTestQueryClient();
     seedQueryData(queryClient, coursewareQueryKeys.courseOutline(courseId), outline);
     seedQueryData(queryClient, coursewareQueryKeys.sidebarToggles(courseId), { enableCompletionTracking: true });
     const { container } = render(
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <QueryClientProvider client={queryClient}>
           <IntlProvider locale="en">
             <MemoryRouter initialEntries={[`/course/${courseId}`]}>

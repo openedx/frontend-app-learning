@@ -6,9 +6,10 @@ import { Factory } from 'rosie';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import {
-  authenticatedUser, createTestQueryClient, fireEvent, initializeMockApp, getTestStoreIds, initializeTestStore, render,
+  authenticatedUser, createTestQueryClient, fireEvent, initializeMockApp, mockCourseRequests, render,
   screen, seedQueryData, waitFor,
 } from '../../../../setupTest';
+import { getCourseHomeCourseMetadata } from '../../../../course-home/data/api';
 import { courseHomeQueryKeys } from '../../../../course-home/data/queryKeys';
 import HonorCode from './HonorCode';
 
@@ -22,30 +23,30 @@ jest.mock('react-router-dom', () => ({
 
 describe('Honor Code', () => {
   let axiosMock;
-  let store;
+  let courseHomeMeta;
   let honorCodePostUrl;
   const mockData = {};
 
-  async function setupStoreState(courseHomeMetaOptions) {
+  async function setupCourse(courseHomeMetaOptions) {
     if (courseHomeMetaOptions) {
       const courseHomeMetadata = Factory.build('courseHomeMetadata', courseHomeMetaOptions);
-      store = await initializeTestStore({ courseHomeMetadata });
+      mockData.courseId = mockCourseRequests({ courseHomeMetadata }).courseId;
     } else {
-      store = await initializeTestStore();
+      mockData.courseId = mockCourseRequests().courseId;
     }
+    courseHomeMeta = await getCourseHomeCourseMetadata(mockData.courseId);
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    mockData.courseId = getTestStoreIds(store).courseId;
     honorCodePostUrl = `${getConfig().LMS_BASE_URL}/api/agreements/v1/integrity_signature/${mockData.courseId}`;
   }
 
   // The suite's own axios adapter replaces the one mocking the metadata endpoint, so the component
-  // reads the course metadata from a seeded query rather than a mounted fetch.
+  // reads the course metadata, fetched before the swap, from a seeded query rather than a mounted fetch.
   function renderHonorCode() {
     const queryClient = createTestQueryClient();
     seedQueryData(
       queryClient,
       courseHomeQueryKeys.metadata(mockData.courseId),
-      store.getState().models.courseHomeMeta[mockData.courseId],
+      courseHomeMeta,
     );
     return render(
       <QueryClientProvider client={queryClient}>
@@ -56,7 +57,7 @@ describe('Honor Code', () => {
   }
 
   it('cancel button links to course home ', async () => {
-    await setupStoreState();
+    await setupCourse();
     renderHonorCode();
     const cancelButton = screen.getByText('Cancel');
     fireEvent.click(cancelButton);
@@ -64,7 +65,7 @@ describe('Honor Code', () => {
   });
 
   it('calls to save integrity_signature when agreeing', async () => {
-    await setupStoreState({ username: authenticatedUser.username });
+    await setupCourse({ username: authenticatedUser.username });
     renderHonorCode();
     const agreeButton = screen.getByText('I agree');
     fireEvent.click(agreeButton);
@@ -75,7 +76,7 @@ describe('Honor Code', () => {
   });
 
   it('still calls to save integrity_signature if masquerading', async () => {
-    await setupStoreState(
+    await setupCourse(
       {
         is_staff: false,
         original_user_is_staff: true,
@@ -92,7 +93,7 @@ describe('Honor Code', () => {
   });
 
   it('will not call to save integrity_signature if masquerading a specific student', async () => {
-    await setupStoreState(
+    await setupCourse(
       {
         is_staff: false,
         original_user_is_staff: true,

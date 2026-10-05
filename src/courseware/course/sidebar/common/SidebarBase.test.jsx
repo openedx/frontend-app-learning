@@ -2,7 +2,7 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { breakpoints } from '@openedx/paragon';
 import {
-  fireEvent, initializeTestStore, render, screen,
+  fireEvent, mockCourseRequests, render, screen,
 } from '@src/setupTest';
 import SidebarState from '@src/tests/SidebarState';
 import { SidebarProvider } from '../SidebarContext';
@@ -47,7 +47,7 @@ describe('SidebarBase', () => {
   const { innerWidth: originalInnerWidth } = window;
 
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
   });
 
   beforeEach(() => {

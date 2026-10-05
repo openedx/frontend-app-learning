@@ -6,12 +6,10 @@ import {
 import { useCoursewareSearchFeatureFlag, useCoursewareSearchParams } from '../course-home/courseware-search/hooks';
 import { useCoursewareSearch } from '../course-home/courseware-search/CoursewareSearchContext';
 import { CourseTabsNavigation } from './index';
-import initializeStore from '../store';
 
 jest.mock('../course-home/courseware-search/hooks');
 jest.mock('../course-home/courseware-search/CoursewareSearchContext');
 
-const mockDispatch = jest.fn();
 const coursewareSearch = {
   query: '',
   filter: '',
@@ -20,15 +18,9 @@ const coursewareSearch = {
   clearSearchParams: jest.fn(),
 };
 
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
-}));
-
 function renderComponent(props = { tabs: [] }) {
-  const store = initializeStore();
   const { container } = render(
-    <AppProvider store={store}>
+    <AppProvider>
       <CourseTabsNavigation {...props} />
     </AppProvider>,
   );

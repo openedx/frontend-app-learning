@@ -4,7 +4,7 @@ import { camelCaseObject } from '@edx/frontend-platform';
 import { getLoggingService } from '@edx/frontend-platform/logging';
 import { QueryClientProvider } from '@tanstack/react-query';
 import {
-  act, createTestQueryClient, initializeTestStore, render, screen, seedQueryData,
+  act, createTestQueryClient, mockCourseRequests, render, screen, seedQueryData,
 } from '../setupTest';
 import { courseHomeQueryKeys } from '../course-home/data/queryKeys';
 import LoadedTabPage from './LoadedTabPage';
@@ -38,7 +38,7 @@ describe('Loaded Tab Page', () => {
   }
 
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchSequence: true });
+    mockCourseRequests();
   });
 
   it('renders correctly', () => {

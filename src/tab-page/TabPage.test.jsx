@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  initializeTestStore, render, screen,
+  mockCourseRequests, render, screen,
 } from '../setupTest';
 import { TabPage } from './index';
 import { useToast } from '../generic/ToastContext';
@@ -34,7 +34,7 @@ describe('Tab Page', () => {
   };
 
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
   });
 
   beforeEach(() => {

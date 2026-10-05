@@ -12,7 +12,6 @@ import { buildSimpleCourseBlocks } from '../../shared/data/__factories__/courseB
 import { buildOutlineFromBlocks } from './__factories__/learningSequencesOutline.factory';
 import { getResponseStatus } from '../../data/http-error';
 import { createTestQueryClient, initializeMockApp } from '../../setupTest';
-import initializeStore from '../../store';
 import { normalizeMinimalCourseOutline } from './minimalCourseOutline';
 import { normalizeCourseNavigationOutline } from './courseNavigationOutline';
 import { normalizeSequenceMetadata } from './sequenceMetadata';
@@ -409,12 +408,11 @@ describe('courseware apiHooks — useCoursewareOutlineSidebarToggles', () => {
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    loggingService.logError.mockReset();
   });
 
   const renderToggles = () => {
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={createTestQueryClient(initializeStore())}>{children}</QueryClientProvider>
+      <QueryClientProvider client={createTestQueryClient()}>{children}</QueryClientProvider>
     );
     return renderHook(() => useCoursewareOutlineSidebarToggles(courseId), { wrapper });
   };
@@ -428,13 +426,12 @@ describe('courseware apiHooks — useCoursewareOutlineSidebarToggles', () => {
     expect(result.current.data).toEqual({ enableCompletionTracking: true });
   });
 
-  it('logs the error and leaves the flag unset on failure', async () => {
+  it('leaves the flag unset on failure', async () => {
     axiosMock.onGet(togglesUrl).networkError();
 
     const { result } = renderToggles();
 
     await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(loggingService.logError).toHaveBeenCalled();
     expect(result.current.data).toBeUndefined();
   });
 });
@@ -451,9 +448,7 @@ describe('courseware apiHooks — discussionTopicsQuery', () => {
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    // The app QueryCache (whose onError logs) still takes a store until #1977 removes the bridge.
-    queryClient = createTestQueryClient(initializeStore());
-    loggingService.logError.mockReset();
+    queryClient = createTestQueryClient();
   });
 
   it('loads openedx-provider topics that have a usage key', async () => {
@@ -480,12 +475,11 @@ describe('courseware apiHooks — discussionTopicsQuery', () => {
     expect(queryClient.getQueryData(topicsQueryKey)).toEqual([]);
   });
 
-  it('logs the error and caches nothing when the config request fails', async () => {
+  it('caches nothing when the config request fails', async () => {
     axiosMock.onGet(configUrl).networkError();
 
     await expect(queryClient.query(discussionTopicsQuery(courseId))).rejects.toThrow();
 
-    expect(loggingService.logError).toHaveBeenCalled();
     expect(queryClient.getQueryData(topicsQueryKey)).toBeUndefined();
   });
 });
