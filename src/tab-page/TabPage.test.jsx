@@ -4,6 +4,7 @@ import {
 } from '../setupTest';
 import { TabPage } from './index';
 import { useToast } from '../generic/ToastContext';
+import { CoursePathwaysStripSlot } from '../plugin-slots/CoursePathwaysStripSlot';
 
 // We should not test `LoadedTabPage` page here, as `TabPage` is used only for passing `passthroughProps`.
 jest.mock('./LoadedTabPage', () => function () {
@@ -15,7 +16,7 @@ jest.mock('../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton', (
 });
 
 jest.mock('../plugin-slots/CoursePathwaysStripSlot', () => ({
-  CoursePathwaysStripSlot: ({ courseId }) => <div data-testid="CoursePathwaysStripSlot">{courseId}</div>,
+  CoursePathwaysStripSlot: jest.fn(() => <div data-testid="CoursePathwaysStripSlot" />),
 }));
 
 jest.mock('../generic/ToastContext', () => ({
@@ -62,7 +63,8 @@ describe('Tab Page', () => {
 
   it('renders the course pathways strip slot', () => {
     render(<TabPage {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByTestId('CoursePathwaysStripSlot')).toHaveTextContent('test-course');
+    expect(screen.getByTestId('CoursePathwaysStripSlot')).toBeInTheDocument();
+    expect(CoursePathwaysStripSlot).toHaveBeenCalledWith({ courseId: 'test-course' }, expect.anything());
   });
 
   it('does not render the course pathways strip slot while the course is loading', () => {
