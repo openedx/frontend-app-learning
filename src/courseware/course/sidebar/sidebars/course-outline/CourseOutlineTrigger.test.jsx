@@ -81,6 +81,24 @@ describe('<CourseOutlineTrigger />', () => {
     expect(currentSidebar()).toBe(outlineSidebarId);
   });
 
+  it('exposes aria-expanded=false when the outline sidebar is collapsed', async () => {
+    await initTestStore();
+    renderWithProvider({ isMobileView: true });
+
+    expect(currentSidebar()).toBe('null');
+    expect(toggleButton()).toHaveAttribute('aria-expanded', 'false');
+    expect(toggleButton()).toHaveAttribute('aria-controls', 'outline-sidebar-outline');
+  });
+
+  it('exposes aria-expanded=true when the outline sidebar is open', async () => {
+    await initTestStore();
+    window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify(outlineSidebarId));
+    renderWithProvider({ isMobileView: true });
+
+    expect(currentSidebar()).toBe(outlineSidebarId);
+    expect(toggleButton()).toHaveAttribute('aria-expanded', 'true');
+  });
+
   it('changes current sidebar value on click', async () => {
     const user = userEvent.setup();
     await initTestStore();
