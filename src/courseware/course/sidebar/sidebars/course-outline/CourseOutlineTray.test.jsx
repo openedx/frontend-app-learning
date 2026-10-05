@@ -94,12 +94,12 @@ describe('<CourseOutlineTray />', () => {
   });
 
   it('exposes aria-expanded=true on the in-tray toggle button', async () => {
-    await initTestStore();
+    await initTestData();
     renderWithProvider();
+    await waitForOutlineLoaded();
 
-    const collapseBtn = screen.getByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage });
-    expect(collapseBtn).toHaveAttribute('aria-expanded', 'true');
-    expect(collapseBtn).toHaveAttribute('aria-controls', 'outline-sidebar-outline');
+    expect(collapseButton()).toHaveAttribute('aria-expanded', 'true');
+    expect(collapseButton()).toHaveAttribute('aria-controls', 'outline-sidebar-outline');
   });
 
   it('collapses sidebar correctly when toggle button is clicked', async () => {

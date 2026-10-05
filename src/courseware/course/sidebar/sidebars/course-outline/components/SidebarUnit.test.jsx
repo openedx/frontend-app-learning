@@ -222,7 +222,7 @@ describe('<SidebarUnit />', () => {
 
     describe('aria-current', () => {
       it('marks the active unit link with aria-current="page"', async () => {
-        await initTestStore();
+        await initTestData();
         renderWithProvider({ unit: { ...unit }, activeUnitId: unit.id });
 
         const unitLink = screen.getByText(unit.title).closest('a');
@@ -230,7 +230,7 @@ describe('<SidebarUnit />', () => {
       });
 
       it('does not set aria-current on a non-active unit link', async () => {
-        await initTestStore();
+        await initTestData();
         renderWithProvider({ unit: { ...unit }, activeUnitId: 'some-other-unit-id' });
 
         const unitLink = screen.getByText(unit.title).closest('a');
