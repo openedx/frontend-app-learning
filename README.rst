@@ -157,6 +157,12 @@ ENABLE_JUMPNAV
   This feature flag is slated to be removed as jumpnav becomes default. Follow the progress of this ticket here:
   https://openedx.atlassian.net/browse/TNL-8678
 
+ENABLE_PATHWAY_PILOT_UI
+  Enables the pathways pilot UI: the strip above the course header that lists the pathways, in which
+  the learner is enrolled, that include the course. Disabled by default; set it to 'true' to enable it.
+  When disabled, the pathways are not requested and the ``org.openedx.frontend.learning.course_pathways_strip.v1``
+  plugin slot is not rendered.
+
 SOCIAL_UTM_MILESTONE_CAMPAIGN
   This value is passed as the ``utm_campaign`` parameter for social-share
   links when celebrating learning milestones in the course. Optional.

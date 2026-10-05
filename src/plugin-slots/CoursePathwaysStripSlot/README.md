@@ -12,6 +12,8 @@ that include the current course and in which the learner is enrolled. When the p
 strip, the remaining ones are shown in a "+N" popover. The default strip is not rendered when the course is
 not included in any of the learner's pathways.
 
+The slot is only rendered when the `ENABLE_PATHWAY_PILOT_UI` configuration flag is enabled.
+
 ## Example
 
 ### Default content
