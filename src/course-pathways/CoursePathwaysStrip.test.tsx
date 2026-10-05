@@ -27,7 +27,7 @@ const mockUseVisiblePathways = useVisiblePathways as jest.MockedFunction<typeof 
 
 const pathways = [dataEngineering, machineLearning, loremIpsum];
 
-const mockPathways = (data: PathwayData[] | undefined) => {
+const mockPathways = (data?: PathwayData[]) => {
   mockUseCoursePathways.mockReturnValue({ data });
 };
 
