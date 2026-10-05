@@ -5,14 +5,14 @@ import { Icon } from '@openedx/paragon';
 import { CheckCircleOutline, CheckCircle } from '@openedx/paragon/icons';
 
 import EffortEstimate from '../../../shared/effort-estimate';
-import type { OutlineSequence } from '../../data/apiHooks';
+import type { CourseHomeOutlineSequence } from '../../data/courseHomeOutline';
 import messages from '../messages';
 
 interface Props {
   complete: boolean;
   showLink: boolean;
   title: string;
-  sequence: OutlineSequence;
+  sequence: CourseHomeOutlineSequence;
   id: string;
 }
 

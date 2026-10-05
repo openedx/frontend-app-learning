@@ -245,8 +245,8 @@ describe('course-home apiHooks', () => {
       const { result } = renderHook(() => useProgressTabData('course-1'), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(result.current.data.studioUrl).toEqual('http://studio.edx.org/settings/grading/course-v1:edX+Test+run');
-      expect(result.current.data.gradesFeatureIsFullyLocked).toBe(false);
+      expect(result.current.data?.studioUrl).toEqual('http://studio.edx.org/settings/grading/course-v1:edX+Test+run');
+      expect(result.current.data?.gradesFeatureIsFullyLocked).toBe(false);
     });
 
     it('appends the targetUserId to the request URL', async () => {

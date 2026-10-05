@@ -1,14 +1,49 @@
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { logInfo } from '@edx/frontend-platform/logging';
+
+import { getResponseStatus } from '@src/data/http-error';
+import type { TabMetadata } from '@src/course-tabs/utils';
 import { appendBrowserTimezoneToUrl } from '../../utils';
+import { type CourseHomeOutline, normalizeCourseHomeOutline } from './courseHomeOutline';
+
+// The result types below name only the fields this repo's readers use; each endpoint returns more,
+// left reachable as `unknown` so plugins importing the hooks are not limited to our list. The full
+// shapes are openedx-platform's to describe — a copy of them here would drift — so they stay partial
+// until the platform ships types we can import.
+
+// GET /api/course_home/v1/course_metadata/
+export interface CourseHomeMeta {
+  canViewCertificate: boolean;
+  celebrations: {
+    streakLengthToCelebrate?: number | null;
+    streakDiscountEnabled?: boolean;
+  } | null;
+  courseAccess: { hasAccess: boolean };
+  courseModes: { slug: string; name: string }[];
+  hasCourseAuthorAccess: boolean;
+  isEnrolled: boolean;
+  // Computed here, not sent by the platform.
+  isMasquerading: boolean;
+  isSelfPaced: boolean;
+  isStaff: boolean;
+  number: string;
+  org: string;
+  originalUserIsStaff: boolean;
+  start: string;
+  tabs: TabMetadata[];
+  title: string;
+  username: string;
+  userTimezone: string | null;
+  verifiedMode: Record<string, unknown> | null;
+  [key: string]: unknown;
+}
 
 /**
  * Tweak the metadata for consistency
  * @param metadata the data to normalize
  * @returns {Object} The normalized metadata
  */
-function normalizeCourseHomeCourseMetadata(metadata) {
+function normalizeCourseHomeCourseMetadata(metadata: unknown): CourseHomeMeta {
   const data = camelCaseObject(metadata);
   return {
     ...data,
@@ -16,102 +51,54 @@ function normalizeCourseHomeCourseMetadata(metadata) {
   };
 }
 
-export function normalizeOutlineBlocks(courseId, blocks) {
-  const models = {
-    courses: {},
-    sections: {},
-    sequences: {},
-  };
-  Object.values(blocks).forEach(block => {
-    switch (block.type) {
-      case 'course':
-        models.courses[block.id] = {
-          id: courseId,
-          title: block.display_name,
-          sectionIds: block.children || [],
-          hasScheduledContent: block.has_scheduled_content,
-        };
-        break;
-
-      case 'chapter':
-        models.sections[block.id] = {
-          complete: block.complete,
-          id: block.id,
-          title: block.display_name,
-          resumeBlock: block.resume_block,
-          sequenceIds: block.children || [],
-          hideFromTOC: block.hide_from_toc,
-        };
-        break;
-
-      case 'sequential':
-        models.sequences[block.id] = {
-          complete: block.complete,
-          description: block.description,
-          due: block.due,
-          effortActivities: block.effort_activities,
-          effortTime: block.effort_time,
-          icon: block.icon,
-          id: block.id,
-          // The presence of a URL for the sequence indicates that we want this sequence to be a clickable
-          // link in the outline (even though we ignore the given url and use an internal <Link> to ourselves).
-          showLink: !!block.lms_web_url,
-          title: block.display_name,
-          hideFromTOC: block.hide_from_toc,
-          navigationDisabled: block.navigation_disabled,
-        };
-        break;
-
-      default:
-        logInfo(`Unexpected course block type: ${block.type} with ID ${block.id}.  Expected block types are course, chapter, and sequential.`);
-    }
-  });
-
-  // Next go through each list and use their child lists to decorate those children with a
-  // reference back to their parent.
-  Object.values(models.courses).forEach(course => {
-    if (Array.isArray(course.sectionIds)) {
-      course.sectionIds.forEach(sectionId => {
-        const section = models.sections[sectionId];
-        section.courseId = course.id;
-      });
-    }
-  });
-
-  Object.values(models.sections).forEach(section => {
-    if (Array.isArray(section.sequenceIds)) {
-      section.sequenceIds.forEach(sequenceId => {
-        if (sequenceId in models.sequences) {
-          models.sequences[sequenceId].sectionId = section.id;
-        } else {
-          logInfo(`Section ${section.id} has child block ${sequenceId}, but that block is not in the list of sequences.`);
-        }
-      });
-    }
-  });
-
-  return models;
-}
-
-export async function getCourseHomeCourseMetadata(courseId) {
+export async function getCourseHomeCourseMetadata(courseId: string): Promise<CourseHomeMeta> {
   let url = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   url = appendBrowserTimezoneToUrl(url);
   const { data } = await getAuthenticatedHttpClient().get(url);
   return normalizeCourseHomeCourseMetadata(data);
 }
 
+// One entry of a tab's `course_date_blocks` (the platform's `DateSummarySerializer`), on the dates tab
+// and in the outline's dates widget.
+export interface CourseHomeDateBlock {
+  assignmentType: string | null;
+  complete: boolean | null;
+  date: string;
+  dateType: string;
+  description: string;
+  extraInfo: string | null;
+  learnerHasAccess: boolean;
+  link: string;
+  title: string;
+  [key: string]: unknown;
+}
+
+// GET /api/course_home/v1/dates/. Every field is optional because the 401 and 403 branches return `{}`.
+export interface CourseHomeDates {
+  courseDateBlocks?: CourseHomeDateBlock[];
+  datesBannerInfo?: {
+    contentTypeGatingEnabled: boolean;
+    missedDeadlines: boolean;
+    missedGatedContent: boolean;
+    verifiedUpgradeLink: string | null;
+    [key: string]: unknown;
+  };
+  hasEnded?: boolean;
+  [key: string]: unknown;
+}
+
 // For debugging purposes, you might like to see a fully loaded dates tab.
 // Just uncomment the next few lines and the immediate 'return' in the function below
 // import { Factory } from 'rosie';
 // import './__factories__';
-export async function getDatesTabData(courseId) {
+export async function getDatesTabData(courseId: string): Promise<CourseHomeDates> {
   // return camelCaseObject(Factory.build('datesTabData'));
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/dates/${courseId}`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return camelCaseObject(data);
   } catch (error) {
-    const httpErrorStatus = error?.response?.status;
+    const httpErrorStatus = getResponseStatus(error);
     if (httpErrorStatus === 401) {
       // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
       // courseAccess in the metadata call, so just ignore this status for now.
@@ -127,7 +114,81 @@ export async function getDatesTabData(courseId) {
   }
 }
 
-export async function getProgressTabData(courseId, targetUserId) {
+export interface CourseHomeProgressSubsectionScore {
+  assignmentType: string | null;
+  blockKey: string;
+  displayName: string;
+  hasGradedAssignment: boolean;
+  learnerHasAccess: boolean;
+  numPointsEarned: number;
+  numPointsPossible: number;
+  override: { system: string; reason: string } | null;
+  problemScores: { earned: number; possible: number }[];
+  showGrades: boolean;
+  url: string | null;
+  [key: string]: unknown;
+}
+
+export interface CourseHomeProgressSectionScore {
+  displayName: string;
+  subsections: CourseHomeProgressSubsectionScore[];
+  [key: string]: unknown;
+}
+
+export interface CourseHomeProgressAssignmentTypeGradeSummary {
+  averageGrade: number;
+  hasHiddenContribution: string;
+  lastGradePublishDate: string | null;
+  numDroppable: number;
+  shortLabel: string;
+  type: string;
+  weight: number;
+  weightedGrade: number;
+  [key: string]: unknown;
+}
+
+// GET /api/course_home/v1/progress/. Every field is optional because the 401 and 403 branches return `{}`.
+export interface CourseHomeProgress {
+  assignmentTypeGradeSummary?: CourseHomeProgressAssignmentTypeGradeSummary[];
+  certificateData?: {
+    certStatus: string;
+    certWebViewUrl: string | null;
+    certificateAvailableDate: string | null;
+    [key: string]: unknown;
+  } | null;
+  completionSummary?: { completeCount: number; incompleteCount: number; lockedCount: number };
+  courseGrade?: { isPassing: boolean; letterGrade: string | null; percent: number };
+  creditCourseRequirements?: {
+    eligibilityStatus: string;
+    requirements: {
+      criteria: unknown;
+      displayName: string;
+      namespace: string;
+      order: number;
+      status: string;
+      [key: string]: unknown;
+    }[];
+    [key: string]: unknown;
+  } | null;
+  disableProgressGraph?: boolean;
+  end?: string | null;
+  enrollmentMode?: string | null;
+  finalGrades?: number;
+  gradingPolicy?: { gradeRange: Record<string, number>; [key: string]: unknown };
+  hasScheduledContent?: boolean | null;
+  sectionScores?: CourseHomeProgressSectionScore[];
+  studioUrl?: string | null;
+  userHasPassingGrade?: boolean;
+  username?: string;
+  verificationData?: { link: string | null; status: string | null; [key: string]: unknown };
+  verifiedMode?: { upgradeUrl: string; [key: string]: unknown } | null;
+  // Computed here, not sent by the platform.
+  gradesFeatureIsFullyLocked?: boolean;
+  gradesFeatureIsPartiallyLocked?: boolean;
+  [key: string]: unknown;
+}
+
+export async function getProgressTabData(courseId: string, targetUserId?: string): Promise<CourseHomeProgress> {
   let url = `${getConfig().LMS_BASE_URL}/api/course_home/progress/${courseId}`;
 
   // If targetUserId is passed in, we will get the progress page data
@@ -167,7 +228,7 @@ export async function getProgressTabData(courseId, targetUserId) {
 
     return camelCasedData;
   } catch (error) {
-    const httpErrorStatus = error?.response?.status;
+    const httpErrorStatus = getResponseStatus(error);
     if (httpErrorStatus === 401) {
       // The backend sends this for unenrolled and unauthenticated learners, but we handle those cases by examining
       // courseAccess in the metadata call, so just ignore this status for now.
@@ -183,7 +244,19 @@ export async function getProgressTabData(courseId, targetUserId) {
   }
 }
 
-export async function getProctoringInfoData(courseId, username) {
+// The onboarding-status endpoint's raw response (snake_case, not camel-cased): edx-proctoring's
+// `user_onboarding/status`, or edx-exams' `onboarding`. Every field is optional because the 404 branch
+// returns `{}`.
+export interface ProctoringInfo {
+  expiration_date?: string | null;
+  onboarding_link?: string;
+  onboarding_past_due?: boolean;
+  onboarding_release_date?: string;
+  onboarding_status?: string;
+  [key: string]: unknown;
+}
+
+export async function getProctoringInfoData(courseId: string, username?: string): Promise<ProctoringInfo> {
   let url;
   if (!getConfig().EXAMS_BASE_URL) {
     url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
@@ -200,7 +273,7 @@ export async function getProctoringInfoData(courseId, username) {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return data;
   } catch (error) {
-    const { httpErrorStatus } = error && error.customAttributes;
+    const httpErrorStatus = getResponseStatus(error);
     if (httpErrorStatus === 404) {
       return {};
     }
@@ -208,13 +281,20 @@ export async function getProctoringInfoData(courseId, username) {
   }
 }
 
-export async function getLiveTabIframe(courseId) {
+// GET /api/course_live/iframe/, raw (not camel-cased). `iframe` is absent when the live tab is disabled
+// for the course (the view answers 200 with a `developer_message`), and the 404 branch returns `{}`.
+export interface CourseLiveIframe {
+  iframe?: string;
+  [key: string]: unknown;
+}
+
+export async function getLiveTabIframe(courseId: string): Promise<CourseLiveIframe> {
   const url = `${getConfig().LMS_BASE_URL}/api/course_live/iframe/${courseId}/`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return data;
   } catch (error) {
-    const { httpErrorStatus } = error && error.customAttributes;
+    const httpErrorStatus = getResponseStatus(error);
     if (httpErrorStatus === 404) {
       return {};
     }
@@ -222,7 +302,7 @@ export async function getLiveTabIframe(courseId) {
   }
 }
 
-export function getTimeOffsetMillis(headerDate, requestTime, responseTime) {
+export function getTimeOffsetMillis(headerDate: string | undefined, requestTime: number, responseTime: number): number {
   // Time offset computation should move down into the HttpClient wrapper to maintain a global time correction reference
   // Requires 'Access-Control-Expose-Headers: Date' on the server response per https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#access-control-expose-headers
 
@@ -237,14 +317,14 @@ export function getTimeOffsetMillis(headerDate, requestTime, responseTime) {
   return timeOffsetMillis;
 }
 
-export async function getOutlineTabData(courseId) {
+export async function getOutlineTabData(courseId: string): Promise<CourseHomeOutline | Record<string, never>> {
   const url = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   const requestTime = Date.now();
   let tabData;
   try {
     tabData = await getAuthenticatedHttpClient().get(url);
   } catch (error) {
-    const httpErrorStatus = error?.response?.status;
+    const httpErrorStatus = getResponseStatus(error);
     if (httpErrorStatus === 403) {
       // The backend sends this if there is a course access error and the user should be redirected. The redirect
       // info is included in the course metadata request and will be handled there as long as this call returns
@@ -261,50 +341,18 @@ export async function getOutlineTabData(courseId) {
     headers,
   } = tabData;
 
-  const accessExpiration = camelCaseObject(data.access_expiration);
-  const certData = camelCaseObject(data.cert_data);
-  const courseBlocks = data.course_blocks ? normalizeOutlineBlocks(courseId, data.course_blocks.blocks) : {};
-  const courseGoals = camelCaseObject(data.course_goals);
-  const courseTools = camelCaseObject(data.course_tools);
-  const datesBannerInfo = camelCaseObject(data.dates_banner_info);
-  const datesWidget = camelCaseObject(data.dates_widget);
-  const enableProctoredExams = data.enable_proctored_exams;
-  const enrollAlert = camelCaseObject(data.enroll_alert);
-  const enrollmentMode = data.enrollment_mode;
-  const handoutsHtml = data.handouts_html;
-  const hasScheduledContent = data.has_scheduled_content;
-  const hasEnded = data.has_ended;
-  const offer = camelCaseObject(data.offer);
-  const resumeCourse = camelCaseObject(data.resume_course);
   const timeOffsetMillis = getTimeOffsetMillis(headers && headers.date, requestTime, responseTime);
-  const userHasPassingGrade = data.user_has_passing_grade;
-  const verifiedMode = camelCaseObject(data.verified_mode);
-  const welcomeMessageHtml = data.welcome_message_html || '';
-
-  return {
-    accessExpiration,
-    certData,
-    courseBlocks,
-    courseGoals,
-    courseTools,
-    datesBannerInfo,
-    datesWidget,
-    enrollAlert,
-    enrollmentMode,
-    enableProctoredExams,
-    handoutsHtml,
-    hasScheduledContent,
-    hasEnded,
-    offer,
-    resumeCourse,
-    timeOffsetMillis, // This should move to a global time correction reference
-    userHasPassingGrade,
-    verifiedMode,
-    welcomeMessageHtml,
-  };
+  return normalizeCourseHomeOutline(courseId, data, timeOffsetMillis);
 }
 
-export async function postCourseDeadlines(courseId, model) {
+// The body of the reset-deadlines and post-event responses, shown as a toast.
+export interface CallToActionResponse {
+  header: string;
+  link: string;
+  link_text: string;
+}
+
+export async function postCourseDeadlines(courseId: string, model: string): Promise<{ data: CallToActionResponse }> {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
   return getAuthenticatedHttpClient().post(url.href, {
     course_key: courseId,
@@ -312,7 +360,11 @@ export async function postCourseDeadlines(courseId, model) {
   });
 }
 
-export async function postWeeklyLearningGoal(courseId, daysPerWeek, subscribedToReminders) {
+export async function postWeeklyLearningGoal(
+  courseId: string,
+  daysPerWeek: number,
+  subscribedToReminders: boolean,
+): Promise<unknown> {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`);
   return getAuthenticatedHttpClient().post(url.href, {
     course_id: courseId,
@@ -321,17 +373,25 @@ export async function postWeeklyLearningGoal(courseId, daysPerWeek, subscribedTo
   });
 }
 
-export async function postDismissWelcomeMessage(courseId) {
+export async function postDismissWelcomeMessage(courseId: string): Promise<void> {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/dismiss_welcome_message`);
   await getAuthenticatedHttpClient().post(url.href, { course_id: courseId });
 }
 
-export async function postRequestCert(courseId) {
+export async function postRequestCert(courseId: string): Promise<void> {
   const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/generate_user_cert`);
   await getAuthenticatedHttpClient().post(url.href);
 }
 
-export async function executePostFromPostEvent(postData, researchEventData) {
+export interface PostEventData {
+  url: string;
+  bodyParams: { courseId: string };
+}
+
+export async function executePostFromPostEvent(
+  postData: PostEventData,
+  researchEventData: unknown,
+): Promise<{ data: CallToActionResponse }> {
   const url = new URL(postData.url);
   return getAuthenticatedHttpClient().post(url.href, {
     course_key: postData.bodyParams.courseId,
@@ -339,19 +399,35 @@ export async function executePostFromPostEvent(postData, researchEventData) {
   });
 }
 
-export async function unsubscribeFromCourseGoal(token) {
+// The whole http response, camel-cased; the caller reads its `data`.
+export interface UnsubscribeFromCourseGoalResponse {
+  data: { courseTitle?: string; [key: string]: unknown };
+  [key: string]: unknown;
+}
+
+export async function unsubscribeFromCourseGoal(token: string): Promise<UnsubscribeFromCourseGoalResponse> {
   const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/unsubscribe_from_course_goal/${token}`);
   return getAuthenticatedHttpClient().post(url.href)
     .then(res => camelCaseObject(res));
 }
 
-export async function getCoursewareSearchEnabled(courseId) {
+export async function getCoursewareSearchEnabled(courseId: string): Promise<{ enabled: boolean }> {
   const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-search/enabled/`);
   const { data } = await getAuthenticatedHttpClient().get(url.href);
   return { enabled: data.enabled || false };
 }
 
-export async function searchCourseContentFromAPI(courseId, searchKeyword, options = {}) {
+// The whole http response, camel-cased; the caller hands its `data` to `mapSearchResponse`.
+export interface CoursewareSearchResponse {
+  data: unknown;
+  [key: string]: unknown;
+}
+
+export async function searchCourseContentFromAPI(
+  courseId: string,
+  searchKeyword: string,
+  options: { page?: number; limit?: number } = {},
+): Promise<CoursewareSearchResponse> {
   const defaults = { page: 0, limit: 20 };
   const { page, limit } = { ...defaults, ...options };
 
@@ -362,7 +438,14 @@ export async function searchCourseContentFromAPI(courseId, searchKeyword, option
   return camelCaseObject(response);
 }
 
-export async function getExamsData(courseId, sequenceId) {
+// One sequence's exam attempt: edx-proctoring's `proctored_exam/attempt`, or edx-exams' `exam/attempt`.
+// Every field is optional because the 404 branch returns `{}`.
+export interface ExamAttempt {
+  exam?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export async function getExamsData(courseId: string, sequenceId: string): Promise<ExamAttempt> {
   let url;
 
   if (!getConfig().EXAMS_BASE_URL) {
@@ -375,7 +458,7 @@ export async function getExamsData(courseId, sequenceId) {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return camelCaseObject(data);
   } catch (error) {
-    const { httpErrorStatus } = error && error.customAttributes;
+    const httpErrorStatus = getResponseStatus(error);
     if (httpErrorStatus === 404) {
       return {};
     }

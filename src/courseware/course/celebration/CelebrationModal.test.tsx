@@ -7,7 +7,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
   createTestQueryClient, initializeTestStore, render, screen, seedQueryData, waitFor,
 } from '../../../setupTest';
-import type { CourseHomeMeta } from '../../../course-home/data/apiHooks';
+import type { CourseHomeMeta } from '../../../course-home/data/api';
 import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
 import CelebrationModal from './CelebrationModal';
 
