@@ -1,5 +1,8 @@
+import { AppContext } from '@edx/frontend-platform/react';
+import { SELECTED_THEME_VARIANT_KEY } from '@edx/frontend-platform/react/constants';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { useMemo } from 'react';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 import { getConfig } from '@edx/frontend-platform';
@@ -10,8 +13,17 @@ import { getResponseStatus } from '../../data/http-error';
 import { ToastProvider, useToast } from '../../generic/ToastContext';
 import {
   useCourseHomeMeta,
-  useOutlineTabData, useLiveTabData, useProgressTabData, useResetDeadlines, usePostEvent, useRequestCert,
-  useDismissWelcomeMessage, useSaveWeeklyLearningGoal, useExamAttemptsData, useProctoringInfoData,
+  useOutlineTabData,
+  useLiveTabData,
+  useProgressTabData,
+  useResetDeadlines,
+  usePostEvent,
+  useRequestCert,
+  useDismissWelcomeMessage,
+  useSaveWeeklyLearningGoal,
+  useExamAttemptsData,
+  useProctoringInfoData,
+  useCourseTheme,
 } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
@@ -472,6 +484,54 @@ describe('course-home apiHooks', () => {
 
       expect(result.current.fetchStatus).toBe('idle');
       expect(metadataRequests()).toHaveLength(0);
+    });
+  });
+
+  describe('useCourseTheme', () => {
+    const courseId = 'course-1';
+    const metadataUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/`);
+    const mockSetThemeVariant = jest.fn((val) => localStorage.setItem(SELECTED_THEME_VARIANT_KEY, val));
+
+    beforeEach(() => {
+      localStorage.setItem(SELECTED_THEME_VARIANT_KEY, 'default');
+    });
+    afterEach(() => {
+      localStorage.clear();
+    });
+    const buildWrapperWithTheme = () => {
+      const { wrapper: Wrapper } = buildWrapper();
+      // Force the context to match the expected type since we're not using the full context
+      const themeContext = useMemo(() => ({
+        paragonTheme: {
+          setThemeVariant: mockSetThemeVariant,
+        },
+      }), [mockSetThemeVariant]) as unknown as React.ContextType<typeof AppContext>;
+      return function ({ children } :{ children: React.ReactNode }) {
+        return (
+          <AppContext.Provider value={themeContext}>
+            <Wrapper>{children}</Wrapper>
+          </AppContext.Provider>
+        );
+      };
+    };
+
+    it.each(['theme1', 'dark'])('should apply the course theme variant %s', async (variant) => {
+      axiosMock.onGet(metadataUrl).reply(200, Factory.build('courseHomeMetadata', {
+        course_theme_variant: variant,
+      }));
+      const wrapper = buildWrapperWithTheme();
+      renderHook(() => (useCourseTheme(courseId)), { wrapper });
+      await waitFor(() => expect(mockSetThemeVariant).toHaveBeenCalledWith(variant));
+      expect(localStorage.getItem(SELECTED_THEME_VARIANT_KEY)).toEqual('default');
+    });
+
+    it.each([null, ''])('should not apply any course theme if not set (%p)', async (variant) => {
+      axiosMock.onGet(metadataUrl).reply(200, Factory.build('courseHomeMetadata', {
+        course_theme_variant: variant,
+      }));
+      const wrapper = buildWrapperWithTheme();
+      renderHook(() => (useCourseTheme(courseId)), { wrapper });
+      expect(mockSetThemeVariant).not.toHaveBeenCalledWith(variant);
     });
   });
 });

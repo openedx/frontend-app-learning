@@ -35,6 +35,7 @@ export interface CourseHomeMeta {
   username: string;
   userTimezone: string | null;
   verifiedMode: Record<string, unknown> | null;
+  courseThemeVariant: string | null;
   [key: string]: unknown;
 }
 
