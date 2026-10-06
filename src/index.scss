@@ -367,20 +367,20 @@
 // window (retaining padding around the edge).  Bootstrap modals don't have a full-screen
 // size like this.  Because of the hack below around react-focus-on's div, it would be better long-term to pull this into Paragon and perhaps call it "modal-full" or something like that.
 .modal-lti {
-  height: 100%;
+  height: 80vh;
   max-width: 100% !important;
 
   // I don't like this.  We need to set a height of 100% on a div created by react-focus-on, a
   // package we use in our Modal.  That div has no class name or ID, so instead we're uniquely
   // identifying it by based on a unique attribute it has which its siblings don't share.
   > div[data-focus-lock-disabled="false"] {
-    height: 100%;
+    height: 80vh;
   }
 
   // Along with setting the height of modal-content's parent div from react-focus-on, we need to
   // set modal-content's height as well to get the modal to expand to full-screen height.
   .modal-content {
-    height: 100%;
+    height: 80vh;
   }
 }
 
