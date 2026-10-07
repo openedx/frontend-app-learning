@@ -14,6 +14,7 @@ import { AppProvider } from '@edx/frontend-platform/react';
 import { UserMessagesProvider } from './generic/user-messages';
 import { ToastProvider } from './generic/ToastContext';
 import { PluginOverridesProvider } from './generic/plugin-overrides';
+import { mockSpecialExams } from './tests/mockSpecialExams';
 
 import messages from './i18n';
 import { appendBrowserTimezoneToUrl } from './utils';
@@ -159,11 +160,11 @@ export function logUnhandledRequests(axiosMock) {
 }
 
 // Mock the requests a course page makes (course and course-home metadata, the learning-sequences
-// outline, the sequence metadata, discussion config and topics, the sidebar toggles and outline)
-// for a factory-built course, one section with one sequence and one unit unless `options` supplies
-// the blocks or payloads, and return the built payloads with the ids a test needs. `options` are
-// passed through to `buildSimpleCourseAndSequenceMetadata`, plus `preventSequenceLoad` /
-// `preventOutlineSidebarLoad` to hold those requests pending.
+// outline, the sequence metadata, discussion config and topics, the sidebar toggles and outline,
+// the special-exams endpoints) for a factory-built course, one section with one sequence and one
+// unit unless `options` supplies the blocks or payloads, and return the built payloads with the ids
+// a test needs. `options` are passed through to `buildSimpleCourseAndSequenceMetadata`, plus
+// `preventSequenceLoad` / `preventOutlineSidebarLoad` to hold those requests pending.
 export function mockCourseRequests(options = {}) {
   initializeMockApp();
   const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
@@ -217,9 +218,10 @@ export function mockCourseRequests(options = {}) {
     } else {
       axiosMock.onGet(sequenceMetadataUrl).reply(200, metadata);
     }
-    const proctoredExamApiUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${courseMetadata.id}/content_id/${sequenceMetadata.item_id}?is_learning_mfe=true`;
-    axiosMock.onGet(proctoredExamApiUrl).reply(200, { exam: {}, active_attempt: {} });
   });
+
+  // Before the catch-all below: axios-mock-adapter matches handlers in registration order.
+  const specialExams = mockSpecialExams(axiosMock, courseMetadata.id);
 
   logUnhandledRequests(axiosMock);
 
@@ -228,6 +230,7 @@ export function mockCourseRequests(options = {}) {
     courseId: courseMetadata.id,
     sequenceId: sequenceBlocks[0].id,
     unitId: unitBlocks[0].id,
+    specialExams,
   };
 }
 
@@ -250,6 +253,10 @@ export function seedQueryData(queryClient, queryKey, data) {
 // `store`: pass the app's `initializeStore()` when the tree reaches `@edx/frontend-lib-special-exams`
 // (`Sequence`, `Unit`, `TabWithTimer`), whose components select from the Redux store; `AppProvider`
 // renders a react-redux `Provider` only when given one.
+/**
+ * @param {React.ReactElement} ui
+ * @param {{ store?: ReturnType<typeof import('./store').default> | null, wrapWithRouter?: boolean }} [options]
+ */
 function render(
   ui,
   {
