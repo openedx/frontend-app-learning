@@ -88,20 +88,19 @@ describe('CoursePathwaysStrip', () => {
     ]);
   });
 
-  it('does not render the popover nor truncate labels when every pathway fits', () => {
-    const { container } = renderComponent();
+  it('does not render the popover when every pathway fits', () => {
+    renderComponent();
     expect(MorePathwaysPopover).not.toHaveBeenCalled();
-    expect(container.querySelector('.is-truncated')).not.toBeInTheDocument();
   });
 
-  it('truncates the last visible label and passes the hidden pathways to the popover', () => {
+  it('renders only the visible pathways and passes the hidden ones to the popover', () => {
     mockSplit([dataEngineering, machineLearning], [loremIpsum]);
     const { container } = renderComponent();
 
-    const visibleLabels = getVisibleLabels(container);
-    expect(visibleLabels).toHaveLength(2);
-    expect(visibleLabels[0]).not.toHaveClass('is-truncated');
-    expect(visibleLabels[1]).toHaveClass('is-truncated');
+    expect(getVisibleLabels(container).map((label) => label.textContent)).toEqual([
+      'Data Engineering Fundamentals',
+      'Introduction to Machine Learning',
+    ]);
 
     expect(screen.getByText('MorePathwaysPopover')).toBeInTheDocument();
     expect(MorePathwaysPopover).toHaveBeenCalledWith({ pathways: [loremIpsum] }, expect.anything());

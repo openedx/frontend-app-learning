@@ -20,7 +20,7 @@ export const MorePathwaysPopover = ({ pathways }: { pathways: PathwayData[] }) =
         variant="inverse-tertiary"
         size="sm"
         iconAfter={ArrowDropDown}
-        className="course-pathways-strip-trigger ml-2 pl-2"
+        className="course-pathways-strip-trigger ml-auto pl-2"
         aria-label={formatMessage(messages.morePathways, { count: pathways.length })}
         onClick={open}
       >

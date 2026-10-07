@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 
 import { useCoursePathways } from './data/apiHooks';
@@ -9,19 +8,15 @@ import messages from './messages';
 
 interface PathwayLabelProps {
   pathway: PathwayData;
-  isTruncated?: boolean;
 }
 
 export interface CoursePathwaysStripProps {
   courseId?: string;
 }
 
-const PathwayLabel = ({
-  pathway,
-  isTruncated = false,
-}: PathwayLabelProps) => (
+const PathwayLabel = ({ pathway }: PathwayLabelProps) => (
   // TODO Link to the pathway outline once its URL is known
-  <span className={classNames('course-pathways-strip-label', { 'is-truncated': isTruncated })}>
+  <span className="course-pathways-strip-label">
     {pathway.pathway.content.displayName}
   </span>
 );
@@ -46,12 +41,8 @@ export const CoursePathwaysStrip = ({ courseId }: CoursePathwaysStripProps) => {
           <FormattedMessage {...messages.includedIn} />
         </span>
         <div ref={containerRef} className="course-pathways-strip-container d-flex align-items-center">
-          {visiblePathways.map((pathway, index) => (
-            <PathwayLabel
-              key={pathway.pathway.id}
-              pathway={pathway}
-              isTruncated={hiddenPathways.length > 0 && index === visiblePathways.length - 1}
-            />
+          {visiblePathways.map((pathway) => (
+            <PathwayLabel key={pathway.pathway.id} pathway={pathway} />
           ))}
           {hiddenPathways.length > 0 && <MorePathwaysPopover pathways={hiddenPathways} />}
           <div ref={measureRef} className="course-pathways-strip-measure d-flex align-items-center" aria-hidden>

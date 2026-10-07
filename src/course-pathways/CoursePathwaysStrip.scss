@@ -16,14 +16,6 @@
       padding-inline-start: 0.75rem;
       border-inline-start: 1px solid var(--pgn-color-light-700);
     }
-
-    // The last visible label is truncated with an ellipsis when other labels go to the popover
-    &.is-truncated {
-      flex-shrink: 1;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
   }
 
   // "+N" trigger, separated from the labels by a vertical line
