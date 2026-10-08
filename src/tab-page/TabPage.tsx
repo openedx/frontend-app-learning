@@ -9,7 +9,8 @@ import HeaderSlot from '../plugin-slots/HeaderSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
 import { getErrorDetail, type RequestError } from '../data/http-error';
-import type { CourseHomeMeta } from '../course-home/data/api';
+import { type CourseHomeMeta } from '../course-home/data/api';
+import { useCourseTheme } from '../course-home/data/apiHooks';
 import { useToast } from '../generic/ToastContext';
 
 import genericMessages from '../generic/messages';
@@ -89,6 +90,8 @@ const TabPage = ({
   const {
     isLoading, isError, isDenied, errorDetails,
   } = deriveView(courseStatus);
+
+  useCourseTheme(courseId);
 
   if (isDenied) {
     const redirectUrl = getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start);
