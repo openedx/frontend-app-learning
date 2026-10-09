@@ -3,15 +3,14 @@ import PropTypes from 'prop-types';
 import {
   mockCourseRequests, render, screen,
 } from '../../../setupTest';
-import initializeStore from '../../../store';
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import { useSequenceMetadata } from '../../data/apiHooks';
 import SequenceContent from './SequenceContent';
+import SpecialExamsProvider from '../../../generic/special-exams/SpecialExamsProvider';
 
 describe('Sequence Content', () => {
   let mockData;
   let gatedContent;
-  const store = initializeStore();
 
   beforeAll(() => {
     const {
@@ -38,11 +37,11 @@ describe('Sequence Content', () => {
   };
 
   const renderContent = (props = {}) => render(
-    <>
+    <SpecialExamsProvider>
       <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
       <LoadedSequenceContent {...mockData} {...props} />
-    </>,
-    { store, wrapWithRouter: true },
+    </SpecialExamsProvider>,
+    { wrapWithRouter: true },
   );
 
   it('displays loading message', async () => {

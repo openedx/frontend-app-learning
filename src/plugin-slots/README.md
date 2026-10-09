@@ -28,3 +28,4 @@
 * [`org.openedx.frontend.learning.sequence_container.v1`](./SequenceContainerSlot/)
 * [`org.openedx.frontend.learning.sequence_navigation.v1`](./SequenceNavigationSlot/)
 * [`org.openedx.frontend.learning.unit_title.v1`](./UnitTitleSlot/)
+* [`org.openedx.frontend.special_exams.submitted_timed_exam_instructions.v1`](./SubmittedTimedExamInstructionsSlot/)

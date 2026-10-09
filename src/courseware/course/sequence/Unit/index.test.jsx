@@ -5,12 +5,12 @@ import { Factory } from 'rosie';
 import {
   initializeMockApp, mockCourseRequests, render, screen, waitFor,
 } from '../../../../setupTest';
-import initializeStore from '../../../../store';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import { usePluginOverrides } from '../../../../generic/plugin-overrides';
 import { getIFrameUrl } from './urls';
 import { views } from './constants';
 import Unit from '.';
+import SpecialExamsProvider from '../../../../generic/special-exams/SpecialExamsProvider';
 
 const courseMetadata = Factory.build('courseMetadata');
 
@@ -31,16 +31,17 @@ const unit = {
 };
 
 let sequenceId;
-const store = initializeStore();
 
 const renderComponent = (props, { children = null, search = '' } = {}) => {
   render(
     <MemoryRouter initialEntries={[{ pathname: `/course/${props.courseId}/${sequenceId}/${props.id}`, search }]}>
-      <MountCourseQueryHooks courseId={props.courseId} sequenceId={sequenceId} />
-      {children}
-      <Unit sequenceId={sequenceId} {...props} />
+      <SpecialExamsProvider>
+        <MountCourseQueryHooks courseId={props.courseId} sequenceId={sequenceId} />
+        {children}
+        <Unit sequenceId={sequenceId} {...props} />
+      </SpecialExamsProvider>
     </MemoryRouter>,
-    { store, wrapWithRouter: false },
+    { wrapWithRouter: false },
   );
 };
 
