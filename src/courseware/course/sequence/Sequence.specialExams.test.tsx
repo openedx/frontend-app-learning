@@ -2,13 +2,12 @@ import { Factory } from 'rosie';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { mergeConfig } from '@edx/frontend-platform';
+import type { ExamScenario } from '@edx/frontend-lib-special-exams/testing';
 
 import {
-  mockCourseRequests, render, screen, waitFor, within,
+  act, mockCourseRequests, render, screen, waitFor, within,
 } from '../../../setupTest';
-import initializeStore from '../../../store';
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
-import type { ExamScenario } from '../../../tests/mockSpecialExams';
 import { SidebarProvider } from '../sidebar/SidebarContext';
 import Sequence from './Sequence';
 
@@ -72,7 +71,7 @@ const renderSequence = (rendered: Course) => {
         />
       </Routes>
     </MemoryRouter>,
-    { store: initializeStore() },
+    {},
   );
 };
 
@@ -85,6 +84,7 @@ const renderExam = (scenario: ExamScenario, options?: CourseOptions) => {
 
 const examRequests = () => course.specialExams.requests
   .filter(({ url }) => url.includes('/student/exam/attempt/') || url.includes('/proctored_exam/attempt/course_id/'));
+const latestAttemptRequests = () => course.specialExams.requests.filter(({ url }) => url.includes('/exams/attempt/latest'));
 const tokenRequests = () => course.specialExams.requests.filter(({ url }) => url.includes('/access_tokens/'));
 const putActions = () => course.specialExams.requests
   .filter(({ method }) => method === 'PUT').map(({ body }) => body?.action);
@@ -118,7 +118,8 @@ describe('Sequence with a special exam', () => {
     user = userEvent.setup();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    await act(async () => { await jest.runOnlyPendingTimersAsync(); });
     jest.useRealTimers();
   });
 
@@ -288,10 +289,7 @@ describe('Sequence with a special exam', () => {
       });
 
       it('submits the exam itself', () => {
-        // One submit per timer mounted earlier in this file: the library never removes its
-        // TIMER_LIMIT_REACHED listener. Exactly one when run alone.
-        expect(putActions().length).toBeGreaterThanOrEqual(1);
-        expect(new Set(putActions())).toEqual(new Set(['submit']));
+        expect(putActions()).toEqual(['submit']);
       });
 
       it('removes the timer', () => {
@@ -310,7 +308,7 @@ describe('Sequence with a special exam', () => {
         });
         renderSequence(course);
         await findUnitFrame();
-        await user.click(endExamButton());
+        await user.click(await screen.findByRole('button', { name: 'End My Exam' }));
         await waitFor(() => expect(putActions()).toEqual(['stop']));
       });
 
@@ -514,17 +512,22 @@ describe('Sequence with a special exam', () => {
 
       describe('with the proctoring app replying from the exams origin', () => {
         // jsdom's postMessage never sets event.origin, which the library checks against EXAMS_BASE_URL.
+        let replied = false;
         const reply = (event: MessageEvent) => {
           if (Array.isArray(event.data) && event.data[0] === 'proctorio_status') {
+            replied = true;
             window.dispatchEvent(new MessageEvent('message', { data: { active: true }, origin: EXAMS_BASE_URL }));
           }
         };
 
         beforeEach(async () => {
           jest.useFakeTimers();
+          replied = false;
           window.addEventListener('message', reply);
           course = renderExam({ exam: proctored, status: 'ready_to_start', attempt: lti });
           await screen.findByText('You have 30 minutes to complete this exam.');
+          // jsdom delivers postMessage on a real timer; let the probe be answered before the 5 s fake timeout runs
+          await waitFor(() => expect(replied).toBe(true));
           jest.advanceTimersByTime(6_000);
         });
 
@@ -719,8 +722,8 @@ describe('Sequence with a special exam', () => {
         expect(screen.getByText('This exam is hidden from the learner.')).toBeInTheDocument();
       });
 
-      it('shows the unit behind it', () => {
-        expect(unitFrame()).toBeInTheDocument();
+      it('shows the unit behind it', async () => {
+        expect(await findUnitFrame()).toBeInTheDocument();
       });
     });
 
@@ -767,8 +770,9 @@ describe('Sequence with a special exam', () => {
       expect(unitFrame()).toBeInTheDocument();
     });
 
-    it('asks for the exam once', () => {
-      expect(examRequests()).toHaveLength(1);
+    it('asks for the latest attempt once and never for the exam', () => {
+      expect(examRequests()).toHaveLength(0);
+      expect(latestAttemptRequests()).toHaveLength(1);
     });
   });
 });

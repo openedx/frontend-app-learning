@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import {
   mockCourseRequests, render, screen, waitFor, within,
 } from '../setupTest';
-import initializeStore from '../store';
 import { useCourseHomeMeta } from '../course-home/data/apiHooks';
 import TabWithTimer from './TabWithTimer';
 
@@ -33,7 +32,7 @@ const putActions = () => course.specialExams.requests
 
 const renderTab = (rendered: Course) => {
   course = rendered;
-  return render(<Tab courseId={course.courseId} />, { store: initializeStore(), wrapWithRouter: true });
+  return render(<Tab courseId={course.courseId} />, { wrapWithRouter: true });
 };
 
 describe('TabWithTimer', () => {

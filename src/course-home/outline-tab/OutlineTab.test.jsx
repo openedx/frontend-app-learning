@@ -20,7 +20,6 @@ import {
   createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, waitFor, act,
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import initializeStore from '../../store';
 import { courseHomeQueryKeys } from '../data/queryKeys';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 import OutlineTab from './OutlineTab';
@@ -60,7 +59,6 @@ describe('Outline Tab', () => {
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   const proctoringInfoUrl = `${getConfig().EXAMS_BASE_URL}/api/v1/student/course_id/${encodeURIComponent(courseId)}/onboarding?username=MockUser`;
 
-  const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata');
   const defaultTabData = Factory.build('outlineTabData');
 
@@ -78,7 +76,7 @@ describe('Outline Tab', () => {
     const search = path.includes('?') ? path.slice(path.indexOf('?')) : '';
     const queryClient = createTestQueryClient();
     await act(async () => render(
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <MemoryRouter initialEntries={[`/course/${courseId}/home${search}`]}>
           <QueryClientProvider client={queryClient}>
             <UserMessagesProvider>

@@ -12,7 +12,6 @@ import { ToastProvider } from '../../generic/ToastContext';
 import {
   createTestQueryClient, initializeMockApp, screen, waitFor,
 } from '../../setupTest';
-import initializeStore from '../../store';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import LiveTab from './LiveTab';
 
@@ -21,7 +20,6 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('LiveTab', () => {
   let axiosMock;
-  let store;
   let component;
   let queryClient;
 
@@ -34,11 +32,10 @@ describe('LiveTab', () => {
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    store = initializeStore();
     queryClient = createTestQueryClient();
     axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
     component = (
-      <AppProvider store={store}>
+      <AppProvider>
         <QueryClientProvider client={queryClient}>
           <UserMessagesProvider>
             <ToastProvider>

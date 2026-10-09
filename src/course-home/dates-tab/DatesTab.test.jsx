@@ -15,7 +15,6 @@ import DatesTab from './DatesTab';
 import {
   createTestQueryClient, fireEvent, initializeMockApp, waitFor,
 } from '../../setupTest';
-import initializeStore from '../../store';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import { UserMessagesProvider } from '../../generic/user-messages';
 import { ToastProvider } from '../../generic/ToastContext';
@@ -25,16 +24,14 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('DatesTab', () => {
   let axiosMock;
-  let store;
   let queryClient;
   let component;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    store = initializeStore();
     queryClient = createTestQueryClient();
     component = (
-      <AppProvider store={store}>
+      <AppProvider>
         <QueryClientProvider client={queryClient}>
           <UserMessagesProvider>
             <ToastProvider>
