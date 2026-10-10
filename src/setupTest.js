@@ -11,10 +11,11 @@ import { render as rtlRender } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { mockSpecialExams } from '@edx/frontend-lib-special-exams/testing';
 import { UserMessagesProvider } from './generic/user-messages';
 import { ToastProvider } from './generic/ToastContext';
 import { PluginOverridesProvider } from './generic/plugin-overrides';
-import { mockSpecialExams } from './tests/mockSpecialExams';
+import { getSpecialExamsConfig } from './generic/special-exams/SpecialExamsProvider';
 
 import messages from './i18n';
 import { appendBrowserTimezoneToUrl } from './utils';
@@ -221,7 +222,7 @@ export function mockCourseRequests(options = {}) {
   });
 
   // Before the catch-all below: axios-mock-adapter matches handlers in registration order.
-  const specialExams = mockSpecialExams(axiosMock, courseMetadata.id);
+  const specialExams = mockSpecialExams(axiosMock, courseMetadata.id, getSpecialExamsConfig());
 
   logUnhandledRequests(axiosMock);
 
@@ -250,17 +251,13 @@ export function seedQueryData(queryClient, queryKey, data) {
   queryClient.setQueryData(queryKey, data);
 }
 
-// `store`: pass the app's `initializeStore()` when the tree reaches `@edx/frontend-lib-special-exams`
-// (`Sequence`, `Unit`, `TabWithTimer`), whose components select from the Redux store; `AppProvider`
-// renders a react-redux `Provider` only when given one.
 /**
  * @param {React.ReactElement} ui
- * @param {{ store?: ReturnType<typeof import('./store').default> | null, wrapWithRouter?: boolean }} [options]
+ * @param {{ wrapWithRouter?: boolean }} [options]
  */
 function render(
   ui,
   {
-    store = null,
     wrapWithRouter = false,
     ...renderOptions
   } = {},
@@ -269,7 +266,7 @@ function render(
   const Wrapper = ({ children }) => (
     // eslint-disable-next-line react/jsx-filename-extension
     <IntlProvider locale="en">
-      <AppProvider store={store} wrapWithRouter={wrapWithRouter}>
+      <AppProvider wrapWithRouter={wrapWithRouter}>
         <QueryClientProvider client={testQueryClient}>
           <UserMessagesProvider>
             <ToastProvider>

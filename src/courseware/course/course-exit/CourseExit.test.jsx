@@ -15,7 +15,6 @@ import { buildOutlineFromBlocks } from '../../data/__factories__/learningSequenc
 import {
   createTestQueryClient, initializeMockApp, logUnhandledRequests, render, screen,
 } from '../../../setupTest';
-import initializeStore from '../../../store';
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import { appendBrowserTimezoneToUrl } from '../../../utils';
 import CourseCelebration from './CourseCelebration';
@@ -29,7 +28,6 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Course Exit Pages', () => {
   let axiosMock;
-  const store = initializeStore();
   const coursewareMetadata = Factory.build('courseMetadata', {
     user_has_passing_grade: true,
     end: '2014-02-05T05:00:00Z',
@@ -73,7 +71,7 @@ describe('Course Exit Pages', () => {
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>,
-      { store, wrapWithRouter: false },
+      { wrapWithRouter: false },
     );
     if (screen.queryByRole('status')) {
       await waitForElementToBeRemoved(() => screen.queryByRole('status'));
@@ -117,7 +115,7 @@ describe('Course Exit Pages', () => {
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>,
-        { store, wrapWithRouter: false },
+        { wrapWithRouter: false },
       );
       return queryClient;
     };
@@ -195,7 +193,7 @@ describe('Course Exit Pages', () => {
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>,
-        { store, wrapWithRouter: false },
+        { wrapWithRouter: false },
       );
 
       await waitFor(() => expect(global.location.pathname).toBe(`/course/${courseId}/home`));
@@ -272,7 +270,7 @@ describe('Course Exit Pages', () => {
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>,
-        { store, wrapWithRouter: false },
+        { wrapWithRouter: false },
       );
       expect(await screen.findByText('You are not enrolled')).toBeInTheDocument();
     });

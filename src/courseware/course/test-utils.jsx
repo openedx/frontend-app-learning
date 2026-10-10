@@ -4,7 +4,6 @@ import { Factory } from 'rosie';
 import { snakeCaseObject } from '@edx/frontend-platform';
 import { breakpoints } from '@openedx/paragon';
 import { mockCourseRequests, render } from '@src/setupTest';
-import initializeStore from '@src/store';
 import CourseQueryGate from '@src/tests/CourseQueryGate';
 import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
 import Course from './Course';
@@ -40,7 +39,7 @@ const setupDiscussionSidebar = async (HomeMetaParams) => {
       <MountCourseQueryHooks courseId={courseId} sequenceId={sequenceId} />
       <LoadedCourse {...mockData} />
     </>,
-    { store: initializeStore(), wrapWithRouter: true },
+    { wrapWithRouter: true },
   );
   return {
     ...wrapper, courseId, sequenceId, unitId,

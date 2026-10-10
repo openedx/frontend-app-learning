@@ -9,7 +9,6 @@ import userEvent from '@testing-library/user-event';
 import {
   cleanup, fireEvent, getByRole, loadUnit, mockCourseRequests, render, screen, waitFor,
 } from '../../setupTest';
-import initializeStore from '../../store';
 import MountCourseQueryHooks from '../../tests/MountCourseQueryHooks';
 import * as celebrationUtils from './celebration/utils';
 import { handleNextSectionCelebration } from './celebration';
@@ -44,7 +43,6 @@ celebrationUtils.recordFirstSectionCelebration = recordFirstSectionCelebration;
 
 describe('Course', () => {
   let fixtures;
-  const store = initializeStore();
   const mockData = {
     nextSequenceHandler: () => {},
     previousSequenceHandler: () => {},
@@ -65,7 +63,6 @@ describe('Course', () => {
         />
       </Routes>
     </MemoryRouter>,
-    { store },
   );
 
   beforeAll(() => {

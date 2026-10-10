@@ -15,7 +15,6 @@ import {
   createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, within, act, waitFor,
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import initializeStore from '../../store';
 import ProgressTab from './ProgressTab';
 import { useExamsData } from './hooks';
 import { UserMessagesProvider } from '../../generic/user-messages';
@@ -47,7 +46,6 @@ const mockSearchParams = ((props = coursewareSearch) => {
 describe('Progress Tab', () => {
   let axiosMock;
 
-  const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata');
   const defaultTabData = Factory.build('progressTabData');
 
@@ -73,7 +71,7 @@ describe('Progress Tab', () => {
   async function fetchAndRender(initialEntry = `/course/${courseId}/progress`, { waitForLoaded = true } = {}) {
     const queryClient = createTestQueryClient();
     await act(async () => render(
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <MemoryRouter initialEntries={[initialEntry]}>
           <QueryClientProvider client={queryClient}>
             <UserMessagesProvider>
