@@ -53,6 +53,7 @@ const LmsHtmlFragment = ({
       scrolling="no"
       srcDoc={wholePage}
       title={title}
+      tabIndex={-1}
       {...rest}
     />
   );
