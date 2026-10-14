@@ -767,8 +767,6 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
   });
 
   it('leaves the outline untouched when the cached tree does not contain the unit', async () => {
-    // The old reducer threw on an unknown unit and immer discarded the draft, leaving the
-    // outline unmodified; the helper's not-found guard reproduces that outcome.
     axiosMock.onPost(completionUrl).reply(201, { complete: true });
     seedOutline();
     const foreignUnitId = 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@not_in_this_outline';

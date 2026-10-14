@@ -17,7 +17,6 @@ const GoalUnsubscribe = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState({});
 
-  // We don't need to bother with redux for this simple page. We're not sharing state with other pages at all.
   useEffect(() => {
     unsubscribeFromCourseGoal(token)
       .then(
