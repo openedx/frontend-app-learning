@@ -34,6 +34,7 @@ Factory.define('courseHomeMetadata')
       price: 149,
       currency_symbol: '$',
     },
+    course_theme_variant: null,
   })
   .attr('tabs', ['id', 'host'], (id, host) => [
     Factory.build(

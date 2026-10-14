@@ -1,4 +1,7 @@
+import { SELECTED_THEME_VARIANT_KEY } from '@edx/frontend-platform/react/constants';
+import { ContextType, useContext, useEffect } from 'react';
 import { logError } from '@edx/frontend-platform/logging';
+import { AppContext } from '@edx/frontend-platform/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import type { RequestError } from '@src/data/http-error';
@@ -137,3 +140,22 @@ export const useSaveWeeklyLearningGoal = () => useMutation({
   }) => postWeeklyLearningGoal(courseId, daysPerWeek, subscribedToReminders),
   onError: (error) => logError(error),
 });
+
+export const useCourseTheme = (courseId?: string) => {
+  const { data } = useCourseHomeMeta(courseId);
+  const themeVariant = data?.courseThemeVariant;
+  // TODO: fix the AppContext shape when moving to frontend-base
+  type ParagonThemeContext = { paragonTheme: { setThemeVariant: (themeVariant: string) => void } };
+  const { paragonTheme } = useContext(AppContext) as ContextType<typeof AppContext> & ParagonThemeContext;
+
+  useEffect(() => {
+    if (courseId && themeVariant) {
+      // TODO: remove the hack to save and restore the theme variant once fixed in paragon.
+      const oldThemeVariant = window.localStorage.getItem(SELECTED_THEME_VARIANT_KEY);
+      paragonTheme.setThemeVariant(themeVariant);
+      if (oldThemeVariant) {
+        window.localStorage.setItem(SELECTED_THEME_VARIANT_KEY, oldThemeVariant);
+      }
+    }
+  }, [courseId, themeVariant]);
+};
