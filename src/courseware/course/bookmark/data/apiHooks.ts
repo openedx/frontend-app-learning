@@ -2,8 +2,7 @@ import { useCallback } from 'react';
 import { logError } from '@edx/frontend-platform/logging';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { updateSequenceUnit, useIsPreview } from '@src/courseware/data/apiHooks';
-import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
+import { sequenceMetadataQuery, updateSequenceUnit, useIsPreview } from '@src/courseware/data/apiHooks';
 import { createBookmark, deleteBookmark } from './api';
 
 interface SetBookmarkedVars {
@@ -23,7 +22,7 @@ export const useSetBookmarked = () => {
   ) => {
     updateSequenceUnit(
       queryClient,
-      coursewareQueryKeys.sequence(sequenceId, isPreview),
+      sequenceMetadataQuery(sequenceId, isPreview).queryKey,
       unitId,
       { bookmarked, bookmarkedUpdateState },
     );

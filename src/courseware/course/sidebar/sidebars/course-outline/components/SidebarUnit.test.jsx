@@ -15,7 +15,7 @@ import {
   waitFor,
 } from '@src/setupTest';
 import { getCourseOutline } from '@src/courseware/data/api';
-import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
+import { courseOutlineStructureQuery, coursewareOutlineSidebarTogglesQuery } from '@src/courseware/data/apiHooks';
 import SidebarState from '@src/tests/SidebarState';
 import { SidebarProvider } from '../../../SidebarContext';
 import SidebarUnit from './SidebarUnit';
@@ -57,8 +57,12 @@ describe('<SidebarUnit />', () => {
 
   function renderWithProvider(props = {}, pathname = undefined) {
     const queryClient = createTestQueryClient();
-    seedQueryData(queryClient, coursewareQueryKeys.courseOutline(courseId), outline);
-    seedQueryData(queryClient, coursewareQueryKeys.sidebarToggles(courseId), { enableCompletionTracking: true });
+    seedQueryData(queryClient, courseOutlineStructureQuery(courseId).queryKey, outline);
+    seedQueryData(
+      queryClient,
+      coursewareOutlineSidebarTogglesQuery(courseId).queryKey,
+      { enableCompletionTracking: true },
+    );
     const sidebarUnit = (
       <SidebarUnit
         isFirst

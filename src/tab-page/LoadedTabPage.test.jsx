@@ -3,10 +3,10 @@ import { Factory } from 'rosie';
 import { camelCaseObject } from '@edx/frontend-platform';
 import { getLoggingService } from '@edx/frontend-platform/logging';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import {
   act, createTestQueryClient, mockCourseRequests, render, screen, seedQueryData,
 } from '../setupTest';
-import { courseHomeQueryKeys } from '../course-home/data/queryKeys';
 import LoadedTabPage from './LoadedTabPage';
 
 jest.mock('@edx/frontend-platform/analytics');
@@ -27,7 +27,7 @@ describe('Loaded Tab Page', () => {
     const queryClient = createTestQueryClient();
     seedQueryData(
       queryClient,
-      courseHomeQueryKeys.metadata(courseHomeMetadata.id),
+      courseHomeMetaQuery(courseHomeMetadata.id).queryKey,
       camelCaseObject(courseHomeMetadata),
     );
     return render(

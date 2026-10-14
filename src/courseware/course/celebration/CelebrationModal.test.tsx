@@ -4,18 +4,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import {
   createTestQueryClient, mockCourseRequests, render, screen, seedQueryData, waitFor,
 } from '../../../setupTest';
-import type { CourseHomeMeta } from '../../../course-home/data/api';
-import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
 import CelebrationModal from './CelebrationModal';
 
 jest.mock('@edx/frontend-platform/analytics');
 
 describe('CelebrationModal', () => {
   const courseId = 'course-v1:edX+DemoX+Demo_Course';
-  const queryKey = courseHomeQueryKeys.metadata(courseId);
+  const { queryKey } = courseHomeMetaQuery(courseId);
   const celebrationUrl = new URL(`${getConfig().LMS_BASE_URL}/api/courseware/celebration/${courseId}`).href;
   let axiosMock: MockAdapter;
   let queryClient: QueryClient;
@@ -46,7 +45,7 @@ describe('CelebrationModal', () => {
     await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
     expect(axiosMock.history.post[0].url).toBe(celebrationUrl);
     expect(axiosMock.history.post[0].data).toEqual(JSON.stringify({ first_section: false }));
-    expect(queryClient.getQueryData<CourseHomeMeta>(queryKey)?.celebrations)
+    expect(queryClient.getQueryData(queryKey)?.celebrations)
       .toEqual({ firstSection: false, weeklyGoal: false });
     expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.celebration.first_section.opened', expect.objectContaining({
       org_key: 'edX',
@@ -59,7 +58,7 @@ describe('CelebrationModal', () => {
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(axiosMock.history.post).toHaveLength(0);
-    expect(queryClient.getQueryData<CourseHomeMeta>(queryKey)?.celebrations)
+    expect(queryClient.getQueryData(queryKey)?.celebrations)
       .toEqual({ firstSection: true, weeklyGoal: false });
   });
 });

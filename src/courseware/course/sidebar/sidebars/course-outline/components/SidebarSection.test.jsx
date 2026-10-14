@@ -11,7 +11,7 @@ import {
 } from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { getCourseOutline } from '@src/courseware/data/api';
-import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
+import { courseOutlineStructureQuery, coursewareOutlineSidebarTogglesQuery } from '@src/courseware/data/apiHooks';
 import { SidebarProvider } from '../../../SidebarContext';
 import SidebarSection from './SidebarSection';
 
@@ -31,8 +31,12 @@ describe('<SidebarSection />', () => {
   const RootWrapper = (props) => {
     const queryClient = useMemo(() => {
       const client = createTestQueryClient();
-      seedQueryData(client, coursewareQueryKeys.courseOutline(courseId), outline);
-      seedQueryData(client, coursewareQueryKeys.sidebarToggles(courseId), { enableCompletionTracking: true });
+      seedQueryData(client, courseOutlineStructureQuery(courseId).queryKey, outline);
+      seedQueryData(
+        client,
+        coursewareOutlineSidebarTogglesQuery(courseId).queryKey,
+        { enableCompletionTracking: true },
+      );
       return client;
     }, []);
 

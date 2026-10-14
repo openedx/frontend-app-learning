@@ -5,10 +5,10 @@ import type { UseQueryResult } from '@tanstack/react-query';
 
 import { Toast } from '@openedx/paragon';
 import { FooterSlot } from '@edx/frontend-component-footer';
+import { getErrorDetail } from '@src/data/http-error';
 import HeaderSlot from '../plugin-slots/HeaderSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
-import { getErrorDetail, type RequestError } from '../data/http-error';
 import type { CourseHomeMeta } from '../course-home/data/api';
 import { useToast } from '../generic/ToastContext';
 
@@ -21,7 +21,7 @@ import { TourProvider } from '../product-tours/TourContext';
 // A tab hands TabPage its metadata + tab-data queries and lets TabPage derive the view; a tab
 // whose data comes from more than one query passes them as `tabDataQueries`.
 export type CourseStatus = {
-  metadataQuery: UseQueryResult<CourseHomeMeta, RequestError>;
+  metadataQuery: UseQueryResult<CourseHomeMeta>;
 } & (
   | { tabDataQuery?: UseQueryResult; tabDataQueries?: never }
   | { tabDataQuery?: never; tabDataQueries: UseQueryResult[] }

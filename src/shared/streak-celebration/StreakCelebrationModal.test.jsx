@@ -8,6 +8,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import userEvent from '@testing-library/user-event';
 import MockAdapter from 'axios-mock-adapter';
 
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import {
   act,
   createTestQueryClient,
@@ -18,7 +19,6 @@ import {
   seedQueryData,
 } from '../../setupTest';
 import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
-import { courseHomeQueryKeys } from '../../course-home/data/queryKeys';
 import StreakModal from './StreakCelebrationModal';
 
 initializeMockApp();
@@ -65,7 +65,7 @@ describe('Loaded Tab Page', () => {
     queryClient = createTestQueryClient();
     seedQueryData(
       queryClient,
-      courseHomeQueryKeys.metadata(mockData.courseId),
+      courseHomeMetaQuery(mockData.courseId).queryKey,
       courseHomeMeta,
     );
     await act(async () => render(
@@ -109,7 +109,7 @@ describe('Loaded Tab Page', () => {
   it('clears the streak in the course metadata query when the modal closes', async () => {
     await renderModal();
     const user = userEvent.setup();
-    const queryKey = courseHomeQueryKeys.metadata(mockData.courseId);
+    const { queryKey } = courseHomeMetaQuery(mockData.courseId);
     expect(queryClient.getQueryData(queryKey).celebrations.streakLengthToCelebrate).toBe(3);
 
     await user.click(await screen.findByRole('button', { name: /keep it up/i }));

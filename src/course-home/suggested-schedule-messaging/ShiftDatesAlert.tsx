@@ -10,8 +10,7 @@ import {
   Col,
 } from '@openedx/paragon';
 
-import { useResetDeadlines } from '../data/apiHooks';
-import { courseHomeQueryKeys } from '../data/queryKeys';
+import { datesTabDataQuery, outlineTabDataQuery, useResetDeadlines } from '@src/course-home/data/apiHooks';
 import messages from './messages';
 
 interface Props {
@@ -41,8 +40,8 @@ const ShiftDatesAlert = ({ model, datesBannerInfo, hasEnded = false }: Props) =>
   }
 
   const refreshTabData = () => {
-    queryClient.invalidateQueries({ queryKey: courseHomeQueryKeys.datesTab(courseId) });
-    queryClient.invalidateQueries({ queryKey: courseHomeQueryKeys.outlineTab(courseId) });
+    queryClient.invalidateQueries({ queryKey: datesTabDataQuery(courseId).queryKey });
+    queryClient.invalidateQueries({ queryKey: outlineTabDataQuery(courseId).queryKey });
   };
 
   return (

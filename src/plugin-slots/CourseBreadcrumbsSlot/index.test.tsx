@@ -12,12 +12,10 @@ import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Factory } from 'rosie';
 
-import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
+import { courseHomeMetaQuery, useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import CourseBreadcrumbs from '@src/courseware/course/breadcrumbs';
 import { buildOutlineFromBlocks } from '@src/courseware/data/__factories__/learningSequencesOutline.factory';
-import { useCoursewareMetadata, useMinimalCourseOutline } from '@src/courseware/data/apiHooks';
-import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
+import { coursewareMetadataQuery, useCoursewareMetadata, useMinimalCourseOutline } from '@src/courseware/data/apiHooks';
 import { createTestQueryClient, initializeMockApp } from '@src/setupTest';
 import { buildSimpleCourseBlocks } from '@src/shared/data/__factories__/courseBlocks.factory';
 import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
@@ -86,9 +84,9 @@ describe('CourseBreadcrumbsSlot', () => {
   // renders the slot, and, unless `waitForOutline` is false, once the outline has too.
   const LoadedGate = ({ waitForOutline = true, children }: { waitForOutline?: boolean, children: ReactNode }) => {
     const metadataQuery = useCoursewareMetadata(courseId, { enabled: false });
-    const courseHomeMetaQuery = useCourseHomeMeta(courseId, { enabled: false });
+    const courseHomeMetadataQuery = useCourseHomeMeta(courseId, { enabled: false });
     const outlineQuery = useMinimalCourseOutline(courseId, { enabled: false });
-    const isLoaded = metadataQuery.isSuccess && courseHomeMetaQuery.isSuccess
+    const isLoaded = metadataQuery.isSuccess && courseHomeMetadataQuery.isSuccess
       && (!waitForOutline || outlineQuery.isSuccess);
     return isLoaded ? <>{children}</> : null;
   };
@@ -126,8 +124,8 @@ describe('CourseBreadcrumbsSlot', () => {
     holdOutline();
     renderSlot({ waitForOutline: false });
     await waitFor(() => {
-      expect(queryClient.getQueryState(coursewareQueryKeys.metadata(courseId))?.status).toBe('success');
-      expect(queryClient.getQueryState(courseHomeQueryKeys.metadata(courseId))?.status).toBe('success');
+      expect(queryClient.getQueryState(coursewareMetadataQuery(courseId).queryKey)?.status).toBe('success');
+      expect(queryClient.getQueryState(courseHomeMetaQuery(courseId).queryKey)?.status).toBe('success');
     });
     await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
 

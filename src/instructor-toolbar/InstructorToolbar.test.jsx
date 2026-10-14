@@ -3,12 +3,12 @@ import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { courseHomeMetaQuery, outlineTabDataQuery } from '@src/course-home/data/apiHooks';
+import { coursewareMetadataQuery } from '@src/courseware/data/apiHooks';
 import {
   createTestQueryClient,
   mockCourseRequests, render, screen, seedQueryData, waitFor, getByText, logUnhandledRequests,
 } from '../setupTest';
-import { courseHomeQueryKeys } from '../course-home/data/queryKeys';
-import { coursewareQueryKeys } from '../courseware/data/queryKeys';
 import InstructorToolbar from './index';
 
 const originalConfig = jest.requireActual('@edx/frontend-platform').getConfig();
@@ -85,7 +85,7 @@ describe('Instructor Toolbar', () => {
 
     function renderWithQueries(tab, seeds) {
       const queryClient = createTestQueryClient();
-      seedQueryData(queryClient, courseHomeQueryKeys.metadata(courseId), { userTimezone: 'America/New_York' });
+      seedQueryData(queryClient, courseHomeMetaQuery(courseId).queryKey, { userTimezone: 'America/New_York' });
       seeds.forEach(([queryKey, data]) => seedQueryData(queryClient, queryKey, data));
       return render(
         <QueryClientProvider client={queryClient}>
@@ -95,7 +95,7 @@ describe('Instructor Toolbar', () => {
     }
 
     it('renders the banner from the outline query on the outline tab', async () => {
-      renderWithQueries('outline', [[courseHomeQueryKeys.outlineTab(courseId), { accessExpiration: expiredAccess }]]);
+      renderWithQueries('outline', [[outlineTabDataQuery(courseId).queryKey, { accessExpiration: expiredAccess }]]);
 
       expect(await screen.findByText(bannerText, { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
@@ -103,8 +103,8 @@ describe('Instructor Toolbar', () => {
 
     it('does not render the banner on the courseware tab even when the courseware metadata carries the flag', async () => {
       renderWithQueries('courseware', [
-        [coursewareQueryKeys.metadata(courseId), { accessExpiration: expiredAccess }],
-        [courseHomeQueryKeys.outlineTab(courseId), { accessExpiration: expiredAccess }],
+        [coursewareMetadataQuery(courseId).queryKey, { accessExpiration: expiredAccess }],
+        [outlineTabDataQuery(courseId).queryKey, { accessExpiration: expiredAccess }],
       ]);
 
       await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
