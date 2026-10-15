@@ -8,8 +8,8 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 
-import { coursewareQueryKeys } from '../../data/queryKeys';
-import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
+import { coursewareMetadataQuery } from '@src/courseware/data/apiHooks';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from '../../data/__factories__/learningSequencesOutline.factory';
 import {
@@ -122,8 +122,8 @@ describe('Course Exit Pages', () => {
 
     const waitForMetadataWithOutlinePending = async (queryClient) => {
       await waitFor(() => {
-        expect(queryClient.getQueryState(coursewareQueryKeys.metadata(courseId))?.status).toBe('success');
-        expect(queryClient.getQueryState(courseHomeQueryKeys.metadata(courseId))?.status).toBe('success');
+        expect(queryClient.getQueryState(coursewareMetadataQuery(courseId).queryKey)?.status).toBe('success');
+        expect(queryClient.getQueryState(courseHomeMetaQuery(courseId).queryKey)?.status).toBe('success');
       });
       await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
     };

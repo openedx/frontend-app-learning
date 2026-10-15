@@ -13,6 +13,7 @@ import MockAdapter from 'axios-mock-adapter';
 import Cookies from 'js-cookie';
 import userEvent from '@testing-library/user-event';
 import { render } from '@testing-library/react';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import messages from './messages';
 
 import { buildMinimalCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
@@ -20,7 +21,6 @@ import {
   createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, waitFor, act,
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import { courseHomeQueryKeys } from '../data/queryKeys';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 import OutlineTab from './OutlineTab';
 import { UserMessagesProvider } from '../../generic/user-messages';
@@ -129,7 +129,7 @@ describe('Outline Tab', () => {
 
       const queryClient = await fetchAndRender('', { waitForLoaded: false });
 
-      await waitFor(() => expect(queryClient.getQueryData(courseHomeQueryKeys.metadata(courseId))).toBeDefined());
+      await waitFor(() => expect(queryClient.getQueryData(courseHomeMetaQuery(courseId).queryKey)).toBeDefined());
       expect(screen.getByRole('status')).toBeInTheDocument();
 
       await act(async () => { resolveOutline([200, Factory.build('outlineTabData')]); });

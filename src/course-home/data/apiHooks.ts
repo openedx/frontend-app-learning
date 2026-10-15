@@ -1,11 +1,10 @@
 import { logError } from '@edx/frontend-platform/logging';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
 
-import type { RequestError } from '@src/data/http-error';
+import { appId } from '@src/constants';
 import { useToast, ToastContent } from '@src/generic/ToastContext';
 import {
   type CallToActionResponse,
-  type CourseHomeMeta,
   type PostEventData,
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
@@ -20,7 +19,8 @@ import {
   postRequestCert,
   postWeeklyLearningGoal,
 } from './api';
-import { courseHomeQueryKeys } from './queryKeys';
+
+const courseHomeKey = [appId, 'courseHome'] as const;
 
 interface QueryOptions {
   enabled?: boolean;
@@ -57,33 +57,53 @@ export const usePostEvent = () => {
   });
 };
 
+export const courseHomeMetaQuery = (courseId: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'metadata', courseId] as const,
+  queryFn: () => getCourseHomeCourseMetadata(courseId),
+});
+
 export const useCourseHomeMeta = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
-) => useQuery<CourseHomeMeta, RequestError>({
-  queryKey: courseHomeQueryKeys.metadata(courseId!),
-  queryFn: () => getCourseHomeCourseMetadata(courseId!),
+) => useQuery({
+  ...courseHomeMetaQuery(courseId!),
   enabled: enabled && !!courseId,
 });
 
-export const useDatesTabData = (courseId: string, { enabled = true }: QueryOptions = {}) => useQuery({
-  queryKey: courseHomeQueryKeys.datesTab(courseId),
+export const datesTabDataQuery = (courseId: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'datesTab', courseId] as const,
   queryFn: () => getDatesTabData(courseId),
+});
+
+export const useDatesTabData = (courseId: string, { enabled = true }: QueryOptions = {}) => useQuery({
+  ...datesTabDataQuery(courseId),
   enabled,
+});
+
+export const outlineTabDataQuery = (courseId: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'outlineTab', courseId] as const,
+  queryFn: () => getOutlineTabData(courseId),
 });
 
 export const useOutlineTabData = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
 ) => useQuery({
-  queryKey: courseHomeQueryKeys.outlineTab(courseId!),
-  queryFn: () => getOutlineTabData(courseId!),
+  ...outlineTabDataQuery(courseId!),
   enabled: enabled && !!courseId,
 });
 
-export const useLiveTabData = (courseId: string) => useQuery({
-  queryKey: courseHomeQueryKeys.liveTab(courseId),
+export const liveTabDataQuery = (courseId: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'liveTab', courseId] as const,
   queryFn: () => getLiveTabIframe(courseId),
+});
+
+export const useLiveTabData = (courseId: string) => useQuery(liveTabDataQuery(courseId));
+
+export const progressTabDataQuery = (courseId: string, targetUserId?: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'progressTab', courseId, targetUserId] as const,
+  queryFn: () => getProgressTabData(courseId, targetUserId),
+  meta: { logStatusAs: { 404: 'silent' } },
 });
 
 export const useProgressTabData = (
@@ -91,23 +111,31 @@ export const useProgressTabData = (
   targetUserId?: string,
   { enabled = true }: QueryOptions = {},
 ) => useQuery({
-  queryKey: courseHomeQueryKeys.progressTab(courseId, targetUserId),
-  queryFn: () => getProgressTabData(courseId, targetUserId),
+  ...progressTabDataQuery(courseId, targetUserId),
   enabled,
-  meta: { logStatusAs: { 404: 'silent' } },
 });
 
-export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: string[] | undefined) => useQuery({
-  queryKey: courseHomeQueryKeys.examAttempts(courseId!, sequenceIds ?? []),
-  queryFn: () => Promise.all((sequenceIds ?? []).map(async (sequenceId) => {
+export const examAttemptsDataQuery = (courseId: string, sequenceIds: string[]) => queryOptions({
+  queryKey: [...courseHomeKey, 'examAttempts', courseId, sequenceIds] as const,
+  queryFn: () => Promise.all(sequenceIds.map(async (sequenceId) => {
     try {
-      return (await getExamsData(courseId!, sequenceId)).exam || {};
+      return (await getExamsData(courseId, sequenceId)).exam || {};
     } catch (error) {
       logError(error as Error);
       return {};
     }
   })),
+});
+
+export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: string[] | undefined) => useQuery({
+  ...examAttemptsDataQuery(courseId!, sequenceIds ?? []),
   enabled: !!courseId && !!sequenceIds,
+});
+
+export const proctoringInfoDataQuery = (courseId: string, username?: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'proctoringInfo', courseId, username] as const,
+  queryFn: () => getProctoringInfoData(courseId, username),
+  retry: false,
 });
 
 export const useProctoringInfoData = (
@@ -115,10 +143,8 @@ export const useProctoringInfoData = (
   username?: string,
   { enabled = true }: QueryOptions = {},
 ) => useQuery({
-  queryKey: courseHomeQueryKeys.proctoringInfo(courseId, username),
-  queryFn: () => getProctoringInfoData(courseId, username),
+  ...proctoringInfoDataQuery(courseId, username),
   enabled,
-  retry: false,
 });
 
 export const useRequestCert = () => useMutation({

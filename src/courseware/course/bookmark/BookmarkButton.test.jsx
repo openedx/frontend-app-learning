@@ -8,7 +8,6 @@ import {
   createTestQueryClient,
 } from '../../../setupTest';
 import { sequenceMetadataQuery } from '../../data/apiHooks';
-import { coursewareQueryKeys } from '../../data/queryKeys';
 import { BookmarkButton } from './index';
 import { getBookmarksBaseUrl } from './data/api';
 
@@ -33,7 +32,7 @@ describe('Bookmark Button', () => {
   const unitBlocks = [nonBookmarkedUnitBlock, bookmarkedUnitBlock];
 
   const cachedUnit = (unitId) => (
-    queryClient.getQueryData(coursewareQueryKeys.sequence(sequenceId, false)).units.find((unit) => unit.id === unitId)
+    queryClient.getQueryData(sequenceMetadataQuery(sequenceId, false).queryKey).units.find((unit) => unit.id === unitId)
   );
 
   const renderButton = (props = {}) => render(

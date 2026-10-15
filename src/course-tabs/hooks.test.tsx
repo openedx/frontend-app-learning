@@ -8,7 +8,7 @@ import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
 import { createTestQueryClient, initializeMockApp, seedQueryData } from '@src/setupTest';
-import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { useCourseOutlineUrl, useDatesTabUrl, useProgressTabUrl } from './hooks';
 
 initializeMockApp();
@@ -43,7 +43,7 @@ describe.each([
   ['useProgressTabUrl', useProgressTabUrl, 'progress'],
 ])('%s', (_name, useTabUrl, tabId) => {
   it('returns the tab\'s url from the course metadata on the page', () => {
-    seedQueryData(queryClient, courseHomeQueryKeys.metadata(courseId), courseHomeMetadata);
+    seedQueryData(queryClient, courseHomeMetaQuery(courseId).queryKey, courseHomeMetadata);
     const { result } = renderHook(() => useTabUrl(), { wrapper });
 
     expect(result.current).toBe(tabUrl(tabId));

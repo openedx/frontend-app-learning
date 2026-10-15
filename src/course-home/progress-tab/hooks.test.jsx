@@ -7,9 +7,8 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
+import { progressTabDataQuery, useProgressTabData } from '@src/course-home/data/apiHooks';
 import { createTestQueryClient, initializeMockApp, seedQueryData } from '../../setupTest';
-import { useProgressTabData } from '../data/apiHooks';
-import { courseHomeQueryKeys } from '../data/queryKeys';
 import { useExamsData, useProgressData } from './hooks';
 
 initializeMockApp();
@@ -75,7 +74,7 @@ describe('useExamsData', () => {
 
   const seedProgress = (scores) => seedQueryData(
     queryClient,
-    courseHomeQueryKeys.progressTab(courseId, undefined),
+    progressTabDataQuery(courseId, undefined).queryKey,
     camelCaseObject(Factory.build('progressTabData', { section_scores: scores })),
   );
 

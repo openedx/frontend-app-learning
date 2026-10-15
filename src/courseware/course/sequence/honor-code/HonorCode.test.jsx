@@ -5,12 +5,12 @@ import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
 import { QueryClientProvider } from '@tanstack/react-query';
 
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import {
   authenticatedUser, createTestQueryClient, fireEvent, initializeMockApp, mockCourseRequests, render,
   screen, seedQueryData, waitFor,
 } from '../../../../setupTest';
 import { getCourseHomeCourseMetadata } from '../../../../course-home/data/api';
-import { courseHomeQueryKeys } from '../../../../course-home/data/queryKeys';
 import HonorCode from './HonorCode';
 
 const mockNavigate = jest.fn();
@@ -45,7 +45,7 @@ describe('Honor Code', () => {
     const queryClient = createTestQueryClient();
     seedQueryData(
       queryClient,
-      courseHomeQueryKeys.metadata(mockData.courseId),
+      courseHomeMetaQuery(mockData.courseId).queryKey,
       courseHomeMeta,
     );
     return render(

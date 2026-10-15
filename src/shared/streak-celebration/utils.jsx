@@ -5,7 +5,7 @@ import {
   getAuthenticatedUser,
 } from '@edx/frontend-platform/auth';
 
-import { courseHomeQueryKeys } from '../../course-home/data/queryKeys';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 
 function recordStreakCelebration(org, courseId) {
   // Tell our analytics
@@ -20,7 +20,7 @@ function recordStreakCelebration(org, courseId) {
 function recordModalClosing(celebrations, org, courseId, queryClient) {
   // Ensure we only celebrate each streak once
   queryClient.setQueryData(
-    courseHomeQueryKeys.metadata(courseId),
+    courseHomeMetaQuery(courseId).queryKey,
     (meta) => ({ ...meta, celebrations: { ...celebrations, streakLengthToCelebrate: null } }),
   );
 }

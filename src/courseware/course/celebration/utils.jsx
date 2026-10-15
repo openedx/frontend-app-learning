@@ -1,8 +1,8 @@
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { postCelebrationComplete } from './data/api';
-import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
 import { clearLocalStorage, getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 
 const CELEBRATION_LOCAL_STORAGE_KEY = 'CelebrationModal.showOnSectionLoad';
@@ -20,7 +20,7 @@ function recordFirstSectionCelebration(org, courseId, celebrations, queryClient)
   postCelebrationComplete(courseId, { first_section: false });
   // Update our local copy of course data from LMS
   queryClient.setQueryData(
-    courseHomeQueryKeys.metadata(courseId),
+    courseHomeMetaQuery(courseId).queryKey,
     (meta) => ({ ...meta, celebrations: { ...celebrations, firstSection: false } }),
   );
 
@@ -76,7 +76,7 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSectio
 
     // Update our local copy of course data from LMS
     queryClient.setQueryData(
-      courseHomeQueryKeys.metadata(courseId),
+      courseHomeMetaQuery(courseId).queryKey,
       (meta) => ({ ...meta, celebrations: { ...celebrations, firstSection: false } }),
     );
   }

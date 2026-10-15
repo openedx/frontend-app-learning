@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 
-import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { setLocalStorage } from '../../../data/localStorage';
 import { recordFirstSectionCelebration, shouldCelebrateOnSectionLoad } from './utils';
 
@@ -11,7 +11,7 @@ jest.mock('@edx/frontend-platform/auth', () => ({
 }));
 
 const courseId = 'course-v1:edX+DemoX+Demo_Course';
-const queryKey = courseHomeQueryKeys.metadata(courseId);
+const { queryKey } = courseHomeMetaQuery(courseId);
 const celebrations = { firstSection: true, streakLengthToCelebrate: null, weeklyGoal: false };
 
 const seededQueryClient = () => {
