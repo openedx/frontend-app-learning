@@ -7,11 +7,10 @@ import classNames from 'classnames';
 import { useState } from 'react';
 import SidebarSection from './components/SidebarSection';
 import SidebarSequence from './components/SidebarSequence';
-import { ID } from './constants';
-import { useCourseOutlineSidebar } from './hooks';
+import { useCourseOutlineData } from './hooks';
 import messages from './messages';
 
-export const CourseOutline = () => {
+export const CourseOutline = ({ fullscreen, onToggleCollapse }:{ fullscreen:boolean, onToggleCollapse:() => void }) => {
   const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
@@ -19,15 +18,12 @@ export const CourseOutline = () => {
   const {
     courseId,
     unitId,
-    currentSidebar,
     isActiveEntranceExam,
     isOutlinePending,
     activeSequenceId,
     sections,
     sequences,
-    shouldDisplayFullScreen,
-    handleToggleCollapse,
-  } = useCourseOutlineSidebar();
+  } = useCourseOutlineData();
 
   const activeSectionId = activeSequenceId && Object.keys(sections)
     .find((sectionId) => sections[sectionId].sequenceIds.includes(activeSequenceId));
@@ -48,21 +44,21 @@ export const CourseOutline = () => {
 
   const sidebarHeading = (
     <CourseOutlineSidebarHeadingSlot
-      onToggleCollapse={handleToggleCollapse}
+      onToggleCollapse={onToggleCollapse}
       isDisplaySequenceLevel={isDisplaySequenceLevel}
       backButton={backButtonTitle ? { title: backButtonTitle, onClick: handleBackToSectionLevel } : undefined}
     />
   );
 
-  if (isActiveEntranceExam || currentSidebar !== ID) {
+  if (isActiveEntranceExam) {
     return null;
   }
 
   if (isOutlinePending) {
     return (
       <div className={classNames('outline-sidebar-wrapper', {
-        'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
-        'bg-white m-0 fixed-top w-100 dvh-100': shouldDisplayFullScreen,
+        'flex-shrink-0 mr-4 h-auto': !fullscreen,
+        'bg-white m-0 fixed-top w-100 dvh-100': fullscreen,
       })}
       >
         <section className="outline-sidebar w-100">
@@ -77,8 +73,8 @@ export const CourseOutline = () => {
 
   return (
     <div className={classNames('outline-sidebar-wrapper', {
-      'flex-shrink-0 mr-4 h-auto': !shouldDisplayFullScreen,
-      'bg-white m-0 fixed-top w-100 dvh-100': shouldDisplayFullScreen,
+      'flex-shrink-0 mr-4 h-auto': !fullscreen,
+      'bg-white m-0 fixed-top w-100 dvh-100': fullscreen,
     })}
     >
       <section className="outline-sidebar w-100">

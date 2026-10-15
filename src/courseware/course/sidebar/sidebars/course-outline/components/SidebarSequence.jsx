@@ -8,7 +8,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Collapsible } from '@openedx/paragon';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
-import { useCourseOutlineSidebar } from '../hooks';
+import { useCourseOutlineData } from '../hooks';
 import SidebarUnit from './SidebarUnit';
 import { UNIT_ICON_TYPES } from './UnitIcon';
 
@@ -30,7 +30,7 @@ const SidebarSequence = ({
   } = sequence;
 
   const [open, setOpen] = useState(defaultOpen);
-  const { activeSequenceId, units, isEnabledCompletionTracking } = useCourseOutlineSidebar();
+  const { activeSequenceId, units, isEnabledCompletionTracking } = useCourseOutlineData();
   const isActiveSequence = id === activeSequenceId;
 
   const sectionTitle = (
