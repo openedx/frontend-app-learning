@@ -24,7 +24,6 @@ import { getSequenceForUnitDeprecatedUrl } from './data/api';
 import { coursewareQueryKeys } from './data/queryKeys';
 import { courseHomeQueryKeys } from '../course-home/data/queryKeys';
 import { buildSimpleCourseBlocks, buildBinaryCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
-import initializeStore from '../store';
 import { appendBrowserTimezoneToUrl } from '../utils';
 import { buildOutlineFromBlocks } from './data/__factories__/learningSequencesOutline.factory';
 
@@ -53,7 +52,6 @@ jest.mock('@edx/frontend-platform/analytics');
 initializeMockApp();
 
 describe('CoursewareContainer', () => {
-  let store;
   let component;
   let axiosMock;
   let queryClient;
@@ -94,11 +92,10 @@ describe('CoursewareContainer', () => {
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
-    store = initializeStore();
     queryClient = createTestQueryClient();
 
     component = (
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <QueryClientProvider client={queryClient}>
           <UserMessagesProvider>
             <ToastProvider>

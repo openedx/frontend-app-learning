@@ -18,7 +18,6 @@ import * as popper from '@popperjs/core';
 import {
   act, createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, render, screen, waitFor,
 } from '../setupTest';
-import initializeStore from '../store';
 import { appendBrowserTimezoneToUrl } from '../utils';
 
 import CoursewareContainer from '../courseware/CoursewareContainer';
@@ -47,7 +46,6 @@ describe('Course Home Tours', () => {
   const tourDataUrl = `${getConfig().LMS_BASE_URL}/api/user_tours/v1/MockUser`;
   const proctoringUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=course-v1%3AedX%2BTest%2Brun&username=MockUser`;
 
-  const store = initializeStore();
   const defaultTabData = Factory.build('outlineTabData');
 
   function setMetadata(attributes, options) {
@@ -69,7 +67,6 @@ describe('Course Home Tours', () => {
           </Routes>
         </QueryClientProvider>
       </MemoryRouter>,
-      { store },
     ));
     await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
   }
@@ -226,7 +223,6 @@ jest.mock(
 );
 
 describe('Courseware Tour', () => {
-  let store;
   let component;
   let axiosMock;
 
@@ -268,10 +264,8 @@ describe('Courseware Tour', () => {
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
-    store = initializeStore();
-
     component = (
-      <AppProvider store={store}>
+      <AppProvider>
         <QueryClientProvider client={createTestQueryClient()}>
           <UserMessagesProvider>
             <Routes>

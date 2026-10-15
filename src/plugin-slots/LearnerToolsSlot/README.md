@@ -20,7 +20,7 @@ Plugins registered to this slot can use the provided context to:
 - Display course-specific tools based on courseId and unitId
 - Show different features based on user's enrollment mode
 - Provide staff-only functionality when isStaff is true
-- Query additional data from Redux store or backend APIs as needed
+- Query additional data from backend APIs as needed
 
 ### Notes
 - Returns `null` if user is not authenticated

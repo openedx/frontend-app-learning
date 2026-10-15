@@ -10,7 +10,6 @@ import userEvent from '@testing-library/user-event';
 import {
   loadUnit, mockCourseRequests, render, screen, waitFor,
 } from '../../../setupTest';
-import initializeStore from '../../../store';
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import { getEnabledWidgets } from '../sidebar/defaultWidgets';
 import { SidebarProvider } from '../sidebar/SidebarContext';
@@ -20,7 +19,6 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Sequence', () => {
   let mockData;
-  const store = initializeStore();
   const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
     'block',
@@ -78,7 +76,7 @@ describe('Sequence', () => {
   it('renders correctly without data', async () => {
     render(
       <Sequence {...mockData} {...{ unitId: undefined, sequenceId: undefined }} />,
-      { store, wrapWithRouter: true },
+      { wrapWithRouter: true },
     );
 
     expect(screen.getByText('There is no content here.')).toBeInTheDocument();
@@ -90,7 +88,6 @@ describe('Sequence', () => {
     const { sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
     render(
       <SidebarWrapper overrideData={{ sequenceId, unitId: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@not_in_this_sequence' }} />,
-      { store },
     );
 
     expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
@@ -123,7 +120,6 @@ describe('Sequence', () => {
     });
     const { container } = render(
       <SidebarWrapper overrideData={{ sequenceId: sequenceBlocks[0].id }} />,
-      { store },
     );
 
     await screen.findByText('Loading locked content messaging...');
@@ -168,7 +164,6 @@ describe('Sequence', () => {
           />
         </Routes>
       </MemoryRouter>,
-      { store },
     );
 
     await waitFor(() => {
@@ -190,7 +185,7 @@ describe('Sequence', () => {
         <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
         <Sequence {...mockData} />
       </>,
-      { store, wrapWithRouter: true },
+      { wrapWithRouter: true },
     );
 
     await screen.findByText('There was an error loading this course.');
@@ -199,7 +194,7 @@ describe('Sequence', () => {
 
   it('handles loading unit', async () => {
     const { sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
-    render(<SidebarWrapper overrideData={{ sequenceId }} />, { store });
+    render(<SidebarWrapper overrideData={{ sequenceId }} />);
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
     // `Previous`, `Next`, `Bookmark` and `Close Tray` buttons.
     await waitFor(() => expect(screen.getAllByRole('button')).toHaveLength(4));
@@ -241,7 +236,7 @@ describe('Sequence', () => {
         sequenceId: sequenceBlocks[1].id,
         previousSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store });
+      render(<SidebarWrapper overrideData={testData} />);
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       await user.click(await screen.findByRole('button', { name: /previous/i }));
@@ -275,7 +270,7 @@ describe('Sequence', () => {
         sequenceId: sequenceBlocks[0].id,
         nextSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store });
+      render(<SidebarWrapper overrideData={testData} />);
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       await user.click(await screen.findByRole('button', { name: /next/i }));
@@ -311,7 +306,7 @@ describe('Sequence', () => {
         previousSequenceHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store });
+      render(<SidebarWrapper overrideData={testData} />);
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       await user.click(await screen.findByRole('button', { name: /previous/i }));
@@ -337,7 +332,7 @@ describe('Sequence', () => {
         unitNavigationHandler: jest.fn(),
         previousSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store });
+      render(<SidebarWrapper overrideData={testData} />);
       await screen.findByRole('button', { name: /previous/i });
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
@@ -358,7 +353,7 @@ describe('Sequence', () => {
         unitNavigationHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store });
+      render(<SidebarWrapper overrideData={testData} />);
       await screen.findByRole('button', { name: /next/i });
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
@@ -397,7 +392,7 @@ describe('Sequence', () => {
         sequenceId: testSequenceBlocks[1].id,
       };
 
-      render(<SidebarWrapper overrideData={testData} />, { store });
+      render(<SidebarWrapper overrideData={testData} />);
 
       expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
       expect(screen.queryByTestId('content-iframe-test-id')).not.toBeInTheDocument();
@@ -462,7 +457,6 @@ describe('Sequence', () => {
             />
           </Routes>
         </MemoryRouter>,
-        { store },
       );
     };
 
@@ -489,7 +483,7 @@ describe('Sequence', () => {
 
     it('does not render upgrade panel in sequence by default if in responsive view', async () => {
       global.innerWidth = breakpoints.medium.maxWidth;
-      const { container } = render(<Sequence {...mockData} />, { store, wrapWithRouter: true });
+      const { container } = render(<Sequence {...mockData} />, { wrapWithRouter: true });
       // unable to test the absence of 'Upgrade' by finding it by text, using the class of the panel instead:
       expect(container).not.toHaveClass('upgrade-panel-container');
     });
