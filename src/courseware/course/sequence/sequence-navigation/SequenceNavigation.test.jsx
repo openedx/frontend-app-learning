@@ -95,7 +95,7 @@ describe('Sequence Navigation', () => {
     // The unit button should not work for gated content.
     expect(testData.onNavigate).not.toHaveBeenCalled();
     // TODO: Not sure if this is working as expected, because the `contentType="lock"` will be overridden by the value
-    //  from Redux. To make this provide a `fa-icon` lock we could introduce something like `overriddenContentType`.
+    //  from `useUnit`. To make this provide a `fa-icon` lock we could introduce something like `overriddenContentType`.
     expect(unitButton.firstChild).toHaveClass('fa-tasks');
   });
 
