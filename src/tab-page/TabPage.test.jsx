@@ -4,7 +4,7 @@ import {
 } from '../setupTest';
 import { TabPage } from './index';
 import { useToast } from '../generic/ToastContext';
-import { CoursePathwaysStripSlot } from '../plugin-slots/CoursePathwaysStripSlot';
+import { CourseInfoStripSlot } from '../plugin-slots/CourseInfoStripSlot';
 
 // We should not test `LoadedTabPage` page here, as `TabPage` is used only for passing `passthroughProps`.
 jest.mock('./LoadedTabPage', () => function () {
@@ -15,8 +15,8 @@ jest.mock('../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton', (
   return <div data-testid="sr-tour-button" />;
 });
 
-jest.mock('../plugin-slots/CoursePathwaysStripSlot', () => ({
-  CoursePathwaysStripSlot: jest.fn(() => <div data-testid="CoursePathwaysStripSlot" />),
+jest.mock('../plugin-slots/CourseInfoStripSlot', () => ({
+  CourseInfoStripSlot: jest.fn(() => <div data-testid="CourseInfoStripSlot" />),
 }));
 
 jest.mock('../generic/ToastContext', () => ({
@@ -61,18 +61,18 @@ describe('Tab Page', () => {
     expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
   });
 
-  it('renders the course pathways strip slot', () => {
+  it('renders the course info strip slot', () => {
     render(<TabPage {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByTestId('CoursePathwaysStripSlot')).toBeInTheDocument();
-    expect(CoursePathwaysStripSlot).toHaveBeenCalledWith({ courseId: 'test-course' }, expect.anything());
+    expect(screen.getByTestId('CourseInfoStripSlot')).toBeInTheDocument();
+    expect(CourseInfoStripSlot).toHaveBeenCalledWith({ courseId: 'test-course' }, expect.anything());
   });
 
-  it('does not render the course pathways strip slot while the course is loading', () => {
+  it('does not render the course info strip slot while the course is loading', () => {
     render(
       <TabPage {...mockData} courseStatus={{ metadataQuery: { isPending: true }, tabDataQuery: {} }} />,
       { wrapWithRouter: true },
     );
-    expect(screen.queryByTestId('CoursePathwaysStripSlot')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('CourseInfoStripSlot')).not.toBeInTheDocument();
   });
 
   it('renders the screen-reader tour button on the outline tab', () => {
