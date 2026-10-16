@@ -5,14 +5,14 @@ export interface PathwayData {
     content: {
       displayName: string;
     };
-    courseCount: number;
+    itemCount: number;
     category?: string;
     categoryLabel?: string;
     categoryBackgroundColor?: string;
     categoryTextColor?: string;
   };
   progress?: {
-    completedCourseCount: number;
+    completedItemCount: number;
   };
   provider?: {
     name: string;

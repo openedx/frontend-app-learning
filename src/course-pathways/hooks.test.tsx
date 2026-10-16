@@ -7,7 +7,7 @@ const buildPathway = (id: string): PathwayData => ({
   pathway: {
     id,
     content: { displayName: `Pathway ${id}` },
-    courseCount: 3,
+    itemCount: 3,
   },
 });
 
