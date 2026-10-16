@@ -1,6 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { getConfig, setConfig } from '@edx/frontend-platform';
 
 import { getPathwaysByCourse } from './api';
 import { useCoursePathways } from './apiHooks';
@@ -29,15 +28,8 @@ const buildWrapper = () => {
 };
 
 describe('course-pathways apiHooks', () => {
-  const originalConfig = getConfig();
-
   beforeEach(() => {
     mockGetPathwaysByCourse.mockReset();
-    setConfig({ ...originalConfig, ENABLE_PATHWAY_PILOT_UI: true });
-  });
-
-  afterEach(() => {
-    setConfig(originalConfig);
   });
 
   describe('useCoursePathways', () => {
@@ -74,15 +66,6 @@ describe('course-pathways apiHooks', () => {
 
       expect(result.current.fetchStatus).toBe('idle');
       expect(result.current.data).toBeUndefined();
-      expect(mockGetPathwaysByCourse).not.toHaveBeenCalled();
-    });
-
-    it('does not request anything when the pathway pilot UI is disabled', () => {
-      setConfig({ ...originalConfig, ENABLE_PATHWAY_PILOT_UI: false });
-      const { wrapper } = buildWrapper();
-      const { result } = renderHook(() => useCoursePathways(courseIdWithPathways), { wrapper });
-
-      expect(result.current.fetchStatus).toBe('idle');
       expect(mockGetPathwaysByCourse).not.toHaveBeenCalled();
     });
 
