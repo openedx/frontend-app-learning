@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dropdown } from '@openedx/paragon';
-import { ActiveMasqueradeData } from './data/api';
+import { ActiveMasqueradeData, reloadAfterMasqueradeChange } from './data/api';
 
 interface Payload {
   role?: string;
@@ -50,7 +50,7 @@ export const MasqueradeWidgetOption: React.FC<Props> = ({
       payload.user_partition_id = userPartitionId!;
     }
     props.onSubmit(payload).then(() => {
-      global.location.reload();
+      reloadAfterMasqueradeChange();
     });
     return true;
   }, []);

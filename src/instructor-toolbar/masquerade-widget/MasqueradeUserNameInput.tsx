@@ -2,7 +2,7 @@ import React from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Form } from '@openedx/paragon';
 
-import { MasqueradeStatus, Payload } from './data/api';
+import { MasqueradeStatus, Payload, reloadAfterMasqueradeChange } from './data/api';
 import messages from './messages';
 
 interface Props extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onSubmit' | 'onError'> {
@@ -20,7 +20,7 @@ export const MasqueradeUserNameInput: React.FC<Props> = ({ onSubmit, onError, ..
     };
     onSubmit(payload).then((data) => {
       if (data && data.success) {
-        global.location.reload();
+        reloadAfterMasqueradeChange();
       } else {
         const error = (data && data.error) || '';
         onError(error);
