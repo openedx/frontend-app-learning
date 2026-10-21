@@ -1,0 +1,85 @@
+{
+  "name": "@openedx/frontend-template-application",
+  "version": "0.0.0-dev",
+  "packageManager": "npm@11.12.1",
+  "description": "Frontend application template",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openedx/frontend-template-application.git"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "/dist"
+  ],
+  "workspaces": [
+    "packages/*"
+  ],
+  "browserslist": [
+    "extends @edx/browserslist-config"
+  ],
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
+  "atlasTranslations": {
+    "path": "translations/frontend-template-application/src/i18n/messages",
+    "dependencies": [
+      "@openedx/frontend-base"
+    ]
+  },
+  "scripts": {
+    "build": "make build",
+    "build:ci": "make build-ci",
+    "build:packages": "make build-packages",
+    "clean": "make clean",
+    "clean:packages": "make clean-packages",
+    "dev": "PORT=8080 PUBLIC_PATH=/template openedx dev",
+    "dev:site": "make dev-site",
+    "dev:packages": "make dev-packages",
+    "i18n_extract": "openedx formatjs extract",
+    "lint": "openedx lint .",
+    "lint:fix": "openedx lint --fix .",
+    "prepack": "npm run clean && npm run build",
+    "snapshot": "openedx test --updateSnapshot",
+    "test": "openedx test --coverage --passWithNoTests",
+    "translations:pull": "openedx translations:pull",
+    "watch:build": "nodemon --exec 'npm run build'"
+  },
+  "author": "Open edX",
+  "license": "AGPL-3.0",
+  "homepage": "https://github.com/openedx/frontend-template-application#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/openedx/frontend-template-application/issues"
+  },
+  "dependencies": {
+    "@edx/openedx-atlas": "^0.7.0",
+    "react-helmet": "^6.1.0"
+  },
+  "devDependencies": {
+    "@edx/browserslist-config": "^1.5.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^29.5.14",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "jest": "^29",
+    "nodemon": "^3.1.14",
+    "tsc-alias": "^1.8.16",
+    "turbo": "^2.9.2"
+  },
+  "peerDependencies": {
+    "@openedx/frontend-base": "^2.0.0-alpha || 0.0.0-dev",
+    "@openedx/paragon": "^23",
+    "@tanstack/react-query": "^5",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-router": "^6",
+    "react-router-dom": "^6"
+  }
+}
