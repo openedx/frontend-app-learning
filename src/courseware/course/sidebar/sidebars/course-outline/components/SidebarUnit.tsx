@@ -22,6 +22,7 @@ interface SidebarUnitProps {
   isLocked: boolean;
   activeUnitId: string;
   isCompletionTrackingEnabled: boolean;
+  onUnitClick?: () => void;
 }
 
 const SidebarUnit = ({
@@ -34,6 +35,7 @@ const SidebarUnit = ({
   isLocked,
   activeUnitId,
   isCompletionTrackingEnabled,
+  onUnitClick,
 }: SidebarUnitProps) => {
   const {
     complete,
@@ -51,10 +53,11 @@ const SidebarUnit = ({
     >
       <UnitLinkWrapper
         {...{
-          sequenceId,
           activeUnitId,
-          id,
           courseId,
+          id,
+          onUnitClick,
+          sequenceId,
         }}
       >
         <CourseOutlineSidebarUnitSlot
