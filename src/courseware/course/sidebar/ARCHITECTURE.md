@@ -68,18 +68,6 @@ if (shouldDisplaySidebarOpen && !shouldDisplayFullScreen) {
 }
 ```
 
-**LEFT Sidebar (Desktop Fallback):**
-```javascript
-// In useCourseOutlineSidebar hooks
-const isOpenSidebar = !initialSidebar && !isCollapsedOutlineSidebar;
-
-useEffect(() => {
-  if (isOpenSidebar && currentSidebar !== 'COURSE_OUTLINE') {
-    toggleSidebar('COURSE_OUTLINE'); // Opens course outline as fallback
-  }
-}, [initialSidebar, unitId]);
-```
-
 ### Priority Cascade (Desktop)
 
 1. **Registered widgets** sorted by `priority` (lower number = higher priority) — opens first available widget
@@ -216,7 +204,6 @@ if (!firstAvailable) {
 - Exposes `currentSidebar`, `shouldDisplayFullScreen`, and `handleToggleCollapse`
 - Collapses the outline on resize below the `lg` breakpoint, ignoring resize events that only change window height (mobile browser URL-bar show/hide)
 
-Consumers that need both (e.g. `UnitLinkWrapper`, which collapses the sidebar after a unit click on mobile) call both hooks.
 
 ### Sidebar.jsx (RIGHT Sidebar Renderer)
 
@@ -231,10 +218,12 @@ if (!currentSidebar || !SIDEBARS || !SIDEBARS[currentSidebar]) {
 }
 ```
 
-### CourseOutlineTray.jsx (LEFT Sidebar Renderer)
+### CourseOutlineTray.tsx (LEFT Sidebar Renderer)
 
 **Responsibilities:**
-- Render `CourseOutline`, passing down `shouldDisplayFullScreen`/`handleToggleCollapse` from `useCourseOutlineSidebar`
+- Render `CourseOutline`, passing down `shouldDisplayFullScreen`/`handleToggleCollapse`
+  from `useCourseOutlineSidebar` as `fullscreen`/`onToggleCollapse`. An `onUnitClick` 
+  handler is also passed to `CourseOutline` to handle unit clicks.
 - Only show when `currentSidebar === 'COURSE_OUTLINE'`
 
 **Key Logic:**

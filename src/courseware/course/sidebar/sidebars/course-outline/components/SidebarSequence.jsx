@@ -17,6 +17,7 @@ const SidebarSequence = ({
   defaultOpen,
   sequence,
   activeUnitId,
+  onUnitClick,
 }) => {
   const intl = useIntl();
   const {
@@ -79,6 +80,7 @@ const SidebarSequence = ({
               isFirst={index === 0}
               isLocked={type === UNIT_ICON_TYPES.lock}
               isCompletionTrackingEnabled={isEnabledCompletionTracking}
+              onUnitClick={onUnitClick}
             />
           ))}
         </ol>
@@ -103,6 +105,7 @@ SidebarSequence.propTypes = {
     }),
   }).isRequired,
   activeUnitId: PropTypes.string.isRequired,
+  onUnitClick: PropTypes.func,
 };
 
 export default SidebarSequence;

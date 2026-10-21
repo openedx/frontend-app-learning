@@ -173,25 +173,15 @@ describe('<SidebarUnit />', () => {
       expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({ usage_key: unit.id });
     });
 
-    it('leaves sidebar open in desktop mode', async () => {
-      const user = userEvent.setup();
-      window.innerWidth = breakpoints.extraExtraLarge.minWidth;
-      await initTestData();
-      renderWithProvider({ unit: { ...unit } });
-      await user.click(screen.getByText(unit.title));
-
-      expect(currentSidebar()).toBe(ID);
-    });
-
-    it('closes sidebar on mobile devices', async () => {
+    it('calls unit click handler', async () => {
       const user = userEvent.setup();
       await initTestData();
-      renderWithProvider({ unit: { ...unit } });
-      expect(currentSidebar()).toBe(ID);
+      const mockOnUnitClick = jest.fn();
+      renderWithProvider({ unit: { ...unit }, onUnitClick: mockOnUnitClick });
 
       await user.click(screen.getByText(unit.title));
 
-      expect(currentSidebar()).toBe('null');
+      expect(mockOnUnitClick).toHaveBeenCalled();
     });
   });
 

@@ -1,5 +1,5 @@
 import {
-  useLayoutEffect, useRef, useState,
+  useLayoutEffect, useRef,
 } from 'react';
 import { useParams } from 'react-router-dom';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
@@ -14,7 +14,6 @@ import {
 import { useSidebar } from '../../SidebarContext';
 import { ID } from './constants';
 
-// eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineData = () => {
   const checkBlockCompletion = useCheckBlockCompletion();
   const { courseId, sequenceId: activeSequenceId, unitId } = useParams();
@@ -70,18 +69,12 @@ export const useCourseOutlineData = () => {
   };
 };
 
-// eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
   const {
-    unitId,
     currentSidebar,
     toggleSidebar,
     shouldDisplayFullScreen,
   } = useSidebar();
-
-  // Course outline state is now fully controlled by SidebarProvider
-  // This component only renders when currentSidebar === 'COURSE_OUTLINE'
-  const [isOpen, setIsOpen] = useState(true);
 
   const collapseSidebar = () => {
     toggleSidebar(null);
@@ -122,11 +115,8 @@ export const useCourseOutlineSidebar = () => {
   }, [currentSidebar]);
 
   return {
-    unitId,
     currentSidebar,
     shouldDisplayFullScreen,
-    isOpen,
-    setIsOpen,
     handleToggleCollapse,
   };
 };

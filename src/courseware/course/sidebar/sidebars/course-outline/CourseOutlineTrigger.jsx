@@ -15,7 +15,6 @@ const CourseOutlineTrigger = ({ isMobileView }) => {
     currentSidebar,
     shouldDisplayFullScreen,
     handleToggleCollapse,
-
   } = useCourseOutlineSidebar();
 
   const isDisplayForDesktopView = !isMobileView && !shouldDisplayFullScreen && currentSidebar !== ID;

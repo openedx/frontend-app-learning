@@ -10,7 +10,13 @@ import SidebarSequence from './components/SidebarSequence';
 import { useCourseOutlineData } from './hooks';
 import messages from './messages';
 
-export const CourseOutline = ({ fullscreen, onToggleCollapse }:{ fullscreen:boolean, onToggleCollapse:() => void }) => {
+interface CourseOutlineProps {
+  fullscreen: boolean;
+  onToggleCollapse: () => void;
+  onUnitClick?: () => void;
+}
+
+export const CourseOutline = ({ fullscreen, onToggleCollapse, onUnitClick }: CourseOutlineProps) => {
   const intl = useIntl();
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [isDisplaySequenceLevel, setDisplaySequenceLevel, setDisplaySectionLevel] = useToggle(true);
@@ -88,6 +94,7 @@ export const CourseOutline = ({ fullscreen, onToggleCollapse }:{ fullscreen:bool
                 sequence={sequences[sequenceId]}
                 defaultOpen={sequenceId === activeSequenceId}
                 activeUnitId={unitId!}
+                onUnitClick={onUnitClick}
               />
             ))
             : sectionsIds.map((sectionId) => (

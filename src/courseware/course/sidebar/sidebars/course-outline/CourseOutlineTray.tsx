@@ -12,7 +12,19 @@ const CourseOutlineTray = () => {
   if (currentSidebar !== ID) {
     return null;
   }
-  return <CourseOutline fullscreen={shouldDisplayFullScreen} onToggleCollapse={handleToggleCollapse} />;
+  const handleUnitClick = () => {
+    // Hide the sidebar after selecting a unit on a mobile device.
+    if (shouldDisplayFullScreen) {
+      handleToggleCollapse();
+    }
+  };
+  return (
+    <CourseOutline
+      fullscreen={shouldDisplayFullScreen}
+      onToggleCollapse={handleToggleCollapse}
+      onUnitClick={handleUnitClick}
+    />
+  );
 };
 
 CourseOutlineTray.ID = ID;
