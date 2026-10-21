@@ -29,6 +29,7 @@ export const ROUTES = {
   DASHBOARD: 'dashboard',
   ENTERPRISE_LEARNER_DASHBOARD: 'enterprise-learner-dashboard',
   CONSENT: 'consent',
+  EMBARGO: 'embargo',
 } as const satisfies Readonly<{ [k: string]: string }>;
 
 export const REDIRECT_MODES = {
@@ -37,6 +38,7 @@ export const REDIRECT_MODES = {
   CONSENT_REDIRECT: 'consent-redirect',
   HOME_REDIRECT: 'home-redirect',
   SURVEY_REDIRECT: 'survey-redirect',
+  EMBARGO_REDIRECT: 'embargo-redirect',
 } as const satisfies Readonly<{ [k: string]: string }>;
 
 export const VERIFIED_MODES = [
