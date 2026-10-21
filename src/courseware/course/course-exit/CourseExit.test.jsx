@@ -557,8 +557,11 @@ describe('Course Exit Pages', () => {
         expect(recommendationsTable).toBeInTheDocument();
         expect(screen.queryByText('Already Enrolled')).not.toBeInTheDocument();
         expect(screen.queryByText('Not Already Enrolled')).toBeInTheDocument();
-        const enrollmentRequests = axiosMock.history.get.filter(({ url }) => enrollmentsUrl.test(String(url)));
-        expect(enrollmentRequests.map(({ url }) => String(url))).toEqual([
+        // The page may fetch recommendations more than once, so compare the distinct addresses.
+        const enrollmentRequestUrls = axiosMock.history.get
+          .map(({ url }) => String(url))
+          .filter((url) => enrollmentsUrl.test(url));
+        expect([...new Set(enrollmentRequestUrls)]).toEqual([
           `${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment/?page_size=100`,
           secondPageUrl,
         ]);
