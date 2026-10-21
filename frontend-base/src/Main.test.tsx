@@ -13,7 +13,7 @@ describe('Main', () => {
       </IntlProvider>
     );
     await waitFor(() => {
-      expect(document.title).toBe('Template | Template Test Site');
+      expect(document.title).toBe('Learning | Learning Test Site');
     });
   });
 });
