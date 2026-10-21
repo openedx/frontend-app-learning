@@ -1,26 +1,5 @@
-import { templateRole } from './constants';
+import { RoleRouteObject } from '@openedx/frontend-base';
 
-const routes = [
-  {
-    id: 'org.openedx.frontend.route.template.main',
-    path: 'template',
-    handle: {
-      roles: [templateRole],
-    },
-    async lazy() {
-      const module = await import(/* webpackChunkName: "template-main" */ './Main');
-      return { Component: module.default };
-    },
-    children: [
-      {
-        index: true,
-        async lazy() {
-          const module = await import(/* webpackChunkName: "template-example" */ './example/ExamplePage');
-          return { Component: module.default };
-        },
-      },
-    ],
-  },
-];
+const routes: RoleRouteObject[] = [];
 
 export default routes;

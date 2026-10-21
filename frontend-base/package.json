@@ -1,11 +1,11 @@
 {
-  "name": "@openedx/frontend-template-application",
+  "name": "@openedx/frontend-app-learning",
   "version": "0.0.0-dev",
   "packageManager": "npm@11.12.1",
-  "description": "Frontend application template",
+  "description": "Open edX Learning frontend app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openedx/frontend-template-application.git"
+    "url": "git+https://github.com/openedx/frontend-app-learning.git"
   },
   "exports": {
     ".": "./dist/index.js"
@@ -24,7 +24,7 @@
     "*.scss"
   ],
   "atlasTranslations": {
-    "path": "translations/frontend-template-application/src/i18n/messages",
+    "path": "translations/frontend-app-learning/src/i18n/messages",
     "dependencies": [
       "@openedx/frontend-base"
     ]
@@ -35,7 +35,7 @@
     "build:packages": "make build-packages",
     "clean": "make clean",
     "clean:packages": "make clean-packages",
-    "dev": "PORT=8080 PUBLIC_PATH=/template openedx dev",
+    "dev": "PORT=2000 PUBLIC_PATH=/learning openedx dev",
     "dev:site": "make dev-site",
     "dev:packages": "make dev-packages",
     "i18n_extract": "openedx formatjs extract",
@@ -49,12 +49,12 @@
   },
   "author": "Open edX",
   "license": "AGPL-3.0",
-  "homepage": "https://github.com/openedx/frontend-template-application#readme",
+  "homepage": "https://github.com/openedx/frontend-app-learning#readme",
   "publishConfig": {
     "access": "public"
   },
   "bugs": {
-    "url": "https://github.com/openedx/frontend-template-application/issues"
+    "url": "https://github.com/openedx/frontend-app-learning/issues"
   },
   "dependencies": {
     "@edx/openedx-atlas": "^0.7.0",

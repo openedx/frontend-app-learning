@@ -4,6 +4,11 @@ module.exports = createConfig('test', {
   setupFilesAfterEnv: [
     '<rootDir>/src/setupTest.js',
   ],
+  coverageThreshold: {
+    global: {
+      lines: 96.15,
+    },
+  },
   coveragePathIgnorePatterns: [
     'src/setupTest.js',
     'src/i18n',

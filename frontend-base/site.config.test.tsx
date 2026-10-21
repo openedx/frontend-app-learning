@@ -1,8 +1,8 @@
 import { EnvironmentTypes, SiteConfig } from '@openedx/frontend-base';
 
 const siteConfig: SiteConfig = {
-  siteId: 'template-test-site',
-  siteName: 'Template Test Site',
+  siteId: 'learning-test-site',
+  siteName: 'Learning Test Site',
   baseUrl: 'http://localhost:8080',
   lmsBaseUrl: 'http://localhost:8000',
   loginUrl: 'http://localhost:8000/login',
@@ -10,7 +10,7 @@ const siteConfig: SiteConfig = {
 
   environment: EnvironmentTypes?.TEST ?? 'test',
   apps: [{
-    appId: 'org.openedx.frontend.app.template',
+    appId: 'org.openedx.frontend.app.learning',
   }],
 };
 
