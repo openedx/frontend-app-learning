@@ -14,4 +14,7 @@ module.exports = createConfig('test', {
     '\\.svg$': '<rootDir>/src/__mocks__/svg.js',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/src/__mocks__/file.js',
   },
+  // lcov paths carry the frontend-base/ prefix so codecov files them under
+  // this directory, not over the legacy src/ tree. Jest's defaults, restated.
+  coverageReporters: ['clover', 'json', ['lcov', { projectRoot: '..' }], 'text'],
 });
