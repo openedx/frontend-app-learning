@@ -37,6 +37,16 @@ describe('Course Exit Pages', () => {
   const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`);
   const discoveryRecommendationsUrl = new RegExp(`${getConfig().DISCOVERY_API_BASE_URL}/api/v1/course_recommendations/*`);
   const enrollmentsUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment*`);
+  // One page of the paginated v2 enrollment list.
+  const enrollmentsPage = (results, next = null) => ({
+    count: results.length,
+    num_pages: next ? 2 : 1,
+    current_page: 1,
+    start: 0,
+    next,
+    previous: null,
+    results,
+  });
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
   const now = new Date();
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -63,7 +73,7 @@ describe('Course Exit Pages', () => {
       200,
       Factory.build('courseRecommendations', {}, { numRecs: 2 }),
     );
-    axiosMock.onGet(enrollmentsUrl).reply(200, []);
+    axiosMock.onGet(enrollmentsUrl).reply(200, enrollmentsPage([]));
     axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(defaultCourseBlocks));
 
     logUnhandledRequests(axiosMock);
@@ -335,7 +345,7 @@ describe('Course Exit Pages', () => {
           Factory.build('courseRecommendation', { key: 'edX+NotEnrolledX', title: 'Not Already Enrolled' }),
         );
         axiosMock.onGet(discoveryRecommendationsUrl).reply(200, initialRecommendations);
-        axiosMock.onGet(enrollmentsUrl).reply(200, [
+        axiosMock.onGet(enrollmentsUrl).reply(200, enrollmentsPage([
           Factory.build(
             'userEnrollment',
             '',
@@ -343,12 +353,54 @@ describe('Course Exit Pages', () => {
               runKey: 'edX+EnrolledX+1T2021',
             },
           ),
-        ]);
+        ]));
         await fetchAndRender(<CourseCelebration />);
         const recommendationsTable = await screen.findByTestId('course-recommendations');
         expect(recommendationsTable).toBeInTheDocument();
         expect(screen.queryByText('Already Enrolled')).not.toBeInTheDocument();
         expect(screen.queryByText('Not Already Enrolled')).toBeInTheDocument();
+      });
+
+      it('Will not recommend a course in which the user is enrolled on a later page of enrollments', async () => {
+        const initialRecommendations = Factory.build('courseRecommendations', {}, { numRecs: 2 });
+        initialRecommendations.recommendations.push(
+          Factory.build('courseRecommendation', { key: 'edX+EnrolledX', title: 'Already Enrolled' }),
+        );
+        initialRecommendations.recommendations.push(
+          Factory.build('courseRecommendation', { key: 'edX+NotEnrolledX', title: 'Not Already Enrolled' }),
+        );
+        axiosMock.onGet(discoveryRecommendationsUrl).reply(200, initialRecommendations);
+        const secondPageUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment/?page=2&page_size=100`;
+        axiosMock.onGet(enrollmentsUrl).reply((config) => (
+          String(config.url) === secondPageUrl
+            ? [200, enrollmentsPage([Factory.build('userEnrollment', '', { runKey: 'edX+EnrolledX+1T2021' })])]
+            : [200, enrollmentsPage([Factory.build('userEnrollment', '', { runKey: 'edX+OtherX+1T2021' })], secondPageUrl)]
+        ));
+        await fetchAndRender(<CourseCelebration />);
+        const recommendationsTable = await screen.findByTestId('course-recommendations');
+        expect(recommendationsTable).toBeInTheDocument();
+        expect(screen.queryByText('Already Enrolled')).not.toBeInTheDocument();
+        expect(screen.queryByText('Not Already Enrolled')).toBeInTheDocument();
+        const enrollmentRequests = axiosMock.history.get.filter(({ url }) => enrollmentsUrl.test(String(url)));
+        expect(enrollmentRequests.map(({ url }) => String(url))).toEqual([
+          `${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment/?page_size=100`,
+          secondPageUrl,
+        ]);
+      });
+
+      it('Will not recommend a course in which the user has an inactive enrollment', async () => {
+        const initialRecommendations = Factory.build('courseRecommendations', {}, { numRecs: 2 });
+        initialRecommendations.recommendations.push(
+          Factory.build('courseRecommendation', { key: 'edX+UnenrolledX', title: 'Unenrolled' }),
+        );
+        axiosMock.onGet(discoveryRecommendationsUrl).reply(200, initialRecommendations);
+        axiosMock.onGet(enrollmentsUrl).reply(200, enrollmentsPage([
+          Factory.build('userEnrollment', { is_active: false }, { runKey: 'edX+UnenrolledX+1T2021' }),
+        ]));
+        await fetchAndRender(<CourseCelebration />);
+        const recommendationsTable = await screen.findByTestId('course-recommendations');
+        expect(recommendationsTable).toBeInTheDocument();
+        expect(screen.queryByText('Unenrolled')).not.toBeInTheDocument();
       });
 
       it('Will not recommend the same course that the user just finished', async () => {
