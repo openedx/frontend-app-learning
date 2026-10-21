@@ -8,7 +8,6 @@ import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { breakpoints } from '@openedx/paragon';
 
 import {
   createTestQueryClient, initializeMockApp, logUnhandledRequests, mockCourseRequests, seedQueryData,
@@ -52,8 +51,6 @@ describe('<SidebarUnit />', () => {
     // The outline is the stored sidebar, so it is open on any viewport.
     window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify(ID));
   };
-
-  const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
 
   function renderWithProvider(props = {}, pathname = undefined) {
     const queryClient = createTestQueryClient();
