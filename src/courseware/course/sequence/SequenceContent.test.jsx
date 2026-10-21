@@ -78,21 +78,58 @@ describe('Sequence Content', () => {
     expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
   });
 
-  it('moves focus to div.app-container after unit navigation', async () => {
+  it('does not move focus on initial load', async () => {
+    // Even when the heading is present, the initial page load must not steal focus,
+    // so the normal page start (e.g. the "Skip to main content" link) is preserved.
+    const heading = global.document.createElement('h3');
+    heading.id = 'courseware-unit-title';
+    heading.setAttribute('tabindex', '-1');
+    global.document.body.appendChild(heading);
+
+    await act(async () => {
+      render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
+    });
+
+    expect(heading).not.toHaveFocus();
+
+    global.document.body.removeChild(heading);
+  });
+
+  it('moves focus to the unit heading after unit navigation', async () => {
+    // JSDOM does not render the full unit shell here, so we create the heading the
+    // focus logic targets, matching the real DOM (UnitTitleSlot renders an
+    // <h3 id="courseware-unit-title" tabindex="-1">).
+    const heading = global.document.createElement('h3');
+    heading.id = 'courseware-unit-title';
+    heading.setAttribute('tabindex', '-1');
+    global.document.body.appendChild(heading);
+
+    const { rerender } = render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
+
+    // Simulate next/previous navigation by re-rendering the same instance with a new
+    // unitId. rerender preserves the provider wrappers (they are applied via the
+    // wrapper option in setupTest's render helper). act flushes the focus effect.
+    await act(async () => {
+      rerender(<SequenceContent {...mockData} unitId={secondUnitId} />);
+    });
+
+    expect(heading).toHaveFocus();
+
+    global.document.body.removeChild(heading);
+  });
+
+  it('falls back to div.app-container when navigation lands on content without a unit heading', async () => {
     // JSDOM does not include the app shell markup, so we create the element manually
-    // to match the real DOM structure the focus logic targets.
+    // to match the real DOM structure the fallback targets.
     const appContainer = global.document.createElement('div');
     appContainer.className = 'app-container';
     global.document.body.appendChild(appContainer);
 
-    render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
-
-    // Simulate navigating to the next unit by re-rendering with a new unitId.
-    // A second render call is used instead of rerender because rerender bypasses
-    // the provider wrappers from setupTest's custom render helper.
-    // We use act to flush the useEffect triggered by the unitId change.
+    // Navigate from a real unit to the "no content" branch (unitId=''), which renders
+    // no unit heading.
+    const { rerender } = render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
     await act(async () => {
-      render(<SequenceContent {...mockData} unitId={secondUnitId} />, { wrapWithRouter: true });
+      rerender(<SequenceContent {...mockData} unitId="" />);
     });
 
     expect(appContainer).toHaveAttribute('tabindex', '-1');
@@ -101,16 +138,15 @@ describe('Sequence Content', () => {
     global.document.body.removeChild(appContainer);
   });
 
-  it('falls back to focusing document.body when div.app-container is absent', async () => {
-    // Verify div.app-container is not in the DOM for this test — if a previous
-    // test left one behind, this assertion would give a false negative.
+  it('falls back to document.body when neither heading nor div.app-container is present', async () => {
+    // Verify neither fallback-preempting element is in the DOM for this test — if a
+    // previous test left one behind, this assertion would give a false negative.
+    expect(global.document.getElementById('courseware-unit-title')).toBeNull();
     expect(global.document.querySelector('div.app-container')).toBeNull();
 
-    render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
-
-    // A second render call is used instead of rerender — see comment above.
+    const { rerender } = render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
     await act(async () => {
-      render(<SequenceContent {...mockData} unitId={secondUnitId} />, { wrapWithRouter: true });
+      rerender(<SequenceContent {...mockData} unitId="" />);
     });
 
     expect(global.document.body).toHaveFocus();
