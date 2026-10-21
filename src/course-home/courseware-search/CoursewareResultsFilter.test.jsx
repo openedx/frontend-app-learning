@@ -10,14 +10,11 @@ import {
 } from '../../setupTest';
 import { CoursewareSearchResultsFilter } from './CoursewareResultsFilter';
 import { useCoursewareSearchParams } from './hooks';
-import initializeStore from '../../store';
-import { useModel } from '../../generic/model-store';
+import { useCoursewareSearchResults } from './data/apiHooks';
 import searchResultsFactory from './test-data/search-results-factory';
 
 jest.mock('./hooks');
-jest.mock('../../generic/model-store', () => ({
-  useModel: jest.fn(),
-}));
+jest.mock('./data/apiHooks');
 
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
@@ -43,10 +40,9 @@ const coursewareSearch = {
 };
 
 function renderComponent(props = {}) {
-  const store = initializeStore();
   history.push(pathname);
   const { container } = render(
-    <AppProvider store={store}>
+    <AppProvider>
       <Routes>
         <Route path="/course/:courseId/:sequenceId/:unitId" element={<CoursewareSearchResultsFilter intl={intl} {...props} />} />
       </Routes>
@@ -68,7 +64,7 @@ describe('CoursewareSearchResultsFilter', () => {
 
   describe('when returning full results', () => {
     beforeEach(() => {
-      useModel.mockReturnValue(searchResultsFactory());
+      useCoursewareSearchResults.mockReturnValue({ data: searchResultsFactory() });
       renderComponent();
     });
 
@@ -90,13 +86,12 @@ describe('CoursewareSearchResultsFilter', () => {
     beforeEach(async () => {
       // Get results for only videos
       const data = searchResultsFactory();
-      const onlyVideos = data.results.filter(({ type }) => type === 'video');
-      const filteredResults = {
+      const onlyVideos = {
         ...data,
-        results: onlyVideos,
+        results: data.results.filter(({ type }) => type === 'video'),
       };
 
-      useModel.mockReturnValue(filteredResults);
+      useCoursewareSearchResults.mockReturnValue({ data: onlyVideos });
       await renderComponent();
     });
 
@@ -111,13 +106,15 @@ describe('CoursewareSearchResultsFilter', () => {
 
   describe('when there are not results', () => {
     beforeEach(async () => {
-      useModel.mockReturnValue(searchResultsFactory('blah', {
-        results: [],
-        filters: [],
-        total: 0,
-        maxScore: null,
-        ms: 5,
-      }));
+      useCoursewareSearchResults.mockReturnValue({
+        data: searchResultsFactory('blah', {
+          results: [],
+          filters: [],
+          total: 0,
+          maxScore: null,
+          ms: 5,
+        }),
+      });
       await renderComponent();
     });
 

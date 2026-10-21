@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@openedx/paragon';
 import { Lock } from '@openedx/paragon/icons';
-import { useContextId } from '../../../../data/hooks';
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 
 import AssignmentTypeCell from './AssignmentTypeCell';
 import DroppableAssignmentFootnote from './DroppableAssignmentFootnote';
@@ -14,13 +13,12 @@ import messages from '../messages';
 
 const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     assignmentTypeGradeSummary,
     gradesFeatureIsFullyLocked,
     sectionScores,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const footnotes = [];
 

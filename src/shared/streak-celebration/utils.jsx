@@ -5,7 +5,7 @@ import {
   getAuthenticatedUser,
 } from '@edx/frontend-platform/auth';
 
-import { updateModel } from '../../generic/model-store';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 
 function recordStreakCelebration(org, courseId) {
   // Tell our analytics
@@ -17,15 +17,12 @@ function recordStreakCelebration(org, courseId) {
   });
 }
 
-function recordModalClosing(celebrations, org, courseId, dispatch) {
+function recordModalClosing(celebrations, org, courseId, queryClient) {
   // Ensure we only celebrate each streak once
-  dispatch(updateModel({
-    modelType: 'courseHomeMeta',
-    model: {
-      id: courseId,
-      celebrations: { ...celebrations, streakLengthToCelebrate: null },
-    },
-  }));
+  queryClient.setQueryData(
+    courseHomeMetaQuery(courseId).queryKey,
+    (meta) => ({ ...meta, celebrations: { ...celebrations, streakLengthToCelebrate: null } }),
+  );
 }
 
 async function calculateVoucherDiscountPercentage(voucher, sku, username) {

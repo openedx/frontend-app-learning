@@ -3,7 +3,8 @@ import { Factory } from 'rosie';
 import { getAllByRole } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { initializeTestStore, render, screen } from '../../../../setupTest';
+import { mockCourseRequests, render, screen } from '../../../../setupTest';
+import { SidebarProvider } from '../../sidebar/SidebarContext';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
@@ -30,7 +31,7 @@ describe('Sequence Navigation Tabs', () => {
   const activeBlockNumber = 2;
 
   beforeAll(async () => {
-    await initializeTestStore({ courseMetadata, unitBlocks });
+    mockCourseRequests({ courseMetadata, unitBlocks });
     mockData = {
       // Blocks are numbered from 1 in the UI, so we're decreasing this by 1 to have correct block's ID in the array.
       unitId: unitBlocks[activeBlockNumber - 1].id,
@@ -40,9 +41,16 @@ describe('Sequence Navigation Tabs', () => {
     };
   });
 
+  const renderTabs = () => render(
+    <SidebarProvider courseId={courseMetadata.id} unitId={mockData.unitId} widgets={[]}>
+      <SequenceNavigationTabs {...mockData} />
+    </SidebarProvider>,
+    { wrapWithRouter: true },
+  );
+
   it('renders unit buttons', () => {
     useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
-    render(<SequenceNavigationTabs {...mockData} />, { wrapWithRouter: true });
+    renderTabs();
 
     expect(screen.getAllByRole('link')).toHaveLength(unitBlocks.length);
   });
@@ -51,7 +59,7 @@ describe('Sequence Navigation Tabs', () => {
     let container = null;
 
     useIndexOfLastVisibleChild.mockReturnValue([-1, null, null]);
-    const booyah = render(<SequenceNavigationTabs {...mockData} />, { wrapWithRouter: true });
+    const booyah = renderTabs();
 
     // wait for links to appear so we aren't testing an empty div
     await screen.findAllByRole('link');

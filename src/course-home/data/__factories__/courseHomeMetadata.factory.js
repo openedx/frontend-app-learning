@@ -40,9 +40,7 @@ Factory.define('courseHomeMetadata')
       'tab',
       {
         title: 'Course',
-        priority: 0,
-        slug: 'courseware',
-        type: 'courseware',
+        tab_id: 'courseware',
       },
       {
         courseId: id,
@@ -54,9 +52,7 @@ Factory.define('courseHomeMetadata')
       'tab',
       {
         title: 'Discussion',
-        priority: 1,
-        slug: 'discussion',
-        type: 'discussion',
+        tab_id: 'discussion',
       },
       {
         courseId: id,
@@ -68,9 +64,7 @@ Factory.define('courseHomeMetadata')
       'tab',
       {
         title: 'Wiki',
-        priority: 2,
-        slug: 'wiki',
-        type: 'wiki',
+        tab_id: 'wiki',
       },
       {
         courseId: id,
@@ -82,9 +76,7 @@ Factory.define('courseHomeMetadata')
       'tab',
       {
         title: 'Progress',
-        priority: 3,
-        slug: 'progress',
-        type: 'progress',
+        tab_id: 'progress',
       },
       {
         courseId: id,
@@ -96,9 +88,7 @@ Factory.define('courseHomeMetadata')
       'tab',
       {
         title: 'Instructor',
-        priority: 4,
-        slug: 'instructor',
-        type: 'instructor',
+        tab_id: 'instructor',
       },
       {
         courseId: id,
@@ -110,9 +100,7 @@ Factory.define('courseHomeMetadata')
       'tab',
       {
         title: 'Dates',
-        priority: 5,
-        slug: 'dates',
-        type: 'dates',
+        tab_id: 'dates',
       },
       {
         courseId: id,

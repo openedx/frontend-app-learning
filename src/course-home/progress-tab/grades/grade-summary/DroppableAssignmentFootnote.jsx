@@ -1,17 +1,15 @@
 import PropTypes from 'prop-types';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useContextId } from '../../../../data/hooks';
 
 import messages from '../messages';
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 
 const DroppableAssignmentFootnote = ({ footnotes }) => {
   const intl = useIntl();
-  const courseId = useContextId();
   const {
     gradesFeatureIsFullyLocked,
-  } = useModel('progress', courseId);
+  } = useProgressData();
   return (
     <>
       <span id="grade-summary-footnote-label" className="sr-only">{intl.formatMessage(messages.footnotesTitle)}</span>

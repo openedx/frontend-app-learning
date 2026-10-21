@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -11,18 +11,16 @@ import {
 import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
 
 import messages from '../messages';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
 import LaunchCourseHomeTourButton from '../../../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 
 const CourseTools = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
-  const { org } = useModel('courseHomeMeta', courseId);
+  const { courseId } = useParams();
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     courseTools,
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   if (courseTools.length === 0) {
     return null;

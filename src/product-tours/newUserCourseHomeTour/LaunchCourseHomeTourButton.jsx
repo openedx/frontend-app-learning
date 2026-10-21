@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -8,28 +8,28 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Button, Icon } from '@openedx/paragon';
 import { Compass } from '@openedx/paragon/icons';
 
-import { useModel } from '../../generic/model-store';
-import { launchCourseHomeTour } from '../data/slice';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
+import { useTourData } from '../data/apiHooks';
+import { useTourState } from '../TourContext';
 import messages from '../messages';
 
 const LaunchCourseHomeTourButton = ({ srOnly }) => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
+
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const {
-    org,
-  } = useModel('courseHomeMeta', courseId);
+    administrator,
+    username,
+  } = getAuthenticatedUser() || {};
 
-  const {
-    toursEnabled,
-  } = useSelector(state => state.tours);
+  const { data: tourData } = useTourData(username, false);
+  const toursEnabled = tourData?.toursEnabled;
 
-  const dispatch = useDispatch();
+  const { launchCourseHomeTour } = useTourState();
 
   const handleClick = () => {
-    const { administrator } = getAuthenticatedUser();
     sendTrackEvent('edx.ui.lms.launch_tour.clicked', {
       org_key: org,
       courserun_key: courseId,
@@ -37,7 +37,7 @@ const LaunchCourseHomeTourButton = ({ srOnly }) => {
       tour_variant: 'course_home',
     });
 
-    dispatch(launchCourseHomeTour());
+    launchCourseHomeTour();
   };
 
   return (

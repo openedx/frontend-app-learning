@@ -1,12 +1,11 @@
-import { useDispatch } from 'react-redux';
 import { renderHook } from '@testing-library/react';
 
 import { logError } from '@edx/frontend-platform/logging';
 
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { fetchCourse } from '@src/courseware/data';
-import { processEvent } from '@src/course-home/data/thunks';
+import { coursewareMetadataQuery, minimalCourseOutlineQuery } from '@src/courseware/data/apiHooks';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { useEventListener } from '@src/generic/hooks';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
 
@@ -15,8 +14,11 @@ import { messageTypes } from '../constants';
 import useIFrameBehavior, { iframeBehaviorState } from './useIFrameBehavior';
 
 const mockNavigate = jest.fn();
+const mockMutate = jest.fn();
+const mockInvalidateQueries = jest.fn();
 
 jest.mock('@edx/frontend-platform', () => ({
+  ...jest.requireActual('@edx/frontend-platform'),
   getConfig: jest.fn(),
 }));
 
@@ -27,30 +29,29 @@ jest.mock('react', () => ({
   useCallback: jest.fn((cb, prereqs) => ({ cb, prereqs })),
 }));
 
-jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(),
-  useSelector: jest.fn(),
-}));
-
 jest.mock('@edx/frontend-platform/logging', () => ({
   logError: jest.fn(),
 }));
 
-jest.mock('@src/courseware/data', () => ({
-  fetchCourse: jest.fn(),
+jest.mock('@tanstack/react-query', () => ({
+  ...jest.requireActual('@tanstack/react-query'),
+  useQueryClient: () => ({ invalidateQueries: mockInvalidateQueries }),
 }));
-jest.mock('@src/course-home/data/thunks', () => ({
-  processEvent: jest.fn((...args) => ({ processEvent: args })),
+jest.mock('@src/course-home/data/apiHooks', () => ({
+  ...jest.requireActual('@src/course-home/data/apiHooks'),
+  usePostEvent: () => ({ mutate: mockMutate }),
 }));
 jest.mock('@src/generic/hooks', () => ({
   useEventListener: jest.fn(),
 }));
-jest.mock('@src/generic/model-store', () => ({
-  useModel: () => ({ unitIds: ['unit1', 'unit2'], entranceExamData: { entranceExamPassed: null } }),
+jest.mock('@src/courseware/data/apiHooks', () => ({
+  ...jest.requireActual('@src/courseware/data/apiHooks'),
+  useSequenceMetadata: () => ({ data: { sequence: { unitIds: ['unit1', 'unit2'], activeUnitIndex: 0 } } }),
 }));
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
+  useParams: () => ({ sequenceId: 'test-sequence-id' }),
 }));
 
 jest.mock('@src/courseware/course/sequence/sequence-navigation/hooks');
@@ -67,9 +68,6 @@ const testIFrameHeight = 42;
 
 const config = { LMS_BASE_URL: 'test-base-url' };
 getConfig.mockReturnValue(config);
-
-const dispatch = jest.fn();
-useDispatch.mockReturnValue(dispatch);
 
 const postMessage = jest.fn();
 const frame = {
@@ -347,14 +345,32 @@ describe('useIFrameBehavior hook', () => {
         result.current.handleIFrameLoad();
         expect(sendTrackEvent).not.toHaveBeenCalled();
       });
-      it('registers an event handler to process fetchCourse events.', () => {
+      it('invalidates the courseware queries on a post event.', () => {
         mockState(defaultStateVals);
         const { result } = renderHook(() => useIFrameBehavior(props));
         result.current.handleIFrameLoad();
-        const eventName = 'test-event-name';
-        const event = { data: { event_name: eventName } };
+        const event = {
+          data: {
+            event_name: 'post_event',
+            post_data: { url: 'post-url', body_params: { course_id: 'course-1' } },
+            research_event_data: { location: 'unit' },
+          },
+        };
         window.onmessage(event);
-        expect(dispatch).toHaveBeenCalledWith(processEvent(event.data, fetchCourse));
+
+        expect(mockMutate).toHaveBeenCalledWith(
+          {
+            postData: { url: 'post-url', bodyParams: { courseId: 'course-1' } },
+            researchEventData: { location: 'unit' },
+          },
+          { onSuccess: expect.any(Function) },
+        );
+
+        const { onSuccess } = mockMutate.mock.calls[0][1];
+        onSuccess();
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: coursewareMetadataQuery('course-1').queryKey });
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: minimalCourseOutlineQuery('course-1').queryKey });
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: courseHomeMetaQuery('course-1').queryKey });
       });
       it('updates initial iframe visibility on load', () => {
         const { result } = renderHook(() => useIFrameBehavior(props));

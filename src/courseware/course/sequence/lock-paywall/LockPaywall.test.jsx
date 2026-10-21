@@ -3,33 +3,40 @@ import { Factory } from 'rosie';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 
 import {
-  fireEvent, initializeTestStore, render, screen,
+  fireEvent, mockCourseRequests, render, screen,
 } from '../../../../setupTest';
+import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
+import { SidebarProvider } from '../../sidebar/SidebarContext';
 import LockPaywall from './LockPaywall';
 
 jest.mock('@edx/frontend-platform/analytics');
 
 describe('Lock Paywall', () => {
-  let store;
+  let unitId;
+  let defaultCourseHomeMetadata;
   const mockData = { currentSidebar: null };
 
-  beforeAll(async () => {
-    store = await initializeTestStore();
-    const { courseware } = store.getState();
-    Object.assign(mockData, {
-      courseId: courseware.courseId,
-    });
+  beforeAll(() => {
+    ({ courseId: mockData.courseId, unitId, courseHomeMetadata: defaultCourseHomeMetadata } = mockCourseRequests());
   });
 
-  it('displays unlock link with price', () => {
-    const {
-      currencySymbol,
-      price,
-      upgradeUrl,
-    } = store.getState().models.courseHomeMeta[mockData.courseId].verifiedMode;
-    render(<LockPaywall {...mockData} />);
+  const renderPaywall = (props, options) => render(
+    <SidebarProvider courseId={props.courseId} unitId={unitId} widgets={[]}>
+      <MountCourseQueryHooks courseId={props.courseId} />
+      <LockPaywall {...props} />
+    </SidebarProvider>,
+    { wrapWithRouter: true, ...options },
+  );
 
-    const upgradeLink = screen.getByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
+  it('displays unlock link with price', async () => {
+    const {
+      currency_symbol: currencySymbol,
+      price,
+      upgrade_url: upgradeUrl,
+    } = defaultCourseHomeMetadata.verified_mode;
+    renderPaywall(mockData);
+
+    const upgradeLink = await screen.findByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
     expect(upgradeLink).toHaveAttribute('href', `${upgradeUrl}`);
   });
 
@@ -44,22 +51,23 @@ describe('Lock Paywall', () => {
         upgrade_url: 'https://example.com/upgrade',
       },
     });
-    const testStore = await initializeTestStore({ courseMetadata }, false);
-    render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+    mockCourseRequests({ courseMetadata });
+    renderPaywall({ ...mockData, courseId: courseMetadata.id });
 
-    expect(screen.getByText(/Upgrade for/).textContent).toMatch('$85 ($100)');
+    expect((await screen.findByText(/Upgrade for/)).textContent).toMatch('$85 ($100)');
   });
 
-  it('sends analytics event onClick of unlock link', () => {
+  it('sends analytics event onClick of unlock link', async () => {
     sendTrackEvent.mockClear();
 
+    mockCourseRequests();
     const {
-      currencySymbol,
+      currency_symbol: currencySymbol,
       price,
-    } = store.getState().models.courseHomeMeta[mockData.courseId].verifiedMode;
-    render(<LockPaywall {...mockData} />);
+    } = defaultCourseHomeMetadata.verified_mode;
+    renderPaywall(mockData);
 
-    const upgradeLink = screen.getByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
+    const upgradeLink = await screen.findByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
     fireEvent.click(upgradeLink);
 
     expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -75,8 +83,8 @@ describe('Lock Paywall', () => {
 
   it('does not display anything if course does not have verified mode', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { verified_mode: null });
-    const testStore = await initializeTestStore({ courseHomeMetadata, excludeFetchSequence: true }, false);
-    render(<LockPaywall {...mockData} courseId={courseHomeMetadata.id} />, { store: testStore });
+    mockCourseRequests({ courseHomeMetadata });
+    renderPaywall({ ...mockData, courseId: courseHomeMetadata.id });
 
     expect(screen.queryByTestId('lock-paywall-test-id')).not.toBeInTheDocument();
   });
@@ -88,9 +96,9 @@ describe('Lock Paywall', () => {
       },
       marketing_url: 'https://example.com/course-details',
     });
-    const testStore = await initializeTestStore({ courseMetadata }, false);
-    render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-    expect(screen.getByText('The upgrade deadline for this course passed. To upgrade, enroll in the next available session.')).toBeInTheDocument();
+    mockCourseRequests({ courseMetadata });
+    renderPaywall({ ...mockData, courseId: courseMetadata.id });
+    expect(await screen.findByText('The upgrade deadline for this course passed. To upgrade, enroll in the next available session.')).toBeInTheDocument();
     expect(screen.getByText('View Course Details'))
       .toHaveAttribute('href', 'https://example.com/course-details');
   });
@@ -103,9 +111,9 @@ describe('Lock Paywall', () => {
       },
       marketing_url: 'https://example.com/course-details',
     });
-    const testStore = await initializeTestStore({ courseMetadata }, false);
-    render(<LockPaywall {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-    const courseDetailsLink = await screen.getByText('View Course Details');
+    mockCourseRequests({ courseMetadata });
+    renderPaywall({ ...mockData, courseId: courseMetadata.id });
+    const courseDetailsLink = await screen.findByText('View Course Details');
     fireEvent.click(courseDetailsLink);
 
     expect(sendTrackEvent).toHaveBeenCalledTimes(1);

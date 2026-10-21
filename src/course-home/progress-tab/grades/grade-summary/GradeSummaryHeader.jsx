@@ -8,18 +8,16 @@ import {
   Tooltip,
 } from '@openedx/paragon';
 import { InfoOutline, Locked } from '@openedx/paragon/icons';
-import { useContextId } from '../../../../data/hooks';
 
 import messages from '../messages';
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 
 const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
   const intl = useIntl();
-  const courseId = useContextId();
   const {
     verifiedMode,
     gradesFeatureIsFullyLocked,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   return (
     <Stack gap={2} className="mb-3">

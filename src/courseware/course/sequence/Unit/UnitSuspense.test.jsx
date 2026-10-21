@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { useModel } from '@src/generic/model-store';
+import { useCoursewareMetadata, useUnit } from '@src/courseware/data/apiHooks';
 import hooks from './hooks';
-import { modelKeys } from './constants';
 
 import UnitSuspense from './UnitSuspense';
 
@@ -19,22 +18,20 @@ jest.mock('react', () => ({
 
 jest.mock('../honor-code', () => jest.fn(() => <div>HonorCode</div>));
 jest.mock('../lock-paywall', () => jest.fn(() => <div>LockPaywall</div>));
-jest.mock('@src/generic/model-store', () => ({ useModel: jest.fn() }));
+jest.mock('@src/courseware/data/apiHooks', () => ({ useCoursewareMetadata: jest.fn(), useUnit: jest.fn() }));
 
 jest.mock('./hooks', () => ({
   useShouldDisplayHonorCode: jest.fn(() => false),
 }));
 
 const mockModels = (enabled, containsContent) => {
-  useModel.mockImplementation((key) => (
-    key === modelKeys.units
-      ? { containsContentTypeGatedContent: containsContent }
-      : { contentTypeGatingEnabled: enabled }
-  ));
+  useUnit.mockReturnValue({ data: { containsContentTypeGatedContent: containsContent } });
+  useCoursewareMetadata.mockReturnValue({ data: { contentTypeGatingEnabled: enabled } });
 };
 
 const props = {
   courseId: 'test-course-id',
+  sequenceId: 'test-sequence-id',
   id: 'test-id',
 };
 
@@ -44,13 +41,10 @@ describe('UnitSuspense component', () => {
     mockModels(false, false);
   });
   describe('behavior', () => {
-    it('initializes models', () => {
+    it('reads the unit from its sequence and the courseware metadata query', () => {
       render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
-      const { calls } = useModel.mock;
-      const [unitCall] = calls.filter(call => call[0] === modelKeys.units);
-      const [metaCall] = calls.filter(call => call[0] === modelKeys.coursewareMeta);
-      expect(unitCall[1]).toEqual(props.id);
-      expect(metaCall[1]).toEqual(props.courseId);
+      expect(useUnit).toHaveBeenCalledWith('test-sequence-id', props.id);
+      expect(useCoursewareMetadata).toHaveBeenCalledWith(props.courseId, { enabled: false });
     });
   });
   describe('output', () => {

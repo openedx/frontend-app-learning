@@ -1,15 +1,10 @@
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 import { CourseTabLinksList } from '@src/course-tabs/CourseTabLinksList';
+import { TabMetadata } from '@src/course-tabs/utils';
 import React from 'react';
 
-type CourseTabList = Array<{
-  title: string;
-  slug: string;
-  url: string;
-}>;
-
 export const CourseTabLinksSlot = ({ tabs, activeTabSlug }: {
-  tabs: CourseTabList,
+  tabs: TabMetadata[],
   activeTabSlug?: string
 }) => (
   <PluginSlot

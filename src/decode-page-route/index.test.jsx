@@ -45,7 +45,7 @@ const renderPage = (props) => {
   const { container } = render(
     <Router initialEntries={[props?.pathname]}>
       <Routes>
-        <Route path={props?.pattern?.path} element={<DecodePageRoute> {[]} </DecodePageRoute>} />
+        <Route path="*" element={<DecodePageRoute> {[]} </DecodePageRoute>} />
       </Routes>
     </Router>,
   );

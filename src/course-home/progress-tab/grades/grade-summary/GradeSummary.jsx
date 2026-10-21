@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 
-import { useContextId } from '../../../../data/hooks';
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 
 import GradeSummaryHeader from './GradeSummaryHeader';
 import GradeSummaryTable from './GradeSummaryTable';
 
 const GradeSummary = () => {
-  const courseId = useContextId();
-
   const {
     assignmentTypeGradeSummary,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const [allOfSomeAssignmentTypeIsLocked, setAllOfSomeAssignmentTypeIsLocked] = useState(false);
 

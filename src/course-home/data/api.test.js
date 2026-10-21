@@ -1,7 +1,9 @@
 import { getConfig, setConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import MockAdapter from 'axios-mock-adapter';
-import { getTimeOffsetMillis, getExamsData } from './api';
+import {
+  getDatesTabData, getExamsData, getProctoringInfoData, getTimeOffsetMillis, searchCourseContentFromAPI,
+} from './api';
 import { initializeMockApp } from '../../setupTest';
 
 initializeMockApp();
@@ -173,5 +175,80 @@ describe('getExamsData', () => {
     expect(axiosMock.history.get[0].url).toBe(expectedUrl);
     expect(axiosMock.history.get[0].url).toContain('course-v1%3AedX%2BDemo%20X%2BDemo%20Course');
     expect(axiosMock.history.get[0].url).toContain('block-v1%3AedX%2BDemo%20X%2BDemo%20Course%2Btype%40sequential%2Bblock%40test%20sequence');
+  });
+});
+
+describe('getDatesTabData', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  const datesUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dates/${courseId}`;
+
+  beforeEach(() => {
+    axiosMock.reset();
+  });
+
+  it('returns camelCased data on success', async () => {
+    axiosMock.onGet(datesUrl).reply(200, { course_date_blocks: [] });
+    await expect(getDatesTabData(courseId)).resolves.toEqual({ courseDateBlocks: [] });
+  });
+
+  it('swallows a 401 and resolves to an empty object', async () => {
+    axiosMock.onGet(datesUrl).reply(401);
+    await expect(getDatesTabData(courseId)).resolves.toEqual({});
+  });
+
+  it('swallows a 403 and resolves to an empty object', async () => {
+    axiosMock.onGet(datesUrl).reply(403);
+    await expect(getDatesTabData(courseId)).resolves.toEqual({});
+  });
+
+  it('re-throws other errors', async () => {
+    axiosMock.onGet(datesUrl).reply(500);
+    await expect(getDatesTabData(courseId)).rejects.toThrow();
+  });
+});
+
+describe('getProctoringInfoData', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  let originalConfig;
+
+  beforeEach(() => {
+    axiosMock.reset();
+    originalConfig = getConfig();
+  });
+
+  afterEach(() => {
+    axiosMock.reset();
+    setConfig(originalConfig);
+  });
+
+  it('uses the LMS proctoring URL, with the username, when EXAMS_BASE_URL is not configured', async () => {
+    setConfig({
+      ...originalConfig,
+      EXAMS_BASE_URL: undefined,
+      LMS_BASE_URL: 'http://localhost:18000',
+    });
+    const expectedUrl = `http://localhost:18000/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}&username=learner`;
+    axiosMock.onGet(expectedUrl).reply(200, { onboarding_status: 'verified' });
+
+    await expect(getProctoringInfoData(courseId, 'learner')).resolves.toEqual({ onboarding_status: 'verified' });
+    expect(axiosMock.history.get[0].url).toBe(expectedUrl);
+  });
+});
+
+describe('searchCourseContentFromAPI', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  const searchUrl = `${getConfig().LMS_BASE_URL}/search/${courseId}`;
+
+  beforeEach(() => {
+    axiosMock.reset();
+  });
+
+  it('POSTs the search form with the default page size and camel-cases the response', async () => {
+    axiosMock.onPost(searchUrl).reply(200, { total_hits: 1, results: [] });
+
+    const response = await searchCourseContentFromAPI(courseId, 'quiz');
+
+    expect(axiosMock.history.post[0].data).toBe('search_string=quiz&page_size=20&page_index=0');
+    expect(response.data).toEqual({ totalHits: 1, results: [] });
   });
 });

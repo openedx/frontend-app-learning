@@ -1,13 +1,13 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 import Timeline from './timeline/Timeline';
 
-import { fetchDatesTab } from '../data';
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta, useDatesTabData } from '../data/apiHooks';
+import { TabWithTimer } from '../../tab-page';
 
 import SuggestedScheduleHeader from '../suggested-schedule-messaging/SuggestedScheduleHeader';
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
@@ -16,18 +16,21 @@ import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToS
 
 const DatesTab = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
+
+  const metadataQuery = useCourseHomeMeta(courseId);
+  const tabDataQuery = useDatesTabData(courseId);
 
   const {
     isSelfPaced,
     org,
-  } = useModel('courseHomeMeta', courseId);
+  } = metadataQuery.data ?? {};
 
   const {
     courseDateBlocks,
-  } = useModel('dates', courseId);
+    datesBannerInfo,
+    hasEnded,
+  } = tabDataQuery.data ?? {};
 
   const hasDeadlines = courseDateBlocks && courseDateBlocks.some(x => x.dateType === 'assignment-due-date');
 
@@ -43,20 +46,28 @@ const DatesTab = () => {
   };
 
   return (
-    <>
+    <TabWithTimer
+      activeTabSlug="dates"
+      courseId={courseId}
+      courseStatus={{ metadataQuery, tabDataQuery }}
+    >
       <div role="heading" aria-level="1" className="h2 my-3">
         {intl.formatMessage(messages.title)}
       </div>
       {isSelfPaced && hasDeadlines && (
         <>
-          <ShiftDatesAlert model="dates" fetch={fetchDatesTab} />
+          <ShiftDatesAlert model="dates" datesBannerInfo={datesBannerInfo} hasEnded={hasEnded} />
           <SuggestedScheduleHeader />
           <BannerDatesUpgradeSlot courseId={courseId} logUpgradeLinkClick={logUpgradeLinkClick} />
-          <UpgradeToShiftDatesAlert logUpgradeLinkClick={logUpgradeLinkClick} model="dates" />
+          <UpgradeToShiftDatesAlert
+            logUpgradeLinkClick={logUpgradeLinkClick}
+            datesBannerInfo={datesBannerInfo}
+            hasEnded={hasEnded}
+          />
         </>
       )}
       <Timeline />
-    </>
+    </TabWithTimer>
   );
 };
 

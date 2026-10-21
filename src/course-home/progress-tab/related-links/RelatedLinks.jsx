@@ -2,18 +2,16 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Hyperlink } from '@openedx/paragon';
-import { useContextId } from '../../../data/hooks';
+import { useParams } from 'react-router-dom';
 
+import { useCourseOutlineUrl, useDatesTabUrl } from '../../../course-tabs/hooks';
 import messages from './messages';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../data/apiHooks';
 
 const RelatedLinks = () => {
   const intl = useIntl();
-  const courseId = useContextId();
-  const {
-    org,
-    tabs,
-  } = useModel('courseHomeMeta', courseId);
+  const { courseId } = useParams();
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const { administrator } = getAuthenticatedUser();
   const logLinkClicked = (linkName) => {
@@ -25,10 +23,8 @@ const RelatedLinks = () => {
     });
   };
 
-  const overviewTab = tabs.find(tab => tab.slug === 'outline');
-  const overviewTabUrl = overviewTab && overviewTab.url;
-  const datesTab = tabs.find(tab => tab.slug === 'dates');
-  const datesTabUrl = datesTab && datesTab.url;
+  const courseOutlineUrl = useCourseOutlineUrl();
+  const datesTabUrl = useDatesTabUrl();
 
   return (
     <section className="mb-4 x-small">
@@ -42,9 +38,9 @@ const RelatedLinks = () => {
           <p>{intl.formatMessage(messages.datesCardDescription)}</p>
         </li>
         )}
-        {overviewTabUrl && (
+        {courseOutlineUrl && (
         <li>
-          <Hyperlink destination={overviewTabUrl} onClick={() => logLinkClicked('course_outline')}>
+          <Hyperlink destination={courseOutlineUrl} onClick={() => logLinkClicked('course_outline')}>
             {intl.formatMessage(messages.outlineCardLink)}
           </Hyperlink>
           <p>{intl.formatMessage(messages.outlineCardDescription)}</p>

@@ -1,18 +1,18 @@
 import React from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Icon } from '@openedx/paragon';
 import { CheckCircleOutline, CheckCircle } from '@openedx/paragon/icons';
 
 import EffortEstimate from '../../../shared/effort-estimate';
+import type { CourseHomeOutlineSequence } from '../../data/courseHomeOutline';
 import messages from '../messages';
-import { useContextId } from '../../../data/hooks';
 
 interface Props {
   complete: boolean;
   showLink: boolean;
   title: string;
-  sequence: object;
+  sequence: CourseHomeOutlineSequence;
   id: string;
 }
 
@@ -24,7 +24,7 @@ const SequenceTitle: React.FC<Props> = ({
   id,
 }) => {
   const intl = useIntl();
-  const courseId = useContextId();
+  const { courseId } = useParams();
   const coursewareUrl = <Link to={`/course/${courseId}/${id}`}>{title}</Link>;
   const displayTitle = showLink ? coursewareUrl : title;
 

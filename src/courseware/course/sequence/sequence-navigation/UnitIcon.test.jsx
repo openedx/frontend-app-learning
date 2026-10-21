@@ -1,6 +1,6 @@
 import React from 'react';
 import { Factory } from 'rosie';
-import { initializeTestStore, render } from '../../../../setupTest';
+import { mockCourseRequests, render } from '../../../../setupTest';
 import UnitIcon from './UnitIcon';
 
 describe('Unit Icon', () => {
@@ -21,7 +21,7 @@ describe('Unit Icon', () => {
   ));
 
   beforeAll(async () => {
-    await initializeTestStore({ courseMetadata, unitBlocks });
+    mockCourseRequests({ courseMetadata, unitBlocks });
   });
 
   unitBlocks.forEach(block => {

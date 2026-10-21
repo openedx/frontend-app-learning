@@ -1,10 +1,5 @@
 import { getConfig } from '@edx/frontend-platform';
-import {
-  getEnabledWidgets,
-  buildSidebarsRegistry,
-  getSidebarOrder,
-  DEFAULT_WIDGETS,
-} from './defaultWidgets';
+import { getEnabledWidgets, DEFAULT_WIDGETS } from './defaultWidgets';
 import { WIDGET_PRIORITIES } from './constants';
 
 jest.mock('@edx/frontend-platform', () => ({
@@ -143,54 +138,6 @@ describe('defaultWidgets', () => {
       const widgets = getEnabledWidgets();
       // The default should be removed
       expect(widgets.some(w => w.id === 'DISCUSSIONS')).toBe(false);
-    });
-  });
-
-  describe('buildSidebarsRegistry', () => {
-    it('builds a registry keyed by widget id', () => {
-      const MockSidebar = () => null;
-      const MockTrigger = () => null;
-      const mockIsAvailable = jest.fn();
-      const widgets = [{
-        id: 'DISCUSSIONS',
-        Sidebar: MockSidebar,
-        Trigger: MockTrigger,
-        isAvailable: mockIsAvailable,
-      }];
-      const registry = buildSidebarsRegistry(widgets);
-      expect(registry.DISCUSSIONS).toBeDefined();
-      expect(registry.DISCUSSIONS.ID).toBe('DISCUSSIONS');
-      expect(registry.DISCUSSIONS.Sidebar).toBe(MockSidebar);
-      expect(registry.DISCUSSIONS.Trigger).toBe(MockTrigger);
-      expect(registry.DISCUSSIONS.isAvailable).toBe(mockIsAvailable);
-    });
-
-    it('returns an empty object for an empty widget list', () => {
-      expect(buildSidebarsRegistry([])).toEqual({});
-    });
-
-    it('registers multiple widgets', () => {
-      const widgets = [
-        { id: 'DISCUSSIONS', Sidebar: () => null, Trigger: () => null },
-        { id: 'CUSTOM_WIDGET', Sidebar: () => null, Trigger: () => null },
-      ];
-      const registry = buildSidebarsRegistry(widgets);
-      expect(Object.keys(registry)).toHaveLength(2);
-      expect(registry.CUSTOM_WIDGET).toBeDefined();
-    });
-  });
-
-  describe('getSidebarOrder', () => {
-    it('returns an array of widget IDs in the given order', () => {
-      const widgets = [
-        { id: 'DISCUSSIONS', priority: 10 },
-        { id: 'CUSTOM_WIDGET', priority: 20 },
-      ];
-      expect(getSidebarOrder(widgets)).toEqual(['DISCUSSIONS', 'CUSTOM_WIDGET']);
-    });
-
-    it('returns an empty array for empty input', () => {
-      expect(getSidebarOrder([])).toEqual([]);
     });
   });
 });

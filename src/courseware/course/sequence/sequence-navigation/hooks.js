@@ -1,21 +1,23 @@
-import { useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
-import { useModel } from '../../../../generic/model-store';
-import { sequenceIdsSelector } from '../../../data';
-import SidebarContext from '../../sidebar/SidebarContext';
+import {
+  useCoursewareMetadata, useIsCourseLoaded, useSequenceIds, useSequenceMetadata,
+} from '../../../data/apiHooks';
+import { useSidebar } from '../../sidebar/SidebarContext';
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
-  const sequenceIds = useSelector(sequenceIdsSelector);
-  const sequence = useModel('sequences', currentSequenceId);
-  const courseId = useSelector(state => state.courseware.courseId);
-  const courseStatus = useSelector(state => state.courseware.courseStatus);
-  const { entranceExamData: { entranceExamPassed } } = useModel('coursewareMeta', courseId);
-  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
+  const { courseId } = useParams();
+  const sequenceIds = useSequenceIds(courseId);
+  const isCourseLoaded = useIsCourseLoaded(courseId);
+  const {
+    entranceExamData: { entranceExamPassed } = {},
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
+  const sequenceQuery = useSequenceMetadata(currentSequenceId, { enabled: false });
+  const sequence = sequenceQuery.data?.sequence;
 
   // If we don't know the sequence and unit yet, then assume no.
-  if (courseStatus !== 'loaded' || sequenceStatus !== 'loaded' || !currentSequenceId || !currentUnitId) {
+  if (!isCourseLoaded || !sequenceQuery.isSuccess || !currentSequenceId || !currentUnitId) {
     return {
       isFirstUnit: false,
       isLastUnit: false,
@@ -98,6 +100,6 @@ export function useIsOnXLDesktop() {
 }
 
 export function useIsSidebarOpen() {
-  const { currentSidebar, availableSidebarIds } = useContext(SidebarContext);
+  const { currentSidebar, availableSidebarIds } = useSidebar();
   return availableSidebarIds.includes(currentSidebar);
 }

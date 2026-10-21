@@ -3,8 +3,10 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Locked } from '@openedx/paragon/icons';
 import { Icon, Hyperlink } from '@openedx/paragon';
-import { useContextId } from '../../../../data/hooks';
-import { useModel } from '../../../../generic/model-store';
+import { useParams } from 'react-router-dom';
+import { useCourseHomeMeta } from '../../../data/apiHooks';
+import { useCourseOutlineUrl } from '../../../../course-tabs/hooks';
+import { useProgressData } from '../../hooks';
 import { showUngradedAssignments } from '../../utils';
 
 import DetailedGradesTable from './DetailedGradesTable';
@@ -14,16 +16,13 @@ import messages from '../messages';
 const DetailedGrades = () => {
   const intl = useIntl();
   const { administrator } = getAuthenticatedUser();
-  const courseId = useContextId();
-  const {
-    org,
-    tabs,
-  } = useModel('courseHomeMeta', courseId);
+  const { courseId } = useParams();
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     gradesFeatureIsFullyLocked,
     gradesFeatureIsPartiallyLocked,
     sectionScores,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const hasSectionScores = sectionScores.length > 0;
   const emptyTableMsg = showUngradedAssignments()
@@ -37,14 +36,13 @@ const DetailedGrades = () => {
     });
   };
 
-  const overviewTab = tabs.find(tab => tab.slug === 'outline');
-  const overviewTabUrl = overviewTab && overviewTab.url;
+  const courseOutlineUrl = useCourseOutlineUrl();
 
-  const outlineLink = overviewTabUrl && (
+  const outlineLink = courseOutlineUrl && (
     <Hyperlink
       variant="muted"
       isInline
-      destination={overviewTabUrl}
+      destination={courseOutlineUrl}
       onClick={logOutlineLinkClick}
       tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
     >
@@ -77,7 +75,7 @@ const DetailedGrades = () => {
       {!hasSectionScores && (
         <p className="small">{intl.formatMessage(emptyTableMsg)}</p>
       )}
-      {overviewTabUrl && !showUngradedAssignments() && (
+      {courseOutlineUrl && !showUngradedAssignments() && (
         <p className="x-small m-0">
           {intl.formatMessage(messages.ungradedAlert, { outlineLink })}
         </p>

@@ -1,55 +1,45 @@
 import {
-  useContext, useEffect, useLayoutEffect, useState,
+  useLayoutEffect, useRef, useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { breakpoints } from '@openedx/paragon';
 
-import { useModel } from '@src/generic/model-store';
-import { LOADED } from '@src/constants';
-import { checkBlockCompletion, getCourseOutlineStructure } from '@src/courseware/data/thunks';
 import {
-  getCoursewareOutlineSidebarSettings,
-  getCourseOutlineShouldUpdate,
-  getCourseOutlineStatus,
-  getSequenceId,
-  getCourseOutline,
-  getSequenceStatus,
-} from '@src/courseware/data/selectors';
-import SidebarContext from '../../SidebarContext';
+  useCheckBlockCompletion,
+  useCourseOutlineStructure,
+  useCoursewareMetadata,
+  useCoursewareOutlineSidebarToggles,
+} from '@src/courseware/data/apiHooks';
+import { useSidebar } from '../../SidebarContext';
 import { ID } from './constants';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
-  const dispatch = useDispatch();
-  const {
-    enableCompletionTracking: isEnabledCompletionTracking,
-  } = useSelector(getCoursewareOutlineSidebarSettings);
-  const courseOutlineShouldUpdate = useSelector(getCourseOutlineShouldUpdate);
-  const courseOutlineStatus = useSelector(getCourseOutlineStatus);
-  const sequenceStatus = useSelector(getSequenceStatus);
-  const activeSequenceId = useSelector(getSequenceId);
-  const { sections = {}, sequences = {}, units = {} } = useSelector(getCourseOutline);
+  const checkBlockCompletion = useCheckBlockCompletion();
 
-  const { courseId } = useParams();
-  const course = useModel('coursewareMeta', courseId);
+  const { courseId, sequenceId: activeSequenceId } = useParams();
+  const { data: sidebarToggles } = useCoursewareOutlineSidebarToggles(courseId);
+  const isEnabledCompletionTracking = sidebarToggles?.enableCompletionTracking;
+  const outlineQuery = useCourseOutlineStructure(courseId);
+  const { sections = {}, sequences = {}, units = {} } = outlineQuery.data ?? {};
+  const coursewareMetadata = useCoursewareMetadata(courseId, { enabled: false }).data;
 
   const {
     unitId,
     currentSidebar,
     toggleSidebar,
     shouldDisplayFullScreen,
-  } = useContext(SidebarContext);
+  } = useSidebar();
 
-  // Course outline state is now fully controlled by SidebarContextProvider
+  // Course outline state is now fully controlled by SidebarProvider
   // This component only renders when currentSidebar === 'COURSE_OUTLINE'
   const [isOpen, setIsOpen] = useState(true);
 
   const {
     entranceExamEnabled,
     entranceExamPassed,
-  } = course.entranceExamData || {};
+  } = coursewareMetadata?.entranceExamData || {};
   const isActiveEntranceExam = entranceExamEnabled && !entranceExamPassed;
 
   const collapseSidebar = () => {
@@ -64,7 +54,7 @@ export const useCourseOutlineSidebar = () => {
     }
   };
 
-  const handleUnitClick = ({ sequenceId, activeUnitId, id }) => {
+  const handleUnitClick = ({ activeUnitId, id }) => {
     const logEvent = (eventName, widgetPlacement) => {
       const findSequenceByUnitId = () => Object.values(sequences).find(seq => seq.unitIds.includes(activeUnitId));
       const activeSequence = findSequenceByUnitId(activeUnitId);
@@ -87,7 +77,7 @@ export const useCourseOutlineSidebar = () => {
     };
 
     logEvent('edx.ui.lms.sequence.tab_selected', 'left');
-    dispatch(checkBlockCompletion(courseId, sequenceId, activeUnitId));
+    checkBlockCompletion(courseId, activeSequenceId, activeUnitId);
 
     // Hide the sidebar after selecting a unit on a mobile device.
     if (shouldDisplayFullScreen) {
@@ -95,16 +85,20 @@ export const useCourseOutlineSidebar = () => {
     }
   };
 
-  // Load course outline structure when needed
-  useEffect(() => {
-    if (courseOutlineStatus !== LOADED || courseOutlineShouldUpdate) {
-      dispatch(getCourseOutlineStructure(courseId));
-    }
-  }, [courseId, courseOutlineShouldUpdate]);
-
   // Collapse sidebar if screen resized to a width that displays the sidebar automatically
+  const lastWindowWidth = useRef(global.innerWidth);
   useLayoutEffect(() => {
     const handleResize = () => {
+      const widthChanged = global.innerWidth !== lastWindowWidth.current;
+      lastWindowWidth.current = global.innerWidth;
+
+      // Only react to actual width changes. Mobile browsers fire `resize` on vertical scroll
+      // (the URL bar showing/hiding changes only the viewport height), and reacting to those
+      // would close the sidebar while the user is simply scrolling its content.
+      if (!widthChanged) {
+        return;
+      }
+
       // breakpoints.large.maxWidth is 1200px and currently the breakpoint for showing the sidebar
       if (currentSidebar === ID && global.innerWidth < breakpoints.large.maxWidth) {
         collapseSidebar();
@@ -127,12 +121,11 @@ export const useCourseOutlineSidebar = () => {
     setIsOpen,
     handleToggleCollapse,
     isActiveEntranceExam,
-    courseOutlineStatus,
+    isOutlinePending: outlineQuery.isPending,
     activeSequenceId,
     sections,
     sequences,
     units,
     handleUnitClick,
-    sequenceStatus,
   };
 };

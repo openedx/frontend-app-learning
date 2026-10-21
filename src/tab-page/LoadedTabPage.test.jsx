@@ -1,56 +1,83 @@
 import React from 'react';
 import { Factory } from 'rosie';
-import { initializeTestStore, render, screen } from '../setupTest';
+import { camelCaseObject } from '@edx/frontend-platform';
+import { getLoggingService } from '@edx/frontend-platform/logging';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
+import {
+  act, createTestQueryClient, mockCourseRequests, render, screen, seedQueryData,
+} from '../setupTest';
 import LoadedTabPage from './LoadedTabPage';
 
+jest.mock('@edx/frontend-platform/analytics');
 jest.mock('../course-tabs/CourseTabsNavigation', () => function () {
   return <div data-testid="CourseTabsNavigation" />;
 });
 jest.mock('../instructor-toolbar/InstructorToolbar', () => function () {
   return <div data-testid="InstructorToolbar" />;
 });
-jest.mock('../shared/streak-celebration/StreakCelebrationModal', () => function () {
-  return <div data-testid="StreakModal" />;
-});
 jest.mock('../product-tours/ProductTours', () => function () {
   return <div data-testid="ProductTours" />;
 });
 
 describe('Loaded Tab Page', () => {
-  const mockData = { activeTabSlug: 'courseware', metadataModel: 'coursewareMeta' };
+  const mockData = { activeTabSlug: 'courseware' };
+
+  function renderWithMetadata(courseHomeMetadata) {
+    const queryClient = createTestQueryClient();
+    seedQueryData(
+      queryClient,
+      courseHomeMetaQuery(courseHomeMetadata.id).queryKey,
+      camelCaseObject(courseHomeMetadata),
+    );
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <LoadedTabPage {...mockData} courseId={courseHomeMetadata.id} />
+      </QueryClientProvider>,
+    );
+  }
 
   beforeAll(async () => {
-    const store = await initializeTestStore({ excludeFetchSequence: true });
-    mockData.courseId = store.getState().courseware.courseId;
+    mockCourseRequests();
   });
 
   it('renders correctly', () => {
-    render(<LoadedTabPage {...mockData} />);
+    renderWithMetadata(Factory.build('courseHomeMetadata'));
 
     expect(screen.queryByTestId('CourseTabsNavigation')).toBeInTheDocument();
     expect(screen.queryByTestId('InstructorToolbar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('shows Instructor Toolbar if original user is staff', async () => {
-    const courseMetadata = Factory.build('courseMetadata');
-    const courseHomeMetadata = Factory.build('courseHomeMetadata', { original_user_is_staff: true });
-    const testStore = await initializeTestStore(
-      {
-        courseMetadata,
-        courseHomeMetadata,
-        excludeFetchSequence: true,
-      },
-      false,
-    );
-    render(<LoadedTabPage {...mockData} courseId={courseMetadata.id} />, { store: testStore });
+  it('shows Instructor Toolbar if original user is staff', () => {
+    renderWithMetadata(Factory.build('courseHomeMetadata', { original_user_is_staff: true }));
 
     expect(screen.getByTestId('InstructorToolbar')).toBeInTheDocument();
   });
 
   it('shows streak celebration modal', async () => {
-    const courseMetadata = Factory.build('courseMetadata', { celebrations: { streakLengthToCelebrate: 3 } });
-    const testStore = await initializeTestStore({ courseMetadata }, false);
-    render(<LoadedTabPage {...mockData} courseId={courseMetadata.id} />, { store: testStore });
-    expect(screen.getByTestId('StreakModal')).toBeInTheDocument();
+    const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
+    await act(async () => renderWithMetadata(courseHomeMetadata));
+    expect(screen.getByRole('dialog')).toHaveTextContent('3 day streak');
+  });
+
+  it('throws when rendered before the course metadata has loaded', () => {
+    // jsdom reports the caught render error on console.error; silence it, not the assertion.
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(
+      <QueryClientProvider client={createTestQueryClient()}>
+        <LoadedTabPage {...mockData} courseId="course-v1:edX+DemoX+Demo_Course" />
+      </QueryClientProvider>,
+    );
+
+    expect(getLoggingService().logError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'LoadedTabPage rendered without course metadata for course-v1:edX+DemoX+Demo_Course',
+      }),
+      expect.anything(),
+    );
+
+    consoleError.mockRestore();
   });
 });

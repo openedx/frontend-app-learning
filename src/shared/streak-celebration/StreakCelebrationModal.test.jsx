@@ -4,15 +4,21 @@ import { camelCaseObject, getConfig, mergeConfig } from '@edx/frontend-platform'
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
+import { QueryClientProvider } from '@tanstack/react-query';
+import userEvent from '@testing-library/user-event';
 import MockAdapter from 'axios-mock-adapter';
 
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import {
   act,
+  createTestQueryClient,
   initializeMockApp,
-  initializeTestStore,
+  mockCourseRequests,
   render,
   screen,
+  seedQueryData,
 } from '../../setupTest';
+import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
 import StreakModal from './StreakCelebrationModal';
 
 initializeMockApp();
@@ -20,8 +26,9 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Loaded Tab Page', () => {
   let mockData;
-  let testStore;
+  let courseHomeMeta;
   let axiosMock;
+  let queryClient;
   const calculateUrl = `${getConfig().ECOMMERCE_BASE_URL}/api/v2/baskets/calculate/?code=ZGY11119949&sku=8CF08E5&username=MockUser`;
   const courseMetadata = Factory.build('courseMetadata');
   const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
@@ -52,8 +59,20 @@ describe('Loaded Tab Page', () => {
     axiosMock.onGet(calculateUrl).reply(500);
   }
 
+  // The suite's own axios adapter replaces the one mocking the metadata endpoint, so the modal
+  // reads the course metadata, fetched before the swap, from a seeded query rather than a mounted fetch.
   async function renderModal() {
-    await act(async () => render(<StreakModal {...mockData} />, { store: testStore }));
+    queryClient = createTestQueryClient();
+    seedQueryData(
+      queryClient,
+      courseHomeMetaQuery(mockData.courseId).queryKey,
+      courseHomeMeta,
+    );
+    await act(async () => render(
+      <QueryClientProvider client={queryClient}>
+        <StreakModal {...mockData} />
+      </QueryClientProvider>,
+    ));
   }
 
   beforeAll(async () => {
@@ -61,12 +80,12 @@ describe('Loaded Tab Page', () => {
       closeStreakCelebration: jest.fn(),
       courseId: courseMetadata.id,
       isStreakCelebrationOpen: true,
-      metadataModel: 'coursewareMeta',
       streakLengthToCelebrate: 3,
       verifiedMode: camelCaseObject(courseHomeMetadata.verified_mode),
     };
 
-    testStore = await initializeTestStore({ courseMetadata, courseHomeMetadata }, false);
+    mockCourseRequests({ courseMetadata, courseHomeMetadata });
+    courseHomeMeta = await getCourseHomeCourseMetadata(mockData.courseId);
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
   });
 
@@ -85,6 +104,20 @@ describe('Loaded Tab Page', () => {
       courserun_key: mockData.courseId,
       is_staff: false,
     });
+  });
+
+  it('clears the streak in the course metadata query when the modal closes', async () => {
+    await renderModal();
+    const user = userEvent.setup();
+    const { queryKey } = courseHomeMetaQuery(mockData.courseId);
+    expect(queryClient.getQueryData(queryKey).celebrations.streakLengthToCelebrate).toBe(3);
+
+    await user.click(await screen.findByRole('button', { name: /keep it up/i }));
+
+    expect(mockData.closeStreakCelebration).toHaveBeenCalledTimes(1);
+    const { celebrations, org } = queryClient.getQueryData(queryKey);
+    expect(celebrations.streakLengthToCelebrate).toBeNull();
+    expect(org).toBe(courseHomeMetadata.org);
   });
 
   it('shows normal streak celebration modal when discount call fails', async () => {

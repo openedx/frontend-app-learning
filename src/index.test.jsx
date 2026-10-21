@@ -42,7 +42,6 @@ jest.mock('./course-home/goal-unsubscribe', () => 'Goal Unsubscribe');
 jest.mock('./courseware/CoursewareRedirectLandingPage', () => 'Courseware Redirect Landing Page');
 jest.mock('./preferences-unsubscribe', () => 'Preferences Unsubscribe');
 jest.mock('./generic/CourseAccessErrorPage', () => 'Course Access Error Page');
-jest.mock('./tab-page', () => ({ TabContainer: 'Tab Container' }));
 jest.mock('./course-home/outline-tab', () => 'Outline Tab');
 jest.mock('./course-home/live-tab/LiveTab', () => 'Live Tab');
 jest.mock('./course-home/dates-tab', () => 'Dates Tab');

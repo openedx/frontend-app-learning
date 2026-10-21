@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { Form, Card, Icon } from '@openedx/paragon';
@@ -8,11 +8,9 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Email } from '@openedx/paragon/icons';
-import { useSelector } from 'react-redux';
 import messages from '../messages';
 import LearningGoalButton from './LearningGoalButton';
-import { saveWeeklyLearningGoal } from '../../data';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta, useSaveWeeklyLearningGoal } from '../../data/apiHooks';
 import './FlagButton.scss';
 
 const WeeklyLearningGoalCard = ({
@@ -20,16 +18,15 @@ const WeeklyLearningGoalCard = ({
   subscribedToReminders,
 }) => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
 
   const {
     isMasquerading,
     org,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const { administrator } = getAuthenticatedUser();
+  const saveWeeklyLearningGoal = useSaveWeeklyLearningGoal();
 
   const [daysPerWeekGoal, setDaysPerWeekGoal] = useState(daysPerWeek);
   // eslint-disable-next-line react/prop-types
@@ -42,7 +39,7 @@ const WeeklyLearningGoalCard = ({
     setGetReminderSelected(selectReminders);
     setDaysPerWeekGoal(days);
     if (!isMasquerading) { // don't save goal updates while masquerading
-      saveWeeklyLearningGoal(courseId, days, selectReminders);
+      saveWeeklyLearningGoal.mutate({ courseId, daysPerWeek: days, subscribedToReminders: selectReminders });
       sendTrackEvent('edx.ui.lms.goal.days-per-week.changed', {
         org_key: org,
         courserun_key: courseId,
@@ -60,7 +57,9 @@ const WeeklyLearningGoalCard = ({
     const isGetReminderChecked = event.target.checked;
     setGetReminderSelected(isGetReminderChecked);
     if (!isMasquerading) { // don't save goal updates while masquerading
-      saveWeeklyLearningGoal(courseId, daysPerWeekGoal, isGetReminderChecked);
+      saveWeeklyLearningGoal.mutate({
+        courseId, daysPerWeek: daysPerWeekGoal, subscribedToReminders: isGetReminderChecked,
+      });
       sendTrackEvent('edx.ui.lms.goal.reminder-selected.changed', {
         org_key: org,
         courserun_key: courseId,

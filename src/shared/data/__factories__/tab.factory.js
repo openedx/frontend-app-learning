@@ -6,11 +6,8 @@ Factory.define('tab')
   .option('host', 'http://localhost:18000')
   .attrs({
     title: 'Course',
-    priority: 0,
-    slug: 'courseware',
-    type: 'courseware',
+    tab_id: 'courseware',
   })
-  .attr('tab_id', ['slug'], (slug) => slug)
   .attr(
     'url',
     ['courseId', 'path', 'host'],

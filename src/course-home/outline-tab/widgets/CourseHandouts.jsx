@@ -1,20 +1,18 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import LmsHtmlFragment from '../LmsHtmlFragment';
 import messages from '../messages';
-import { useModel } from '../../../generic/model-store';
+import { useOutlineTabData } from '../../data/apiHooks';
 
 const CourseHandouts = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
   const {
     handoutsHtml,
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   if (!handoutsHtml) {
     return null;

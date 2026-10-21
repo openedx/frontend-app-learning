@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
@@ -7,10 +7,11 @@ import {
   Alert, Hyperlink, breakpoints, useWindowSize,
 } from '@openedx/paragon';
 import { Locked } from '@openedx/paragon/icons';
-import SidebarContext from '../../sidebar/SidebarContext';
+import { useSidebar } from '../../sidebar/SidebarContext';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/openedx_locked_certificate.png';
-import { useModel } from '../../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../../course-home/data/apiHooks';
+import { useCoursewareMetadata } from '../../../data/apiHooks';
 import { UpgradeButton } from '../../../../generic/upgrade-button';
 import {
   VerifiedCertBullet,
@@ -23,17 +24,16 @@ const LockPaywall = ({
   courseId,
 }) => {
   const intl = useIntl();
-  const { currentSidebar, availableSidebarIds } = useContext(SidebarContext);
-  const course = useModel('coursewareMeta', courseId);
+  const { currentSidebar, availableSidebarIds } = useSidebar();
   const {
     accessExpiration,
     marketingUrl,
     offer,
-  } = course;
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
 
   const {
     org, verifiedMode,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   // the following variables are set and used for responsive layout to work with
   // whether any sidebar panel is open and if there's an offer with longer text

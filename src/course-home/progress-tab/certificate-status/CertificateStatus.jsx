@@ -1,33 +1,33 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 
 import { Button, Card } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
-import { useContextId } from '../../../data/hooks';
-import { useModel } from '../../../generic/model-store';
+import { useParams } from 'react-router-dom';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
+import { useCoursewareMetadata } from '../../../courseware/data/apiHooks';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
-import { requestCert } from '../../data/thunks';
+import { useCourseHomeMeta, useRequestCert } from '../../data/apiHooks';
+import { useProgressData } from '../hooks';
 import messages from './messages';
 import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertificateStatusSlot';
 
 const CertificateStatus = () => {
   const intl = useIntl();
-  const courseId = useContextId();
+  const { courseId } = useParams();
 
   const {
     entranceExamData,
-  } = useModel('coursewareMeta', courseId);
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
 
   const {
     isEnrolled,
     org,
     canViewCertificate,
     userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const {
     certificateData,
@@ -40,7 +40,7 @@ const CertificateStatus = () => {
     userHasPassingGrade,
     verificationData,
     verifiedMode,
-  } = useModel('progress', courseId);
+  } = useProgressData();
   const {
     certificateAvailableDate,
   } = certificateData || {};
@@ -62,7 +62,7 @@ const CertificateStatus = () => {
     courserun_key: courseId,
   };
 
-  const dispatch = useDispatch();
+  const requestCert = useRequestCert();
   const { administrator } = getAuthenticatedUser();
 
   let certStatus;
@@ -110,7 +110,7 @@ const CertificateStatus = () => {
     switch (certStatus) {
       case 'requesting':
         certCase = 'requestable';
-        buttonAction = () => { dispatch(requestCert(courseId)); };
+        buttonAction = () => { requestCert.mutate({ courseId }); };
         body = intl.formatMessage(messages[`${certCase}Body`]);
         buttonText = intl.formatMessage(messages[`${certCase}Button`]);
         break;

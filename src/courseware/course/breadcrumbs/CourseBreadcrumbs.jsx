@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 
-import { useModel, useModels } from '../../../generic/model-store';
+import { useMinimalCourseOutline, useIsCourseLoaded, useSequenceMetadata } from '../../data/apiHooks';
 import BreadcrumbItem from './BreadcrumbItem';
 
 const CourseBreadcrumbs = ({
@@ -16,19 +15,18 @@ const CourseBreadcrumbs = ({
   unitId,
   isStaff,
 }) => {
-  const course = useModel('coursewareMeta', courseId);
-  const courseStatus = useSelector((state) => state.courseware.courseStatus);
-  const sequenceStatus = useSelector(
-    (state) => state.courseware.sequenceStatus,
-  );
+  const isCourseLoaded = useIsCourseLoaded(courseId);
+  const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
+  const { courses, sections, sequences } = useMinimalCourseOutline(courseId, { enabled: false }).data ?? {};
+  const courseSections = courses ? courses[courseId].sectionIds.map((id) => sections[id]) : [];
 
   const allSequencesInSections = Object.fromEntries(
-    useModels('sections', course.sectionIds)?.map((section) => [
+    courseSections.map((section) => [
       section.id,
       {
         default: section.id === sectionId,
         title: section.title,
-        sequences: useModels('sequences', section.sequenceIds),
+        sequences: section.sequenceIds.map((id) => sequences[id]),
       },
     ]),
   );
@@ -36,7 +34,7 @@ const CourseBreadcrumbs = ({
   const links = useMemo(() => {
     const chapters = [];
     const sequentials = [];
-    if (courseStatus === 'loaded' && sequenceStatus === 'loaded') {
+    if (isCourseLoaded && sequenceQuery.isSuccess) {
       Object.entries(allSequencesInSections).forEach(([id, section]) => {
         chapters.push({
           id,
@@ -57,7 +55,7 @@ const CourseBreadcrumbs = ({
       });
     }
     return [chapters, sequentials];
-  }, [courseStatus, sequenceStatus, allSequencesInSections]);
+  }, [isCourseLoaded, sequenceQuery.isSuccess, allSequencesInSections, sequenceId]);
 
   return (
     <nav aria-label="breadcrumb" className="d-inline-block col-sm-10 mb-3">

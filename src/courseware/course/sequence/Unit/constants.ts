@@ -1,8 +1,3 @@
-export const modelKeys = {
-  units: 'units',
-  coursewareMeta: 'coursewareMeta',
-} as const;
-
 export const views = {
   student: 'student_view',
   public: 'public_view',
@@ -17,9 +12,13 @@ export const messageTypes = {
   autoAdvance: 'plugin.autoAdvance',
 } as const;
 
+export const eventTypes = {
+  POST_EVENT: 'post_event',
+} as const;
+
 export default {
-  modelKeys,
   views,
   loadingState,
   messageTypes,
+  eventTypes,
 };

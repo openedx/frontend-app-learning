@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
-import { useContextId } from '../../../../data/hooks';
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 import CurrentGradeTooltip from './CurrentGradeTooltip';
 import PassingGradeTooltip from './PassingGradeTooltip';
 
@@ -10,7 +9,6 @@ import messages from '../messages';
 
 const GradeBar = ({ passingGrade }) => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     courseGrade: {
@@ -18,7 +16,7 @@ const GradeBar = ({ passingGrade }) => {
       percent,
     },
     gradesFeatureIsFullyLocked,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const currentGrade = Number((percent * 100).toFixed(0));
 

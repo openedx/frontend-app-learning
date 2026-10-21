@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -13,7 +12,7 @@ import CourseHandouts from './widgets/CourseHandouts';
 import StartOrResumeCourseCard from './widgets/StartOrResumeCourseCard';
 import WeeklyLearningGoalCard from './widgets/WeeklyLearningGoalCard';
 import CourseTools from './widgets/CourseTools';
-import { fetchOutlineTab } from '../data';
+import { useCourseHomeMeta, useOutlineTabData, useProctoringInfoData } from '../data/apiHooks';
 import messages from './messages';
 import ShiftDatesAlert from '../suggested-schedule-messaging/ShiftDatesAlert';
 import UpgradeToShiftDatesAlert from '../suggested-schedule-messaging/UpgradeToShiftDatesAlert';
@@ -22,24 +21,23 @@ import useCourseEndAlert from './alerts/course-end-alert';
 import useCourseStartAlert from '../../alerts/course-start-alert';
 import usePrivateCourseAlert from './alerts/private-course-alert';
 import useScheduledContentAlert from './alerts/scheduled-content-alert';
-import { useModel } from '../../generic/model-store';
 import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
 import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
 import CourseHomeSectionOutlineSlot from '../../plugin-slots/CourseHomeSectionOutlineSlot';
+import { TabWithTimer } from '../../tab-page';
 
-const OutlineTab = () => {
+const OutlineTabContent = () => {
   const intl = useIntl();
-  const {
-    courseId,
-    proctoringPanelStatus,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
 
   const {
     isSelfPaced,
     org,
     title,
-  } = useModel('courseHomeMeta', courseId);
+    username,
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
+  const { isPending: isProctoringInfoPending } = useProctoringInfoData(courseId, username);
 
   const expandButtonRef = useRef();
 
@@ -55,8 +53,10 @@ const OutlineTab = () => {
     datesWidget: {
       courseDateBlocks,
     },
+    datesBannerInfo,
     enableProctoredExams,
-  } = useModel('outline', courseId);
+    hasEnded,
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   const [expandAll, setExpandAll] = useState(false);
   const navigate = useNavigate();
@@ -146,8 +146,12 @@ const OutlineTab = () => {
           />
           {isSelfPaced && hasDeadlines && (
             <>
-              <ShiftDatesAlert model="outline" fetch={fetchOutlineTab} />
-              <UpgradeToShiftDatesAlert model="outline" logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick} />
+              <ShiftDatesAlert model="outline" datesBannerInfo={datesBannerInfo} hasEnded={hasEnded} />
+              <UpgradeToShiftDatesAlert
+                logUpgradeLinkClick={logUpgradeToShiftDatesLinkClick}
+                datesBannerInfo={datesBannerInfo}
+                hasEnded={hasEnded}
+              />
             </>
           )}
           <StartOrResumeCourseCard />
@@ -174,7 +178,7 @@ const OutlineTab = () => {
             <ProctoringInfoPanel />
             { /** Defer showing the goal widget until the ProctoringInfoPanel has resolved or has been determined as
              disabled to avoid components bouncing around too much as screen is rendered */ }
-            {(!enableProctoredExams || proctoringPanelStatus === 'loaded') && weeklyLearningGoalEnabled && (
+            {(!enableProctoredExams || !isProctoringInfoPending) && weeklyLearningGoalEnabled && (
               <WeeklyLearningGoalCard
                 daysPerWeek={selectedGoal && 'daysPerWeek' in selectedGoal ? selectedGoal.daysPerWeek : null}
                 subscribedToReminders={selectedGoal && 'subscribedToReminders' in selectedGoal ? selectedGoal.subscribedToReminders : false}
@@ -188,6 +192,22 @@ const OutlineTab = () => {
         )}
       </div>
     </>
+  );
+};
+
+const OutlineTab = () => {
+  const { courseId } = useParams();
+  const metadataQuery = useCourseHomeMeta(courseId);
+  const tabDataQuery = useOutlineTabData(courseId);
+
+  return (
+    <TabWithTimer
+      activeTabSlug="outline"
+      courseId={courseId}
+      courseStatus={{ metadataQuery, tabDataQuery }}
+    >
+      <OutlineTabContent />
+    </TabWithTimer>
   );
 };
 

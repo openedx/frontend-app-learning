@@ -1,22 +1,19 @@
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Button } from '@openedx/paragon';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
-import { useModel } from '../../generic/model-store';
-
+import { useProgressData } from './hooks';
 import messages from './messages';
 
 const ProgressHeader = () => {
   const intl = useIntl();
-  const {
-    courseId,
-    targetUserId,
-  } = useSelector(state => state.courseHome);
+  const { targetUserId: targetUserIdParam } = useParams();
+  const targetUserId = parseInt(targetUserIdParam, 10);
 
   const { administrator, userId } = getAuthenticatedUser();
 
-  const { studioUrl, username } = useModel('progress', courseId);
+  const { studioUrl, username } = useProgressData();
 
   const viewingOtherStudentsProgressPage = (targetUserId && targetUserId !== userId);
 

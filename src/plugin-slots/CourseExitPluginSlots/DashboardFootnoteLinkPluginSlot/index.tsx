@@ -5,7 +5,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import messages from '../../../courseware/course/course-exit/messages';
 import { logClick } from '../../../courseware/course/course-exit/utils';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 import { useContextId } from '../../../data/hooks';
 
 interface LinkProps {
@@ -16,7 +16,7 @@ interface LinkProps {
 const DashboardFootnoteLink: React.FC<LinkProps> = ({ variant, destination }: LinkProps) => {
   const intl = useIntl();
   const courseId = useContextId();
-  const { org } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const { administrator } = getAuthenticatedUser();
   return (
     <Hyperlink

@@ -1,19 +1,18 @@
 import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { UserMessagesProvider } from '../../generic/user-messages';
+import { ToastProvider } from '../../generic/ToastContext';
 import {
-  initializeMockApp, messageEvent, screen, waitFor,
+  createTestQueryClient, initializeMockApp, messageEvent, screen, waitFor,
 } from '../../setupTest';
-import initializeStore from '../../store';
-import { TabContainer } from '../../tab-page';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import { fetchDiscussionTab } from '../data/thunks';
 import DiscussionTab from './DiscussionTab';
 
 initializeMockApp();
@@ -21,26 +20,26 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('DiscussionTab', () => {
   let axiosMock;
-  let store;
+  let queryClient;
   let component;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    store = initializeStore();
+    queryClient = createTestQueryClient();
     component = (
-      <AppProvider store={store}>
-        <UserMessagesProvider>
-          <Routes>
-            <Route
-              path="/course/:courseId/discussion"
-              element={(
-                <TabContainer tab="discussion" fetch={fetchDiscussionTab} slice="courseHome">
-                  <DiscussionTab />
-                </TabContainer>
-              )}
-            />
-          </Routes>
-        </UserMessagesProvider>
+      <AppProvider>
+        <QueryClientProvider client={queryClient}>
+          <UserMessagesProvider>
+            <ToastProvider>
+              <Routes>
+                <Route
+                  path="/course/:courseId/discussion"
+                  element={<DiscussionTab />}
+                />
+              </Routes>
+            </ToastProvider>
+          </UserMessagesProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
   });
@@ -62,5 +61,11 @@ describe('DiscussionTab', () => {
     window.postMessage({ ...messageEvent, payload: { height: 1234 } }, '*');
     await waitFor(() => expect(screen.getByTitle('discussion'))
       .toHaveAttribute('height', String(1234)));
+  });
+
+  it('requests the course metadata once per load', async () => {
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+    expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
   });
 });

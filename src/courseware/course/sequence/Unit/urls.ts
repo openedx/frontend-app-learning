@@ -28,7 +28,7 @@ export const getIFrameUrl = ({
     xblockUrl.searchParams.set(key, String(value));
   }
   xblockUrl.searchParams.set('view', view);
-  xblockUrl.searchParams.set('preview', String(preview));
+  xblockUrl.searchParams.set('preview', preview ? '1' : '0');
   if (format) {
     xblockUrl.searchParams.set('format', format);
   }

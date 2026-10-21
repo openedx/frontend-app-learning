@@ -3,25 +3,27 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig, history } from '@edx/frontend-platform';
+import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 import * as popper from '@popperjs/core';
 
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen,
+  act, createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, render, screen, waitFor,
 } from '../setupTest';
-import initializeStore from '../store';
-import { appendBrowserTimezoneToUrl, executeThunk } from '../utils';
+import { appendBrowserTimezoneToUrl } from '../utils';
 
 import CoursewareContainer from '../courseware/CoursewareContainer';
-import LoadedTabPage from '../tab-page/LoadedTabPage';
+import { TourProvider } from './TourContext';
+import ProductTours from './ProductTours';
 import OutlineTab from '../course-home/outline-tab/OutlineTab';
-import * as courseHomeThunks from '../course-home/data/thunks';
 import { buildSimpleCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from '../courseware/data/__factories__/learningSequencesOutline.factory';
 
@@ -44,7 +46,6 @@ describe('Course Home Tours', () => {
   const tourDataUrl = `${getConfig().LMS_BASE_URL}/api/user_tours/v1/MockUser`;
   const proctoringUrl = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=course-v1%3AedX%2BTest%2Brun&username=MockUser`;
 
-  const store = initializeStore();
   const defaultTabData = Factory.build('outlineTabData');
 
   function setMetadata(attributes, options) {
@@ -58,17 +59,21 @@ describe('Course Home Tours', () => {
   }
 
   async function fetchAndRender() {
-    await executeThunk(courseHomeThunks.fetchOutlineTab(courseId), store.dispatch);
-    render(
-      <LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">
-        <OutlineTab />
-      </LoadedTabPage>,
-      { store, wrapWithRouter: true },
-    );
+    await act(async () => render(
+      <MemoryRouter initialEntries={[`/course/${courseId}/home`]}>
+        <QueryClientProvider client={createTestQueryClient()}>
+          <Routes>
+            <Route path="/course/:courseId/home" element={<OutlineTab />} />
+          </Routes>
+        </QueryClientProvider>
+      </MemoryRouter>,
+    ));
+    await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
   }
 
   beforeEach(async () => {
     popperMock.mockImplementation(jest.fn());
+    sendTrackEvent.mockClear();
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
@@ -108,6 +113,43 @@ describe('Course Home Tours', () => {
 
       expect(await screen.findByRole('dialog', { name: 'Take the course!' }));
     });
+
+    it('dismisses the modal and runs the abandon tour on "Skip for now"', async () => {
+      const user = userEvent.setup();
+      await user.click(await screen.findByRole('button', { name: 'Skip for now' }));
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.new_user_modal.dismissed', expect.any(Object));
+
+      // Dismissing the modal enables the abandon tour; ending it clears that flag.
+      await user.click(await screen.findByRole('button', { name: 'Okay' }));
+    });
+
+    it('dismisses the new-user tour on escape', async () => {
+      const user = userEvent.setup();
+      await user.click(await screen.findByRole('button', { name: 'Begin tour' }));
+      await screen.findByRole('dialog', { name: 'Take the course!' });
+
+      // The tour's onEscape handler is its onDismiss.
+      await user.keyboard('{Escape}');
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.new_user_tour.dismissed', expect.any(Object));
+    });
+
+    it('completes the new-user tour', async () => {
+      const user = userEvent.setup();
+      await user.click(await screen.findByRole('button', { name: 'Begin tour' }));
+      await screen.findByRole('dialog', { name: 'Take the course!' });
+
+      // Advance through each checkpoint, then finish on the last one.
+      const advanceToEnd = async () => {
+        const next = screen.queryByRole('button', { name: 'Next' });
+        if (!next) { return; }
+        await user.click(next);
+        await advanceToEnd();
+      };
+      await advanceToEnd();
+
+      await user.click(screen.getByRole('button', { name: 'Okay' }));
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.new_user_tour.completed', expect.any(Object));
+    });
   });
 
   describe('for eligible existing users', () => {
@@ -120,6 +162,18 @@ describe('Course Home Tours', () => {
 
       expect(await screen.findByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('We’ve recently added a few new features to the course experience.', { exact: false })).toBeInTheDocument();
+    });
+
+    it('completes the existing-user tour', async () => {
+      setTourData({
+        course_home_tour_status: 'show-existing-user-tour',
+        show_courseware_tour: false,
+      });
+      await fetchAndRender();
+      const user = userEvent.setup();
+
+      await user.click(await screen.findByRole('button', { name: 'Okay' }));
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.existing_user_tour.completed', expect.any(Object));
     });
   });
 
@@ -137,7 +191,8 @@ describe('Course Home Tours', () => {
     });
 
     it('launches tour on button click', async () => {
-      const launchTourButton = await screen.findByRole('button', { name: 'Launch tour' });
+      const buttons = await screen.findAllByRole('button', { name: 'Launch tour' });
+      const launchTourButton = buttons.find((button) => !button.classList.contains('sr-only'));
       expect(launchTourButton).toBeInTheDocument();
 
       fireEvent.click(launchTourButton);
@@ -168,7 +223,6 @@ jest.mock(
 );
 
 describe('Courseware Tour', () => {
-  let store;
   let component;
   let axiosMock;
 
@@ -206,24 +260,25 @@ describe('Courseware Tour', () => {
 
   beforeEach(() => {
     popperMock.mockImplementation(jest.fn());
+    sendTrackEvent.mockClear();
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
-    store = initializeStore();
-
     component = (
-      <AppProvider store={store}>
-        <UserMessagesProvider>
-          <Routes>
-            {DECODE_ROUTES.COURSEWARE.map((route) => (
-              <Route
-                key={route}
-                path={route}
-                element={<CoursewareContainer />}
-              />
-            ))}
-          </Routes>
-        </UserMessagesProvider>
+      <AppProvider>
+        <QueryClientProvider client={createTestQueryClient()}>
+          <UserMessagesProvider>
+            <Routes>
+              {DECODE_ROUTES.COURSEWARE.map((route) => (
+                <Route
+                  key={route}
+                  path={route}
+                  element={<CoursewareContainer />}
+                />
+              ))}
+            </Routes>
+          </UserMessagesProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
   });
@@ -293,9 +348,42 @@ describe('Courseware Tour', () => {
         });
 
         const container = await loadContainer();
-        const checkpoint = container.querySelectorAll('#pgn__checkpoint');
-        expect(checkpoint).toHaveLength(showCoursewareTour ? 1 : 0);
+        await waitFor(() => {
+          expect(container.querySelectorAll('#pgn__checkpoint')).toHaveLength(showCoursewareTour ? 1 : 0);
+        });
       },
     );
+
+    it('completes the courseware tour', async () => {
+      axiosMock.onGet(tourDataUrl).reply(200, {
+        course_home_tour_status: 'no-tour',
+        show_courseware_tour: true,
+      });
+      await loadContainer();
+      const user = userEvent.setup();
+
+      await user.click(await screen.findByRole('button', { name: 'Okay' }));
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.courseware_tour.completed', expect.any(Object));
+    });
+  });
+});
+
+describe('ProductTours guards', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+
+  const renderTours = (props) => render(
+    <TourProvider>
+      <ProductTours courseId={courseId} org="edX" {...props} />
+    </TourProvider>,
+  );
+
+  it('renders nothing during a streak celebration', () => {
+    renderTours({ activeTab: 'outline', isStreakCelebrationOpen: true });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('does not show a tour on non-tour tabs', () => {
+    renderTours({ activeTab: 'dates', isStreakCelebrationOpen: false });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

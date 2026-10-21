@@ -1,24 +1,30 @@
 import React from 'react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig, setConfig } from '@edx/frontend-platform';
+import { AppProvider } from '@edx/frontend-platform/react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
 import { breakpoints } from '@openedx/paragon';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { render } from '@testing-library/react';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, act,
+  createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, within, act, waitFor,
 } from '../../setupTest';
-import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
-import * as thunks from '../data/thunks';
-import initializeStore from '../../store';
+import { appendBrowserTimezoneToUrl } from '../../utils';
 import ProgressTab from './ProgressTab';
-import LoadedTabPage from '../../tab-page/LoadedTabPage';
+import { useExamsData } from './hooks';
+import { UserMessagesProvider } from '../../generic/user-messages';
+import { ToastProvider } from '../../generic/ToastContext';
 import messages from './grades/messages';
 
 const mockCoursewareSearchParams = jest.fn();
 
 initializeMockApp();
+jest.unmock('@openedx/frontend-plugin-framework');
 jest.mock('@edx/frontend-platform/analytics');
 jest.mock('../courseware-search/hooks', () => ({
   ...jest.requireActual('../courseware-search/hooks'),
@@ -40,7 +46,6 @@ const mockSearchParams = ((props = coursewareSearch) => {
 describe('Progress Tab', () => {
   let axiosMock;
 
-  const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata');
   const defaultTabData = Factory.build('progressTabData');
 
@@ -63,9 +68,27 @@ describe('Progress Tab', () => {
     axiosMock.onGet(progressUrl).reply(200, progressTabData);
   }
 
-  async function fetchAndRender() {
-    await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-    await act(async () => render(<ProgressTab />, { store }));
+  async function fetchAndRender(initialEntry = `/course/${courseId}/progress`, { waitForLoaded = true } = {}) {
+    const queryClient = createTestQueryClient();
+    await act(async () => render(
+      <AppProvider wrapWithRouter={false}>
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <QueryClientProvider client={queryClient}>
+            <UserMessagesProvider>
+              <ToastProvider>
+                <Routes>
+                  <Route path="/course/:courseId/progress/:targetUserId?" element={<ProgressTab />} />
+                </Routes>
+              </ToastProvider>
+            </UserMessagesProvider>
+          </QueryClientProvider>
+        </MemoryRouter>
+      </AppProvider>,
+    ));
+    if (waitForLoaded) {
+      await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
+    }
+    return queryClient;
   }
 
   beforeEach(async () => {
@@ -95,7 +118,8 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       sendTrackEvent.mockClear();
 
-      const datesTabLink = screen.getByRole('link', { name: 'Dates' });
+      const relatedLinks = within(screen.getByRole('heading', { name: 'Related links' }).closest('section'));
+      const datesTabLink = relatedLinks.getByRole('link', { name: 'Dates' });
       fireEvent.click(datesTabLink);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -319,7 +343,7 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       expect(screen.getByText('locked feature')).toBeInTheDocument();
       expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
-      expect(screen.getAllByRole('link', 'Unlock now')).toHaveLength(3);
+      expect(screen.getAllByRole('link', { name: 'Upgrade now' })).toHaveLength(1);
     });
 
     it('sends events on click of upgrade button in locked content header (CourseGradeHeader)', async () => {
@@ -363,7 +387,7 @@ describe('Progress Tab', () => {
       expect(screen.getByText('locked feature')).toBeInTheDocument();
       expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
 
-      const upgradeButton = screen.getAllByRole('link', 'Unlock now')[0];
+      const upgradeButton = screen.getAllByRole('link', { name: 'Upgrade now' })[0];
       fireEvent.click(upgradeButton);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(2);
@@ -1019,6 +1043,10 @@ describe('Progress Tab', () => {
           is_staff: false,
           certificate_status_variant: 'requesting',
         });
+
+        await waitFor(() => expect(
+          axiosMock.history.post.some(req => req.url.includes('generate_user_cert')),
+        ).toBe(true));
       });
 
       it('Displays verify identity link', async () => {
@@ -1430,8 +1458,7 @@ describe('Progress Tab', () => {
           masquerading_expired_course: true,
         },
       });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
+      await fetchAndRender();
       expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
@@ -1444,10 +1471,21 @@ describe('Progress Tab', () => {
           masquerading_expired_course: false,
         },
       });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
+      await fetchAndRender();
       expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
       expect(screen.queryByText('1/1/2020', { exact: false })).not.toBeInTheDocument();
+    });
+    it('renders banner when viewing another learner\'s progress', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      setTabData({
+        access_expiration: {
+          expiration_date: '2020-01-01T12:00:00Z',
+          masquerading_expired_course: true,
+        },
+      });
+      await fetchAndRender(`/course/${courseId}/progress/10/`);
+      expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
     });
   });
 
@@ -1459,8 +1497,7 @@ describe('Progress Tab', () => {
         is_staff: false,
         start: '2999-01-01T00:00:00Z',
       });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
+      await fetchAndRender();
       expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(screen.getByText('This learner does not yet have access to this course. The course starts on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2999', { exact: false })).toBeInTheDocument();
@@ -1472,8 +1509,7 @@ describe('Progress Tab', () => {
         is_staff: true,
         start: '2999-01-01T00:00:00Z',
       });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-      await act(async () => render(<LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="progress">...</LoadedTabPage>, { store }));
+      await fetchAndRender();
       expect(screen.queryByText('This learner does not yet have access to this course. The course starts on', { exact: false })).not.toBeInTheDocument();
       expect(screen.queryByText('1/1/2999', { exact: false })).not.toBeInTheDocument();
     });
@@ -1484,293 +1520,121 @@ describe('Progress Tab', () => {
       setMetadata({ is_enrolled: true });
       setTabData({ username: 'otherstudent' });
 
-      await executeThunk(thunks.fetchProgressTab(courseId, 10), store.dispatch);
-      await act(async () => render(<ProgressTab />, { store }));
+      await fetchAndRender(`/course/${courseId}/progress/10/`);
 
       expect(screen.getByText('Course progress for otherstudent')).toBeInTheDocument();
     });
   });
 
-  describe('Exam data fetching integration', () => {
-    const mockSectionScores = [
-      {
-        display_name: 'Section 1',
-        subsections: [
-          {
-            assignment_type: 'Exam',
-            block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@exam1',
-            display_name: 'Midterm Exam',
-            learner_has_access: true,
-            has_graded_assignment: true,
-            percent_graded: 0.8,
-            show_correctness: 'always',
-            show_grades: true,
-            url: '/mock-url',
-          },
-          {
-            assignment_type: 'Homework',
-            block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@homework1',
-            display_name: 'Homework 1',
-            learner_has_access: true,
-            has_graded_assignment: true,
-            percent_graded: 0.9,
-            show_correctness: 'always',
-            show_grades: true,
-            url: '/mock-url',
-          },
-        ],
-      },
-      {
-        display_name: 'Section 2',
-        subsections: [
-          {
-            assignment_type: 'Exam',
-            block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@final_exam',
-            display_name: 'Final Exam',
-            learner_has_access: true,
-            has_graded_assignment: true,
-            percent_graded: 0.85,
-            show_correctness: 'always',
-            show_grades: true,
-            url: '/mock-url',
-          },
-        ],
-      },
-    ];
+  describe('exam attempt data for plugins', () => {
+    const slotId = 'org.openedx.frontend.learning.progress_tab_course_grade.v1';
+    const blockKey = (name) => `block-v1:edX+DemoX+Demo_Course+type@sequential+block@${name}`;
+    const ExamsDataPlugin = () => {
+      const examsData = useExamsData();
+      return <div data-testid="exams-data-plugin">{examsData ? examsData.map((exam) => exam.examName ?? '-').join(',') : 'null'}</div>;
+    };
+
+    let originalConfig;
 
     beforeEach(() => {
-      // Reset any existing handlers to avoid conflicts
-      axiosMock.reset();
-
-      // Re-add the base mocks that other tests expect
-      axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
-      axiosMock.onGet(progressUrl).reply(200, defaultTabData);
-      axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
-
-      // Mock exam data endpoints using specific GET handlers
-      axiosMock.onGet(/.*exam1.*/).reply(200, {
-        exam: {
-          id: 1,
-          course_id: courseId,
-          content_id: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@exam1',
-          exam_name: 'Midterm Exam',
-          attempt_status: 'submitted',
-          time_remaining_seconds: 0,
-        },
-      });
-
-      axiosMock.onGet(/.*homework1.*/).reply(404);
-
-      axiosMock.onGet(/.*final_exam.*/).reply(200, {
-        exam: {
-          id: 2,
-          course_id: courseId,
-          content_id: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@final_exam',
-          exam_name: 'Final Exam',
-          attempt_status: 'ready_to_start',
-          time_remaining_seconds: 7200,
-        },
-      });
-    });
-
-    it('should fetch exam data for all subsections when ProgressTab renders', async () => {
-      setTabData({ section_scores: mockSectionScores });
-
-      await fetchAndRender();
-
-      // Verify exam API calls were made for all subsections
-      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(3);
-
-      // Verify the exam data is in the Redux store
-      const state = store.getState();
-      expect(state.courseHome.examsData).toHaveLength(3);
-
-      // Check the exam data structure
-      expect(state.courseHome.examsData[0]).toEqual({
-        id: 1,
-        courseId,
-        contentId: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@exam1',
-        examName: 'Midterm Exam',
-        attemptStatus: 'submitted',
-        timeRemainingSeconds: 0,
-      });
-
-      expect(state.courseHome.examsData[1]).toEqual({}); // 404 response for homework
-
-      expect(state.courseHome.examsData[2]).toEqual({
-        id: 2,
-        courseId,
-        contentId: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@final_exam',
-        examName: 'Final Exam',
-        attemptStatus: 'ready_to_start',
-        timeRemainingSeconds: 7200,
-      });
-    });
-
-    it('should handle empty section scores gracefully', async () => {
-      setTabData({ section_scores: [] });
-
-      await fetchAndRender();
-
-      // Verify no exam API calls were made
-      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(0);
-
-      // Verify empty exam data in Redux store
-      const state = store.getState();
-      expect(state.courseHome.examsData).toEqual([]);
-    });
-
-    it('should re-fetch exam data when section scores change', async () => {
-      // Initial render with limited section scores
-      setTabData({
-        section_scores: [mockSectionScores[0]], // Only first section
-      });
-
-      await fetchAndRender();
-
-      // Verify initial API calls (2 subsections in first section)
-      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(2);
-
-      // Clear axios history to track new calls
-      axiosMock.resetHistory();
-
-      // Update with full section scores and re-render
-      setTabData({ section_scores: mockSectionScores });
-      await executeThunk(thunks.fetchProgressTab(courseId), store.dispatch);
-
-      // Verify additional API calls for all subsections
-      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(3);
-    });
-
-    it('should handle exam API errors gracefully without breaking ProgressTab', async () => {
-      // Clear existing mocks and setup specific error scenario
-      axiosMock.reset();
-
-      // Re-add base mocks
-      axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
-      axiosMock.onGet(progressUrl).reply(200, defaultTabData);
-      axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
-
-      // Mock first exam to return 500 error
-      axiosMock.onGet(/.*exam1.*/).reply(500, { error: 'Server Error' });
-
-      // Mock other exams to succeed
-      axiosMock.onGet(/.*homework1.*/).reply(404, { customAttributes: { httpErrorStatus: 404 } });
-      axiosMock.onGet(/.*final_exam.*/).reply(200, {
-        exam: {
-          id: 2,
-          course_id: courseId,
-          content_id: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@final_exam',
-          exam_name: 'Final Exam',
-          attempt_status: 'ready_to_start',
-          time_remaining_seconds: 7200,
-        },
-      });
-
-      setTabData({ section_scores: mockSectionScores });
-
-      await fetchAndRender();
-
-      // Verify ProgressTab still renders successfully despite API error
-      expect(screen.getByText('Grades')).toBeInTheDocument();
-
-      // Verify the exam data includes error placeholder for failed request
-      const state = store.getState();
-      expect(state.courseHome.examsData).toHaveLength(3);
-      expect(state.courseHome.examsData[0]).toEqual({}); // Failed request returns empty object
-    });
-
-    it('should use EXAMS_BASE_URL when configured for exam API calls', async () => {
-      // Configure EXAMS_BASE_URL
-      const originalConfig = getConfig();
+      originalConfig = getConfig();
       setConfig({
         ...originalConfig,
-        EXAMS_BASE_URL: 'http://localhost:18740',
-      });
-
-      // Override mock to use new base URL
-      const examUrlWithExamsBase = /http:\/\/localhost:18740\/api\/v1\/student\/exam\/attempt\/course_id.*/;
-      axiosMock.onGet(examUrlWithExamsBase).reply(200, {
-        exam: {
-          id: 1,
-          course_id: courseId,
-          exam_name: 'Test Exam',
-          attempt_status: 'created',
+        pluginSlots: {
+          [slotId]: {
+            plugins: [{
+              op: PLUGIN_OPERATIONS.Insert,
+              widget: { id: 'exams_data_plugin', type: DIRECT_PLUGIN, RenderWidget: ExamsDataPlugin },
+            }],
+          },
         },
       });
+      axiosMock.reset();
+      axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
+      axiosMock.onGet(progressUrl).reply(200, defaultTabData);
+      axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
+      axiosMock.onGet(/exam1/).reply(200, { exam: { id: 1, exam_name: 'Midterm' } });
+      axiosMock.onGet(/homework1/).reply(() => Promise.reject(Object.assign(new Error('Request failed with status code 404'), {
+        response: { status: 404, data: {} },
+        customAttributes: { httpErrorStatus: 404 },
+      })));
+      logUnhandledRequests(axiosMock);
+    });
 
-      setTabData({ section_scores: [mockSectionScores[0]] });
-
-      await fetchAndRender();
-
-      // Verify API calls use EXAMS_BASE_URL
-      const examApiCalls = axiosMock.history.get.filter(req => req.url.includes('localhost:18740'));
-      expect(examApiCalls.length).toBeGreaterThan(0);
-
-      // Restore original config
+    afterEach(() => {
       setConfig(originalConfig);
     });
 
-    it('should extract sequence IDs correctly from nested section scores structure', async () => {
-      const complexSectionScores = [
-        {
-          display_name: 'Introduction',
-          subsections: [
-            {
-              assignment_type: 'Lecture',
-              block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@intro',
-              display_name: 'Course Introduction',
-            },
-          ],
-        },
-        {
-          display_name: 'Assessments',
-          subsections: [
-            {
-              assignment_type: 'Exam',
-              block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@quiz1',
-              display_name: 'Quiz 1',
-            },
-            {
-              assignment_type: 'Exam',
-              block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@quiz2',
-              display_name: 'Quiz 2',
-            },
-          ],
-        },
-      ];
-
-      // Mock all the expected sequence IDs
-      const expectedSequenceIds = [
-        'block-v1:edX+DemoX+Demo_Course+type@sequential+block@intro',
-        'block-v1:edX+DemoX+Demo_Course+type@sequential+block@quiz1',
-        'block-v1:edX+DemoX+Demo_Course+type@sequential+block@quiz2',
-      ];
-
-      expectedSequenceIds.forEach((sequenceId, index) => {
-        const examUrl = new RegExp(`.*/api/v1/student/exam/attempt/course_id/${encodeURIComponent(courseId)}/content_id/${encodeURIComponent(sequenceId)}.*`);
-        axiosMock.onGet(examUrl).reply(index === 0 ? 404 : 200, {
-          exam: {
-            id: index,
-            course_id: courseId,
-            content_id: sequenceId,
-            exam_name: `Test ${index}`,
-          },
-        });
+    it('lets a slot plugin read one entry per subsection, fetched only because the plugin asked', async () => {
+      setTabData({
+        section_scores: [
+          { display_name: 'Section', subsections: [{ block_key: blockKey('exam1') }, { block_key: blockKey('homework1') }] },
+        ],
       });
-
-      setTabData({ section_scores: complexSectionScores });
 
       await fetchAndRender();
 
-      // Verify API calls were made for all extracted sequence IDs
-      expect(axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'))).toHaveLength(3);
+      await waitFor(() => expect(screen.getByTestId('exams-data-plugin')).toHaveTextContent('Midterm,-'));
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'))).toHaveLength(2);
+    });
 
-      // Verify correct sequence IDs were used in API calls
-      const apiCalls = axiosMock.history.get.filter(req => req.url.includes('/api/v1/student/exam/attempt/'));
-      expectedSequenceIds.forEach(sequenceId => {
-        expect(apiCalls.some(call => call.url.includes(encodeURIComponent(sequenceId)))).toBe(true);
+    it('makes no attempt requests when no plugin reads the data', async () => {
+      setConfig(originalConfig);
+      setTabData({
+        section_scores: [{ display_name: 'Section', subsections: [{ block_key: blockKey('exam1') }] }],
       });
+
+      await fetchAndRender();
+
+      expect(screen.getByText('Grades')).toBeInTheDocument();
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'))).toHaveLength(0);
+    });
+  });
+
+  describe('request count', () => {
+    it('requests the progress data once per load', async () => {
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => progressUrl.test(req.url))).toHaveLength(1);
+    });
+
+    it('requests the course metadata once per load', async () => {
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
+    });
+
+    it('requests the progress data once per load with the instructor toolbar mounted', async () => {
+      setMetadata({ original_user_is_staff: true });
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(axiosMock.history.get.filter((req) => progressUrl.test(req.url))).toHaveLength(1);
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/api/course_home/outline/'))).toHaveLength(0);
+    });
+  });
+
+  describe('when the progress request 404s', () => {
+    it('redirects to the legacy progress page and shows the loading indicator meanwhile', async () => {
+      // jsdom's location.replace is non-configurable, so we swap the whole location for the
+      // duration of this test (restored in finally so it can never bleed into another test).
+      const originalLocation = window.location;
+      const replace = jest.fn();
+      Object.defineProperty(window, 'location', { configurable: true, value: { replace } });
+      try {
+        axiosMock.onGet(progressUrl).reply(404, {});
+
+        await fetchAndRender(`/course/${courseId}/progress`, { waitForLoaded: false });
+
+        await waitFor(() => expect(replace).toHaveBeenCalledWith(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`));
+        expect(screen.getByRole('status')).toBeInTheDocument();
+        expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
+      } finally {
+        Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
+      }
     });
   });
 });

@@ -2,15 +2,13 @@ import PropTypes from 'prop-types';
 
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
 import { OverlayTrigger, Popover } from '@openedx/paragon';
-import { useContextId } from '../../../../data/hooks';
 
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 
 import messages from '../messages';
 
 const CurrentGradeTooltip = ({ tooltipClassName }) => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     assignmentTypeGradeSummary,
@@ -18,7 +16,7 @@ const CurrentGradeTooltip = ({ tooltipClassName }) => {
       isPassing,
       percent,
     },
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const currentGrade = Number((percent * 100).toFixed(0));
 

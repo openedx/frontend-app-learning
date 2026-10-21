@@ -1,26 +1,22 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import DateSummary from '../DateSummary';
 import messages from '../messages';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
 
 const CourseDates = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
-  const {
-    userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  const { courseId } = useParams();
+  const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
   const {
     datesWidget: {
       courseDateBlocks,
       datesTabLink,
     },
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   if (courseDateBlocks.length === 0) {
     return null;

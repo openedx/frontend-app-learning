@@ -6,7 +6,7 @@ import { Info, WarningFilled } from '@openedx/paragon/icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 
 import messages from './messages';
 import useEnrollClickHandler from './clickHook';
@@ -20,9 +20,7 @@ const EnrollmentAlert = ({ payload }) => {
     isStaff,
   } = payload;
 
-  const {
-    org,
-  } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const { enrollClickHandler, loading } = useEnrollClickHandler(
     courseId,

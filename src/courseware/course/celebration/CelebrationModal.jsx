@@ -9,25 +9,25 @@ import {
   useWindowSize,
 } from '@openedx/paragon';
 
-import { useDispatch } from 'react-redux';
+import { useQueryClient } from '@tanstack/react-query';
 import ClapsMobile from './assets/claps_280x201.gif';
 import ClapsTablet from './assets/claps_456x328.gif';
 import messages from './messages';
 import SocialIcons from '../../social-share/SocialIcons';
 import { recordFirstSectionCelebration } from './utils';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 const CelebrationModal = ({
   courseId, isOpen, onClose, ...rest
 }) => {
   const intl = useIntl();
-  const { org, celebrations } = useModel('courseHomeMeta', courseId);
-  const dispatch = useDispatch();
+  const { org, celebrations } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
+  const queryClient = useQueryClient();
   const wideScreen = useWindowSize().width >= breakpoints.small.minWidth;
 
   useEffect(() => {
     if (isOpen) {
-      recordFirstSectionCelebration(org, courseId, celebrations, dispatch);
+      recordFirstSectionCelebration(org, courseId, celebrations, queryClient);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);

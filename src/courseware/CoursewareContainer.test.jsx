@@ -1,34 +1,31 @@
 import { getConfig, history } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import {
-  BrowserRouter, MemoryRouter, Route, Routes,
+  BrowserRouter, Link, MemoryRouter, Route, Routes,
 } from 'react-router-dom';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { UserMessagesProvider } from '../generic/user-messages';
+import { ToastProvider } from '../generic/ToastContext';
 import tabMessages from '../tab-page/messages';
-import { initializeMockApp, waitFor } from '../setupTest';
+import { createTestQueryClient, initializeMockApp, waitFor } from '../setupTest';
 import { DECODE_ROUTES } from '../constants';
 
-import CoursewareContainer, {
-  checkResumeRedirect,
-  checkSectionToSequenceRedirect,
-  checkSectionUnitToUnitRedirect,
-  checkSequenceToSequenceUnitRedirect,
-  checkSequenceUnitMarkerToSequenceUnitRedirect,
-  checkUnitToSequenceUnitRedirect,
-} from './CoursewareContainer';
+import CoursewareContainer from './CoursewareContainer';
+import { getSequenceForUnitDeprecatedUrl } from './data/api';
+import { coursewareMetadataQuery } from './data/apiHooks';
 import { buildSimpleCourseBlocks, buildBinaryCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
-import initializeStore from '../store';
 import { appendBrowserTimezoneToUrl } from '../utils';
 import { buildOutlineFromBlocks } from './data/__factories__/learningSequencesOutline.factory';
-import { getSequenceForUnitDeprecatedUrl } from './data/api';
 
 // NOTE: Because the unit creates an iframe, we choose to mock it out as its rendering isn't
 // pertinent to this test.  Instead, we render a simple div that displays the properties we expect
@@ -36,11 +33,17 @@ import { getSequenceForUnitDeprecatedUrl } from './data/api';
 // proves that the component is rendered and receives the correct props.  We probably COULD render
 // Unit.jsx and its iframe in this test, but it's already complex enough.
 
+let mockRenderUnitNav = false;
 jest.mock(
   './course/sequence/Unit',
   // eslint-disable-next-line react/prop-types
-  () => function ({ courseId, id }) {
-    return <div className="fake-unit">Unit Contents {courseId} {id}</div>;
+  () => function ({ courseId, id, renderUnitNavigation }) {
+    return (
+      <div className="fake-unit">
+        Unit Contents {courseId} {id}
+        {mockRenderUnitNav && renderUnitNavigation ? renderUnitNavigation() : null}
+      </div>
+    );
   },
 );
 
@@ -49,9 +52,9 @@ jest.mock('@edx/frontend-platform/analytics');
 initializeMockApp();
 
 describe('CoursewareContainer', () => {
-  let store;
   let component;
   let axiosMock;
+  let queryClient;
 
   // This is a standard set of data that can be used in CoursewareContainer tests.
   // By default, `setUpMockRequests()` will configure the mock LMS API to return use this data.
@@ -79,6 +82,7 @@ describe('CoursewareContainer', () => {
   const {
     courseBlocks: defaultCourseBlocks,
     sequenceBlocks: [defaultSequenceBlock],
+    sectionBlocks: [defaultSectionBlock],
   } = buildSimpleCourseBlocks(
     defaultCourseId,
     defaultCourseHomeMetadata.title,
@@ -88,23 +92,31 @@ describe('CoursewareContainer', () => {
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
-    store = initializeStore();
+    queryClient = createTestQueryClient();
 
     component = (
-      <AppProvider store={store} wrapWithRouter={false}>
-        <UserMessagesProvider>
-          <Routes>
-            {DECODE_ROUTES.COURSEWARE.map((route) => (
-              <Route
-                key={route}
-                path={route}
-                element={<CoursewareContainer />}
-              />
-            ))}
-          </Routes>
-        </UserMessagesProvider>
+      <AppProvider wrapWithRouter={false}>
+        <QueryClientProvider client={queryClient}>
+          <UserMessagesProvider>
+            <ToastProvider>
+              <Routes>
+                {DECODE_ROUTES.COURSEWARE.map((route) => (
+                  <Route
+                    key={route}
+                    path={route}
+                    element={<CoursewareContainer />}
+                  />
+                ))}
+              </Routes>
+            </ToastProvider>
+          </UserMessagesProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
+  });
+
+  afterEach(() => {
+    mockRenderUnitNav = false;
   });
 
   function setUpMockRequests(options = {}) {
@@ -158,6 +170,12 @@ describe('CoursewareContainer', () => {
 
     const discussionConfigUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/*`);
     axiosMock.onGet(discussionConfigUrl).reply(200, { provider: 'legacy' });
+
+    // The outline sidebar (rendered via its trigger) fetches these at render.
+    const navigationUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/v1/navigation/*`);
+    axiosMock.onGet(navigationUrlRegExp).reply(200, courseBlocks);
+    const sidebarTogglesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/courses/.*/courseware-navigation-sidebar/toggles/`);
+    axiosMock.onGet(sidebarTogglesUrlRegExp).reply(200, { enable_completion_tracking: true });
   }
 
   async function loadContainer() {
@@ -224,7 +242,7 @@ describe('CoursewareContainer', () => {
         assertLoadedHeader(container);
         assertNoSequenceNavigation(container);
 
-        expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
+        await waitFor(() => expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents'));
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
         expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[1].id);
       });
@@ -247,9 +265,150 @@ describe('CoursewareContainer', () => {
         assertLoadedHeader(container);
         assertNoSequenceNavigation(container);
 
-        expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents');
+        await waitFor(() => expect(container.querySelector('.fake-unit')).toHaveTextContent('Unit Contents'));
         expect(container.querySelector('.fake-unit')).toHaveTextContent(courseId);
         expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
+      });
+
+      it('should ask for the resume block again on a later visit to the course root', async () => {
+        const resumeUrl = `${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`;
+        const resumeRequests = () => axiosMock.history.get.filter((req) => req.url === resumeUrl);
+        axiosMock.onGet(resumeUrl).reply(200, { sectionId: sequenceBlock.id, unitId: unitBlocks[0].id });
+
+        history.push(`/course/${courseId}`);
+        // An in-app link back to the course root, as the fallbacks to it navigate.
+        const { container } = render(
+          <BrowserRouter>
+            <Link to={`/course/${courseId}`}>course root</Link>
+            {component}
+          </BrowserRouter>,
+        );
+        await waitForElementToBeRemoved(screen.getByRole('status'));
+        await waitFor(() => expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[0].id));
+        expect(resumeRequests()).toHaveLength(1);
+
+        // The learner has moved on since; the next visit to the root must not reuse the first answer.
+        axiosMock.onGet(resumeUrl).reply(200, { sectionId: sequenceBlock.id, unitId: unitBlocks[2].id });
+        const user = userEvent.setup();
+        await user.click(screen.getByRole('link', { name: 'course root' }));
+
+        await waitFor(() => expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id));
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${sequenceBlock.id}/${unitBlocks[2].id}`);
+        expect(resumeRequests()).toHaveLength(2);
+      });
+
+      it('should stay on the course root when the resume block request fails', async () => {
+        const resumeUrl = `${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`;
+        axiosMock.onGet(resumeUrl).reply(500);
+
+        history.push(`/course/${courseId}`);
+        const container = await loadContainer();
+
+        assertLoadedHeader(container);
+        await waitFor(() => expect(axiosMock.history.get.filter((req) => req.url === resumeUrl)).toHaveLength(1));
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+        expect(container.querySelector('.fake-unit')).toBeNull();
+      });
+    });
+
+    describe('when the URL contains a unit ID instead of a sequence ID', () => {
+      const { href: blocksUrl } = getSequenceForUnitDeprecatedUrl(courseId);
+      const courseBlocksUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/courses/v2/blocks/*`);
+      const unitBlock = defaultUnitBlocks[1];
+      const savedBlocksRequests = () => axiosMock.history.get.filter((req) => req.url === blocksUrl);
+
+      it('should redirect to the unit within its parent sequence', async () => {
+        history.push(`/course/${courseId}/${unitBlock.id}`);
+        const container = await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(
+          `http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlock.id}`,
+        ));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlock.id);
+        expect(savedBlocksRequests()).toHaveLength(1);
+      });
+
+      it('should redirect to the course root when no sequence holds the unit', async () => {
+        axiosMock.onGet(courseBlocksUrlRegExp).reply(200, {
+          ...defaultCourseBlocks,
+          blocks: {
+            ...defaultCourseBlocks.blocks,
+            [defaultSequenceBlock.id]: { ...defaultSequenceBlock, children: [] },
+          },
+        });
+
+        history.push(`/course/${courseId}/${unitBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}`));
+        expect(savedBlocksRequests()).toHaveLength(1);
+      });
+
+      it('should redirect to the course root when the blocks request fails', async () => {
+        axiosMock.onGet(courseBlocksUrlRegExp).reply(500);
+
+        history.push(`/course/${courseId}/${unitBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}`));
+        expect(savedBlocksRequests()).toHaveLength(1);
+      });
+    });
+
+    describe('when the URL has the /preview prefix', () => {
+      const unitPath = `/course/${courseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`;
+
+      it('should send a user who is not staff to the same URL without the prefix', async () => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        history.push(`/preview${unitPath}`);
+        const container = await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost${unitPath}`));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(defaultUnitBlocks[0].id);
+        expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('You should call navigate() in a React.useEffect()'));
+        warn.mockRestore();
+      });
+
+      it('should keep staff on the preview URL', async () => {
+        setUpMockRequests({ courseHomeMetadata: Factory.build('courseHomeMetadata', { original_user_is_staff: true }) });
+
+        history.push(`/preview${unitPath}`);
+        const container = await loadContainer();
+
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(defaultUnitBlocks[0].id);
+        expect(global.location.href).toEqual(`http://localhost/preview${unitPath}`);
+      });
+
+      it('should send a user who is not staff from a unit ID in the sequence slot to the unit without the prefix', async () => {
+        const unitBlock = defaultUnitBlocks[1];
+        const { href: blocksUrl } = getSequenceForUnitDeprecatedUrl(courseId);
+
+        history.push(`/preview/course/${courseId}/${unitBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(
+          `http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlock.id}`,
+        ));
+        expect(axiosMock.history.get.filter((req) => req.url === blocksUrl)).toHaveLength(1);
+      });
+
+      it('should keep the prefix when redirecting staff from a section to its first sequence', async () => {
+        setUpMockRequests({ courseHomeMetadata: Factory.build('courseHomeMetadata', { original_user_is_staff: true }) });
+
+        history.push(`/preview/course/${courseId}/${defaultSectionBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/preview${unitPath}`));
+      });
+
+      it('should drop the prefix when redirecting staff to the course root', async () => {
+        setUpMockRequests({ courseHomeMetadata: Factory.build('courseHomeMetadata', { original_user_is_staff: true }) });
+
+        history.push(`/preview/course/${courseId}/block-v1:edX+DemoX+Demo_Course+type@sequential+block@unknown`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}`));
       });
     });
 
@@ -278,7 +437,8 @@ describe('CoursewareContainer', () => {
           const container = await loadContainer();
           assertLoadedHeader(container);
           assertNoSequenceNavigation(container);
-          assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id);
+          // Two redirects, the second after the sequence request comes back.
+          await waitFor(() => assertLocation(container, sequenceTree[1][0].id, unitTree[1][0][0].id));
         });
       });
 
@@ -306,6 +466,116 @@ describe('CoursewareContainer', () => {
           await loadContainer();
           expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
         });
+      });
+
+      describe('when next leaves the first section', () => {
+        const celebrationKey = 'CelebrationModal.showOnSectionLoad';
+
+        beforeEach(() => {
+          global.localStorage.removeItem(celebrationKey);
+          setUpMockRequests({
+            courseBlocks,
+            courseMetadata: Factory.build('courseMetadata', { celebrations: { first_section: true } }),
+          });
+        });
+
+        it('records the section change for the first-section celebration', async () => {
+          mockRenderUnitNav = true;
+          setUrl(sequenceTree[0][1].id, unitTree[0][1][1].id);
+          await loadContainer();
+
+          const user = userEvent.setup();
+          await user.click(screen.getByRole('link', { name: /next/i }));
+
+          expect(JSON.parse(global.localStorage.getItem(celebrationKey))).toEqual({
+            prevSequenceId: sequenceTree[0][1].id,
+            nextSequenceId: sequenceTree[1][0].id,
+          });
+        });
+      });
+    });
+
+    describe('when the URL contains a section ID and a unit ID', () => {
+      it('should redirect to the unit within its parent sequence', async () => {
+        const unitBlock = defaultUnitBlocks[1];
+        history.push(`/course/${courseId}/${defaultSectionBlock.id}/${unitBlock.id}`);
+        const container = await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(
+          `http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitBlock.id}`,
+        ));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlock.id);
+      });
+    });
+
+    describe('when the URL contains an ID that is not a sequence, section or unit', () => {
+      it('should redirect to the course root', async () => {
+        history.push(`/course/${courseId}/block-v1:edX+DemoX+Demo_Course+type@sequential+block@unknown`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}`));
+        expect(axiosMock.history.get.map(({ url }) => url)).not.toContainEqual(expect.stringContaining('/api/courses/v2/blocks/'));
+      });
+
+      it('should stay put when a unit ID follows it', async () => {
+        const path = `/course/${courseId}/block-v1:edX+DemoX+Demo_Course+type@sequential+block@unknown/${defaultUnitBlocks[0].id}`;
+        history.push(path);
+        await loadContainer();
+
+        expect(global.location.href).toEqual(`http://localhost${path}`);
+      });
+    });
+
+    describe('when the sequence has no units', () => {
+      beforeEach(() => {
+        const sequenceMetadata = Factory.build(
+          'sequenceMetadata',
+          {},
+          { courseId, sequenceBlock: defaultSequenceBlock, unitBlocks: [] },
+        );
+        setUpMockRequests({ sequenceMetadatas: [sequenceMetadata] });
+      });
+
+      it('should redirect a unit marker to the sequence', async () => {
+        history.push(`/course/${courseId}/${defaultSequenceBlock.id}/first`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}`));
+      });
+
+      it('should stay on the sequence without a redirect to it', async () => {
+        history.push(`/course/${courseId}/${defaultSequenceBlock.id}`);
+        const replaceState = jest.spyOn(global.history, 'replaceState');
+        await loadContainer();
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+        expect(global.location.href).toEqual(`http://localhost/course/${courseId}/${defaultSequenceBlock.id}`);
+        // React Router stamps the initial entry with replaceState(state, '') on start-up; a redirect
+        // passes a URL.
+        expect(replaceState.mock.calls.filter(([, , url]) => url)).toHaveLength(0);
+        replaceState.mockRestore();
+      });
+    });
+
+    describe('when the learning-sequences outline fails', () => {
+      const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
+
+      beforeEach(() => {
+        axiosMock.onGet(learningSequencesUrlRegExp).reply(500);
+      });
+
+      it('should go to the course home', async () => {
+        history.push(`/course/${courseId}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}/home`));
+      });
+
+      it('should go to the course home rather than the sequence\'s unit', async () => {
+        history.push(`/course/${courseId}/${defaultSequenceBlock.id}`);
+        await loadContainer();
+
+        await waitFor(() => expect(global.location.href).toEqual(`http://localhost/course/${courseId}/home`));
       });
     });
 
@@ -385,6 +655,73 @@ describe('CoursewareContainer', () => {
 
         expect(screen.getByTestId('org.openedx.frontend.learning.sequence_navigation.v1')).toBeInTheDocument();
       });
+
+      it('marks the current unit complete when navigating to the next unit', async () => {
+        const completionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceBlock.id}/handler/get_completion`;
+        axiosMock.onPost(completionUrl).reply(200, { complete: true });
+
+        mockRenderUnitNav = true;
+        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
+        await loadContainer();
+
+        const user = userEvent.setup();
+        await user.click(screen.getByRole('link', { name: /next/i }));
+
+        await waitFor(() => {
+          expect(axiosMock.history.post.filter(request => request.url === completionUrl)).toHaveLength(1);
+        });
+      });
+
+      it('saves the position on each unit change', async () => {
+        const positionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceBlock.id}/handler/goto_position`;
+        axiosMock.onPost(positionUrl).reply(200, {});
+        const savedPositions = () => axiosMock.history.post
+          .filter(request => request.url === positionUrl)
+          .map(request => JSON.parse(request.data).position);
+
+        mockRenderUnitNav = true;
+        history.push(`/course/${courseId}/${sequenceBlock.id}/${unitBlocks[0].id}`);
+        const container = await loadContainer();
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[0].id);
+        expect(savedPositions()).toEqual([]);
+
+        const user = userEvent.setup();
+        await user.click(screen.getByRole('link', { name: /next/i }));
+        await waitFor(() => expect(savedPositions()).toEqual([2]));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[1].id);
+
+        await user.click(screen.getByRole('link', { name: /next/i }));
+        await waitFor(() => expect(savedPositions()).toEqual([2, 3]));
+        expect(container.querySelector('.fake-unit')).toHaveTextContent(unitBlocks[2].id);
+      });
+    });
+  });
+
+  describe('when the course has no sections', () => {
+    it('does not resume-redirect (there is no first sequence to pick)', async () => {
+      global.scrollTo = jest.fn();
+      const courseId = defaultCourseId;
+      const emptyCourseBlocks = {
+        courseId,
+        title: defaultCourseHomeMetadata.title,
+        blocks: {
+          [courseId]: {
+            id: courseId,
+            type: 'course',
+            display_name: defaultCourseHomeMetadata.title,
+            children: [],
+          },
+        },
+        root: courseId,
+      };
+      setUpMockRequests({ courseBlocks: emptyCourseBlocks });
+      axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {});
+
+      history.push(`/course/${courseId}`);
+      const container = await loadContainer();
+
+      expect(global.location.href).toEqual(`http://localhost/course/${courseId}`);
+      expect(container.querySelector('.fake-unit')).toBeNull();
     });
   });
 
@@ -472,839 +809,113 @@ describe('CoursewareContainer', () => {
       expect(global.location.href).toEqual('http://localhost/redirect/enterprise-learner-dashboard');
     });
   });
-});
 
-describe('Course redirect functions', () => {
-  let navigate;
-  let axiosMock;
+  describe('while the learning-sequences outline is pending', () => {
+    const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
+    const unitPath = `/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[1].id}`;
 
-  beforeEach(() => {
-    navigate = jest.fn();
-    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-  });
+    // Holds the outline request, as a slow outline would.
+    const holdOutline = () => {
+      axiosMock.onGet(learningSequencesUrlRegExp).reply(() => new Promise(() => {}));
+    };
 
-  describe('isPreview equals true', () => {
-    describe('checkSequenceUnitMarkerToSequenceUnitRedirect', () => {
-      it('return when sequence is not loaded', () => {
-        checkSequenceUnitMarkerToSequenceUnitRedirect(
-          'courseId',
-          'loading',
-          { id: 'sequence_1', unitIds: ['unit_1'] },
-          'first',
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
+    // Both metadata queries have succeeded, and the page has had a render with the outline still held.
+    const waitForMetadataWithOutlinePending = async () => {
+      await waitFor(() => {
+        expect(queryClient.getQueryState(coursewareMetadataQuery(defaultCourseId).queryKey)?.status).toBe('success');
+        expect(queryClient.getQueryState(courseHomeMetaQuery(defaultCourseId).queryKey)?.status).toBe('success');
       });
+      await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
+    };
 
-      it('return when sequence id is null', () => {
-        checkSequenceUnitMarkerToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: null, unitIds: ['unit_1'] },
-          'first',
-          navigate,
-          true,
-        );
+    const renderUnit = () => {
+      history.push(unitPath);
+      render(<BrowserRouter>{component}</BrowserRouter>);
+    };
 
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('calls navigate with first unit id', () => {
-        checkSequenceUnitMarkerToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'] },
-          'first',
-          navigate,
-          true,
-        );
-        const expectedUrl = '/preview/course/courseId/sequence_1/unit_1';
-
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
-
-      it('calls navigate with last unit id', () => {
-        checkSequenceUnitMarkerToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'] },
-          'last',
-          navigate,
-          true,
-        );
-        const expectedUrl = '/preview/course/courseId/sequence_1/unit_2';
-
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
+    beforeEach(() => {
+      setUpMockRequests();
     });
 
-    describe('checkSequenceToSequenceUnitRedirect', () => {
-      it('calls navigate with next unit id', () => {
-        checkSequenceToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
-          null,
-          navigate,
-          true,
-        );
-        const expectedUrl = '/preview/course/courseId/sequence_1/unit_1';
+    it('disables the Next control', async () => {
+      mockRenderUnitNav = true;
+      holdOutline();
+      renderUnit();
+      await waitForMetadataWithOutlinePending();
 
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
-
-      it('returns when sequence status is loading', () => {
-        checkSequenceToSequenceUnitRedirect(
-          'courseId',
-          'loading',
-          { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when sequence id is null', () => {
-        checkSequenceToSequenceUnitRedirect(
-          'courseId',
-          'loading',
-          { unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when unit id is defined', () => {
-        checkSequenceToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
-          'unit_2',
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when unit ids are undefiend', () => {
-        checkSequenceToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: 'sequence_1', activeUnitIndex: 0 },
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
+      expect(screen.getByText(/^next$/i).closest('a, button')).toBeDisabled();
     });
 
-    describe('checkUnitToSequenceUnitRedirect', () => {
-      const { href: apiUrl } = getSequenceForUnitDeprecatedUrl('courseId');
+    it('does not show a page title with an empty segment', async () => {
+      holdOutline();
+      renderUnit();
+      await waitForMetadataWithOutlinePending();
 
-      it('calls navigate with parentId and sequenceId', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
-        axiosMock.onGet(apiUrl).reply(200, {
-          blocks: [{
-            id: 'sequence_1',
-            type: 'sequential',
-            children: ['unit_1'],
-          }],
-        });
-
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-        const expectedUrl = '/course/courseId/sequence_1';
-
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('calls navigate to course page when getSequenceForUnitDeprecated errors', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
-        axiosMock.onGet(apiUrl).reply(404);
-
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-        const expectedUrl = '/course/courseId';
-
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('calls navigate to course page when no parent id is returned', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
-        axiosMock.onGet(apiUrl).reply(200, {
-          blocks: [{
-            id: 'sequence_1',
-            type: 'sequential',
-            children: ['block_1'],
-          }],
-        });
-
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-        const expectedUrl = '/course/courseId';
-
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('calls navigate to course page when sequnce is not unit', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
-
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          false,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-        const expectedUrl = '/course/courseId';
-
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).not.toHaveBeenCalled();
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('returns when course status is loading', () => {
-        checkUnitToSequenceUnitRedirect(
-          'loading',
-          'courseId',
-          'failed',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when sequence status is not failed', () => {
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'loaded',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when section is defined', () => {
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'loaded',
-          true,
-          'unit_1',
-          true,
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when routeUnitId is defined', () => {
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'loaded',
-          true,
-          'unit_1',
-          false,
-          'unit_1',
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
+      expect(document.title).not.toMatch(/^\s*\||\|\s*\|/);
     });
 
-    describe('checkSectionUnitToUnitRedirect', () => {
-      it('calls navigate with unitId', () => {
-        checkSectionUnitToUnitRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          true,
-          'unit_2',
-          navigate,
-          true,
-        );
-        const expectedUrl = '/preview/course/courseId/unit_2';
+    it('does not resume-redirect from the course root', async () => {
+      const resumeUrl = `${getConfig().LMS_BASE_URL}/api/courseware/resume/${defaultCourseId}`;
+      axiosMock.onGet(resumeUrl).reply(200, { sectionId: defaultSectionBlock.id, unitId: defaultUnitBlocks[1].id });
+      holdOutline();
+      history.push(`/course/${defaultCourseId}`);
+      render(<BrowserRouter>{component}</BrowserRouter>);
+      await waitForMetadataWithOutlinePending();
 
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
-
-      it('returns when course status is loading', () => {
-        checkSectionUnitToUnitRedirect(
-          'loading',
-          'courseId',
-          'loaded',
-          true,
-          'unit_2',
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when sequence status is loading', () => {
-        checkSectionUnitToUnitRedirect(
-          'loaded',
-          'courseId',
-          'loaded',
-          true,
-          'unit_2',
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when section is null', () => {
-        checkSectionUnitToUnitRedirect(
-          'loaded',
-          'courseId',
-          'loaded',
-          null,
-          'unit_2',
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when unitId is null', () => {
-        checkSectionUnitToUnitRedirect(
-          'loaded',
-          'courseId',
-          'loaded',
-          true,
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
+      expect(global.location.href).toEqual(`http://localhost/course/${defaultCourseId}`);
+      expect(axiosMock.history.get.map(({ url }) => url)).not.toContain(resumeUrl);
     });
 
-    describe('checkResumeRedirect', () => {
-      it('calls navigate with unitId', () => {
-        axiosMock.onGet(
-          `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
-        ).reply(200, {
-          section_id: 'section_1',
-          unitId: 'unit_1',
-        });
-        checkResumeRedirect(
-          'loaded',
-          'courseId',
-          null,
-          'sequence_1',
-          navigate,
-          true,
-        );
-        const expectedUrl = '/preview/course/courseId/section_1/unit_1';
+    it('does not redirect a section URL', async () => {
+      holdOutline();
+      history.push(`/course/${defaultCourseId}/${defaultSectionBlock.id}`);
+      render(<BrowserRouter>{component}</BrowserRouter>);
+      await waitForMetadataWithOutlinePending();
 
-        waitFor(() => {
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('calls navigate with firstSequenceId', () => {
-        axiosMock.onGet(
-          `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
-        ).reply(200, {
-          section_id: 'section_1',
-          first_sequence_id: 'sequence_1',
-        });
-        checkResumeRedirect(
-          'loaded',
-          'courseId',
-          null,
-          'sequence_1',
-          navigate,
-          true,
-        );
-        const expectedUrl = '/course/courseId/sequence_1';
-
-        waitFor(() => {
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('returns after calling getResumeBlock', () => {
-        const getResumeBlock = jest.fn();
-        axiosMock.onGet(
-          `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
-        ).reply(200, {
-          course_id: 'courseId',
-        });
-        checkResumeRedirect(
-          'loaded',
-          'courseId',
-          null,
-          'sequence_1',
-          navigate,
-          true,
-        );
-
-        waitFor(() => {
-          expect(getResumeBlock).toHaveBeenCalled();
-          expect(navigate).not.toHaveBeenCalled();
-        });
-      });
-
-      it('returns when course status is loading', () => {
-        checkResumeRedirect(
-          'loading',
-          'courseId',
-          null,
-          'sequence_1',
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when sequenceId is defined', () => {
-        checkResumeRedirect(
-          'loaded',
-          'courseId',
-          'sequence_3',
-          'sequence_1',
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when getResumeBlock throws error', () => {
-        const getResumeBlock = jest.fn();
-        axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`).reply(404);
-        checkResumeRedirect(
-          'loaded',
-          'courseId',
-          null,
-          'sequence_1',
-          navigate,
-          true,
-        );
-
-        waitFor(() => {
-          expect(getResumeBlock).toHaveBeenCalled();
-          expect(navigate).not.toHaveBeenCalled();
-        });
-      });
+      expect(global.location.href).toEqual(`http://localhost/course/${defaultCourseId}/${defaultSectionBlock.id}`);
+      expect(axiosMock.history.get.map(({ url }) => url)).not.toContainEqual(expect.stringContaining('/api/courses/v2/blocks/'));
     });
   });
 
-  describe('isPreview equals false', () => {
-    describe('checkSectionToSequenceRedirect', () => {
-      it('calls navigate with section based sequence id', () => {
-        checkSectionToSequenceRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          { sequenceIds: ['sequence_1'] },
-          null,
-          navigate,
-        );
-        const expectedUrl = '/course/courseId/sequence_1';
+  describe('request count', () => {
+    it('requests the course metadata once per load', async () => {
+      setUpMockRequests();
+      history.push(`/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`);
+      await loadContainer();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
-
-      it('calls navigate with course id only', () => {
-        checkSectionToSequenceRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          { sequenceIds: [] },
-          null,
-          navigate,
-        );
-        const expectedUrl = '/course/courseId';
-
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
-
-      it('returns when course status is loading', () => {
-        checkSectionToSequenceRedirect(
-          'loading',
-          'courseId',
-          'failed',
-          { sequenceIds: [] },
-          null,
-          navigate,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when sequence status is not failed', () => {
-        checkSectionToSequenceRedirect(
-          'loaded',
-          'courseId',
-          'loading',
-          { sequenceIds: [] },
-          null,
-          navigate,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when section is not defined', () => {
-        checkSectionToSequenceRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          null,
-          null,
-          navigate,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when unitId is defined', () => {
-        checkSectionToSequenceRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          null,
-          'unit_1',
-          navigate,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
+      const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${defaultCourseId}`);
+      expect(axiosMock.history.get.filter((req) => req.url === courseHomeMetadataUrl)).toHaveLength(1);
     });
 
-    describe('checkResumeRedirect', () => {
-      it('calls navigate with unitId', () => {
-        axiosMock.onGet(
-          `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
-        ).reply(200, {
-          section_id: 'section_1',
-          unitId: 'unit_1',
-        });
-        checkResumeRedirect(
-          'loaded',
-          'courseId',
-          null,
-          'sequence_1',
-          navigate,
-          false,
-        );
-        const expectedUrl = '/preview/course/courseId/section_1/unit_1';
+    it('requests the sequence metadata once per load', async () => {
+      setUpMockRequests();
+      history.push(`/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`);
+      await loadContainer();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
-        waitFor(() => {
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('calls navigate with firstSequenceId', () => {
-        axiosMock.onGet(
-          `${getConfig().LMS_BASE_URL}/api/courseware/resume/courseId`,
-        ).reply(200, {
-          section_id: 'section_1',
-          first_sequence_id: 'sequence_1',
-        });
-        checkResumeRedirect(
-          'loaded',
-          'courseId',
-          null,
-          'sequence_1',
-          navigate,
-          false,
-        );
-        const expectedUrl = '/course/courseId/sequence_1';
-
-        waitFor(() => {
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
+      const sequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${defaultSequenceBlock.id}`;
+      expect(axiosMock.history.get.filter((req) => req.url === sequenceMetadataUrl)).toHaveLength(1);
     });
 
-    describe('checkSequenceUnitMarkerToSequenceUnitRedirect', () => {
-      it('calls navigate with first unit id', () => {
-        checkSequenceUnitMarkerToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'] },
-          'first',
-          navigate,
-          false,
-        );
-        const expectedUrl = '/course/courseId/sequence_1/unit_1';
+    it('requests the courseware metadata once per load', async () => {
+      setUpMockRequests();
+      history.push(`/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`);
+      await loadContainer();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
-
-      it('calls navigate with base url when no unit id', () => {
-        checkSequenceUnitMarkerToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: 'sequence_1', unitIds: [] },
-          'first',
-          navigate,
-          true,
-        );
-        const expectedUrl = '/course/courseId/sequence_1';
-
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
-
-      it('calls navigate with last unit id', () => {
-        checkSequenceUnitMarkerToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'] },
-          'last',
-          navigate,
-          false,
-        );
-        const expectedUrl = '/course/courseId/sequence_1/unit_2';
-
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
+      const coursewareMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${defaultCourseId}`);
+      expect(axiosMock.history.get.filter((req) => req.url === coursewareMetadataUrl)).toHaveLength(1);
     });
 
-    describe('checkSequenceToSequenceUnitRedirect', () => {
-      it('calls navigate with next unit id', () => {
-        checkSequenceToSequenceUnitRedirect(
-          'courseId',
-          'loaded',
-          { id: 'sequence_1', unitIds: ['unit_1', 'unit_2'], activeUnitIndex: 0 },
-          null,
-          navigate,
-          false,
-        );
-        const expectedUrl = '/course/courseId/sequence_1/unit_1';
+    it('requests the learning-sequences outline once per load', async () => {
+      setUpMockRequests();
+      history.push(`/course/${defaultCourseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`);
+      await loadContainer();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
-    });
-
-    describe('checkUnitToSequenceUnitRedirect', () => {
-      const apiUrl = getSequenceForUnitDeprecatedUrl('courseId');
-
-      it('calls navigate with parentId and sequenceId', () => {
-        axiosMock.onGet(apiUrl).reply(200, {
-          parent: { id: 'sequence_1' },
-        });
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-        const expectedUrl = '/course/courseId/sequence_1';
-
-        waitFor(() => {
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('calls navigate to course page when getSequenceForUnitDeprecated errors', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
-        axiosMock.onGet(apiUrl).reply(404);
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-        const expectedUrl = '/course/courseId';
-
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('calls navigate to course page when no parent id is returned', () => {
-        const getSequenceForUnitDeprecated = jest.fn();
-        axiosMock.onGet(apiUrl).reply(200, {
-          parent: { children: ['block_1'] },
-        });
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-        const expectedUrl = '/course/courseId';
-
-        waitFor(() => {
-          expect(getSequenceForUnitDeprecated).toHaveBeenCalled();
-          expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-        });
-      });
-
-      it('returns when course status is loading', () => {
-        checkUnitToSequenceUnitRedirect(
-          'loading',
-          'courseId',
-          'failed',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when sequence status is not failed', () => {
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'loaded',
-          true,
-          'unit_1',
-          false,
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when section is defined', () => {
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'loaded',
-          true,
-          'unit_1',
-          true,
-          null,
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-
-      it('returns when routeUnitId is defined', () => {
-        checkUnitToSequenceUnitRedirect(
-          'loaded',
-          'courseId',
-          'loaded',
-          true,
-          'unit_1',
-          false,
-          'unit_1',
-          navigate,
-          true,
-        );
-
-        expect(navigate).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('checkSectionUnitToUnitRedirect', () => {
-      it('calls navigate with unitId', () => {
-        checkSectionUnitToUnitRedirect(
-          'loaded',
-          'courseId',
-          'failed',
-          true,
-          'unit_2',
-          navigate,
-          false,
-        );
-        const expectedUrl = '/course/courseId/unit_2';
-
-        expect(navigate).toHaveBeenCalledWith(expectedUrl, { replace: true });
-      });
+      const outlineUrl = new URL(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/${defaultCourseId}`).href;
+      expect(axiosMock.history.get.filter((req) => req.url === outlineUrl)).toHaveLength(1);
     });
   });
 });

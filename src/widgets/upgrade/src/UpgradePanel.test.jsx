@@ -4,11 +4,13 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
   render, screen, act, waitFor, initializeMockApp,
 } from '@src/setupTest';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { breakpoints } from '@openedx/paragon';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { SidebarProvider } from '@src/courseware/course/sidebar/SidebarContext';
+import { useCoursewareMetadata } from '@src/courseware/data/apiHooks';
 import * as localStorageModule from '@src/data/localStorage';
-import { useModel } from '@src/generic/model-store';
-import { UpgradeWidgetProvider } from './UpgradeWidgetContext';
 import UpgradePanel from './UpgradePanel';
+import { upgradeWidgetConfig } from './widgetConfig';
 
 jest.mock('@edx/frontend-platform/analytics', () => ({
   sendTrackEvent: jest.fn(),
@@ -23,8 +25,14 @@ jest.mock('@src/data/localStorage', () => ({
   setLocalStorage: jest.fn(),
 }));
 
-jest.mock('@src/generic/model-store', () => ({
-  useModel: jest.fn(),
+jest.mock('@src/course-home/data/apiHooks', () => ({
+  ...jest.requireActual('@src/course-home/data/apiHooks'),
+  useCourseHomeMeta: jest.fn(),
+}));
+
+jest.mock('@src/courseware/data/apiHooks', () => ({
+  ...jest.requireActual('@src/courseware/data/apiHooks'),
+  useCoursewareMetadata: jest.fn(),
 }));
 
 initializeMockApp();
@@ -54,30 +62,19 @@ function buildCourseHomeMeta(overrides = {}) {
   };
 }
 
-function renderPanel(contextOverrides = {}, modelOverrides = {}) {
-  useModel.mockImplementation((modelType) => {
-    if (modelType === 'coursewareMeta') {
-      return buildCoursewareMeta(modelOverrides.coursewareMeta);
-    }
-    if (modelType === 'courseHomeMeta') {
-      return buildCourseHomeMeta(modelOverrides.courseHomeMeta);
-    }
-    return {};
-  });
+// The panel is the stored sidebar on a desktop viewport; the widget's own Provider comes from
+// the sidebar provider mounting the upgrade widget config.
+function renderPanel(modelOverrides = {}) {
+  useCoursewareMetadata.mockReturnValue({ data: buildCoursewareMeta(modelOverrides.coursewareMeta) });
+  useCourseHomeMeta.mockReturnValue({ data: buildCourseHomeMeta(modelOverrides.courseHomeMeta) });
+  localStorageModule.getLocalStorage.mockImplementation((key) => (key === `sidebar.${courseId}` ? 'UPGRADE' : null));
+  global.innerWidth = breakpoints.extraExtraLarge.minWidth;
 
   return render(
-    <SidebarContext.Provider value={{
-      courseId,
-      shouldDisplayFullScreen: false,
-      currentSidebar: 'UPGRADE',
-      toggleSidebar: jest.fn(),
-      ...contextOverrides,
-    }}
-    >
-      <UpgradeWidgetProvider>
-        <UpgradePanel />
-      </UpgradeWidgetProvider>
-    </SidebarContext.Provider>,
+    <SidebarProvider courseId={courseId} unitId="unit-test-456" widgets={[upgradeWidgetConfig]}>
+      <UpgradePanel />
+    </SidebarProvider>,
+    { wrapWithRouter: true },
   );
 }
 
@@ -145,7 +142,7 @@ describe('UpgradePanel', () => {
   });
 
   it('shows PluginSlot content area when verifiedMode is truthy', async () => {
-    renderPanel({}, { courseHomeMeta: { verifiedMode: { price: 100 } } });
+    renderPanel({ courseHomeMeta: { verifiedMode: { price: 100 } } });
 
     await waitFor(() => {
       expect(screen.queryByText(/no upgrade options available/i)).not.toBeInTheDocument();
@@ -153,7 +150,7 @@ describe('UpgradePanel', () => {
   });
 
   it('includes course metadata in the track event payload', () => {
-    renderPanel({}, {
+    renderPanel({
       coursewareMeta: { enrollmentMode: 'verified' },
       courseHomeMeta: { org: 'TestOrg', username: 'testuser' },
     });

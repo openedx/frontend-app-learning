@@ -1,14 +1,14 @@
 import React from 'react';
 import { FormattedTime, useIntl } from '@edx/frontend-platform/i18n';
-import { useModel } from '../../../generic/model-store';
+import { useParams } from 'react-router-dom';
+import { useCourseHomeMeta } from '../../data/apiHooks';
 
-import { useContextId } from '../../../data/hooks';
 import messages from '../messages';
 
 interface Props {
-  due: string;
+  due: string | null;
   id: string;
-  description: string;
+  description: string | null;
 }
 
 const SequenceDueDate: React.FC<Props> = ({
@@ -17,14 +17,12 @@ const SequenceDueDate: React.FC<Props> = ({
   description,
 }) => {
   const intl = useIntl();
-  const courseId = useContextId();
+  const { courseId } = useParams();
   let dueDateMessage: string | React.ReactNode = intl.formatMessage(
     messages.sequenceNoDueDate,
     { description: description || '' },
   );
-  const {
-    userTimezone,
-  } = useModel('outline', courseId);
+  const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
 
   if (due) {
     const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};

@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { useDispatch } from 'react-redux';
+import { useQueryClient } from '@tanstack/react-query';
 import { getConfig } from '@edx/frontend-platform';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '@src/generic/user-messages';
-import { useModel } from '@src/generic/model-store';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { useCoursewareMetadata, useMinimalCourseOutline } from '@src/courseware/data/apiHooks';
 import { LearnerToolsSlot } from '../../plugin-slots/LearnerToolsSlot';
-import SidebarProvider from './sidebar/SidebarContextProvider';
+import { SidebarProvider } from './sidebar/SidebarContext';
+import { getEnabledWidgets } from './sidebar/defaultWidgets';
 import { RightSidebarTriggerSlot } from '../../plugin-slots/RightSidebarTriggerSlot';
 import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
 import ContentTools from './content-tools';
@@ -26,30 +27,25 @@ const Course = ({
   unitNavigationHandler,
   windowWidth,
 }) => {
-  const course = useModel('coursewareMeta', courseId);
+  const coursewareMetadata = useCoursewareMetadata(courseId, { enabled: false }).data;
   const {
     celebrations,
     isStaff,
-    originalUserIsStaff,
-  } = useModel('courseHomeMeta', courseId);
-  const sequence = useModel('sequences', sequenceId);
-  const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-
-  if (!originalUserIsStaff && pathname.startsWith('/preview')) {
-    const courseUrl = pathname.replace('/preview', '');
-    navigate(courseUrl, { replace: true });
-  }
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
+  const minimalCourseOutlineQuery = useMinimalCourseOutline(courseId, { enabled: false });
+  const minimalCourseOutline = minimalCourseOutlineQuery.data;
+  const minimalCourseMetadata = minimalCourseOutline?.courses[courseId];
+  const minimalSequenceMetadata = minimalCourseOutline?.sequences[sequenceId];
+  const section = minimalSequenceMetadata && minimalCourseOutline.sections[minimalSequenceMetadata.sectionId];
 
   const pageTitleBreadCrumbs = [
-    sequence,
+    minimalSequenceMetadata,
     section,
-    course,
+    minimalCourseMetadata,
   ].filter(element => element != null).map(element => element.title);
 
-  // Below the tabs, above the breadcrumbs alerts (appearing in the order listed here)
-  const dispatch = useDispatch();
+  const widgets = useMemo(() => getEnabledWidgets(), []);
+  const queryClient = useQueryClient();
 
   const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(false);
   // If streakLengthToCelebrate is populated, that modal takes precedence. Wait til the next load to display
@@ -58,7 +54,7 @@ const Course = ({
     celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal,
   );
   const shouldDisplayLearnerTools = windowWidth >= breakpoints.medium.minWidth;
-  const daysPerWeek = course?.courseGoals?.selectedGoal?.daysPerWeek;
+  const daysPerWeek = coursewareMetadata?.courseGoals?.selectedGoal?.daysPerWeek;
 
   useEffect(() => {
     const celebrateFirstSection = celebrations && celebrations.firstSection;
@@ -66,16 +62,18 @@ const Course = ({
       courseId,
       sequenceId,
       celebrateFirstSection,
-      dispatch,
+      queryClient,
       celebrations,
     ));
   }, [sequenceId]);
 
   return (
-    <SidebarProvider courseId={courseId} unitId={unitId}>
-      <Helmet>
-        <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
-      </Helmet>
+    <SidebarProvider courseId={courseId} unitId={unitId} widgets={widgets}>
+      {minimalCourseOutlineQuery.isSuccess && (
+        <Helmet>
+          <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
+        </Helmet>
+      )}
       <div className="position-relative d-flex align-items-xl-center mb-4 mt-1 flex-column flex-xl-row">
         <CourseBreadcrumbsSlot
           courseId={courseId}
@@ -86,7 +84,7 @@ const Course = ({
         />
         {shouldDisplayLearnerTools && (
           <LearnerToolsSlot
-            enrollmentMode={course.enrollmentMode}
+            enrollmentMode={coursewareMetadata.enrollmentMode}
             isStaff={isStaff}
             courseId={courseId}
             unitId={unitId}
@@ -118,7 +116,7 @@ const Course = ({
         isOpen={weeklyGoalCelebrationOpen}
         onClose={() => setWeeklyGoalCelebrationOpen(false)}
       />
-      <ContentTools course={course} />
+      <ContentTools course={coursewareMetadata} />
     </SidebarProvider>
   );
 };

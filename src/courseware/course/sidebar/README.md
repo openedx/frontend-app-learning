@@ -13,28 +13,27 @@ Widget implementations:
 
 ### Widget Structure
 
-Each widget must provide:
-
-```javascript
-{
-  id: string,                         // Unique identifier (e.g., 'DISCUSSIONS', 'CUSTOM_TOOL')
-  priority: number,                   // Display order (lower = first, default: 50)
-  Sidebar: ReactComponent,            // Main panel component
-  Trigger: ReactComponent,            // Trigger button component
-  isAvailable: (context) => boolean,  // Optional: check if widget should be shown
-  prefetch: ({ courseId, course, dispatch }) => void, // Optional: pre-load data (runs post-mount; sync logic re-evaluates availability)
-  enabled: boolean,                   // Whether widget is enabled
-  Provider?: ReactComponent,          // Optional: React Provider for Panel↔Trigger shared state
-}
-```
+Each widget is a `SidebarWidget`, declared in [`SidebarContext.tsx`](SidebarContext.tsx).
 
 ### The `Provider` field
 
-An optional hook point for widgets that need to share React state between their `Sidebar` and `Trigger` components. The widget owns the full Provider implementation. The framework simply mounts it.
+An optional component the widget supplies, taking `children`. `SidebarProvider` wraps all children in each registered widget's `Provider` (in reverse-priority order), whether or not the widget is currently available, and the Provider can read `courseId` etc. through `useSidebar()` since it mounts inside the provider. That gives the widget one component that is mounted for as long as the sidebar is, where it can run hooks and hold state that its `Sidebar` and `Trigger` both read. The two built-in widgets use it for the two things it is for:
 
-`SidebarContextProvider` wraps all children in each registered widget's `Provider` (in reverse-priority order), so both components have access to the same widget-level context. The Provider itself can safely read `courseId` etc. from `SidebarContext` since it mounts inside it.
+- **Shared state.** The upgrade widget's `UpgradeWidgetProvider` keeps the seen/unseen status and the upgrade stage in a context of its own, which `UpgradeTrigger` and `UpgradePanel` read.
+- **Loading the data `isAvailable` depends on.** A widget's trigger is mounted only once the widget is available, so a fetch the availability check needs cannot live in the trigger. The discussions widget's `DiscussionsProvider` runs one `useQuery`, with the conditions for fetching in `enabled`, and renders its children unchanged. The request goes out once when the sidebar mounts; the first availability check runs before the data arrives, and when the query resolves the framework re-evaluates availability and the trigger appears.
 
-No built-in widgets use this field — it exists as a generic extension point for custom widgets that need cross-component coordination without polluting `SidebarContext`.
+```javascript
+// widgets/discussions/DiscussionsProvider.tsx
+const DiscussionsProvider = ({ children }) => {
+  const { courseId } = useSidebar();
+  const tabs = useCourseHomeMeta(courseId, { enabled: false }).data?.tabs;
+  useQuery({
+    ...discussionTopicsQuery(courseId),
+    enabled: !!getConfig().DISCUSSIONS_MFE_BASE_URL && hasDiscussionTab(tabs),
+  });
+  return <>{children}</>;
+};
+```
 
 ```javascript
 // In your widget's widgetConfig.js
@@ -42,46 +41,15 @@ export const myWidgetConfig = {
   id: 'MY_WIDGET',
   Sidebar: MyWidgetPanel,
   Trigger: MyWidgetTrigger,
-  Provider: MyWidgetProvider,  // optional — omit if Sidebar/Trigger don't share state
+  Provider: MyWidgetProvider,  // optional — omit if the widget has no shared state and no data to load
   isAvailable: ({ course }) => !!course?.someField,
   enabled: true,
 };
 ```
 
-### The `prefetch` field
-
-An optional function called by `SidebarContextProvider` after mount (and when `courseId` or the widget list changes). Use it to dispatch Redux thunks or fetch data that `isAvailable`, `Trigger`, or `Sidebar` depend on. The `course` argument always reflects the latest `coursewareMeta` + `courseHomeMeta` values at the time the effect fires. Because this runs post-mount, it does not guarantee the data is present for the initial render-time availability check; widgets that depend on prefetched data may become available after the store updates and the framework sync logic re-evaluates availability.
-
-```javascript
-export const myWidgetPrefetch = ({ courseId, course, dispatch }) => {
-  if (course?.someCondition) {
-    dispatch(fetchMyWidgetData(courseId));
-  }
-};
-
-export const myWidgetConfig = {
-  id: 'MY_WIDGET',
-  // ...
-  prefetch: myWidgetPrefetch,
-};
-```
-
-The `course` object is a merged view of `coursewareMeta` and `courseHomeMeta` models.
-
 ### Context Object
 
-The `isAvailable` function receives a context object with:
-
-```javascript
-{
-  courseId: string,
-  unitId: string,
-  course: object,  // Merged coursewareMeta + courseHomeMeta (verifiedMode, enrollmentMode, courseModes, …)
-  unit: object,    // discussionTopics model for the current unit (id, enabledInContext, …)
-}
-```
-
-Widgets pick whatever they need from `course` or `unit` — the sidebar makes no assumptions about which fields any given widget requires.
+The `isAvailable` function receives the parameter of `SidebarWidget['isAvailable']`, declared in [`SidebarContext.tsx`](SidebarContext.tsx): `courseId`, `unitId`, `course` and `unit`, with every field of `course` optional, since the first availability check can run before the data it reads has arrived. Widgets pick whatever they need from `course` or `unit` — the sidebar makes no assumptions about which fields any given widget requires.
 
 ## Adding Widgets
 
@@ -123,16 +91,15 @@ export default {
 The main panel component that renders when the widget is active. Wrap your content in `SidebarBase` to get the standard close button, fullscreen handling, and show/hide behaviour:
 
 ```javascript
-import { useContext } from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { useSidebar } from '@src/courseware/course/sidebar/SidebarContext';
 
 export const ID = 'MY_WIDGET';
 
 const MySidebar = () => {
   const intl = useIntl();
-  const { courseId } = useContext(SidebarContext);
+  const { courseId } = useSidebar();
 
   return (
     <SidebarBase
@@ -176,20 +143,19 @@ The `onClick` prop is injected by the framework — your trigger does not need t
 
 ## Accessing Course Data
 
-Widgets can access course data via the model store:
+The widget config functions, `isAvailable` and `prefetch`, are handed course data as their `course` argument (see the context object above). Widget components get no such argument and read course data with the React Query hooks. `{ enabled: false }` makes the hook read the cached result without requesting it, which is right under the courseware page: the page has already fetched both queries. Anywhere else, `.data` stays `undefined` until something on that page fetches the data, for example by calling `useCourseHomeMeta(courseId)` without the option.
 
 ```javascript
-import { useModel } from '@src/generic/model-store';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 
 // In your component
-const courseData = useModel('coursewareMeta', courseId);
-const { verifiedMode, enrollmentMode } = courseData;
+const { verifiedMode, courseModes } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 ```
 
-Available models:
-- `coursewareMeta` - Course metadata, enrollment, verification
-- `courseHomeMeta` - Course home data, staff status, permissions
-- `discussionTopics` - Discussion topic data per unit
+Available data:
+- `useCourseHomeMeta` (`@src/course-home/data/apiHooks`) - Course home data, staff status, permissions
+- `useCoursewareMetadata` (`@src/courseware/data/apiHooks`) - Course metadata, enrollment, verification
+- `useDiscussionTopic` (`@src/courseware/data/apiHooks`) - Discussion topic data per unit
 
 ## Examples
 

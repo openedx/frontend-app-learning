@@ -1,22 +1,20 @@
 import { CourseTabLink } from '@src/course-tabs/CourseTabLink';
 import React from 'react';
 
+import { TabMetadata } from './utils';
+
 interface CourseTabLinkListProps {
-  tabs: Array<{
-    title: string;
-    slug: string;
-    url: string;
-  }>,
+  tabs: TabMetadata[],
   activeTabSlug?: string;
 }
 
 export const CourseTabLinksList = ({ tabs, activeTabSlug }: CourseTabLinkListProps) => (
   <>
-    {tabs.map(({ url, title, slug }) => (
+    {tabs.map(({ url, title, tabId }) => (
       <CourseTabLink
-        key={slug}
+        key={tabId}
         url={url}
-        slug={slug}
+        slug={tabId}
         title={title}
         activeTabSlug={activeTabSlug}
       />

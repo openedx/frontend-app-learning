@@ -1,66 +1,65 @@
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  fireEvent, initializeMockApp, initializeTestStore, render, screen,
+  createTestQueryClient, fireEvent, initializeMockApp, mockCourseRequests, render, screen,
 } from '@src/setupTest';
-import { executeThunk } from '@src/utils';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
-import { getCourseDiscussionTopics } from '@src/courseware/data/thunks';
-import SidebarContext from '@src/courseware/course/sidebar/SidebarContext';
+import { discussionTopicsQuery } from '@src/courseware/data/apiHooks';
+import { SidebarProvider } from '@src/courseware/course/sidebar/SidebarContext';
 import DiscussionsTrigger from './DiscussionsTrigger';
 
 initializeMockApp();
 
 describe('Discussions Trigger', () => {
   let axiosMock;
+  let queryClient;
   let mockData;
   let courseId;
   let unitId;
+  let configUrl;
+  let topicsUrl;
 
   beforeEach(async () => {
-    const store = await initializeTestStore({
-      excludeFetchCourse: false,
-      excludeFetchSequence: false,
-    });
+    const fixtures = mockCourseRequests();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    const state = store.getState();
-    courseId = state.courseware.courseId;
-    [unitId] = Object.keys(state.models.units);
+    ({ courseId, unitId } = fixtures);
 
     mockData = {
       courseId,
       unitId,
     };
 
-    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`).reply(
-      200,
-      {
-        provider: 'openedx',
-      },
-    );
-    axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`)
-      .reply(200, buildTopicsFromUnits(state.models.units));
-
-    // Pre-fetch discussion topics since prefetch is now in widgetConfig, not in the Trigger
-    await executeThunk(getCourseDiscussionTopics(courseId), store.dispatch);
+    configUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`;
+    topicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`;
+    axiosMock.onGet(configUrl).reply(200, { provider: 'openedx' });
+    axiosMock.onGet(topicsUrl).reply(200, buildTopicsFromUnits(fixtures.unitBlocks));
+    // Load the topics into the client the render uses; the trigger reads them without fetching.
+    queryClient = createTestQueryClient();
+    await queryClient.query(discussionTopicsQuery(courseId));
   });
 
-  const SidebarWrapper = ({ contextValue, onClick }) => (
-    <SidebarContext.Provider value={contextValue}>
-      <DiscussionsTrigger onClick={onClick} />
-    </SidebarContext.Provider>
+  const SidebarWrapper = ({ unitId: renderedUnitId, onClick }) => (
+    <QueryClientProvider client={queryClient}>
+      <SidebarProvider courseId={courseId} unitId={renderedUnitId} widgets={[]}>
+        <DiscussionsTrigger onClick={onClick} />
+      </SidebarProvider>
+    </QueryClientProvider>
   );
 
   SidebarWrapper.propTypes = {
-    contextValue: PropTypes.shape({}).isRequired,
+    unitId: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
   };
 
   function renderWithProvider(testData = {}, onClick = () => null) {
-    const { container } = render(<SidebarWrapper contextValue={{ ...mockData, ...testData }} onClick={onClick} />);
+    const { container } = render(
+      <SidebarWrapper unitId={testData.unitId ?? mockData.unitId} onClick={onClick} />,
+      { wrapWithRouter: true },
+    );
     return container;
   }
 
@@ -79,5 +78,13 @@ describe('Discussions Trigger', () => {
     renderWithProvider({ unitId: 'has-no-discussion' }, clickTrigger);
 
     expect(await screen.queryByRole('button', { name: /Show discussions tray/i })).not.toBeInTheDocument();
+  });
+
+  it('reads the topics without requesting them', async () => {
+    renderWithProvider();
+    expect(await screen.findByRole('button', { name: /Show discussions tray/i })).toBeInTheDocument();
+
+    // Only the seed's two requests; the trigger's read added none.
+    expect(axiosMock.history.get.map(request => request.url)).toEqual([configUrl, topicsUrl]);
   });
 });

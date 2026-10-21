@@ -1,6 +1,5 @@
 import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
-import { useContextId } from '../../../data/hooks';
-import { useModel } from '../../../generic/model-store';
+import { useProgressData } from '../hooks';
 
 import CompleteDonutSegment from './CompleteDonutSegment';
 import IncompleteDonutSegment from './IncompleteDonutSegment';
@@ -9,7 +8,6 @@ import messages from './messages';
 
 const CompletionDonutChart = () => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     completionSummary: {
@@ -17,7 +15,7 @@ const CompletionDonutChart = () => {
       incompleteCount,
       lockedCount,
     },
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const numTotalUnits = completeCount + incompleteCount + lockedCount;
   const completePercentage = completeCount ? Number(((completeCount / numTotalUnits) * 100).toFixed(0)) : 0;

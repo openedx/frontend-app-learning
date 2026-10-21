@@ -1,45 +1,69 @@
 import React from 'react';
-import { initializeTestStore, render, screen } from '../../../setupTest';
+import PropTypes from 'prop-types';
+import {
+  mockCourseRequests, render, screen,
+} from '../../../setupTest';
+import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
+import { useSequenceMetadata } from '../../data/apiHooks';
 import SequenceContent from './SequenceContent';
+import SpecialExamsProvider from '../../../generic/special-exams/SpecialExamsProvider';
 
 describe('Sequence Content', () => {
   let mockData;
-  let store;
+  let gatedContent;
 
-  beforeAll(async () => {
-    store = await initializeTestStore();
-    const { models, courseware } = store.getState();
+  beforeAll(() => {
+    const {
+      courseId, sequenceId, unitId, sequenceMetadata,
+    } = mockCourseRequests();
+    [{ gated_content: gatedContent }] = sequenceMetadata;
     mockData = {
       gated: false,
-      courseId: courseware.courseId,
-      sequenceId: courseware.sequenceId,
-      unitId: models.sequences[courseware.sequenceId].unitIds[0],
+      courseId,
+      sequenceId,
+      unitId,
       unitLoadedHandler: () => { },
       renderUnitNavigation: () => { },
     };
   });
 
-  it('displays loading message', () => {
-    render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
-    expect(screen.getByText('Loading learning sequence...')).toBeInTheDocument();
+  // Sequence renders SequenceContent only once the sequence query has succeeded.
+  const LoadedSequenceContent = (props) => (
+    useSequenceMetadata(props.sequenceId, { enabled: false }).isSuccess ? <SequenceContent {...props} /> : null
+  );
+
+  LoadedSequenceContent.propTypes = {
+    sequenceId: PropTypes.string.isRequired,
+  };
+
+  const renderContent = (props = {}) => render(
+    <SpecialExamsProvider>
+      <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
+      <LoadedSequenceContent {...mockData} {...props} />
+    </SpecialExamsProvider>,
+    { wrapWithRouter: true },
+  );
+
+  it('displays loading message', async () => {
+    renderContent();
+    expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
   });
 
   it('displays messages for the locked content', async () => {
-    const { gatedContent } = store.getState().models.sequences[mockData.sequenceId];
-    const { container } = render(<SequenceContent {...mockData} gated />, { wrapWithRouter: true });
+    const { container } = renderContent({ gated: true });
 
-    expect(screen.getByText('Loading locked content messaging...')).toBeInTheDocument();
+    await screen.findByText('Loading locked content messaging...');
     expect(await screen.findByText('Content Locked')).toBeInTheDocument();
     expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
     expect(container.querySelector('svg')).toHaveClass('fa-lock');
     expect(screen.getByText(
-      `You must complete the prerequisite: '${gatedContent.prereqSectionName}' to access this content.`,
+      `You must complete the prerequisite: '${gatedContent.prereq_section_name}' to access this content.`,
     )).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
   });
 
-  it('displays message for no content', () => {
-    render(<SequenceContent {...mockData} unitId="" />, { wrapWithRouter: true });
-    expect(screen.getByText('There is no content here.')).toBeInTheDocument();
+  it('displays message for no content', async () => {
+    renderContent({ unitId: '' });
+    expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
   });
 });

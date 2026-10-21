@@ -1,0 +1,78 @@
+import { useMemo } from 'react';
+import { WIDGETS } from '@src/constants';
+import {
+  getSidebarId,
+  isSidebarClosedByUser,
+} from '../utils/storage';
+import type { SidebarWidget } from '../SidebarContext';
+
+interface Params {
+  courseId: string;
+  shouldDisplayFullScreen: boolean;
+  isInitiallySidebarOpen: boolean;
+  getFirstAvailablePanel: () => string | null;
+  getAvailableWidgets: () => SidebarWidget[];
+}
+
+/**
+ * Calculate initial sidebar based on screen size and available widgets
+ *
+ * Manages ALL panels: DISCUSSIONS, UPGRADE, and COURSE_OUTLINE
+ * DESKTOP (>1200px): Auto-opens panels with priority cascade
+ * MOBILE (<1200px): Respects localStorage, no auto-open
+ */
+export function useInitialSidebar({
+  courseId,
+  shouldDisplayFullScreen,
+  isInitiallySidebarOpen,
+  getFirstAvailablePanel,
+  getAvailableWidgets,
+}: Params) {
+  return useMemo<string | null>(() => {
+    // MOBILE: Use stored value or null (no auto-open)
+    if (shouldDisplayFullScreen) {
+      return isSidebarClosedByUser() ? null : getSidebarId(courseId);
+    }
+
+    // DESKTOP: Auto-open if screen size allows
+    if (!isInitiallySidebarOpen) {
+      return null;
+    }
+
+    // User explicitly closed the sidebar this session — respect that
+    if (isSidebarClosedByUser()) {
+      return null;
+    }
+
+    const storedSidebar = getSidebarId(courseId);
+
+    // Honor a stored RIGHT panel preference even before widget data has loaded.
+    // Keeps initialSidebar stable across the async load window so downstream
+    // effects don't briefly see COURSE_OUTLINE and overwrite storage.
+    if (storedSidebar && storedSidebar !== WIDGETS.COURSE_OUTLINE) {
+      const firstAvailable = getFirstAvailablePanel();
+      if (firstAvailable) {
+        const availableWidgets = getAvailableWidgets();
+        const storedWidget = availableWidgets.find(w => w.id === storedSidebar);
+        const firstAvailableWidget = availableWidgets.find(w => w.id === firstAvailable);
+        if (!storedWidget) {
+          // Stored widget no longer registered; fall back to first available.
+          return firstAvailable;
+        }
+        if (firstAvailableWidget && firstAvailableWidget.priority < storedWidget.priority) {
+          return firstAvailable;
+        }
+      }
+      return storedSidebar;
+    }
+
+    // Stored COURSE_OUTLINE or no stored preference: open the navigation sidebar.
+    return WIDGETS.COURSE_OUTLINE;
+  }, [
+    shouldDisplayFullScreen,
+    isInitiallySidebarOpen,
+    courseId,
+    getFirstAvailablePanel,
+    getAvailableWidgets,
+  ]);
+}

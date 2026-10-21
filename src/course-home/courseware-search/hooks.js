@@ -1,27 +1,13 @@
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { debounce } from 'lodash';
-import { fetchCoursewareSearchSettings } from '../data/thunks';
+import { useCoursewareSearchEnabled } from './data/apiHooks';
 
 const DEBOUNCE_WAIT = 100; // ms
 
 export function useCoursewareSearchFeatureFlag() {
   const { courseId } = useParams();
-  const [enabled, setEnabled] = useState(false);
-
-  useEffect(() => {
-    fetchCoursewareSearchSettings(courseId).then(response => setEnabled(response.enabled));
-  }, [courseId]);
-
-  return enabled;
-}
-
-export function useCoursewareSearchState() {
-  const enabled = useCoursewareSearchFeatureFlag();
-  const show = useSelector(state => state.courseHome.showSearch);
-
-  return { show: enabled && show };
+  return useCoursewareSearchEnabled(courseId).data?.enabled ?? false;
 }
 
 export function useElementBoundingBox(elementId) {

@@ -1,7 +1,6 @@
-import { useContext } from 'react';
 import classNames from 'classnames';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
-import SidebarContext from './SidebarContext';
+import { useSidebar } from './SidebarContext';
 
 const SidebarTriggers = () => {
   const {
@@ -10,12 +9,12 @@ const SidebarTriggers = () => {
     availableSidebarIds,
     SIDEBAR_ORDER,
     SIDEBARS,
-  } = useContext(SidebarContext);
+  } = useSidebar();
 
   const { width } = useWindowSize();
   const isMobileView = width < breakpoints.small.minWidth;
 
-  if (!SIDEBAR_ORDER || SIDEBAR_ORDER.length === 0) {
+  if (SIDEBAR_ORDER.length === 0) {
     return null;
   }
 

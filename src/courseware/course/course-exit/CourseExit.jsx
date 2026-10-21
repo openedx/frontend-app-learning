@@ -1,33 +1,36 @@
 import { useEffect } from 'react';
 
-import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 import CourseCelebration from './CourseCelebration';
 import CourseInProgress from './CourseInProgress';
 import CourseNonPassing from './CourseNonPassing';
 import { COURSE_EXIT_MODES, getCourseExitMode } from './utils';
-import { unsubscribeFromGoalReminders } from './data/thunks';
+import { postUnsubscribeFromGoalReminders } from './data/api';
 import { CourseExitViewCoursesPluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
-import { useModel } from '../../../generic/model-store';
+import { TabWithTimer } from '../../../tab-page';
+import { useCoursewareMetadata, useMinimalCourseOutline } from '../../data/apiHooks';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
-const CourseExit = () => {
-  const { courseId } = useSelector(state => state.courseware);
+const CourseExitContent = () => {
+  const { courseId } = useParams();
   const {
     certificateData,
     courseExitPageIsActive,
     courseGoals,
     enrollmentMode,
-    hasScheduledContent,
     isEnrolled,
     userHasPassingGrade,
-  } = useModel('coursewareMeta', courseId);
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
+  const hasScheduledContent = (
+    useMinimalCourseOutline(courseId, { enabled: false }).data?.courses[courseId].hasScheduledContent
+  );
 
   const {
     isMasquerading,
     canViewCertificate,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const mode = getCourseExitMode(
     certificateData,
@@ -43,7 +46,7 @@ const CourseExit = () => {
   // to avoid spamming them with goal reminder emails
   if (courseGoals && enrollmentMode === 'audit' && !isMasquerading) {
     useEffect(() => {
-      unsubscribeFromGoalReminders(courseId);
+      postUnsubscribeFromGoalReminders(courseId);
     }, []);
   }
 
@@ -63,6 +66,27 @@ const CourseExit = () => {
       <CourseExitViewCoursesPluginSlot />
       {body}
     </>
+  );
+};
+
+const CourseExit = () => {
+  const { courseId } = useParams();
+  const metadataQuery = useCoursewareMetadata(courseId);
+  const courseHomeMetaQuery = useCourseHomeMeta(courseId);
+  const outlineQuery = useMinimalCourseOutline(courseId);
+
+  if (outlineQuery.isError && courseHomeMetaQuery.data?.courseAccess?.hasAccess) {
+    return (<Navigate to={`/course/${courseId}/home`} replace />);
+  }
+
+  return (
+    <TabWithTimer
+      activeTabSlug="courseware"
+      courseId={courseId}
+      courseStatus={{ metadataQuery: courseHomeMetaQuery, tabDataQueries: [metadataQuery, outlineQuery] }}
+    >
+      <CourseExitContent />
+    </TabWithTimer>
   );
 };
 

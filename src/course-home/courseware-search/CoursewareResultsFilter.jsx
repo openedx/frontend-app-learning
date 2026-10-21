@@ -6,7 +6,7 @@ import { useParams } from 'react-router';
 import CoursewareSearchResults from './CoursewareSearchResults';
 import messages from './messages';
 import { useCoursewareSearchParams } from './hooks';
-import { useModel } from '../../generic/model-store';
+import { useCoursewareSearchResults } from './data/apiHooks';
 
 const filterAll = 'all';
 const filterTypes = ['text', 'video', 'sequence'];
@@ -16,15 +16,10 @@ const validFilters = [filterAll, ...filterTypes, filterOther];
 export const CoursewareSearchResultsFilter = () => {
   const intl = useIntl();
   const { courseId } = useParams();
-  const lastSearch = useModel('contentSearchResults', courseId);
-  const { filter: filterKeyword, setFilter } = useCoursewareSearchParams();
+  const { filter: filterKeyword, setFilter, query: searchKeyword } = useCoursewareSearchParams();
+  const { data: lastSearch } = useCoursewareSearchResults(courseId, searchKeyword);
 
-  if (!lastSearch) { return null; }
-
-  const { results: data = [] } = lastSearch;
-
-  // If there's no data, we show an empty result.
-  if (!data.length) { return <CoursewareSearchResults />; }
+  const { results: data = [] } = lastSearch ?? {};
 
   const results = useMemo(() => {
     // This reducer distributes the data into different groups to make it easy to
@@ -45,14 +40,20 @@ export const CoursewareSearchResultsFilter = () => {
   }, [lastSearch]);
 
   const tabKeys = Object.keys(results);
-  // Filter has no use if it has only 2 tabs (The "all" tab and another one with the same items).
-  if (tabKeys.length < 3) { return <CoursewareSearchResults results={results[filterAll]} />; }
 
   const filters = useMemo(() => tabKeys.map((key) => ({
     key,
     label: intl.formatMessage(messages[`filter:${key}`]),
     count: results[key].length,
   })), [results]);
+
+  if (!lastSearch) { return null; }
+
+  // If there's no data, we show an empty result.
+  if (!data.length) { return <CoursewareSearchResults />; }
+
+  // Filter has no use if it has only 2 tabs (The "all" tab and another one with the same items).
+  if (tabKeys.length < 3) { return <CoursewareSearchResults results={results[filterAll]} />; }
 
   const activeKey = validFilters.includes(filterKeyword) ? filterKeyword : filterAll;
 

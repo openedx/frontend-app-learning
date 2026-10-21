@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -9,15 +9,15 @@ import { Hyperlink } from '@openedx/paragon';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 import messages from './messages';
 import { logClick } from './utils';
 
 const CatalogSuggestion = ({ variant }) => {
   const intl = useIntl();
-  const { courseId } = useSelector(state => state.courseware);
-  const { org } = useModel('courseHomeMeta', courseId);
+  const { courseId } = useParams();
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const { administrator } = getAuthenticatedUser();
 
   const searchOurCatalogLink = (

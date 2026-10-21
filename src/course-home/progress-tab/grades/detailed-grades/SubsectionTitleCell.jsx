@@ -10,21 +10,20 @@ import {
   Info,
   Locked,
 } from '@openedx/paragon/icons';
-import { useContextId } from '../../../../data/hooks';
+import { useParams } from 'react-router-dom';
 
 import messages from '../messages';
-import { useModel } from '../../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../data/apiHooks';
+import { useProgressData } from '../../hooks';
 import ProblemScoreDrawer from './ProblemScoreDrawer';
 
 const SubsectionTitleCell = ({ subsection }) => {
   const intl = useIntl();
-  const courseId = useContextId();
-  const {
-    org,
-  } = useModel('courseHomeMeta', courseId);
+  const { courseId } = useParams();
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     gradesFeatureIsFullyLocked,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const {
     blockKey,

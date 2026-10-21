@@ -4,7 +4,7 @@ import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
 import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Helmet } from 'react-helmet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {
   Alert,
   breakpoints,
@@ -22,8 +22,8 @@ import certificate from '../../../generic/assets/openedx_certificate.png';
 import certificateLocked from '../../../generic/assets/openedx_locked_certificate.png';
 import { FormattedPricing } from '../../../generic/upgrade-button';
 import messages from './messages';
-import { useModel } from '../../../generic/model-store';
-import { requestCert } from '../../../course-home/data/thunks';
+import { useCourseHomeMeta, useRequestCert } from '../../../course-home/data/apiHooks';
+import { useCoursewareMetadata, useMinimalCourseOutline } from '../../data/apiHooks';
 import ProgramCompletion from './ProgramCompletion';
 import UpgradeFootnote from './UpgradeFootnote';
 import SocialIcons from '../../social-share/SocialIcons';
@@ -37,8 +37,8 @@ const LINKEDIN_BLUE = '#2867B2';
 const CourseCelebration = () => {
   const intl = useIntl();
   const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
-  const { courseId } = useSelector(state => state.courseware);
-  const dispatch = useDispatch();
+  const { courseId } = useParams();
+  const requestCert = useRequestCert();
   const {
     certificateData,
     end,
@@ -46,17 +46,17 @@ const CourseCelebration = () => {
     marketingUrl,
     offer,
     relatedPrograms,
-    title,
     verifyIdentityUrl,
     verificationStatus,
-  } = useModel('coursewareMeta', courseId);
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
+  const title = useMinimalCourseOutline(courseId, { enabled: false }).data?.courses[courseId].title;
 
   const {
     org,
     verifiedMode,
     canViewCertificate,
     userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const {
     certStatus,
@@ -153,7 +153,7 @@ const CourseCelebration = () => {
           variant={buttonVariant}
           onClick={() => {
             logClick(org, courseId, administrator, buttonEvent);
-            dispatch(requestCert(courseId));
+            requestCert.mutate({ courseId });
           }}
         >
           {intl.formatMessage(messages.requestCertificateButton)}

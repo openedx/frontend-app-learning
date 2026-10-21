@@ -2,20 +2,18 @@ import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { CheckCircle, WarningFilled, WatchFilled } from '@openedx/paragon/icons';
 import { Hyperlink, Icon } from '@openedx/paragon';
-import { useContextId } from '../../../data/hooks';
 
-import { useModel } from '../../../generic/model-store';
+import { useProgressData } from '../hooks';
 import { DashboardLink } from '../../../shared/links';
 
 import messages from './messages';
 
 const CreditInformation = () => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     creditCourseRequirements,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   if (!creditCourseRequirements) { return null; }
 

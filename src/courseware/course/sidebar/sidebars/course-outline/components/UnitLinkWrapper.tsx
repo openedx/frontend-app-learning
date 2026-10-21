@@ -36,7 +36,7 @@ const UnitLinkWrapper: React.FC<Props> = ({
     <Link
       to={link}
       className="row w-100 m-0 d-flex align-items-center text-gray-700"
-      onClick={() => handleUnitClick({ sequenceId, activeUnitId, id })}
+      onClick={() => handleUnitClick({ activeUnitId, id })}
     >
       {children}
     </Link>

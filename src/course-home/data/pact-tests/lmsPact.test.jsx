@@ -125,7 +125,7 @@ describe('Course Home Service', () => {
           start: '2013-02-05T05:00:00Z',
           tabs: [
             {
-              slug: 'outline',
+              tabId: 'courseware',
               title: 'Course',
               url: `${getConfig().BASE_URL}/course/course-v1:edX+DemoX+Demo_Course/home`,
             },
@@ -134,7 +134,7 @@ describe('Course Home Service', () => {
           username: 'edx',
           hasCourseAuthorAccess: true,
         };
-        const response = getCourseHomeCourseMetadata(courseId, 'outline');
+        const response = getCourseHomeCourseMetadata(courseId);
         expect(response).toBeTruthy();
         expect(response).toEqual(normalizedTabData);
       }, 100);

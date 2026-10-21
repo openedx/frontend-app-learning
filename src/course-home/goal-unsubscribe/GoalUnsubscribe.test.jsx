@@ -10,7 +10,6 @@ import { render, screen } from '@testing-library/react';
 
 import GoalUnsubscribe from './GoalUnsubscribe';
 import { act, initializeMockApp } from '../../setupTest';
-import initializeStore from '../../store';
 import { UserMessagesProvider } from '../../generic/user-messages';
 
 initializeMockApp();
@@ -18,15 +17,13 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('GoalUnsubscribe', () => {
   let axiosMock;
-  let store;
   let component;
   const unsubscribeUrl = `${getConfig().LMS_BASE_URL}/api/course_home/unsubscribe_from_course_goal/TOKEN`;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    store = initializeStore();
     component = (
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <UserMessagesProvider>
           <MemoryRouter initialEntries={['/goal-unsubscribe/TOKEN']}>
             <Routes>

@@ -6,43 +6,44 @@ import { getConfig, history } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { AppProvider } from '@edx/frontend-platform/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { waitForElementToBeRemoved } from '@testing-library/dom';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import DatesTab from './DatesTab';
-import { fetchDatesTab } from '../data';
-import { fireEvent, initializeMockApp, waitFor } from '../../setupTest';
-import initializeStore from '../../store';
-import { TabContainer } from '../../tab-page';
+import {
+  createTestQueryClient, fireEvent, initializeMockApp, waitFor,
+} from '../../setupTest';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import { UserMessagesProvider } from '../../generic/user-messages';
+import { ToastProvider } from '../../generic/ToastContext';
 
 initializeMockApp();
 jest.mock('@edx/frontend-platform/analytics');
 
 describe('DatesTab', () => {
   let axiosMock;
-  let store;
+  let queryClient;
   let component;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    store = initializeStore();
+    queryClient = createTestQueryClient();
     component = (
-      <AppProvider store={store}>
-        <UserMessagesProvider>
-          <Routes>
-            <Route
-              path="/course/:courseId/dates"
-              element={(
-                <TabContainer tab="dates" fetch={fetchDatesTab} slice="courseHome">
-                  <DatesTab />
-                </TabContainer>
-              )}
-            />
-          </Routes>
-        </UserMessagesProvider>
+      <AppProvider>
+        <QueryClientProvider client={queryClient}>
+          <UserMessagesProvider>
+            <ToastProvider>
+              <Routes>
+                <Route
+                  path="/course/:courseId/dates"
+                  element={<DatesTab />}
+                />
+              </Routes>
+            </ToastProvider>
+          </UserMessagesProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
   });
@@ -355,6 +356,18 @@ describe('DatesTab', () => {
     it('redirects to the home page when unenrolled', async () => {
       await renderDenied('enrollment_required');
       expect(global.location.href).toEqual(`http://localhost/course/${courseMetadata.id}/home`);
+    });
+  });
+
+  describe('request count', () => {
+    it('requests the course metadata once per load', async () => {
+      axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
+      history.push(`/course/${courseId}/dates`);
+      render(component);
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
     });
   });
 });

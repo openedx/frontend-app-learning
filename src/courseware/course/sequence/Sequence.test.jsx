@@ -1,23 +1,24 @@
 import PropTypes from 'prop-types';
+import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getConfig } from '@edx/frontend-platform';
+import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { breakpoints } from '@openedx/paragon';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
 import {
-  loadUnit, render, screen, fireEvent, waitFor, initializeTestStore, act,
+  loadUnit, mockCourseRequests, render, screen, waitFor,
 } from '../../../setupTest';
-import SidebarContext from '../sidebar/SidebarContext';
-import Sequence from './Sequence';
-import { fetchSequenceFailure } from '../../data/slice';
+import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
+import { getEnabledWidgets } from '../sidebar/defaultWidgets';
+import { SidebarProvider } from '../sidebar/SidebarContext';
+import Sequence, { logSequenceEvent } from './Sequence';
 
 jest.mock('@edx/frontend-platform/analytics');
-jest.mock('@edx/frontend-lib-special-exams/dist/data/thunks.js', () => ({
-  ...jest.requireActual('@edx/frontend-lib-special-exams/dist/data/thunks.js'),
-  checkExamEntry: () => jest.fn(),
-}));
 
 describe('Sequence', () => {
   let mockData;
-  let defaultContextValue;
   const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
     'block',
@@ -26,49 +27,72 @@ describe('Sequence', () => {
   ));
 
   beforeAll(async () => {
-    const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    const { courseware } = store.getState();
+    const { courseId, sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
     mockData = {
       unitId: unitBlocks[0].id,
-      sequenceId: courseware.sequenceId,
-      courseId: courseware.courseId,
+      sequenceId,
+      courseId,
       unitNavigationHandler: () => {},
       nextSequenceHandler: () => {},
       previousSequenceHandler: () => {},
     };
-    defaultContextValue = { courseId: mockData.courseId, currentSidebar: null, toggleSidebar: jest.fn() };
   });
 
   beforeEach(() => {
     global.innerWidth = breakpoints.extraLarge.minWidth;
   });
 
-  const SidebarWrapper = ({ contextValue = defaultContextValue, overrideData = {} }) => (
-    <SidebarContext.Provider value={contextValue}>
-      <Sequence {...({ ...mockData, ...overrideData })} />
-    </SidebarContext.Provider>
-  );
+  // Renders the sequence at its course route, as CoursewareContainer does: the navigation reads
+  // `courseId` from the route params.
+  const SidebarWrapper = ({ overrideData = {}, widgets = [] }) => {
+    const data = { ...mockData, ...overrideData };
+    return (
+      <MemoryRouter initialEntries={[`/course/${data.courseId}/${data.sequenceId}/${data.unitId}`]}>
+        <Routes>
+          <Route
+            path="/course/:courseId/:sequenceId/*"
+            element={(
+              <SidebarProvider courseId={data.courseId} unitId={data.unitId} widgets={widgets}>
+                <MountCourseQueryHooks courseId={data.courseId} sequenceId={data.sequenceId} />
+                <Sequence {...data} />
+              </SidebarProvider>
+            )}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+  };
 
   SidebarWrapper.defaultProps = {
-    contextValue: defaultContextValue,
     overrideData: {},
+    widgets: [],
   };
 
   SidebarWrapper.propTypes = {
-    contextValue: PropTypes.shape({}),
     overrideData: PropTypes.shape({}),
+    widgets: PropTypes.arrayOf(PropTypes.shape({})),
   };
 
   it('renders correctly without data', async () => {
-    const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
     render(
       <Sequence {...mockData} {...{ unitId: undefined, sequenceId: undefined }} />,
-      { store: testStore, wrapWithRouter: true },
+      { wrapWithRouter: true },
     );
 
     expect(screen.getByText('There is no content here.')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it('displays the no-content message for a unit that is not in the sequence', async () => {
+    const { sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
+    render(
+      <SidebarWrapper overrideData={{ sequenceId, unitId: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@not_in_this_sequence' }} />,
+    );
+
+    expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
+    expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('content-iframe-test-id')).not.toBeInTheDocument();
   });
 
   it('renders correctly for gated content', async () => {
@@ -88,31 +112,28 @@ describe('Sequence', () => {
       { gated_content: gatedContent },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore({
+    mockCourseRequests({
       courseMetadata,
       unitBlocks,
       sequenceBlocks,
       sequenceMetadata,
-    }, false);
+    });
     const { container } = render(
       <SidebarWrapper overrideData={{ sequenceId: sequenceBlocks[0].id }} />,
-      { store: testStore, wrapWithRouter: true },
     );
 
-    waitFor(() => {
-      expect(screen.queryByText('Loading locked content messaging...')).toBeInTheDocument();
-      // `Previous`, `Prerequisite` and `Close Tray` buttons.
-      expect(screen.getAllByRole('button').length).toEqual(3);
-      // `Next` button.
-      expect(screen.getAllByRole('link').length).toEqual(1);
+    await screen.findByText('Loading locked content messaging...');
 
-      expect(screen.getByText('Content Locked')).toBeInTheDocument();
-      const unitContainer = container.querySelector('.unit-container');
-      expect(unitContainer.querySelector('svg')).toHaveClass('fa-lock');
-      expect(screen.getByText(/You must complete the prerequisite/)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
-      expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
-    });
+    expect(await screen.findByText('Content Locked')).toBeInTheDocument();
+    // `Prerequisite` and `Close Tray` buttons.
+    expect(screen.getAllByRole('button')).toHaveLength(2);
+    // No `Next` button.
+    expect(screen.queryAllByRole('link')).toHaveLength(0);
+    const unitContainer = container.querySelector('.unit-container');
+    expect(unitContainer.querySelector('svg')).toHaveClass('fa-lock');
+    expect(screen.getByText(/You must complete the prerequisite/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Go To Prerequisite Section' })).toBeInTheDocument();
+    expect(screen.queryByText('Loading locked content messaging...')).not.toBeInTheDocument();
   });
 
   it('renders correctly for hidden after due content', async () => {
@@ -126,12 +147,23 @@ describe('Sequence', () => {
       { is_hidden_after_due: true },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore({
+    mockCourseRequests({
       courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
-    }, false);
+    });
     render(
-      <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />,
-      { store: testStore, wrapWithRouter: true },
+      <MemoryRouter initialEntries={[`/course/${mockData.courseId}/${sequenceBlocks[0].id}`]}>
+        <Routes>
+          <Route
+            path="/course/:courseId/:sequenceId/*"
+            element={(
+              <>
+                <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={sequenceBlocks[0].id} />
+                <Sequence {...mockData} {...{ sequenceId: sequenceBlocks[0].id }} />
+              </>
+            )}
+          />
+        </Routes>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -146,34 +178,39 @@ describe('Sequence', () => {
   });
 
   it('displays error message on sequence load failure', async () => {
-    const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
-    testStore.dispatch(fetchSequenceFailure({ sequenceId: mockData.sequenceId }));
-    render(<Sequence {...mockData} />, { store: testStore, wrapWithRouter: true });
+    const failingMock = new MockAdapter(getAuthenticatedHttpClient());
+    failingMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${mockData.sequenceId}`).reply(500);
+    render(
+      <>
+        <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
+        <Sequence {...mockData} />
+      </>,
+      { wrapWithRouter: true },
+    );
 
     await screen.findByText('There was an error loading this course.');
+    failingMock.restore();
   });
 
   it('handles loading unit', async () => {
-    render(<SidebarWrapper />, { wrapWithRouter: true });
-    waitFor(() => {
-      expect(screen.findByText('Loading learning sequence...')).toBeInTheDocument();
-      // `Previous`, `Prerequisite` and `Close Tray` buttons.
-      expect(screen.getAllByRole('button')).toHaveLength(3);
-      // Renders `Next` button.
-      expect(screen.getAllByRole('link')).toHaveLength(1);
+    const { sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
+    render(<SidebarWrapper overrideData={{ sequenceId }} />);
+    expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
+    // `Previous`, `Next`, `Bookmark` and `Close Tray` buttons.
+    await waitFor(() => expect(screen.getAllByRole('button')).toHaveLength(4));
+    // No `Next` link until the unit has loaded.
+    expect(screen.queryAllByRole('link')).toHaveLength(0);
 
-      loadUnit();
-      expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
-      // At this point there will be 2 `Previous` and 2 `Next` buttons.
-      expect(screen.getAllByRole('button', { name: /previous/i }).length).toEqual(2);
-      expect(screen.getAllByRole('link', { name: /next/i }).length).toEqual(2);
-      // Renders two `Next` buttons for top and bottom unit navigations.
-      expect(screen.getAllByRole('link')).toHaveLength(2);
-    });
+    loadUnit();
+    await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
+    // At this point there will be 2 `Previous` buttons.
+    expect(screen.getAllByRole('button', { name: /previous/i }).length).toEqual(2);
+    // Renders `Next` for the top (button) and bottom (link) unit navigations.
+    expect(screen.getAllByRole('button', { name: /next/i }).length).toEqual(1);
+    expect(screen.getAllByRole('link', { name: /next/i }).length).toEqual(1);
   });
 
   describe('sequence and unit navigation buttons', () => {
-    let testStore;
     const sequenceBlocks = [Factory.build(
       'block',
       { type: 'sequential', children: unitBlocks.map(block => block.id) },
@@ -184,10 +221,8 @@ describe('Sequence', () => {
       { courseId: courseMetadata.id },
     )];
 
-    beforeAll(async () => {
-      testStore = await initializeTestStore({
-        courseMetadata, unitBlocks, sequenceBlocks,
-      }, false);
+    beforeAll(() => {
+      mockCourseRequests({ courseMetadata, unitBlocks, sequenceBlocks });
     });
 
     beforeEach(() => {
@@ -195,79 +230,73 @@ describe('Sequence', () => {
     });
 
     it('navigates to the previous sequence if the unit is the first in the sequence', async () => {
+      const user = userEvent.setup();
       const testData = {
         ...mockData,
         sequenceId: sequenceBlocks[1].id,
         previousSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => {
-        expect(screen.findByText('Loading learning sequence...')).toBeInTheDocument();
+      render(<SidebarWrapper overrideData={testData} />);
+      expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
-        const sequencePreviousButton = screen.getByRole('link', { name: /previous/i });
-        fireEvent.click(sequencePreviousButton);
-        expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(1);
-        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.previous_selected', {
-          current_tab: 1,
-          id: testData.unitId,
-          tab_count: unitBlocks.length,
-          widget_placement: 'top',
-        });
+      await user.click(await screen.findByRole('button', { name: /previous/i }));
+      expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.previous_selected', {
+        current_tab: 1,
+        id: testData.unitId,
+        tab_count: unitBlocks.length,
+        widget_placement: 'bottom',
+      });
 
-        loadUnit();
-        expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
-        const unitPreviousButton = screen.getAllByRole('link', { name: /previous/i })
-          .filter(button => button !== sequencePreviousButton)[0];
-        fireEvent.click(unitPreviousButton);
-        expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
-        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
-        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.previous_selected', {
-          current_tab: 1,
-          id: testData.unitId,
-          tab_count: unitBlocks.length,
-          widget_placement: 'bottom',
-        });
+      loadUnit();
+      await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
+      await user.click(screen.getByRole('link', { name: /previous/i }));
+      expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.previous_selected', {
+        current_tab: 1,
+        id: testData.unitId,
+        tab_count: unitBlocks.length,
+        widget_placement: 'bottom',
       });
     });
 
     it('navigates to the next sequence if the unit is the last in the sequence', async () => {
+      const user = userEvent.setup();
       const testData = {
         ...mockData,
         unitId: unitBlocks[unitBlocks.length - 1].id,
         sequenceId: sequenceBlocks[0].id,
         nextSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => {
-        expect(screen.findByText('Loading learning sequence...')).toBeInTheDocument();
-        const sequenceNextButton = screen.getByRole('link', { name: /next/i });
-        fireEvent.click(sequenceNextButton);
-        expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(1);
-        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.next_selected', {
-          current_tab: unitBlocks.length,
-          id: testData.unitId,
-          tab_count: unitBlocks.length,
-          widget_placement: 'top',
-        });
+      render(<SidebarWrapper overrideData={testData} />);
+      expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
-        loadUnit();
-        expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
-        const unitNextButton = screen.getAllByRole('link', { name: /next/i })
-          .filter(button => button !== sequenceNextButton)[0];
-        fireEvent.click(unitNextButton);
-        expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
-        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
-        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.next_selected', {
-          current_tab: unitBlocks.length,
-          id: testData.unitId,
-          tab_count: unitBlocks.length,
-          widget_placement: 'bottom',
-        });
+      await user.click(await screen.findByRole('button', { name: /next/i }));
+      expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.next_selected', {
+        current_tab: unitBlocks.length,
+        id: testData.unitId,
+        tab_count: unitBlocks.length,
+        widget_placement: 'bottom',
+      });
+
+      loadUnit();
+      await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
+      await user.click(screen.getByRole('link', { name: /next/i }));
+      expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.next_selected', {
+        current_tab: unitBlocks.length,
+        id: testData.unitId,
+        tab_count: unitBlocks.length,
+        widget_placement: 'bottom',
       });
     });
 
     it('navigates to the previous/next unit if the unit is not in the corner of the sequence', async () => {
+      const user = userEvent.setup();
       const unitNumber = 1;
       const testData = {
         ...mockData,
@@ -277,26 +306,25 @@ describe('Sequence', () => {
         previousSequenceHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => {
-        expect(screen.findByText('Loading learning sequence...')).toBeInTheDocument();
+      render(<SidebarWrapper overrideData={testData} />);
+      expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
-        fireEvent.click(screen.getByRole('link', { name: /previous/i }));
-        expect(testData.previousSequenceHandler).not.toHaveBeenCalled();
-        expect(testData.unitNavigationHandler).toHaveBeenCalledWith(unitBlocks[unitNumber - 1].id);
+      await user.click(await screen.findByRole('button', { name: /previous/i }));
+      expect(testData.previousSequenceHandler).not.toHaveBeenCalled();
+      expect(testData.unitNavigationHandler).toHaveBeenCalledWith(unitBlocks[unitNumber - 1].id);
 
-        fireEvent.click(screen.getByRole('link', { name: /next/i }));
-        expect(testData.nextSequenceHandler).not.toHaveBeenCalled();
-        // As `previousSequenceHandler` and `nextSequenceHandler` are mocked,
-        // we aren't really changing the position here.
-        // Therefore the next unit will still be `the initial one + 1`.
-        expect(testData.unitNavigationHandler).toHaveBeenNthCalledWith(2, unitBlocks[unitNumber + 1].id);
+      await user.click(screen.getByRole('button', { name: /next/i }));
+      expect(testData.nextSequenceHandler).not.toHaveBeenCalled();
+      // As `previousSequenceHandler` and `nextSequenceHandler` are mocked,
+      // we aren't really changing the position here.
+      // Therefore the next unit will still be `the initial one + 1`.
+      expect(testData.unitNavigationHandler).toHaveBeenNthCalledWith(2, unitBlocks[unitNumber + 1].id);
 
-        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
-      });
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
     });
 
     it('handles the `Previous` buttons for the first unit in the first sequence', async () => {
+      const user = userEvent.setup();
       const testData = {
         ...mockData,
         unitId: unitBlocks[0].id,
@@ -304,20 +332,20 @@ describe('Sequence', () => {
         unitNavigationHandler: jest.fn(),
         previousSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
+      render(<SidebarWrapper overrideData={testData} />);
+      await screen.findByRole('button', { name: /previous/i });
       loadUnit();
-      waitFor(() => {
-        expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
-        screen.getAllByRole('button', { name: /previous/i }).forEach(button => fireEvent.click(button));
+      await Promise.all(screen.getAllByRole('button', { name: /previous/i }).map(button => user.click(button)));
 
-        expect(testData.previousSequenceHandler).not.toHaveBeenCalled();
-        expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
-        expect(sendTrackEvent).not.toHaveBeenCalled();
-      });
+      expect(testData.previousSequenceHandler).not.toHaveBeenCalled();
+      expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
+      expect(sendTrackEvent).not.toHaveBeenCalled();
     });
 
     it('handles the `Next` buttons for the last unit in the last sequence', async () => {
+      const user = userEvent.setup();
       const testData = {
         ...mockData,
         unitId: unitBlocks[unitBlocks.length - 1].id,
@@ -325,20 +353,19 @@ describe('Sequence', () => {
         unitNavigationHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
+      render(<SidebarWrapper overrideData={testData} />);
+      await screen.findByRole('button', { name: /next/i });
       loadUnit();
-      waitFor(() => {
-        expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
 
-        screen.getAllByRole('button', { name: /next/i }).forEach(button => fireEvent.click(button));
+      await Promise.all(screen.getAllByRole('button', { name: /next/i }).map(button => user.click(button)));
 
-        expect(testData.nextSequenceHandler).not.toHaveBeenCalled();
-        expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
-        expect(sendTrackEvent).not.toHaveBeenCalled();
-      });
+      expect(testData.nextSequenceHandler).not.toHaveBeenCalled();
+      expect(testData.unitNavigationHandler).not.toHaveBeenCalled();
+      expect(sendTrackEvent).not.toHaveBeenCalled();
     });
 
-    it('handles the navigation buttons for empty sequence', async () => {
+    it('shows the no-content message for a sequence with no units', async () => {
       const testSequenceBlocks = [Factory.build(
         'block',
         { type: 'sequential', children: unitBlocks.map(block => block.id) },
@@ -347,112 +374,111 @@ describe('Sequence', () => {
         'block',
         { type: 'sequential', children: [] },
         { courseId: courseMetadata.id },
-      ), Factory.build(
-        'block',
-        { type: 'sequential', children: unitBlocks.map(block => block.id) },
-        { courseId: courseMetadata.id },
       )];
       const testSequenceMetadata = testSequenceBlocks.map(block => Factory.build(
         'sequenceMetadata',
         {},
         { courseId: courseMetadata.id, unitBlocks: block.children.length ? unitBlocks : [], sequenceBlock: block },
       ));
-      const innerTestStore = await initializeTestStore({
+      mockCourseRequests({
         courseMetadata,
         unitBlocks,
         sequenceBlocks: testSequenceBlocks,
         sequenceMetadata: testSequenceMetadata,
-      }, false);
+      });
       const testData = {
         ...mockData,
-        unitId: unitBlocks[0].id,
+        unitId: undefined,
         sequenceId: testSequenceBlocks[1].id,
-        unitNavigationHandler: jest.fn(),
-        previousSequenceHandler: jest.fn(),
-        nextSequenceHandler: jest.fn(),
       };
 
-      render(<SidebarWrapper overrideData={testData} />, { store: innerTestStore, wrapWithRouter: true });
-      loadUnit();
+      render(<SidebarWrapper overrideData={testData} />);
 
-      waitFor(() => {
-        expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
+      expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
+      expect(screen.queryByTestId('content-iframe-test-id')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /previous|next/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: /previous|next/i })).not.toBeInTheDocument();
+    });
+  });
 
-        screen.getAllByRole('link', { name: /previous/i }).forEach(button => fireEvent.click(button));
-        expect(testData.previousSequenceHandler).toHaveBeenCalledTimes(2);
-        expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(2);
+  describe('logSequenceEvent', () => {
+    const unitIds = ['unit-1', 'unit-2', 'unit-3'];
 
-        screen.getAllByRole('link', { name: /next/i }).forEach(button => fireEvent.click(button));
-        expect(testData.nextSequenceHandler).toHaveBeenCalledTimes(2);
-        expect(testData.unitNavigationHandler).toHaveBeenCalledTimes(4);
-
-        expect(sendTrackEvent).toHaveBeenNthCalledWith(1, 'edx.ui.lms.sequence.previous_selected', {
-          current_tab: 1,
-          id: testData.unitId,
-          tab_count: 0,
-          widget_placement: 'top',
-        });
-        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.sequence.previous_selected', {
-          current_tab: 1,
-          id: testData.unitId,
-          tab_count: 0,
-          widget_placement: 'bottom',
-        });
-        expect(sendTrackEvent).toHaveBeenNthCalledWith(3, 'edx.ui.lms.sequence.next_selected', {
-          current_tab: 1,
-          id: testData.unitId,
-          tab_count: 0,
-          widget_placement: 'top',
-        });
-        expect(sendTrackEvent).toHaveBeenNthCalledWith(4, 'edx.ui.lms.sequence.next_selected', {
-          current_tab: 1,
-          id: testData.unitId,
-          tab_count: 0,
-          widget_placement: 'bottom',
-        });
-      });
+    beforeEach(() => {
+      sendTrackEvent.mockClear();
+      sendTrackingLogEvent.mockClear();
     });
 
-    it('handles unit navigation button', async () => {
-      const currentTabNumber = 1;
-      const targetUnitNumber = 2;
-      const targetUnit = unitBlocks[targetUnitNumber - 1];
-      const testData = {
-        ...mockData,
-        unitId: unitBlocks[currentTabNumber - 1].id,
-        sequenceId: sequenceBlocks[0].id,
-        unitNavigationHandler: jest.fn(),
+    it('reports the 1-indexed current and target tabs', () => {
+      logSequenceEvent('edx.ui.lms.sequence.tab_selected', {
+        sequence: { unitIds }, unitId: 'unit-2', widgetPlacement: 'top', targetUnitId: 'unit-3',
+      });
+      const payload = {
+        current_tab: 2,
+        id: 'unit-2',
+        tab_count: 3,
+        widget_placement: 'top',
+        target_tab: 3,
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore, wrapWithRouter: true });
-      waitFor(() => {
-        expect(screen.findByText('Loading learning sequence...')).toBeInTheDocument();
-        fireEvent.click(screen.getByRole('link', { name: targetUnit.display_name }));
-        expect(testData.unitNavigationHandler).toHaveBeenCalledWith(targetUnit.id);
-        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', {
-          current_tab: currentTabNumber,
-          id: testData.unitId,
-          target_tab: targetUnitNumber,
-          tab_count: unitBlocks.length,
-          widget_placement: 'top',
-        });
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', payload);
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.tab_selected', payload);
+    });
+
+    it('reports tab 1 of 0 for a sequence with no units', () => {
+      logSequenceEvent('edx.ui.lms.sequence.next_selected', {
+        sequence: { unitIds: [] }, unitId: null, widgetPlacement: 'bottom',
+      });
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.sequence.next_selected', {
+        current_tab: 1,
+        id: null,
+        tab_count: 0,
+        widget_placement: 'bottom',
       });
     });
   });
 
   describe('Upgrade Panel feature', () => {
+    // The panel renders under the real sidebar provider, as the stored sidebar on a desktop viewport.
+    const renderWithUpgradePanelOpen = async () => {
+      global.innerWidth = breakpoints.extraExtraLarge.minWidth;
+      window.localStorage.setItem(`sidebar.${mockData.courseId}`, JSON.stringify('UPGRADE'));
+      const { sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
+      render(
+        <MemoryRouter initialEntries={[`/course/${mockData.courseId}/${sequenceId}/${mockData.unitId}`]}>
+          <Routes>
+            <Route
+              path="/course/:courseId/:sequenceId/*"
+              element={(
+                <SidebarProvider courseId={mockData.courseId} unitId={mockData.unitId} widgets={getEnabledWidgets()}>
+                  <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={sequenceId} />
+                  <Sequence {...mockData} sequenceId={sequenceId} />
+                </SidebarProvider>
+              )}
+            />
+          </Routes>
+        </MemoryRouter>,
+      );
+    };
+
+    afterEach(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
+
     it('renders upgrade panel in sequence', async () => {
-      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'UPGRADE', toggleSidebar: () => null }} />, { wrapWithRouter: true });
-      waitFor(async () => expect(await screen.findByText('Upgrade')).toBeInTheDocument());
+      await renderWithUpgradePanelOpen();
+
+      expect(await screen.findByRole('region', { name: /upgrade panel/i })).not.toHaveClass('d-none');
     });
 
     it('handles click on upgrade panel close button', async () => {
-      const toggleUpgradePanel = jest.fn();
-      render(<SidebarWrapper contextValue={{ courseId: mockData.courseId, currentSidebar: 'UPGRADE', toggleSidebar: toggleUpgradePanel }} />, { wrapWithRouter: true });
-      act(async () => {
-        const upgradeCloseIconButton = await screen.findByRole('button', { name: /Close sidebar/i });
-        fireEvent.click(upgradeCloseIconButton);
-        expect(toggleUpgradePanel).toHaveBeenCalled();
-      });
+      const user = userEvent.setup();
+      await renderWithUpgradePanelOpen();
+      await screen.findByRole('region', { name: /upgrade panel/i });
+
+      await user.click(screen.getByRole('button', { name: /Close sidebar/i }));
+
+      expect(screen.queryByRole('region', { name: /upgrade panel/i })).not.toBeInTheDocument();
     });
 
     it('does not render upgrade panel in sequence by default if in responsive view', async () => {

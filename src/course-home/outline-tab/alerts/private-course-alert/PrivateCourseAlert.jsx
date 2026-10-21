@@ -12,7 +12,7 @@ import genericMessages from '../../../../generic/messages';
 import messages from './messages';
 import outlineMessages from '../../messages';
 import useEnrollClickHandler from '../../../../alerts/enrollment-alert/clickHook';
-import { useModel } from '../../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../data/apiHooks';
 
 const PrivateCourseAlert = ({ payload }) => {
   const intl = useIntl();
@@ -25,7 +25,7 @@ const PrivateCourseAlert = ({ payload }) => {
   const {
     org,
     title,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const { enrollClickHandler, loading } = useEnrollClickHandler(
     courseId,

@@ -17,7 +17,8 @@ import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
-import { useModel } from '../../generic/model-store';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
+import { useCoursewareMetadata } from '../data/apiHooks';
 
 const SocialIcons = ({
   analyticsId,
@@ -29,12 +30,12 @@ const SocialIcons = ({
   socialMessage,
 }) => {
   const intl = useIntl();
-  const { marketingUrl } = useModel('coursewareMeta', courseId);
+  const marketingUrl = useCoursewareMetadata(courseId, { enabled: false }).data?.marketingUrl;
 
   const {
     org,
     title,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   if (!marketingUrl) {
     return null;

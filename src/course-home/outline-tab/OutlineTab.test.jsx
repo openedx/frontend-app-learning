@@ -2,26 +2,29 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { Factory } from 'rosie';
 import { getConfig } from '@edx/frontend-platform';
+import { AppProvider } from '@edx/frontend-platform/react';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import Cookies from 'js-cookie';
 import userEvent from '@testing-library/user-event';
+import { render } from '@testing-library/react';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import messages from './messages';
 
 import { buildMinimalCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
 import {
-  fireEvent, initializeMockApp, logUnhandledRequests, render, screen, waitFor, act,
+  createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, waitFor, act,
 } from '../../setupTest';
-import { appendBrowserTimezoneToUrl, executeThunk } from '../../utils';
-import * as thunks from '../data/thunks';
-import initializeStore from '../../store';
+import { appendBrowserTimezoneToUrl } from '../../utils';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 import OutlineTab from './OutlineTab';
-import LoadedTabPage from '../../tab-page/LoadedTabPage';
+import { UserMessagesProvider } from '../../generic/user-messages';
+import { ToastProvider } from '../../generic/ToastContext';
 
 const mockCoursewareSearchParams = jest.fn();
 
@@ -56,7 +59,6 @@ describe('Outline Tab', () => {
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   const proctoringInfoUrl = `${getConfig().EXAMS_BASE_URL}/api/v1/student/course_id/${encodeURIComponent(courseId)}/onboarding?username=MockUser`;
 
-  const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata');
   const defaultTabData = Factory.build('outlineTabData');
 
@@ -70,14 +72,28 @@ describe('Outline Tab', () => {
     axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
   }
 
-  async function fetchAndRender(path = '') {
-    await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
+  async function fetchAndRender(path = '', { waitForLoaded = true } = {}) {
+    const search = path.includes('?') ? path.slice(path.indexOf('?')) : '';
+    const queryClient = createTestQueryClient();
     await act(async () => render(
-      <MemoryRouter initialEntries={[path]}>
-        <OutlineTab />
-      </MemoryRouter>,
-      { store },
+      <AppProvider wrapWithRouter={false}>
+        <MemoryRouter initialEntries={[`/course/${courseId}/home${search}`]}>
+          <QueryClientProvider client={queryClient}>
+            <UserMessagesProvider>
+              <ToastProvider>
+                <Routes>
+                  <Route path="/course/:courseId/home" element={<OutlineTab />} />
+                </Routes>
+              </ToastProvider>
+            </UserMessagesProvider>
+          </QueryClientProvider>
+        </MemoryRouter>
+      </AppProvider>,
     ));
+    if (waitForLoaded) {
+      await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
+    }
+    return queryClient;
   }
 
   beforeEach(async () => {
@@ -103,6 +119,22 @@ describe('Outline Tab', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('Access denied', () => {
+    it('waits for the outline data before rendering for a denied learner (no crash)', async () => {
+      setMetadata({ course_access: { has_access: false, error_code: 'authentication_required' }, is_enrolled: false });
+      let resolveOutline;
+      axiosMock.onGet(outlineUrl).reply(() => new Promise((resolve) => { resolveOutline = resolve; }));
+
+      const queryClient = await fetchAndRender('', { waitForLoaded: false });
+
+      await waitFor(() => expect(queryClient.getQueryData(courseHomeMetaQuery(courseId).queryKey)).toBeDefined());
+      expect(screen.getByRole('status')).toBeInTheDocument();
+
+      await act(async () => { resolveOutline([200, Factory.build('outlineTabData')]); });
+      expect(await screen.findByTestId('private-course-alert')).toBeInTheDocument();
+    });
   });
 
   describe('Course Outline', () => {
@@ -190,9 +222,39 @@ describe('Outline Tab', () => {
       const sequenceLink = screen.getByText('Title of Sequence');
       expect(sequenceLink.getAttribute('href')).toContain(`/course/${courseId}`);
     });
+
+    it('formats a sequence due date in the user_timezone from the course metadata', async () => {
+      // Tests run in UTC (global-setup.js), so a non-UTC preference distinguishes the
+      // preference from the browser fallback.
+      setMetadata({ user_timezone: 'Asia/Tokyo' });
+      const sequenceBlocks = [Factory.build(
+        'block',
+        { display_name: 'Title of Sequence', due: '2030-04-01T12:00:00Z', type: 'sequential' },
+        { courseId },
+      )];
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true, sequenceBlocks });
+      setTabData({
+        course_blocks: { blocks: courseBlocks.blocks },
+      });
+      await fetchAndRender();
+
+      expect(screen.getByText('due Apr 1, 2030, 9:00 PM GMT+9')).toBeInTheDocument();
+    });
   });
 
   describe('Suggested schedule alerts', () => {
+    const dateBlocks = [
+      {
+        assignment_type: 'Homework',
+        date: '2010-08-20T05:59:40.942669Z',
+        date_type: 'assignment-due-date',
+        description: '',
+        learner_has_access: true,
+        title: 'Missed assignment',
+        extra_info: null,
+      },
+    ];
+
     beforeEach(() => {
       setMetadata({ is_enrolled: true, is_self_paced: true });
       setTabData({
@@ -202,19 +264,7 @@ describe('Outline Tab', () => {
           missed_gated_content: true,
           verified_upgrade_link: 'http://localhost:18130/basket/add/?sku=8CF08E5',
         },
-      }, {
-        date_blocks: [
-          {
-            assignment_type: 'Homework',
-            date: '2010-08-20T05:59:40.942669Z',
-            date_type: 'assignment-due-date',
-            description: '',
-            learner_has_access: true,
-            title: 'Missed assignment',
-            extra_info: null,
-          },
-        ],
-      });
+      }, { date_blocks: dateBlocks });
     });
 
     it('renders UpgradeToShiftDatesAlert', async () => {
@@ -241,6 +291,28 @@ describe('Outline Tab', () => {
         linkType: 'button',
         pageName: 'course_home',
       });
+    });
+
+    it('handles shift due dates click', async () => {
+      const user = userEvent.setup();
+      setTabData(
+        { dates_banner_info: { missed_deadlines: true, missed_gated_content: false } },
+        { date_blocks: dateBlocks },
+      );
+      await fetchAndRender();
+
+      const button = await screen.findByRole('button', { name: 'Shift due dates' });
+
+      axiosMock.onPost(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`)
+        .reply(200, { header: 'Dates shifted' });
+      setTabData(
+        { dates_banner_info: { missed_deadlines: false, missed_gated_content: false } },
+        { date_blocks: dateBlocks },
+      );
+
+      await user.click(button);
+
+      await waitFor(() => expect(screen.queryByRole('button', { name: 'Shift due dates' })).not.toBeInTheDocument());
     });
   });
 
@@ -401,12 +473,10 @@ describe('Outline Tab', () => {
           weekly_learning_goal_enabled: true,
         },
       });
-      const spy = jest.spyOn(thunks, 'saveWeeklyLearningGoal');
-
       await fetchAndRender();
-      const button = await screen.getByTestId('weekly-learning-goal-input-Regular');
+      const button = screen.getByTestId('weekly-learning-goal-input-Regular');
       fireEvent.click(button);
-      expect(spy).toHaveBeenCalledTimes(0);
+      expect(axiosMock.history.post.some(req => req.url.includes('save_course_goal'))).toBe(false);
     });
 
     it('post goal via query param', async () => {
@@ -415,11 +485,12 @@ describe('Outline Tab', () => {
           weekly_learning_goal_enabled: true,
         },
       });
-      const spy = jest.spyOn(thunks, 'saveWeeklyLearningGoal');
       sendTrackEvent.mockClear();
 
       await fetchAndRender('http://localhost/?weekly_goal=3');
-      expect(spy).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(
+        axiosMock.history.post.filter(req => req.url.includes('save_course_goal')),
+      ).toHaveLength(1));
       expect(sendTrackEvent).toHaveBeenCalledWith('enrollment.email.clicked.setgoal', {});
     });
 
@@ -637,9 +708,8 @@ describe('Outline Tab', () => {
             masquerading_expired_course: true,
           },
         });
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-        await act(async () => render(<LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">...</LoadedTabPage>, { store }));
-        const instructorToolbar = await screen.getByTestId('instructor-toolbar');
+        await fetchAndRender();
+        const instructorToolbar = screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
         expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
@@ -653,9 +723,8 @@ describe('Outline Tab', () => {
             masquerading_expired_course: false,
           },
         });
-        await executeThunk(thunks.fetchOutlineTab(courseId), store.dispatch);
-        await act(async () => render(<LoadedTabPage metadataModel="courseHomeMeta" courseId={courseId} activeTabSlug="outline">...</LoadedTabPage>, { store }));
-        const instructorToolbar = await screen.getByTestId('instructor-toolbar');
+        await fetchAndRender();
+        const instructorToolbar = screen.getByTestId('instructor-toolbar');
         expect(instructorToolbar).toBeInTheDocument();
         expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
       });
@@ -1007,6 +1076,24 @@ describe('Outline Tab', () => {
   describe('Proctoring Info Panel', () => {
     const onboardingReleaseDate = new Date();
     onboardingReleaseDate.setDate(new Date().getDate() - 7);
+
+    it('defers the weekly learning goal card until the proctoring info has settled', async () => {
+      let resolveProctoringInfo;
+      axiosMock.onGet(proctoringInfoUrl).reply(() => new Promise((resolve) => { resolveProctoringInfo = resolve; }));
+      setTabData({
+        enable_proctored_exams: true,
+        course_goals: { weekly_learning_goal_enabled: true },
+      });
+      await fetchAndRender();
+
+      expect(screen.queryByTestId('weekly-learning-goal-card')).not.toBeInTheDocument();
+
+      await act(async () => { resolveProctoringInfo([200, {}]); });
+
+      expect(await screen.findByTestId('weekly-learning-goal-card')).toBeInTheDocument();
+      expect(screen.queryByText('This course contains proctored exams')).not.toBeInTheDocument();
+    });
+
     it('appears', async () => {
       await fetchAndRender();
       await screen.findByText('This course contains proctored exams');
@@ -1041,6 +1128,20 @@ describe('Outline Tab', () => {
       expect(screen.queryByRole('link', { name: 'Review instructions and system requirements' })).toBeInTheDocument();
       expect(screen.queryByText('You must complete the onboarding process prior to taking any proctored exam.')).toBeInTheDocument();
       expect(screen.queryByText('Onboarding profile review can take 2+ business days.')).toBeInTheDocument();
+    });
+
+    it('appears for started', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'started',
+        onboarding_link: 'test',
+        expiration_date: null,
+        onboarding_release_date: onboardingReleaseDate.toISOString(),
+      });
+      await fetchAndRender();
+      await screen.findByText('This course contains proctored exams');
+      expect(screen.queryByText('Current Onboarding Status: Started')).toBeInTheDocument();
+      expect(screen.queryByText('You have started your onboarding exam.')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Complete Onboarding' })).toBeInTheDocument();
     });
 
     it('appears for submitted', async () => {
@@ -1326,6 +1427,25 @@ describe('Outline Tab', () => {
 
       expect(iconHiddenFromTocSequenceLink).not.toBeInTheDocument();
       expect(textHiddenFromTocSequenceLink).not.toBeInTheDocument();
+    });
+  });
+
+  describe('request count', () => {
+    it('requests the course metadata once per load', async () => {
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
+    });
+
+    it('requests the outline once per load with the instructor toolbar mounted', async () => {
+      setMetadata({ original_user_is_staff: true });
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(axiosMock.history.get.filter((req) => req.url === outlineUrl)).toHaveLength(1);
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/api/course_home/progress/'))).toHaveLength(0);
     });
   });
 });

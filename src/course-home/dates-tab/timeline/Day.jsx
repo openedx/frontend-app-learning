@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {
   FormattedDate,
   FormattedTime,
@@ -11,7 +11,7 @@ import { Tooltip, OverlayTrigger } from '@openedx/paragon';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../data/apiHooks';
 
 import { getBadgeListAndColor } from './badgelist';
 import { isLearnerAssignment } from '../utils';
@@ -23,12 +23,8 @@ const Day = ({
   last,
 }) => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
-  const {
-    userTimezone,
-  } = useModel('courseHomeMeta', courseId);
+  const { courseId } = useParams();
+  const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 

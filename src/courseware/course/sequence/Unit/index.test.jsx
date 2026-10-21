@@ -1,15 +1,21 @@
+import { useEffect } from 'react';
 import { MemoryRouter } from 'react-router';
 import { Factory } from 'rosie';
 
 import {
-  initializeMockApp, initializeTestStore, render, screen,
+  initializeMockApp, mockCourseRequests, render, screen, waitFor,
 } from '../../../../setupTest';
+import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
+import { usePluginOverrides } from '../../../../generic/plugin-overrides';
 import { getIFrameUrl } from './urls';
 import { views } from './constants';
 import Unit from '.';
+import SpecialExamsProvider from '../../../../generic/special-exams/SpecialExamsProvider';
+
+const courseMetadata = Factory.build('courseMetadata');
 
 const defaultProps = {
-  courseId: 'test-course-id',
+  courseId: courseMetadata.id,
   format: 'test-format',
   onLoaded: jest.fn().mockName('props.onLoaded'),
   id: 'unit-id',
@@ -24,28 +30,31 @@ const unit = {
   bookmarkedUpdateState: 'pending',
 };
 
-let store;
+let sequenceId;
 
-const renderComponent = (props) => {
+const renderComponent = (props, { children = null, search = '' } = {}) => {
   render(
-    <MemoryRouter initialEntries={[{ pathname: `/course/${props.courseID}` }]}>
-      <Unit {...props} />
+    <MemoryRouter initialEntries={[{ pathname: `/course/${props.courseId}/${sequenceId}/${props.id}`, search }]}>
+      <SpecialExamsProvider>
+        <MountCourseQueryHooks courseId={props.courseId} sequenceId={sequenceId} />
+        {children}
+        <Unit sequenceId={sequenceId} {...props} />
+      </SpecialExamsProvider>
     </MemoryRouter>,
-    { store, wrapWithRouter: false },
+    { wrapWithRouter: false },
   );
 };
 
 initializeMockApp();
 
 async function setupStoreState() {
-  const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = [Factory.build(
     'block',
     { type: 'vertical', ...unit },
     { courseId: courseMetadata.id },
   )];
 
-  store = await initializeTestStore({ courseMetadata, unitBlocks });
+  ({ sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks }));
 }
 
 describe('<Unit />', () => {
@@ -54,42 +63,42 @@ describe('<Unit />', () => {
   });
 
   describe('unit title', () => {
-    it('has two children', () => {
+    it('has two children', async () => {
       renderComponent(defaultProps);
-      const unitTitleWrapper = screen.getByTestId('org.openedx.frontend.learning.unit_title.v1').children[0];
+      const unitTitleWrapper = (await screen.findByTestId('org.openedx.frontend.learning.unit_title.v1')).children[0];
 
       expect(unitTitleWrapper.children).toHaveLength(3);
     });
 
-    it('renders bookmark button', () => {
+    it('renders bookmark button', async () => {
       renderComponent(defaultProps);
 
-      expect(screen.getByText('Bookmark this page')).toBeInTheDocument();
+      expect(await screen.findByText('Bookmark this page')).toBeInTheDocument();
     });
 
-    it('renders unit navigation buttons', () => {
+    it('renders unit navigation buttons', async () => {
       const props = { ...defaultProps };
       renderComponent(props);
 
-      const nextButton = screen.getByText('UnitNaviagtion');
+      const nextButton = await screen.findByText('UnitNaviagtion');
 
       expect(nextButton).toBeVisible();
     });
   });
 
   describe('UnitSuspense', () => {
-    it('renders loading message', () => {
+    it('renders loading message', async () => {
       renderComponent(defaultProps);
 
-      expect(screen.getByText('Loading', { exact: false })).toBeInTheDocument();
+      expect(await screen.findByText('Loading', { exact: false })).toBeInTheDocument();
     });
   });
 
   describe('ContentIFrame', () => {
     let iframe;
-    beforeEach(() => {
+    beforeEach(async () => {
       renderComponent(defaultProps);
-      iframe = screen.getByTestId('content-iframe-test-id');
+      iframe = await screen.findByTestId('content-iframe-test-id');
     });
 
     it('renders content iframe', () => {
@@ -106,8 +115,42 @@ describe('<Unit />', () => {
           blockAccess: false,
         },
         jumpToId: null,
-        preview: 0,
+        preview: false,
       }));
+    });
+  });
+
+  describe('iframe url parameters', () => {
+    it('omits format from the iframe url when the unit has none', async () => {
+      renderComponent({ ...defaultProps, format: undefined });
+      expect((await screen.findByTestId('content-iframe-test-id')).getAttribute('src')).not.toContain('format=');
+    });
+
+    it('passes jumpToId from the search params into the iframe url', async () => {
+      renderComponent(defaultProps, { search: '?jumpToId=some-block-id' });
+      expect((await screen.findByTestId('content-iframe-test-id')).getAttribute('src')).toContain('jumpToId=some-block-id');
+    });
+  });
+
+  describe('getIFrameUrl override', () => {
+    const IFrameUrlOverridePlugin = () => {
+      const { registerOverrideMethod } = usePluginOverrides();
+      useEffect(() => {
+        registerOverrideMethod({
+          pluginName: 'test-plugin',
+          methodName: 'getIFrameUrl',
+          method: (iframeUrl) => `${iframeUrl}&overridden=1`,
+        });
+      }, [registerOverrideMethod]);
+      return null;
+    };
+
+    it('applies a registered override to the iframe src', async () => {
+      renderComponent(defaultProps, { children: <IFrameUrlOverridePlugin /> });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('content-iframe-test-id').getAttribute('src')).toMatch(/&overridden=1$/);
+      });
     });
   });
 });

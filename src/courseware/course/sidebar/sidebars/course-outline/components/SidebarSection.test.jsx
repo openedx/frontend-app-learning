@@ -1,40 +1,67 @@
 import { useMemo } from 'react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { AppProvider } from '@edx/frontend-platform/react';
 
-import { initializeTestStore } from '@src/setupTest';
+import {
+  createTestQueryClient, mockCourseRequests, seedQueryData,
+} from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
-import SidebarContext from '../../../SidebarContext';
+import { getCourseOutline } from '@src/courseware/data/api';
+import { courseOutlineStructureQuery, coursewareOutlineSidebarTogglesQuery } from '@src/courseware/data/apiHooks';
+import { SidebarProvider } from '../../../SidebarContext';
 import SidebarSection from './SidebarSection';
 
 describe('<SidebarSection />', () => {
   let mockHandleSelectSection;
-  let store;
+  let courseId;
+  let outline;
   let section;
 
-  const initTestStore = async (options) => {
-    store = await initializeTestStore(options);
-    const state = store.getState();
-    const [activeSectionId] = Object.keys(state.courseware.courseOutline.sections);
-    section = state.courseware.courseOutline.sections[activeSectionId];
+  const initTestData = async (options) => {
+    courseId = mockCourseRequests(options).courseId;
+    outline = await getCourseOutline(courseId);
+    const [activeSectionId] = Object.keys(outline.sections);
+    section = outline.sections[activeSectionId];
   };
 
   const RootWrapper = (props) => {
-    const mockData = useMemo(() => ({ toggleSidebar: jest.fn() }), []);
+    const queryClient = useMemo(() => {
+      const client = createTestQueryClient();
+      seedQueryData(client, courseOutlineStructureQuery(courseId).queryKey, outline);
+      seedQueryData(
+        client,
+        coursewareOutlineSidebarTogglesQuery(courseId).queryKey,
+        { enableCompletionTracking: true },
+      );
+      return client;
+    }, []);
 
     return (
-      <AppProvider store={store} wrapWithRouter={false}>
-        <IntlProvider locale="en">
-          <SidebarContext.Provider value={mockData}>
-            <SidebarSection
-              section={section}
-              handleSelectSection={mockHandleSelectSection}
-              {...props}
-            />
-          </SidebarContext.Provider>
-        </IntlProvider>
+      <AppProvider wrapWithRouter={false}>
+        <QueryClientProvider client={queryClient}>
+          <IntlProvider locale="en">
+            <MemoryRouter initialEntries={[`/course/${courseId}`]}>
+              <SidebarProvider courseId={courseId} unitId="unit-1" widgets={[]}>
+                <Routes>
+                  <Route
+                    path="/course/:courseId"
+                    element={(
+                      <SidebarSection
+                        section={section}
+                        handleSelectSection={mockHandleSelectSection}
+                        {...props}
+                      />
+                    )}
+                  />
+                </Routes>
+              </SidebarProvider>
+            </MemoryRouter>
+          </IntlProvider>
+        </QueryClientProvider>
       </AppProvider>
     );
   };
@@ -45,7 +72,7 @@ describe('<SidebarSection />', () => {
 
   it('renders correctly when section is incomplete', async () => {
     const user = userEvent.setup();
-    await initTestStore();
+    await initTestData();
     const { getByText, container } = render(<RootWrapper />);
 
     expect(getByText(section.title)).toBeInTheDocument();
@@ -60,7 +87,7 @@ describe('<SidebarSection />', () => {
 
   it('renders correctly when section is complete', async () => {
     const user = userEvent.setup();
-    await initTestStore();
+    await initTestData();
     const { getByText, getByTestId } = render(
       <RootWrapper section={{ ...section, completionStat: { completed: 4, total: 4 }, complete: true }} />,
     );

@@ -2,7 +2,8 @@ import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
 import messages from './messages';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
+import { useCoursewareMetadata, useMinimalCourseOutline } from '../../data/apiHooks';
 
 const COURSE_EXIT_MODES = {
   disabled: 0,
@@ -76,13 +77,15 @@ function getCourseExitMode(
 function GetCourseExitNavigation(courseId, intl) {
   const {
     certificateData,
-    hasScheduledContent,
     isEnrolled,
     userHasPassingGrade,
     courseExitPageIsActive,
     entranceExamData: { entranceExamPassed },
-  } = useModel('coursewareMeta', courseId);
-  const { canViewCertificate } = useModel('courseHomeMeta', courseId);
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
+  const hasScheduledContent = (
+    useMinimalCourseOutline(courseId, { enabled: false }).data?.courses[courseId].hasScheduledContent
+  );
+  const canViewCertificate = useCourseHomeMeta(courseId, { enabled: false }).data?.canViewCertificate;
   const exitMode = getCourseExitMode(
     certificateData,
     hasScheduledContent,

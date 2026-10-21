@@ -2,20 +2,16 @@ import React from 'react';
 import { Button, Card } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import messages from '../messages';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
 
 const StartOrResumeCourseCard = () => {
   const intl = useIntl();
-  const {
-    courseId,
-  } = useSelector(state => state.courseHome);
+  const { courseId } = useParams();
 
-  const {
-    org,
-  } = useModel('courseHomeMeta', courseId);
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const eventProperties = {
     org_key: org,
@@ -27,7 +23,7 @@ const StartOrResumeCourseCard = () => {
       hasVisitedCourse,
       url: resumeCourseUrl,
     },
-  } = useModel('outline', courseId);
+  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
 
   if (!resumeCourseUrl) {
     return null;

@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -11,12 +10,9 @@ import coursewareTour from './CoursewareTour';
 import existingUserCourseHomeTour from './ExistingUserCourseHomeTour';
 import newUserCourseHomeTour from './newUserCourseHomeTour/NewUserCourseHomeTour';
 import NewUserCourseHomeTourModal from './newUserCourseHomeTour/NewUserCourseHomeTourModal';
-import {
-  closeNewUserCourseHomeModal,
-  endCourseHomeTour,
-  endCoursewareTour,
-  fetchTourData,
-} from './data';
+import { useEndCourseHomeTour, useEndCoursewareTour, useTourData } from './data/apiHooks';
+import { useTourState } from './TourContext';
+import { useCourseHomeMeta, useProctoringInfoData } from '../course-home/data/apiHooks';
 
 const ProductTours = ({
   activeTab,
@@ -24,55 +20,89 @@ const ProductTours = ({
   isStreakCelebrationOpen,
   org,
 }) => {
-  const {
-    proctoringPanelStatus,
-  } = useSelector(state => state.courseHome);
+  const courseHomeMeta = useCourseHomeMeta(courseId, { enabled: false }).data;
 
   const {
     showCoursewareTour,
     showExistingUserCourseHomeTour,
     showNewUserCourseHomeModal,
     showNewUserCourseHomeTour,
-  } = useSelector(state => state.tours);
+    setTourData,
+    disableCourseHomeTour,
+    disableCoursewareTour,
+    closeNewUserCourseHomeModal,
+  } = useTourState();
 
   const [isAbandonTourEnabled, setIsAbandonTourEnabled] = useState(false);
   const [isCoursewareTourEnabled, setIsCoursewareTourEnabled] = useState(false);
   const [isExistingUserCourseHomeTourEnabled, setIsExistingUserCourseHomeTourEnabled] = useState(false);
   const [isNewUserCourseHomeTourEnabled, setIsNewUserCourseHomeTourEnabled] = useState(false);
 
-  const dispatch = useDispatch();
   const {
     administrator,
     username,
   } = getAuthenticatedUser() || {};
-  const isCoursewareTab = activeTab === 'courseware';
-  const isOutlineTab = activeTab === 'outline';
+  const coursewareTabActive = activeTab === 'courseware';
+  const outlineTabActive = activeTab === 'outline';
+  const proctoringInfoQuery = useProctoringInfoData(courseId, courseHomeMeta?.username, { enabled: outlineTabActive });
 
-  useEffect(() => {
-    const isOutlineTabResolved = isOutlineTab && proctoringPanelStatus === 'loaded';
-    const userIsAuthenticated = !!username;
+  const endCoursewareTourMutation = useEndCoursewareTour();
+  const endCourseHomeTourMutation = useEndCourseHomeTour();
 
-    // Tours currently only exist on the Outline Tab and within Courseware, so we'll avoid
-    // calling the tour endpoint unnecessarily.
-    if (userIsAuthenticated && (isCoursewareTab || isOutlineTabResolved)) {
-      dispatch(fetchTourData(username));
+  // Persist the tour completion and hide it client-side.
+  const endCoursewareTour = () => {
+    endCoursewareTourMutation.mutate(username);
+    disableCoursewareTour();
+  };
+  const endCourseHomeTour = () => {
+    endCourseHomeTourMutation.mutate(username);
+    disableCourseHomeTour();
+  };
+
+  const shouldFetchTourData = () => {
+    // The tour endpoint is per-user; there's nothing to fetch for anonymous users.
+    if (!username) {
+      return false;
     }
-  }, [proctoringPanelStatus]);
+
+    // Tours only exist on the Outline and Courseware tabs, so avoid calling the
+    // tour endpoint on any other tab.
+    if (!coursewareTabActive && !outlineTabActive) {
+      return false;
+    }
+
+    // On the outline tab the tour anchors to the weekly-goal widget, which only
+    // renders once the proctoring panel has loaded; wait for it so the tour's
+    // target elements exist before we start.
+    if (outlineTabActive && proctoringInfoQuery.isPending) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const { data: tourData } = useTourData(username, shouldFetchTourData());
 
   useEffect(() => {
-    if (isCoursewareTab && showCoursewareTour) {
+    if (tourData) {
+      setTourData(tourData);
+    }
+  }, [tourData]);
+
+  useEffect(() => {
+    if (coursewareTabActive && showCoursewareTour) {
       setIsCoursewareTourEnabled(true);
     }
   }, [showCoursewareTour]);
 
   useEffect(() => {
-    if (isOutlineTab) {
+    if (outlineTabActive) {
       setIsExistingUserCourseHomeTourEnabled(!!showExistingUserCourseHomeTour);
     }
   }, [showExistingUserCourseHomeTour]);
 
   useEffect(() => {
-    if (isOutlineTab && showNewUserCourseHomeTour) {
+    if (outlineTabActive && showNewUserCourseHomeTour) {
       setIsAbandonTourEnabled(false);
       setIsNewUserCourseHomeTourEnabled(true);
     }
@@ -100,7 +130,7 @@ const ProductTours = ({
           courserun_key: courseId,
           is_staff: administrator,
         });
-        dispatch(endCoursewareTour(username));
+        endCoursewareTour();
       },
     }),
     existingUserCourseHomeTour({
@@ -112,7 +142,7 @@ const ProductTours = ({
           courserun_key: courseId,
           is_staff: administrator,
         });
-        dispatch(endCourseHomeTour(username));
+        endCourseHomeTour();
       },
     }),
     newUserCourseHomeTour({
@@ -125,8 +155,8 @@ const ProductTours = ({
           courserun_key: courseId,
           is_staff: administrator,
         });
-        dispatch(endCourseHomeTour(username));
-        dispatch(endCoursewareTour(username));
+        endCourseHomeTour();
+        endCoursewareTour();
       },
       onEnd: () => {
         setIsNewUserCourseHomeTourEnabled(false);
@@ -135,7 +165,7 @@ const ProductTours = ({
           courserun_key: courseId,
           is_staff: administrator,
         });
-        dispatch(endCourseHomeTour(username));
+        endCourseHomeTour();
       },
     }),
   ];
@@ -146,16 +176,16 @@ const ProductTours = ({
         tours={tours}
       />
       <NewUserCourseHomeTourModal
-        isOpen={isOutlineTab && showNewUserCourseHomeModal}
+        isOpen={outlineTabActive && showNewUserCourseHomeModal}
         onDismiss={() => {
           sendTrackEvent('edx.ui.lms.new_user_modal.dismissed', {
             org_key: org,
             courserun_key: courseId,
             is_staff: administrator,
           });
-          dispatch(closeNewUserCourseHomeModal());
+          closeNewUserCourseHomeModal();
           setIsAbandonTourEnabled(true);
-          dispatch(endCourseHomeTour(username));
+          endCourseHomeTour();
         }}
         onStartTour={() => {
           sendTrackEvent('edx.ui.lms.new_user_tour.started', {
@@ -163,7 +193,7 @@ const ProductTours = ({
             courserun_key: courseId,
             is_staff: administrator,
           });
-          dispatch(closeNewUserCourseHomeModal());
+          closeNewUserCourseHomeModal();
           setIsNewUserCourseHomeTourEnabled(true);
         }}
       />

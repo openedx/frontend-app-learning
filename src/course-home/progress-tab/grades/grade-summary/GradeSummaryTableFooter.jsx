@@ -7,14 +7,12 @@ import {
   Tooltip,
 } from '@openedx/paragon';
 import { InfoOutline } from '@openedx/paragon/icons';
-import { useContextId } from '../../../../data/hooks';
 
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 import messages from '../messages';
 
 const GradeSummaryTableFooter = () => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     courseGrade: {
@@ -22,7 +20,7 @@ const GradeSummaryTableFooter = () => {
       percent,
     },
     finalGrades,
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const getGradePercent = (grade) => {
     const percentage = grade * 100;

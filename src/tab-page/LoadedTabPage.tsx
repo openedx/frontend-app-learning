@@ -5,8 +5,9 @@ import { getConfig } from '@edx/frontend-platform';
 import { useToggle } from '@openedx/paragon';
 
 import { CourseTabsNavigationSlot } from '@src/plugin-slots/CourseTabsNavigationSlot';
+import { getActiveTabTitle } from '@src/course-tabs/utils';
 
-import { useModel } from '@src/generic/model-store';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { AlertList } from '@src/generic/user-messages';
 import useEnrollmentAlert from '@src/alerts/enrollment-alert';
 import useLogistrationAlert from '@src/alerts/logistration-alert';
@@ -19,7 +20,6 @@ interface LoadedTabPageProps {
   activeTabSlug: string;
   children?: React.ReactNode;
   courseId: string;
-  metadataModel: string;
   unitId?: string | null;
 }
 
@@ -27,9 +27,22 @@ const LoadedTabPage = ({
   activeTabSlug,
   children = null,
   courseId,
-  metadataModel,
   unitId = null,
 }: LoadedTabPageProps) => {
+  const metadataQuery = useCourseHomeMeta(courseId, { enabled: false });
+
+  // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
+  // breadcrumbs when they are visible.
+  const logistrationAlert = useLogistrationAlert(courseId);
+  const enrollmentAlert = useEnrollmentAlert(courseId);
+
+  const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(
+    !!metadataQuery.data?.celebrations?.streakLengthToCelebrate,
+  );
+
+  if (!metadataQuery.isSuccess) {
+    throw new Error(`LoadedTabPage rendered without course metadata for ${courseId}`);
+  }
   const {
     celebrations,
     org,
@@ -38,18 +51,12 @@ const LoadedTabPage = ({
     title,
     verifiedMode,
     hasCourseAuthorAccess,
-  } = useModel('courseHomeMeta', courseId);
+  } = metadataQuery.data;
 
-  // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
-  // breadcrumbs when they are visible.
-  const logistrationAlert = useLogistrationAlert(courseId);
-  const enrollmentAlert = useEnrollmentAlert(courseId);
-
-  const activeTab = tabs.filter(tab => tab.slug === activeTabSlug)[0];
+  const activeTabTitle = getActiveTabTitle(tabs, activeTabSlug);
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
-  const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(streakLengthToCelebrate);
 
   return (
     <>
@@ -60,7 +67,7 @@ const LoadedTabPage = ({
         org={org}
       />
       <Helmet>
-        <title>{`${activeTab ? `${activeTab.title} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
+        <title>{`${activeTabTitle ? `${activeTabTitle} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
       </Helmet>
       {originalUserIsStaff && (
         <InstructorToolbar
@@ -72,7 +79,6 @@ const LoadedTabPage = ({
       )}
       <StreakModal
         courseId={courseId}
-        metadataModel={metadataModel}
         streakLengthToCelebrate={streakLengthToCelebrate}
         isStreakCelebrationOpen={!!isStreakCelebrationOpen}
         closeStreakCelebration={closeStreakCelebration}

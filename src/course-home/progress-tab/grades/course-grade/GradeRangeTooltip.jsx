@@ -6,21 +6,19 @@ import { InfoOutline } from '@openedx/paragon/icons';
 import {
   Icon, IconButton, OverlayTrigger, Popover,
 } from '@openedx/paragon';
-import { useContextId } from '../../../../data/hooks';
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 
 import messages from '../messages';
 
 const GradeRangeTooltip = ({ iconButtonClassName, passingGrade }) => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     gradesFeatureIsFullyLocked,
     gradingPolicy: {
       gradeRange,
     },
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const [showTooltip, setShowTooltip] = useState(false);
 

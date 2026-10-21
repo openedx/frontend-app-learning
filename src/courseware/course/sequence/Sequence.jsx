@@ -8,23 +8,47 @@ import {
   sendTrackingLogEvent,
 } from '@edx/frontend-platform/analytics';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { useSelector } from 'react-redux';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
+import SpecialExamsProvider from '@src/generic/special-exams/SpecialExamsProvider';
 
 import PageLoading from '@src/generic/PageLoading';
-import { useModel } from '@src/generic/model-store';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import {
+  sequenceMightBeUnit, useCoursewareMetadata, useMinimalCourseOutline, useSequenceMetadata, useUnit,
+} from '@src/courseware/data/apiHooks';
 import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
 import SequenceContainerSlot from '@src/plugin-slots/SequenceContainerSlot';
 import { CourseOutlineSidebarSlot } from '@src/plugin-slots/CourseOutlineSidebarSlot';
 import { CourseOutlineSidebarTriggerSlot } from '@src/plugin-slots/CourseOutlineSidebarTriggerSlot';
 import { RightSidebarSlot } from '@src/plugin-slots/RightSidebarSlot';
 import SequenceNavigationSlot from '@src/plugin-slots/SequenceNavigationSlot';
+import { SubmittedTimedExamInstructionsSlot } from '@src/plugin-slots/SubmittedTimedExamInstructionsSlot';
 
 import CourseLicense from '../course-license';
 import messages from './messages';
 import HiddenAfterDue from './hidden-after-due';
 import { UnitNavigation } from './sequence-navigation';
 import SequenceContent from './SequenceContent';
+
+export const logSequenceEvent = (eventName, {
+  sequence, unitId, widgetPlacement, targetUnitId,
+}) => {
+  // Note: tabs are tracked with a 1-indexed position
+  // as opposed to a 0-index used throughout this MFE
+  const currentIndex = sequence.unitIds.length > 0 ? sequence.unitIds.indexOf(unitId) : 0;
+  const payload = {
+    current_tab: currentIndex + 1,
+    id: unitId,
+    tab_count: sequence.unitIds.length,
+    widget_placement: widgetPlacement,
+  };
+  if (targetUnitId) {
+    const targetIndex = sequence.unitIds.indexOf(targetUnitId);
+    payload.target_tab = targetIndex + 1;
+  }
+  sendTrackEvent(eventName, payload);
+  sendTrackingLogEvent(eventName, payload);
+};
 
 const Sequence = ({
   unitId,
@@ -38,16 +62,17 @@ const Sequence = ({
   const {
     canAccessProctoredExams,
     license,
-  } = useModel('coursewareMeta', courseId);
+  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
   const {
     isStaff,
     originalUserIsStaff,
-  } = useModel('courseHomeMeta', courseId);
-  const sequence = useModel('sequences', sequenceId);
-  const section = useModel('sections', sequence ? sequence.sectionId : null);
-  const unit = useModel('units', unitId);
-  const sequenceStatus = useSelector(state => state.courseware.sequenceStatus);
-  const sequenceMightBeUnit = useSelector(state => state.courseware.sequenceMightBeUnit);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
+  const minimalCourseOutline = useMinimalCourseOutline(courseId, { enabled: false }).data;
+  const minimalSequenceMetadata = minimalCourseOutline?.sequences[sequenceId];
+  const section = minimalSequenceMetadata && minimalCourseOutline.sections[minimalSequenceMetadata.sectionId];
+  const unit = useUnit(sequenceId, unitId).data;
+  const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
+  const sequence = sequenceQuery.data?.sequence;
 
   const handleNext = () => {
     const nextIndex = sequence.unitIds.indexOf(unitId) + 1;
@@ -73,23 +98,9 @@ const Sequence = ({
     unitNavigationHandler(destinationUnitId);
   };
 
-  const logEvent = (eventName, widgetPlacement, targetUnitId) => {
-    // Note: tabs are tracked with a 1-indexed position
-    // as opposed to a 0-index used throughout this MFE
-    const currentIndex = sequence.unitIds.length > 0 ? sequence.unitIds.indexOf(unitId) : 0;
-    const payload = {
-      current_tab: currentIndex + 1,
-      id: unitId,
-      tab_count: sequence.unitIds.length,
-      widget_placement: widgetPlacement,
-    };
-    if (targetUnitId) {
-      const targetIndex = sequence.unitIds.indexOf(targetUnitId);
-      payload.target_tab = targetIndex + 1;
-    }
-    sendTrackEvent(eventName, payload);
-    sendTrackingLogEvent(eventName, payload);
-  };
+  const logEvent = (eventName, widgetPlacement, targetUnitId) => logSequenceEvent(eventName, {
+    sequence, unitId, widgetPlacement, targetUnitId,
+  });
 
   /* istanbul ignore next */
   const nextHandler = (placement) => () => {
@@ -147,7 +158,7 @@ const Sequence = ({
 
   // If sequence might be a unit, we want to keep showing a spinner - the courseware container will redirect us when
   // it knows which sequence to actually go to.
-  const loading = sequenceStatus === 'loading' || (sequenceStatus === 'failed' && sequenceMightBeUnit);
+  const loading = sequenceQuery.isPending || sequenceMightBeUnit(sequenceQuery);
   if (loading) {
     if (!sequenceId) {
       return (<div> {intl.formatMessage(messages.noContent)} </div>);
@@ -159,10 +170,10 @@ const Sequence = ({
     );
   }
 
-  if (sequenceStatus === 'loaded' && sequence.isHiddenAfterDue) {
+  if (sequenceQuery.isSuccess && sequence.isHiddenAfterDue) {
     // Shouldn't even be here - these sequences are normally stripped out of the navigation.
     // But we are here, so render a notice instead of the normal content.
-    return <HiddenAfterDue courseId={courseId} />;
+    return <HiddenAfterDue />;
   }
 
   const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
@@ -237,19 +248,22 @@ const Sequence = ({
     </>
   );
 
-  if (sequenceStatus === 'loaded') {
+  if (sequenceQuery.isSuccess) {
     return (
       <>
         <div className="d-flex flex-column flex-grow-1 justify-content-center">
-          <SequenceExamWrapper
-            sequence={sequence}
-            courseId={courseId}
-            isStaff={isStaff}
-            originalUserIsStaff={originalUserIsStaff}
-            canAccessProctoredExams={canAccessProctoredExams}
-          >
-            {defaultContent}
-          </SequenceExamWrapper>
+          <SpecialExamsProvider>
+            <SequenceExamWrapper
+              sequence={sequence}
+              courseId={courseId}
+              isStaff={isStaff}
+              originalUserIsStaff={originalUserIsStaff}
+              canAccessProctoredExams={canAccessProctoredExams}
+              submittedTimedExamInstructions={SubmittedTimedExamInstructionsSlot}
+            >
+              {defaultContent}
+            </SequenceExamWrapper>
+          </SpecialExamsProvider>
         </div>
         <CourseLicense license={license || undefined} />
       </>

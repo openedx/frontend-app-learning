@@ -3,11 +3,12 @@ import React, { useEffect } from 'react';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Helmet } from 'react-helmet';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { Alert, Button } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform';
 
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
+import { useDatesTabUrl } from '../../../course-tabs/hooks';
 
 import CatalogSuggestion from './CatalogSuggestion';
 import DashboardFootnote from './DashboardFootnote';
@@ -16,17 +17,15 @@ import { logClick, logVisit } from './utils';
 
 const CourseInProgress = () => {
   const intl = useIntl();
-  const { courseId } = useSelector(state => state.courseware);
+  const { courseId } = useParams();
   const {
     org,
-    tabs,
     title,
-  } = useModel('courseHomeMeta', courseId);
+  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const { administrator } = getAuthenticatedUser();
 
   // Get dates tab link for 'view course schedule' button
-  const datesTab = tabs.find(tab => tab.slug === 'dates');
-  const datesTabLink = datesTab && datesTab.url;
+  const datesTabLink = useDatesTabUrl();
 
   useEffect(() => logVisit(org, courseId, administrator, 'in_progress'), [org, courseId, administrator]);
 

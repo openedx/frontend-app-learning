@@ -2,7 +2,7 @@ import React, { Suspense, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import PageLoading from '../../../generic/PageLoading';
-import { useModel } from '../../../generic/model-store';
+import { useSequenceMetadata, useUnit } from '../../data/apiHooks';
 
 import messages from './messages';
 import Unit from './Unit';
@@ -19,7 +19,8 @@ const SequenceContent = ({
   renderUnitNavigation,
 }) => {
   const intl = useIntl();
-  const sequence = useModel('sequences', sequenceId);
+  const sequence = useSequenceMetadata(sequenceId, { enabled: false }).data?.sequence;
+  const unit = useUnit(sequenceId, unitId).data;
 
   // Go back to the top of the page whenever the unit or sequence changes.
   useEffect(() => {
@@ -45,7 +46,6 @@ const SequenceContent = ({
     );
   }
 
-  const unit = useModel('units', unitId);
   if (!unitId || !unit) {
     return (
       <div>
@@ -60,6 +60,7 @@ const SequenceContent = ({
       format={sequence.format}
       key={unitId}
       id={unitId}
+      sequenceId={sequenceId}
       onLoaded={unitLoadedHandler}
       isOriginalUserStaff={isOriginalUserStaff}
       renderUnitNavigation={renderUnitNavigation}

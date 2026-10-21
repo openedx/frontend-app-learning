@@ -7,24 +7,19 @@ import {
   screen,
   waitFor,
 } from '../../setupTest';
-import { fetchCoursewareSearchSettings } from '../data/thunks';
-import { setShowSearch } from '../data/slice';
 import { CoursewareSearchToggle } from './index';
+import { useCoursewareSearchFeatureFlag } from './hooks';
+import { useCoursewareSearch } from './CoursewareSearchContext';
 
-const mockDispatch = jest.fn();
+const mockOpen = jest.fn();
 const mockCoursewareSearchParams = jest.fn();
 
-jest.mock('../data/thunks');
-jest.mock('../data/slice');
-
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
-}));
+jest.mock('./CoursewareSearchContext');
 
 jest.mock('./hooks', () => ({
   ...jest.requireActual('./hooks'),
   useCoursewareSearchParams: () => mockCoursewareSearchParams,
+  useCoursewareSearchFeatureFlag: jest.fn(),
 }));
 
 const coursewareSearch = {
@@ -49,43 +44,45 @@ describe('CoursewareSearchToggle', () => {
     initializeMockApp();
   });
 
+  beforeEach(() => {
+    useCoursewareSearch.mockReturnValue({ show: false, open: mockOpen, close: jest.fn() });
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('Should not render when the waffle flag is disabled', async () => {
-    fetchCoursewareSearchSettings.mockImplementation(() => Promise.resolve({ enabled: false }));
+    useCoursewareSearchFeatureFlag.mockReturnValue(false);
     mockSearchParams();
 
     await act(async () => renderComponent());
     await waitFor(() => {
-      expect(fetchCoursewareSearchSettings).toHaveBeenCalledTimes(1);
+      expect(useCoursewareSearchFeatureFlag).toHaveBeenCalled();
       expect(screen.queryByTestId('courseware-search-open-button')).not.toBeInTheDocument();
     });
   });
 
   it('Should render when the waffle flag is enabled', async () => {
-    fetchCoursewareSearchSettings.mockImplementation(() => Promise.resolve({ enabled: true }));
+    useCoursewareSearchFeatureFlag.mockReturnValue(true);
     mockSearchParams();
 
     await act(async () => renderComponent());
 
     await waitFor(() => {
-      expect(fetchCoursewareSearchSettings).toHaveBeenCalledTimes(1);
+      expect(useCoursewareSearchFeatureFlag).toHaveBeenCalled();
       expect(screen.queryByTestId('courseware-search-open-button')).toBeInTheDocument();
     });
   });
 
-  it('Should dispatch setShowSearch(true) when clicking the search button', async () => {
-    fetchCoursewareSearchSettings.mockImplementation(() => Promise.resolve({ enabled: true }));
+  it('Should open search when clicking the search button', async () => {
+    useCoursewareSearchFeatureFlag.mockReturnValue(true);
     mockSearchParams();
 
     await act(async () => renderComponent());
     const button = await screen.findByTestId('courseware-search-open-button');
     fireEvent.click(button);
 
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
-    expect(setShowSearch).toHaveBeenCalledTimes(1);
-    expect(setShowSearch).toHaveBeenCalledWith(true);
+    expect(mockOpen).toHaveBeenCalledTimes(1);
   });
 });

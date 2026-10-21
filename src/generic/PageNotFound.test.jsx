@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
 
 import {
-  initializeTestStore,
+  initializeMockApp,
   render,
   screen,
 } from '../setupTest';
@@ -14,7 +14,7 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('PageNotFound', () => {
   beforeEach(async () => {
-    await initializeTestStore();
+    initializeMockApp();
     const invalidUrl = '/new/course';
     history.push(invalidUrl);
     render(

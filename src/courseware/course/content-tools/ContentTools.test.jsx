@@ -1,5 +1,5 @@
 import React from 'react';
-import { initializeTestStore, render, screen } from '../../../setupTest';
+import { mockCourseRequests, render, screen } from '../../../setupTest';
 import ContentTools from './ContentTools';
 
 jest.mock('./calculator/Calculator', () => function () {
@@ -18,7 +18,7 @@ describe('Content Tools', () => {
   };
 
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
   });
 
   it('hides content tools', () => {

@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { CheckCircle, WarningFilled } from '@openedx/paragon/icons';
 import { breakpoints, Icon, useWindowSize } from '@openedx/paragon';
-import { useContextId } from '../../../../data/hooks';
-import { useModel } from '../../../../generic/model-store';
+import { useProgressData } from '../../hooks';
 
 import GradeRangeTooltip from './GradeRangeTooltip';
 import messages from '../messages';
@@ -45,13 +44,12 @@ const NoticeRow = ({
 
 const CourseGradeFooter = ({ passingGrade }) => {
   const intl = useIntl();
-  const courseId = useContextId();
 
   const {
     assignmentTypeGradeSummary,
     courseGrade: { isPassing, letterGrade },
     gradingPolicy: { gradeRange },
-  } = useModel('progress', courseId);
+  } = useProgressData();
 
   const latestDueDate = getLatestDueDateInFuture(assignmentTypeGradeSummary);
   const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;

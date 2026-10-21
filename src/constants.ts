@@ -1,3 +1,5 @@
+export const appId = 'learning';
+
 export const DECODE_ROUTES = {
   ACCESS_DENIED: '/course/:courseId/access-denied',
   HOME: '/course/:courseId/home',
@@ -77,5 +79,3 @@ export const WIDGETS = {
 export const LOADING = 'loading';
 export const LOADED = 'loaded';
 export const FAILED = 'failed';
-export const DENIED = 'denied';
-export type StatusValue = typeof LOADING | typeof LOADED | typeof FAILED | typeof DENIED;

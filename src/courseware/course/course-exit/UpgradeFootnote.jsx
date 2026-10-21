@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -10,12 +10,12 @@ import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import Footnote from './Footnote';
 import { logClick } from './utils';
 import messages from './messages';
-import { useModel } from '../../../generic/model-store';
+import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 const UpgradeFootnote = ({ deadline, href }) => {
   const intl = useIntl();
-  const { courseId } = useSelector(state => state.courseware);
-  const { org } = useModel('courseHomeMeta', courseId);
+  const { courseId } = useParams();
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const { administrator } = getAuthenticatedUser();
 
   const upgradeLink = (

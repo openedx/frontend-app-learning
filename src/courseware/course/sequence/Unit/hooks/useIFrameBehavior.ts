@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
-import { getConfig } from '@edx/frontend-platform';
+import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { throttle } from 'lodash';
 
 import { logError } from '@edx/frontend-platform/logging';
 
-import { fetchCourse } from '@src/courseware/data';
-import { processEvent } from '@src/course-home/data/thunks';
+import { courseHomeMetaQuery, usePostEvent } from '@src/course-home/data/apiHooks';
 import { useEventListener } from '@src/generic/hooks';
-import { getSequenceId } from '@src/courseware/data/selectors';
-import { useModel } from '@src/generic/model-store';
+import { coursewareMetadataQuery, minimalCourseOutlineQuery, useSequenceMetadata } from '@src/courseware/data/apiHooks';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
-import { messageTypes } from '../constants';
+import { eventTypes, messageTypes } from '../constants';
 
 import useLoadBearingHook from './useLoadBearingHook';
 
@@ -33,11 +31,12 @@ const useIFrameBehavior = ({
   // Do not remove this hook.  See function description.
   useLoadBearingHook(id);
 
-  const dispatch = useDispatch();
-  const activeSequenceId = useSelector(getSequenceId);
+  const queryClient = useQueryClient();
+  const postEvent = usePostEvent();
+  const { sequenceId: activeSequenceId } = useParams();
   const navigate = useNavigate();
-  const activeSequence = useModel('sequences', activeSequenceId);
-  const activeUnitId = activeSequence.unitIds.length > 0
+  const activeSequence = useSequenceMetadata(activeSequenceId, { enabled: false }).data?.sequence;
+  const activeUnitId = activeSequence && activeSequence.unitIds.length > 0
     ? activeSequence.unitIds[activeSequence.activeUnitIndex] : null;
   const { isLastUnit, nextLink } = useSequenceNavigationMetadata(activeSequenceId, activeUnitId);
 
@@ -150,6 +149,29 @@ const useIFrameBehavior = ({
   * could have given us a 4xx or 5xx response.
   */
 
+  const handlePostMessageEvent = (e: MessageEvent) => {
+    if (!e.data?.event_name) {
+      return;
+    }
+    // Pull this out before camelCasing so it stays in the shape the backend expects.
+    const { research_event_data: researchEventData } = e.data;
+    const event = camelCaseObject(e.data);
+    if (event.eventName !== eventTypes.POST_EVENT) {
+      return;
+    }
+    postEvent.mutate(
+      { postData: event.postData, researchEventData },
+      {
+        onSuccess: () => {
+          const eventCourseId = event.postData.bodyParams.courseId;
+          queryClient.invalidateQueries({ queryKey: coursewareMetadataQuery(eventCourseId).queryKey });
+          queryClient.invalidateQueries({ queryKey: minimalCourseOutlineQuery(eventCourseId).queryKey });
+          queryClient.invalidateQueries({ queryKey: courseHomeMetaQuery(eventCourseId).queryKey });
+        },
+      },
+    );
+  };
+
   const handleIFrameLoad = () => {
     if (!hasLoaded) {
       setShowError(true);
@@ -161,11 +183,7 @@ const useIFrameBehavior = ({
         iframeUrl,
       });
     }
-    window.onmessage = (e) => {
-      if (e.data.event_name) {
-        dispatch(processEvent(e.data, fetchCourse));
-      }
-    };
+    window.onmessage = handlePostMessageEvent;
 
     // Update the visibility of the iframe in case the element is already visible.
     updateIframeVisibility();
