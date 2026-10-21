@@ -1,0 +1,6 @@
+# Provenance of the frontend-base port: one line per legacy path per target, two tab-separated
+# columns, sorted by the legacy path. A split is several lines with the same legacy path; a merge
+# is several lines with the same target. A file that is not ported has `dropped` as its target.
+#
+# src/courseware/course/Course.jsx	frontend-base/src/courseware/course/Course.jsx
+# src/generic/model-store/index.js	dropped
