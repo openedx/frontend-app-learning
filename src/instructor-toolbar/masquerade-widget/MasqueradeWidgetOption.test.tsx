@@ -54,7 +54,13 @@ describe('Masquerade Widget Dropdown', () => {
     };
     Object.defineProperty(global, 'location', {
       configurable: true,
-      value: { reload: jest.fn() },
+      value: {
+        pathname: '/learning/course/course-v1:edX+Test+Run/home',
+        search: '',
+        hash: '',
+        reload: jest.fn(),
+        assign: jest.fn(),
+      },
     });
   });
 

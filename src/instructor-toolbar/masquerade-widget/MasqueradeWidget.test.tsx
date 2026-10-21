@@ -204,4 +204,78 @@ describe('Masquerade Widget Dropdown', () => {
       expect(mockData.onError).toHaveBeenLastCalledWith('An error has occurred; please try again.');
     });
   });
+
+  describe('after a masquerade change', () => {
+    const courseId = 'course-v1:edX+Test+Run';
+    const originalLocation = global.location;
+    let reload: jest.Mock;
+    let assign: jest.Mock;
+
+    const setLocation = (pathname: string, search = '', hash = '') => {
+      Object.defineProperty(global, 'location', {
+        configurable: true,
+        value: {
+          pathname, search, hash, reload, assign,
+        },
+      });
+    };
+
+    const masqueradeAsUser = async (user: ReturnType<typeof userEvent.setup>) => {
+      const { container } = render(<MasqueradeWidget {...mockData} />);
+      await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
+      await user.click(container.querySelector('.dropdown-toggle')!);
+      const dropdownMenu = container.querySelector('.dropdown-menu') as HTMLElement;
+      await user.click(await within(dropdownMenu).findByRole('button', { name: 'Specific Student...' }));
+      await user.type(await screen.findByLabelText(/Username or email/), 'testuser');
+      await user.keyboard('{Enter}');
+      await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
+    };
+
+    beforeEach(() => {
+      reload = jest.fn();
+      assign = jest.fn();
+      axiosMock.onPost(masqueradeUrl).reply(200, {
+        ...mockResponse,
+        active: { ...mockResponse.active, role: null, user_name: 'testUser' },
+      });
+    });
+
+    afterEach(() => {
+      Object.defineProperty(global, 'location', { configurable: true, value: originalLocation });
+    });
+
+    it('drops the target user id from a learner progress url', async () => {
+      setLocation(`/learning/course/${courseId}/progress/123/`, '?foo=bar', '#top');
+      await masqueradeAsUser(userEvent.setup());
+      await waitFor(() => expect(assign).toHaveBeenCalledWith(`/learning/course/${courseId}/progress?foo=bar#top`));
+      expect(reload).not.toHaveBeenCalled();
+    });
+
+    it('reloads on a non-progress page', async () => {
+      setLocation(`/learning/course/${courseId}/home`);
+      await masqueradeAsUser(userEvent.setup());
+      await waitFor(() => expect(reload).toHaveBeenCalled());
+      expect(assign).not.toHaveBeenCalled();
+    });
+
+    it('reloads on the plain progress page', async () => {
+      setLocation(`/learning/course/${courseId}/progress`);
+      await masqueradeAsUser(userEvent.setup());
+      await waitFor(() => expect(reload).toHaveBeenCalled());
+      expect(assign).not.toHaveBeenCalled();
+    });
+
+    it('neither reloads nor navigates when masquerading fails', async () => {
+      axiosMock.reset();
+      axiosMock.onGet(masqueradeUrl).reply(200, mockResponse);
+      axiosMock.onPost(masqueradeUrl).reply(200, { success: false, error: 'That user does not exist' });
+      setLocation(`/learning/course/${courseId}/progress/123/`);
+      await masqueradeAsUser(userEvent.setup());
+      await waitFor(() => {
+        expect(mockData.onError).toHaveBeenLastCalledWith('That user does not exist');
+      });
+      expect(reload).not.toHaveBeenCalled();
+      expect(assign).not.toHaveBeenCalled();
+    });
+  });
 });
