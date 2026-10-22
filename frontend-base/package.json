@@ -69,6 +69,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "jest": "^29",
+    "jest-fail-on-console": "^3.3.4",
     "nodemon": "^3.1.14",
     "tsc-alias": "^1.8.16",
     "turbo": "^2.9.2"
