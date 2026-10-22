@@ -1,6 +1,7 @@
 const { createConfig } = require('@openedx/frontend-base/tools');
 
 module.exports = createConfig('test', {
+  testEnvironment: '<rootDir>/jsdom-environment-with-node-fetch.mjs',
   setupFilesAfterEnv: [
     '<rootDir>/src/setupTest.js',
   ],
@@ -13,6 +14,7 @@ module.exports = createConfig('test', {
     'src/setupTest.js',
     'src/i18n',
     'src/__mocks__',
+    'src/tests',
   ],
   moduleNameMapper: {
     '^@src/(.*)$': '<rootDir>/src/$1',
