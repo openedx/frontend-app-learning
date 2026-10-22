@@ -1,6 +1,7 @@
 const { createConfig } = require('@openedx/frontend-base/tools');
 
 module.exports = createConfig('test', {
+  testEnvironment: '<rootDir>/jsdom-environment-with-node-fetch.mjs',
   setupFilesAfterEnv: [
     '<rootDir>/src/setupTest.js',
   ],
