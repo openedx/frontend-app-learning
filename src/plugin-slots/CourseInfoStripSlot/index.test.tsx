@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import { CourseInfoStripSlot } from './index';
 
-jest.mock('@src/course-pathways/CoursePathwaysStrip', () => ({
+jest.mock('@src/pathways/pathways-strip/CoursePathwaysStrip', () => ({
   CoursePathwaysStrip: ({ courseId }: { courseId?: string }) => (
     <div data-testid="CoursePathwaysStrip">{courseId}</div>
   ),

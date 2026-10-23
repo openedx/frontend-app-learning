@@ -1,6 +1,6 @@
 import { PluginSlot } from '@openedx/frontend-plugin-framework';
 
-import { CoursePathwaysStrip } from '@src/course-pathways/CoursePathwaysStrip';
+import { CoursePathwaysStrip } from '@src/pathways/pathways-strip/CoursePathwaysStrip';
 
 interface CourseInfoStripSlotProps {
   courseId?: string;

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 
-import type { PathwayData } from './data/types';
+import type { PathwayData } from '../data/types';
 
 // Width kept free at the end of the strip for the "+N" popover trigger
 const COUNTER_RESERVED_WIDTH = 74;

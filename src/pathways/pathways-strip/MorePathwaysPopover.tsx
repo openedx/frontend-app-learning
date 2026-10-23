@@ -5,7 +5,7 @@ import {
 } from '@openedx/paragon';
 import { ArrowDropDown } from '@openedx/paragon/icons';
 
-import type { PathwayData } from './data/types';
+import type { PathwayData } from '../data/types';
 import messages from './messages';
 
 export const MorePathwaysPopover = ({ pathways }: { pathways: PathwayData[] }) => {

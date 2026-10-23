@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import type { PathwayData } from './data/types';
-import { dataEngineering, machineLearning } from './data/__fixtures__/pathways';
+import type { PathwayData } from '../data/types';
+import { dataEngineering, machineLearning } from '../data/__fixtures__/pathways';
 import { MorePathwaysPopover } from './MorePathwaysPopover';
 
 const renderComponent = (pathways: PathwayData[] = [dataEngineering, machineLearning]) => render(

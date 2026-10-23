@@ -1,7 +1,7 @@
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 
-import { useCoursePathways } from './data/apiHooks';
-import type { PathwayData } from './data/types';
+import { useCoursePathways } from '../data/apiHooks';
+import type { PathwayData } from '../data/types';
 import { MorePathwaysPopover } from './MorePathwaysPopover';
 import { useVisiblePathways } from './hooks';
 import messages from './messages';

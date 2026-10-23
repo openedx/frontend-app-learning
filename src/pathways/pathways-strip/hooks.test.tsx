@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 
-import type { PathwayData } from './data/types';
+import type { PathwayData } from '../data/types';
 import { useVisiblePathways } from './hooks';
 
 const buildPathway = (id: string): PathwayData => ({

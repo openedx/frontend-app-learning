@@ -1,16 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { useCoursePathways } from './data/apiHooks';
-import type { PathwayData } from './data/types';
+import { useCoursePathways } from '../data/apiHooks';
+import type { PathwayData } from '../data/types';
 import {
   courseIdWithPathways, dataEngineering, loremIpsum, machineLearning,
-} from './data/__fixtures__/pathways';
+} from '../data/__fixtures__/pathways';
 import { useVisiblePathways } from './hooks';
 import { MorePathwaysPopover } from './MorePathwaysPopover';
 import { CoursePathwaysStrip } from './CoursePathwaysStrip';
 
-jest.mock('./data/apiHooks', () => ({
+jest.mock('../data/apiHooks', () => ({
   useCoursePathways: jest.fn(),
 }));
 
