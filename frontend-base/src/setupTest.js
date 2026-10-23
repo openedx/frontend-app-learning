@@ -1,9 +1,17 @@
-import siteConfig from 'site.config';
-import { mergeSiteConfig } from '@openedx/frontend-base';
+import { addAppConfigs, initializeMockApp, mergeSiteConfig } from '@openedx/frontend-base';
 import '@testing-library/jest-dom';
 import failOnConsole from 'jest-fail-on-console';
 
-mergeSiteConfig(siteConfig);
+import './course-home/data/__factories__';
+import learningApp from './app';
+import { authenticatedUser } from './tests/authenticatedUser';
+import { restoreLocation } from './tests/location';
+
+initializeMockApp({ authenticatedUser });
+mergeSiteConfig({ apps: [learningApp] });
+addAppConfigs();
+
+afterEach(restoreLocation);
 
 failOnConsole({
   silenceMessage: (message) => {

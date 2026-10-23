@@ -4,3 +4,26 @@
 #
 # src/courseware/course/Course.jsx	frontend-base/src/courseware/course/Course.jsx
 # src/generic/model-store/index.js	dropped
+src/course-home/data/apiHooks.test.tsx	frontend-base/src/course-home/data/apiHooks.test.tsx
+src/course-home/data/apiHooks.ts	frontend-base/src/course-home/data/apiHooks.ts
+src/course-home/data/api.test.js	frontend-base/src/course-home/data/api.test.js
+src/course-home/data/api.ts	frontend-base/src/course-home/data/api.ts
+src/course-home/data/courseHomeOutline.test.ts	frontend-base/src/course-home/data/courseHomeOutline.test.ts
+src/course-home/data/courseHomeOutline.ts	frontend-base/src/course-home/data/courseHomeOutline.ts
+src/course-home/data/__factories__/courseHomeMetadata.factory.js	frontend-base/src/course-home/data/__factories__/courseHomeMetadata.factory.js
+src/course-home/data/__factories__/datesTabData.factory.js	frontend-base/src/course-home/data/__factories__/datesTabData.factory.js
+src/course-home/data/__factories__/index.js	frontend-base/src/course-home/data/__factories__/index.js
+src/course-home/data/__factories__/progressTabData.factory.js	frontend-base/src/course-home/data/__factories__/progressTabData.factory.js
+src/course-home/data/__factories__/upgradeNotificationData.factory.js	dropped
+src/course-home/data/pact-tests/lmsPact.test.jsx	dropped
+src/course-tabs/utils.test.ts	frontend-base/src/course-tabs/utils.test.ts
+src/course-tabs/utils.ts	frontend-base/src/course-tabs/utils.ts
+src/data/http-error.ts	frontend-base/src/data/http-error.ts
+src/generic/ToastContext.test.tsx	frontend-base/src/generic/ToastContext.test.tsx
+src/generic/ToastContext.tsx	frontend-base/src/generic/ToastContext.tsx
+src/pacts/constants.js	dropped
+src/pacts/frontend-app-learning-lms.json	dropped
+src/shared/data/__factories__/courseMetadataBase.factory.js	frontend-base/src/shared/data/__factories__/courseMetadataBase.factory.js
+src/shared/data/__factories__/index.js	frontend-base/src/shared/data/__factories__/index.js
+src/shared/data/__factories__/tab.factory.js	frontend-base/src/shared/data/__factories__/tab.factory.js
+src/utils.ts	frontend-base/src/utils.ts
