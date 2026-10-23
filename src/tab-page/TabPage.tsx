@@ -1,7 +1,6 @@
 import React, { type ReactNode } from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Navigate } from 'react-router-dom';
-import type { UseQueryResult } from '@tanstack/react-query';
 
 import { Toast } from '@openedx/paragon';
 import { FooterSlot } from '@edx/frontend-component-footer';
@@ -9,24 +8,17 @@ import HeaderSlot from '../plugin-slots/HeaderSlot';
 import { CourseInfoStripSlot } from '../plugin-slots/CourseInfoStripSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
-import { getErrorDetail, type RequestError } from '../data/http-error';
 import type { CourseHomeMeta } from '../course-home/data/apiHooks';
 import { useToast } from '../generic/ToastContext';
 
 import genericMessages from '../generic/messages';
 import messages from './messages';
 import LoadedTabPage from './LoadedTabPage';
+import { deriveView, type TabStatus } from './utils';
 import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
 import { TourProvider } from '../product-tours/TourContext';
 
-// A tab hands TabPage its metadata + tab-data queries and lets TabPage derive the view; a tab
-// whose data comes from more than one query passes them as `tabDataQueries`.
-export type CourseStatus = {
-  metadataQuery: UseQueryResult<CourseHomeMeta, RequestError>;
-} & (
-  | { tabDataQuery?: UseQueryResult; tabDataQueries?: never }
-  | { tabDataQuery?: never; tabDataQueries: UseQueryResult[] }
-);
+export type CourseStatus = TabStatus<CourseHomeMeta>;
 
 export interface TabPageProps {
   activeTabSlug: string;
@@ -35,40 +27,6 @@ export interface TabPageProps {
   unitId?: string;
   children?: ReactNode;
 }
-
-interface TabView {
-  isLoading: boolean;
-  isError: boolean;
-  isDenied: boolean;
-  errorDetails?: string[];
-}
-
-const getErrorDetails = (queries: { error: unknown }[]): string[] => {
-  const details = queries.flatMap((query) => getErrorDetail(query.error) || []);
-  return [...new Set(details)];
-};
-
-const deriveView = (courseStatus: CourseStatus): TabView => {
-  const view = { isLoading: false, isError: false, isDenied: false };
-
-  // Access is read from the metadata query, resolved before tabData is considered.
-  const {
-    metadataQuery,
-    tabDataQuery,
-    tabDataQueries = tabDataQuery ? [tabDataQuery] : [],
-  } = courseStatus;
-  if (metadataQuery.isError) {
-    return { ...view, isError: true, errorDetails: getErrorDetails([metadataQuery]) };
-  }
-  if (metadataQuery.isPending) { return { ...view, isLoading: true }; }
-  if (tabDataQueries.some((query) => query.isPending)) { return { ...view, isLoading: true }; }
-  if (!metadataQuery.data?.courseAccess?.hasAccess) { return { ...view, isDenied: true }; }
-  const failedQueries = tabDataQueries.filter((query) => query.isError);
-  if (failedQueries.length > 0) {
-    return { ...view, isError: true, errorDetails: getErrorDetails(failedQueries) };
-  }
-  return view;
-};
 
 const TabPage = ({
   activeTabSlug,
@@ -89,7 +47,7 @@ const TabPage = ({
 
   const {
     isLoading, isError, isDenied, errorDetails,
-  } = deriveView(courseStatus);
+  } = deriveView(courseStatus, (metadata) => !!metadata.courseAccess?.hasAccess);
 
   if (isDenied) {
     const redirectUrl = getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start);
