@@ -6,6 +6,7 @@
 * [`org.openedx.frontend.learning.content_iframe_loader.v1`](./ContentIFrameLoaderSlot/)
 * [`org.openedx.frontend.learning.course_breadcrumbs.v1`](./CourseBreadcrumbsSlot/)
 * [`org.openedx.frontend.learning.course_home_section_outline.v1`](./CourseHomeSectionOutlineSlot/)
+* [`org.openedx.frontend.learning.course_info_strip.v1`](./CourseInfoStripSlot/)
 * [`org.openedx.frontend.learning.course_outline_mobile_sidebar_trigger.v1`](./CourseOutlineMobileSidebarTriggerSlot/)
 * [`org.openedx.frontend.learning.course_outline_sidebar_trigger.v1`](./CourseOutlineSidebarTriggerSlot)
 * [`org.openedx.frontend.learning.course_outline_sidebar.v1`](./CourseOutlineSidebarSlot/)
