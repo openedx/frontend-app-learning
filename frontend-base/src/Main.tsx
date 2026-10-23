@@ -1,6 +1,10 @@
 import { CurrentAppProvider, getSiteConfig, useIntl } from '@openedx/frontend-base';
 import { Helmet } from 'react-helmet';
 import { Outlet } from 'react-router-dom';
+
+import NoticesProvider from './generic/notices';
+import { ToastProvider } from './generic/ToastContext';
+import { UserMessagesProvider } from './generic/user-messages';
 import { appId } from './constants';
 import messages from './messages';
 
@@ -17,9 +21,15 @@ const Main = () => {
           })}
         </title>
       </Helmet>
-      <div className="d-flex flex-column flex-grow-1">
-        <Outlet />
-      </div>
+      <NoticesProvider>
+        <UserMessagesProvider>
+          <ToastProvider>
+            <div className="d-flex flex-column flex-grow-1">
+              <Outlet />
+            </div>
+          </ToastProvider>
+        </UserMessagesProvider>
+      </NoticesProvider>
     </CurrentAppProvider>
   );
 };
