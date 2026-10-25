@@ -37,7 +37,7 @@ import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
 import { PathwayOutline } from './pathways/PathwayOutline';
-import { PathwayProgress } from './pathways/PathwayProgress';
+import { PathwayProgress } from './pathways/pathway-progress/PathwayProgress';
 import { PathwayAchievements } from './pathways/PathwayAchievements';
 
 const queryClient = createQueryClient(store);

@@ -19,4 +19,19 @@ export interface PathwayData {
   };
 }
 
+export interface GradeData {
+  displayName: string;
+  progress: number;
+  passGrade: number;
+  currentGrade: number;
+  detailsUrl: string;
+}
+
+export interface PathwayProgressData {
+  id: string;
+  itemCount: number;
+  completedItemCount: number;
+  grades: GradeData[];
+}
+
 export type PathwaysByCourse = Record<string, PathwayData[]>;
