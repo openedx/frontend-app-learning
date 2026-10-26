@@ -355,6 +355,55 @@ describe('CoursewareContainer', () => {
       });
     });
 
+    describe('when the URL contains a sequence or unit of another course', () => {
+      const otherCourseId = 'course-v1:OtherOrg+Other101+2025';
+      const otherUnitBlocks = [Factory.build('block', { type: 'vertical' }, { courseId: otherCourseId })];
+      const { sequenceBlocks: [otherSequenceBlock] } = buildSimpleCourseBlocks(
+        otherCourseId,
+        'Other course',
+        { unitBlocks: otherUnitBlocks },
+      );
+      const otherSequenceMetadataUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${otherSequenceBlock.id}`;
+      const otherBlocksPath = `${otherSequenceBlock.id}/${otherUnitBlocks[0].id}`;
+
+      beforeEach(() => {
+        axiosMock.onGet(otherSequenceMetadataUrl).reply(200, Factory.build(
+          'sequenceMetadata',
+          {},
+          { courseId: otherCourseId, sequenceBlock: otherSequenceBlock, unitBlocks: otherUnitBlocks },
+        ));
+        axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/resume/${courseId}`).reply(200, {
+          sectionId: defaultSequenceBlock.id,
+          unitId: defaultUnitBlocks[1].id,
+        });
+      });
+
+      async function assertShowsCourseUnit(container, unitId) {
+        await waitFor(() => expect(global.location.href).toEqual(
+          `http://localhost/course/${courseId}/${defaultSequenceBlock.id}/${unitId}`,
+        ));
+        await waitFor(() => expect(container.querySelector('.fake-unit')).toHaveTextContent(`${courseId} ${unitId}`));
+        expect(axiosMock.history.get.map(({ url }) => url)).not.toContain(otherSequenceMetadataUrl);
+      }
+
+      it.each([
+        ['a sequence and unit', `/course/${courseId}/${otherBlocksPath}`],
+        ['a sequence', `/course/${courseId}/${otherSequenceBlock.id}`],
+        ['a preview sequence and unit', `/preview/course/${courseId}/${otherBlocksPath}`],
+      ])('should resume within the course from %s of another course', async (_, url) => {
+        history.push(url);
+        const container = await loadContainer();
+        assertLoadedHeader(container);
+        await assertShowsCourseUnit(container, defaultUnitBlocks[1].id);
+      });
+
+      it('should drop a unit of another course and pick a unit of the sequence', async () => {
+        history.push(`/course/${courseId}/${defaultSequenceBlock.id}/${otherUnitBlocks[0].id}`);
+        const container = await loadContainer();
+        await assertShowsCourseUnit(container, defaultUnitBlocks[0].id);
+      });
+    });
+
     describe('when the URL has the /preview prefix', () => {
       const unitPath = `/course/${courseId}/${defaultSequenceBlock.id}/${defaultUnitBlocks[0].id}`;
 
