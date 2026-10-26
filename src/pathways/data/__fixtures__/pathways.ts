@@ -1,4 +1,6 @@
-import type { PathwayData, PathwayProgressData, PathwaysByCourse } from '../types';
+import type {
+  PathwayAchievementData, PathwayData, PathwayProgressData, PathwaysByCourse,
+} from '../types';
 
 export const dataEngineering: PathwayData = {
   pathway: {
@@ -102,5 +104,55 @@ export const dataEngineeringProgress: PathwayProgressData = {
       currentGrade: 0,
       detailsUrl: '/course/course-v1:edX+DE104+2026/progress',
     },
+    {
+      displayName: 'Machine Learning Operations for Production Systems on Kubernetes',
+      progress: 20,
+      passGrade: 70,
+      currentGrade: 15,
+      detailsUrl: '/course/course-v1:edX+DE105+2026/progress',
+    },
   ],
 };
+
+export const dataEngineeringAchievements: PathwayAchievementData[] = [
+  {
+    credentialId: 'a1b2c3d4e5f60718293a4b5c6d7e8f90',
+    displayName: 'Data Engineering Fundamentals',
+    providerName: 'MIT OpenCourseWare',
+    completedOn: '2026-08-11',
+    certificateUrl: '/certificates/a1b2c3d4e5f60718293a4b5c6d7e8f90',
+    isOverarching: true,
+  },
+  {
+    credentialId: 'b2c3d4e5f60718293a4b5c6d7e8f90a1',
+    displayName: 'Introduction to Data Engineering with Python, SQL and Cloud Tools',
+    providerName: 'MIT OpenCourseWare',
+    completedOn: '2026-07-02',
+    certificateUrl: '/certificates/b2c3d4e5f60718293a4b5c6d7e8f90a1',
+    isOverarching: false,
+  },
+  {
+    credentialId: 'c3d4e5f60718293a4b5c6d7e8f90a1b2',
+    displayName: 'Data Pipelines',
+    providerName: 'MIT OpenCourseWare',
+    completedOn: '2026-07-20',
+    certificateUrl: '/certificates/c3d4e5f60718293a4b5c6d7e8f90a1b2',
+    isOverarching: false,
+  },
+  {
+    credentialId: 'd4e5f60718293a4b5c6d7e8f90a1b2c3',
+    displayName: 'Data Warehousing',
+    providerName: 'MIT OpenCourseWare',
+    completedOn: '2026-07-28',
+    certificateUrl: '/certificates/d4e5f60718293a4b5c6d7e8f90a1b2c3',
+    isOverarching: false,
+  },
+  {
+    credentialId: 'e5f60718293a4b5c6d7e8f90a1b2c3d4',
+    displayName: 'Stream Processing',
+    providerName: 'MIT OpenCourseWare',
+    completedOn: '2026-08-05',
+    certificateUrl: '/certificates/e5f60718293a4b5c6d7e8f90a1b2c3d4',
+    isOverarching: false,
+  },
+];

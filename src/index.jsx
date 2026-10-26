@@ -38,7 +38,7 @@ import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
 import { PathwayOutline } from './pathways/PathwayOutline';
 import { PathwayProgress } from './pathways/pathway-progress/PathwayProgress';
-import { PathwayAchievements } from './pathways/PathwayAchievements';
+import { PathwayAchievements } from './pathways/pathways-achievements/PathwayAchievements';
 
 const queryClient = createQueryClient(store);
 
