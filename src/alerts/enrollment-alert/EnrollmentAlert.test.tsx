@@ -15,7 +15,7 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('EnrollmentAlert', () => {
   const courseId = 'course-v1:edX+DemoX+Demo_Course';
-  const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
+  const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment/`;
   let axiosMock: MockAdapter;
 
   function renderAlert(payload = {}) {
