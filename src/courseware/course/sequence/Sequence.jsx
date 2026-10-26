@@ -9,6 +9,7 @@ import {
 } from '@edx/frontend-platform/analytics';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
+import SpecialExamsProvider from '@src/generic/special-exams/SpecialExamsProvider';
 
 import PageLoading from '@src/generic/PageLoading';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
@@ -21,6 +22,7 @@ import { CourseOutlineSidebarSlot } from '@src/plugin-slots/CourseOutlineSidebar
 import { CourseOutlineSidebarTriggerSlot } from '@src/plugin-slots/CourseOutlineSidebarTriggerSlot';
 import { RightSidebarSlot } from '@src/plugin-slots/RightSidebarSlot';
 import SequenceNavigationSlot from '@src/plugin-slots/SequenceNavigationSlot';
+import { SubmittedTimedExamInstructionsSlot } from '@src/plugin-slots/SubmittedTimedExamInstructionsSlot';
 
 import CourseLicense from '../course-license';
 import messages from './messages';
@@ -201,7 +203,7 @@ const Sequence = ({
           unitId={unitId}
         />
         <CourseOutlineSidebarSlot />
-        <div className="sequence w-100">
+        <main id="main-content" className="sequence w-100">
           <div className="sequence-navigation-container">
             {/**
              SequenceNavigationSlot renders nothing by default.
@@ -239,7 +241,7 @@ const Sequence = ({
             />
             )}
           </div>
-        </div>
+        </main>
         <RightSidebarSlot courseId={courseId} />
       </div>
       <SequenceContainerSlot courseId={courseId} unitId={unitId} />
@@ -250,15 +252,18 @@ const Sequence = ({
     return (
       <>
         <div className="d-flex flex-column flex-grow-1 justify-content-center">
-          <SequenceExamWrapper
-            sequence={sequence}
-            courseId={courseId}
-            isStaff={isStaff}
-            originalUserIsStaff={originalUserIsStaff}
-            canAccessProctoredExams={canAccessProctoredExams}
-          >
-            {defaultContent}
-          </SequenceExamWrapper>
+          <SpecialExamsProvider>
+            <SequenceExamWrapper
+              sequence={sequence}
+              courseId={courseId}
+              isStaff={isStaff}
+              originalUserIsStaff={originalUserIsStaff}
+              canAccessProctoredExams={canAccessProctoredExams}
+              submittedTimedExamInstructions={SubmittedTimedExamInstructionsSlot}
+            >
+              {defaultContent}
+            </SequenceExamWrapper>
+          </SpecialExamsProvider>
         </div>
         <CourseLicense license={license || undefined} />
       </>

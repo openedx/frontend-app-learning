@@ -4,11 +4,10 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { Factory } from 'rosie';
 import {
-  render, screen, fireEvent, initializeTestStore, waitFor, authenticatedUser, logUnhandledRequests,
-  createTestQueryClient, getTestStoreIds,
+  render, screen, fireEvent, mockCourseRequests, waitFor, authenticatedUser, logUnhandledRequests,
+  createTestQueryClient,
 } from '../../../setupTest';
 import { sequenceMetadataQuery } from '../../data/apiHooks';
-import { coursewareQueryKeys } from '../../data/queryKeys';
 import { BookmarkButton } from './index';
 import { getBookmarksBaseUrl } from './data/api';
 
@@ -33,7 +32,7 @@ describe('Bookmark Button', () => {
   const unitBlocks = [nonBookmarkedUnitBlock, bookmarkedUnitBlock];
 
   const cachedUnit = (unitId) => (
-    queryClient.getQueryData(coursewareQueryKeys.sequence(sequenceId, false)).units.find((unit) => unit.id === unitId)
+    queryClient.getQueryData(sequenceMetadataQuery(sequenceId, false).queryKey).units.find((unit) => unit.id === unitId)
   );
 
   const renderButton = (props = {}) => render(
@@ -44,8 +43,7 @@ describe('Bookmark Button', () => {
   );
 
   beforeEach(async () => {
-    const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    ({ sequenceId } = getTestStoreIds(store));
+    ({ sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks }));
     mockData.unitId = nonBookmarkedUnitBlock.id;
     queryClient = createTestQueryClient();
     await queryClient.fetchQuery(sequenceMetadataQuery(sequenceId, false));

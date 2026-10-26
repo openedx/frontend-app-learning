@@ -3,9 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { DECODE_ROUTES } from '@src/constants';
 import { getPathway, getPathwayAchievements } from '@src/pathways/data/api';
 import { dataEngineering, dataEngineeringAchievements } from '@src/pathways/data/__fixtures__/pathways';
-import {
-  initializeMockApp, initializeTestStore, render, screen,
-} from '@src/setupTest';
+import { initializeMockApp, render, screen } from '@src/setupTest';
 
 import { PathwayAchievements } from './PathwayAchievements';
 
@@ -31,9 +29,8 @@ const renderComponent = () => render(
 );
 
 describe('PathwayAchievements', () => {
-  beforeAll(async () => {
+  beforeAll(() => {
     initializeMockApp();
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
   });
 
   beforeEach(() => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import {
-  fireEvent, getTestStoreIds, initializeTestStore, render, screen,
+  fireEvent, mockCourseRequests, render, screen,
 } from '../../../../setupTest';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 import UnitButton from './UnitButton';
@@ -28,8 +28,7 @@ describe('Unit Button', () => {
   const [unit, completedUnit, bookmarkedUnit] = unitBlocks;
 
   beforeAll(async () => {
-    const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    ({ courseId, sequenceId } = getTestStoreIds(store));
+    ({ courseId, sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks }));
     mockData = {
       unitId: unit.id,
       onClick: () => {},

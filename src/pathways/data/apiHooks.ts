@@ -1,5 +1,4 @@
 import { appId } from '@src/constants';
-import type { RequestError } from '@src/data/http-error';
 import { skipToken, useQuery } from '@tanstack/react-query';
 
 import {
@@ -27,7 +26,7 @@ export const useCoursePathways = (courseId?: string) => useQuery({
 });
 
 // The given pathway, with the learner's progress in it.
-export const usePathway = (pathwayId?: string) => useQuery<PathwayData, RequestError>({
+export const usePathway = (pathwayId?: string) => useQuery({
   queryKey: pathwayQueryKeys.pathway(pathwayId!),
   queryFn: pathwayId ? () => getPathway(pathwayId) : skipToken,
 });

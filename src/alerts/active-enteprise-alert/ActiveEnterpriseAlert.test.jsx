@@ -1,7 +1,7 @@
 import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import {
-  initializeTestStore, render, screen,
+  mockCourseRequests, render, screen,
 } from '../../setupTest';
 import ActiveEnterpriseAlert from './ActiveEnterpriseAlert';
 
@@ -13,7 +13,7 @@ describe('ActiveEnterpriseAlert', () => {
     },
   };
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
   });
 
   it('Shows alert message and links', () => {

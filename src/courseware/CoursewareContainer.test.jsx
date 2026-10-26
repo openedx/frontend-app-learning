@@ -13,6 +13,7 @@ import {
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { UserMessagesProvider } from '../generic/user-messages';
 import { ToastProvider } from '../generic/ToastContext';
 import tabMessages from '../tab-page/messages';
@@ -21,10 +22,8 @@ import { DECODE_ROUTES } from '../constants';
 
 import CoursewareContainer from './CoursewareContainer';
 import { getSequenceForUnitDeprecatedUrl } from './data/api';
-import { coursewareQueryKeys } from './data/queryKeys';
-import { courseHomeQueryKeys } from '../course-home/data/queryKeys';
+import { coursewareMetadataQuery } from './data/apiHooks';
 import { buildSimpleCourseBlocks, buildBinaryCourseBlocks } from '../shared/data/__factories__/courseBlocks.factory';
-import initializeStore from '../store';
 import { appendBrowserTimezoneToUrl } from '../utils';
 import { buildOutlineFromBlocks } from './data/__factories__/learningSequencesOutline.factory';
 
@@ -53,7 +52,6 @@ jest.mock('@edx/frontend-platform/analytics');
 initializeMockApp();
 
 describe('CoursewareContainer', () => {
-  let store;
   let component;
   let axiosMock;
   let queryClient;
@@ -94,11 +92,10 @@ describe('CoursewareContainer', () => {
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
 
-    store = initializeStore();
-    queryClient = createTestQueryClient(store);
+    queryClient = createTestQueryClient();
 
     component = (
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <QueryClientProvider client={queryClient}>
           <UserMessagesProvider>
             <ToastProvider>
@@ -825,8 +822,8 @@ describe('CoursewareContainer', () => {
     // Both metadata queries have succeeded, and the page has had a render with the outline still held.
     const waitForMetadataWithOutlinePending = async () => {
       await waitFor(() => {
-        expect(queryClient.getQueryState(coursewareQueryKeys.metadata(defaultCourseId))?.status).toBe('success');
-        expect(queryClient.getQueryState(courseHomeQueryKeys.metadata(defaultCourseId))?.status).toBe('success');
+        expect(queryClient.getQueryState(coursewareMetadataQuery(defaultCourseId).queryKey)?.status).toBe('success');
+        expect(queryClient.getQueryState(courseHomeMetaQuery(defaultCourseId).queryKey)?.status).toBe('success');
       });
       await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
     };

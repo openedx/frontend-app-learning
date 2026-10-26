@@ -4,7 +4,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { getConfig } from '@edx/frontend-platform';
 import Calculator from './Calculator';
 import {
-  initializeTestStore, render, screen, fireEvent, waitFor, logUnhandledRequests,
+  mockCourseRequests, render, screen, fireEvent, waitFor, logUnhandledRequests,
 } from '../../../../setupTest';
 
 describe('Calculator', () => {
@@ -12,7 +12,7 @@ describe('Calculator', () => {
   let equationUrl;
 
   beforeAll(async () => {
-    await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true });
+    mockCourseRequests();
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     equationUrl = new RegExp(`${getConfig().LMS_BASE_URL}/calculate*`);

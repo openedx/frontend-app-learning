@@ -1,11 +1,11 @@
 import type { UseQueryResult } from '@tanstack/react-query';
 
-import { getErrorDetail, type RequestError } from '../data/http-error';
+import { getErrorDetail } from '@src/data/http-error';
 
 // A tab hands TabPage its metadata + tab-data queries and lets TabPage derive the view; a tab
 // whose data comes from more than one query passes them as `tabDataQueries`.
 export type TabStatus<TMetadata> = {
-  metadataQuery: UseQueryResult<TMetadata, RequestError>;
+  metadataQuery: UseQueryResult<TMetadata>;
 } & (
   | { tabDataQuery?: UseQueryResult; tabDataQueries?: never }
   | { tabDataQuery?: never; tabDataQueries: UseQueryResult[] }

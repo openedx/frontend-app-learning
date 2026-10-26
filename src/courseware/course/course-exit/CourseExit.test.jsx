@@ -8,17 +8,13 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 
-import { getCourseMetadata } from '../../data/api';
-import { coursewareQueryKeys } from '../../data/queryKeys';
-import { courseHomeQueryKeys } from '../../../course-home/data/queryKeys';
-import { getCourseHomeCourseMetadata } from '../../../course-home/data/api';
-import { addModel } from '../../../generic/model-store';
+import { coursewareMetadataQuery } from '@src/courseware/data/apiHooks';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from '../../data/__factories__/learningSequencesOutline.factory';
 import {
   createTestQueryClient, initializeMockApp, logUnhandledRequests, render, screen,
 } from '../../../setupTest';
-import initializeStore from '../../../store';
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import { appendBrowserTimezoneToUrl } from '../../../utils';
 import CourseCelebration from './CourseCelebration';
@@ -32,7 +28,6 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Course Exit Pages', () => {
   let axiosMock;
-  let store;
   const coursewareMetadata = Factory.build('courseMetadata', {
     user_has_passing_grade: true,
     end: '2014-02-05T05:00:00Z',
@@ -45,7 +40,17 @@ describe('Course Exit Pages', () => {
   coursewareMetadataUrl = appendBrowserTimezoneToUrl(coursewareMetadataUrl);
   const courseHomeMetadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`);
   const discoveryRecommendationsUrl = new RegExp(`${getConfig().DISCOVERY_API_BASE_URL}/api/v1/course_recommendations/*`);
-  const enrollmentsUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment*`);
+  const enrollmentsUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment*`);
+  // One page of the paginated v2 enrollment list.
+  const enrollmentsPage = (results, next = null) => ({
+    count: results.length,
+    num_pages: next ? 2 : 1,
+    current_page: 1,
+    start: 0,
+    next,
+    previous: null,
+    results,
+  });
   const learningSequencesUrlRegExp = new RegExp(`${getConfig().LMS_BASE_URL}/api/learning_sequences/v1/course_outline/*`);
   const now = new Date();
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -59,15 +64,9 @@ describe('Course Exit Pages', () => {
   }
 
   async function fetchAndRender(component) {
-    const [metadata, homeMetadata] = await Promise.all([
-      getCourseMetadata(courseId),
-      getCourseHomeCourseMetadata(courseId, 'courseware'),
-    ]);
-    store.dispatch(addModel({ modelType: 'coursewareMeta', model: metadata }));
-    store.dispatch(addModel({ modelType: 'courseHomeMeta', model: { id: courseId, ...homeMetadata } }));
     history.push(`/course/${courseId}`);
     axiosMock.resetHistory();
-    const queryClient = createTestQueryClient(store);
+    const queryClient = createTestQueryClient();
     const element = component.type === CourseExit ? component : (
       <>
         <MountCourseQueryHooks courseId={courseId} />
@@ -82,7 +81,7 @@ describe('Course Exit Pages', () => {
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>,
-      { store, wrapWithRouter: false },
+      { wrapWithRouter: false },
     );
     if (screen.queryByRole('status')) {
       await waitForElementToBeRemoved(() => screen.queryByRole('status'));
@@ -92,7 +91,6 @@ describe('Course Exit Pages', () => {
   }
 
   beforeEach(() => {
-    store = initializeStore();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     axiosMock.onGet(coursewareMetadataUrl).reply(200, coursewareMetadata);
     axiosMock.onGet(courseHomeMetadataUrl).reply(200, courseHomeMetadata);
@@ -100,7 +98,7 @@ describe('Course Exit Pages', () => {
       200,
       Factory.build('courseRecommendations', {}, { numRecs: 2 }),
     );
-    axiosMock.onGet(enrollmentsUrl).reply(200, []);
+    axiosMock.onGet(enrollmentsUrl).reply(200, enrollmentsPage([]));
     axiosMock.onGet(learningSequencesUrlRegExp).reply(200, buildOutlineFromBlocks(defaultCourseBlocks));
 
     logUnhandledRequests(axiosMock);
@@ -116,7 +114,7 @@ describe('Course Exit Pages', () => {
     };
 
     const renderCourseEnd = () => {
-      const queryClient = createTestQueryClient(store);
+      const queryClient = createTestQueryClient();
       history.push(courseEndPath);
       render(
         <QueryClientProvider client={queryClient}>
@@ -127,15 +125,15 @@ describe('Course Exit Pages', () => {
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>,
-        { store, wrapWithRouter: false },
+        { wrapWithRouter: false },
       );
       return queryClient;
     };
 
     const waitForMetadataWithOutlinePending = async (queryClient) => {
       await waitFor(() => {
-        expect(queryClient.getQueryState(coursewareQueryKeys.metadata(courseId))?.status).toBe('success');
-        expect(queryClient.getQueryState(courseHomeQueryKeys.metadata(courseId))?.status).toBe('success');
+        expect(queryClient.getQueryState(coursewareMetadataQuery(courseId).queryKey)?.status).toBe('success');
+        expect(queryClient.getQueryState(courseHomeMetaQuery(courseId).queryKey)?.status).toBe('success');
       });
       await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
     };
@@ -197,7 +195,7 @@ describe('Course Exit Pages', () => {
       axiosMock.onGet(learningSequencesUrlRegExp).reply(500);
       history.push(`/course/${courseId}/course-end`);
       render(
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={createTestQueryClient()}>
           <BrowserRouter>
             <Routes>
               <Route path="/course/:courseId/course-end" element={<CourseExit />} />
@@ -205,7 +203,7 @@ describe('Course Exit Pages', () => {
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>,
-        { store, wrapWithRouter: false },
+        { wrapWithRouter: false },
       );
 
       await waitFor(() => expect(global.location.pathname).toBe(`/course/${courseId}/home`));
@@ -275,14 +273,14 @@ describe('Course Exit Pages', () => {
       axiosMock.onGet(courseHomeMetadataUrl).reply(403, { detail: 'You are not enrolled', error_code: 'not_enrolled' });
       history.push(`/course/${courseId}`);
       render(
-        <QueryClientProvider client={createTestQueryClient(store)}>
+        <QueryClientProvider client={createTestQueryClient()}>
           <BrowserRouter>
             <Routes>
               <Route path="/course/:courseId" element={<CourseExit />} />
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>,
-        { store, wrapWithRouter: false },
+        { wrapWithRouter: false },
       );
       expect(await screen.findByText('You are not enrolled')).toBeInTheDocument();
     });
@@ -523,7 +521,7 @@ describe('Course Exit Pages', () => {
           Factory.build('courseRecommendation', { key: 'edX+NotEnrolledX', title: 'Not Already Enrolled' }),
         );
         axiosMock.onGet(discoveryRecommendationsUrl).reply(200, initialRecommendations);
-        axiosMock.onGet(enrollmentsUrl).reply(200, [
+        axiosMock.onGet(enrollmentsUrl).reply(200, enrollmentsPage([
           Factory.build(
             'userEnrollment',
             '',
@@ -531,12 +529,57 @@ describe('Course Exit Pages', () => {
               runKey: 'edX+EnrolledX+1T2021',
             },
           ),
-        ]);
+        ]));
         await fetchAndRender(<CourseCelebration />);
         const recommendationsTable = await screen.findByTestId('course-recommendations');
         expect(recommendationsTable).toBeInTheDocument();
         expect(screen.queryByText('Already Enrolled')).not.toBeInTheDocument();
         expect(screen.queryByText('Not Already Enrolled')).toBeInTheDocument();
+      });
+
+      it('Will not recommend a course in which the user is enrolled on a later page of enrollments', async () => {
+        const initialRecommendations = Factory.build('courseRecommendations', {}, { numRecs: 2 });
+        initialRecommendations.recommendations.push(
+          Factory.build('courseRecommendation', { key: 'edX+EnrolledX', title: 'Already Enrolled' }),
+        );
+        initialRecommendations.recommendations.push(
+          Factory.build('courseRecommendation', { key: 'edX+NotEnrolledX', title: 'Not Already Enrolled' }),
+        );
+        axiosMock.onGet(discoveryRecommendationsUrl).reply(200, initialRecommendations);
+        const secondPageUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment/?page=2&page_size=100`;
+        axiosMock.onGet(enrollmentsUrl).reply((config) => (
+          String(config.url) === secondPageUrl
+            ? [200, enrollmentsPage([Factory.build('userEnrollment', '', { runKey: 'edX+EnrolledX+1T2021' })])]
+            : [200, enrollmentsPage([Factory.build('userEnrollment', '', { runKey: 'edX+OtherX+1T2021' })], secondPageUrl)]
+        ));
+        await fetchAndRender(<CourseCelebration />);
+        const recommendationsTable = await screen.findByTestId('course-recommendations');
+        expect(recommendationsTable).toBeInTheDocument();
+        expect(screen.queryByText('Already Enrolled')).not.toBeInTheDocument();
+        expect(screen.queryByText('Not Already Enrolled')).toBeInTheDocument();
+        // The page may fetch recommendations more than once, so compare the distinct addresses.
+        const enrollmentRequestUrls = axiosMock.history.get
+          .map(({ url }) => String(url))
+          .filter((url) => enrollmentsUrl.test(url));
+        expect([...new Set(enrollmentRequestUrls)]).toEqual([
+          `${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment/?page_size=100`,
+          secondPageUrl,
+        ]);
+      });
+
+      it('Will not recommend a course in which the user has an inactive enrollment', async () => {
+        const initialRecommendations = Factory.build('courseRecommendations', {}, { numRecs: 2 });
+        initialRecommendations.recommendations.push(
+          Factory.build('courseRecommendation', { key: 'edX+UnenrolledX', title: 'Unenrolled' }),
+        );
+        axiosMock.onGet(discoveryRecommendationsUrl).reply(200, initialRecommendations);
+        axiosMock.onGet(enrollmentsUrl).reply(200, enrollmentsPage([
+          Factory.build('userEnrollment', { is_active: false }, { runKey: 'edX+UnenrolledX+1T2021' }),
+        ]));
+        await fetchAndRender(<CourseCelebration />);
+        const recommendationsTable = await screen.findByTestId('course-recommendations');
+        expect(recommendationsTable).toBeInTheDocument();
+        expect(screen.queryByText('Unenrolled')).not.toBeInTheDocument();
       });
 
       it('Will not recommend the same course that the user just finished', async () => {

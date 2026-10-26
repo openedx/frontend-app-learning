@@ -4,8 +4,8 @@ import { logError } from '@edx/frontend-platform/logging';
 
 import { getConfig } from '@edx/frontend-platform';
 import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
-import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
+import { coursewareMetadataQuery, minimalCourseOutlineQuery } from '@src/courseware/data/apiHooks';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { useEventListener } from '@src/generic/hooks';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
 
@@ -38,12 +38,14 @@ jest.mock('@tanstack/react-query', () => ({
   useQueryClient: () => ({ invalidateQueries: mockInvalidateQueries }),
 }));
 jest.mock('@src/course-home/data/apiHooks', () => ({
+  ...jest.requireActual('@src/course-home/data/apiHooks'),
   usePostEvent: () => ({ mutate: mockMutate }),
 }));
 jest.mock('@src/generic/hooks', () => ({
   useEventListener: jest.fn(),
 }));
 jest.mock('@src/courseware/data/apiHooks', () => ({
+  ...jest.requireActual('@src/courseware/data/apiHooks'),
   useSequenceMetadata: () => ({ data: { sequence: { unitIds: ['unit1', 'unit2'], activeUnitIndex: 0 } } }),
 }));
 jest.mock('react-router-dom', () => ({
@@ -366,9 +368,9 @@ describe('useIFrameBehavior hook', () => {
 
         const { onSuccess } = mockMutate.mock.calls[0][1];
         onSuccess();
-        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: coursewareQueryKeys.metadata('course-1') });
-        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: coursewareQueryKeys.outline('course-1') });
-        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: courseHomeQueryKeys.metadata('course-1') });
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: coursewareMetadataQuery('course-1').queryKey });
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: minimalCourseOutlineQuery('course-1').queryKey });
+        expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: courseHomeMetaQuery('course-1').queryKey });
       });
       it('updates initial iframe visibility on load', () => {
         const { result } = renderHook(() => useIFrameBehavior(props));

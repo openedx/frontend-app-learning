@@ -3,7 +3,7 @@ import { Factory } from 'rosie';
 import { getAllByRole } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { initializeTestStore, render, screen } from '../../../../setupTest';
+import { mockCourseRequests, render, screen } from '../../../../setupTest';
 import { SidebarProvider } from '../../sidebar/SidebarContext';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
@@ -31,7 +31,7 @@ describe('Sequence Navigation Tabs', () => {
   const activeBlockNumber = 2;
 
   beforeAll(async () => {
-    await initializeTestStore({ courseMetadata, unitBlocks });
+    mockCourseRequests({ courseMetadata, unitBlocks });
     mockData = {
       // Blocks are numbered from 1 in the UI, so we're decreasing this by 1 to have correct block's ID in the array.
       unitId: unitBlocks[activeBlockNumber - 1].id,

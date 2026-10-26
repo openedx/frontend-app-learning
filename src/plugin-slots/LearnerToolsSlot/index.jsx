@@ -28,7 +28,7 @@ export const LearnerToolsSlot = ({
   };
 
   // Use generic plugin slot ID (location-based, not feature-specific)
-  // Plugins will query their own requirements from Redux/config
+  // Plugins will query their own requirements from config/APIs
   return createPortal(
     <PluginSlot
       id="org.openedx.frontend.learning.learner_tools.v1"

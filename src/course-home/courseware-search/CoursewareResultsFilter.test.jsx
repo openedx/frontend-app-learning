@@ -10,7 +10,6 @@ import {
 } from '../../setupTest';
 import { CoursewareSearchResultsFilter } from './CoursewareResultsFilter';
 import { useCoursewareSearchParams } from './hooks';
-import initializeStore from '../../store';
 import { useCoursewareSearchResults } from './data/apiHooks';
 import searchResultsFactory from './test-data/search-results-factory';
 
@@ -41,10 +40,9 @@ const coursewareSearch = {
 };
 
 function renderComponent(props = {}) {
-  const store = initializeStore();
   history.push(pathname);
   const { container } = render(
-    <AppProvider store={store}>
+    <AppProvider>
       <Routes>
         <Route path="/course/:courseId/:sequenceId/:unitId" element={<CoursewareSearchResultsFilter intl={intl} {...props} />} />
       </Routes>

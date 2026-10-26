@@ -5,7 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  createTestQueryClient, fireEvent, initializeMockApp, getTestStoreIds, initializeTestStore, render, screen,
+  createTestQueryClient, fireEvent, initializeMockApp, mockCourseRequests, render, screen,
 } from '@src/setupTest';
 import { buildTopicsFromUnits } from '@src/courseware/data/__factories__/discussionTopics.factory';
 import { discussionTopicsQuery } from '@src/courseware/data/apiHooks';
@@ -24,14 +24,9 @@ describe('Discussions Trigger', () => {
   let topicsUrl;
 
   beforeEach(async () => {
-    const store = await initializeTestStore({
-      excludeFetchCourse: false,
-      excludeFetchSequence: false,
-    });
+    const fixtures = mockCourseRequests();
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    const state = store.getState();
-    courseId = getTestStoreIds(store).courseId;
-    [unitId] = Object.keys(state.models.units);
+    ({ courseId, unitId } = fixtures);
 
     mockData = {
       courseId,
@@ -41,7 +36,7 @@ describe('Discussions Trigger', () => {
     configUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`;
     topicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`;
     axiosMock.onGet(configUrl).reply(200, { provider: 'openedx' });
-    axiosMock.onGet(topicsUrl).reply(200, buildTopicsFromUnits(state.models.units));
+    axiosMock.onGet(topicsUrl).reply(200, buildTopicsFromUnits(fixtures.unitBlocks));
     // Load the topics into the client the render uses; the trigger reads them without fetching.
     queryClient = createTestQueryClient();
     await queryClient.query(discussionTopicsQuery(courseId));

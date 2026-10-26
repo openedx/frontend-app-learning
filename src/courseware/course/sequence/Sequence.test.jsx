@@ -8,7 +8,7 @@ import { breakpoints } from '@openedx/paragon';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import {
-  loadUnit, render, screen, waitFor, getTestStoreIds, initializeTestStore,
+  loadUnit, mockCourseRequests, render, screen, waitFor,
 } from '../../../setupTest';
 import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
 import { getEnabledWidgets } from '../sidebar/defaultWidgets';
@@ -27,8 +27,7 @@ describe('Sequence', () => {
   ));
 
   beforeAll(async () => {
-    const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    const { courseId, sequenceId } = getTestStoreIds(store);
+    const { courseId, sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
     mockData = {
       unitId: unitBlocks[0].id,
       sequenceId,
@@ -75,10 +74,9 @@ describe('Sequence', () => {
   };
 
   it('renders correctly without data', async () => {
-    const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
     render(
       <Sequence {...mockData} {...{ unitId: undefined, sequenceId: undefined }} />,
-      { store: testStore, wrapWithRouter: true },
+      { wrapWithRouter: true },
     );
 
     expect(screen.getByText('There is no content here.')).toBeInTheDocument();
@@ -87,11 +85,9 @@ describe('Sequence', () => {
   });
 
   it('displays the no-content message for a unit that is not in the sequence', async () => {
-    const testStore = await initializeTestStore({ courseMetadata, unitBlocks }, false);
-    const { sequenceId } = getTestStoreIds(testStore);
+    const { sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
     render(
       <SidebarWrapper overrideData={{ sequenceId, unitId: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@not_in_this_sequence' }} />,
-      { store: testStore },
     );
 
     expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
@@ -116,15 +112,14 @@ describe('Sequence', () => {
       { gated_content: gatedContent },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore({
+    mockCourseRequests({
       courseMetadata,
       unitBlocks,
       sequenceBlocks,
       sequenceMetadata,
-    }, false);
+    });
     const { container } = render(
       <SidebarWrapper overrideData={{ sequenceId: sequenceBlocks[0].id }} />,
-      { store: testStore },
     );
 
     await screen.findByText('Loading locked content messaging...');
@@ -152,9 +147,9 @@ describe('Sequence', () => {
       { is_hidden_after_due: true },
       { courseId: courseMetadata.id, unitBlocks, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore({
+    mockCourseRequests({
       courseMetadata, unitBlocks, sequenceBlocks, sequenceMetadata,
-    }, false);
+    });
     render(
       <MemoryRouter initialEntries={[`/course/${mockData.courseId}/${sequenceBlocks[0].id}`]}>
         <Routes>
@@ -169,7 +164,6 @@ describe('Sequence', () => {
           />
         </Routes>
       </MemoryRouter>,
-      { store: testStore },
     );
 
     await waitFor(() => {
@@ -184,7 +178,6 @@ describe('Sequence', () => {
   });
 
   it('displays error message on sequence load failure', async () => {
-    const testStore = await initializeTestStore({ excludeFetchCourse: true, excludeFetchSequence: true }, false);
     const failingMock = new MockAdapter(getAuthenticatedHttpClient());
     failingMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${mockData.sequenceId}`).reply(500);
     render(
@@ -192,7 +185,7 @@ describe('Sequence', () => {
         <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
         <Sequence {...mockData} />
       </>,
-      { store: testStore, wrapWithRouter: true },
+      { wrapWithRouter: true },
     );
 
     await screen.findByText('There was an error loading this course.');
@@ -200,9 +193,8 @@ describe('Sequence', () => {
   });
 
   it('handles loading unit', async () => {
-    const testStore = await initializeTestStore({ courseMetadata, unitBlocks }, false);
-    const { sequenceId } = getTestStoreIds(testStore);
-    render(<SidebarWrapper overrideData={{ sequenceId }} />, { store: testStore });
+    const { sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
+    render(<SidebarWrapper overrideData={{ sequenceId }} />);
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
     // `Previous`, `Next`, `Bookmark` and `Close Tray` buttons.
     await waitFor(() => expect(screen.getAllByRole('button')).toHaveLength(4));
@@ -219,7 +211,6 @@ describe('Sequence', () => {
   });
 
   describe('sequence and unit navigation buttons', () => {
-    let testStore;
     const sequenceBlocks = [Factory.build(
       'block',
       { type: 'sequential', children: unitBlocks.map(block => block.id) },
@@ -230,10 +221,8 @@ describe('Sequence', () => {
       { courseId: courseMetadata.id },
     )];
 
-    beforeAll(async () => {
-      testStore = await initializeTestStore({
-        courseMetadata, unitBlocks, sequenceBlocks,
-      }, false);
+    beforeAll(() => {
+      mockCourseRequests({ courseMetadata, unitBlocks, sequenceBlocks });
     });
 
     beforeEach(() => {
@@ -247,7 +236,7 @@ describe('Sequence', () => {
         sequenceId: sequenceBlocks[1].id,
         previousSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore });
+      render(<SidebarWrapper overrideData={testData} />);
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       await user.click(await screen.findByRole('button', { name: /previous/i }));
@@ -281,7 +270,7 @@ describe('Sequence', () => {
         sequenceId: sequenceBlocks[0].id,
         nextSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore });
+      render(<SidebarWrapper overrideData={testData} />);
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       await user.click(await screen.findByRole('button', { name: /next/i }));
@@ -317,7 +306,7 @@ describe('Sequence', () => {
         previousSequenceHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore });
+      render(<SidebarWrapper overrideData={testData} />);
       expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
 
       await user.click(await screen.findByRole('button', { name: /previous/i }));
@@ -343,7 +332,7 @@ describe('Sequence', () => {
         unitNavigationHandler: jest.fn(),
         previousSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore });
+      render(<SidebarWrapper overrideData={testData} />);
       await screen.findByRole('button', { name: /previous/i });
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
@@ -364,7 +353,7 @@ describe('Sequence', () => {
         unitNavigationHandler: jest.fn(),
         nextSequenceHandler: jest.fn(),
       };
-      render(<SidebarWrapper overrideData={testData} />, { store: testStore });
+      render(<SidebarWrapper overrideData={testData} />);
       await screen.findByRole('button', { name: /next/i });
       loadUnit();
       await waitFor(() => expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument());
@@ -391,19 +380,19 @@ describe('Sequence', () => {
         {},
         { courseId: courseMetadata.id, unitBlocks: block.children.length ? unitBlocks : [], sequenceBlock: block },
       ));
-      const innerTestStore = await initializeTestStore({
+      mockCourseRequests({
         courseMetadata,
         unitBlocks,
         sequenceBlocks: testSequenceBlocks,
         sequenceMetadata: testSequenceMetadata,
-      }, false);
+      });
       const testData = {
         ...mockData,
         unitId: undefined,
         sequenceId: testSequenceBlocks[1].id,
       };
 
-      render(<SidebarWrapper overrideData={testData} />, { store: innerTestStore });
+      render(<SidebarWrapper overrideData={testData} />);
 
       expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
       expect(screen.queryByTestId('content-iframe-test-id')).not.toBeInTheDocument();
@@ -453,8 +442,7 @@ describe('Sequence', () => {
     const renderWithUpgradePanelOpen = async () => {
       global.innerWidth = breakpoints.extraExtraLarge.minWidth;
       window.localStorage.setItem(`sidebar.${mockData.courseId}`, JSON.stringify('UPGRADE'));
-      const testStore = await initializeTestStore({ courseMetadata, unitBlocks }, false);
-      const { sequenceId } = getTestStoreIds(testStore);
+      const { sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
       render(
         <MemoryRouter initialEntries={[`/course/${mockData.courseId}/${sequenceId}/${mockData.unitId}`]}>
           <Routes>
@@ -469,7 +457,6 @@ describe('Sequence', () => {
             />
           </Routes>
         </MemoryRouter>,
-        { store: testStore },
       );
     };
 

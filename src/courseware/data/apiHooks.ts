@@ -5,6 +5,7 @@ import {
   type QueryClient, queryOptions, useMutation, useQuery, useQueryClient,
 } from '@tanstack/react-query';
 
+import { appId } from '@src/constants';
 import { getResponseStatus } from '@src/data/http-error';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import {
@@ -15,24 +16,29 @@ import {
 import { applyUnitCompletion, type CourseNavigationOutline } from './courseNavigationOutline';
 import type { CoursewareMeta } from './coursewareMeta';
 import type { MinimalCourseOutline } from './minimalCourseOutline';
-import { coursewareQueryKeys } from './queryKeys';
 import type { SequenceMetadataData, SequenceUnit } from './sequenceMetadata';
+
+const coursewareKey = [appId, 'courseware'] as const;
 
 interface QueryOptions {
   enabled?: boolean;
 }
 
+export const coursewareMetadataQuery = (courseId: string) => queryOptions({
+  queryKey: [...coursewareKey, 'metadata', courseId] as const,
+  queryFn: (): Promise<CoursewareMeta> => getCourseMetadata(courseId),
+});
+
 export const useCoursewareMetadata = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
-) => useQuery<CoursewareMeta>({
-  queryKey: coursewareQueryKeys.metadata(courseId!),
-  queryFn: () => getCourseMetadata(courseId),
+) => useQuery({
+  ...coursewareMetadataQuery(courseId!),
   enabled: enabled && !!courseId,
 });
 
 export const minimalCourseOutlineQuery = (courseId: string) => queryOptions({
-  queryKey: coursewareQueryKeys.outline(courseId),
+  queryKey: [...coursewareKey, 'outline', courseId] as const,
   queryFn: (): Promise<MinimalCourseOutline> => getLearningSequencesOutline(courseId),
   meta: { logStatusAs: { 403: 'info' } },
 });
@@ -75,7 +81,7 @@ export const useSequenceIds = (courseId: string | undefined): string[] => {
 export const useIsPreview = () => useLocation().pathname.startsWith('/preview');
 
 export const sequenceMetadataQuery = (sequenceId: string, isPreview: boolean) => queryOptions({
-  queryKey: coursewareQueryKeys.sequence(sequenceId, isPreview),
+  queryKey: [...coursewareKey, 'sequence', sequenceId, isPreview] as const,
   queryFn: async (): Promise<SequenceMetadataData> => {
     const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
     if (sequence.blockType !== 'sequential') {
@@ -110,12 +116,14 @@ export const useUnit = (sequenceId: string | undefined, unitId: string | undefin
   });
 };
 
+type SequenceMetadataQueryKey = ReturnType<typeof sequenceMetadataQuery>['queryKey'];
+
 export const updateSequenceUnit = (
   queryClient: QueryClient,
-  queryKey: ReturnType<typeof coursewareQueryKeys.sequence>,
+  queryKey: SequenceMetadataQueryKey,
   unitId: string | undefined,
   patch: Partial<SequenceUnit>,
-) => queryClient.setQueryData<SequenceMetadataData>(queryKey, (data) => data && ({
+) => queryClient.setQueryData(queryKey, (data) => data && ({
   ...data,
   units: data.units.map(unit => (unit.id === unitId ? { ...unit, ...patch } : unit)),
 }));
@@ -132,36 +140,44 @@ export interface ResumeBlock {
 }
 
 export const resumeBlockQuery = (courseId: string, visitKey: string) => queryOptions({
-  queryKey: coursewareQueryKeys.resume(courseId, visitKey),
+  queryKey: [...coursewareKey, 'resume', courseId, visitKey] as const,
   queryFn: (): Promise<ResumeBlock> => getResumeBlock(courseId),
 });
 
 export const parentSequenceQuery = (courseId: string, unitId: string) => queryOptions({
-  queryKey: coursewareQueryKeys.parentSequence(courseId, unitId),
+  queryKey: [...coursewareKey, 'parentSequence', courseId, unitId] as const,
   queryFn: (): Promise<string | null> => getSequenceForUnitDeprecated(courseId, unitId),
   // Re-enabled whenever its rule applies again, and a unit's parent never changes mid-session:
   staleTime: Infinity,
 });
 
-export const useCourseOutlineStructure = (courseId: string | undefined) => useQuery<CourseNavigationOutline | null>({
-  queryKey: coursewareQueryKeys.courseOutline(courseId!),
-  queryFn: () => getCourseOutline(courseId!),
-  enabled: !!courseId,
+export const courseOutlineStructureQuery = (courseId: string) => queryOptions({
+  queryKey: [...coursewareKey, 'courseOutline', courseId] as const,
+  queryFn: (): Promise<CourseNavigationOutline | null> => getCourseOutline(courseId),
   // Observed by every outline row; only invalidation should refetch:
   staleTime: Infinity,
 });
 
-export const useCoursewareOutlineSidebarToggles = (courseId: string | undefined) => useQuery({
-  queryKey: coursewareQueryKeys.sidebarToggles(courseId!),
+export const useCourseOutlineStructure = (courseId: string | undefined) => useQuery({
+  ...courseOutlineStructureQuery(courseId!),
+  enabled: !!courseId,
+});
+
+export const coursewareOutlineSidebarTogglesQuery = (courseId: string) => queryOptions({
+  queryKey: [...coursewareKey, 'sidebarToggles', courseId] as const,
   queryFn: async () => {
     const {
       enable_completion_tracking: enableCompletionTracking,
-    } = await getCoursewareOutlineSidebarToggles(courseId!);
+    } = await getCoursewareOutlineSidebarToggles(courseId);
     return { enableCompletionTracking };
   },
-  enabled: !!courseId,
   // Observed by every outline row and never changes mid-session:
   staleTime: Infinity,
+});
+
+export const useCoursewareOutlineSidebarToggles = (courseId: string | undefined) => useQuery({
+  ...coursewareOutlineSidebarTogglesQuery(courseId!),
+  enabled: !!courseId,
 });
 
 // Names only the fields this repo's TypeScript readers need; the endpoint returns many more,
@@ -177,7 +193,7 @@ export interface DiscussionTopic {
 
 // Observed by DiscussionsProvider, which owns the fetch.
 export const discussionTopicsQuery = (courseId: string) => queryOptions({
-  queryKey: coursewareQueryKeys.discussionTopics(courseId),
+  queryKey: [...coursewareKey, 'discussionTopics', courseId] as const,
   queryFn: async () => {
     const config: { provider: string } = await getCourseDiscussionConfig(courseId);
     // Only load topics for the openedx provider, the legacy provider uses
@@ -213,15 +229,15 @@ export const useCheckBlockCompletion = () => {
     onSuccess: (isComplete: boolean, { courseId, sequenceId, unitId }) => {
       updateSequenceUnit(
         queryClient,
-        coursewareQueryKeys.sequence(sequenceId!, isPreview),
+        sequenceMetadataQuery(sequenceId!, isPreview).queryKey,
         unitId,
         { complete: isComplete },
       );
       if (!isComplete || !unitId || !courseId) {
         return;
       }
-      const queryKey = coursewareQueryKeys.courseOutline(courseId);
-      const cachedOutline = queryClient.getQueryData<CourseNavigationOutline | null>(queryKey);
+      const { queryKey } = courseOutlineStructureQuery(courseId);
+      const cachedOutline = queryClient.getQueryData(queryKey);
       if (!cachedOutline) {
         return; // sidebar outline never fetched (e.g. never opened)
       }
@@ -235,8 +251,8 @@ export const useCheckBlockCompletion = () => {
   });
 
   return useCallback((courseId: string | undefined, sequenceId: string | undefined, unitId?: string) => {
-    const sequenceKey = coursewareQueryKeys.sequence(sequenceId!, isPreview);
-    const unit = queryClient.getQueryData<SequenceMetadataData>(sequenceKey)?.units.find(({ id }) => id === unitId);
+    const sequenceKey = sequenceMetadataQuery(sequenceId!, isPreview).queryKey;
+    const unit = queryClient.getQueryData(sequenceKey)?.units.find(({ id }) => id === unitId);
     if (unit?.complete) {
       return; // things don't get uncompleted after they are completed
     }
@@ -253,9 +269,9 @@ interface SaveSequencePositionVars {
 export const useSaveSequencePosition = () => {
   const isPreview = useIsPreview();
   const queryClient = useQueryClient();
-  const sequenceKey = (sequenceId: string | undefined) => coursewareQueryKeys.sequence(sequenceId!, isPreview);
+  const sequenceKey = (sequenceId: string | undefined) => sequenceMetadataQuery(sequenceId!, isPreview).queryKey;
   const setPosition = (sequenceId: string | undefined, activeUnitIndex: number) => {
-    queryClient.setQueryData<SequenceMetadataData>(sequenceKey(sequenceId), (data) => data && ({
+    queryClient.setQueryData(sequenceKey(sequenceId), (data) => data && ({
       ...data,
       sequence: { ...data.sequence, activeUnitIndex },
     }));
@@ -265,7 +281,7 @@ export const useSaveSequencePosition = () => {
       postSequencePosition(courseId, sequenceId, activeUnitIndex)
     ),
     onMutate: ({ sequenceId, activeUnitIndex }) => {
-      const previous = queryClient.getQueryData<SequenceMetadataData>(sequenceKey(sequenceId));
+      const previous = queryClient.getQueryData(sequenceKey(sequenceId));
       // Optimistically update the position.
       setPosition(sequenceId, activeUnitIndex);
       return { previous };
@@ -301,8 +317,8 @@ export const useSaveIntegritySignature = () => {
       isMasquerading ? null : postIntegritySignature(courseId)
     ),
     onSuccess: (_data, { courseId }) => {
-      queryClient.setQueryData<CoursewareMeta>(
-        coursewareQueryKeys.metadata(courseId),
+      queryClient.setQueryData(
+        coursewareMetadataQuery(courseId).queryKey,
         (data) => data && ({ ...data, userNeedsIntegritySignature: false }),
       );
     },

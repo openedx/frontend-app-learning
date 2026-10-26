@@ -3,8 +3,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { logError } from '@edx/frontend-platform/logging';
 
 import { getTourData, patchTourData } from './api';
-import { useEndCourseHomeTour, useEndCoursewareTour, useTourData } from './apiHooks';
-import { tourQueryKeys } from './queryKeys';
+import {
+  tourDataQuery, useEndCourseHomeTour, useEndCoursewareTour, useTourData,
+} from './apiHooks';
 
 jest.mock('./api');
 jest.mock('@edx/frontend-platform/logging');
@@ -52,7 +53,7 @@ describe('product-tours apiHooks', () => {
       await act(async () => { await result.current.mutateAsync('MockUser'); });
 
       expect(patchTourData).toHaveBeenCalledWith('MockUser', { course_home_tour_status: 'no-tour' });
-      expect(invalidate).toHaveBeenCalledWith({ queryKey: tourQueryKeys.user('MockUser') });
+      expect(invalidate).toHaveBeenCalledWith({ queryKey: tourDataQuery('MockUser').queryKey });
     });
 
     it('useEndCoursewareTour PATCHes show_courseware_tour false and invalidates', async () => {
@@ -64,7 +65,7 @@ describe('product-tours apiHooks', () => {
       await act(async () => { await result.current.mutateAsync('MockUser'); });
 
       expect(patchTourData).toHaveBeenCalledWith('MockUser', { show_courseware_tour: false });
-      expect(invalidate).toHaveBeenCalledWith({ queryKey: tourQueryKeys.user('MockUser') });
+      expect(invalidate).toHaveBeenCalledWith({ queryKey: tourDataQuery('MockUser').queryKey });
     });
 
     it.each([

@@ -5,9 +5,9 @@ import { MemoryRouter } from 'react-router-dom';
 import { getConfig, mergeConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
-import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { SidebarProvider } from '@src/courseware/course/sidebar/SidebarContext';
-import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
+import { discussionTopicsQuery } from '@src/courseware/data/apiHooks';
 import { createTestQueryClient, initializeMockApp, seedQueryData } from '@src/setupTest';
 
 import DiscussionsProvider from './DiscussionsProvider';
@@ -19,7 +19,7 @@ const configUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${cours
 const topicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`;
 const datesTab = { tabId: 'dates', title: 'Dates', url: 'http://localhost/dates' };
 const discussionTab = { tabId: 'discussion', title: 'Discussion', url: 'http://localhost/discussion' };
-const topicsQueryKey = coursewareQueryKeys.discussionTopics(courseId);
+const topicsQueryKey = discussionTopicsQuery(courseId).queryKey;
 
 describe('DiscussionsProvider', () => {
   let axiosMock: MockAdapter;
@@ -29,7 +29,7 @@ describe('DiscussionsProvider', () => {
 
   const renderProvider = (tabs?: typeof datesTab[]) => {
     if (tabs) {
-      seedQueryData(queryClient, courseHomeQueryKeys.metadata(courseId), { tabs });
+      seedQueryData(queryClient, courseHomeMetaQuery(courseId).queryKey, { tabs });
     }
     return render(
       <QueryClientProvider client={queryClient}>
@@ -104,8 +104,8 @@ describe('DiscussionsProvider', () => {
 
     act(() => {
       queryClient.setQueryData(
-        courseHomeQueryKeys.metadata(courseId),
-        (meta: { tabs: typeof datesTab[] }) => ({ ...meta, celebrations: { firstSection: false } }),
+        courseHomeMetaQuery(courseId).queryKey,
+        (meta) => ({ ...meta, celebrations: { firstSection: false } }),
       );
     });
     await act(async () => {});

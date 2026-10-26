@@ -14,7 +14,7 @@ const mergedConfig = createConfig('jest', {
     'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
     '@src/(.*)': '<rootDir>/src/$1',
     // Explicit mapping to ensure Jest resolves the module correctly
-    '@edx/frontend-lib-special-exams': '<rootDir>/node_modules/@edx/frontend-lib-special-exams',
+    '^@edx/frontend-lib-special-exams$': '<rootDir>/node_modules/@edx/frontend-lib-special-exams',
   },
   testTimeout: 30000,
   globalSetup: "./global-setup.js",

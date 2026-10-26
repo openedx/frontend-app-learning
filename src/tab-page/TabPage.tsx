@@ -8,7 +8,7 @@ import HeaderSlot from '../plugin-slots/HeaderSlot';
 import { CourseInfoStripSlot } from '../plugin-slots/CourseInfoStripSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
-import type { CourseHomeMeta } from '../course-home/data/apiHooks';
+import type { CourseHomeMeta } from '../course-home/data/api';
 import { useToast } from '../generic/ToastContext';
 
 import genericMessages from '../generic/messages';

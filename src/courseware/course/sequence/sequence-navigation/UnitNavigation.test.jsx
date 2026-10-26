@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import userEvent from '@testing-library/user-event';
 import {
-  render, screen, getTestStoreIds, initializeTestStore, waitFor,
+  mockCourseRequests, render, screen, waitFor,
 } from '../../../../setupTest';
 import CourseQueryGate from '../../../../tests/CourseQueryGate';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
@@ -26,8 +26,7 @@ describe('Unit Navigation', () => {
   ));
 
   beforeEach(async () => {
-    const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    const { courseId, sequenceId } = getTestStoreIds(store);
+    const { courseId, sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
     mockData = {
       courseId,
       unitId: unitBlocks[1].id,
@@ -37,7 +36,7 @@ describe('Unit Navigation', () => {
     };
   });
 
-  const renderNav = (props = {}, { store } = {}) => {
+  const renderNav = (props = {}) => {
     const sequenceId = props.sequenceId ?? mockData.sequenceId;
     return render(
       <MemoryRouter initialEntries={[`/course/${courseMetadata.id}/${sequenceId || 'no-sequence'}`]}>
@@ -55,7 +54,6 @@ describe('Unit Navigation', () => {
           />
         </Routes>
       </MemoryRouter>,
-      { store },
     );
   };
 
@@ -123,11 +121,11 @@ describe('Unit Navigation', () => {
 
   it('has the "Next" button disabled for the last unit in the sequence if there is no Exit Page', async () => {
     const testCourseMetadata = { ...courseMetadata, certificate_data: { cert_status: 'bogus_status' }, user_has_passing_grade: true };
-    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
-    // Have to refetch the sequenceId since the new store generates new sequences
-    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
+    // The new build generates a new sequence, so take its id.
+    const { sequenceId } = mockCourseRequests({ courseMetadata: testCourseMetadata, unitBlocks });
+    const testData = { ...mockData, sequenceId };
 
-    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id });
 
     expect(await screen.findByRole('button', { name: /next/i })).toBeDisabled();
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -142,11 +140,11 @@ describe('Unit Navigation', () => {
         entrance_exam_current_score: 0, entrance_exam_enabled: true, entrance_exam_id: '1', entrance_exam_minimum_score_pct: 0.65, entrance_exam_passed: false,
       },
     };
-    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
-    // Have to refetch the sequenceId since the new store generates new sequences
-    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
+    // The new build generates a new sequence, so take its id.
+    const { sequenceId } = mockCourseRequests({ courseMetadata: testCourseMetadata, unitBlocks });
+    const testData = { ...mockData, sequenceId };
 
-    renderNav({ ...testData, unitId: unitBlocks[0].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[0].id });
 
     expect(await screen.findByRole('button', { name: /next/i })).toBeDisabled();
   });
@@ -160,11 +158,11 @@ describe('Unit Navigation', () => {
         entrance_exam_current_score: 1.0, entrance_exam_enabled: true, entrance_exam_id: '1', entrance_exam_minimum_score_pct: 0.65, entrance_exam_passed: true,
       },
     };
-    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
-    // Have to refetch the sequenceId since the new store generates new sequences
-    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
+    // The new build generates a new sequence, so take its id.
+    const { sequenceId } = mockCourseRequests({ courseMetadata: testCourseMetadata, unitBlocks });
+    const testData = { ...mockData, sequenceId };
 
-    renderNav({ ...testData, unitId: unitBlocks[0].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[0].id });
 
     await waitFor(() => expect(screen.getByRole('link', { name: /next/i })).toHaveAttribute('href'));
     expect(screen.getByRole('link', { name: /next/i })).toBeEnabled();
@@ -172,11 +170,11 @@ describe('Unit Navigation', () => {
 
   it('displays end of course message instead of the "Next" button as needed', async () => {
     const testCourseMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' }, enrollment: { is_active: true } };
-    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
-    // Have to refetch the sequenceId since the new store generates new sequences
-    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
+    // The new build generates a new sequence, so take its id.
+    const { sequenceId } = mockCourseRequests({ courseMetadata: testCourseMetadata, unitBlocks });
+    const testData = { ...mockData, sequenceId };
 
-    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id });
 
     expect(await screen.findByRole('link', { name: /next \(end of course\)/i })).toBeEnabled();
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
@@ -189,11 +187,11 @@ describe('Unit Navigation', () => {
       enrollment: { is_active: true },
       user_has_passing_grade: true,
     };
-    const testStore = await initializeTestStore({ courseMetadata: testCourseMetadata, unitBlocks }, false);
-    // Have to refetch the sequenceId since the new store generates new sequences
-    const testData = { ...mockData, sequenceId: getTestStoreIds(testStore).sequenceId };
+    // The new build generates a new sequence, so take its id.
+    const { sequenceId } = mockCourseRequests({ courseMetadata: testCourseMetadata, unitBlocks });
+    const testData = { ...mockData, sequenceId };
 
-    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id }, { store: testStore });
+    renderNav({ ...testData, unitId: unitBlocks[unitBlocks.length - 1].id });
 
     expect(await screen.findByRole('link', { name: /Complete the course/i })).toBeEnabled();
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();

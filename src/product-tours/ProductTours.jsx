@@ -49,7 +49,7 @@ const ProductTours = ({
   const endCoursewareTourMutation = useEndCoursewareTour();
   const endCourseHomeTourMutation = useEndCourseHomeTour();
 
-  // Persist the tour completion and hide it client-side (mirrors the former end-tour thunks).
+  // Persist the tour completion and hide it client-side.
   const endCoursewareTour = () => {
     endCoursewareTourMutation.mutate(username);
     disableCoursewareTour();
