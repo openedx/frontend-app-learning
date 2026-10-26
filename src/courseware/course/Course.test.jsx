@@ -181,7 +181,7 @@ describe('Course', () => {
     });
 
     it('exposes the course outline sidebar as a navigation landmark with an accessible name', async () => {
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData);
       loadUnit();
 
       const outlineNav = await screen.findByRole('navigation', { name: /course outline/i });
@@ -189,7 +189,7 @@ describe('Course', () => {
     });
 
     it('renders the primary content inside <main id="main-content"> with the sidebar navigation kept outside of it', async () => {
-      render(<Course {...testData} />, { store: testStore, wrapWithRouter: true });
+      renderCourse(testData);
       loadUnit();
 
       const outlineNav = await screen.findByRole('navigation', { name: /course outline/i });

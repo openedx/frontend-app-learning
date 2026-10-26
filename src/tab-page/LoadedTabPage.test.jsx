@@ -23,7 +23,7 @@ jest.mock('../product-tours/ProductTours', () => function () {
 describe('Loaded Tab Page', () => {
   const mockData = { activeTabSlug: 'courseware' };
 
-  function renderWithMetadata(courseHomeMetadata) {
+  function renderWithMetadata(courseHomeMetadata, props = {}, { children = null } = {}) {
     const queryClient = createTestQueryClient();
     seedQueryData(
       queryClient,
@@ -32,7 +32,9 @@ describe('Loaded Tab Page', () => {
     );
     return render(
       <QueryClientProvider client={queryClient}>
-        <LoadedTabPage {...mockData} courseId={courseHomeMetadata.id} />
+        <LoadedTabPage {...mockData} courseId={courseHomeMetadata.id} {...props}>
+          {children}
+        </LoadedTabPage>
       </QueryClientProvider>,
     );
   }
@@ -83,7 +85,7 @@ describe('Loaded Tab Page', () => {
 
   describe('landmark structure', () => {
     it('for the courseware tab, does not render a <main> wrapper here (Sequence renders <main id="main-content"> instead)', () => {
-      render(<LoadedTabPage {...mockData} activeTabSlug="courseware" />);
+      renderWithMetadata(Factory.build('courseHomeMetadata'), { activeTabSlug: 'courseware' });
 
       // No <main> is emitted from LoadedTabPage — the courseware Sequence provides it.
       expect(document.querySelector('main')).not.toBeInTheDocument();
@@ -92,10 +94,10 @@ describe('Loaded Tab Page', () => {
     });
 
     it('for non-courseware tabs, the <main id="main-content"> landmark wraps only the page children, not the alerts or tab navigation', () => {
-      render(
-        <LoadedTabPage {...mockData} activeTabSlug="outline">
-          <button type="button">Tab content</button>
-        </LoadedTabPage>,
+      renderWithMetadata(
+        Factory.build('courseHomeMetadata'),
+        { activeTabSlug: 'outline' },
+        { children: <button type="button">Tab content</button> },
       );
 
       const mainLandmark = screen.getByRole('main');
