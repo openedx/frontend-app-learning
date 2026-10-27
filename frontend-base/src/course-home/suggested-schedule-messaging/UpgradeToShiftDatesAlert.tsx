@@ -1,0 +1,67 @@
+import React from 'react';
+
+import { useIntl } from '@openedx/frontend-base';
+import {
+  Alert,
+  Button,
+  Row,
+  Col,
+} from '@openedx/paragon';
+
+import messages from './messages';
+
+interface Props {
+  logUpgradeLinkClick?: () => void;
+  datesBannerInfo: {
+    contentTypeGatingEnabled?: boolean;
+    missedDeadlines?: boolean;
+    missedGatedContent?: boolean;
+    verifiedUpgradeLink?: string;
+  };
+  hasEnded?: boolean;
+}
+
+const UpgradeToShiftDatesAlert = ({
+  logUpgradeLinkClick = () => {},
+  datesBannerInfo,
+  hasEnded = false,
+}: Props) => {
+  const intl = useIntl();
+
+  const {
+    contentTypeGatingEnabled,
+    missedDeadlines,
+    missedGatedContent,
+    verifiedUpgradeLink,
+  } = datesBannerInfo;
+
+  if (!(contentTypeGatingEnabled && missedDeadlines && missedGatedContent && verifiedUpgradeLink) || hasEnded) {
+    return null;
+  }
+
+  return (
+    <Alert id="upgrade-shift-dates-alert" className="bg-light-200">
+      <Row className="w-100 m-0">
+        <Col xs={12} md={9} className="small p-0 pr-md-2">
+          <strong>{intl.formatMessage(messages.missedDeadlines)}</strong>
+          {' '}{intl.formatMessage(messages.upgradeToShiftBody)}
+        </Col>
+        <Col xs={12} md={3} className="align-self-center text-right mt-3 mt-md-0 p-0">
+          <Button
+            variant="brand"
+            size="sm"
+            className="w-xs-100 w-md-auto"
+            onClick={() => {
+              logUpgradeLinkClick();
+              global.location.replace(verifiedUpgradeLink);
+            }}
+          >
+            {intl.formatMessage(messages.upgradeToShiftButton)}
+          </Button>
+        </Col>
+      </Row>
+    </Alert>
+  );
+};
+
+export default UpgradeToShiftDatesAlert;
