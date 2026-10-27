@@ -1,11 +1,11 @@
-import { generatePath, Link } from "react-router-dom";
+import { generatePath, Link } from 'react-router-dom';
 
-import { FormattedMessage } from "@edx/frontend-platform/i18n";
-import { Button } from "@openedx/paragon";
+import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { Button } from '@openedx/paragon';
 
-import { DECODE_ROUTES } from "@src/constants";
+import { DECODE_ROUTES } from '@src/constants';
 
-import messages from "./messages";
+import messages from './messages';
 
 export interface AchievementsInfoProps {
   pathwayId: string;
@@ -13,8 +13,10 @@ export interface AchievementsInfoProps {
 }
 
 export const AchievementsInfo = ({ pathwayId, hasAchievements }: AchievementsInfoProps) => {
-  const title = hasAchievements ? messages.achievementsInfoTitle: messages.achievementsInfoEmptyTitle;
-  const description = hasAchievements ? messages.achievementsInfoDescription : messages.achievementsInfoEmptyDescription;
+  const title = hasAchievements ? messages.achievementsInfoTitle : messages.achievementsInfoEmptyTitle;
+  const description = hasAchievements
+    ? messages.achievementsInfoDescription
+    : messages.achievementsInfoEmptyDescription;
 
   return (
     <section className="bg-light-200 rounded raised-card p-4">
@@ -35,5 +37,5 @@ export const AchievementsInfo = ({ pathwayId, hasAchievements }: AchievementsInf
         </Button>
       )}
     </section>
-  )
+  );
 };

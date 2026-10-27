@@ -1,11 +1,11 @@
 import classNames from 'classnames';
-import { Button, Icon, Stack } from "@openedx/paragon";
-import { FormattedMessage } from "@edx/frontend-platform/i18n";
+import { Button, Icon, Stack } from '@openedx/paragon';
+import { FormattedMessage } from '@edx/frontend-platform/i18n';
 
-import { PathwayAchievementData } from "@src/pathways/data/types";
+import { PathwayAchievementData } from '@src/pathways/data/types';
 
-import { ReactComponent as NewModeIcon} from "./newsmode.svg";
-import messages from "./messages";
+import { ReactComponent as NewModeIcon } from './newsmode.svg';
+import messages from './messages';
 
 export interface CertificateCardProps extends PathwayAchievementData {
   categoryLabel?: string;
@@ -20,15 +20,16 @@ export const CertificateCard = ({
   categoryLabel,
 }: CertificateCardProps) => {
   const subtitle = isOverarching ? messages.pathwayCertificate : messages.itemCertificate;
-  
+
   return (
     <section className={classNames(
-      "w-100 rounded p-4",
+      'w-100 rounded p-4',
       {
-        "bg-primary-100 border border-primary-300": isOverarching,
-        "bg-light-200 raised-card": !isOverarching,
+        'bg-primary-100 border border-primary-300': isOverarching,
+        'bg-light-200 raised-card': !isOverarching,
       },
-    )}>
+    )}
+    >
       <Stack gap={3}>
         <Stack>
           <Stack direction="horizontal" gap={1}>

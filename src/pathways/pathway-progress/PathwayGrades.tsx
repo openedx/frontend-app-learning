@@ -1,15 +1,34 @@
-import { FormattedMessage, FormattedNumber, useIntl } from "@edx/frontend-platform/i18n";
-import { DataTable } from "@openedx/paragon";
+import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import { DataTable } from '@openedx/paragon';
 
-import { GradeData } from "@src/pathways/data/types";
+import { GradeData } from '@src/pathways/data/types';
 
-import messages from "./messages";
-import { PathwayProgressRing } from "./progress-ring/PathwayProgressRing";
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import messages from './messages';
+import { PathwayProgressRing } from './progress-ring/PathwayProgressRing';
+
+// The cells are defined outside of `PathwayGrades` so React does not remount them on every render.
+const PercentCell = ({ value }: { value: number }) => {
+  const intl = useIntl();
+  return <>{intl.formatNumber(value / 100, { style: 'percent' })}</>;
+};
+
+const ProgressCell = ({ value }: { value: number }) => (
+  <span className="d-flex align-items-center">
+    <PathwayProgressRing className="learning-pathway-progress-ring-sm mr-2" percentage={value} aria-hidden />
+    <PercentCell value={value} />
+  </span>
+);
+
+const DetailsCell = ({ row }: { row: { original: GradeData } }) => (
+  <Link to={row.original.detailsUrl}>
+    <FormattedMessage {...messages.gradesViewDetails} />
+  </Link>
+);
 
 export const PathwayGrades = ({ grades }: { grades: GradeData[] }) => {
   const intl = useIntl();
-  
+
   return (
     <DataTable
       columns={[
@@ -20,22 +39,17 @@ export const PathwayGrades = ({ grades }: { grades: GradeData[] }) => {
         {
           Header: intl.formatMessage(messages.gradesProgressColumn),
           accessor: 'progress',
-          Cell: ({ value }) => (
-            <span className="d-flex align-items-center">
-              <PathwayProgressRing className="learning-pathway-progress-ring-sm mr-2" percentage={value} aria-hidden />
-              <FormattedNumber value={value / 100} style="percent" />
-            </span>
-          ),
+          Cell: ProgressCell,
         },
         {
           Header: intl.formatMessage(messages.gradesPassGradeColumn),
           accessor: 'passGrade',
-          Cell: ({ value }) => <FormattedNumber value={value / 100} style="percent" />,
+          Cell: PercentCell,
         },
         {
           Header: intl.formatMessage(messages.gradesCurrentGradeColumn),
           accessor: 'currentGrade',
-          Cell: ({ value }) => <FormattedNumber value={value / 100} style="percent" />,
+          Cell: PercentCell,
         },
       ]}
       itemCount={grades.length}
@@ -43,12 +57,8 @@ export const PathwayGrades = ({ grades }: { grades: GradeData[] }) => {
       additionalColumns={[
         {
           id: 'action',
-          Cell: ({ row }) => (
-            <Link to={row.original.detailsUrl}>
-              <FormattedMessage {...messages.gradesViewDetails} />
-            </Link>
-          )
-        }
+          Cell: DetailsCell,
+        },
       ]}
     >
       <DataTable.Table />

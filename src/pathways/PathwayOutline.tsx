@@ -9,7 +9,7 @@ export const PathwayOutline = () => {
 
   return (
     <TabPage
-      activeTabSlug='outline'
+      activeTabSlug="outline"
       pathwayId={pathwayId}
       pathwayStatus={{ metadataQuery }}
     >

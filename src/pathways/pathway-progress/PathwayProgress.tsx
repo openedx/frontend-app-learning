@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom';
+import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { Col, Row, Stack } from '@openedx/paragon';
 import { usePathway, usePathwayAchievements, usePathwayProgress } from '../data/apiHooks';
 import { TabPage } from '../tab-page/TabPage';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import messages from './messages';
-import { Col, Row, Stack } from '@openedx/paragon';
 import { AchievementsInfo } from './AchievementsInfo';
 import { PathwayCompletion } from './pathway-completion/PathwayCompletion';
 import { PathwayGrades } from './PathwayGrades';
@@ -27,11 +27,11 @@ export const PathwayProgress = () => {
 
   return (
     <TabPage
-      activeTabSlug='progress'
+      activeTabSlug="progress"
       pathwayId={pathwayId}
       pathwayStatus={{
         metadataQuery,
-        tabDataQueries: [pathwayProgress, pathwayAchievements]
+        tabDataQueries: [pathwayProgress, pathwayAchievements],
       }}
     >
       <Stack gap={2}>
@@ -49,7 +49,7 @@ export const PathwayProgress = () => {
               <h1>
                 <FormattedMessage {...messages.gradesTitle} />
               </h1>
-              <PathwayGrades grades={grades ?? []}/>
+              <PathwayGrades grades={grades ?? []} />
             </Stack>
           </Col>
 
