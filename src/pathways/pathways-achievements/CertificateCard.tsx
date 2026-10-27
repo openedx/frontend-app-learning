@@ -4,8 +4,8 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 
 import { PathwayAchievementData } from '@src/pathways/data/types';
 
-import { ReactComponent as NewModeIcon } from './newsmode.svg';
 import messages from './messages';
+import { NewsModeIcon } from './NewsModeIcon';
 
 export interface CertificateCardProps extends PathwayAchievementData {
   categoryLabel?: string;
@@ -33,7 +33,7 @@ export const CertificateCard = ({
       <Stack gap={3}>
         <Stack>
           <Stack direction="horizontal" gap={1}>
-            <Icon className="text-info-800" src={NewModeIcon} />
+            <Icon className="text-info-800" src={NewsModeIcon} />
             <span className="small">
               <FormattedMessage {...subtitle} values={{ categoryLabel }} />
             </span>
