@@ -31,6 +31,23 @@ describe('PathwayGrades', () => {
     expect(row.getByText('30%')).toBeInTheDocument();
   });
 
+  it('colors the current grade by whether it reaches the pass grade', () => {
+    renderComponent();
+
+    // 85% with a 70% pass grade
+    expect(within(getRow('Introduction to Data Engineering')).getByText('85%')).toHaveClass('text-success');
+    // 30% with a 70% pass grade
+    expect(within(getRow('Data Pipelines')).getByText('30%')).toHaveClass('text-danger');
+  });
+
+  it('shows no current grade for a course without progress', () => {
+    renderComponent();
+
+    const row = within(getRow('Stream Processing'));
+    expect(row.getByText('-')).toBeInTheDocument();
+    expect(row.queryByText('0%', { selector: '.text-danger' })).not.toBeInTheDocument();
+  });
+
   it('links each course to its grade details', () => {
     renderComponent();
 

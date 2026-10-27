@@ -20,6 +20,19 @@ const ProgressCell = ({ value }: { value: number }) => (
   </span>
 );
 
+// Green when the course is passed, red otherwise
+const CurrentGradeCell = ({ value, row }: { value: number, row: { original: GradeData } }) => {
+  if (row.original.progress === 0) {
+    return <>-</>;
+  }
+
+  return (
+    <span className={value >= row.original.passGrade ? 'text-success' : 'text-danger'}>
+      <PercentCell value={value} />
+    </span>
+  );
+};
+
 const DetailsCell = ({ row }: { row: { original: GradeData } }) => (
   <Link to={row.original.detailsUrl}>
     <FormattedMessage {...messages.gradesViewDetails} />
@@ -49,7 +62,7 @@ export const PathwayGrades = ({ grades }: { grades: GradeData[] }) => {
         {
           Header: intl.formatMessage(messages.gradesCurrentGradeColumn),
           accessor: 'currentGrade',
-          Cell: PercentCell,
+          Cell: CurrentGradeCell,
         },
       ]}
       itemCount={grades.length}
