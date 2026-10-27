@@ -25,7 +25,10 @@ const datesRoutes: RoleRouteObject[] = [
     id: 'org.openedx.frontend.route.learning.dates',
     path: 'dates',
     handle: { roles: [courseDatesRole] },
-    element: <StubPage page="dates" />,
+    async lazy() {
+      const module = await import(/* webpackChunkName: "learning-dates" */ './course-home/dates-tab');
+      return { Component: module.default };
+    },
   },
 ];
 

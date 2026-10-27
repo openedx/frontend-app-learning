@@ -61,6 +61,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.2.6",
+    "classnames": "^2.5.1",
     "prop-types": "^15.8.1",
     "react-helmet": "^6.1.0"
   },

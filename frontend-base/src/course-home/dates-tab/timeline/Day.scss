@@ -1,0 +1,47 @@
+$dot-radius: 0.3rem;
+$dot-size: $dot-radius * 2;
+$offset: $dot-radius * 1.5;
+
+.dates-day {
+  position: relative;
+}
+
+.dates-line-top {
+  display: inline-block;
+  position: absolute;
+  left: $offset;
+  top: 0;
+  height: $offset;
+  z-index: 0;
+}
+
+.dates-dot {
+  display: inline-block;
+  position: absolute;
+  border-radius: 50%;
+  left: $dot-radius * 0.5; // save room for today's larger size
+  top: $offset;
+  height: $dot-size;
+  width: $dot-size;
+  z-index: 1;
+
+  &.dates-bg-today {
+    left: 0;
+    top: $offset - $dot-radius;
+    height: $dot-size * 1.5;
+    width: $dot-size * 1.5;
+  }
+}
+
+.dates-line-bottom {
+  display: inline-block;
+  position: absolute;
+  top: $offset + $dot-size;
+  bottom: 0;
+  left: $offset;
+  z-index: 0;
+}
+
+.dates-bg-today {
+  background: #ffdb87;
+}
