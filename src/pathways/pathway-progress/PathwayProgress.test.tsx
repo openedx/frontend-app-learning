@@ -1,8 +1,10 @@
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { DECODE_ROUTES } from '@src/constants';
-import { getPathway, getPathwayProgress } from '@src/pathways/data/api';
-import { dataEngineering, dataEngineeringProgress } from '@src/pathways/data/__fixtures__/pathways';
+import { getPathway, getPathwayAchievements, getPathwayProgress } from '@src/pathways/data/api';
+import {
+  dataEngineering, dataEngineeringAchievements, dataEngineeringProgress,
+} from '@src/pathways/data/__fixtures__/pathways';
 import { initializeMockApp, render, screen } from '@src/setupTest';
 
 import { PathwayProgress } from './PathwayProgress';
@@ -12,10 +14,12 @@ jest.mock('@src/plugin-slots/HeaderSlot', () => () => null);
 
 jest.mock('@src/pathways/data/api', () => ({
   getPathway: jest.fn(),
+  getPathwayAchievements: jest.fn(),
   getPathwayProgress: jest.fn(),
 }));
 
 const mockGetPathway = getPathway as jest.MockedFunction<typeof getPathway>;
+const mockGetPathwayAchievements = getPathwayAchievements as jest.MockedFunction<typeof getPathwayAchievements>;
 const mockGetPathwayProgress = getPathwayProgress as jest.MockedFunction<typeof getPathwayProgress>;
 
 const pathwayId = dataEngineering.pathway.id;
@@ -36,6 +40,7 @@ describe('PathwayProgress', () => {
   beforeEach(() => {
     mockGetPathway.mockResolvedValue(dataEngineering);
     mockGetPathwayProgress.mockResolvedValue(dataEngineeringProgress);
+    mockGetPathwayAchievements.mockResolvedValue([]);
   });
 
   it('shows the completion, grades and achievements of the pathway in the URL', async () => {
@@ -48,6 +53,14 @@ describe('PathwayProgress', () => {
 
     expect(mockGetPathway).toHaveBeenCalledWith(pathwayId);
     expect(mockGetPathwayProgress).toHaveBeenCalledWith(pathwayId);
+    expect(mockGetPathwayAchievements).toHaveBeenCalledWith(pathwayId);
+  });
+
+  it('links to the achievements when the learner has earned some', async () => {
+    mockGetPathwayAchievements.mockResolvedValue(dataEngineeringAchievements);
+    renderComponent();
+
+    expect(await screen.findByRole('link', { name: 'View achievements' })).toBeInTheDocument();
   });
 
   it('shows an error instead of the progress when it cannot be loaded', async () => {
