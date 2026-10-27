@@ -1,3 +1,4 @@
+import { runPageRules } from '@openedx/frontend-base';
 import { screen } from '@testing-library/react';
 
 import routes from '@src/routes';
@@ -118,6 +119,32 @@ describe('routes', () => {
     it('renders at preferences-unsubscribe/:userToken/:updatePatch with the patch', async () => {
       renderAt('/preferences-unsubscribe/tok/patch');
       await expectStub('preferencesUnsubscribe', { userToken: 'tok', updatePatch: 'patch' });
+    });
+  });
+
+  describe('page rules', () => {
+    it.each([
+      `/course/${courseId}/home`,
+      `/course/${courseId}/dates`,
+      `/course/${courseId}/progress`,
+      `/course/${courseId}/progress/42`,
+      `/course/${courseId}/discussion/topics/abc`,
+      `/course/${courseId}/live`,
+      `/course/${courseId}`,
+      `/course/${courseId}/seq`,
+      `/course/${courseId}/seq/unit`,
+      `/preview/course/${courseId}/seq`,
+      `/preview/course/${courseId}/seq/unit`,
+      `/course/${courseId}/course-end`,
+      `/course/${courseId}/access-denied`,
+      '/goal-unsubscribe/tok',
+      '/redirect/dashboard',
+      '/preferences-unsubscribe/tok',
+      '/preferences-unsubscribe/tok/patch',
+    ])('reports no page-rule diagnostics at %s', async (path) => {
+      renderAt(path);
+      await screen.findByText(/: not yet ported$/);
+      expect(runPageRules(document)).toEqual([]);
     });
   });
 });
