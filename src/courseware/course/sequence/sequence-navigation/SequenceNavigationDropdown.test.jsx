@@ -5,7 +5,7 @@ import { getAllByRole } from '@testing-library/dom';
 import { act } from '@testing-library/react';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import {
-  render, screen, fireEvent, getTestStoreIds, initializeTestStore,
+  render, screen, fireEvent, mockCourseRequests,
 } from '../../../../setupTest';
 import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
 
@@ -21,8 +21,7 @@ describe('Sequence Navigation Dropdown', () => {
   ));
 
   beforeAll(async () => {
-    const store = await initializeTestStore({ courseMetadata, unitBlocks });
-    ({ courseId, sequenceId } = getTestStoreIds(store));
+    ({ courseId, sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks }));
     mockData = {
       unitId: unitBlocks[1].id,
       unitIds: unitBlocks.map(block => block.id),

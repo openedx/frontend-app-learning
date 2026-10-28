@@ -4,7 +4,8 @@ import {
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { useCourseHomeMeta, type CourseHomeMeta } from '@src/course-home/data/apiHooks';
+import type { CourseHomeMeta } from '@src/course-home/data/api';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import {
   useCoursewareMetadata, useDiscussionTopic, useMinimalCourseOutline, type DiscussionTopic,
 } from '@src/courseware/data/apiHooks';

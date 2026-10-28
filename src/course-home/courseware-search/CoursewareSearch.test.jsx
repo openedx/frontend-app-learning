@@ -17,7 +17,6 @@ import {
 } from './hooks';
 import { useCoursewareSearch } from './CoursewareSearchContext';
 import { useCoursewareSearchResults } from './data/apiHooks';
-import initializeStore from '../../store';
 import { useCourseHomeMeta } from '../data/apiHooks';
 
 jest.mock('./hooks');
@@ -55,10 +54,9 @@ const intl = {
 };
 
 function renderComponent(props = {}) {
-  const store = initializeStore();
   history.push(pathname);
   const { container } = render(
-    <AppProvider store={store}>
+    <AppProvider>
       <Routes>
         <Route path="/course/:courseId/:sequenceId/:unitId" element={<CoursewareSearch intl={intl} {...props} />} />
       </Routes>

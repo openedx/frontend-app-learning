@@ -9,8 +9,6 @@ import messages from './messages';
 import searchResultsFactory from './test-data/search-results-factory';
 import * as mock from './test-data/mocked-response.json';
 
-jest.mock('react-redux');
-
 function renderComponent({ results }) {
   const { container } = render(<CoursewareSearchResults results={results} />);
   return container;

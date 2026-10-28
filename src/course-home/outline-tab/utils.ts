@@ -1,5 +1,7 @@
 import camelCase from 'lodash.camelcase';
 
+import type { ProctoringInfo } from '../data/api';
+
 export const readableProctoringStatuses = {
   notStarted: 'notStarted',
   started: 'started',
@@ -29,12 +31,6 @@ function getReadableProctoringStatusClass(examStatus?: string): ReadableProctori
     }
   }
   return readableClass;
-}
-
-// The onboarding-status endpoint's raw response (snake_case), as getProctoringInfoData returns it.
-interface ProctoringInfo {
-  onboarding_status?: string;
-  expiration_date?: string | null;
 }
 
 export function getReadableProctoringStatus(response: ProctoringInfo): ReadableProctoringStatus {

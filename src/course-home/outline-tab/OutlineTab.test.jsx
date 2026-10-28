@@ -13,6 +13,7 @@ import MockAdapter from 'axios-mock-adapter';
 import Cookies from 'js-cookie';
 import userEvent from '@testing-library/user-event';
 import { render } from '@testing-library/react';
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import messages from './messages';
 
 import { buildMinimalCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
@@ -20,8 +21,6 @@ import {
   createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, waitFor, act,
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import initializeStore from '../../store';
-import { courseHomeQueryKeys } from '../data/queryKeys';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 import OutlineTab from './OutlineTab';
 import { UserMessagesProvider } from '../../generic/user-messages';
@@ -54,13 +53,12 @@ describe('Outline Tab', () => {
   const courseId = 'course-v1:edX+DemoX+Demo_Course';
   let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-  const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v1/enrollment`;
+  const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment/`;
   const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
   const masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
   const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
   const proctoringInfoUrl = `${getConfig().EXAMS_BASE_URL}/api/v1/student/course_id/${encodeURIComponent(courseId)}/onboarding?username=MockUser`;
 
-  const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata');
   const defaultTabData = Factory.build('outlineTabData');
 
@@ -74,11 +72,11 @@ describe('Outline Tab', () => {
     axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
   }
 
-  async function fetchAndRender(path = '', { renderStore = store, waitForLoaded = true } = {}) {
+  async function fetchAndRender(path = '', { waitForLoaded = true } = {}) {
     const search = path.includes('?') ? path.slice(path.indexOf('?')) : '';
-    const queryClient = createTestQueryClient(renderStore);
+    const queryClient = createTestQueryClient();
     await act(async () => render(
-      <AppProvider store={renderStore} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <MemoryRouter initialEntries={[`/course/${courseId}/home${search}`]}>
           <QueryClientProvider client={queryClient}>
             <UserMessagesProvider>
@@ -125,14 +123,13 @@ describe('Outline Tab', () => {
 
   describe('Access denied', () => {
     it('waits for the outline data before rendering for a denied learner (no crash)', async () => {
-      const testStore = initializeStore();
       setMetadata({ course_access: { has_access: false, error_code: 'authentication_required' }, is_enrolled: false });
       let resolveOutline;
       axiosMock.onGet(outlineUrl).reply(() => new Promise((resolve) => { resolveOutline = resolve; }));
 
-      const queryClient = await fetchAndRender('', { renderStore: testStore, waitForLoaded: false });
+      const queryClient = await fetchAndRender('', { waitForLoaded: false });
 
-      await waitFor(() => expect(queryClient.getQueryData(courseHomeQueryKeys.metadata(courseId))).toBeDefined());
+      await waitFor(() => expect(queryClient.getQueryData(courseHomeMetaQuery(courseId).queryKey)).toBeDefined());
       expect(screen.getByRole('status')).toBeInTheDocument();
 
       await act(async () => { resolveOutline([200, Factory.build('outlineTabData')]); });
@@ -1439,6 +1436,16 @@ describe('Outline Tab', () => {
       await waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
       expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
+    });
+
+    it('requests the outline once per load with the instructor toolbar mounted', async () => {
+      setMetadata({ original_user_is_staff: true });
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(axiosMock.history.get.filter((req) => req.url === outlineUrl)).toHaveLength(1);
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/api/course_home/progress/'))).toHaveLength(0);
     });
   });
 });

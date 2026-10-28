@@ -7,11 +7,9 @@ import { throttle } from 'lodash';
 
 import { logError } from '@edx/frontend-platform/logging';
 
-import { usePostEvent } from '@src/course-home/data/apiHooks';
-import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
-import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
+import { courseHomeMetaQuery, usePostEvent } from '@src/course-home/data/apiHooks';
 import { useEventListener } from '@src/generic/hooks';
-import { useSequenceMetadata } from '@src/courseware/data/apiHooks';
+import { coursewareMetadataQuery, minimalCourseOutlineQuery, useSequenceMetadata } from '@src/courseware/data/apiHooks';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
 import { eventTypes, messageTypes } from '../constants';
 
@@ -166,9 +164,9 @@ const useIFrameBehavior = ({
       {
         onSuccess: () => {
           const eventCourseId = event.postData.bodyParams.courseId;
-          queryClient.invalidateQueries({ queryKey: coursewareQueryKeys.metadata(eventCourseId) });
-          queryClient.invalidateQueries({ queryKey: coursewareQueryKeys.outline(eventCourseId) });
-          queryClient.invalidateQueries({ queryKey: courseHomeQueryKeys.metadata(eventCourseId) });
+          queryClient.invalidateQueries({ queryKey: coursewareMetadataQuery(eventCourseId).queryKey });
+          queryClient.invalidateQueries({ queryKey: minimalCourseOutlineQuery(eventCourseId).queryKey });
+          queryClient.invalidateQueries({ queryKey: courseHomeMetaQuery(eventCourseId).queryKey });
         },
       },
     );

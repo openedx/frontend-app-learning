@@ -6,9 +6,9 @@ import { useCourseHomeMeta } from '../../data/apiHooks';
 import messages from '../messages';
 
 interface Props {
-  due: string;
+  due: string | null;
   id: string;
-  description: string;
+  description: string | null;
 }
 
 const SequenceDueDate: React.FC<Props> = ({

@@ -1,10 +1,11 @@
 import { logError } from '@edx/frontend-platform/logging';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
 
-import type { TabMetadata } from '@src/course-tabs/utils';
-import type { RequestError } from '@src/data/http-error';
+import { appId } from '@src/constants';
 import { useToast, ToastContent } from '@src/generic/ToastContext';
 import {
+  type CallToActionResponse,
+  type PostEventData,
   executePostFromPostEvent,
   getCourseHomeCourseMetadata,
   getDatesTabData,
@@ -18,21 +19,11 @@ import {
   postRequestCert,
   postWeeklyLearningGoal,
 } from './api';
-import { courseHomeQueryKeys } from './queryKeys';
 
-interface CallToActionResponse {
-  header: string;
-  link: string;
-  link_text: string;
-}
+const courseHomeKey = [appId, 'courseHome'] as const;
 
 interface QueryOptions {
   enabled?: boolean;
-}
-
-interface PostData {
-  url: string;
-  bodyParams: { courseId: string };
 }
 
 const toastFrom = ({ header, link, link_text: linkText }: CallToActionResponse): ToastContent => ({
@@ -55,7 +46,7 @@ export const useResetDeadlines = () => {
 export const usePostEvent = () => {
   const { setToastContent, openToast } = useToast();
   return useMutation({
-    mutationFn: ({ postData, researchEventData }: { postData: PostData; researchEventData: unknown }) => (
+    mutationFn: ({ postData, researchEventData }: { postData: PostEventData; researchEventData: unknown }) => (
       executePostFromPostEvent(postData, researchEventData)
     ),
     onSuccess: ({ data }) => {
@@ -66,85 +57,53 @@ export const usePostEvent = () => {
   });
 };
 
-// Names only the fields this repo's TypeScript readers need; the endpoint returns many more,
-// left reachable as `unknown` so plugins importing this hook are not limited to our list.
-// The full shape is openedx-platform's to describe — a copy of it here would drift — so this
-// stays partial until the platform ships types we can import.
-export interface CourseHomeMeta {
-  celebrations: {
-    streakLengthToCelebrate?: number | null;
-    streakDiscountEnabled?: boolean;
-  } | null;
-  courseAccess: { hasAccess: boolean };
-  hasCourseAuthorAccess: boolean;
-  number: string;
-  org: string;
-  originalUserIsStaff: boolean;
-  start: string;
-  tabs: TabMetadata[];
-  title: string;
-  userTimezone: string | null;
-  verifiedMode: Record<string, unknown> | null;
-  [key: string]: unknown;
-}
+export const courseHomeMetaQuery = (courseId: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'metadata', courseId] as const,
+  queryFn: () => getCourseHomeCourseMetadata(courseId),
+});
 
 export const useCourseHomeMeta = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
-) => useQuery<CourseHomeMeta, RequestError>({
-  queryKey: courseHomeQueryKeys.metadata(courseId!),
-  queryFn: () => getCourseHomeCourseMetadata(courseId),
+) => useQuery({
+  ...courseHomeMetaQuery(courseId!),
   enabled: enabled && !!courseId,
 });
 
-export const useDatesTabData = (courseId: string, { enabled = true }: QueryOptions = {}) => useQuery({
-  queryKey: courseHomeQueryKeys.datesTab(courseId),
+export const datesTabDataQuery = (courseId: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'datesTab', courseId] as const,
   queryFn: () => getDatesTabData(courseId),
-  enabled,
-  // Transitional (#1999): the access-expiration masquerade banner still reads this model,
-  // via useModel(tab, courseId). Dropped when that reader converts.
-  meta: { modelType: 'dates', courseId },
 });
 
-export interface OutlineSequence {
-  complete: boolean;
-  description: string;
-  due: string;
-  showLink: boolean;
-  title: string;
-  hideFromTOC: boolean;
-  effortActivities?: number;
-  effortTime?: number;
-}
+export const useDatesTabData = (courseId: string, { enabled = true }: QueryOptions = {}) => useQuery({
+  ...datesTabDataQuery(courseId),
+  enabled,
+});
 
-// Names only the fields this repo's TypeScript readers need; the endpoint returns many more,
-// left reachable as `unknown` so plugins importing these hooks are not limited to our list.
-// The full shape is openedx-platform's to describe — a copy of it here would drift — so this
-// stays partial until the platform ships types we can import. Every field is optional because
-// the endpoint's 403 branch returns `{}`.
-interface OutlineTabData {
-  courseBlocks?: {
-    sequences?: Record<string, OutlineSequence>;
-  };
-  userTimezone?: string;
-  [key: string]: unknown;
-}
+export const outlineTabDataQuery = (courseId: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'outlineTab', courseId] as const,
+  queryFn: () => getOutlineTabData(courseId),
+});
 
 export const useOutlineTabData = (
   courseId: string | undefined,
   { enabled = true }: QueryOptions = {},
-) => useQuery<OutlineTabData>({
-  queryKey: courseHomeQueryKeys.outlineTab(courseId!),
-  queryFn: () => getOutlineTabData(courseId),
+) => useQuery({
+  ...outlineTabDataQuery(courseId!),
   enabled: enabled && !!courseId,
-  // Transitional (#1999): the access-expiration masquerade banner still reads this model,
-  // via useModel(tab, courseId). Dropped when that reader converts.
-  meta: { modelType: 'outline', courseId },
 });
 
-export const useLiveTabData = (courseId: string) => useQuery({
-  queryKey: courseHomeQueryKeys.liveTab(courseId),
+export const liveTabDataQuery = (courseId: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'liveTab', courseId] as const,
   queryFn: () => getLiveTabIframe(courseId),
+});
+
+export const useLiveTabData = (courseId: string) => useQuery(liveTabDataQuery(courseId));
+
+export const progressTabDataQuery = (courseId: string, targetUserId?: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'progressTab', courseId, targetUserId] as const,
+  queryFn: () => getProgressTabData(courseId, targetUserId),
+  meta: { logStatusAs: { 404: 'silent' } },
 });
 
 export const useProgressTabData = (
@@ -152,17 +111,13 @@ export const useProgressTabData = (
   targetUserId?: string,
   { enabled = true }: QueryOptions = {},
 ) => useQuery({
-  queryKey: courseHomeQueryKeys.progressTab(courseId, targetUserId),
-  queryFn: () => getProgressTabData(courseId, targetUserId),
+  ...progressTabDataQuery(courseId, targetUserId),
   enabled,
-  meta: { modelType: 'progress', courseId, logStatusAs: { 404: 'silent' } },
 });
 
-export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: string[] | undefined) => useQuery<
-Record<string, unknown>[]
->({
-  queryKey: courseHomeQueryKeys.examAttempts(courseId!, sequenceIds ?? []),
-  queryFn: () => Promise.all((sequenceIds ?? []).map(async (sequenceId) => {
+export const examAttemptsDataQuery = (courseId: string, sequenceIds: string[]) => queryOptions({
+  queryKey: [...courseHomeKey, 'examAttempts', courseId, sequenceIds] as const,
+  queryFn: () => Promise.all(sequenceIds.map(async (sequenceId) => {
     try {
       return (await getExamsData(courseId, sequenceId)).exam || {};
     } catch (error) {
@@ -170,7 +125,17 @@ Record<string, unknown>[]
       return {};
     }
   })),
+});
+
+export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: string[] | undefined) => useQuery({
+  ...examAttemptsDataQuery(courseId!, sequenceIds ?? []),
   enabled: !!courseId && !!sequenceIds,
+});
+
+export const proctoringInfoDataQuery = (courseId: string, username?: string) => queryOptions({
+  queryKey: [...courseHomeKey, 'proctoringInfo', courseId, username] as const,
+  queryFn: () => getProctoringInfoData(courseId, username),
+  retry: false,
 });
 
 export const useProctoringInfoData = (
@@ -178,10 +143,8 @@ export const useProctoringInfoData = (
   username?: string,
   { enabled = true }: QueryOptions = {},
 ) => useQuery({
-  queryKey: courseHomeQueryKeys.proctoringInfo(courseId, username),
-  queryFn: () => getProctoringInfoData(courseId, username),
+  ...proctoringInfoDataQuery(courseId, username),
   enabled,
-  retry: false,
 });
 
 export const useRequestCert = () => useMutation({

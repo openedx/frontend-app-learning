@@ -6,8 +6,7 @@ import { MasqueradeWidget } from './MasqueradeWidget';
 import {
   fireEvent,
   getAllByRole,
-  getTestStoreIds,
-  initializeTestStore,
+  mockCourseRequests,
   render,
   screen,
   waitFor,
@@ -39,8 +38,7 @@ describe('Masquerade Widget Dropdown', () => {
   ];
 
   beforeAll(async () => {
-    const store = await initializeTestStore();
-    courseId = getTestStoreIds(store).courseId;
+    courseId = mockCourseRequests().courseId;
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
     mockData = {

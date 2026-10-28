@@ -24,7 +24,6 @@ import DatesTab from './course-home/dates-tab';
 import GoalUnsubscribe from './course-home/goal-unsubscribe';
 import ProgressTab from './course-home/progress-tab/ProgressTab';
 
-import { store } from './store';
 import { createQueryClient } from './queryClient';
 import NoticesProvider from './generic/notices';
 import PathFixesProvider from './generic/path-fixes';
@@ -37,14 +36,14 @@ import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
 
-const queryClient = createQueryClient(store);
+const queryClient = createQueryClient();
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
 
   root.render(
     <StrictMode>
-      <AppProvider store={store}>
+      <AppProvider>
         <QueryClientProvider client={queryClient}>
           <Helmet>
             <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />

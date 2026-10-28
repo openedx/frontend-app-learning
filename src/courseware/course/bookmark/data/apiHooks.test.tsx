@@ -5,18 +5,27 @@ import MockAdapter from 'axios-mock-adapter';
 import { MemoryRouter } from 'react-router-dom';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { Factory } from 'rosie';
 
-import type { SequenceMetadataData } from '@src/courseware/data/sequenceMetadata';
-import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
+import { sequenceMetadataQuery } from '@src/courseware/data/apiHooks';
+import { buildSimpleCourseBlocks } from '@src/shared/data/__factories__/courseBlocks.factory';
 import { createTestQueryClient, initializeMockApp } from '../../../../setupTest';
 import { useSetBookmarked } from './apiHooks';
 
 const { loggingService } = initializeMockApp();
 
 describe('bookmark apiHooks — useSetBookmarked', () => {
-  const sequenceId = 'sequenceId';
-  const unitId = 'unitId';
-  const sequenceKey = coursewareQueryKeys.sequence(sequenceId, false);
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  const { unitBlocks, sequenceBlocks } = buildSimpleCourseBlocks(courseId);
+  const sequenceMetadata = Factory.build(
+    'sequenceMetadata',
+    {},
+    { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
+  );
+  const sequenceId = sequenceBlocks[0].id;
+  const unitId = unitBlocks[0].id;
+  const sequenceKey = sequenceMetadataQuery(sequenceId, false).queryKey;
+  const sequenceUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
   const createBookmarkURL = `${getConfig().LMS_BASE_URL}/api/bookmarks/v1/bookmarks/`;
   const deleteBookmarkURL = `${createBookmarkURL}${getAuthenticatedUser().username},${unitId}/`;
 
@@ -24,7 +33,7 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
   let queryClient: QueryClient;
 
   const cachedUnit = () => (
-    queryClient.getQueryData<SequenceMetadataData>(sequenceKey)?.units.find((unit) => unit.id === unitId)
+    queryClient.getQueryData(sequenceKey)?.units.find((unit) => unit.id === unitId)
   );
 
   const renderSetBookmarked = () => {
@@ -36,11 +45,12 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
     return renderHook(() => useSetBookmarked(), { wrapper });
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     queryClient = createTestQueryClient();
     loggingService.logError.mockReset();
-    queryClient.setQueryData(sequenceKey, { sequence: {}, units: [{ id: unitId, bookmarked: false }] });
+    axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
+    await queryClient.fetchQuery(sequenceMetadataQuery(sequenceId, false));
   });
 
   it('creates the bookmark and updates the cached unit', async () => {
@@ -128,7 +138,7 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
 
     await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
     await act(async () => {});
-    expect(queryClient.getQueryData(coursewareQueryKeys.sequence(otherSequenceId, false))).toBeUndefined();
+    expect(queryClient.getQueryData(sequenceMetadataQuery(otherSequenceId, false).queryKey)).toBeUndefined();
     expect(cachedUnit()).toEqual(expect.objectContaining({ bookmarked: false }));
   });
 });

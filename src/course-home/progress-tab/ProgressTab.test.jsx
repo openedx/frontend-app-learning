@@ -15,7 +15,6 @@ import {
   createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, within, act, waitFor,
 } from '../../setupTest';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import initializeStore from '../../store';
 import ProgressTab from './ProgressTab';
 import { useExamsData } from './hooks';
 import { UserMessagesProvider } from '../../generic/user-messages';
@@ -47,7 +46,6 @@ const mockSearchParams = ((props = coursewareSearch) => {
 describe('Progress Tab', () => {
   let axiosMock;
 
-  const store = initializeStore();
   const defaultMetadata = Factory.build('courseHomeMetadata');
   const defaultTabData = Factory.build('progressTabData');
 
@@ -71,9 +69,9 @@ describe('Progress Tab', () => {
   }
 
   async function fetchAndRender(initialEntry = `/course/${courseId}/progress`, { waitForLoaded = true } = {}) {
-    const queryClient = createTestQueryClient(store);
+    const queryClient = createTestQueryClient();
     await act(async () => render(
-      <AppProvider store={store} wrapWithRouter={false}>
+      <AppProvider wrapWithRouter={false}>
         <MemoryRouter initialEntries={[initialEntry]}>
           <QueryClientProvider client={queryClient}>
             <UserMessagesProvider>
@@ -1477,6 +1475,18 @@ describe('Progress Tab', () => {
       expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
       expect(screen.queryByText('1/1/2020', { exact: false })).not.toBeInTheDocument();
     });
+    it('renders banner when viewing another learner\'s progress', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      setTabData({
+        access_expiration: {
+          expiration_date: '2020-01-01T12:00:00Z',
+          masquerading_expired_course: true,
+        },
+      });
+      await fetchAndRender(`/course/${courseId}/progress/10/`);
+      expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
+    });
   });
 
   describe('Course start masquerade banner', () => {
@@ -1594,6 +1604,16 @@ describe('Progress Tab', () => {
       await waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
       expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
+    });
+
+    it('requests the progress data once per load with the instructor toolbar mounted', async () => {
+      setMetadata({ original_user_is_staff: true });
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(axiosMock.history.get.filter((req) => progressUrl.test(req.url))).toHaveLength(1);
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/api/course_home/outline/'))).toHaveLength(0);
     });
   });
 

@@ -6,7 +6,7 @@ import { AppProvider } from '@edx/frontend-platform/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { breakpoints } from '@openedx/paragon';
 
-import { createTestQueryClient, getTestStoreIds, initializeTestStore } from '@src/setupTest';
+import { createTestQueryClient, mockCourseRequests } from '@src/setupTest';
 import SidebarState from '@src/tests/SidebarState';
 import { SidebarProvider } from '../../SidebarContext';
 import CourseOutlineTrigger from './CourseOutlineTrigger';
@@ -16,7 +16,6 @@ import messages from './messages';
 describe('<CourseOutlineTrigger />', () => {
   let courseId;
   let unitId;
-  let store;
 
   const { innerWidth: originalInnerWidth } = window;
 
@@ -26,11 +25,8 @@ describe('<CourseOutlineTrigger />', () => {
     window.sessionStorage.clear();
   });
 
-  const initTestStore = async (options) => {
-    store = await initializeTestStore(options);
-    const state = store.getState();
-    courseId = getTestStoreIds(store).courseId;
-    [unitId] = Object.keys(state.models.units);
+  const initTestStore = (options) => {
+    ({ courseId, unitId } = mockCourseRequests(options));
   };
 
   const toggleButton = () => screen.queryByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage });
@@ -38,8 +34,8 @@ describe('<CourseOutlineTrigger />', () => {
 
   function renderWithProvider(props = {}) {
     const { container } = render(
-      <AppProvider store={store} wrapWithRouter={false}>
-        <QueryClientProvider client={createTestQueryClient(store)}>
+      <AppProvider wrapWithRouter={false}>
+        <QueryClientProvider client={createTestQueryClient()}>
           <IntlProvider locale="en">
             <MemoryRouter>
               <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>

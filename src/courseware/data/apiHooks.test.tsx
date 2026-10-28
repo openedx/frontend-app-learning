@@ -7,26 +7,23 @@ import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { MemoryRouter } from 'react-router-dom';
 
+import { courseHomeMetaQuery, useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import { buildSimpleCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
 import { buildOutlineFromBlocks } from './__factories__/learningSequencesOutline.factory';
 import { getResponseStatus } from '../../data/http-error';
 import { createTestQueryClient, initializeMockApp } from '../../setupTest';
-import initializeStore from '../../store';
 import { normalizeMinimalCourseOutline } from './minimalCourseOutline';
 import { normalizeCourseNavigationOutline } from './courseNavigationOutline';
 import { normalizeSequenceMetadata } from './sequenceMetadata';
-import { coursewareQueryKeys } from './queryKeys';
-import { courseHomeQueryKeys } from '../../course-home/data/queryKeys';
 import type { CourseNavigationOutline } from './courseNavigationOutline';
-import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import {
-  discussionTopicsQuery, sequenceMetadataQuery, sequenceMightBeUnit, updateSequenceUnit, useCheckBlockCompletion,
-  useCourseOutlineStructure, useCoursewareMetadata, useMinimalCourseOutline, useCoursewareOutlineSidebarToggles,
-  useDiscussionTopic, useIsCourseLoaded, useSaveIntegritySignature, useSaveSequencePosition, useSequenceIds,
+  courseOutlineStructureQuery, coursewareMetadataQuery, discussionTopicsQuery, minimalCourseOutlineQuery,
+  sequenceMetadataQuery, sequenceMightBeUnit, updateSequenceUnit, useCheckBlockCompletion,
+  useCourseOutlineStructure, useCoursewareMetadata, useCoursewareOutlineSidebarToggles, useDiscussionTopic,
+  useIsCourseLoaded, useMinimalCourseOutline, useSaveIntegritySignature, useSaveSequencePosition, useSequenceIds,
   useSequenceMetadata, useUnit,
 } from './apiHooks';
-import type { SequenceMetadataData } from './sequenceMetadata';
 
 const { loggingService } = initializeMockApp();
 
@@ -76,7 +73,7 @@ describe('courseware apiHooks — useSequenceIds', () => {
 
     // The outline has resolved, but the loaded gate still waits on the metadata: no ids yet.
     await waitFor(() => (
-      expect(queryClient.getQueryState(coursewareQueryKeys.outline(courseId))?.status).toBe('success')
+      expect(queryClient.getQueryState(minimalCourseOutlineQuery(courseId).queryKey)?.status).toBe('success')
     ));
     expect(result.current).toEqual([]);
 
@@ -151,10 +148,10 @@ describe('courseware apiHooks — useIsCourseLoaded', () => {
     const { result } = renderLoaded(courseId, queryClient);
 
     await waitFor(() => {
-      expect(statusOf(queryClient, coursewareQueryKeys.outline(courseId))).toBe('success');
-      expect(statusOf(queryClient, courseHomeQueryKeys.metadata(courseId))).toBe('success');
+      expect(statusOf(queryClient, minimalCourseOutlineQuery(courseId).queryKey)).toBe('success');
+      expect(statusOf(queryClient, courseHomeMetaQuery(courseId).queryKey)).toBe('success');
     });
-    expect(statusOf(queryClient, coursewareQueryKeys.metadata(courseId))).toBe('pending');
+    expect(statusOf(queryClient, coursewareMetadataQuery(courseId).queryKey)).toBe('pending');
     expect(result.current).toBe(false);
   });
 
@@ -168,9 +165,7 @@ describe('courseware apiHooks — useIsCourseLoaded', () => {
     const { result } = renderLoaded(courseId, queryClient);
 
     await waitFor(() => expect(queryClient.isFetching()).toBe(0));
-    expect(queryClient.getQueryData<{ courseAccess: { hasAccess: boolean } }>(
-      courseHomeQueryKeys.metadata(courseId),
-    )?.courseAccess.hasAccess).toBe(false);
+    expect(queryClient.getQueryData(courseHomeMetaQuery(courseId).queryKey)?.courseAccess.hasAccess).toBe(false);
     expect(result.current).toBe(false);
   });
 
@@ -181,7 +176,7 @@ describe('courseware apiHooks — useIsCourseLoaded', () => {
     const { result } = renderLoaded(courseId, queryClient);
 
     await waitFor(() => expect(queryClient.isFetching()).toBe(0));
-    expect(statusOf(queryClient, coursewareQueryKeys.outline(courseId))).toBe('error');
+    expect(statusOf(queryClient, minimalCourseOutlineQuery(courseId).queryKey)).toBe('error');
     expect(result.current).toBe(false);
   });
 
@@ -192,7 +187,7 @@ describe('courseware apiHooks — useIsCourseLoaded', () => {
     const { result } = renderLoaded(courseId, queryClient);
 
     await waitFor(() => expect(queryClient.isFetching()).toBe(0));
-    expect(statusOf(queryClient, coursewareQueryKeys.metadata(courseId))).toBe('error');
+    expect(statusOf(queryClient, coursewareMetadataQuery(courseId).queryKey)).toBe('error');
     expect(result.current).toBe(false);
   });
 
@@ -409,12 +404,11 @@ describe('courseware apiHooks — useCoursewareOutlineSidebarToggles', () => {
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    loggingService.logError.mockReset();
   });
 
   const renderToggles = () => {
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={createTestQueryClient(initializeStore())}>{children}</QueryClientProvider>
+      <QueryClientProvider client={createTestQueryClient()}>{children}</QueryClientProvider>
     );
     return renderHook(() => useCoursewareOutlineSidebarToggles(courseId), { wrapper });
   };
@@ -428,13 +422,12 @@ describe('courseware apiHooks — useCoursewareOutlineSidebarToggles', () => {
     expect(result.current.data).toEqual({ enableCompletionTracking: true });
   });
 
-  it('logs the error and leaves the flag unset on failure', async () => {
+  it('leaves the flag unset on failure', async () => {
     axiosMock.onGet(togglesUrl).networkError();
 
     const { result } = renderToggles();
 
     await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(loggingService.logError).toHaveBeenCalled();
     expect(result.current.data).toBeUndefined();
   });
 });
@@ -444,16 +437,14 @@ describe('courseware apiHooks — discussionTopicsQuery', () => {
   const courseId = courseMetadata.id;
   const configUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v1/courses/${courseId}`;
   const topicsUrl = `${getConfig().LMS_BASE_URL}/api/discussion/v2/course_topics/${courseId}`;
-  const topicsQueryKey = coursewareQueryKeys.discussionTopics(courseId);
+  const topicsQueryKey = discussionTopicsQuery(courseId).queryKey;
 
   let axiosMock: MockAdapter;
   let queryClient: QueryClient;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    // The app QueryCache (whose onError logs) still takes a store until #1977 removes the bridge.
-    queryClient = createTestQueryClient(initializeStore());
-    loggingService.logError.mockReset();
+    queryClient = createTestQueryClient();
   });
 
   it('loads openedx-provider topics that have a usage key', async () => {
@@ -480,12 +471,11 @@ describe('courseware apiHooks — discussionTopicsQuery', () => {
     expect(queryClient.getQueryData(topicsQueryKey)).toEqual([]);
   });
 
-  it('logs the error and caches nothing when the config request fails', async () => {
+  it('caches nothing when the config request fails', async () => {
     axiosMock.onGet(configUrl).networkError();
 
     await expect(queryClient.query(discussionTopicsQuery(courseId))).rejects.toThrow();
 
-    expect(loggingService.logError).toHaveBeenCalled();
     expect(queryClient.getQueryData(topicsQueryKey)).toBeUndefined();
   });
 });
@@ -634,16 +624,16 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
   const unitId = unitBlocks[0].id;
   const sequenceUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
   const completionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/get_completion`;
-  const outlineQueryKey = coursewareQueryKeys.courseOutline(courseId);
+  const outlineQueryKey = courseOutlineStructureQuery(courseId).queryKey;
 
-  const sequenceKey = coursewareQueryKeys.sequence(sequenceId, false);
+  const sequenceKey = sequenceMetadataQuery(sequenceId, false).queryKey;
 
   let axiosMock: MockAdapter;
   let queryClient: QueryClient;
 
-  const outline = () => queryClient.getQueryData<CourseNavigationOutline>(outlineQueryKey)!;
+  const outline = () => queryClient.getQueryData(outlineQueryKey)!;
   const cachedUnit = (id: string) => (
-    queryClient.getQueryData<SequenceMetadataData>(sequenceKey)?.units.find((unit) => unit.id === id)
+    queryClient.getQueryData(sequenceKey)?.units.find((unit) => unit.id === id)
   );
 
   const seedOutline = () => {
@@ -773,8 +763,6 @@ describe('courseware apiHooks — useCheckBlockCompletion', () => {
   });
 
   it('leaves the outline untouched when the cached tree does not contain the unit', async () => {
-    // The old reducer threw on an unknown unit and immer discarded the draft, leaving the
-    // outline unmodified; the helper's not-found guard reproduces that outcome.
     axiosMock.onPost(completionUrl).reply(201, { complete: true });
     seedOutline();
     const foreignUnitId = 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@not_in_this_outline';
@@ -853,14 +841,14 @@ describe('courseware apiHooks — useSaveSequencePosition', () => {
     { courseId, unitBlocks, sequenceBlock: sequenceBlocks[0] },
   );
   const sequenceId = sequenceBlocks[0].id;
-  const sequenceKey = coursewareQueryKeys.sequence(sequenceId, false);
+  const sequenceKey = sequenceMetadataQuery(sequenceId, false).queryKey;
   const sequenceUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
   const gotoPositionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/goto_position`;
 
   let axiosMock: MockAdapter;
   let queryClient: QueryClient;
 
-  const activeUnitIndex = () => queryClient.getQueryData<SequenceMetadataData>(sequenceKey)?.sequence.activeUnitIndex;
+  const activeUnitIndex = () => queryClient.getQueryData(sequenceKey)?.sequence.activeUnitIndex;
 
   const renderSaveSequencePosition = () => {
     const wrapper = ({ children }: { children: ReactNode }) => (
@@ -939,17 +927,16 @@ describe('courseware apiHooks — useSaveSequencePosition', () => {
 });
 
 describe('courseware apiHooks — useSaveIntegritySignature', () => {
-  const courseMetadata = Factory.build('courseMetadata');
+  const courseMetadata = Factory.build('courseMetadata', { user_needs_integrity_signature: true });
   const courseId = courseMetadata.id;
   const integritySignatureUrl = `${getConfig().LMS_BASE_URL}/api/agreements/v1/integrity_signature/${courseId}`;
-  const metadataKey = coursewareQueryKeys.metadata(courseId);
+  const metadataUrl = appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/courseware/course/${courseId}`);
+  const metadataKey = coursewareMetadataQuery(courseId).queryKey;
 
   let axiosMock: MockAdapter;
   let queryClient: QueryClient;
 
-  const needsSignature = () => (
-    queryClient.getQueryData<{ userNeedsIntegritySignature: boolean }>(metadataKey)?.userNeedsIntegritySignature
-  );
+  const needsSignature = () => queryClient.getQueryData(metadataKey)?.userNeedsIntegritySignature;
 
   const renderSaveIntegritySignature = () => {
     const wrapper = ({ children }: { children: ReactNode }) => (
@@ -958,13 +945,12 @@ describe('courseware apiHooks — useSaveIntegritySignature', () => {
     return renderHook(() => useSaveIntegritySignature(), { wrapper });
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     queryClient = createTestQueryClient();
     loggingService.logError.mockReset();
-    // The hook patches only `userNeedsIntegritySignature`; the field's normalization is covered by
-    // the metadata query and pact tests.
-    queryClient.setQueryData(metadataKey, { userNeedsIntegritySignature: true });
+    axiosMock.onGet(metadataUrl).reply(200, courseMetadata);
+    await queryClient.fetchQuery(coursewareMetadataQuery(courseId));
   });
 
   it('updates userNeedsIntegritySignature upon success', async () => {

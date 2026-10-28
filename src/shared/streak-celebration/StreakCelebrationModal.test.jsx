@@ -8,16 +8,17 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import userEvent from '@testing-library/user-event';
 import MockAdapter from 'axios-mock-adapter';
 
+import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import {
   act,
   createTestQueryClient,
   initializeMockApp,
-  initializeTestStore,
+  mockCourseRequests,
   render,
   screen,
   seedQueryData,
 } from '../../setupTest';
-import { courseHomeQueryKeys } from '../../course-home/data/queryKeys';
+import { getCourseHomeCourseMetadata } from '../../course-home/data/api';
 import StreakModal from './StreakCelebrationModal';
 
 initializeMockApp();
@@ -25,7 +26,7 @@ jest.mock('@edx/frontend-platform/analytics');
 
 describe('Loaded Tab Page', () => {
   let mockData;
-  let testStore;
+  let courseHomeMeta;
   let axiosMock;
   let queryClient;
   const calculateUrl = `${getConfig().ECOMMERCE_BASE_URL}/api/v2/baskets/calculate/?code=ZGY11119949&sku=8CF08E5&username=MockUser`;
@@ -59,19 +60,18 @@ describe('Loaded Tab Page', () => {
   }
 
   // The suite's own axios adapter replaces the one mocking the metadata endpoint, so the modal
-  // reads the course metadata from a seeded query rather than a mounted fetch.
+  // reads the course metadata, fetched before the swap, from a seeded query rather than a mounted fetch.
   async function renderModal() {
     queryClient = createTestQueryClient();
     seedQueryData(
       queryClient,
-      courseHomeQueryKeys.metadata(mockData.courseId),
-      testStore.getState().models.courseHomeMeta[mockData.courseId],
+      courseHomeMetaQuery(mockData.courseId).queryKey,
+      courseHomeMeta,
     );
     await act(async () => render(
       <QueryClientProvider client={queryClient}>
         <StreakModal {...mockData} />
       </QueryClientProvider>,
-      { store: testStore },
     ));
   }
 
@@ -84,7 +84,8 @@ describe('Loaded Tab Page', () => {
       verifiedMode: camelCaseObject(courseHomeMetadata.verified_mode),
     };
 
-    testStore = await initializeTestStore({ courseMetadata, courseHomeMetadata }, false);
+    mockCourseRequests({ courseMetadata, courseHomeMetadata });
+    courseHomeMeta = await getCourseHomeCourseMetadata(mockData.courseId);
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
   });
 
@@ -108,7 +109,7 @@ describe('Loaded Tab Page', () => {
   it('clears the streak in the course metadata query when the modal closes', async () => {
     await renderModal();
     const user = userEvent.setup();
-    const queryKey = courseHomeQueryKeys.metadata(mockData.courseId);
+    const { queryKey } = courseHomeMetaQuery(mockData.courseId);
     expect(queryClient.getQueryData(queryKey).celebrations.streakLengthToCelebrate).toBe(3);
 
     await user.click(await screen.findByRole('button', { name: /keep it up/i }));

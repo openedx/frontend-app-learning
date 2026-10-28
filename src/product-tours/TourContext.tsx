@@ -28,7 +28,6 @@ const initialState: TourState = {
   showNewUserCourseHomeTour: false,
 };
 
-// Mirrors the reducers of the former `tours` Redux slice 1:1.
 function reducer(state: TourState, action: TourAction): TourState {
   switch (action.type) {
     case 'setTourData': {

@@ -7,7 +7,7 @@ import { breakpoints } from '@openedx/paragon';
 import userEvent from '@testing-library/user-event';
 
 import {
-  cleanup, fireEvent, getByRole, getTestStoreIds, initializeTestStore, loadUnit, render, screen, waitFor,
+  cleanup, fireEvent, getByRole, loadUnit, mockCourseRequests, render, screen, waitFor,
 } from '../../setupTest';
 import MountCourseQueryHooks from '../../tests/MountCourseQueryHooks';
 import * as celebrationUtils from './celebration/utils';
@@ -42,14 +42,14 @@ const recordFirstSectionCelebration = jest.fn();
 celebrationUtils.recordFirstSectionCelebration = recordFirstSectionCelebration;
 
 describe('Course', () => {
-  let store;
+  let fixtures;
   const mockData = {
     nextSequenceHandler: () => {},
     previousSequenceHandler: () => {},
     unitNavigationHandler: () => {},
   };
 
-  const renderCourse = (testData, testStore) => render(
+  const renderCourse = (testData) => render(
     <MemoryRouter initialEntries={[`/course/${testData.courseId}/${testData.sequenceId}/${testData.unitId}`]}>
       <Routes>
         <Route
@@ -63,18 +63,12 @@ describe('Course', () => {
         />
       </Routes>
     </MemoryRouter>,
-    { store: testStore },
   );
 
-  beforeAll(async () => {
-    store = await initializeTestStore();
-    const { models } = store.getState();
-    const { courseId, sequenceId } = getTestStoreIds(store);
-    Object.assign(mockData, {
-      courseId,
-      sequenceId,
-      unitId: Object.values(models.units)[0].id,
-    });
+  beforeAll(() => {
+    fixtures = mockCourseRequests();
+    const { courseId, sequenceId, unitId } = fixtures;
+    Object.assign(mockData, { courseId, sequenceId, unitId });
   });
 
   beforeEach(() => {
@@ -90,18 +84,17 @@ describe('Course', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Learn About Verified Certificates' })).not.toBeInTheDocument();
 
-    const { models } = store.getState();
-    await screen.findByRole('heading', { name: models.units[mockData.unitId].title });
+    const {
+      unitBlocks, sequenceBlocks, sectionBlocks, courseMetadata,
+    } = fixtures;
+    await screen.findByRole('heading', { name: unitBlocks[0].display_name });
     loadUnit();
     await waitFor(() => {
       expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
     });
 
-    const sequence = models.sequences[mockData.sequenceId];
-    const section = models.sections[sequence.sectionId];
-    const course = models.coursewareMeta[mockData.courseId];
     expect(document.title).toMatch(
-      `${sequence.title} | ${section.title} | ${course.title} | edX`,
+      `${sequenceBlocks[0].display_name} | ${sectionBlocks[0].display_name} | ${courseMetadata.name} | edX`,
     );
   });
 
@@ -116,30 +109,28 @@ describe('Course', () => {
       { navigation_disabled: true },
       { courseId: mockData.courseId, sequenceBlock: sequenceBlocks[0] },
     )];
-    const testStore = await initializeTestStore({ sequenceBlocks, sequenceMetadata }, false);
+    mockCourseRequests({ sequenceBlocks, sequenceMetadata });
     const testData = {
       ...mockData,
       sequenceId: sequenceBlocks[0].id,
       onNavigate: jest.fn(),
     };
-    renderCourse(testData, testStore);
+    renderCourse(testData);
     expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
   });
 
   it('displays first section celebration modal', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { firstSection: true } });
-    const testStore = await initializeTestStore({ courseHomeMetadata }, false);
-    const { models } = testStore.getState();
-    const { courseId, sequenceId } = getTestStoreIds(testStore);
+    const { courseId, sequenceId, unitId } = mockCourseRequests({ courseHomeMetadata });
     const testData = {
       ...mockData,
       courseId,
       sequenceId,
-      unitId: Object.values(models.units)[0].id,
+      unitId,
     };
     // Set up LocalStorage for testing.
     handleNextSectionCelebration(sequenceId, sequenceId, testData.unitId);
-    renderCourse(testData, testStore);
+    renderCourse(testData);
 
     const firstSectionCelebrationModal = await screen.findByRole('dialog');
     expect(getByRole(firstSectionCelebrationModal, 'heading', { name: 'Congratulations!' })).toBeInTheDocument();
@@ -147,39 +138,32 @@ describe('Course', () => {
 
   it('displays weekly goal celebration modal', async () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { weeklyGoal: true } });
-    const testStore = await initializeTestStore({ courseHomeMetadata }, false);
-    const { models } = testStore.getState();
-    const { courseId, sequenceId } = getTestStoreIds(testStore);
+    const { courseId, sequenceId, unitId } = mockCourseRequests({ courseHomeMetadata });
     const testData = {
       ...mockData,
       courseId,
       sequenceId,
-      unitId: Object.values(models.units)[0].id,
+      unitId,
     };
-    renderCourse(testData, testStore);
+    renderCourse(testData);
 
     const weeklyGoalCelebrationModal = await screen.findByRole('dialog');
     expect(getByRole(weeklyGoalCelebrationModal, 'heading', { name: 'You met your goal!' })).toBeInTheDocument();
   });
 
   describe('sidebar behavior', () => {
-    let testStore;
     let testData;
 
     beforeEach(async () => {
-      // setupDiscussionSidebar configures the discussion topics mock + loads
-      // topics into a testStore. The render it does is incidental — clean it up
-      // so we can render fresh against per-test seeded storage.
-      const { testStore: setupStore } = await setupDiscussionSidebar();
+      // setupDiscussionSidebar mocks the course requests with the openedx discussion provider.
+      // The render it does is incidental — clean it up so each test renders fresh.
+      const { courseId, sequenceId, unitId } = await setupDiscussionSidebar();
       cleanup();
-      testStore = setupStore;
-      const { models } = testStore.getState();
-      const { courseId, sequenceId } = getTestStoreIds(testStore);
       testData = {
         ...mockData,
         courseId,
         sequenceId,
-        unitId: Object.values(models.units)[0].id,
+        unitId,
       };
       global.innerWidth = breakpoints.extraExtraLarge.minWidth;
       window.localStorage.clear();
@@ -187,68 +171,89 @@ describe('Course', () => {
     });
 
     it('opens the course outline on render when no preference is stored and the user has not closed the sidebar', async () => {
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       loadUnit();
 
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
       expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
     });
 
+    it('exposes the course outline sidebar as a navigation landmark with an accessible name', async () => {
+      renderCourse(testData);
+      loadUnit();
+
+      const outlineNav = await screen.findByRole('navigation', { name: /course outline/i });
+      expect(outlineNav).toHaveClass('outline-sidebar');
+    });
+
+    it('renders the primary content inside <main id="main-content"> with the sidebar navigation kept outside of it', async () => {
+      renderCourse(testData);
+      loadUnit();
+
+      const outlineNav = await screen.findByRole('navigation', { name: /course outline/i });
+      const main = document.getElementById('main-content');
+      expect(main).toBeInTheDocument();
+      expect(main.tagName).toBe('MAIN');
+      expect(main).toHaveClass('sequence');
+      // Sidebar landmark must not be nested inside <main>.
+      expect(main).not.toContainElement(outlineNav);
+    });
+
     it('keeps the sidebar closed on render when the user previously closed it', async () => {
       window.sessionStorage.setItem('sidebarClosedByUser', 'true');
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       loadUnit();
 
       await waitFor(() => {
         // The Provider's topics query resolves; assert nothing has opened in response.
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
       });
-      expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+      expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
     });
 
     it('opens discussions on render when it is the stored preference', async () => {
       window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       loadUnit();
 
       await waitFor(() => {
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
       });
-      expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+      expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
     });
 
     it('opens the course outline on render when it is the stored preference', async () => {
       window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('COURSE_OUTLINE'));
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       loadUnit();
 
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
       expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
     });
 
     it('closes the course outline when the user clicks its trigger', async () => {
       const user = userEvent.setup();
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       loadUnit();
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
 
       await user.click(screen.getByRole('button', { name: /Toggle course outline tray/i }));
 
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
       });
     });
 
     it('opens the course outline when the user clicks its trigger, closing discussions if open', async () => {
       const user = userEvent.setup();
       window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       loadUnit();
       await waitFor(() => {
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
@@ -257,17 +262,17 @@ describe('Course', () => {
       await user.click(screen.getByRole('button', { name: /Toggle course outline tray/i }));
 
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
       expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
     });
 
     it('opens discussions when the user clicks its trigger, closing the outline', async () => {
       const user = userEvent.setup();
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       loadUnit();
       await waitFor(() => {
-        expect(document.querySelector('section.outline-sidebar')).toBeInTheDocument();
+        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
       });
 
       await user.click(await screen.findByRole('button', { name: /Show discussions tray/i }));
@@ -275,13 +280,13 @@ describe('Course', () => {
       await waitFor(() => {
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
       });
-      expect(document.querySelector('section.outline-sidebar')).not.toBeInTheDocument();
+      expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
     });
 
     it('closes discussions when the user clicks its trigger', async () => {
       const user = userEvent.setup();
       window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       loadUnit();
       await waitFor(() => {
         expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
@@ -304,18 +309,16 @@ describe('Course', () => {
       { type: 'vertical' },
       { courseId: courseMetadata.id },
     ));
-    const testStore = await initializeTestStore({
-      courseMetadata, unitBlocks,
-    }, false);
-    const { models } = testStore.getState();
-    const { courseId, sequenceId } = getTestStoreIds(testStore);
+    const {
+      courseId, sequenceId, sectionBlocks, sequenceBlocks,
+    } = mockCourseRequests({ courseMetadata, unitBlocks });
     const testData = {
       ...mockData,
       courseId,
       sequenceId,
-      unitId: Object.values(models.units)[1].id, // Corner cases are already covered in `Sequence` tests.
+      unitId: unitBlocks[1].id, // Corner cases are already covered in `Sequence` tests.
     };
-    renderCourse(testData, testStore);
+    renderCourse(testData);
 
     // loadUnit()'s window message is lost unless the unit's listener is registered first.
     await screen.findByTestId(testIDs.contentIFrame);
@@ -325,8 +328,8 @@ describe('Course', () => {
     });
     // expect the section and sequence "titles" not to be loaded in as breadcrumb labels.
     await waitFor(() => {
-      expect(screen.queryByText(Object.values(models.sections)[0].title)).not.toBeInTheDocument();
-      expect(screen.queryByText(Object.values(models.sequences)[0].title)).not.toBeInTheDocument();
+      expect(screen.queryByText(sectionBlocks[0].display_name)).not.toBeInTheDocument();
+      expect(screen.queryByText(sequenceBlocks[0].display_name)).not.toBeInTheDocument();
     });
   });
 
@@ -341,19 +344,17 @@ describe('Course', () => {
       { type: 'vertical' },
       { courseId: courseMetadata.id },
     ));
-    const testStore = await initializeTestStore({ courseMetadata, unitBlocks }, false);
-    const { models } = testStore.getState();
-    const { courseId, sequenceId } = getTestStoreIds(testStore);
+    const { courseId, sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
     const testData = {
       ...mockData,
       courseId,
       sequenceId,
-      unitId: Object.values(models.units)[1].id, // Corner cases are already covered in `Sequence` tests.
+      unitId: unitBlocks[1].id, // Corner cases are already covered in `Sequence` tests.
       nextSequenceHandler,
       previousSequenceHandler,
       unitNavigationHandler,
     };
-    renderCourse(testData, testStore);
+    renderCourse(testData);
 
     await screen.findByTestId(testIDs.contentIFrame);
     loadUnit();
@@ -379,13 +380,13 @@ describe('Course', () => {
         { courseId: courseMetadata.id, sequenceBlock: sequenceBlocks[0] },
       )];
 
-      const testStore = await initializeTestStore({ courseMetadata, sequenceBlocks, sequenceMetadata });
+      mockCourseRequests({ courseMetadata, sequenceBlocks, sequenceMetadata });
       const testData = {
         ...mockData,
         courseId: courseMetadata.id,
         sequenceId: sequenceBlocks[0].id,
       };
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       expect(await screen.findByText('Some random banner text to display.')).toBeInTheDocument();
     });
 
@@ -411,15 +412,13 @@ describe('Course', () => {
         { courseId: testCourseMetadata.id },
       )];
 
-      const testStore = await initializeTestStore({
-        courseMetadata: testCourseMetadata, sequenceBlocks, sectionBlocks,
-      });
+      mockCourseRequests({ courseMetadata: testCourseMetadata, sequenceBlocks, sectionBlocks });
       const testData = {
         ...mockData,
         courseId: testCourseMetadata.id,
         sequenceId: sequenceBlocks[0].id,
       };
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       expect(await screen.findByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument();
     });
 
@@ -445,15 +444,13 @@ describe('Course', () => {
         { courseId: testCourseMetadata.id },
       )];
 
-      const testStore = await initializeTestStore({
-        courseMetadata: testCourseMetadata, sequenceBlocks, sectionBlocks,
-      });
+      mockCourseRequests({ courseMetadata: testCourseMetadata, sequenceBlocks, sectionBlocks });
       const testData = {
         ...mockData,
         courseId: testCourseMetadata.id,
         sequenceId: sequenceBlocks[0].id,
       };
-      renderCourse(testData, testStore);
+      renderCourse(testData);
       expect(await screen.findByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument();
     });
   });
@@ -462,16 +459,14 @@ describe('Course', () => {
     const courseMetadata = Factory.build('courseMetadata', {
       enrollment: { mode: 'verified' },
     });
-    const testStore = await initializeTestStore({ courseMetadata }, false);
-    const { models } = testStore.getState();
-    const { courseId, sequenceId } = getTestStoreIds(testStore);
+    const { courseId, sequenceId, unitId } = mockCourseRequests({ courseMetadata });
     const testData = {
       ...mockData,
       courseId,
       sequenceId,
-      unitId: Object.values(models.units)[0].id,
+      unitId,
     };
-    renderCourse(testData, testStore);
+    renderCourse(testData);
 
     expect(await screen.findByTestId(mockLearnerToolsTestId)).toBeInTheDocument();
   });
@@ -481,16 +476,14 @@ describe('Course', () => {
     const courseMetadata = Factory.build('courseMetadata', {
       enrollment: { mode: 'verified' },
     });
-    const testStore = await initializeTestStore({ courseMetadata }, false);
-    const { models } = testStore.getState();
-    const { courseId, sequenceId } = getTestStoreIds(testStore);
+    const { courseId, sequenceId, unitId } = mockCourseRequests({ courseMetadata });
     const testData = {
       ...mockData,
       courseId,
       sequenceId,
-      unitId: Object.values(models.units)[0].id,
+      unitId,
     };
-    renderCourse(testData, testStore);
+    renderCourse(testData);
     await screen.findByText('Loading learning sequence...');
 
     expect(screen.queryByTestId(mockLearnerToolsTestId)).not.toBeInTheDocument();

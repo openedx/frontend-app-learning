@@ -2,9 +2,12 @@ import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { courseHomeMetaQuery, outlineTabDataQuery } from '@src/course-home/data/apiHooks';
+import { coursewareMetadataQuery } from '@src/courseware/data/apiHooks';
 import {
-  getTestStoreIds,
-  initializeTestStore, render, screen, waitFor, getByText, logUnhandledRequests,
+  createTestQueryClient,
+  mockCourseRequests, render, screen, seedQueryData, waitFor, getByText, logUnhandledRequests,
 } from '../setupTest';
 import InstructorToolbar from './index';
 
@@ -17,15 +20,13 @@ getConfig.mockImplementation(() => originalConfig);
 
 describe('Instructor Toolbar', () => {
   let courseId;
-  let models;
+  let unitId;
   let mockData;
   let axiosMock;
   let masqueradeUrl;
 
   beforeAll(async () => {
-    const store = await initializeTestStore();
-    models = store.getState().models;
-    courseId = getTestStoreIds(store).courseId;
+    ({ courseId, unitId } = mockCourseRequests());
 
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
@@ -34,7 +35,7 @@ describe('Instructor Toolbar', () => {
   beforeEach(() => {
     mockData = {
       courseId,
-      unitId: Object.values(models.units)[0].id,
+      unitId,
     };
     axiosMock.reset();
     axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
@@ -76,5 +77,38 @@ describe('Instructor Toolbar', () => {
     render(<InstructorToolbar {...mockData} unitId={null} />);
 
     expect(screen.queryByText('View course in:')).not.toBeInTheDocument();
+  });
+
+  describe('access-expiration masquerade banner', () => {
+    const bannerText = 'This learner no longer has access to this course. Their access expired on';
+    const expiredAccess = { expirationDate: '2020-01-01T12:00:00Z', masqueradingExpiredCourse: true };
+
+    function renderWithQueries(tab, seeds) {
+      const queryClient = createTestQueryClient();
+      seedQueryData(queryClient, courseHomeMetaQuery(courseId).queryKey, { userTimezone: 'America/New_York' });
+      seeds.forEach(([queryKey, data]) => seedQueryData(queryClient, queryKey, data));
+      return render(
+        <QueryClientProvider client={queryClient}>
+          <InstructorToolbar {...mockData} tab={tab} />
+        </QueryClientProvider>,
+      );
+    }
+
+    it('renders the banner from the outline query on the outline tab', async () => {
+      renderWithQueries('outline', [[outlineTabDataQuery(courseId).queryKey, { accessExpiration: expiredAccess }]]);
+
+      expect(await screen.findByText(bannerText, { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
+    });
+
+    it('does not render the banner on the courseware tab even when the courseware metadata carries the flag', async () => {
+      renderWithQueries('courseware', [
+        [coursewareMetadataQuery(courseId).queryKey, { accessExpiration: expiredAccess }],
+        [outlineTabDataQuery(courseId).queryKey, { accessExpiration: expiredAccess }],
+      ]);
+
+      await waitFor(() => expect(axiosMock.history.get).toHaveLength(1));
+      expect(screen.queryByText(bannerText, { exact: false })).not.toBeInTheDocument();
+    });
   });
 });

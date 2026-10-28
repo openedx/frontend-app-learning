@@ -12,15 +12,12 @@ import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Factory } from 'rosie';
 
-import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { courseHomeQueryKeys } from '@src/course-home/data/queryKeys';
+import { courseHomeMetaQuery, useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import CourseBreadcrumbs from '@src/courseware/course/breadcrumbs';
 import { buildOutlineFromBlocks } from '@src/courseware/data/__factories__/learningSequencesOutline.factory';
-import { useCoursewareMetadata, useMinimalCourseOutline } from '@src/courseware/data/apiHooks';
-import { coursewareQueryKeys } from '@src/courseware/data/queryKeys';
+import { coursewareMetadataQuery, useCoursewareMetadata, useMinimalCourseOutline } from '@src/courseware/data/apiHooks';
 import { createTestQueryClient, initializeMockApp } from '@src/setupTest';
 import { buildSimpleCourseBlocks } from '@src/shared/data/__factories__/courseBlocks.factory';
-import initializeStore from '@src/store';
 import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
 import { appendBrowserTimezoneToUrl } from '@src/utils';
 
@@ -43,7 +40,6 @@ describe('CourseBreadcrumbsSlot', () => {
   let axiosMock: MockAdapter;
   let originalConfig: ReturnType<typeof getConfig>;
   let queryClient: QueryClient;
-  let store: ReturnType<typeof initializeStore>;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
@@ -52,8 +48,7 @@ describe('CourseBreadcrumbsSlot', () => {
     axiosMock.onGet(appendBrowserTimezoneToUrl(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`))
       .reply(200, courseHomeMetadata);
     axiosMock.onGet(`${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceBlock.id}`).reply(200, sequenceMetadata);
-    store = initializeStore();
-    queryClient = createTestQueryClient(store);
+    queryClient = createTestQueryClient();
 
     // The default breadcrumbs inserted as the slot's README shows.
     originalConfig = getConfig();
@@ -89,15 +84,15 @@ describe('CourseBreadcrumbsSlot', () => {
   // renders the slot, and, unless `waitForOutline` is false, once the outline has too.
   const LoadedGate = ({ waitForOutline = true, children }: { waitForOutline?: boolean, children: ReactNode }) => {
     const metadataQuery = useCoursewareMetadata(courseId, { enabled: false });
-    const courseHomeMetaQuery = useCourseHomeMeta(courseId, { enabled: false });
+    const courseHomeMetadataQuery = useCourseHomeMeta(courseId, { enabled: false });
     const outlineQuery = useMinimalCourseOutline(courseId, { enabled: false });
-    const isLoaded = metadataQuery.isSuccess && courseHomeMetaQuery.isSuccess
+    const isLoaded = metadataQuery.isSuccess && courseHomeMetadataQuery.isSuccess
       && (!waitForOutline || outlineQuery.isSuccess);
     return isLoaded ? <>{children}</> : null;
   };
 
   const renderSlot = ({ waitForOutline = true }: { waitForOutline?: boolean } = {}) => render(
-    <AppProvider store={store} wrapWithRouter={false}>
+    <AppProvider wrapWithRouter={false}>
       <QueryClientProvider client={queryClient}>
         <IntlProvider locale="en">
           <MemoryRouter>
@@ -129,8 +124,8 @@ describe('CourseBreadcrumbsSlot', () => {
     holdOutline();
     renderSlot({ waitForOutline: false });
     await waitFor(() => {
-      expect(queryClient.getQueryState(coursewareQueryKeys.metadata(courseId))?.status).toBe('success');
-      expect(queryClient.getQueryState(courseHomeQueryKeys.metadata(courseId))?.status).toBe('success');
+      expect(queryClient.getQueryState(coursewareMetadataQuery(courseId).queryKey)?.status).toBe('success');
+      expect(queryClient.getQueryState(courseHomeMetaQuery(courseId).queryKey)?.status).toBe('success');
     });
     await act(async () => { await new Promise((resolve) => { setTimeout(resolve, 0); }); });
 
