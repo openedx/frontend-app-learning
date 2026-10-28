@@ -151,4 +151,27 @@ describe('Sequence Content', () => {
 
     expect(global.document.body).toHaveFocus();
   });
+
+  it('waits for the heading before moving focus when navigating to a still-loading unit', async () => {
+    // A unit id that is not in the sequence metadata, so useUnit never resolves its
+    // data — mimicking a unit that has not finished loading.
+    const notLoadedUnitId = 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@not-loaded';
+
+    // Sentinel element that should keep focus while the new unit is still loading.
+    const sentinel = global.document.createElement('button');
+    global.document.body.appendChild(sentinel);
+    sentinel.focus();
+
+    const { rerender } = render(<SequenceContent {...mockData} />, { wrapWithRouter: true });
+
+    // Navigate to the new unit before its heading or data is available: the focus
+    // effect must bail out early and leave focus untouched rather than falling back to
+    // the app container or body.
+    await act(async () => {
+      rerender(<SequenceContent {...mockData} unitId={notLoadedUnitId} />);
+    });
+    expect(sentinel).toHaveFocus();
+
+    global.document.body.removeChild(sentinel);
+  });
 });
