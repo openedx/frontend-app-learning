@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { MemoryRouter } from 'react-router-dom';
 
 import type { PathwayData } from '../data/types';
 import { dataEngineering, machineLearning } from '../data/__fixtures__/pathways';
@@ -8,7 +9,9 @@ import { MorePathwaysPopover } from './MorePathwaysPopover';
 
 const renderComponent = (pathways: PathwayData[] = [dataEngineering, machineLearning]) => render(
   <IntlProvider locale="en">
-    <MorePathwaysPopover pathways={pathways} />
+    <MemoryRouter>
+      <MorePathwaysPopover pathways={pathways} />
+    </MemoryRouter>
   </IntlProvider>,
 );
 
@@ -33,8 +36,10 @@ describe('MorePathwaysPopover', () => {
     const user = userEvent.setup();
     renderComponent();
     await user.click(screen.getByRole('button', { name: 'Show 2 more pathways' }));
-    expect(screen.getByText('Data Engineering Fundamentals')).toBeInTheDocument();
-    expect(screen.getByText('Introduction to Machine Learning')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Data Engineering Fundamentals' }))
+      .toHaveAttribute('href', `/pathway/${dataEngineering.pathway.id}/outline`);
+    expect(screen.getByRole('link', { name: 'Introduction to Machine Learning' }))
+      .toHaveAttribute('href', `/pathway/${machineLearning.pathway.id}/outline`);
   });
 
   it('closes the pathways list on Escape', async () => {

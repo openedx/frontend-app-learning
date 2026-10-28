@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { MemoryRouter } from 'react-router-dom';
 
 import { useCoursePathways } from '../data/apiHooks';
 import type { PathwayData } from '../data/types';
@@ -42,7 +43,9 @@ const mockSplit = (visiblePathways: PathwayData[], hiddenPathways: PathwayData[]
 
 const renderComponent = () => render(
   <IntlProvider locale="en">
-    <CoursePathwaysStrip courseId={courseIdWithPathways} />
+    <MemoryRouter>
+      <CoursePathwaysStrip courseId={courseIdWithPathways} />
+    </MemoryRouter>
   </IntlProvider>,
 );
 
@@ -88,6 +91,13 @@ describe('CoursePathwaysStrip', () => {
     ]);
   });
 
+  it('links every visible pathway to its outline', () => {
+    const { container } = renderComponent();
+    expect(getVisibleLabels(container).map((label) => label.getAttribute('href'))).toEqual(
+      pathways.map((pathway) => `/pathway/${pathway.pathway.id}/outline`),
+    );
+  });
+
   it('does not render the popover when every pathway fits', () => {
     renderComponent();
     expect(MorePathwaysPopover).not.toHaveBeenCalled();
@@ -112,5 +122,8 @@ describe('CoursePathwaysStrip', () => {
     const measureRow = container.querySelector('.course-pathways-strip-measure');
     expect(measureRow).toHaveAttribute('aria-hidden');
     expect(measureRow?.children).toHaveLength(pathways.length);
+    Array.from(measureRow?.children ?? []).forEach((label) => {
+      expect(label).toHaveAttribute('tabindex', '-1');
+    });
   });
 });

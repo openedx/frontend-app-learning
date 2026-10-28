@@ -1,4 +1,7 @@
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { generatePath, Link } from 'react-router-dom';
+
+import { DECODE_ROUTES } from '@src/constants';
 
 import { useCoursePathways } from '../data/apiHooks';
 import type { PathwayData } from '../data/types';
@@ -8,17 +11,21 @@ import messages from './messages';
 
 interface PathwayLabelProps {
   pathway: PathwayData;
+  isMeasure?: boolean;
 }
 
 export interface CoursePathwaysStripProps {
   courseId?: string;
 }
 
-const PathwayLabel = ({ pathway }: PathwayLabelProps) => (
-  // TODO Link to the pathway outline once its URL is known
-  <span className="course-pathways-strip-label">
+const PathwayLabel = ({ pathway, isMeasure = false }: PathwayLabelProps) => (
+  <Link
+    to={generatePath(DECODE_ROUTES.PATHWAY_OUTLINE, { pathwayId: pathway.pathway.id })}
+    className="course-pathways-strip-label text-white"
+    tabIndex={isMeasure ? -1 : undefined}
+  >
     {pathway.pathway.content.displayName}
-  </span>
+  </Link>
 );
 
 export const CoursePathwaysStrip = ({ courseId }: CoursePathwaysStripProps) => {
@@ -47,7 +54,7 @@ export const CoursePathwaysStrip = ({ courseId }: CoursePathwaysStripProps) => {
           {hiddenPathways.length > 0 && <MorePathwaysPopover pathways={hiddenPathways} />}
           <div ref={measureRef} className="course-pathways-strip-measure d-flex align-items-center" aria-hidden>
             {pathways.map((pathway) => (
-              <PathwayLabel key={pathway.pathway.id} pathway={pathway} />
+              <PathwayLabel key={pathway.pathway.id} pathway={pathway} isMeasure />
             ))}
           </div>
         </div>

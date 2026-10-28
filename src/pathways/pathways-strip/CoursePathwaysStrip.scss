@@ -10,6 +10,11 @@
     flex-shrink: 0;
     white-space: nowrap;
 
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+    }
+
     // Labels are separated by a vertical line
     & + .course-pathways-strip-label {
       margin-inline-start: 0.75rem;

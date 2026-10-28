@@ -4,6 +4,9 @@ import {
   Badge, Button, ModalPopup, useToggle,
 } from '@openedx/paragon';
 import { ArrowDropDown } from '@openedx/paragon/icons';
+import { generatePath, Link } from 'react-router-dom';
+
+import { DECODE_ROUTES } from '@src/constants';
 
 import type { PathwayData } from '../data/types';
 import messages from './messages';
@@ -36,8 +39,11 @@ export const MorePathwaysPopover = ({ pathways }: { pathways: PathwayData[] }) =
         <div className="bg-white px-4 py-3 rounded shadow small">
           <ul className="mb-0 pl-3">
             {pathways.map((pathway) => (
-              // TODO Link to the pathway outline once its URL is known
-              <li key={pathway.pathway.id}>{pathway.pathway.content.displayName}</li>
+              <li key={pathway.pathway.id}>
+                <Link to={generatePath(DECODE_ROUTES.PATHWAY_OUTLINE, { pathwayId: pathway.pathway.id })}>
+                  {pathway.pathway.content.displayName}
+                </Link>
+              </li>
             ))}
           </ul>
         </div>
