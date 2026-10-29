@@ -49,6 +49,9 @@ jest.mock('./course-home/discussion-tab/DiscussionTab', () => 'Discussion Tab');
 jest.mock('./course-home/progress-tab/ProgressTab', () => 'Progress Tab');
 jest.mock('./courseware/course/course-exit', () => ({ CourseExit: 'Course Exit' }));
 jest.mock('./courseware', () => 'Courseware Container');
+jest.mock('./pathways/PathwayOutline', () => ({ PathwayOutline: 'Pathway Outline' }));
+jest.mock('./pathways/PathwayProgress', () => ({ PathwayProgress: 'Pathway Progress' }));
+jest.mock('./pathways/pathways-achievements/PathwayAchievements', () => ({ PathwayAchievements: 'Pathway Achievements' }));
 
 describe('app registry', () => {
   let getElement;

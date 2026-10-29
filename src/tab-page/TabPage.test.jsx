@@ -4,6 +4,7 @@ import {
 } from '../setupTest';
 import { TabPage } from './index';
 import { useToast } from '../generic/ToastContext';
+import { CourseInfoStripSlot } from '../plugin-slots/CourseInfoStripSlot';
 
 // We should not test `LoadedTabPage` page here, as `TabPage` is used only for passing `passthroughProps`.
 jest.mock('./LoadedTabPage', () => function () {
@@ -13,6 +14,10 @@ jest.mock('./LoadedTabPage', () => function () {
 jest.mock('../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton', () => function () {
   return <div data-testid="sr-tour-button" />;
 });
+
+jest.mock('../plugin-slots/CourseInfoStripSlot', () => ({
+  CourseInfoStripSlot: jest.fn(() => <div data-testid="CourseInfoStripSlot" />),
+}));
 
 jest.mock('../generic/ToastContext', () => ({
   ...jest.requireActual('../generic/ToastContext'),
@@ -54,6 +59,20 @@ describe('Tab Page', () => {
   it('displays Loaded Tab Page', () => {
     render(<TabPage {...mockData} />, { wrapWithRouter: true });
     expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
+  });
+
+  it('renders the course info strip slot', () => {
+    render(<TabPage {...mockData} />, { wrapWithRouter: true });
+    expect(screen.getByTestId('CourseInfoStripSlot')).toBeInTheDocument();
+    expect(CourseInfoStripSlot).toHaveBeenCalledWith({ courseId: 'test-course' }, expect.anything());
+  });
+
+  it('does not render the course info strip slot while the course is loading', () => {
+    render(
+      <TabPage {...mockData} courseStatus={{ metadataQuery: { isPending: true }, tabDataQuery: {} }} />,
+      { wrapWithRouter: true },
+    );
+    expect(screen.queryByTestId('CourseInfoStripSlot')).not.toBeInTheDocument();
   });
 
   it('renders the screen-reader tour button on the outline tab', () => {
