@@ -1,7 +1,85 @@
-import { QueryClient } from '@tanstack/react-query';
+import { createElement, type ReactNode } from 'react';
+import { getLoggingService, MockLoggingService } from '@openedx/frontend-base';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook } from '@testing-library/react';
 
-import { queryDefaults, shouldRetryQuery } from './queryClient';
+import { queryDefaults, shouldRetryQuery, useQueryErrorLogging } from './queryClient';
+import { appId } from './constants';
 import { NonRetryableError } from './data/http-error';
+
+const loggingService = getLoggingService() as MockLoggingService;
+
+describe('query error logging', () => {
+  let queryClient: QueryClient;
+  const listen = () => renderHook(() => useQueryErrorLogging(), {
+    wrapper: ({ children }: { children: ReactNode }) => createElement(QueryClientProvider, { client: queryClient }, children),
+  });
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    loggingService.logError.mockReset();
+    loggingService.logInfo.mockReset();
+  });
+
+  it('reports a Learning query error through logError', async () => {
+    listen();
+    const error = new Error('boom');
+    await queryClient.fetchQuery({
+      queryKey: [appId, 'failing'],
+      queryFn: () => Promise.reject(error),
+    }).catch(() => {});
+
+    expect(loggingService.logError).toHaveBeenCalledWith(error, undefined);
+  });
+
+  it('logs a status listed in `logStatusAs` at that level instead of as an error', async () => {
+    listen();
+    const error = Object.assign(new Error('forbidden'), { response: { status: 403 } });
+    await queryClient.fetchQuery({
+      queryKey: [appId, 'forbidden'],
+      queryFn: () => Promise.reject(error),
+      meta: { logStatusAs: { 403: 'info' } },
+    }).catch(() => {});
+
+    expect(loggingService.logInfo).toHaveBeenCalledWith(error, undefined);
+    expect(loggingService.logError).not.toHaveBeenCalled();
+  });
+
+  it('does not log a status mapped to `silent`', async () => {
+    listen();
+    const error = Object.assign(new Error('unprocessable'), { response: { status: 422 } });
+    await queryClient.fetchQuery({
+      queryKey: [appId, 'maybe-unit'],
+      queryFn: () => Promise.reject(error),
+      meta: { logStatusAs: { 422: 'silent' } },
+    }).catch(() => {});
+
+    expect(loggingService.logError).not.toHaveBeenCalled();
+    expect(loggingService.logInfo).not.toHaveBeenCalled();
+  });
+
+  it('does not log a query outside Learning', async () => {
+    listen();
+    await queryClient.fetchQuery({
+      queryKey: ['shell', 'failing'],
+      queryFn: () => Promise.reject(new Error('boom')),
+    }).catch(() => {});
+
+    expect(loggingService.logError).not.toHaveBeenCalled();
+  });
+
+  it('stops logging once unmounted', async () => {
+    listen().unmount();
+    await queryClient.fetchQuery({
+      queryKey: [appId, 'failing'],
+      queryFn: () => Promise.reject(new Error('boom')),
+    }).catch(() => {});
+
+    expect(loggingService.logError).not.toHaveBeenCalled();
+  });
+});
 
 describe('shouldRetryQuery', () => {
   const httpError = (status: number) => ({ response: { status } });
