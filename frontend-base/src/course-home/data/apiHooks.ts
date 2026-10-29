@@ -3,6 +3,7 @@ import { queryOptions, useMutation, useQuery } from '@tanstack/react-query';
 
 import { appId } from '@src/constants';
 import { useToast, ToastContent } from '@src/generic/ToastContext';
+import { queryDefaults } from '@src/queryClient';
 import {
   type CallToActionResponse,
   type PostEventData,
@@ -58,6 +59,7 @@ export const usePostEvent = () => {
 };
 
 export const courseHomeMetaQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...courseHomeKey, 'metadata', courseId] as const,
   queryFn: () => getCourseHomeCourseMetadata(courseId),
 });
@@ -71,6 +73,7 @@ export const useCourseHomeMeta = (
 });
 
 export const datesTabDataQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...courseHomeKey, 'datesTab', courseId] as const,
   queryFn: () => getDatesTabData(courseId),
 });
@@ -81,6 +84,7 @@ export const useDatesTabData = (courseId: string, { enabled = true }: QueryOptio
 });
 
 export const outlineTabDataQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...courseHomeKey, 'outlineTab', courseId] as const,
   queryFn: () => getOutlineTabData(courseId),
 });
@@ -94,6 +98,7 @@ export const useOutlineTabData = (
 });
 
 export const liveTabDataQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...courseHomeKey, 'liveTab', courseId] as const,
   queryFn: () => getLiveTabIframe(courseId),
 });
@@ -101,6 +106,7 @@ export const liveTabDataQuery = (courseId: string) => queryOptions({
 export const useLiveTabData = (courseId: string) => useQuery(liveTabDataQuery(courseId));
 
 export const progressTabDataQuery = (courseId: string, targetUserId?: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...courseHomeKey, 'progressTab', courseId, targetUserId] as const,
   queryFn: () => getProgressTabData(courseId, targetUserId),
   meta: { logStatusAs: { 404: 'silent' } },
@@ -116,6 +122,7 @@ export const useProgressTabData = (
 });
 
 export const examAttemptsDataQuery = (courseId: string, sequenceIds: string[]) => queryOptions({
+  ...queryDefaults,
   queryKey: [...courseHomeKey, 'examAttempts', courseId, sequenceIds] as const,
   queryFn: () => Promise.all(sequenceIds.map(async (sequenceId) => {
     try {
@@ -133,6 +140,7 @@ export const useExamAttemptsData = (courseId: string | undefined, sequenceIds: s
 });
 
 export const proctoringInfoDataQuery = (courseId: string, username?: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...courseHomeKey, 'proctoringInfo', courseId, username] as const,
   queryFn: () => getProctoringInfoData(courseId, username),
   retry: false,

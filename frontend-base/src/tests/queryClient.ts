@@ -2,7 +2,7 @@ import { QueryClient, type QueryKey } from '@tanstack/react-query';
 
 export const createTestQueryClient = () => new QueryClient({
   defaultOptions: {
-    queries: { retry: false, refetchOnWindowFocus: false },
+    queries: { retry: false, retryDelay: 0, refetchOnWindowFocus: false },
     mutations: { retry: false },
   },
 });
