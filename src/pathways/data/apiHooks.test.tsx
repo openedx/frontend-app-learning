@@ -1,13 +1,18 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { getPathway, getPathwayAchievements, getPathwaysByCourse } from './api';
-import { useCoursePathways, usePathway, usePathwayAchievements } from './apiHooks';
+import {
+  getPathway, getPathwayAchievements, getPathwayProgress, getPathwaysByCourse,
+} from './api';
+import {
+  useCoursePathways, usePathway, usePathwayAchievements, usePathwayProgress,
+} from './apiHooks';
 import {
   courseIdWithPathways,
   courseIdWithoutPathways,
   dataEngineering,
   dataEngineeringAchievements,
+  dataEngineeringProgress,
   machineLearning,
   pathwaysByCourse,
 } from './__fixtures__/pathways';
@@ -15,11 +20,13 @@ import {
 jest.mock('./api', () => ({
   getPathway: jest.fn(),
   getPathwayAchievements: jest.fn(),
+  getPathwayProgress: jest.fn(),
   getPathwaysByCourse: jest.fn(),
 }));
 
 const mockGetPathway = getPathway as jest.MockedFunction<typeof getPathway>;
 const mockGetPathwayAchievements = getPathwayAchievements as jest.MockedFunction<typeof getPathwayAchievements>;
+const mockGetPathwayProgress = getPathwayProgress as jest.MockedFunction<typeof getPathwayProgress>;
 const mockGetPathwaysByCourse = getPathwaysByCourse as jest.MockedFunction<typeof getPathwaysByCourse>;
 
 const buildWrapper = () => {
@@ -36,6 +43,7 @@ describe('course-pathways apiHooks', () => {
   beforeEach(() => {
     mockGetPathway.mockReset();
     mockGetPathwayAchievements.mockReset();
+    mockGetPathwayProgress.mockReset();
     mockGetPathwaysByCourse.mockReset();
   });
 
@@ -106,6 +114,29 @@ describe('course-pathways apiHooks', () => {
       expect(result.current.fetchStatus).toBe('idle');
       expect(result.current.data).toBeUndefined();
       expect(mockGetPathway).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('usePathwayProgress', () => {
+    const pathwayId = dataEngineeringProgress.id;
+
+    it('returns the progress in the requested pathway', async () => {
+      mockGetPathwayProgress.mockResolvedValue(dataEngineeringProgress);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayProgress(pathwayId), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(mockGetPathwayProgress).toHaveBeenCalledWith(pathwayId);
+      expect(result.current.data).toEqual(dataEngineeringProgress);
+    });
+
+    it('does not request anything without a pathway', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayProgress(undefined), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockGetPathwayProgress).not.toHaveBeenCalled();
     });
   });
 

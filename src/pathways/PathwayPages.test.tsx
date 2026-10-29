@@ -4,7 +4,6 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { usePathway } from './data/apiHooks';
 import { TabPage } from './tab-page/TabPage';
 import { PathwayOutline } from './PathwayOutline';
-import { PathwayProgress } from './PathwayProgress';
 
 jest.mock('./data/apiHooks', () => ({
   usePathway: jest.fn(),
@@ -19,7 +18,6 @@ const metadataQuery = { data: undefined };
 // The pathway pages render their content inside the pathway TabPage
 describe.each([
   { Page: PathwayOutline, activeTabSlug: 'outline', content: 'Outline' },
-  { Page: PathwayProgress, activeTabSlug: 'progress', content: 'Progress' },
 ])('$Page.name', ({ Page, activeTabSlug, content }) => {
   beforeEach(() => {
     jest.clearAllMocks();

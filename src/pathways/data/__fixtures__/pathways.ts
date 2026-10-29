@@ -1,4 +1,6 @@
-import type { PathwayAchievementData, PathwayData, PathwaysByCourse } from '../types';
+import type {
+  PathwayAchievementData, PathwayData, PathwayProgressData, PathwaysByCourse,
+} from '../types';
 
 export const dataEngineering: PathwayData = {
   pathway: {
@@ -8,7 +10,7 @@ export const dataEngineering: PathwayData = {
     category: 'bootcamp',
     categoryLabel: 'Bootcamp',
   },
-  progress: { completedItemCount: 0 },
+  progress: { completedItemCount: 3 },
   provider: { name: 'MIT OpenCourseWare' },
 };
 
@@ -67,6 +69,49 @@ export const courseIdWithoutPathways = 'course-v1:edX+No+Pathways';
 export const pathwaysByCourse: PathwaysByCourse = {
   [courseIdWithPathways]: [dataEngineering, machineLearning],
   [courseIdWithManyPathways]: [dataEngineering, machineLearning, loremIpsum, sedUt, nemoEnim],
+};
+
+export const dataEngineeringProgress: PathwayProgressData = {
+  id: 'pathway-1',
+  itemCount: 6,
+  completedItemCount: 3,
+  grades: [
+    {
+      displayName: 'Introduction to Data Engineering',
+      progress: 100,
+      passGrade: 70,
+      currentGrade: 85,
+      detailsUrl: '/course/course-v1:edX+DE101+2026/progress',
+    },
+    {
+      displayName: 'Data Pipelines',
+      progress: 40,
+      passGrade: 70,
+      currentGrade: 30,
+      detailsUrl: '/course/course-v1:edX+DE102+2026/progress',
+    },
+    {
+      displayName: 'Data Warehousing',
+      progress: 65,
+      passGrade: 60,
+      currentGrade: 55,
+      detailsUrl: '/course/course-v1:edX+DE103+2026/progress',
+    },
+    {
+      displayName: 'Stream Processing',
+      progress: 0,
+      passGrade: 70,
+      currentGrade: 0,
+      detailsUrl: '/course/course-v1:edX+DE104+2026/progress',
+    },
+    {
+      displayName: 'Machine Learning Operations for Production Systems on Kubernetes',
+      progress: 20,
+      passGrade: 70,
+      currentGrade: 15,
+      detailsUrl: '/course/course-v1:edX+DE105+2026/progress',
+    },
+  ],
 };
 
 export const dataEngineeringAchievements: PathwayAchievementData[] = [

@@ -1,4 +1,6 @@
-import { getPathway, getPathwayAchievements, getPathwaysByCourse } from './api';
+import {
+  getPathway, getPathwayAchievements, getPathwayProgress, getPathwaysByCourse,
+} from './api';
 
 describe('course-pathways api', () => {
   describe('getPathwaysByCourse', () => {
@@ -12,6 +14,13 @@ describe('course-pathways api', () => {
     // Until the backend exists, every request fails
     it('fails', async () => {
       await expect(getPathway('pathway-1')).rejects.toThrow();
+    });
+  });
+
+  describe('getPathwayProgress', () => {
+    // Until the backend exists, every request fails
+    it('fails', async () => {
+      await expect(getPathwayProgress('pathway-1')).rejects.toThrow();
     });
   });
 
