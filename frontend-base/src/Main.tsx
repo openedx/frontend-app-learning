@@ -7,11 +7,13 @@ import { ToastProvider } from './generic/ToastContext';
 import { UserMessagesProvider } from './generic/user-messages';
 import { appId } from './constants';
 import messages from './messages';
+import { useQueryErrorLogging } from './queryClient';
 
 import './style.scss';
 
 const Main = () => {
   const { formatMessage } = useIntl();
+  useQueryErrorLogging();
   return (
     <CurrentAppProvider appId={appId}>
       <Helmet>
