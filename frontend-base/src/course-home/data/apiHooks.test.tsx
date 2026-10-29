@@ -8,8 +8,11 @@ import {
 
 import { getResponseStatus } from '../../data/http-error';
 import { ToastProvider, useToast } from '../../generic/ToastContext';
+import { queryDefaults } from '../../queryClient';
 import { mockLocation } from '../../tests/location';
 import {
+  courseHomeMetaQuery, datesTabDataQuery, examAttemptsDataQuery, liveTabDataQuery, outlineTabDataQuery,
+  proctoringInfoDataQuery, progressTabDataQuery,
   useCourseHomeMeta,
   useOutlineTabData, useLiveTabData, useProgressTabData, useResetDeadlines, usePostEvent, useRequestCert,
   useDismissWelcomeMessage, useSaveWeeklyLearningGoal, useExamAttemptsData, useProctoringInfoData,
@@ -18,8 +21,9 @@ import {
 const loggingService = getLoggingService() as MockLoggingService;
 
 const buildWrapper = () => {
+  // Each query sets its own retry (queryDefaults), which wins over this client's; no delay keeps those retries instant.
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+    defaultOptions: { queries: { retry: false, retryDelay: 0 }, mutations: { retry: false } },
   });
   const wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
@@ -35,6 +39,21 @@ describe('course-home apiHooks', () => {
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     loggingService.logError.mockReset();
+  });
+
+  it.each([
+    ['courseHomeMetaQuery', courseHomeMetaQuery('course-1')],
+    ['datesTabDataQuery', datesTabDataQuery('course-1')],
+    ['outlineTabDataQuery', outlineTabDataQuery('course-1')],
+    ['liveTabDataQuery', liveTabDataQuery('course-1')],
+    ['progressTabDataQuery', progressTabDataQuery('course-1')],
+    ['examAttemptsDataQuery', examAttemptsDataQuery('course-1', [])],
+  ])('%s carries the query defaults', (_, options) => {
+    expect(options).toMatchObject(queryDefaults);
+  });
+
+  it('proctoringInfoDataQuery keeps its own retry over the query defaults', () => {
+    expect(proctoringInfoDataQuery('course-1')).toMatchObject({ ...queryDefaults, retry: false });
   });
 
   describe('useResetDeadlines', () => {

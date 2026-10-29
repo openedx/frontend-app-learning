@@ -86,6 +86,8 @@ src/plugin-slots/CourseTabsNavigationSlot/README.md	dropped
 src/plugin-slots/HeaderSlot/images/header_custom_component.png	dropped
 src/plugin-slots/HeaderSlot/index.jsx	dropped
 src/plugin-slots/HeaderSlot/README.md	dropped
+src/queryClient.test.ts	frontend-base/src/queryClient.test.ts
+src/queryClient.ts	frontend-base/src/queryClient.ts
 src/shared/access.js	frontend-base/src/shared/access.js
 src/shared/data/__factories__/courseMetadataBase.factory.js	frontend-base/src/shared/data/__factories__/courseMetadataBase.factory.js
 src/shared/data/__factories__/index.js	frontend-base/src/shared/data/__factories__/index.js
