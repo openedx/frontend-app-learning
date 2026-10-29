@@ -5,3 +5,4 @@ node_modules/
 jest.config.js
 env.config.jsx
 example.env.config.jsx
+frontend-base/
