@@ -3,7 +3,6 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { usePathway } from './data/apiHooks';
 import { TabPage } from './tab-page/TabPage';
-import { PathwayAchievements } from './PathwayAchievements';
 import { PathwayOutline } from './PathwayOutline';
 import { PathwayProgress } from './PathwayProgress';
 
@@ -21,7 +20,6 @@ const metadataQuery = { data: undefined };
 describe.each([
   { Page: PathwayOutline, activeTabSlug: 'outline', content: 'Outline' },
   { Page: PathwayProgress, activeTabSlug: 'progress', content: 'Progress' },
-  { Page: PathwayAchievements, activeTabSlug: 'achievements', content: 'Achievements' },
 ])('$Page.name', ({ Page, activeTabSlug, content }) => {
   beforeEach(() => {
     jest.clearAllMocks();

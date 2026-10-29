@@ -19,4 +19,13 @@ export interface PathwayData {
   };
 }
 
+export interface PathwayAchievementData {
+  credentialId: string;
+  displayName: string;
+  providerName: string;
+  completedOn: string;
+  certificateUrl: string;
+  isOverarching: boolean;
+}
+
 export type PathwaysByCourse = Record<string, PathwayData[]>;

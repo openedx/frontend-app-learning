@@ -1,22 +1,25 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { getPathway, getPathwaysByCourse } from './api';
-import { useCoursePathways, usePathway } from './apiHooks';
+import { getPathway, getPathwayAchievements, getPathwaysByCourse } from './api';
+import { useCoursePathways, usePathway, usePathwayAchievements } from './apiHooks';
 import {
   courseIdWithPathways,
   courseIdWithoutPathways,
   dataEngineering,
+  dataEngineeringAchievements,
   machineLearning,
   pathwaysByCourse,
 } from './__fixtures__/pathways';
 
 jest.mock('./api', () => ({
   getPathway: jest.fn(),
+  getPathwayAchievements: jest.fn(),
   getPathwaysByCourse: jest.fn(),
 }));
 
 const mockGetPathway = getPathway as jest.MockedFunction<typeof getPathway>;
+const mockGetPathwayAchievements = getPathwayAchievements as jest.MockedFunction<typeof getPathwayAchievements>;
 const mockGetPathwaysByCourse = getPathwaysByCourse as jest.MockedFunction<typeof getPathwaysByCourse>;
 
 const buildWrapper = () => {
@@ -32,6 +35,7 @@ const buildWrapper = () => {
 describe('course-pathways apiHooks', () => {
   beforeEach(() => {
     mockGetPathway.mockReset();
+    mockGetPathwayAchievements.mockReset();
     mockGetPathwaysByCourse.mockReset();
   });
 
@@ -102,6 +106,29 @@ describe('course-pathways apiHooks', () => {
       expect(result.current.fetchStatus).toBe('idle');
       expect(result.current.data).toBeUndefined();
       expect(mockGetPathway).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('usePathwayAchievements', () => {
+    const pathwayId = dataEngineering.pathway.id;
+
+    it('returns the achievements earned in the requested pathway', async () => {
+      mockGetPathwayAchievements.mockResolvedValue(dataEngineeringAchievements);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayAchievements(pathwayId), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(mockGetPathwayAchievements).toHaveBeenCalledWith(pathwayId);
+      expect(result.current.data).toEqual(dataEngineeringAchievements);
+    });
+
+    it('does not request anything without a pathway', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayAchievements(undefined), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockGetPathwayAchievements).not.toHaveBeenCalled();
     });
   });
 });
