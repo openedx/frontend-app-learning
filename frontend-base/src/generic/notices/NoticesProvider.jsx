@@ -1,0 +1,36 @@
+import { useEffect, useState } from 'react';
+import { getAppConfig } from '@openedx/frontend-base';
+import { appId } from '@src/constants';
+import PropTypes from 'prop-types';
+import { getNotices } from './api';
+/**
+ * This component uses the platform-plugin-notices plugin to function.
+ * If the user has an unacknowledged notice, they will be rerouted off
+ * course home and onto a full-screen notice page. If the plugin is not
+ * installed, or there are no notices, we just passthrough this component.
+ */
+const NoticesProvider = ({ children }) => {
+  const [isRedirected, setIsRedirected] = useState();
+
+  useEffect(() => {
+    async function getData() {
+      if (getAppConfig(appId).ENABLE_NOTICES) {
+        const data = await getNotices();
+        if (data && data.results && data.results.length > 0) {
+          const { results } = data;
+          setIsRedirected(true);
+          window.location.replace(`${results[0]}?next=${window.location.href}`);
+        }
+      }
+    }
+    getData();
+  }, []);
+
+  return isRedirected === true ? null : children;
+};
+
+NoticesProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+export default NoticesProvider;

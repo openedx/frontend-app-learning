@@ -6,6 +6,10 @@ import slots from '@src/slots';
 
 const app: App = {
   appId,
+  defaultConfig: {
+    ENABLE_NOTICES: null,
+    EXAMS_BASE_URL: null,
+  },
   routes,
   provides,
   slots,

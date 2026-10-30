@@ -22,13 +22,6 @@ describe('routes', () => {
     });
   });
 
-  describe('dates', () => {
-    it('renders at course/:courseId/dates', async () => {
-      renderAt(`/course/${courseId}/dates`);
-      await expectStub('dates', { courseId });
-    });
-  });
-
   describe('progress', () => {
     it('renders at course/:courseId/progress', async () => {
       renderAt(`/course/${courseId}/progress`);
@@ -125,7 +118,6 @@ describe('routes', () => {
   describe('page rules', () => {
     it.each([
       `/course/${courseId}/home`,
-      `/course/${courseId}/dates`,
       `/course/${courseId}/progress`,
       `/course/${courseId}/progress/42`,
       `/course/${courseId}/discussion/topics/abc`,
