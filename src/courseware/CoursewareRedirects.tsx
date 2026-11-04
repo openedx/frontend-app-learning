@@ -10,6 +10,7 @@ import {
   parentSequenceQuery, resumeBlockQuery, sequenceMightBeUnit, useIsCourseLoaded, useIsPreview,
   useMinimalCourseOutline, useSequenceMetadata,
 } from './data/apiHooks';
+import { isBlockInCourse } from './data/courseKeys';
 import { useCourseHomeMeta } from '../course-home/data/apiHooks';
 
 // The preview routes (DECODE_ROUTES.COURSEWARE) exist for the sequence and unit shapes only; the course
@@ -61,6 +62,21 @@ const getNonStaffPreviewRedirect = (inputs: RedirectInputs): string | null => {
 
   if (isPreview && courseHomeMeta && !courseHomeMeta.originalUserIsStaff) {
     return pathname.replace('/preview', '');
+  }
+  return null;
+};
+
+// A sequence or unit of another course is never shown inside this one: its ID is dropped from the URL.
+const getForeignBlockRedirect = (inputs: RedirectInputs): string | null => {
+  const {
+    courseId, sequenceId, unitId, isPreview,
+  } = inputs;
+
+  if (!isBlockInCourse(sequenceId, courseId)) {
+    return coursewarePath(isPreview, courseId);
+  }
+  if (!isBlockInCourse(unitId, courseId)) {
+    return coursewarePath(isPreview, courseId, sequenceId);
   }
   return null;
 };
@@ -178,6 +194,7 @@ const CoursewareRedirects = () => {
   const to = [
     // Access
     getNonStaffPreviewRedirect(inputs),
+    getForeignBlockRedirect(inputs),
     // Errors
     getOutlineFailureRedirect(inputs),
     // The sequence has loaded
