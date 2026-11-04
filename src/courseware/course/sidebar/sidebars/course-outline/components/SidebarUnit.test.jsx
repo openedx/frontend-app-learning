@@ -8,7 +8,6 @@ import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { breakpoints } from '@openedx/paragon';
 
 import {
   createTestQueryClient, initializeMockApp, logUnhandledRequests, mockCourseRequests, seedQueryData,
@@ -52,8 +51,6 @@ describe('<SidebarUnit />', () => {
     // The outline is the stored sidebar, so it is open on any viewport.
     window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify(ID));
   };
-
-  const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
 
   function renderWithProvider(props = {}, pathname = undefined) {
     const queryClient = createTestQueryClient();
@@ -173,25 +170,15 @@ describe('<SidebarUnit />', () => {
       expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({ usage_key: unit.id });
     });
 
-    it('leaves sidebar open in desktop mode', async () => {
-      const user = userEvent.setup();
-      window.innerWidth = breakpoints.extraExtraLarge.minWidth;
-      await initTestData();
-      renderWithProvider({ unit: { ...unit } });
-      await user.click(screen.getByText(unit.title));
-
-      expect(currentSidebar()).toBe(ID);
-    });
-
-    it('closes sidebar on mobile devices', async () => {
+    it('calls unit click handler', async () => {
       const user = userEvent.setup();
       await initTestData();
-      renderWithProvider({ unit: { ...unit } });
-      expect(currentSidebar()).toBe(ID);
+      const mockOnUnitClick = jest.fn();
+      renderWithProvider({ unit: { ...unit }, onUnitClick: mockOnUnitClick });
 
       await user.click(screen.getByText(unit.title));
 
-      expect(currentSidebar()).toBe('null');
+      expect(mockOnUnitClick).toHaveBeenCalled();
     });
   });
 
