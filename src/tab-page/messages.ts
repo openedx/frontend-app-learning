@@ -1,6 +1,11 @@
 import { defineMessages } from '@edx/frontend-platform/i18n';
 
 const messages = defineMessages({
+  retry: {
+    id: 'learning.loading.retry',
+    defaultMessage: 'Retry',
+    description: 'Retry loading the current course after a temporary failure',
+  },
   failure: {
     id: 'learning.loading.failure',
     defaultMessage: 'There was an error loading this course.',

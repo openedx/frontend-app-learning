@@ -30,23 +30,45 @@ import {
   updateCourseOutlineCompletion,
 } from './slice';
 
+// A store owns its pending work; independent stores must never share results.
+const courseRequests = new WeakMap();
+const sequenceRequests = new WeakMap();
+const outlineRequests = new WeakMap();
+const latestOutlineRequests = new WeakMap();
+
 export function fetchCourse(courseId) {
   return async (dispatch) => {
+    const request = {};
+    courseRequests.set(dispatch, request);
+    const isCurrent = () => courseRequests.get(dispatch) === request;
     dispatch(fetchCourseRequest({ courseId }));
-    Promise.allSettled([
+    dispatch(setCoursewareOutlineSidebarToggles({}));
+    // Presentation preferences are optional and cannot hold the access barrier open.
+    getCoursewareOutlineSidebarToggles(courseId).then(result => {
+      if (isCurrent()) {
+        dispatch(setCoursewareOutlineSidebarToggles({
+          enableCompletionTracking: result.enable_completion_tracking,
+        }));
+      }
+    }, error => {
+      if (isCurrent()) {
+        logError(error);
+      }
+    });
+    return Promise.allSettled([
       getCourseMetadata(courseId),
       getLearningSequencesOutline(courseId),
       getCourseHomeCourseMetadata(courseId, 'courseware'),
-      getCoursewareOutlineSidebarToggles(courseId),
     ]).then(([
       courseMetadataResult,
       learningSequencesOutlineResult,
-      courseHomeMetadataResult,
-      coursewareOutlineSidebarTogglesResult]) => {
+      courseHomeMetadataResult]) => {
+      if (!isCurrent()) {
+        return;
+      }
       const fetchedMetadata = courseMetadataResult.status === 'fulfilled';
       const fetchedCourseHomeMetadata = courseHomeMetadataResult.status === 'fulfilled';
       const fetchedOutline = learningSequencesOutlineResult.status === 'fulfilled';
-      const fetchedCoursewareOutlineSidebarTogglesResult = coursewareOutlineSidebarTogglesResult.status === 'fulfilled';
 
       if (fetchedMetadata) {
         dispatch(addModel({
@@ -86,15 +108,6 @@ export function fetchCourse(courseId) {
         }));
       }
 
-      if (fetchedCoursewareOutlineSidebarTogglesResult) {
-        const {
-          enable_completion_tracking: enableCompletionTracking,
-        } = coursewareOutlineSidebarTogglesResult.value;
-        dispatch(setCoursewareOutlineSidebarToggles(
-          { enableCompletionTracking },
-        ));
-      }
-
       // Log errors for each request if needed. Outline failures may occur
       // even if the course metadata request is successful
       if (!fetchedOutline) {
@@ -112,9 +125,6 @@ export function fetchCourse(courseId) {
       }
       if (!fetchedCourseHomeMetadata) {
         logError(courseHomeMetadataResult.reason);
-      }
-      if (!fetchedCoursewareOutlineSidebarTogglesResult) {
-        logError(coursewareOutlineSidebarTogglesResult.reason);
       }
       if (fetchedMetadata && fetchedCourseHomeMetadata) {
         if (courseHomeMetadataResult.value.courseAccess.hasAccess && fetchedOutline) {
@@ -146,9 +156,15 @@ export function fetchCourse(courseId) {
 
 export function fetchSequence(sequenceId, isPreview) {
   return async (dispatch) => {
+    const request = {};
+    sequenceRequests.set(dispatch, request);
+    const isCurrent = () => sequenceRequests.get(dispatch) === request;
     dispatch(fetchSequenceRequest({ sequenceId }));
     try {
       const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
+      if (!isCurrent()) {
+        return;
+      }
       if (sequence.blockType !== 'sequential') {
         // Some other block types (particularly 'chapter') can be returned
         // by this API. We want to error in that case, since downstream
@@ -170,6 +186,9 @@ export function fetchSequence(sequenceId, isPreview) {
         dispatch(fetchSequenceSuccess({ sequenceId }));
       }
     } catch (error) {
+      if (!isCurrent()) {
+        return;
+      }
       // Some errors are expected - for example, CoursewareContainer may request sequence metadata for a unit and rely
       // on the request failing to notice that it actually does have a unit (mostly so it doesn't have to know anything
       // about the opaque key structure). In such cases, the backend gives us a 422.
@@ -286,14 +305,40 @@ export function getCourseDiscussionTopics(courseId) {
 }
 
 export function getCourseOutlineStructure(courseId) {
-  return async (dispatch) => {
-    dispatch(fetchCourseOutlineRequest());
-    try {
-      const courseOutline = await getCourseOutline(courseId);
-      dispatch(fetchCourseOutlineSuccess({ courseOutline }));
-    } catch (error) {
-      logError(error);
-      dispatch(fetchCourseOutlineFailure());
+  return (dispatch) => {
+    let pending = outlineRequests.get(dispatch);
+    if (!pending) {
+      pending = new Map();
+      outlineRequests.set(dispatch, pending);
     }
+    if (pending.has(courseId)) {
+      const existing = pending.get(courseId);
+      const reclaimingOutline = latestOutlineRequests.get(dispatch) !== existing;
+      latestOutlineRequests.set(dispatch, existing);
+      if (reclaimingOutline) {
+        dispatch(fetchCourseOutlineRequest());
+      }
+      return existing;
+    }
+    // Install the flight before dispatch so synchronous subscribers can also join it.
+    const request = Promise.resolve().then(async () => {
+      dispatch(fetchCourseOutlineRequest());
+      try {
+        const courseOutline = await getCourseOutline(courseId);
+        if (latestOutlineRequests.get(dispatch) === request) {
+          dispatch(fetchCourseOutlineSuccess({ courseOutline }));
+        }
+      } catch (error) {
+        if (latestOutlineRequests.get(dispatch) === request) {
+          logError(error);
+          dispatch(fetchCourseOutlineFailure());
+        }
+      } finally {
+        pending.delete(courseId);
+      }
+    });
+    pending.set(courseId, request);
+    latestOutlineRequests.set(dispatch, request);
+    return request;
   };
 }

@@ -3,7 +3,7 @@ import { getConfig } from '@edx/frontend-platform';
 import MockAdapter from 'axios-mock-adapter';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import {
-  initializeTestStore, logUnhandledRequests, render, screen,
+  fireEvent, initializeTestStore, logUnhandledRequests, render, screen,
 } from '../setupTest';
 import { TabPage } from './index';
 import { executeThunk } from '../utils';
@@ -31,6 +31,16 @@ describe('Tab Page', () => {
   it('displays loading failure message', () => {
     render(<TabPage {...mockData} courseStatus="other" />, { wrapWithRouter: true });
     expect(screen.getByText('There was an error loading this course.')).toBeInTheDocument();
+  });
+
+  it('offers a native Retry callback only on failure', () => {
+    const onRetry = jest.fn();
+    const { rerender } = render(<TabPage {...mockData} courseStatus="failed" onRetry={onRetry} />, { wrapWithRouter: true });
+    expect(screen.getByRole('alert')).toHaveTextContent('There was an error loading this course.');
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    expect(onRetry).toHaveBeenCalledTimes(1);
+    rerender(<TabPage {...mockData} courseStatus="loading" onRetry={onRetry} />);
+    expect(screen.queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument();
   });
 
   it('displays custom error message from courseHome state when available', async () => {

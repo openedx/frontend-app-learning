@@ -9,7 +9,7 @@ import {
   fetchCourse,
   fetchSequence,
   getResumeBlock,
-  getSequenceForUnitDeprecated,
+  getSequenceForBlockDeprecated,
   saveSequencePosition,
 } from './data';
 import { TabPage } from '../tab-page';
@@ -80,31 +80,37 @@ export const checkUnitToSequenceUnitRedirect = memoize((
   routeUnitId,
   navigate,
   isPreview,
+  isCurrent = () => true,
 ) => {
   if (courseStatus === 'loaded' && sequenceStatus === 'failed' && !section && !routeUnitId) {
     if (sequenceMightBeUnit) {
       // If the sequence failed to load as a sequence, but it is marked as a possible unit, then
       // we need to look up the correct parent sequence for it, and redirect there.
       const unitId = sequenceId; // just for clarity during the rest of this method
-      getSequenceForUnitDeprecated(courseId, unitId).then(
-        parentId => {
-          if (parentId) {
-            const baseUrl = `/course/${courseId}/${parentId}`;
+      return getSequenceForBlockDeprecated(courseId, unitId).then(
+        resolved => {
+          if (!isCurrent(courseId, sequenceId)) {
+            return;
+          }
+          if (resolved) {
+            const baseUrl = `/course/${courseId}/${resolved.sequenceId}`;
             const sequenceUrl = isPreview ? `/preview${baseUrl}` : baseUrl;
-            navigate(`${sequenceUrl}/${unitId}`, { replace: true });
+            navigate(`${sequenceUrl}/${resolved.unitId}`, { replace: true });
           } else {
-            navigate(`/course/${courseId}`, { replace: true });
+            navigate(`/course/${courseId}/home`, { replace: true });
           }
         },
         () => { // error case
-          navigate(`/course/${courseId}`, { replace: true });
+          if (isCurrent(courseId, sequenceId)) {
+            navigate(`/course/${courseId}/home`, { replace: true });
+          }
         },
       );
-    } else {
-      // Invalid sequence that isn't a unit either. Redirect up to main course.
-      navigate(`/course/${courseId}`, { replace: true });
     }
+    // Invalid sequence that isn't a unit either. Redirect up to main course.
+    navigate(`/course/${courseId}/home`, { replace: true });
   }
+  return undefined;
 });
 
 // Look at where this is called in componentDidUpdate for more info about its usage
@@ -173,6 +179,7 @@ class CoursewareContainer extends Component {
   });
 
   componentDidMount() {
+    this.mounted = true;
     const {
       routeCourseId,
       routeSequenceId,
@@ -273,6 +280,7 @@ class CoursewareContainer extends Component {
       routeUnitId,
       navigate,
       isPreview,
+      this.isCurrentDeepLink,
     );
 
     // Check sequence to sequence-unit redirect:
@@ -302,6 +310,25 @@ class CoursewareContainer extends Component {
       isPreview,
     );
   }
+
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  isCurrentDeepLink = (courseId, sequenceId) => this.mounted
+    && this.props.routeCourseId === courseId
+    && this.props.routeSequenceId === sequenceId
+    && !this.props.routeUnitId
+    && this.props.courseStatus === 'loaded'
+    && this.props.sequenceStatus === 'failed';
+
+  handleRetry = () => {
+    const { routeCourseId, routeSequenceId, isPreview } = this.props;
+    this.props.fetchCourse(routeCourseId);
+    if (routeSequenceId) {
+      this.props.fetchSequence(routeSequenceId, isPreview);
+    }
+  };
 
   handleUnitNavigationClick = () => {
     const {
@@ -346,6 +373,7 @@ class CoursewareContainer extends Component {
         unitId={routeUnitId}
         courseStatus={courseStatus}
         metadataModel="coursewareMeta"
+        onRetry={this.handleRetry}
       >
         <Course
           courseId={courseId}

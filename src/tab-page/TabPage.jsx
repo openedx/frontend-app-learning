@@ -4,7 +4,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
-import { Toast } from '@openedx/paragon';
+import { Button, Toast } from '@openedx/paragon';
 import { FooterSlot } from '@edx/frontend-component-footer';
 import HeaderSlot from '../plugin-slots/HeaderSlot';
 import PageLoading from '../generic/PageLoading';
@@ -24,6 +24,7 @@ const TabPage = (props) => {
     courseId,
     courseStatus,
     metadataModel,
+    onRetry,
   } = props;
   const {
     toastBodyLink,
@@ -82,9 +83,10 @@ const TabPage = (props) => {
 
       {/* courseStatus 'failed' and any other unexpected course status. */}
       {(!['loading', 'loaded', 'denied'].includes(courseStatus)) && (
-        <p className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
-          {errorMessage || intl.formatMessage(messages.failure)}
-        </p>
+        <div role="alert" className="text-center py-5 mx-auto" style={{ maxWidth: '30em' }}>
+          <p>{errorMessage || intl.formatMessage(messages.failure)}</p>
+          {onRetry && <Button onClick={onRetry}>{intl.formatMessage(messages.retry)}</Button>}
+        </div>
       )}
       <FooterSlot />
     </>
@@ -94,6 +96,7 @@ const TabPage = (props) => {
 TabPage.defaultProps = {
   courseId: null,
   unitId: null,
+  onRetry: null,
 };
 
 TabPage.propTypes = {
@@ -102,6 +105,7 @@ TabPage.propTypes = {
   courseStatus: PropTypes.string.isRequired,
   metadataModel: PropTypes.string.isRequired,
   unitId: PropTypes.string,
+  onRetry: PropTypes.func,
 };
 
 export default TabPage;
