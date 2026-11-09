@@ -13,6 +13,11 @@ import CourseOutlineTray from './CourseOutlineTray';
 import { ID as outlineSidebarId } from './constants';
 import messages from './messages';
 
+jest.mock('@edx/frontend-platform/analytics', () => ({
+  sendTrackEvent: jest.fn(),
+  sendTrackingLogEvent: jest.fn(),
+}));
+
 describe('<CourseOutlineTray />', () => {
   let section = {};
   let sequence = {};
@@ -106,6 +111,30 @@ describe('<CourseOutlineTray />', () => {
     await user.click(collapseButton());
 
     expect(collapseButton()).not.toBeInTheDocument();
+  });
+
+  it('collapses sidebar correctly when unit is clicked on mobile', async () => {
+    const user = userEvent.setup();
+    window.innerWidth = 500;
+    await initTestData();
+    renderWithProvider();
+    await waitForOutlineLoaded();
+    expect(collapseButton()).toBeInTheDocument();
+    await user.click(screen.getByText(unit.title));
+
+    expect(collapseButton()).not.toBeInTheDocument();
+  });
+
+  it('does not collapse sidebar when unit is clicked on desktop', async () => {
+    const user = userEvent.setup();
+    window.innerWidth = 1500;
+    await initTestData();
+    renderWithProvider();
+    await waitForOutlineLoaded();
+    expect(collapseButton()).toBeInTheDocument();
+    await user.click(screen.getByText(unit.title));
+
+    expect(collapseButton()).toBeInTheDocument();
   });
 
   it('collapses sidebar correctly when screen is resized', async () => {
