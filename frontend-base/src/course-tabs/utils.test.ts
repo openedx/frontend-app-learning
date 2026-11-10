@@ -1,9 +1,9 @@
 import {
   getActiveTabTitle,
-  getCourseOutlineUrl,
-  getDatesTabUrl,
-  getProgressTabUrl,
+  hasCourseOutlineTab,
+  hasDatesTab,
   hasDiscussionTab,
+  hasProgressTab,
   isActiveTab,
 } from './utils';
 
@@ -49,20 +49,20 @@ describe('getActiveTabTitle', () => {
 });
 
 describe.each([
-  ['getCourseOutlineUrl', getCourseOutlineUrl, courseTab],
-  ['getDatesTabUrl', getDatesTabUrl, datesTab],
-  ['getProgressTabUrl', getProgressTabUrl, progressTab],
-] as const)('%s', (_name, getUrl, expected) => {
-  it('returns its tab\'s url', () => {
-    expect(getUrl(tabs)).toBe(expected.url);
+  ['hasCourseOutlineTab', hasCourseOutlineTab, courseTab],
+  ['hasDatesTab', hasDatesTab, datesTab],
+  ['hasProgressTab', hasProgressTab, progressTab],
+] as const)('%s', (_name, hasTab, expected) => {
+  it('is true when the course has its tab', () => {
+    expect(hasTab(tabs)).toBe(true);
   });
 
-  it('returns undefined when the course has no such tab', () => {
-    expect(getUrl(tabs.filter(tab => tab !== expected))).toBeUndefined();
+  it('is false when the course has no such tab', () => {
+    expect(hasTab(tabs.filter(tab => tab !== expected))).toBe(false);
   });
 
-  it('returns undefined before the tabs have loaded', () => {
-    expect(getUrl(undefined)).toBeUndefined();
+  it('is false before the tabs have loaded', () => {
+    expect(hasTab(undefined)).toBe(false);
   });
 });
 

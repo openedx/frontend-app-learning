@@ -47,12 +47,15 @@ src/course-tabs/CourseTabLink.tsx	dropped
 src/course-tabs/course-tabs-navigation.scss	dropped
 src/course-tabs/CourseTabsNavigation.test.jsx	dropped
 src/course-tabs/CourseTabsNavigation.tsx	dropped
-src/course-tabs/hooks.test.tsx	dropped
-src/course-tabs/hooks.ts	dropped
+src/course-tabs/hooks.test.tsx	frontend-base/src/course-tabs/hooks.test.tsx
+src/course-tabs/hooks.ts	frontend-base/src/course-tabs/hooks.ts
 src/course-tabs/index.ts	dropped
 src/course-tabs/messages.ts	dropped
 src/course-tabs/utils.test.ts	frontend-base/src/course-tabs/utils.test.ts
 src/course-tabs/utils.ts	frontend-base/src/course-tabs/utils.ts
+src/courseware/course/course-exit/messages.ts	frontend-base/src/courseware/course/course-exit/messages.ts
+src/courseware/course/course-exit/utils.js	frontend-base/src/courseware/course/course-exit/utils.js
+src/courseware/course/course-exit/utils.test.ts	frontend-base/src/courseware/course/course-exit/utils.test.ts
 src/data/http-error.ts	frontend-base/src/data/http-error.ts
 src/data/localStorage.js	frontend-base/src/data/localStorage.js
 src/generic/messages.ts	frontend-base/src/generic/messages.ts
@@ -92,6 +95,7 @@ src/shared/access.js	frontend-base/src/shared/access.js
 src/shared/data/__factories__/courseMetadataBase.factory.js	frontend-base/src/shared/data/__factories__/courseMetadataBase.factory.js
 src/shared/data/__factories__/index.js	frontend-base/src/shared/data/__factories__/index.js
 src/shared/data/__factories__/tab.factory.js	frontend-base/src/shared/data/__factories__/tab.factory.js
+src/shared/links.jsx	frontend-base/src/shared/links.jsx
 src/tab-page/index.js	frontend-base/src/tab-page/index.js
 src/tab-page/LoadedTabPage.test.jsx	frontend-base/src/tab-page/LoadedTabPage.test.jsx
 src/tab-page/LoadedTabPage.tsx	frontend-base/src/tab-page/LoadedTabPage.tsx

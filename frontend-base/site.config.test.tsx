@@ -12,7 +12,9 @@ const siteConfig: SiteConfig = {
   apps: [{
     appId: 'org.openedx.frontend.app.learning',
     config: {
+      CREDIT_HELP_LINK_URL: 'https://help.edx.org/edxlearner/s/article/Can-I-receive-college-credit-or-credit-hours-for-my-course',
       EXAMS_BASE_URL: 'http://localhost:18740',
+      SUPPORT_URL_ID_VERIFICATION: 'https://support.edx.org/hc/en-us/articles/206503858-How-do-I-verify-my-identity',
     },
   }],
 };

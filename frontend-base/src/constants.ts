@@ -6,3 +6,6 @@ export const courseOutlineRole = 'org.openedx.frontend.role.courseOutline';
 export const courseDatesRole = 'org.openedx.frontend.role.courseDates';
 export const courseProgressRole = 'org.openedx.frontend.role.courseProgress';
 export const coursewareRole = 'org.openedx.frontend.role.courseware';
+
+export const dashboardRole = 'org.openedx.frontend.role.dashboard';
+export const profileRole = 'org.openedx.frontend.role.profile';
