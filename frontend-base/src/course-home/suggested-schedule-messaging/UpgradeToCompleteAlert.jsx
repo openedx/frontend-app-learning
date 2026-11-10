@@ -1,0 +1,63 @@
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useIntl } from '@openedx/frontend-base';
+import {
+  Alert,
+  Button,
+  Col,
+  Row,
+} from '@openedx/paragon';
+
+import { useDatesTabData } from '../data/apiHooks';
+import messages from './messages';
+
+const UpgradeToCompleteAlert = ({ logUpgradeLinkClick = () => {} }) => {
+  const intl = useIntl();
+  const { courseId } = useParams();
+
+  const {
+    datesBannerInfo,
+    hasEnded,
+  } = useDatesTabData(courseId, { enabled: false }).data;
+
+  const {
+    contentTypeGatingEnabled,
+    missedDeadlines,
+    verifiedUpgradeLink,
+  } = datesBannerInfo;
+
+  if (!contentTypeGatingEnabled || missedDeadlines || hasEnded || !verifiedUpgradeLink) {
+    return null;
+  }
+
+  return (
+    <Alert id="upgrade-complete-alert" className="bg-light-200">
+      <Row className="w-100 m-0">
+        <Col xs={12} md={9} className="small p-0 pr-md-2">
+          <Alert.Heading>{intl.formatMessage(messages.upgradeToCompleteHeader)}</Alert.Heading>
+          {intl.formatMessage(messages.upgradeToCompleteBody)}
+        </Col>
+        <Col xs={12} md={3} className="align-self-center text-right mt-3 mt-md-0 p-0">
+          <Button
+            variant="brand"
+            size="sm"
+            className="w-xs-100 w-md-auto"
+            onClick={() => {
+              logUpgradeLinkClick();
+              global.location.replace(verifiedUpgradeLink);
+            }}
+          >
+            {intl.formatMessage(messages.upgradeToCompleteButton)}
+          </Button>
+        </Col>
+      </Row>
+    </Alert>
+  );
+};
+
+UpgradeToCompleteAlert.propTypes = {
+  logUpgradeLinkClick: PropTypes.func,
+};
+
+export default UpgradeToCompleteAlert;
