@@ -1,0 +1,53 @@
+name: frontend-base
+on:
+  push:
+    branches:
+      - frontend-base
+    paths:
+      - 'frontend-base/**'
+      - '.github/workflows/frontend-base.yml'
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - 'frontend-base/**'
+      - '.github/workflows/frontend-base.yml'
+defaults:
+  run:
+    working-directory: frontend-base
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        fetch-depth: 0
+    - name: Setup Nodejs
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version-file: 'frontend-base/.nvmrc'
+    - name: Install dependencies
+      run: npm ci
+    - name: Lint
+      run: npm run lint
+    - name: Test
+      run: npm run test
+    - name: Build
+      run: npm run build
+    - name: Build (CI)
+      run: npm run build:ci
+    - name: i18n_extract
+      run: npm run i18n_extract
+    # Runs from the repository root, not frontend-base/, so the uploader
+    # resolves the report's paths against the whole tree; jest writes them
+    # with the frontend-base/ prefix (projectRoot in jest.config.js).
+    - name: Coverage
+      uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true
+        disable_search: true
+        files: frontend-base/coverage/lcov.info
+        flags: frontend-base

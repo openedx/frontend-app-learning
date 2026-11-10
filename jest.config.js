@@ -16,6 +16,9 @@ const mergedConfig = createConfig('jest', {
     // Explicit mapping to ensure Jest resolves the module correctly
     '^@edx/frontend-lib-special-exams$': '<rootDir>/node_modules/@edx/frontend-lib-special-exams',
   },
+  // The frontend-base package under frontend-base/ has its own jest config.
+  modulePathIgnorePatterns: ['<rootDir>/frontend-base/'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/frontend-base/'],
   testTimeout: 30000,
   globalSetup: "./global-setup.js",
   verbose: true,

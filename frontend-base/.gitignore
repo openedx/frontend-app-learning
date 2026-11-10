@@ -1,0 +1,19 @@
+node_modules
+npm-debug.log
+coverage
+dist/
+packages/
+/.turbo
+/turbo.json
+/*.tgz
+
+### i18n ###
+src/i18n/transifex_input.json
+src/i18n/messages.ts
+src/i18n/messages/
+
+### Editors ###
+.DS_Store
+*~
+/temp
+/.vscode
