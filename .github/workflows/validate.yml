@@ -3,6 +3,7 @@ on:
   push:
     branches:
     - master
+    - frontend-base
   pull_request:
     branches:
     - '**'
