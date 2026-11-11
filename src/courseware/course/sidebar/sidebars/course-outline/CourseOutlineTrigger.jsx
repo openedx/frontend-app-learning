@@ -35,6 +35,8 @@ const CourseOutlineTrigger = ({ isMobileView }) => {
         className="outline-sidebar-toggle-btn flex-shrink-0 text-dark bg-light-200 rounded-0"
         iconAs={MenuOpenIcon}
         onClick={handleToggleCollapse}
+        aria-expanded={currentSidebar === ID}
+        aria-controls="outline-sidebar-outline"
       />
     </div>
   );
