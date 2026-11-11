@@ -1,19 +1,27 @@
 import { Factory } from 'rosie';
 import {
-  getAnalyticsService, getAppConfig, getAuthenticatedHttpClient, getSiteConfig, mergeAppConfig, runPageRules,
+  getAnalyticsService, getAppConfig, getAuthenticatedHttpClient, getLocale, getSiteConfig, mergeAppConfig,
+  runPageRules, setAuthenticatedUser,
 } from '@openedx/frontend-base';
 import { breakpoints } from '@openedx/paragon';
 import {
   act, fireEvent, screen, waitFor, within,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import MockAdapter from 'axios-mock-adapter';
 
 import { appId } from '@src/constants';
 import routes from '@src/routes';
+import { authenticatedUser } from '@src/tests/authenticatedUser';
 import { mockLocation, preventNavigation } from '@src/tests/location';
 import { renderRoutes } from '@src/tests/render';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import messages from './grades/messages';
+
+jest.mock('@openedx/frontend-base', () => {
+  const actual = jest.requireActual('@openedx/frontend-base');
+  return { ...actual, getLocale: jest.fn(actual.getLocale) };
+});
 
 const { sendTrackEvent } = getAnalyticsService();
 
@@ -1626,6 +1634,64 @@ describe('Progress Tab', () => {
     });
   });
 
+  describe('Progress header', () => {
+    afterEach(() => {
+      setAuthenticatedUser(authenticatedUser);
+    });
+
+    it('links an administrator to the grading settings in Studio', async () => {
+      setAuthenticatedUser({ ...authenticatedUser, administrator: true });
+      await fetchAndRender();
+      expect(screen.getByRole('link', { name: 'View grading in Studio' })).toHaveAttribute('href', defaultTabData.studio_url);
+    });
+  });
+
+  describe('Course completion', () => {
+    const segments = () => screen.getByText('completed').closest('svg').querySelectorAll('.donut-segment-group');
+
+    it.each([
+      ['incomplete', 0, 'Content that you have access to and have not completed.'],
+      ['locked', 1, 'Content that is locked and available only to those who upgrade.'],
+      ['complete', 2, 'Content that you have completed.'],
+    ])('explains the %s segment of the chart while it has focus', async (_name, index, explanation) => {
+      setTabData({ completion_summary: { complete_count: 3, incomplete_count: 5, locked_count: 2 } });
+      await fetchAndRender();
+      const segment = segments()[index];
+
+      expect(screen.queryByText(explanation)).not.toBeInTheDocument();
+      fireEvent.focus(segment);
+      expect(await screen.findByText(explanation)).toBeInTheDocument();
+      fireEvent.blur(segment);
+      await waitFor(() => expect(screen.queryByText(explanation)).not.toBeInTheDocument());
+    });
+
+    it('draws only the complete segment when all content is complete', async () => {
+      setTabData({ completion_summary: { complete_count: 2, incomplete_count: 0, locked_count: 0 } });
+      await fetchAndRender();
+
+      expect(screen.getByText('You have completed 100% of content in this course.', { exact: false })).toBeInTheDocument();
+      expect(segments()).toHaveLength(1);
+      expect(segments()[0].querySelector('.complete-stroke')).toBeInTheDocument();
+    });
+
+    it('draws only the incomplete segment when no content is complete', async () => {
+      setTabData({ completion_summary: { complete_count: 0, incomplete_count: 2, locked_count: 0 } });
+      await fetchAndRender();
+
+      expect(screen.getByText('You have completed 0% of content in this course.', { exact: false })).toBeInTheDocument();
+      expect(segments()).toHaveLength(1);
+      expect(segments()[0].querySelector('.incomplete-stroke')).toBeInTheDocument();
+    });
+
+    it('hides the lock icon in a locked segment too thin to hold it', async () => {
+      setTabData({ completion_summary: { complete_count: 12, incomplete_count: 12, locked_count: 1 } });
+      await fetchAndRender();
+
+      expect(screen.getByText('4% of content in this course is locked and available only for those who upgrade.', { exact: false })).toBeInTheDocument();
+      expect(segments()[1].querySelector('path')).toHaveAttribute('fill', 'transparent');
+    });
+  });
+
   describe('Related links and subsection titles', () => {
     it('links to the dates and outline tabs of this course', async () => {
       await fetchAndRender();
@@ -1654,15 +1720,260 @@ describe('Progress Tab', () => {
       expect(await screen.findByRole('heading', { name: 'Important dates' })).toBeInTheDocument();
       expect(router.state.location.pathname).toBe(`/learning/course/${courseId}/dates`);
     });
+
+    it('labels the problem scores of an ungraded subsection as practice scores', async () => {
+      const user = userEvent.setup();
+      mergeAppConfig(appId, { SHOW_UNGRADED_ASSIGNMENT_PROGRESS: 'true' });
+      const [firstSection] = defaultTabData.section_scores;
+      setTabData({
+        section_scores: [
+          { ...firstSection, subsections: [{ ...firstSection.subsections[0], has_graded_assignment: false }] },
+        ],
+      });
+      await fetchAndRender();
+
+      await user.click(screen.getByRole('button', { name: 'Toggle individual problem scores for First subsection' }));
+      expect(screen.getAllByText('Practice Scores:').length).toBeGreaterThan(1);
+
+      act(() => mergeAppConfig(appId, { SHOW_UNGRADED_ASSIGNMENT_PROGRESS: false }));
+    });
   });
 
   describe('Credit requirements', () => {
+    const creditRequirement = (attributes) => ({
+      namespace: 'proctored_exam',
+      name: 'i4x://edX/DemoX/proctoring-block/final_uuid',
+      display_name: 'Proctored Mid Term Exam',
+      criteria: {},
+      reason: {},
+      status: 'satisfied',
+      status_date: '2015-06-26 11:07:42',
+      order: 1,
+      ...attributes,
+    });
+    const eligibilitySentence = () => screen.getByRole('heading', { name: 'Requirements for course credit' }).nextElementSibling;
+
+    it.each([
+      ['not_eligible', 'You are no longer eligible for credit in this course. Learn more about course credit.'],
+      ['partial_eligible', 'You have not yet met the requirements for credit. Learn more about course credit.'],
+      ['some_other_status', ''],
+    ])('explains the %s eligibility status', async (eligibilityStatus, sentence) => {
+      setTabData({ credit_course_requirements: { eligibility_status: eligibilityStatus, requirements: [] } });
+      await fetchAndRender();
+
+      expect(eligibilitySentence()).toHaveTextContent(sentence, { normalizeWhitespace: true });
+      expect(eligibilitySentence().textContent).toBe(sentence);
+    });
+
     it('links course credit to CREDIT_HELP_LINK_URL from the app config', async () => {
       setTabData({ credit_course_requirements: { eligibility_status: 'not_eligible', requirements: [] } });
       await fetchAndRender();
 
       expect(screen.getByRole('link', { name: 'course credit' }))
         .toHaveAttribute('href', getAppConfig(appId).CREDIT_HELP_LINK_URL);
+    });
+
+    it.each([
+      ['submitted', 'Verification submitted'],
+      ['failed', 'Verification failed'],
+      ['declined', 'Verification failed'],
+      ['satisfied', 'Completed'],
+      [null, 'Upcoming'],
+    ])('reports a requirement with status %s', async (status, statusText) => {
+      setTabData({
+        credit_course_requirements: { eligibility_status: 'partial_eligible', requirements: [creditRequirement({ status })] },
+      });
+      await fetchAndRender();
+
+      expect(screen.getByText('Proctored Mid Term Exam:').nextElementSibling).toHaveTextContent(statusText);
+    });
+  });
+
+  describe('Grade summary percentages', () => {
+    const assignmentType = (attributes) => ({
+      type: 'Homework',
+      short_label: 'HW',
+      weight: 1,
+      average_grade: 1,
+      weighted_grade: 1,
+      num_droppable: 0,
+      num_total: 2,
+      has_hidden_contribution: 'none',
+      last_grade_publish_date: null,
+      ...attributes,
+    });
+
+    it('shows two decimals for a grade that is not a whole percent', async () => {
+      setTabData({
+        assignment_type_grade_summary: [assignmentType({ average_grade: 0.3333, weighted_grade: 0.1667, weight: 0.5 })],
+      });
+      await fetchAndRender();
+
+      const row = within(screen.getByRole('row', { name: /Homework/ }));
+      expect(row.getByText('50%')).toBeInTheDocument();
+      expect(row.getByText('33.33%')).toBeInTheDocument();
+      expect(row.getByText('16.67%')).toBeInTheDocument();
+    });
+
+    it('decides an assignment type is locked from its graded subsections that carry points', async () => {
+      const subsection = (attributes) => ({ ...defaultTabData.section_scores[0].subsections[0], ...attributes });
+      setTabData({
+        section_scores: [{
+          display_name: 'First section',
+          subsections: [
+            subsection({
+              display_name: 'Locked with points earned', learner_has_access: false, num_points_earned: 2, num_points_possible: 0,
+            }),
+            subsection({ display_name: 'Open without points', num_points_earned: 0, num_points_possible: 0 }),
+            subsection({ display_name: 'Open but ungraded', has_graded_assignment: false }),
+            subsection({ display_name: 'Open of another type', assignment_type: 'Exam' }),
+          ],
+        }],
+      });
+      await fetchAndRender();
+
+      expect(screen.getByText('You have limited access to graded assignments as part of the audit track in this course.', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('Locked with points earned')).toBeInTheDocument();
+      expect(screen.queryByText('Open without points')).not.toBeInTheDocument();
+      expect(screen.queryByText('Open but ungraded')).not.toBeInTheDocument();
+      expect(screen.getByText('Open of another type')).toBeInTheDocument();
+    });
+
+    it('names a footnote after the assignment type when the type has no short label', async () => {
+      setTabData({
+        assignment_type_grade_summary: [assignmentType({ short_label: null, num_droppable: 1 })],
+      });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: '1' })).toHaveAttribute('href', '#Homework-footnote');
+    });
+
+    it('shows the raw weighted grade with two decimals in the summary tooltip', async () => {
+      const user = userEvent.setup();
+      setTabData({ final_grades: 0.8349, course_grade: { is_passing: true, letter_grade: 'pass', percent: 0.83 } });
+      await fetchAndRender();
+
+      const summary = screen.getByText('Your current weighted grade summary');
+      await user.hover(summary.querySelector('[alt="Grade summary tooltip"]'));
+      expect(await screen.findByText('Your raw weighted grade summary is 83.49 and rounds to 83.')).toBeInTheDocument();
+    });
+  });
+
+  describe('Grade bar', () => {
+    it('closes the grade range tooltip when its button loses focus', async () => {
+      const user = userEvent.setup();
+      setTabData({
+        grading_policy: { ...defaultTabData.grading_policy, grade_range: { A: 0.9, B: 0.8 } },
+      });
+      await fetchAndRender();
+
+      await user.click(screen.getByRole('button', { name: 'Grade range tooltip' }));
+      expect(await screen.findByText('Grade ranges for this course:')).toBeInTheDocument();
+      await user.tab();
+      await waitFor(() => expect(screen.queryByText('Grade ranges for this course:')).not.toBeInTheDocument());
+    });
+  });
+
+  describe('Certificate status card', () => {
+    beforeEach(() => {
+      sendTrackEvent.mockClear();
+    });
+
+    it('shows a downloadable certificate to a learner without a passing grade', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({ certificate_data: { cert_status: 'downloadable', cert_web_view_url: '/certificates/abc' } });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'View my certificate' }))
+        .toHaveAttribute('href', `${getSiteConfig().lmsBaseUrl}/certificates/abc`);
+    });
+
+    it('shows a downloadable certificate without a button when it has no web view', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({ certificate_data: { cert_status: 'downloadable' }, user_has_passing_grade: true });
+      await fetchAndRender();
+
+      const certificateStatus = within(screen.getByTestId('certificate-status-component'));
+      expect(certificateStatus.getByText('Showcase your accomplishment on LinkedIn', { exact: false })).toBeInTheDocument();
+      expect(certificateStatus.queryByRole('link')).not.toBeInTheDocument();
+      expect(certificateStatus.queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    it('shows no card to a passing learner with no certificate data once certificates can be viewed', async () => {
+      setMetadata({ is_enrolled: true, can_view_certificate: true });
+      setTabData({ certificate_data: undefined, user_has_passing_grade: true });
+      await fetchAndRender();
+
+      expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', expect.objectContaining({
+        certificate_status_variant: 'no_certificate_status',
+      }));
+    });
+
+    it('renders the card in the main column on a screen narrower than the large breakpoint', async () => {
+      const wideWidth = global.innerWidth;
+      global.innerWidth = breakpoints.large.minWidth - 1;
+      setMetadata({ is_enrolled: true });
+      await fetchAndRender();
+
+      const mainColumn = screen.getByRole('heading', { name: 'Grades' }).closest('.col-md-8');
+      expect(within(mainColumn).getByTestId('certificate-status-component')).toBeInTheDocument();
+      expect(screen.getAllByTestId('certificate-status-component')).toHaveLength(1);
+
+      global.innerWidth = wideWidth;
+    });
+  });
+
+  describe('in a right-to-left locale', () => {
+    beforeEach(() => {
+      getLocale.mockReturnValue('ar');
+    });
+
+    afterEach(() => {
+      getLocale.mockImplementation(jest.requireActual('@openedx/frontend-base').getLocale);
+    });
+
+    it('marks every percentage as right-to-left and mirrors the grade bar', async () => {
+      const user = userEvent.setup();
+      setTabData({
+        assignment_type_grade_summary: [{
+          ...defaultTabData.assignment_type_grade_summary[0],
+          has_hidden_contribution: 'some',
+        }],
+      });
+      await fetchAndRender();
+
+      // The completion chart: 1 of 2 units complete.
+      expect(screen.getByText('50\u200f%')).toBeInTheDocument();
+      // The grade bar: a current grade of 100% and a passing grade of 75%, measured from the right.
+      expect(screen.getByTestId('currentGradeTooltipContent')).toHaveTextContent('100\u200f%');
+      expect(screen.getByText('75\u200f%')).toBeInTheDocument();
+      expect(screen.getByText('Passing grade', { selector: 'text' })).toHaveAttribute('x', '25%');
+      expect(screen.getByText('Passing grade', { selector: 'text' })).toHaveStyle({ transform: 'translateX(3.4em)' });
+      expect(screen.getByText('Your current grade', { selector: 'text' })).toHaveAttribute('x', '0%');
+      expect(screen.getByText('Your current grade', { selector: 'text' })).toHaveStyle({ transform: 'translateX(3.4em)' });
+      // The grade summary table and its footer.
+      const row = within(screen.getByRole('row', { name: /Homework/ }));
+      expect(row.getAllByText('100\u200f% + Hidden Scores')).toHaveLength(2);
+      expect(row.getByText('100\u200f%')).toBeInTheDocument();
+      expect(screen.getByTestId('gradeSummaryFooterTotalWeightedGrade')).toHaveTextContent('100\u200f%');
+      // The detailed grades: earned and possible points are separated by a backslash.
+      expect(screen.getByText('0\\3')).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Toggle individual problem scores for First subsection' }));
+      expect(screen.getAllByText('0\\1')).toHaveLength(3);
+    });
+
+    it('mirrors the grade bar labels for grades below 50%', async () => {
+      setTabData({
+        course_grade: { is_passing: false, letter_grade: null, percent: 0.3 },
+        grading_policy: { ...defaultTabData.grading_policy, grade_range: { pass: 0.4 } },
+      });
+      await fetchAndRender();
+
+      expect(screen.getByText('Passing grade', { selector: 'text' })).toHaveAttribute('x', '60%');
+      expect(screen.getByText('Passing grade', { selector: 'text' })).toHaveStyle({ transform: 'translateX(-3.4em)' });
+      expect(screen.getByText('Your current grade', { selector: 'text' })).toHaveAttribute('x', '70%');
+      expect(screen.getByText('Your current grade', { selector: 'text' })).toHaveStyle({ transform: 'translateX(-3.4em)' });
     });
   });
 });
