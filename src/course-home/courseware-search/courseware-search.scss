@@ -6,8 +6,9 @@
   right: 0;
   bottom: 0;
   width: 100%;
-  height: 100%;
+  height: auto;
   max-width: none;
+  max-height: none;
   margin: 0;
   border-top: 1px solid var(--pgn-color-light-300);
   z-index: var(--pgn-elevation-modal-zindex); // Bootstrap's z-index layer for Modals.
