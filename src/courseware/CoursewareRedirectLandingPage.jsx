@@ -38,6 +38,10 @@ const CoursewareRedirectLandingPage = () => (
         element={<PageWrap><RedirectPage mode={REDIRECT_MODES.CONSENT_REDIRECT} /></PageWrap>}
       />
       <Route
+        path={ROUTES.EMBARGO}
+        element={<PageWrap><RedirectPage pattern="/embargo/blocked-message/courseware/default/" mode={REDIRECT_MODES.EMBARGO_REDIRECT} /></PageWrap>}
+      />
+      <Route
         path={DECODE_ROUTES.REDIRECT_HOME}
         element={<DecodePageRoute><RedirectPage pattern="/course/:courseId/home" mode={REDIRECT_MODES.HOME_REDIRECT} /></DecodePageRoute>}
       />

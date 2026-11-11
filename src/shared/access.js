@@ -30,6 +30,13 @@ export function getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess
     case 'unfulfilled_milestones':
       url = '/redirect/dashboard';
       break;
+    case 'embargo':
+      // Unlike enrollment_required/authentication_required (default, below), there's no
+      // "preview" concept for a sanctions block - redirect away from every tab, including
+      // the outline tab, to the same generic embargo "blocked message" page the legacy
+      // courseware view redirects to.
+      url = '/redirect/embargo';
+      break;
     case 'authentication_required':
     case 'enrollment_required':
     default:
