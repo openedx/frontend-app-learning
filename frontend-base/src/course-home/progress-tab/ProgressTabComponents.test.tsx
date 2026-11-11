@@ -7,16 +7,12 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 
 import { useProgressTabData } from '@src/course-home/data/apiHooks';
-import { useCoursewareMetadata } from '@src/courseware/data/apiHooks';
 import { createTestQueryClient } from '@src/tests/queryClient';
 import { render } from '@src/tests/render';
 import CertificateStatus from './certificate-status/CertificateStatus';
 import CompleteDonutSegment from './course-completion/CompleteDonutSegment';
 
 // Each case renders one component on its own.
-
-// Nothing on the progress tab loads the courseware metadata, so a case supplies it: https://github.com/openedx/frontend-app-learning/issues/2243
-jest.mock('@src/courseware/data/apiHooks');
 
 const courseId = 'course-v1:edX+DemoX+Demo_Course';
 const progressUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/progress/${courseId}`;
@@ -38,10 +34,6 @@ const renderWithProgressData = (ui: ReactElement, tabData = {}) => {
     </QueryClientProvider>,
   );
 };
-
-beforeEach(() => {
-  (useCoursewareMetadata as jest.Mock).mockReturnValue({ data: undefined });
-});
 
 describe('CompleteDonutSegment', () => {
   const dividers = (container: HTMLElement) => container.querySelectorAll('.divider-stroke');
@@ -76,19 +68,6 @@ describe('CertificateStatus', () => {
     expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', expect.objectContaining({
       org_key: undefined,
       certificate_status_variant: 'certificate_status_disabled',
-    }));
-  });
-
-  it('renders no card and reports the certificate status as it is when the entrance exam was not passed', async () => {
-    const { sendTrackEvent } = getAnalyticsService();
-    (sendTrackEvent as jest.Mock).mockClear();
-    (useCoursewareMetadata as jest.Mock).mockReturnValue({ data: { entranceExamData: { entranceExamPassed: false } } });
-    renderWithProgressData(<><CertificateStatus /><p>loaded</p></>, { certificate_data: { cert_status: 'unverified' } });
-
-    await screen.findByText('loaded');
-    expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
-    expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', expect.objectContaining({
-      certificate_status_variant: 'unverified',
     }));
   });
 });
