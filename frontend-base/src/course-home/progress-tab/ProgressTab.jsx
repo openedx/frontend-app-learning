@@ -9,6 +9,7 @@ import ProgressTabCourseCompletionSlot from '@src/plugin-slots/ProgressTabCourse
 import ProgressTabCourseGradeSlot from '@src/plugin-slots/ProgressTabCourseGradeSlot';
 import ProgressTabGradeBreakdownSlot from '@src/plugin-slots/ProgressTabGradeBreakdownSlot';
 import ProgressTabRelatedLinksSlot from '@src/plugin-slots/ProgressTabRelatedLinksSlot';
+import { useCoursewareMetadata } from '@src/courseware/data/apiHooks';
 import { getResponseStatus } from '@src/data/http-error';
 import PageLoading from '@src/generic/PageLoading';
 import tabPageMessages from '@src/tab-page/messages';
@@ -55,6 +56,8 @@ const ProgressTab = () => {
   const { courseId, targetUserId } = useParams();
   const metadataQuery = useCourseHomeMeta(courseId);
   const tabDataQuery = useProgressTabData(courseId, targetUserId);
+  // GET /api/courseware/course/ answers for the requester, not the target user: https://github.com/openedx/frontend-app-learning/issues/2244
+  const coursewareMetadataQuery = useCoursewareMetadata(courseId, { enabled: !targetUserId });
   const redirectToLegacyProgress = getResponseStatus(tabDataQuery.error) === 404;
 
   useEffect(() => {
@@ -70,7 +73,10 @@ const ProgressTab = () => {
     <TabWithTimer
       activeTabSlug="progress"
       courseId={courseId}
-      courseStatus={{ metadataQuery, tabDataQuery }}
+      courseStatus={{
+        metadataQuery,
+        tabDataQueries: targetUserId ? [tabDataQuery] : [tabDataQuery, coursewareMetadataQuery],
+      }}
     >
       <ProgressTabContent />
     </TabWithTimer>

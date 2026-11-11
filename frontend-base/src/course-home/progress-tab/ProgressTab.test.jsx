@@ -38,6 +38,7 @@ describe('Progress Tab', () => {
   const progressUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/course_home/progress/*`);
   const masqueradeUrl = `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/masquerade`;
   const datesUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/dates/${courseId}`;
+  const coursewareMetadataUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/courseware/course/*`);
   const now = new Date();
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
   const overmorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
@@ -61,6 +62,10 @@ describe('Progress Tab', () => {
     axiosMock.onGet(progressUrl).reply(200, progressTabData);
   }
 
+  function setCoursewareMetadata(attributes) {
+    axiosMock.onGet(coursewareMetadataUrl).reply(200, Factory.build('courseMetadata', attributes));
+  }
+
   const progressPath = `/learning/course/${courseId}/progress`;
 
   async function fetchAndRender(path = progressPath, { waitForLoaded = true } = {}) {
@@ -82,6 +87,7 @@ describe('Progress Tab', () => {
     // Set defaults for network requests
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     axiosMock.onGet(progressUrl).reply(200, defaultTabData);
+    axiosMock.onGet(coursewareMetadataUrl).reply(200, Factory.build('courseMetadata'));
     axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
   });
 
@@ -1517,6 +1523,68 @@ describe('Progress Tab', () => {
       await fetchAndRender(`${progressPath}/10`);
 
       expect(screen.getByText('Course progress for otherstudent')).toBeInTheDocument();
+    });
+  });
+
+  describe('Entrance exam status', () => {
+    const failedEntranceExam = { entrance_exam_data: { entrance_exam_enabled: true, entrance_exam_passed: false } };
+    const passedEntranceExam = { entrance_exam_data: { entrance_exam_enabled: true, entrance_exam_passed: true } };
+    const coursewareMetadataRequests = () => axiosMock.history.get.filter(({ url }) => coursewareMetadataUrl.test(url));
+
+    beforeAll(() => {
+      global.innerWidth = breakpoints.large.minWidth;
+    });
+
+    beforeEach(() => {
+      setMetadata({ is_enrolled: true });
+      sendTrackEvent.mockClear();
+    });
+
+    it('shows no certificate card to a learner who has not passed the entrance exam, and reports no certificate status', async () => {
+      setCoursewareMetadata(failedEntranceExam);
+      await fetchAndRender();
+
+      expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', expect.objectContaining({
+        certificate_status_variant: undefined,
+      }));
+    });
+
+    it('shows the certificate card to a learner who has passed the entrance exam', async () => {
+      setCoursewareMetadata(passedEntranceExam);
+      await fetchAndRender();
+
+      expect(screen.getByTestId('certificate-status-component')).toBeInTheDocument();
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', expect.objectContaining({
+        certificate_status_variant: 'not_passing',
+      }));
+    });
+
+    it('requests the courseware metadata once on the learner\'s own page', async () => {
+      await fetchAndRender();
+
+      expect(coursewareMetadataRequests()).toHaveLength(1);
+    });
+
+    it('requests no courseware metadata on another learner\'s page', async () => {
+      setCoursewareMetadata(failedEntranceExam);
+      await fetchAndRender(`${progressPath}/10`);
+
+      expect(coursewareMetadataRequests()).toHaveLength(0);
+      expect(screen.getByTestId('certificate-status-component')).toBeInTheDocument();
+    });
+
+    it('shows another learner\'s certificate card when the requester\'s own page left a failed entrance exam in the query cache', async () => {
+      setCoursewareMetadata(failedEntranceExam);
+      await fetchAndRender();
+      expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+
+      await act(() => router.navigate(`${progressPath}/10`));
+
+      expect(await screen.findByTestId('certificate-status-component')).toBeInTheDocument();
+      expect(coursewareMetadataRequests()).toHaveLength(1);
     });
   });
 

@@ -15,7 +15,7 @@ import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertifi
 
 const CertificateStatus = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const { courseId, targetUserId } = useParams();
 
   const {
     entranceExamData,
@@ -44,7 +44,8 @@ const CertificateStatus = () => {
     certificateAvailableDate,
   } = certificateData || {};
 
-  const entranceExamPassed = entranceExamData?.entranceExamPassed ?? null;
+  // GET /api/courseware/course/ answers for the requester, not the target user: https://github.com/openedx/frontend-app-learning/issues/2244
+  const entranceExamPassed = targetUserId ? null : (entranceExamData?.entranceExamPassed ?? null);
 
   const mode = getCourseExitMode(
     certificateData,

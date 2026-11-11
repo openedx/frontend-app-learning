@@ -2,6 +2,7 @@ import { addAppConfigs, initializeMockApp, mergeSiteConfig } from '@openedx/fron
 import '@testing-library/jest-dom';
 import failOnConsole from 'jest-fail-on-console';
 
+import './courseware/data/__factories__';
 import './course-home/data/__factories__';
 import learningApp from './app';
 import { authenticatedUser } from './tests/authenticatedUser';

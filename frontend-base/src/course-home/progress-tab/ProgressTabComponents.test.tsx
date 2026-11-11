@@ -15,7 +15,7 @@ import CompleteDonutSegment from './course-completion/CompleteDonutSegment';
 
 // Each case renders one component on its own.
 
-// Nothing on the progress tab loads the courseware metadata, so a case supplies it: https://github.com/openedx/frontend-app-learning/issues/2243
+// A component rendered alone reads the courseware metadata without fetching it, so a case supplies it.
 jest.mock('@src/courseware/data/apiHooks');
 
 const courseId = 'course-v1:edX+DemoX+Demo_Course';
