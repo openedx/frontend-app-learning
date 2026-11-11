@@ -53,6 +53,7 @@ const Section: React.FC<Props> = ({
 
   return (
     <li>
+      <h2 className="sr-only">{title}</h2>
       <Collapsible
         className="mb-2"
         styling="card-lg"
