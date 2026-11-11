@@ -57,7 +57,9 @@ Factory.define('progressTabData')
         subsections: [
           {
             assignment_type: 'Homework',
+            block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@67890',
             display_name: 'Second subsection',
+            learner_has_access: false,
             has_graded_assignment: true,
             num_points_earned: 1,
             num_points_possible: 1,

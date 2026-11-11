@@ -1,0 +1,124 @@
+import React from 'react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react';
+import { camelCaseObject, getAuthenticatedHttpClient, getSiteConfig } from '@openedx/frontend-base';
+import { Factory } from 'rosie';
+import MockAdapter from 'axios-mock-adapter';
+
+import { progressTabDataQuery, useProgressTabData } from '@src/course-home/data/apiHooks';
+import { createTestQueryClient, seedQueryData } from '@src/tests/queryClient';
+import { useExamsData, useProgressData } from './hooks';
+
+const courseId = 'course-v1:edX+DemoX+Demo_Course';
+const progressUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/course_home/progress/`);
+
+let axiosMock;
+let queryClient;
+
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={[`/course/${courseId}/progress`]}>
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route path="/course/:courseId/progress/:targetUserId?" element={children} />
+      </Routes>
+    </QueryClientProvider>
+  </MemoryRouter>
+);
+
+const progressRequests = () => axiosMock.history.get.filter((req) => progressUrl.test(req.url));
+
+beforeEach(() => {
+  axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+  queryClient = createTestQueryClient();
+});
+
+describe('useProgressData', () => {
+  beforeEach(() => {
+    axiosMock.onGet(progressUrl).reply(200, Factory.build('progressTabData'));
+  });
+
+  it('fetches nothing on its own', () => {
+    const { result } = renderHook(() => useProgressData(), { wrapper });
+
+    expect(result.current).toBeUndefined();
+    expect(progressRequests()).toHaveLength(0);
+  });
+
+  it('reads the owner\'s result without fetching again', async () => {
+    const owner = renderHook(() => useProgressTabData(courseId), { wrapper });
+    await waitFor(() => expect(owner.result.current.isSuccess).toBe(true));
+    const requestCount = progressRequests().length;
+
+    const reader = renderHook(() => useProgressData(), { wrapper });
+
+    expect(reader.result.current).toBe(owner.result.current.data);
+    expect(progressRequests()).toHaveLength(requestCount);
+  });
+});
+
+describe('useExamsData', () => {
+  const blockKey = (name) => `block-v1:edX+DemoX+Demo_Course+type@sequential+block@${name}`;
+  const sectionScores = [
+    { display_name: 'Section 1', subsections: [{ block_key: blockKey('exam1') }, { block_key: blockKey('homework1') }] },
+    { display_name: 'Section 2', subsections: [{ block_key: blockKey('final_exam') }] },
+  ];
+  const examFor = (name) => ({
+    exam: {
+      id: name.length, course_id: courseId, content_id: blockKey(name), exam_name: `Exam ${name}`,
+    },
+  });
+
+  const seedProgress = (scores) => seedQueryData(
+    queryClient,
+    progressTabDataQuery(courseId, undefined).queryKey,
+    camelCaseObject(Factory.build('progressTabData', { section_scores: scores })),
+  );
+
+  const attemptRequests = () => axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'));
+  const notFound = () => Promise.reject(Object.assign(new Error('Request failed with status code 404'), {
+    response: { status: 404, data: {} },
+    customAttributes: { httpErrorStatus: 404 },
+  }));
+
+  beforeEach(() => {
+    axiosMock.onGet(/exam1/).reply(200, examFor('exam1'));
+    axiosMock.onGet(/homework1/).reply(notFound);
+    axiosMock.onGet(/final_exam/).reply(200, examFor('final_exam'));
+  });
+
+  it('is null and requests nothing until the progress data is present', () => {
+    const { result } = renderHook(() => useExamsData(), { wrapper });
+
+    expect(result.current).toBeNull();
+    expect(progressRequests()).toHaveLength(0);
+    expect(attemptRequests()).toHaveLength(0);
+  });
+
+  it('fetches one attempt per subsection, in sectionScores order, with {} where there is none', async () => {
+    seedProgress(sectionScores);
+    const { result } = renderHook(() => useExamsData(), { wrapper });
+
+    expect(result.current).toBeNull();
+    await waitFor(() => expect(result.current).not.toBeNull());
+
+    expect(attemptRequests().map((req) => decodeURIComponent(req.url).split('/content_id/')[1])).toEqual(
+      [blockKey('exam1'), blockKey('homework1'), blockKey('final_exam')],
+    );
+    expect(result.current).toEqual([
+      camelCaseObject(examFor('exam1').exam),
+      {},
+      camelCaseObject(examFor('final_exam').exam),
+    ]);
+  });
+
+  it('fetches again when the progress data changes the subsection list', async () => {
+    seedProgress([sectionScores[0]]);
+    const { result } = renderHook(() => useExamsData(), { wrapper });
+    await waitFor(() => expect(result.current).toHaveLength(2));
+
+    seedProgress(sectionScores);
+    await waitFor(() => expect(result.current).toHaveLength(3));
+    expect(attemptRequests()).toHaveLength(5);
+  });
+});

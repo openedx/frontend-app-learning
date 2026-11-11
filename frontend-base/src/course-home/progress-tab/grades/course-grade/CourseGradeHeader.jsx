@@ -1,0 +1,80 @@
+import { getAuthenticatedUser, sendTrackEvent, useIntl } from '@openedx/frontend-base';
+import { Locked } from '@openedx/paragon/icons';
+import { Button, Icon } from '@openedx/paragon';
+import { useParams } from 'react-router-dom';
+
+import { useCourseHomeMeta } from '../../../data/apiHooks';
+import { useProgressData } from '../../hooks';
+import messages from '../messages';
+
+const CourseGradeHeader = () => {
+  const intl = useIntl();
+  const { courseId } = useParams();
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
+  const {
+    verifiedMode,
+    gradesFeatureIsFullyLocked,
+  } = useProgressData();
+
+  const eventProperties = {
+    org_key: org,
+    courserun_key: courseId,
+  };
+
+  const { administrator } = getAuthenticatedUser();
+  const logUpgradeButtonClick = () => {
+    sendTrackEvent('edx.ui.lms.course_progress.grades_upgrade.clicked', {
+      org_key: org,
+      courserun_key: courseId,
+      is_staff: administrator,
+    });
+    sendTrackEvent('edx.bi.ecommerce.upsell_links_clicked', {
+      ...eventProperties,
+      linkCategory: '(none)',
+      linkName: 'progress_locked',
+      linkType: 'button',
+      pageName: 'progress',
+    });
+  };
+  let previewText;
+  if (verifiedMode) {
+    previewText = gradesFeatureIsFullyLocked
+      ? intl.formatMessage(messages.courseGradePreviewUnlockCertificateBody)
+      : intl.formatMessage(messages.courseGradePartialPreviewUnlockCertificateBody);
+  } else {
+    previewText = intl.formatMessage(messages.courseGradePreviewUpgradeDeadlinePassedBody);
+  }
+  return (
+    <div id="grade-course-header" className="row w-100 m-0 p-4 rounded-top bg-primary-500 text-white">
+      <div className={`col-12 ${verifiedMode ? 'col-md-9' : ''} p-0`}>
+        <div className="row w-100 m-0 p-0">
+          <div className="col-1 p-0">
+            <Icon src={Locked} />
+          </div>
+          <div className="col-11 px-2 p-sm-0 h4 text-white">
+            <span aria-hidden="true">
+              {intl.formatMessage(messages.courseGradePreviewHeaderAriaHidden)}
+            </span>
+            {gradesFeatureIsFullyLocked
+              ? intl.formatMessage(messages.courseGradePreviewHeaderLocked)
+              : intl.formatMessage(messages.courseGradePreviewHeaderLimited)}
+          </div>
+        </div>
+        <div className="row w-100 m-0 p-0 justify-content-end">
+          <div className="col-11 px-2 p-sm-0 small">
+            {previewText}
+          </div>
+        </div>
+      </div>
+      {verifiedMode && (
+        <div className="col-12 col-md-3 mt-3 mt-md-0 p-0 align-self-center text-right">
+          <Button id="upgrade-button" variant="brand" size="sm" href={verifiedMode.upgradeUrl} onClick={logUpgradeButtonClick}>
+            {intl.formatMessage(messages.courseGradePreviewUpgradeButton)}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CourseGradeHeader;

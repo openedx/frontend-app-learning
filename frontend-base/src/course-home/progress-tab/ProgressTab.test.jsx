@@ -1,0 +1,1668 @@
+import { Factory } from 'rosie';
+import {
+  getAnalyticsService, getAppConfig, getAuthenticatedHttpClient, getSiteConfig, mergeAppConfig, runPageRules,
+} from '@openedx/frontend-base';
+import { breakpoints } from '@openedx/paragon';
+import {
+  act, fireEvent, screen, waitFor, within,
+} from '@testing-library/react';
+import MockAdapter from 'axios-mock-adapter';
+
+import { appId } from '@src/constants';
+import routes from '@src/routes';
+import { mockLocation, preventNavigation } from '@src/tests/location';
+import { renderRoutes } from '@src/tests/render';
+import { appendBrowserTimezoneToUrl } from '../../utils';
+import messages from './grades/messages';
+
+const { sendTrackEvent } = getAnalyticsService();
+
+describe('Progress Tab', () => {
+  let axiosMock;
+  let router;
+
+  const defaultMetadata = Factory.build('courseHomeMetadata');
+  const defaultTabData = Factory.build('progressTabData');
+
+  const courseId = defaultMetadata.id;
+  let courseMetadataUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/course_metadata/${courseId}`;
+  courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
+  const progressUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/course_home/progress/*`);
+  const masqueradeUrl = `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/masquerade`;
+  const datesUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/dates/${courseId}`;
+  const now = new Date();
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const overmorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
+
+  function setMetadata(attributes, options) {
+    const courseMetadata = Factory.build('courseHomeMetadata', attributes, options);
+    axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+  }
+
+  function setTabData(attributes, options) {
+    const progressTabData = Factory.build('progressTabData', attributes, options);
+    // The detailed grades require a block key and problem scores of every subsection; a case's own subsections may leave them out.
+    progressTabData.section_scores = progressTabData.section_scores.map((section, sectionIndex) => ({
+      ...section,
+      subsections: section.subsections.map((subsection, index) => ({
+        block_key: `block-v1:edX+DemoX+Demo_Course+type@sequential+block@${sectionIndex}-${index}`,
+        problem_scores: [],
+        ...subsection,
+      })),
+    }));
+    axiosMock.onGet(progressUrl).reply(200, progressTabData);
+  }
+
+  const progressPath = `/learning/course/${courseId}/progress`;
+
+  async function fetchAndRender(path = progressPath, { waitForLoaded = true } = {}) {
+    const { queryClient, router: renderedRouter } = renderRoutes(routes, path);
+    router = renderedRouter;
+    if (waitForLoaded) {
+      await screen.findByRole('heading', { level: 1 });
+      await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
+    }
+    return queryClient;
+  }
+
+  // The lazy route's first load compiles the whole page, which can outlast findBy's timeout.
+  beforeAll(() => import('./ProgressTab'));
+
+  beforeEach(async () => {
+    axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+
+    // Set defaults for network requests
+    axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
+    axiosMock.onGet(progressUrl).reply(200, defaultTabData);
+    axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('page rules', () => {
+    it.each([progressPath, `${progressPath}/10`])('reports no page-rule diagnostics at %s', async (path) => {
+      await fetchAndRender(path);
+      expect(runPageRules(document)).toEqual([]);
+    });
+  });
+
+  describe('Related links', () => {
+    beforeEach(() => {
+      sendTrackEvent.mockClear();
+    });
+
+    it('sends event on click of dates tab link', async () => {
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+
+      const relatedLinks = within(screen.getByRole('heading', { name: 'Related links' }).closest('section'));
+      const datesTabLink = relatedLinks.getByRole('link', { name: 'Dates' });
+      preventNavigation(datesTabLink);
+      fireEvent.click(datesTabLink);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.related_links.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+        link_clicked: 'dates',
+      });
+    });
+
+    it('sends event on click of outline tab link', async () => {
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+
+      const outlineTabLink = screen.getAllByRole('link', { name: 'Course outline' });
+      preventNavigation(outlineTabLink[1]);
+      fireEvent.click(outlineTabLink[1]); // outlineTabLink[0] corresponds to the link in the DetailedGrades component
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.related_links.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+        link_clicked: 'course_outline',
+      });
+    });
+  });
+
+  describe('Course Grade', () => {
+    it('renders Course Grade', async () => {
+      await fetchAndRender();
+      expect(screen.getByText('Grades')).toBeInTheDocument();
+      expect(screen.getByText('This represents your weighted grade against the grade needed to pass this course.')).toBeInTheDocument();
+    });
+
+    it('renders correct copy in CourseGradeFooter for non-passing', async () => {
+      setTabData({
+        course_grade: {
+          is_passing: false,
+          letter_grade: null,
+          percent: 0.5,
+        },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 0.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.queryByRole('button', { name: 'Grade range tooltip' })).not.toBeInTheDocument();
+      expect(screen.getByTestId('currentGradeTooltipContent').innerHTML).toEqual('50%');
+      expect(screen.getByTestId('gradeSummaryFooterTotalWeightedGrade').innerHTML).toEqual('50%');
+      expect(screen.getByText('A weighted grade of 75% is required to pass in this course')).toBeInTheDocument();
+    });
+
+    it('renders correct copy in CourseGradeFooter for passing with pass/fail grade range', async () => {
+      await fetchAndRender();
+      expect(screen.queryByRole('button', { name: 'Grade range tooltip' })).not.toBeInTheDocument();
+      expect(screen.getByText('You’re currently passing this course')).toBeInTheDocument();
+    });
+
+    it('renders correct copy and tooltip in CourseGradeFooter for non-passing with letter grade range', async () => {
+      setTabData({
+        course_grade: {
+          is_passing: false,
+          letter_grade: null,
+          percent: 0,
+        },
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 1,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            A: 0.9,
+            B: 0.8,
+          },
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByRole('button', { name: 'Grade range tooltip' }));
+      expect(screen.getByTestId('currentGradeTooltipContent').innerHTML).toEqual('0%');
+      expect(screen.getByTestId('gradeSummaryFooterTotalWeightedGrade').innerHTML).toEqual('0%');
+      expect(screen.getByText('A weighted grade of 80% is required to pass in this course')).toBeInTheDocument();
+    });
+
+    it('renders correct copy and tooltip in CourseGradeFooter for passing with letter grade range', async () => {
+      setTabData({
+        course_grade: {
+          is_passing: true,
+          letter_grade: 'B',
+          percent: 0.8,
+        },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 8,
+                num_points_possible: 10,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 1,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            A: 0.9,
+            B: 0.8,
+          },
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByRole('button', { name: 'Grade range tooltip' }));
+      expect(screen.getByTestId('currentGradeTooltipContent').innerHTML).toEqual('80%');
+      expect(screen.getByTestId('gradeSummaryFooterTotalWeightedGrade').innerHTML).toEqual('80%');
+      expect(await screen.findByText('You’re currently passing this course with a grade of B (80-90%)')).toBeInTheDocument();
+    });
+
+    it('renders tooltip in CourseGradeFooter for grade range', async () => {
+      setTabData({
+        course_grade: {
+          percent: 0,
+          is_passing: false,
+        },
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 1,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            A: 0.9,
+            B: 0.8,
+          },
+        },
+      });
+      await fetchAndRender();
+      const tooltip = await screen.getByRole('button', { name: 'Grade range tooltip' });
+      fireEvent.click(tooltip);
+      expect(await screen.findByText('Grade ranges for this course:'));
+      expect(screen.getByText('A: 90%-100%'));
+      expect(screen.getByText('B: 80%-90%'));
+      expect(screen.getByText('F: <80%'));
+    });
+
+    it('renders locked feature preview (CourseGradeHeader) with upgrade button when user has locked content', async () => {
+      setTabData({
+        completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 1,
+        },
+        verified_mode: {
+          access_expiration_date: '2050-01-01T12:00:00',
+          currency: 'USD',
+          currency_symbol: '$',
+          price: 149,
+          sku: 'ABCD1234',
+          upgrade_url: 'edx.org/upgrade',
+        },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: false,
+                has_graded_assignment: true,
+                num_points_earned: 8,
+                num_points_possible: 10,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.getByText('locked feature')).toBeInTheDocument();
+      expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
+      expect(screen.getAllByRole('link', { name: 'Upgrade now' })).toHaveLength(1);
+    });
+
+    it('sends events on click of upgrade button in locked content header (CourseGradeHeader)', async () => {
+      setTabData({
+        completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 1,
+        },
+        verified_mode: {
+          access_expiration_date: '2050-01-01T12:00:00',
+          currency: 'USD',
+          currency_symbol: '$',
+          price: 149,
+          sku: 'ABCD1234',
+          upgrade_url: 'edx.org/upgrade',
+        },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: false,
+                has_graded_assignment: true,
+                num_points_earned: 8,
+                num_points_possible: 10,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
+      });
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+      expect(screen.getByText('locked feature')).toBeInTheDocument();
+      expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
+
+      const upgradeButton = screen.getAllByRole('link', { name: 'Upgrade now' })[0];
+      preventNavigation(upgradeButton);
+      fireEvent.click(upgradeButton);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.grades_upgrade.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+      });
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        linkCategory: '(none)',
+        linkName: 'progress_locked',
+        linkType: 'button',
+        pageName: 'progress',
+      });
+    });
+
+    it('renders locked feature preview with no upgrade button when user has locked content but cannot upgrade', async () => {
+      setTabData({
+        completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 1,
+        },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: false,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.getByText('locked feature')).toBeInTheDocument();
+      expect(screen.getByText('The deadline to upgrade in this course has passed.')).toBeInTheDocument();
+    });
+
+    it('does not render locked feature preview when user does not have locked content', async () => {
+      await fetchAndRender();
+      expect(screen.queryByText('locked feature')).not.toBeInTheDocument();
+    });
+
+    it('renders limited feature preview with upgrade button when user has access to some content that would typically be locked', async () => {
+      setTabData({
+        completion_summary: {
+          complete_count: 1,
+          incomplete_count: 1,
+          locked_count: 1,
+        },
+        verified_mode: {
+          access_expiration_date: '2050-01-01T12:00:00',
+          currency: 'USD',
+          currency_symbol: '$',
+          price: 149,
+          sku: 'ABCD1234',
+          upgrade_url: 'edx.org/upgrade',
+        },
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@123456',
+                display_name: 'First subsection',
+                learner_has_access: false,
+                has_graded_assignment: true,
+                num_points_earned: 8,
+                num_points_possible: 10,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+              {
+                assignment_type: 'Exam',
+                display_name: 'Second subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 1,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection',
+              },
+            ],
+          },
+        ],
+      });
+      await fetchAndRender();
+      expect(screen.getByText('limited feature')).toBeInTheDocument();
+      expect(screen.getByText('Unlock to work towards a certificate.')).toBeInTheDocument();
+      expect(screen.queryAllByText(
+        'You have limited access to graded assignments as part of the audit track in this course.',
+        { exact: false },
+      )).toHaveLength(2);
+
+      expect(screen.queryAllByTestId('locked-icon')).toHaveLength(4);
+    });
+
+    it('does not render subsections for which showGrades is false', async () => {
+      // The second assignment has showGrades set to false, so it should not be shown.
+      setTabData({
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+          {
+            display_name: 'Second section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                display_name: 'Second subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 1,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: false,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection',
+              },
+            ],
+          },
+        ],
+      });
+
+      await fetchAndRender();
+      expect(screen.getByText('First subsection')).toBeInTheDocument();
+      expect(screen.queryByText('Second subsection')).not.toBeInTheDocument();
+    });
+
+    it('renders correct title when credit information is available', async () => {
+      setTabData({
+        credit_course_requirements: {
+          eligibility_status: 'eligible',
+          requirements: [
+            {
+              namespace: 'proctored_exam',
+              name: 'i4x://edX/DemoX/proctoring-block/final_uuid',
+              display_name: 'Proctored Mid Term Exam',
+              criteria: {},
+              reason: {},
+              status: 'satisfied',
+              status_date: '2015-06-26 11:07:42',
+              order: 1,
+            },
+          ],
+        },
+      });
+
+      await fetchAndRender();
+      expect(screen.getByText('Grades & Credit')).toBeInTheDocument();
+    });
+
+    it('does not render ungraded subsections when SHOW_UNGRADED_ASSIGNMENT_PROGRESS is false', async () => {
+      // The second assignment has has_graded_assignment set to false, so it should not be shown.
+      setTabData({
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+          {
+            display_name: 'Second section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                display_name: 'Second subsection',
+                learner_has_access: true,
+                has_graded_assignment: false,
+                num_points_earned: 1,
+                num_points_possible: 1,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection',
+              },
+            ],
+          },
+        ],
+      });
+
+      await fetchAndRender();
+      expect(screen.getByText('First subsection')).toBeInTheDocument();
+      expect(screen.queryByText('Second subsection')).not.toBeInTheDocument();
+    });
+
+    it('renders both graded and ungraded subsections when SHOW_UNGRADED_ASSIGNMENT_PROGRESS is true', async () => {
+      // The second assignment has has_graded_assignment set to false.
+      mergeAppConfig(appId, { SHOW_UNGRADED_ASSIGNMENT_PROGRESS: true });
+
+      setTabData({
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/first_subsection',
+              },
+            ],
+          },
+          {
+            display_name: 'Second section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                display_name: 'Second subsection',
+                learner_has_access: true,
+                has_graded_assignment: false,
+                num_points_earned: 1,
+                num_points_possible: 1,
+                percent_graded: 1.0,
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection',
+              },
+            ],
+          },
+        ],
+      });
+
+      await fetchAndRender();
+      expect(screen.getByText('First subsection')).toBeInTheDocument();
+      expect(screen.getByText('Second subsection')).toBeInTheDocument();
+
+      // reset config for other tests
+      act(() => mergeAppConfig(appId, { SHOW_UNGRADED_ASSIGNMENT_PROGRESS: false }));
+    });
+  });
+
+  describe('Grade Summary', () => {
+    it('renders Grade Summary table when assignment policies are populated', async () => {
+      await fetchAndRender();
+      expect(screen.getByText('Grade summary')).toBeInTheDocument();
+    });
+
+    it('does not render Grade Summary when assignment type grade summary is not populated', async () => {
+      setTabData({
+        assignment_type_grade_summary: [],
+      });
+      await fetchAndRender();
+      expect(screen.queryByText('Grade summary')).not.toBeInTheDocument();
+    });
+
+    it('shows lock icon when all subsections of assignment type are hidden', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 1,
+              short_label: 'Final',
+              type: 'Final Exam',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+        assignment_type_grade_summary: [
+          {
+            type: 'Final Exam',
+            weight: 0.4,
+            average_grade: 0.0,
+            weighted_grade: 0.0,
+            last_grade_publish_date: '2025-10-15T14:17:04.368903Z',
+            has_hidden_contribution: 'all',
+            short_label: 'Final',
+            num_droppable: 0,
+          },
+        ],
+      });
+      await fetchAndRender();
+      // Should show lock icon for grade and weighted grade
+      expect(screen.getAllByTestId('lock-icon')).toHaveLength(2);
+    });
+
+    it('shows percent plus hidden grades when some subsections of assignment type are hidden', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+        assignment_type_grade_summary: [
+          {
+            type: 'Homework',
+            weight: 1,
+            average_grade: 0.25,
+            weighted_grade: 0.25,
+            last_grade_publish_date: '2025-10-15T14:17:04.368903Z',
+            has_hidden_contribution: 'some',
+            short_label: 'HW',
+            num_droppable: 0,
+          },
+        ],
+      });
+      await fetchAndRender();
+      // Should show percent + hidden scores for grade and weighted grade
+      const hiddenScoresCells = screen.getAllByText(/% \+ Hidden Scores/);
+      expect(hiddenScoresCells).toHaveLength(2);
+      // Only correct visible scores should be shown (from subsection2)
+      // The correct visible score is 1/4 = 0.25 -> 25%
+      expect(hiddenScoresCells[0]).toHaveTextContent('25% + Hidden Scores');
+      expect(hiddenScoresCells[1]).toHaveTextContent('25% + Hidden Scores');
+    });
+
+    it('displays a warning message with the latest due date when not all assignment scores are included in the total grade', async () => {
+      setTabData({
+        grading_policy: {
+          assignment_policies: [
+            {
+              num_droppable: 0,
+              num_total: 2,
+              short_label: 'HW',
+              type: 'Homework',
+              weight: 1,
+            },
+          ],
+          grade_range: {
+            pass: 0.75,
+          },
+        },
+        assignment_type_grade_summary: [
+          {
+            type: 'Homework',
+            weight: 1,
+            average_grade: 1,
+            weighted_grade: 1,
+            last_grade_publish_date: tomorrow.toISOString(),
+            has_hidden_contribution: 'none',
+            short_label: 'HW',
+            num_droppable: 0,
+          },
+        ],
+      });
+
+      await fetchAndRender();
+
+      const formattedDateTime = new Intl.DateTimeFormat('en', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        timeZoneName: 'short',
+      }).format(tomorrow);
+
+      expect(
+        screen.getByText(
+          `Some assignment scores are not yet included in your total grade. These grades will be released by ${formattedDateTime}.`,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('renders override notice', async () => {
+      setTabData({
+        section_scores: [
+          {
+            display_name: 'First section',
+            subsections: [
+              {
+                assignment_type: 'Homework',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+                display_name: 'First subsection',
+                has_graded_assignment: true,
+                learner_has_access: true,
+                num_points_earned: 1,
+                num_points_possible: 2,
+                percent_graded: 1.0,
+                problem_scores: [{
+                  earned: 1,
+                  possible: 2,
+                }],
+                show_correctness: 'always',
+                show_grades: true,
+              },
+            ],
+          },
+          {
+            display_name: 'Second section',
+            subsections: [
+              {
+                assignment_type: 'Exam',
+                block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@98765',
+                display_name: 'Second subsection',
+                learner_has_access: true,
+                has_graded_assignment: true,
+                num_points_earned: 0,
+                num_points_possible: 1,
+                override: {
+                  system: 'PROCTORING',
+                  reason: 'Suspicious activity',
+                },
+                percent_graded: 1.0,
+                problem_scores: [{
+                  earned: 0,
+                  possible: 1,
+                }],
+                show_correctness: 'always',
+                show_grades: true,
+                url: 'http://learning.edx.org/course/course-v1:edX+Test+run/second_subsection',
+              },
+            ],
+          },
+        ],
+      });
+
+      await fetchAndRender();
+
+      const problemScoreDrawerToggle = screen.getByRole('button', { name: 'Toggle individual problem scores for Second subsection' });
+      expect(problemScoreDrawerToggle).toBeInTheDocument();
+
+      // Open the problem score drawer
+      fireEvent.click(problemScoreDrawerToggle);
+
+      expect(screen.getByText(messages.sectionGradeOverridden.defaultMessage)).toBeInTheDocument();
+    });
+  });
+
+  describe('Detailed Grades', () => {
+    it('renders Detailed Grades table when section scores are populated', async () => {
+      await fetchAndRender();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+
+      expect(screen.getByText('First subsection'));
+      expect(screen.getByText('Second subsection'));
+    });
+
+    it('sends event on click of subsection link', async () => {
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+
+      const subsectionLink = screen.getByRole('link', { name: 'First subsection' });
+      preventNavigation(subsectionLink);
+      fireEvent.click(subsectionLink);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.detailed_grades_assignment.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+        assignment_block_key: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345',
+      });
+    });
+
+    it('sends event on click of course outline link', async () => {
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+
+      const outlineLink = screen.getAllByRole('link', { name: 'Course outline' })[0];
+      preventNavigation(outlineLink);
+      fireEvent.click(outlineLink);
+
+      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.detailed_grades.course_outline_link.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        is_staff: false,
+      });
+    });
+
+    it('renders individual problem score drawer', async () => {
+      sendTrackEvent.mockClear();
+      await fetchAndRender();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+
+      const problemScoreDrawerToggle = screen.getByRole('button', { name: 'Toggle individual problem scores for First subsection' });
+      expect(problemScoreDrawerToggle).toBeInTheDocument();
+
+      // Open the problem score drawer
+      fireEvent.click(problemScoreDrawerToggle);
+      expect(screen.getAllByText('Graded Scores:').length).toBeGreaterThan(1);
+      expect(screen.getAllByText('0/1')).toHaveLength(3);
+    });
+
+    it('render message when section scores are not populated', async () => {
+      setTabData({
+        section_scores: [],
+      });
+      await fetchAndRender();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+      expect(screen.getByText('You currently have no graded problem scores.')).toBeInTheDocument();
+    });
+
+    it('renders Detailed Grades table when section scores are populated', async () => {
+      await fetchAndRender();
+      expect(screen.getByText('Detailed grades')).toBeInTheDocument();
+
+      expect(screen.getByText('First subsection'));
+      expect(screen.getByText('Second subsection'));
+    });
+  });
+
+  describe('Certificate Status', () => {
+    beforeAll(() => {
+      global.innerWidth = breakpoints.large.minWidth;
+    });
+
+    describe('enrolled user', () => {
+      beforeEach(async () => {
+        setMetadata({ is_enrolled: true });
+        sendTrackEvent.mockClear();
+      });
+
+      it('Displays text for nonPassing case when learner does not have a passing grade', async () => {
+        await fetchAndRender();
+        expect(screen.getByText('In order to qualify for a certificate, you must have a passing grade.')).toBeInTheDocument();
+      });
+
+      it('sends event when visiting progress tab when learner is not passing', async () => {
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'not_passing',
+          certificate_status_variant: 'not_passing',
+        });
+      });
+
+      it('Displays text for inProgress case when more content is scheduled and the learner does not have a passing grade', async () => {
+        setTabData({
+          has_scheduled_content: true,
+        });
+        await fetchAndRender();
+        expect(screen.getByText('It looks like there is more content in this course that will be released in the future. Look out for email updates or check back on your course for when this content will be available.')).toBeInTheDocument();
+      });
+
+      it('sends event when visiting progress tab when user has scheduled content', async () => {
+        setTabData({
+          has_scheduled_content: true,
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'not_passing',
+          certificate_status_variant: 'has_scheduled_content',
+        });
+      });
+
+      it('Displays request certificate link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'requesting' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(screen.getByRole('button', { name: 'Request certificate' })).toBeInTheDocument();
+      });
+
+      it('sends events on view of progress tab and on click of request certificate link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'requesting' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'requesting',
+        });
+
+        const requestCertificateLink = screen.getByRole('button', { name: 'Request certificate' });
+        fireEvent.click(requestCertificateLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          certificate_status_variant: 'requesting',
+        });
+
+        await waitFor(() => expect(
+          axiosMock.history.post.some(req => req.url.includes('generate_user_cert')),
+        ).toBe(true));
+      });
+
+      it('Displays verify identity link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'unverified' },
+          user_has_passing_grade: true,
+          verification_data: { link: 'test' },
+        });
+        await fetchAndRender();
+        expect(screen.getByRole('link', { name: 'Verify ID' })).toBeInTheDocument();
+      });
+
+      it('sends events on view of progress tab and on click of ID verification link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'unverified' },
+          user_has_passing_grade: true,
+          verification_data: { link: 'test' },
+        });
+        await fetchAndRender();
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'unverified',
+        });
+
+        const idVerificationLink = screen.getByRole('link', { name: 'Verify ID' });
+        preventNavigation(idVerificationLink);
+        fireEvent.click(idVerificationLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          certificate_status_variant: 'unverified',
+        });
+      });
+
+      it('Displays verification pending message', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'unverified' },
+          verification_data: { status: 'pending' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(screen.getByText('Your ID verification is pending and your certificate will be available once approved.')).toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: 'Verify ID' })).not.toBeInTheDocument();
+      });
+
+      it('sends event when visiting progress tab with ID verification pending message', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'unverified' },
+          verification_data: { status: 'pending' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'unverified',
+        });
+      });
+
+      it('Displays webview link', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'downloadable',
+            cert_web_view_url: '/certificates/cooluuidgoeshere',
+          },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(screen.getByRole('link', { name: 'View my certificate' })).toBeInTheDocument();
+      });
+
+      it('sends events on view of progress tab and on click of view certificate link', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'downloadable',
+            cert_web_view_url: '/certificates/cooluuidgoeshere',
+          },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'earned_viewable',
+        });
+
+        const viewCertificateLink = screen.getByRole('link', { name: 'View my certificate' });
+        preventNavigation(viewCertificateLink);
+        fireEvent.click(viewCertificateLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(2);
+        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          certificate_status_variant: 'earned_viewable',
+        });
+      });
+
+      it('Displays certificate is earned but unavailable message', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'earned_but_not_available' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+        expect(screen.queryByText('Certificate status')).toBeInTheDocument();
+      });
+
+      it('sends event when visiting the progress tab when cert is earned but unavailable', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'earned_but_not_available' },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'earned_but_not_available',
+        });
+      });
+
+      it('sends event with correct grade variant for passing with letter grades', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'earned_but_not_available' },
+          grading_policy: {
+            assignment_policies: [
+              {
+                num_droppable: 1,
+                num_total: 2,
+                short_label: 'HW',
+                type: 'Homework',
+                weight: 1,
+              },
+            ],
+            grade_range: {
+              A: 0.9,
+              B: 0.8,
+            },
+          },
+          user_has_passing_grade: true,
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing_grades',
+          certificate_status_variant: 'earned_but_not_available',
+        });
+      });
+
+      it('Displays upgrade link when available', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'audit_passing' },
+          verified_mode: {
+            upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+          },
+        });
+        await fetchAndRender();
+        // Keep these text checks in sync with "audit only" test below, so it doesn't end up checking for text that is
+        // never actually there, when/if the text changes.
+        expect(screen.getByText('You are in an audit track and do not qualify for a certificate. In order to work towards a certificate, upgrade your course today.')).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'Upgrade now' })).toBeInTheDocument();
+      });
+
+      it('sends events on view of progress tab and when audit learner clicks upgrade link', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'audit_passing' },
+          verified_mode: {
+            upgrade_url: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+          },
+        });
+        await fetchAndRender();
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'not_passing',
+          certificate_status_variant: 'audit_passing',
+        });
+
+        const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
+        preventNavigation(upgradeLink);
+        fireEvent.click(upgradeLink);
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(3);
+        expect(sendTrackEvent).toHaveBeenNthCalledWith(2, 'edx.ui.lms.course_progress.certificate_status.clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          certificate_status_variant: 'audit_passing',
+        });
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          linkCategory: '(none)',
+          linkName: 'progress_certificate',
+          linkType: 'button',
+          pageName: 'progress',
+        });
+      });
+
+      it('Displays nothing if audit only', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'audit_passing' },
+        });
+        await fetchAndRender();
+        // Keep these queries in sync with "upgrade link" test above, so we don't end up checking for text that is
+        // never actually there, when/if the text changes.
+        expect(screen.queryByText('You are in an audit track and do not qualify for a certificate. In order to work towards a certificate, upgrade your course today.')).not.toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: 'Upgrade now' })).not.toBeInTheDocument();
+      });
+
+      it('sends event when visiting the progress tab even when audit user cannot upgrade (i.e. certificate component does not render)', async () => {
+        setTabData({
+          certificate_data: { cert_status: 'audit_passing' },
+        });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'not_passing',
+          certificate_status_variant: 'audit_passing_missed_upgrade_deadline',
+        });
+      });
+
+      it('Does not display the certificate component if it does not match any statuses', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'bogus_status',
+          },
+          user_has_passing_grade: true,
+        });
+        setMetadata({ is_enrolled: true });
+        await fetchAndRender();
+        expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+      });
+
+      it('sends event when visiting progress tab, although no certificate statuses match', async () => {
+        setTabData({
+          certificate_data: {
+            cert_status: 'bogus_status',
+          },
+          user_has_passing_grade: true,
+        });
+        setMetadata({ is_enrolled: true });
+        await fetchAndRender();
+
+        expect(sendTrackEvent).toHaveBeenCalledTimes(1);
+        expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', {
+          org_key: 'edX',
+          courserun_key: courseId,
+          is_staff: false,
+          track_variant: 'audit',
+          grade_variant: 'passing',
+          certificate_status_variant: 'certificate_status_disabled',
+        });
+      });
+    });
+
+    it('Does not display the certificate component if the user is not enrolled', async () => {
+      await fetchAndRender();
+      expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+    });
+
+    it('Shows not available messaging before certificates are available to nonpassing learners when theres no certificate data', async () => {
+      setMetadata({
+        can_view_certificate: false,
+        is_enrolled: true,
+      });
+      setTabData({
+        end: tomorrow.toISOString(),
+        certificate_data: undefined,
+      });
+      await fetchAndRender();
+      expect(screen.getByText(`Final grades and any earned certificates are scheduled to be available after ${tomorrow.toLocaleDateString('en-us', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}.`)).toBeInTheDocument();
+    });
+
+    it('Shows not available messaging before certificates are available to passing learners when theres no certificate data', async () => {
+      setMetadata({
+        can_view_certificate: false,
+        is_enrolled: true,
+      });
+      setTabData({
+        end: tomorrow.toISOString(),
+        user_has_passing_grade: true,
+        certificate_data: undefined,
+      });
+      await fetchAndRender();
+      expect(screen.getByText(`Final grades and any earned certificates are scheduled to be available after ${tomorrow.toLocaleDateString('en-us', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}.`)).toBeInTheDocument();
+    });
+
+    it('Shows certificate_available_date if learner is passing', async () => {
+      setMetadata({
+        can_view_certificate: false,
+        is_enrolled: true,
+      });
+      setTabData({
+        end: tomorrow.toISOString(),
+        user_has_passing_grade: true,
+        certificate_data: {
+          cert_status: 'earned_but_not_available',
+          certificate_available_date: overmorrow.toISOString(),
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByText('Certificate status'));
+      expect(screen.getByText(
+        overmorrow.toLocaleDateString('en-us', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+        { exact: false },
+      )).toBeInTheDocument();
+    });
+  });
+
+  describe('Credit Information', () => {
+    it('renders credit information when provided', async () => {
+      setTabData({
+        credit_course_requirements: {
+          eligibility_status: 'eligible',
+          requirements: [
+            {
+              namespace: 'proctored_exam',
+              name: 'i4x://edX/DemoX/proctoring-block/final_uuid',
+              display_name: 'Proctored Mid Term Exam',
+              criteria: {},
+              reason: {},
+              status: null,
+              status_date: '2015-06-26 11:07:42',
+              order: 1,
+            },
+            {
+              namespace: 'grade',
+              name: 'i4x://edX/DemoX/proctoring-block/final_uuid',
+              display_name: 'Minimum Passing Grade',
+              criteria: { min_grade: 0.8 },
+              reason: { final_grade: 0.95 },
+              status: 'satisfied',
+              status_date: '2015-06-26 11:07:44',
+              order: 2,
+            },
+          ],
+        },
+      });
+
+      await fetchAndRender();
+      expect(screen.getByText('Grades & Credit')).toBeInTheDocument();
+      expect(screen.getByText('Requirements for course credit')).toBeInTheDocument();
+      expect(screen.getByText('You have met the requirements for credit in this course.', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('Proctored Mid Term Exam:')).toBeInTheDocument();
+      // 80% comes from the criteria.minGrade being 0.8
+      expect(screen.getByText('Minimum grade for credit (80%):')).toBeInTheDocument();
+      // Completed because the grade requirement has been satisfied
+      expect(screen.getByText('Completed')).toBeInTheDocument();
+    });
+
+    it('does not render credit information when it is not provided', async () => {
+      await fetchAndRender();
+      expect(screen.queryByText('Grades & Credit')).not.toBeInTheDocument();
+      expect(screen.queryByText('Requirements for course credit.')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Access expiration masquerade banner', () => {
+    // https://github.com/openedx/frontend-app-learning/issues/2194
+    it.skip('renders banner when masquerading as a user', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      setTabData({
+        access_expiration: {
+          expiration_date: '2020-01-01T12:00:00Z',
+          masquerading_expired_course: true,
+        },
+      });
+      await fetchAndRender();
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
+    });
+    // https://github.com/openedx/frontend-app-learning/issues/2194
+    it.skip('does not render banner when not masquerading', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      setTabData({
+        access_expiration: {
+          expiration_date: '2020-01-01T12:00:00Z',
+          masquerading_expired_course: false,
+        },
+      });
+      await fetchAndRender();
+      expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
+      expect(screen.queryByText('1/1/2020', { exact: false })).not.toBeInTheDocument();
+    });
+    // https://github.com/openedx/frontend-app-learning/issues/2194
+    it.skip('renders banner when viewing another learner\'s progress', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      setTabData({
+        access_expiration: {
+          expiration_date: '2020-01-01T12:00:00Z',
+          masquerading_expired_course: true,
+        },
+      });
+      await fetchAndRender(`${progressPath}/10`);
+      expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
+    });
+  });
+
+  describe('Course start masquerade banner', () => {
+    // https://github.com/openedx/frontend-app-learning/issues/2194
+    it.skip('renders banner when masquerading as a user', async () => {
+      setMetadata({
+        is_enrolled: true,
+        original_user_is_staff: true,
+        is_staff: false,
+        start: '2999-01-01T00:00:00Z',
+      });
+      await fetchAndRender();
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(screen.getByText('This learner does not yet have access to this course. The course starts on', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('1/1/2999', { exact: false })).toBeInTheDocument();
+    });
+    // https://github.com/openedx/frontend-app-learning/issues/2194
+    it.skip('does not render banner when not masquerading', async () => {
+      setMetadata({
+        is_enrolled: true,
+        original_user_is_staff: true,
+        is_staff: true,
+        start: '2999-01-01T00:00:00Z',
+      });
+      await fetchAndRender();
+      expect(screen.queryByText('This learner does not yet have access to this course. The course starts on', { exact: false })).not.toBeInTheDocument();
+      expect(screen.queryByText('1/1/2999', { exact: false })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Viewing progress page of other students by changing url', () => {
+    it('Changing the url changes the header', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({ username: 'otherstudent' });
+
+      await fetchAndRender(`${progressPath}/10`);
+
+      expect(screen.getByText('Course progress for otherstudent')).toBeInTheDocument();
+    });
+  });
+
+  // https://github.com/openedx/frontend-app-learning/issues/2185
+  /*
+  import { getConfig, setConfig } from '@edx/frontend-platform';
+  import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
+
+  import { logUnhandledRequests } from '../../setupTest';
+  import { useExamsData } from './hooks';
+
+  describe('exam attempt data for plugins', () => {
+    const slotId = 'org.openedx.frontend.learning.progress_tab_course_grade.v1';
+    const blockKey = (name) => `block-v1:edX+DemoX+Demo_Course+type@sequential+block@${name}`;
+    const ExamsDataPlugin = () => {
+      const examsData = useExamsData();
+      return <div data-testid="exams-data-plugin">{examsData ? examsData.map((exam) => exam.examName ?? '-').join(',') : 'null'}</div>;
+    };
+
+    let originalConfig;
+
+    beforeEach(() => {
+      originalConfig = getConfig();
+      setConfig({
+        ...originalConfig,
+        pluginSlots: {
+          [slotId]: {
+            plugins: [{
+              op: PLUGIN_OPERATIONS.Insert,
+              widget: { id: 'exams_data_plugin', type: DIRECT_PLUGIN, RenderWidget: ExamsDataPlugin },
+            }],
+          },
+        },
+      });
+      axiosMock.reset();
+      axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
+      axiosMock.onGet(progressUrl).reply(200, defaultTabData);
+      axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
+      axiosMock.onGet(/exam1/).reply(200, { exam: { id: 1, exam_name: 'Midterm' } });
+      axiosMock.onGet(/homework1/).reply(() => Promise.reject(Object.assign(new Error('Request failed with status code 404'), {
+        response: { status: 404, data: {} },
+        customAttributes: { httpErrorStatus: 404 },
+      })));
+      logUnhandledRequests(axiosMock);
+    });
+
+    afterEach(() => {
+      setConfig(originalConfig);
+    });
+
+    it('lets a slot plugin read one entry per subsection, fetched only because the plugin asked', async () => {
+      setTabData({
+        section_scores: [
+          { display_name: 'Section', subsections: [{ block_key: blockKey('exam1') }, { block_key: blockKey('homework1') }] },
+        ],
+      });
+
+      await fetchAndRender();
+
+      await waitFor(() => expect(screen.getByTestId('exams-data-plugin')).toHaveTextContent('Midterm,-'));
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'))).toHaveLength(2);
+    });
+
+    it('makes no attempt requests when no plugin reads the data', async () => {
+      setConfig(originalConfig);
+      setTabData({
+        section_scores: [{ display_name: 'Section', subsections: [{ block_key: blockKey('exam1') }] }],
+      });
+
+      await fetchAndRender();
+
+      expect(screen.getByText('Grades')).toBeInTheDocument();
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'))).toHaveLength(0);
+    });
+  });
+  */
+
+  describe('request count', () => {
+    it('requests the progress data once per load', async () => {
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => progressUrl.test(req.url))).toHaveLength(1);
+    });
+
+    it('requests the course metadata once per load', async () => {
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
+    });
+
+    // https://github.com/openedx/frontend-app-learning/issues/2194
+    it.skip('requests the progress data once per load with the instructor toolbar mounted', async () => {
+      setMetadata({ original_user_is_staff: true });
+      const queryClient = await fetchAndRender();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+
+      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
+      expect(axiosMock.history.get.filter((req) => progressUrl.test(req.url))).toHaveLength(1);
+      expect(axiosMock.history.get.filter((req) => req.url.includes('/api/course_home/outline/'))).toHaveLength(0);
+    });
+  });
+
+  describe('when the progress request 404s', () => {
+    it('redirects to the legacy progress page and shows the loading indicator meanwhile', async () => {
+      const { replace } = mockLocation({ replace: jest.fn() });
+      axiosMock.onGet(progressUrl).reply(404, {});
+
+      await fetchAndRender(progressPath, { waitForLoaded: false });
+
+      await waitFor(() => expect(replace).toHaveBeenCalledWith(`${getSiteConfig().lmsBaseUrl}/courses/${courseId}/progress`));
+      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Related links and subsection titles', () => {
+    it('links to the dates and outline tabs of this course', async () => {
+      await fetchAndRender();
+
+      const relatedLinks = within(screen.getByRole('heading', { name: 'Related links' }).closest('section'));
+      expect(relatedLinks.getByRole('link', { name: 'Dates' })).toHaveAttribute('href', `/learning/course/${courseId}/dates`);
+      expect(relatedLinks.getByRole('link', { name: 'Course outline' })).toHaveAttribute('href', `/learning/course/${courseId}/home`);
+    });
+
+    it('links a subsection title to its sequence in this course', async () => {
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'First subsection' })).toHaveAttribute(
+        'href',
+        `/learning/course/${courseId}/block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345`,
+      );
+    });
+
+    it('opens the dates tab in the site from the dates link', async () => {
+      axiosMock.onGet(datesUrl).reply(200, Factory.build('datesTabData'));
+      await fetchAndRender();
+
+      const relatedLinks = within(screen.getByRole('heading', { name: 'Related links' }).closest('section'));
+      fireEvent.click(relatedLinks.getByRole('link', { name: 'Dates' }));
+
+      expect(await screen.findByRole('heading', { name: 'Important dates' })).toBeInTheDocument();
+      expect(router.state.location.pathname).toBe(`/learning/course/${courseId}/dates`);
+    });
+  });
+
+  describe('Credit requirements', () => {
+    it('links course credit to CREDIT_HELP_LINK_URL from the app config', async () => {
+      setTabData({ credit_course_requirements: { eligibility_status: 'not_eligible', requirements: [] } });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'course credit' }))
+        .toHaveAttribute('href', getAppConfig(appId).CREDIT_HELP_LINK_URL);
+    });
+  });
+});
