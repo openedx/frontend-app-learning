@@ -10,6 +10,7 @@ const app: App = {
     CREDIT_HELP_LINK_URL: null,
     ENABLE_NOTICES: null,
     EXAMS_BASE_URL: null,
+    LEGACY_THEME_NAME: null,
     SHOW_UNGRADED_ASSIGNMENT_PROGRESS: false,
     SUPPORT_URL_ID_VERIFICATION: null,
   },

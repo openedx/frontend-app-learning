@@ -1,5 +1,8 @@
 @use "@openedx/paragon/styles/css/core/custom-media-breakpoints.css";
 @use "./course-home/dates-tab/timeline/Day";
+@use "./course-home/outline-tab/DateSummary";
+@use "./course-home/outline-tab/widgets/FlagButton";
+@use "./course-home/outline-tab/widgets/ProctoringInfoPanel";
 @use "./course-home/progress-tab/course-completion/CompletionDonutChart";
 @use "./course-home/progress-tab/grades/course-grade/GradeBar";
 
@@ -23,4 +26,20 @@
 .raised-card {
   border: 0 !important;
   box-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .2) !important;
+}
+
+@media (--pgn-size-breakpoint-max-width-xs) {
+  .course-outline-tab .pgn__card {
+    .pgn__card-header {
+      display: block;
+
+      .pgn__card-header-content {
+        margin-top: 0;
+      }
+    }
+
+    .pgn__card-header-actions {
+      margin-left: 0;
+    }
+  }
 }

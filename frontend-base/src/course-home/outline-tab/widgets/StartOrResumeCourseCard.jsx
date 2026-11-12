@@ -1,0 +1,60 @@
+import React from 'react';
+import { Button, Card } from '@openedx/paragon';
+import { sendTrackingLogEvent, useIntl } from '@openedx/frontend-base';
+
+import { useParams } from 'react-router-dom';
+import messages from '../messages';
+import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
+
+const StartOrResumeCourseCard = () => {
+  const intl = useIntl();
+  const { courseId } = useParams();
+
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
+
+  const eventProperties = {
+    org_key: org,
+    courserun_key: courseId,
+  };
+
+  const {
+    resumeCourse: {
+      hasVisitedCourse,
+      url: resumeCourseUrl,
+    },
+  } = useOutlineTabData(courseId, { enabled: false }).data;
+
+  if (!resumeCourseUrl) {
+    return null;
+  }
+
+  const logResumeCourseClick = () => {
+    sendTrackingLogEvent('edx.course.home.resume_course.clicked', {
+      ...eventProperties,
+      event_type: hasVisitedCourse ? 'resume' : 'start',
+      url: resumeCourseUrl,
+    });
+  };
+
+  return (
+    <Card className="mb-3 raised-card" data-testid="start-resume-card">
+      <Card.Header
+        title={hasVisitedCourse ? intl.formatMessage(messages.resumeBlurb) : intl.formatMessage(messages.startBlurb)}
+        actions={(
+          <Button
+            variant="brand"
+            block
+            href={resumeCourseUrl}
+            onClick={() => logResumeCourseClick()}
+          >
+            {hasVisitedCourse ? intl.formatMessage(messages.resume) : intl.formatMessage(messages.start)}
+          </Button>
+        )}
+      />
+      {/* Footer is needed for internal vertical spacing to work out. If you can remove, be my guest */}
+      <Card.Footer><></></Card.Footer>
+    </Card>
+  );
+};
+
+export default StartOrResumeCourseCard;

@@ -16,7 +16,10 @@ const outlineRoutes: RoleRouteObject[] = [
     id: 'org.openedx.frontend.route.learning.outline',
     path: 'home',
     handle: { roles: [courseOutlineRole] },
-    element: <StubPage page="outline" />,
+    async lazy() {
+      const module = await import(/* webpackChunkName: "learning-outline" */ './course-home/outline-tab');
+      return { Component: module.default };
+    },
   },
 ];
 
