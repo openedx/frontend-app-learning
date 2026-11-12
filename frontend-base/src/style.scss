@@ -1,2 +1,26 @@
 @use "@openedx/paragon/styles/css/core/custom-media-breakpoints.css";
 @use "./course-home/dates-tab/timeline/Day";
+@use "./course-home/progress-tab/course-completion/CompletionDonutChart";
+@use "./course-home/progress-tab/grades/course-grade/GradeBar";
+
+.greyed-out {
+  opacity: 0.3;
+}
+
+.locked-overlay {
+  opacity: 0.3;
+  pointer-events: none;
+
+  &.grades {
+    overflow: hidden;
+    max-height: 852px;
+    @media screen and (min-width: 992px) {
+      max-height: 920px;
+    }
+  }
+}
+
+.raised-card {
+  border: 0 !important;
+  box-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .2) !important;
+}

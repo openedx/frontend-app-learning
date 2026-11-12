@@ -27,18 +27,6 @@ describe('routes', () => {
     });
   });
 
-  describe('progress', () => {
-    it('renders at course/:courseId/progress', async () => {
-      renderAt(`/course/${courseId}/progress`);
-      await expectStub('progress', { courseId });
-    });
-
-    it('renders at course/:courseId/progress/:targetUserId with the target user', async () => {
-      renderAt(`/course/${courseId}/progress/42`);
-      await expectStub('progress', { courseId, targetUserId: '42' });
-    });
-  });
-
   describe('discussion', () => {
     it('renders at course/:courseId/discussion/:path/* with the path and the rest', async () => {
       renderAt(`/course/${courseId}/discussion/topics/abc`);
@@ -128,8 +116,6 @@ describe('routes', () => {
   describe('page rules', () => {
     it.each([
       `/course/${courseId}/home`,
-      `/course/${courseId}/progress`,
-      `/course/${courseId}/progress/42`,
       `/course/${courseId}/discussion/topics/abc`,
       `/course/${courseId}/live`,
       `/course/${courseId}`,

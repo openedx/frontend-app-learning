@@ -10,3 +10,8 @@ export const mockLocation = <T extends Partial<Location>>(members: T) => {
 export const restoreLocation = () => {
   Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
 };
+
+// For a case about a link's click handler: jsdom reports a followed anchor on the console, and a route link would render its page.
+export const preventNavigation = (link: HTMLElement) => {
+  link.addEventListener('click', (event) => event.preventDefault());
+};

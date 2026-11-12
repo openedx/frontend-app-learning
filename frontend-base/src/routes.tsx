@@ -32,17 +32,22 @@ const datesRoutes: RoleRouteObject[] = [
   },
 ];
 
+const lazyProgressTab = async () => {
+  const module = await import(/* webpackChunkName: "learning-progress" */ './course-home/progress-tab/ProgressTab');
+  return { Component: module.default };
+};
+
 const progressRoutes: RoleRouteObject[] = [
   {
     id: 'org.openedx.frontend.route.learning.progress',
     path: 'progress',
     handle: { roles: [courseProgressRole] },
-    element: <StubPage page="progress" />,
+    lazy: lazyProgressTab,
   },
   {
     path: 'progress/:targetUserId',
     handle: { roles: [courseProgressRole] },
-    element: <StubPage page="progress" />,
+    lazy: lazyProgressTab,
   },
 ];
 

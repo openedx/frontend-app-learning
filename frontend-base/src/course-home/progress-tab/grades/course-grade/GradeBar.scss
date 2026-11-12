@@ -1,0 +1,52 @@
+.grade-bar {
+  rect {
+    height: 6px;
+  }
+
+  .grade-bar__base {
+    fill: var(--pgn-color-light-300);
+  }
+
+  .grade-bar__divider {
+    fill: var(--pgn-color-primary-500);
+    width: 1px;
+  }
+
+  .grade-bar--passing {
+    fill: var(--pgn-color-primary-500);
+  }
+
+  .grade-bar--current-passing {
+    fill: var(--pgn-color-success-500);
+  }
+
+  .grade-bar--current-non-passing {
+    fill: var(--pgn-color-accent-b);
+  }
+}
+
+.arrow {
+  margin: 0 !important;
+}
+
+#minimum-grade-tooltip {
+  .arrow::after {
+    border-bottom-color: var(--pgn-color-primary-500);
+  }
+}
+
+#passing-grade-tooltip {
+  background: var(--pgn-color-success-500);
+
+  .arrow::after {
+    border-top-color: var(--pgn-color-success-500);
+  }
+}
+
+#non-passing-grade-tooltip {
+  background: var(--pgn-color-accent-b);
+
+  .arrow::after {
+    border-top-color: var(--pgn-color-accent-b);
+  }
+}
