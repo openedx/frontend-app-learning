@@ -10,7 +10,7 @@ import {
   COURSE_EXIT_MODES, getCourseExitMode, GetCourseExitNavigation, logClick, logVisit,
 } from './utils';
 
-// Both courseware queries are stubs until https://github.com/openedx/frontend-app-learning/issues/2195, so the cases supply their data.
+// Nothing here fetches the courseware metadata, and the outline query is a stub until https://github.com/openedx/frontend-app-learning/issues/2195, so the cases supply both.
 jest.mock('@src/courseware/data/apiHooks');
 
 const courseId = 'course-v1:OpenedX+DemoX+DemoCourse';
