@@ -6,11 +6,11 @@ export interface TabMetadata {
 
 const getTab = (tabs: TabMetadata[] | undefined, tabId: string) => tabs?.find(tab => tab.tabId === tabId);
 
-export const getDatesTabUrl = (tabs?: TabMetadata[]) => getTab(tabs, 'dates')?.url;
-export const getProgressTabUrl = (tabs?: TabMetadata[]) => getTab(tabs, 'progress')?.url;
+export const hasDatesTab = (tabs?: TabMetadata[]) => !!getTab(tabs, 'dates');
+export const hasProgressTab = (tabs?: TabMetadata[]) => !!getTab(tabs, 'progress');
 export const hasDiscussionTab = (tabs?: TabMetadata[]) => !!getTab(tabs, 'discussion');
 
-export const getCourseOutlineUrl = (tabs?: TabMetadata[]) => getTab(tabs, 'courseware')?.url;
+export const hasCourseOutlineTab = (tabs?: TabMetadata[]) => !!getTab(tabs, 'courseware');
 
 export const isActiveTab = (slug: string, activeTabSlug?: string) => {
   if (activeTabSlug === slug) {
