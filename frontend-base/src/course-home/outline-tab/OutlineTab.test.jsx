@@ -1,17 +1,19 @@
 import { Factory } from 'rosie';
 import {
   getAnalyticsService, getAppConfig, getAuthenticatedHttpClient, getSiteConfig, mergeAppConfig, runPageRules,
+  setAuthenticatedUser,
 } from '@openedx/frontend-base';
 import MockAdapter from 'axios-mock-adapter';
 import Cookies from 'js-cookie';
 import userEvent from '@testing-library/user-event';
 import {
-  act, fireEvent, screen, waitFor,
+  act, fireEvent, screen, waitFor, within,
 } from '@testing-library/react';
 
 import { appId } from '@src/constants';
 import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import routes from '@src/routes';
+import { authenticatedUser } from '@src/tests/authenticatedUser';
 import { mockLocation, preventNavigation } from '@src/tests/location';
 import { renderRoutes } from '@src/tests/render';
 import messages from './messages';
@@ -20,7 +22,7 @@ import { buildMinimalCourseBlocks } from '../../shared/data/__factories__/course
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
 
-const { sendTrackEvent } = getAnalyticsService();
+const { sendTrackEvent, sendTrackingLogEvent } = getAnalyticsService();
 
 describe('Outline Tab', () => {
   let axiosMock;
@@ -1541,6 +1543,405 @@ describe('Outline Tab', () => {
 
       // reset config for other tests
       act(() => mergeAppConfig(appId, { LEGACY_THEME_NAME: null }));
+    });
+  });
+
+  describe('Section', () => {
+    it('opens and closes on its title and on its icon button', async () => {
+      const user = userEvent.setup();
+      await fetchAndRender();
+      const section = screen.getByRole('button', { name: /Title of Section/ });
+      expect(section).toHaveAttribute('aria-expanded', 'false');
+
+      await user.click(section);
+      expect(section).toHaveAttribute('aria-expanded', 'true');
+
+      await user.click(within(section).getByRole('button', { name: 'Close' }));
+      expect(section).toHaveAttribute('aria-expanded', 'false');
+
+      await user.click(within(section).getByRole('button', { name: 'Open' }));
+      expect(section).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('renders the outline of a course whose blocks include a unit', async () => {
+      setTabData({ course_blocks: { blocks: Factory.build('courseBlocks', { courseId }).blocks } });
+      await fetchAndRender();
+
+      expect(screen.getAllByRole('button', { name: /Incomplete section/ })).toHaveLength(1);
+    });
+
+    it('renders the outline of a course whose sequences are given as a single block', async () => {
+      const user = userEvent.setup();
+      const sequence = Factory.build('block', { type: 'sequential', display_name: 'Only sequence' }, { courseId });
+      const courseBlocks = Factory.build('courseBlocks', { courseId }, { sequences: sequence });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      await user.click(screen.getByRole('button', { name: /Incomplete section/ }));
+
+      expect(screen.getByRole('link', { name: 'Only sequence' })).toBeInTheDocument();
+    });
+
+    it('links a sequence whose block carries its own URLs', async () => {
+      const sequence = Factory.build('block', {
+        type: 'sequential',
+        display_name: 'Sequence with URLs',
+        lms_web_url: `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/jump_to/sequence`,
+        student_view_url: `${getSiteConfig().lmsBaseUrl}/xblock/sequence`,
+      }, { courseId });
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', {
+        resumeBlock: true,
+        sequenceBlocks: [sequence],
+      });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'Sequence with URLs' })).toBeInTheDocument();
+    });
+  });
+
+  describe('Start or resume button', () => {
+    const resumeUrl = `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/jump_to/block-v1:edX+Test+Block@12345abcde`;
+
+    it.each([
+      [false, 'Start course', 'start'],
+      [true, 'Resume course', 'resume'],
+    ])('reports a click with has_visited_course %s', async (hasVisitedCourse, name, eventType) => {
+      setTabData({ resume_course: { has_visited_course: hasVisitedCourse, url: resumeUrl } });
+      await fetchAndRender();
+      const link = screen.getByRole('link', { name });
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.course.home.resume_course.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        event_type: eventType,
+        url: resumeUrl,
+      });
+    });
+
+    it('renders no card without a resume URL', async () => {
+      setTabData({ resume_course: { has_visited_course: false, url: null } });
+      await fetchAndRender();
+
+      expect(screen.queryByTestId('start-resume-card')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Course tools', () => {
+    const tool = (analyticsId) => ({ analytics_id: analyticsId, title: analyticsId, url: `https://example.com/${analyticsId}` });
+
+    it.each([
+      ['edx.bookmarks', 'bookmark'],
+      ['edx.tool.verified_upgrade', 'certificate'],
+      ['edx.tool.financial_assistance', 'info'],
+      ['edx.calendar-sync', 'calendar'],
+      ['edx.updates', 'newspaper'],
+      ['edx.reviews', 'star'],
+    ])('gives the %s tool the %s icon', async (analyticsId, icon) => {
+      setTabData({ course_tools: [tool(analyticsId)] });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: analyticsId }).querySelector('svg')).toHaveAttribute('data-icon', icon);
+    });
+
+    it('lists a tool it has no icon for without one', async () => {
+      setTabData({ course_tools: [tool('example.unknown')] });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'example.unknown' }).querySelector('svg')).not.toBeInTheDocument();
+    });
+
+    it('reports a click on a tool', async () => {
+      await fetchAndRender();
+      const link = screen.getByRole('link', { name: 'Bookmarks' });
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.course.tool.accessed', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        course_id: courseId,
+        is_staff: false,
+        tool_name: 'edx.bookmarks',
+      });
+    });
+  });
+
+  describe('Certificate alert buttons', () => {
+    const now = new Date();
+    const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    const endDateBlock = { date_type: 'course-end-date', date: yesterday.toISOString(), title: 'End' };
+    const clickProperties = { org_key: 'edX', courserun_key: courseId, is_staff: false };
+
+    it('reports a click on the certificate button', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        cert_data: {
+          cert_status: CERT_STATUS_TYPE.DOWNLOADABLE,
+          cert_web_view_url: 'certificate/testuuid',
+          certificate_available_date: null,
+        },
+      }, { date_blocks: [endDateBlock] });
+      await fetchAndRender();
+      const link = await screen.findByRole('link', { name: 'View my certificate' });
+      sendTrackEvent.mockClear();
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackEvent).toHaveBeenCalledWith(
+        'edx.ui.lms.course_outline.certificate_alert_downloadable_button.clicked',
+        clickProperties,
+      );
+    });
+
+    it('reports a click on the grades button', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        cert_data: {},
+        user_has_passing_grade: false,
+        has_ended: true,
+        enrollment_mode: 'verified',
+      }, { date_blocks: [endDateBlock] });
+      await fetchAndRender();
+      const link = await screen.findByRole('link', { name: 'View grades' });
+      sendTrackEvent.mockClear();
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackEvent).toHaveBeenCalledWith(
+        'edx.ui.lms.course_outline.certificate_alert_view_grades_button.clicked',
+        clickProperties,
+      );
+    });
+  });
+
+  describe('Proctoring onboarding past due', () => {
+    it('shows a disabled past-due button', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: '',
+        onboarding_link: 'test',
+        expiration_date: null,
+        onboarding_past_due: true,
+      });
+      await fetchAndRender();
+
+      expect(await screen.findByRole('button', { name: 'Onboarding Past Due' })).toBeDisabled();
+    });
+  });
+
+  describe('Dates widget entries', () => {
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+    it('formats a date in the browser time zone when the learner has set none', async () => {
+      setMetadata({ is_enrolled: true, user_timezone: null });
+      setTabData({}, { date_blocks: [{ date_type: 'course-start-date', date: tomorrow.toISOString(), title: 'Start' }] });
+      await fetchAndRender();
+
+      const date = new Intl.DateTimeFormat('en', {
+        day: 'numeric', month: 'short', weekday: 'short', year: 'numeric',
+      }).format(tomorrow);
+      expect(screen.getByText(date)).toBeInTheDocument();
+    });
+
+    it('links the title of an assignment the learner can open, and shows its description', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({}, {
+        date_blocks: [{
+          date_type: 'assignment-due-date',
+          date: tomorrow.toISOString(),
+          title: 'Homework 1',
+          link: 'https://example.com/homework-1',
+          learner_has_access: true,
+          description: 'Due before midnight.',
+        }],
+      });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'Homework 1' })).toHaveAttribute('href', 'https://example.com/homework-1');
+      expect(screen.getByText('Due before midnight.')).toBeInTheDocument();
+    });
+
+    it('sends no upsell event for a link that is not the upgrade deadline', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({}, {
+        date_blocks: [{
+          date_type: 'certificate-available-date',
+          date: tomorrow.toISOString(),
+          title: 'Certificate Available',
+          link: 'https://example.com/certificates',
+          link_text: 'About certificates',
+        }],
+      });
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+      const link = screen.getByRole('link', { name: 'About certificates' });
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackEvent).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Section contents', () => {
+    const renderSequence = async (attributes) => {
+      const sequence = Factory.build('block', { type: 'sequential', ...attributes }, { courseId });
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', {
+        resumeBlock: true,
+        sequenceBlocks: [sequence],
+      });
+      return { courseBlocks, sequence };
+    };
+
+    it('marks a completed sequence', async () => {
+      const { courseBlocks } = await renderSequence({ display_name: 'Finished sequence', complete: true });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'Finished sequence' }).closest('li')).toHaveTextContent('Finished sequence, Completed');
+    });
+
+    it('shows a sequence the response gives no URL for as text, not a link', async () => {
+      const { courseBlocks, sequence } = await renderSequence({ display_name: 'Locked sequence' });
+      sequence.lms_web_url = null;
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      expect(screen.getByText('Locked sequence')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Locked sequence' })).not.toBeInTheDocument();
+    });
+
+    it('formats a sequence due date in the browser time zone when the learner has set none', async () => {
+      const due = '2030-04-01T12:00:00Z';
+      setMetadata({ user_timezone: null });
+      const { courseBlocks } = await renderSequence({ display_name: 'Title of Sequence', due });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      const dueDate = new Intl.DateTimeFormat('en', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', timeZoneName: 'short',
+      }).format(new Date(due));
+      expect(screen.getByText(`due ${dueDate}`)).toBeInTheDocument();
+    });
+  });
+
+  describe('Learner kinds', () => {
+    afterEach(() => {
+      setAuthenticatedUser(authenticatedUser);
+    });
+
+    const learnerType = () => document.querySelector('[data-learner-type]').getAttribute('data-learner-type');
+
+    it('asks an anonymous visitor to a private course to sign in or register', async () => {
+      setAuthenticatedUser(null);
+      setMetadata({ is_enrolled: false });
+      setTabData({ course_blocks: null });
+      await fetchAndRender();
+
+      expect(await screen.findByTestId('private-course-alert'))
+        .toHaveTextContent('Sign in or register and then enroll in this course.');
+      expect(learnerType()).toBe('b2c_learner');
+    });
+
+    it('marks the page for an enterprise learner', async () => {
+      setAuthenticatedUser({ ...authenticatedUser, roles: ['enterprise_learner:*'] });
+      await fetchAndRender();
+
+      expect(learnerType()).toBe('enterprise_learner');
+    });
+  });
+
+  describe('Outline responses with parts missing', () => {
+    it('renders without the goal card when the response carries no course goals', async () => {
+      setTabData({ course_goals: undefined });
+      await fetchAndRender();
+
+      expect(screen.getByTestId('start-resume-card')).toBeInTheDocument();
+      expect(screen.queryByTestId('weekly-learning-goal-card')).not.toBeInTheDocument();
+    });
+
+    it('shows no certificate alert when the response carries no certificate data', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({ cert_data: null });
+      await fetchAndRender();
+
+      expect(screen.getByTestId('start-resume-card')).toBeInTheDocument();
+      expect(screen.queryByText('Congratulations! Your certificate is ready.')).not.toBeInTheDocument();
+    });
+
+    it('offers no enroll button when the response carries no enroll alert', async () => {
+      setTabData({ enroll_alert: null });
+      await fetchAndRender();
+
+      const alert = await screen.findByTestId('private-course-alert');
+      expect(alert).toHaveTextContent('You must be enrolled in the course to see course content.');
+      expect(screen.queryByRole('button', { name: 'Enroll now' })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Proctoring status the panel does not know', () => {
+    it('shows the panel without a status line', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'something_new',
+        onboarding_link: 'test',
+        expiration_date: null,
+      });
+      await fetchAndRender();
+
+      expect(await screen.findByText('This course contains proctored exams')).toBeInTheDocument();
+      expect(screen.queryByText('Current Onboarding Status:', { exact: false })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Changing a weekly learning goal', () => {
+    const goalPosts = () => axiosMock.history.post.filter((request) => request.url.includes('save_course_goal'));
+    const withGoal = (selectedGoal) => setTabData({
+      course_goals: { weekly_learning_goal_enabled: true, selected_goal: selectedGoal },
+    });
+
+    it('keeps the reminder choice when the learner picks another goal', async () => {
+      withGoal({ days_per_week: 3, subscribed_to_reminders: false });
+      await fetchAndRender();
+      fireEvent.click(screen.getByTestId('weekly-learning-goal-input-Casual'));
+
+      await waitFor(() => expect(goalPosts()).toHaveLength(1));
+      expect(JSON.parse(goalPosts()[0].data)).toEqual({
+        course_id: courseId,
+        days_per_week: 1,
+        subscribed_to_reminders: false,
+      });
+    });
+
+    it('does not save the reminder switch while masquerading', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      withGoal({ days_per_week: 3, subscribed_to_reminders: false });
+      await fetchAndRender();
+      fireEvent.click(screen.getByRole('switch'));
+
+      expect(screen.getByRole('switch')).toBeChecked();
+      expect(goalPosts()).toHaveLength(0);
+    });
+  });
+
+  describe('Frame height', () => {
+    it('is set again when the frame document reports a resize', async () => {
+      await fetchAndRender();
+      const frame = screen.getByTitle('Course Handouts');
+      frame.removeAttribute('height');
+      fireEvent(window, new MessageEvent('message', { data: { type: 'lmshtmlfragment.resize' } }));
+
+      expect(frame).toHaveAttribute('height');
+    });
+
+    it('is left alone on a message of another type', async () => {
+      await fetchAndRender();
+      const frame = screen.getByTitle('Course Handouts');
+      frame.removeAttribute('height');
+      fireEvent(window, new MessageEvent('message', { data: { type: 'something.else' } }));
+
+      expect(frame).not.toHaveAttribute('height');
     });
   });
 
