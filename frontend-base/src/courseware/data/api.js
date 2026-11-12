@@ -8,3 +8,9 @@ export async function getCourseMetadata(courseId) {
   const metadata = await getAuthenticatedHttpClient().get(url);
   return normalizeCoursewareMeta(metadata);
 }
+
+export async function sendActivationEmail() {
+  const url = new URL(`${getSiteConfig().lmsBaseUrl}/api/send_account_activation_email`);
+  const { data } = await getAuthenticatedHttpClient().post(url.href, {});
+  return data;
+}

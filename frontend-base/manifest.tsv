@@ -4,6 +4,10 @@
 #
 # src/courseware/course/Course.jsx	frontend-base/src/courseware/course/Course.jsx
 # src/generic/model-store/index.js	dropped
+src/alerts/course-start-alert/CourseStartAlert.jsx	frontend-base/src/alerts/course-start-alert/CourseStartAlert.jsx
+src/alerts/course-start-alert/CourseStartMasqueradeBanner.jsx	frontend-base/src/alerts/course-start-alert/CourseStartMasqueradeBanner.jsx
+src/alerts/course-start-alert/hooks.js	frontend-base/src/alerts/course-start-alert/hooks.js
+src/alerts/course-start-alert/index.js	frontend-base/src/alerts/course-start-alert/index.js
 src/alerts/enrollment-alert/clickHook.js	frontend-base/src/alerts/enrollment-alert/clickHook.js
 src/alerts/enrollment-alert/data/api.js	frontend-base/src/alerts/enrollment-alert/data/api.js
 src/alerts/enrollment-alert/EnrollmentAlert.jsx	frontend-base/src/alerts/enrollment-alert/EnrollmentAlert.jsx
@@ -11,9 +15,11 @@ src/alerts/enrollment-alert/EnrollmentAlert.test.tsx	frontend-base/src/alerts/en
 src/alerts/enrollment-alert/hooks.js	frontend-base/src/alerts/enrollment-alert/hooks.js
 src/alerts/enrollment-alert/index.js	frontend-base/src/alerts/enrollment-alert/index.js
 src/alerts/enrollment-alert/messages.ts	frontend-base/src/alerts/enrollment-alert/messages.ts
+src/alerts/logistration-alert/AccountActivationAlert.jsx	frontend-base/src/alerts/logistration-alert/AccountActivationAlert.jsx
 src/alerts/logistration-alert/hooks.js	frontend-base/src/alerts/logistration-alert/hooks.js
 src/alerts/logistration-alert/index.js	frontend-base/src/alerts/logistration-alert/index.js
 src/alerts/logistration-alert/LogistrationAlert.jsx	frontend-base/src/alerts/logistration-alert/LogistrationAlert.jsx
+src/alerts/logistration-alert/messages.ts	frontend-base/src/alerts/logistration-alert/messages.ts
 src/course-home/data/apiHooks.test.tsx	frontend-base/src/course-home/data/apiHooks.test.tsx
 src/course-home/data/apiHooks.ts	frontend-base/src/course-home/data/apiHooks.ts
 src/course-home/data/api.test.js	frontend-base/src/course-home/data/api.test.js
@@ -101,6 +107,7 @@ src/courseware/data/api.js	frontend-base/src/courseware/data/api.js
 src/courseware/data/coursewareMeta.ts	frontend-base/src/courseware/data/coursewareMeta.ts
 src/courseware/data/__factories__/courseMetadata.factory.js	frontend-base/src/courseware/data/__factories__/courseMetadata.factory.js
 src/courseware/data/__factories__/index.js	frontend-base/src/courseware/data/__factories__/index.js
+src/courseware/data/index.js	frontend-base/src/courseware/data/index.js
 src/data/http-error.ts	frontend-base/src/data/http-error.ts
 src/data/localStorage.js	frontend-base/src/data/localStorage.js
 src/generic/messages.ts	frontend-base/src/generic/messages.ts
@@ -164,6 +171,9 @@ src/shared/access.js	frontend-base/src/shared/access.js
 src/shared/data/__factories__/courseMetadataBase.factory.js	frontend-base/src/shared/data/__factories__/courseMetadataBase.factory.js
 src/shared/data/__factories__/index.js	frontend-base/src/shared/data/__factories__/index.js
 src/shared/data/__factories__/tab.factory.js	frontend-base/src/shared/data/__factories__/tab.factory.js
+src/shared/effort-estimate/EffortEstimate.jsx	frontend-base/src/shared/effort-estimate/EffortEstimate.jsx
+src/shared/effort-estimate/index.js	frontend-base/src/shared/effort-estimate/index.js
+src/shared/effort-estimate/messages.ts	frontend-base/src/shared/effort-estimate/messages.ts
 src/shared/links.jsx	frontend-base/src/shared/links.jsx
 src/tab-page/index.js	frontend-base/src/tab-page/index.js
 src/tab-page/LoadedTabPage.test.jsx	frontend-base/src/tab-page/LoadedTabPage.test.jsx
