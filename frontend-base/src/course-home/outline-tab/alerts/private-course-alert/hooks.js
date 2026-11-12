@@ -1,0 +1,35 @@
+import React, { useContext, useMemo } from 'react';
+import { SiteContext } from '@openedx/frontend-base';
+import { ALERT_TYPES, useAlert } from '../../../../generic/user-messages';
+import { useCourseHomeMeta, useOutlineTabData } from '../../../data/apiHooks';
+
+const PrivateCourseAlert = React.lazy(() => import('./PrivateCourseAlert'));
+
+export function usePrivateCourseAlert(courseId) {
+  const { authenticatedUser } = useContext(SiteContext);
+  const course = useCourseHomeMeta(courseId, { enabled: false }).data;
+  const outline = useOutlineTabData(courseId, { enabled: false }).data;
+  const enrolledUser = course && course.isEnrolled !== undefined && course.isEnrolled;
+  const privateOutline = outline && outline.courseBlocks && !outline.courseBlocks.courses;
+  /**
+   * This alert should render if the user is not enrolled AND
+   *    1. the user is anonymous AND the outline is private, OR
+   *    2. the user is authenticated.
+   * */
+  const isVisible = !enrolledUser && (privateOutline || authenticatedUser !== null);
+  const payload = useMemo(() => ({
+    anonymousUser: authenticatedUser === null,
+    canEnroll: outline && outline.enrollAlert ? outline.enrollAlert.canEnroll : false,
+    courseId,
+  }), [authenticatedUser, courseId, outline]);
+
+  useAlert(isVisible, {
+    code: 'clientPrivateCourseAlert',
+    dismissible: false,
+    payload,
+    topic: 'outline-private-alerts',
+    type: ALERT_TYPES.WELCOME,
+  });
+
+  return { clientPrivateCourseAlert: PrivateCourseAlert };
+}

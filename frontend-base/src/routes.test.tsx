@@ -20,13 +20,6 @@ const RouteStatus = () => {
 };
 
 describe('routes', () => {
-  describe('outline', () => {
-    it('renders at course/:courseId/home', async () => {
-      renderAt(`/course/${courseId}/home`);
-      await expectStub('outline', { courseId });
-    });
-  });
-
   describe('discussion', () => {
     it('renders at course/:courseId/discussion/:path/* with the path and the rest', async () => {
       renderAt(`/course/${courseId}/discussion/topics/abc`);
@@ -115,7 +108,6 @@ describe('routes', () => {
 
   describe('page rules', () => {
     it.each([
-      `/course/${courseId}/home`,
       `/course/${courseId}/discussion/topics/abc`,
       `/course/${courseId}/live`,
       `/course/${courseId}`,

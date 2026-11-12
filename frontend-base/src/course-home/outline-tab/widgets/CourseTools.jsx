@@ -1,0 +1,83 @@
+import React from 'react';
+import { useParams } from 'react-router-dom';
+
+import { getAuthenticatedUser, sendTrackingLogEvent, useIntl } from '@openedx/frontend-base';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faBookmark, faCertificate, faInfo, faCalendar, faStar,
+} from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
+
+import messages from '../messages';
+import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
+import LaunchCourseHomeTourButton from '../../../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
+
+const CourseTools = () => {
+  const intl = useIntl();
+  const { courseId } = useParams();
+  const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
+  const {
+    courseTools,
+  } = useOutlineTabData(courseId, { enabled: false }).data;
+
+  if (courseTools.length === 0) {
+    return null;
+  }
+
+  const eventProperties = {
+    org_key: org,
+    courserun_key: courseId,
+  };
+
+  const logClick = (analyticsId) => {
+    const { administrator } = getAuthenticatedUser();
+    sendTrackingLogEvent('edx.course.tool.accessed', {
+      ...eventProperties,
+      course_id: courseId, // should only be courserun_key, but left as-is for historical reasons
+      is_staff: administrator,
+      tool_name: analyticsId,
+    });
+  };
+
+  const renderIcon = (iconClasses) => {
+    switch (iconClasses) {
+      case 'edx.bookmarks':
+        return faBookmark;
+      case 'edx.tool.verified_upgrade':
+        return faCertificate;
+      case 'edx.tool.financial_assistance':
+        return faInfo;
+      case 'edx.calendar-sync':
+        return faCalendar;
+      case 'edx.updates':
+        return faNewspaper;
+      case 'edx.reviews':
+        return faStar;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <section className="mb-4">
+      <h2 className="h4">{intl.formatMessage(messages.tools)}</h2>
+      <ul className="list-unstyled">
+        {courseTools.map((courseTool) => (
+          <li key={courseTool.analyticsId} className="small">
+            <a href={courseTool.url} onClick={() => logClick(courseTool.analyticsId)}>
+              {renderIcon(courseTool.analyticsId) && (
+                <FontAwesomeIcon icon={renderIcon(courseTool.analyticsId)} className="mr-2" fixedWidth />
+              )}
+              {courseTool.title}
+            </a>
+          </li>
+        ))}
+        <li className="small" id="courseHome-launchTourLink">
+          <LaunchCourseHomeTourButton />
+        </li>
+      </ul>
+    </section>
+  );
+};
+
+export default CourseTools;
