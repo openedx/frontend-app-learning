@@ -33,7 +33,8 @@ const UnitTitleSlot = ({
     >
       <div className="d-flex justify-content-between">
         <div className="mb-0">
-          <h3 className="h3">{unit.title}</h3>
+          {/* Focus target for post-navigation focus management (see SequenceContent). */}
+          <h3 className="h3" id="courseware-unit-title" tabIndex={-1}>{unit.title}</h3>
         </div>
         {renderUnitNavigation(true)}
       </div>
