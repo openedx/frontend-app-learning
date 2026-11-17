@@ -35,6 +35,9 @@ import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
+import { PathwayOutline } from './pathways/PathwayOutline';
+import { PathwayProgress } from './pathways/PathwayProgress';
+import { PathwayAchievements } from './pathways/PathwayAchievements';
 
 const queryClient = createQueryClient();
 
@@ -133,6 +136,30 @@ subscribe(APP_READY, () => {
                         )}
                           />
                         ))}
+                        <Route
+                          path={DECODE_ROUTES.PATHWAY_OUTLINE}
+                          element={(
+                            <DecodePageRoute>
+                              <PathwayOutline />
+                            </DecodePageRoute>
+                          )}
+                        />
+                        <Route
+                          path={DECODE_ROUTES.PATHWAY_PROGRESS}
+                          element={(
+                            <DecodePageRoute>
+                              <PathwayProgress />
+                            </DecodePageRoute>
+                          )}
+                        />
+                        <Route
+                          path={DECODE_ROUTES.PATHWAY_ACHIEVEMENTS}
+                          element={(
+                            <DecodePageRoute>
+                              <PathwayAchievements />
+                            </DecodePageRoute>
+                          )}
+                        />
                       </Routes>
                     </PluginOverridesProvider>
                   </ToastProvider>
