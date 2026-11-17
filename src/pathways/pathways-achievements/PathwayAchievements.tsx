@@ -23,7 +23,7 @@ export const PathwayAchievements = () => {
         {tabDataQuery.data?.map((data) => (
           <CertificateCard
             key={data.credentialId}
-            categoryLabel={metadataQuery.data?.pathway.categoryLabel}
+            categoryLabel={metadataQuery.data?.pathway.categoryLabel ?? ''}
             {...data}
           />
         ))}
