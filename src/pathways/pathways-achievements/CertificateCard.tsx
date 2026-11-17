@@ -1,14 +1,14 @@
 import classNames from 'classnames';
 import { Button, Icon, Stack } from '@openedx/paragon';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { FormattedDate, FormattedMessage } from '@edx/frontend-platform/i18n';
 
-import { PathwayAchievementData } from '@src/pathways/data/types';
+import type { PathwayAchievementData } from '@src/pathways/data/types';
 
 import messages from './messages';
 import { NewsModeIcon } from './NewsModeIcon';
 
 export interface CertificateCardProps extends PathwayAchievementData {
-  categoryLabel?: string;
+  categoryLabel: string;
 }
 
 export const CertificateCard = ({
@@ -38,16 +38,29 @@ export const CertificateCard = ({
               <FormattedMessage {...subtitle} values={{ categoryLabel }} />
             </span>
           </Stack>
-          <span className="h4">
+          <h3 className="h4">
             {displayName}
-          </span>
+          </h3>
         </Stack>
         <Stack>
           <span className="text-gray-500 small">
             {providerName}
           </span>
           <span className="small">
-            <FormattedMessage {...messages.completed} values={{ date: completedOn }} />
+            <FormattedMessage
+              {...messages.completed}
+              values={{
+                date: (
+                  <FormattedDate
+                    value={completedOn}
+                    day="numeric"
+                    month="short"
+                    year="numeric"
+                    timeZone="UTC"
+                  />
+                ),
+              }}
+            />
           </span>
         </Stack>
         <Button className="w-75">

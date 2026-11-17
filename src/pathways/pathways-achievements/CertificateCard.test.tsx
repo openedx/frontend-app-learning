@@ -19,7 +19,7 @@ describe('CertificateCard', () => {
 
     expect(screen.getByText(itemCertificate.displayName)).toBeInTheDocument();
     expect(screen.getByText(itemCertificate.providerName)).toBeInTheDocument();
-    expect(screen.getByText(/^Completed on/)).toBeInTheDocument();
+    expect(screen.getByText('Completed on Jul 2, 2026')).toBeInTheDocument();
     expect(screen.getByText(itemCertificate.credentialId)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'View certificate' })).toBeInTheDocument();
   });

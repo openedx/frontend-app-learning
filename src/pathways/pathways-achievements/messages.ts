@@ -4,17 +4,17 @@ const messages = defineMessages({
   pathwayCertificate: {
     id: 'learning.pathways.certificate-card.pathway-certificate',
     defaultMessage: '{categoryLabel} certificate',
-    description: 'Subtite of the Pathway certificate',
+    description: 'Subtitle of the Pathway certificate',
   },
   itemCertificate: {
     id: 'learning.pathways.certificate-card.item-certificate',
     defaultMessage: 'Certificate',
-    description: 'Subtite of the Item certificate',
+    description: 'Subtitle of the Item certificate',
   },
   completed: {
     id: 'learning.pathways.certificate-card.completed',
     defaultMessage: 'Completed on {date}',
-    description: 'Subtite of the Pathway certificate',
+    description: 'Completion date for the course',
   },
   viewCertificateButton: {
     id: 'learning.pathways.certificate-card.view-certificate',
