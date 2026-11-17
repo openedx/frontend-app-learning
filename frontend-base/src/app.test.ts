@@ -16,7 +16,8 @@ import {
 } from './constants';
 
 const [main] = learningApp.routes ?? [];
-const [course, preview, ...nonCourse] = main.children ?? [];
+const [pathFixes] = main.children ?? [];
+const [course, preview, ...nonCourse] = pathFixes.children ?? [];
 
 describe('learningApp', () => {
   it('declares the Learning app id with no slot operations yet', () => {
