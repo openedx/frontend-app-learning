@@ -58,52 +58,51 @@ Factory.define('courseBlocks')
   )
   .attr('root', ['course'], course => course.id);
 
-// https://github.com/openedx/frontend-app-learning/issues/2195
-// /**
-//  * Builds a course with a single chapter, sequence, and unit.
-//  */
-// export function buildSimpleCourseBlocks(courseId, title, options = {}) {
-//   const unitBlocks = options.unitBlocks || [Factory.build(
-//     'block',
-//     { type: 'vertical' },
-//     { courseId },
-//   )];
-//   const sequenceBlocks = options.sequenceBlocks || [Factory.build(
-//     'block',
-//     { type: 'sequential', children: unitBlocks.map(block => block.id) },
-//     { courseId },
-//   )];
-//   const sectionBlocks = options.sectionBlocks || [Factory.build(
-//     'block',
-//     { type: 'chapter', children: sequenceBlocks.map(block => block.id) },
-//     { courseId },
-//   )];
-//   const courseBlock = options.courseBlock || Factory.build(
-//     'block',
-//     { type: 'course', display_name: title, children: sectionBlocks.map(block => block.id) },
-//     { courseId },
-//   );
-//   return {
-//     courseBlocks: options.courseBlocks || Factory.build(
-//       'courseBlocks',
-//       {
-//         courseId,
-//         hasScheduledContent: options.hasScheduledContent || false,
-//         title,
-//       },
-//       {
-//         units: unitBlocks,
-//         sequences: sequenceBlocks,
-//         sections: sectionBlocks,
-//         course: courseBlock,
-//       },
-//     ),
-//     unitBlocks,
-//     sequenceBlocks,
-//     sectionBlocks,
-//     courseBlock,
-//   };
-// }
+/**
+ * Builds a course with a single chapter, sequence, and unit.
+ */
+export function buildSimpleCourseBlocks(courseId, title, options = {}) {
+  const unitBlocks = options.unitBlocks || [Factory.build(
+    'block',
+    { type: 'vertical' },
+    { courseId },
+  )];
+  const sequenceBlocks = options.sequenceBlocks || [Factory.build(
+    'block',
+    { type: 'sequential', children: unitBlocks.map(block => block.id) },
+    { courseId },
+  )];
+  const sectionBlocks = options.sectionBlocks || [Factory.build(
+    'block',
+    { type: 'chapter', children: sequenceBlocks.map(block => block.id) },
+    { courseId },
+  )];
+  const courseBlock = options.courseBlock || Factory.build(
+    'block',
+    { type: 'course', display_name: title, children: sectionBlocks.map(block => block.id) },
+    { courseId },
+  );
+  return {
+    courseBlocks: options.courseBlocks || Factory.build(
+      'courseBlocks',
+      {
+        courseId,
+        hasScheduledContent: options.hasScheduledContent || false,
+        title,
+      },
+      {
+        units: unitBlocks,
+        sequences: sequenceBlocks,
+        sections: sectionBlocks,
+        course: courseBlock,
+      },
+    ),
+    unitBlocks,
+    sequenceBlocks,
+    sectionBlocks,
+    courseBlock,
+  };
+}
 
 /**
  * Builds a course with a single chapter and sequence, but no units.
