@@ -48,12 +48,20 @@ describe('PathwayGrades', () => {
     expect(row.queryByText('0%', { selector: '.text-danger' })).not.toBeInTheDocument();
   });
 
+  it('names the column of the details links for assistive technologies only', () => {
+    renderComponent();
+
+    const header = screen.getByRole('columnheader', { name: 'Actions' });
+    expect(within(header).getByText('Actions')).toHaveClass('sr-only');
+  });
+
   it('links each course to its grade details', () => {
     renderComponent();
 
     grades.forEach(({ displayName, detailsUrl }) => {
-      expect(within(getRow(displayName)).getByRole('link', { name: 'View details' }))
-        .toHaveAttribute('href', detailsUrl);
+      const link = within(getRow(displayName)).getByRole('link', { name: `View details for ${displayName}` });
+      expect(link).toHaveAttribute('href', detailsUrl);
+      expect(link).toHaveTextContent('View details');
     });
   });
 });

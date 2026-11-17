@@ -9,10 +9,11 @@ import messages from './messages';
 
 export interface AchievementsInfoProps {
   pathwayId: string;
+  categoryLabel: string;
   hasAchievements: boolean;
 }
 
-export const AchievementsInfo = ({ pathwayId, hasAchievements }: AchievementsInfoProps) => {
+export const AchievementsInfo = ({ pathwayId, categoryLabel, hasAchievements }: AchievementsInfoProps) => {
   const title = hasAchievements ? messages.achievementsInfoTitle : messages.achievementsInfoEmptyTitle;
   const description = hasAchievements
     ? messages.achievementsInfoDescription
@@ -24,7 +25,7 @@ export const AchievementsInfo = ({ pathwayId, hasAchievements }: AchievementsInf
         <FormattedMessage {...title} />
       </p>
       <p className="small">
-        <FormattedMessage {...description} />
+        <FormattedMessage {...description} values={{ categoryLabel }} />
       </p>
       {hasAchievements && (
         <Button

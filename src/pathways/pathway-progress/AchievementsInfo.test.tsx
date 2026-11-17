@@ -7,7 +7,7 @@ import { AchievementsInfo } from './AchievementsInfo';
 const renderComponent = (hasAchievements: boolean) => render(
   <IntlProvider locale="en">
     <MemoryRouter>
-      <AchievementsInfo pathwayId="pathway-1" hasAchievements={hasAchievements} />
+      <AchievementsInfo pathwayId="pathway-1" categoryLabel="Bootcamp" hasAchievements={hasAchievements} />
     </MemoryRouter>
   </IntlProvider>,
 );
@@ -17,6 +17,9 @@ describe('AchievementsInfo', () => {
     renderComponent(true);
 
     expect(screen.getByText('Achievements available')).toBeInTheDocument();
+    expect(screen.getByText(
+      "Showcase your certificates on LinkedIn, or your resume today. Access your Bootcamp's achievements below.",
+    )).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'View achievements' }))
       .toHaveAttribute('href', '/pathway/pathway-1/achievements');
   });

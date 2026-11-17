@@ -46,15 +46,19 @@ export const PathwayProgress = () => {
                 total={itemCount ?? 0}
                 completed={completedItemCount ?? 0}
               />
-              <h1>
+              <h2 className="h1">
                 <FormattedMessage {...messages.gradesTitle} />
-              </h1>
+              </h2>
               <PathwayGrades grades={grades ?? []} />
             </Stack>
           </Col>
 
           <Col xs={12} md={4} className="p-0 pl-md-4">
-            <AchievementsInfo pathwayId={pathwayId!} hasAchievements={hasAchievements} />
+            <AchievementsInfo
+              pathwayId={pathwayId!}
+              categoryLabel={categoryLabel ?? ''}
+              hasAchievements={hasAchievements}
+            />
           </Col>
         </Row>
       </Stack>

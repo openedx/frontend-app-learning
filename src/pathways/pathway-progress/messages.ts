@@ -31,10 +31,20 @@ const messages = defineMessages({
     defaultMessage: 'Current Grade',
     description: 'Label for the Current Grade column in the grades table',
   },
+  gradesActionsColumn: {
+    id: 'learning.pathways.progress.grades.table.actions',
+    defaultMessage: 'Actions',
+    description: 'Accessible label for the column of the grades table with the View details links. It is not shown on screen',
+  },
   gradesViewDetails: {
     id: 'learning.pathways.progress.grades.table.view-details',
     defaultMessage: 'View details',
-    description: 'Label for the Viewd details links in the grades table',
+    description: 'Label for the View details links in the grades table',
+  },
+  gradesViewDetailsFor: {
+    id: 'learning.pathways.progress.grades.table.view-details-for',
+    defaultMessage: 'View details for {courseName}',
+    description: 'Accessible label for the View details links in the grades table',
   },
   achievementsInfoEmptyTitle: {
     id: 'learning.pathways.progress.achievements-info.empty.title',
@@ -43,7 +53,7 @@ const messages = defineMessages({
   },
   achievementsInfoEmptyDescription: {
     id: 'learning.pathways.progress.achievements-info.empty.description',
-    defaultMessage: 'No certificates earned yet. ',
+    defaultMessage: 'No certificates earned yet.',
     description: 'Description of the empty state of the achievements info card',
   },
   achievementsInfoTitle: {
@@ -53,7 +63,7 @@ const messages = defineMessages({
   },
   achievementsInfoDescription: {
     id: 'learning.pathways.progress.achievements-info.description',
-    defaultMessage: "Showcase your certificates on LinkedIn, or your resume today. Access your bootcamp's achievements below.",
+    defaultMessage: "Showcase your certificates on LinkedIn, or your resume today. Access your {categoryLabel}'s achievements below.",
     description: 'Description of the achievements info card',
   },
   achievementsInfoButton: {

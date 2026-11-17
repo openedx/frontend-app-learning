@@ -15,7 +15,7 @@ describe('PathwayCompletion', () => {
 
     expect(screen.getByRole('heading', { name: 'Bootcamp completion' })).toBeInTheDocument();
     expect(
-      screen.getByText('This represents how many courses you have completed in this Bootcamp.'),
+      screen.getByText('This represents how many items you have completed in this Bootcamp.'),
     ).toBeInTheDocument();
   });
 });

@@ -1,7 +1,7 @@
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { DataTable } from '@openedx/paragon';
 
-import { GradeData } from '@src/pathways/data/types';
+import type { GradeData } from '@src/pathways/data/types';
 
 import { Link } from 'react-router-dom';
 import messages from './messages';
@@ -33,11 +33,18 @@ const CurrentGradeCell = ({ value, row }: { value: number, row: { original: Grad
   );
 };
 
-const DetailsCell = ({ row }: { row: { original: GradeData } }) => (
-  <Link to={row.original.detailsUrl}>
-    <FormattedMessage {...messages.gradesViewDetails} />
-  </Link>
-);
+// Every row shows the same link text, so the accessible name includes the course to tell them apart.
+const DetailsCell = ({ row }: { row: { original: GradeData } }) => {
+  const intl = useIntl();
+  return (
+    <Link
+      to={row.original.detailsUrl}
+      aria-label={intl.formatMessage(messages.gradesViewDetailsFor, { courseName: row.original.displayName })}
+    >
+      <FormattedMessage {...messages.gradesViewDetails} />
+    </Link>
+  );
+};
 
 export const PathwayGrades = ({ grades }: { grades: GradeData[] }) => {
   const intl = useIntl();
@@ -70,6 +77,7 @@ export const PathwayGrades = ({ grades }: { grades: GradeData[] }) => {
       additionalColumns={[
         {
           id: 'action',
+          Header: <span className="sr-only">{intl.formatMessage(messages.gradesActionsColumn)}</span>,
           Cell: DetailsCell,
         },
       ]}

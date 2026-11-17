@@ -18,7 +18,7 @@ const messages = defineMessages({
   },
   completionDescription: {
     id: 'learning.pathways.progress.completion.description',
-    defaultMessage: 'This represents how many courses you have completed in this {categoryLabel}.',
+    defaultMessage: 'This represents how many items you have completed in this {categoryLabel}.',
     description: 'Description of the Completion section',
   },
 });
