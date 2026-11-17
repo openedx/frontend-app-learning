@@ -35,31 +35,6 @@ describe('routes', () => {
   });
 
   describe('courseware', () => {
-    it('renders at course/:courseId', async () => {
-      renderAt(`/course/${courseId}`);
-      await expectStub('courseware', { courseId });
-    });
-
-    it('renders at course/:courseId/:sequenceId with the sequence', async () => {
-      renderAt(`/course/${courseId}/seq`);
-      await expectStub('courseware', { courseId, sequenceId: 'seq' });
-    });
-
-    it('renders at course/:courseId/:sequenceId/:unitId with both ids', async () => {
-      renderAt(`/course/${courseId}/seq/unit`);
-      await expectStub('courseware', { courseId, sequenceId: 'seq', unitId: 'unit' });
-    });
-
-    it('renders at preview/course/:courseId/:sequenceId with the sequence', async () => {
-      renderAt(`/preview/course/${courseId}/seq`);
-      await expectStub('courseware', { courseId, sequenceId: 'seq' });
-    });
-
-    it('renders at preview/course/:courseId/:sequenceId/:unitId with both ids', async () => {
-      renderAt(`/preview/course/${courseId}/seq/unit`);
-      await expectStub('courseware', { courseId, sequenceId: 'seq', unitId: 'unit' });
-    });
-
     it('throws a 404 response at preview/course/:courseId, which the shell renders as not found', async () => {
       renderRoutes([{ errorElement: <RouteStatus />, children: routes }], `/learning/preview/course/${courseId}`);
       expect(await screen.findByText('status=404')).toBeInTheDocument();
@@ -110,11 +85,6 @@ describe('routes', () => {
     it.each([
       `/course/${courseId}/discussion/topics/abc`,
       `/course/${courseId}/live`,
-      `/course/${courseId}`,
-      `/course/${courseId}/seq`,
-      `/course/${courseId}/seq/unit`,
-      `/preview/course/${courseId}/seq`,
-      `/preview/course/${courseId}/seq/unit`,
       `/course/${courseId}/course-end`,
       `/course/${courseId}/access-denied`,
       '/goal-unsubscribe/tok',

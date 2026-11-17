@@ -43,7 +43,7 @@ export const useQueryErrorLogging = () => {
   useEffect(() => queryClient.getQueryCache().subscribe(logLearningQueryError), [queryClient]);
 };
 
-export const shouldRetryQuery = (failureCount: number, error: unknown): boolean => {
+export const shouldRetryQuery = (failureCount: number, error: Error): boolean => {
   if (isNonRetryable(error)) {
     return false;
   }

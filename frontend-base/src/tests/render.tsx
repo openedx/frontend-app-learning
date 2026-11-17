@@ -4,7 +4,9 @@ import {
 import { type QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render as rtlRender, type RenderOptions } from '@testing-library/react';
 import { type ReactElement, type ReactNode } from 'react';
-import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter, createMemoryRouter, MemoryRouter, RouterProvider,
+} from 'react-router-dom';
 
 import { ToastProvider } from '@src/generic/ToastContext';
 import { UserMessagesProvider } from '@src/generic/user-messages';
@@ -48,9 +50,8 @@ export const render = (ui: ReactElement, { wrapWithRouter = false, ...options }:
   return rtlRender(ui, { wrapper: Wrapper, ...options });
 };
 
-export const renderRoutes = (routes: RoleRouteObject[], path: string) => {
+const renderRouter = (router: ReturnType<typeof createMemoryRouter>) => {
   const queryClient = createTestQueryClient();
-  const router = createMemoryRouter(routes, { initialEntries: [path] });
   return {
     ...rtlRender(
       <IntlProvider locale="en" messages={{}}>
@@ -65,6 +66,13 @@ export const renderRoutes = (routes: RoleRouteObject[], path: string) => {
     router,
   };
 };
+
+export const renderRoutes = (routes: RoleRouteObject[], path: string) => (
+  renderRouter(createMemoryRouter(routes, { initialEntries: [path] }))
+);
+
+// Renders at the browser's own address, for a suite that asserts on it; a test sets the address before rendering.
+export const renderBrowserRoutes = (routes: RoleRouteObject[]) => renderRouter(createBrowserRouter(routes));
 
 // The route array with each page replaced by `page`, so a test renders the real layout routes and no page's requests.
 export const replacePages = (routes: RoleRouteObject[], page: ReactNode): RoleRouteObject[] => routes.map((route) => {
