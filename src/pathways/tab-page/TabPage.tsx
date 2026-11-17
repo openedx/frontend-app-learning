@@ -39,7 +39,7 @@ export const TabPage = ({
   const activeTabTitle = tabs.find((tab) => tab.tabId === activeTabSlug)?.title;
 
   const {
-    isLoading, isError, isDenied, errorDetails,
+    isPending, isError, isDenied, errorDetails,
   } = deriveView(pathwayStatus);
 
   if (isDenied) {
@@ -49,7 +49,7 @@ export const TabPage = ({
     // or a field in the returned data.
   }
 
-  const shouldRenderContent = !isLoading && !isError;
+  const shouldRenderContent = !isPending && !isError;
 
   const renderLoading = () => (
     <PageLoading srMessage={intl.formatMessage(messages.loading)} />
@@ -84,7 +84,7 @@ export const TabPage = ({
         courseOrg={provider?.name ?? ''}
         courseTitle={title}
       />
-      {isLoading && renderLoading()}
+      {isPending && renderLoading()}
       {shouldRenderContent && renderLoadedTabPage()}
       {isError && renderError()}
       <FooterSlot />

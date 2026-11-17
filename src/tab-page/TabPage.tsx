@@ -46,7 +46,7 @@ const TabPage = ({
   }: Partial<CourseHomeMeta> = courseStatus.metadataQuery.data ?? {};
 
   const {
-    isLoading, isError, isDenied, errorDetails,
+    isPending, isError, isDenied, errorDetails,
   } = deriveView(courseStatus, (metadata) => !!metadata.courseAccess?.hasAccess);
 
   if (isDenied) {
@@ -58,7 +58,7 @@ const TabPage = ({
 
   // The page renders once metadata resolves without error — loaded, or denied without a
   // redirect (the outline tab shows the page to denied learners).
-  const shouldRenderContent = !isLoading && !isError;
+  const shouldRenderContent = !isPending && !isError;
 
   const renderToast = () => (
     <Toast
@@ -112,7 +112,7 @@ const TabPage = ({
       {shouldRenderContent && renderSrOnlyTourButton()}
       <HeaderSlot courseOrg={org} courseNumber={number} courseTitle={title} />
       {shouldRenderContent && <CourseInfoStripSlot courseId={courseId} />}
-      {isLoading && renderLoading()}
+      {isPending && renderLoading()}
       {shouldRenderContent && renderLoadedTabPage()}
       {isError && renderError()}
       <FooterSlot />

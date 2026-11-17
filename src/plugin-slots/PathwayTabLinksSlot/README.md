@@ -14,7 +14,11 @@ By default, it renders a link for each of the pathway tabs and highlights the ac
 
 ## Example
 
+### Default content
+![Pathway tab links slot with default content](./screenshot_default.png)
+
 ### Added link to Pathway Tabs
+![Pathway tab links slot with a custom tab](./screenshot_custom.png)
 
 The following `env.config.jsx` will add a new pathway tab called "Custom Tab".
 

@@ -139,19 +139,25 @@ subscribe(APP_READY, () => {
                         <Route
                           path={DECODE_ROUTES.PATHWAY_OUTLINE}
                           element={(
-                            <PathwayOutline />
+                            <DecodePageRoute>
+                              <PathwayOutline />
+                            </DecodePageRoute>
                           )}
                         />
                         <Route
                           path={DECODE_ROUTES.PATHWAY_PROGRESS}
                           element={(
-                            <PathwayProgress />
+                            <DecodePageRoute>
+                              <PathwayProgress />
+                            </DecodePageRoute>
                           )}
                         />
                         <Route
                           path={DECODE_ROUTES.PATHWAY_ACHIEVEMENTS}
                           element={(
-                            <PathwayAchievements />
+                            <DecodePageRoute>
+                              <PathwayAchievements />
+                            </DecodePageRoute>
                           )}
                         />
                       </Routes>

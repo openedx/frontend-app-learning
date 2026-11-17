@@ -24,4 +24,12 @@ describe('PathwayTabLinksList', () => {
     expect(screen.getByRole('link', { name: 'Home' })).not.toHaveClass('active');
     expect(screen.getByRole('link', { name: 'Achievements' })).not.toHaveClass('active');
   });
+
+  it('marks only the active tab as the current page', () => {
+    render(<PathwayTabLinksList tabs={tabs} activeTabSlug="progress" />, { wrapper: MemoryRouter });
+
+    expect(screen.getByRole('link', { name: 'Progress' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Achievements' })).not.toHaveAttribute('aria-current');
+  });
 });

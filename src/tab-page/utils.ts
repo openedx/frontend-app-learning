@@ -12,7 +12,7 @@ export type TabStatus<TMetadata> = {
 );
 
 export interface TabView {
-  isLoading: boolean;
+  isPending: boolean;
   isError: boolean;
   isDenied: boolean;
   errorDetails?: string[];
@@ -29,7 +29,7 @@ export const deriveView = <TMetadata>(
   status: TabStatus<TMetadata>,
   hasAccess: (metadata: TMetadata) => boolean = () => true,
 ): TabView => {
-  const view = { isLoading: false, isError: false, isDenied: false };
+  const view = { isPending: false, isError: false, isDenied: false };
 
   // Access is read from the metadata query, resolved before tabData is considered.
   const {
@@ -40,8 +40,8 @@ export const deriveView = <TMetadata>(
   if (metadataQuery.isError) {
     return { ...view, isError: true, errorDetails: getErrorDetails([metadataQuery]) };
   }
-  if (metadataQuery.isPending) { return { ...view, isLoading: true }; }
-  if (tabDataQueries.some((query) => query.isPending)) { return { ...view, isLoading: true }; }
+  if (metadataQuery.isPending) { return { ...view, isPending: true }; }
+  if (tabDataQueries.some((query) => query.isPending)) { return { ...view, isPending: true }; }
   if (!metadataQuery.data || !hasAccess(metadataQuery.data)) { return { ...view, isDenied: true }; }
   const failedQueries = tabDataQueries.filter((query) => query.isError);
   if (failedQueries.length > 0) {
