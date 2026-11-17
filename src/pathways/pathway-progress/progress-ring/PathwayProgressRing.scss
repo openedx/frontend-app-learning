@@ -1,0 +1,27 @@
+.learning-pathway-progress-ring {
+  .progress-ring-track,
+  .progress-ring-segment {
+    fill: transparent;
+    stroke-width: 6px;
+  }
+
+  .progress-ring-track {
+    stroke: var(--pgn-color-light-400);
+  }
+
+  .progress-ring-segment {
+    stroke: var(--pgn-color-primary-500);
+  }
+
+  // Small rings, shown next to a value, need a thicker stroke to stay visible.
+  &.learning-pathway-progress-ring-sm {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+
+    .progress-ring-track,
+    .progress-ring-segment {
+      stroke-width: 9px;
+    }
+  }
+}
