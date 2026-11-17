@@ -1,0 +1,16 @@
+.learning-pathway-tabs-navigation {
+  border-bottom: var(--pgn-size-border-width) solid var(--pgn-color-nav-tabs-base-border-base);
+
+  .nav a,
+  .nav button {
+    &:hover {
+      background-color: var(--pgn-color-light-400);
+    }
+  }
+
+  .nav a {
+    &:not(.active):hover {
+      border-bottom: none;
+    }
+  }
+}
