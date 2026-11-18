@@ -21,7 +21,7 @@ failOnConsole({
       /^⚠️ React Router Future Flag Warning: .*`v7_startTransition`/,
       /^⚠️ React Router Future Flag Warning: .*`v7_relativeSplatPath`/,
       // https://github.com/openedx/paragon/issues/3043
-      /^Warning: (CollapsibleBody|CollapsibleTrigger|CollapsibleVisible|DataTable|DataTableLayout|PopoverContent|Table|TableFooter): Support for defaultProps will be removed from function components/,
+      /^Warning: (AlertModal|CollapsibleBody|CollapsibleTrigger|CollapsibleVisible|DataTable|DataTableLayout|ModalDialogBody|ModalDialogFooter|ModalDialogTitle|PopoverContent|Table|TableFooter): Support for defaultProps will be removed from function components/,
       // https://github.com/openedx/paragon/issues/4523
       /^Warning: (Overlay|OverlayTrigger): Support for defaultProps will be removed from function components/,
       // https://github.com/openedx/paragon/issues/3425
