@@ -11,9 +11,11 @@ import userEvent from '@testing-library/user-event';
 import MockAdapter from 'axios-mock-adapter';
 
 import { appId } from '@src/constants';
+import { coursewareMetadataQuery } from '@src/courseware/data/apiHooks';
 import routes from '@src/routes';
 import { authenticatedUser } from '@src/tests/authenticatedUser';
 import { mockLocation, preventNavigation } from '@src/tests/location';
+import { seedQueryData } from '@src/tests/queryClient';
 import { renderRoutes } from '@src/tests/render';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import messages from './grades/messages';
@@ -38,6 +40,7 @@ describe('Progress Tab', () => {
   const progressUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/course_home/progress/*`);
   const masqueradeUrl = `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/masquerade`;
   const datesUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/dates/${courseId}`;
+  const coursewareMetadataUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/courseware/course/*`);
   const now = new Date();
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
   const overmorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
@@ -1517,6 +1520,33 @@ describe('Progress Tab', () => {
       await fetchAndRender(`${progressPath}/10`);
 
       expect(screen.getByText('Course progress for otherstudent')).toBeInTheDocument();
+    });
+  });
+
+  describe('Entrance exam status', () => {
+    const paths = [progressPath, `${progressPath}/10`];
+
+    beforeAll(() => {
+      global.innerWidth = breakpoints.large.minWidth;
+    });
+
+    beforeEach(() => {
+      setMetadata({ is_enrolled: true });
+    });
+
+    it.each(paths)('requests no courseware metadata at %s', async (path) => {
+      await fetchAndRender(path);
+
+      expect(axiosMock.history.get.filter(({ url }) => coursewareMetadataUrl.test(url))).toHaveLength(0);
+    });
+
+    it.each(paths)('shows the certificate card at %s when the query cache holds a failed entrance exam', async (path) => {
+      const queryClient = await fetchAndRender(path, { waitForLoaded: false });
+      seedQueryData(queryClient, coursewareMetadataQuery(courseId).queryKey, {
+        entranceExamData: { entranceExamEnabled: true, entranceExamPassed: false },
+      });
+
+      expect(await screen.findByTestId('certificate-status-component')).toBeInTheDocument();
     });
   });
 

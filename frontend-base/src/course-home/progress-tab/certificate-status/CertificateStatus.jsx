@@ -6,7 +6,6 @@ import {
 import { Button, Card } from '@openedx/paragon';
 import { useParams } from 'react-router-dom';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
-import { useCoursewareMetadata } from '../../../courseware/data/apiHooks';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import { useCourseHomeMeta, useRequestCert } from '../../data/apiHooks';
 import { useProgressData } from '../hooks';
@@ -16,10 +15,6 @@ import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertifi
 const CertificateStatus = () => {
   const intl = useIntl();
   const { courseId } = useParams();
-
-  const {
-    entranceExamData,
-  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
 
   const {
     isEnrolled,
@@ -44,8 +39,6 @@ const CertificateStatus = () => {
     certificateAvailableDate,
   } = certificateData || {};
 
-  const entranceExamPassed = entranceExamData?.entranceExamPassed ?? null;
-
   const mode = getCourseExitMode(
     certificateData,
     hasScheduledContent,
@@ -53,7 +46,7 @@ const CertificateStatus = () => {
     userHasPassingGrade,
     null, // CourseExitPageIsActive
     canViewCertificate,
-    entranceExamPassed,
+    // entranceExamPassed, // https://github.com/openedx/frontend-app-learning/issues/2243
   );
 
   const eventProperties = {

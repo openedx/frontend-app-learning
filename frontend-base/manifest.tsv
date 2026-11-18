@@ -96,6 +96,11 @@ src/course-tabs/utils.ts	frontend-base/src/course-tabs/utils.ts
 src/courseware/course/course-exit/messages.ts	frontend-base/src/courseware/course/course-exit/messages.ts
 src/courseware/course/course-exit/utils.js	frontend-base/src/courseware/course/course-exit/utils.js
 src/courseware/course/course-exit/utils.test.ts	frontend-base/src/courseware/course/course-exit/utils.test.ts
+src/courseware/data/apiHooks.ts	frontend-base/src/courseware/data/apiHooks.ts
+src/courseware/data/api.js	frontend-base/src/courseware/data/api.js
+src/courseware/data/coursewareMeta.ts	frontend-base/src/courseware/data/coursewareMeta.ts
+src/courseware/data/__factories__/courseMetadata.factory.js	frontend-base/src/courseware/data/__factories__/courseMetadata.factory.js
+src/courseware/data/__factories__/index.js	frontend-base/src/courseware/data/__factories__/index.js
 src/data/http-error.ts	frontend-base/src/data/http-error.ts
 src/data/localStorage.js	frontend-base/src/data/localStorage.js
 src/generic/messages.ts	frontend-base/src/generic/messages.ts
