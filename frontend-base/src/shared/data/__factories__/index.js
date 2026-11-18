@@ -1,4 +1,4 @@
-// import './block.factory'; // https://github.com/openedx/frontend-app-learning/issues/2191
-// import './courseBlocks.factory'; // https://github.com/openedx/frontend-app-learning/issues/2191
+import './block.factory';
+import './courseBlocks.factory';
 import './courseMetadataBase.factory';
 import './tab.factory';

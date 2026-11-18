@@ -1,4 +1,6 @@
-import { ErrorBoundary, IntlProvider, type RoleRouteObject } from '@openedx/frontend-base';
+import {
+  ErrorBoundary, getAuthenticatedUser, getSiteConfig, IntlProvider, type RoleRouteObject, SiteContext,
+} from '@openedx/frontend-base';
 import { type QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render as rtlRender, type RenderOptions } from '@testing-library/react';
 import { type ReactElement, type ReactNode } from 'react';
@@ -9,16 +11,25 @@ import { UserMessagesProvider } from '@src/generic/user-messages';
 
 import { createTestQueryClient } from './queryClient';
 
+// The shell's SiteProvider supplies this context; its default holds no authenticated user.
+const SiteContextProvider = ({ children }: { children: ReactNode }) => (
+  <SiteContext.Provider value={{ authenticatedUser: getAuthenticatedUser(), siteConfig: getSiteConfig(), locale: 'en' }}>
+    {children}
+  </SiteContext.Provider>
+);
+
 const Providers = ({ queryClient, children }: { queryClient: QueryClient; children: ReactNode }) => (
   <IntlProvider locale="en" messages={{}}>
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <UserMessagesProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </UserMessagesProvider>
-      </QueryClientProvider>
+      <SiteContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <UserMessagesProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </UserMessagesProvider>
+        </QueryClientProvider>
+      </SiteContextProvider>
     </ErrorBoundary>
   </IntlProvider>
 );
@@ -43,9 +54,11 @@ export const renderRoutes = (routes: RoleRouteObject[], path: string) => {
   return {
     ...rtlRender(
       <IntlProvider locale="en" messages={{}}>
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>
+        <SiteContextProvider>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </SiteContextProvider>
       </IntlProvider>,
     ),
     queryClient,

@@ -1,0 +1,58 @@
+import React from 'react';
+import { FormattedTime, useIntl } from '@openedx/frontend-base';
+import { useParams } from 'react-router-dom';
+import { useCourseHomeMeta } from '../../data/apiHooks';
+
+import messages from '../messages';
+
+interface Props {
+  due: string | null;
+  id: string;
+  description: string | null;
+}
+
+const SequenceDueDate: React.FC<Props> = ({
+  due,
+  id,
+  description,
+}) => {
+  const intl = useIntl();
+  const { courseId } = useParams();
+  let dueDateMessage: string | React.ReactNode = intl.formatMessage(
+    messages.sequenceNoDueDate,
+    { description: description || '' },
+  );
+  const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
+
+  if (due) {
+    const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
+
+    dueDateMessage = intl.formatMessage(
+      messages.sequenceDueDate,
+      {
+        assignmentDue: (
+          <FormattedTime
+            key={`${id}-due`}
+            day="numeric"
+            month="short"
+            year="numeric"
+            timeZoneName="short"
+            value={due}
+            {...timezoneFormatArgs}
+          />
+        ),
+        description: description || '',
+      },
+    );
+  }
+
+  return (
+    <div className="row w-100 m-0 ml-3 pl-3">
+      <small className="text-body pl-2">
+        {dueDateMessage}
+      </small>
+    </div>
+  );
+};
+
+export default SequenceDueDate;
