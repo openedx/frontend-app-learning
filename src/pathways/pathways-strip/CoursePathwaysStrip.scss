@@ -18,9 +18,10 @@
     }
   }
 
-  // "+N" trigger, separated from the labels by a vertical line
+  // "+N" trigger, right after the last visible label and separated from it by a vertical line
   .course-pathways-strip-trigger {
     flex-shrink: 0;
+    margin-inline-start: 0.75rem;
     padding-top: 0;
     padding-bottom: 0;
     border-inline-start: 1px solid var(--pgn-color-light-700);

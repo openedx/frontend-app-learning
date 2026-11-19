@@ -2,8 +2,9 @@ import { useLayoutEffect, useRef, useState } from 'react';
 
 import type { PathwayData } from '../data/types';
 
-// Width kept free at the end of the strip for the "+N" popover trigger
-const COUNTER_RESERVED_WIDTH = 74;
+// Width kept free after the last visible label for the "+N" popover trigger, including its
+// 0.75rem (12px) start margin
+const COUNTER_RESERVED_WIDTH = 86;
 
 /**
  * Splits the course pathways into the ones that fit in the strip and the ones that go to the
