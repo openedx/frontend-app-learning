@@ -10,6 +10,7 @@ import {
   useSequenceIds,
   useSequenceMetadata,
 } from './data/apiHooks';
+import { isRouteInCourse } from './data/courseKeys';
 import CoursewareRedirects from './CoursewareRedirects';
 import { TabPage } from '../tab-page';
 
@@ -28,7 +29,9 @@ const CoursewareContainer = () => {
 
   const coursewareMetadataQuery = useCoursewareMetadata(courseId);
   const courseHomeMetaQuery = useCourseHomeMeta(courseId);
-  const sequenceQuery = useSequenceMetadata(sequenceId);
+  // Nothing of another course is loaded here; CoursewareRedirects drops its IDs from the URL.
+  const isRouteOfCourse = isRouteInCourse(courseId, sequenceId, routeUnitId);
+  const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: isRouteOfCourse });
   const isSequenceLoaded = sequenceQuery.isSuccess;
 
   const sequence = sequenceQuery.data?.sequence ?? null;
