@@ -45,3 +45,13 @@ export async function postMasqueradeOptions(courseId: string, payload: Payload):
   const { data } = await getAuthenticatedHttpClient().post(url.href, payload);
   return camelCaseObject(data);
 }
+
+export function reloadAfterMasqueradeChange() {
+  const { pathname, search, hash } = global.location;
+  const progressPath = pathname.replace(/(\/course\/[^/]+\/progress)\/[^/]+\/?$/, '$1');
+  if (progressPath === pathname) {
+    global.location.reload();
+  } else {
+    global.location.assign(`${progressPath}${search}${hash}`);
+  }
+}
