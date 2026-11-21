@@ -2,7 +2,7 @@ import { appId } from '@src/constants';
 import { skipToken, useQuery } from '@tanstack/react-query';
 
 import {
-  getPathway, getPathwayAchievements, getPathwayProgress, getPathwaysByCourse,
+  getPathway, getPathwayAchievements, getPathwayItems, getPathwayProgress, getPathwaysByCourse,
 } from './api';
 import type { PathwayData } from './types';
 
@@ -16,6 +16,7 @@ export const pathwayQueryKeys = {
   pathway: (pathwayId: string) => [...pathwayQueryKeys.all, pathwayId] as const,
   progress: (pathwayId: string) => [...pathwayQueryKeys.pathway(pathwayId), 'progress'] as const,
   achievements: (pathwayId: string) => [...pathwayQueryKeys.pathway(pathwayId), 'achievements'] as const,
+  items: (pathwayId: string) => [...pathwayQueryKeys.pathway(pathwayId), 'items'] as const,
 };
 
 // Pathways in which the learner is enrolled that include the given course.
@@ -41,4 +42,10 @@ export const usePathwayProgress = (pathwayId?: string) => useQuery({
 export const usePathwayAchievements = (pathwayId?: string) => useQuery({
   queryKey: pathwayQueryKeys.achievements(pathwayId!),
   queryFn: pathwayId ? () => getPathwayAchievements(pathwayId) : skipToken,
+});
+
+// The items of the given pathway.
+export const usePathwayItems = (pathwayId?: string) => useQuery({
+  queryKey: pathwayQueryKeys.items(pathwayId!),
+  queryFn: pathwayId ? () => getPathwayItems(pathwayId) : skipToken,
 });

@@ -35,7 +35,7 @@ import DecodePageRoute from './decode-page-route';
 import { DECODE_ROUTES, ROUTES } from './constants';
 import PreferencesUnsubscribe from './preferences-unsubscribe';
 import PageNotFound from './generic/PageNotFound';
-import { PathwayOutline } from './pathways/PathwayOutline';
+import { PathwayOutline } from './pathways/pathway-outline/PathwayOutline';
 import { PathwayProgress } from './pathways/pathway-progress/PathwayProgress';
 import { PathwayAchievements } from './pathways/pathways-achievements/PathwayAchievements';
 

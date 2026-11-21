@@ -1,5 +1,5 @@
 import type {
-  PathwayAchievementData, PathwayData, PathwayProgressData, PathwaysByCourse,
+  PathwayAchievementData, PathwayData, PathwayItemData, PathwayProgressData, PathwaysByCourse,
 } from './types';
 
 // TODO The backend is missing.
@@ -37,4 +37,14 @@ export const getPathwayProgress = async (_pathwayId: string): Promise<PathwayPro
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getPathwayAchievements = async (_pathwayId: string): Promise<PathwayAchievementData[]> => {
   throw new Error('The pathway achievements backend is missing');
+};
+
+// TODO The backend is missing.
+// This endpoint should receive a pathway ID and return the items of that pathway, in order,
+// with the learner's status in each of them.
+// The response must be mapped here to the `PathwayItemData` shape.
+// Until then, every request fails.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getPathwayItems = async (_pathwayId: string): Promise<PathwayItemData[]> => {
+  throw new Error('The pathway items backend is missing');
 };

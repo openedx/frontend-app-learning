@@ -43,4 +43,20 @@ export interface PathwayAchievementData {
   isOverarching: boolean;
 }
 
+export interface PathwayItemData {
+  id: string;
+  displayName: string;
+  endDate: string;
+  hasCertificate: boolean;
+  type: 'course';
+  status: 'not-started' | 'in-progress' | 'not-passed' | 'passed';
+}
+
+export interface PathwayOutlineData {
+  items: PathwayItemData[];
+}
+
 export type PathwaysByCourse = Record<string, PathwayData[]>;
+export type PathwayItemType = PathwayItemData['type'];
+export type PathwayItemStatus = PathwayItemData['status'];
+export type StartedStatuses = Exclude<PathwayItemStatus, 'not-started'>;

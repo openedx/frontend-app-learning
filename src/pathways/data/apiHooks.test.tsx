@@ -2,10 +2,10 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import {
-  getPathway, getPathwayAchievements, getPathwayProgress, getPathwaysByCourse,
+  getPathway, getPathwayAchievements, getPathwayItems, getPathwayProgress, getPathwaysByCourse,
 } from './api';
 import {
-  useCoursePathways, usePathway, usePathwayAchievements, usePathwayProgress,
+  useCoursePathways, usePathway, usePathwayAchievements, usePathwayItems, usePathwayProgress,
 } from './apiHooks';
 import {
   courseIdWithPathways,
@@ -16,16 +16,19 @@ import {
   machineLearning,
   pathwaysByCourse,
 } from './__fixtures__/pathways';
+import { dataEngineeringItems } from './__fixtures__/pathwayItems';
 
 jest.mock('./api', () => ({
   getPathway: jest.fn(),
   getPathwayAchievements: jest.fn(),
+  getPathwayItems: jest.fn(),
   getPathwayProgress: jest.fn(),
   getPathwaysByCourse: jest.fn(),
 }));
 
 const mockGetPathway = getPathway as jest.MockedFunction<typeof getPathway>;
 const mockGetPathwayAchievements = getPathwayAchievements as jest.MockedFunction<typeof getPathwayAchievements>;
+const mockGetPathwayItems = getPathwayItems as jest.MockedFunction<typeof getPathwayItems>;
 const mockGetPathwayProgress = getPathwayProgress as jest.MockedFunction<typeof getPathwayProgress>;
 const mockGetPathwaysByCourse = getPathwaysByCourse as jest.MockedFunction<typeof getPathwaysByCourse>;
 
@@ -43,6 +46,7 @@ describe('course-pathways apiHooks', () => {
   beforeEach(() => {
     mockGetPathway.mockReset();
     mockGetPathwayAchievements.mockReset();
+    mockGetPathwayItems.mockReset();
     mockGetPathwayProgress.mockReset();
     mockGetPathwaysByCourse.mockReset();
   });
@@ -160,6 +164,29 @@ describe('course-pathways apiHooks', () => {
       expect(result.current.fetchStatus).toBe('idle');
       expect(result.current.data).toBeUndefined();
       expect(mockGetPathwayAchievements).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('usePathwayItems', () => {
+    const pathwayId = dataEngineering.pathway.id;
+
+    it('returns the items of the requested pathway', async () => {
+      mockGetPathwayItems.mockResolvedValue(dataEngineeringItems);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayItems(pathwayId), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(mockGetPathwayItems).toHaveBeenCalledWith(pathwayId);
+      expect(result.current.data).toEqual(dataEngineeringItems);
+    });
+
+    it('does not request anything without a pathway', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayItems(undefined), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockGetPathwayItems).not.toHaveBeenCalled();
     });
   });
 });
