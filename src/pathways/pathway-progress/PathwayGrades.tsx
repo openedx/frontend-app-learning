@@ -5,7 +5,7 @@ import type { GradeData } from '@src/pathways/data/types';
 
 import { Link } from 'react-router-dom';
 import messages from './messages';
-import { PathwayProgressRing } from './progress-ring/PathwayProgressRing';
+import { PathwayProgressRing } from '../progress-ring/PathwayProgressRing';
 
 // The cells are defined outside of `PathwayGrades` so React does not remount them on every render.
 const PercentCell = ({ value }: { value: number }) => {

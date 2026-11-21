@@ -1,6 +1,6 @@
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import messages from './messages';
-import { PathwayProgressDonut } from './PathwayProgressDonut';
+import { PathwayProgressDonut } from '../../progress-donut/PathwayProgressDonut';
 
 export interface PathwayCompletionProps {
   categoryLabel: string;
