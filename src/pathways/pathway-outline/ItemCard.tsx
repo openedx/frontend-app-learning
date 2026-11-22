@@ -1,8 +1,13 @@
-import { FormattedMessage } from "@edx/frontend-platform/i18n";
-import { ActionRow, Button, Card, Icon, Stack } from "@openedx/paragon";
+import { FormattedMessage, useIntl } from "@edx/frontend-platform/i18n";
+import {
+  ActionRow, Button, Card, Icon, IconButton, Stack, useToggle,
+} from "@openedx/paragon";
 import { PathwayItemData, StartedStatuses } from "pathways/data/types";
 import { messages, getItemMessage } from "./messages";
-import { Award, Flag, LaptopWindows } from "@openedx/paragon/icons";
+import {
+  Award, Flag, LaptopWindows, Minus, Plus,
+} from "@openedx/paragon/icons";
+import { CourseOutline } from "./course-outline/CourseOutline";
 
 const ITEM_STATUS_ICONS: Record<StartedStatuses, React.ComponentType> = {
   'in-progress': LaptopWindows,
@@ -50,19 +55,38 @@ const NotStartedItemCard = ({ item }: { item: PathwayItemData }) => (
 );
 
 const StartedItemCard = ({ item }: { item: PathwayItemData }) => {
+  const intl = useIntl();
+  const [isOpen, , , toggle] = useToggle(false);
+  const outlineId = `pathway-item-outline-${item.id}`;
+
   return (
-    <Card orientation='horizontal'>
-      <ItemCardTitleSection item={item} />
-      <Card.Footer className="w-auto flex-shrink-0">
-        <ActionRow>
-          <Stack gap={2} direction="horizontal">
-            <Icon className={ITEM_STATUS_COLORS[item.status]} src={ITEM_STATUS_ICONS[item.status]} />
-            <small>
-              <FormattedMessage {...messages[`itemStatusLabel-${item.status}`]} />
-            </small>
-          </Stack>
-        </ActionRow>
-      </Card.Footer>
+    <Card>
+      <Stack direction="horizontal">
+        <ItemCardTitleSection item={item} />
+        <Card.Footer className="w-auto flex-shrink-0">
+          <ActionRow>
+            <Stack gap={2} direction="horizontal">
+              <Icon className={ITEM_STATUS_COLORS[item.status]} src={ITEM_STATUS_ICONS[item.status]} />
+              <small>
+                <FormattedMessage {...messages[`itemStatusLabel-${item.status}`]} />
+              </small>
+            </Stack>
+            <IconButton
+              src={isOpen ? Minus : Plus}
+              iconAs={Icon}
+              alt={intl.formatMessage(isOpen ? messages.hideItemOutline : messages.showItemOutline)}
+              onClick={toggle}
+              aria-expanded={isOpen}
+              aria-controls={outlineId}
+            />
+          </ActionRow>
+        </Card.Footer>
+      </Stack>
+      {isOpen && (
+        <Card.Section id={outlineId} className="pt-0">
+          <CourseOutline courseId={item.id} />
+        </Card.Section>
+      )}
     </Card>
   );
 };

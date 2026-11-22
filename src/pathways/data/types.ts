@@ -53,6 +53,19 @@ export interface PathwayItemData {
   status: 'not-started' | 'in-progress' | 'not-passed' | 'passed';
 }
 
+export interface CourseSubsectionData {
+  id: string;
+  displayName: string;
+  complete: boolean;
+}
+
+export interface CourseSectionData {
+  id: string;
+  displayName: string;
+  complete: boolean;
+  subsections: CourseSubsectionData[];
+}
+
 export interface PathwayOutlineData {
   items: PathwayItemData[];
 }

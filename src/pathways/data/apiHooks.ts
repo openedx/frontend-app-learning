@@ -2,13 +2,23 @@ import { appId } from '@src/constants';
 import { skipToken, useQuery } from '@tanstack/react-query';
 
 import {
-  getPathway, getPathwayAchievements, getPathwayItems, getPathwayProgress, getPathwaysByCourse,
+  getCourseOutline,
+  getPathway,
+  getPathwayAchievements,
+  getPathwayItems,
+  getPathwayProgress,
+  getPathwaysByCourse,
 } from './api';
 import type { PathwayData } from './types';
 
 export const coursePathwaysQueryKeys = {
   all: [appId, 'coursePathways'] as const,
   course: (courseId: string) => [...coursePathwaysQueryKeys.all, courseId] as const,
+};
+
+export const courseOutlineQueryKeys = {
+  all: [appId, 'pathwayCourseOutline'] as const,
+  course: (courseId: string) => [...courseOutlineQueryKeys.all, courseId] as const,
 };
 
 export const pathwayQueryKeys = {
@@ -48,4 +58,10 @@ export const usePathwayAchievements = (pathwayId?: string) => useQuery({
 export const usePathwayItems = (pathwayId?: string) => useQuery({
   queryKey: pathwayQueryKeys.items(pathwayId!),
   queryFn: pathwayId ? () => getPathwayItems(pathwayId) : skipToken,
+});
+
+// The sections of the given course of a pathway, with their subsections.
+export const useCourseOutline = (courseId?: string) => useQuery({
+  queryKey: courseOutlineQueryKeys.course(courseId!),
+  queryFn: courseId ? () => getCourseOutline(courseId) : skipToken,
 });

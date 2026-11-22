@@ -1,5 +1,10 @@
 import {
-  getPathway, getPathwayAchievements, getPathwayItems, getPathwayProgress, getPathwaysByCourse,
+  getCourseOutline,
+  getPathway,
+  getPathwayAchievements,
+  getPathwayItems,
+  getPathwayProgress,
+  getPathwaysByCourse,
 } from './api';
 
 describe('course-pathways api', () => {
@@ -35,6 +40,13 @@ describe('course-pathways api', () => {
     // Until the backend exists, every request fails
     it('fails', async () => {
       await expect(getPathwayItems('pathway-1')).rejects.toThrow();
+    });
+  });
+
+  describe('getCourseOutline', () => {
+    // Until the backend exists, every request fails
+    it('fails', async () => {
+      await expect(getCourseOutline('course-v1:edX+DE102+2026')).rejects.toThrow();
     });
   });
 });

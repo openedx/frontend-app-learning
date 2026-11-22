@@ -34,6 +34,16 @@ export const messages = defineMessages({
     defaultMessage: 'About this {categoryLabel}',
     description: 'Link below the overview card to the catalog page that describes the pathway',
   },
+  showItemOutline: {
+    id: 'learning.pathways.outline.item.show-outline',
+    defaultMessage: 'Show outline',
+    description: 'Accessible label of the button that shows the sections of an item of the pathway',
+  },
+  hideItemOutline: {
+    id: 'learning.pathways.outline.item.hide-outline',
+    defaultMessage: 'Hide outline',
+    description: 'Accessible label of the button that hides the sections of an item of the pathway',
+  },
   'itemStatusLabel-in-progress': {
     id: 'learning.pathways.outline.item.in-progress',
     defaultMessage: 'In progress',

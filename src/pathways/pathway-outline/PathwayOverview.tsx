@@ -25,7 +25,6 @@ export const PathwayOverview = ({
         <FormattedMessage {...messages.overviewCompletedCount} values={{ completed, total }} />
       </p>
     </section>
-    {/* The details page lives in the catalog MFE, so it is a plain link instead of a router one */}
     {detailsUrl && (
       <Hyperlink
         destination={detailsUrl}

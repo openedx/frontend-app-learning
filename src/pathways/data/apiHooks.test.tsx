@@ -2,10 +2,20 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import {
-  getPathway, getPathwayAchievements, getPathwayItems, getPathwayProgress, getPathwaysByCourse,
+  getCourseOutline,
+  getPathway,
+  getPathwayAchievements,
+  getPathwayItems,
+  getPathwayProgress,
+  getPathwaysByCourse,
 } from './api';
 import {
-  useCoursePathways, usePathway, usePathwayAchievements, usePathwayItems, usePathwayProgress,
+  useCourseOutline,
+  useCoursePathways,
+  usePathway,
+  usePathwayAchievements,
+  usePathwayItems,
+  usePathwayProgress,
 } from './apiHooks';
 import {
   courseIdWithPathways,
@@ -17,8 +27,10 @@ import {
   pathwaysByCourse,
 } from './__fixtures__/pathways';
 import { dataEngineeringItems } from './__fixtures__/pathwayItems';
+import { dataPipelinesOutline } from './__fixtures__/courseOutline';
 
 jest.mock('./api', () => ({
+  getCourseOutline: jest.fn(),
   getPathway: jest.fn(),
   getPathwayAchievements: jest.fn(),
   getPathwayItems: jest.fn(),
@@ -26,6 +38,7 @@ jest.mock('./api', () => ({
   getPathwaysByCourse: jest.fn(),
 }));
 
+const mockGetCourseOutline = getCourseOutline as jest.MockedFunction<typeof getCourseOutline>;
 const mockGetPathway = getPathway as jest.MockedFunction<typeof getPathway>;
 const mockGetPathwayAchievements = getPathwayAchievements as jest.MockedFunction<typeof getPathwayAchievements>;
 const mockGetPathwayItems = getPathwayItems as jest.MockedFunction<typeof getPathwayItems>;
@@ -44,6 +57,7 @@ const buildWrapper = () => {
 
 describe('course-pathways apiHooks', () => {
   beforeEach(() => {
+    mockGetCourseOutline.mockReset();
     mockGetPathway.mockReset();
     mockGetPathwayAchievements.mockReset();
     mockGetPathwayItems.mockReset();
@@ -187,6 +201,29 @@ describe('course-pathways apiHooks', () => {
       expect(result.current.fetchStatus).toBe('idle');
       expect(result.current.data).toBeUndefined();
       expect(mockGetPathwayItems).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('useCourseOutline', () => {
+    const courseId = 'course-v1:edX+DE102+2026';
+
+    it('returns the sections of the requested course', async () => {
+      mockGetCourseOutline.mockResolvedValue(dataPipelinesOutline);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCourseOutline(courseId), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(mockGetCourseOutline).toHaveBeenCalledWith(courseId);
+      expect(result.current.data).toEqual(dataPipelinesOutline);
+    });
+
+    it('does not request anything without a course', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCourseOutline(undefined), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockGetCourseOutline).not.toHaveBeenCalled();
     });
   });
 });
