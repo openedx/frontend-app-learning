@@ -18,6 +18,22 @@ export const messages = defineMessages({
     defaultMessage: 'Complete {count, plural, one {this course} other {these # courses}} in any order',
     description: 'Instruction to complete the courses of the pathway in any order',
   },
+  overviewTitle: {
+    id: 'learning.pathways.outline.overview.title',
+    defaultMessage: '{categoryLabel} overview',
+    description: 'Title of the card that shows how many items of the pathway the learner has completed',
+  },
+  // TODO: Same as `completeMessage`, it must change when the pathway includes items other than courses.
+  overviewCompletedCount: {
+    id: 'learning.pathways.outline.overview.completed-count',
+    defaultMessage: '{completed} of {total, plural, one {# course} other {# courses}}',
+    description: 'How many courses of the pathway the learner has completed, below the progress donut',
+  },
+  overviewDetailsLink: {
+    id: 'learning.pathways.outline.overview.details-link',
+    defaultMessage: 'About this {categoryLabel}',
+    description: 'Link below the overview card to the catalog page that describes the pathway',
+  },
   'itemStatusLabel-in-progress': {
     id: 'learning.pathways.outline.item.in-progress',
     defaultMessage: 'In progress',

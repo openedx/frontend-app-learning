@@ -1,0 +1,8 @@
+// From `lg` the overview column keeps a fixed width, narrower than the 3 grid columns,
+// and the items column takes the rest.
+.learning-pathway-outline-sidebar {
+  @media (--pgn-size-breakpoint-min-width-lg) {
+    flex: 0 0 300px;
+    max-width: 300px;
+  }
+}
