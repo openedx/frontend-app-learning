@@ -1,0 +1,165 @@
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+import {
+  getPathway, getPathwayAchievements, getPathwayProgress, getPathwaysByCourse,
+} from './api';
+import {
+  useCoursePathways, usePathway, usePathwayAchievements, usePathwayProgress,
+} from './apiHooks';
+import {
+  courseIdWithPathways,
+  courseIdWithoutPathways,
+  dataEngineering,
+  dataEngineeringAchievements,
+  dataEngineeringProgress,
+  machineLearning,
+  pathwaysByCourse,
+} from './__fixtures__/pathways';
+
+jest.mock('./api', () => ({
+  getPathway: jest.fn(),
+  getPathwayAchievements: jest.fn(),
+  getPathwayProgress: jest.fn(),
+  getPathwaysByCourse: jest.fn(),
+}));
+
+const mockGetPathway = getPathway as jest.MockedFunction<typeof getPathway>;
+const mockGetPathwayAchievements = getPathwayAchievements as jest.MockedFunction<typeof getPathwayAchievements>;
+const mockGetPathwayProgress = getPathwayProgress as jest.MockedFunction<typeof getPathwayProgress>;
+const mockGetPathwaysByCourse = getPathwaysByCourse as jest.MockedFunction<typeof getPathwaysByCourse>;
+
+const buildWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  const wrapper = ({ children }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+  return { wrapper };
+};
+
+describe('course-pathways apiHooks', () => {
+  beforeEach(() => {
+    mockGetPathway.mockReset();
+    mockGetPathwayAchievements.mockReset();
+    mockGetPathwayProgress.mockReset();
+    mockGetPathwaysByCourse.mockReset();
+  });
+
+  describe('useCoursePathways', () => {
+    it('requests the pathways of the given course', async () => {
+      mockGetPathwaysByCourse.mockResolvedValue(pathwaysByCourse);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCoursePathways(courseIdWithPathways), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(mockGetPathwaysByCourse).toHaveBeenCalledWith([courseIdWithPathways]);
+    });
+
+    it('returns only the pathways of the given course', async () => {
+      mockGetPathwaysByCourse.mockResolvedValue(pathwaysByCourse);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCoursePathways(courseIdWithPathways), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual([dataEngineering, machineLearning]);
+    });
+
+    it('returns an empty list when the course has no pathways', async () => {
+      mockGetPathwaysByCourse.mockResolvedValue(pathwaysByCourse);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCoursePathways(courseIdWithoutPathways), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual([]);
+    });
+
+    it('does not request anything without a course', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCoursePathways(undefined), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockGetPathwaysByCourse).not.toHaveBeenCalled();
+    });
+
+    it('exposes the error when the request fails', async () => {
+      mockGetPathwaysByCourse.mockRejectedValue(new Error('network error'));
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useCoursePathways(courseIdWithPathways), { wrapper });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(result.current.data).toBeUndefined();
+    });
+  });
+
+  describe('usePathway', () => {
+    const pathwayId = dataEngineering.pathway.id;
+
+    it('returns the requested pathway', async () => {
+      mockGetPathway.mockResolvedValue(dataEngineering);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathway(pathwayId), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(mockGetPathway).toHaveBeenCalledWith(pathwayId);
+      expect(result.current.data).toEqual(dataEngineering);
+    });
+
+    it('does not request anything without a pathway', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathway(undefined), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockGetPathway).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('usePathwayProgress', () => {
+    const pathwayId = dataEngineeringProgress.id;
+
+    it('returns the progress in the requested pathway', async () => {
+      mockGetPathwayProgress.mockResolvedValue(dataEngineeringProgress);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayProgress(pathwayId), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(mockGetPathwayProgress).toHaveBeenCalledWith(pathwayId);
+      expect(result.current.data).toEqual(dataEngineeringProgress);
+    });
+
+    it('does not request anything without a pathway', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayProgress(undefined), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockGetPathwayProgress).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('usePathwayAchievements', () => {
+    const pathwayId = dataEngineering.pathway.id;
+
+    it('returns the achievements earned in the requested pathway', async () => {
+      mockGetPathwayAchievements.mockResolvedValue(dataEngineeringAchievements);
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayAchievements(pathwayId), { wrapper });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(mockGetPathwayAchievements).toHaveBeenCalledWith(pathwayId);
+      expect(result.current.data).toEqual(dataEngineeringAchievements);
+    });
+
+    it('does not request anything without a pathway', () => {
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => usePathwayAchievements(undefined), { wrapper });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockGetPathwayAchievements).not.toHaveBeenCalled();
+    });
+  });
+});
