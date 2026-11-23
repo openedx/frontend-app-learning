@@ -93,6 +93,15 @@ describe('<CourseOutlineTray />', () => {
     expect(screen.getByText(unit.title)).toBeInTheDocument();
   });
 
+  it('exposes aria-expanded=true on the in-tray toggle button', async () => {
+    await initTestData();
+    renderWithProvider();
+    await waitForOutlineLoaded();
+
+    expect(collapseButton()).toHaveAttribute('aria-expanded', 'true');
+    expect(collapseButton()).toHaveAttribute('aria-controls', 'outline-sidebar-outline');
+  });
+
   it('collapses sidebar correctly when toggle button is clicked', async () => {
     const user = userEvent.setup();
     await initTestData();
