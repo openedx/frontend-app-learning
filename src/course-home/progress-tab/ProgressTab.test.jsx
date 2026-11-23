@@ -8,7 +8,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
 import { breakpoints } from '@openedx/paragon';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { render } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
@@ -676,6 +676,42 @@ describe('Progress Tab', () => {
         ...getConfig(),
         SHOW_UNGRADED_ASSIGNMENT_PROGRESS: false,
       });
+    });
+  });
+
+  describe('Grade bar tooltips', () => {
+    let notifyBodyResized;
+    let observe;
+    let disconnect;
+
+    beforeEach(() => {
+      observe = jest.fn();
+      disconnect = jest.fn();
+      global.ResizeObserver = jest.fn().mockImplementation((callback) => {
+        notifyBodyResized = callback;
+        return { observe, unobserve: jest.fn(), disconnect };
+      });
+    });
+
+    afterEach(() => {
+      delete global.ResizeObserver;
+    });
+
+    it('repositions the tooltips when the page grows underneath them', async () => {
+      await fetchAndRender();
+      expect(observe).toHaveBeenCalledWith(document.body);
+
+      const tooltipBeforeResize = screen.getByTestId('currentGradeTooltipContent');
+      await act(async () => { notifyBodyResized(); });
+
+      expect(screen.getByTestId('currentGradeTooltipContent')).not.toBe(tooltipBeforeResize);
+    });
+
+    it('stops observing when the page is left', async () => {
+      await fetchAndRender();
+      cleanup();
+
+      expect(disconnect).toHaveBeenCalled();
     });
   });
 
