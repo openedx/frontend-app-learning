@@ -7,6 +7,7 @@ import { Toast } from '@openedx/paragon';
 import { FooterSlot } from '@edx/frontend-component-footer';
 import { getErrorDetail } from '@src/data/http-error';
 import HeaderSlot from '../plugin-slots/HeaderSlot';
+import { CourseInfoStripSlot } from '../plugin-slots/CourseInfoStripSlot';
 import PageLoading from '../generic/PageLoading';
 import { getAccessDeniedRedirectUrl } from '../shared/access';
 import type { CourseHomeMeta } from '../course-home/data/api';
@@ -152,6 +153,7 @@ const TabPage = ({
       {shouldRenderContent && renderToast()}
       {shouldRenderContent && renderSrOnlyTourButton()}
       <HeaderSlot courseOrg={org} courseNumber={number} courseTitle={title} />
+      {shouldRenderContent && <CourseInfoStripSlot courseId={courseId} />}
       {isLoading && renderLoading()}
       {shouldRenderContent && renderLoadedTabPage()}
       {isError && renderError()}
