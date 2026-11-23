@@ -8,8 +8,8 @@ export interface PathwayData {
     itemCount: number;
     category?: string;
     categoryLabel?: string;
-    categoryBackgroundColor?: string;
-    categoryTextColor?: string;
+    categoryBackgroundColor: string;
+    categoryTextColor: string;
     detailsUrl: string;
   };
   progress?: {

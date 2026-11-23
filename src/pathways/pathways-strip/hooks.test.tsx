@@ -8,6 +8,8 @@ const buildPathway = (id: string): PathwayData => ({
     id,
     content: { displayName: `Pathway ${id}` },
     itemCount: 3,
+    categoryBackgroundColor: '#FCE4F3',
+    categoryTextColor: '#9B1766',
     detailsUrl: `/catalog/pathways/${id}`,
   },
 });
