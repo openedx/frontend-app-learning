@@ -110,12 +110,13 @@ const CoursewareSearchModal = ({ ...sectionProps }) => {
       <div className="courseware-search__outer-content">
         <div className="courseware-search__content" data-testid="courseware-search-content">
           <div className="courseware-search__form">
-            <h1 className="h2">{formatMessage(messages.searchModuleTitle)}</h1>
+            <h1 className="h2" id="courseware-search-title">{formatMessage(messages.searchModuleTitle)}</h1>
             <CoursewareSearchForm
               searchTerm={searchKeyword}
               onSubmit={handleSubmit}
               onChange={handleOnChange}
               placeholder={formatMessage(messages.searchBarPlaceholderText)}
+              labelledBy="courseware-search-title"
             />
             <div className="courseware-search__close">
               <Button
