@@ -147,6 +147,9 @@ src/course-tabs/utils.ts	frontend-base/src/course-tabs/utils.ts
 src/courseware/course/course-exit/messages.ts	frontend-base/src/courseware/course/course-exit/messages.ts
 src/courseware/course/course-exit/utils.js	frontend-base/src/courseware/course/course-exit/utils.js
 src/courseware/course/course-exit/utils.test.ts	frontend-base/src/courseware/course/course-exit/utils.test.ts
+src/courseware/CoursewareContainer.test.jsx	frontend-base/src/courseware/CoursewareContainer.test.jsx
+src/courseware/CoursewareContainer.tsx	frontend-base/src/courseware/CoursewareContainer.tsx
+src/courseware/CoursewareRedirects.tsx	frontend-base/src/courseware/CoursewareRedirects.tsx
 src/courseware/data/apiHooks.test.tsx	frontend-base/src/courseware/data/apiHooks.test.tsx
 src/courseware/data/apiHooks.ts	frontend-base/src/courseware/data/apiHooks.ts
 src/courseware/data/api.js	frontend-base/src/courseware/data/api.js
@@ -161,6 +164,7 @@ src/courseware/data/minimalCourseOutline.test.ts	frontend-base/src/courseware/da
 src/courseware/data/minimalCourseOutline.ts	frontend-base/src/courseware/data/minimalCourseOutline.ts
 src/courseware/data/pact-tests/lmsPact.test.jsx	dropped
 src/courseware/data/sequenceMetadata.ts	frontend-base/src/courseware/data/sequenceMetadata.ts
+src/courseware/index.js	frontend-base/src/courseware/index.js
 src/data/http-error.ts	frontend-base/src/data/http-error.ts
 src/data/localStorage.js	frontend-base/src/data/localStorage.js
 src/decode-page-route/decodeRoutes.test.tsx	frontend-base/src/decode-page-route/decodeRoutes.test.tsx

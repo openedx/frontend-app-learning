@@ -82,7 +82,7 @@ describe('query error logging', () => {
 });
 
 describe('shouldRetryQuery', () => {
-  const httpError = (status: number) => ({ response: { status } });
+  const httpError = (status: number) => Object.assign(new Error(`status ${status}`), { response: { status } });
 
   it.each([400, 401, 403, 404, 422])('does not retry client error %s', (status) => {
     expect(shouldRetryQuery(0, httpError(status))).toBe(false);

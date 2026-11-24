@@ -72,22 +72,27 @@ const liveRoutes: RoleRouteObject[] = [
   },
 ];
 
+const lazyCourseware = async () => {
+  const module = await import(/* webpackChunkName: "learning-courseware" */ './courseware');
+  return { Component: module.default };
+};
+
 const coursewareRoutes: RoleRouteObject[] = [
   {
     id: 'org.openedx.frontend.route.learning.courseware',
     index: true,
     handle: { roles: [coursewareRole] },
-    element: <StubPage page="courseware" />,
+    lazy: lazyCourseware,
   },
   {
     path: ':sequenceId',
     handle: { roles: [coursewareRole] },
-    element: <StubPage page="courseware" />,
+    lazy: lazyCourseware,
   },
   {
     path: ':sequenceId/:unitId',
     handle: { roles: [coursewareRole] },
-    element: <StubPage page="courseware" />,
+    lazy: lazyCourseware,
   },
 ];
 
@@ -102,12 +107,12 @@ const previewCoursewareRoutes: RoleRouteObject[] = [
   {
     path: ':sequenceId',
     handle: { roles: [coursewareRole] },
-    element: <StubPage page="courseware" />,
+    lazy: lazyCourseware,
   },
   {
     path: ':sequenceId/:unitId',
     handle: { roles: [coursewareRole] },
-    element: <StubPage page="courseware" />,
+    lazy: lazyCourseware,
   },
 ];
 
