@@ -8,6 +8,8 @@ const buildPathway = (id: string): PathwayData => ({
     id,
     content: { displayName: `Pathway ${id}` },
     itemCount: 3,
+    category: 'bootcamp',
+    categoryLabel: 'Bootcamp',
   },
 });
 
