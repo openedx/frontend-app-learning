@@ -1,11 +1,11 @@
 import classNames from 'classnames';
 import { Button, Icon, Stack } from '@openedx/paragon';
+import { Article } from '@openedx/paragon/icons';
 import { FormattedDate, FormattedMessage } from '@edx/frontend-platform/i18n';
 
 import type { PathwayAchievementData } from '@src/pathways/data/types';
 
 import messages from './messages';
-import { NewsModeIcon } from './NewsModeIcon';
 
 export interface CertificateCardProps extends PathwayAchievementData {
   categoryLabel: string;
@@ -33,7 +33,7 @@ export const CertificateCard = ({
       <Stack gap={3}>
         <Stack>
           <Stack direction="horizontal" gap={1}>
-            <Icon className="text-info-800" src={NewsModeIcon} />
+            <Icon className="text-info-800" src={Article} />
             <span className="small">
               <FormattedMessage {...subtitle} values={{ categoryLabel }} />
             </span>
