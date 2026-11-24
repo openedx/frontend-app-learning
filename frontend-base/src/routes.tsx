@@ -9,6 +9,8 @@ import {
   learningCourseRole,
   learningRole,
 } from './constants';
+import DecodePageRoute from './decode-page-route';
+import PathFixesProvider from './generic/path-fixes';
 import StubPage from './StubPage';
 
 const outlineRoutes: RoleRouteObject[] = [
@@ -130,7 +132,7 @@ const courseRoutes: RoleRouteObject[] = [
     id: 'org.openedx.frontend.route.learning.course',
     path: 'course/:courseId',
     handle: { roles: [learningCourseRole] },
-    element: <Outlet />,
+    element: <DecodePageRoute><Outlet /></DecodePageRoute>,
     children: [
       ...outlineRoutes,
       ...datesRoutes,
@@ -146,7 +148,7 @@ const courseRoutes: RoleRouteObject[] = [
     id: 'org.openedx.frontend.route.learning.preview',
     path: 'preview/course/:courseId',
     handle: { roles: [learningCourseRole] },
-    element: <Outlet />,
+    element: <DecodePageRoute><Outlet /></DecodePageRoute>,
     children: previewCoursewareRoutes,
   },
 ];
@@ -185,10 +187,16 @@ const routes: RoleRouteObject[] = [
       return { Component: module.default };
     },
     children: [
-      ...courseRoutes,
-      ...goalUnsubscribeRoutes,
-      ...redirectRoutes,
-      ...preferencesUnsubscribeRoutes,
+      {
+        id: 'org.openedx.frontend.route.learning.pathFixes',
+        element: <PathFixesProvider><Outlet /></PathFixesProvider>,
+        children: [
+          ...courseRoutes,
+          ...goalUnsubscribeRoutes,
+          ...redirectRoutes,
+          ...preferencesUnsubscribeRoutes,
+        ],
+      },
     ],
   },
 ];

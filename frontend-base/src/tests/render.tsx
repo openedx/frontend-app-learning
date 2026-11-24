@@ -65,3 +65,12 @@ export const renderRoutes = (routes: RoleRouteObject[], path: string) => {
     router,
   };
 };
+
+// The route array with each page replaced by `page`, so a test renders the real layout routes and no page's requests.
+export const replacePages = (routes: RoleRouteObject[], page: ReactNode): RoleRouteObject[] => routes.map((route) => {
+  // A route with children is a layout: it stays, and the pages under it are replaced.
+  if (route.children) {
+    return { ...route, children: replacePages(route.children, page) };
+  }
+  return { ...route, lazy: undefined, loader: undefined, element: page };
+});
