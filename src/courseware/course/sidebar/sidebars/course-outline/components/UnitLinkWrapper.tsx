@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import { useCourseOutlineSidebar } from '../hooks';
+import { useCourseOutlineData } from '../hooks';
 
 interface Props {
   courseId: string;
@@ -9,6 +9,7 @@ interface Props {
   activeUnitId: string;
   id: string;
   children?: React.ReactNode;
+  onUnitClick?: () => void;
 }
 
 /*
@@ -25,18 +26,23 @@ const UnitLinkWrapper: React.FC<Props> = ({
   id,
   courseId,
   children,
+  onUnitClick,
 }) => {
-  const { handleUnitClick } = useCourseOutlineSidebar();
+  const { handleUnitClick } = useCourseOutlineData();
   const { pathname } = useLocation();
   const isPreview = pathname.startsWith('/preview');
   const baseUrl = `/course/${courseId}/${sequenceId}/${id}`;
   const link = isPreview ? `/preview${baseUrl}` : baseUrl;
+  const handleClick = () => {
+    handleUnitClick({ activeUnitId, id });
+    onUnitClick?.();
+  };
 
   return (
     <Link
       to={link}
       className="row w-100 m-0 d-flex align-items-center text-gray-700"
-      onClick={() => handleUnitClick({ activeUnitId, id })}
+      onClick={handleClick}
     >
       {children}
     </Link>
