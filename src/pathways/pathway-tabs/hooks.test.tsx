@@ -16,6 +16,14 @@ describe('usePathwayTabs', () => {
     ]);
   });
 
+  it('uses the category label as the outline tab title', () => {
+    const { result } = renderHook(() => usePathwayTabs('pathway-1', 'Bootcamp'), { wrapper });
+
+    expect(result.current[0]).toEqual(
+      { tabId: 'outline', title: 'Bootcamp', url: '/pathway/pathway-1/outline' },
+    );
+  });
+
   it('returns no tabs without a pathway', () => {
     const { result } = renderHook(() => usePathwayTabs(undefined), { wrapper });
 

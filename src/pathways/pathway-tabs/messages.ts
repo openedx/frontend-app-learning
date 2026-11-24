@@ -9,7 +9,7 @@ const messages = defineMessages({
   home: {
     id: 'learning.pathways.tabs.home',
     defaultMessage: 'Outline',
-    description: 'Title of the pathway tab that shows the pathway outline',
+    description: 'Title of the pathway tab that shows the pathway outline, used when the pathway has no category',
   },
   progress: {
     id: 'learning.pathways.tabs.progress',

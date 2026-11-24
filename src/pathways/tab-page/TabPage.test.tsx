@@ -56,7 +56,7 @@ describe('Pathway TabPage', () => {
       expect.anything(),
     );
     const navigation = screen.getByRole('navigation', { name: 'Pathway Material' });
-    expect(navigation).toContainElement(screen.getByRole('link', { name: 'Outline' }));
+    expect(navigation).toContainElement(screen.getByRole('link', { name: 'Bootcamp' }));
     expect(screen.getByRole('link', { name: 'Progress' })).toHaveClass('active');
     expect(screen.getByText('Tab content')).toBeInTheDocument();
     expect(screen.getByText('FooterSlot')).toBeInTheDocument();

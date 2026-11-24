@@ -35,7 +35,7 @@ export const TabPage = ({
     provider,
   } = pathwayStatus.metadataQuery.data ?? {};
   const title = pathway?.content.displayName ?? '';
-  const tabs = usePathwayTabs(pathwayId);
+  const tabs = usePathwayTabs(pathwayId, pathway?.categoryLabel);
   const activeTabTitle = tabs.find((tab) => tab.tabId === activeTabSlug)?.title;
 
   const {
