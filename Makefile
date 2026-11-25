@@ -40,9 +40,10 @@ pull_translations:
 	           translations/frontend-component-header/src/i18n/messages:frontend-component-header \
 	           translations/frontend-component-footer/src/i18n/messages:frontend-component-footer \
 	           translations/frontend-lib-special-exams/src/i18n/messages:frontend-lib-special-exams \
-	           translations/frontend-app-learning/src/i18n/messages:frontend-app-learning
+	           translations/frontend-app-learning/src/i18n/messages:frontend-app-learning \
+	          $(ATLAS_EXTRA_SOURCES)
 
-	$(intl_imports) frontend-platform paragon frontend-component-header frontend-component-footer frontend-lib-special-exams frontend-app-learning
+	$(intl_imports) frontend-platform paragon frontend-component-header frontend-component-footer frontend-lib-special-exams frontend-app-learning $(ATLAS_EXTRA_INTL_IMPORTS)
 
 
 # This target is used by Travis.
