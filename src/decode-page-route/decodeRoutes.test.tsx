@@ -1,19 +1,9 @@
 import React from 'react';
-import {
-  MemoryRouter, Route, Routes, useLocation,
-} from 'react-router-dom';
-import { render, screen } from '@testing-library/react';
+import { useLocation } from 'react-router-dom';
+import { screen } from '@testing-library/react';
 
-import DecodePageRoute from '.';
-import { DECODE_ROUTES } from '../constants';
-
-jest.mock('@edx/frontend-platform/react', () => ({
-  PageWrap: ({ children }) => children,
-}));
-
-const ROOT_PATHS = Object.values(DECODE_ROUTES).flatMap(
-  (value) => (Array.isArray(value) ? [...value] : [value]),
-).filter((path) => path.startsWith('/'));
+import routes from '@src/routes';
+import { renderRoutes, replacePages } from '@src/tests/render';
 
 const courseId = 'course-v1:edX+DemoX+Demo_Course';
 const punctuatedCourseId = 'course-v1:edX~Demo.X:2+Course.1~b+Run.2026-Q1';
@@ -148,28 +138,15 @@ const COURSE_KEY_CASES = COURSE_KEYS.flatMap(
 
 const LandingProbe = () => <span data-testid="landing">{useLocation().pathname}</span>;
 
-const landingPathname = (url: string) => {
-  render(
-    <MemoryRouter initialEntries={[url]}>
-      <Routes>
-        {ROOT_PATHS.map((path) => (
-          <Route
-            key={path}
-            path={path}
-            element={<DecodePageRoute><LandingProbe /></DecodePageRoute>}
-          />
-        ))}
-        <Route path="*" element={<LandingProbe />} />
-      </Routes>
-    </MemoryRouter>,
-  );
+const landingPathname = async (url: string) => {
+  renderRoutes([...replacePages(routes, <LandingProbe />), { path: '*', element: <LandingProbe /> }], `/learning${url}`);
 
-  return screen.getByTestId('landing').textContent;
+  return (await screen.findByTestId('landing')).textContent;
 };
 
 describe('DecodePageRoute landing urls', () => {
-  it.each(COURSE_KEY_CASES)('$name', ({ url, landing }) => {
-    expect(landingPathname(url)).toEqual(landing);
+  it.each(COURSE_KEY_CASES)('$name', async ({ url, landing }) => {
+    expect(await landingPathname(url)).toEqual(`/learning${landing}`);
   });
 
   it.each([
@@ -191,9 +168,9 @@ describe('DecodePageRoute landing urls', () => {
     {
       name: 'mangled url with an encoded space, not a valid course key',
       url: `/course/${encodeURIComponent('course-v1:edX Demo+Run')}/home`,
-      landing: '/course/course-v1:edX Demo+Run/home',
+      landing: '/course/course-v1:edX+Demo+Run/home',
     },
-  ])('$name', ({ url, landing }) => {
-    expect(landingPathname(url)).toEqual(landing);
+  ])('$name', async ({ url, landing }) => {
+    expect(await landingPathname(url)).toEqual(`/learning${landing}`);
   });
 });

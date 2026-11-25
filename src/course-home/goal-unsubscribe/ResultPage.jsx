@@ -1,25 +1,32 @@
 import PropTypes from 'prop-types';
-import { getConfig } from '@edx/frontend-platform';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import {
+  getLinkProps, getUrlByRouteRole, useAppConfig, useIntl,
+} from '@openedx/frontend-base';
 import { Button, Hyperlink } from '@openedx/paragon';
 
-import messages from './messages';
-import { ReactComponent as UnsubscribeIcon } from './unsubscribe.svg';
+import { dashboardRole } from '@src/constants';
 
-const ResultPage = ({ courseTitle, error }) => {
+import UnsubscribeIcon from './UnsubscribeIcon';
+import messages from './messages';
+
+const ResultPage = ({ courseTitle = null, error = false }) => {
   const intl = useIntl();
+  const { CONTACT_URL: contactUrl } = useAppConfig();
+  const dashboardUrl = getUrlByRouteRole(dashboardRole);
+
+  const contactSupport = intl.formatMessage(messages.contactSupport);
   const errorDescription = intl.formatMessage(
     messages.errorDescription,
     {
-      contactSupport: (
+      contactSupport: contactUrl ? (
         <Hyperlink
           className="text-reset"
           style={{ textDecoration: 'underline' }}
-          destination={`${getConfig().CONTACT_URL}`}
+          destination={contactUrl}
         >
-          {intl.formatMessage(messages.contactSupport)}
+          {contactSupport}
         </Hyperlink>
-      ),
+      ) : contactSupport,
     },
   );
 
@@ -32,21 +39,18 @@ const ResultPage = ({ courseTitle, error }) => {
 
   return (
     <>
-      <UnsubscribeIcon className="text-primary" alt="" />
+      <UnsubscribeIcon className="text-primary" />
       <div role="heading" aria-level="1" className="h2">{header}</div>
       <div className="row justify-content-center">
         <div className="col-xl-7 col-12 p-0">{description}</div>
       </div>
-      <Button variant="brand" href={`${getConfig().LMS_BASE_URL}/dashboard`} className="mt-4">
-        {intl.formatMessage(messages.goToDashboard)}
-      </Button>
+      {dashboardUrl && (
+        <Button variant="brand" {...getLinkProps(dashboardUrl)} className="mt-4">
+          {intl.formatMessage(messages.goToDashboard)}
+        </Button>
+      )}
     </>
   );
-};
-
-ResultPage.defaultProps = {
-  courseTitle: null,
-  error: false,
 };
 
 ResultPage.propTypes = {

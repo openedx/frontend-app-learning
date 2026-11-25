@@ -1,28 +1,24 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import SequenceBottomNavigationSlot from '@src/plugin-slots/SequenceBottomNavigationSlot';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import {
-  sendTrackEvent,
-  sendTrackingLogEvent,
-} from '@edx/frontend-platform/analytics';
-import { useIntl } from '@edx/frontend-platform/i18n';
 import SequenceExamWrapper from '@edx/frontend-lib-special-exams';
-import SpecialExamsProvider from '@src/generic/special-exams/SpecialExamsProvider';
+import { sendTrackEvent, sendTrackingLogEvent, useIntl } from '@openedx/frontend-base';
 
 import PageLoading from '@src/generic/PageLoading';
+import SpecialExamsProvider from '@src/generic/special-exams/SpecialExamsProvider';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import {
   sequenceMightBeUnit, useCoursewareMetadata, useMinimalCourseOutline, useSequenceMetadata, useUnit,
 } from '@src/courseware/data/apiHooks';
-import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from '@src/alerts/sequence-alerts/hooks';
-import SequenceContainerSlot from '@src/plugin-slots/SequenceContainerSlot';
-import { CourseOutlineSidebarSlot } from '@src/plugin-slots/CourseOutlineSidebarSlot';
-import { CourseOutlineSidebarTriggerSlot } from '@src/plugin-slots/CourseOutlineSidebarTriggerSlot';
-import { RightSidebarSlot } from '@src/plugin-slots/RightSidebarSlot';
-import SequenceNavigationSlot from '@src/plugin-slots/SequenceNavigationSlot';
-import { SubmittedTimedExamInstructionsSlot } from '@src/plugin-slots/SubmittedTimedExamInstructionsSlot';
+import { useSequenceBannerTextAlert, useSequenceEntranceExamAlert } from './sequence-alerts/hooks';
+import AuxiliarySidebarSlot from '@src/slots/AuxiliarySidebarSlot';
+import CourseOutlineSidebarSlot from '@src/slots/CourseOutlineSidebarSlot';
+import CourseOutlineSidebarTriggerSlot from '@src/slots/CourseOutlineSidebarTriggerSlot';
+import SequenceBottomNavigationSlot from '@src/slots/SequenceBottomNavigationSlot';
+import SequenceContainerSlot from '@src/slots/SequenceContainerSlot';
+import SequenceNavigationSlot from '@src/slots/SequenceNavigationSlot';
+import SubmittedTimedExamInstructionsSlot from '@src/slots/SubmittedTimedExamInstructionsSlot';
 
 import CourseLicense from '../course-license';
 import messages from './messages';
@@ -51,8 +47,8 @@ export const logSequenceEvent = (eventName, {
 };
 
 const Sequence = ({
-  unitId,
-  sequenceId,
+  unitId = null,
+  sequenceId = null,
   courseId,
   unitNavigationHandler,
   nextSequenceHandler,
@@ -176,7 +172,7 @@ const Sequence = ({
     return <HiddenAfterDue />;
   }
 
-  const gated = sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated;
+  const gated = !!(sequence && sequence.gatedContent !== undefined && sequence.gatedContent.gated);
 
   const unitNavigationProps = {
     courseId,
@@ -197,30 +193,26 @@ const Sequence = ({
     <>
       <div className="sequence-container d-inline-flex flex-row w-100">
         <CourseOutlineSidebarTriggerSlot
+          courseId={courseId}
           sectionId={section ? section.id : null}
           sequenceId={sequenceId}
           isStaff={isStaff}
           unitId={unitId}
         />
-        <CourseOutlineSidebarSlot />
-        <main id="main-content" className="sequence w-100">
+        <CourseOutlineSidebarSlot courseId={courseId} sequenceId={sequenceId} unitId={unitId} />
+        <main className="sequence w-100">
           <div className="sequence-navigation-container">
             {/**
              SequenceNavigationSlot renders nothing by default.
              However, we still pass nextHandler, previousHandler, and onNavigate,
-             because, as per the slot's contract, if this slot is replaced
-             with the default SequenceNavigation component, these props are required.
-             These handlers are excluded from test coverage via istanbul ignore,
-             since they are not used unless the slot is overridden.
+             because, as per the slot's contract, if a site adds the unit tab strip
+             (sequenceNavigationSlotOperation) or a widget of its own, these props are required.
              */}
             <SequenceNavigationSlot
+              courseId={courseId}
               sequenceId={sequenceId}
               unitId={unitId}
-              {...{
-                ...sequenceNavProps,
-                nextSequenceHandler,
-                handleNavigate,
-              }}
+              {...sequenceNavProps}
             />
           </div>
 
@@ -242,9 +234,9 @@ const Sequence = ({
             )}
           </div>
         </main>
-        <RightSidebarSlot courseId={courseId} />
+        <AuxiliarySidebarSlot courseId={courseId} sequenceId={sequenceId} unitId={unitId} />
       </div>
-      <SequenceContainerSlot courseId={courseId} unitId={unitId} />
+      <SequenceContainerSlot courseId={courseId} sequenceId={sequenceId} unitId={unitId} />
     </>
   );
 
@@ -285,11 +277,6 @@ Sequence.propTypes = {
   unitNavigationHandler: PropTypes.func.isRequired,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
-};
-
-Sequence.defaultProps = {
-  sequenceId: null,
-  unitId: null,
 };
 
 export default Sequence;

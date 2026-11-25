@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 
 import { useAlert } from '../../../../generic/user-messages';
 import { useCourseHomeMeta, useOutlineTabData } from '../../../data/apiHooks';
+import { useDatesTabUrl } from '../../../../course-tabs/hooks';
 
 const ScheduledContentAlert = React.lazy(() => import('./ScheduledCotentAlert'));
 
@@ -10,10 +11,8 @@ const useScheduledContentAlert = (courseId) => {
     courseBlocks: {
       courses,
     },
-    datesWidget: {
-      datesTabLink,
-    },
-  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
+  } = useOutlineTabData(courseId, { enabled: false }).data;
+  const datesTabLink = useDatesTabUrl();
 
   const hasScheduledContent = (
     !!courses

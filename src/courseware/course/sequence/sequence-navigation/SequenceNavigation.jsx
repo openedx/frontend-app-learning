@@ -1,18 +1,18 @@
 import PropTypes from 'prop-types';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 import classNames from 'classnames';
-import { useIntl } from '@edx/frontend-platform/i18n';
-import { useParams } from 'react-router-dom';
+import { useIntl } from '@openedx/frontend-base';
 
 import { useSequenceMetadata } from '@src/courseware/data/apiHooks';
-import { GetCourseExitNavigation } from '../../course-exit';
+import { GetCourseExitNavigation } from '../../course-exit/utils';
 import UnitButton from './UnitButton';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
 import { useSequenceNavigationMetadata } from './hooks';
 
 import messages from './messages';
 import PreviousButton from './generic/PreviousButton';
-import { NextUnitTopNavTriggerSlot } from '../../../../plugin-slots/NextUnitTopNavTriggerSlot';
+import NextUnitTopNavTriggerSlot from '@src/slots/NextUnitTopNavTriggerSlot';
+import { useCourseId } from '@src/generic/course-params';
 
 const SequenceNavigation = ({
   unitId,
@@ -31,7 +31,7 @@ const SequenceNavigation = ({
     navigationDisabledPrevSequence,
     navigationDisabledNextSequence,
   } = useSequenceNavigationMetadata(sequenceId, unitId);
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const sequenceQuery = useSequenceMetadata(sequenceId, { enabled: false });
   const sequence = sequenceQuery.data?.sequence;
   const { exitActive, exitText } = GetCourseExitNavigation(courseId, intl);
@@ -47,7 +47,7 @@ const SequenceNavigation = ({
         <UnitButton unitId={unitId} title="" contentType="lock" isActive onClick={() => {}} />
       );
     }
-    if (sequence.unitIds.length === 0 || unitId === null) {
+    if (sequence.unitIds.length === 0 || !unitId) {
       return (
         <div style={{ flexBasis: '100%', minWidth: 0, borderBottom: 'solid 1px #EAEAEA' }} />
       );
@@ -113,11 +113,6 @@ SequenceNavigation.propTypes = {
   onNavigate: PropTypes.func.isRequired,
   nextHandler: PropTypes.func.isRequired,
   previousHandler: PropTypes.func.isRequired,
-};
-
-SequenceNavigation.defaultProps = {
-  className: null,
-  unitId: null,
 };
 
 export default SequenceNavigation;

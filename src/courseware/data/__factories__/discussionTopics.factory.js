@@ -1,5 +1,4 @@
-/* eslint-disable import/prefer-default-export */
-import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
+import { Factory } from 'rosie';
 
 Factory.define('verifiedMode')
   .attr('currency', 'USD')

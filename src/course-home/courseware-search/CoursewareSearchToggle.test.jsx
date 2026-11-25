@@ -2,11 +2,10 @@ import React from 'react';
 import {
   act,
   fireEvent,
-  initializeMockApp,
-  render,
   screen,
   waitFor,
-} from '../../setupTest';
+} from '@testing-library/react';
+import { render } from '@src/tests/render';
 import { CoursewareSearchToggle } from './index';
 import { useCoursewareSearchFeatureFlag } from './hooks';
 import { useCoursewareSearch } from './CoursewareSearchContext';
@@ -40,9 +39,6 @@ function renderComponent() {
 }
 
 describe('CoursewareSearchToggle', () => {
-  beforeAll(async () => {
-    initializeMockApp();
-  });
 
   beforeEach(() => {
     useCoursewareSearch.mockReturnValue({ show: false, open: mockOpen, close: jest.fn() });

@@ -1,6 +1,7 @@
+import type { ReactNode } from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { logError } from '@edx/frontend-platform/logging';
+import { getLoggingService, type MockLoggingService } from '@openedx/frontend-base';
 
 import { getTourData, patchTourData } from './api';
 import {
@@ -8,13 +9,14 @@ import {
 } from './apiHooks';
 
 jest.mock('./api');
-jest.mock('@edx/frontend-platform/logging');
+
+const loggingService = getLoggingService() as MockLoggingService;
 
 const buildWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
-  const wrapper = ({ children }) => (
+  const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
   return { queryClient, wrapper };
@@ -50,7 +52,9 @@ describe('product-tours apiHooks', () => {
       const invalidate = jest.spyOn(queryClient, 'invalidateQueries');
 
       const { result } = renderHook(() => useEndCourseHomeTour(), { wrapper });
-      await act(async () => { await result.current.mutateAsync('MockUser'); });
+      await act(async () => {
+        await result.current.mutateAsync('MockUser');
+      });
 
       expect(patchTourData).toHaveBeenCalledWith('MockUser', { course_home_tour_status: 'no-tour' });
       expect(invalidate).toHaveBeenCalledWith({ queryKey: tourDataQuery('MockUser').queryKey });
@@ -62,7 +66,9 @@ describe('product-tours apiHooks', () => {
       const invalidate = jest.spyOn(queryClient, 'invalidateQueries');
 
       const { result } = renderHook(() => useEndCoursewareTour(), { wrapper });
-      await act(async () => { await result.current.mutateAsync('MockUser'); });
+      await act(async () => {
+        await result.current.mutateAsync('MockUser');
+      });
 
       expect(patchTourData).toHaveBeenCalledWith('MockUser', { show_courseware_tour: false });
       expect(invalidate).toHaveBeenCalledWith({ queryKey: tourDataQuery('MockUser').queryKey });
@@ -81,7 +87,7 @@ describe('product-tours apiHooks', () => {
         await result.current.mutateAsync('MockUser').catch(() => {});
       });
 
-      await waitFor(() => expect(logError).toHaveBeenCalledWith(error));
+      await waitFor(() => expect(loggingService.logError).toHaveBeenCalledWith(error, undefined));
     });
   });
 });

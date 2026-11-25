@@ -1,0 +1,382 @@
+@use "@openedx/paragon/styles/css/core/custom-media-breakpoints.css";
+@use "./course-home/courseware-search/courseware-search";
+@use "./course-home/dates-tab/timeline/Day";
+@use "./course-home/outline-tab/DateSummary";
+@use "./course-home/outline-tab/widgets/FlagButton";
+@use "./course-home/outline-tab/widgets/ProctoringInfoPanel";
+@use "./course-home/progress-tab/course-completion/CompletionDonutChart";
+@use "./course-home/progress-tab/grades/course-grade/GradeBar";
+@use "./courseware/course/celebration/CelebrationModal";
+@use "./courseware/course/content-tools/calculator/calculator";
+@use "./courseware/course/content-tools/contentTools";
+@use "./courseware/course/course-exit/CourseRecommendations";
+@use "./courseware/course/sidebar/common/SidebarBase";
+@use "./courseware/course/sidebar/sidebars/course-outline/CourseOutlineTray";
+@use "./product-tours/newUserCourseHomeTour/NewUserCourseHomeTourModal";
+@use "./shared/streak-celebration/StreakCelebrationModal";
+@use "./widgets/DiscussionsSidebar/Discussions";
+
+.greyed-out {
+  opacity: 0.3;
+}
+
+.locked-overlay {
+  opacity: 0.3;
+  pointer-events: none;
+
+  &.grades {
+    overflow: hidden;
+    max-height: 852px;
+    @media screen and (min-width: 992px) {
+      max-height: 920px;
+    }
+  }
+}
+
+.size-56px {
+  width: 56px !important;
+  height: 56px !important;
+}
+
+.raised-card {
+  border: 0 !important;
+  box-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .2) !important;
+}
+
+@media (--pgn-size-breakpoint-max-width-xs) {
+  .course-outline-tab .pgn__card {
+    .pgn__card-header {
+      display: block;
+
+      .pgn__card-header-content {
+        margin-top: 0;
+      }
+    }
+
+    .pgn__card-header-actions {
+      margin-left: 0;
+    }
+  }
+}
+
+.sequence-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin-bottom: 4rem;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.sequence {
+  @media (--pgn-size-breakpoint-min-width-sm) {
+    border: solid 1px #eaeaea;
+    border-radius: 4px;
+  }
+}
+
+.sequence-navigation-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.sidebar-trigger-btn {
+  @media (--pgn-size-breakpoint-max-width-xs) {
+    height: 3rem;
+  }
+}
+
+.sequence-navigation {
+  display: flex;
+  flex-grow: 1;
+
+  @media (--pgn-size-breakpoint-max-width-xs) {
+    max-width: 100%;
+  }
+
+  @media (--pgn-size-breakpoint-min-width-sm) {
+    margin: -1px -1px 0;
+  }
+
+  @media (--pgn-size-breakpoint-max-width-xs) {
+    width: 100% !important;
+  }
+
+  .btn {
+    flex-grow: 1;
+    display: inline-flex;
+    border-radius: 0;
+    border: solid 1px #eaeaea;
+    border-left-width: 0;
+    position: relative;
+    font-weight: 400;
+    padding: 0 0.375rem;
+    height: 3rem;
+    justify-content: center;
+    align-items: center;
+    color: var(--pgn-color-gray-500);
+    white-space: nowrap;
+
+    &:hover,
+    &:focus,
+    &.active {
+      color: var(--pgn-color-gray-700);
+    }
+
+    &:focus {
+      z-index: 1;
+    }
+
+    &.active {
+      &:after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--pgn-color-primary-base);
+      }
+    }
+
+    &.complete {
+      background-color: #eef7e5;
+      color: var(--pgn-color-success-base);
+    }
+
+    &:first-child {
+      border-left-width: 0;
+    }
+
+    &:last-child {
+      border-right-width: 0;
+    }
+  }
+
+  .sequence-navigation-tabs-container {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 100%;
+    display: flex;
+    // min-width 0 prevents the flex item from overflowing the parent container
+    // https://dev.to/martyhimmel/quick-tip-to-stop-flexbox-from-overflowing-peb
+    min-width: 0;
+  }
+
+  .sequence-navigation-tabs {
+    overflow: auto;
+    .btn {
+      flex-basis: 100%;
+      min-width: 3rem;
+    }
+  }
+
+  .navigation-tab-width-xl {
+    max-width: 47rem;
+  }
+
+  .navigation-tab-width-large {
+    max-width: 28rem;
+  }
+
+  .navigation-tab-width-medium{
+    max-width: 23.5rem;
+  }
+
+  .sequence-navigation-dropdown {
+    .dropdown-menu .btn {
+      flex-basis: 100%;
+      min-width: 4rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      border-right: 0;
+
+      & + .btn {
+        border-top: 0;
+      }
+
+      .unit-title {
+        flex-grow: 1;
+        text-align: left;
+        overflow: hidden;
+        min-width: 0;
+        margin: 0 1rem;
+        text-overflow: ellipsis;
+        color: var(--pgn-color-gray-700);
+      }
+
+      &.active {
+        .unit-icon {
+          color: var(--pgn-color-primary-500);
+        }
+
+        &:after {
+          content: "";
+          position: absolute;
+          bottom: 0px;
+          left: 0px;
+          top: 0px;
+          right: auto;
+          width: 2px;
+          height: auto;
+          background: var(--pgn-color-primary-base);
+        }
+      }
+    }
+
+    .dropdown-item {
+      &.active {
+        // This is un-doing the default react-bootstrap styling for active dropdown-item elements.
+        background-color: transparent;
+      }
+    }
+  }
+
+  .previous-btn,
+  .next-btn {
+    border: 1px solid var(--pgn-color-light-400) !important;
+    color: var(--pgn-color-gray-700);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    @media (--pgn-size-breakpoint-max-width-sm) {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    @media (--pgn-size-breakpoint-min-width-sm) {
+      min-width: fit-content;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  .previous-btn {
+    border-left-width: 0;
+    margin-left: 0;
+
+    @media (--pgn-size-breakpoint-min-width-sm) {
+      border-left-width: 1px;
+      border-top-left-radius: 4px;
+    }
+  }
+
+  .next-btn {
+    border-left-width: 1px;
+    border-right-width: 0;
+
+    @media (--pgn-size-breakpoint-min-width-sm) {
+      border-top-right-radius: 4px;
+      border-right-width: 1px;
+    }
+  }
+}
+
+.unit-container {
+  padding-top: 0;
+  padding-bottom: 2rem;
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+
+  @media (--pgn-size-breakpoint-min-width-sm) {
+    padding-left: var(--pgn-spacing-grid-gutter-width);
+    padding-right: var(--pgn-spacing-grid-gutter-width);
+  }
+
+  @media (min-width: 830px) {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+.unit-iframe-wrapper {
+  margin-top: 0;
+
+  // Some XBlocks (such as xblock-drag-and-drop-v2) rely on the viewport width
+  // to determine their layout on mobile. This is problematic because the
+  // viewport width may not be the same as the width of the iframe. To fix this,
+  // here we compensate for the padding of the parent div with "container-xl"
+  // class to ensure that the viewport width is the same as the width of the
+  // iframe.
+  margin-left: calc(var(--pgn-spacing-grid-gutter-width) * -0.5);
+  margin-right: calc(var(--pgn-spacing-grid-gutter-width) * -0.5);
+
+  margin-bottom: 2rem;
+
+  @media (min-width: 830px) {
+    margin: 0 -40px 2rem;
+  }
+}
+
+#unit-iframe {
+  width: 100%;
+  border: none;
+  display: block;
+}
+
+.unit-navigation {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  max-width: 640px;
+  margin: 0 auto;
+
+  @media (--pgn-size-breakpoint-max-width-xs) {
+    flex-direction: column;
+    gap: var(--pgn-spacing-spacer-base);
+  }
+
+  .previous-button,
+  .next-button {
+    border-radius: 4px;
+
+    &:focus:before {
+      border-radius: 6px;
+    }
+  }
+}
+
+.top-unit-navigation {
+  display: flex;
+  max-width: 100%;
+  gap: 5px;
+  justify-content: flex-end;
+
+  .next-button,
+  .previous-button {
+    font-size: 1.5rem;
+  }
+}
+
+// This class forces any modals using 'modal-lti' as their dialogClassName to take up the whole
+// window (retaining padding around the edge).  Bootstrap modals don't have a full-screen
+// size like this.  Because of the hack below around react-focus-on's div, it would be better long-term to pull this into Paragon and perhaps call it "modal-full" or something like that.
+.modal-lti {
+  height: 100%;
+  max-width: 100% !important;
+
+  // I don't like this.  We need to set a height of 100% on a div created by react-focus-on, a
+  // package we use in our Modal.  That div has no class name or ID, so instead we're uniquely
+  // identifying it by based on a unique attribute it has which its siblings don't share.
+  > div[data-focus-lock-disabled="false"] {
+    height: 100%;
+  }
+
+  // Along with setting the height of modal-content's parent div from react-focus-on, we need to
+  // set modal-content's height as well to get the modal to expand to full-screen height.
+  .modal-content {
+    height: 100%;
+  }
+}
+
+.icon-hover {
+  &:hover {
+    color: var(--pgn-color-primary-500) !important;
+    background-color: var(--pgn-color-light-300) !important;
+  }
+}

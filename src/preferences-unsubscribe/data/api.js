@@ -1,8 +1,7 @@
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { getAuthenticatedHttpClient, getSiteConfig } from '@openedx/frontend-base';
 
 export const getUnsubscribeUrl = (userToken) => (
-  `${getConfig().LMS_BASE_URL}/api/notifications/preferences/update/${userToken}/`
+  `${getSiteConfig().lmsBaseUrl}/api/notifications/preferences/update/${userToken}/`
 );
 
 export async function unsubscribeNotificationPreferences(userToken) {

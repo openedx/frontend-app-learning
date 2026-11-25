@@ -1,7 +1,6 @@
 import React from 'react';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { FormattedMessage } from '@openedx/frontend-base';
 import {
-  DismissButtonFormattedMessage,
   NextButtonFormattedMessage,
   OkayButtonFormattedMessage,
 } from '../GenericTourFormattedMessages';
@@ -32,29 +31,17 @@ const outlineCheckpoint = {
   />,
 };
 
+// The shell's course bar renders the tabs: its navbar carries this class and no id of its own.
 const tabNavigationCheckpoint = {
   body: <FormattedMessage
     id="tours.tabNavigationCheckpoint.body"
     defaultMessage="These tabs can be used to access other course materials, such as your progress, syllabus, etc."
   />,
   placement: 'bottom',
-  target: '#courseTabsNavigation',
+  target: '.course-tabs-navigation',
   title: <FormattedMessage
     id="tours.tabNavigationCheckpoint.title"
     defaultMessage="Additional course resources"
-  />,
-};
-
-const upgradeCheckpoint = {
-  body: <FormattedMessage
-    id="tours.upgradeCheckpoint.body"
-    defaultMessage="Work towards a certificate and gain full access to course materials. Upgrade now!"
-  />,
-  placement: 'left',
-  target: '#courseHome-upgradeNotification',
-  title: <FormattedMessage
-    id="tours.upgradeCheckpoint.title"
-    defaultMessage="Unlock your course"
   />,
 };
 
@@ -81,10 +68,8 @@ const newUserCourseHomeTour = ({
     outlineCheckpoint,
     datesCheckpoint,
     tabNavigationCheckpoint,
-    upgradeCheckpoint,
     weeklyGoalsCheckpoint,
   ],
-  dismissButtonText: <DismissButtonFormattedMessage />,
   enabled,
   endButtonText: <OkayButtonFormattedMessage />,
   onDismiss,

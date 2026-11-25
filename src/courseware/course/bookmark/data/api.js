@@ -1,7 +1,6 @@
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { getAuthenticatedHttpClient, getAuthenticatedUser, getSiteConfig } from '@openedx/frontend-base';
 
-export const getBookmarksBaseUrl = () => `${getConfig().LMS_BASE_URL}/api/bookmarks/v1/bookmarks/`;
+export const getBookmarksBaseUrl = () => `${getSiteConfig().lmsBaseUrl}/api/bookmarks/v1/bookmarks/`;
 
 export async function createBookmark(usageId) {
   return getAuthenticatedHttpClient().post(getBookmarksBaseUrl(), { usage_id: usageId });

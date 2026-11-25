@@ -2,11 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from '@openedx/paragon';
 
-import {
-  sendTrackingLogEvent,
-  sendTrackEvent,
-} from '@edx/frontend-platform/analytics';
+import { sendTrackEvent, sendTrackingLogEvent } from '@openedx/frontend-base';
 import { useNavigate } from 'react-router-dom';
+
+import { getSequenceUrl, getUnitUrl } from '@src/courseware/urls';
 
 const JumpNavMenuItem = ({
   title,
@@ -33,9 +32,9 @@ const JumpNavMenuItem = ({
 
   function destinationUrl() {
     if (isDefault) {
-      return `/course/${courseId}/${currentSequence}/${currentUnit}`;
+      return getUnitUrl(courseId, currentSequence, currentUnit);
     }
-    return `/course/${courseId}/${sequences[0].id}`;
+    return getSequenceUrl(courseId, sequences[0].id);
   }
   function handleClick(e) {
     const url = destinationUrl();
@@ -58,17 +57,13 @@ const sequenceShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
 });
 
-JumpNavMenuItem.defaultProps = {
-  onClick: null,
-};
-
 JumpNavMenuItem.propTypes = {
   title: PropTypes.string.isRequired,
   sequences: PropTypes.arrayOf(sequenceShape).isRequired,
   isDefault: PropTypes.bool.isRequired,
   courseId: PropTypes.string.isRequired,
-  currentSequence: PropTypes.string.isRequired,
-  currentUnit: PropTypes.string.isRequired,
+  currentSequence: PropTypes.string,
+  currentUnit: PropTypes.string,
   onClick: PropTypes.func,
 };
 

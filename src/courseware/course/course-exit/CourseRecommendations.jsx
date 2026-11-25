@@ -1,22 +1,22 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import React from 'react';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import {
-  FormattedMessage, useIntl, defineMessages,
-} from '@edx/frontend-platform/i18n';
-import { useParams } from 'react-router-dom';
+  defineMessages, FormattedMessage, getAuthenticatedUser, getLinkProps, getUrlByRouteRole, useIntl,
+} from '@openedx/frontend-base';
 import {
   Hyperlink, DataTable, CardView, Card,
 } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import truncate from 'truncate-html';
+
+import { coursesRole } from '@src/constants';
 import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 import { useCourseRecommendations } from './data/apiHooks';
 import { trackRecommendationsViewed } from './track';
 import CatalogSuggestion from './CatalogSuggestion';
 import PageLoading from '../../../generic/PageLoading';
 import { logClick } from './utils';
+import { useCourseId } from '@src/generic/course-params';
 
 const messages = defineMessages({
   recommendationsHeading: {
@@ -132,11 +132,12 @@ const IntlCard = CourseCard;
 
 const CourseRecommendations = ({ variant }) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const { org, number } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
 
   const courseKey = `${org}+${number}`;
   const { administrator } = getAuthenticatedUser();
+  const catalogUrl = getUrlByRouteRole(coursesRole);
 
   const {
     data: recommendations = [],
@@ -186,13 +187,15 @@ const CourseRecommendations = ({ variant }) => {
           <CardView CardComponent={IntlCard} />
         </DataTable>
       </div>
-      <Hyperlink
-        style={{ textDecoration: 'underline' }}
-        destination={getConfig().SEARCH_CATALOG_URL}
-        className="text-center"
-      >
-        {intl.formatMessage(messages.browseCatalog)}
-      </Hyperlink>
+      {catalogUrl && (
+        <Hyperlink
+          style={{ textDecoration: 'underline' }}
+          {...getLinkProps(catalogUrl)}
+          className="text-center"
+        >
+          {intl.formatMessage(messages.browseCatalog)}
+        </Hyperlink>
+      )}
     </div>
   );
 };

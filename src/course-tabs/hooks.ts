@@ -1,13 +1,23 @@
-import { useParams } from 'react-router-dom';
+import { resolveRouteByRole } from '@openedx/frontend-base';
 
+import { courseDatesRole, courseOutlineRole, courseProgressRole } from '@src/constants';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
-import { getCourseOutlineUrl, getDatesTabUrl, getProgressTabUrl } from './utils';
+import { hasCourseOutlineTab, hasDatesTab, hasProgressTab } from './utils';
+import { useCourseId } from '@src/generic/course-params';
 
 const useTabs = () => {
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   return useCourseHomeMeta(courseId, { enabled: false }).data?.tabs;
 };
 
-export const useCourseOutlineUrl = () => getCourseOutlineUrl(useTabs());
-export const useDatesTabUrl = () => getDatesTabUrl(useTabs());
-export const useProgressTabUrl = () => getProgressTabUrl(useTabs());
+const useTabUrl = (hasTab: boolean, role: string) => {
+  const courseId = useCourseId();
+  if (!hasTab || !courseId) {
+    return undefined;
+  }
+  return resolveRouteByRole(role, { courseId })?.url;
+};
+
+export const useCourseOutlineUrl = () => useTabUrl(hasCourseOutlineTab(useTabs()), courseOutlineRole);
+export const useDatesTabUrl = () => useTabUrl(hasDatesTab(useTabs()), courseDatesRole);
+export const useProgressTabUrl = () => useTabUrl(hasProgressTab(useTabs()), courseProgressRole);

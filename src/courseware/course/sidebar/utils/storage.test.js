@@ -1,4 +1,4 @@
-import { logError } from '@edx/frontend-platform/logging';
+import { getLoggingService } from '@openedx/frontend-base';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import {
   isSidebarClosedByUser,
@@ -7,10 +7,6 @@ import {
   setSidebarId,
 } from './storage';
 import { STORAGE_KEYS } from '../constants';
-
-jest.mock('@edx/frontend-platform/logging', () => ({
-  logError: jest.fn(),
-}));
 
 jest.mock('@src/data/localStorage', () => ({
   getLocalStorage: jest.fn(),
@@ -46,7 +42,7 @@ describe('sidebar storage utils', () => {
       });
 
       expect(isSidebarClosedByUser()).toBe(false);
-      expect(logError).toHaveBeenCalled();
+      expect(getLoggingService().logError).toHaveBeenCalled();
       spy.mockRestore();
     });
   });
@@ -71,7 +67,7 @@ describe('sidebar storage utils', () => {
       });
 
       expect(() => setSidebarClosedByUser(true)).not.toThrow();
-      expect(logError).toHaveBeenCalled();
+      expect(getLoggingService().logError).toHaveBeenCalled();
       spy.mockRestore();
     });
 
@@ -81,7 +77,7 @@ describe('sidebar storage utils', () => {
       });
 
       expect(() => setSidebarClosedByUser(false)).not.toThrow();
-      expect(logError).toHaveBeenCalled();
+      expect(getLoggingService().logError).toHaveBeenCalled();
       spy.mockRestore();
     });
   });

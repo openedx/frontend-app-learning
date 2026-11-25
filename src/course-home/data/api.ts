@@ -1,5 +1,8 @@
-import { camelCaseObject, getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import {
+  camelCaseObject, getAppConfig, getAuthenticatedHttpClient, getSiteConfig,
+} from '@openedx/frontend-base';
+
+import { appId } from '@src/constants';
 
 import { getResponseStatus } from '@src/data/http-error';
 import type { TabMetadata } from '@src/course-tabs/utils';
@@ -52,7 +55,7 @@ function normalizeCourseHomeCourseMetadata(metadata: unknown): CourseHomeMeta {
 }
 
 export async function getCourseHomeCourseMetadata(courseId: string): Promise<CourseHomeMeta> {
-  let url = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
+  let url = `${getSiteConfig().lmsBaseUrl}/api/course_home/course_metadata/${courseId}`;
   url = appendBrowserTimezoneToUrl(url);
   const { data } = await getAuthenticatedHttpClient().get(url);
   return normalizeCourseHomeCourseMetadata(data);
@@ -93,7 +96,7 @@ export interface CourseHomeDates {
 // import './__factories__';
 export async function getDatesTabData(courseId: string): Promise<CourseHomeDates> {
   // return camelCaseObject(Factory.build('datesTabData'));
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/dates/${courseId}`;
+  const url = `${getSiteConfig().lmsBaseUrl}/api/course_home/dates/${courseId}`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return camelCaseObject(data);
@@ -190,7 +193,7 @@ export interface CourseHomeProgress {
 }
 
 export async function getProgressTabData(courseId: string, targetUserId?: string): Promise<CourseHomeProgress> {
-  let url = `${getConfig().LMS_BASE_URL}/api/course_home/progress/${courseId}`;
+  let url = `${getSiteConfig().lmsBaseUrl}/api/course_home/progress/${courseId}`;
 
   // If targetUserId is passed in, we will get the progress page data
   // for the user with the provided id, rather than the requesting user.
@@ -259,13 +262,13 @@ export interface ProctoringInfo {
 
 export async function getProctoringInfoData(courseId: string, username?: string): Promise<ProctoringInfo> {
   let url;
-  if (!getConfig().EXAMS_BASE_URL) {
-    url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
+  if (!getAppConfig(appId).EXAMS_BASE_URL) {
+    url = `${getSiteConfig().lmsBaseUrl}/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`;
     if (username) {
       url += `&username=${encodeURIComponent(username)}`;
     }
   } else {
-    url = `${getConfig().EXAMS_BASE_URL}/api/v1/student/course_id/${encodeURIComponent(courseId)}/onboarding`;
+    url = `${getAppConfig(appId).EXAMS_BASE_URL}/api/v1/student/course_id/${encodeURIComponent(courseId)}/onboarding`;
     if (username) {
       url += `?username=${encodeURIComponent(username)}`;
     }
@@ -290,7 +293,7 @@ export interface CourseLiveIframe {
 }
 
 export async function getLiveTabIframe(courseId: string): Promise<CourseLiveIframe> {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_live/iframe/${courseId}/`;
+  const url = `${getSiteConfig().lmsBaseUrl}/api/course_live/iframe/${courseId}/`;
   try {
     const { data } = await getAuthenticatedHttpClient().get(url);
     return data;
@@ -319,7 +322,7 @@ export function getTimeOffsetMillis(headerDate: string | undefined, requestTime:
 }
 
 export async function getOutlineTabData(courseId: string): Promise<CourseHomeOutline | Record<string, never>> {
-  const url = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
+  const url = `${getSiteConfig().lmsBaseUrl}/api/course_home/outline/${courseId}`;
   const requestTime = Date.now();
   let tabData;
   try {
@@ -354,7 +357,7 @@ export interface CallToActionResponse {
 }
 
 export async function postCourseDeadlines(courseId: string, model: string): Promise<{ data: CallToActionResponse }> {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`);
+  const url = new URL(`${getSiteConfig().lmsBaseUrl}/api/course_experience/v1/reset_course_deadlines`);
   return getAuthenticatedHttpClient().post(url.href, {
     course_key: courseId,
     research_event_data: { location: `${model}-tab` },
@@ -366,7 +369,7 @@ export async function postWeeklyLearningGoal(
   daysPerWeek: number,
   subscribedToReminders: boolean,
 ): Promise<unknown> {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`);
+  const url = new URL(`${getSiteConfig().lmsBaseUrl}/api/course_home/save_course_goal`);
   return getAuthenticatedHttpClient().post(url.href, {
     course_id: courseId,
     days_per_week: daysPerWeek,
@@ -375,12 +378,12 @@ export async function postWeeklyLearningGoal(
 }
 
 export async function postDismissWelcomeMessage(courseId: string): Promise<void> {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/dismiss_welcome_message`);
+  const url = new URL(`${getSiteConfig().lmsBaseUrl}/api/course_home/dismiss_welcome_message`);
   await getAuthenticatedHttpClient().post(url.href, { course_id: courseId });
 }
 
 export async function postRequestCert(courseId: string): Promise<void> {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/generate_user_cert`);
+  const url = new URL(`${getSiteConfig().lmsBaseUrl}/courses/${courseId}/generate_user_cert`);
   await getAuthenticatedHttpClient().post(url.href);
 }
 
@@ -407,13 +410,13 @@ export interface UnsubscribeFromCourseGoalResponse {
 }
 
 export async function unsubscribeFromCourseGoal(token: string): Promise<UnsubscribeFromCourseGoalResponse> {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/unsubscribe_from_course_goal/${token}`);
+  const url = new URL(`${getSiteConfig().lmsBaseUrl}/api/course_home/unsubscribe_from_course_goal/${token}`);
   return getAuthenticatedHttpClient().post(url.href)
     .then(res => camelCaseObject(res));
 }
 
 export async function getCoursewareSearchEnabled(courseId: string): Promise<{ enabled: boolean }> {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/courses/${courseId}/courseware-search/enabled/`);
+  const url = new URL(`${getSiteConfig().lmsBaseUrl}/courses/${courseId}/courseware-search/enabled/`);
   const { data } = await getAuthenticatedHttpClient().get(url.href);
   return { enabled: data.enabled || false };
 }
@@ -432,7 +435,7 @@ export async function searchCourseContentFromAPI(
   const defaults = { page: 0, limit: 20 };
   const { page, limit } = { ...defaults, ...options };
 
-  const url = new URL(`${getConfig().LMS_BASE_URL}/search/${courseId}`);
+  const url = new URL(`${getSiteConfig().lmsBaseUrl}/search/${courseId}`);
   const formData = `search_string=${searchKeyword}&page_size=${limit}&page_index=${page}`;
   const response = await getAuthenticatedHttpClient().post(url.href, formData);
 
@@ -449,10 +452,10 @@ export interface ExamAttempt {
 export async function getExamsData(courseId: string, sequenceId: string): Promise<ExamAttempt> {
   let url;
 
-  if (!getConfig().EXAMS_BASE_URL) {
-    url = `${getConfig().LMS_BASE_URL}/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${encodeURIComponent(courseId)}?is_learning_mfe=true&content_id=${encodeURIComponent(sequenceId)}`;
+  if (!getAppConfig(appId).EXAMS_BASE_URL) {
+    url = `${getSiteConfig().lmsBaseUrl}/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${encodeURIComponent(courseId)}?is_learning_mfe=true&content_id=${encodeURIComponent(sequenceId)}`;
   } else {
-    url = `${getConfig().EXAMS_BASE_URL}/api/v1/student/exam/attempt/course_id/${encodeURIComponent(courseId)}/content_id/${encodeURIComponent(sequenceId)}`;
+    url = `${getAppConfig(appId).EXAMS_BASE_URL}/api/v1/student/exam/attempt/course_id/${encodeURIComponent(courseId)}/content_id/${encodeURIComponent(sequenceId)}`;
   }
 
   try {

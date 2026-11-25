@@ -1,64 +1,110 @@
-import React from 'react';
-import {
-  MemoryRouter, Route, Routes,
-} from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { render, screen } from '@testing-library/react';
+import {
+  getAnalyticsService, getAuthenticatedHttpClient, getSiteConfig, mergeAppConfig, runPageRules, setAuthenticatedUser,
+  setSiteConfig,
+} from '@openedx/frontend-base';
+import { act, screen } from '@testing-library/react';
 
-import GoalUnsubscribe from './GoalUnsubscribe';
-import { act, initializeMockApp } from '../../setupTest';
-import { UserMessagesProvider } from '../../generic/user-messages';
+import { appId, dashboardRole } from '@src/constants';
+import routes from '@src/routes';
+import { authenticatedUser } from '@src/tests/authenticatedUser';
+import { renderRoutes } from '@src/tests/render';
 
-initializeMockApp();
-jest.mock('@edx/frontend-platform/analytics');
+const { sendPageEvent, sendTrackEvent } = getAnalyticsService();
+const siteConfig = getSiteConfig();
 
 describe('GoalUnsubscribe', () => {
   let axiosMock;
-  let component;
-  const unsubscribeUrl = `${getConfig().LMS_BASE_URL}/api/course_home/unsubscribe_from_course_goal/TOKEN`;
+  const unsubscribeUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/unsubscribe_from_course_goal/TOKEN`;
+  const renderPage = () => renderRoutes(routes, '/learning/goal-unsubscribe/TOKEN');
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    component = (
-      <AppProvider wrapWithRouter={false}>
-        <UserMessagesProvider>
-          <MemoryRouter initialEntries={['/goal-unsubscribe/TOKEN']}>
-            <Routes>
-              <Route path="/goal-unsubscribe/:token" element={<GoalUnsubscribe />} />
-            </Routes>
-          </MemoryRouter>
-        </UserMessagesProvider>
-      </AppProvider>
-    );
+    sendPageEvent.mockClear();
+    sendTrackEvent.mockClear();
+    setSiteConfig({ ...siteConfig, externalRoutes: [{ role: dashboardRole, url: 'http://localhost:18000/dashboard' }] });
+    mergeAppConfig(appId, { CONTACT_URL: 'http://localhost:18000/contact' });
   });
 
-  it('starts with a spinner', () => {
-    render(component);
-    expect(screen.getByRole('status')).toBeInTheDocument();
+  afterEach(() => {
+    act(() => {
+      setSiteConfig(siteConfig);
+      mergeAppConfig(appId, { CONTACT_URL: null });
+      setAuthenticatedUser(authenticatedUser);
+    });
+  });
+
+  it('starts with a spinner', async () => {
+    axiosMock.onPost(unsubscribeUrl).reply(() => new Promise(() => {}));
+    renderPage();
+    expect(await screen.findByRole('status')).toBeInTheDocument();
+  });
+
+  it('sends the page event and the unsubscribe event', async () => {
+    axiosMock.onPost(unsubscribeUrl).reply(200, { course_title: 'My Sample Course' });
+    renderPage();
+    await screen.findByText('You’ve unsubscribed from goal reminders');
+
+    expect(sendPageEvent).toHaveBeenCalledTimes(1);
+    expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.goal.unsubscribe', { token: 'TOKEN' });
   });
 
   it('loads a real token', async () => {
-    const response = { course_title: 'My Sample Course' };
-    axiosMock.onPost(unsubscribeUrl).reply(200, response);
-    await act(async () => render(component));
+    axiosMock.onPost(unsubscribeUrl).reply(200, { course_title: 'My Sample Course' });
+    renderPage();
 
-    expect(screen.getByText('You’ve unsubscribed from goal reminders')).toBeInTheDocument();
+    expect(await screen.findByText('You’ve unsubscribed from goal reminders')).toBeInTheDocument();
     expect(screen.getByText(/your goal for My Sample Course/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Go to dashboard' }))
       .toHaveAttribute('href', 'http://localhost:18000/dashboard');
+    expect(runPageRules(document)).toEqual([]);
+  });
+
+  it('draws the envelope inline, in the brand color', async () => {
+    axiosMock.onPost(unsubscribeUrl).reply(200, { course_title: 'My Sample Course' });
+    const { container } = renderPage();
+    await screen.findByText('You’ve unsubscribed from goal reminders');
+
+    const envelope = container.querySelector('svg[viewBox="0 0 167 153"]');
+    expect(envelope).toHaveClass('text-primary');
+    expect(envelope.querySelector('path')).toHaveAttribute('fill', 'currentColor');
+  });
+
+  it('unsubscribes an anonymous visitor', async () => {
+    setAuthenticatedUser(null);
+    axiosMock.onPost(unsubscribeUrl).reply(200, { course_title: 'My Sample Course' });
+    renderPage();
+
+    expect(await screen.findByText('You’ve unsubscribed from goal reminders')).toBeInTheDocument();
+    expect(axiosMock.history.post.map((request) => request.url)).toEqual([unsubscribeUrl]);
   });
 
   it('loads a bad token with an error page', async () => {
     axiosMock.onPost(unsubscribeUrl).reply(404, {});
-    await act(async () => render(component));
+    renderPage();
 
-    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+    expect(await screen.findByText('Something went wrong')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Go to dashboard' }))
       .toHaveAttribute('href', 'http://localhost:18000/dashboard');
     expect(screen.getByRole('link', { name: 'contact support' }))
       .toHaveAttribute('href', 'http://localhost:18000/contact');
+  });
+
+  it('names support without a link when no contact URL is configured', async () => {
+    mergeAppConfig(appId, { CONTACT_URL: null });
+    axiosMock.onPost(unsubscribeUrl).reply(404, {});
+    renderPage();
+
+    expect(await screen.findByText(/contact support for help/)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'contact support' })).not.toBeInTheDocument();
+  });
+
+  it('leaves out the dashboard button when nothing provides the dashboard role', async () => {
+    setSiteConfig(siteConfig);
+    axiosMock.onPost(unsubscribeUrl).reply(200, { course_title: 'My Sample Course' });
+    renderPage();
+
+    expect(await screen.findByText('You’ve unsubscribed from goal reminders')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Go to dashboard' })).not.toBeInTheDocument();
   });
 });

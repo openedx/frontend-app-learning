@@ -1,14 +1,16 @@
-import { logError } from '@edx/frontend-platform/logging';
+import { logError } from '@openedx/frontend-base';
 import {
   queryOptions, useMutation, useQuery, useQueryClient,
 } from '@tanstack/react-query';
 
 import { appId } from '@src/constants';
+import { queryDefaults } from '@src/queryClient';
 import { getTourData, patchTourData } from './api';
 
 const toursKey = [appId, 'tours'] as const;
 
 export const tourDataQuery = (username: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...toursKey, username] as const,
   queryFn: () => getTourData(username),
 });

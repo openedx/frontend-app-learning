@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import {
+  getAuthenticatedUser, getLinkProps, getSiteConfig, useIntl,
+} from '@openedx/frontend-base';
 import { Helmet } from 'react-helmet';
-import { useParams } from 'react-router-dom';
 import { Alert, Button } from '@openedx/paragon';
-import { getConfig } from '@edx/frontend-platform';
 
 import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 import { useDatesTabUrl } from '../../../course-tabs/hooks';
@@ -14,10 +13,11 @@ import CatalogSuggestion from './CatalogSuggestion';
 import DashboardFootnote from './DashboardFootnote';
 import messages from './messages';
 import { logClick, logVisit } from './utils';
+import { useCourseId } from '@src/generic/course-params';
 
 const CourseInProgress = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const {
     org,
     title,
@@ -32,7 +32,13 @@ const CourseInProgress = () => {
   return (
     <>
       <Helmet>
-        <title>{`${intl.formatMessage(messages.endOfCourseTitle)} | ${title} | ${getConfig().SITE_NAME}`}</title>
+        <title>
+          {intl.formatMessage(messages.pageTitle, {
+            pageName: intl.formatMessage(messages.endOfCourseTitle),
+            courseTitle: title,
+            siteName: getSiteConfig().siteName,
+          })}
+        </title>
       </Helmet>
       <div className="row w-100 mx-0 mb-4 px-5 py-4 border border-light justify-content-center">
         <div className="col-12 p-0 h2 text-center">
@@ -45,7 +51,7 @@ const CourseInProgress = () => {
               <Button
                 variant="primary"
                 className="mt-3 my-md-0 mb-1 ml-md-5 w-xs-100 w-md-auto"
-                href={datesTabLink}
+                {...getLinkProps(datesTabLink)}
                 onClick={() => logClick(org, courseId, administrator, 'view_dates_tab')}
               >
                 {intl.formatMessage(messages.viewCourseScheduleButton)}

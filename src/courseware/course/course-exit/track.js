@@ -1,4 +1,4 @@
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackEvent } from '@openedx/frontend-base';
 import { FAILED, LOADED } from '@src/constants';
 
 export const trackRecommendationsViewed = ({ courseKey, isError, length }) => {

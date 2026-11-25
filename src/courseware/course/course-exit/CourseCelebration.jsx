@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
-import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import {
+  FormattedDate, FormattedMessage, getAuthenticatedUser, getSiteConfig, useAppConfig, useIntl,
+} from '@openedx/frontend-base';
 import { Helmet } from 'react-helmet';
-import { useParams } from 'react-router-dom';
 import {
   Alert,
   breakpoints,
@@ -13,9 +14,8 @@ import {
   useWindowSize,
 } from '@openedx/paragon';
 import { CheckCircle } from '@openedx/paragon/icons';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 
+import CourseRecommendationsSlot from '@src/slots/CourseExitSlots/CourseRecommendationsSlot';
 import CelebrationMobile from './assets/celebration_456x328.gif';
 import CelebrationDesktop from './assets/celebration_750x540.gif';
 import certificate from '../../../generic/assets/openedx_certificate.png';
@@ -30,14 +30,15 @@ import SocialIcons from '../../social-share/SocialIcons';
 import { logClick, logVisit } from './utils';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import DashboardFootnote from './DashboardFootnote';
-import { CourseRecommendationsSlot } from '../../../plugin-slots/CourseExitPluginSlots';
+import { useCourseId } from '@src/generic/course-params';
 
 const LINKEDIN_BLUE = '#2867B2';
 
 const CourseCelebration = () => {
   const intl = useIntl();
+  const { SUPPORT_URL_VERIFIED_CERTIFICATE: supportUrlVerifiedCertificate } = useAppConfig();
   const wideScreen = useWindowSize().width >= breakpoints.medium.minWidth;
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const requestCert = useRequestCert();
   const {
     certificateData,
@@ -100,7 +101,7 @@ const CourseCelebration = () => {
         </p>
       );
       if (certWebViewUrl) {
-        buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
+        buttonLocation = `${getSiteConfig().lmsBaseUrl}${certWebViewUrl}`;
         buttonText = intl.formatMessage(messages.viewCertificateButton);
       }
       if (linkedinAddToProfileUrl) {
@@ -204,11 +205,11 @@ const CourseCelebration = () => {
               description="Body text when the learner needs to upgrade to earn a certifcate and they have passed the course"
             />
             <br />
-            {getConfig().SUPPORT_URL_VERIFIED_CERTIFICATE && (
+            {supportUrlVerifiedCertificate && (
               <Hyperlink
                 className="text-gray-700"
                 style={{ textDecoration: 'underline' }}
-                destination={getConfig().SUPPORT_URL_VERIFIED_CERTIFICATE}
+                destination={supportUrlVerifiedCertificate}
               >
                 {intl.formatMessage(messages.verifiedCertificateSupportLink)}
               </Hyperlink>
@@ -277,7 +278,13 @@ const CourseCelebration = () => {
   return (
     <>
       <Helmet>
-        <title>{`${intl.formatMessage(messages.congratulationsHeader)} | ${title} | ${getConfig().SITE_NAME}`}</title>
+        <title>
+          {intl.formatMessage(messages.pageTitle, {
+            pageName: intl.formatMessage(messages.congratulationsHeader),
+            courseTitle: title,
+            siteName: getSiteConfig().siteName,
+          })}
+        </title>
       </Helmet>
       <div className="row w-100 mx-0 mb-4 px-5 py-4 border border-light">
         <div className="col-12 p-0 h2 text-center">
@@ -356,7 +363,7 @@ const CourseCelebration = () => {
             />
           ))}
           {footnote}
-          <CourseRecommendationsSlot variant={visitEvent} />
+          <CourseRecommendationsSlot courseId={courseId} variant={visitEvent} />
         </div>
       </div>
     </>

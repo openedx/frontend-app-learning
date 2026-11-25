@@ -1,36 +1,21 @@
-const { createConfig } = require('@openedx/frontend-build');
+const { createConfig } = require('@openedx/frontend-base/tools');
 
-const mergedConfig = createConfig('jest', {
+module.exports = createConfig('test', {
+  testEnvironment: '<rootDir>/jsdom-environment-with-node-fetch.mjs',
   setupFilesAfterEnv: [
     '<rootDir>/src/setupTest.js',
   ],
   coveragePathIgnorePatterns: [
     'src/setupTest.js',
     'src/i18n',
-    'src/.*\\.exp\\..*',
+    'src/__mocks__',
+    'src/tests',
   ],
   moduleNameMapper: {
-    // See https://stackoverflow.com/questions/72382316/jest-encountered-an-unexpected-token-react-markdown
-    'react-markdown': '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
-    '@src/(.*)': '<rootDir>/src/$1',
-    // Explicit mapping to ensure Jest resolves the module correctly
+    '^@src/(.*)$': '<rootDir>/src/$1',
+    // The library's `exports` has only an `import` condition, which Jest's resolver does not match.
     '^@edx/frontend-lib-special-exams$': '<rootDir>/node_modules/@edx/frontend-lib-special-exams',
+    '\\.svg$': '<rootDir>/src/__mocks__/svg.js',
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/src/__mocks__/file.js',
   },
-  testTimeout: 30000,
-  globalSetup: "./global-setup.js",
-  verbose: true,
-  testEnvironment: 'jsdom',
 });
-
-// Limit ts-jest diagnostics to test files so type errors in transformed
-// dependencies (included via transformIgnorePatterns) don't fail the run.
-mergedConfig.transform['^.+\\.[tj]sx?$'] = [
-  'ts-jest',
-  {
-    diagnostics: {
-      exclude: ['!**/*.test.*'],
-    },
-  },
-];
-
-module.exports = mergedConfig;

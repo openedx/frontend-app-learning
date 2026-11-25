@@ -1,16 +1,15 @@
-import { useParams } from 'react-router-dom';
 
-import { useIntl } from '@edx/frontend-platform/i18n';
-import { getExternalLinkUrl } from '@edx/frontend-platform';
+import { getExternalLinkUrl, useIntl } from '@openedx/frontend-base';
 import { Button } from '@openedx/paragon';
 
 import messages from '../messages';
 import { useCourseHomeMeta, useProctoringInfoData } from '../../data/apiHooks';
 import { getReadableProctoringStatus, readableProctoringStatuses } from '../utils';
+import { useCourseId } from '@src/generic/course-params';
 
 const ProctoringInfoPanel = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const username = useCourseHomeMeta(courseId, { enabled: false }).data?.username;
   const { data: proctoringInfo } = useProctoringInfoData(courseId, username);
 
@@ -74,14 +73,14 @@ const ProctoringInfoPanel = () => {
         {intl.formatMessage(messages.proctoringOnboardingButtonPastDue)}
       </Button>
     );
-  } else if (!isNotYetReleased(releaseDate)) {
+  } else {
     if (readableStatus === readableProctoringStatuses.otherCourseApproved) {
       onboardingExamButton = (
         <Button variant="primary" block href={link}>
           {intl.formatMessage(messages.proctoringOnboardingPracticeButton)}
         </Button>
       );
-    } else if (readableStatus !== readableProctoringStatuses.otherCourseApproved) {
+    } else {
       onboardingExamButton = (
         <Button variant="primary" block href={link}>
           {intl.formatMessage(messages.proctoringOnboardingButton)}
@@ -91,7 +90,6 @@ const ProctoringInfoPanel = () => {
   }
 
   return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       { showInfoPanel && (
         <section className={`mb-4 p-3 outline-sidebar-proctoring-panel ${getBorderClass()}`}>

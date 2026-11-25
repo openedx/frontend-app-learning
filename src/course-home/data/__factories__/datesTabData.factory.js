@@ -1,4 +1,4 @@
-import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
+import { Factory } from 'rosie';
 
 // Sample data helpful when developing & testing, to see a variety of configurations.
 // This set of data is not realistic (mix of having access and not), but it

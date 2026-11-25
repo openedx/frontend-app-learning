@@ -1,49 +1,42 @@
 import React from 'react';
-import { useParams, Navigate } from 'react-router-dom';
-import { useIntl } from '@edx/frontend-platform/i18n';
-import { FooterSlot } from '@edx/frontend-component-footer';
-import HeaderSlot from '../plugin-slots/HeaderSlot';
+import { getUrlByRouteRole, useIntl } from '@openedx/frontend-base';
+import { Navigate } from 'react-router-dom';
+
+import { learningRole } from '@src/constants';
 import useActiveEnterpriseAlert from '../alerts/active-enteprise-alert';
 import { AlertList } from './user-messages';
 import { useCourseHomeMeta } from '../course-home/data/apiHooks';
 import PageLoading from './PageLoading';
 import messages from '../tab-page/messages';
+import { useCourseId } from '@src/generic/course-params';
 
 const CourseAccessErrorPage = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
 
   const activeEnterpriseAlert = useActiveEnterpriseAlert(courseId);
   const metadataQuery = useCourseHomeMeta(courseId);
 
   if (metadataQuery.isPending) {
     return (
-      <>
-        <HeaderSlot />
-        <PageLoading
-          srMessage={intl.formatMessage(messages.loading)}
-        />
-        <FooterSlot />
-      </>
+      <PageLoading
+        srMessage={intl.formatMessage(messages.loading)}
+      />
     );
   }
   if (metadataQuery.data?.courseAccess?.hasAccess) {
-    return <Navigate to={`/redirect/home/${courseId}`} replace />;
+    return <Navigate to={`${getUrlByRouteRole(learningRole)}/redirect/home/${courseId}`} replace />;
   }
   return (
-    <>
-      <HeaderSlot />
-      <main id="main-content" className="container my-5 text-center" data-testid="access-denied-main">
-        <AlertList
-          topic="outline"
-          className="mx-5 mt-3"
-          customAlerts={{
-            ...activeEnterpriseAlert,
-          }}
-        />
-      </main>
-      <FooterSlot />
-    </>
+    <main className="container my-5 text-center" data-testid="access-denied-main">
+      <AlertList
+        topic="outline"
+        className="mx-5 mt-3"
+        customAlerts={{
+          ...activeEnterpriseAlert,
+        }}
+      />
+    </main>
   );
 };
 

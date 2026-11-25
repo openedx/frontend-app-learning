@@ -1,9 +1,8 @@
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import {
+  getAuthenticatedUser, getLinkProps, sendTrackEvent, useIntl,
+} from '@openedx/frontend-base';
 import { Locked } from '@openedx/paragon/icons';
 import { Icon, Hyperlink } from '@openedx/paragon';
-import { useParams } from 'react-router-dom';
 import { useCourseHomeMeta } from '../../../data/apiHooks';
 import { useCourseOutlineUrl } from '../../../../course-tabs/hooks';
 import { useProgressData } from '../../hooks';
@@ -12,11 +11,12 @@ import { showUngradedAssignments } from '../../utils';
 import DetailedGradesTable from './DetailedGradesTable';
 
 import messages from '../messages';
+import { useCourseId } from '@src/generic/course-params';
 
 const DetailedGrades = () => {
   const intl = useIntl();
   const { administrator } = getAuthenticatedUser();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     gradesFeatureIsFullyLocked,
@@ -42,7 +42,7 @@ const DetailedGrades = () => {
     <Hyperlink
       variant="muted"
       isInline
-      destination={courseOutlineUrl}
+      {...getLinkProps(courseOutlineUrl)}
       onClick={logOutlineLinkClick}
       tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
     >

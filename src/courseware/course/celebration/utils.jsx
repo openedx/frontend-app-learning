@@ -1,9 +1,8 @@
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { getAuthenticatedUser, sendTrackEvent } from '@openedx/frontend-base';
 
 import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
+import { clearLocalStorage, getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import { postCelebrationComplete } from './data/api';
-import { clearLocalStorage, getLocalStorage, setLocalStorage } from '../../../data/localStorage';
 
 const CELEBRATION_LOCAL_STORAGE_KEY = 'CelebrationModal.showOnSectionLoad';
 
@@ -60,7 +59,7 @@ function shouldCelebrateOnSectionLoad(courseId, sequenceId, celebrateFirstSectio
     nextSequenceId,
   } = celebrationIds;
   const onTargetSequence = sequenceId === nextSequenceId;
-  let shouldCelebrate = onTargetSequence && celebrateFirstSection;
+  let shouldCelebrate = onTargetSequence && !!celebrateFirstSection;
 
   if (shouldCelebrate && celebrations.streakLengthToCelebrate) {
     // We don't want two modals to show up on the same page.

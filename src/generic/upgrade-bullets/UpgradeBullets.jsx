@@ -1,8 +1,7 @@
 import React from 'react';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
-import { getConfig } from '@edx/frontend-platform';
+import { FormattedMessage, getSiteConfig, useAppConfig } from '@openedx/frontend-base';
 
 const CheckmarkBullet = () => (
   <span className="fa-li"><FontAwesomeIcon icon={faCheck} /></span>
@@ -10,13 +9,18 @@ const CheckmarkBullet = () => (
 
 // Must be child of a <ul className="fa-ul">
 export const VerifiedCertBullet = () => {
-  const verifiedCertLink = (
-    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${getConfig().MARKETING_SITE_BASE_URL}/verified-certificate`}>
-      <FormattedMessage
-        id="learning.generic.upsell.verifiedCertBullet.verifiedCert"
-        defaultMessage="verified certificate"
-        description="Bolded words 'verified certificate', which is the name of credential the learner receives."
-      />
+  const { MARKETING_SITE_BASE_URL: marketingSiteBaseUrl } = useAppConfig();
+  const verifiedCert = (
+    <FormattedMessage
+      id="learning.generic.upsell.verifiedCertBullet.verifiedCert"
+      defaultMessage="verified certificate"
+      description="Bolded words 'verified certificate', which is the name of credential the learner receives."
+    />
+  );
+  // Without a marketing site to point at, the words are bold but not linked.
+  const verifiedCertLink = marketingSiteBaseUrl ? (
+    <a className="inline-link-underline font-weight-bold" rel="noopener noreferrer" target="_blank" href={`${marketingSiteBaseUrl}/verified-certificate`}>
+      {verifiedCert}
       <span className="sr-only">
         <FormattedMessage
           id="learning.generic.upsell.verifiedCertBullet.verifiedCert.newTab.screenreaderOnly.message"
@@ -24,6 +28,8 @@ export const VerifiedCertBullet = () => {
         />
       </span>
     </a>
+  ) : (
+    <span className="font-weight-bold">{verifiedCert}</span>
   );
   return (
     <li className="upgrade-bullet">
@@ -104,7 +110,7 @@ export const SupportMissionBullet = () => {
         id="learning.generic.upsell.supportMissionBullet"
         defaultMessage="Support our {missionInBoldText} at {siteName}"
         description="Bullet encouraging user to support edX's goals."
-        values={{ missionInBoldText, siteName: getConfig().SITE_NAME }}
+        values={{ missionInBoldText, siteName: getSiteConfig().siteName }}
       />
     </li>
   );

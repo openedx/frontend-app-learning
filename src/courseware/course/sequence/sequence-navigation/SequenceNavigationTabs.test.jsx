@@ -1,18 +1,18 @@
-import React from 'react';
 import { Factory } from 'rosie';
-import { getAllByRole } from '@testing-library/react';
+import { getAllByRole, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { mockCourseRequests, render, screen } from '../../../../setupTest';
+import useIndexOfLastVisibleChild from '@src/generic/tabs/useIndexOfLastVisibleChild';
+import { mockCourseRequests, renderInCourseware } from '@src/tests/courseware';
 import { SidebarProvider } from '../../sidebar/SidebarContext';
 import SequenceNavigationTabs from './SequenceNavigationTabs';
-import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
 // Mock the hook to avoid relying on its implementation and mocking `getBoundingClientRect`.
-jest.mock('../../../../generic/tabs/useIndexOfLastVisibleChild');
+jest.mock('@src/generic/tabs/useIndexOfLastVisibleChild');
 
 describe('Sequence Navigation Tabs', () => {
   let mockData;
+  let sequenceId;
 
   const courseMetadata = Factory.build('courseMetadata');
   const unitBlocks = [Factory.build(
@@ -31,7 +31,7 @@ describe('Sequence Navigation Tabs', () => {
   const activeBlockNumber = 2;
 
   beforeAll(async () => {
-    mockCourseRequests({ courseMetadata, unitBlocks });
+    ({ sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks }));
     mockData = {
       // Blocks are numbered from 1 in the UI, so we're decreasing this by 1 to have correct block's ID in the array.
       unitId: unitBlocks[activeBlockNumber - 1].id,
@@ -41,18 +41,18 @@ describe('Sequence Navigation Tabs', () => {
     };
   });
 
-  const renderTabs = () => render(
+  const renderTabs = () => renderInCourseware(
     <SidebarProvider courseId={courseMetadata.id} unitId={mockData.unitId} widgets={[]}>
       <SequenceNavigationTabs {...mockData} />
     </SidebarProvider>,
-    { wrapWithRouter: true },
+    { courseId: courseMetadata.id, sequenceId, unitId: mockData.unitId },
   );
 
-  it('renders unit buttons', () => {
+  it('renders unit buttons', async () => {
     useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
     renderTabs();
 
-    expect(screen.getAllByRole('link')).toHaveLength(unitBlocks.length);
+    expect(await screen.findAllByRole('link')).toHaveLength(unitBlocks.length);
   });
 
   it('renders unit buttons and dropdown button', async () => {

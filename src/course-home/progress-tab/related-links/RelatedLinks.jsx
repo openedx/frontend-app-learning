@@ -1,16 +1,16 @@
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import {
+  getAuthenticatedUser, getLinkProps, sendTrackEvent, useIntl,
+} from '@openedx/frontend-base';
 import { Hyperlink } from '@openedx/paragon';
-import { useParams } from 'react-router-dom';
 
 import { useCourseOutlineUrl, useDatesTabUrl } from '../../../course-tabs/hooks';
 import messages from './messages';
 import { useCourseHomeMeta } from '../../data/apiHooks';
+import { useCourseId } from '@src/generic/course-params';
 
 const RelatedLinks = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const { administrator } = getAuthenticatedUser();
@@ -31,20 +31,20 @@ const RelatedLinks = () => {
       <h3 className="h4">{intl.formatMessage(messages.relatedLinks)}</h3>
       <ul className="pl-4">
         {datesTabUrl && (
-        <li>
-          <Hyperlink destination={datesTabUrl} onClick={() => logLinkClicked('dates')}>
-            {intl.formatMessage(messages.datesCardLink)}
-          </Hyperlink>
-          <p>{intl.formatMessage(messages.datesCardDescription)}</p>
-        </li>
+          <li>
+            <Hyperlink {...getLinkProps(datesTabUrl)} onClick={() => logLinkClicked('dates')}>
+              {intl.formatMessage(messages.datesCardLink)}
+            </Hyperlink>
+            <p>{intl.formatMessage(messages.datesCardDescription)}</p>
+          </li>
         )}
         {courseOutlineUrl && (
-        <li>
-          <Hyperlink destination={courseOutlineUrl} onClick={() => logLinkClicked('course_outline')}>
-            {intl.formatMessage(messages.outlineCardLink)}
-          </Hyperlink>
-          <p>{intl.formatMessage(messages.outlineCardDescription)}</p>
-        </li>
+          <li>
+            <Hyperlink {...getLinkProps(courseOutlineUrl)} onClick={() => logLinkClicked('course_outline')}>
+              {intl.formatMessage(messages.outlineCardLink)}
+            </Hyperlink>
+            <p>{intl.formatMessage(messages.outlineCardDescription)}</p>
+          </li>
         )}
       </ul>
     </section>

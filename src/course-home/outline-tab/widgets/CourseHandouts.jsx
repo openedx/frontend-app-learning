@@ -1,15 +1,15 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 
 import LmsHtmlFragment from '../LmsHtmlFragment';
 import messages from '../messages';
 import { useOutlineTabData } from '../../data/apiHooks';
+import { useCourseId } from '@src/generic/course-params';
 
 const CourseHandouts = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const {
     handoutsHtml,
   } = useOutlineTabData(courseId, { enabled: false }).data ?? {};

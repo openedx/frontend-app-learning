@@ -4,7 +4,7 @@ import { useCoursewareMetadata, useMinimalCourseOutline, useSequenceMetadata } f
 // Mounts the query hooks CoursewareContainer mounts (courseware metadata, outline, course-home
 // metadata and, when given a sequenceId, the sequence metadata), for components under test that
 // only read them.
-const MountCourseQueryHooks = ({ courseId, sequenceId }: { courseId: string, sequenceId?: string }) => {
+const MountCourseQueryHooks = ({ courseId, sequenceId }: { courseId: string; sequenceId?: string }) => {
   useCoursewareMetadata(courseId);
   useMinimalCourseOutline(courseId);
   useCourseHomeMeta(courseId);

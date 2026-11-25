@@ -1,12 +1,11 @@
 import React from 'react';
 import {
   act,
-  initializeMockApp,
-  render,
   screen,
   waitFor,
   fireEvent,
-} from '../../setupTest';
+} from '@testing-library/react';
+import { render } from '@src/tests/render';
 import CoursewareSearchForm from './CoursewareSearchForm';
 
 function renderComponent(placeholder, onSubmit, onChange) {
@@ -18,7 +17,7 @@ function renderComponent(placeholder, onSubmit, onChange) {
   return container;
 }
 
-describe('CoursewareSearchToggle', () => {
+describe('CoursewareSearchForm', () => {
   const placeholderText = 'Search for courseware';
   let onSubmitHandlerMock;
   let onChangeHandlerMock;
@@ -26,7 +25,6 @@ describe('CoursewareSearchToggle', () => {
   beforeAll(async () => {
     onChangeHandlerMock = jest.fn();
     onSubmitHandlerMock = jest.fn();
-    initializeMockApp();
   });
 
   it('should render', async () => {

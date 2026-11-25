@@ -1,20 +1,23 @@
 import { useEffect } from 'react';
 
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
+import CourseExitViewCoursesSlot from '@src/slots/CourseExitSlots/CourseExitViewCoursesSlot';
 import CourseCelebration from './CourseCelebration';
 import CourseInProgress from './CourseInProgress';
 import CourseNonPassing from './CourseNonPassing';
 import { COURSE_EXIT_MODES, getCourseExitMode } from './utils';
 import { postUnsubscribeFromGoalReminders } from './data/api';
-import { CourseExitViewCoursesPluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
 
 import { TabWithTimer } from '../../../tab-page';
+import ProductTours from '../../../product-tours/ProductTours';
 import { useCoursewareMetadata, useMinimalCourseOutline } from '../../data/apiHooks';
 import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
+import { getCourseOutlineUrl, getCoursewareUrl } from '../../urls';
+import { useCourseId } from '@src/generic/course-params';
 
 const CourseExitContent = () => {
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const {
     certificateData,
     courseExitPageIsActive,
@@ -44,11 +47,12 @@ const CourseExitContent = () => {
   // Audit users cannot fully complete a course, so we will
   // unsubscribe them from goal reminders once they reach the course exit page
   // to avoid spamming them with goal reminder emails
-  if (courseGoals && enrollmentMode === 'audit' && !isMasquerading) {
-    useEffect(() => {
+  const shouldUnsubscribe = !!courseGoals && enrollmentMode === 'audit' && !isMasquerading;
+  useEffect(() => {
+    if (shouldUnsubscribe) {
       postUnsubscribeFromGoalReminders(courseId);
-    }, []);
-  }
+    }
+  }, [shouldUnsubscribe, courseId]);
 
   let body = null;
   if (mode === COURSE_EXIT_MODES.nonPassing) {
@@ -58,32 +62,42 @@ const CourseExitContent = () => {
   } else if (mode === COURSE_EXIT_MODES.celebration) {
     body = (<CourseCelebration />);
   } else {
-    return (<Navigate to={`/course/${courseId}`} replace />);
+    return (<Navigate to={getCoursewareUrl(courseId)} replace />);
   }
 
+  // The courseware tab leaves the <main> landmark to its page, as the unit page does in Sequence.
   return (
-    <>
-      <CourseExitViewCoursesPluginSlot />
+    <main className="d-flex flex-column flex-grow-1">
+      <CourseExitViewCoursesSlot courseId={courseId} />
       {body}
-    </>
+    </main>
   );
 };
 
 const CourseExit = () => {
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const metadataQuery = useCoursewareMetadata(courseId);
   const courseHomeMetaQuery = useCourseHomeMeta(courseId);
   const outlineQuery = useMinimalCourseOutline(courseId);
 
   if (outlineQuery.isError && courseHomeMetaQuery.data?.courseAccess?.hasAccess) {
-    return (<Navigate to={`/course/${courseId}/home`} replace />);
+    return (<Navigate to={getCourseOutlineUrl(courseId)} replace />);
   }
 
   return (
     <TabWithTimer
-      activeTabSlug="courseware"
       courseId={courseId}
       courseStatus={{ metadataQuery: courseHomeMetaQuery, tabDataQueries: [metadataQuery, outlineQuery] }}
+      // As on the courseware: the <main> landmark is the content's own, and the courseware's tours run here too.
+      ownsMainLandmark
+      renderTours={({ isStreakCelebrationOpen }) => (
+        <ProductTours
+          activeTab="courseware"
+          courseId={courseId}
+          isStreakCelebrationOpen={isStreakCelebrationOpen}
+          org={courseHomeMetaQuery.data?.org}
+        />
+      )}
     >
       <CourseExitContent />
     </TabWithTimer>

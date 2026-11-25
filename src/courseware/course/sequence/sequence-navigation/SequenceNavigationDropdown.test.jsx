@@ -1,13 +1,11 @@
-import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
-import { getAllByRole } from '@testing-library/dom';
-import { act } from '@testing-library/react';
-import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 import {
-  render, screen, fireEvent, mockCourseRequests,
-} from '../../../../setupTest';
-import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
+  act, fireEvent, getAllByRole, screen,
+} from '@testing-library/react';
+
+import { mockCourseRequests, renderInCourseware } from '@src/tests/courseware';
+import { render } from '@src/tests/render';
+import SequenceNavigationDropdown from './SequenceNavigationDropdown';
 
 describe('Sequence Navigation Dropdown', () => {
   let mockData;
@@ -44,22 +42,11 @@ describe('Sequence Navigation Dropdown', () => {
 
   unitBlocks.forEach((unit, index) => {
     it(`marks unit ${index + 1} as active`, async () => {
-      const { container } = render(
-        <MemoryRouter initialEntries={[`/course/${courseId}/${sequenceId}/${unit.id}`]}>
-          <Routes>
-            <Route
-              path="/course/:courseId/:sequenceId/:unitId"
-              element={(
-                <>
-                  <MountCourseQueryHooks courseId={courseId} sequenceId={sequenceId} />
-                  <SequenceNavigationDropdown {...mockData} unitId={unit.id} />
-                </>
-              )}
-            />
-          </Routes>
-        </MemoryRouter>,
+      const { container } = renderInCourseware(
+        <SequenceNavigationDropdown {...mockData} unitId={unit.id} />,
+        { courseId, sequenceId, unitId: unit.id },
       );
-      const dropdownToggle = container.querySelector('.dropdown-toggle');
+      const dropdownToggle = await screen.findByRole('button');
       await act(async () => {
         await fireEvent.click(dropdownToggle);
       });
@@ -76,14 +63,14 @@ describe('Sequence Navigation Dropdown', () => {
     });
   });
 
-  it('handles the clicks', () => {
+  it('handles the clicks', async () => {
     const onNavigate = jest.fn();
-    const { container } = render(
+    const { container } = renderInCourseware(
       <SequenceNavigationDropdown {...mockData} onNavigate={onNavigate} />,
-      { wrapWithRouter: true },
+      { courseId, sequenceId },
     );
 
-    const dropdownToggle = container.querySelector('.dropdown-toggle');
+    const dropdownToggle = await screen.findByRole('button');
     act(() => {
       fireEvent.click(dropdownToggle);
     });

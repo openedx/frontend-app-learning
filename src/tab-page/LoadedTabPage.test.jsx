@@ -1,29 +1,28 @@
 import React from 'react';
 import { Factory } from 'rosie';
-import { camelCaseObject } from '@edx/frontend-platform';
-import { getLoggingService } from '@edx/frontend-platform/logging';
+import { camelCaseObject, getLoggingService } from '@openedx/frontend-base';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
-import {
-  act, createTestQueryClient, mockCourseRequests, render, screen, seedQueryData,
-} from '../setupTest';
+import { act, screen } from '@testing-library/react';
+
+import { useAlert } from '@src/generic/user-messages';
+import { createTestQueryClient, seedQueryData } from '@src/tests/queryClient';
+import { render } from '@src/tests/render';
 import LoadedTabPage from './LoadedTabPage';
 
-jest.mock('@edx/frontend-platform/analytics');
-jest.mock('../course-tabs/CourseTabsNavigation', () => function () {
-  return <nav aria-label="Course tabs" />;
-});
-jest.mock('../instructor-toolbar/InstructorToolbar', () => function () {
-  return <div data-testid="InstructorToolbar" />;
-});
-jest.mock('../product-tours/ProductTours', () => function () {
-  return <div data-testid="ProductTours" />;
-});
+const Banner = () => <div role="alert">a masquerade banner</div>;
+const PageAlert = () => <div role="alert">a page alert</div>;
+
+// Registers one message per topic, as a tab's alert hooks would, and hands the frame the components for them.
+const WithAlerts = (props) => {
+  useAlert(true, { code: 'banner', topic: 'instructor-toolbar-alerts' });
+  useAlert(true, { code: 'pageAlert', topic: 'outline' });
+  return <LoadedTabPage masqueradeBanners={{ banner: Banner }} pageAlerts={{ pageAlert: PageAlert }} {...props} />;
+};
 
 describe('Loaded Tab Page', () => {
-  const mockData = { activeTabSlug: 'courseware' };
-
-  function renderWithMetadata(courseHomeMetadata, props = {}, { children = null } = {}) {
+  // No params provider: the frame needs none.
+  function renderWithMetadata(courseHomeMetadata, props = {}, { children = null, Component = LoadedTabPage } = {}) {
     const queryClient = createTestQueryClient();
     seedQueryData(
       queryClient,
@@ -32,29 +31,43 @@ describe('Loaded Tab Page', () => {
     );
     return render(
       <QueryClientProvider client={queryClient}>
-        <LoadedTabPage {...mockData} courseId={courseHomeMetadata.id} {...props}>
+        <Component courseId={courseHomeMetadata.id} {...props}>
           {children}
-        </LoadedTabPage>
+        </Component>
       </QueryClientProvider>,
     );
   }
 
-  beforeAll(async () => {
-    mockCourseRequests();
-  });
-
   it('renders correctly', () => {
     renderWithMetadata(Factory.build('courseHomeMetadata'));
 
-    expect(screen.getByRole('navigation', { name: /course tabs/i })).toBeInTheDocument();
-    expect(screen.queryByTestId('InstructorToolbar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
-  it('shows Instructor Toolbar if original user is staff', () => {
-    renderWithMetadata(Factory.build('courseHomeMetadata', { original_user_is_staff: true }));
+  it('leaves the document title to the page', () => {
+    document.title = 'The page title';
+    renderWithMetadata(Factory.build('courseHomeMetadata'));
 
-    expect(screen.getByTestId('InstructorToolbar')).toBeInTheDocument();
+    expect(document.title).toBe('The page title');
+  });
+
+  it('shows the masquerade banners first and the page alerts above the content', async () => {
+    renderWithMetadata(
+      Factory.build('courseHomeMetadata'),
+      {},
+      { children: <p>Tab content</p>, Component: WithAlerts },
+    );
+
+    const banner = await screen.findByText('a masquerade banner');
+    const pageAlert = await screen.findByText('a page alert');
+    const main = screen.getByRole('main');
+    // Each region sits where the frame always had it: the banners first, then the page alerts, then the content.
+    expect(banner.compareDocumentPosition(pageAlert)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(pageAlert.compareDocumentPosition(main)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(main).not.toContainElement(pageAlert);
+    expect(main).toHaveTextContent('Tab content');
   });
 
   it('shows streak celebration modal', async () => {
@@ -63,13 +76,34 @@ describe('Loaded Tab Page', () => {
     expect(screen.getByRole('dialog')).toHaveTextContent('3 day streak');
   });
 
+  describe('tours', () => {
+    const renderTours = jest.fn(({ isStreakCelebrationOpen }) => (
+      <div data-testid="tours">{isStreakCelebrationOpen ? 'hidden' : 'shown'}</div>
+    ));
+
+    it('renders what the tab passes, first, telling it the streak celebration is closed', () => {
+      renderWithMetadata(Factory.build('courseHomeMetadata'), { renderTours });
+
+      expect(screen.getByTestId('tours')).toHaveTextContent('shown');
+      expect(screen.getByTestId('tours').compareDocumentPosition(screen.getByRole('main')))
+        .toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    it('tells it while the streak celebration is open', async () => {
+      const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { streak_length_to_celebrate: 3 } });
+      await act(async () => renderWithMetadata(courseHomeMetadata, { renderTours }));
+
+      expect(screen.getByTestId('tours')).toHaveTextContent('hidden');
+    });
+  });
+
   it('throws when rendered before the course metadata has loaded', () => {
     // jsdom reports the caught render error on console.error; silence it, not the assertion.
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
       <QueryClientProvider client={createTestQueryClient()}>
-        <LoadedTabPage {...mockData} courseId="course-v1:edX+DemoX+Demo_Course" />
+        <LoadedTabPage courseId="course-v1:edX+DemoX+Demo_Course" />
       </QueryClientProvider>,
     );
 
@@ -84,32 +118,23 @@ describe('Loaded Tab Page', () => {
   });
 
   describe('landmark structure', () => {
-    it('for the courseware tab, does not render a <main> wrapper here (Sequence renders <main id="main-content"> instead)', () => {
-      renderWithMetadata(Factory.build('courseHomeMetadata'), { activeTabSlug: 'courseware' });
+    it('does not render a <main> wrapper when the content owns its <main> landmark', () => {
+      renderWithMetadata(Factory.build('courseHomeMetadata'), { ownsMainLandmark: true });
 
-      // No <main> is emitted from LoadedTabPage — the courseware Sequence provides it.
+      // No <main> is emitted from LoadedTabPage: the courseware Sequence provides it.
       expect(document.querySelector('main')).not.toBeInTheDocument();
-      // #main-content id is deferred to Sequence's <main>, not on the container div here.
-      expect(document.getElementById('main-content')).not.toBeInTheDocument();
     });
 
-    it('for non-courseware tabs, the <main id="main-content"> landmark wraps only the page children, not the alerts or tab navigation', () => {
+    it('otherwise wraps the page children in the <main> landmark', () => {
       renderWithMetadata(
         Factory.build('courseHomeMetadata'),
-        { activeTabSlug: 'outline' },
+        {},
         { children: <button type="button">Tab content</button> },
       );
 
       const mainLandmark = screen.getByRole('main');
 
-      // The <main> landmark and the #main-content container are the same element.
-      expect(mainLandmark).toBe(document.getElementById('main-content'));
-
-      // It wraps the page children...
       expect(mainLandmark).toContainElement(screen.getByRole('button', { name: /tab content/i }));
-
-      // ...but not the tab navigation, which sits outside the landmark.
-      expect(mainLandmark).not.toContainElement(screen.getByRole('navigation', { name: /course tabs/i }));
     });
   });
 });

@@ -1,4 +1,3 @@
-import React from 'react';
 import { OuterExamTimer } from '@edx/frontend-lib-special-exams';
 
 import SpecialExamsProvider from '@src/generic/special-exams/SpecialExamsProvider';

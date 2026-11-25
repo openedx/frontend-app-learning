@@ -1,9 +1,9 @@
 import React from 'react';
-import { FormattedTime, useIntl } from '@edx/frontend-platform/i18n';
-import { useParams } from 'react-router-dom';
+import { FormattedTime, useIntl } from '@openedx/frontend-base';
 import { useCourseHomeMeta } from '../../data/apiHooks';
 
 import messages from '../messages';
+import { useCourseId } from '@src/generic/course-params';
 
 interface Props {
   due: string | null;
@@ -17,7 +17,7 @@ const SequenceDueDate: React.FC<Props> = ({
   description,
 }) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   let dueDateMessage: string | React.ReactNode = intl.formatMessage(
     messages.sequenceNoDueDate,
     { description: description || '' },

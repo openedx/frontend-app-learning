@@ -1,4 +1,4 @@
-import { defineMessages } from '@edx/frontend-platform/i18n';
+import { defineMessages } from '@openedx/frontend-base';
 
 const messages = defineMessages({
   applyForCredit: {
@@ -89,10 +89,12 @@ const messages = defineMessages({
   endOfCourseHeader: {
     id: 'courseExit.endOfCourseHeader',
     defaultMessage: 'You’ve reached the end of the course!',
+    description: 'Header shown when a learner reaches the end of the course',
   },
   endOfCourseTitle: {
     id: 'courseExit.endOfCourseTitle',
     defaultMessage: 'End of Course',
+    description: 'Page title shown in the browser tab at the end of the course',
   },
   idVerificationSupportLink: {
     id: 'courseExit.idVerificationSupportLink',
@@ -107,14 +109,17 @@ const messages = defineMessages({
   microBachelorsLearnMore: {
     id: 'courseExit.programs.microBachelors.learnMore',
     defaultMessage: 'Learn more about how your MicroBachelors credential can be applied for credit.',
+    description: 'Link to an article about applying a MicroBachelors credential for credit',
   },
   microMastersLearnMore: {
     id: 'courseExit.programs.microMasters.learnMore',
     defaultMessage: 'Learn more about the process of applying MicroMasters certificates to Master’s degrees.',
+    description: 'Link to an article about applying MicroMasters certificates to Master’s degrees',
   },
   microMastersMessage: {
     id: 'courseExit.programs.microMasters.mastersMessage',
     defaultMessage: 'If you’re interested in using your MicroMasters certificate towards a Master’s program, you can get started today!',
+    description: 'Text that precedes link to an article about MicroMasters certificates',
   },
   nextButtonComplete: {
     id: 'learn.sequence.navigation.complete.button', // for historical reasons
@@ -151,6 +156,11 @@ const messages = defineMessages({
     defaultMessage: 'Search our catalog',
     description: 'First part of a sentence that continues afterward',
   },
+  pageTitle: {
+    id: 'courseExit.page.title',
+    defaultMessage: '{pageName} | {courseTitle} | {siteName}',
+    description: 'Document title of the page at the end of a course: the name of the page, of the course and of the site',
+  },
   shareMessage: {
     id: 'courseCelebration.shareMessage',
     defaultMessage: 'Share your success on social media or email.',
@@ -164,10 +174,12 @@ const messages = defineMessages({
   upgradeButton: {
     id: 'courseExit.upgradeButton',
     defaultMessage: 'Upgrade now',
+    description: 'Text for button that redirects to the upgrade page',
   },
   upgradeLink: {
     id: 'courseExit.upgradeLink',
     defaultMessage: 'upgrade now',
+    description: 'Anchor text for the link to the upgrade page',
   },
   verificationPending: {
     id: 'courseCelebration.verificationPending',
@@ -202,6 +214,7 @@ const messages = defineMessages({
   viewGradesButton: {
     id: 'courseExit.viewGradesButton',
     defaultMessage: 'View grades',
+    description: 'Button to view the learner’s grades',
   },
 
 });

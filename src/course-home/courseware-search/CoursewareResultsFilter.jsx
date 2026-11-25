@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Tabs, Tab } from '@openedx/paragon';
 
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import CoursewareSearchResults from './CoursewareSearchResults';
 import messages from './messages';
 import { useCoursewareSearchParams } from './hooks';

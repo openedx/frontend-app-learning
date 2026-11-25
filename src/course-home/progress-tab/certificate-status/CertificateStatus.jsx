@@ -1,26 +1,20 @@
 import { useEffect } from 'react';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import {
+  FormattedDate, FormattedMessage, getAuthenticatedUser, getSiteConfig, sendTrackEvent, useIntl,
+} from '@openedx/frontend-base';
 
 import { Button, Card } from '@openedx/paragon';
-import { getConfig } from '@edx/frontend-platform';
-import { useParams } from 'react-router-dom';
 import { COURSE_EXIT_MODES, getCourseExitMode } from '../../../courseware/course/course-exit/utils';
-import { useCoursewareMetadata } from '../../../courseware/data/apiHooks';
 import { DashboardLink, IdVerificationSupportLink, ProfileLink } from '../../../shared/links';
 import { useCourseHomeMeta, useRequestCert } from '../../data/apiHooks';
 import { useProgressData } from '../hooks';
 import messages from './messages';
-import ProgressCertificateStatusSlot from '../../../plugin-slots/ProgressCertificateStatusSlot';
+import ProgressCertificateStatusSlot from '../../../slots/ProgressCertificateStatusSlot';
+import { useCourseId } from '@src/generic/course-params';
 
 const CertificateStatus = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
-
-  const {
-    entranceExamData,
-  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
+  const courseId = useCourseId();
 
   const {
     isEnrolled,
@@ -45,8 +39,6 @@ const CertificateStatus = () => {
     certificateAvailableDate,
   } = certificateData || {};
 
-  const entranceExamPassed = entranceExamData?.entranceExamPassed ?? null;
-
   const mode = getCourseExitMode(
     certificateData,
     hasScheduledContent,
@@ -54,7 +46,7 @@ const CertificateStatus = () => {
     userHasPassingGrade,
     null, // CourseExitPageIsActive
     canViewCertificate,
-    entranceExamPassed,
+    // entranceExamPassed, // https://github.com/openedx/frontend-app-learning/issues/2243
   );
 
   const eventProperties = {
@@ -110,7 +102,9 @@ const CertificateStatus = () => {
     switch (certStatus) {
       case 'requesting':
         certCase = 'requestable';
-        buttonAction = () => { requestCert.mutate({ courseId }); };
+        buttonAction = () => {
+          requestCert.mutate({ courseId });
+        };
         body = intl.formatMessage(messages[`${certCase}Body`]);
         buttonText = intl.formatMessage(messages[`${certCase}Button`]);
         break;
@@ -149,7 +143,7 @@ const CertificateStatus = () => {
         );
         if (certWebViewUrl) {
           certEventName = 'earned_viewable';
-          buttonLocation = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
+          buttonLocation = `${getSiteConfig().lmsBaseUrl}${certWebViewUrl}`;
           buttonText = intl.formatMessage(messages.viewableButton);
         }
         break;
@@ -254,7 +248,9 @@ const CertificateStatus = () => {
                   variant="outline-brand"
                   onClick={() => {
                     logCertificateStatusButtonClicked(certStatus);
-                    if (buttonAction) { buttonAction(); }
+                    if (buttonAction) {
+                      buttonAction();
+                    }
                   }}
                   href={buttonLocation}
                   block

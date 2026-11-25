@@ -1,15 +1,14 @@
 import React from 'react';
 import { Button, Card } from '@openedx/paragon';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { sendTrackingLogEvent, useIntl } from '@openedx/frontend-base';
 
-import { useParams } from 'react-router-dom';
-import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import messages from '../messages';
 import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
+import { useCourseId } from '@src/generic/course-params';
 
 const StartOrResumeCourseCard = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
 
   const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
@@ -23,7 +22,7 @@ const StartOrResumeCourseCard = () => {
       hasVisitedCourse,
       url: resumeCourseUrl,
     },
-  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
+  } = useOutlineTabData(courseId, { enabled: false }).data;
 
   if (!resumeCourseUrl) {
     return null;
@@ -53,7 +52,6 @@ const StartOrResumeCourseCard = () => {
         )}
       />
       {/* Footer is needed for internal vertical spacing to work out. If you can remove, be my guest */}
-      {/* eslint-disable-next-line react/jsx-no-useless-fragment */}
       <Card.Footer><></></Card.Footer>
     </Card>
   );

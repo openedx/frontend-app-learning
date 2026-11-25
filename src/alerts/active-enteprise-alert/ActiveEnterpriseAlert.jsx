@@ -1,23 +1,25 @@
 import React from 'react';
-import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import {
+  FormattedMessage, getSiteConfig, resolveRouteByRole, useIntl,
+} from '@openedx/frontend-base';
 import PropTypes from 'prop-types';
 import { Alert, Hyperlink } from '@openedx/paragon';
 import { WarningFilled } from '@openedx/paragon/icons';
 
-import { getConfig } from '@edx/frontend-platform';
+import { courseOutlineRole } from '@src/constants';
 import genericMessages from './messages';
 
 const ActiveEnterpriseAlert = ({ payload }) => {
   const intl = useIntl();
   const { text, courseId } = payload;
+  // The outline is Learning's own route; an absolute URL, since the LMS sends the learner back to it.
+  const courseHomeUrl = new URL(resolveRouteByRole(courseOutlineRole, { courseId }).url, global.location.origin).href;
   const changeActiveEnterprise = (
     <Hyperlink
       style={{ textDecoration: 'underline' }}
       destination={
-        `${getConfig().LMS_BASE_URL}/enterprise/select/active/?success_url=${encodeURIComponent(
-          `${global.location.origin}/course/${courseId}/home`,
-        )}`
-    }
+        `${getSiteConfig().lmsBaseUrl}/enterprise/select/active/?success_url=${encodeURIComponent(courseHomeUrl)}`
+      }
     >
       {intl.formatMessage(genericMessages.changeActiveEnterpriseLowercase)}
     </Hyperlink>

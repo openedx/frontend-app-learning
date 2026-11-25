@@ -1,13 +1,11 @@
-import {
-  CourseOutlineSidebarCompletionIconSlot,
-} from '@src/plugin-slots/CourseOutlineSidebarCompletionIconSlot';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Button, Icon } from '@openedx/paragon';
 import { ChevronRight as ChevronRightIcon } from '@openedx/paragon/icons';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
+import CourseOutlineSidebarCompletionIconSlot from '@src/slots/CourseOutlineSidebarCompletionIconSlot';
 import { useCourseOutlineSidebar } from '../hooks';
 
 const SidebarSection = ({ section, handleSelectSection }) => {

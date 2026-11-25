@@ -1,32 +1,25 @@
 import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
-import { camelCaseObject, getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { camelCaseObject, getAuthenticatedHttpClient, getSiteConfig } from '@openedx/frontend-base';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
 
 import { progressTabDataQuery, useProgressTabData } from '@src/course-home/data/apiHooks';
-import { createTestQueryClient, initializeMockApp, seedQueryData } from '../../setupTest';
+import { CourseParamsProvider } from '@src/generic/course-params';
+import { createTestQueryClient, seedQueryData } from '@src/tests/queryClient';
 import { useExamsData, useProgressData } from './hooks';
 
-initializeMockApp();
-
 const courseId = 'course-v1:edX+DemoX+Demo_Course';
-const progressUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/progress/`);
+const progressUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/course_home/progress/`);
 
 let axiosMock;
 let queryClient;
 
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={[`/course/${courseId}/progress`]}>
-    <QueryClientProvider client={queryClient}>
-      <Routes>
-        <Route path="/course/:courseId/progress/:targetUserId?" element={children} />
-      </Routes>
-    </QueryClientProvider>
-  </MemoryRouter>
+  <CourseParamsProvider courseId={courseId}>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  </CourseParamsProvider>
 );
 
 const progressRequests = () => axiosMock.history.get.filter((req) => progressUrl.test(req.url));

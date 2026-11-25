@@ -1,8 +1,8 @@
-import { initializeMockApp, render, screen } from '@src/setupTest';
+import { screen } from '@testing-library/react';
+
+import { render } from '@src/tests/render';
 
 import CourseLicense from './CourseLicense';
-
-initializeMockApp();
 
 const licenseLink = () => screen.getByRole('link');
 

@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import {
   ActionRow,
   breakpoints,
@@ -8,14 +8,14 @@ import {
   StandardModal,
   useWindowSize,
 } from '@openedx/paragon';
-
 import { useQueryClient } from '@tanstack/react-query';
+
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import SocialIcons from '@src/courseware/social-share/SocialIcons';
 import ClapsMobile from './assets/claps_280x201.gif';
 import ClapsTablet from './assets/claps_456x328.gif';
 import messages from './messages';
-import SocialIcons from '../../social-share/SocialIcons';
 import { recordFirstSectionCelebration } from './utils';
-import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 const CelebrationModal = ({
   courseId, isOpen, onClose, ...rest
@@ -34,6 +34,7 @@ const CelebrationModal = ({
 
   return (
     <StandardModal
+      className="celebration-modal"
       footerNode={(
         <ActionRow isStacked className="pb-2">
           <Button onClick={onClose}>{intl.formatMessage(messages.forward)}</Button>
@@ -42,9 +43,7 @@ const CelebrationModal = ({
       hasCloseButton={false}
       isOpen={isOpen}
       onClose={onClose}
-      title={(
-        <p className="h2 text-center mr-n5 pt-4">{intl.formatMessage(messages.congrats)}</p>
-      )}
+      title={intl.formatMessage(messages.congrats)}
       {...rest}
     >
       <>

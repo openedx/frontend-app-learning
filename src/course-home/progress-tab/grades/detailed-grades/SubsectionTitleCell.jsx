@@ -1,25 +1,26 @@
 import PropTypes from 'prop-types';
 
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
-import { Collapsible, Icon, Row } from '@openedx/paragon';
+import {
+  getAuthenticatedUser, getLinkProps, sendTrackEvent, useIntl,
+} from '@openedx/frontend-base';
+import { Collapsible, Hyperlink, Icon, Row } from '@openedx/paragon';
 import {
   ArrowDropDown,
   ArrowDropUp,
   Info,
   Locked,
 } from '@openedx/paragon/icons';
-import { useParams } from 'react-router-dom';
 
+import { getSequenceUrl } from '@src/courseware/urls';
 import messages from '../messages';
 import { useCourseHomeMeta } from '../../../data/apiHooks';
 import { useProgressData } from '../../hooks';
 import ProblemScoreDrawer from './ProblemScoreDrawer';
+import { useCourseId } from '@src/generic/course-params';
 
 const SubsectionTitleCell = ({ subsection }) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     gradesFeatureIsFullyLocked,
@@ -56,25 +57,26 @@ const SubsectionTitleCell = ({ subsection }) => {
         <span className="small d-inline ml-4 pl-1">
           {gradesFeatureIsFullyLocked || subsection.learnerHasAccess ? ''
             : (
-              <Icon
-                id={`detailedGradesBlockedIcon${subsection.blockKey}`}
-                aria-label={intl.formatMessage(messages.noAccessToSubsection, { displayName })}
-                className="mr-1 mt-1 d-inline-flex"
-                style={{ height: '1rem', width: '1rem' }}
-                src={Locked}
-                data-testid="locked-icon"
-              />
-            )}
+                <Icon
+                  id={`detailedGradesBlockedIcon${subsection.blockKey}`}
+                  aria-label={intl.formatMessage(messages.noAccessToSubsection, { displayName })}
+                  className="mr-1 mt-1 d-inline-flex"
+                  style={{ height: '1rem', width: '1rem' }}
+                  src={Locked}
+                  data-testid="locked-icon"
+                />
+              )}
           {url ? (
-            <a
-              href={url}
-              className="muted-link small"
+            <Hyperlink
+              variant="muted"
+              className="small"
+              {...getLinkProps(getSequenceUrl(courseId, blockKey))}
               onClick={logSubsectionClicked}
               tabIndex={gradesFeatureIsFullyLocked ? '-1' : '0'}
               aria-labelledby={`detailedGradesBlockedIcon${subsection.blockKey}`}
             >
               {displayName}
-            </a>
+            </Hyperlink>
           ) : (
             <span className="greyed-out small">{displayName}</span>
           )}

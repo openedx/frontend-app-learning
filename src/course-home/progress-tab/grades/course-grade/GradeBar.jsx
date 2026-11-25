@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@openedx/frontend-base';
 import { useProgressData } from '../../hooks';
 import CurrentGradeTooltip from './CurrentGradeTooltip';
 import PassingGradeTooltip from './PassingGradeTooltip';

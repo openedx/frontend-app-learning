@@ -1,12 +1,13 @@
-import React from 'react';
 import MockAdapter from 'axios-mock-adapter';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { getAuthenticatedHttpClient } from '@openedx/frontend-base';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { Factory } from 'rosie';
-import {
-  render, screen, fireEvent, mockCourseRequests, waitFor, authenticatedUser, logUnhandledRequests,
-  createTestQueryClient,
-} from '../../../setupTest';
+
+import { authenticatedUser } from '@src/tests/authenticatedUser';
+import { mockCourseRequests } from '@src/tests/courseware';
+import { createTestQueryClient } from '@src/tests/queryClient';
+import { render } from '@src/tests/render';
 import { sequenceMetadataQuery } from '../../data/apiHooks';
 import { BookmarkButton } from './index';
 import { getBookmarksBaseUrl } from './data/api';
@@ -39,7 +40,7 @@ describe('Bookmark Button', () => {
     <QueryClientProvider client={queryClient}>
       <BookmarkButton {...mockData} sequenceId={sequenceId} {...props} />
     </QueryClientProvider>,
-    { wrapWithRouter: true },
+    { wrapWithRouter: true, courseParams: { courseId: courseMetadata.id, sequenceId } },
   );
 
   beforeEach(async () => {
@@ -55,7 +56,6 @@ describe('Bookmark Button', () => {
 
     const bookmarkDeleteUrlRegExp = new RegExp(`${bookmarkUrl}*,*`);
     axiosMock.onDelete(bookmarkDeleteUrlRegExp).reply(200, { });
-    logUnhandledRequests(axiosMock);
   });
 
   it('handles adding bookmark', async () => {

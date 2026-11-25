@@ -1,9 +1,6 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 
-import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { getAuthenticatedUser, sendTrackingLogEvent, useIntl } from '@openedx/frontend-base';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBookmark, faCertificate, faInfo, faCalendar, faStar,
@@ -13,14 +10,15 @@ import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
 import messages from '../messages';
 import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
 import LaunchCourseHomeTourButton from '../../../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
+import { useCourseId } from '@src/generic/course-params';
 
 const CourseTools = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     courseTools,
-  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
+  } = useOutlineTabData(courseId, { enabled: false }).data;
 
   if (courseTools.length === 0) {
     return null;
@@ -67,7 +65,9 @@ const CourseTools = () => {
         {courseTools.map((courseTool) => (
           <li key={courseTool.analyticsId} className="small">
             <a href={courseTool.url} onClick={() => logClick(courseTool.analyticsId)}>
-              <FontAwesomeIcon icon={renderIcon(courseTool.analyticsId)} className="mr-2" fixedWidth />
+              {renderIcon(courseTool.analyticsId) && (
+                <FontAwesomeIcon icon={renderIcon(courseTool.analyticsId)} className="mr-2" fixedWidth />
+              )}
               {courseTool.title}
             </a>
           </li>

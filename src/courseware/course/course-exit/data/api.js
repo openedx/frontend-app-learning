@@ -1,5 +1,8 @@
-import { getConfig, camelCaseObject } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import {
+  camelCaseObject, getAppConfig, getAuthenticatedHttpClient, getSiteConfig,
+} from '@openedx/frontend-base';
+
+import { appId } from '@src/constants';
 
 function filterRecommendationsList(
   {
@@ -36,12 +39,12 @@ async function getAllEnrollments(url) {
 }
 
 export async function getCourseRecommendations(courseKey) {
-  const discoveryApiUrl = getConfig().DISCOVERY_API_BASE_URL;
+  const discoveryApiUrl = getAppConfig(appId).DISCOVERY_API_BASE_URL;
   if (!discoveryApiUrl) {
     return [];
   }
   const recommendationsUrl = new URL(`${discoveryApiUrl}/api/v1/course_recommendations/${courseKey}?exclude_utm=true`);
-  const enrollmentsUrl = new URL(`${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment/?page_size=100`);
+  const enrollmentsUrl = new URL(`${getSiteConfig().lmsBaseUrl}/api/enrollment/v2/enrollment/?page_size=100`);
   const [recommendationsResponse, enrollments] = await Promise.all([
     getAuthenticatedHttpClient().get(recommendationsUrl),
     getAllEnrollments(enrollmentsUrl),
@@ -50,7 +53,7 @@ export async function getCourseRecommendations(courseKey) {
 }
 
 export async function postUnsubscribeFromGoalReminders(courseId) {
-  const url = new URL(`${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`);
+  const url = new URL(`${getSiteConfig().lmsBaseUrl}/api/course_home/save_course_goal`);
   return getAuthenticatedHttpClient().post(url.href, {
     course_id: courseId,
     subscribed_to_reminders: false,

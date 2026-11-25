@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import PropTypes from 'prop-types';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getAuthenticatedUser, sendTrackEvent, useIntl } from '@openedx/frontend-base';
 import { Button } from '@openedx/paragon';
-import { CourseOutlineTabNotificationsSlot } from '../../plugin-slots/CourseOutlineTabNotificationsSlot';
+import CourseOutlineTabNotificationsSlot from '../../slots/CourseOutlineTabNotificationsSlot';
 import { AlertList } from '../../generic/user-messages';
 
 import CourseDates from './widgets/CourseDates';
@@ -23,20 +22,27 @@ import usePrivateCourseAlert from './alerts/private-course-alert';
 import useScheduledContentAlert from './alerts/scheduled-content-alert';
 import WelcomeMessage from './widgets/WelcomeMessage';
 import ProctoringInfoPanel from './widgets/ProctoringInfoPanel';
-import AccountActivationAlert from '../../alerts/logistration-alert/AccountActivationAlert';
-import CourseHomeSectionOutlineSlot from '../../plugin-slots/CourseHomeSectionOutlineSlot';
+import AccountActivationAlert from './alerts/logistration-alert/AccountActivationAlert';
+import useEnrollmentAlert from './alerts/enrollment-alert';
+import useLogistrationAlert from './alerts/logistration-alert';
+import { useAccessExpirationMasqueradeBanner } from '../../alerts/access-expiration-alert';
+import ProductTours from '../../product-tours/ProductTours';
+import LaunchCourseHomeTourButton from '../../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
+import CourseHomeSectionOutlineSlot from '../../slots/CourseHomeSectionOutlineSlot';
 import { TabWithTimer } from '../../tab-page';
+import { CourseParamsProvider, useCourseId } from '../../generic/course-params';
+import LearningWidgetProviders from '../../generic/LearningWidgetProviders';
 
 const OutlineTabContent = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
 
   const {
     isSelfPaced,
     org,
     title,
     username,
-  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
+  } = useCourseHomeMeta(courseId, { enabled: false }).data;
   const { isPending: isProctoringInfoPending } = useProctoringInfoData(courseId, username);
 
   const expandButtonRef = useRef();
@@ -56,7 +62,7 @@ const OutlineTabContent = () => {
     datesBannerInfo,
     enableProctoredExams,
     hasEnded,
-  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
+  } = useOutlineTabData(courseId, { enabled: false }).data;
 
   const [expandAll, setExpandAll] = useState(false);
   const navigate = useNavigate();
@@ -111,10 +117,9 @@ const OutlineTabContent = () => {
       navigate({
         pathname: location.pathname,
         search: `?${currentParams.toString()}`,
-        replace: true,
-      });
+      }, { replace: true, preventScrollReset: true });
     }
-  }, [location.search]);
+  }, [location.search, location.pathname, navigate]);
 
   return (
     <>
@@ -160,12 +165,20 @@ const OutlineTabContent = () => {
             <>
               <div id="expand-button-row" className="row w-100 m-0 mb-3 justify-content-end">
                 <div className="col-12 col-md-auto p-0">
-                  <Button ref={expandButtonRef} variant="outline-primary" block onClick={() => { setExpandAll(!expandAll); }}>
+                  <Button
+                    ref={expandButtonRef}
+                    variant="outline-primary"
+                    block
+                    onClick={() => {
+                      setExpandAll(!expandAll);
+                    }}
+                  >
                     {expandAll ? intl.formatMessage(messages.collapseAll) : intl.formatMessage(messages.expandAll)}
                   </Button>
                 </div>
               </div>
               <CourseHomeSectionOutlineSlot
+                courseId={courseId}
                 expandAll={expandAll}
                 sectionIds={courses[rootCourseId].sectionIds}
                 sections={sections}
@@ -195,20 +208,58 @@ const OutlineTabContent = () => {
   );
 };
 
-const OutlineTab = () => {
-  const { courseId } = useParams();
+// Under the providers OutlineTab mounts: the alert hooks register with its user messages.
+const OutlineTabFrame = ({ courseId }) => {
   const metadataQuery = useCourseHomeMeta(courseId);
   const tabDataQuery = useOutlineTabData(courseId);
 
+  // Shown above the course title, so passed to the frame for its top alert region.
+  const logistrationAlert = useLogistrationAlert(courseId);
+  const enrollmentAlert = useEnrollmentAlert(courseId);
+  const accessExpirationMasqueradeBanner = useAccessExpirationMasqueradeBanner(
+    courseId,
+    tabDataQuery.data?.accessExpiration,
+  );
+
   return (
     <TabWithTimer
-      activeTabSlug="outline"
       courseId={courseId}
       courseStatus={{ metadataQuery, tabDataQuery }}
+      // An unenrolled or anonymous learner sees the outline, with the alerts that ask them to enroll or sign in.
+      showWhenDenied
+      // The visible "launch tour" button is deep in the outline. Screen-reader users get a copy above the rest of the
+      // page, where it won't be buried (https://github.com/openedx/frontend-app-learning/pull/750#discussion_r755536879).
+      aboveContent={<LaunchCourseHomeTourButton srOnly />}
+      pageAlerts={{ ...enrollmentAlert, ...logistrationAlert }}
+      masqueradeBanners={accessExpirationMasqueradeBanner}
+      renderTours={({ isStreakCelebrationOpen }) => (
+        <ProductTours
+          activeTab="outline"
+          courseId={courseId}
+          isStreakCelebrationOpen={isStreakCelebrationOpen}
+          org={metadataQuery.data.org}
+        />
+      )}
     >
       <OutlineTabContent />
     </TabWithTimer>
   );
+};
+
+OutlineTabFrame.propTypes = {
+  courseId: PropTypes.string.isRequired,
+};
+
+const OutlineTab = ({ courseId }) => (
+  <LearningWidgetProviders>
+    <CourseParamsProvider courseId={courseId}>
+      <OutlineTabFrame courseId={courseId} />
+    </CourseParamsProvider>
+  </LearningWidgetProviders>
+);
+
+OutlineTab.propTypes = {
+  courseId: PropTypes.string.isRequired,
 };
 
 export default OutlineTab;

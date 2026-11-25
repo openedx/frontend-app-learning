@@ -1,4 +1,4 @@
-import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@openedx/frontend-base';
 import { useProgressData } from '../hooks';
 
 import CompleteDonutSegment from './CompleteDonutSegment';

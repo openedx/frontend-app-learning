@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { logError } from '@edx/frontend-platform/logging';
+import { logError } from '@openedx/frontend-base';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { sequenceMetadataQuery, updateSequenceUnit, useIsPreview } from '@src/courseware/data/apiHooks';

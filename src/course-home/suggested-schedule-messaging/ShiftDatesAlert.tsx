@@ -1,8 +1,7 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import {
   Alert,
   Button,
@@ -12,6 +11,7 @@ import {
 
 import { datesTabDataQuery, outlineTabDataQuery, useResetDeadlines } from '@src/course-home/data/apiHooks';
 import messages from './messages';
+import { useCourseId } from '@src/generic/course-params';
 
 interface Props {
   // Names the tab the reset was triggered from, for the reset-deadlines research event.
@@ -25,7 +25,7 @@ interface Props {
 
 const ShiftDatesAlert = ({ model, datesBannerInfo, hasEnded = false }: Props) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const queryClient = useQueryClient();
 
   const {

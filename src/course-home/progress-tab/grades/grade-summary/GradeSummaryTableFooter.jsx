@@ -1,4 +1,4 @@
-import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@openedx/frontend-base';
 import {
   DataTable,
   Icon,
@@ -41,7 +41,6 @@ const GradeSummaryTableFooter = () => {
           <Stack gap={2} direction="horizontal">
             {intl.formatMessage(messages.weightedGradeSummary)}
             <OverlayTrigger
-              trigger="hover"
               placement="bottom"
               overlay={(
                 <Tooltip>

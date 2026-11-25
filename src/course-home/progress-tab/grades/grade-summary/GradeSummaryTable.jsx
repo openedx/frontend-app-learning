@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@openedx/frontend-base';
 import { DataTable } from '@openedx/paragon';
 import { Lock } from '@openedx/paragon/icons';
 import { useProgressData } from '../../hooks';
@@ -35,6 +36,7 @@ const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
     return (grade * 100).toFixed(2);
   };
 
+  let allOfSomeAssignmentTypeIsLocked = false;
   const hasNoAccessToAssignmentsOfType = (assignmentType) => {
     const subsectionAssignmentsOfType = sectionScores.map((chapter) => chapter.subsections.filter((subsection) => (
       subsection.assignmentType === assignmentType && subsection.hasGradedAssignment
@@ -45,7 +47,7 @@ const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
         subsection.learnerHasAccess === true
       ));
       if (noAccessToAssignmentsOfType) {
-        setAllOfSomeAssignmentTypeIsLocked(true);
+        allOfSomeAssignmentTypeIsLocked = true;
         return true;
       }
     }
@@ -97,12 +99,19 @@ const GradeSummaryTable = ({ setAllOfSomeAssignmentTypeIsLocked }) => {
       weightedGrade: { weightedGrade: weightedGradeDisplay, locked },
     };
   });
+
+  useEffect(() => {
+    if (allOfSomeAssignmentTypeIsLocked) {
+      setAllOfSomeAssignmentTypeIsLocked(true);
+    }
+  }, [allOfSomeAssignmentTypeIsLocked, setAllOfSomeAssignmentTypeIsLocked]);
+
   const getAssignmentTypeCell = (value) => (
     <AssignmentTypeCell
-      assignmentType={value.type} // eslint-disable-line react/prop-types
-      footnoteId={value.footnoteId} // eslint-disable-line react/prop-types
-      footnoteMarker={value.footnoteMarker} // eslint-disable-line react/prop-types
-      locked={value.locked} // eslint-disable-line react/prop-types
+      assignmentType={value.type}
+      footnoteId={value.footnoteId}
+      footnoteMarker={value.footnoteMarker}
+      locked={value.locked}
     />
   );
 

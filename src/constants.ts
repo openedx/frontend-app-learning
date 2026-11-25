@@ -1,80 +1,25 @@
-export const appId = 'learning';
+export const appId = 'org.openedx.frontend.app.learning';
 
-export const DECODE_ROUTES = {
-  ACCESS_DENIED: '/course/:courseId/access-denied',
-  HOME: '/course/:courseId/home',
-  LIVE: '/course/:courseId/live',
-  DATES: '/course/:courseId/dates',
-  DISCUSSION: '/course/:courseId/discussion/:path/*',
-  PROGRESS: [
-    '/course/:courseId/progress/:targetUserId/',
-    '/course/:courseId/progress',
-  ],
-  COURSE_END: '/course/:courseId/course-end',
-  COURSEWARE: [
-    '/course/:courseId/:sequenceId/:unitId',
-    '/course/:courseId/:sequenceId',
-    '/course/:courseId',
-    '/preview/course/:courseId/:sequenceId/:unitId',
-    '/preview/course/:courseId/:sequenceId',
-  ],
-  REDIRECT_HOME: 'home/:courseId',
-  REDIRECT_SURVEY: 'survey/:courseId',
-} as const satisfies Readonly<{ [k: string]: string | readonly string[] }>;
+export const learningRole = 'org.openedx.frontend.role.learning';
+export const learningCourseRole = 'org.openedx.frontend.role.learningCourse';
+export const courseOutlineRole = 'org.openedx.frontend.role.courseOutline';
+export const courseDatesRole = 'org.openedx.frontend.role.courseDates';
+export const courseProgressRole = 'org.openedx.frontend.role.courseProgress';
+export const coursewareRole = 'org.openedx.frontend.role.courseware';
 
-export const ROUTES = {
-  UNSUBSCRIBE: '/goal-unsubscribe/:token',
-  PREFERENCES_UNSUBSCRIBE: '/preferences-unsubscribe/:userToken/:updatePatch?',
-  REDIRECT: '/redirect/*',
-  DASHBOARD: 'dashboard',
-  ENTERPRISE_LEARNER_DASHBOARD: 'enterprise-learner-dashboard',
-  CONSENT: 'consent',
-} as const satisfies Readonly<{ [k: string]: string }>;
-
-export const REDIRECT_MODES = {
-  DASHBOARD_REDIRECT: 'dashboard-redirect',
-  ENTERPRISE_LEARNER_DASHBOARD_REDIRECT: 'enterprise-learner-dashboard-redirect',
-  CONSENT_REDIRECT: 'consent-redirect',
-  HOME_REDIRECT: 'home-redirect',
-  SURVEY_REDIRECT: 'survey-redirect',
-} as const satisfies Readonly<{ [k: string]: string }>;
-
-export const VERIFIED_MODES = [
-  'professional',
-  'verified',
-  'no-id-professional',
-  'credit',
-  'masters',
-  'executive-education',
-  'paid-executive-education',
-  'paid-bootcamp',
-] as const satisfies readonly string[];
-
-export const AUDIT_MODES = [
-  'audit',
-  'honor',
-  'unpaid-executive-education',
-  'unpaid-bootcamp',
-] as const satisfies readonly string[];
-
-// In sync with CourseMode.UPSELL_TO_VERIFIED_MODES
-// https://github.com/openedx/edx-platform/blob/master/common/djangoapps/course_modes/models.py#L231
-export const ALLOW_UPSELL_MODES = [
-  'audit',
-  'honor',
-] as const satisfies readonly string[];
+export const dashboardRole = 'org.openedx.frontend.role.dashboard';
+export const profileRole = 'org.openedx.frontend.role.profile';
+export const discussionsRole = 'org.openedx.frontend.role.discussions';
+export const accountRole = 'org.openedx.frontend.role.account';
+export const coursesRole = 'org.openedx.frontend.role.courses';
+// The chromeless Discussions route the auxiliary sidebar embeds, with `/<course id>/category/<unit id>` appended.
+// Both the role name and that sub-path are local proposals: openedx/frontend-app-discussions#802 has not fixed
+// either yet.
+export const discussionsSidebarRole = 'org.openedx.frontend.role.discussionsSidebar';
 
 export const WIDGETS = {
-  DISCUSSIONS: 'DISCUSSIONS',
   COURSE_OUTLINE: 'COURSE_OUTLINE',
-  /**
-   * @deprecated since ADR 0010. The widget was renamed from 'Notifications' to 'Upgrade'.
-   * This alias maps to the current widget ID 'UPGRADE' so that legacy checks
-   * `currentSidebar === WIDGETS.NOTIFICATIONS` continue to resolve correctly.
-   * Use the upgrade widget's `ID` constant directly for new code.
-   */
-  NOTIFICATIONS: 'UPGRADE',
-} as const satisfies Readonly<{ [k: string]: string }>;
+} as const satisfies Readonly<Record<string, string>>;
 
 export const LOADING = 'loading';
 export const LOADED = 'loaded';

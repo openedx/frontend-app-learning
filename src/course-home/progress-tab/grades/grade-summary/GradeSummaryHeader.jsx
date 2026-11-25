@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import {
   Hyperlink,
   Icon,
@@ -24,7 +24,6 @@ const GradeSummaryHeader = ({ allOfSomeAssignmentTypeIsLocked }) => {
       <Stack direction="horizontal" gap={2}>
         <h3 className="h4 m-0">{intl.formatMessage(messages.gradeSummary)}</h3>
         <OverlayTrigger
-          trigger="hover"
           placement="top"
           overlay={(
             <Tooltip>

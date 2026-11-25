@@ -1,4 +1,4 @@
-import { defineMessages } from '@edx/frontend-platform/i18n';
+import { defineMessages } from '@openedx/frontend-base';
 
 const messages = defineMessages({
   certStatusEarnedNotAvailableHeader: {
@@ -14,10 +14,12 @@ const messages = defineMessages({
   certStatusNotPassingHeader: {
     id: 'cert.alert.notPassing.header',
     defaultMessage: 'You are not yet eligible for a certificate',
+    description: 'Header of the alert shown once the course has ended to a learner without a passing grade',
   },
   certStatusNotPassingButton: {
     id: 'cert.alert.notPassing.button',
     defaultMessage: 'View grades',
+    description: 'Button that opens the progress tab, in the alert for a learner without a passing grade',
   },
 });
 

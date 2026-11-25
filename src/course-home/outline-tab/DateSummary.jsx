@@ -1,19 +1,17 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { FormattedDate } from '@edx/frontend-platform/i18n';
+import { FormattedDate, sendTrackEvent } from '@openedx/frontend-base';
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useCourseHomeMeta } from '../data/apiHooks';
 import { isLearnerAssignment } from '../dates-tab/utils';
-import './DateSummary.scss';
+import { useCourseId } from '@src/generic/course-params';
 
 const DateSummary = ({
   dateBlock,
   userTimezone,
 }) => {
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
   const linkedTitle = dateBlock.link && isLearnerAssignment(dateBlock);
@@ -85,10 +83,6 @@ DateSummary.propTypes = {
     learnerHasAccess: PropTypes.bool,
   }).isRequired,
   userTimezone: PropTypes.string,
-};
-
-DateSummary.defaultProps = {
-  userTimezone: null,
 };
 
 export default DateSummary;

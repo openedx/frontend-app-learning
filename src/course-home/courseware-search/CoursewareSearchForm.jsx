@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { SearchField } from '@openedx/paragon';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import messages from './messages';
 
 const CoursewareSearchForm = ({
@@ -21,7 +21,7 @@ const CoursewareSearchForm = ({
       screenReaderText={{
         label: formatMessage(messages.searchSubmitLabel),
         clearButton: formatMessage(messages.searchClearAction),
-        submitButton: null, // Remove the sr-only label in the button.
+        submitButton: '', // No sr-only label in the button: its visible text names it. Paragon requires the key.
       }}
     >
       <div className="pgn__searchfield_wrapper" data-testid="courseware-search-form">
@@ -43,13 +43,6 @@ CoursewareSearchForm.propTypes = {
   onSubmit: PropTypes.func,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
-};
-
-CoursewareSearchForm.defaultProps = {
-  searchTerm: undefined,
-  onSubmit: undefined,
-  onChange: undefined,
-  placeholder: undefined,
 };
 
 export default CoursewareSearchForm;

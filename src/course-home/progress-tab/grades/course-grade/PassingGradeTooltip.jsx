@@ -1,6 +1,7 @@
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@openedx/frontend-base';
 import { OverlayTrigger, Popover } from '@openedx/paragon';
 
 import messages from '../messages';
@@ -21,7 +22,7 @@ const PassingGradeTooltip = ({ passingGrade, tooltipClassName }) => {
         show
         placement="bottom"
         overlay={(
-          <Popover id="minimum-grade-tooltip" className={`bg-primary-500 ${tooltipClassName}`} aria-hidden="true">
+          <Popover id="minimum-grade-tooltip" className={classNames('bg-primary-500', tooltipClassName)} aria-hidden="true">
             <Popover.Content className="text-white">
               {passingGrade}{isLocaleRtl && '\u200f'}%
             </Popover.Content>
@@ -45,10 +46,6 @@ const PassingGradeTooltip = ({ passingGrade, tooltipClassName }) => {
       </text>
     </>
   );
-};
-
-PassingGradeTooltip.defaultProps = {
-  tooltipClassName: '',
 };
 
 PassingGradeTooltip.propTypes = {

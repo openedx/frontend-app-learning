@@ -102,8 +102,4 @@ UserMessagesProvider.propTypes = {
   children: PropTypes.node,
 };
 
-UserMessagesProvider.defaultProps = {
-  children: null,
-};
-
 export default UserMessagesProvider;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getConfig } from '@edx/frontend-platform';
+import { useAppConfig } from '@openedx/frontend-base';
 import PropTypes from 'prop-types';
 import { getNotices } from './api';
 /**
@@ -10,10 +10,11 @@ import { getNotices } from './api';
  */
 const NoticesProvider = ({ children }) => {
   const [isRedirected, setIsRedirected] = useState();
+  const appConfig = useAppConfig();
 
   useEffect(() => {
     async function getData() {
-      if (getConfig().ENABLE_NOTICES) {
+      if (appConfig.ENABLE_NOTICES) {
         const data = await getNotices();
         if (data && data.results && data.results.length > 0) {
           const { results } = data;

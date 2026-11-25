@@ -5,7 +5,7 @@ import UserMessagesContext from './UserMessagesContext';
 import Alert from './Alert';
 
 const AlertList = ({
-  topic, className, customAlerts, customProps,
+  topic, className, customAlerts = {}, customProps = {},
 }) => {
   const { remove, messages } = useContext(UserMessagesContext);
   const getAlertComponent = useCallback(
@@ -50,15 +50,7 @@ AlertList.propTypes = {
       PropTypes.node,
     ]),
   ),
-  // eslint-disable-next-line react/forbid-prop-types
   customProps: PropTypes.object,
-};
-
-AlertList.defaultProps = {
-  topic: null,
-  className: null,
-  customAlerts: {},
-  customProps: {},
 };
 
 export default AlertList;

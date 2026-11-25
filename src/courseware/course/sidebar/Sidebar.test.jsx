@@ -1,21 +1,24 @@
-import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { mockCourseRequests, render, screen } from '@src/setupTest';
-import Sidebar from './Sidebar';
+import { screen } from '@testing-library/react';
+import AuxiliarySidebarSlot from '@src/slots/AuxiliarySidebarSlot';
+import AuxiliarySidebarTriggerSlot from '@src/slots/AuxiliarySidebarTriggerSlot';
+import { addSidebarWidgets } from '@src/tests/auxiliarySidebar';
+import { render } from '@src/tests/render';
+import SidebarTriggerBase from './common/TriggerBase';
 import { SidebarProvider } from './SidebarContext';
-import SidebarTriggers from './SidebarTriggers';
 
 const courseId = 'course-v1:edX+Test+2024';
 const unitId = 'unit-1';
 
 const stubWidget = (id) => ({
   id,
-  priority: id === 'DISCUSSIONS' ? 10 : 20,
-  Sidebar: () => <div data-testid={`${id.toLowerCase()}-panel`}>{id} Content</div>,
-  // eslint-disable-next-line react/prop-types
-  Trigger: ({ onClick }) => <button type="button" onClick={onClick}>{`Open ${id}`}</button>,
+  Panel: () => <div data-testid={`${id.toLowerCase()}-panel`}>{id} Content</div>,
+  Trigger: () => (
+    <SidebarTriggerBase sidebarId={id} ariaLabel={`Open ${id}`}>
+      <span>{id}</span>
+    </SidebarTriggerBase>
+  ),
   isAvailable: () => true,
-  enabled: true,
 });
 
 const widgets = [stubWidget('DISCUSSIONS'), stubWidget('NOTES')];
@@ -23,20 +26,17 @@ const widgets = [stubWidget('DISCUSSIONS'), stubWidget('NOTES')];
 // The panel a widget renders is chosen by the provider's current sidebar; the tests drive it the
 // way a learner does, through a stored preference or the triggers.
 function renderSidebar() {
+  addSidebarWidgets(widgets);
   return render(
-    <SidebarProvider courseId={courseId} unitId={unitId} widgets={widgets}>
-      <SidebarTriggers />
-      <Sidebar />
+    <SidebarProvider courseId={courseId} unitId={unitId}>
+      <AuxiliarySidebarTriggerSlot courseId={courseId} sequenceId="sequence-1" unitId={unitId} />
+      <AuxiliarySidebarSlot courseId={courseId} sequenceId="sequence-1" unitId={unitId} />
     </SidebarProvider>,
     { wrapWithRouter: true },
   );
 }
 
 describe('Sidebar', () => {
-  beforeAll(async () => {
-    mockCourseRequests();
-  });
-
   afterEach(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();

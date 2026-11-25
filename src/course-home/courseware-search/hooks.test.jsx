@@ -48,16 +48,13 @@ describe('CoursewareSearch Hooks', () => {
 
   describe('useElementBoundingBox', () => {
     let getBoundingClientRectSpy;
-    const renderTestHook = async ({ elementId, mockedInfo }) => {
-      getBoundingClientRectSpy = jest.spyOn(document, 'getElementById').mockImplementation(() => (
-        mockedInfo
-          ? { getBoundingClientRect: () => ({ ...mockedInfo }) }
-          : undefined
-      ));
+    const renderTestHook = async ({ mockedInfo }) => {
+      getBoundingClientRectSpy = jest.fn(() => ({ ...mockedInfo }));
+      const elementRef = { current: mockedInfo ? { getBoundingClientRect: getBoundingClientRectSpy } : null };
 
       let hook;
       await act(async () => {
-        hook = renderHook(() => useElementBoundingBox(elementId));
+        hook = renderHook(() => useElementBoundingBox(elementRef));
       });
 
       return hook;
@@ -74,14 +71,14 @@ describe('CoursewareSearch Hooks', () => {
       const mockedInfo = { top: 128 };
 
       it('should bind resize and scroll events on mount', async () => {
-        await renderTestHook({ elementId: 'test', mockedInfo });
+        await renderTestHook({ mockedInfo });
 
         expect(addEventListenerSpy).toHaveBeenCalledWith('resize', expect.anything());
         expect(addEventListenerSpy).toHaveBeenCalledWith('scroll', expect.anything());
       });
 
       it('should unbindbind resize and scroll events when unmounted', async () => {
-        const hook = await renderTestHook({ elementId: 'test', mockedInfo });
+        const hook = await renderTestHook({ mockedInfo });
         hook.unmount();
 
         expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.anything());
@@ -89,7 +86,7 @@ describe('CoursewareSearch Hooks', () => {
       });
 
       it('should return the element bounding box', async () => {
-        const hook = await renderTestHook({ elementId: 'test', mockedInfo });
+        const hook = await renderTestHook({ mockedInfo });
 
         await waitFor(() => expect(getBoundingClientRectSpy).toHaveBeenCalled());
 
@@ -97,7 +94,7 @@ describe('CoursewareSearch Hooks', () => {
       });
 
       it('should call getBoundingClientRect on window resize', async () => {
-        const hook = await renderTestHook({ elementId: 'test', mockedInfo });
+        const hook = await renderTestHook({ mockedInfo });
 
         act(() => {
           // Trigger the window resize event.
@@ -110,15 +107,20 @@ describe('CoursewareSearch Hooks', () => {
     });
 
     describe('when element is NOT present', () => {
-      let consoleWarnSpy;
-      beforeEach(() => {
-        consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      it('should return undefined and bind no events', async () => {
+        const hook = await renderTestHook({});
+
+        expect(hook.result.current).toBeUndefined();
+        expect(addEventListenerSpy).not.toHaveBeenCalledWith('resize', expect.anything());
       });
 
-      it('should log a warning and return undefined', async () => {
-        await renderTestHook({ elementId: 'happiness' });
+      it('should return undefined when given no ref at all', async () => {
+        let hook;
+        await act(async () => {
+          hook = renderHook(() => useElementBoundingBox(undefined));
+        });
 
-        expect(consoleWarnSpy).toHaveBeenCalledWith("useElementBoundingBox(): Unable to find element with id='happiness' in the document.");
+        expect(hook.result.current).toBeUndefined();
       });
     });
   });
@@ -134,7 +136,7 @@ describe('CoursewareSearch Hooks', () => {
     let hook;
 
     beforeEach(() => {
-      windowScrollSpy = jest.spyOn(window, 'scrollTo');
+      windowScrollSpy = jest.spyOn(window, 'scrollTo').mockImplementation(() => {}); // jsdom has no scrolling.
       addBodyClassSpy = jest.spyOn(document.body.classList, 'add');
       removeBodyClassSpy = jest.spyOn(document.body.classList, 'remove');
       hook = renderTestHook();
@@ -157,6 +159,8 @@ describe('CoursewareSearch Hooks', () => {
 
   describe('useSearchParams', () => {
     const initSearch = { q: '', f: '' };
+    // Each update rewrites the address in place, so none resets the scroll.
+    const inPlace = { preventScrollReset: true };
     const q = { value: '' };
     const f = { value: '' };
     const mockedQuery = { q, f };
@@ -177,13 +181,13 @@ describe('CoursewareSearch Hooks', () => {
       expect(filter).toBe('');
 
       setQuery('setQuery');
-      expect(setSearchParams).toBeCalledWith(expect.any(Function));
+      expect(setSearchParams).toHaveBeenLastCalledWith(expect.any(Function), inPlace);
 
       setFilter('setFilter');
-      expect(setSearchParams).toBeCalledWith(expect.any(Function));
+      expect(setSearchParams).toHaveBeenLastCalledWith(expect.any(Function), inPlace);
 
       clearSearchParams();
-      expect(setSearchParams).toBeCalledWith(initSearch);
+      expect(setSearchParams).toHaveBeenLastCalledWith(initSearch, inPlace);
     });
 
     it('should return the query and lowercase filter if any', () => {

@@ -1,13 +1,5 @@
 import React from 'react';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
-
-export const DismissButtonFormattedMessage = () => (
-  <FormattedMessage
-    id="tours.button.dismiss"
-    defaultMessage="Dismiss"
-    description="A button used to close the tour of the website"
-  />
-);
+import { FormattedMessage } from '@openedx/frontend-base';
 
 export const NextButtonFormattedMessage = () => (
   <FormattedMessage

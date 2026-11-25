@@ -1,5 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-
 import {
   useCallback, useEffect, useRef, useState,
 } from 'react';

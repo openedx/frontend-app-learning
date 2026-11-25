@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import {
+  FormattedMessage, getAuthenticatedUser, getSiteConfig, useAppConfig, useIntl,
+} from '@openedx/frontend-base';
 import { ActionRow, Alert, Button } from '@openedx/paragon';
 
 import { useNavigate } from 'react-router-dom';
-import { useCourseHomeMeta } from '../../../../course-home/data/apiHooks';
-import { useSaveIntegritySignature } from '../../../data/apiHooks';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { useSaveIntegritySignature } from '@src/courseware/data/apiHooks';
+import { getCourseOutlineUrl } from '@src/courseware/urls';
 import messages from './messages';
 
 const HonorCode = ({ courseId }) => {
@@ -19,10 +20,13 @@ const HonorCode = ({ courseId }) => {
     username,
   } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
   const authUser = getAuthenticatedUser();
-  const siteName = getConfig().SITE_NAME;
-  const honorCodeUrl = `${getConfig().TERMS_OF_SERVICE_URL}#honor-code`;
+  const { TERMS_OF_SERVICE_URL: termsOfServiceUrl } = useAppConfig();
+  const siteName = getSiteConfig().siteName;
+  const honorCodeName = intl.formatMessage(messages['learn.honorCode.name']);
+  // Without a terms of service page to point at, the honor code is named but not linked.
+  const honorCodeLink = termsOfServiceUrl ? <a href={`${termsOfServiceUrl}#honor-code`}>{honorCodeName}</a> : honorCodeName;
 
-  const handleCancel = () => navigate(`/course/${courseId}/home`);
+  const handleCancel = () => navigate(getCourseOutlineUrl(courseId));
 
   const handleAgree = () => saveIntegritySignature(
     // If the request is made by a staff user masquerading as a specific learner,
@@ -46,7 +50,7 @@ const HonorCode = ({ courseId }) => {
           defaultMessage="Honesty and academic integrity are important to {siteName} and the institutions providing courses and programs on the {siteName} site. By clicking “I agree” below, I confirm that I have read, understand, and will abide by the {link} for the {siteName} Site."
           values={{
             siteName,
-            link: <a href={honorCodeUrl}>{intl.formatMessage(messages['learn.honorCode.name'])}</a>,
+            link: honorCodeLink,
           }}
           description="This is shown to learner, when course author wants to learners to explicity agree on their (Term of use or conduct), hence it links honor code page. "
         />

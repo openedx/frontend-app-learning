@@ -1,4 +1,4 @@
-import { getConfig } from '@edx/frontend-platform';
+import { getSiteConfig } from '@openedx/frontend-base';
 
 export const iframeParams = {
   show_title: 0,
@@ -6,11 +6,11 @@ export const iframeParams = {
   recheck_access: 1,
 };
 
-interface Props {
+export interface IFrameUrlParams {
   id: string;
   view: string;
   format?: string | null;
-  examAccess: { blockAccess: boolean, accessToken?: string };
+  examAccess: { blockAccess: boolean; accessToken?: string };
   jumpToId?: string;
   preview: boolean;
 }
@@ -22,8 +22,8 @@ export const getIFrameUrl = ({
   examAccess,
   jumpToId,
   preview,
-}: Props) => {
-  const xblockUrl = new URL(`${getConfig().LMS_BASE_URL}/xblock/${id}`);
+}: IFrameUrlParams) => {
+  const xblockUrl = new URL(`${getSiteConfig().lmsBaseUrl}/xblock/${id}`);
   for (const [key, value] of Object.entries(iframeParams)) {
     xblockUrl.searchParams.set(key, String(value));
   }

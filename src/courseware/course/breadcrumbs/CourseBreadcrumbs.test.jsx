@@ -1,12 +1,11 @@
 import { Factory } from 'rosie';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { createTestQueryClient, initializeMockApp, mockCourseRequests } from '@src/setupTest';
+import { CourseParamsProvider } from '@src/generic/course-params';
+import { mockCourseRequests } from '@src/tests/courseware';
 import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
+import { render } from '@src/tests/render';
 import CourseBreadcrumbs from './CourseBreadcrumbs';
 
 const props = {
@@ -33,36 +32,30 @@ const sectionBlocks = [Factory.build(
   { courseId: props.courseId },
 )];
 
-initializeMockApp();
-
 describe('CourseBreadcrumbs', () => {
-  const initTestStore = () => {
-    mockCourseRequests({ courseMetadata, sectionBlocks, sequenceBlocks });
+  const initTestStore = (blocks = { sectionBlocks, sequenceBlocks }) => {
+    mockCourseRequests({ courseMetadata, ...blocks });
   };
 
-  function renderWithProvider(pathname = '/course') {
+  function renderWithProvider(isPreview = false, extraProps = {}) {
     const { container } = render(
-      <AppProvider wrapWithRouter={false}>
-        <QueryClientProvider client={createTestQueryClient()}>
-          <IntlProvider locale="en">
-            <MemoryRouter initialEntries={[{ pathname }]}>
-              <MountCourseQueryHooks courseId={props.courseId} sequenceId={props.sequenceId} />
-              <CourseBreadcrumbs {...props} />
-            </MemoryRouter>
-          </IntlProvider>
-        </QueryClientProvider>
-      </AppProvider>,
+      <MemoryRouter>
+        <CourseParamsProvider courseId={props.courseId} sequenceId={props.sequenceId} isPreview={isPreview}>
+          <MountCourseQueryHooks courseId={props.courseId} sequenceId={props.sequenceId} />
+          <CourseBreadcrumbs {...props} {...extraProps} />
+        </CourseParamsProvider>
+      </MemoryRouter>,
     );
     return container;
   }
 
   describe('in live view', () => {
     it('renders course breadcrumbs as expected', async () => {
-      await initTestStore();
+      initTestStore();
       renderWithProvider();
       const courseHomeButtonDestination = screen.getAllByRole('link')[0].href;
 
-      expect(courseHomeButtonDestination).toBe('http://localhost/course/course-v1:edX+DemoX+Demo_Course/home');
+      expect(courseHomeButtonDestination).toBe('http://localhost/learning/course/course-v1:edX+DemoX+Demo_Course/home');
 
       expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
 
@@ -70,22 +63,22 @@ describe('CourseBreadcrumbs', () => {
     });
 
     it('section link does not include /preview/', async () => {
-      await initTestStore();
+      initTestStore();
       renderWithProvider();
       const sectionBreadcrumb = await screen.findByText(sectionBlocks[0].block_id);
       const sectionLink = sectionBreadcrumb.closest('a').href;
 
-      expect(sectionLink.includes('/preview/')).toBeFalsy();
+      expect(sectionLink).toBe(`http://localhost/learning/course/${props.courseId}/${props.sequenceId}`);
     });
   });
 
-  describe('in live view', () => {
+  describe('in preview', () => {
     it('renders course breadcrumbs as expected', async () => {
-      await initTestStore();
-      renderWithProvider('/preview/courses');
+      initTestStore();
+      renderWithProvider(true);
       const courseHomeButtonDestination = screen.getAllByRole('link')[0].href;
 
-      expect(courseHomeButtonDestination).toBe('http://localhost/course/course-v1:edX+DemoX+Demo_Course/home');
+      expect(courseHomeButtonDestination).toBe('http://localhost/learning/course/course-v1:edX+DemoX+Demo_Course/home');
 
       expect(screen.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
 
@@ -93,12 +86,52 @@ describe('CourseBreadcrumbs', () => {
     });
 
     it('section link does includes /preview/', async () => {
-      await initTestStore();
-      renderWithProvider('/preview/courses');
+      initTestStore();
+      renderWithProvider(true);
       const sectionBreadcrumb = await screen.findByText(sectionBlocks[0].block_id);
       const sectionLink = sectionBreadcrumb.closest('a').href;
 
-      expect(sectionLink.includes('/preview/')).toBeTruthy();
+      expect(sectionLink).toBe(`http://localhost/learning/preview/course/${props.courseId}/${props.sequenceId}`);
+    });
+  });
+
+  describe('jump navigation', () => {
+    const otherSequenceBlocks = [Factory.build('block', { type: 'sequential' }, { courseId: props.courseId })];
+    const twoSections = {
+      sequenceBlocks: [...sequenceBlocks, ...otherSequenceBlocks],
+      sectionBlocks: [
+        ...sectionBlocks,
+        Factory.build(
+          'block',
+          { type: 'chapter', children: otherSequenceBlocks.map(block => block.id) },
+          { courseId: props.courseId },
+        ),
+      ],
+    };
+
+    it('opens a menu of the sections for staff when it is on', async () => {
+      initTestStore(twoSections);
+      renderWithProvider(false, { jumpNav: true, unitId: 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@unit' });
+      const sectionButton = await screen.findByRole('button', { name: sectionBlocks[0].block_id });
+
+      fireEvent.click(sectionButton);
+
+      expect(await screen.findByText(twoSections.sectionBlocks[1].block_id)).toBeInTheDocument();
+    });
+
+    it('shows plain links when it is off', async () => {
+      initTestStore(twoSections);
+      renderWithProvider();
+
+      expect(await screen.findByRole('link', { name: sectionBlocks[0].block_id })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: sectionBlocks[0].block_id })).not.toBeInTheDocument();
+    });
+
+    it('shows plain links to learners who are not staff', async () => {
+      initTestStore(twoSections);
+      renderWithProvider(false, { jumpNav: true, isStaff: false });
+
+      expect(await screen.findByRole('link', { name: sectionBlocks[0].block_id })).toBeInTheDocument();
     });
   });
 });

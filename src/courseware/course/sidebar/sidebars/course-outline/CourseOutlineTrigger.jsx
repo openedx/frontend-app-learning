@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { IconButton } from '@openedx/paragon';
 import { MenuOpen as MenuOpenIcon } from '@openedx/paragon/icons';
 
@@ -8,7 +8,7 @@ import { useCourseOutlineSidebar } from './hooks';
 import { ID } from './constants';
 import messages from './messages';
 
-const CourseOutlineTrigger = ({ isMobileView }) => {
+const CourseOutlineTrigger = ({ isMobileView = false }) => {
   const intl = useIntl();
   const {
     currentSidebar,
@@ -38,10 +38,6 @@ const CourseOutlineTrigger = ({ isMobileView }) => {
       />
     </div>
   );
-};
-
-CourseOutlineTrigger.defaultProps = {
-  isMobileView: false,
 };
 
 CourseOutlineTrigger.propTypes = {

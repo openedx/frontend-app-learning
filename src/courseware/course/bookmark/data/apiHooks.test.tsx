@@ -2,17 +2,18 @@ import type { ReactNode } from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
-import { MemoryRouter } from 'react-router-dom';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import {
+  getAuthenticatedHttpClient, getAuthenticatedUser, getLoggingService, getSiteConfig, type MockLoggingService,
+} from '@openedx/frontend-base';
 import { Factory } from 'rosie';
 
 import { sequenceMetadataQuery } from '@src/courseware/data/apiHooks';
+import { CourseParamsProvider } from '@src/generic/course-params';
 import { buildSimpleCourseBlocks } from '@src/shared/data/__factories__/courseBlocks.factory';
-import { createTestQueryClient, initializeMockApp } from '../../../../setupTest';
+import { createTestQueryClient } from '@src/tests/queryClient';
 import { useSetBookmarked } from './apiHooks';
 
-const { loggingService } = initializeMockApp();
+const loggingService = getLoggingService() as MockLoggingService;
 
 describe('bookmark apiHooks — useSetBookmarked', () => {
   const courseId = 'course-v1:edX+DemoX+Demo_Course';
@@ -25,9 +26,9 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
   const sequenceId = sequenceBlocks[0].id;
   const unitId = unitBlocks[0].id;
   const sequenceKey = sequenceMetadataQuery(sequenceId, false).queryKey;
-  const sequenceUrl = `${getConfig().LMS_BASE_URL}/api/courseware/sequence/${sequenceMetadata.item_id}`;
-  const createBookmarkURL = `${getConfig().LMS_BASE_URL}/api/bookmarks/v1/bookmarks/`;
-  const deleteBookmarkURL = `${createBookmarkURL}${getAuthenticatedUser().username},${unitId}/`;
+  const sequenceUrl = `${getSiteConfig().lmsBaseUrl}/api/courseware/sequence/${sequenceMetadata.item_id}`;
+  const createBookmarkURL = `${getSiteConfig().lmsBaseUrl}/api/bookmarks/v1/bookmarks/`;
+  const deleteBookmarkURL = `${createBookmarkURL}${getAuthenticatedUser()!.username},${unitId}/`;
 
   let axiosMock: MockAdapter;
   let queryClient: QueryClient;
@@ -38,9 +39,9 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
 
   const renderSetBookmarked = () => {
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <MemoryRouter initialEntries={[`/course/courseId/${sequenceId}/${unitId}`]}>
+      <CourseParamsProvider courseId={courseId} sequenceId={sequenceId} unitId={unitId}>
         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </MemoryRouter>
+      </CourseParamsProvider>
     );
     return renderHook(() => useSetBookmarked(), { wrapper });
   };
@@ -48,7 +49,7 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
   beforeEach(async () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
     queryClient = createTestQueryClient();
-    loggingService.logError.mockReset();
+    (loggingService.logError as jest.Mock).mockReset();
     axiosMock.onGet(sequenceUrl).reply(200, sequenceMetadata);
     await queryClient.fetchQuery(sequenceMetadataQuery(sequenceId, false));
   });
@@ -57,7 +58,9 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
     axiosMock.onPost(createBookmarkURL).reply(201);
 
     const { result } = renderSetBookmarked();
-    act(() => { result.current(sequenceId, unitId, true); });
+    act(() => {
+      result.current(sequenceId, unitId, true);
+    });
 
     await waitFor(() => expect(cachedUnit()).toEqual(expect.objectContaining({
       bookmarked: true,
@@ -71,7 +74,9 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
     axiosMock.onPost(createBookmarkURL).networkError();
 
     const { result } = renderSetBookmarked();
-    act(() => { result.current(sequenceId, unitId, true); });
+    act(() => {
+      result.current(sequenceId, unitId, true);
+    });
 
     await waitFor(() => expect(loggingService.logError).toHaveBeenCalled());
     expect(axiosMock.history.post[0].url).toEqual(createBookmarkURL);
@@ -85,7 +90,9 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
     axiosMock.onDelete(deleteBookmarkURL).reply(201);
 
     const { result } = renderSetBookmarked();
-    act(() => { result.current(sequenceId, unitId, false); });
+    act(() => {
+      result.current(sequenceId, unitId, false);
+    });
 
     await waitFor(() => expect(cachedUnit()).toEqual(expect.objectContaining({
       bookmarked: false,
@@ -98,7 +105,9 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
     axiosMock.onDelete(deleteBookmarkURL).networkError();
 
     const { result } = renderSetBookmarked();
-    act(() => { result.current(sequenceId, unitId, false); });
+    act(() => {
+      result.current(sequenceId, unitId, false);
+    });
 
     await waitFor(() => expect(loggingService.logError).toHaveBeenCalled());
     expect(axiosMock.history.delete[0].url).toEqual(deleteBookmarkURL);
@@ -115,7 +124,9 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
     }));
 
     const { result } = renderSetBookmarked();
-    act(() => { result.current(sequenceId, unitId, true); });
+    act(() => {
+      result.current(sequenceId, unitId, true);
+    });
 
     await waitFor(() => expect(cachedUnit()).toEqual(expect.objectContaining({
       bookmarked: true,
@@ -134,7 +145,9 @@ describe('bookmark apiHooks — useSetBookmarked', () => {
     const otherSequenceId = 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@not_cached';
 
     const { result } = renderSetBookmarked();
-    act(() => { result.current(otherSequenceId, unitId, true); });
+    act(() => {
+      result.current(otherSequenceId, unitId, true);
+    });
 
     await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
     await act(async () => {});

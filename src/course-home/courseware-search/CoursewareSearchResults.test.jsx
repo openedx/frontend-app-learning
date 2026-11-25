@@ -1,9 +1,8 @@
 import React from 'react';
 import {
-  initializeMockApp,
-  render,
   screen,
-} from '../../setupTest';
+} from '@testing-library/react';
+import { render } from '@src/tests/render';
 import CoursewareSearchResults from './CoursewareSearchResults';
 import messages from './messages';
 import searchResultsFactory from './test-data/search-results-factory';
@@ -15,9 +14,6 @@ function renderComponent({ results }) {
 }
 
 describe('CoursewareSearchResults', () => {
-  beforeAll(async () => {
-    initializeMockApp();
-  });
 
   describe('when an empty array is provided', () => {
     beforeEach(() => { renderComponent({ results: [] }); });

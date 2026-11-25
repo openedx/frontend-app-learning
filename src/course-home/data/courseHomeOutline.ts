@@ -1,5 +1,4 @@
-import { camelCaseObject } from '@edx/frontend-platform';
-import { logInfo } from '@edx/frontend-platform/logging';
+import { camelCaseObject, logInfo } from '@openedx/frontend-base';
 
 import type { CourseHomeDateBlock } from './api';
 

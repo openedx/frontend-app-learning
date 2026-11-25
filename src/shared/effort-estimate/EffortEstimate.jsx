@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import { FormattedMessage, useIntl } from '@openedx/frontend-base';
 
 import messages from './messages';
 
@@ -54,10 +54,6 @@ const EffortEstimate = (props) => {
       {content}
     </span>
   );
-};
-
-EffortEstimate.defaultProps = {
-  className: null,
 };
 
 EffortEstimate.propTypes = {

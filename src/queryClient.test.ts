@@ -1,27 +1,33 @@
-import { QueryClient } from '@tanstack/react-query';
+import { createElement, type ReactNode } from 'react';
+import { getLoggingService, MockLoggingService } from '@openedx/frontend-base';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook } from '@testing-library/react';
 
-import { createAppQueryCache, createQueryClient, shouldRetryQuery } from './queryClient';
+import { queryDefaults, shouldRetryQuery, useQueryErrorLogging } from './queryClient';
+import { appId } from './constants';
 import { NonRetryableError } from './data/http-error';
-import { initializeMockApp } from './setupTest';
 
-const { loggingService } = initializeMockApp();
+const loggingService = getLoggingService() as MockLoggingService;
 
-describe('app query cache', () => {
+describe('query error logging', () => {
   let queryClient: QueryClient;
+  const listen = () => renderHook(() => useQueryErrorLogging(), {
+    wrapper: ({ children }: { children: ReactNode }) => createElement(QueryClientProvider, { client: queryClient }, children),
+  });
 
   beforeEach(() => {
     queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
-      queryCache: createAppQueryCache(),
     });
     loggingService.logError.mockReset();
     loggingService.logInfo.mockReset();
   });
 
-  it('reports query errors through onError', async () => {
+  it('reports a Learning query error through logError', async () => {
+    listen();
     const error = new Error('boom');
     await queryClient.fetchQuery({
-      queryKey: ['failing'],
+      queryKey: [appId, 'failing'],
       queryFn: () => Promise.reject(error),
     }).catch(() => {});
 
@@ -29,9 +35,10 @@ describe('app query cache', () => {
   });
 
   it('logs a status listed in `logStatusAs` at that level instead of as an error', async () => {
-    const error = { response: { status: 403 } };
+    listen();
+    const error = Object.assign(new Error('forbidden'), { response: { status: 403 } });
     await queryClient.fetchQuery({
-      queryKey: ['forbidden'],
+      queryKey: [appId, 'forbidden'],
       queryFn: () => Promise.reject(error),
       meta: { logStatusAs: { 403: 'info' } },
     }).catch(() => {});
@@ -41,9 +48,10 @@ describe('app query cache', () => {
   });
 
   it('does not log a status mapped to `silent`', async () => {
-    const error = { response: { status: 422 } };
+    listen();
+    const error = Object.assign(new Error('unprocessable'), { response: { status: 422 } });
     await queryClient.fetchQuery({
-      queryKey: ['maybe-unit'],
+      queryKey: [appId, 'maybe-unit'],
       queryFn: () => Promise.reject(error),
       meta: { logStatusAs: { 422: 'silent' } },
     }).catch(() => {});
@@ -51,10 +59,30 @@ describe('app query cache', () => {
     expect(loggingService.logError).not.toHaveBeenCalled();
     expect(loggingService.logInfo).not.toHaveBeenCalled();
   });
+
+  it('does not log a query outside Learning', async () => {
+    listen();
+    await queryClient.fetchQuery({
+      queryKey: ['shell', 'failing'],
+      queryFn: () => Promise.reject(new Error('boom')),
+    }).catch(() => {});
+
+    expect(loggingService.logError).not.toHaveBeenCalled();
+  });
+
+  it('stops logging once unmounted', async () => {
+    listen().unmount();
+    await queryClient.fetchQuery({
+      queryKey: [appId, 'failing'],
+      queryFn: () => Promise.reject(new Error('boom')),
+    }).catch(() => {});
+
+    expect(loggingService.logError).not.toHaveBeenCalled();
+  });
 });
 
 describe('shouldRetryQuery', () => {
-  const httpError = (status: number) => ({ response: { status } });
+  const httpError = (status: number) => Object.assign(new Error(`status ${status}`), { response: { status } });
 
   it.each([400, 401, 403, 404, 422])('does not retry client error %s', (status) => {
     expect(shouldRetryQuery(0, httpError(status))).toBe(false);
@@ -77,16 +105,16 @@ describe('shouldRetryQuery', () => {
     expect(shouldRetryQuery(3, networkError)).toBe(false);
   });
 
-  it('is wired in as the default query retry policy on createQueryClient', () => {
-    expect(createQueryClient().getDefaultOptions().queries?.retry).toBe(shouldRetryQuery);
+  it('is the retry policy in queryDefaults', () => {
+    expect(queryDefaults.retry).toBe(shouldRetryQuery);
   });
 });
 
-describe('createQueryClient retry behavior (integration)', () => {
+describe('queryDefaults retry behavior on a client with library defaults (integration)', () => {
   const attemptsFor = async (error: unknown): Promise<number> => {
     const queryFn = jest.fn().mockRejectedValue(error);
-    await createQueryClient().fetchQuery({
-      queryKey: ['retry-test'], queryFn, retryDelay: 0,
+    await new QueryClient().fetchQuery({
+      ...queryDefaults, queryKey: ['retry-test'], queryFn, retryDelay: 0,
     }).catch(() => {});
     return queryFn.mock.calls.length;
   };
@@ -108,8 +136,8 @@ describe('createQueryClient retry behavior (integration)', () => {
   });
 });
 
-describe('createQueryClient defaults', () => {
+describe('queryDefaults', () => {
   it('disables refetchOnWindowFocus (parity with the pre-RQ no-focus-refetch behavior)', () => {
-    expect(createQueryClient().getDefaultOptions().queries?.refetchOnWindowFocus).toBe(false);
+    expect(queryDefaults.refetchOnWindowFocus).toBe(false);
   });
 });

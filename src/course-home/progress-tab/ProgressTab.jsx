@@ -1,24 +1,28 @@
 import React, { useEffect } from 'react';
-import { getConfig } from '@edx/frontend-platform';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { getSiteConfig, useIntl } from '@openedx/frontend-base';
 import { useWindowSize } from '@openedx/paragon';
-import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-import ProgressTabCertificateStatusMainBodySlot from '@src/plugin-slots/ProgressTabCertificateStatusMainBodySlot';
-import ProgressTabCertificateStatusSidePanelSlot from '@src/plugin-slots/ProgressTabCertificateStatusSidePanelSlot';
-import ProgressTabCourseCompletionSlot from '@src/plugin-slots/ProgressTabCourseCompletionSlot';
-import ProgressTabCourseGradeSlot from '@src/plugin-slots/ProgressTabCourseGradeSlot';
-import ProgressTabGradeBreakdownSlot from '@src/plugin-slots/ProgressTabGradeBreakdownSlot';
-import ProgressTabRelatedLinksSlot from '@src/plugin-slots/ProgressTabRelatedLinksSlot';
+import ProgressTabCertificateStatusMainBodySlot from '@src/slots/ProgressTabCertificateStatusMainBodySlot';
+import ProgressTabCertificateStatusSidePanelSlot from '@src/slots/ProgressTabCertificateStatusSidePanelSlot';
+import ProgressTabCourseCompletionSlot from '@src/slots/ProgressTabCourseCompletionSlot';
+import ProgressTabCourseGradeSlot from '@src/slots/ProgressTabCourseGradeSlot';
+import ProgressTabGradeBreakdownSlot from '@src/slots/ProgressTabGradeBreakdownSlot';
+import ProgressTabRelatedLinksSlot from '@src/slots/ProgressTabRelatedLinksSlot';
 import { getResponseStatus } from '@src/data/http-error';
 import PageLoading from '@src/generic/PageLoading';
 import tabPageMessages from '@src/tab-page/messages';
 import ProgressHeader from './ProgressHeader';
 import { useProgressData } from './hooks';
 import { useCourseHomeMeta, useProgressTabData } from '../data/apiHooks';
+import { useAccessExpirationMasqueradeBanner } from '../../alerts/access-expiration-alert';
+import { useCourseStartMasqueradeBanner } from '../../alerts/course-start-alert';
 import { TabWithTimer } from '../../tab-page';
+import { CourseParamsProvider, useCourseId } from '../../generic/course-params';
+import LearningWidgetProviders from '../../generic/LearningWidgetProviders';
 
 const ProgressTabContent = () => {
+  const courseId = useCourseId();
   const { disableProgressGraph } = useProgressData();
 
   const windowWidth = useWindowSize().width;
@@ -35,32 +39,38 @@ const ProgressTabContent = () => {
       <div className="row w-100 m-0">
         {/* Main body */}
         <div className="col-12 col-md-8 p-0">
-          <ProgressTabCourseCompletionSlot enableProgressGraph={!disableProgressGraph} />
-          <ProgressTabCertificateStatusMainBodySlot />
-          <ProgressTabCourseGradeSlot />
-          <ProgressTabGradeBreakdownSlot />
+          <ProgressTabCourseCompletionSlot courseId={courseId} enableProgressGraph={!disableProgressGraph} />
+          <ProgressTabCertificateStatusMainBodySlot courseId={courseId} />
+          <ProgressTabCourseGradeSlot courseId={courseId} />
+          <ProgressTabGradeBreakdownSlot courseId={courseId} />
         </div>
 
         {/* Side panel */}
         <div className="col-12 col-md-4 p-0 px-md-4">
-          <ProgressTabCertificateStatusSidePanelSlot />
-          <ProgressTabRelatedLinksSlot />
+          <ProgressTabCertificateStatusSidePanelSlot courseId={courseId} />
+          <ProgressTabRelatedLinksSlot courseId={courseId} />
         </div>
       </div>
     </>
   );
 };
 
-const ProgressTab = () => {
+// Under the providers ProgressTab mounts: the banner hooks register with its user messages.
+const ProgressTabFrame = ({ courseId, targetUserId = undefined }) => {
   const intl = useIntl();
-  const { courseId, targetUserId } = useParams();
   const metadataQuery = useCourseHomeMeta(courseId);
   const tabDataQuery = useProgressTabData(courseId, targetUserId);
   const redirectToLegacyProgress = getResponseStatus(tabDataQuery.error) === 404;
 
+  const accessExpirationMasqueradeBanner = useAccessExpirationMasqueradeBanner(
+    courseId,
+    tabDataQuery.data?.accessExpiration,
+  );
+  const courseStartMasqueradeBanner = useCourseStartMasqueradeBanner(courseId);
+
   useEffect(() => {
     if (redirectToLegacyProgress) {
-      global.location.replace(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`);
+      global.location.replace(`${getSiteConfig().lmsBaseUrl}/courses/${courseId}/progress`);
     }
   }, [redirectToLegacyProgress, courseId]);
 
@@ -68,14 +78,33 @@ const ProgressTab = () => {
     return <PageLoading srMessage={intl.formatMessage(tabPageMessages.loading)} />;
   }
   return (
-    <TabWithTimer
-      activeTabSlug="progress"
-      courseId={courseId}
-      courseStatus={{ metadataQuery, tabDataQuery }}
-    >
-      <ProgressTabContent />
-    </TabWithTimer>
+    <CourseParamsProvider courseId={courseId} targetUserId={targetUserId}>
+      <TabWithTimer
+        courseId={courseId}
+        courseStatus={{ metadataQuery, tabDataQuery }}
+        masqueradeBanners={{ ...accessExpirationMasqueradeBanner, ...courseStartMasqueradeBanner }}
+      >
+        <ProgressTabContent />
+      </TabWithTimer>
+    </CourseParamsProvider>
   );
+};
+
+ProgressTabFrame.propTypes = {
+  courseId: PropTypes.string.isRequired,
+  targetUserId: PropTypes.string,
+};
+
+/** @param {{ courseId: string, targetUserId?: string }} props */
+const ProgressTab = ({ courseId, targetUserId = undefined }) => (
+  <LearningWidgetProviders>
+    <ProgressTabFrame courseId={courseId} targetUserId={targetUserId} />
+  </LearningWidgetProviders>
+);
+
+ProgressTab.propTypes = {
+  courseId: PropTypes.string.isRequired,
+  targetUserId: PropTypes.string,
 };
 
 export default ProgressTab;

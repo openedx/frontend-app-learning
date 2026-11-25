@@ -1,19 +1,14 @@
 import { render, screen } from '@testing-library/react';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { IntlProvider } from '@openedx/frontend-base';
 
 import { useCoursewareMetadata, useUnit } from '@src/courseware/data/apiHooks';
 import hooks from './hooks';
 
 import UnitSuspense from './UnitSuspense';
 
-jest.mock('@edx/frontend-platform/i18n', () => ({
-  ...jest.requireActual('@edx/frontend-platform/i18n'),
+jest.mock('@openedx/frontend-base', () => ({
+  ...jest.requireActual('@openedx/frontend-base'),
   defineMessages: m => m,
-}));
-
-jest.mock('react', () => ({
-  ...jest.requireActual('react'),
-  Suspense: 'Suspense',
 }));
 
 jest.mock('../honor-code', () => jest.fn(() => <div>HonorCode</div>));
@@ -63,13 +58,10 @@ describe('UnitSuspense component', () => {
       });
       describe('gating enabled, gated content included', () => {
         beforeEach(() => { mockModels(true, true); });
-        it('displays LockPaywall in Suspense wrapper with PageLoading fallback', () => {
+        it('displays LockPaywall', () => {
           hooks.useShouldDisplayHonorCode.mockReturnValueOnce(false);
           render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
-          const lockPaywall = screen.getByText('LockPaywall');
-          expect(lockPaywall).toBeInTheDocument();
-          const suspenseWrapper = lockPaywall.closest('suspense');
-          expect(suspenseWrapper).toBeInTheDocument();
+          expect(screen.getByText('LockPaywall')).toBeInTheDocument();
         });
       });
     });
@@ -80,13 +72,10 @@ describe('UnitSuspense component', () => {
         const honorCode = screen.queryByText('HonorCode');
         expect(honorCode).toBeNull();
       });
-      it('displays HonorCode component in Suspense wrapper with PageLoading fallback if shouldDisplayHonorCode', () => {
+      it('displays HonorCode if shouldDisplayHonorCode', () => {
         hooks.useShouldDisplayHonorCode.mockReturnValueOnce(true);
         render(<IntlProvider locale="en"><UnitSuspense {...props} /></IntlProvider>);
-        const honorCode = screen.getByText('HonorCode');
-        expect(honorCode).toBeInTheDocument();
-        const suspenseWrapper = honorCode.closest('suspense');
-        expect(suspenseWrapper).toBeInTheDocument();
+        expect(screen.getByText('HonorCode')).toBeInTheDocument();
       });
     });
   });

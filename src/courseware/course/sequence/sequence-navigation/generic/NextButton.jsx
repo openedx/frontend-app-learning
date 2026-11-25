@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, IconButton, Icon } from '@openedx/paragon';
 import {
   ArrowBack,
@@ -7,7 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from '@openedx/paragon/icons';
-import { isRtl, getLocale } from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl } from '@openedx/frontend-base';
 
 import UnitNavigationEffortEstimate from '../UnitNavigationEffortEstimate';
 
@@ -18,12 +18,10 @@ const NextButton = ({
   variant,
   buttonStyle,
   disabled,
-  hasEffortEstimate,
-  isAtTop,
+  hasEffortEstimate = false,
+  isAtTop = false,
 }) => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const navLink = pathname.startsWith('/preview') ? `/preview${nextLink}` : nextLink;
   const buttonContent = hasEffortEstimate ? (
     <UnitNavigationEffortEstimate>
       {buttonText}
@@ -40,7 +38,7 @@ const NextButton = ({
   const nextArrow = getNextArrow();
 
   const onClick = () => {
-    navigate(navLink);
+    navigate(nextLink);
     onClickHandler();
   };
 
@@ -64,7 +62,7 @@ const NextButton = ({
       disabled={disabled}
       onClick={onClickHandler}
       as={disabled ? undefined : Link}
-      to={disabled ? undefined : navLink}
+      to={disabled ? undefined : nextLink}
       iconAfter={nextArrow}
     >
       {buttonContent}
@@ -72,19 +70,16 @@ const NextButton = ({
   );
 };
 
-NextButton.defaultProps = {
-  hasEffortEstimate: false,
-};
 
 NextButton.propTypes = {
   onClickHandler: PropTypes.func.isRequired,
-  buttonText: PropTypes.string.isRequired,
-  nextLink: PropTypes.string.isRequired,
+  buttonText: PropTypes.string,
+  nextLink: PropTypes.string,
   variant: PropTypes.string.isRequired,
   buttonStyle: PropTypes.string.isRequired,
   disabled: PropTypes.bool.isRequired,
   hasEffortEstimate: PropTypes.bool,
-  isAtTop: PropTypes.bool.isRequired,
+  isAtTop: PropTypes.bool,
 };
 
 export default NextButton;

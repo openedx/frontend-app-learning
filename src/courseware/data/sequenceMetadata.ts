@@ -1,4 +1,4 @@
-import { camelCaseObject } from '@edx/frontend-platform';
+import { camelCaseObject } from '@openedx/frontend-base';
 
 // The sequence metadata (GET /api/courseware/sequence/), as `normalizeSequenceMetadata` shapes it.
 

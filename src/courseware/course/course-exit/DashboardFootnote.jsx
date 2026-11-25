@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 
-import { DashboardFootnoteLinkPluginSlot } from '../../../plugin-slots/CourseExitPluginSlots';
+import CourseExitDashboardFootnoteLinkSlot from '@src/slots/CourseExitSlots/CourseExitDashboardFootnoteLinkSlot';
 import Footnote from './Footnote';
 import messages from './messages';
+import { useCourseId } from '@src/generic/course-params';
 
 const DashboardFootnote = ({ variant }) => {
   const intl = useIntl();
-  const dashboardLink = (<DashboardFootnoteLinkPluginSlot variant={variant} />);
+  const courseId = useCourseId();
+  const dashboardLink = (<CourseExitDashboardFootnoteLinkSlot courseId={courseId} variant={variant} />);
 
   return (
     <Footnote

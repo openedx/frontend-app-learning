@@ -1,9 +1,10 @@
 import {
   useLayoutEffect, useRef, useState,
 } from 'react';
-import { useParams } from 'react-router-dom';
-import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackEvent, sendTrackingLogEvent } from '@openedx/frontend-base';
 import { breakpoints } from '@openedx/paragon';
+
+import { useCourseId, useSequenceId } from '@src/generic/course-params';
 
 import {
   useCheckBlockCompletion,
@@ -14,11 +15,11 @@ import {
 import { useSidebar } from '../../SidebarContext';
 import { ID } from './constants';
 
-// eslint-disable-next-line import/prefer-default-export
 export const useCourseOutlineSidebar = () => {
   const checkBlockCompletion = useCheckBlockCompletion();
 
-  const { courseId, sequenceId: activeSequenceId } = useParams();
+  const courseId = useCourseId();
+  const activeSequenceId = useSequenceId();
   const { data: sidebarToggles } = useCoursewareOutlineSidebarToggles(courseId);
   const isEnabledCompletionTracking = sidebarToggles?.enableCompletionTracking;
   const outlineQuery = useCourseOutlineStructure(courseId);
@@ -109,6 +110,8 @@ export const useCourseOutlineSidebar = () => {
     return () => {
       global.removeEventListener('resize', handleResize);
     };
+    // collapseSidebar is recreated each render; the legacy app re-subscribed only when the open sidebar changed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSidebar]);
 
   return {

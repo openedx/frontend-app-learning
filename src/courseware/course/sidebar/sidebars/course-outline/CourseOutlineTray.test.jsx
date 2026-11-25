@@ -1,13 +1,15 @@
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { act, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { Factory } from 'rosie';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
 
-import { createTestQueryClient, mockCourseRequests } from '@src/setupTest';
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
 import { getCourseOutline } from '@src/courseware/data/api';
+import { CourseParamsProvider } from '@src/generic/course-params';
+import CourseQueryGate from '@src/tests/CourseQueryGate';
+import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
+import { mockCourseRequests, unitPath } from '@src/tests/courseware';
+import { render } from '@src/tests/render';
 import { SidebarProvider } from '../../SidebarContext';
 import CourseOutlineTray from './CourseOutlineTray';
 import { ID as outlineSidebarId } from './constants';
@@ -51,19 +53,13 @@ describe('<CourseOutlineTray />', () => {
 
   function renderWithProvider() {
     const { container } = render(
-      <AppProvider wrapWithRouter={false}>
-        <QueryClientProvider client={createTestQueryClient()}>
-          <IntlProvider locale="en">
-            <MemoryRouter initialEntries={[`/course/${courseId}/${activeSequenceId}/${unitId}`]}>
-              <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>
-                <Routes>
-                  <Route path="/course/:courseId/:sequenceId/:unitId" element={<CourseOutlineTray />} />
-                </Routes>
-              </SidebarProvider>
-            </MemoryRouter>
-          </IntlProvider>
-        </QueryClientProvider>
-      </AppProvider>,
+      <MemoryRouter initialEntries={[unitPath(courseId, activeSequenceId, unitId)]}>
+        <CourseParamsProvider courseId={courseId} sequenceId={activeSequenceId} unitId={unitId}>
+          <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>
+            <CourseOutlineTray />
+          </SidebarProvider>
+        </CourseParamsProvider>
+      </MemoryRouter>,
     );
     return container;
   }
@@ -91,6 +87,34 @@ describe('<CourseOutlineTray />', () => {
     expect(screen.getByRole('button', { name: messages.toggleCourseOutlineTrigger.defaultMessage })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: new RegExp(`${sequence.title} , ${courseOutlineMessages.incompleteAssignment.defaultMessage}`) })).toBeInTheDocument();
     expect(screen.getByText(unit.title)).toBeInTheDocument();
+  });
+
+  it('renders nothing during an active entrance exam', async () => {
+    const sectionId = 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@entrance_exam';
+    await initTestData({
+      courseMetadata: Factory.build('courseMetadata', {
+        entrance_exam_data: {
+          entrance_exam_enabled: true,
+          entrance_exam_id: sectionId,
+          entrance_exam_passed: false,
+        },
+      }),
+    });
+    const { container } = render(
+      <MemoryRouter initialEntries={[unitPath(courseId, activeSequenceId, unitId)]}>
+        <CourseParamsProvider courseId={courseId} sequenceId={activeSequenceId} unitId={unitId}>
+          <MountCourseQueryHooks courseId={courseId} />
+          <CourseQueryGate courseId={courseId}>
+            <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>
+              <CourseOutlineTray />
+            </SidebarProvider>
+          </CourseQueryGate>
+        </CourseParamsProvider>
+      </MemoryRouter>,
+    );
+    await screen.findByTestId('course-query-gate-open');
+
+    expect(container.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
   });
 
   it('collapses sidebar correctly when toggle button is clicked', async () => {

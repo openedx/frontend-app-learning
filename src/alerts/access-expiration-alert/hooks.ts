@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import { useAlert } from '../../generic/user-messages';
-import { useCourseHomeMeta, useOutlineTabData, useProgressTabData } from '../../course-home/data/apiHooks';
+import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import type { CourseHomeAccessExpiration } from '../../course-home/data/courseHomeOutline';
 
 const AccessExpirationAlert = React.lazy(() => import('./AccessExpirationAlert'));
@@ -33,16 +32,12 @@ function useAccessExpirationAlert(
   return { clientAccessExpirationAlert: AccessExpirationAlert };
 }
 
-export function useAccessExpirationMasqueradeBanner(courseId: string, tab: string) {
-  const { targetUserId } = useParams();
+// The caller passes the access expiration from its own tab's payload.
+export function useAccessExpirationMasqueradeBanner(
+  courseId: string,
+  accessExpiration: CourseHomeAccessExpiration | null | undefined,
+) {
   const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
-  const outline = useOutlineTabData(courseId, { enabled: false }).data;
-  const progress = useProgressTabData(courseId, targetUserId, { enabled: false }).data;
-  const accessExpirationByTab: Partial<Record<string, CourseHomeAccessExpiration | null>> = {
-    outline: outline?.accessExpiration,
-    progress: progress?.accessExpiration,
-  };
-  const accessExpiration = accessExpirationByTab[tab];
 
   const isVisible = accessExpiration && accessExpiration.masqueradingExpiredCourse;
   const expirationDate = accessExpiration && accessExpiration.expirationDate;

@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import React, { useMemo } from 'react';
 import { useAlert } from '../../../../generic/user-messages';
 import { useCourseHomeMeta, useOutlineTabData } from '../../../data/apiHooks';
@@ -15,7 +14,7 @@ export function useCourseEndAlert(courseId) {
       courseDateBlocks,
     },
     userTimezone,
-  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
+  } = useOutlineTabData(courseId, { enabled: false }).data;
 
   const endBlock = courseDateBlocks.find(b => b.dateType === 'course-end-date');
   const endDate = endBlock ? new Date(endBlock.date) : null;

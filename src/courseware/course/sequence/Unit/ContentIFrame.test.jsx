@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { IntlProvider } from '@openedx/frontend-base';
 
 import * as hooks from './hooks';
 import ContentIFrame, { IFRAME_FEATURE_POLICY } from './ContentIFrame';
@@ -9,7 +9,7 @@ const IntlWrapper = ({ children }) => (
   <IntlProvider locale="en">{children}</IntlProvider>
 );
 
-jest.mock('@edx/frontend-platform/react', () => ({ ErrorPage: () => <div>ErrorPage</div> }));
+jest.mock('@openedx/frontend-base', () => ({ ...jest.requireActual('@openedx/frontend-base'), ErrorPage: () => <div>ErrorPage</div> }));
 
 jest.mock('@src/generic/PageLoading', () => jest.fn(() => <div>PageLoading</div>));
 
@@ -60,6 +60,15 @@ const props = {
 };
 
 describe('ContentIFrame Component', () => {
+  // The modal's focus lock focuses the modal iframe's window, which jsdom does not implement.
+  beforeAll(() => {
+    jest.spyOn(HTMLIFrameElement.prototype, 'contentWindow', 'get').mockReturnValue({ focus: () => {} });
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });

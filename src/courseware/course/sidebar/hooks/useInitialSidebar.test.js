@@ -20,7 +20,6 @@ function buildParams(overrides = {}) {
     shouldDisplayFullScreen: false,
     isInitiallySidebarOpen: true,
     getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-    getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
     ...overrides,
   };
 }
@@ -84,7 +83,6 @@ describe('useInitialSidebar', () => {
           getSidebarId.mockReturnValue('DISCUSSIONS');
           const { result } = renderHook(() => useInitialSidebar(buildParams({
             getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-            getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
           })));
 
           expect(result.current).toBe('DISCUSSIONS');
@@ -94,30 +92,15 @@ describe('useInitialSidebar', () => {
           getSidebarId.mockReturnValue('DISCUSSIONS');
           const { result } = renderHook(() => useInitialSidebar(buildParams({
             getFirstAvailablePanel: jest.fn(() => null),
-            getAvailableWidgets: jest.fn(() => []),
           })));
 
           expect(result.current).toBe('DISCUSSIONS');
         });
 
-        it('returns higher-priority panel instead of stored lower-priority panel', () => {
+        it('returns the first available panel instead of a stored one that comes later, or is gone', () => {
           getSidebarId.mockReturnValue('NOTES');
           const { result } = renderHook(() => useInitialSidebar(buildParams({
             getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-            getAvailableWidgets: jest.fn(() => [
-              { id: 'DISCUSSIONS', priority: 10 },
-              { id: 'NOTES', priority: 20 },
-            ]),
-          })));
-
-          expect(result.current).toBe('DISCUSSIONS');
-        });
-
-        it('returns firstAvailable when stored panel is no longer in available widgets', () => {
-          getSidebarId.mockReturnValue('NOTES');
-          const { result } = renderHook(() => useInitialSidebar(buildParams({
-            getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-            getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
           })));
 
           expect(result.current).toBe('DISCUSSIONS');

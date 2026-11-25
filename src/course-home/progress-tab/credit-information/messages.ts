@@ -1,4 +1,4 @@
-import { defineMessages } from '@edx/frontend-platform/i18n';
+import { defineMessages } from '@openedx/frontend-base';
 
 const messages = defineMessages({
   completed: {
@@ -14,6 +14,7 @@ const messages = defineMessages({
   minimumGrade: {
     id: 'progress.creditInformation.minimumGrade',
     defaultMessage: 'Minimum grade for credit ({minGrade}%)',
+    description: 'The minimum grade requirement, in the list of requirements for course credit',
   },
   requirementsHeader: {
     id: 'progress.creditInformation.requirementsHeader',

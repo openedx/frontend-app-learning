@@ -1,13 +1,14 @@
-import React from 'react';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { IntlProvider, Slot, WidgetOperationTypes } from '@openedx/frontend-base';
 import {
-  render, renderHook, screen, fireEvent, act,
+  render, screen, fireEvent, act,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { upgradeIsAvailable } from '@src/widgets/upgrade/src/utils';
-import {
-  SidebarProvider, buildSidebarsRegistry, getSidebarOrder, useSidebar,
-} from './SidebarContext';
+import { auxiliarySidebarSlotId } from '@src/slots/AuxiliarySidebarSlot';
+import { addSidebarWidgets } from '@src/tests/auxiliarySidebar';
+import { addSlotOperations, addTestApp } from '@src/tests/slots';
+import { discussionsSidebarWidgetId } from '@src/widgets/DiscussionsSidebar';
+import { useAuxiliarySidebarWidgets } from './auxiliarySidebarWidgets';
+import { SidebarProvider, useSidebar } from './SidebarContext';
 
 jest.mock('@src/course-home/data/apiHooks', () => ({
   ...jest.requireActual('@src/course-home/data/apiHooks'),
@@ -39,17 +40,14 @@ jest.mock('./utils/storage', () => ({
 const courseId = 'course-test-123';
 const unitId = 'unit-test-456';
 
-const stubWidget = (id, priority, overrides = {}) => ({
+// A sidebar widget as a plugin registers it: a panel in the auxiliary sidebar slot, and its options.
+const stubWidget = (id, overrides = {}) => ({
   id,
-  priority,
-  Sidebar: () => null,
-  Trigger: () => null,
   isAvailable: () => true,
-  enabled: true,
   ...overrides,
 });
 
-const defaultWidgets = [stubWidget('DISCUSSIONS', 10), stubWidget('NOTES', 20)];
+const defaultWidgets = [stubWidget('DISCUSSIONS'), stubWidget('NOTES')];
 
 const ContextConsumer = () => {
   const { currentSidebar, toggleSidebar, availableSidebarIds } = useSidebar();
@@ -75,15 +73,20 @@ const ContextConsumer = () => {
   );
 };
 
-function renderProvider(props = {}) {
-  return render(
-    <IntlProvider locale="en">
-      <MemoryRouter>
-        <SidebarProvider courseId={courseId} unitId={unitId} widgets={defaultWidgets} {...props}>
-          <ContextConsumer />
-        </SidebarProvider>
-      </MemoryRouter>
-    </IntlProvider>,
+const AvailableIds = () => <span data-testid="available-ids">{useSidebar().availableSidebarIds.join(',')}</span>;
+
+const renderWithoutWidgets = (ui) => render(
+  <IntlProvider locale="en" messages={{}}>
+    <MemoryRouter>{ui}</MemoryRouter>
+  </IntlProvider>,
+);
+
+function renderProvider({ widgets = defaultWidgets } = {}) {
+  addSidebarWidgets(widgets);
+  return renderWithoutWidgets(
+    <SidebarProvider courseId={courseId} unitId={unitId}>
+      <ContextConsumer />
+    </SidebarProvider>,
   );
 }
 
@@ -113,8 +116,8 @@ describe('SidebarProvider', () => {
     it('excludes a widget from availableSidebarIds when isAvailable returns false', () => {
       renderProvider({
         widgets: [
-          stubWidget('DISCUSSIONS', 10),
-          stubWidget('UNAVAILABLE_WIDGET', 20, { isAvailable: () => false }),
+          stubWidget('DISCUSSIONS'),
+          stubWidget('UNAVAILABLE_WIDGET', { isAvailable: () => false }),
         ],
       });
 
@@ -124,7 +127,7 @@ describe('SidebarProvider', () => {
     });
 
     it('treats a widget without isAvailable as always available', () => {
-      renderProvider({ widgets: [stubWidget('ALWAYS_ON', 10, { isAvailable: undefined })] });
+      renderProvider({ widgets: [stubWidget('ALWAYS_ON', { isAvailable: undefined })] });
 
       expect(screen.getByTestId('available-ids').textContent).toBe('ALWAYS_ON');
     });
@@ -132,9 +135,10 @@ describe('SidebarProvider', () => {
 
   describe('when a metadata query has no data', () => {
     const widgets = [
-      stubWidget('ALWAYS_ON', 10, { isAvailable: undefined }),
-      stubWidget('COURSE_LIST', 20, { isAvailable: (context) => context.courseId === courseId }),
-      stubWidget('UPGRADE', 30, { isAvailable: upgradeIsAvailable }),
+      stubWidget('ALWAYS_ON', { isAvailable: undefined }),
+      stubWidget('COURSE_LIST', { isAvailable: (context) => context.courseId === courseId }),
+      // The upgrade widget's rule, which reads a course-home field.
+      stubWidget('UPGRADE', { isAvailable: ({ course }) => !!course?.verifiedMode }),
     ];
 
     afterEach(() => {
@@ -241,7 +245,7 @@ describe('SidebarProvider', () => {
 
     it('wraps children with widget Providers when widgets define one', () => {
       const ProviderCallCheck = jest.fn(({ children }) => children);
-      renderProvider({ widgets: [stubWidget('DISCUSSIONS', 10, { Provider: ProviderCallCheck })] });
+      renderProvider({ widgets: [stubWidget('DISCUSSIONS', { Provider: ProviderCallCheck })] });
 
       expect(ProviderCallCheck).toHaveBeenCalled();
     });
@@ -250,55 +254,161 @@ describe('SidebarProvider', () => {
 
 describe('useSidebar', () => {
   it('throws outside a SidebarProvider', () => {
-    expect(() => renderHook(() => useSidebar()))
-      .toThrow('useSidebar must be used within a SidebarProvider');
+    // Caught in the component, so React has no uncaught render error to report.
+    const Probe = () => {
+      try {
+        useSidebar();
+      } catch (error) {
+        return error.message;
+      }
+      return null;
+    };
+    render(<Probe />);
+
+    expect(screen.getByText('useSidebar must be used within a SidebarProvider')).toBeInTheDocument();
   });
 });
 
-describe('buildSidebarsRegistry', () => {
-  it('builds a registry keyed by widget id', () => {
-    const MockSidebar = () => null;
-    const MockTrigger = () => null;
-    const mockIsAvailable = jest.fn();
-    const widgets = [{
-      id: 'DISCUSSIONS',
-      Sidebar: MockSidebar,
-      Trigger: MockTrigger,
-      isAvailable: mockIsAvailable,
-    }];
-    const registry = buildSidebarsRegistry(widgets);
-    expect(registry.DISCUSSIONS).toBeDefined();
-    expect(registry.DISCUSSIONS.ID).toBe('DISCUSSIONS');
-    expect(registry.DISCUSSIONS.Sidebar).toBe(MockSidebar);
-    expect(registry.DISCUSSIONS.Trigger).toBe(MockTrigger);
-    expect(registry.DISCUSSIONS.isAvailable).toBe(mockIsAvailable);
+describe('the sidebar widget list', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.requireMock('@openedx/paragon').useWindowSize.mockReturnValue({ width: 600 });
   });
 
-  it('returns an empty object for an empty widget list', () => {
-    expect(buildSidebarsRegistry([])).toEqual({});
+  // Every widget, available or not, in the order the provider holds them.
+  const WidgetList = () => (
+    <span data-testid="widgets">{useAuxiliarySidebarWidgets().map(({ id }) => id).join(',')}</span>
+  );
+  const widgetList = () => screen.getByTestId('widgets').textContent;
+  const availableIds = () => screen.getByTestId('available-ids').textContent;
+
+  // The list with the widgets that are available on the unit.
+  const renderInProvider = () => renderWithoutWidgets(
+    <SidebarProvider courseId={courseId} unitId={unitId}>
+      <WidgetList />
+      <AvailableIds />
+    </SidebarProvider>,
+  );
+
+  // Options a site, or another app, sets on a widget's panel.
+  const setOptions = (relatedId, options) => addSlotOperations([{
+    slotId: auxiliarySidebarSlotId, relatedId, op: WidgetOperationTypes.OPTIONS, options,
+  }]);
+
+  // Learning registers its own discussions widget, so it is in every list. It is not available here: the unit has
+  // no discussion topic.
+  const learningWidgets = discussionsSidebarWidgetId;
+
+  it('holds the panels in the order of the slot', () => {
+    addSidebarWidgets([stubWidget('NOTES'), stubWidget('GLOSSARY')]);
+    renderWithoutWidgets(<WidgetList />);
+
+    expect(widgetList()).toBe(`${learningWidgets},NOTES,GLOSSARY`);
   });
 
-  it('registers multiple widgets', () => {
-    const widgets = [
-      { id: 'DISCUSSIONS', Sidebar: () => null, Trigger: () => null },
-      { id: 'CUSTOM_WIDGET', Sidebar: () => null, Trigger: () => null },
-    ];
-    const registry = buildSidebarsRegistry(widgets);
-    expect(Object.keys(registry)).toHaveLength(2);
-    expect(registry.CUSTOM_WIDGET).toBeDefined();
-  });
-});
+  it('follows the slot operations a site reorders the panels with', () => {
+    addSidebarWidgets([stubWidget('NOTES')]);
+    addSlotOperations([{
+      slotId: auxiliarySidebarSlotId,
+      id: 'GLOSSARY',
+      op: WidgetOperationTypes.INSERT_BEFORE,
+      relatedId: discussionsSidebarWidgetId,
+      element: <div />,
+    }]);
+    renderInProvider();
 
-describe('getSidebarOrder', () => {
-  it('returns an array of widget IDs in the given order', () => {
-    const widgets = [
-      { id: 'DISCUSSIONS', priority: 10 },
-      { id: 'CUSTOM_WIDGET', priority: 20 },
-    ];
-    expect(getSidebarOrder(widgets)).toEqual(['DISCUSSIONS', 'CUSTOM_WIDGET']);
+    expect(widgetList()).toBe(`GLOSSARY,${learningWidgets},NOTES`);
+    expect(availableIds()).toBe('GLOSSARY,NOTES');
   });
 
-  it('returns an empty array for empty input', () => {
-    expect(getSidebarOrder([])).toEqual([]);
+  it('treats a panel with no options as always available', () => {
+    addSidebarWidgets([{ id: 'NO_OPTIONS', noOptions: true }]);
+    renderInProvider();
+
+    expect(widgetList()).toBe(`${learningWidgets},NO_OPTIONS`);
+    expect(availableIds()).toBe('NO_OPTIONS');
+  });
+
+  it('ignores options set on a widget with no panel', () => {
+    setOptions('NO_PANEL', { isAvailable: () => true });
+    renderWithoutWidgets(<WidgetList />);
+
+    expect(widgetList()).toBe(learningWidgets);
+  });
+
+  it('drops a widget whose panel a site removes, with its provider', () => {
+    const Provider = jest.fn(({ children }) => children);
+    addSidebarWidgets([stubWidget('NOTES', { Provider })]);
+    addSlotOperations([
+      { slotId: auxiliarySidebarSlotId, op: WidgetOperationTypes.REMOVE, relatedId: 'NOTES' },
+      { slotId: auxiliarySidebarSlotId, op: WidgetOperationTypes.REMOVE, relatedId: discussionsSidebarWidgetId },
+    ]);
+    renderWithoutWidgets(
+      <SidebarProvider courseId={courseId} unitId={unitId}><WidgetList /></SidebarProvider>,
+    );
+
+    expect(widgetList()).toBe('');
+    expect(Provider).not.toHaveBeenCalled();
+  });
+
+  it('leaves out an option of the wrong kind, so its default applies', () => {
+    addSidebarWidgets([{ id: 'NOTES', noOptions: true }]);
+    setOptions('NOTES', { isAvailable: false, Provider: 'div' });
+    const { container } = renderInProvider();
+
+    // Had `isAvailable` counted, the widget would not be available; had `Provider`, a <div> would wrap the page.
+    expect(availableIds()).toBe('NOTES');
+    expect(screen.getByTestId('widgets').parentElement).toBe(container);
+  });
+
+  it('merges the options several operations set on one widget, the later one winning', () => {
+    const Provider = jest.fn(({ children }) => children);
+    addSidebarWidgets([stubWidget('NOTES', { isAvailable: () => false, Provider })]);
+    setOptions('NOTES', { isAvailable: () => true });
+    renderInProvider();
+
+    // The later operation changes the one option it names: the provider is still the first app's.
+    expect(availableIds()).toBe('NOTES');
+    expect(Provider).toHaveBeenCalled();
+  });
+
+  it('applies options set under an alias of the widget ID', () => {
+    addSlotOperations([{
+      slotId: auxiliarySidebarSlotId,
+      id: 'NOTES',
+      idAliases: ['OLD_NOTES'],
+      op: WidgetOperationTypes.APPEND,
+      element: <div />,
+    }]);
+    setOptions('OLD_NOTES', { isAvailable: () => false });
+    renderInProvider();
+
+    expect(widgetList()).toBe(`${learningWidgets},NOTES`);
+    expect(availableIds()).toBe('');
+  });
+
+  it('hands on the same list until a widget or an option changes', () => {
+    const lists = [];
+    const Probe = () => {
+      lists.push(useAuxiliarySidebarWidgets());
+      return null;
+    };
+    addSidebarWidgets([stubWidget('NOTES')]);
+    const { rerender } = renderWithoutWidgets(<Probe />);
+    rerender(<IntlProvider locale="en" messages={{}}><MemoryRouter><Probe /></MemoryRouter></IntlProvider>);
+
+    expect(lists.length).toBeGreaterThan(1);
+    expect(new Set(lists).size).toBe(1);
+  });
+
+  it("takes no default content from the slot the provider is rendered in, which is not the panel slot", () => {
+    addSidebarWidgets([stubWidget('NOTES')]);
+    renderWithoutWidgets(
+      <Slot id="org.example.slot.enclosing" layout={WidgetList}>
+        <span>The enclosing slot&apos;s default content</span>
+      </Slot>,
+    );
+
+    expect(widgetList()).toBe(`${learningWidgets},NOTES`);
   });
 });

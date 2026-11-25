@@ -1,84 +1,51 @@
-import React from 'react';
-
 import { Factory } from 'rosie';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-
+import {
+  getAuthenticatedUser, getSiteConfig, runPageRules, setAuthenticatedUser, WidgetOperationTypes,
+} from '@openedx/frontend-base';
 import { breakpoints } from '@openedx/paragon';
 import userEvent from '@testing-library/user-event';
+import { screen, waitFor, within } from '@testing-library/react';
 
-import {
-  cleanup, fireEvent, getByRole, loadUnit, mockCourseRequests, render, screen, waitFor,
-} from '../../setupTest';
-import MountCourseQueryHooks from '../../tests/MountCourseQueryHooks';
-import * as celebrationUtils from './celebration/utils';
-import { handleNextSectionCelebration } from './celebration';
+import { discussionsSidebarRole } from '@src/constants';
+import routes from '@src/routes';
+import { courseBreadcrumbsSlotId } from '@src/slots/CourseBreadcrumbsSlot';
+import { learnerToolsSlotId } from '@src/slots/LearnerToolsSlot';
+import { loadUnit, mockCourseRequests, unitPath } from '@src/tests/courseware';
+import { renderRoutes } from '@src/tests/render';
+import { addExternalRoute, addSlotOperations } from '@src/tests/slots';
+import { discussionsSidebarWidgetId } from '@src/widgets/DiscussionsSidebar';
 import { testIDs } from './sequence/Unit/ContentIFrame';
-import setupDiscussionSidebar, { LoadedCourse } from './test-utils';
 
-jest.mock('@edx/frontend-platform/analytics');
-jest.mock('@edx/frontend-lib-special-exams', () => {
-  const actual = jest.requireActual('@edx/frontend-lib-special-exams');
-  return {
-    ...actual,
-    __esModule: true,
-    // Mock the default export (SequenceExamWrapper) to just render children
-    // eslint-disable-next-line react/prop-types
-    default: ({ children }) => <div data-testid="sequence-exam-wrapper">{children}</div>,
-  };
-});
-const mockLearnerToolsTestId = 'fake-learner-tools';
-jest.mock(
-  '../../plugin-slots/LearnerToolsSlot',
-  () => ({
-    // eslint-disable-next-line react/prop-types
-    LearnerToolsSlot({ courseId }) {
-      return <div className="fake-learner-tools" data-testid={mockLearnerToolsTestId}>LearnerTools contents {courseId} </div>;
-    },
-  }),
-);
-
-const recordFirstSectionCelebration = jest.fn();
-// eslint-disable-next-line no-import-assign
-celebrationUtils.recordFirstSectionCelebration = recordFirstSectionCelebration;
+// The legacy app's celebration cases are in celebration/CelebrationModal.test.jsx.
 
 describe('Course', () => {
-  let fixtures;
-  const mockData = {
-    nextSequenceHandler: () => {},
-    previousSequenceHandler: () => {},
-    unitNavigationHandler: () => {},
-  };
-
-  const renderCourse = (testData) => render(
-    <MemoryRouter initialEntries={[`/course/${testData.courseId}/${testData.sequenceId}/${testData.unitId}`]}>
-      <Routes>
-        <Route
-          path="/course/:courseId/:sequenceId/*"
-          element={(
-            <>
-              <MountCourseQueryHooks courseId={testData.courseId} sequenceId={testData.sequenceId} />
-              <LoadedCourse {...testData} />
-            </>
-          )}
-        />
-      </Routes>
-    </MemoryRouter>,
-  );
-
-  beforeAll(() => {
-    fixtures = mockCourseRequests();
-    const { courseId, sequenceId, unitId } = fixtures;
-    Object.assign(mockData, { courseId, sequenceId, unitId });
-  });
+  // The lazy routes' first load compiles the tab page and the container, which can outlast findBy's timeout.
+  beforeAll(() => Promise.all([import('@src/Main'), import('@src/courseware')]));
 
   beforeEach(() => {
     global.innerWidth = breakpoints.extraLarge.minWidth;
+    global.scrollTo = jest.fn();
   });
 
+  const renderCourse = ({ courseId, sequenceId, unitId }) => renderRoutes(routes, unitPath(courseId, sequenceId, unitId));
+
+  // A learner tools widget, as a site would append one.
+  const addLearnerTools = () => {
+    const LearnerTools = jest.fn(({ courseId }) => <div data-testid="fake-learner-tools">LearnerTools contents {courseId}</div>);
+    addSlotOperations([{
+      slotId: learnerToolsSlotId,
+      id: 'org.example.widget.learnerTools',
+      op: WidgetOperationTypes.APPEND,
+      component: LearnerTools,
+    }]);
+    return LearnerTools;
+  };
+
   it('loads learning sequence', async () => {
-    renderCourse(mockData);
-    expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
+    const fixtures = mockCourseRequests();
+    renderCourse(fixtures);
     expect(await screen.findByText('Loading learning sequence...')).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -93,232 +60,56 @@ describe('Course', () => {
       expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
     });
 
-    expect(document.title).toMatch(
-      `${sequenceBlocks[0].display_name} | ${sectionBlocks[0].display_name} | ${courseMetadata.name} | edX`,
-    );
+    await waitFor(() => expect(document.title).toMatch(
+      `${sequenceBlocks[0].display_name} | ${sectionBlocks[0].display_name} | ${courseMetadata.name} | ${getSiteConfig().siteName}`,
+    ));
+  });
+
+  it('reports no page-rule diagnostics', async () => {
+    renderCourse(mockCourseRequests());
+    await screen.findByTestId(testIDs.contentIFrame);
+
+    expect(runPageRules(document)).toEqual([]);
+  });
+
+  it('renders the sequence content in a <main> with no id of its own', async () => {
+    renderCourse(mockCourseRequests());
+    await screen.findByTestId(testIDs.contentIFrame);
+
+    const main = screen.getByRole('main');
+    expect(main).toHaveClass('sequence');
+    expect(main).not.toHaveAttribute('id');
   });
 
   it('removes breadcrumbs when navigation is disabled', async () => {
+    const courseId = Factory.build('courseMetadata').id;
     const sequenceBlocks = [Factory.build(
       'block',
       { type: 'sequential', children: [] },
-      { courseId: mockData.courseId },
+      { courseId },
     )];
     const sequenceMetadata = [Factory.build(
       'sequenceMetadata',
       { navigation_disabled: true },
-      { courseId: mockData.courseId, sequenceBlock: sequenceBlocks[0] },
+      { courseId, sequenceBlock: sequenceBlocks[0] },
     )];
-    mockCourseRequests({ sequenceBlocks, sequenceMetadata });
-    const testData = {
-      ...mockData,
-      sequenceId: sequenceBlocks[0].id,
-      onNavigate: jest.fn(),
-    };
-    renderCourse(testData);
+    const fixtures = mockCourseRequests({ sequenceBlocks, sequenceMetadata });
+    renderCourse({ ...fixtures, sequenceId: sequenceBlocks[0].id });
+
+    expect(await screen.findByText('There is no content here.')).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
   });
 
-  it('displays first section celebration modal', async () => {
-    const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { firstSection: true } });
-    const { courseId, sequenceId, unitId } = mockCourseRequests({ courseHomeMetadata });
-    const testData = {
-      ...mockData,
-      courseId,
-      sequenceId,
-      unitId,
-    };
-    // Set up LocalStorage for testing.
-    handleNextSectionCelebration(sequenceId, sequenceId, testData.unitId);
-    renderCourse(testData);
-
-    const firstSectionCelebrationModal = await screen.findByRole('dialog');
-    expect(getByRole(firstSectionCelebrationModal, 'heading', { name: 'Congratulations!' })).toBeInTheDocument();
-  });
-
-  it('displays weekly goal celebration modal', async () => {
-    const courseHomeMetadata = Factory.build('courseHomeMetadata', { celebrations: { weeklyGoal: true } });
-    const { courseId, sequenceId, unitId } = mockCourseRequests({ courseHomeMetadata });
-    const testData = {
-      ...mockData,
-      courseId,
-      sequenceId,
-      unitId,
-    };
-    renderCourse(testData);
-
-    const weeklyGoalCelebrationModal = await screen.findByRole('dialog');
-    expect(getByRole(weeklyGoalCelebrationModal, 'heading', { name: 'You met your goal!' })).toBeInTheDocument();
-  });
-
-  describe('sidebar behavior', () => {
-    let testData;
-
-    beforeEach(async () => {
-      // setupDiscussionSidebar mocks the course requests with the openedx discussion provider.
-      // The render it does is incidental — clean it up so each test renders fresh.
-      const { courseId, sequenceId, unitId } = await setupDiscussionSidebar();
-      cleanup();
-      testData = {
-        ...mockData,
-        courseId,
-        sequenceId,
-        unitId,
-      };
-      global.innerWidth = breakpoints.extraExtraLarge.minWidth;
-      window.localStorage.clear();
-      window.sessionStorage.clear();
-    });
-
-    it('opens the course outline on render when no preference is stored and the user has not closed the sidebar', async () => {
-      renderCourse(testData);
-      loadUnit();
-
-      await waitFor(() => {
-        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
-      });
-      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
-    });
-
-    it('exposes the course outline sidebar as a navigation landmark with an accessible name', async () => {
-      renderCourse(testData);
-      loadUnit();
-
-      const outlineNav = await screen.findByRole('navigation', { name: /course outline/i });
-      expect(outlineNav).toHaveClass('outline-sidebar');
-    });
-
-    it('renders the primary content inside <main id="main-content"> with the sidebar navigation kept outside of it', async () => {
-      renderCourse(testData);
-      loadUnit();
-
-      const outlineNav = await screen.findByRole('navigation', { name: /course outline/i });
-      const main = document.getElementById('main-content');
-      expect(main).toBeInTheDocument();
-      expect(main.tagName).toBe('MAIN');
-      expect(main).toHaveClass('sequence');
-      // Sidebar landmark must not be nested inside <main>.
-      expect(main).not.toContainElement(outlineNav);
-    });
-
-    it('keeps the sidebar closed on render when the user previously closed it', async () => {
-      window.sessionStorage.setItem('sidebarClosedByUser', 'true');
-      renderCourse(testData);
-      loadUnit();
-
-      await waitFor(() => {
-        // The Provider's topics query resolves; assert nothing has opened in response.
-        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
-      });
-      expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
-    });
-
-    it('opens discussions on render when it is the stored preference', async () => {
-      window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
-      renderCourse(testData);
-      loadUnit();
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
-      });
-      expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
-    });
-
-    it('opens the course outline on render when it is the stored preference', async () => {
-      window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('COURSE_OUTLINE'));
-      renderCourse(testData);
-      loadUnit();
-
-      await waitFor(() => {
-        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
-      });
-      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
-    });
-
-    it('closes the course outline when the user clicks its trigger', async () => {
-      const user = userEvent.setup();
-      renderCourse(testData);
-      loadUnit();
-      await waitFor(() => {
-        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
-      });
-
-      await user.click(screen.getByRole('button', { name: /Toggle course outline tray/i }));
-
-      await waitFor(() => {
-        expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
-      });
-    });
-
-    it('opens the course outline when the user clicks its trigger, closing discussions if open', async () => {
-      const user = userEvent.setup();
-      window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
-      renderCourse(testData);
-      loadUnit();
-      await waitFor(() => {
-        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
-      });
-
-      await user.click(screen.getByRole('button', { name: /Toggle course outline tray/i }));
-
-      await waitFor(() => {
-        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
-      });
-      expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
-    });
-
-    it('opens discussions when the user clicks its trigger, closing the outline', async () => {
-      const user = userEvent.setup();
-      renderCourse(testData);
-      loadUnit();
-      await waitFor(() => {
-        expect(document.querySelector('nav.outline-sidebar')).toBeInTheDocument();
-      });
-
-      await user.click(await screen.findByRole('button', { name: /Show discussions tray/i }));
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
-      });
-      expect(document.querySelector('nav.outline-sidebar')).not.toBeInTheDocument();
-    });
-
-    it('closes discussions when the user clicks its trigger', async () => {
-      const user = userEvent.setup();
-      window.localStorage.setItem(`sidebar.${testData.courseId}`, JSON.stringify('DISCUSSIONS'));
-      renderCourse(testData);
-      loadUnit();
-      await waitFor(() => {
-        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).toBeInTheDocument();
-      });
-
-      await user.click(screen.getByRole('button', { name: /Show discussions tray/i }));
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('sidebar-DISCUSSIONS')).not.toBeInTheDocument();
-      });
-    });
-  });
-
-  it('doesn\'t renders course breadcrumbs by default', async () => {
-    global.innerWidth = breakpoints.extraLarge.minWidth;
-
+  it('doesn\'t render course breadcrumbs by default', async () => {
     const courseMetadata = Factory.build('courseMetadata');
     const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
       'block',
       { type: 'vertical' },
       { courseId: courseMetadata.id },
     ));
-    const {
-      courseId, sequenceId, sectionBlocks, sequenceBlocks,
-    } = mockCourseRequests({ courseMetadata, unitBlocks });
-    const testData = {
-      ...mockData,
-      courseId,
-      sequenceId,
-      unitId: unitBlocks[1].id, // Corner cases are already covered in `Sequence` tests.
-    };
-    renderCourse(testData);
+    const fixtures = mockCourseRequests({ courseMetadata, unitBlocks });
+    const { sectionBlocks, sequenceBlocks } = fixtures;
+    renderCourse({ ...fixtures, unitId: unitBlocks[1].id });
 
     // loadUnit()'s window message is lost unless the unit's listener is registered first.
     await screen.findByTestId(testIDs.contentIFrame);
@@ -327,72 +118,249 @@ describe('Course', () => {
       expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
     });
     // expect the section and sequence "titles" not to be loaded in as breadcrumb labels.
-    await waitFor(() => {
-      expect(screen.queryByText(sectionBlocks[0].display_name)).not.toBeInTheDocument();
-      expect(screen.queryByText(sequenceBlocks[0].display_name)).not.toBeInTheDocument();
-    });
+    expect(screen.queryByRole('navigation', { name: 'breadcrumb' })).not.toBeInTheDocument();
+    expect(screen.queryByText(sectionBlocks[0].display_name)).not.toBeInTheDocument();
+    expect(screen.queryByText(sequenceBlocks[0].display_name)).not.toBeInTheDocument();
   });
 
-  it('passes handlers to the sequence', async () => {
-    const nextSequenceHandler = jest.fn();
-    const previousSequenceHandler = jest.fn();
-    const unitNavigationHandler = jest.fn();
+  it('passes the breadcrumbs slot what it is about', async () => {
+    const Breadcrumbs = jest.fn(() => null);
+    addSlotOperations([{
+      slotId: courseBreadcrumbsSlotId,
+      id: 'org.example.widget.breadcrumbs',
+      op: WidgetOperationTypes.APPEND,
+      component: Breadcrumbs,
+    }]);
+    const fixtures = mockCourseRequests();
+    renderCourse(fixtures);
+    await screen.findByTestId(testIDs.contentIFrame);
 
+    expect(Breadcrumbs).toHaveBeenLastCalledWith(expect.objectContaining({
+      courseId: fixtures.courseId,
+      sectionId: fixtures.sectionBlocks[0].id,
+      sequenceId: fixtures.sequenceId,
+      unitId: fixtures.unitId,
+      isStaff: false,
+    }), {});
+  });
+
+  it('checks the unit\'s completion on each move to another unit', async () => {
+    const user = userEvent.setup();
     const courseMetadata = Factory.build('courseMetadata');
     const unitBlocks = Array.from({ length: 3 }).map(() => Factory.build(
       'block',
       { type: 'vertical' },
       { courseId: courseMetadata.id },
     ));
-    const { courseId, sequenceId } = mockCourseRequests({ courseMetadata, unitBlocks });
-    const testData = {
-      ...mockData,
-      courseId,
-      sequenceId,
-      unitId: unitBlocks[1].id, // Corner cases are already covered in `Sequence` tests.
-      nextSequenceHandler,
-      previousSequenceHandler,
-      unitNavigationHandler,
-    };
-    renderCourse(testData);
+    const fixtures = mockCourseRequests({ courseMetadata, unitBlocks });
+    const completionUrl = `${getSiteConfig().lmsBaseUrl}/courses/${fixtures.courseId}/xblock/${fixtures.sequenceId}/handler/get_completion`;
+    fixtures.axiosMock.onPost(completionUrl).reply(200, { complete: false });
+    const completionRequests = () => fixtures.axiosMock.history.post.filter(request => request.url === completionUrl);
+    const { router } = renderCourse({ ...fixtures, unitId: unitBlocks[1].id });
 
     await screen.findByTestId(testIDs.contentIFrame);
     loadUnit();
-    await waitFor(() => {
-      expect(screen.queryByText('Loading learning sequence...')).not.toBeInTheDocument();
-      screen.getAllByRole('link', { name: /previous/i }).forEach(link => fireEvent.click(link));
-      screen.getAllByRole('link', { name: /next/i }).forEach(link => fireEvent.click(link));
+    await user.click(await screen.findByRole('link', { name: /next/i }));
 
-      // We are in the middle of the sequence, so no
-      expect(previousSequenceHandler).not.toHaveBeenCalled();
-      expect(nextSequenceHandler).not.toHaveBeenCalled();
-      expect(unitNavigationHandler).toHaveBeenCalledTimes(4);
+    await waitFor(() => expect(router.state.location.pathname).toEqual(
+      unitPath(fixtures.courseId, fixtures.sequenceId, unitBlocks[2].id),
+    ));
+    await waitFor(() => expect(completionRequests()).toHaveLength(1));
+  });
+
+  describe('sidebar behavior', () => {
+    const outlineNav = () => screen.queryByRole('navigation', { name: 'Course outline' });
+
+    beforeEach(() => {
+      global.innerWidth = breakpoints.extraExtraLarge.minWidth;
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
+
+    afterEach(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
+
+    it('opens the course outline on render when no preference is stored and the user has not closed the sidebar', async () => {
+      renderCourse(mockCourseRequests());
+
+      expect(await screen.findByRole('navigation', { name: 'Course outline' })).toHaveClass('outline-sidebar');
+    });
+
+    it('keeps the sidebar navigation outside of the sequence <main>', async () => {
+      renderCourse(mockCourseRequests());
+
+      const nav = await screen.findByRole('navigation', { name: 'Course outline' });
+      const main = screen.getByRole('main');
+      expect(main).toHaveClass('sequence');
+      expect(main).not.toContainElement(nav);
+    });
+
+    it('keeps the sidebar closed on render when the user previously closed it', async () => {
+      window.sessionStorage.setItem('sidebarClosedByUser', 'true');
+      renderCourse(mockCourseRequests());
+      await screen.findByTestId(testIDs.contentIFrame);
+
+      expect(outlineNav()).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Toggle course outline tray' })).toBeInTheDocument();
+    });
+
+    it('opens the course outline on render when it is the stored preference', async () => {
+      const fixtures = mockCourseRequests();
+      window.localStorage.setItem(`sidebar.${fixtures.courseId}`, JSON.stringify('COURSE_OUTLINE'));
+      renderCourse(fixtures);
+
+      expect(await screen.findByRole('navigation', { name: 'Course outline' })).toBeInTheDocument();
+    });
+
+    it('closes the course outline when the user clicks its trigger, and opens it again', async () => {
+      const user = userEvent.setup();
+      renderCourse(mockCourseRequests());
+      await screen.findByRole('navigation', { name: 'Course outline' });
+
+      await user.click(screen.getByRole('button', { name: 'Toggle course outline tray' }));
+      await waitFor(() => expect(outlineNav()).not.toBeInTheDocument());
+      expect(window.sessionStorage.getItem('sidebarClosedByUser')).toBe('true');
+
+      await user.click(screen.getByRole('button', { name: 'Toggle course outline tray' }));
+      expect(await screen.findByRole('navigation', { name: 'Course outline' })).toBeInTheDocument();
+    });
+
+    it('navigates to a unit from the course outline and marks it current', async () => {
+      const user = userEvent.setup();
+      const courseMetadata = Factory.build('courseMetadata');
+      const unitBlocks = Array.from({ length: 2 }).map(() => Factory.build(
+        'block',
+        { type: 'vertical' },
+        { courseId: courseMetadata.id },
+      ));
+      const fixtures = mockCourseRequests({ courseMetadata, unitBlocks });
+      const { router } = renderCourse(fixtures);
+      const nav = await screen.findByRole('navigation', { name: 'Course outline' });
+      const secondUnit = await within(nav).findByRole('link', { name: new RegExp(unitBlocks[1].display_name) });
+
+      await user.click(secondUnit);
+
+      await waitFor(() => expect(router.state.location.pathname).toEqual(
+        unitPath(fixtures.courseId, fixtures.sequenceId, unitBlocks[1].id),
+      ));
+      await waitFor(() => expect(
+        within(nav).getByRole('link', { name: new RegExp(unitBlocks[1].display_name) }).closest('li'),
+      ).toHaveClass('bg-info-100'));
+    });
+
+    it('opens the course outline from the mobile trigger on a narrow viewport', async () => {
+      const user = userEvent.setup();
+      global.innerWidth = breakpoints.medium.minWidth;
+      renderCourse(mockCourseRequests());
+      await screen.findByTestId(testIDs.contentIFrame);
+      expect(outlineNav()).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: 'Toggle course outline tray' }));
+
+      expect(await screen.findByRole('navigation', { name: 'Course outline' })).toBeInTheDocument();
+    });
+
+    describe('with the discussions sidebar', () => {
+      const discussionsPanel = () => screen.queryByTestId(`sidebar-${discussionsSidebarWidgetId}`);
+      const discussionsTrigger = () => screen.findByRole('button', { name: 'Show discussions tray' });
+
+      // A course whose units have in-context discussions, on a site that provides the discussions sidebar role.
+      const mockDiscussionsCourse = () => {
+        addExternalRoute(discussionsSidebarRole, 'http://localhost:2002/discussions/sidebar');
+        return mockCourseRequests({ discussionsProvider: 'openedx' });
+      };
+
+      it('opens discussions on render when it is the stored preference, with the discussions app for the unit', async () => {
+        const fixtures = mockDiscussionsCourse();
+        window.localStorage.setItem(`sidebar.${fixtures.courseId}`, JSON.stringify(discussionsSidebarWidgetId));
+        renderCourse(fixtures);
+
+        expect(await screen.findByTitle('Discussions')).toHaveAttribute(
+          'src',
+          `http://localhost:2002/discussions/sidebar/${fixtures.courseId}/category/${fixtures.unitId}`,
+        );
+        expect(discussionsPanel()).toBeInTheDocument();
+        expect(outlineNav()).not.toBeInTheDocument();
+        // The trigger loads lazily too: wait for it, or it can finish loading after the test has ended.
+        await discussionsTrigger();
+      });
+
+      it('keeps discussions closed on render when the user previously closed the sidebar', async () => {
+        window.sessionStorage.setItem('sidebarClosedByUser', 'true');
+        renderCourse(mockDiscussionsCourse());
+
+        // The trigger shows once the topics have loaded; nothing opens in response.
+        await discussionsTrigger();
+        expect(discussionsPanel()).not.toBeInTheDocument();
+        expect(outlineNav()).not.toBeInTheDocument();
+      });
+
+      it('opens discussions when the user clicks its trigger, closing the outline, and closes it again', async () => {
+        const user = userEvent.setup();
+        renderCourse(mockDiscussionsCourse());
+        await screen.findByRole('navigation', { name: 'Course outline' });
+
+        await user.click(await discussionsTrigger());
+
+        expect(await screen.findByTitle('Discussions')).toBeInTheDocument();
+        expect(outlineNav()).not.toBeInTheDocument();
+
+        await user.click(await discussionsTrigger());
+
+        await waitFor(() => expect(discussionsPanel()).not.toBeInTheDocument());
+      });
+
+      it('opens the course outline when the user clicks its trigger, closing discussions', async () => {
+        const user = userEvent.setup();
+        const fixtures = mockDiscussionsCourse();
+        window.localStorage.setItem(`sidebar.${fixtures.courseId}`, JSON.stringify(discussionsSidebarWidgetId));
+        renderCourse(fixtures);
+        await screen.findByTitle('Discussions');
+
+        await user.click(screen.getByRole('button', { name: 'Toggle course outline tray' }));
+
+        expect(await screen.findByRole('navigation', { name: 'Course outline' })).toBeInTheDocument();
+        expect(discussionsPanel()).not.toBeInTheDocument();
+      });
+
+      it('offers no discussions, and requests no topics, when nothing provides the discussions sidebar role', async () => {
+        const fixtures = mockCourseRequests({ discussionsProvider: 'openedx' });
+        window.localStorage.setItem(`sidebar.${fixtures.courseId}`, JSON.stringify(discussionsSidebarWidgetId));
+        renderCourse(fixtures);
+        await screen.findByTestId(testIDs.contentIFrame);
+
+        expect(screen.queryByRole('button', { name: 'Show discussions tray' })).not.toBeInTheDocument();
+        expect(discussionsPanel()).not.toBeInTheDocument();
+        expect(fixtures.axiosMock.history.get.map(request => request.url))
+          .not.toContainEqual(expect.stringContaining('/api/discussion/'));
+      });
     });
   });
 
   describe('Sequence alerts display', () => {
     it('renders banner text alert', async () => {
       const courseMetadata = Factory.build('courseMetadata');
-      const sequenceBlocks = [Factory.build('block', { type: 'sequential', banner_text: 'Some random banner text to display.' })];
+      const sequenceBlocks = [Factory.build(
+        'block',
+        { type: 'sequential', banner_text: 'Some random banner text to display.' },
+        { courseId: courseMetadata.id },
+      )];
       const sequenceMetadata = [Factory.build(
         'sequenceMetadata',
         { banner_text: sequenceBlocks[0].banner_text },
         { courseId: courseMetadata.id, sequenceBlock: sequenceBlocks[0] },
       )];
 
-      mockCourseRequests({ courseMetadata, sequenceBlocks, sequenceMetadata });
-      const testData = {
-        ...mockData,
-        courseId: courseMetadata.id,
-        sequenceId: sequenceBlocks[0].id,
-      };
-      renderCourse(testData);
+      const fixtures = mockCourseRequests({ courseMetadata, sequenceBlocks, sequenceMetadata });
+      renderCourse(fixtures);
       expect(await screen.findByText('Some random banner text to display.')).toBeInTheDocument();
     });
 
     it('renders Entrance Exam alert with passing score', async () => {
       const sectionId = 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@entrance_exam';
-      const testCourseMetadata = Factory.build('courseMetadata', {
+      const courseMetadata = Factory.build('courseMetadata', {
         entrance_exam_data: {
           entrance_exam_current_score: 1.0,
           entrance_exam_enabled: true,
@@ -404,27 +372,22 @@ describe('Course', () => {
       const sequenceBlocks = [Factory.build(
         'block',
         { type: 'sequential', sectionId },
-        { courseId: testCourseMetadata.id },
+        { courseId: courseMetadata.id },
       )];
       const sectionBlocks = [Factory.build(
         'block',
         { type: 'chapter', children: sequenceBlocks.map(block => block.id), id: sectionId },
-        { courseId: testCourseMetadata.id },
+        { courseId: courseMetadata.id },
       )];
 
-      mockCourseRequests({ courseMetadata: testCourseMetadata, sequenceBlocks, sectionBlocks });
-      const testData = {
-        ...mockData,
-        courseId: testCourseMetadata.id,
-        sequenceId: sequenceBlocks[0].id,
-      };
-      renderCourse(testData);
+      const fixtures = mockCourseRequests({ courseMetadata, sequenceBlocks, sectionBlocks });
+      renderCourse(fixtures);
       expect(await screen.findByText('Your score is 100%. You have passed the entrance exam.')).toBeInTheDocument();
     });
 
     it('renders Entrance Exam alert with non-passing score', async () => {
       const sectionId = 'block-v1:edX+DemoX+Demo_Course+type@chapter+block@entrance_exam';
-      const testCourseMetadata = Factory.build('courseMetadata', {
+      const courseMetadata = Factory.build('courseMetadata', {
         entrance_exam_data: {
           entrance_exam_current_score: 0.3,
           entrance_exam_enabled: true,
@@ -436,56 +399,53 @@ describe('Course', () => {
       const sequenceBlocks = [Factory.build(
         'block',
         { type: 'sequential', sectionId },
-        { courseId: testCourseMetadata.id },
+        { courseId: courseMetadata.id },
       )];
       const sectionBlocks = [Factory.build(
         'block',
         { type: 'chapter', children: sequenceBlocks.map(block => block.id), id: sectionId },
-        { courseId: testCourseMetadata.id },
+        { courseId: courseMetadata.id },
       )];
 
-      mockCourseRequests({ courseMetadata: testCourseMetadata, sequenceBlocks, sectionBlocks });
-      const testData = {
-        ...mockData,
-        courseId: testCourseMetadata.id,
-        sequenceId: sequenceBlocks[0].id,
-      };
-      renderCourse(testData);
+      const fixtures = mockCourseRequests({ courseMetadata, sequenceBlocks, sectionBlocks });
+      renderCourse(fixtures);
       expect(await screen.findByText('To access course materials, you must score 70% or higher on this exam. Your current score is 30%.')).toBeInTheDocument();
     });
   });
 
-  it('displays learner tools when screen is wide enough (browser)', async () => {
-    const courseMetadata = Factory.build('courseMetadata', {
-      enrollment: { mode: 'verified' },
+  describe('learner tools', () => {
+    const originalUser = getAuthenticatedUser();
+
+    afterEach(() => {
+      setAuthenticatedUser(originalUser);
     });
-    const { courseId, sequenceId, unitId } = mockCourseRequests({ courseMetadata });
-    const testData = {
-      ...mockData,
-      courseId,
-      sequenceId,
-      unitId,
-    };
-    renderCourse(testData);
 
-    expect(await screen.findByTestId(mockLearnerToolsTestId)).toBeInTheDocument();
-  });
+    it('displays learner tools when screen is wide enough (browser)', async () => {
+      const LearnerTools = addLearnerTools();
+      const courseMetadata = Factory.build('courseMetadata', { enrollment: { mode: 'verified' } });
+      const fixtures = mockCourseRequests({ courseMetadata });
+      renderCourse(fixtures);
 
-  it('does not display learner tools when screen is too narrow (mobile)', async () => {
-    global.innerWidth = breakpoints.extraSmall.maxWidth;
-    const courseMetadata = Factory.build('courseMetadata', {
-      enrollment: { mode: 'verified' },
+      // The slot renders into document.body, outside the page.
+      expect(await screen.findByTestId('fake-learner-tools')).toBeInTheDocument();
+      expect(LearnerTools).toHaveBeenLastCalledWith({
+        courseId: fixtures.courseId,
+        sequenceId: fixtures.sequenceId,
+        unitId: fixtures.unitId,
+        userId: originalUser.userId,
+        isStaff: false,
+        enrollmentMode: 'verified',
+      }, {});
     });
-    const { courseId, sequenceId, unitId } = mockCourseRequests({ courseMetadata });
-    const testData = {
-      ...mockData,
-      courseId,
-      sequenceId,
-      unitId,
-    };
-    renderCourse(testData);
-    await screen.findByText('Loading learning sequence...');
 
-    expect(screen.queryByTestId(mockLearnerToolsTestId)).not.toBeInTheDocument();
+    it('does not display learner tools when screen is too narrow (mobile)', async () => {
+      global.innerWidth = breakpoints.extraSmall.maxWidth;
+      addLearnerTools();
+      const courseMetadata = Factory.build('courseMetadata', { enrollment: { mode: 'verified' } });
+      renderCourse(mockCourseRequests({ courseMetadata }));
+      await screen.findByText('Loading learning sequence...');
+
+      expect(screen.queryByTestId('fake-learner-tools')).not.toBeInTheDocument();
+    });
   });
 });

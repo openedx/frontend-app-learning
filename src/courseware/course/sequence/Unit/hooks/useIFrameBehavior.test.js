@@ -1,9 +1,6 @@
 import { renderHook } from '@testing-library/react';
 
-import { logError } from '@edx/frontend-platform/logging';
-
-import { getConfig } from '@edx/frontend-platform';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getSiteConfig, logError, sendTrackEvent } from '@openedx/frontend-base';
 import { coursewareMetadataQuery, minimalCourseOutlineQuery } from '@src/courseware/data/apiHooks';
 import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
 import { useEventListener } from '@src/generic/hooks';
@@ -17,20 +14,16 @@ const mockNavigate = jest.fn();
 const mockMutate = jest.fn();
 const mockInvalidateQueries = jest.fn();
 
-jest.mock('@edx/frontend-platform', () => ({
-  ...jest.requireActual('@edx/frontend-platform'),
-  getConfig: jest.fn(),
+jest.mock('@openedx/frontend-base', () => ({
+  ...jest.requireActual('@openedx/frontend-base'),
+  getSiteConfig: jest.fn(),
+  logError: jest.fn(),
+  sendTrackEvent: jest.fn(),
 }));
-
-jest.mock('@edx/frontend-platform/analytics');
 
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useCallback: jest.fn((cb, prereqs) => ({ cb, prereqs })),
-}));
-
-jest.mock('@edx/frontend-platform/logging', () => ({
-  logError: jest.fn(),
 }));
 
 jest.mock('@tanstack/react-query', () => ({
@@ -51,7 +44,10 @@ jest.mock('@src/courseware/data/apiHooks', () => ({
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
-  useParams: () => ({ sequenceId: 'test-sequence-id' }),
+}));
+jest.mock('@src/generic/course-params', () => ({
+  ...jest.requireActual('@src/generic/course-params'),
+  useSequenceId: () => 'test-sequence-id',
 }));
 
 jest.mock('@src/courseware/course/sequence/sequence-navigation/hooks');
@@ -66,8 +62,8 @@ const props = {
 
 const testIFrameHeight = 42;
 
-const config = { LMS_BASE_URL: 'test-base-url' };
-getConfig.mockReturnValue(config);
+const config = { lmsBaseUrl: 'test-base-url' };
+getSiteConfig.mockReturnValue(config);
 
 const postMessage = jest.fn();
 const frame = {
@@ -100,13 +96,26 @@ const mockState = (state) => {
   const {
     iframeHeight, hasLoaded, showError, windowTopOffset,
   } = state;
-  if ('iframeHeight' in state) { jest.spyOn(iframeBehaviorState, 'iframeHeight').mockImplementation(() => [iframeHeight, setIframeHeight]); }
-  if ('hasLoaded' in state) { jest.spyOn(iframeBehaviorState, 'hasLoaded').mockImplementation(() => [hasLoaded, setHasLoaded]); }
-  if ('showError' in state) { jest.spyOn(iframeBehaviorState, 'showError').mockImplementation(() => [showError, setShowError]); }
-  if ('windowTopOffset' in state) { jest.spyOn(iframeBehaviorState, 'windowTopOffset').mockImplementation(() => [windowTopOffset, setWindowTopOffset]); }
+  if ('iframeHeight' in state) {
+    jest.spyOn(iframeBehaviorState, 'iframeHeight').mockImplementation(() => [iframeHeight, setIframeHeight]);
+  }
+  if ('hasLoaded' in state) {
+    jest.spyOn(iframeBehaviorState, 'hasLoaded').mockImplementation(() => [hasLoaded, setHasLoaded]);
+  }
+  if ('showError' in state) {
+    jest.spyOn(iframeBehaviorState, 'showError').mockImplementation(() => [showError, setShowError]);
+  }
+  if ('windowTopOffset' in state) {
+    jest.spyOn(iframeBehaviorState, 'windowTopOffset').mockImplementation(() => [windowTopOffset, setWindowTopOffset]);
+  }
 };
 
 describe('useIFrameBehavior hook', () => {
+  // The legacy app's test setup stubs it for every suite; jsdom does not implement it.
+  beforeEach(() => {
+    window.scrollTo = jest.fn();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     global.document.getElementById = mockGetElementById;
@@ -144,7 +153,7 @@ describe('useIFrameBehavior hook', () => {
       it('posts url hash if the window has one', () => {
         window.location.hash = testHash;
         renderHook(() => useIFrameBehavior(props));
-        expect(postMessage).toHaveBeenCalledWith({ hashName: testHash }, config.LMS_BASE_URL);
+        expect(postMessage).toHaveBeenCalledWith({ hashName: testHash }, config.lmsBaseUrl);
       });
     });
     describe('event listener', () => {
@@ -289,7 +298,7 @@ describe('useIFrameBehavior hook', () => {
         // Initial visibility update is handled by the `handleIFrameLoad` method.
         expect(postMessage).not.toHaveBeenCalledWith(
           expect.objectContaining({ type: 'unit.visibilityStatus' }),
-          config.LMS_BASE_URL,
+          config.lmsBaseUrl,
         );
       });
       it('does not set up visibility tracking before iframe has loaded', () => {
@@ -383,7 +392,7 @@ describe('useIFrameBehavior hook', () => {
               viewportHeight: 800,
             },
           },
-          config.LMS_BASE_URL,
+          config.lmsBaseUrl,
         );
       });
     });

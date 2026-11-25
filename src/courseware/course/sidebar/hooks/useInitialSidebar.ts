@@ -4,21 +4,19 @@ import {
   getSidebarId,
   isSidebarClosedByUser,
 } from '../utils/storage';
-import type { SidebarWidget } from '../SidebarContext';
 
 interface Params {
   courseId: string;
   shouldDisplayFullScreen: boolean;
   isInitiallySidebarOpen: boolean;
   getFirstAvailablePanel: () => string | null;
-  getAvailableWidgets: () => SidebarWidget[];
 }
 
 /**
  * Calculate initial sidebar based on screen size and available widgets
  *
  * Manages ALL panels: DISCUSSIONS, UPGRADE, and COURSE_OUTLINE
- * DESKTOP (>1200px): Auto-opens panels with priority cascade
+ * DESKTOP (>1200px): Auto-opens the first available panel, in the order of the auxiliary sidebar slot
  * MOBILE (<1200px): Respects localStorage, no auto-open
  */
 export function useInitialSidebar({
@@ -26,7 +24,6 @@ export function useInitialSidebar({
   shouldDisplayFullScreen,
   isInitiallySidebarOpen,
   getFirstAvailablePanel,
-  getAvailableWidgets,
 }: Params) {
   return useMemo<string | null>(() => {
     // MOBILE: Use stored value or null (no auto-open)
@@ -50,20 +47,9 @@ export function useInitialSidebar({
     // Keeps initialSidebar stable across the async load window so downstream
     // effects don't briefly see COURSE_OUTLINE and overwrite storage.
     if (storedSidebar && storedSidebar !== WIDGETS.COURSE_OUTLINE) {
-      const firstAvailable = getFirstAvailablePanel();
-      if (firstAvailable) {
-        const availableWidgets = getAvailableWidgets();
-        const storedWidget = availableWidgets.find(w => w.id === storedSidebar);
-        const firstAvailableWidget = availableWidgets.find(w => w.id === firstAvailable);
-        if (!storedWidget) {
-          // Stored widget no longer registered; fall back to first available.
-          return firstAvailable;
-        }
-        if (firstAvailableWidget && firstAvailableWidget.priority < storedWidget.priority) {
-          return firstAvailable;
-        }
-      }
-      return storedSidebar;
+      // The first available panel, in the slot's order, opens whatever was stored: an earlier one takes over from
+      // a later one, and from one that is gone. With none available yet, the stored choice stands.
+      return getFirstAvailablePanel() ?? storedSidebar;
     }
 
     // Stored COURSE_OUTLINE or no stored preference: open the navigation sidebar.
@@ -73,6 +59,5 @@ export function useInitialSidebar({
     isInitiallySidebarOpen,
     courseId,
     getFirstAvailablePanel,
-    getAvailableWidgets,
   ]);
 }

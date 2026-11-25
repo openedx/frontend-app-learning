@@ -1,17 +1,17 @@
-import { useSidebar } from './SidebarContext';
+import { useWidgets } from '@openedx/frontend-base';
 
+import { useSidebar } from './useSidebar';
+
+// The auxiliary sidebar slot's layout: the panel of the sidebar widget that is open, and nothing else.
 const Sidebar = () => {
-  const { currentSidebar, SIDEBARS } = useSidebar();
+  const widgets = useWidgets();
+  const { currentSidebar } = useSidebar();
 
-  if (!currentSidebar || !SIDEBARS[currentSidebar]) {
+  if (!currentSidebar) {
     return null;
   }
 
-  const SidebarToRender = SIDEBARS[currentSidebar].Sidebar;
-
-  return (
-    <SidebarToRender />
-  );
+  return widgets.byId(currentSidebar);
 };
 
 export default Sidebar;

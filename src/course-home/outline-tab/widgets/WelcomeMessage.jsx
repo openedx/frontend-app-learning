@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Alert, Button, TransitionReplace } from '@openedx/paragon';
 import truncate from 'truncate-html';
 
@@ -13,7 +13,7 @@ const WelcomeMessage = ({ courseId, nextElementRef }) => {
   const intl = useIntl();
   const {
     welcomeMessageHtml,
-  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
+  } = useOutlineTabData(courseId, { enabled: false }).data;
 
   const messageBodyRef = useRef();
   const [display, setDisplay] = useState(true);
@@ -56,6 +56,7 @@ const WelcomeMessage = ({ courseId, nextElementRef }) => {
       className="raised-card"
       actions={messageCanBeShortened ? [
         <Button
+          key="show-more-or-less"
           onClick={() => {
             if (showShortMessage) {
               messageBodyRef.current?.focus();
@@ -97,7 +98,7 @@ const WelcomeMessage = ({ courseId, nextElementRef }) => {
 
 WelcomeMessage.propTypes = {
   courseId: PropTypes.string.isRequired,
-  nextElementRef: PropTypes.shape({ current: PropTypes.instanceOf(HTMLInputElement) }),
+  nextElementRef: PropTypes.shape({ current: PropTypes.instanceOf(HTMLElement) }),
 };
 
 export default WelcomeMessage;

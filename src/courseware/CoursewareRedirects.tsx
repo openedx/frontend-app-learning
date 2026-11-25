@@ -4,26 +4,24 @@
  * See docs/decisions/0008-liberal-courseware-path-handling.md.
  */
 import { useQuery } from '@tanstack/react-query';
-import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 import {
-  parentSequenceQuery, resumeBlockQuery, sequenceMightBeUnit, useIsCourseLoaded, useIsPreview,
+  useCourseId, useIsPreview, useSequenceId, useUnitId,
+} from '../generic/course-params';
+import {
+  parentSequenceQuery, resumeBlockQuery, sequenceMightBeUnit, useIsCourseLoaded,
   useMinimalCourseOutline, useSequenceMetadata,
 } from './data/apiHooks';
 import { useCourseHomeMeta } from '../course-home/data/apiHooks';
+import { getCourseOutlineUrl, getCoursewarePath as coursewarePath } from './urls';
 
-// The preview routes (DECODE_ROUTES.COURSEWARE) exist for the sequence and unit shapes only; the course
-// root has none, so a root destination is never prefixed.
-const coursewarePath = (isPreview: boolean, courseId: string, sequenceId?: string, unitId?: string) => {
-  const path = `/course/${[courseId, sequenceId, unitId].filter((segment) => segment).join('/')}`;
-  return isPreview && sequenceId ? `/preview${path}` : path;
-};
-
-// What the rules read: the route, the page's queries from the cache, and the two lookups.
+// What the rules read: the params, the page's queries from the cache, and the two lookups.
 const useRedirectInputs = () => {
-  // Every courseware route (DECODE_ROUTES.COURSEWARE) has :courseId.
-  const { courseId, sequenceId, unitId } = useParams() as { courseId: string; sequenceId?: string; unitId?: string };
-  const { pathname, key: visitKey } = useLocation();
+  const courseId = useCourseId();
+  const sequenceId = useSequenceId();
+  const unitId = useUnitId();
+  const { key: visitKey } = useLocation();
   const isPreview = useIsPreview();
   const isCourseLoaded = useIsCourseLoaded(courseId);
   const courseHomeMeta = useCourseHomeMeta(courseId, { enabled: false }).data;
@@ -40,7 +38,6 @@ const useRedirectInputs = () => {
     courseId,
     sequenceId,
     unitId,
-    pathname,
     isPreview,
     isCourseLoaded,
     courseHomeMeta,
@@ -56,11 +53,14 @@ const useRedirectInputs = () => {
 
 type RedirectInputs = ReturnType<typeof useRedirectInputs>;
 
+// The same page, off the preview routes.
 const getNonStaffPreviewRedirect = (inputs: RedirectInputs): string | null => {
-  const { pathname, isPreview, courseHomeMeta } = inputs;
+  const {
+    courseId, sequenceId, unitId, isPreview, courseHomeMeta,
+  } = inputs;
 
   if (isPreview && courseHomeMeta && !courseHomeMeta.originalUserIsStaff) {
-    return pathname.replace('/preview', '');
+    return coursewarePath(false, courseId, sequenceId, unitId);
   }
   return null;
 };
@@ -72,7 +72,7 @@ const getOutlineFailureRedirect = (inputs: RedirectInputs): string | null => {
     minimalCourseOutlineQuery.isError
     && courseHomeMeta?.courseAccess.hasAccess // TabPage handles 403s
   ) {
-    return `/course/${courseId}/home`;
+    return getCourseOutlineUrl(courseId);
   }
   return null;
 };

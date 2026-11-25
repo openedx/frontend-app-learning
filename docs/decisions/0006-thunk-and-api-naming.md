@@ -1,5 +1,7 @@
 # Naming API functions and redux thunks
 
+> **Historical.** The thunk half of this decision describes the Redux store, which was removed under #1946.
+
 Because API functions and redux thunks are two parts of a larger process, we've informally settled on some naming conventions for them to help differentiate the type of code we're looking at.
 
 ## API Functions

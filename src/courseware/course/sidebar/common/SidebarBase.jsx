@@ -1,4 +1,4 @@
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Icon, IconButton } from '@openedx/paragon';
 import { ArrowBackIos, Close } from '@openedx/paragon/icons';
 import classNames from 'classnames';
@@ -14,8 +14,8 @@ const SidebarBase = ({
   sidebarId,
   className,
   children,
-  showTitleBar,
-  width,
+  showTitleBar = true,
+  width = '31rem',
 }) => {
   const intl = useIntl();
   const {
@@ -92,11 +92,6 @@ SidebarBase.propTypes = {
   children: PropTypes.element.isRequired,
   showTitleBar: PropTypes.bool,
   width: PropTypes.string,
-};
-
-SidebarBase.defaultProps = {
-  width: '31rem',
-  showTitleBar: true,
 };
 
 export default SidebarBase;

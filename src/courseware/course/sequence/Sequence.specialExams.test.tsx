@@ -1,19 +1,24 @@
-import { Factory } from 'rosie';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import userEvent from '@testing-library/user-event';
-import { mergeConfig } from '@edx/frontend-platform';
 import type { ExamScenario } from '@edx/frontend-lib-special-exams/testing';
-
 import {
-  act, mockCourseRequests, render, screen, waitFor, within,
-} from '../../../setupTest';
-import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
-import { SidebarProvider } from '../sidebar/SidebarContext';
-import Sequence from './Sequence';
+  getAppConfig, mergeAppConfig, type SlotOperation, WidgetOperationTypes,
+} from '@openedx/frontend-base';
+import { breakpoints } from '@openedx/paragon';
+import {
+  act, screen, waitFor, within,
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Factory } from 'rosie';
 
-jest.mock('@edx/frontend-platform/analytics');
+import { appId } from '@src/constants';
+import routes from '@src/routes';
+import { submittedTimedExamInstructionsSlotId } from '@src/slots/SubmittedTimedExamInstructionsSlot';
+import { mockCourseRequests, unitPath } from '@src/tests/courseware';
+import { mockLocation } from '@src/tests/location';
+import { renderRoutes } from '@src/tests/render';
+import { addSlotOperations } from '@src/tests/slots';
 
 const EXAMS_BASE_URL = 'http://localhost:18740';
+const originalExamsBaseUrl = getAppConfig(appId).EXAMS_BASE_URL;
 const OVERTIME_TITLE = 'The time allotted for this exam has expired. Your exam has been submitted and any work you completed will be graded.';
 
 interface CourseOptions {
@@ -47,31 +52,11 @@ const mockExamCourse = ({ courseMetadata, courseHomeMetadata, sequence = {} }: C
 type Course = ReturnType<typeof mockExamCourse>;
 let course: Course;
 
+// The sequence on the courseware page, at its unit's route.
 const renderSequence = (rendered: Course) => {
   course = rendered;
   const { courseId, sequenceId, unitId } = rendered;
-  return render(
-    <MemoryRouter initialEntries={[`/course/${courseId}/${sequenceId}/${unitId}`]}>
-      <Routes>
-        <Route
-          path="/course/:courseId/:sequenceId/*"
-          element={(
-            <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>
-              <MountCourseQueryHooks courseId={courseId} sequenceId={sequenceId} />
-              <Sequence
-                courseId={courseId}
-                sequenceId={sequenceId}
-                unitId={unitId}
-                unitNavigationHandler={() => {}}
-                nextSequenceHandler={() => {}}
-                previousSequenceHandler={() => {}}
-              />
-            </SidebarProvider>
-        )}
-        />
-      </Routes>
-    </MemoryRouter>,
-  );
+  return renderRoutes(routes, unitPath(courseId, sequenceId, unitId));
 };
 
 const renderExam = (scenario: ExamScenario, options?: CourseOptions) => {
@@ -96,30 +81,55 @@ const timerAlert = () => timerText().closest('[role="alert"]') as HTMLElement;
 const endExamButton = () => screen.getByRole('button', { name: 'End My Exam' });
 const examAccessParam = () => new URL(unitFrame().getAttribute('src') ?? '').searchParams.get('exam_access');
 
-// jsdom cannot navigate; the library writes `location.href` and calls `location.assign`.
+// jsdom cannot navigate; the library writes `location.href` and calls `location.assign`. setupTest restores it.
 let locationStub: { href: string; assign: jest.Mock };
 const stubLocation = () => {
-  const original = window.location;
   beforeEach(() => {
-    locationStub = { ...original, href: original.href, assign: jest.fn() };
-    Object.defineProperty(window, 'location', { configurable: true, value: locationStub });
+    locationStub = mockLocation({ href: window.location.href, assign: jest.fn() });
   });
-  afterEach(() => {
-    Object.defineProperty(window, 'location', { configurable: true, value: original });
-  });
+};
+
+// Jest warns on the console when timers are advanced without fake timers, so the clean-up only runs them for a test
+// that switched them on.
+let usingFakeTimers = false;
+const useFakeTimers = (config?: Parameters<typeof jest.useFakeTimers>[0]) => {
+  usingFakeTimers = true;
+  jest.useFakeTimers(config);
+};
+
+// For a test where the library logs a known prop-type error: runs `test` with console.error replaced by a spy, and
+// returns each call's arguments joined (React passes the component and prop names as format arguments). The spy is
+// restored even if `test` fails, so jest-fail-on-console sees anything logged after it.
+const withConsoleErrorSpy = async (test: () => Promise<void>) => {
+  const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    await test();
+    return spy.mock.calls.map((args) => args.map(String).join(' '));
+  } finally {
+    spy.mockRestore();
+  }
 };
 
 describe('Sequence with a special exam', () => {
   let user: ReturnType<typeof userEvent.setup>;
 
+  // The lazy routes' first load compiles the tab page and the container, which can outlast findBy's timeout.
+  beforeAll(() => Promise.all([import('@src/Main'), import('@src/courseware')]));
+
   beforeEach(() => {
-    mergeConfig({ EXAMS_BASE_URL });
+    global.innerWidth = breakpoints.extraLarge.minWidth as number;
+    global.scrollTo = jest.fn();
+    mergeAppConfig(appId, { EXAMS_BASE_URL });
     user = userEvent.setup();
   });
 
   afterEach(async () => {
-    await act(async () => { await jest.runOnlyPendingTimersAsync(); });
-    jest.useRealTimers();
+    if (usingFakeTimers) {
+      await act(() => jest.runOnlyPendingTimersAsync());
+      jest.useRealTimers();
+      usingFakeTimers = false;
+    }
+    act(() => mergeAppConfig(appId, { EXAMS_BASE_URL: originalExamsBaseUrl }));
   });
 
   describe('timed exam', () => {
@@ -280,7 +290,7 @@ describe('Sequence with a special exam', () => {
 
     describe('when time runs out', () => {
       beforeEach(async () => {
-        jest.useFakeTimers({ now: new Date('2026-10-07T10:00:00Z') });
+        useFakeTimers({ now: new Date('2026-10-07T10:00:00Z') });
         course = renderExam({ status: 'started', remainingSeconds: 2 });
         await findUnitFrame();
         // The library holds the countdown at 00:00 for a 5 s grace period, then expires the attempt.
@@ -340,23 +350,31 @@ describe('Sequence with a special exam', () => {
       });
 
       it('shows the prerequisites page instead of the entrance when prerequisites are unmet', async () => {
-        renderExam({
-          exam: {
-            ...proctored,
-            prerequisite_status: {
-              are_prerequisites_satisifed: false,
-              satisfied_prerequisites: [],
-              failed_prerequisites: [{
-                namespace: 'proctoring', name: 'onboarding', display_name: 'Onboarding exam', status: 'failed',
-              }],
-              pending_prerequisites: [],
-              declined_prerequisites: [],
+        const errors = await withConsoleErrorSpy(async () => {
+          renderExam({
+            exam: {
+              ...proctored,
+              prerequisite_status: {
+                are_prerequisites_satisifed: false,
+                satisfied_prerequisites: [],
+                failed_prerequisites: [{
+                  namespace: 'proctoring', name: 'onboarding', display_name: 'Onboarding exam', status: 'failed',
+                }],
+                pending_prerequisites: [],
+                declined_prerequisites: [],
+              },
             },
-          },
+          });
+          expect(await screen.findByText('You did not satisfy the requirements for taking this exam with proctoring.')).toBeInTheDocument();
+          expect(screen.getByText('Onboarding exam')).toBeInTheDocument();
+          expect(screen.queryByRole('button', { name: 'Continue to my proctored exam.' })).not.toBeInTheDocument();
         });
-        expect(await screen.findByText('You did not satisfy the requirements for taking this exam with proctoring.')).toBeInTheDocument();
-        expect(screen.getByText('Onboarding exam')).toBeInTheDocument();
-        expect(screen.queryByRole('button', { name: 'Continue to my proctored exam.' })).not.toBeInTheDocument();
+
+        // Library bug: FailedPrerequisitesProctoredExamInstructions requires allowProctoringOptOut, which is optional. Delete once
+        // https://github.com/openedx/frontend-lib-special-exams/issues/182 is fixed.
+        expect(errors).toEqual([
+          expect.stringMatching(/`allowProctoringOptOut` is marked as required in `FailedPrerequisitesProctoredExamInstructions`/),
+        ]);
       });
     });
 
@@ -454,8 +472,16 @@ describe('Sequence with a special exam', () => {
 
     describe('after the download was clicked', () => {
       it('stays on the setup page', async () => {
-        renderExam({ exam: proctored, status: 'download_software_clicked', attempt: lti });
-        expect(await screen.findByText('Set up and start your proctored exam.')).toBeInTheDocument();
+        const errors = await withConsoleErrorSpy(async () => {
+          renderExam({ exam: proctored, status: 'download_software_clicked', attempt: lti });
+          expect(await screen.findByText('Set up and start your proctored exam.')).toBeInTheDocument();
+        });
+
+        // Library bug: Instructions renders DownloadSoftwareProctoredExamInstructions without skipProctoredExam here. Delete once
+        // https://github.com/openedx/frontend-lib-special-exams/issues/183 is fixed.
+        expect(errors).toEqual([
+          expect.stringMatching(/`skipProctoredExam` is marked as required in `DownloadSoftwareProctoredExamInstructions`/),
+        ]);
       });
     });
 
@@ -488,7 +514,7 @@ describe('Sequence with a special exam', () => {
     describe('when ready to start on an LTI exam', () => {
       describe('with no proctoring app answering', () => {
         beforeEach(async () => {
-          jest.useFakeTimers();
+          useFakeTimers();
           course = renderExam({
             exam: proctored, status: 'ready_to_start', attempt: lti, proctoringSettings: { proctoring_escalation_email: 'escalate@example.com' },
           });
@@ -520,7 +546,7 @@ describe('Sequence with a special exam', () => {
         };
 
         beforeEach(async () => {
-          jest.useFakeTimers();
+          useFakeTimers();
           replied = false;
           window.addEventListener('message', reply);
           course = renderExam({ exam: proctored, status: 'ready_to_start', attempt: lti });
@@ -571,10 +597,23 @@ describe('Sequence with a special exam', () => {
       it.each([
         ['proctored', /Your proctoring session was reviewed successfully/],
         ['practice', /Your proctoring session was reviewed successfully/],
-        ['onboarding', 'Your onboarding profile was reviewed successfully'],
       ])('shows the verified page for a %s exam', async (type, text) => {
         renderExam({ exam: { type, use_legacy_attempt_api: true }, status: 'verified' });
         expect(await screen.findByText(text)).toBeInTheDocument();
+      });
+
+      it('shows the verified page for a onboarding exam', async () => {
+        const errors = await withConsoleErrorSpy(async () => {
+          renderExam({ exam: { type: 'onboarding', use_legacy_attempt_api: true }, status: 'verified' });
+          expect(await screen.findByText('Your onboarding profile was reviewed successfully')).toBeInTheDocument();
+        });
+
+        // Library bug: VerifiedOnboardingExamInstructions gives MailtoLink an empty `to` until the proctoring settings load, and
+        // the mock backend's settings have no address. Delete once
+        // https://github.com/openedx/frontend-lib-special-exams/issues/184 is fixed.
+        expect(errors).toEqual([
+          expect.stringMatching(/Invalid prop `to` supplied to[\s\S]*VerifiedOnboardingExamInstructions/),
+        ]);
       });
     });
 
@@ -664,7 +703,7 @@ describe('Sequence with a special exam', () => {
 
     describe('without EXAMS_BASE_URL', () => {
       beforeEach(async () => {
-        mergeConfig({ EXAMS_BASE_URL: '' });
+        mergeAppConfig(appId, { EXAMS_BASE_URL: '' });
         course = renderExam({ status: 'started' });
         await findUnitFrame();
       });
@@ -772,6 +811,58 @@ describe('Sequence with a special exam', () => {
     it('asks for the latest attempt once and never for the exam', () => {
       expect(examRequests()).toHaveLength(0);
       expect(latestAttemptRequests()).toHaveLength(1);
+    });
+  });
+
+  // The legacy app's SubmittedTimedExamInstructionsSlot cases, against the Slot API.
+  describe('submitted timed exam instructions slot', () => {
+    const DEFAULT_TITLE = 'You have submitted your timed exam.';
+
+    // The widget a site would configure: it shows the `timeIsOver` it was given.
+    const WidgetHeading = ({ timeIsOver }: { timeIsOver: boolean }) => (
+      <h3>{`Widget heading, timeIsOver: ${timeIsOver}`}</h3>
+    );
+
+    const addWidget = (op: WidgetOperationTypes.REPLACE | WidgetOperationTypes.INSERT_AFTER) => addSlotOperations([{
+      slotId: submittedTimedExamInstructionsSlotId,
+      id: 'org.example.widget',
+      op,
+      relatedId: 'defaultContent',
+      component: WidgetHeading,
+    } as SlotOperation]);
+
+    it('renders the default heading once the learner submits', async () => {
+      renderExam({ status: 'submitted' });
+
+      expect(await screen.findByRole('heading', { name: DEFAULT_TITLE })).toBeInTheDocument();
+    });
+
+    it('renders the widget in place of the default once the learner submits', async () => {
+      addWidget(WidgetOperationTypes.REPLACE);
+      renderExam({ status: 'started' });
+
+      await user.click(await screen.findByRole('button', { name: 'End My Exam' }));
+      await user.click(await screen.findByRole('button', { name: 'Yes, submit my timed exam.' }));
+
+      expect(await screen.findByText('Widget heading, timeIsOver: false')).toBeInTheDocument();
+      expect(screen.queryByText(DEFAULT_TITLE)).not.toBeInTheDocument();
+    });
+
+    it('passes timeIsOver when the time limit submitted the exam', async () => {
+      addWidget(WidgetOperationTypes.REPLACE);
+      useFakeTimers({ now: new Date('2026-10-07T10:00:00Z') });
+      renderExam({ status: 'started', remainingSeconds: 2 });
+
+      // The library holds the countdown at 00:00 for a 5 s grace period, then expires the attempt.
+      expect(await screen.findByText('Widget heading, timeIsOver: true', {}, { timeout: 10_000 })).toBeInTheDocument();
+    });
+
+    it('renders the widget beside the default heading when it is inserted after it', async () => {
+      addWidget(WidgetOperationTypes.INSERT_AFTER);
+      renderExam({ status: 'submitted' });
+
+      expect(await screen.findByText('Widget heading, timeIsOver: false')).toBeInTheDocument();
+      expect(screen.getByText(DEFAULT_TITLE)).toBeInTheDocument();
     });
   });
 });

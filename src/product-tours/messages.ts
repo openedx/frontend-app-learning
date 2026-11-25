@@ -1,4 +1,4 @@
-import { defineMessages } from '@edx/frontend-platform/i18n';
+import { defineMessages } from '@openedx/frontend-base';
 
 const messages = defineMessages({
   beginTour: {
@@ -14,6 +14,7 @@ const messages = defineMessages({
   newUserModalBody: {
     id: 'tours.newUserModal.body',
     defaultMessage: 'Let’s take a quick tour of {siteName} so you can get the most out of your course.',
+    description: 'The body of the welcome modal that offers a new learner a tour of the course home',
   },
   newUserModalTitleWelcome: {
     id: 'tours.newUserModal.title.welcome',

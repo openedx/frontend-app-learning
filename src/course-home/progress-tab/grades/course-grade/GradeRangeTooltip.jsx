@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { InfoOutline } from '@openedx/paragon/icons';
 import {
   Icon, IconButton, OverlayTrigger, Popover,
@@ -32,7 +33,7 @@ const GradeRangeTooltip = ({ iconButtonClassName, passingGrade }) => {
       trigger="click"
       show={showTooltip}
       overlay={(
-        <Popover>
+        <Popover id="grade-range-tooltip">
           <Popover.Content className="px-3">
             {intl.formatMessage(messages.courseGradeRangeTooltip)}
             <ul className="list-unstyled m-0">
@@ -61,7 +62,7 @@ const GradeRangeTooltip = ({ iconButtonClassName, passingGrade }) => {
         onClick={() => setShowTooltip(!showTooltip)}
         onBlur={() => setShowTooltip(false)}
         alt={intl.formatMessage(messages.gradeRangeTooltipAlt)}
-        className={`mb-0 mt-n1 ${iconButtonClassName}`}
+        className={classNames('mb-0 mt-n1', iconButtonClassName)}
         src={InfoOutline}
         iconAs={Icon}
         size="inline"
@@ -69,10 +70,6 @@ const GradeRangeTooltip = ({ iconButtonClassName, passingGrade }) => {
       />
     </OverlayTrigger>
   );
-};
-
-GradeRangeTooltip.defaultProps = {
-  iconButtonClassName: '',
 };
 
 GradeRangeTooltip.propTypes = {

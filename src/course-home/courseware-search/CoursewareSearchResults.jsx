@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Folder, TextFields, VideoCamera, Article,
 } from '@openedx/paragon/icons';
-import { getConfig } from '@edx/frontend-platform';
+import { getSiteConfig } from '@openedx/frontend-base';
 import { Icon } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import CoursewareSearchEmpty from './CoursewareSearchEmpty';
@@ -21,7 +21,7 @@ const CoursewareSearchResults = ({ results = [] }) => {
     return <CoursewareSearchEmpty />;
   }
 
-  const baseUrl = `${getConfig().LMS_BASE_URL}`;
+  const baseUrl = getSiteConfig().lmsBaseUrl;
 
   return (
     <div className="courseware-search-results" data-testid="search-results">
@@ -77,10 +77,6 @@ CoursewareSearchResults.propTypes = {
     url: PropTypes.string,
     contentHits: PropTypes.number,
   })),
-};
-
-CoursewareSearchResults.defaultProps = {
-  results: [],
 };
 
 export default CoursewareSearchResults;

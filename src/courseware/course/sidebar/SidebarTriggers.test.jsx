@@ -1,79 +1,49 @@
-import React from 'react';
+import { WidgetOperationTypes } from '@openedx/frontend-base';
 import userEvent from '@testing-library/user-event';
-import { mergeConfig } from '@edx/frontend-platform';
-import { mockCourseRequests, render, screen } from '@src/setupTest';
+import { screen } from '@testing-library/react';
+import AuxiliarySidebarTriggerSlot, { auxiliarySidebarTriggerSlotId } from '@src/slots/AuxiliarySidebarTriggerSlot';
+import { auxiliarySidebarSlotId } from '@src/slots/AuxiliarySidebarSlot';
+import { addSidebarWidgets } from '@src/tests/auxiliarySidebar';
+import { render } from '@src/tests/render';
 import SidebarState from '@src/tests/SidebarState';
-import { getEnabledWidgets } from './defaultWidgets';
+import { addSlotOperations, addTestApp } from '@src/tests/slots';
+import SidebarTriggerBase from './common/TriggerBase';
 import { SidebarProvider } from './SidebarContext';
-import SidebarTriggers from './SidebarTriggers';
-
-jest.mock('@src/widgets/discussions/widgetConfig', () => ({
-  discussionsWidgetConfig: {
-    id: 'DISCUSSIONS',
-    priority: 10,
-    Sidebar: () => null,
-    Trigger: () => <button type="button" data-testid="trigger-DISCUSSIONS">Discussions</button>,
-    isAvailable: jest.fn(),
-    enabled: true,
-  },
-}));
-
-jest.mock('@src/widgets/upgrade/src/widgetConfig', () => ({
-  upgradeWidgetConfig: {
-    id: 'UPGRADE',
-    priority: 20,
-    Sidebar: () => null,
-    Trigger: () => <button type="button" data-testid="trigger-UPGRADE">Upgrade</button>,
-    isAvailable: jest.fn(),
-    enabled: true,
-  },
-}));
 
 const courseId = 'course-v1:edX+Test+2024';
 const unitId = 'unit-1';
 
-// eslint-disable-next-line react/prop-types
-const MockTriggerA = ({ onClick }) => (
-  <button type="button" onClick={onClick} data-testid="trigger-A">Trigger A</button>
-);
-// eslint-disable-next-line react/prop-types
-const MockTriggerB = ({ onClick }) => (
-  <button type="button" onClick={onClick} data-testid="trigger-B">Trigger B</button>
+// A trigger as a widget writes one: it toggles its own panel.
+const mockTrigger = (id) => () => (
+  <SidebarTriggerBase sidebarId={id} ariaLabel={`Trigger ${id}`}>
+    <span>{id}</span>
+  </SidebarTriggerBase>
 );
 
-const stubWidget = (id, priority, Trigger, overrides = {}) => ({
+const stubWidget = (id, overrides = {}) => ({
   id,
-  priority,
-  Sidebar: () => null,
-  Trigger,
+  Trigger: mockTrigger(id),
   isAvailable: () => true,
-  enabled: true,
   ...overrides,
 });
 
-const defaultWidgets = [stubWidget('WIDGET_A', 10, MockTriggerA), stubWidget('WIDGET_B', 20, MockTriggerB)];
+const defaultWidgets = [stubWidget('WIDGET_A'), stubWidget('WIDGET_B')];
 
 function renderTriggers(widgets = defaultWidgets) {
+  addSidebarWidgets(widgets);
   return render(
-    <SidebarProvider courseId={courseId} unitId={unitId} widgets={widgets}>
-      <SidebarTriggers />
+    <SidebarProvider courseId={courseId} unitId={unitId}>
+      <AuxiliarySidebarTriggerSlot courseId={courseId} sequenceId="sequence-1" unitId={unitId} />
       <SidebarState />
     </SidebarProvider>,
     { wrapWithRouter: true },
   );
 }
 
+const trigger = (id) => screen.queryByRole('button', { name: `Trigger ${id}` });
 const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
 
 describe('SidebarTriggers', () => {
-  beforeAll(async () => {
-    mockCourseRequests();
-  });
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   afterEach(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -83,24 +53,55 @@ describe('SidebarTriggers', () => {
     it('renders a trigger for each available widget', () => {
       renderTriggers();
 
-      expect(screen.getByTestId('trigger-A')).toBeInTheDocument();
-      expect(screen.getByTestId('trigger-B')).toBeInTheDocument();
+      expect(trigger('WIDGET_A')).toBeInTheDocument();
+      expect(trigger('WIDGET_B')).toBeInTheDocument();
+    });
+
+    it('renders the triggers in the order of their panels, whatever order the triggers were added in', () => {
+      const { APPEND } = WidgetOperationTypes;
+      addTestApp({
+        slots: [
+          {
+            slotId: auxiliarySidebarTriggerSlotId, id: 'WIDGET_A', op: APPEND, component: mockTrigger('WIDGET_A'),
+          },
+          {
+            slotId: auxiliarySidebarTriggerSlotId, id: 'WIDGET_B', op: APPEND, component: mockTrigger('WIDGET_B'),
+          },
+          {
+            slotId: auxiliarySidebarSlotId, id: 'WIDGET_B', op: APPEND, element: <div />,
+          },
+          {
+            slotId: auxiliarySidebarSlotId, id: 'WIDGET_A', op: APPEND, element: <div />,
+          },
+        ],
+      });
+      renderTriggers([]);
+
+      expect(screen.getAllByRole('button').map(button => button.getAttribute('aria-label')))
+        .toEqual(['Trigger WIDGET_B', 'Trigger WIDGET_A']);
     });
 
     it('renders no trigger for a widget that is not available', () => {
       renderTriggers([
-        stubWidget('WIDGET_A', 10, MockTriggerA),
-        stubWidget('WIDGET_B', 20, MockTriggerB, { isAvailable: () => false }),
+        stubWidget('WIDGET_A'),
+        stubWidget('WIDGET_B', { isAvailable: () => false }),
       ]);
 
-      expect(screen.getByTestId('trigger-A')).toBeInTheDocument();
-      expect(screen.queryByTestId('trigger-B')).not.toBeInTheDocument();
+      expect(trigger('WIDGET_A')).toBeInTheDocument();
+      expect(trigger('WIDGET_B')).not.toBeInTheDocument();
     });
 
     it('renders nothing when no widgets are registered', () => {
       renderTriggers([]);
 
       expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    it('passes each trigger what the slot is about', () => {
+      const Trigger = jest.fn(() => null);
+      renderTriggers([stubWidget('WIDGET_A', { Trigger })]);
+
+      expect(Trigger.mock.calls[0][0]).toEqual({ courseId, sequenceId: 'sequence-1', unitId });
     });
   });
 
@@ -111,7 +112,7 @@ describe('SidebarTriggers', () => {
       const triggerWrappers = container.querySelectorAll('[class*="sidebar-active"]');
 
       expect(triggerWrappers).toHaveLength(1);
-      expect(screen.getByTestId('trigger-A').closest('[class*="sidebar-active"]')).toBeInTheDocument();
+      expect(trigger('WIDGET_A').closest('[class*="sidebar-active"]')).toBeInTheDocument();
     });
 
     it('applies no active class when no sidebar is open', () => {
@@ -125,8 +126,7 @@ describe('SidebarTriggers', () => {
       window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('WIDGET_B'));
       renderTriggers();
 
-      const triggerB = screen.getByTestId('trigger-B');
-      expect(triggerB.closest('[class*="sidebar-active"]')).toBeInTheDocument();
+      expect(trigger('WIDGET_B').closest('[class*="sidebar-active"]')).toBeInTheDocument();
     });
   });
 
@@ -136,7 +136,7 @@ describe('SidebarTriggers', () => {
       renderTriggers();
       expect(currentSidebar()).toBe('null');
 
-      await user.click(screen.getByTestId('trigger-A'));
+      await user.click(trigger('WIDGET_A'));
 
       expect(currentSidebar()).toBe('WIDGET_A');
     });
@@ -146,7 +146,7 @@ describe('SidebarTriggers', () => {
       window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify('WIDGET_A'));
       renderTriggers();
 
-      await user.click(screen.getByTestId('trigger-B'));
+      await user.click(trigger('WIDGET_B'));
 
       expect(currentSidebar()).toBe('WIDGET_B');
     });
@@ -157,7 +157,7 @@ describe('SidebarTriggers', () => {
       renderTriggers();
       expect(currentSidebar()).toBe('WIDGET_A');
 
-      await user.click(screen.getByTestId('trigger-A'));
+      await user.click(trigger('WIDGET_A'));
 
       expect(currentSidebar()).toBe('null');
     });
@@ -165,72 +165,65 @@ describe('SidebarTriggers', () => {
 });
 
 describe('SidebarTriggers - external widget integration', () => {
-  beforeAll(async () => {
-    mockCourseRequests();
+  const dummyWidgetId = 'org.example.widget.dummy';
+
+  // A widget as a plugin app registers it in a site config: the two operations alone, with no options.
+  const addDummyPlugin = () => addTestApp({
+    slots: [
+      {
+        slotId: auxiliarySidebarTriggerSlotId,
+        id: dummyWidgetId,
+        op: WidgetOperationTypes.APPEND,
+        component: mockTrigger(dummyWidgetId),
+      },
+      {
+        slotId: auxiliarySidebarSlotId,
+        id: dummyWidgetId,
+        op: WidgetOperationTypes.APPEND,
+        element: <div>Dummy Sidebar</div>,
+      },
+    ],
   });
 
   afterEach(() => {
-    mergeConfig({ SIDEBAR_WIDGETS: [] });
     window.localStorage.clear();
     window.sessionStorage.clear();
   });
 
   it('registers an external widget and renders its trigger on screen', () => {
-    const ExternalTrigger = () => (
-      <button type="button" data-testid="trigger-DUMMY_WIDGET">Dummy Widget</button>
-    );
-    mergeConfig({
-      SIDEBAR_WIDGETS: [{
-        id: 'DUMMY_WIDGET',
-        priority: 30,
-        Sidebar: () => <div>Dummy Sidebar</div>,
-        Trigger: ExternalTrigger,
-        isAvailable: () => true,
-        enabled: true,
-      }],
-    });
+    addDummyPlugin();
+    renderTriggers([]);
 
-    renderTriggers(getEnabledWidgets());
-
-    expect(screen.getByTestId('trigger-DUMMY_WIDGET')).toBeInTheDocument();
-    expect(screen.getByText('Dummy Widget')).toBeVisible();
+    expect(trigger(dummyWidgetId)).toBeVisible();
   });
 
-  it('does not render a trigger for an external widget with enabled: false', () => {
-    mergeConfig({
-      SIDEBAR_WIDGETS: [{
-        id: 'HIDDEN_WIDGET',
-        priority: 30,
-        Sidebar: () => null,
-        Trigger: () => <button type="button" data-testid="trigger-HIDDEN_WIDGET">Hidden</button>,
-        enabled: false,
-      }],
-    });
+  it('does not render the trigger of a widget whose panel a site removed', () => {
+    addDummyPlugin();
+    addSlotOperations([{ slotId: auxiliarySidebarSlotId, op: WidgetOperationTypes.REMOVE, relatedId: dummyWidgetId }]);
+    renderTriggers([]);
 
-    renderTriggers(getEnabledWidgets());
+    expect(trigger(dummyWidgetId)).not.toBeInTheDocument();
+  });
 
-    expect(screen.queryByTestId('trigger-HIDDEN_WIDGET')).not.toBeInTheDocument();
+  it('does not render a trigger that has no panel', () => {
+    addSlotOperations([{
+      slotId: auxiliarySidebarTriggerSlotId,
+      id: dummyWidgetId,
+      op: WidgetOperationTypes.APPEND,
+      component: mockTrigger(dummyWidgetId),
+    }]);
+    renderTriggers([]);
+
+    expect(trigger(dummyWidgetId)).not.toBeInTheDocument();
   });
 
   it('clicking an external widget trigger opens it', async () => {
     const user = userEvent.setup();
-    // eslint-disable-next-line react/prop-types
-    const ExternalTrigger = ({ onClick }) => (
-      <button type="button" data-testid="trigger-DUMMY_WIDGET" onClick={onClick}>Dummy Widget</button>
-    );
-    mergeConfig({
-      SIDEBAR_WIDGETS: [{
-        id: 'DUMMY_WIDGET',
-        priority: 30,
-        Sidebar: () => null,
-        Trigger: ExternalTrigger,
-        enabled: true,
-      }],
-    });
+    addDummyPlugin();
+    renderTriggers([]);
 
-    renderTriggers(getEnabledWidgets());
-    await user.click(screen.getByTestId('trigger-DUMMY_WIDGET'));
+    await user.click(trigger(dummyWidgetId));
 
-    expect(currentSidebar()).toBe('DUMMY_WIDGET');
+    expect(currentSidebar()).toBe(dummyWidgetId);
   });
 });

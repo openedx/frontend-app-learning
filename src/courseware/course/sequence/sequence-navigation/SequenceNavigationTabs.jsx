@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import UnitButton from './UnitButton';
 import SequenceNavigationDropdown from './SequenceNavigationDropdown';
-import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
+import useIndexOfLastVisibleChild from '@src/generic/tabs/useIndexOfLastVisibleChild';
 import {
   useIsOnXLDesktop, useIsOnMediumDesktop, useIsOnLargeDesktop, useIsSidebarOpen,
 } from './hooks';
