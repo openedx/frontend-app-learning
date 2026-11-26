@@ -1,5 +1,4 @@
-import { getConfig } from '@edx/frontend-platform';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useAppConfig, useIntl } from '@openedx/frontend-base';
 import { CheckCircle, WarningFilled, WatchFilled } from '@openedx/paragon/icons';
 import { Hyperlink, Icon } from '@openedx/paragon';
 
@@ -10,12 +9,15 @@ import messages from './messages';
 
 const CreditInformation = () => {
   const intl = useIntl();
+  const appConfig = useAppConfig();
 
   const {
     creditCourseRequirements,
   } = useProgressData();
 
-  if (!creditCourseRequirements) { return null; }
+  if (!creditCourseRequirements) {
+    return null;
+  }
 
   let eligibilityStatus;
   let requirementStatus;
@@ -25,7 +27,7 @@ const CreditInformation = () => {
     <Hyperlink
       variant="muted"
       isInline
-      destination={getConfig().CREDIT_HELP_LINK_URL}
+      destination={appConfig.CREDIT_HELP_LINK_URL}
     >{intl.formatMessage(messages.courseCredit)}
     </Hyperlink>
   );

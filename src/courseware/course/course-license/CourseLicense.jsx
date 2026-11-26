@@ -1,5 +1,5 @@
 import React from 'react';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopyright } from '@fortawesome/free-regular-svg-icons';
@@ -104,7 +104,7 @@ function parseLicense(license) {
 }
 
 const CourseLicense = ({
-  license,
+  license = 'all-rights-reserved',
 }) => {
   const intl = useIntl();
   const renderAllRightsReservedLicense = () => (
@@ -155,10 +155,6 @@ const CourseLicense = ({
 
 CourseLicense.propTypes = {
   license: PropTypes.string,
-};
-
-CourseLicense.defaultProps = {
-  license: 'all-rights-reserved',
 };
 
 export default CourseLicense;

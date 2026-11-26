@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import {
   EmailIcon,
@@ -10,26 +9,29 @@ import {
   TwitterIcon,
   TwitterShareButton,
 } from 'react-share';
+import {
+  getAuthenticatedUser, getSiteConfig, sendTrackEvent, useAppConfig, useIntl,
+} from '@openedx/frontend-base';
 
-import { getConfig } from '@edx/frontend-platform';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
-
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { useCoursewareMetadata } from '@src/courseware/data/apiHooks';
 import messages from './messages';
-import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
-import { useCoursewareMetadata } from '../data/apiHooks';
 
 const SocialIcons = ({
-  analyticsId,
-  className,
+  analyticsId = '',
+  className = '',
   courseId,
-  emailBody,
-  emailSubject,
-  hashtags,
-  socialMessage,
+  emailBody = messages.defaultEmailBody,
+  emailSubject = null,
+  hashtags = null,
+  socialMessage = null,
 }) => {
   const intl = useIntl();
+  const {
+    SOCIAL_UTM_MILESTONE_CAMPAIGN: socialUtmMilestoneCampaign,
+    TWITTER_HASHTAG: twitterHashtag,
+    TWITTER_URL: twitterUrl,
+  } = useAppConfig();
   const marketingUrl = useCoursewareMetadata(courseId, { enabled: false }).data?.marketingUrl;
 
   const {
@@ -41,7 +43,7 @@ const SocialIcons = ({
     return null;
   }
 
-  const twitterUrl = getConfig().TWITTER_URL;
+  const { siteName } = getSiteConfig();
   const twitterAccount = twitterUrl && twitterUrl.substring(twitterUrl.lastIndexOf('/') + 1);
 
   const logClick = (service) => {
@@ -59,8 +61,8 @@ const SocialIcons = ({
     });
   };
 
-  const socialUtmCampaign = getConfig().SOCIAL_UTM_MILESTONE_CAMPAIGN
-    ? `utm_campaign=${getConfig().SOCIAL_UTM_MILESTONE_CAMPAIGN}&` : '';
+  const socialUtmCampaign = socialUtmMilestoneCampaign
+    ? `utm_campaign=${socialUtmMilestoneCampaign}&` : '';
   const socialUtmMarketingUrl = `${marketingUrl}?${socialUtmCampaign}utm_medium=social`;
 
   return (
@@ -76,7 +78,7 @@ const SocialIcons = ({
         <TwitterShareButton
           beforeOnClick={() => logClick('twitter')}
           className="ml-2"
-          hashtags={hashtags}
+          hashtags={hashtags ?? [twitterHashtag]}
           title={socialMessage ? intl.formatMessage(socialMessage, { platform: `@${twitterAccount}`, title }) : ''}
           url={`${socialUtmMarketingUrl}&utm_source=twitter`}
         >
@@ -87,7 +89,7 @@ const SocialIcons = ({
       <FacebookShareButton
         beforeOnClick={() => logClick('facebook')}
         className="ml-2"
-        quote={socialMessage ? intl.formatMessage(socialMessage, { platform: getConfig().SITE_NAME, title }) : ''}
+        quote={socialMessage ? intl.formatMessage(socialMessage, { platform: siteName, title }) : ''}
         url={`${socialUtmMarketingUrl}&utm_source=facebook`}
       >
         <FacebookIcon round size={32} />
@@ -97,7 +99,7 @@ const SocialIcons = ({
         beforeOnClick={() => logClick('email')}
         body={emailBody ? `${intl.formatMessage(emailBody)}\n\n` : ''}
         className="ml-2"
-        subject={emailSubject ? intl.formatMessage(emailSubject, { platform: getConfig().SITE_NAME, title }) : ''}
+        subject={emailSubject ? intl.formatMessage(emailSubject, { platform: siteName, title }) : ''}
         url={`${marketingUrl}?${socialUtmCampaign}utm_medium=email&utm_source=email`}
       >
         <EmailIcon round size={32} />
@@ -107,21 +109,13 @@ const SocialIcons = ({
   );
 };
 
-SocialIcons.defaultProps = {
-  analyticsId: '',
-  className: '',
-  emailBody: messages.defaultEmailBody,
-  emailSubject: null,
-  hashtags: [getConfig().TWITTER_HASHTAG],
-  socialMessage: null,
-};
-
 SocialIcons.propTypes = {
   analyticsId: PropTypes.string,
   className: PropTypes.string,
   courseId: PropTypes.string.isRequired,
   emailBody: PropTypes.shape({}),
   emailSubject: PropTypes.shape({}),
+  // Defaults to the app config's TWITTER_HASHTAG.
   hashtags: PropTypes.arrayOf(PropTypes.string),
   socialMessage: PropTypes.shape({}),
 };

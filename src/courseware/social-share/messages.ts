@@ -1,4 +1,4 @@
-import { defineMessages } from '@edx/frontend-platform/i18n';
+import { defineMessages } from '@openedx/frontend-base';
 
 const messages = defineMessages({
   defaultEmailBody: {
@@ -14,6 +14,7 @@ const messages = defineMessages({
   shareService: {
     id: 'learning.social.shareService',
     defaultMessage: 'Share your progress on {service}.',
+    description: 'Screen reader text for a share button; service is the social network, such as LinkedIn',
   },
 });
 

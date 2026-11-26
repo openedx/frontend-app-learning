@@ -1,5 +1,5 @@
 import React from 'react';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Icon } from '@openedx/paragon';
 import { CheckCircle, CheckCircleOutline, DisabledVisible } from '@openedx/paragon/icons';
 
@@ -7,7 +7,7 @@ import messages from '../messages';
 
 interface Props {
   complete: boolean;
-  hideFromTOC: boolean;
+  hideFromTOC: boolean | null;
   title: string;
 }
 
@@ -41,16 +41,16 @@ const SectionTitle: React.FC<Props> = ({ complete, hideFromTOC, title }) => {
         </span>
       </div>
       {hideFromTOC && (
-      <div className="row">
-        {hideFromTOC && (
-          <span className="small d-flex align-content-end">
-            <Icon className="mr-2" src={DisabledVisible} data-testid="hide-from-toc-section-icon" />
-            <span data-testid="hide-from-toc-section-text">
-              {intl.formatMessage(messages.hiddenSection)}
+        <div className="row">
+          {hideFromTOC && (
+            <span className="small d-flex align-content-end">
+              <Icon className="mr-2" src={DisabledVisible} data-testid="hide-from-toc-section-icon" />
+              <span data-testid="hide-from-toc-section-text">
+                {intl.formatMessage(messages.hiddenSection)}
+              </span>
             </span>
-          </span>
-        )}
-      </div>
+          )}
+        </div>
       )}
     </div>
   );

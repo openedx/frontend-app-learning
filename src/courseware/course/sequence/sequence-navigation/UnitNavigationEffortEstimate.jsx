@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 
-import EffortEstimate from '../../../../shared/effort-estimate';
-import { useMinimalCourseOutline, useSequenceIds, useSequenceMetadata } from '../../../data/apiHooks';
+import EffortEstimate from '@src/shared/effort-estimate';
+import { useMinimalCourseOutline, useSequenceIds, useSequenceMetadata } from '@src/courseware/data/apiHooks';
 
 import messages from './messages';
+import { useCourseId } from '@src/generic/course-params';
 
 // This component exists to peek ahead at the next sequence and grab its estimated effort.
 // If we should be showing the next sequence's effort, we display the title and effort instead of "Next".
@@ -27,7 +27,7 @@ const UnitNavigationEffortEstimate = ({
   unitId,
 }) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const sequenceIds = useSequenceIds(courseId);
   const sequenceIndex = sequenceIds.indexOf(sequenceId);
   const nextSequenceId = sequenceIndex < sequenceIds.length - 1 ? sequenceIds[sequenceIndex + 1] : null;
@@ -59,13 +59,8 @@ const UnitNavigationEffortEstimate = ({
 
 UnitNavigationEffortEstimate.propTypes = {
   children: PropTypes.node,
-  sequenceId: PropTypes.string.isRequired,
+  sequenceId: PropTypes.string,
   unitId: PropTypes.string,
-};
-
-UnitNavigationEffortEstimate.defaultProps = {
-  children: null,
-  unitId: null,
 };
 
 export default UnitNavigationEffortEstimate;

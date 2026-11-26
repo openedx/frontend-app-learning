@@ -1,10 +1,12 @@
 import { useCallback } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import { Button, Icon } from '@openedx/paragon';
 import { Bookmark } from '@openedx/paragon/icons';
 
-import { useUnit } from '../../../data/apiHooks';
+import { useIsPreview, useUnit } from '@src/courseware/data/apiHooks';
+import { useCourseId, useSequenceId } from '@src/generic/course-params';
+import { getCoursewarePath } from '@src/courseware/urls';
 import UnitIcon from './UnitIcon';
 import CompleteIcon from './CompleteIcon';
 
@@ -29,15 +31,16 @@ const UnitButton = ({
   className,
   showTitle = false,
 }: Props) => {
-  const { courseId, sequenceId } = useParams();
+  const courseId = useCourseId();
+  const sequenceId = useSequenceId();
   const unit = useUnit(sequenceId, unitId).data;
   const title = unit?.title ?? fallbackTitle;
   const contentType = unit?.contentType ?? fallbackContentType;
   const bookmarked = unit?.bookmarked ?? false;
   const complete = unit?.complete ?? false;
-  const { pathname } = useLocation();
-  const basePath = `/course/${courseId}/${sequenceId}/${unitId}`;
-  const unitPath = pathname.startsWith('/preview') ? `/preview${basePath}` : basePath;
+  const isPreview = useIsPreview();
+  // The unit buttons render on the courseware routes only, which all have both ids.
+  const unitPath = getCoursewarePath(isPreview, courseId, sequenceId!, unitId);
 
   const handleClick = useCallback(() => {
     onClick(unitId);

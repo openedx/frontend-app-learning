@@ -1,8 +1,8 @@
 import React, { Suspense, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useIntl } from '@edx/frontend-platform/i18n';
-import PageLoading from '../../../generic/PageLoading';
-import { useSequenceMetadata, useUnit } from '../../data/apiHooks';
+import { useIntl } from '@openedx/frontend-base';
+import PageLoading from '@src/generic/PageLoading';
+import { useSequenceMetadata, useUnit } from '@src/courseware/data/apiHooks';
 
 import messages from './messages';
 import Unit from './Unit';
@@ -13,7 +13,7 @@ const SequenceContent = ({
   gated,
   courseId,
   sequenceId,
-  unitId,
+  unitId = null,
   unitLoadedHandler,
   isOriginalUserStaff,
   renderUnitNavigation,
@@ -76,10 +76,6 @@ SequenceContent.propTypes = {
   unitLoadedHandler: PropTypes.func.isRequired,
   isOriginalUserStaff: PropTypes.bool.isRequired,
   renderUnitNavigation: PropTypes.func.isRequired,
-};
-
-SequenceContent.defaultProps = {
-  unitId: null,
 };
 
 export default SequenceContent;

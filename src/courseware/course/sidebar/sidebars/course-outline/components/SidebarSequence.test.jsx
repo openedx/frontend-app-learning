@@ -1,72 +1,50 @@
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
-import {
-  createTestQueryClient, initializeMockApp, mockCourseRequests, seedQueryData,
-} from '@src/setupTest';
 import { getCourseOutline } from '@src/courseware/data/api';
-import { courseOutlineStructureQuery, coursewareOutlineSidebarTogglesQuery } from '@src/courseware/data/apiHooks';
+import { mockCourseRequests } from '@src/tests/courseware';
+import { CourseParamsProvider } from '@src/generic/course-params';
+import OutlineQueryGate from '@src/tests/OutlineQueryGate';
+import { render } from '@src/tests/render';
 import { SidebarProvider } from '../../../SidebarContext';
 import messages from '../messages';
 import SidebarSequence from './SidebarSequence';
 
-initializeMockApp();
-
 describe('<SidebarSequence />', () => {
   let courseId;
-  let outline;
   let sequence;
   let unit;
   const sequenceDescription = 'sequence test description';
 
   const initTestData = async (options) => {
     courseId = mockCourseRequests(options).courseId;
-    outline = await getCourseOutline(courseId);
-    let activeSequenceId = '';
-    [activeSequenceId] = Object.keys(outline.sequences);
+    const outline = await getCourseOutline(courseId);
+    const [activeSequenceId] = Object.keys(outline.sequences);
     sequence = outline.sequences[activeSequenceId];
     const unitId = sequence.unitIds[0];
     unit = outline.units[unitId];
   };
 
+  // The rows read the outline and completion tracking from their queries, which mockCourseRequests answers.
   function renderWithProvider(props = {}) {
-    const queryClient = createTestQueryClient();
-    seedQueryData(queryClient, courseOutlineStructureQuery(courseId).queryKey, outline);
-    seedQueryData(
-      queryClient,
-      coursewareOutlineSidebarTogglesQuery(courseId).queryKey,
-      { enableCompletionTracking: true },
-    );
     const { container } = render(
-      <AppProvider wrapWithRouter={false}>
-        <QueryClientProvider client={queryClient}>
-          <IntlProvider locale="en">
-            <MemoryRouter initialEntries={[`/course/${courseId}`]}>
-              <SidebarProvider courseId={courseId} unitId={unit.id} widgets={[]}>
-                <Routes>
-                  <Route
-                    path="/course/:courseId"
-                    element={(
-                      <SidebarSequence
-                        courseId={courseId}
-                        defaultOpen={false}
-                        sequence={sequence}
-                        activeUnitId={sequence.unitIds[0]}
-                        {...props}
-                      />
-                    )}
-                  />
-                </Routes>
-              </SidebarProvider>
-            </MemoryRouter>
-          </IntlProvider>
-        </QueryClientProvider>
-      </AppProvider>,
+      <MemoryRouter>
+        <CourseParamsProvider courseId={courseId}>
+          <SidebarProvider courseId={courseId} unitId={unit.id} widgets={[]}>
+            <OutlineQueryGate>
+              <SidebarSequence
+                courseId={courseId}
+                defaultOpen={false}
+                sequence={sequence}
+                activeUnitId={sequence.unitIds[0]}
+                {...props}
+              />
+            </OutlineQueryGate>
+          </SidebarProvider>
+        </CourseParamsProvider>
+      </MemoryRouter>,
     );
     return container;
   }
@@ -75,7 +53,7 @@ describe('<SidebarSequence />', () => {
     await initTestData();
     renderWithProvider();
 
-    expect(screen.getByText(sequence.title)).toBeInTheDocument();
+    expect(await screen.findByText(sequence.title)).toBeInTheDocument();
     expect(screen.queryByText(sequenceDescription)).not.toBeInTheDocument();
     expect(screen.getByText(`, ${courseOutlineMessages.incompleteAssignment.defaultMessage}`)).toBeInTheDocument();
     expect(screen.queryByText(unit.title)).not.toBeInTheDocument();
@@ -93,7 +71,7 @@ describe('<SidebarSequence />', () => {
       },
     });
 
-    expect(screen.getByText(sequence.title)).toBeInTheDocument();
+    expect(await screen.findByText(sequence.title)).toBeInTheDocument();
     expect(screen.getByText(sequenceDescription)).toBeInTheDocument();
     expect(screen.getByText(`, ${courseOutlineMessages.completedAssignment.defaultMessage}`)).toBeInTheDocument();
     expect(screen.getByText(unit.title)).toBeInTheDocument();

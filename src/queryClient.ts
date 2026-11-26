@@ -1,12 +1,14 @@
-import { logError, logInfo } from '@edx/frontend-platform/logging';
-import { QueryCache, QueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { logError, logInfo } from '@openedx/frontend-base';
+import {
+  matchQuery, type Query, type QueryCacheNotifyEvent, useQueryClient,
+} from '@tanstack/react-query';
 
+import { appId } from './constants';
 import { getResponseStatus, isNonRetryable } from './data/http-error';
 
-// frontend-platform doesn't type its log functions, so name the shape here.
-type Logger = (error: string | Error) => void;
 export type LogLevel = 'error' | 'info' | 'silent';
-const loggers: Record<LogLevel, Logger> = {
+const loggers: Record<LogLevel, typeof logError> = {
   error: logError,
   info: logInfo,
   silent: () => {},
@@ -18,15 +20,30 @@ declare module '@tanstack/react-query' {
   }
 }
 
-export const createAppQueryCache = () => new QueryCache({
-  onError: (error, query) => {
-    const status = getResponseStatus(error);
-    const level = (status !== undefined && query.meta?.logStatusAs?.[status]) || 'error';
-    loggers[level](error);
-  },
-});
+const logQueryError = (error: Error, query: Query) => {
+  const status = getResponseStatus(error);
+  const level = (status !== undefined && query.meta?.logStatusAs?.[status]) || 'error';
+  loggers[level](error);
+};
 
-export const shouldRetryQuery = (failureCount: number, error: unknown): boolean => {
+const learningQueries = { queryKey: [appId] };
+
+const logLearningQueryError = (event: QueryCacheNotifyEvent) => {
+  if (
+    event.type === 'updated'
+    && event.action.type === 'error'
+    && matchQuery(learningQueries, event.query)
+  ) {
+    logQueryError(event.action.error, event.query);
+  }
+};
+
+export const useQueryErrorLogging = () => {
+  const queryClient = useQueryClient();
+  useEffect(() => queryClient.getQueryCache().subscribe(logLearningQueryError), [queryClient]);
+};
+
+export const shouldRetryQuery = (failureCount: number, error: Error): boolean => {
   if (isNonRetryable(error)) {
     return false;
   }
@@ -37,9 +54,7 @@ export const shouldRetryQuery = (failureCount: number, error: unknown): boolean 
   return failureCount < 3;
 };
 
-export const createQueryClient = () => new QueryClient({
-  queryCache: createAppQueryCache(),
-  defaultOptions: {
-    queries: { retry: shouldRetryQuery, refetchOnWindowFocus: false },
-  },
-});
+export const queryDefaults = {
+  retry: shouldRetryQuery,
+  refetchOnWindowFocus: false,
+} as const;

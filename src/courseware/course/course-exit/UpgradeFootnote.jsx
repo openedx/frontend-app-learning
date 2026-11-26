@@ -1,9 +1,9 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { FormattedDate, FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import {
+  FormattedDate, FormattedMessage, getAuthenticatedUser, useIntl,
+} from '@openedx/frontend-base';
 import { Hyperlink } from '@openedx/paragon';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 
@@ -11,10 +11,11 @@ import Footnote from './Footnote';
 import { logClick } from './utils';
 import messages from './messages';
 import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
+import { useCourseId } from '@src/generic/course-params';
 
 const UpgradeFootnote = ({ deadline, href }) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const { administrator } = getAuthenticatedUser();
 
@@ -58,7 +59,8 @@ const UpgradeFootnote = ({ deadline, href }) => {
 };
 
 UpgradeFootnote.propTypes = {
-  deadline: PropTypes.instanceOf(Date).isRequired,
+  // The course metadata carries the deadline as an ISO string.
+  deadline: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string]).isRequired,
   href: PropTypes.string.isRequired,
 };
 

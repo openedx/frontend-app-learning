@@ -1,5 +1,5 @@
+import { FormattedMessage } from '@openedx/frontend-base';
 import { Icon, StatefulButton } from '@openedx/paragon';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { Bookmark, BookmarkBorder } from '@openedx/paragon/icons';
 import { useSetBookmarked } from './data/apiHooks';
 

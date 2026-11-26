@@ -1,16 +1,11 @@
-import React from 'react';
-import { history } from '@edx/frontend-platform';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { Route, Routes } from 'react-router-dom';
-import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
+import React, { createRef } from 'react';
+import { getAnalyticsService } from '@openedx/frontend-base';
 import {
-  initializeMockApp,
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-  within,
-} from '../../setupTest';
+  fireEvent, screen, waitFor, within,
+} from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+
+import { render } from '@src/tests/render';
 import { CoursewareSearch } from './index';
 import {
   useCoursewareSearchFeatureFlag, useElementBoundingBox, useLockScroll, useCoursewareSearchParams,
@@ -27,9 +22,13 @@ jest.mock('../data/apiHooks', () => ({
   useCourseHomeMeta: jest.fn(),
 }));
 
-jest.mock('@edx/frontend-platform/analytics', () => ({
-  sendTrackingLogEvent: jest.fn(),
-}));
+// jsdom has no <dialog> behavior.
+HTMLDialogElement.prototype.showModal = jest.fn();
+HTMLDialogElement.prototype.close = jest.fn(function mock() {
+  this.dispatchEvent(new CustomEvent('close'));
+});
+
+const { sendTrackingLogEvent } = getAnalyticsService();
 
 const decodedCourseId = 'course-v1:edX+DemoX+Demo_Course';
 const decodedSequenceId = 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction';
@@ -49,18 +48,13 @@ const defaultSearchParams = {
   clearSearchParams: jest.fn(),
 };
 
-const intl = {
-  formatMessage: (message) => message?.defaultMessage || '',
-};
-
 function renderComponent(props = {}) {
-  history.push(pathname);
   const { container } = render(
-    <AppProvider>
+    <MemoryRouter initialEntries={[pathname]}>
       <Routes>
-        <Route path="/course/:courseId/:sequenceId/:unitId" element={<CoursewareSearch intl={intl} {...props} />} />
+        <Route path="/course/:courseId/:sequenceId/:unitId" element={<CoursewareSearch {...props} />} />
       </Routes>
-    </AppProvider>,
+    </MemoryRouter>,
   );
   return container;
 }
@@ -75,8 +69,6 @@ const mockSearchParams = ((params) => {
 });
 
 describe('CoursewareSearch', () => {
-  beforeAll(() => initializeMockApp());
-
   beforeEach(() => {
     useCourseHomeMeta.mockReturnValue({ data: { org } });
     useCoursewareSearchFeatureFlag.mockReturnValue(true);
@@ -101,7 +93,15 @@ describe('CoursewareSearch', () => {
       expect(useLockScroll).toHaveBeenCalledTimes(1);
     });
 
-    it('should have a "--modal-top-position" CSS variable matching the CourseTabsNavigation top position', () => {
+    it('should measure the anchor it is handed, not pass it on to the dialog', () => {
+      const anchorRef = createRef();
+      renderComponent({ anchorRef });
+
+      expect(useElementBoundingBox).toHaveBeenCalledWith(anchorRef);
+      expect(screen.getByTestId('courseware-search-dialog')).not.toHaveAttribute('anchorRef');
+    });
+
+    it('should have a "--modal-top-position" CSS variable matching the anchor top position', () => {
       renderComponent();
 
       const section = screen.getByTestId('courseware-search-dialog');
@@ -123,8 +123,8 @@ describe('CoursewareSearch', () => {
     });
   });
 
-  describe('when CourseTabsNavigation is not present', () => {
-    it('should use "--modal-top-position: 0" if  nce element is not present', () => {
+  describe('when the anchor is not present', () => {
+    it('should use "--modal-top-position: 0" if the anchor element is not present', () => {
       useElementBoundingBox.mockImplementation(() => undefined);
 
       renderComponent();

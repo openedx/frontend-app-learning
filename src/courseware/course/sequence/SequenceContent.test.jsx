@@ -1,18 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {
-  mockCourseRequests, render, screen,
-} from '../../../setupTest';
-import MountCourseQueryHooks from '../../../tests/MountCourseQueryHooks';
-import { useSequenceMetadata } from '../../data/apiHooks';
+import { screen } from '@testing-library/react';
+
+import SpecialExamsProvider from '@src/generic/special-exams/SpecialExamsProvider';
+import { mockCourseRequests, renderInCourseware } from '@src/tests/courseware';
 import SequenceContent from './SequenceContent';
-import SpecialExamsProvider from '../../../generic/special-exams/SpecialExamsProvider';
 
 describe('Sequence Content', () => {
   let mockData;
   let gatedContent;
 
   beforeAll(() => {
+    global.scrollTo = jest.fn();
+  });
+
+  beforeEach(() => {
     const {
       courseId, sequenceId, unitId, sequenceMetadata,
     } = mockCourseRequests();
@@ -22,26 +22,16 @@ describe('Sequence Content', () => {
       courseId,
       sequenceId,
       unitId,
+      isOriginalUserStaff: false,
       unitLoadedHandler: () => { },
       renderUnitNavigation: () => { },
     };
   });
 
-  // Sequence renders SequenceContent only once the sequence query has succeeded.
-  const LoadedSequenceContent = (props) => (
-    useSequenceMetadata(props.sequenceId, { enabled: false }).isSuccess ? <SequenceContent {...props} /> : null
-  );
-
-  LoadedSequenceContent.propTypes = {
-    sequenceId: PropTypes.string.isRequired,
-  };
-
-  const renderContent = (props = {}) => render(
-    <SpecialExamsProvider>
-      <MountCourseQueryHooks courseId={mockData.courseId} sequenceId={mockData.sequenceId} />
-      <LoadedSequenceContent {...mockData} {...props} />
-    </SpecialExamsProvider>,
-    { wrapWithRouter: true },
+  // Sequence renders SequenceContent only once the sequence query has succeeded, under the special exams provider.
+  const renderContent = (props = {}) => renderInCourseware(
+    <SpecialExamsProvider><SequenceContent {...mockData} {...props} /></SpecialExamsProvider>,
+    { courseId: mockData.courseId, sequenceId: mockData.sequenceId, states: { sequence: 'success' } },
   );
 
   it('displays loading message', async () => {

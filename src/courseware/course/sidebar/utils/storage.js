@@ -1,4 +1,4 @@
-import { logError } from '@edx/frontend-platform/logging';
+import { logError } from '@openedx/frontend-base';
 import { getLocalStorage, setLocalStorage } from '@src/data/localStorage';
 import { STORAGE_KEYS } from '../constants';
 

@@ -1,12 +1,8 @@
-import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
 import userEvent from '@testing-library/user-event';
-import {
-  mockCourseRequests, render, screen, waitFor,
-} from '../../../../setupTest';
-import CourseQueryGate from '../../../../tests/CourseQueryGate';
-import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
+import { screen, waitFor } from '@testing-library/react';
+
+import { mockCourseRequests, renderInCourseware, unitPath } from '@src/tests/courseware';
 import UnitNavigation from './UnitNavigation';
 
 const mockNavigate = jest.fn();
@@ -38,23 +34,7 @@ describe('Unit Navigation', () => {
 
   const renderNav = (props = {}) => {
     const sequenceId = props.sequenceId ?? mockData.sequenceId;
-    return render(
-      <MemoryRouter initialEntries={[`/course/${courseMetadata.id}/${sequenceId || 'no-sequence'}`]}>
-        <Routes>
-          <Route
-            path="/course/:courseId/:sequenceId/*"
-            element={(
-              <>
-                <MountCourseQueryHooks courseId={courseMetadata.id} sequenceId={sequenceId} />
-                <CourseQueryGate courseId={courseMetadata.id} sequenceId={sequenceId}>
-                  <UnitNavigation {...mockData} {...props} />
-                </CourseQueryGate>
-              </>
-            )}
-          />
-        </Routes>
-      </MemoryRouter>,
-    );
+    return renderInCourseware(<UnitNavigation {...mockData} {...props} />, { courseId: courseMetadata.id, sequenceId });
   };
 
   it('renders correctly without units', async () => {
@@ -195,5 +175,24 @@ describe('Unit Navigation', () => {
 
     expect(await screen.findByRole('link', { name: /Complete the course/i })).toBeEnabled();
     expect(screen.getByRole('link', { name: /previous/i })).toBeEnabled();
+  });
+
+  it('links to the units around it', async () => {
+    renderNav();
+
+    expect(await screen.findByRole('link', { name: /previous/i }))
+      .toHaveAttribute('href', unitPath(courseMetadata.id, mockData.sequenceId, unitBlocks[0].id));
+    expect(screen.getByRole('link', { name: /next/i }))
+      .toHaveAttribute('href', unitPath(courseMetadata.id, mockData.sequenceId, unitBlocks[2].id));
+  });
+
+  it('links past the last unit of the course to the course end', async () => {
+    const testCourseMetadata = { ...courseMetadata, certificate_data: { cert_status: 'notpassing' }, enrollment: { is_active: true } };
+    const { sequenceId } = mockCourseRequests({ courseMetadata: testCourseMetadata, unitBlocks });
+
+    renderNav({ sequenceId, unitId: unitBlocks[unitBlocks.length - 1].id });
+
+    expect(await screen.findByRole('link', { name: /next \(end of course\)/i }))
+      .toHaveAttribute('href', `/learning/course/${courseMetadata.id}/course-end`);
   });
 });

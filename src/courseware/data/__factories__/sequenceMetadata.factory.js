@@ -1,14 +1,9 @@
-import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
+import { Factory } from 'rosie';
 import '../../../shared/data/__factories__/block.factory';
 import { buildSimpleCourseBlocks } from '../../../shared/data/__factories__/courseBlocks.factory';
 
 Factory.define('sequenceMetadata')
-  .option('courseId', (courseId) => {
-    if (courseId) {
-      return courseId;
-    }
-    throw new Error('courseId must be specified for sequenceMetadata factory.');
-  })
+  .option('courseId')
   // An array of units
   .option('unitBlocks', ['courseId'], courseId => ([
     Factory.build(

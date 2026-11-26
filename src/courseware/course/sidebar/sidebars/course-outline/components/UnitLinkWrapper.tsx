@@ -1,5 +1,8 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
+import { useIsPreview } from '@src/courseware/data/apiHooks';
+import { getCoursewarePath } from '@src/courseware/urls';
 
 import { useCourseOutlineSidebar } from '../hooks';
 
@@ -27,10 +30,8 @@ const UnitLinkWrapper: React.FC<Props> = ({
   children,
 }) => {
   const { handleUnitClick } = useCourseOutlineSidebar();
-  const { pathname } = useLocation();
-  const isPreview = pathname.startsWith('/preview');
-  const baseUrl = `/course/${courseId}/${sequenceId}/${id}`;
-  const link = isPreview ? `/preview${baseUrl}` : baseUrl;
+  const isPreview = useIsPreview();
+  const link = getCoursewarePath(isPreview, courseId, sequenceId, id);
 
   return (
     <Link

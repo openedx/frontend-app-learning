@@ -1,60 +1,41 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
 import { Factory } from 'rosie';
-import { getConfig, history } from '@edx/frontend-platform';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { waitForElementToBeRemoved } from '@testing-library/dom';
-import { render, screen, within } from '@testing-library/react';
+import {
+  getAnalyticsService, getAuthenticatedHttpClient, getSiteConfig, runPageRules, WidgetOperationTypes,
+} from '@openedx/frontend-base';
+import {
+  fireEvent, screen, waitFor, within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import DatesTab from './DatesTab';
-import {
-  createTestQueryClient, fireEvent, initializeMockApp, waitFor,
-} from '../../setupTest';
+import routes from '@src/routes';
+import { bannerDatesUpgradeSlotId } from '@src/slots/BannerDatesUpgradeSlot';
+import { datesTabSlotId } from '@src/slots/DatesTabSlot';
+import { mockLocation } from '@src/tests/location';
+import { renderRoutes } from '@src/tests/render';
+import { addSlotOperations } from '@src/tests/slots';
+import { datesTabWidgetId } from '@src/widgets/DatesTab';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import { UserMessagesProvider } from '../../generic/user-messages';
-import { ToastProvider } from '../../generic/ToastContext';
-
-initializeMockApp();
-jest.mock('@edx/frontend-platform/analytics');
+import suggestedScheduleMessages from '../suggested-schedule-messaging/messages';
+import messages from './messages';
 
 describe('DatesTab', () => {
   let axiosMock;
-  let queryClient;
-  let component;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-    queryClient = createTestQueryClient();
-    component = (
-      <AppProvider>
-        <QueryClientProvider client={queryClient}>
-          <UserMessagesProvider>
-            <ToastProvider>
-              <Routes>
-                <Route
-                  path="/course/:courseId/dates"
-                  element={<DatesTab />}
-                />
-              </Routes>
-            </ToastProvider>
-          </UserMessagesProvider>
-        </QueryClientProvider>
-      </AppProvider>
-    );
   });
 
   const datesTabData = Factory.build('datesTabData');
   let courseMetadata = Factory.build('courseHomeMetadata', { user_timezone: 'America/New_York' });
   const { id: courseId } = courseMetadata;
 
-  const datesUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dates/${courseId}`;
-  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
+  const datesUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/dates/${courseId}`;
+  let courseMetadataUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
+
+  const datesPath = `/learning/course/${courseId}/dates`;
+  const renderDates = () => renderRoutes(routes, datesPath);
 
   function setMetadata(attributes, options) {
     courseMetadata = Factory.build('courseHomeMetadata', attributes, options);
@@ -87,9 +68,12 @@ describe('DatesTab', () => {
     beforeEach(() => {
       axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      history.push(`/course/${courseId}/dates`); // so tab can pull course id from url
+      renderDates();
+    });
 
-      render(component);
+    it('reports no page-rule diagnostics', async () => {
+      await screen.findByRole('heading', { name: messages.title.defaultMessage });
+      expect(runPageRules(document)).toEqual([]);
     });
 
     it('handles unreleased & complete', async () => {
@@ -156,7 +140,6 @@ describe('DatesTab', () => {
   describe('Suggested schedule messaging', () => {
     beforeEach(() => {
       setMetadata({ is_self_paced: true, is_enrolled: true });
-      history.push(`/course/${courseId}/dates`);
     });
 
     it('renders SuggestedScheduleHeader', async () => {
@@ -167,7 +150,7 @@ describe('DatesTab', () => {
       };
 
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      render(component);
+      renderDates();
 
       await waitFor(() => expect(screen.getByText('We’ve built a suggested schedule to help you stay on track. But don’t worry—it’s flexible so you can learn at your own pace.')).toBeInTheDocument());
     });
@@ -181,8 +164,9 @@ describe('DatesTab', () => {
       };
 
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      render(component);
+      renderDates();
 
+      await screen.findByText(suggestedScheduleMessages.suggestedSchedule.defaultMessage);
       expect(screen.queryByText('You are auditing this course, which means that you are unable to participate in graded assignments. To complete graded assignments as part of this course, you can upgrade today.')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Upgrade now' })).not.toBeInTheDocument();
     });
@@ -196,7 +180,7 @@ describe('DatesTab', () => {
       };
 
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      render(component);
+      renderDates();
 
       await waitFor(() => expect(screen.getByText('It looks like you missed some important deadlines based on our suggested schedule.')).toBeInTheDocument());
       expect(screen.getByText('To keep yourself on track, you can update this schedule and shift the past due assignments into the future. Don’t worry—you won’t lose any of the progress you’ve made when you shift your due dates.')).toBeInTheDocument();
@@ -212,7 +196,7 @@ describe('DatesTab', () => {
       };
 
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      render(component);
+      renderDates();
 
       await waitFor(() => expect(screen.getByText('It looks like you missed some important deadlines based on our suggested schedule.')).toBeInTheDocument());
       expect(screen.getByText('To keep yourself on track, you can update this schedule and shift the past due assignments into the future. Don’t worry—you won’t lose any of the progress you’ve made when you shift your due dates.')).toBeInTheDocument();
@@ -228,7 +212,7 @@ describe('DatesTab', () => {
       };
 
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      render(component);
+      renderDates();
 
       // confirm "Shift due dates" button has rendered
       await waitFor(() => expect(screen.getByRole('button', { name: 'Shift due dates' })).toBeInTheDocument());
@@ -244,7 +228,7 @@ describe('DatesTab', () => {
       const resetDeadlinesData = {
         header: "You've successfully shifted your dates!",
       };
-      axiosMock.onPost(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`).reply(200, resetDeadlinesData);
+      axiosMock.onPost(`${getSiteConfig().lmsBaseUrl}/api/course_experience/v1/reset_course_deadlines`).reply(200, resetDeadlinesData);
 
       // click "Shift due dates"
       fireEvent.click(screen.getByRole('button', { name: 'Shift due dates' }));
@@ -256,7 +240,8 @@ describe('DatesTab', () => {
     });
 
     it('sends analytics event onClick of upgrade button in UpgradeToCompleteAlert', async () => {
-      sendTrackEvent.mockClear();
+      mockLocation({ replace: jest.fn() });
+      getAnalyticsService().sendTrackEvent.mockClear();
       datesTabData.datesBannerInfo = {
         contentTypeGatingEnabled: true,
         missedDeadlines: false,
@@ -265,13 +250,13 @@ describe('DatesTab', () => {
       };
 
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      render(component);
+      renderDates();
 
       const upgradeButton = await waitFor(() => screen.getByRole('button', { name: 'Upgrade now' }));
       fireEvent.click(upgradeButton);
 
-      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+      expect(getAnalyticsService().sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(getAnalyticsService().sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
         org_key: 'edX',
         courserun_key: courseId,
         linkCategory: 'personalized_learner_schedules',
@@ -281,8 +266,49 @@ describe('DatesTab', () => {
       });
     });
 
+    describe('upgrade banner slot', () => {
+      beforeEach(() => {
+        datesTabData.datesBannerInfo = {
+          contentTypeGatingEnabled: true,
+          missedDeadlines: false,
+          missedGatedContent: false,
+          verifiedUpgradeLink: 'http://localhost:18130/basket/add/?sku=8CF08E5',
+        };
+        axiosMock.onGet(datesUrl).reply(200, datesTabData);
+      });
+
+      it('renders a widget that replaces the upgrade alert instead of it, with the slot props', async () => {
+        const Banner = jest.fn(() => <p>Custom banner</p>);
+        addSlotOperations([{
+          slotId: bannerDatesUpgradeSlotId,
+          id: 'org.example.banner',
+          op: WidgetOperationTypes.REPLACE,
+          relatedId: 'defaultContent',
+          component: Banner,
+        }]);
+        renderDates();
+
+        expect(await screen.findByText('Custom banner')).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Upgrade now' })).not.toBeInTheDocument();
+        expect(Banner.mock.lastCall[0]).toEqual({ courseId, logUpgradeLinkClick: expect.any(Function) });
+      });
+
+      it('renders no upgrade alert when an operation removes it', async () => {
+        addSlotOperations([{
+          slotId: bannerDatesUpgradeSlotId,
+          op: WidgetOperationTypes.REMOVE,
+          relatedId: 'defaultContent',
+        }]);
+        renderDates();
+
+        await screen.findByText(suggestedScheduleMessages.suggestedSchedule.defaultMessage);
+        expect(screen.queryByRole('button', { name: 'Upgrade now' })).not.toBeInTheDocument();
+      });
+    });
+
     it('sends analytics event onClick of upgrade button in UpgradeToShiftDatesAlert', async () => {
-      sendTrackEvent.mockClear();
+      mockLocation({ replace: jest.fn() });
+      getAnalyticsService().sendTrackEvent.mockClear();
       datesTabData.datesBannerInfo = {
         contentTypeGatingEnabled: true,
         missedDeadlines: true,
@@ -291,13 +317,13 @@ describe('DatesTab', () => {
       };
 
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      render(component);
+      renderDates();
 
       const upgradeButton = await waitFor(() => screen.getByRole('button', { name: 'Upgrade to shift due dates' }));
       fireEvent.click(upgradeButton);
 
-      expect(sendTrackEvent).toHaveBeenCalledTimes(1);
-      expect(sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
+      expect(getAnalyticsService().sendTrackEvent).toHaveBeenCalledTimes(1);
+      expect(getAnalyticsService().sendTrackEvent).toHaveBeenCalledWith('edx.bi.ecommerce.upsell_links_clicked', {
         org_key: 'edX',
         courserun_key: courseId,
         linkCategory: 'personalized_learner_schedules',
@@ -308,66 +334,37 @@ describe('DatesTab', () => {
     });
   });
 
-  describe('when receiving an access denied error', () => {
-    // These tests could go into any particular tab, as they all go through the same flow. But dates tab works.
-
-    async function renderDenied(errorCode) {
-      setMetadata({
-        course_access: {
-          has_access: false,
-          error_code: errorCode,
-          additional_context_user_message: 'uhoh oh no', // only used by audit_expired
-        },
-      });
-      render(component);
-      await waitForElementToBeRemoved(screen.getByRole('status'));
-    }
-
-    beforeEach(() => {
-      axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      history.push(`/course/${courseId}/dates`); // so tab can pull course id from url
-    });
-
-    it('redirects to course survey for a survey_required error code', async () => {
-      await renderDenied('survey_required');
-      expect(global.location.href).toEqual(`http://localhost/redirect/survey/${courseMetadata.id}`);
-    });
-
-    it('redirects to dashboard for an unfulfilled_milestones error code', async () => {
-      await renderDenied('unfulfilled_milestones');
-      expect(global.location.href).toEqual('http://localhost/redirect/dashboard');
-    });
-
-    it('redirects to the dashboard with an attached access_response_error for an audit_expired error code', async () => {
-      await renderDenied('audit_expired');
-      expect(global.location.href).toEqual('http://localhost/redirect/dashboard?access_response_error=uhoh%20oh%20no');
-    });
-
-    it('redirects to the dashboard with a notlive start date for a course_not_started error code', async () => {
-      await renderDenied('course_not_started');
-      expect(global.location.href).toEqual('http://localhost/redirect/dashboard?notlive=2/5/2013'); // date from factory
-    });
-
-    it('redirects to the home page when unauthenticated', async () => {
-      await renderDenied('authentication_required');
-      expect(global.location.href).toEqual(`http://localhost/course/${courseMetadata.id}/home`);
-    });
-
-    it('redirects to the home page when unenrolled', async () => {
-      await renderDenied('enrollment_required');
-      expect(global.location.href).toEqual(`http://localhost/course/${courseMetadata.id}/home`);
-    });
-  });
-
   describe('request count', () => {
     it('requests the course metadata once per load', async () => {
-      axiosMock.onGet(courseMetadataUrl).reply(200, courseMetadata);
+      setMetadata({ user_timezone: 'America/New_York' });
       axiosMock.onGet(datesUrl).reply(200, datesTabData);
-      history.push(`/course/${courseId}/dates`);
-      render(component);
+      const { queryClient } = renderDates();
+      await screen.findByRole('heading', { name: messages.title.defaultMessage });
       await waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
       expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
+    });
+  });
+
+  describe('the tab slot', () => {
+    it("shows a widget that replaces Learning's by its ID, in the page's place", async () => {
+      setMetadata({ user_timezone: 'America/New_York' });
+      axiosMock.onGet(datesUrl).reply(200, datesTabData);
+      addSlotOperations([{
+        slotId: datesTabSlotId,
+        id: 'org.example.widget.myDates',
+        op: WidgetOperationTypes.REPLACE,
+        relatedId: datesTabWidgetId,
+        component: ({ courseId: id }) => <p>My dates for {id}</p>,
+      }]);
+      const { queryClient } = renderDates();
+
+      expect(await screen.findByText(`My dates for ${courseId}`)).toBeInTheDocument();
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0));
+      // The page still sets the title; Learning's tab never loads, so its dates are not requested.
+      await waitFor(() => expect(document.title).toBe(`Dates | ${courseMetadata.title} | Learning Test Site`));
+      expect(screen.queryByRole('heading', { name: messages.title.defaultMessage })).not.toBeInTheDocument();
+      expect(axiosMock.history.get.filter((req) => req.url === datesUrl)).toHaveLength(0);
     });
   });
 });

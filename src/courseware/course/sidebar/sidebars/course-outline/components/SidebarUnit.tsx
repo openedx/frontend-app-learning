@@ -3,7 +3,7 @@ import UnitIcon, {
 } from '@src/courseware/course/sidebar/sidebars/course-outline/components/UnitIcon';
 import classNames from 'classnames';
 
-import { CourseOutlineSidebarUnitSlot } from '@src/plugin-slots/CourseOutlineSidebarUnitSlot';
+import CourseOutlineSidebarUnitSlot from '@src/slots/CourseOutlineSidebarUnitSlot';
 import UnitLinkWrapper from './UnitLinkWrapper';
 
 interface SidebarUnitProps {

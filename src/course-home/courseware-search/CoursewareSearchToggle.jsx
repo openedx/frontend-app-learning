@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Button } from '@openedx/paragon';
 import { ManageSearch } from '@openedx/paragon/icons';
 import messages from './messages';

@@ -1,13 +1,17 @@
-import { useParams } from 'react-router-dom';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import {
-  useCoursewareMetadata, useIsCourseLoaded, useSequenceIds, useSequenceMetadata,
-} from '../../../data/apiHooks';
+  useCoursewareMetadata, useIsCourseLoaded, useIsPreview, useSequenceIds, useSequenceMetadata,
+} from '@src/courseware/data/apiHooks';
+import { getCourseExitUrl, getCoursewarePath } from '@src/courseware/urls';
 import { useSidebar } from '../../sidebar/SidebarContext';
+import { useCourseId } from '@src/generic/course-params';
+
+// The links are the paths the router navigates to, under the /preview prefix while previewing.
 
 export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) {
-  const { courseId } = useParams();
+  const courseId = useCourseId();
+  const isPreview = useIsPreview();
   const sequenceIds = useSequenceIds(courseId);
   const isCourseLoaded = useIsCourseLoaded(courseId);
   const {
@@ -54,14 +58,14 @@ export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) 
 
   let nextLink;
   if (isLastUnit) {
-    nextLink = `/course/${courseId}/course-end`;
+    nextLink = getCourseExitUrl(courseId);
   } else {
     const nextIndex = unitIndex + 1;
     if (nextIndex < sequence.unitIds.length) {
       const nextUnitId = sequence.unitIds[nextIndex];
-      nextLink = `/course/${courseId}/${currentSequenceId}/${nextUnitId}`;
+      nextLink = getCoursewarePath(isPreview, courseId, currentSequenceId, nextUnitId);
     } else if (nextSequenceId) {
-      nextLink = `/course/${courseId}/${nextSequenceId}/first`;
+      nextLink = getCoursewarePath(isPreview, courseId, nextSequenceId, 'first');
     }
   }
 
@@ -69,9 +73,9 @@ export function useSequenceNavigationMetadata(currentSequenceId, currentUnitId) 
   const previousIndex = unitIndex - 1;
   if (previousIndex >= 0) {
     const previousUnitId = sequence.unitIds[previousIndex];
-    previousLink = `/course/${courseId}/${currentSequenceId}/${previousUnitId}`;
+    previousLink = getCoursewarePath(isPreview, courseId, currentSequenceId, previousUnitId);
   } else if (previousSequenceId) {
-    previousLink = `/course/${courseId}/${previousSequenceId}/last`;
+    previousLink = getCoursewarePath(isPreview, courseId, previousSequenceId, 'last');
   }
 
   return {

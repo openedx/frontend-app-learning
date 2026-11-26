@@ -1,9 +1,7 @@
-import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { breakpoints } from '@openedx/paragon';
-import {
-  fireEvent, mockCourseRequests, render, screen,
-} from '@src/setupTest';
+import { fireEvent, screen } from '@testing-library/react';
+import { render } from '@src/tests/render';
 import SidebarState from '@src/tests/SidebarState';
 import { SidebarProvider } from '../SidebarContext';
 import SidebarBase from './SidebarBase';
@@ -21,7 +19,6 @@ const defaultProps = {
 
 const stubWidget = (id) => ({
   id,
-  priority: 10,
   Sidebar: () => null,
   Trigger: () => null,
   isAvailable: () => true,
@@ -45,10 +42,6 @@ const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
 
 describe('SidebarBase', () => {
   const { innerWidth: originalInnerWidth } = window;
-
-  beforeAll(async () => {
-    mockCourseRequests();
-  });
 
   beforeEach(() => {
     window.innerWidth = breakpoints.extraExtraLarge.minWidth;

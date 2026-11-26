@@ -1,12 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { MemoryRouter } from 'react-router-dom';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { breakpoints } from '@openedx/paragon';
 
-import { createTestQueryClient, mockCourseRequests } from '@src/setupTest';
+import { mockCourseRequests } from '@src/tests/courseware';
+import { render } from '@src/tests/render';
 import SidebarState from '@src/tests/SidebarState';
 import { SidebarProvider } from '../../SidebarContext';
 import CourseOutlineTrigger from './CourseOutlineTrigger';
@@ -34,18 +31,11 @@ describe('<CourseOutlineTrigger />', () => {
 
   function renderWithProvider(props = {}) {
     const { container } = render(
-      <AppProvider wrapWithRouter={false}>
-        <QueryClientProvider client={createTestQueryClient()}>
-          <IntlProvider locale="en">
-            <MemoryRouter>
-              <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>
-                <CourseOutlineTrigger {...props} />
-                <SidebarState />
-              </SidebarProvider>
-            </MemoryRouter>
-          </IntlProvider>
-        </QueryClientProvider>
-      </AppProvider>,
+      <SidebarProvider courseId={courseId} unitId={unitId} widgets={[]}>
+        <CourseOutlineTrigger {...props} />
+        <SidebarState />
+      </SidebarProvider>,
+      { wrapWithRouter: true, courseParams: { courseId, unitId } },
     );
     return container;
   }
@@ -56,7 +46,7 @@ describe('<CourseOutlineTrigger />', () => {
     // trigger shows; clicking it opens the outline, which hides the trigger.
     window.innerWidth = breakpoints.extraExtraLarge.minWidth;
     window.sessionStorage.setItem('sidebarClosedByUser', 'true');
-    await initTestStore();
+    initTestStore();
     renderWithProvider({ isMobileView: false });
 
     expect(toggleButton()).toBeInTheDocument();
@@ -70,7 +60,7 @@ describe('<CourseOutlineTrigger />', () => {
 
   it('renders correctly for mobile when sidebar is enabled', async () => {
     const user = userEvent.setup();
-    await initTestStore();
+    initTestStore();
     renderWithProvider({ isMobileView: true });
 
     expect(toggleButton()).toBeInTheDocument();
@@ -81,9 +71,16 @@ describe('<CourseOutlineTrigger />', () => {
     expect(currentSidebar()).toBe(outlineSidebarId);
   });
 
+  it('renders nothing for the desktop trigger on a narrow viewport', () => {
+    initTestStore();
+    renderWithProvider();
+
+    expect(toggleButton()).not.toBeInTheDocument();
+  });
+
   it('changes current sidebar value on click', async () => {
     const user = userEvent.setup();
-    await initTestStore();
+    initTestStore();
     window.localStorage.setItem(`sidebar.${courseId}`, JSON.stringify(outlineSidebarId));
     renderWithProvider({ isMobileView: true });
 

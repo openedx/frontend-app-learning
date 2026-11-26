@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getConfig } from '@edx/frontend-platform';
-import { useIntl, FormattedMessage } from '@edx/frontend-platform/i18n';
-import { getLoginRedirectUrl } from '@edx/frontend-platform/auth';
+import {
+  FormattedMessage, getLoginRedirectUrl, getSiteConfig, useIntl,
+} from '@openedx/frontend-base';
 import { Alert, Button, Hyperlink } from '@openedx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-import enrollmentMessages from '../../../../alerts/enrollment-alert/messages';
+import enrollmentMessages from '../enrollment-alert/messages';
 import genericMessages from '../../../../generic/messages';
 import messages from './messages';
 import outlineMessages from '../../messages';
-import useEnrollClickHandler from '../../../../alerts/enrollment-alert/clickHook';
+import useEnrollClickHandler from '../enrollment-alert/clickHook';
 import { useCourseHomeMeta } from '../../../data/apiHooks';
 
 const PrivateCourseAlert = ({ payload }) => {
@@ -49,7 +49,7 @@ const PrivateCourseAlert = ({ payload }) => {
   const register = (
     <Hyperlink
       style={{ textDecoration: 'underline' }}
-      destination={`${getConfig().LMS_BASE_URL}/register?next=${encodeURIComponent(global.location.href)}`}
+      destination={`${getSiteConfig().lmsBaseUrl}/register?next=${encodeURIComponent(global.location.href)}`}
     >
       {intl.formatMessage(genericMessages.registerLowercase)}
     </Hyperlink>

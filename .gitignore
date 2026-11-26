@@ -1,32 +1,19 @@
-.DS_Store
-.eslintcache
-.idea
-*.swp
-*.swo
 node_modules
 npm-debug.log
 coverage
-env.config.*
-
 dist/
-src/i18n/transifex_input.json
-temp/babel-plugin-react-intl
-logs
+packages/
+/.turbo
+/turbo.json
+/*.tgz
 
-### pyenv ###
-.python-version
+### i18n ###
+src/i18n/transifex_input.json
+src/i18n/messages.ts
+src/i18n/messages/
 
 ### Editors ###
+.DS_Store
 *~
 /temp
 /.vscode
-
-# Local package dependencies
-module.config.js
-
-# Local environment overrides
-.env.private
-
-src/i18n/messages/
-
-env.config.jsx

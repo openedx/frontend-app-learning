@@ -5,7 +5,7 @@ import {
   FormattedMessage,
   FormattedRelativeTime,
   FormattedTime,
-} from '@edx/frontend-platform/i18n';
+} from '@openedx/frontend-base';
 import { Alert } from '@openedx/paragon';
 import { Info } from '@openedx/paragon/icons';
 
@@ -23,7 +23,7 @@ const CourseStartAlert = ({ payload }) => {
   const {
     start: startDate,
     userTimezone,
-  } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
+  } = useCourseHomeMeta(courseId, { enabled: false }).data;
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
 

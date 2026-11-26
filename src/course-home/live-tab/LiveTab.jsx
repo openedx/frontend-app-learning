@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 
 import { useCourseHomeMeta, useLiveTabData } from '../data/apiHooks';
 import { TabWithTimer } from '../../tab-page';
+import { CourseParamsProvider } from '../../generic/course-params';
+import LearningWidgetProviders from '../../generic/LearningWidgetProviders';
 
-const LiveTabContent = ({ html }) => {
+const LiveTabContent = ({ html = undefined }) => {
   useEffect(() => {
     const iframe = document.getElementById('lti-tab-embed');
     if (iframe) {
@@ -25,25 +26,34 @@ LiveTabContent.propTypes = {
   html: PropTypes.string,
 };
 
-LiveTabContent.defaultProps = {
-  html: undefined,
-};
-
-const LiveTab = () => {
-  const { courseId } = useParams();
-
+const LiveTabFrame = ({ courseId }) => {
   const metadataQuery = useCourseHomeMeta(courseId);
   const tabDataQuery = useLiveTabData(courseId);
 
   return (
-    <TabWithTimer
-      activeTabSlug="lti_live"
-      courseId={courseId}
-      courseStatus={{ metadataQuery, tabDataQuery }}
-    >
-      <LiveTabContent html={tabDataQuery.data?.iframe} />
-    </TabWithTimer>
+    <CourseParamsProvider courseId={courseId}>
+      <TabWithTimer
+        courseId={courseId}
+        courseStatus={{ metadataQuery, tabDataQuery }}
+      >
+        <LiveTabContent html={tabDataQuery.data?.iframe} />
+      </TabWithTimer>
+    </CourseParamsProvider>
   );
+};
+
+LiveTabFrame.propTypes = {
+  courseId: PropTypes.string.isRequired,
+};
+
+const LiveTab = ({ courseId }) => (
+  <LearningWidgetProviders>
+    <LiveTabFrame courseId={courseId} />
+  </LearningWidgetProviders>
+);
+
+LiveTab.propTypes = {
+  courseId: PropTypes.string.isRequired,
 };
 
 export default LiveTab;

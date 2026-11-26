@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import { useContext, useEffect } from 'react';
 import UserMessagesContext, { type UserMessage } from './UserMessagesContext';
 

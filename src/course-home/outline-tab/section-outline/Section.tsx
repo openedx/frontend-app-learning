@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Collapsible, IconButton } from '@openedx/paragon';
 import { Minus, Plus } from '@openedx/paragon/icons';
 
-import { useParams } from 'react-router-dom';
 import { useOutlineTabData } from '../../data/apiHooks';
 import genericMessages from '../../../generic/messages';
 import messages from '../messages';
 import SectionTitle from './SectionTitle';
 import SequenceLink from './SequenceLink';
+import { useCourseId } from '@src/generic/course-params';
 
 interface Props {
   defaultOpen: boolean;
@@ -17,7 +17,7 @@ interface Props {
     complete: boolean;
     sequenceIds: string[];
     title: string;
-    hideFromTOC: boolean;
+    hideFromTOC: boolean | null;
   };
 }
 
@@ -27,7 +27,7 @@ const Section: React.FC<Props> = ({
   section,
 }) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const {
     complete,
     sequenceIds,
@@ -58,12 +58,16 @@ const Section: React.FC<Props> = ({
         styling="card-lg"
         title={<SectionTitle {...{ complete, hideFromTOC, title }} />}
         open={open}
-        onToggle={() => { setOpen(!open); }}
+        onToggle={() => {
+          setOpen(!open);
+        }}
         iconWhenClosed={(
           <IconButton
             alt={intl.formatMessage(messages.openSection)}
             iconAs={Plus}
-            onClick={() => { setOpen(true); }}
+            onClick={() => {
+              setOpen(true);
+            }}
             size="sm"
           />
         )}
@@ -71,7 +75,9 @@ const Section: React.FC<Props> = ({
           <IconButton
             alt={intl.formatMessage(genericMessages.close)}
             iconAs={Minus}
-            onClick={() => { setOpen(false); }}
+            onClick={() => {
+              setOpen(false);
+            }}
             size="sm"
           />
         )}

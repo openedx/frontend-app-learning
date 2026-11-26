@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { Form, Card, Icon } from '@openedx/paragon';
-import { history } from '@edx/frontend-platform';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { getAuthenticatedUser, sendTrackEvent, useIntl } from '@openedx/frontend-base';
 import { Email } from '@openedx/paragon/icons';
 import messages from '../messages';
 import LearningGoalButton from './LearningGoalButton';
 import { useCourseHomeMeta, useSaveWeeklyLearningGoal } from '../../data/apiHooks';
-import './FlagButton.scss';
+import { useCourseId } from '@src/generic/course-params';
 
 const WeeklyLearningGoalCard = ({
-  daysPerWeek,
-  subscribedToReminders,
+  daysPerWeek = null,
+  subscribedToReminders = false,
 }) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
 
   const {
     isMasquerading,
@@ -29,9 +26,9 @@ const WeeklyLearningGoalCard = ({
   const saveWeeklyLearningGoal = useSaveWeeklyLearningGoal();
 
   const [daysPerWeekGoal, setDaysPerWeekGoal] = useState(daysPerWeek);
-  // eslint-disable-next-line react/prop-types
   const [isGetReminderSelected, setGetReminderSelected] = useState(subscribedToReminders);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleSelect = (days, triggeredFromEmail = false) => {
     // Set the subscription button if this is the first time selecting a goal
@@ -79,9 +76,9 @@ const WeeklyLearningGoalCard = ({
       // Deleting the weekly_goal query param as it only needs to be set once
       // whenever passed in query params.
       currentParams.delete('weekly_goal');
-      history.replace({
+      navigate({
         search: currentParams.toString(),
-      });
+      }, { replace: true, preventScrollReset: true });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
@@ -153,8 +150,4 @@ WeeklyLearningGoalCard.propTypes = {
   subscribedToReminders: PropTypes.bool,
 };
 
-WeeklyLearningGoalCard.defaultProps = {
-  daysPerWeek: null,
-  subscribedToReminders: false,
-};
 export default WeeklyLearningGoalCard;

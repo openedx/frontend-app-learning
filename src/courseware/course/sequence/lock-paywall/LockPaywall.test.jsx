@@ -1,31 +1,28 @@
-import React from 'react';
 import { Factory } from 'rosie';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { getAnalyticsService } from '@openedx/frontend-base';
+import { fireEvent, screen } from '@testing-library/react';
 
-import {
-  fireEvent, mockCourseRequests, render, screen,
-} from '../../../../setupTest';
-import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
+import { mockCourseRequests, renderInCourseware } from '@src/tests/courseware';
+import { preventNavigation } from '@src/tests/location';
 import { SidebarProvider } from '../../sidebar/SidebarContext';
 import LockPaywall from './LockPaywall';
 
-jest.mock('@edx/frontend-platform/analytics');
+const { sendTrackEvent } = getAnalyticsService();
 
 describe('Lock Paywall', () => {
-  let unitId;
+  let sequenceId;
   let defaultCourseHomeMetadata;
-  const mockData = { currentSidebar: null };
+  const mockData = {};
 
-  beforeAll(() => {
-    ({ courseId: mockData.courseId, unitId, courseHomeMetadata: defaultCourseHomeMetadata } = mockCourseRequests());
+  beforeEach(() => {
+    ({ courseId: mockData.courseId, sequenceId, courseHomeMetadata: defaultCourseHomeMetadata } = mockCourseRequests());
   });
 
-  const renderPaywall = (props, options) => render(
-    <SidebarProvider courseId={props.courseId} unitId={unitId} widgets={[]}>
-      <MountCourseQueryHooks courseId={props.courseId} />
+  const renderPaywall = (props) => renderInCourseware(
+    <SidebarProvider courseId={props.courseId} unitId={null} widgets={[]}>
       <LockPaywall {...props} />
     </SidebarProvider>,
-    { wrapWithRouter: true, ...options },
+    { courseId: props.courseId, sequenceId },
   );
 
   it('displays unlock link with price', async () => {
@@ -68,6 +65,7 @@ describe('Lock Paywall', () => {
     renderPaywall(mockData);
 
     const upgradeLink = await screen.findByRole('link', { name: `Upgrade for ${currencySymbol}${price}` });
+    preventNavigation(upgradeLink);
     fireEvent.click(upgradeLink);
 
     expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -85,6 +83,7 @@ describe('Lock Paywall', () => {
     const courseHomeMetadata = Factory.build('courseHomeMetadata', { verified_mode: null });
     mockCourseRequests({ courseHomeMetadata });
     renderPaywall({ ...mockData, courseId: courseHomeMetadata.id });
+    await screen.findByTestId('course-query-gate-open');
 
     expect(screen.queryByTestId('lock-paywall-test-id')).not.toBeInTheDocument();
   });
@@ -114,6 +113,7 @@ describe('Lock Paywall', () => {
     mockCourseRequests({ courseMetadata });
     renderPaywall({ ...mockData, courseId: courseMetadata.id });
     const courseDetailsLink = await screen.findByText('View Course Details');
+    preventNavigation(courseDetailsLink);
     fireEvent.click(courseDetailsLink);
 
     expect(sendTrackEvent).toHaveBeenCalledTimes(1);

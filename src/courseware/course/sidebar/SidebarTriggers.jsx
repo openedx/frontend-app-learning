@@ -1,27 +1,29 @@
 import classNames from 'classnames';
+import { useWidgets } from '@openedx/frontend-base';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
-import { useSidebar } from './SidebarContext';
 
+import { useSidebar } from './useSidebar';
+
+// The auxiliary sidebar trigger slot's layout: the trigger of each available sidebar widget, in the order of the panels,
+// marked while its panel is open. A trigger whose panel is gone is not a sidebar widget, so it does not render.
 const SidebarTriggers = () => {
-  const {
-    toggleSidebar,
-    currentSidebar,
-    availableSidebarIds,
-    SIDEBAR_ORDER,
-    SIDEBARS,
-  } = useSidebar();
+  const widgets = useWidgets();
+  const { currentSidebar, availableSidebarIds } = useSidebar();
 
   const { width } = useWindowSize();
   const isMobileView = width < breakpoints.small.minWidth;
 
-  if (SIDEBAR_ORDER.length === 0) {
+  const triggers = availableSidebarIds
+    .map(sidebarId => ({ sidebarId, nodes: widgets.byId(sidebarId) }))
+    .filter(({ nodes }) => nodes.length > 0);
+
+  if (triggers.length === 0) {
     return null;
   }
 
   return (
     <div className="d-flex ml-auto">
-      {SIDEBAR_ORDER.filter(id => availableSidebarIds.includes(id)).map((sidebarId) => {
-        const { Trigger } = SIDEBARS[sidebarId];
+      {triggers.map(({ sidebarId, nodes }) => {
         const isActive = sidebarId === currentSidebar;
         return (
           <div
@@ -29,7 +31,7 @@ const SidebarTriggers = () => {
             style={{ borderBottom: '2px solid', borderColor: isActive ? 'inherit' : 'transparent' }}
             key={sidebarId}
           >
-            <Trigger onClick={() => toggleSidebar(sidebarId)} />
+            {nodes}
           </div>
         );
       })}

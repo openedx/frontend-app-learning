@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 
 import { ModalDialog } from '@openedx/paragon';
-import { ContentIFrameLoaderSlot } from '../../../../plugin-slots/ContentIFrameLoaderSlot';
-import { ContentIFrameErrorSlot } from '../../../../plugin-slots/ContentIFrameErrorSlot';
+import ContentIFrameErrorSlot from '@src/slots/ContentIFrameErrorSlot';
+import ContentIFrameLoaderSlot from '@src/slots/ContentIFrameLoaderSlot';
 
 import * as hooks from './hooks';
 
@@ -25,15 +25,17 @@ export const testIDs = {
   modalIFrame: 'modal-iframe-test-id',
 };
 
+const noOnLoaded = () => {};
+
 const ContentIFrame = ({
   iframeUrl,
   shouldShowContent,
   loadingMessage,
   id,
   elementId,
-  onLoaded,
+  onLoaded = noOnLoaded,
   title,
-  courseId,
+  courseId = '',
 }) => {
   const {
     handleIFrameLoad,
@@ -67,9 +69,9 @@ const ContentIFrame = ({
     <>
       {(shouldShowContent && !hasLoaded) && (
         showError ? (
-          <ContentIFrameErrorSlot courseId={courseId} />
+          <ContentIFrameErrorSlot courseId={courseId} unitId={id} />
         ) : (
-          <ContentIFrameLoaderSlot courseId={courseId} loadingMessage={loadingMessage} />
+          <ContentIFrameLoaderSlot courseId={courseId} unitId={id} loadingMessage={loadingMessage} />
         )
       )}
       {shouldShowContent && (
@@ -114,12 +116,6 @@ ContentIFrame.propTypes = {
   onLoaded: PropTypes.func,
   title: PropTypes.node.isRequired,
   courseId: PropTypes.string,
-};
-
-ContentIFrame.defaultProps = {
-  iframeUrl: null,
-  onLoaded: () => ({}),
-  courseId: '',
 };
 
 export default ContentIFrame;

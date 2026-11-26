@@ -1,15 +1,7 @@
 import PropTypes from 'prop-types';
-import { PageWrap } from '@edx/frontend-platform/react';
+import { PageWrap } from '@openedx/frontend-base';
 import React from 'react';
-import {
-  generatePath, matchPath, useLocation, Navigate,
-} from 'react-router-dom';
-
-import { DECODE_ROUTES } from '../constants';
-
-const ROUTES = [].concat(
-  ...Object.values(DECODE_ROUTES).map(value => (Array.isArray(value) ? value : [value])),
-);
+import { useLocation, Navigate } from 'react-router-dom';
 
 export const decodeUrl = (encodedUrl) => {
   const decodedUrl = decodeURIComponent(encodedUrl);
@@ -20,29 +12,12 @@ export const decodeUrl = (encodedUrl) => {
 };
 
 const DecodePageRoute = ({ children }) => {
-  const location = useLocation();
-  let computedMatch = null;
+  const { pathname } = useLocation();
+  const newUrl = pathname.split('/').map(decodeUrl).join('/');
 
-  ROUTES.forEach((route) => {
-    const matchedRoute = matchPath(route, location.pathname);
-    if (matchedRoute) { computedMatch = matchedRoute; }
-  });
-
-  if (computedMatch) {
-    const { pathname, pattern, params } = computedMatch;
-
-    Object.keys(params).forEach((param) => {
-      // only decode params not the entire url.
-      // it is just to be safe and less prone to errors
-      params[param] = decodeUrl(params[param]);
-    });
-
-    const newUrl = generatePath(pattern.path, params);
-
-    // if the url get decoded, reroute to the decoded url
-    if (newUrl !== pathname) {
-      return <Navigate to={newUrl} replace />;
-    }
+  // if the url get decoded, reroute to the decoded url
+  if (newUrl !== pathname) {
+    return <Navigate to={newUrl} replace />;
   }
 
   return <PageWrap> {children} </PageWrap>;

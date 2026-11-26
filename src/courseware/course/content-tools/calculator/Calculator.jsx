@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Collapsible } from '@openedx/paragon';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import {
+  FormattedMessage, getAuthenticatedHttpClient, getSiteConfig, useAppConfig, useIntl,
+} from '@openedx/frontend-base';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalculator, faQuestionCircle, faTimesCircle, faEquals,
@@ -11,6 +11,7 @@ import messages from './messages';
 
 const Calculator = () => {
   const intl = useIntl();
+  const { SUPPORT_URL_CALCULATOR_MATH: supportUrlCalculatorMath } = useAppConfig();
   const [equation, setEquation] = useState('');
   const [result, setResult] = useState('');
 
@@ -21,7 +22,7 @@ const Calculator = () => {
     urlEncoded.append('equation', equation);
 
     const response = await getAuthenticatedHttpClient().get(
-      `${getConfig().LMS_BASE_URL}/calculate?${urlEncoded.toString()}`,
+      `${getSiteConfig().lmsBaseUrl}/calculate?${urlEncoded.toString()}`,
     );
     setResult(response.data.result);
   };
@@ -94,7 +95,7 @@ const Calculator = () => {
               description="Text that precedes the link which redirects to help page calculator"
               values={{
                 expressions_link: (
-                  <a href={getConfig().SUPPORT_URL_CALCULATOR_MATH}>
+                  <a href={supportUrlCalculatorMath}>
                     <FormattedMessage
                       id="calculator.instructions.support.title"
                       defaultMessage="Help Center"

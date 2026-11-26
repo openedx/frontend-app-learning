@@ -1,22 +1,16 @@
 import React, { type ReactNode } from 'react';
-import { useIntl } from '@edx/frontend-platform/i18n';
-import { Navigate } from 'react-router-dom';
+import { useIntl } from '@openedx/frontend-base';
 import type { UseQueryResult } from '@tanstack/react-query';
 
 import { Toast } from '@openedx/paragon';
-import { FooterSlot } from '@edx/frontend-component-footer';
 import { getErrorDetail } from '@src/data/http-error';
-import HeaderSlot from '../plugin-slots/HeaderSlot';
 import PageLoading from '../generic/PageLoading';
-import { getAccessDeniedRedirectUrl } from '../shared/access';
 import type { CourseHomeMeta } from '../course-home/data/api';
 import { useToast } from '../generic/ToastContext';
 
 import genericMessages from '../generic/messages';
 import messages from './messages';
-import LoadedTabPage from './LoadedTabPage';
-import LaunchCourseHomeTourButton from '../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton';
-import { TourProvider } from '../product-tours/TourContext';
+import LoadedTabPage, { type FrameContentProps } from './LoadedTabPage';
 
 // A tab hands TabPage its metadata + tab-data queries and lets TabPage derive the view; a tab
 // whose data comes from more than one query passes them as `tabDataQueries`.
@@ -27,11 +21,15 @@ export type CourseStatus = {
   | { tabDataQuery?: never; tabDataQueries: UseQueryResult[] }
 );
 
-export interface TabPageProps {
-  activeTabSlug: string;
+export interface TabPageProps extends FrameContentProps {
   courseId?: string;
   courseStatus: CourseStatus;
-  unitId?: string;
+  // Rendered once loaded, above everything else the frame renders but the toast (the outline's screen-reader-only
+  // tour button goes here).
+  aboveContent?: ReactNode;
+  // The tab shows itself to a learner denied access (the outline does). Otherwise the frame renders nothing for them:
+  // on Learning's routes, the page sends them elsewhere.
+  showWhenDenied?: boolean;
   children?: ReactNode;
 }
 
@@ -59,9 +57,15 @@ const deriveView = (courseStatus: CourseStatus): TabView => {
   if (metadataQuery.isError) {
     return { ...view, isError: true, errorDetails: getErrorDetails([metadataQuery]) };
   }
-  if (metadataQuery.isPending) { return { ...view, isLoading: true }; }
-  if (tabDataQueries.some((query) => query.isPending)) { return { ...view, isLoading: true }; }
-  if (!metadataQuery.data?.courseAccess?.hasAccess) { return { ...view, isDenied: true }; }
+  if (metadataQuery.isPending) {
+    return { ...view, isLoading: true };
+  }
+  if (tabDataQueries.some((query) => query.isPending)) {
+    return { ...view, isLoading: true };
+  }
+  if (!metadataQuery.data?.courseAccess?.hasAccess) {
+    return { ...view, isDenied: true };
+  }
   const failedQueries = tabDataQueries.filter((query) => query.isError);
   if (failedQueries.length > 0) {
     return { ...view, isError: true, errorDetails: getErrorDetails(failedQueries) };
@@ -70,35 +74,28 @@ const deriveView = (courseStatus: CourseStatus): TabView => {
 };
 
 const TabPage = ({
-  activeTabSlug,
   courseId,
   courseStatus,
-  unitId,
+  aboveContent = null,
+  showWhenDenied = false,
   children,
+  ...frameContentProps
 }: TabPageProps) => {
   const intl = useIntl();
   const { toastContent, isToastOpen, closeToast } = useToast();
-  const {
-    courseAccess,
-    number,
-    org,
-    start,
-    title,
-  }: Partial<CourseHomeMeta> = courseStatus.metadataQuery.data ?? {};
 
   const {
     isLoading, isError, isDenied, errorDetails,
   } = deriveView(courseStatus);
 
-  if (isDenied) {
-    const redirectUrl = getAccessDeniedRedirectUrl(courseId, activeTabSlug, courseAccess, start);
-    if (redirectUrl) {
-      return (<Navigate to={redirectUrl} replace />);
-    }
+  // The tab can see the course metadata before the page above it does, so a denied learner may reach the frame
+  // before the page has redirected them: render nothing for them, as the redirect did here before.
+  if (isDenied && !showWhenDenied) {
+    return null;
   }
 
-  // The page renders once metadata resolves without error — loaded, or denied without a
-  // redirect (the outline tab shows the page to denied learners).
+  // The page renders once metadata resolves without error, and for a denied learner (a failed tab-data query
+  // notwithstanding) when the tab shows itself to them.
   const shouldRenderContent = !isLoading && !isError;
 
   const renderToast = () => (
@@ -112,27 +109,16 @@ const TabPage = ({
     </Toast>
   );
 
-  // The outline page renders a visible "launch tour" button deep in the DOM; no other tab
-  // renders it. For screen-reader users we render a screen-reader-only copy above the header,
-  // where it won't be buried (a11y rationale:
-  // https://github.com/openedx/frontend-app-learning/pull/750#discussion_r755536879).
-  const renderSrOnlyTourButton = () => {
-    if (activeTabSlug !== 'outline') { return null; }
-    return (<LaunchCourseHomeTourButton srOnly />);
-  };
-
   const renderLoading = () => (
     <PageLoading srMessage={intl.formatMessage(messages.loading)} />
   );
 
   const renderLoadedTabPage = () => {
-    if (!courseId) { return null; }
+    if (!courseId) {
+      return null;
+    }
     return (
-      <LoadedTabPage
-        activeTabSlug={activeTabSlug}
-        courseId={courseId}
-        unitId={unitId}
-      >
+      <LoadedTabPage courseId={courseId} {...frameContentProps}>
         {children}
       </LoadedTabPage>
     );
@@ -148,15 +134,13 @@ const TabPage = ({
   };
 
   return (
-    <TourProvider>
+    <>
       {shouldRenderContent && renderToast()}
-      {shouldRenderContent && renderSrOnlyTourButton()}
-      <HeaderSlot courseOrg={org} courseNumber={number} courseTitle={title} />
+      {shouldRenderContent && aboveContent}
       {isLoading && renderLoading()}
       {shouldRenderContent && renderLoadedTabPage()}
       {isError && renderError()}
-      <FooterSlot />
-    </TourProvider>
+    </>
   );
 };
 

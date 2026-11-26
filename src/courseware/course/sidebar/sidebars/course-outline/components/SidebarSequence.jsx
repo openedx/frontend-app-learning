@@ -1,13 +1,11 @@
-import {
-  CourseOutlineSidebarCompletionIconSlot,
-} from '@src/plugin-slots/CourseOutlineSidebarCompletionIconSlot';
 import { useState } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Collapsible } from '@openedx/paragon';
 
 import courseOutlineMessages from '@src/course-home/outline-tab/messages';
+import CourseOutlineSidebarCompletionIconSlot from '@src/slots/CourseOutlineSidebarCompletionIconSlot';
 import { useCourseOutlineSidebar } from '../hooks';
 import SidebarUnit from './SidebarUnit';
 import { UNIT_ICON_TYPES } from './UnitIcon';
@@ -60,8 +58,8 @@ const SidebarSequence = ({
   return (
     <li>
       <Collapsible
-        className={classNames('mb-2', { 'bg-info-100': isActiveSequence && !open })}
-        styling="card-lg text-break"
+        className={classNames('mb-2 text-break', { 'bg-info-100': isActiveSequence && !open })}
+        styling="card-lg"
         title={sectionTitle}
         open={open}
         onToggle={() => setOpen(!open)}

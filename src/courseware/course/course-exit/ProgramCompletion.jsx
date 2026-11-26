@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { getConfig } from '@edx/frontend-platform';
-import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import { FormattedMessage, useAppConfig, useIntl } from '@openedx/frontend-base';
 import { Alert, Button, Hyperlink } from '@openedx/paragon';
 import certImage from '../../../generic/assets/openedx_certificate.png';
 import messages from './messages';
@@ -26,6 +25,7 @@ const ProgramCompletion = ({
   url,
 }) => {
   const intl = useIntl();
+  const { CREDENTIALS_BASE_URL: credentialsBaseUrl, SUPPORT_URL: supportUrl } = useAppConfig();
   if (!programTypes.includes(type) || progress.notStarted !== 0 || progress.inProgress !== 0) {
     return null;
   }
@@ -58,13 +58,13 @@ const ProgramCompletion = ({
               <p>
                 <Hyperlink
                   style={{ textDecoration: 'underline' }}
-                  destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/360004623154`}
+                  destination={`${supportUrl}/hc/en-us/articles/360004623154`}
                   className="text-reset"
                 >
                   {intl.formatMessage(messages.microBachelorsLearnMore)}
                 </Hyperlink>
               </p>
-              <Button variant="primary" className="mb-2 mb-sm-0" href={`${getConfig().CREDENTIALS_BASE_URL}/records`}>
+              <Button variant="primary" className="mb-2 mb-sm-0" href={`${credentialsBaseUrl}/records`}>
                 {intl.formatMessage(messages.applyForCredit)}
               </Button>
             </>
@@ -75,7 +75,7 @@ const ProgramCompletion = ({
               {' '}
               <Hyperlink
                 style={{ textDecoration: 'underline' }}
-                destination={`${getConfig().SUPPORT_URL}/hc/en-us/articles/360010346853-Does-a-Micromasters-certificate-count-towards-the-online-Master-s-degree-`}
+                destination={`${supportUrl}/hc/en-us/articles/360010346853-Does-a-Micromasters-certificate-count-towards-the-online-Master-s-degree-`}
                 className="text-reset"
               >
                 {intl.formatMessage(messages.microMastersLearnMore)}

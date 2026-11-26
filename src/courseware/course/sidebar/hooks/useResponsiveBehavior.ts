@@ -43,5 +43,7 @@ export function useResponsiveBehavior({
       setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
       setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
     }
+    // The refs and the state setter are stable; the legacy app listed only the values that change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldDisplaySidebarOpen, currentSidebar, courseId]);
 }

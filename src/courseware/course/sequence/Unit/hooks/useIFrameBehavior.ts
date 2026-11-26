@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { camelCaseObject, getConfig } from '@edx/frontend-platform';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { throttle } from 'lodash';
 
-import { logError } from '@edx/frontend-platform/logging';
+import {
+  camelCaseObject, getSiteConfig, logError, sendTrackEvent,
+} from '@openedx/frontend-base';
 
 import { courseHomeMetaQuery, usePostEvent } from '@src/course-home/data/apiHooks';
+import { useSequenceId } from '@src/generic/course-params';
 import { useEventListener } from '@src/generic/hooks';
 import { coursewareMetadataQuery, minimalCourseOutlineQuery, useSequenceMetadata } from '@src/courseware/data/apiHooks';
 import { useSequenceNavigationMetadata } from '@src/courseware/course/sequence/sequence-navigation/hooks';
-import { eventTypes, messageTypes } from '../constants';
+import { eventTypes, messageTypes, unitIFrameId } from '../constants';
 
 import useLoadBearingHook from './useLoadBearingHook';
 
@@ -33,7 +34,7 @@ const useIFrameBehavior = ({
 
   const queryClient = useQueryClient();
   const postEvent = usePostEvent();
-  const { sequenceId: activeSequenceId } = useParams();
+  const activeSequenceId = useSequenceId();
   const navigate = useNavigate();
   const activeSequence = useSequenceMetadata(activeSequenceId, { enabled: false }).data?.sequence;
   const activeUnitId = activeSequence && activeSequence.unitIds.length > 0
@@ -51,7 +52,7 @@ const useIFrameBehavior = ({
     if (hash) {
       // The url hash will be sent to LMS-served iframe in order to find the location of the
       // hash within the iframe.
-      frame?.contentWindow?.postMessage({ hashName: hash }, `${getConfig().LMS_BASE_URL}`);
+      frame?.contentWindow?.postMessage({ hashName: hash }, getSiteConfig().lmsBaseUrl);
     }
   }, [id, onLoaded, iframeHeight, hasLoaded]);
 
@@ -79,7 +80,7 @@ const useIFrameBehavior = ({
     } else if (data.offset) {
       // We listen for this message from LMS to know when the page needs to
       // be scrolled to another location on the page.
-      window.scrollTo(0, data.offset + document.getElementById('unit-iframe')!.offsetTop);
+      window.scrollTo(0, data.offset + document.getElementById(unitIFrameId)!.offsetTop);
     } else if (type === messageTypes.autoAdvance) {
       // We are listening to autoAdvance message to move to next sequence automatically.
       // In case it is the last unit we need not do anything.
@@ -113,7 +114,7 @@ const useIFrameBehavior = ({
     };
     iframeElement?.contentWindow?.postMessage(
       visibleInfo,
-      `${getConfig().LMS_BASE_URL}`,
+      getSiteConfig().lmsBaseUrl,
     );
   };
 

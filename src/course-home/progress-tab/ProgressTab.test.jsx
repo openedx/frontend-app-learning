@@ -1,59 +1,49 @@
-import React from 'react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { Factory } from 'rosie';
-import { getConfig, setConfig } from '@edx/frontend-platform';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { DIRECT_PLUGIN, PLUGIN_OPERATIONS } from '@openedx/frontend-plugin-framework';
+import {
+  getAnalyticsService, getAppConfig, getAuthenticatedHttpClient, getLocale, getSiteConfig, mergeAppConfig,
+  runPageRules, setAuthenticatedUser, WidgetOperationTypes,
+} from '@openedx/frontend-base';
 import { breakpoints } from '@openedx/paragon';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { render } from '@testing-library/react';
+import {
+  act, fireEvent, screen, waitFor, within,
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import MockAdapter from 'axios-mock-adapter';
 
-import {
-  createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, within, act, waitFor,
-} from '../../setupTest';
+import { appId } from '@src/constants';
+import { coursewareMetadataQuery } from '@src/courseware/data/apiHooks';
+import routes from '@src/routes';
+import { progressTabCourseGradeSlotId } from '@src/slots/ProgressTabCourseGradeSlot';
+import { authenticatedUser } from '@src/tests/authenticatedUser';
+import { mockLocation, preventNavigation } from '@src/tests/location';
+import { seedQueryData } from '@src/tests/queryClient';
+import { renderRoutes } from '@src/tests/render';
+import { addSlotOperations } from '@src/tests/slots';
 import { appendBrowserTimezoneToUrl } from '../../utils';
-import ProgressTab from './ProgressTab';
-import { useExamsData } from './hooks';
-import { UserMessagesProvider } from '../../generic/user-messages';
-import { ToastProvider } from '../../generic/ToastContext';
 import messages from './grades/messages';
+import { useExamsData } from './hooks';
 
-const mockCoursewareSearchParams = jest.fn();
-
-initializeMockApp();
-jest.unmock('@openedx/frontend-plugin-framework');
-jest.mock('@edx/frontend-platform/analytics');
-jest.mock('../courseware-search/hooks', () => ({
-  ...jest.requireActual('../courseware-search/hooks'),
-  useCoursewareSearchParams: () => mockCoursewareSearchParams,
-}));
-
-const coursewareSearch = {
-  query: '',
-  filter: '',
-  setQuery: jest.fn(),
-  setFilter: jest.fn(),
-  clearSearchParams: jest.fn(),
-};
-
-const mockSearchParams = ((props = coursewareSearch) => {
-  mockCoursewareSearchParams.mockReturnValue(props);
+jest.mock('@openedx/frontend-base', () => {
+  const actual = jest.requireActual('@openedx/frontend-base');
+  return { ...actual, getLocale: jest.fn(actual.getLocale) };
 });
+
+const { sendTrackEvent } = getAnalyticsService();
 
 describe('Progress Tab', () => {
   let axiosMock;
+  let router;
 
   const defaultMetadata = Factory.build('courseHomeMetadata');
   const defaultTabData = Factory.build('progressTabData');
 
   const courseId = defaultMetadata.id;
-  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
+  let courseMetadataUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-  const progressUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/progress/*`);
-  const masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
+  const progressUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/course_home/progress/*`);
+  const masqueradeUrl = `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/masquerade`;
+  const datesUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/dates/${courseId}`;
+  const coursewareMetadataUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/courseware/course/*`);
   const now = new Date();
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
   const overmorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
@@ -65,31 +55,32 @@ describe('Progress Tab', () => {
 
   function setTabData(attributes, options) {
     const progressTabData = Factory.build('progressTabData', attributes, options);
+    // The detailed grades require a block key and problem scores of every subsection; a case's own subsections may leave them out.
+    progressTabData.section_scores = progressTabData.section_scores.map((section, sectionIndex) => ({
+      ...section,
+      subsections: section.subsections.map((subsection, index) => ({
+        block_key: `block-v1:edX+DemoX+Demo_Course+type@sequential+block@${sectionIndex}-${index}`,
+        problem_scores: [],
+        ...subsection,
+      })),
+    }));
     axiosMock.onGet(progressUrl).reply(200, progressTabData);
   }
 
-  async function fetchAndRender(initialEntry = `/course/${courseId}/progress`, { waitForLoaded = true } = {}) {
-    const queryClient = createTestQueryClient();
-    await act(async () => render(
-      <AppProvider wrapWithRouter={false}>
-        <MemoryRouter initialEntries={[initialEntry]}>
-          <QueryClientProvider client={queryClient}>
-            <UserMessagesProvider>
-              <ToastProvider>
-                <Routes>
-                  <Route path="/course/:courseId/progress/:targetUserId?" element={<ProgressTab />} />
-                </Routes>
-              </ToastProvider>
-            </UserMessagesProvider>
-          </QueryClientProvider>
-        </MemoryRouter>
-      </AppProvider>,
-    ));
+  const progressPath = `/learning/course/${courseId}/progress`;
+
+  async function fetchAndRender(path = progressPath, { waitForLoaded = true } = {}) {
+    const { queryClient, router: renderedRouter } = renderRoutes(routes, path);
+    router = renderedRouter;
     if (waitForLoaded) {
+      await screen.findByRole('heading', { level: 1 });
       await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
     }
     return queryClient;
   }
+
+  // The lazy route's first load compiles the whole page, which can outlast findBy's timeout.
+  beforeAll(() => import('./ProgressTab'));
 
   beforeEach(async () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
@@ -98,15 +89,17 @@ describe('Progress Tab', () => {
     axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
     axiosMock.onGet(progressUrl).reply(200, defaultTabData);
     axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
-
-    // Mock courseware search params
-    mockSearchParams();
-
-    logUnhandledRequests(axiosMock);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('page rules', () => {
+    it.each([progressPath, `${progressPath}/10`])('reports no page-rule diagnostics at %s', async (path) => {
+      await fetchAndRender(path);
+      expect(runPageRules(document)).toEqual([]);
+    });
   });
 
   describe('Related links', () => {
@@ -120,6 +113,7 @@ describe('Progress Tab', () => {
 
       const relatedLinks = within(screen.getByRole('heading', { name: 'Related links' }).closest('section'));
       const datesTabLink = relatedLinks.getByRole('link', { name: 'Dates' });
+      preventNavigation(datesTabLink);
       fireEvent.click(datesTabLink);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -136,6 +130,7 @@ describe('Progress Tab', () => {
       sendTrackEvent.mockClear();
 
       const outlineTabLink = screen.getAllByRole('link', { name: 'Course outline' });
+      preventNavigation(outlineTabLink[1]);
       fireEvent.click(outlineTabLink[1]); // outlineTabLink[0] corresponds to the link in the DetailedGrades component
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -298,7 +293,7 @@ describe('Progress Tab', () => {
       await fetchAndRender();
       const tooltip = await screen.getByRole('button', { name: 'Grade range tooltip' });
       fireEvent.click(tooltip);
-      expect(screen.getByText('Grade ranges for this course:'));
+      expect(await screen.findByText('Grade ranges for this course:'));
       expect(screen.getByText('A: 90%-100%'));
       expect(screen.getByText('B: 80%-90%'));
       expect(screen.getByText('F: <80%'));
@@ -388,6 +383,7 @@ describe('Progress Tab', () => {
       expect(screen.getByText('Unlock to view grades and work towards a certificate.')).toBeInTheDocument();
 
       const upgradeButton = screen.getAllByRole('link', { name: 'Upgrade now' })[0];
+      preventNavigation(upgradeButton);
       fireEvent.click(upgradeButton);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(2);
@@ -622,10 +618,7 @@ describe('Progress Tab', () => {
 
     it('renders both graded and ungraded subsections when SHOW_UNGRADED_ASSIGNMENT_PROGRESS is true', async () => {
       // The second assignment has has_graded_assignment set to false.
-      setConfig({
-        ...getConfig(),
-        SHOW_UNGRADED_ASSIGNMENT_PROGRESS: true,
-      });
+      mergeAppConfig(appId, { SHOW_UNGRADED_ASSIGNMENT_PROGRESS: true });
 
       setTabData({
         section_scores: [
@@ -672,10 +665,7 @@ describe('Progress Tab', () => {
       expect(screen.getByText('Second subsection')).toBeInTheDocument();
 
       // reset config for other tests
-      setConfig({
-        ...getConfig(),
-        SHOW_UNGRADED_ASSIGNMENT_PROGRESS: false,
-      });
+      act(() => mergeAppConfig(appId, { SHOW_UNGRADED_ASSIGNMENT_PROGRESS: false }));
     });
   });
 
@@ -894,6 +884,7 @@ describe('Progress Tab', () => {
       expect(screen.getByText('Detailed grades')).toBeInTheDocument();
 
       const subsectionLink = screen.getByRole('link', { name: 'First subsection' });
+      preventNavigation(subsectionLink);
       fireEvent.click(subsectionLink);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -911,6 +902,7 @@ describe('Progress Tab', () => {
       expect(screen.getByText('Detailed grades')).toBeInTheDocument();
 
       const outlineLink = screen.getAllByRole('link', { name: 'Course outline' })[0];
+      preventNavigation(outlineLink);
       fireEvent.click(outlineLink);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -1077,6 +1069,7 @@ describe('Progress Tab', () => {
         });
 
         const idVerificationLink = screen.getByRole('link', { name: 'Verify ID' });
+        preventNavigation(idVerificationLink);
         fireEvent.click(idVerificationLink);
 
         expect(sendTrackEvent).toHaveBeenCalledTimes(2);
@@ -1150,6 +1143,7 @@ describe('Progress Tab', () => {
         });
 
         const viewCertificateLink = screen.getByRole('link', { name: 'View my certificate' });
+        preventNavigation(viewCertificateLink);
         fireEvent.click(viewCertificateLink);
 
         expect(sendTrackEvent).toHaveBeenCalledTimes(2);
@@ -1254,6 +1248,7 @@ describe('Progress Tab', () => {
         });
 
         const upgradeLink = screen.getByRole('link', { name: 'Upgrade now' });
+        preventNavigation(upgradeLink);
         fireEvent.click(upgradeLink);
 
         expect(sendTrackEvent).toHaveBeenCalledTimes(3);
@@ -1459,8 +1454,8 @@ describe('Progress Tab', () => {
         },
       });
       await fetchAndRender();
-      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
-      expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
+      // The banner is loaded lazily, so it can arrive after the page has rendered.
+      expect(await screen.findByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
     });
     it('does not render banner when not masquerading', async () => {
@@ -1483,8 +1478,9 @@ describe('Progress Tab', () => {
           masquerading_expired_course: true,
         },
       });
-      await fetchAndRender(`/course/${courseId}/progress/10/`);
-      expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
+      await fetchAndRender(`${progressPath}/10`);
+      // The banner is loaded lazily, so it can arrive after the page has rendered.
+      expect(await screen.findByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
     });
   });
@@ -1498,8 +1494,8 @@ describe('Progress Tab', () => {
         start: '2999-01-01T00:00:00Z',
       });
       await fetchAndRender();
-      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
-      expect(screen.getByText('This learner does not yet have access to this course. The course starts on', { exact: false })).toBeInTheDocument();
+      // The banner is loaded lazily, so it can arrive after the page has rendered.
+      expect(await screen.findByText('This learner does not yet have access to this course. The course starts on', { exact: false })).toBeInTheDocument();
       expect(screen.getByText('1/1/2999', { exact: false })).toBeInTheDocument();
     });
     it('does not render banner when not masquerading', async () => {
@@ -1520,52 +1516,92 @@ describe('Progress Tab', () => {
       setMetadata({ is_enrolled: true });
       setTabData({ username: 'otherstudent' });
 
-      await fetchAndRender(`/course/${courseId}/progress/10/`);
+      await fetchAndRender(`${progressPath}/10`);
 
       expect(screen.getByText('Course progress for otherstudent')).toBeInTheDocument();
     });
   });
 
-  describe('exam attempt data for plugins', () => {
-    const slotId = 'org.openedx.frontend.learning.progress_tab_course_grade.v1';
-    const blockKey = (name) => `block-v1:edX+DemoX+Demo_Course+type@sequential+block@${name}`;
-    const ExamsDataPlugin = () => {
-      const examsData = useExamsData();
-      return <div data-testid="exams-data-plugin">{examsData ? examsData.map((exam) => exam.examName ?? '-').join(',') : 'null'}</div>;
-    };
+  describe('Entrance exam status', () => {
+    const paths = [progressPath, `${progressPath}/10`];
 
-    let originalConfig;
+    beforeAll(() => {
+      global.innerWidth = breakpoints.large.minWidth;
+    });
 
     beforeEach(() => {
-      originalConfig = getConfig();
-      setConfig({
-        ...originalConfig,
-        pluginSlots: {
-          [slotId]: {
-            plugins: [{
-              op: PLUGIN_OPERATIONS.Insert,
-              widget: { id: 'exams_data_plugin', type: DIRECT_PLUGIN, RenderWidget: ExamsDataPlugin },
-            }],
-          },
-        },
+      setMetadata({ is_enrolled: true });
+    });
+
+    it.each(paths)('requests no courseware metadata at %s', async (path) => {
+      await fetchAndRender(path);
+
+      expect(axiosMock.history.get.filter(({ url }) => coursewareMetadataUrl.test(url))).toHaveLength(0);
+    });
+
+    it.each(paths)('shows the certificate card at %s when the query cache holds a failed entrance exam', async (path) => {
+      const queryClient = await fetchAndRender(path, { waitForLoaded: false });
+      seedQueryData(queryClient, coursewareMetadataQuery(courseId).queryKey, {
+        entranceExamData: { entranceExamEnabled: true, entranceExamPassed: false },
       });
-      axiosMock.reset();
-      axiosMock.onGet(courseMetadataUrl).reply(200, defaultMetadata);
-      axiosMock.onGet(progressUrl).reply(200, defaultTabData);
-      axiosMock.onGet(masqueradeUrl).reply(200, { success: true });
+
+      expect(await screen.findByTestId('certificate-status-component')).toBeInTheDocument();
+    });
+  });
+
+  describe('course grade slot', () => {
+    it('renders a widget that replaces the course grade instead of it, with the course ID', async () => {
+      const Grade = jest.fn(() => <p>Custom grade</p>);
+      addSlotOperations([{
+        slotId: progressTabCourseGradeSlotId,
+        id: 'org.example.grade',
+        op: WidgetOperationTypes.REPLACE,
+        relatedId: 'defaultContent',
+        component: Grade,
+      }]);
+      await fetchAndRender();
+
+      expect(screen.getByText('Custom grade')).toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: 'Grades' })).not.toBeInTheDocument();
+      expect(Grade.mock.lastCall[0]).toEqual({ courseId });
+    });
+
+    it('renders no course grade when an operation removes it', async () => {
+      addSlotOperations([{
+        slotId: progressTabCourseGradeSlotId,
+        op: WidgetOperationTypes.REMOVE,
+        relatedId: 'defaultContent',
+      }]);
+      await fetchAndRender();
+
+      expect(screen.getByText('Grade summary')).toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: 'Grades' })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('exam attempt data for widgets', () => {
+    const blockKey = (name) => `block-v1:edX+DemoX+Demo_Course+type@sequential+block@${name}`;
+    const ExamsDataWidget = () => {
+      const examsData = useExamsData();
+      return <div data-testid="exams-data-widget">{examsData ? examsData.map((exam) => exam.examName ?? '-').join(',') : 'null'}</div>;
+    };
+    const attemptRequests = () => axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'));
+
+    beforeEach(() => {
       axiosMock.onGet(/exam1/).reply(200, { exam: { id: 1, exam_name: 'Midterm' } });
       axiosMock.onGet(/homework1/).reply(() => Promise.reject(Object.assign(new Error('Request failed with status code 404'), {
         response: { status: 404, data: {} },
         customAttributes: { httpErrorStatus: 404 },
       })));
-      logUnhandledRequests(axiosMock);
     });
 
-    afterEach(() => {
-      setConfig(originalConfig);
-    });
-
-    it('lets a slot plugin read one entry per subsection, fetched only because the plugin asked', async () => {
+    it('lets a slot widget read one entry per subsection, fetched only because the widget asked', async () => {
+      addSlotOperations([{
+        slotId: progressTabCourseGradeSlotId,
+        id: 'org.example.examsData',
+        op: WidgetOperationTypes.APPEND,
+        component: ExamsDataWidget,
+      }]);
       setTabData({
         section_scores: [
           { display_name: 'Section', subsections: [{ block_key: blockKey('exam1') }, { block_key: blockKey('homework1') }] },
@@ -1574,12 +1610,11 @@ describe('Progress Tab', () => {
 
       await fetchAndRender();
 
-      await waitFor(() => expect(screen.getByTestId('exams-data-plugin')).toHaveTextContent('Midterm,-'));
-      expect(axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'))).toHaveLength(2);
+      await waitFor(() => expect(screen.getByTestId('exams-data-widget')).toHaveTextContent('Midterm,-'));
+      expect(attemptRequests()).toHaveLength(2);
     });
 
-    it('makes no attempt requests when no plugin reads the data', async () => {
-      setConfig(originalConfig);
+    it('makes no attempt requests when no widget reads the data', async () => {
       setTabData({
         section_scores: [{ display_name: 'Section', subsections: [{ block_key: blockKey('exam1') }] }],
       });
@@ -1587,7 +1622,7 @@ describe('Progress Tab', () => {
       await fetchAndRender();
 
       expect(screen.getByText('Grades')).toBeInTheDocument();
-      expect(axiosMock.history.get.filter((req) => req.url.includes('/exam/attempt/'))).toHaveLength(0);
+      expect(attemptRequests()).toHaveLength(0);
     });
   });
 
@@ -1606,12 +1641,11 @@ describe('Progress Tab', () => {
       expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
     });
 
-    it('requests the progress data once per load with the instructor toolbar mounted', async () => {
+    it('requests the progress data once per load for staff, with the masquerade banners mounted', async () => {
       setMetadata({ original_user_is_staff: true });
       const queryClient = await fetchAndRender();
       await waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
-      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(axiosMock.history.get.filter((req) => progressUrl.test(req.url))).toHaveLength(1);
       expect(axiosMock.history.get.filter((req) => req.url.includes('/api/course_home/outline/'))).toHaveLength(0);
     });
@@ -1619,22 +1653,357 @@ describe('Progress Tab', () => {
 
   describe('when the progress request 404s', () => {
     it('redirects to the legacy progress page and shows the loading indicator meanwhile', async () => {
-      // jsdom's location.replace is non-configurable, so we swap the whole location for the
-      // duration of this test (restored in finally so it can never bleed into another test).
-      const originalLocation = window.location;
-      const replace = jest.fn();
-      Object.defineProperty(window, 'location', { configurable: true, value: { replace } });
-      try {
-        axiosMock.onGet(progressUrl).reply(404, {});
+      const { replace } = mockLocation({ replace: jest.fn() });
+      axiosMock.onGet(progressUrl).reply(404, {});
 
-        await fetchAndRender(`/course/${courseId}/progress`, { waitForLoaded: false });
+      await fetchAndRender(progressPath, { waitForLoaded: false });
 
-        await waitFor(() => expect(replace).toHaveBeenCalledWith(`${getConfig().LMS_BASE_URL}/courses/${courseId}/progress`));
-        expect(screen.getByRole('status')).toBeInTheDocument();
-        expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
-      } finally {
-        Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
-      }
+      await waitFor(() => expect(replace).toHaveBeenCalledWith(`${getSiteConfig().lmsBaseUrl}/courses/${courseId}/progress`));
+      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Progress header', () => {
+    afterEach(() => {
+      setAuthenticatedUser(authenticatedUser);
+    });
+
+    it('links an administrator to the grading settings in Studio', async () => {
+      setAuthenticatedUser({ ...authenticatedUser, administrator: true });
+      await fetchAndRender();
+      expect(screen.getByRole('link', { name: 'View grading in Studio' })).toHaveAttribute('href', defaultTabData.studio_url);
+    });
+  });
+
+  describe('Course completion', () => {
+    const segments = () => screen.getByText('completed').closest('svg').querySelectorAll('.donut-segment-group');
+
+    it.each([
+      ['incomplete', 0, 'Content that you have access to and have not completed.'],
+      ['locked', 1, 'Content that is locked and available only to those who upgrade.'],
+      ['complete', 2, 'Content that you have completed.'],
+    ])('explains the %s segment of the chart while it has focus', async (_name, index, explanation) => {
+      setTabData({ completion_summary: { complete_count: 3, incomplete_count: 5, locked_count: 2 } });
+      await fetchAndRender();
+      const segment = segments()[index];
+
+      expect(screen.queryByText(explanation)).not.toBeInTheDocument();
+      fireEvent.focus(segment);
+      expect(await screen.findByText(explanation)).toBeInTheDocument();
+      fireEvent.blur(segment);
+      await waitFor(() => expect(screen.queryByText(explanation)).not.toBeInTheDocument());
+    });
+
+    it('draws only the complete segment when all content is complete', async () => {
+      setTabData({ completion_summary: { complete_count: 2, incomplete_count: 0, locked_count: 0 } });
+      await fetchAndRender();
+
+      expect(screen.getByText('You have completed 100% of content in this course.', { exact: false })).toBeInTheDocument();
+      expect(segments()).toHaveLength(1);
+      expect(segments()[0].querySelector('.complete-stroke')).toBeInTheDocument();
+    });
+
+    it('draws only the incomplete segment when no content is complete', async () => {
+      setTabData({ completion_summary: { complete_count: 0, incomplete_count: 2, locked_count: 0 } });
+      await fetchAndRender();
+
+      expect(screen.getByText('You have completed 0% of content in this course.', { exact: false })).toBeInTheDocument();
+      expect(segments()).toHaveLength(1);
+      expect(segments()[0].querySelector('.incomplete-stroke')).toBeInTheDocument();
+    });
+
+    it('hides the lock icon in a locked segment too thin to hold it', async () => {
+      setTabData({ completion_summary: { complete_count: 12, incomplete_count: 12, locked_count: 1 } });
+      await fetchAndRender();
+
+      expect(screen.getByText('4% of content in this course is locked and available only for those who upgrade.', { exact: false })).toBeInTheDocument();
+      expect(segments()[1].querySelector('path')).toHaveAttribute('fill', 'transparent');
+    });
+  });
+
+  describe('Related links and subsection titles', () => {
+    it('links to the dates and outline tabs of this course', async () => {
+      await fetchAndRender();
+
+      const relatedLinks = within(screen.getByRole('heading', { name: 'Related links' }).closest('section'));
+      expect(relatedLinks.getByRole('link', { name: 'Dates' })).toHaveAttribute('href', `/learning/course/${courseId}/dates`);
+      expect(relatedLinks.getByRole('link', { name: 'Course outline' })).toHaveAttribute('href', `/learning/course/${courseId}/home`);
+    });
+
+    it('links a subsection title to its sequence in this course', async () => {
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'First subsection' })).toHaveAttribute(
+        'href',
+        `/learning/course/${courseId}/block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345`,
+      );
+    });
+
+    it('opens the dates tab in the site from the dates link', async () => {
+      axiosMock.onGet(datesUrl).reply(200, Factory.build('datesTabData'));
+      await fetchAndRender();
+
+      const relatedLinks = within(screen.getByRole('heading', { name: 'Related links' }).closest('section'));
+      fireEvent.click(relatedLinks.getByRole('link', { name: 'Dates' }));
+
+      expect(await screen.findByRole('heading', { name: 'Important dates' })).toBeInTheDocument();
+      expect(router.state.location.pathname).toBe(`/learning/course/${courseId}/dates`);
+    });
+
+    it('labels the problem scores of an ungraded subsection as practice scores', async () => {
+      const user = userEvent.setup();
+      mergeAppConfig(appId, { SHOW_UNGRADED_ASSIGNMENT_PROGRESS: 'true' });
+      const [firstSection] = defaultTabData.section_scores;
+      setTabData({
+        section_scores: [
+          { ...firstSection, subsections: [{ ...firstSection.subsections[0], has_graded_assignment: false }] },
+        ],
+      });
+      await fetchAndRender();
+
+      await user.click(screen.getByRole('button', { name: 'Toggle individual problem scores for First subsection' }));
+      expect(screen.getAllByText('Practice Scores:').length).toBeGreaterThan(1);
+
+      act(() => mergeAppConfig(appId, { SHOW_UNGRADED_ASSIGNMENT_PROGRESS: false }));
+    });
+  });
+
+  describe('Credit requirements', () => {
+    const creditRequirement = (attributes) => ({
+      namespace: 'proctored_exam',
+      name: 'i4x://edX/DemoX/proctoring-block/final_uuid',
+      display_name: 'Proctored Mid Term Exam',
+      criteria: {},
+      reason: {},
+      status: 'satisfied',
+      status_date: '2015-06-26 11:07:42',
+      order: 1,
+      ...attributes,
+    });
+    const eligibilitySentence = () => screen.getByRole('heading', { name: 'Requirements for course credit' }).nextElementSibling;
+
+    it.each([
+      ['not_eligible', 'You are no longer eligible for credit in this course. Learn more about course credit.'],
+      ['partial_eligible', 'You have not yet met the requirements for credit. Learn more about course credit.'],
+      ['some_other_status', ''],
+    ])('explains the %s eligibility status', async (eligibilityStatus, sentence) => {
+      setTabData({ credit_course_requirements: { eligibility_status: eligibilityStatus, requirements: [] } });
+      await fetchAndRender();
+
+      expect(eligibilitySentence()).toHaveTextContent(sentence, { normalizeWhitespace: true });
+      expect(eligibilitySentence().textContent).toBe(sentence);
+    });
+
+    it('links course credit to CREDIT_HELP_LINK_URL from the app config', async () => {
+      setTabData({ credit_course_requirements: { eligibility_status: 'not_eligible', requirements: [] } });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'course credit' }))
+        .toHaveAttribute('href', getAppConfig(appId).CREDIT_HELP_LINK_URL);
+    });
+
+    it.each([
+      ['submitted', 'Verification submitted'],
+      ['failed', 'Verification failed'],
+      ['declined', 'Verification failed'],
+      ['satisfied', 'Completed'],
+      [null, 'Upcoming'],
+    ])('reports a requirement with status %s', async (status, statusText) => {
+      setTabData({
+        credit_course_requirements: { eligibility_status: 'partial_eligible', requirements: [creditRequirement({ status })] },
+      });
+      await fetchAndRender();
+
+      expect(screen.getByText('Proctored Mid Term Exam:').nextElementSibling).toHaveTextContent(statusText);
+    });
+  });
+
+  describe('Grade summary percentages', () => {
+    const assignmentType = (attributes) => ({
+      type: 'Homework',
+      short_label: 'HW',
+      weight: 1,
+      average_grade: 1,
+      weighted_grade: 1,
+      num_droppable: 0,
+      num_total: 2,
+      has_hidden_contribution: 'none',
+      last_grade_publish_date: null,
+      ...attributes,
+    });
+
+    it('shows two decimals for a grade that is not a whole percent', async () => {
+      setTabData({
+        assignment_type_grade_summary: [assignmentType({ average_grade: 0.3333, weighted_grade: 0.1667, weight: 0.5 })],
+      });
+      await fetchAndRender();
+
+      const row = within(screen.getByRole('row', { name: /Homework/ }));
+      expect(row.getByText('50%')).toBeInTheDocument();
+      expect(row.getByText('33.33%')).toBeInTheDocument();
+      expect(row.getByText('16.67%')).toBeInTheDocument();
+    });
+
+    it('decides an assignment type is locked from its graded subsections that carry points', async () => {
+      const subsection = (attributes) => ({ ...defaultTabData.section_scores[0].subsections[0], ...attributes });
+      setTabData({
+        section_scores: [{
+          display_name: 'First section',
+          subsections: [
+            subsection({
+              display_name: 'Locked with points earned', learner_has_access: false, num_points_earned: 2, num_points_possible: 0,
+            }),
+            subsection({ display_name: 'Open without points', num_points_earned: 0, num_points_possible: 0 }),
+            subsection({ display_name: 'Open but ungraded', has_graded_assignment: false }),
+            subsection({ display_name: 'Open of another type', assignment_type: 'Exam' }),
+          ],
+        }],
+      });
+      await fetchAndRender();
+
+      expect(screen.getByText('You have limited access to graded assignments as part of the audit track in this course.', { exact: false })).toBeInTheDocument();
+      expect(screen.getByText('Locked with points earned')).toBeInTheDocument();
+      expect(screen.queryByText('Open without points')).not.toBeInTheDocument();
+      expect(screen.queryByText('Open but ungraded')).not.toBeInTheDocument();
+      expect(screen.getByText('Open of another type')).toBeInTheDocument();
+    });
+
+    it('names a footnote after the assignment type when the type has no short label', async () => {
+      setTabData({
+        assignment_type_grade_summary: [assignmentType({ short_label: null, num_droppable: 1 })],
+      });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: '1' })).toHaveAttribute('href', '#Homework-footnote');
+    });
+
+    it('shows the raw weighted grade with two decimals in the summary tooltip', async () => {
+      const user = userEvent.setup();
+      setTabData({ final_grades: 0.8349, course_grade: { is_passing: true, letter_grade: 'pass', percent: 0.83 } });
+      await fetchAndRender();
+
+      const summary = screen.getByText('Your current weighted grade summary');
+      await user.hover(summary.querySelector('[alt="Grade summary tooltip"]'));
+      expect(await screen.findByText('Your raw weighted grade summary is 83.49 and rounds to 83.')).toBeInTheDocument();
+    });
+  });
+
+  describe('Grade bar', () => {
+    it('closes the grade range tooltip when its button loses focus', async () => {
+      const user = userEvent.setup();
+      setTabData({
+        grading_policy: { ...defaultTabData.grading_policy, grade_range: { A: 0.9, B: 0.8 } },
+      });
+      await fetchAndRender();
+
+      await user.click(screen.getByRole('button', { name: 'Grade range tooltip' }));
+      expect(await screen.findByText('Grade ranges for this course:')).toBeInTheDocument();
+      await user.tab();
+      await waitFor(() => expect(screen.queryByText('Grade ranges for this course:')).not.toBeInTheDocument());
+    });
+  });
+
+  describe('Certificate status card', () => {
+    beforeEach(() => {
+      sendTrackEvent.mockClear();
+    });
+
+    it('shows a downloadable certificate to a learner without a passing grade', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({ certificate_data: { cert_status: 'downloadable', cert_web_view_url: '/certificates/abc' } });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'View my certificate' }))
+        .toHaveAttribute('href', `${getSiteConfig().lmsBaseUrl}/certificates/abc`);
+    });
+
+    it('shows a downloadable certificate without a button when it has no web view', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({ certificate_data: { cert_status: 'downloadable' }, user_has_passing_grade: true });
+      await fetchAndRender();
+
+      const certificateStatus = within(screen.getByTestId('certificate-status-component'));
+      expect(certificateStatus.getByText('Showcase your accomplishment on LinkedIn', { exact: false })).toBeInTheDocument();
+      expect(certificateStatus.queryByRole('link')).not.toBeInTheDocument();
+      expect(certificateStatus.queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    it('shows no card to a passing learner with no certificate data once certificates can be viewed', async () => {
+      setMetadata({ is_enrolled: true, can_view_certificate: true });
+      setTabData({ certificate_data: undefined, user_has_passing_grade: true });
+      await fetchAndRender();
+
+      expect(screen.queryByTestId('certificate-status-component')).not.toBeInTheDocument();
+      expect(sendTrackEvent).toHaveBeenCalledWith('edx.ui.lms.course_progress.visited', expect.objectContaining({
+        certificate_status_variant: 'no_certificate_status',
+      }));
+    });
+
+    it('renders the card in the main column on a screen narrower than the large breakpoint', async () => {
+      const wideWidth = global.innerWidth;
+      global.innerWidth = breakpoints.large.minWidth - 1;
+      setMetadata({ is_enrolled: true });
+      await fetchAndRender();
+
+      const mainColumn = screen.getByRole('heading', { name: 'Grades' }).closest('.col-md-8');
+      expect(within(mainColumn).getByTestId('certificate-status-component')).toBeInTheDocument();
+      expect(screen.getAllByTestId('certificate-status-component')).toHaveLength(1);
+
+      global.innerWidth = wideWidth;
+    });
+  });
+
+  describe('in a right-to-left locale', () => {
+    beforeEach(() => {
+      getLocale.mockReturnValue('ar');
+    });
+
+    afterEach(() => {
+      getLocale.mockImplementation(jest.requireActual('@openedx/frontend-base').getLocale);
+    });
+
+    it('marks every percentage as right-to-left and mirrors the grade bar', async () => {
+      const user = userEvent.setup();
+      setTabData({
+        assignment_type_grade_summary: [{
+          ...defaultTabData.assignment_type_grade_summary[0],
+          has_hidden_contribution: 'some',
+        }],
+      });
+      await fetchAndRender();
+
+      // The completion chart: 1 of 2 units complete.
+      expect(screen.getByText('50\u200f%')).toBeInTheDocument();
+      // The grade bar: a current grade of 100% and a passing grade of 75%, measured from the right.
+      expect(screen.getByTestId('currentGradeTooltipContent')).toHaveTextContent('100\u200f%');
+      expect(screen.getByText('75\u200f%')).toBeInTheDocument();
+      expect(screen.getByText('Passing grade', { selector: 'text' })).toHaveAttribute('x', '25%');
+      expect(screen.getByText('Passing grade', { selector: 'text' })).toHaveStyle({ transform: 'translateX(3.4em)' });
+      expect(screen.getByText('Your current grade', { selector: 'text' })).toHaveAttribute('x', '0%');
+      expect(screen.getByText('Your current grade', { selector: 'text' })).toHaveStyle({ transform: 'translateX(3.4em)' });
+      // The grade summary table and its footer.
+      const row = within(screen.getByRole('row', { name: /Homework/ }));
+      expect(row.getAllByText('100\u200f% + Hidden Scores')).toHaveLength(2);
+      expect(row.getByText('100\u200f%')).toBeInTheDocument();
+      expect(screen.getByTestId('gradeSummaryFooterTotalWeightedGrade')).toHaveTextContent('100\u200f%');
+      // The detailed grades: earned and possible points are separated by a backslash.
+      expect(screen.getByText('0\\3')).toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Toggle individual problem scores for First subsection' }));
+      expect(screen.getAllByText('0\\1')).toHaveLength(3);
+    });
+
+    it('mirrors the grade bar labels for grades below 50%', async () => {
+      setTabData({
+        course_grade: { is_passing: false, letter_grade: null, percent: 0.3 },
+        grading_policy: { ...defaultTabData.grading_policy, grade_range: { pass: 0.4 } },
+      });
+      await fetchAndRender();
+
+      expect(screen.getByText('Passing grade', { selector: 'text' })).toHaveAttribute('x', '60%');
+      expect(screen.getByText('Passing grade', { selector: 'text' })).toHaveStyle({ transform: 'translateX(-3.4em)' });
+      expect(screen.getByText('Your current grade', { selector: 'text' })).toHaveAttribute('x', '70%');
+      expect(screen.getByText('Your current grade', { selector: 'text' })).toHaveStyle({ transform: 'translateX(-3.4em)' });
     });
   });
 });

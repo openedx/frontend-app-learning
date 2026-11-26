@@ -1,38 +1,25 @@
-import MockAdapter from 'axios-mock-adapter';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { render, screen } from '@testing-library/react';
+import { getAnalyticsService, getSiteConfig } from '@openedx/frontend-base';
+import { MemoryRouter } from 'react-router-dom';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { IntlProvider } from '@edx/frontend-platform/i18n';
-import { sendTrackEvent, sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
 import { breakpoints } from '@openedx/paragon';
 
-import {
-  createTestQueryClient, initializeMockApp, logUnhandledRequests, mockCourseRequests, seedQueryData,
-  waitFor,
-} from '@src/setupTest';
 import { getCourseOutline } from '@src/courseware/data/api';
-import { courseOutlineStructureQuery, coursewareOutlineSidebarTogglesQuery } from '@src/courseware/data/apiHooks';
+import { mockCourseRequests, unitPath } from '@src/tests/courseware';
+import { CourseParamsProvider } from '@src/generic/course-params';
+import OutlineQueryGate from '@src/tests/OutlineQueryGate';
+import { render } from '@src/tests/render';
 import SidebarState from '@src/tests/SidebarState';
 import { SidebarProvider } from '../../../SidebarContext';
 import SidebarUnit from './SidebarUnit';
 import { ID } from '../constants';
 
-jest.mock('@edx/frontend-platform/analytics', () => ({
-  sendTrackEvent: jest.fn(),
-  sendTrackingLogEvent: jest.fn(),
-}));
-
-initializeMockApp();
-
 describe('<SidebarUnit />', () => {
   let courseId;
-  let outline;
+  let axiosMock;
   let unit;
   let sequenceId;
+  const { sendTrackEvent, sendTrackingLogEvent } = getAnalyticsService();
 
   const { innerWidth: originalInnerWidth } = window;
 
@@ -43,8 +30,8 @@ describe('<SidebarUnit />', () => {
   });
 
   const initTestData = async (options) => {
-    courseId = mockCourseRequests(options).courseId;
-    outline = await getCourseOutline(courseId);
+    ({ courseId, axiosMock } = mockCourseRequests(options));
+    const outline = await getCourseOutline(courseId);
     [sequenceId] = Object.keys(outline.sequences);
     const sequence = outline.sequences[sequenceId];
     unit = outline.units[sequence.unitIds[0]];
@@ -55,51 +42,41 @@ describe('<SidebarUnit />', () => {
 
   const currentSidebar = () => screen.getByTestId('current-sidebar').textContent;
 
-  function renderWithProvider(props = {}, pathname = undefined) {
-    const queryClient = createTestQueryClient();
-    seedQueryData(queryClient, courseOutlineStructureQuery(courseId).queryKey, outline);
-    seedQueryData(
-      queryClient,
-      coursewareOutlineSidebarTogglesQuery(courseId).queryKey,
-      { enableCompletionTracking: true },
-    );
+  // The unit reads the outline from its query, which mockCourseRequests answers.
+  // `activeSequenceId` is the sequence the courseware shows; `isPreview` puts it on the preview routes.
+  async function renderWithProvider(props = {}, { activeSequenceId = undefined, isPreview = false } = {}) {
     const sidebarUnit = (
-      <SidebarUnit
-        isFirst
-        id={unit.id}
-        courseId="course123"
-        sequenceId={sequenceId}
-        unit={{ ...unit, icon: 'video', isLocked: false }}
-        isActive={false}
-        activeUnitId={unit.id}
-        isCompletionTrackingEnabled
-        {...props}
-      />
+      <OutlineQueryGate>
+        <SidebarUnit
+          isFirst
+          id={unit.id}
+          courseId="course123"
+          sequenceId={sequenceId}
+          unit={{ ...unit, icon: 'video', isLocked: false }}
+          isActive={false}
+          activeUnitId={unit.id}
+          isCompletionTrackingEnabled
+          {...props}
+        />
+      </OutlineQueryGate>
     );
     const { container } = render(
-      <AppProvider wrapWithRouter={false}>
-        <QueryClientProvider client={queryClient}>
-          <IntlProvider locale="en">
-            <MemoryRouter initialEntries={[{ pathname: pathname ?? `/course/${courseId}` }]}>
-              <SidebarProvider courseId={courseId} unitId={unit.id} widgets={[]}>
-                <Routes>
-                  <Route path="/course/:courseId" element={sidebarUnit} />
-                  <Route path="/course/:courseId/:sequenceId/:unitId" element={sidebarUnit} />
-                  <Route path="/preview/course/:courseId" element={sidebarUnit} />
-                </Routes>
-                <SidebarState />
-              </SidebarProvider>
-            </MemoryRouter>
-          </IntlProvider>
-        </QueryClientProvider>
-      </AppProvider>,
+      <MemoryRouter>
+        <CourseParamsProvider courseId={courseId} sequenceId={activeSequenceId} isPreview={isPreview}>
+          <SidebarProvider courseId={courseId} unitId={unit.id} widgets={[]}>
+            {sidebarUnit}
+            <SidebarState />
+          </SidebarProvider>
+        </CourseParamsProvider>
+      </MemoryRouter>,
     );
+    await screen.findByText(unit.title);
     return container;
   }
 
   it('renders correctly when unit is incomplete', async () => {
     await initTestData();
-    const container = renderWithProvider();
+    const container = await renderWithProvider();
 
     expect(screen.getByText(unit.title)).toBeInTheDocument();
     expect(container.querySelector('.text-success')).not.toBeInTheDocument();
@@ -107,7 +84,7 @@ describe('<SidebarUnit />', () => {
 
   it('renders correctly when unit is complete and tracking enabled', async () => {
     await initTestData();
-    const container = renderWithProvider({ unit: { ...unit, complete: true } });
+    const container = await renderWithProvider({ unit: { ...unit, complete: true } });
 
     expect(screen.getByText(unit.title)).toBeInTheDocument();
     expect(container.querySelector('.text-success')).toBeInTheDocument();
@@ -116,7 +93,7 @@ describe('<SidebarUnit />', () => {
 
   it('renders correctly when unit is not first and icon is not set', async () => {
     await initTestData();
-    const container = renderWithProvider({
+    const container = await renderWithProvider({
       isFirst: false,
       unit: { ...unit, icon: null },
     });
@@ -127,7 +104,7 @@ describe('<SidebarUnit />', () => {
 
   it('renders correctly when unit is locked', async () => {
     await initTestData();
-    renderWithProvider({
+    await renderWithProvider({
       unit: { ...unit, isLocked: true },
     });
 
@@ -138,7 +115,7 @@ describe('<SidebarUnit />', () => {
     it('sends log event correctly', async () => {
       const user = userEvent.setup();
       await initTestData();
-      renderWithProvider({ unit: { ...unit } });
+      await renderWithProvider({ unit: { ...unit } });
       const logData = {
         id: unit.id,
         current_tab: 1,
@@ -157,13 +134,11 @@ describe('<SidebarUnit />', () => {
     it('sends the completion check for the unit navigated away from to its own sequence, not the one navigated to', async () => {
       const user = userEvent.setup();
       await initTestData();
-      const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-      const completionUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/xblock/${sequenceId}/handler/get_completion`;
+      const completionUrl = `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/xblock/${sequenceId}/handler/get_completion`;
       axiosMock.onPost(completionUrl).reply(201, { complete: true });
-      logUnhandledRequests(axiosMock);
-      renderWithProvider(
+      await renderWithProvider(
         { sequenceId: 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@another' },
-        `/course/${courseId}/${sequenceId}/${unit.id}`,
+        { activeSequenceId: sequenceId },
       );
 
       await user.click(screen.getByText(unit.title));
@@ -177,7 +152,7 @@ describe('<SidebarUnit />', () => {
       const user = userEvent.setup();
       window.innerWidth = breakpoints.extraExtraLarge.minWidth;
       await initTestData();
-      renderWithProvider({ unit: { ...unit } });
+      await renderWithProvider({ unit: { ...unit } });
       await user.click(screen.getByText(unit.title));
 
       expect(currentSidebar()).toBe(ID);
@@ -186,7 +161,7 @@ describe('<SidebarUnit />', () => {
     it('closes sidebar on mobile devices', async () => {
       const user = userEvent.setup();
       await initTestData();
-      renderWithProvider({ unit: { ...unit } });
+      await renderWithProvider({ unit: { ...unit } });
       expect(currentSidebar()).toBe(ID);
 
       await user.click(screen.getByText(unit.title));
@@ -196,32 +171,19 @@ describe('<SidebarUnit />', () => {
   });
 
   describe('UnitLinkWrapper', () => {
-    describe('course in preview mode', () => {
-      beforeEach(async () => {
-        await initTestData();
-        renderWithProvider({ unit: { ...unit } }, `/preview/course/${courseId}`);
-      });
+    it('links to the unit under /preview in preview mode', async () => {
+      await initTestData();
+      await renderWithProvider({ unit: { ...unit } }, { isPreview: true });
 
-      it('href includes /preview', async () => {
-        const unitLink = screen.getByText(unit.title).closest('a');
-        const linkHref = unitLink.getAttribute('href');
-
-        expect(linkHref.includes('/preview/')).toBeTruthy();
-      });
+      expect(screen.getByText(unit.title).closest('a'))
+        .toHaveAttribute('href', `/learning/preview/course/course123/${sequenceId}/${unit.id}`);
     });
 
-    describe('course in live mode', () => {
-      beforeEach(async () => {
-        await initTestData();
-        renderWithProvider({ unit: { ...unit } });
-      });
+    it('links to the unit in live mode', async () => {
+      await initTestData();
+      await renderWithProvider({ unit: { ...unit } });
 
-      it('href does not include /preview/', async () => {
-        const unitLink = screen.getByText(unit.title).closest('a');
-        const linkHref = unitLink.getAttribute('href');
-
-        expect(linkHref.includes('/preview/')).toBeFalsy();
-      });
+      expect(screen.getByText(unit.title).closest('a')).toHaveAttribute('href', unitPath('course123', sequenceId, unit.id));
     });
   });
 });

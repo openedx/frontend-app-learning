@@ -1,10 +1,22 @@
 function daycmp(a, b) {
-  if (a.getFullYear() < b.getFullYear()) { return -1; }
-  if (a.getFullYear() > b.getFullYear()) { return 1; }
-  if (a.getMonth() < b.getMonth()) { return -1; }
-  if (a.getMonth() > b.getMonth()) { return 1; }
-  if (a.getDate() < b.getDate()) { return -1; }
-  if (a.getDate() > b.getDate()) { return 1; }
+  if (a.getFullYear() < b.getFullYear()) {
+    return -1;
+  }
+  if (a.getFullYear() > b.getFullYear()) {
+    return 1;
+  }
+  if (a.getMonth() < b.getMonth()) {
+    return -1;
+  }
+  if (a.getMonth() > b.getMonth()) {
+    return 1;
+  }
+  if (a.getDate() < b.getDate()) {
+    return -1;
+  }
+  if (a.getDate() > b.getDate()) {
+    return 1;
+  }
   return 0;
 }
 

@@ -1,4 +1,4 @@
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Button, IconButton } from '@openedx/paragon';
 import {
   MenuOpen as MenuOpenIcon,
@@ -11,7 +11,7 @@ export interface CourseOutlineHeadingProps {
   backButton?: {
     title: string;
     onClick: () => void;
-  }
+  };
   onToggleCollapse?: () => void;
 }
 

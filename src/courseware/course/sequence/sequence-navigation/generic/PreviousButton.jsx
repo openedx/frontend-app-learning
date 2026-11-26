@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, IconButton, Icon } from '@openedx/paragon';
 import {
   ArrowBack,
@@ -7,7 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from '@openedx/paragon/icons';
-import { isRtl, getLocale } from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl } from '@openedx/frontend-base';
 
 const PreviousButton = ({
   onClick,
@@ -16,12 +16,10 @@ const PreviousButton = ({
   variant,
   buttonStyle,
   isFirstUnit,
-  isAtTop,
+  isAtTop = false,
 }) => {
   const navigate = useNavigate();
   const disabled = isFirstUnit || !previousLink;
-  const { pathname } = useLocation();
-  const navLink = pathname.startsWith('/preview') ? `/preview${previousLink}` : previousLink;
 
   const getPrevArrow = () => {
     if (isAtTop) {
@@ -33,7 +31,7 @@ const PreviousButton = ({
   const prevArrow = getPrevArrow();
 
   const onClickHandler = () => {
-    navigate(navLink);
+    navigate(previousLink);
     onClick();
   };
 
@@ -57,7 +55,7 @@ const PreviousButton = ({
       disabled={disabled}
       onClick={onClick}
       as={disabled ? undefined : Link}
-      to={disabled ? undefined : navLink}
+      to={disabled ? undefined : previousLink}
       iconBefore={prevArrow}
     >
       {buttonLabel}
@@ -67,12 +65,12 @@ const PreviousButton = ({
 
 PreviousButton.propTypes = {
   onClick: PropTypes.func.isRequired,
-  buttonLabel: PropTypes.string.isRequired,
-  previousLink: PropTypes.string.isRequired,
+  buttonLabel: PropTypes.string,
+  previousLink: PropTypes.string,
   variant: PropTypes.string.isRequired,
   buttonStyle: PropTypes.string.isRequired,
   isFirstUnit: PropTypes.bool.isRequired,
-  isAtTop: PropTypes.bool.isRequired,
+  isAtTop: PropTypes.bool,
 };
 
 export default PreviousButton;

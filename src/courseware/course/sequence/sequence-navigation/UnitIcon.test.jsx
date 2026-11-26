@@ -1,6 +1,6 @@
-import React from 'react';
 import { Factory } from 'rosie';
-import { mockCourseRequests, render } from '../../../../setupTest';
+
+import { render } from '@src/tests/render';
 import UnitIcon from './UnitIcon';
 
 describe('Unit Icon', () => {
@@ -19,10 +19,6 @@ describe('Unit Icon', () => {
     { id: contentType, type: contentType },
     { courseId: courseMetadata.id },
   ));
-
-  beforeAll(async () => {
-    mockCourseRequests({ courseMetadata, unitBlocks });
-  });
 
   unitBlocks.forEach(block => {
     it(`renders correct icon for ${block.type} unit`, () => {

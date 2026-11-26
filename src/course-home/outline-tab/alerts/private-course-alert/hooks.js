@@ -1,13 +1,12 @@
-/* eslint-disable import/prefer-default-export */
 import React, { useContext, useMemo } from 'react';
-import { AppContext } from '@edx/frontend-platform/react';
+import { SiteContext } from '@openedx/frontend-base';
 import { ALERT_TYPES, useAlert } from '../../../../generic/user-messages';
 import { useCourseHomeMeta, useOutlineTabData } from '../../../data/apiHooks';
 
 const PrivateCourseAlert = React.lazy(() => import('./PrivateCourseAlert'));
 
 export function usePrivateCourseAlert(courseId) {
-  const { authenticatedUser } = useContext(AppContext);
+  const { authenticatedUser } = useContext(SiteContext);
   const course = useCourseHomeMeta(courseId, { enabled: false }).data;
   const outline = useOutlineTabData(courseId, { enabled: false }).data;
   const enrolledUser = course && course.isEnrolled !== undefined && course.isEnrolled;

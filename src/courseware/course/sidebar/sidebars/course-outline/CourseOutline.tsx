@@ -1,8 +1,8 @@
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { useToggle } from '@openedx/paragon';
 
 import PageLoading from '@src/generic/PageLoading';
-import { CourseOutlineSidebarHeadingSlot } from '@src/plugin-slots/CourseOutlineSidebarHeadingSlot';
+import CourseOutlineSidebarHeadingSlot from '@src/slots/CourseOutlineSidebarHeadingSlot';
 import classNames from 'classnames';
 import { useState } from 'react';
 import SidebarSection from './components/SidebarSection';
@@ -41,7 +41,7 @@ export const CourseOutline = () => {
     setSelectedSection(null);
   };
 
-  const handleSelectSection = (id:string) => {
+  const handleSelectSection = (id: string) => {
     setDisplaySequenceLevel();
     setSelectedSection(id);
   };
@@ -86,21 +86,21 @@ export const CourseOutline = () => {
         <ol id="outline-sidebar-outline" className="list-unstyled">
           {isDisplaySequenceLevel
             ? sequenceIds.map((sequenceId: string) => (
-              <SidebarSequence
-                key={sequenceId}
-                courseId={courseId!}
-                sequence={sequences[sequenceId]}
-                defaultOpen={sequenceId === activeSequenceId}
-                activeUnitId={unitId!}
-              />
-            ))
+                <SidebarSequence
+                  key={sequenceId}
+                  courseId={courseId!}
+                  sequence={sequences[sequenceId]}
+                  defaultOpen={sequenceId === activeSequenceId}
+                  activeUnitId={unitId!}
+                />
+              ))
             : sectionsIds.map((sectionId) => (
-              <SidebarSection
-                key={sectionId}
-                section={sections[sectionId]}
-                handleSelectSection={handleSelectSection}
-              />
-            ))}
+                <SidebarSection
+                  key={sectionId}
+                  section={sections[sectionId]}
+                  handleSelectSection={handleSelectSection}
+                />
+              ))}
         </ol>
       </nav>
     </div>

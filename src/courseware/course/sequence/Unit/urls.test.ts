@@ -1,11 +1,11 @@
-import { getConfig } from '@edx/frontend-platform';
+import { getSiteConfig } from '@openedx/frontend-base';
 import { getIFrameUrl } from './urls';
 
-jest.mock('@edx/frontend-platform', () => ({
-  getConfig: jest.fn(),
+jest.mock('@openedx/frontend-base', () => ({
+  getSiteConfig: jest.fn(),
 }));
-const config = { LMS_BASE_URL: 'https://test-lms-url' };
-(getConfig as jest.Mock).mockReturnValue(config);
+const config = { lmsBaseUrl: 'https://test-lms-url' };
+(getSiteConfig as jest.Mock).mockReturnValue(config);
 
 const props = {
   id: 'test-id',

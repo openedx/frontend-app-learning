@@ -1,10 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { getAuthenticatedUser, sendTrackEvent, useIntl } from '@openedx/frontend-base';
 import { Button, Icon } from '@openedx/paragon';
 import { Compass } from '@openedx/paragon/icons';
 
@@ -12,10 +9,11 @@ import { useCourseHomeMeta } from '../../course-home/data/apiHooks';
 import { useTourData } from '../data/apiHooks';
 import { useTourState } from '../TourContext';
 import messages from '../messages';
+import { useCourseId } from '@src/generic/course-params';
 
-const LaunchCourseHomeTourButton = ({ srOnly }) => {
+const LaunchCourseHomeTourButton = ({ srOnly = false }) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
 
   const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
 
@@ -40,27 +38,22 @@ const LaunchCourseHomeTourButton = ({ srOnly }) => {
     launchCourseHomeTour();
   };
 
-  return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    <>
-      {toursEnabled && (
-        <Button variant="link" size="inline" className={`p-0 ${srOnly && 'sr-only sr-only-focusable'}`} onClick={handleClick}>
-          {!srOnly && (
-            <Icon
-              src={Compass}
-              className="mr-2"
-              style={{ height: '18px', width: '18px' }}
-            />
-          )}
-          {intl.formatMessage(messages.launchTour)}
-        </Button>
-      )}
-    </>
-  );
-};
+  if (!toursEnabled) {
+    return null;
+  }
 
-LaunchCourseHomeTourButton.defaultProps = {
-  srOnly: false,
+  return (
+    <Button variant="link" size="inline" className={`p-0 ${srOnly && 'sr-only sr-only-focusable'}`} onClick={handleClick}>
+      {!srOnly && (
+        <Icon
+          src={Compass}
+          className="mr-2"
+          style={{ height: '18px', width: '18px' }}
+        />
+      )}
+      {intl.formatMessage(messages.launchTour)}
+    </Button>
+  );
 };
 
 LaunchCourseHomeTourButton.propTypes = {

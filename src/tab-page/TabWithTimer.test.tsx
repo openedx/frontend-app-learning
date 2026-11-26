@@ -1,22 +1,26 @@
-import { mergeConfig } from '@edx/frontend-platform';
+import { getAppConfig, mergeAppConfig } from '@openedx/frontend-base';
+import {
+  act, screen, waitFor, within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import {
-  mockCourseRequests, render, screen, waitFor, within,
-} from '../setupTest';
-import { useCourseHomeMeta } from '../course-home/data/apiHooks';
-import TabWithTimer from './TabWithTimer';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { appId } from '@src/constants';
+import { mockCourseRequests } from '@src/tests/courseware';
+import { mockLocation } from '@src/tests/location';
+import { render } from '@src/tests/render';
 
-jest.mock('@edx/frontend-platform/analytics');
+import TabWithTimer from './TabWithTimer';
 
 const EXAMS_BASE_URL = 'http://localhost:18740';
 const EXAM_SEQUENCE_ID = 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@exam';
+const originalExamsBaseUrl = getAppConfig(appId).EXAMS_BASE_URL;
 
 // A tab hands TabPage its metadata query, as OutlineTab does.
 const Tab = ({ courseId }: { courseId: string }) => {
   const metadataQuery = useCourseHomeMeta(courseId);
   return (
-    <TabWithTimer activeTabSlug="outline" courseId={courseId} courseStatus={{ metadataQuery }}>
+    <TabWithTimer courseId={courseId} courseStatus={{ metadataQuery }}>
       <div>tab body</div>
     </TabWithTimer>
   );
@@ -32,6 +36,7 @@ const putActions = () => course.specialExams.requests
 
 const renderTab = (rendered: Course) => {
   course = rendered;
+  // No params provider: the frame needs none.
   return render(<Tab courseId={course.courseId} />, { wrapWithRouter: true });
 };
 
@@ -39,28 +44,26 @@ describe('TabWithTimer', () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   beforeEach(() => {
-    mergeConfig({ EXAMS_BASE_URL });
+    mergeAppConfig(appId, { EXAMS_BASE_URL });
     user = userEvent.setup();
+  });
+
+  afterEach(() => {
+    act(() => mergeAppConfig(appId, { EXAMS_BASE_URL: originalExamsBaseUrl }));
   });
 
   describe('with a running attempt', () => {
     // jsdom cannot navigate; the library writes `location.href` to leave for the exam.
-    const originalLocation = window.location;
     let location: { href: string };
 
     beforeEach(async () => {
-      location = { ...originalLocation, href: originalLocation.href };
-      Object.defineProperty(window, 'location', { configurable: true, value: location });
+      location = mockLocation({ href: window.location.href });
       const running = mockCourseRequests();
       running.specialExams.setExam(EXAM_SEQUENCE_ID, {
         status: 'started', exam: { exam_name: 'Final' }, attempt: { exam_url_path: 'http://localhost/the-exam' },
       });
       renderTab(running);
       await screen.findByText(/You are taking/);
-    });
-
-    afterEach(() => {
-      Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
     });
 
     it('shows the timer', () => {
@@ -108,7 +111,7 @@ describe('TabWithTimer', () => {
   });
 
   it('asks the LMS course-level endpoint for the latest attempt on the legacy family', async () => {
-    mergeConfig({ EXAMS_BASE_URL: '' });
+    mergeAppConfig(appId, { EXAMS_BASE_URL: '' });
     const legacy = mockCourseRequests();
     legacy.specialExams.setExam(EXAM_SEQUENCE_ID, { status: 'started' });
     renderTab(legacy);

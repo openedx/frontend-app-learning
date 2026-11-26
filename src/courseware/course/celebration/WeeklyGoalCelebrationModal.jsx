@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import { FormattedMessage, useIntl } from '@openedx/frontend-base';
 import {
   ActionRow, Button, Icon, StandardModal,
 } from '@openedx/paragon';
 import { Lightbulb } from '@openedx/paragon/icons';
 
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import Target from './assets/target.svg';
 import messages from './messages';
 import { recordWeeklyGoalCelebration } from './utils';
-import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
 
 const WeeklyGoalCelebrationModal = ({
   courseId, daysPerWeek, isOpen, onClose, ...rest
@@ -26,6 +26,7 @@ const WeeklyGoalCelebrationModal = ({
 
   return (
     <StandardModal
+      className="celebration-modal"
       footerNode={(
         <ActionRow isStacked className="pb-2">
           <Button onClick={onClose}>{intl.formatMessage(messages.keepItUp)}</Button>
@@ -34,9 +35,7 @@ const WeeklyGoalCelebrationModal = ({
       hasCloseButton={false}
       isOpen={isOpen}
       onClose={onClose}
-      title={(
-        <p className="h2 text-center mr-n5 pt-4">{intl.formatMessage(messages.goalMet)}</p>
-      )}
+      title={intl.formatMessage(messages.goalMet)}
       {...rest}
     >
       <>
@@ -77,7 +76,8 @@ const WeeklyGoalCelebrationModal = ({
 
 WeeklyGoalCelebrationModal.propTypes = {
   courseId: PropTypes.string.isRequired,
-  daysPerWeek: PropTypes.number.isRequired,
+  // Course passes the selected goal's, which a learner with no goal set has none of.
+  daysPerWeek: PropTypes.number,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };

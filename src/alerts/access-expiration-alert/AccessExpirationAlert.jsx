@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { FormattedMessage, FormattedDate, useIntl } from '@edx/frontend-platform/i18n';
+import { FormattedMessage, FormattedDate, sendTrackEvent, useIntl } from '@openedx/frontend-base';
 import { Alert, Hyperlink } from '@openedx/paragon';
 import { Info } from '@openedx/paragon/icons';
 

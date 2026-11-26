@@ -1,16 +1,17 @@
 import { useCallback, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
-import { logError } from '@edx/frontend-platform/logging';
+import { logError } from '@openedx/frontend-base';
 import {
   type QueryClient, queryOptions, useMutation, useQuery, useQueryClient,
 } from '@tanstack/react-query';
 
 import { appId } from '@src/constants';
 import { getResponseStatus } from '@src/data/http-error';
-import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { queryDefaults } from '@src/queryClient';
+import { courseHomeMetaQuery, useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { useIsPreview } from '@src/generic/course-params';
 import {
   getBlockCompletion, getCourseDiscussionConfig, getCourseMetadata, getCourseOutline,
-  getCoursewareOutlineSidebarToggles, getCourseTopics, getLearningSequencesOutline, getResumeBlock,
+  getCoursewareOutlineSidebarToggles, getCourseTopics, getLearningSequencesOutline, getMasquerade, getResumeBlock,
   getSequenceForUnitDeprecated, getSequenceMetadata, postIntegritySignature, postSequencePosition,
 } from './api';
 import { applyUnitCompletion, type CourseNavigationOutline } from './courseNavigationOutline';
@@ -24,9 +25,43 @@ interface QueryOptions {
   enabled?: boolean;
 }
 
+/*
+ * The LMS hands a streak to celebrate to whichever request first updates the learner's streak that day, and the
+ * courseware metadata updates it as the course home metadata does. The celebration is read from the course home
+ * metadata, so a streak that came with the courseware metadata instead is handed on to it. That happens before the
+ * courseware metadata is in, and the frame waits for both, so the celebration is there when the page first shows.
+ */
+const handStreakToCourseHomeMeta = async (
+  client: QueryClient,
+  courseId: string,
+  { streakLengthToCelebrate, streakDiscountEnabled }: CoursewareMeta['celebrations'],
+) => {
+  if (!streakLengthToCelebrate) {
+    return;
+  }
+  const courseHomeMeta = courseHomeMetaQuery(courseId);
+  try {
+    // Joins the page's own request for it when that has not returned yet.
+    await client.ensureQueryData(courseHomeMeta);
+  } catch {
+    // The page shows that failure, and celebrates nothing.
+    return;
+  }
+  client.setQueryData(courseHomeMeta.queryKey, (meta) => (
+    !meta || meta.celebrations?.streakLengthToCelebrate
+      ? meta
+      : { ...meta, celebrations: { ...meta.celebrations, streakLengthToCelebrate, streakDiscountEnabled } }
+  ));
+};
+
 export const coursewareMetadataQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...coursewareKey, 'metadata', courseId] as const,
-  queryFn: (): Promise<CoursewareMeta> => getCourseMetadata(courseId),
+  queryFn: async ({ client }): Promise<CoursewareMeta> => {
+    const metadata = await getCourseMetadata(courseId);
+    await handStreakToCourseHomeMeta(client, courseId, metadata.celebrations);
+    return metadata;
+  },
 });
 
 export const useCoursewareMetadata = (
@@ -38,6 +73,7 @@ export const useCoursewareMetadata = (
 });
 
 export const minimalCourseOutlineQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...coursewareKey, 'outline', courseId] as const,
   queryFn: (): Promise<MinimalCourseOutline> => getLearningSequencesOutline(courseId),
   meta: { logStatusAs: { 403: 'info' } },
@@ -78,9 +114,11 @@ export const useSequenceIds = (courseId: string | undefined): string[] => {
   );
 };
 
-export const useIsPreview = () => useLocation().pathname.startsWith('/preview');
+// The preview routes' page sets it (CourseParamsProvider); re-exported for courseware's callers.
+export { useIsPreview };
 
 export const sequenceMetadataQuery = (sequenceId: string, isPreview: boolean) => queryOptions({
+  ...queryDefaults,
   queryKey: [...coursewareKey, 'sequence', sequenceId, isPreview] as const,
   queryFn: async (): Promise<SequenceMetadataData> => {
     const { sequence, units } = await getSequenceMetadata(sequenceId, { preview: isPreview ? '1' : '0' });
@@ -140,11 +178,13 @@ export interface ResumeBlock {
 }
 
 export const resumeBlockQuery = (courseId: string, visitKey: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...coursewareKey, 'resume', courseId, visitKey] as const,
   queryFn: (): Promise<ResumeBlock> => getResumeBlock(courseId),
 });
 
 export const parentSequenceQuery = (courseId: string, unitId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...coursewareKey, 'parentSequence', courseId, unitId] as const,
   queryFn: (): Promise<string | null> => getSequenceForUnitDeprecated(courseId, unitId),
   // Re-enabled whenever its rule applies again, and a unit's parent never changes mid-session:
@@ -152,6 +192,7 @@ export const parentSequenceQuery = (courseId: string, unitId: string) => queryOp
 });
 
 export const courseOutlineStructureQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...coursewareKey, 'courseOutline', courseId] as const,
   queryFn: (): Promise<CourseNavigationOutline | null> => getCourseOutline(courseId),
   // Observed by every outline row; only invalidation should refetch:
@@ -163,7 +204,25 @@ export const useCourseOutlineStructure = (courseId: string | undefined) => useQu
   enabled: !!courseId,
 });
 
+export const masqueradeQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
+  queryKey: [...coursewareKey, 'masquerade', courseId] as const,
+  queryFn: (): Promise<string | null> => getMasquerade(courseId),
+  // Observed by every unit; what refetches it is the shell's masquerade bar, which invalidates every query on a change:
+  staleTime: Infinity,
+});
+
+// Only course staff can masquerade: callers enable it for them alone.
+export const useMasquerade = (
+  courseId: string | undefined,
+  { enabled = true }: QueryOptions = {},
+) => useQuery({
+  ...masqueradeQuery(courseId!),
+  enabled: enabled && !!courseId,
+});
+
 export const coursewareOutlineSidebarTogglesQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...coursewareKey, 'sidebarToggles', courseId] as const,
   queryFn: async () => {
     const {
@@ -193,6 +252,7 @@ export interface DiscussionTopic {
 
 // Observed by DiscussionsProvider, which owns the fetch.
 export const discussionTopicsQuery = (courseId: string) => queryOptions({
+  ...queryDefaults,
   queryKey: [...coursewareKey, 'discussionTopics', courseId] as const,
   queryFn: async () => {
     const config: { provider: string } = await getCourseDiscussionConfig(courseId);

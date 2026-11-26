@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useParams } from 'react-router-dom';
 import {
   FormattedDate,
   FormattedTime,
   useIntl,
-} from '@edx/frontend-platform/i18n';
+} from '@openedx/frontend-base';
 import { Tooltip, OverlayTrigger } from '@openedx/paragon';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,15 +14,16 @@ import { useCourseHomeMeta } from '../../data/apiHooks';
 
 import { getBadgeListAndColor } from './badgelist';
 import { isLearnerAssignment } from '../utils';
+import { useCourseId } from '@src/generic/course-params';
 
 const Day = ({
   date,
-  first,
+  first = false,
   items,
-  last,
+  last = false,
 }) => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
 
   const timezoneFormatArgs = userTimezone ? { timeZone: userTimezone } : {};
@@ -113,11 +113,6 @@ Day.propTypes = {
     title: PropTypes.string,
   })).isRequired,
   last: PropTypes.bool,
-};
-
-Day.defaultProps = {
-  first: false,
-  last: false,
 };
 
 export default Day;

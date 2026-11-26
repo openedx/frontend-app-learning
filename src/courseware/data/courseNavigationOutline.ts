@@ -1,4 +1,4 @@
-import { logInfo } from '@edx/frontend-platform/logging';
+import { logInfo } from '@openedx/frontend-base';
 
 // The navigation sidebar's outline (GET /api/course_home/v1/navigation/), as
 // `normalizeCourseNavigationOutline` shapes it.

@@ -1,244 +1,140 @@
-# Sidebar Widget Framework
+# Courseware sidebars
 
-## Overview
+Two sidebars sit beside the unit content, in the same row:
 
-The sidebar uses a pluggable widget framework that allows instances to customize which panels appear in the course sidebar.
+- the **navigation sidebar** (the course outline), documented in [`sidebars/course-outline/`](sidebars/course-outline/README.md);
+- the **auxiliary sidebar**, which holds the panels of the _sidebar widgets_ a site registers. Learning registers one itself, the [discussions widget](../../../widgets/DiscussionsSidebar/README.md).
 
-Widget implementations:
+One panel is open at a time, across both. `SidebarProvider` decides which, on every unit change: the course outline by default, and, for a learner who last had a widget's panel open, the first sidebar widget available on the unit, in the order of the panels in the auxiliary sidebar slot. A learner's toggles go through `useSidebar().toggleSidebar(id)`.
 
-- **[discussions](../../../widgets/discussions/README.md)** — built-in right-panel; always enabled (in `src/widgets/`)
-- **[course-outline](sidebars/course-outline/README.md)** — built-in left-panel (in `sidebar/sidebars/`)
+## Adding a sidebar widget
 
-## Architecture
+A sidebar widget is two slot operations under one widget ID, plus an optional third that sets its options:
 
-### Widget Structure
+| Where | What |
+|---|---|
+| `org.openedx.frontend.slot.learning.auxiliarySidebarTrigger.v1` ([slot](../../../slots/AuxiliarySidebarTriggerSlot/README.md)) | the trigger: the button above the unit that opens the panel |
+| `org.openedx.frontend.slot.learning.auxiliarySidebar.v1` ([slot](../../../slots/AuxiliarySidebarSlot/README.md)) | the panel |
+| the same slot, as a widget options operation on the panel | the widget's availability and provider |
 
-Each widget is a `SidebarWidget`, declared in [`SidebarContext.tsx`](SidebarContext.tsx).
+The shared widget ID is what pairs a trigger with its panel, and what the options operation names. The panel slot is the list of sidebar widgets: options for a widget with no panel are ignored, and a trigger whose panel is gone is not rendered.
 
-### The `Provider` field
+The order of the panels in their slot is the order of the widgets: the first one available on the unit is the one that opens, and the triggers follow the same order. A widget goes ahead of another the way it does in any slot, with `PREPEND` or `INSERT_BEFORE` on its panel.
 
-An optional component the widget supplies, taking `children`. `SidebarProvider` wraps all children in each registered widget's `Provider` (in reverse-priority order), whether or not the widget is currently available, and the Provider can read `courseId` etc. through `useSidebar()` since it mounts inside the provider. That gives the widget one component that is mounted for as long as the sidebar is, where it can run hooks and hold state that its `Sidebar` and `Trigger` both read. The two built-in widgets use it for the two things it is for:
+```tsx
+import { App, WidgetOperationTypes } from '@openedx/frontend-base';
+import {
+  auxiliarySidebarSlotId,
+  auxiliarySidebarTriggerSlotId,
+  type AuxiliarySidebarWidgetOptions,
+} from '@openedx/frontend-app-learning';
 
-- **Shared state.** The upgrade widget's `UpgradeWidgetProvider` keeps the seen/unseen status and the upgrade stage in a context of its own, which `UpgradeTrigger` and `UpgradePanel` read.
-- **Loading the data `isAvailable` depends on.** A widget's trigger is mounted only once the widget is available, so a fetch the availability check needs cannot live in the trigger. The discussions widget's `DiscussionsProvider` runs one `useQuery`, with the conditions for fetching in `enabled`, and renders its children unchanged. The request goes out once when the sidebar mounts; the first availability check runs before the data arrives, and when the query resolves the framework re-evaluates availability and the trigger appears.
+const notesSidebarId = 'org.example.widget.notesSidebar.v1';
 
-```javascript
-// widgets/discussions/DiscussionsProvider.tsx
-const DiscussionsProvider = ({ children }) => {
-  const { courseId } = useSidebar();
-  const tabs = useCourseHomeMeta(courseId, { enabled: false }).data?.tabs;
-  useQuery({
-    ...discussionTopicsQuery(courseId),
-    enabled: !!getConfig().DISCUSSIONS_MFE_BASE_URL && hasDiscussionTab(tabs),
-  });
-  return <>{children}</>;
+const notesOptions: AuxiliarySidebarWidgetOptions = {
+  isAvailable: ({ course }) => !!course.notes?.enabled,
+};
+
+const notesApp: App = {
+  appId: 'org.example.app.notes',
+  slots: [
+    {
+      slotId: auxiliarySidebarTriggerSlotId,
+      id: notesSidebarId,
+      op: WidgetOperationTypes.APPEND,
+      component: NotesTrigger,
+    },
+    {
+      slotId: auxiliarySidebarSlotId,
+      id: notesSidebarId,
+      op: WidgetOperationTypes.APPEND,
+      component: NotesPanel,
+    },
+    {
+      slotId: auxiliarySidebarSlotId,
+      relatedId: notesSidebarId,
+      op: WidgetOperationTypes.OPTIONS,
+      options: { ...notesOptions },
+    },
+  ],
 };
 ```
 
-```javascript
-// In your widget's widgetConfig.js
-export const myWidgetConfig = {
-  id: 'MY_WIDGET',
-  Sidebar: MyWidgetPanel,
-  Trigger: MyWidgetTrigger,
-  Provider: MyWidgetProvider,  // optional — omit if the widget has no shared state and no data to load
-  isAvailable: ({ course }) => !!course?.someField,
-  enabled: true,
-};
+Add the app to the site config's `apps`. The smallest sidebar widget is the first two operations alone: with no options, it is always available.
+
+### The options
+
+```ts
+interface AuxiliarySidebarWidgetOptions {
+  isAvailable?: (context: SidebarAvailabilityContext) => boolean;   // per unit; default: always
+  Provider?: ComponentType<{ children: ReactNode }>;                // mounted inside the sidebar provider
+}
 ```
 
-### Context Object
+The package exports this type, and `SidebarAvailabilityContext`, the type of `isAvailable`'s argument. An option of the wrong kind is left out, so its default applies. When several operations set options on the same widget, they merge in the order the operations were declared, so a later app can change one option of an earlier app's widget, such as the discussions widget's availability check.
 
-The `isAvailable` function receives the parameter of `SidebarWidget['isAvailable']`, declared in [`SidebarContext.tsx`](SidebarContext.tsx): `courseId`, `unitId`, `course` and `unit`, with every field of `course` optional, since the first availability check can run before the data it reads has arrived. Widgets pick whatever they need from `course` or `unit` — the sidebar makes no assumptions about which fields any given widget requires.
+`isAvailable` is asked about the unit the learner is on, every time it changes. It receives `courseId`, `unitId`, `course` (the courseware, course home and outline metadata, merged, with every field optional, since the first check can run before the data arrives) and `unit` (the unit's discussion topic). Keep it cheap: no requests.
 
-## Adding Widgets
+`Provider` wraps the whole page inside `SidebarProvider`, whether or not the widget is available, for as long as the sidebar is mounted. That is the place for state the trigger and the panel share, and for loading the data `isAvailable` reads: the trigger only mounts once the widget is available, so it cannot load that data itself. Inside it, `useSidebar()`, which the package exports, gives the course and unit IDs. A provider that needs nothing from the sidebar belongs in the app's own `providers` instead, which the shell mounts site-wide.
 
-Widgets are registered via the `SIDEBAR_WIDGETS` key in `env.config.jsx`. Any object conforming to the widget structure above can be registered.
+### The trigger and the panel
 
-### Method 1: In-repo widget subdirectory (default approach)
+Both receive the slots' props: `courseId`, `sequenceId` and `unitId`. Wrap them in the components Learning uses for its own, for the standard look and behavior:
 
-The widget lives in `src/widgets/<name>/` alongside the built-in widgets.
-
-1. **Create your widget directory** with a `widgetConfig.js` following the widget structure above.
-
-2. **Register it in `env.config.jsx`**:
-   ```javascript
-   import { myWidgetConfig } from './src/widgets/my-widget/widgetConfig';
-
-   export default {
-     SIDEBAR_WIDGETS: [myWidgetConfig],
-   };
-   ```
-
-   _See [`src/widgets/upgrade/`](../../../widgets/upgrade/) for a real example of this pattern._
-
-### Method 2: Via npm package
-
-If the widget lives in a separate repository, install it as a dependency and import it the same way:
-
-```javascript
-import { myWidgetConfig } from '@your-org/custom-sidebar-widget';
-
-export default {
-  SIDEBAR_WIDGETS: [myWidgetConfig],
-};
-```
-
-## Widget Component Requirements
-
-### Sidebar Component
-
-The main panel component that renders when the widget is active. Wrap your content in `SidebarBase` to get the standard close button, fullscreen handling, and show/hide behaviour:
-
-```javascript
-import { useIntl } from '@edx/frontend-platform/i18n';
-import SidebarBase from '@src/courseware/course/sidebar/common/SidebarBase';
-import { useSidebar } from '@src/courseware/course/sidebar/SidebarContext';
-
-export const ID = 'MY_WIDGET';
-
-const MySidebar = () => {
-  const intl = useIntl();
-  const { courseId } = useSidebar();
-
-  return (
-    <SidebarBase
-      title="My Widget"
-      ariaLabel="My Widget panel"
-      sidebarId={ID}
-      width="31rem"
-    >
-      {/* Your panel content */}
-    </SidebarBase>
-  );
-};
-
-export default MySidebar;
-```
-
-### Trigger Component
-
-The button that appears in the toolbar to open the widget. Use `SidebarTriggerBase` for consistent styling across all widgets:
-
-```javascript
+```tsx
 import { Icon } from '@openedx/paragon';
-import { MyIcon } from '@openedx/paragon/icons';
-import PropTypes from 'prop-types';
-import SidebarTriggerBase from '@src/courseware/course/sidebar/common/TriggerBase';
+import { EditNote } from '@openedx/paragon/icons';
+import { SidebarBase, SidebarTriggerBase } from '@openedx/frontend-app-learning';
 
-const MyTrigger = ({ onClick }) => (
-  <SidebarTriggerBase onClick={onClick} ariaLabel="Open My Widget">
-    <Icon src={MyIcon} className="m-0 m-auto" />
+const NotesTrigger = () => (
+  <SidebarTriggerBase sidebarId={notesSidebarId} ariaLabel="Show notes">
+    <Icon src={EditNote} className="m-0 m-auto" />
   </SidebarTriggerBase>
 );
 
-MyTrigger.propTypes = {
-  onClick: PropTypes.func.isRequired,
-};
-
-export default MyTrigger;
+const NotesPanel = ({ courseId, unitId }) => (
+  <SidebarBase title="Notes" ariaLabel="Notes" sidebarId={notesSidebarId} className="ml-4">
+    <Notes courseId={courseId} unitId={unitId} />
+  </SidebarBase>
+);
 ```
 
-The `onClick` prop is injected by the framework — your trigger does not need to call `toggleSidebar` directly.
+`SidebarTriggerBase` toggles the panel of the widget whose ID it is given. `SidebarBase` adds the title bar, the close button and the full-screen behavior on narrow screens, and closes itself when the page posts a `learning.events.sidebar.close` message. The trigger slot draws the marker under the trigger of the open panel.
 
-## Accessing Course Data
+## Removing or replacing the discussions widget
 
-The widget config functions, `isAvailable` and `prefetch`, are handed course data as their `course` argument (see the context object above). Widget components get no such argument and read course data with the React Query hooks. `{ enabled: false }` makes the hook read the cached result without requesting it, which is right under the courseware page: the page has already fetched both queries. Anywhere else, `.data` stays `undefined` until something on that page fetches the data, for example by calling `useCourseHomeMeta(courseId)` without the option.
+The discussions widget is registered the same way, under `org.openedx.frontend.widget.learning.discussionsSidebar.v1` (exported as `discussionsSidebarWidgetId`). Removing its panel switches it off: the trigger goes, and so do its options.
 
-```javascript
-import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+```tsx
+import { App, WidgetOperationTypes } from '@openedx/frontend-base';
+import { auxiliarySidebarSlotId, discussionsSidebarWidgetId } from '@openedx/frontend-app-learning';
 
-// In your component
-const { verifiedMode, courseModes } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
-```
-
-Available data:
-- `useCourseHomeMeta` (`@src/course-home/data/apiHooks`) - Course home data, staff status, permissions
-- `useCoursewareMetadata` (`@src/courseware/data/apiHooks`) - Course metadata, enrollment, verification
-- `useDiscussionTopic` (`@src/courseware/data/apiHooks`) - Discussion topic data per unit
-
-## Examples
-
-### Example 1: LTI Tool Widget
-
-```javascript
-// In env.config.jsx
-import LTIToolWidget from '@edx/lti-tool-sidebar';
-
-const config = {
-  SIDEBAR_WIDGETS: [
+const noDiscussionsSidebarApp: App = {
+  appId: 'org.example.app.noDiscussionsSidebar',
+  slots: [
     {
-      id: 'LTI_TOOL',
-      priority: 25,
-      Sidebar: LTIToolWidget,
-      Trigger: LTIToolWidget.Trigger,
-      isAvailable: ({ courseId }) => {
-        // Only show in specific courses
-        return ['course-v1:edX+Demo+2024'].includes(courseId);
-      },
-      enabled: true,
+      slotId: auxiliarySidebarSlotId,
+      op: WidgetOperationTypes.REMOVE,
+      relatedId: discussionsSidebarWidgetId,
     },
   ],
 };
 ```
 
-### Example 2: Conditional Widget
+To replace it, remove it this way and register your own widget under a new ID. A `condition` on its panel operation limits it the same way.
 
-```javascript
-const config = {
-  SIDEBAR_WIDGETS: [
-    {
-      id: 'PREMIUM_CONTENT',
-      priority: 15,
-      Sidebar: PremiumContentWidget,
-      Trigger: PremiumContentWidget.Trigger,
-      isAvailable: ({ course, courseId }) => {
-        // Only show to learners with a verified mode available
-        return !!course?.verifiedMode?.access_expiration_date;
-      },
-      enabled: true,
-    },
-  ],
-};
-```
+## Migrating from `SIDEBAR_WIDGETS`
 
-## Best Practices
+The legacy app registered sidebar widgets through the `SIDEBAR_WIDGETS` key in `env.config.jsx`. That key is gone. Each field of an entry has a new home:
 
-1. **Priority**: Space priorities by 10 to allow insertions (10, 20, 30 vs 1, 2, 3)
-2. **Availability**: Always provide `isAvailable` to avoid showing empty widgets
-3. **Performance**: Keep `isAvailable` checks lightweight - no API calls
-4. **Styling**: Use Paragon components for consistency
-5. **Accessibility**: Ensure triggers have proper aria-labels
-6. **Error Handling**: Handle missing data gracefully
+| `SIDEBAR_WIDGETS` field | Now |
+|---|---|
+| `id` | the widget ID of the two slot operations, and the `relatedId` of the options operation. Use a namespaced ID (`org.example.widget.notesSidebar.v1`). |
+| `Trigger` | the trigger slot operation's `component`. It no longer receives `onClick`: it toggles its own panel, through `SidebarTriggerBase`'s `sidebarId` or `useSidebar().toggleSidebar`. |
+| `Sidebar` | the panel slot operation's `component`. |
+| `priority` | gone: the order of the panels in the slot. `PREPEND` the panel, or `INSERT_BEFORE` another widget's, to put it ahead. |
+| `isAvailable` | the `isAvailable` option, with the same argument. |
+| `Provider` | the `Provider` option, or the app's `providers` if it needs nothing from the sidebar. |
+| `enabled` | gone: leave the widget out, or `REMOVE` its panel. |
 
-## Troubleshooting
-
-**Widget not appearing?**
-- Check `enabled: true` in configuration
-- Verify `isAvailable()` returns true for your context
-- Check console for deprecation warnings
-- Verify components are exported correctly
-
-**Multiple widgets conflicting?**
-- Adjust priorities to control order
-- Only one widget can be active at a time
-- Check SIDEBAR_ORDER in React DevTools
-
-**Upsell widget not appearing?**
-- Ensure `@edx/learning-upsell-widgets` is installed and `SIDEBAR_WIDGETS` is configured
-- Verify `verifiedMode` is available in the course context
-
----
-
-## Production Deployment
-
-### Pre-Deployment Checklist
-
-**Configuration Review**
-- Verify `SIDEBAR_WIDGETS` array in `env.config.jsx`
-- Test widget availability logic with production data
-
-**Widget Verification**
-- All external widgets installed and compatible
-- `isAvailable()` functions tested with edge cases
-- Priority order produces expected behavior
+The built-in upgrade widget is not part of this package. A site that wants an upsell in the sidebar registers it as its own sidebar widget. The stored sidebar of a learner who had the discussions panel open (`DISCUSSIONS`) no longer names a widget, so the sidebar falls back to its usual choice once.

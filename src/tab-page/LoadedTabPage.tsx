@@ -1,40 +1,40 @@
-import React from 'react';
-import { Helmet } from 'react-helmet';
+import React, { type ComponentType, type ReactNode } from 'react';
 
-import { getConfig } from '@edx/frontend-platform';
-import { useToggle } from '@openedx/paragon';
-
-import { CourseTabsNavigationSlot } from '@src/plugin-slots/CourseTabsNavigationSlot';
-import { getActiveTabTitle } from '@src/course-tabs/utils';
+import { Container, useToggle } from '@openedx/paragon';
 
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { AlertList } from '@src/generic/user-messages';
-import useEnrollmentAlert from '@src/alerts/enrollment-alert';
-import useLogistrationAlert from '@src/alerts/logistration-alert';
 import StreakModal from '@src/shared/streak-celebration';
-import InstructorToolbar from '@src/instructor-toolbar';
 
-import ProductTours from '../product-tours/ProductTours';
+// The components an AlertList renders for its custom alert codes, keyed by code.
+export type CustomAlerts = Record<string, ComponentType<never>>;
 
-interface LoadedTabPageProps {
-  activeTabSlug: string;
-  children?: React.ReactNode;
+// What a tab hands the frame for the frame to place. The frame knows nothing of any particular tab.
+export interface FrameContentProps {
+  // Alerts for the region at the top of the page, above the content (the user messages of topic `outline`).
+  pageAlerts?: CustomAlerts;
+  // Banners for the region beneath the shell's masquerade bar (topic `instructor-toolbar-alerts`).
+  masqueradeBanners?: CustomAlerts;
+  // Renders what has to stay hidden while the streak celebration is open, such as a tab's product tours.
+  renderTours?: (state: { isStreakCelebrationOpen: boolean }) => ReactNode;
+  // The content renders its own <main> landmark, so the frame wraps it in a <div> instead.
+  ownsMainLandmark?: boolean;
+}
+
+interface LoadedTabPageProps extends FrameContentProps {
+  children?: ReactNode;
   courseId: string;
-  unitId?: string | null;
 }
 
 const LoadedTabPage = ({
-  activeTabSlug,
   children = null,
   courseId,
-  unitId = null,
+  pageAlerts = {},
+  masqueradeBanners = {},
+  renderTours,
+  ownsMainLandmark = false,
 }: LoadedTabPageProps) => {
   const metadataQuery = useCourseHomeMeta(courseId, { enabled: false });
-
-  // Logistration and enrollment alerts are only really used for the outline tab, but loaded here to put them above
-  // breadcrumbs when they are visible.
-  const logistrationAlert = useLogistrationAlert(courseId);
-  const enrollmentAlert = useEnrollmentAlert(courseId);
 
   const [isStreakCelebrationOpen,, closeStreakCelebration] = useToggle(
     !!metadataQuery.data?.celebrations?.streakLengthToCelebrate,
@@ -45,44 +45,26 @@ const LoadedTabPage = ({
   }
   const {
     celebrations,
-    org,
-    originalUserIsStaff,
-    tabs,
-    title,
     verifiedMode,
-    hasCourseAuthorAccess,
   } = metadataQuery.data;
-
-  const activeTabTitle = getActiveTabTitle(tabs, activeTabSlug);
 
   const streakLengthToCelebrate = celebrations && celebrations.streakLengthToCelebrate;
   const streakDiscountCouponEnabled = celebrations && celebrations.streakDiscountEnabled && verifiedMode;
 
-  // The courseware tab renders its own <main id="main-content"> landmark inside <Sequence>
-  // so the sidebar navigation stays outside of it. All other tabs render the <main>
-  // landmark below, wrapping only the page children (not the alerts or tab navigation).
-  const isCourseware = activeTabSlug === 'courseware';
-  const ContentWrapper = isCourseware ? 'div' : 'main';
+  // The courseware renders its own <main> landmark inside <Sequence> so the sidebar navigation stays outside of it.
+  // Every other tab gets the <main> landmark below, wrapping only the page children (not the alerts or tab
+  // navigation).
+  const ContentWrapper = ownsMainLandmark ? 'div' : 'main';
 
   return (
     <>
-      <ProductTours
-        activeTab={activeTabSlug}
-        courseId={courseId}
-        isStreakCelebrationOpen={isStreakCelebrationOpen}
-        org={org}
+      {renderTours?.({ isStreakCelebrationOpen: !!isStreakCelebrationOpen })}
+      {/* The shell's masquerade bar renders above the page; these banners, which the legacy app's instructor toolbar
+          rendered beneath it, are Learning's own. Both only show while staff masquerade. */}
+      <AlertList
+        topic="instructor-toolbar-alerts"
+        customAlerts={masqueradeBanners}
       />
-      <Helmet>
-        <title>{`${activeTabTitle ? `${activeTabTitle} | ` : ''}${title} | ${getConfig().SITE_NAME}`}</title>
-      </Helmet>
-      {originalUserIsStaff && (
-        <InstructorToolbar
-          courseId={courseId}
-          unitId={unitId}
-          tab={activeTabSlug}
-          isStudioButtonVisible={hasCourseAuthorAccess}
-        />
-      )}
       <StreakModal
         courseId={courseId}
         streakLengthToCelebrate={streakLengthToCelebrate}
@@ -95,18 +77,11 @@ const LoadedTabPage = ({
         <AlertList
           topic="outline"
           className="mx-5 mt-3"
-          customAlerts={{
-            ...enrollmentAlert,
-            ...logistrationAlert,
-          }}
+          customAlerts={pageAlerts}
         />
-        <CourseTabsNavigationSlot tabs={tabs} activeTabSlug={activeTabSlug} />
-        <ContentWrapper
-          id={isCourseware ? undefined : 'main-content'}
-          className="container-xl d-flex flex-column flex-grow-1"
-        >
+        <Container as={ContentWrapper} size="xl" className="d-flex flex-column flex-grow-1 mt-3">
           {children}
-        </ContentWrapper>
+        </Container>
       </div>
     </>
   );

@@ -1,4 +1,4 @@
-import { camelCaseObject } from '@edx/frontend-platform';
+import { camelCaseObject } from '@openedx/frontend-base';
 
 import { getTimeOffsetMillis } from '../../course-home/data/api';
 
@@ -20,9 +20,14 @@ export interface CoursewareMeta {
   license: string | null;
   userTimezone: string | null;
   showCalculator: boolean;
-  notes: unknown;
+  notes: { enabled: boolean; visible: boolean };
   marketingUrl: string | null;
-  celebrations: { firstSection: boolean };
+  celebrations: {
+    firstSection: boolean;
+    // Set on the one response of the day that updated the learner's streak, when the streak is one to celebrate.
+    streakLengthToCelebrate?: number | null;
+    streakDiscountEnabled?: boolean;
+  };
   userHasPassingGrade: boolean;
   courseExitPageIsActive: boolean;
   certificateData: unknown;
@@ -54,7 +59,7 @@ interface CoursewareMetadataResponse {
     license: string | null;
     user_timezone: string | null;
     show_calculator: boolean;
-    notes: unknown;
+    notes: { enabled: boolean; visible: boolean };
     marketing_url: string | null;
     celebrations: { first_section: boolean };
     user_has_passing_grade: boolean;

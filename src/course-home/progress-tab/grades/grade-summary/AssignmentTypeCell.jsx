@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 import { Locked } from '@openedx/paragon/icons';
 import { Icon } from '@openedx/paragon';
 import { useProgressData } from '../../hooks';
@@ -45,12 +45,6 @@ AssignmentTypeCell.propTypes = {
   footnoteId: PropTypes.string,
   footnoteMarker: PropTypes.number,
   locked: PropTypes.bool,
-};
-
-AssignmentTypeCell.defaultProps = {
-  footnoteId: '',
-  footnoteMarker: null,
-  locked: false,
 };
 
 export default AssignmentTypeCell;

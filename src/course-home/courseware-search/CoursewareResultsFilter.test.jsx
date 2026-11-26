@@ -1,13 +1,8 @@
 import React from 'react';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { Route, Routes } from 'react-router-dom';
-import { history } from '@edx/frontend-platform';
-import {
-  initializeMockApp,
-  render,
-  screen,
-  waitFor,
-} from '../../setupTest';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { screen, waitFor } from '@testing-library/react';
+
+import { render } from '@src/tests/render';
 import { CoursewareSearchResultsFilter } from './CoursewareResultsFilter';
 import { useCoursewareSearchParams } from './hooks';
 import { useCoursewareSearchResults } from './data/apiHooks';
@@ -27,10 +22,6 @@ const decodedSequenceId = 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@
 const decodedUnitId = 'block-v1:edX+DemoX+Demo_Course+type@vertical+block@vertical_0270f6de40fc';
 const pathname = `/course/${decodedCourseId}/${decodedSequenceId}/${decodedUnitId}`;
 
-const intl = {
-  formatMessage: (message) => message?.defaultMessage || '',
-};
-
 const coursewareSearch = {
   query: '',
   filter: '',
@@ -40,20 +31,17 @@ const coursewareSearch = {
 };
 
 function renderComponent(props = {}) {
-  history.push(pathname);
   const { container } = render(
-    <AppProvider>
+    <MemoryRouter initialEntries={[pathname]}>
       <Routes>
-        <Route path="/course/:courseId/:sequenceId/:unitId" element={<CoursewareSearchResultsFilter intl={intl} {...props} />} />
+        <Route path="/course/:courseId/:sequenceId/:unitId" element={<CoursewareSearchResultsFilter {...props} />} />
       </Routes>
-    </AppProvider>,
+    </MemoryRouter>,
   );
   return container;
 }
 
 describe('CoursewareSearchResultsFilter', () => {
-  beforeAll(initializeMockApp);
-
   beforeEach(() => {
     useCoursewareSearchParams.mockReturnValue(coursewareSearch);
   });

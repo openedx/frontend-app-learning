@@ -1,7 +1,6 @@
-import React from 'react';
-import {
-  render, screen, fireEvent, initializeMockApp,
-} from '../../../../setupTest';
+import { fireEvent, screen } from '@testing-library/react';
+
+import { render } from '@src/tests/render';
 import ContentLock from './ContentLock';
 
 const mockNavigate = jest.fn();
@@ -18,11 +17,6 @@ describe('Content Lock', () => {
     prereqId: 'test-prerequisite-id',
     sequenceTitle: 'test-sequence-title',
   };
-
-  beforeAll(async () => {
-    // We need to mock AuthService to implicitly use `getAuthenticatedUser` within `AppContext.Provider`.
-    await initializeMockApp();
-  });
 
   it('displays sequence title along with lock icon', () => {
     const { container } = render(<ContentLock {...mockData} />, { wrapWithRouter: true });
@@ -43,6 +37,6 @@ describe('Content Lock', () => {
     render(<ContentLock {...mockData} />, { wrapWithRouter: true });
     fireEvent.click(screen.getByRole('button'));
 
-    expect(mockNavigate).toHaveBeenCalledWith(`/course/${mockData.courseId}/${mockData.prereqId}`);
+    expect(mockNavigate).toHaveBeenCalledWith(`/learning/course/${mockData.courseId}/${mockData.prereqId}`);
   });
 });

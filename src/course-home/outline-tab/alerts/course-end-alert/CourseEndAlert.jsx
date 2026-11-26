@@ -1,11 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  FormattedDate,
-  FormattedMessage,
-  FormattedRelativeTime,
-  FormattedTime,
-} from '@edx/frontend-platform/i18n';
+  FormattedDate, FormattedMessage, FormattedRelativeTime, FormattedTime,
+} from '@openedx/frontend-base';
 import { Alert } from '@openedx/paragon';
 import { Info } from '@openedx/paragon/icons';
 

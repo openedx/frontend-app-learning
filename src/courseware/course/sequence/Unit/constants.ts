@@ -5,6 +5,9 @@ export const views = {
 
 export const loadingState = 'loading';
 
+// The element ID of the unit's content iframe.
+export const unitIFrameId = 'unit-iframe';
+
 export const messageTypes = {
   modal: 'plugin.modal',
   resize: 'plugin.resize',

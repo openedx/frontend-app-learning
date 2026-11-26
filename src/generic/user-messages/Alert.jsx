@@ -30,7 +30,7 @@ function getAlertIcon(type) {
 }
 
 const Alert = ({
-  type, dismissible, children, onDismiss, stacked,
+  type, dismissible = false, children, onDismiss, stacked = false,
 }) => (
   <ParagonAlert
     data-testid={`alert-container-${type}`}
@@ -55,13 +55,6 @@ Alert.propTypes = {
   children: PropTypes.node,
   onDismiss: PropTypes.func,
   stacked: PropTypes.bool,
-};
-
-Alert.defaultProps = {
-  dismissible: false,
-  children: undefined,
-  onDismiss: null,
-  stacked: false,
 };
 
 export default Alert;

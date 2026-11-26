@@ -1,7 +1,7 @@
-import { initializeMockApp, render } from '../../../setupTest';
-import Section from './Section';
+import { getLoggingService } from '@openedx/frontend-base';
 
-const { loggingService } = initializeMockApp();
+import { render } from '@src/tests/render';
+import Section from './Section';
 
 describe('Section', () => {
   it('throws when rendered without outline data', () => {
@@ -19,10 +19,10 @@ describe('Section', () => {
           hideFromTOC: false,
         }}
       />,
-      { wrapWithRouter: true },
+      { wrapWithRouter: true, courseParams: { courseId: 'course-v1:edX+DemoX+Demo_Course' } },
     );
 
-    expect(loggingService.logError).toHaveBeenCalledWith(
+    expect(getLoggingService().logError).toHaveBeenCalledWith(
       expect.objectContaining({
         message: expect.stringContaining('Section "Introduction" rendered without outline data'),
       }),

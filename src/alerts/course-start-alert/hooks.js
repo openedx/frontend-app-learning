@@ -33,10 +33,13 @@ function useCourseStartAlert(courseId) {
   };
 }
 
-export function useCourseStartMasqueradeBanner(courseId, tab) {
+// Only the progress tab shows this banner, so only it calls this hook.
+export function useCourseStartMasqueradeBanner(courseId) {
   const isMasquerading = useCourseHomeMeta(courseId, { enabled: false }).data?.isMasquerading;
+  // Called whatever the metadata says: the tab calls this hook before its metadata has loaded.
+  const isStartDateInFuture = IsStartDateInFuture(courseId);
 
-  const isVisible = isMasquerading && tab === 'progress' && IsStartDateInFuture(courseId);
+  const isVisible = isMasquerading && isStartDateInFuture;
 
   const payload = useMemo(() => ({
     courseId,

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { OverlayTrigger, Popover } from '@openedx/paragon';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 
 import messages from './messages';
 
@@ -47,7 +47,6 @@ const LockedDonutSegment = ({ lockedPercentage }) => {
         <g
           width="6"
           height="21"
-          viewBox="0 0 21 6"
           style={{
             transformOrigin: 'center',
             transform: `rotate(-${iconDegree}deg)`,

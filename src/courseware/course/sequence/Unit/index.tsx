@@ -1,19 +1,18 @@
-import React from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
-import { AppContext } from '@edx/frontend-platform/react';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useAuthenticatedUser, useIntl } from '@openedx/frontend-base';
 
-import { useUnit } from '@src/courseware/data/apiHooks';
-import { usePluginsCallback } from '@src/generic/plugin-overrides';
+import { useIsPreview, useUnit } from '@src/courseware/data/apiHooks';
+import UnitContentSlot from '@src/slots/UnitContentSlot';
+import UnitTitleSlot from '@src/slots/UnitTitleSlot';
 
 import messages from '../messages';
 import ContentIFrame from './ContentIFrame';
 import UnitSuspense from './UnitSuspense';
-import { views } from './constants';
-import { useExamAccess, useShouldDisplayHonorCode } from './hooks';
+import { unitIFrameId, views } from './constants';
+import { useExamAccess, useMasqueradeKey, useShouldDisplayHonorCode } from './hooks';
 import { getIFrameUrl } from './urls';
-import UnitTitleSlot from '../../../../plugin-slots/UnitTitleSlot';
 
 interface Props {
   courseId: string;
@@ -36,24 +35,41 @@ const Unit = ({
 }: Props) => {
   const { formatMessage } = useIntl();
   const [searchParams] = useSearchParams();
-  const { pathname } = useLocation();
-  const { authenticatedUser } = React.useContext(AppContext);
-  const examAccess = useExamAccess();
+  const isPreview = useIsPreview();
+  const authenticatedUser = useAuthenticatedUser();
+  const { blockAccess, accessToken } = useExamAccess();
   const shouldDisplayHonorCode = useShouldDisplayHonorCode({ courseId, sequenceId, id });
+  const masqueradeKey = useMasqueradeKey(courseId, isOriginalUserStaff);
   const unit = useUnit(sequenceId, id).data;
   const view = authenticatedUser ? views.student : views.public;
-  const shouldDisplayUnitPreview = pathname.startsWith('/preview') && isOriginalUserStaff;
+  const preview = isPreview && isOriginalUserStaff;
+  const jumpToId = searchParams.get('jumpToId') ?? undefined;
+  const title = unit?.title ?? '';
+  const loadingMessage = formatMessage(messages.loadingSequence);
+  const shouldShowContent = !shouldDisplayHonorCode && !blockAccess;
 
-  const getUrl = usePluginsCallback('getIFrameUrl', () => getIFrameUrl({
+  // One object, so that what builds the default URL can be handed on as it is. This and the content props are
+  // memoized, along with the default content: the slot is, and the iframe keys its effects on the URL. The exam access object is rebuilt from its
+  // fields, so that its identity does not depend on the hook's.
+  const iframeUrlParams = useMemo(() => ({
     id,
     view,
     format,
-    examAccess,
-    jumpToId: searchParams.get('jumpToId') ?? undefined,
-    preview: shouldDisplayUnitPreview,
-  }));
-
-  const iframeUrl = getUrl();
+    examAccess: { blockAccess, accessToken },
+    jumpToId,
+    preview,
+  }), [id, view, format, blockAccess, accessToken, jumpToId, preview]);
+  const contentProps = useMemo(() => ({
+    elementId: unitIFrameId,
+    id,
+    iframeUrl: getIFrameUrl(iframeUrlParams),
+    loadingMessage,
+    onLoaded,
+    shouldShowContent,
+    title,
+    courseId,
+  }), [id, iframeUrlParams, loadingMessage, onLoaded, shouldShowContent, title, courseId]);
+  const defaultContent = useMemo(() => <ContentIFrame {...contentProps} />, [contentProps]);
 
   if (!unit) {
     return null;
@@ -61,18 +77,30 @@ const Unit = ({
 
   return (
     <div className="unit">
-      <UnitTitleSlot unitId={id} {...{ unit, renderUnitNavigation }} />
-      <UnitSuspense {...{ courseId, sequenceId, id }} />
-      <ContentIFrame
-        elementId="unit-iframe"
-        id={id}
-        iframeUrl={iframeUrl}
-        loadingMessage={formatMessage(messages.loadingSequence)}
-        onLoaded={onLoaded}
-        shouldShowContent={!shouldDisplayHonorCode && !examAccess.blockAccess}
-        title={unit.title}
+      <UnitTitleSlot
         courseId={courseId}
+        sequenceId={sequenceId}
+        unitId={id}
+        unit={unit}
+        renderUnitNavigation={renderUnitNavigation}
       />
+      <UnitSuspense {...{ courseId, sequenceId, id }} />
+      {/* Keyed, so that a change of masquerade shows the unit as the LMS now renders it, whatever the slot holds. */}
+      <UnitContentSlot
+        key={masqueradeKey}
+        courseId={courseId}
+        sequenceId={sequenceId}
+        unitId={id}
+        title={contentProps.title}
+        elementId={contentProps.elementId}
+        iframeUrl={contentProps.iframeUrl}
+        iframeUrlParams={iframeUrlParams}
+        loadingMessage={contentProps.loadingMessage}
+        shouldShowContent={contentProps.shouldShowContent}
+        onLoaded={contentProps.onLoaded}
+      >
+        {defaultContent}
+      </UnitContentSlot>
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react';
 
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 
 import { useCoursewareMetadata, useUnit } from '@src/courseware/data/apiHooks';
 import PageLoading from '@src/generic/PageLoading';
-import { GatedUnitContentMessageSlot } from '../../../../plugin-slots/GatedUnitContentMessageSlot';
+import GatedUnitContentMessageSlot from '@src/slots/GatedUnitContentMessageSlot';
 
 import messages from '../messages';
 import HonorCode from '../honor-code';
@@ -33,7 +33,7 @@ const UnitSuspense = ({
     <>
       {shouldDisplayContentGating && (
         <Suspense fallback={<PageLoading srMessage={formatMessage(messages.loadingLockedContent)} />}>
-          <GatedUnitContentMessageSlot courseId={courseId} />
+          <GatedUnitContentMessageSlot courseId={courseId} sequenceId={sequenceId} unitId={id} />
         </Suspense>
       )}
       {shouldDisplayHonorCode && (

@@ -1,17 +1,13 @@
 import React from 'react';
-import {
-  mockCourseRequests, render, screen,
-} from '../setupTest';
+import { screen } from '@testing-library/react';
+
+import { render } from '@src/tests/render';
 import { TabPage } from './index';
 import { useToast } from '../generic/ToastContext';
 
 // We should not test `LoadedTabPage` page here, as `TabPage` is used only for passing `passthroughProps`.
-jest.mock('./LoadedTabPage', () => function () {
+jest.mock('./LoadedTabPage', () => function LoadedTabPage() {
   return <div data-testid="LoadedTabPage" />;
-});
-
-jest.mock('../product-tours/newUserCourseHomeTour/LaunchCourseHomeTourButton', () => function () {
-  return <div data-testid="sr-tour-button" />;
 });
 
 jest.mock('../generic/ToastContext', () => ({
@@ -33,10 +29,6 @@ describe('Tab Page', () => {
     courseStatus: { metadataQuery: metaWithAccess },
   };
 
-  beforeAll(async () => {
-    mockCourseRequests();
-  });
-
   beforeEach(() => {
     mockUseToast();
   });
@@ -56,14 +48,22 @@ describe('Tab Page', () => {
     expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
   });
 
-  it('renders the screen-reader tour button on the outline tab', () => {
-    render(<TabPage {...mockData} activeTabSlug="outline" />, { wrapWithRouter: true });
-    expect(screen.getByTestId('sr-tour-button')).toBeInTheDocument();
+  it('renders the content passed for above the page before the Loaded Tab Page', () => {
+    render(<TabPage {...mockData} aboveContent={<div data-testid="above" />} />, { wrapWithRouter: true });
+    expect(screen.getByTestId('above').compareDocumentPosition(screen.getByTestId('LoadedTabPage')))
+      .toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
-  it('does not render the tour button on other tabs', () => {
-    render(<TabPage {...mockData} activeTabSlug="dates" />, { wrapWithRouter: true });
-    expect(screen.queryByTestId('sr-tour-button')).not.toBeInTheDocument();
+  it('does not render the content passed for above the page while loading', () => {
+    render(
+      <TabPage
+        {...mockData}
+        courseStatus={{ metadataQuery: { isPending: true } }}
+        aboveContent={<div data-testid="above" />}
+      />,
+      { wrapWithRouter: true },
+    );
+    expect(screen.queryByTestId('above')).not.toBeInTheDocument();
   });
 
   describe('React Query courseStatus', () => {
@@ -244,7 +244,6 @@ describe('Tab Page', () => {
       render(
         <TabPage
           {...mockData}
-          activeTabSlug="outline"
           courseStatus={{
             metadataQuery: { data: { courseAccess: { hasAccess: false } } },
             tabDataQuery: { isPending: true },
@@ -256,16 +255,33 @@ describe('Tab Page', () => {
       expect(screen.queryByTestId('LoadedTabPage')).not.toBeInTheDocument();
     });
 
-    it('does not render tab content when access is denied', () => {
-      render(
+    // The route page redirects a denied learner; the frame renders nothing for them meanwhile.
+    it('renders nothing for a denied learner', () => {
+      const { container } = render(
         <TabPage
           {...mockData}
-          activeTabSlug="dates"
           courseStatus={{ metadataQuery: { data: { courseAccess: { hasAccess: false } } }, tabDataQuery: {} }}
+          aboveContent={<div data-testid="above" />}
         />,
         { wrapWithRouter: true },
       );
-      expect(screen.queryByTestId('LoadedTabPage')).not.toBeInTheDocument();
+      expect(container).toBeEmptyDOMElement();
+    });
+
+    it('renders the tab content for a denied learner when the tab shows itself to them, even if its data failed', () => {
+      render(
+        <TabPage
+          {...mockData}
+          showWhenDenied
+          courseStatus={{
+            metadataQuery: { data: { courseAccess: { hasAccess: false, errorCode: 'enrollment_required' } } },
+            tabDataQuery: { isError: true },
+          }}
+        />,
+        { wrapWithRouter: true },
+      );
+      expect(screen.getByTestId('LoadedTabPage')).toBeInTheDocument();
+      expect(screen.queryByText('There was an error loading this course.')).not.toBeInTheDocument();
     });
   });
 });

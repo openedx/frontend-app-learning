@@ -1,4 +1,4 @@
-import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
+import { Factory } from 'rosie';
 
 import courseMetadataBase from '../../../shared/data/__factories__/courseMetadataBase.factory';
 

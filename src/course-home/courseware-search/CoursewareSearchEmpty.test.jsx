@@ -1,9 +1,8 @@
 import React from 'react';
 import {
-  initializeMockApp,
-  render,
   screen,
-} from '../../setupTest';
+} from '@testing-library/react';
+import { render } from '@src/tests/render';
 import CoursewareSearchEmpty from './CoursewareSearchEmpty';
 import messages from './messages';
 
@@ -13,9 +12,6 @@ function renderComponent() {
 }
 
 describe('CoursewareSearchEmpty', () => {
-  beforeAll(async () => {
-    initializeMockApp();
-  });
 
   it('render empty results text and corresponding classes', () => {
     renderComponent();

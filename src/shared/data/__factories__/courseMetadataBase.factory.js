@@ -1,6 +1,6 @@
 /* A basic course metadata factory, to be specialized in courseware and course-home., */
 
-import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
+import { Factory } from 'rosie';
 
 import './tab.factory';
 

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { getConfig } from '@edx/frontend-platform';
+import { getSiteConfig } from '@openedx/frontend-base';
 import { useAlert } from '../../../../generic/user-messages';
 import { useCourseHomeMeta, useOutlineTabData } from '../../../data/apiHooks';
 
@@ -44,7 +44,7 @@ function useCertificateStatusAlert(courseId) {
     userHasPassingGrade,
     userTimezone,
     enrollmentMode,
-  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
+  } = useOutlineTabData(courseId, { enabled: false }).data;
 
   const {
     certStatus,
@@ -59,7 +59,7 @@ function useCertificateStatusAlert(courseId) {
   );
   let certURL = '';
   if (certWebViewUrl) {
-    certURL = `${getConfig().LMS_BASE_URL}${certWebViewUrl}`;
+    certURL = `${getSiteConfig().lmsBaseUrl}${certWebViewUrl}`;
   }
   const hasAlertingCertStatus = verifyCertStatusType(certStatus);
 

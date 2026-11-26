@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
+import { sendTrackEvent } from '@openedx/frontend-base';
 
 /**
  * We have seen evidence of learners hitting MFE pages with spaces instead of plus signs (which are used commonly

@@ -1,14 +1,26 @@
-import { getConfig, setConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import MockAdapter from 'axios-mock-adapter';
 import {
-  getDatesTabData, getExamsData, getProctoringInfoData, getTimeOffsetMillis, searchCourseContentFromAPI,
+  getAppConfig, getAuthenticatedHttpClient, getSiteConfig, mergeAppConfig, mergeSiteConfig,
+} from '@openedx/frontend-base';
+import MockAdapter from 'axios-mock-adapter';
+import { Factory } from 'rosie';
+import {
+  getCourseHomeCourseMetadata, getCoursewareSearchEnabled, getDatesTabData, getExamsData, getOutlineTabData,
+  getProctoringInfoData, getProgressTabData, getTimeOffsetMillis, searchCourseContentFromAPI, unsubscribeFromCourseGoal,
 } from './api';
-import { initializeMockApp } from '../../setupTest';
-
-initializeMockApp();
+import { appId } from '@src/constants';
+import { appendBrowserTimezoneToUrl } from '../../utils';
 
 const axiosMock = new MockAdapter(getAuthenticatedHttpClient());
+
+// The exam endpoints live on the LMS unless EXAMS_BASE_URL names an exams service.
+const setUrls = ({ examsBaseUrl, lmsBaseUrl }) => {
+  mergeSiteConfig({ lmsBaseUrl });
+  mergeAppConfig(appId, { EXAMS_BASE_URL: examsBaseUrl });
+};
+const currentUrls = () => ({
+  examsBaseUrl: getAppConfig(appId).EXAMS_BASE_URL ?? null,
+  lmsBaseUrl: getSiteConfig().lmsBaseUrl,
+});
 
 describe('Calculate the time offset properly', () => {
   it('Should return 0 if the headerDate is not set', async () => {
@@ -28,26 +40,20 @@ describe('Calculate the time offset properly', () => {
 describe('getExamsData', () => {
   const courseId = 'course-v1:edX+DemoX+Demo_Course';
   const sequenceId = 'block-v1:edX+DemoX+Demo_Course+type@sequential+block@12345';
-  let originalConfig;
+  let originalUrls;
 
   beforeEach(() => {
     axiosMock.reset();
-    originalConfig = getConfig();
+    originalUrls = currentUrls();
   });
 
   afterEach(() => {
     axiosMock.reset();
-    if (originalConfig) {
-      setConfig(originalConfig);
-    }
+    setUrls(originalUrls);
   });
 
   it('should use LMS URL when EXAMS_BASE_URL is not configured', async () => {
-    setConfig({
-      ...originalConfig,
-      EXAMS_BASE_URL: undefined,
-      LMS_BASE_URL: 'http://localhost:18000',
-    });
+    setUrls({ examsBaseUrl: null, lmsBaseUrl: 'http://localhost:18000' });
 
     const mockExamData = {
       exam: {
@@ -78,11 +84,7 @@ describe('getExamsData', () => {
   });
 
   it('should use EXAMS_BASE_URL when configured', async () => {
-    setConfig({
-      ...originalConfig,
-      EXAMS_BASE_URL: 'http://localhost:18740',
-      LMS_BASE_URL: 'http://localhost:18000',
-    });
+    setUrls({ examsBaseUrl: 'http://localhost:18740', lmsBaseUrl: 'http://localhost:18000' });
 
     const mockExamData = {
       exam: {
@@ -113,11 +115,7 @@ describe('getExamsData', () => {
   });
 
   it('should return empty object when API returns 404', async () => {
-    setConfig({
-      ...originalConfig,
-      EXAMS_BASE_URL: undefined,
-      LMS_BASE_URL: 'http://localhost:18000',
-    });
+    setUrls({ examsBaseUrl: null, lmsBaseUrl: 'http://localhost:18000' });
 
     const expectedUrl = `http://localhost:18000/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${encodeURIComponent(courseId)}?is_learning_mfe=true&content_id=${encodeURIComponent(sequenceId)}`;
 
@@ -136,11 +134,7 @@ describe('getExamsData', () => {
   });
 
   it('should throw error for non-404 HTTP errors', async () => {
-    setConfig({
-      ...originalConfig,
-      EXAMS_BASE_URL: undefined,
-      LMS_BASE_URL: 'http://localhost:18000',
-    });
+    setUrls({ examsBaseUrl: null, lmsBaseUrl: 'http://localhost:18000' });
 
     const expectedUrl = `http://localhost:18000/api/edx_proctoring/v1/proctored_exam/attempt/course_id/${encodeURIComponent(courseId)}?is_learning_mfe=true&content_id=${encodeURIComponent(sequenceId)}`;
 
@@ -157,11 +151,7 @@ describe('getExamsData', () => {
   });
 
   it('should properly encode URL parameters', async () => {
-    setConfig({
-      ...originalConfig,
-      EXAMS_BASE_URL: 'http://localhost:18740',
-      LMS_BASE_URL: 'http://localhost:18000',
-    });
+    setUrls({ examsBaseUrl: 'http://localhost:18740', lmsBaseUrl: 'http://localhost:18000' });
 
     const specialCourseId = 'course-v1:edX+Demo X+Demo Course';
     const specialSequenceId = 'block-v1:edX+Demo X+Demo Course+type@sequential+block@test sequence';
@@ -178,9 +168,36 @@ describe('getExamsData', () => {
   });
 });
 
+describe('getCourseHomeCourseMetadata', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  const metadataUrl = appendBrowserTimezoneToUrl(`${getSiteConfig().lmsBaseUrl}/api/course_home/course_metadata/${courseId}`);
+
+  beforeEach(() => {
+    axiosMock.reset();
+  });
+
+  it('returns the course access camelCased', async () => {
+    axiosMock.onGet(metadataUrl).reply(200, {
+      course_access: {
+        has_access: false,
+        error_code: 'audit_expired',
+        additional_context_user_message: 'uhoh oh no',
+        developer_message: null,
+      },
+    });
+    const { courseAccess } = await getCourseHomeCourseMetadata(courseId);
+    expect(courseAccess).toEqual({
+      hasAccess: false,
+      errorCode: 'audit_expired',
+      additionalContextUserMessage: 'uhoh oh no',
+      developerMessage: null,
+    });
+  });
+});
+
 describe('getDatesTabData', () => {
   const courseId = 'course-v1:edX+DemoX+Demo_Course';
-  const datesUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dates/${courseId}`;
+  const datesUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/dates/${courseId}`;
 
   beforeEach(() => {
     axiosMock.reset();
@@ -207,37 +224,142 @@ describe('getDatesTabData', () => {
   });
 });
 
-describe('getProctoringInfoData', () => {
+describe('getProgressTabData', () => {
   const courseId = 'course-v1:edX+DemoX+Demo_Course';
-  let originalConfig;
+  const progressUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/progress/${courseId}`;
+  // The factory's attrs share their nested objects across builds, and these tests mutate them.
+  const lockedProgress = () => JSON.parse(JSON.stringify(Factory.build('progressTabData', {
+    completion_summary: { complete_count: 1, incomplete_count: 0, locked_count: 1 },
+  })));
 
   beforeEach(() => {
     axiosMock.reset();
-    originalConfig = getConfig();
+  });
+
+  it('marks the grades partially locked when the learner can reach some gated content', async () => {
+    axiosMock.onGet(progressUrl).reply(200, lockedProgress());
+    const progress = await getProgressTabData(courseId);
+    expect(progress.gradesFeatureIsFullyLocked).toBe(false);
+    expect(progress.gradesFeatureIsPartiallyLocked).toBe(true);
+  });
+
+  it('marks the grades fully locked when the learner can reach no gated content', async () => {
+    const data = lockedProgress();
+    data.section_scores[0].subsections[0].learner_has_access = false;
+    axiosMock.onGet(progressUrl).reply(200, data);
+    const progress = await getProgressTabData(courseId);
+    expect(progress.gradesFeatureIsFullyLocked).toBe(true);
+    expect(progress.gradesFeatureIsPartiallyLocked).toBe(false);
+  });
+
+  it('leaves the grades fully locked when the content the learner can reach has no assignment type', async () => {
+    const data = lockedProgress();
+    data.section_scores[0].subsections[0].assignment_type = null;
+    axiosMock.onGet(progressUrl).reply(200, data);
+    const progress = await getProgressTabData(courseId);
+    expect(progress.gradesFeatureIsFullyLocked).toBe(true);
+    expect(progress.gradesFeatureIsPartiallyLocked).toBe(false);
+  });
+
+  it('marks the grades partially locked when the content the learner can reach has points earned but none possible', async () => {
+    const data = lockedProgress();
+    Object.assign(data.section_scores[0].subsections[0], { num_points_earned: 2, num_points_possible: 0 });
+    axiosMock.onGet(progressUrl).reply(200, data);
+    const progress = await getProgressTabData(courseId);
+    expect(progress.gradesFeatureIsFullyLocked).toBe(false);
+    expect(progress.gradesFeatureIsPartiallyLocked).toBe(true);
+  });
+});
+
+describe('getOutlineTabData', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  const outlineUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/outline/${courseId}`;
+
+  beforeEach(() => {
+    axiosMock.reset();
+  });
+
+  it('returns the normalized outline, with no time offset when the response has no date header', async () => {
+    axiosMock.onGet(outlineUrl).reply(200, { course_blocks: null, enrollment_mode: 'audit', welcome_message_html: null });
+    const outline = await getOutlineTabData(courseId);
+    expect(outline).toMatchObject({
+      courseBlocks: {}, enrollmentMode: 'audit', timeOffsetMillis: 0, welcomeMessageHtml: '',
+    });
+  });
+});
+
+describe('unsubscribeFromCourseGoal', () => {
+  const token = 'goal-token';
+  const unsubscribeUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/unsubscribe_from_course_goal/${token}`;
+
+  beforeEach(() => {
+    axiosMock.reset();
+  });
+
+  it('POSTs the token and returns the response camelCased', async () => {
+    axiosMock.onPost(unsubscribeUrl).reply(200, { course_title: 'Demonstration Course' });
+    const response = await unsubscribeFromCourseGoal(token);
+    expect(response.data).toEqual({ courseTitle: 'Demonstration Course' });
+  });
+});
+
+describe('getCoursewareSearchEnabled', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  const enabledUrl = `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/courseware-search/enabled/`;
+
+  beforeEach(() => {
+    axiosMock.reset();
+  });
+
+  it('returns whether search is enabled', async () => {
+    axiosMock.onGet(enabledUrl).reply(200, { enabled: true });
+    await expect(getCoursewareSearchEnabled(courseId)).resolves.toEqual({ enabled: true });
+  });
+
+  it('treats a missing flag as disabled', async () => {
+    axiosMock.onGet(enabledUrl).reply(200, {});
+    await expect(getCoursewareSearchEnabled(courseId)).resolves.toEqual({ enabled: false });
+  });
+});
+
+describe('getProctoringInfoData', () => {
+  const courseId = 'course-v1:edX+DemoX+Demo_Course';
+  let originalUrls;
+
+  beforeEach(() => {
+    axiosMock.reset();
+    originalUrls = currentUrls();
   });
 
   afterEach(() => {
     axiosMock.reset();
-    setConfig(originalConfig);
+    setUrls(originalUrls);
   });
 
   it('uses the LMS proctoring URL, with the username, when EXAMS_BASE_URL is not configured', async () => {
-    setConfig({
-      ...originalConfig,
-      EXAMS_BASE_URL: undefined,
-      LMS_BASE_URL: 'http://localhost:18000',
-    });
+    setUrls({ examsBaseUrl: null, lmsBaseUrl: 'http://localhost:18000' });
     const expectedUrl = `http://localhost:18000/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}&username=learner`;
     axiosMock.onGet(expectedUrl).reply(200, { onboarding_status: 'verified' });
 
     await expect(getProctoringInfoData(courseId, 'learner')).resolves.toEqual({ onboarding_status: 'verified' });
     expect(axiosMock.history.get[0].url).toBe(expectedUrl);
   });
+
+  it.each([
+    ['the LMS', null, `http://localhost:18000/api/edx_proctoring/v1/user_onboarding/status?is_learning_mfe=true&course_id=${encodeURIComponent(courseId)}`],
+    ['the exams service', 'http://localhost:18740', `http://localhost:18740/api/v1/student/course_id/${encodeURIComponent(courseId)}/onboarding`],
+  ])('asks %s without a username when none is given', async (_service, examsBaseUrl, expectedUrl) => {
+    setUrls({ examsBaseUrl, lmsBaseUrl: 'http://localhost:18000' });
+    axiosMock.onGet(expectedUrl).reply(200, { onboarding_status: 'verified' });
+
+    await expect(getProctoringInfoData(courseId)).resolves.toEqual({ onboarding_status: 'verified' });
+    expect(axiosMock.history.get[0].url).toBe(expectedUrl);
+  });
 });
 
 describe('searchCourseContentFromAPI', () => {
   const courseId = 'course-v1:edX+DemoX+Demo_Course';
-  const searchUrl = `${getConfig().LMS_BASE_URL}/search/${courseId}`;
+  const searchUrl = `${getSiteConfig().lmsBaseUrl}/search/${courseId}`;
 
   beforeEach(() => {
     axiosMock.reset();

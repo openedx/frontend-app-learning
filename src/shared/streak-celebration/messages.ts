@@ -1,4 +1,4 @@
-import { defineMessages } from '@edx/frontend-platform/i18n';
+import { defineMessages } from '@openedx/frontend-base';
 
 const messages = defineMessages({
   congratulations: {
@@ -9,6 +9,7 @@ const messages = defineMessages({
   streakBody: {
     id: 'learning.streakCelebration.body',
     defaultMessage: 'Keep it up, you’re on a roll!',
+    description: 'Body of the streak celebration dialog, shown to learners who used the learning app several days in a row',
   },
   streakButton: {
     id: 'learning.streakCelebration.button',
@@ -23,6 +24,7 @@ const messages = defineMessages({
   streakButtonAA759: {
     id: 'learning.streakCelebration.buttonAA759',
     defaultMessage: 'Continue with course',
+    description: 'Text on the button which closes the streak celebration dialog when it offers a discount',
   },
   streakHeader: {
     id: 'learning.streakCelebration.header',

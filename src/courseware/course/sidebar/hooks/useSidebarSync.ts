@@ -19,7 +19,7 @@ interface Params {
 /**
  * Sync currentSidebar with initialSidebar when async data loads
  *
- * sync currentSidebar with the updated initialSidebar (priority cascade).
+ * sync currentSidebar with the updated initialSidebar (the first available panel).
  *
  * Respects user actions: Only syncs if user hasn't manually toggled in current unit.
  */
@@ -89,5 +89,7 @@ export function useSidebarSync({
         setCurrentSidebar(null);
       }
     }
+    // The refs and the state setter are stable; the legacy app listed only the values that change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialSidebar, currentSidebar, shouldDisplayFullScreen, courseId, unitId]);
 }

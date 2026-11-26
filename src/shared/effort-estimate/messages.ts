@@ -1,9 +1,10 @@
-import { defineMessages } from '@edx/frontend-platform/i18n';
+import { defineMessages } from '@openedx/frontend-base';
 
 const messages = defineMessages({
   activities: {
     id: 'learning.effortEstimation.activities',
     defaultMessage: '{activityCount, plural, one {# activity} other {# activities}}',
+    description: 'Number of activities in a sequence, shown beside or in place of its estimated time: 2 activities',
   },
   minutesAbbreviated: {
     id: 'learning.effortEstimation.minutesAbbreviated',

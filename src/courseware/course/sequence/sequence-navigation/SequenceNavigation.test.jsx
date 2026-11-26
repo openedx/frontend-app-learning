@@ -1,17 +1,13 @@
-import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Factory } from 'rosie';
-import {
-  render, screen, fireEvent, getByText, mockCourseRequests,
-} from '../../../../setupTest';
-import CourseQueryGate from '../../../../tests/CourseQueryGate';
-import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
+import { fireEvent, getByText, screen } from '@testing-library/react';
+
+import useIndexOfLastVisibleChild from '@src/generic/tabs/useIndexOfLastVisibleChild';
+import { mockCourseRequests, renderInCourseware } from '@src/tests/courseware';
 import { SidebarProvider } from '../../sidebar/SidebarContext';
 import SequenceNavigation from './SequenceNavigation';
-import useIndexOfLastVisibleChild from '../../../../generic/tabs/useIndexOfLastVisibleChild';
 
 // Mock the hook to avoid relying on its implementation and mocking `getBoundingClientRect`.
-jest.mock('../../../../generic/tabs/useIndexOfLastVisibleChild');
+jest.mock('@src/generic/tabs/useIndexOfLastVisibleChild');
 useIndexOfLastVisibleChild.mockReturnValue([0, null, null]);
 
 describe('Sequence Navigation', () => {
@@ -36,23 +32,13 @@ describe('Sequence Navigation', () => {
 
   const renderNav = (props = {}, { states } = {}) => {
     const sequenceId = props.sequenceId ?? mockData.sequenceId;
-    return render(
-      <MemoryRouter initialEntries={[`/course/${courseMetadata.id}/${sequenceId}`]}>
-        <Routes>
-          <Route
-            path="/course/:courseId/:sequenceId/*"
-            element={(
-              <SidebarProvider courseId={courseMetadata.id} unitId={mockData.unitId} widgets={[]}>
-                <MountCourseQueryHooks courseId={courseMetadata.id} sequenceId={sequenceId} />
-                <CourseQueryGate courseId={courseMetadata.id} sequenceId={sequenceId} states={states}>
-                  <SequenceNavigation {...mockData} {...props} />
-                </CourseQueryGate>
-              </SidebarProvider>
-            )}
-          />
-        </Routes>
-      </MemoryRouter>,
-    );
+    return renderInCourseware((
+      <SidebarProvider courseId={courseMetadata.id} unitId={mockData.unitId} widgets={[]}>
+        <SequenceNavigation {...mockData} {...props} />
+      </SidebarProvider>
+    ), {
+      courseId: courseMetadata.id, sequenceId, states,
+    });
   };
 
   it('is empty while loading', async () => {

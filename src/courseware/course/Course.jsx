@@ -1,27 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Helmet } from 'react-helmet';
 import { useQueryClient } from '@tanstack/react-query';
-import { getConfig } from '@edx/frontend-platform';
 import { breakpoints, useWindowSize } from '@openedx/paragon';
 
 import { AlertList } from '@src/generic/user-messages';
 import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
 import { useCoursewareMetadata, useMinimalCourseOutline } from '@src/courseware/data/apiHooks';
-import { LearnerToolsSlot } from '../../plugin-slots/LearnerToolsSlot';
+import AuxiliarySidebarTriggerSlot from '@src/slots/AuxiliarySidebarTriggerSlot';
+import CourseBreadcrumbsSlot from '@src/slots/CourseBreadcrumbsSlot';
+import CourseOutlineMobileSidebarTriggerSlot from '@src/slots/CourseOutlineMobileSidebarTriggerSlot';
+import LearnerToolsSlot from '@src/slots/LearnerToolsSlot';
 import { SidebarProvider } from './sidebar/SidebarContext';
-import { getEnabledWidgets } from './sidebar/defaultWidgets';
-import { RightSidebarTriggerSlot } from '../../plugin-slots/RightSidebarTriggerSlot';
 import { CelebrationModal, shouldCelebrateOnSectionLoad, WeeklyGoalCelebrationModal } from './celebration';
 import ContentTools from './content-tools';
 import Sequence from './sequence';
-import { CourseOutlineMobileSidebarTriggerSlot } from '../../plugin-slots/CourseOutlineMobileSidebarTriggerSlot';
-import { CourseBreadcrumbsSlot } from '../../plugin-slots/CourseBreadcrumbsSlot';
 
 const Course = ({
   courseId,
-  sequenceId,
-  unitId,
+  sequenceId = null,
+  unitId = null,
   nextSequenceHandler,
   previousSequenceHandler,
   unitNavigationHandler,
@@ -32,26 +29,17 @@ const Course = ({
     celebrations,
     isStaff,
   } = useCourseHomeMeta(courseId, { enabled: false }).data ?? {};
-  const minimalCourseOutlineQuery = useMinimalCourseOutline(courseId, { enabled: false });
-  const minimalCourseOutline = minimalCourseOutlineQuery.data;
-  const minimalCourseMetadata = minimalCourseOutline?.courses[courseId];
+  const minimalCourseOutline = useMinimalCourseOutline(courseId, { enabled: false }).data;
   const minimalSequenceMetadata = minimalCourseOutline?.sequences[sequenceId];
   const section = minimalSequenceMetadata && minimalCourseOutline.sections[minimalSequenceMetadata.sectionId];
 
-  const pageTitleBreadCrumbs = [
-    minimalSequenceMetadata,
-    section,
-    minimalCourseMetadata,
-  ].filter(element => element != null).map(element => element.title);
-
-  const widgets = useMemo(() => getEnabledWidgets(), []);
   const queryClient = useQueryClient();
 
   const [firstSectionCelebrationOpen, setFirstSectionCelebrationOpen] = useState(false);
   // If streakLengthToCelebrate is populated, that modal takes precedence. Wait til the next load to display
   // the weekly goal celebration modal.
   const [weeklyGoalCelebrationOpen, setWeeklyGoalCelebrationOpen] = useState(
-    celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal,
+    !!(celebrations && !celebrations.streakLengthToCelebrate && celebrations.weeklyGoal),
   );
   const shouldDisplayLearnerTools = windowWidth >= breakpoints.medium.minWidth;
   const daysPerWeek = coursewareMetadata?.courseGoals?.selectedGoal?.daysPerWeek;
@@ -65,15 +53,10 @@ const Course = ({
       queryClient,
       celebrations,
     ));
-  }, [sequenceId]);
+  }, [sequenceId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <SidebarProvider courseId={courseId} unitId={unitId} widgets={widgets}>
-      {minimalCourseOutlineQuery.isSuccess && (
-        <Helmet>
-          <title>{`${pageTitleBreadCrumbs.join(' | ')} | ${getConfig().SITE_NAME}`}</title>
-        </Helmet>
-      )}
+    <SidebarProvider courseId={courseId} unitId={unitId}>
       <div className="position-relative d-flex align-items-xl-center mb-4 mt-1 flex-column flex-xl-row">
         <CourseBreadcrumbsSlot
           courseId={courseId}
@@ -87,12 +70,13 @@ const Course = ({
             enrollmentMode={coursewareMetadata.enrollmentMode}
             isStaff={isStaff}
             courseId={courseId}
+            sequenceId={sequenceId}
             unitId={unitId}
           />
         )}
         <div className="w-100 d-flex align-items-center">
-          <CourseOutlineMobileSidebarTriggerSlot />
-          <RightSidebarTriggerSlot courseId={courseId} />
+          <CourseOutlineMobileSidebarTriggerSlot courseId={courseId} sequenceId={sequenceId} unitId={unitId} />
+          <AuxiliarySidebarTriggerSlot courseId={courseId} sequenceId={sequenceId} unitId={unitId} />
         </div>
       </div>
 
@@ -122,19 +106,13 @@ const Course = ({
 };
 
 Course.propTypes = {
-  courseId: PropTypes.string,
+  courseId: PropTypes.string.isRequired,
   sequenceId: PropTypes.string,
   unitId: PropTypes.string,
   nextSequenceHandler: PropTypes.func.isRequired,
   previousSequenceHandler: PropTypes.func.isRequired,
   unitNavigationHandler: PropTypes.func.isRequired,
   windowWidth: PropTypes.number.isRequired,
-};
-
-Course.defaultProps = {
-  courseId: null,
-  sequenceId: null,
-  unitId: null,
 };
 
 const CourseWrapper = (props) => {

@@ -1,4 +1,4 @@
-import { getLocale, isRtl, useIntl } from '@edx/frontend-platform/i18n';
+import { getLocale, isRtl, useIntl } from '@openedx/frontend-base';
 import { DataTable } from '@openedx/paragon';
 
 import { useProgressData } from '../../hooks';
@@ -19,8 +19,8 @@ const DetailedGradesTable = () => {
       const subsectionScores = chapter.subsections.filter(
         (subsection) => !!(
           (showUngradedAssignments() || subsection.hasGradedAssignment)
-            && subsection.showGrades
-            && (subsection.numPointsPossible > 0 || subsection.numPointsEarned > 0)
+          && subsection.showGrades
+          && (subsection.numPointsPossible > 0 || subsection.numPointsEarned > 0)
         ),
       );
 

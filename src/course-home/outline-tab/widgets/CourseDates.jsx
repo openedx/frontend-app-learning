@@ -1,22 +1,24 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { getLinkProps, useIntl } from '@openedx/frontend-base';
+import { Hyperlink } from '@openedx/paragon';
 
 import DateSummary from '../DateSummary';
 import messages from '../messages';
 import { useCourseHomeMeta, useOutlineTabData } from '../../data/apiHooks';
+import { useDatesTabUrl } from '../../../course-tabs/hooks';
+import { useCourseId } from '@src/generic/course-params';
 
 const CourseDates = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const userTimezone = useCourseHomeMeta(courseId, { enabled: false }).data?.userTimezone;
   const {
     datesWidget: {
       courseDateBlocks,
-      datesTabLink,
     },
-  } = useOutlineTabData(courseId, { enabled: false }).data ?? {};
+  } = useOutlineTabData(courseId, { enabled: false }).data;
+  const datesTabLink = useDatesTabUrl();
 
   if (courseDateBlocks.length === 0) {
     return null;
@@ -35,9 +37,11 @@ const CourseDates = () => {
             />
           ))}
         </ol>
-        <a id="dates-tab-link" className="font-weight-bold ml-4 pl-1 small" href={datesTabLink}>
-          {intl.formatMessage(messages.allDates)}
-        </a>
+        {datesTabLink && (
+          <Hyperlink id="dates-tab-link" className="font-weight-bold ml-4 pl-1 small" {...getLinkProps(datesTabLink)}>
+            {intl.formatMessage(messages.allDates)}
+          </Hyperlink>
+        )}
       </div>
     </section>
   );

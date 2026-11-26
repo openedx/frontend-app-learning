@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useIntl } from '@openedx/frontend-base';
 
 import messages from './messages';
 
 const FormattedPricing = (props) => {
   const intl = useIntl();
   const {
-    inline,
-    offer,
-    verifiedMode,
+    inline = false,
+    offer = null,
+    verifiedMode = null,
   } = props;
 
   let currencySymbol;
@@ -59,11 +59,6 @@ const FormattedPricing = (props) => {
   );
 };
 
-FormattedPricing.defaultProps = {
-  inline: false,
-  offer: null,
-  verifiedMode: null,
-};
 
 FormattedPricing.propTypes = {
   inline: PropTypes.bool,

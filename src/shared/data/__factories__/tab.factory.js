@@ -1,4 +1,4 @@
-import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
+import { Factory } from 'rosie';
 
 Factory.define('tab')
   .option('courseId', 'course-v1:edX+DemoX+Demo_Course')

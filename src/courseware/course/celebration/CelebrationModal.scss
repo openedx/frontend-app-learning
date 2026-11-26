@@ -27,3 +27,10 @@
     }
   }
 }
+
+// The legacy app put these utility classes on a <p> inside the title; the title is now the modal's own heading.
+.celebration-modal .pgn__modal-title {
+  padding-top: 1.5rem; // pt-4
+  margin-right: -3rem; // mr-n5
+  text-align: center;
+}

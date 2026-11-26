@@ -17,7 +17,6 @@ function buildParams(overrides = {}) {
     currentSidebar: null,
     setCurrentSidebar: jest.fn(),
     getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-    getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
     courseId,
     shouldDisplayFullScreen: false,
     shouldDisplaySidebarOpen: true,
@@ -145,14 +144,10 @@ describe('useUnitShiftBehavior', () => {
     });
 
     describe('right panels available', () => {
-      it('switches to higher-priority panel when a better panel becomes available', () => {
+      it('switches to the first available panel from one that comes later, or is gone', () => {
         const params = buildParams({
           currentSidebar: 'NOTES',
           getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-          getAvailableWidgets: jest.fn(() => [
-            { id: 'DISCUSSIONS', priority: 10 },
-            { id: 'NOTES', priority: 20 },
-          ]),
         });
         renderHook(() => useUnitShiftBehavior(params));
 
@@ -160,27 +155,14 @@ describe('useUnitShiftBehavior', () => {
         expect(setSidebarId).toHaveBeenCalledWith(courseId, 'DISCUSSIONS');
       });
 
-      it('keeps current panel when no higher-priority panel is available', () => {
+      it('keeps the current panel when it is the first available one', () => {
         const params = buildParams({
           currentSidebar: 'DISCUSSIONS',
           getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-          getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
         });
         renderHook(() => useUnitShiftBehavior(params));
 
         expect(params.setCurrentSidebar).not.toHaveBeenCalled();
-      });
-
-      it('switches to firstAvailable when current panel is no longer in available list', () => {
-        const params = buildParams({
-          currentSidebar: 'NOTES',
-          getFirstAvailablePanel: jest.fn(() => 'DISCUSSIONS'),
-          getAvailableWidgets: jest.fn(() => [{ id: 'DISCUSSIONS', priority: 10 }]),
-        });
-        renderHook(() => useUnitShiftBehavior(params));
-
-        expect(params.setCurrentSidebar).toHaveBeenCalledWith('DISCUSSIONS');
-        expect(setSidebarId).toHaveBeenCalledWith(courseId, 'DISCUSSIONS');
       });
 
       it('opens COURSE_OUTLINE on desktop when no panel was open', () => {

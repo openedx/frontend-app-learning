@@ -1,9 +1,10 @@
-import { getConfig } from '@edx/frontend-platform';
+import { getAppConfig } from '@openedx/frontend-base';
 
-/* eslint-disable import/prefer-default-export */
+import { appId } from '@src/constants';
+
 export const showUngradedAssignments = () => (
-  getConfig().SHOW_UNGRADED_ASSIGNMENT_PROGRESS === 'true'
-  || getConfig().SHOW_UNGRADED_ASSIGNMENT_PROGRESS === true
+  getAppConfig(appId).SHOW_UNGRADED_ASSIGNMENT_PROGRESS === 'true'
+  || getAppConfig(appId).SHOW_UNGRADED_ASSIGNMENT_PROGRESS === true
 );
 
 export const getLatestDueDateInFuture = (assignmentTypeGradeSummary) => {
@@ -11,7 +12,7 @@ export const getLatestDueDateInFuture = (assignmentTypeGradeSummary) => {
   assignmentTypeGradeSummary.forEach((assignment) => {
     const assignmentLastGradePublishDate = assignment.lastGradePublishDate;
     if (assignmentLastGradePublishDate && (!latest || new Date(assignmentLastGradePublishDate) > new Date(latest))
-       && new Date(assignmentLastGradePublishDate) > new Date()) {
+      && new Date(assignmentLastGradePublishDate) > new Date()) {
       latest = assignmentLastGradePublishDate;
     }
   });

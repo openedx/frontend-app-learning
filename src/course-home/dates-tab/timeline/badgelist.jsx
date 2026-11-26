@@ -114,5 +114,4 @@ function getBadgeListAndColor(date, intl, item, items) {
   };
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export { getBadgeListAndColor };

@@ -1,4 +1,4 @@
-import { Factory } from 'rosie'; // eslint-disable-line import/no-extraneous-dependencies
+import { Factory } from 'rosie';
 import './block.factory';
 
 // Most of this file can be removed at some point, now that we rarely use course blocks
@@ -15,7 +15,6 @@ const getIds = (attr) => {
 // Generates an Object in { [block.id]: block } format, either from a single block or an array of blocks.
 const getBlocks = (attr) => {
   const blocks = Array.isArray(attr) ? attr : [attr];
-  // eslint-disable-next-line no-return-assign,no-sequences
   return blocks.reduce((acc, block) => (acc[block.id] = block, acc), {});
 };
 

@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const { NonRetryableError } = require('../../data/http-error');
+import Joi from 'joi';
+import { NonRetryableError } from '../../data/http-error';
 
 const endpointSchema = Joi.object({
   took: Joi.number().required(),
@@ -80,7 +80,9 @@ export default function mapSearchResponse(response, searchKeywords = '') {
   const filters = rawResults.reduce((list, result) => {
     const label = result?.data?.contentType;
 
-    if (!label) { return list; }
+    if (!label) {
+      return list;
+    }
 
     const key = label.toLowerCase();
 

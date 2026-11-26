@@ -1,4 +1,4 @@
-import { camelCaseObject } from '@edx/frontend-platform';
+import { camelCaseObject } from '@openedx/frontend-base';
 import mockedData from './mocked-response.json';
 import mapSearchResponse from '../map-search-response';
 

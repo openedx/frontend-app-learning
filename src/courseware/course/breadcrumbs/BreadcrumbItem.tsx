@@ -1,29 +1,33 @@
 import React, { useState } from 'react';
-import { getConfig } from '@edx/frontend-platform';
 import {
   useToggle,
   ModalPopup,
   Menu,
   Button,
 } from '@openedx/paragon';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
+import { useIsPreview } from '@src/courseware/data/apiHooks';
+import { getCoursewarePath } from '@src/courseware/urls';
 import JumpNavMenuItem from '../JumpNavMenuItem';
 
 interface Props {
   content: {
-    default: boolean,
-    id: string,
-    label: string,
+    default: boolean;
+    id: string;
+    label: string;
     sequences: {
-      id: string,
-    }[],
+      id: string;
+    }[];
   } [];
-  withSeparator: boolean | false,
+  withSeparator: boolean | false;
   separator: string | '';
   courseId: string;
   sequenceId: string | '';
   unitId: string | '';
   isStaff: boolean | false;
+  // Whether staff get the jump navigation menu, the breadcrumbs widget's `jumpNav` option.
+  jumpNav?: boolean;
 }
 
 const BreadcrumbItem: React.FC<Props> = ({
@@ -34,21 +38,22 @@ const BreadcrumbItem: React.FC<Props> = ({
   sequenceId,
   unitId,
   isStaff,
+  jumpNav = false,
 }) => {
-  const defaultContent = content.filter(
+  const defaultContent = content.find(
     (destination: { default: boolean }) => destination.default,
-  )[0] || { id: courseId, label: '', sequences: [] };
+  ) ?? { id: courseId, label: '', sequences: [] };
 
-  const showRegularLink = getConfig().ENABLE_JUMPNAV !== 'true' || content.length < 2 || !isStaff;
+  const showRegularLink = !jumpNav || content.length < 2 || !isStaff;
   const [isOpen, open, close] = useToggle(false);
-  const [target, setTarget] = useState(null);
+  const [target, setTarget] = useState<HTMLButtonElement | null>(null);
 
-  const { pathname } = useLocation();
-  const isPreview = pathname.startsWith('/preview');
-  const baseUrl = defaultContent.sequences.length
-    ? `/course/${courseId}/${defaultContent.sequences[0].id}`
-    : `/course/${courseId}/${defaultContent.id}`;
-  const link = isPreview ? `/preview${baseUrl}` : baseUrl;
+  const isPreview = useIsPreview();
+  const link = getCoursewarePath(
+    isPreview,
+    courseId,
+    defaultContent.sequences.length ? defaultContent.sequences[0].id : defaultContent.id,
+  );
   return (
     <>
       {withSeparator && separator && (
@@ -72,12 +77,9 @@ const BreadcrumbItem: React.FC<Props> = ({
           </Link>
         ) : (
           <>
-            {
-              // @ts-ignore
-              <Button className="text-primary-500 m-0 p-0" variant="link" onClick={open} ref={setTarget}>
-                {defaultContent.label}
-              </Button>
-            }
+            <Button className="text-primary-500 m-0 p-0" variant="link" onClick={open} ref={setTarget}>
+              {defaultContent.label}
+            </Button>
             <ModalPopup positionRef={target} isOpen={isOpen} onClose={close}>
               <Menu>
                 {content.map((item) => (

@@ -1,63 +1,44 @@
-/**
- * @jest-environment jsdom
- */
-import React from 'react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { Factory } from 'rosie';
-import { getConfig } from '@edx/frontend-platform';
-import { AppProvider } from '@edx/frontend-platform/react';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { QueryClientProvider } from '@tanstack/react-query';
+import {
+  getAnalyticsService, getAppConfig, getAuthenticatedHttpClient, getSiteConfig, mergeAppConfig, runPageRules,
+  setAuthenticatedUser, WidgetOperationTypes,
+} from '@openedx/frontend-base';
 import MockAdapter from 'axios-mock-adapter';
 import Cookies from 'js-cookie';
 import userEvent from '@testing-library/user-event';
-import { render } from '@testing-library/react';
+import {
+  act, fireEvent, screen, waitFor, within,
+} from '@testing-library/react';
+
+import { appId } from '@src/constants';
 import { courseHomeMetaQuery } from '@src/course-home/data/apiHooks';
+import routes from '@src/routes';
+import { courseHomeSectionOutlineSlotId } from '@src/slots/CourseHomeSectionOutlineSlot';
+import { courseOutlineTabNotificationsSlotId } from '@src/slots/CourseOutlineTabNotificationsSlot';
+import { authenticatedUser } from '@src/tests/authenticatedUser';
+import { mockLocation, preventNavigation } from '@src/tests/location';
+import { renderRoutes } from '@src/tests/render';
+import { addSlotOperations } from '@src/tests/slots';
 import messages from './messages';
 
 import { buildMinimalCourseBlocks } from '../../shared/data/__factories__/courseBlocks.factory';
-import {
-  createTestQueryClient, fireEvent, initializeMockApp, logUnhandledRequests, screen, waitFor, act,
-} from '../../setupTest';
 import { appendBrowserTimezoneToUrl } from '../../utils';
 import { CERT_STATUS_TYPE } from './alerts/certificate-status-alert/CertificateStatusAlert';
-import OutlineTab from './OutlineTab';
-import { UserMessagesProvider } from '../../generic/user-messages';
-import { ToastProvider } from '../../generic/ToastContext';
 
-const mockCoursewareSearchParams = jest.fn();
-
-initializeMockApp();
-jest.mock('@edx/frontend-platform/analytics');
-jest.mock('../courseware-search/hooks', () => ({
-  ...jest.requireActual('../courseware-search/hooks'),
-  useCoursewareSearchParams: () => mockCoursewareSearchParams,
-}));
-
-const coursewareSearch = {
-  query: '',
-  filter: '',
-  setQuery: jest.fn(),
-  setFilter: jest.fn(),
-  clearSearchParams: jest.fn(),
-};
-
-const mockSearchParams = ((props = coursewareSearch) => {
-  mockCoursewareSearchParams.mockReturnValue(props);
-});
+const { sendTrackEvent, sendTrackingLogEvent } = getAnalyticsService();
 
 describe('Outline Tab', () => {
   let axiosMock;
+  let router;
 
   const courseId = 'course-v1:edX+DemoX+Demo_Course';
-  let courseMetadataUrl = `${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/${courseId}`;
+  let courseMetadataUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/course_metadata/${courseId}`;
   courseMetadataUrl = appendBrowserTimezoneToUrl(courseMetadataUrl);
-  const enrollmentUrl = `${getConfig().LMS_BASE_URL}/api/enrollment/v2/enrollment/`;
-  const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
-  const masqueradeUrl = `${getConfig().LMS_BASE_URL}/courses/${courseId}/masquerade`;
-  const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/${courseId}`;
-  const proctoringInfoUrl = `${getConfig().EXAMS_BASE_URL}/api/v1/student/course_id/${encodeURIComponent(courseId)}/onboarding?username=MockUser`;
+  const enrollmentUrl = `${getSiteConfig().lmsBaseUrl}/api/enrollment/v2/enrollment/`;
+  const goalUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/save_course_goal`;
+  const masqueradeUrl = `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/masquerade`;
+  const outlineUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/outline/${courseId}`;
+  const proctoringInfoUrl = `${getAppConfig(appId).EXAMS_BASE_URL}/api/v1/student/course_id/${encodeURIComponent(courseId)}/onboarding?username=MockUser`;
 
   const defaultMetadata = Factory.build('courseHomeMetadata');
   const defaultTabData = Factory.build('outlineTabData');
@@ -72,29 +53,22 @@ describe('Outline Tab', () => {
     axiosMock.onGet(outlineUrl).reply(200, outlineTabData);
   }
 
+  const outlinePath = `/learning/course/${courseId}/home`;
+
   async function fetchAndRender(path = '', { waitForLoaded = true } = {}) {
     const search = path.includes('?') ? path.slice(path.indexOf('?')) : '';
-    const queryClient = createTestQueryClient();
-    await act(async () => render(
-      <AppProvider wrapWithRouter={false}>
-        <MemoryRouter initialEntries={[`/course/${courseId}/home${search}`]}>
-          <QueryClientProvider client={queryClient}>
-            <UserMessagesProvider>
-              <ToastProvider>
-                <Routes>
-                  <Route path="/course/:courseId/home" element={<OutlineTab />} />
-                </Routes>
-              </ToastProvider>
-            </UserMessagesProvider>
-          </QueryClientProvider>
-        </MemoryRouter>
-      </AppProvider>,
-    ));
+    const { queryClient, router: renderedRouter } = renderRoutes(routes, `${outlinePath}${search}`);
+    router = renderedRouter;
     if (waitForLoaded) {
+      // The account activation modal hides the page behind it from the accessibility tree.
+      await screen.findByRole('heading', { level: 1, hidden: true });
       await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
     }
     return queryClient;
   }
+
+  // The lazy route's first load compiles the whole page, which can outlast findBy's timeout.
+  beforeAll(() => import('./OutlineTab'));
 
   beforeEach(async () => {
     axiosMock = new MockAdapter(getAuthenticatedHttpClient());
@@ -110,29 +84,37 @@ describe('Outline Tab', () => {
       onboarding_link: 'test',
       expiration_date: null,
     });
-
-    // Mock courseware search params
-    mockSearchParams();
-
-    logUnhandledRequests(axiosMock);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
+  describe('page rules', () => {
+    it('reports no page-rule diagnostics', async () => {
+      await fetchAndRender();
+      // The private course alert loads lazily: wait for it, so the rules see it and it cannot load after the test.
+      await screen.findByTestId('private-course-alert');
+      expect(runPageRules(document)).toEqual([]);
+    });
+  });
+
   describe('Access denied', () => {
     it('waits for the outline data before rendering for a denied learner (no crash)', async () => {
       setMetadata({ course_access: { has_access: false, error_code: 'authentication_required' }, is_enrolled: false });
       let resolveOutline;
-      axiosMock.onGet(outlineUrl).reply(() => new Promise((resolve) => { resolveOutline = resolve; }));
+      axiosMock.onGet(outlineUrl).reply(() => new Promise((resolve) => {
+        resolveOutline = resolve;
+      }));
 
       const queryClient = await fetchAndRender('', { waitForLoaded: false });
 
       await waitFor(() => expect(queryClient.getQueryData(courseHomeMetaQuery(courseId).queryKey)).toBeDefined());
       expect(screen.getByRole('status')).toBeInTheDocument();
 
-      await act(async () => { resolveOutline([200, Factory.build('outlineTabData')]); });
+      await act(async () => {
+        resolveOutline([200, Factory.build('outlineTabData')]);
+      });
       expect(await screen.findByTestId('private-course-alert')).toBeInTheDocument();
     });
   });
@@ -147,7 +129,7 @@ describe('Outline Tab', () => {
       setTabData({
         resume_course: {
           has_visited_course: true,
-          url: `${getConfig().LMS_BASE_URL}/courses/${courseId}/jump_to/block-v1:edX+Test+Block@12345abcde`,
+          url: `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/jump_to/block-v1:edX+Test+Block@12345abcde`,
         },
       });
       await fetchAndRender();
@@ -164,14 +146,48 @@ describe('Outline Tab', () => {
       expect(expandedSectionNode).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('includes outline_tab_notifications_slot', async () => {
+    it('renders a widget appended to the notifications slot, with the course ID', async () => {
+      const Notification = jest.fn(() => <p>Course announcement</p>);
+      addSlotOperations([{
+        slotId: courseOutlineTabNotificationsSlotId,
+        id: 'org.example.notification',
+        op: WidgetOperationTypes.APPEND,
+        component: Notification,
+      }]);
       const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
       setTabData({
         course_blocks: { blocks: courseBlocks.blocks },
       });
       await fetchAndRender();
 
-      expect(screen.getByTestId('org.openedx.frontend.learning.course_outline_tab_notifications.v1')).toBeInTheDocument();
+      expect(screen.getByText('Course announcement')).toBeInTheDocument();
+      expect(Notification.mock.lastCall[0]).toEqual({ courseId });
+    });
+
+    it('renders a widget that replaces the section outline instead of it', async () => {
+      addSlotOperations([{
+        slotId: courseHomeSectionOutlineSlotId,
+        id: 'org.example.outline',
+        op: WidgetOperationTypes.REPLACE,
+        relatedId: 'defaultContent',
+        element: <p>Custom outline</p>,
+      }]);
+      await fetchAndRender();
+
+      expect(screen.getByText('Custom outline')).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /section/ })).not.toBeInTheDocument();
+    });
+
+    it('renders no section outline when an operation removes it', async () => {
+      addSlotOperations([{
+        slotId: courseHomeSectionOutlineSlotId,
+        op: WidgetOperationTypes.REMOVE,
+        relatedId: 'defaultContent',
+      }]);
+      await fetchAndRender();
+
+      expect(screen.getByRole('button', { name: 'Expand all' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /section/ })).not.toBeInTheDocument();
     });
 
     it('handles expand/collapse all button click', async () => {
@@ -276,6 +292,7 @@ describe('Outline Tab', () => {
     });
 
     it('sends analytics event onClick of upgrade button in UpgradeToShiftDatesAlert', async () => {
+      mockLocation({ replace: jest.fn() });
       await fetchAndRender();
       sendTrackEvent.mockClear();
 
@@ -303,7 +320,7 @@ describe('Outline Tab', () => {
 
       const button = await screen.findByRole('button', { name: 'Shift due dates' });
 
-      axiosMock.onPost(`${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`)
+      axiosMock.onPost(`${getSiteConfig().lmsBaseUrl}/api/course_experience/v1/reset_course_deadlines`)
         .reply(200, { header: 'Dates shifted' });
       setTabData(
         { dates_banner_info: { missed_deadlines: false, missed_gated_content: false } },
@@ -381,13 +398,13 @@ describe('Outline Tab', () => {
     it('ignores comments and misformatted HTML', async () => {
       setTabData({
         welcome_message_html: '<p class="additional-spaces-in-tag"   >'
-      + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
-      + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
-      + 'Test welcome message that happens to be longer than one hundred words because of comments but displayed content is less.'
-      + 'It should not be shortened.'
-      + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
-      + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
-      + '</p>',
+          + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
+          + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
+          + 'Test welcome message that happens to be longer than one hundred words because of comments but displayed content is less.'
+          + 'It should not be shortened.'
+          + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
+          + '<!-- Even if the welcome_message_html length is above the limit because of comments, we hope it will not be shortened. -->'
+          + '</p>',
       });
       await fetchAndRender();
       const showMoreButton = screen.queryByRole('button', { name: 'Show More' });
@@ -444,6 +461,7 @@ describe('Outline Tab', () => {
       sendTrackEvent.mockClear();
 
       const upgradeLink = screen.getByRole('link', { name: 'Upgrade to Verified Certificate' });
+      preventNavigation(upgradeLink);
       fireEvent.click(upgradeLink);
 
       expect(sendTrackEvent).toHaveBeenCalledTimes(1);
@@ -494,10 +512,35 @@ describe('Outline Tab', () => {
       expect(sendTrackEvent).toHaveBeenCalledWith('enrollment.email.clicked.setgoal', {});
     });
 
+    it('takes weekly_goal out of the address once the goal is saved', async () => {
+      setTabData({
+        course_goals: {
+          weekly_learning_goal_enabled: true,
+        },
+      });
+
+      await fetchAndRender('http://localhost/?weekly_goal=3');
+      await waitFor(() => expect(router.state.location.search).toBe(''));
+      // The address is rewritten in place: the reader stays where they are.
+      expect(router.state.preventScrollReset).toBe(true);
+
+      expect(axiosMock.history.post.filter(req => req.url.includes('save_course_goal'))).toHaveLength(1);
+    });
+
     it('emit start course event via query param', async () => {
       sendTrackEvent.mockClear();
       await fetchAndRender('http://localhost/?start_course=1');
       expect(sendTrackEvent).toHaveBeenCalledWith('enrollment.email.clicked.startcourse', {});
+    });
+
+    it('sends the start course event once and takes start_course out of the address', async () => {
+      sendTrackEvent.mockClear();
+      await fetchAndRender('http://localhost/?start_course=1');
+      await waitFor(() => expect(new URLSearchParams(router.state.location.search).has('start_course')).toBe(false));
+
+      expect(router.state.historyAction).toBe('REPLACE');
+      expect(router.state.preventScrollReset).toBe(true);
+      expect(sendTrackEvent.mock.calls.filter(([name]) => name === 'enrollment.email.clicked.startcourse')).toHaveLength(1);
     });
 
     describe('weekly learning goal is not set', () => {
@@ -513,6 +556,13 @@ describe('Outline Tab', () => {
 
       it('renders weekly learning goal card', async () => {
         expect(screen.queryByTestId('weekly-learning-goal-card')).toBeInTheDocument();
+      });
+
+      it.each(['Casual', 'Regular', 'Intense'])('shows the flag image on the %s goal button', (level) => {
+        const image = screen.getByTestId(`weekly-learning-goal-input-${level}`).querySelector('img');
+
+        expect(image).toHaveAttribute('src', 'SvgURL');
+        expect(image).toHaveAttribute('alt', '');
       });
 
       it('disables the subscribe button if no goal is set', async () => {
@@ -681,11 +731,7 @@ describe('Outline Tab', () => {
       });
 
       it('handles button click', async () => {
-        const { location } = window;
-        delete window.location;
-        window.location = {
-          reload: jest.fn(),
-        };
+        const { reload } = mockLocation({ reload: jest.fn() });
         await fetchAndRender();
 
         const button = await screen.findByRole('button', { name: 'Enroll now' });
@@ -693,9 +739,62 @@ describe('Outline Tab', () => {
         await waitFor(() => expect(axiosMock.history.post).toHaveLength(1));
         expect(axiosMock.history.post[0].data)
           .toEqual(JSON.stringify({ course_details: { course_id: courseId } }));
-        expect(window.location.reload).toHaveBeenCalledTimes(1);
+        expect(reload).toHaveBeenCalledTimes(1);
+      });
+    });
 
-        window.location = location;
+    // The user messages provider takes the flash messages out of local storage when it mounts; the outline mounts
+    // the only copy of it on the page.
+    describe('Flash messages', () => {
+      const flashMessagesKey = 'UserMessagesProvider.flashMessages';
+      const storedFlashMessages = () => JSON.parse(localStorage.getItem(flashMessagesKey));
+
+      afterEach(() => {
+        localStorage.removeItem(flashMessagesKey);
+      });
+
+      it('keeps the enrollment success message for after the reload', async () => {
+        const { reload } = mockLocation({ reload: jest.fn() });
+        await fetchAndRender();
+
+        fireEvent.click(await screen.findByRole('button', { name: 'Enroll now' }));
+        await waitFor(() => expect(reload).toHaveBeenCalledTimes(1));
+
+        expect(storedFlashMessages()).toEqual([expect.objectContaining({
+          flash: true, text: 'You\'ve successfully enrolled in this course!', type: 'success', topic: 'outline',
+        })]);
+      });
+
+      it('shows the enrollment success message once the page has reloaded', async () => {
+        const { reload } = mockLocation({ reload: jest.fn() });
+        const { unmount } = renderRoutes(routes, outlinePath);
+        fireEvent.click(await screen.findByRole('button', { name: 'Enroll now' }));
+        await waitFor(() => expect(reload).toHaveBeenCalledTimes(1));
+        expect(screen.queryByText('You\'ve successfully enrolled in this course!')).not.toBeInTheDocument();
+
+        // The reload: the page mounts again.
+        unmount();
+        renderRoutes(routes, outlinePath);
+
+        expect(await screen.findAllByText('You\'ve successfully enrolled in this course!')).toHaveLength(1);
+        expect(await screen.findByTestId('private-course-alert')).toBeInTheDocument();
+      });
+
+      it('shows a flash message exactly once after a reload, and not after the next one', async () => {
+        // What the enrollment flow stores, on the topic the outline shows above the page.
+        localStorage.setItem(flashMessagesKey, JSON.stringify([{
+          dismissible: true, flash: true, text: 'A flash message', type: 'success', topic: 'outline',
+        }]));
+        const { unmount } = renderRoutes(routes, outlinePath);
+
+        expect(await screen.findAllByText('A flash message')).toHaveLength(1);
+        expect(await screen.findByTestId('private-course-alert')).toBeInTheDocument();
+        expect(storedFlashMessages()).toBeNull();
+
+        unmount();
+        renderRoutes(routes, outlinePath);
+        expect(await screen.findByTestId('private-course-alert')).toBeInTheDocument();
+        expect(screen.queryByText('A flash message')).not.toBeInTheDocument();
       });
     });
 
@@ -709,9 +808,8 @@ describe('Outline Tab', () => {
           },
         });
         await fetchAndRender();
-        const instructorToolbar = screen.getByTestId('instructor-toolbar');
-        expect(instructorToolbar).toBeInTheDocument();
-        expect(screen.getByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
+        // The banner is loaded lazily, so it can arrive after the page has rendered.
+        expect(await screen.findByText('This learner no longer has access to this course. Their access expired on', { exact: false })).toBeInTheDocument();
         expect(screen.getByText('1/1/2020', { exact: false })).toBeInTheDocument();
       });
 
@@ -724,8 +822,6 @@ describe('Outline Tab', () => {
           },
         });
         await fetchAndRender();
-        const instructorToolbar = screen.getByTestId('instructor-toolbar');
-        expect(instructorToolbar).toBeInTheDocument();
         expect(screen.queryByText('This learner no longer has access to this course. Their access expired on', { exact: false })).not.toBeInTheDocument();
       });
     });
@@ -818,7 +914,7 @@ describe('Outline Tab', () => {
           ],
         });
         await fetchAndRender();
-        expect(screen.queryByText('Your grade and certificate status will be available soon.')).toBeInTheDocument();
+        expect(await screen.findByText('Your grade and certificate status will be available soon.')).toBeInTheDocument();
       });
       it('renders verification alert', async () => {
         const now = new Date();
@@ -967,6 +1063,7 @@ describe('Outline Tab', () => {
         await fetchAndRender();
         sendTrackEvent.mockClear();
         const requestingButton = screen.getByRole('link', { name: 'Verify my ID' });
+        preventNavigation(requestingButton);
         fireEvent.click(requestingButton);
         expect(sendTrackEvent).toHaveBeenCalledTimes(1);
         expect(sendTrackEvent).toHaveBeenCalledWith(
@@ -997,7 +1094,7 @@ describe('Outline Tab', () => {
           ],
         });
         await fetchAndRender();
-        expect(screen.queryByText('More content is coming soon!')).toBeInTheDocument();
+        expect(await screen.findByText('More content is coming soon!')).toBeInTheDocument();
       });
     });
     describe('Scheduled Content Alert not present without courseBlocks', () => {
@@ -1079,7 +1176,9 @@ describe('Outline Tab', () => {
 
     it('defers the weekly learning goal card until the proctoring info has settled', async () => {
       let resolveProctoringInfo;
-      axiosMock.onGet(proctoringInfoUrl).reply(() => new Promise((resolve) => { resolveProctoringInfo = resolve; }));
+      axiosMock.onGet(proctoringInfoUrl).reply(() => new Promise((resolve) => {
+        resolveProctoringInfo = resolve;
+      }));
       setTabData({
         enable_proctored_exams: true,
         course_goals: { weekly_learning_goal_enabled: true },
@@ -1088,7 +1187,9 @@ describe('Outline Tab', () => {
 
       expect(screen.queryByTestId('weekly-learning-goal-card')).not.toBeInTheDocument();
 
-      await act(async () => { resolveProctoringInfo([200, {}]); });
+      await act(async () => {
+        resolveProctoringInfo([200, {}]);
+      });
 
       expect(await screen.findByTestId('weekly-learning-goal-card')).toBeInTheDocument();
       expect(screen.queryByText('This course contains proctored exams')).not.toBeInTheDocument();
@@ -1302,7 +1403,9 @@ describe('Outline Tab', () => {
     it('displays account activation alert if cookie is set true', async () => {
       Cookies.set = jest.fn();
       Cookies.get = jest.fn().mockImplementation(() => 'true');
-      Cookies.remove = jest.fn().mockImplementation(() => { Cookies.get = jest.fn(); });
+      Cookies.remove = jest.fn().mockImplementation(() => {
+        Cookies.get = jest.fn();
+      });
 
       await fetchAndRender();
       expect(screen.queryByText('Activate your account so you can log back in')).toBeInTheDocument();
@@ -1312,7 +1415,9 @@ describe('Outline Tab', () => {
     it('do not displays account activation alert if cookie is not set true', async () => {
       Cookies.set = jest.fn();
       Cookies.get = jest.fn();
-      Cookies.remove = jest.fn().mockImplementation(() => { Cookies.get = jest.fn(); });
+      Cookies.remove = jest.fn().mockImplementation(() => {
+        Cookies.get = jest.fn();
+      });
 
       await fetchAndRender();
       expect(screen.queryByText('Activate your account so you can log back in')).not.toBeInTheDocument();
@@ -1322,12 +1427,14 @@ describe('Outline Tab', () => {
     it('sends account activation email on clicking the re-send email in account activation alert', async () => {
       Cookies.set = jest.fn();
       Cookies.get = jest.fn().mockImplementation(() => 'true');
-      Cookies.remove = jest.fn().mockImplementation(() => { Cookies.get = jest.fn(); });
+      Cookies.remove = jest.fn().mockImplementation(() => {
+        Cookies.get = jest.fn();
+      });
 
       await fetchAndRender();
 
       axiosMock = new MockAdapter(getAuthenticatedHttpClient());
-      const resendEmailUrl = `${getConfig().LMS_BASE_URL}/api/send_account_activation_email`;
+      const resendEmailUrl = `${getSiteConfig().lmsBaseUrl}/api/send_account_activation_email`;
       axiosMock.onPost(resendEmailUrl).reply(200, {});
 
       const resendLink = screen.getByRole('button', { name: 'resend the email' });
@@ -1430,6 +1537,507 @@ describe('Outline Tab', () => {
     });
   });
 
+  describe('Links to Learning pages', () => {
+    const datesPath = `/learning/course/${courseId}/dates`;
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    const startDateBlock = { date_type: 'course-start-date', date: tomorrow.toISOString(), title: 'Start' };
+    const tabsWithout = (tabId) => defaultMetadata.tabs.filter((tab) => tab.tab_id !== tabId);
+
+    it('links a sequence title to the sequence under the courseware route', async () => {
+      const { courseBlocks, sequenceBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { resumeBlock: true });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'Title of Sequence' }))
+        .toHaveAttribute('href', `/learning/course/${courseId}/${sequenceBlocks[0].id}`);
+    });
+
+    it('links the dates widget to the dates tab, and the click stays in the site', async () => {
+      axiosMock.onGet(`${getSiteConfig().lmsBaseUrl}/api/course_home/dates/${courseId}`)
+        .reply(200, Factory.build('datesTabData'));
+      setMetadata({ is_enrolled: true });
+      setTabData({}, { date_blocks: [startDateBlock] });
+      await fetchAndRender();
+
+      const link = screen.getByRole('link', { name: 'View all course dates' });
+      expect(link).toHaveAttribute('href', datesPath);
+      await userEvent.click(link);
+
+      await waitFor(() => expect(router.state.location.pathname).toBe(datesPath));
+    });
+
+    it('shows the dates widget without its link for a course that has no dates tab', async () => {
+      setMetadata({ is_enrolled: true, tabs: tabsWithout('dates') });
+      setTabData({}, { date_blocks: [startDateBlock] });
+      await fetchAndRender();
+
+      expect(screen.getByRole('heading', { name: 'Important dates' })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'View all course dates' })).not.toBeInTheDocument();
+    });
+
+    it('links the scheduled content alert to the dates tab', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { hasScheduledContent: true });
+      setMetadata({ is_enrolled: true });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      expect(await screen.findByRole('link', { name: 'View Course Schedule' })).toHaveAttribute('href', datesPath);
+    });
+
+    it('shows the scheduled content alert without its button for a course that has no dates tab', async () => {
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', { hasScheduledContent: true });
+      setMetadata({ is_enrolled: true, tabs: tabsWithout('dates') });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      expect(await screen.findByText('More content is coming soon!')).toBeInTheDocument();
+      expect(screen.queryByText('View Course Schedule')).not.toBeInTheDocument();
+    });
+
+    it('links the not-passing alert to the progress tab', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        cert_data: {},
+        user_has_passing_grade: false,
+        has_ended: true,
+        enrollment_mode: 'verified',
+      }, {
+        date_blocks: [{ date_type: 'course-end-date', date: yesterday.toISOString(), title: 'End' }],
+      });
+      await fetchAndRender();
+
+      expect(await screen.findByRole('link', { name: 'View grades' }))
+        .toHaveAttribute('href', `/learning/course/${courseId}/progress`);
+    });
+  });
+
+  describe('Handouts and welcome message frames', () => {
+    it('builds the frame document on the LMS base, with its stylesheet and the three rules inline', async () => {
+      await fetchAndRender();
+      const { srcdoc } = screen.getByTitle('Course Handouts');
+
+      expect(srcdoc).toContain(`<base href="${getSiteConfig().lmsBaseUrl}" target="_parent">`);
+      expect(srcdoc).toContain('<link rel="stylesheet" href="/static/css/bootstrap/lms-main.css">');
+      expect(srcdoc.replace(/\s+/g, ' ')).toContain(
+        '<style> body a { color: #00688D; } body.inline-link a { text-decoration: underline; } body.small { font-size: 0.875rem; } </style>',
+      );
+      expect(srcdoc).toContain('<body class="small"><ul><li>Handout 1</li></ul></body>');
+    });
+
+    it('links the stylesheet of the theme the app config names', async () => {
+      mergeAppConfig(appId, { LEGACY_THEME_NAME: 'my-theme' });
+      await fetchAndRender();
+
+      expect(screen.getByTitle('Course Handouts').srcdoc)
+        .toContain('<link rel="stylesheet" href="/static/my-theme/css/bootstrap/lms-main.css">');
+
+      // reset config for other tests
+      act(() => mergeAppConfig(appId, { LEGACY_THEME_NAME: null }));
+    });
+  });
+
+  describe('Section', () => {
+    it('opens and closes on its title and on its icon button', async () => {
+      const user = userEvent.setup();
+      await fetchAndRender();
+      const section = screen.getByRole('button', { name: /Title of Section/ });
+      expect(section).toHaveAttribute('aria-expanded', 'false');
+
+      await user.click(section);
+      expect(section).toHaveAttribute('aria-expanded', 'true');
+
+      await user.click(within(section).getByRole('button', { name: 'Close' }));
+      expect(section).toHaveAttribute('aria-expanded', 'false');
+
+      await user.click(within(section).getByRole('button', { name: 'Open' }));
+      expect(section).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('renders the outline of a course whose blocks include a unit', async () => {
+      setTabData({ course_blocks: { blocks: Factory.build('courseBlocks', { courseId }).blocks } });
+      await fetchAndRender();
+
+      expect(screen.getAllByRole('button', { name: /Incomplete section/ })).toHaveLength(1);
+    });
+
+    it('renders the outline of a course whose sequences are given as a single block', async () => {
+      const user = userEvent.setup();
+      const sequence = Factory.build('block', { type: 'sequential', display_name: 'Only sequence' }, { courseId });
+      const courseBlocks = Factory.build('courseBlocks', { courseId }, { sequences: sequence });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      await user.click(screen.getByRole('button', { name: /Incomplete section/ }));
+
+      expect(screen.getByRole('link', { name: 'Only sequence' })).toBeInTheDocument();
+    });
+
+    it('links a sequence whose block carries its own URLs', async () => {
+      const sequence = Factory.build('block', {
+        type: 'sequential',
+        display_name: 'Sequence with URLs',
+        lms_web_url: `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/jump_to/sequence`,
+        student_view_url: `${getSiteConfig().lmsBaseUrl}/xblock/sequence`,
+      }, { courseId });
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', {
+        resumeBlock: true,
+        sequenceBlocks: [sequence],
+      });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'Sequence with URLs' })).toBeInTheDocument();
+    });
+  });
+
+  describe('Start or resume button', () => {
+    const resumeUrl = `${getSiteConfig().lmsBaseUrl}/courses/${courseId}/jump_to/block-v1:edX+Test+Block@12345abcde`;
+
+    it.each([
+      [false, 'Start course', 'start'],
+      [true, 'Resume course', 'resume'],
+    ])('reports a click with has_visited_course %s', async (hasVisitedCourse, name, eventType) => {
+      setTabData({ resume_course: { has_visited_course: hasVisitedCourse, url: resumeUrl } });
+      await fetchAndRender();
+      const link = screen.getByRole('link', { name });
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.course.home.resume_course.clicked', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        event_type: eventType,
+        url: resumeUrl,
+      });
+    });
+
+    it('renders no card without a resume URL', async () => {
+      setTabData({ resume_course: { has_visited_course: false, url: null } });
+      await fetchAndRender();
+
+      expect(screen.queryByTestId('start-resume-card')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Course tools', () => {
+    const tool = (analyticsId) => ({ analytics_id: analyticsId, title: analyticsId, url: `https://example.com/${analyticsId}` });
+
+    it.each([
+      ['edx.bookmarks', 'bookmark'],
+      ['edx.tool.verified_upgrade', 'certificate'],
+      ['edx.tool.financial_assistance', 'info'],
+      ['edx.calendar-sync', 'calendar'],
+      ['edx.updates', 'newspaper'],
+      ['edx.reviews', 'star'],
+    ])('gives the %s tool the %s icon', async (analyticsId, icon) => {
+      setTabData({ course_tools: [tool(analyticsId)] });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: analyticsId }).querySelector('svg')).toHaveAttribute('data-icon', icon);
+    });
+
+    it('lists a tool it has no icon for without one', async () => {
+      setTabData({ course_tools: [tool('example.unknown')] });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'example.unknown' }).querySelector('svg')).not.toBeInTheDocument();
+    });
+
+    it('reports a click on a tool', async () => {
+      await fetchAndRender();
+      const link = screen.getByRole('link', { name: 'Bookmarks' });
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackingLogEvent).toHaveBeenCalledWith('edx.course.tool.accessed', {
+        org_key: 'edX',
+        courserun_key: courseId,
+        course_id: courseId,
+        is_staff: false,
+        tool_name: 'edx.bookmarks',
+      });
+    });
+  });
+
+  describe('Certificate alert buttons', () => {
+    const now = new Date();
+    const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    const endDateBlock = { date_type: 'course-end-date', date: yesterday.toISOString(), title: 'End' };
+    const clickProperties = { org_key: 'edX', courserun_key: courseId, is_staff: false };
+
+    it('reports a click on the certificate button', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        cert_data: {
+          cert_status: CERT_STATUS_TYPE.DOWNLOADABLE,
+          cert_web_view_url: 'certificate/testuuid',
+          certificate_available_date: null,
+        },
+      }, { date_blocks: [endDateBlock] });
+      await fetchAndRender();
+      const link = await screen.findByRole('link', { name: 'View my certificate' });
+      sendTrackEvent.mockClear();
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackEvent).toHaveBeenCalledWith(
+        'edx.ui.lms.course_outline.certificate_alert_downloadable_button.clicked',
+        clickProperties,
+      );
+    });
+
+    it('reports a click on the grades button', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({
+        cert_data: {},
+        user_has_passing_grade: false,
+        has_ended: true,
+        enrollment_mode: 'verified',
+      }, { date_blocks: [endDateBlock] });
+      await fetchAndRender();
+      const link = await screen.findByRole('link', { name: 'View grades' });
+      sendTrackEvent.mockClear();
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackEvent).toHaveBeenCalledWith(
+        'edx.ui.lms.course_outline.certificate_alert_view_grades_button.clicked',
+        clickProperties,
+      );
+    });
+  });
+
+  describe('Proctoring onboarding past due', () => {
+    it('shows a disabled past-due button', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: '',
+        onboarding_link: 'test',
+        expiration_date: null,
+        onboarding_past_due: true,
+      });
+      await fetchAndRender();
+
+      expect(await screen.findByRole('button', { name: 'Onboarding Past Due' })).toBeDisabled();
+    });
+  });
+
+  describe('Dates widget entries', () => {
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+    it('formats a date in the browser time zone when the learner has set none', async () => {
+      setMetadata({ is_enrolled: true, user_timezone: null });
+      setTabData({}, { date_blocks: [{ date_type: 'course-start-date', date: tomorrow.toISOString(), title: 'Start' }] });
+      await fetchAndRender();
+
+      const date = new Intl.DateTimeFormat('en', {
+        day: 'numeric', month: 'short', weekday: 'short', year: 'numeric',
+      }).format(tomorrow);
+      expect(screen.getByText(date)).toBeInTheDocument();
+    });
+
+    it('links the title of an assignment the learner can open, and shows its description', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({}, {
+        date_blocks: [{
+          date_type: 'assignment-due-date',
+          date: tomorrow.toISOString(),
+          title: 'Homework 1',
+          link: 'https://example.com/homework-1',
+          learner_has_access: true,
+          description: 'Due before midnight.',
+        }],
+      });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'Homework 1' })).toHaveAttribute('href', 'https://example.com/homework-1');
+      expect(screen.getByText('Due before midnight.')).toBeInTheDocument();
+    });
+
+    it('sends no upsell event for a link that is not the upgrade deadline', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({}, {
+        date_blocks: [{
+          date_type: 'certificate-available-date',
+          date: tomorrow.toISOString(),
+          title: 'Certificate Available',
+          link: 'https://example.com/certificates',
+          link_text: 'About certificates',
+        }],
+      });
+      await fetchAndRender();
+      sendTrackEvent.mockClear();
+      const link = screen.getByRole('link', { name: 'About certificates' });
+      preventNavigation(link);
+      fireEvent.click(link);
+
+      expect(sendTrackEvent).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Section contents', () => {
+    const renderSequence = async (attributes) => {
+      const sequence = Factory.build('block', { type: 'sequential', ...attributes }, { courseId });
+      const { courseBlocks } = await buildMinimalCourseBlocks(courseId, 'Title', {
+        resumeBlock: true,
+        sequenceBlocks: [sequence],
+      });
+      return { courseBlocks, sequence };
+    };
+
+    it('marks a completed sequence', async () => {
+      const { courseBlocks } = await renderSequence({ display_name: 'Finished sequence', complete: true });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      expect(screen.getByRole('link', { name: 'Finished sequence' }).closest('li')).toHaveTextContent('Finished sequence, Completed');
+    });
+
+    it('shows a sequence the response gives no URL for as text, not a link', async () => {
+      const { courseBlocks, sequence } = await renderSequence({ display_name: 'Locked sequence' });
+      sequence.lms_web_url = null;
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      expect(screen.getByText('Locked sequence')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Locked sequence' })).not.toBeInTheDocument();
+    });
+
+    it('formats a sequence due date in the browser time zone when the learner has set none', async () => {
+      const due = '2030-04-01T12:00:00Z';
+      setMetadata({ user_timezone: null });
+      const { courseBlocks } = await renderSequence({ display_name: 'Title of Sequence', due });
+      setTabData({ course_blocks: { blocks: courseBlocks.blocks } });
+      await fetchAndRender();
+
+      const dueDate = new Intl.DateTimeFormat('en', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', timeZoneName: 'short',
+      }).format(new Date(due));
+      expect(screen.getByText(`due ${dueDate}`)).toBeInTheDocument();
+    });
+  });
+
+  describe('Learner kinds', () => {
+    afterEach(() => {
+      setAuthenticatedUser(authenticatedUser);
+    });
+
+    const learnerType = () => document.querySelector('[data-learner-type]').getAttribute('data-learner-type');
+
+    it('asks an anonymous visitor to a private course to sign in or register', async () => {
+      setAuthenticatedUser(null);
+      setMetadata({ is_enrolled: false });
+      setTabData({ course_blocks: null });
+      await fetchAndRender();
+
+      expect(await screen.findByTestId('private-course-alert'))
+        .toHaveTextContent('Sign in or register and then enroll in this course.');
+      expect(await screen.findByText(/To see course content,/)).toBeInTheDocument();
+      expect(learnerType()).toBe('b2c_learner');
+    });
+
+    it('marks the page for an enterprise learner', async () => {
+      setAuthenticatedUser({ ...authenticatedUser, roles: ['enterprise_learner:*'] });
+      await fetchAndRender();
+
+      expect(learnerType()).toBe('enterprise_learner');
+    });
+  });
+
+  describe('Outline responses with parts missing', () => {
+    it('renders without the goal card when the response carries no course goals', async () => {
+      setTabData({ course_goals: undefined });
+      await fetchAndRender();
+
+      expect(screen.getByTestId('start-resume-card')).toBeInTheDocument();
+      expect(screen.queryByTestId('weekly-learning-goal-card')).not.toBeInTheDocument();
+    });
+
+    it('shows no certificate alert when the response carries no certificate data', async () => {
+      setMetadata({ is_enrolled: true });
+      setTabData({ cert_data: null });
+      await fetchAndRender();
+
+      expect(screen.getByTestId('start-resume-card')).toBeInTheDocument();
+      expect(screen.queryByText('Congratulations! Your certificate is ready.')).not.toBeInTheDocument();
+    });
+
+    it('offers no enroll button when the response carries no enroll alert', async () => {
+      setTabData({ enroll_alert: null });
+      await fetchAndRender();
+
+      const alert = await screen.findByTestId('private-course-alert');
+      expect(alert).toHaveTextContent('You must be enrolled in the course to see course content.');
+      expect(screen.queryByRole('button', { name: 'Enroll now' })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Proctoring status the panel does not know', () => {
+    it('shows the panel without a status line', async () => {
+      axiosMock.onGet(proctoringInfoUrl).reply(200, {
+        onboarding_status: 'something_new',
+        onboarding_link: 'test',
+        expiration_date: null,
+      });
+      await fetchAndRender();
+
+      expect(await screen.findByText('This course contains proctored exams')).toBeInTheDocument();
+      expect(screen.queryByText('Current Onboarding Status:', { exact: false })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Changing a weekly learning goal', () => {
+    const goalPosts = () => axiosMock.history.post.filter((request) => request.url.includes('save_course_goal'));
+    const withGoal = (selectedGoal) => setTabData({
+      course_goals: { weekly_learning_goal_enabled: true, selected_goal: selectedGoal },
+    });
+
+    it('keeps the reminder choice when the learner picks another goal', async () => {
+      withGoal({ days_per_week: 3, subscribed_to_reminders: false });
+      await fetchAndRender();
+      fireEvent.click(screen.getByTestId('weekly-learning-goal-input-Casual'));
+
+      await waitFor(() => expect(goalPosts()).toHaveLength(1));
+      expect(JSON.parse(goalPosts()[0].data)).toEqual({
+        course_id: courseId,
+        days_per_week: 1,
+        subscribed_to_reminders: false,
+      });
+    });
+
+    it('does not save the reminder switch while masquerading', async () => {
+      setMetadata({ is_enrolled: true, original_user_is_staff: true });
+      withGoal({ days_per_week: 3, subscribed_to_reminders: false });
+      await fetchAndRender();
+      fireEvent.click(screen.getByRole('switch'));
+
+      expect(screen.getByRole('switch')).toBeChecked();
+      expect(goalPosts()).toHaveLength(0);
+    });
+  });
+
+  describe('Frame height', () => {
+    it('is set again when the frame document reports a resize', async () => {
+      await fetchAndRender();
+      const frame = screen.getByTitle('Course Handouts');
+      frame.removeAttribute('height');
+      fireEvent(window, new MessageEvent('message', { data: { type: 'lmshtmlfragment.resize' } }));
+
+      expect(frame).toHaveAttribute('height');
+    });
+
+    it('is left alone on a message of another type', async () => {
+      await fetchAndRender();
+      const frame = screen.getByTitle('Course Handouts');
+      frame.removeAttribute('height');
+      fireEvent(window, new MessageEvent('message', { data: { type: 'something.else' } }));
+
+      expect(frame).not.toHaveAttribute('height');
+    });
+  });
+
   describe('request count', () => {
     it('requests the course metadata once per load', async () => {
       const queryClient = await fetchAndRender();
@@ -1438,12 +2046,11 @@ describe('Outline Tab', () => {
       expect(axiosMock.history.get.filter((req) => req.url === courseMetadataUrl)).toHaveLength(1);
     });
 
-    it('requests the outline once per load with the instructor toolbar mounted', async () => {
+    it('requests the outline once per load for staff, with the masquerade banners mounted', async () => {
       setMetadata({ original_user_is_staff: true });
       const queryClient = await fetchAndRender();
       await waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
-      expect(screen.getByTestId('instructor-toolbar')).toBeInTheDocument();
       expect(axiosMock.history.get.filter((req) => req.url === outlineUrl)).toHaveLength(1);
       expect(axiosMock.history.get.filter((req) => req.url.includes('/api/course_home/progress/'))).toHaveLength(0);
     });

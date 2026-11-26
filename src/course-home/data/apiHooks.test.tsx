@@ -1,25 +1,28 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { Factory } from 'rosie';
 import MockAdapter from 'axios-mock-adapter';
-import { getConfig } from '@edx/frontend-platform';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import {
+  getAuthenticatedHttpClient, getLoggingService, getSiteConfig, MockLoggingService,
+} from '@openedx/frontend-base';
 
-import { initializeMockApp } from '../../setupTest';
 import { getResponseStatus } from '../../data/http-error';
 import { ToastProvider, useToast } from '../../generic/ToastContext';
+import { queryDefaults } from '../../queryClient';
+import { mockLocation } from '../../tests/location';
+import { createTestQueryClient } from '../../tests/queryClient';
 import {
+  courseHomeMetaQuery, datesTabDataQuery, examAttemptsDataQuery, liveTabDataQuery, outlineTabDataQuery,
+  proctoringInfoDataQuery, progressTabDataQuery,
   useCourseHomeMeta,
   useOutlineTabData, useLiveTabData, useProgressTabData, useResetDeadlines, usePostEvent, useRequestCert,
   useDismissWelcomeMessage, useSaveWeeklyLearningGoal, useExamAttemptsData, useProctoringInfoData,
 } from './apiHooks';
 
-const { loggingService } = initializeMockApp();
+const loggingService = getLoggingService() as MockLoggingService;
 
 const buildWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  });
+  const queryClient = createTestQueryClient();
   const wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>{children}</ToastProvider>
@@ -36,8 +39,23 @@ describe('course-home apiHooks', () => {
     loggingService.logError.mockReset();
   });
 
+  it.each([
+    ['courseHomeMetaQuery', courseHomeMetaQuery('course-1')],
+    ['datesTabDataQuery', datesTabDataQuery('course-1')],
+    ['outlineTabDataQuery', outlineTabDataQuery('course-1')],
+    ['liveTabDataQuery', liveTabDataQuery('course-1')],
+    ['progressTabDataQuery', progressTabDataQuery('course-1')],
+    ['examAttemptsDataQuery', examAttemptsDataQuery('course-1', [])],
+  ])('%s carries the query defaults', (_, options) => {
+    expect(options).toMatchObject(queryDefaults);
+  });
+
+  it('proctoringInfoDataQuery keeps its own retry over the query defaults', () => {
+    expect(proctoringInfoDataQuery('course-1')).toMatchObject({ ...queryDefaults, retry: false });
+  });
+
   describe('useResetDeadlines', () => {
-    const resetUrl = `${getConfig().LMS_BASE_URL}/api/course_experience/v1/reset_course_deadlines`;
+    const resetUrl = `${getSiteConfig().lmsBaseUrl}/api/course_experience/v1/reset_course_deadlines`;
 
     it('POSTs and surfaces the server response as an open toast', async () => {
       axiosMock.onPost(resetUrl).reply(201, {
@@ -46,7 +64,9 @@ describe('course-home apiHooks', () => {
       const { wrapper } = buildWrapper();
       const { result } = renderHook(() => ({ reset: useResetDeadlines(), toast: useToast() }), { wrapper });
 
-      await act(async () => { await result.current.reset.mutateAsync({ courseId: 'course-1', model: 'dates' }); });
+      await act(async () => {
+        await result.current.reset.mutateAsync({ courseId: 'course-1', model: 'dates' });
+      });
 
       expect(axiosMock.history.post[0].data).toEqual(
         '{"course_key":"course-1","research_event_data":{"location":"dates-tab"}}',
@@ -63,7 +83,9 @@ describe('course-home apiHooks', () => {
       const { wrapper } = buildWrapper();
       const { result } = renderHook(() => ({ reset: useResetDeadlines(), toast: useToast() }), { wrapper });
 
-      await act(async () => { await result.current.reset.mutateAsync({ courseId: 'course-1', model: 'outline' }); });
+      await act(async () => {
+        await result.current.reset.mutateAsync({ courseId: 'course-1', model: 'outline' });
+      });
 
       expect(result.current.toast.toastContent).toEqual({ message: 'done', action: undefined });
       expect(result.current.toast.isToastOpen).toBe(true);
@@ -124,14 +146,16 @@ describe('course-home apiHooks', () => {
   });
 
   describe('useRequestCert', () => {
-    const certUrl = `${getConfig().LMS_BASE_URL}/courses/course-1/generate_user_cert`;
+    const certUrl = `${getSiteConfig().lmsBaseUrl}/courses/course-1/generate_user_cert`;
 
     it('POSTs to the request-cert url', async () => {
       axiosMock.onPost(certUrl).reply(200);
       const { wrapper } = buildWrapper();
       const { result } = renderHook(() => useRequestCert(), { wrapper });
 
-      await act(async () => { await result.current.mutateAsync({ courseId: 'course-1' }); });
+      await act(async () => {
+        await result.current.mutateAsync({ courseId: 'course-1' });
+      });
 
       expect(axiosMock.history.post[0].url).toEqual(certUrl);
     });
@@ -150,14 +174,16 @@ describe('course-home apiHooks', () => {
   });
 
   describe('useDismissWelcomeMessage', () => {
-    const dismissUrl = `${getConfig().LMS_BASE_URL}/api/course_home/dismiss_welcome_message`;
+    const dismissUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/dismiss_welcome_message`;
 
     it('POSTs to the dismiss url', async () => {
       axiosMock.onPost(dismissUrl).reply(201);
       const { wrapper } = buildWrapper();
       const { result } = renderHook(() => useDismissWelcomeMessage(), { wrapper });
 
-      await act(async () => { await result.current.mutateAsync({ courseId: 'course-1' }); });
+      await act(async () => {
+        await result.current.mutateAsync({ courseId: 'course-1' });
+      });
 
       expect(axiosMock.history.post[0].url).toEqual(dismissUrl);
     });
@@ -176,7 +202,7 @@ describe('course-home apiHooks', () => {
   });
 
   describe('useOutlineTabData', () => {
-    const outlineUrl = `${getConfig().LMS_BASE_URL}/api/course_home/outline/course-1`;
+    const outlineUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/outline/course-1`;
 
     it('resolves to an empty object on a 403 (access is handled via the metadata request)', async () => {
       axiosMock.onGet(outlineUrl).reply(403, {});
@@ -197,7 +223,7 @@ describe('course-home apiHooks', () => {
   });
 
   describe('useLiveTabData', () => {
-    const liveUrl = `${getConfig().LMS_BASE_URL}/api/course_live/iframe/course-1/`;
+    const liveUrl = `${getSiteConfig().lmsBaseUrl}/api/course_live/iframe/course-1/`;
 
     it('resolves to the iframe payload', async () => {
       axiosMock.onGet(liveUrl).reply(200, { iframe: 'https://example.com/live' });
@@ -237,7 +263,7 @@ describe('course-home apiHooks', () => {
   });
 
   describe('useProgressTabData', () => {
-    const progressUrl = `${getConfig().LMS_BASE_URL}/api/course_home/progress/course-1`;
+    const progressUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/progress/course-1`;
 
     it('transforms the server response', async () => {
       axiosMock.onGet(progressUrl).reply(200, Factory.build('progressTabData'));
@@ -271,22 +297,14 @@ describe('course-home apiHooks', () => {
     );
 
     it('surfaces a 404 as an error without navigating', async () => {
-      // jsdom's location.replace is non-configurable, so we swap the whole location for the
-      // duration of this test (restored in finally so it can never bleed into another test).
-      const originalLocation = window.location;
-      const replace = jest.fn();
-      Object.defineProperty(window, 'location', { configurable: true, value: { replace } });
-      try {
-        axiosMock.onGet(progressUrl).reply(404, {});
-        const { wrapper } = buildWrapper();
-        const { result } = renderHook(() => useProgressTabData('course-1'), { wrapper });
+      const { replace } = mockLocation({ replace: jest.fn() });
+      axiosMock.onGet(progressUrl).reply(404, {});
+      const { wrapper } = buildWrapper();
+      const { result } = renderHook(() => useProgressTabData('course-1'), { wrapper });
 
-        await waitFor(() => expect(result.current.isError).toBe(true));
-        expect(getResponseStatus(result.current.error)).toBe(404);
-        expect(replace).not.toHaveBeenCalled();
-      } finally {
-        Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
-      }
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(getResponseStatus(result.current.error)).toBe(404);
+      expect(replace).not.toHaveBeenCalled();
     });
 
     it('surfaces the error on a non-handled failure', async () => {
@@ -414,7 +432,7 @@ describe('course-home apiHooks', () => {
   });
 
   describe('useSaveWeeklyLearningGoal', () => {
-    const goalUrl = `${getConfig().LMS_BASE_URL}/api/course_home/save_course_goal`;
+    const goalUrl = `${getSiteConfig().lmsBaseUrl}/api/course_home/save_course_goal`;
 
     it('POSTs the weekly learning goal', async () => {
       axiosMock.onPost(goalUrl).reply(200, {});
@@ -445,7 +463,7 @@ describe('course-home apiHooks', () => {
 
   describe('useCourseHomeMeta', () => {
     const courseId = 'course-1';
-    const metadataUrl = new RegExp(`${getConfig().LMS_BASE_URL}/api/course_home/course_metadata/`);
+    const metadataUrl = new RegExp(`${getSiteConfig().lmsBaseUrl}/api/course_home/course_metadata/`);
     const metadataRequests = () => axiosMock.history.get.filter((req) => req.url?.includes('/course_metadata/'));
 
     beforeEach(() => {

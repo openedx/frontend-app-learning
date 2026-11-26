@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { useParams } from 'react-router';
-import { sendTrackingLogEvent } from '@edx/frontend-platform/analytics';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { useParams } from 'react-router-dom';
+import { sendTrackingLogEvent, useIntl } from '@openedx/frontend-base';
 import {
   Alert, Button, Icon, Spinner,
 } from '@openedx/paragon';
@@ -19,7 +18,7 @@ import CoursewareSearchResultsFilterContainer from './CoursewareResultsFilter';
 import { useCourseHomeMeta } from '../data/apiHooks';
 import { useCoursewareSearchResults } from './data/apiHooks';
 
-const CoursewareSearchModal = ({ ...sectionProps }) => {
+const CoursewareSearchModal = ({ anchorRef, ...sectionProps }) => {
   const { formatMessage } = useIntl();
   const { courseId } = useParams();
   const { query: searchKeyword, setQuery, clearSearchParams } = useCoursewareSearchParams();
@@ -33,7 +32,7 @@ const CoursewareSearchModal = ({ ...sectionProps }) => {
 
   useLockScroll();
 
-  const info = useElementBoundingBox('courseTabsNavigation');
+  const info = useElementBoundingBox(anchorRef);
   const top = info ? `${Math.floor(info.top)}px` : 0;
 
   const clearSearch = () => {
@@ -85,13 +84,13 @@ const CoursewareSearchModal = ({ ...sectionProps }) => {
       handleSubmit(searchKeyword); // In case it's opened with a search link, we run the search.
     }
 
-    const controller = new AbortController();
-    const { signal } = controller;
+    window.addEventListener('popstate', handlePopState);
+    dialog.addEventListener('click', handleBackdropClick);
 
-    window.addEventListener('popstate', handlePopState, { signal });
-    dialog.addEventListener('click', handleBackdropClick, { signal });
-
-    return () => controller.abort(); // Removes event listeners.
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      dialog.removeEventListener('click', handleBackdropClick);
+    };
   }, []);
 
   const handleSearchClose = () => close();

@@ -1,17 +1,15 @@
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { getAuthenticatedUser, sendTrackEvent, useIntl } from '@openedx/frontend-base';
 import { Locked } from '@openedx/paragon/icons';
 import { Button, Icon } from '@openedx/paragon';
-import { useParams } from 'react-router-dom';
 
 import { useCourseHomeMeta } from '../../../data/apiHooks';
 import { useProgressData } from '../../hooks';
 import messages from '../messages';
+import { useCourseId } from '@src/generic/course-params';
 
 const CourseGradeHeader = () => {
   const intl = useIntl();
-  const { courseId } = useParams();
+  const courseId = useCourseId();
   const org = useCourseHomeMeta(courseId, { enabled: false }).data?.org;
   const {
     verifiedMode,

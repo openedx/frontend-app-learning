@@ -1,17 +1,17 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 
 import { useDatesTabData } from '../../data/apiHooks';
 
 import Day from './Day';
 import { daycmp, isLearnerAssignment } from '../utils';
+import { useCourseId } from '@src/generic/course-params';
 
 const Timeline = () => {
-  const { courseId } = useParams();
+  const courseId = useCourseId();
 
   const {
     courseDateBlocks,
-  } = useDatesTabData(courseId, { enabled: false }).data ?? {};
+  } = useDatesTabData(courseId, { enabled: false }).data;
 
   // Group date items by day (assuming they are sorted in first place) and add some metadata
   const groupedDates = [];
@@ -54,9 +54,7 @@ const Timeline = () => {
   if (!foundToday) {
     groupedDates.push({ date: now, items: [] });
   }
-  if (groupedDates.length) {
-    groupedDates[groupedDates.length - 1].last = true;
-  }
+  groupedDates[groupedDates.length - 1].last = true;
 
   return (
     <ul className="list-unstyled m-0 mt-4 pt-2">

@@ -1,5 +1,4 @@
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { getAuthenticatedUser, sendTrackEvent } from '@openedx/frontend-base';
 
 import messages from './messages';
 import { useCourseHomeMeta } from '../../../course-home/data/apiHooks';
@@ -57,8 +56,8 @@ function getCourseExitMode(
 
   if (certificateData) {
     const { certStatus } = certificateData;
-    isCelebratoryStatus = CELEBRATION_STATUSES.indexOf(certStatus) !== -1;
-    isEligibleForCertificate = NON_CERTIFICATE_STATUSES.indexOf(certStatus) === -1;
+    isCelebratoryStatus = CELEBRATION_STATUSES.includes(certStatus);
+    isEligibleForCertificate = !NON_CERTIFICATE_STATUSES.includes(certStatus);
   }
 
   if (hasScheduledContent && !userHasPassingGrade) {
@@ -81,7 +80,7 @@ function GetCourseExitNavigation(courseId, intl) {
     userHasPassingGrade,
     courseExitPageIsActive,
     entranceExamData: { entranceExamPassed },
-  } = useCoursewareMetadata(courseId, { enabled: false }).data ?? {};
+  } = useCoursewareMetadata(courseId, { enabled: false }).data;
   const hasScheduledContent = (
     useMinimalCourseOutline(courseId, { enabled: false }).data?.courses[courseId].hasScheduledContent
   );

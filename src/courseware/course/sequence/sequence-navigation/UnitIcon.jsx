@@ -36,8 +36,4 @@ UnitIcon.propTypes = {
   type: PropTypes.oneOf(['video', 'other', 'vertical', 'problem', 'lock']),
 };
 
-UnitIcon.defaultProps = {
-  type: undefined,
-};
-
 export default UnitIcon;

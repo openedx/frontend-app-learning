@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { sendTrackEvent } from '@edx/frontend-platform/analytics';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { sendTrackEvent, useIntl } from '@openedx/frontend-base';
 import {
   Alert, Hyperlink, breakpoints, useWindowSize,
 } from '@openedx/paragon';
@@ -10,15 +9,15 @@ import { Locked } from '@openedx/paragon/icons';
 import { useSidebar } from '../../sidebar/SidebarContext';
 import messages from './messages';
 import certificateLocked from '../../../../generic/assets/openedx_locked_certificate.png';
-import { useCourseHomeMeta } from '../../../../course-home/data/apiHooks';
-import { useCoursewareMetadata } from '../../../data/apiHooks';
-import { UpgradeButton } from '../../../../generic/upgrade-button';
+import { useCourseHomeMeta } from '@src/course-home/data/apiHooks';
+import { useCoursewareMetadata } from '@src/courseware/data/apiHooks';
+import { UpgradeButton } from '@src/generic/upgrade-button';
 import {
   VerifiedCertBullet,
   UnlockGradedBullet,
   FullAccessBullet,
   SupportMissionBullet,
-} from '../../../../generic/upgrade-bullets/UpgradeBullets';
+} from '@src/generic/upgrade-bullets/UpgradeBullets';
 
 const LockPaywall = ({
   courseId,
@@ -81,7 +80,7 @@ const LockPaywall = ({
   };
 
   return (
-    <Alert variant="light" aria-live="off" icon={Locked} className="lock-paywall-container" data-testId="lock-paywall-test-id">
+    <Alert variant="light" aria-live="off" icon={Locked} className="lock-paywall-container" data-testid="lock-paywall-test-id">
       <div className="row">
         <div className="col">
           <h4 aria-level="3">

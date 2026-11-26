@@ -1,4 +1,4 @@
-import { defineMessages } from '@edx/frontend-platform/i18n';
+import { defineMessages } from '@openedx/frontend-base';
 
 const messages = defineMessages({
   allDates: {
@@ -74,6 +74,7 @@ const messages = defineMessages({
   goalUnsure: {
     id: 'learning.outline.goalUnsure',
     defaultMessage: 'Not sure yet',
+    description: 'Choice for a learner who has not decided on a goal for the course',
   },
   handouts: {
     id: 'learning.outline.handouts',
@@ -103,6 +104,7 @@ const messages = defineMessages({
   learnMore: {
     id: 'learning.outline.learnMore',
     defaultMessage: 'Learn More',
+    description: 'Label of a link to more information',
   },
   openSection: {
     id: 'learning.outline.altText.openSection',
@@ -168,6 +170,7 @@ const messages = defineMessages({
   startBlurb: {
     id: 'learning.outline.startBlurb',
     defaultMessage: 'Begin your course today',
+    description: 'Title of the card that starts the course, shown to a learner who has not visited it yet',
   },
   tools: {
     id: 'learning.outline.tools',
@@ -187,14 +190,17 @@ const messages = defineMessages({
   welcomeMessage: {
     id: 'learning.outline.welcomeMessage',
     defaultMessage: 'Welcome Message',
+    description: 'Title of the frame that holds the welcome message on the outline tab',
   },
   welcomeMessageShowMoreButton: {
     id: 'learning.outline.welcomeMessageShowMoreButton',
     defaultMessage: 'Show More',
+    description: 'Button that expands a shortened welcome message to its full text',
   },
   welcomeMessageShowLessButton: {
     id: 'learning.outline.welcomeMessageShowLessButton',
     defaultMessage: 'Show Less',
+    description: 'Button that shortens an expanded welcome message again',
   },
   welcomeTo: {
     id: 'learning.outline.goalWelcome',

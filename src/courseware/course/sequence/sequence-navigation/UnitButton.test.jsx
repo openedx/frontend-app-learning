@@ -1,10 +1,11 @@
-import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { Factory } from 'rosie';
-import {
-  fireEvent, mockCourseRequests, render, screen,
-} from '../../../../setupTest';
-import MountCourseQueryHooks from '../../../../tests/MountCourseQueryHooks';
+import { fireEvent, screen } from '@testing-library/react';
+
+import { CourseParamsProvider } from '@src/generic/course-params';
+import MountCourseQueryHooks from '@src/tests/MountCourseQueryHooks';
+import { mockCourseRequests, unitPath } from '@src/tests/courseware';
+import { render } from '@src/tests/render';
 import UnitButton from './UnitButton';
 
 describe('Unit Button', () => {
@@ -35,26 +36,21 @@ describe('Unit Button', () => {
     };
   });
 
-  // Renders the button at its unit route, as SequenceNavigation does: it reads the course and
-  // sequence from the route params, and the unit from the sequence the container fetched.
-  const renderButton = (props = {}, { preview = false } = {}) => {
-    const unitPath = `/course/${courseId}/${sequenceId}/${props.unitId ?? mockData.unitId}`;
-    return render(
-      <MemoryRouter initialEntries={[preview ? `/preview${unitPath}` : unitPath]}>
-        <Routes>
-          <Route
-            path={`${preview ? '/preview' : ''}/course/:courseId/:sequenceId/:unitId`}
-            element={(
-              <>
-                <MountCourseQueryHooks courseId={courseId} sequenceId={sequenceId} />
-                <UnitButton {...mockData} {...props} />
-              </>
-            )}
-          />
-        </Routes>
-      </MemoryRouter>,
-    );
-  };
+  // Renders the button in the courseware, as SequenceNavigation does: it reads the course and
+  // sequence from the params, and the unit from the sequence the container fetched.
+  const renderButton = (props = {}, { preview = false } = {}) => render(
+    <MemoryRouter>
+      <CourseParamsProvider
+        courseId={courseId}
+        sequenceId={sequenceId}
+        unitId={props.unitId ?? mockData.unitId}
+        isPreview={preview}
+      >
+        <MountCourseQueryHooks courseId={courseId} sequenceId={sequenceId} />
+        <UnitButton {...mockData} {...props} />
+      </CourseParamsProvider>
+    </MemoryRouter>,
+  );
 
   it('hides title by default', async () => {
     renderButton();
@@ -122,9 +118,14 @@ describe('Unit Button', () => {
     expect(screen.queryByTestId('bookmark-icon')).toBeNull();
   });
 
-  it('prefixes the unit link with /preview on a preview route', async () => {
-    const unitPath = `/course/${courseId}/${sequenceId}/${unit.id}`;
+  it('links to the unit', async () => {
+    renderButton();
+    expect(await screen.findByRole('link')).toHaveAttribute('href', unitPath(courseId, sequenceId, unit.id));
+  });
+
+  it('prefixes the unit link with /preview when previewing', async () => {
     renderButton({}, { preview: true });
-    expect(await screen.findByRole('link')).toHaveAttribute('href', `/preview${unitPath}`);
+    expect(await screen.findByRole('link'))
+      .toHaveAttribute('href', `/learning/preview/course/${courseId}/${sequenceId}/${unit.id}`);
   });
 });

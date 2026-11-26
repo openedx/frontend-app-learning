@@ -4,14 +4,12 @@ import {
   setSidebarId,
   isSidebarClosedByUser,
 } from '../utils/storage';
-import type { SidebarWidget } from '../SidebarContext';
 
 interface Params {
   unitId: string;
   currentSidebar: string | null;
   setCurrentSidebar: (sidebarId: string | null) => void;
   getFirstAvailablePanel: () => string | null;
-  getAvailableWidgets: () => SidebarWidget[];
   courseId: string;
   shouldDisplayFullScreen: boolean;
   shouldDisplaySidebarOpen: boolean;
@@ -28,7 +26,7 @@ interface Params {
  * 1. COURSE_OUTLINE currently open → Keep it open (#2: nav stays open on advance)
  * 2. No RIGHT panels available → Keep the current RIGHT panel provisionally (data may
  *    still be loading); on a wide viewport with nothing open, recover to COURSE_OUTLINE
- * 3. RIGHT panels available → Apply priority cascade / fallback when current is stale;
+ * 3. RIGHT panels available → The first one, in the slot's order, takes over from a later or a stale one;
  *    on a wide viewport with nothing open, recover to COURSE_OUTLINE (default);
  *    on a narrow viewport with nothing open, preserve null
  */
@@ -37,7 +35,6 @@ export function useUnitShiftBehavior({
   currentSidebar,
   setCurrentSidebar,
   getFirstAvailablePanel,
-  getAvailableWidgets,
   courseId,
   shouldDisplayFullScreen,
   shouldDisplaySidebarOpen,
@@ -49,15 +46,12 @@ export function useUnitShiftBehavior({
   useEffect(() => {
     // Detect unit change
     if (previousUnitIdRef.current !== unitId) {
-      // eslint-disable-next-line no-param-reassign
       previousUnitIdRef.current = unitId;
-      // eslint-disable-next-line no-param-reassign
       hasUserToggledRef.current = false; // Reset manual toggle flag on unit change
 
       // Mark that initial load is complete after first navigation
       const wasInitialLoad = isInitialLoadRef.current;
       if (isInitialLoadRef.current) {
-        // eslint-disable-next-line no-param-reassign
         isInitialLoadRef.current = false;
       }
 
@@ -76,7 +70,6 @@ export function useUnitShiftBehavior({
 
       // CASE 1: COURSE_OUTLINE currently open — keep it open across unit nav
       if (currentSidebar === WIDGETS.COURSE_OUTLINE) {
-        // eslint-disable-next-line no-param-reassign
         courseOutlineSetByUnitRef.current = wasInitialLoad ? null : unitId;
         return;
       }
@@ -95,11 +88,9 @@ export function useUnitShiftBehavior({
           setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
           setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
           // Only set flag on subsequent navigations, not initial load
-          // eslint-disable-next-line no-param-reassign
           courseOutlineSetByUnitRef.current = wasInitialLoad ? null : unitId;
         } else {
           setCurrentSidebar(null);
-          // eslint-disable-next-line no-param-reassign
           courseOutlineSetByUnitRef.current = null;
         }
         return;
@@ -107,21 +98,10 @@ export function useUnitShiftBehavior({
 
       // CASE 3: RIGHT panels ARE available
       if (currentSidebar) {
-        // eslint-disable-next-line no-param-reassign
         courseOutlineSetByUnitRef.current = null; // RIGHT panel current, no outline auto-set
-        const availableWidgets = getAvailableWidgets();
-        const currentWidget = availableWidgets.find(w => w.id === currentSidebar);
-        const firstAvailableWidget = availableWidgets.find(w => w.id === firstAvailable);
-
-        // Check if higher priority panel is now available
-        if (currentWidget && firstAvailableWidget && firstAvailableWidget.priority < currentWidget.priority) {
-          // Higher priority panel available (lower number = higher priority) - switch to it
-          setCurrentSidebar(firstAvailable);
-          setSidebarId(courseId, firstAvailable);
-        } else if (currentWidget) {
-          // Current sidebar still valid at same priority — no state change needed
-        } else {
-          // Current panel not available - switch to first available RIGHT sidebar panel
+        // The first available panel, in the slot's order, takes over from a later one, and from one that is no
+        // longer available. The first one itself stays as it is.
+        if (currentSidebar !== firstAvailable) {
           setCurrentSidebar(firstAvailable);
           setSidebarId(courseId, firstAvailable);
         }
@@ -131,17 +111,17 @@ export function useUnitShiftBehavior({
         // a RIGHT panel.
         setCurrentSidebar(WIDGETS.COURSE_OUTLINE);
         setSidebarId(courseId, WIDGETS.COURSE_OUTLINE);
-        // eslint-disable-next-line no-param-reassign
         courseOutlineSetByUnitRef.current = wasInitialLoad ? null : unitId;
       }
       // currentSidebar=null on a narrow viewport: preserve null.
     }
+    // The refs are stable; the legacy app listed only the values that change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     unitId,
     currentSidebar,
     setCurrentSidebar,
     getFirstAvailablePanel,
-    getAvailableWidgets,
     courseId,
     shouldDisplayFullScreen,
     shouldDisplaySidebarOpen,
