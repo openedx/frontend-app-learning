@@ -12,7 +12,8 @@ export const messages = defineMessages({
     defaultMessage: 'Certificate available',
     description: 'Label that show if a certificate is available for the item',
   },
-  // TODO: When the pathway includes items other than just the course, this message will need to be changed. For now, I’m leaving it as is for convenience.
+  // TODO: When the pathway includes items other than just the course, this message will need to be changed.
+  // For now, I’m leaving it as is for convenience.
   completeMessage: {
     id: 'learning.pathways.outline.complete-message',
     defaultMessage: 'Complete {count, plural, one {this course} other {these # courses}} in any order',
@@ -101,6 +102,5 @@ export const getItemMessage = (type: PathwayItemType) => {
   return {
     itemLabel: {},
     beginBtn: {},
-  }
+  };
 };
-

@@ -6,11 +6,11 @@ import {
 } from '@openedx/paragon';
 
 import { DECODE_ROUTES } from '@src/constants';
+import { CheckCircle, Shuffle } from '@openedx/paragon/icons';
+import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { useMarkPathwayAchievementsSeen, usePathway, usePathwayItems } from '../data/apiHooks';
 import { ItemBadge } from '../item-badge/ItemBadge';
 import { TabPage } from '../tab-page/TabPage';
-import { CheckCircle, Shuffle } from '@openedx/paragon/icons';
-import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { messages } from './messages';
 import { ItemCard } from './ItemCard';
 import { PathwayOverview } from './PathwayOverview';
@@ -109,13 +109,16 @@ export const PathwayOutline = () => {
               resumeUrl={progress.resumeUrl}
             />
           )}
-          <Stack className='mt-5' gap={2} direction='horizontal'>
+          <Stack className="mt-5" gap={2} direction="horizontal">
             <Icon className="text-info-900 bg-info-200" src={Shuffle} />
-            <FormattedMessage {...messages.completeMessage} values={{
-              count: items?.length,
-            }} />
+            <FormattedMessage
+              {...messages.completeMessage}
+              values={{
+                count: items?.length,
+              }}
+            />
           </Stack>
-          <Stack className='my-3' gap={3}>
+          <Stack className="my-3" gap={3}>
             {items?.map((item) => (
               <ItemCard key={item.id} item={item} />
             ))}
