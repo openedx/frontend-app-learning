@@ -14,6 +14,8 @@ export interface PathwayData {
   };
   progress?: {
     completedItemCount: number;
+    resumeUrl?: string;
+    hasNewAchievements?: boolean;
   };
   provider?: {
     name: string;

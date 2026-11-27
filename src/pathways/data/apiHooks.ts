@@ -1,5 +1,8 @@
+import { logError } from '@edx/frontend-platform/logging';
 import { appId } from '@src/constants';
-import { skipToken, useQuery } from '@tanstack/react-query';
+import {
+  skipToken, useMutation, useQuery, useQueryClient,
+} from '@tanstack/react-query';
 
 import {
   getCourseOutline,
@@ -8,6 +11,7 @@ import {
   getPathwayItems,
   getPathwayProgress,
   getPathwaysByCourse,
+  markPathwayAchievementsSeen,
 } from './api';
 import type { PathwayData } from './types';
 
@@ -53,6 +57,29 @@ export const usePathwayAchievements = (pathwayId?: string) => useQuery({
   queryKey: pathwayQueryKeys.achievements(pathwayId!),
   queryFn: pathwayId ? () => getPathwayAchievements(pathwayId) : skipToken,
 });
+
+// Records that the learner has seen their achievements in the given pathway. The pathway stops
+// reporting new achievements right away, so the alert about them disappears without waiting
+// for the request.
+export const useMarkPathwayAchievementsSeen = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (pathwayId: string) => markPathwayAchievementsSeen(pathwayId),
+    onMutate: (pathwayId) => {
+      queryClient.setQueryData<PathwayData>(
+        pathwayQueryKeys.pathway(pathwayId),
+        (data) => (data?.progress
+          ? { ...data, progress: { ...data.progress, hasNewAchievements: false } }
+          : data),
+      );
+    },
+    onError: (error, pathwayId) => {
+      logError(error);
+      // Brings back the real value from the backend
+      queryClient.invalidateQueries({ queryKey: pathwayQueryKeys.pathway(pathwayId) });
+    },
+  });
+};
 
 // The items of the given pathway.
 export const usePathwayItems = (pathwayId?: string) => useQuery({

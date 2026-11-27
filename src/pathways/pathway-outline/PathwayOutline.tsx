@@ -1,16 +1,68 @@
-import { useParams } from 'react-router-dom';
+import { generatePath, Link, useParams } from 'react-router-dom';
 import {
+  Alert,
+  Button,
   Col, Icon, Row, Stack,
 } from '@openedx/paragon';
 
-import { usePathway, usePathwayItems } from '../data/apiHooks';
+import { DECODE_ROUTES } from '@src/constants';
+import { useMarkPathwayAchievementsSeen, usePathway, usePathwayItems } from '../data/apiHooks';
 import { ItemBadge } from '../item-badge/ItemBadge';
 import { TabPage } from '../tab-page/TabPage';
-import { Shuffle } from '@openedx/paragon/icons';
+import { CheckCircle, Shuffle } from '@openedx/paragon/icons';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { messages } from './messages';
 import { ItemCard } from './ItemCard';
 import { PathwayOverview } from './PathwayOverview';
+
+const AchievementsAlert = ({ pathwayId }: { pathwayId: string }) => {
+  const { mutate: markAchievementsSeen } = useMarkPathwayAchievementsSeen();
+
+  return (
+    <Alert
+      variant="success"
+      icon={CheckCircle}
+      actions={[
+        <Button
+          key="view-achievements"
+          as={Link}
+          to={generatePath(DECODE_ROUTES.PATHWAY_ACHIEVEMENTS, { pathwayId })}
+          onClick={() => markAchievementsSeen(pathwayId)}
+        >
+          <FormattedMessage {...messages.achievementsAlertBtn} />
+        </Button>,
+      ]}
+    >
+      <Alert.Heading>
+        <FormattedMessage {...messages.achievementsAlertTitle} />
+      </Alert.Heading>
+    </Alert>
+  );
+};
+
+interface ResumePathwayAlertProps {
+  categoryLabel: string;
+  resumeUrl: string;
+}
+
+const ResumePathwayAlert = ({ categoryLabel, resumeUrl }: ResumePathwayAlertProps) => (
+  <Alert
+    actions={[
+      <Button key="resume" href={resumeUrl}>
+        <FormattedMessage
+          {...messages.resumeAlertBtn}
+          values={{ category: categoryLabel }}
+        />
+      </Button>,
+    ]}
+  >
+    <Alert.Heading>
+      <span className="h3">
+        <FormattedMessage {...messages.resumeAlertTitle} />
+      </span>
+    </Alert.Heading>
+  </Alert>
+);
 
 export const PathwayOutline = () => {
   const { pathwayId } = useParams();
@@ -36,7 +88,7 @@ export const PathwayOutline = () => {
     >
       <Row className="w-100 m-0">
         <Col xs={12} md={8} lg className="p-0">
-          <Stack gap={2} className="align-items-start">
+          <Stack gap={2} className="align-items-start mb-5">
             <h1 className="mb-0">
               {pathway?.content.displayName}
             </h1>
@@ -48,6 +100,15 @@ export const PathwayOutline = () => {
               />
             )}
           </Stack>
+          {pathwayId && progress?.hasNewAchievements && (
+            <AchievementsAlert pathwayId={pathwayId} />
+          )}
+          {progress?.resumeUrl && (
+            <ResumePathwayAlert
+              categoryLabel={pathway?.categoryLabel ?? ''}
+              resumeUrl={progress.resumeUrl}
+            />
+          )}
           <Stack className='mt-5' gap={2} direction='horizontal'>
             <Icon className="text-info-900 bg-info-200" src={Shuffle} />
             <FormattedMessage {...messages.completeMessage} values={{
@@ -60,7 +121,6 @@ export const PathwayOutline = () => {
             ))}
           </Stack>
         </Col>
-
         <Col xs={12} md={4} className="learning-pathway-outline-sidebar p-0 pl-md-4 mb-4">
           <PathwayOverview
             categoryLabel={pathway?.categoryLabel ?? ''}

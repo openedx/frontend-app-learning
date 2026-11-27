@@ -1,5 +1,6 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { logError } from '@edx/frontend-platform/logging';
 
 import {
   getCourseOutline,
@@ -8,10 +9,13 @@ import {
   getPathwayItems,
   getPathwayProgress,
   getPathwaysByCourse,
+  markPathwayAchievementsSeen,
 } from './api';
 import {
+  pathwayQueryKeys,
   useCourseOutline,
   useCoursePathways,
+  useMarkPathwayAchievementsSeen,
   usePathway,
   usePathwayAchievements,
   usePathwayItems,
@@ -36,6 +40,11 @@ jest.mock('./api', () => ({
   getPathwayItems: jest.fn(),
   getPathwayProgress: jest.fn(),
   getPathwaysByCourse: jest.fn(),
+  markPathwayAchievementsSeen: jest.fn(),
+}));
+
+jest.mock('@edx/frontend-platform/logging', () => ({
+  logError: jest.fn(),
 }));
 
 const mockGetCourseOutline = getCourseOutline as jest.MockedFunction<typeof getCourseOutline>;
@@ -44,6 +53,9 @@ const mockGetPathwayAchievements = getPathwayAchievements as jest.MockedFunction
 const mockGetPathwayItems = getPathwayItems as jest.MockedFunction<typeof getPathwayItems>;
 const mockGetPathwayProgress = getPathwayProgress as jest.MockedFunction<typeof getPathwayProgress>;
 const mockGetPathwaysByCourse = getPathwaysByCourse as jest.MockedFunction<typeof getPathwaysByCourse>;
+const mockMarkPathwayAchievementsSeen = (
+  markPathwayAchievementsSeen as jest.MockedFunction<typeof markPathwayAchievementsSeen>
+);
 
 const buildWrapper = () => {
   const queryClient = new QueryClient({
@@ -52,7 +64,7 @@ const buildWrapper = () => {
   const wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
-  return { wrapper };
+  return { queryClient, wrapper };
 };
 
 describe('course-pathways apiHooks', () => {
@@ -63,6 +75,8 @@ describe('course-pathways apiHooks', () => {
     mockGetPathwayItems.mockReset();
     mockGetPathwayProgress.mockReset();
     mockGetPathwaysByCourse.mockReset();
+    mockMarkPathwayAchievementsSeen.mockReset();
+    (logError as jest.Mock).mockReset();
   });
 
   describe('useCoursePathways', () => {
@@ -178,6 +192,47 @@ describe('course-pathways apiHooks', () => {
       expect(result.current.fetchStatus).toBe('idle');
       expect(result.current.data).toBeUndefined();
       expect(mockGetPathwayAchievements).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('useMarkPathwayAchievementsSeen', () => {
+    const pathwayId = dataEngineering.pathway.id;
+    const pathwayWithNewAchievements = {
+      ...dataEngineering,
+      progress: { completedItemCount: 3, hasNewAchievements: true },
+    };
+
+    it('marks the achievements as seen and stops reporting them right away', async () => {
+      // Never resolves, to check the pathway is updated without waiting for the request
+      mockMarkPathwayAchievementsSeen.mockReturnValue(new Promise(() => {}));
+      const { queryClient, wrapper } = buildWrapper();
+      queryClient.setQueryData(pathwayQueryKeys.pathway(pathwayId), pathwayWithNewAchievements);
+      const { result } = renderHook(() => useMarkPathwayAchievementsSeen(), { wrapper });
+
+      act(() => result.current.mutate(pathwayId));
+
+      await waitFor(() => expect(mockMarkPathwayAchievementsSeen).toHaveBeenCalledWith(pathwayId));
+      expect(queryClient.getQueryData(pathwayQueryKeys.pathway(pathwayId))).toEqual({
+        ...pathwayWithNewAchievements,
+        progress: { completedItemCount: 3, hasNewAchievements: false },
+      });
+    });
+
+    it('logs the error and reloads the pathway when the request fails', async () => {
+      const error = new Error('network error');
+      mockMarkPathwayAchievementsSeen.mockRejectedValue(error);
+      mockGetPathway.mockResolvedValue(pathwayWithNewAchievements);
+      const { queryClient, wrapper } = buildWrapper();
+      queryClient.setQueryData(pathwayQueryKeys.pathway(pathwayId), pathwayWithNewAchievements);
+      // The pathway query must be in use to be reloaded
+      renderHook(() => usePathway(pathwayId), { wrapper });
+      const { result } = renderHook(() => useMarkPathwayAchievementsSeen(), { wrapper });
+
+      act(() => result.current.mutate(pathwayId));
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(logError).toHaveBeenCalledWith(error);
+      await waitFor(() => expect(mockGetPathway).toHaveBeenCalledWith(pathwayId));
     });
   });
 

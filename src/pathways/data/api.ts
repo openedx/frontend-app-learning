@@ -45,6 +45,14 @@ export const getPathwayAchievements = async (_pathwayId: string): Promise<Pathwa
 };
 
 // TODO The backend is missing.
+// This endpoint should receive a pathway ID and record that the learner has seen their
+// achievements in that pathway, so the pathway no longer reports `hasNewAchievements`
+// until the learner earns a new one.
+// Until then, it does nothing.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const markPathwayAchievementsSeen = async (_pathwayId: string): Promise<void> => {};
+
+// TODO The backend is missing.
 // This endpoint should receive a pathway ID and return the items of that pathway, in order,
 // with the learner's status in each of them.
 // The response must be mapped here to the `PathwayItemData` shape.

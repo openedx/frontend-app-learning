@@ -44,6 +44,26 @@ export const messages = defineMessages({
     defaultMessage: 'Hide outline',
     description: 'Accessible label of the button that hides the sections of an item of the pathway',
   },
+  resumeAlertTitle: {
+    id: 'learning.pathways.outline.resume.alert.title',
+    defaultMessage: 'Pick up where you left off',
+    description: 'Title of the alert that invites the learner to continue the pathway where they left off',
+  },
+  resumeAlertBtn: {
+    id: 'learning.pathways.outline.resume.alert.btn',
+    defaultMessage: 'Resume {category}',
+    description: 'Label of the button that takes the learner to where they left off in the pathway. {category} is the pathway category, e.g. Bootcamp',
+  },
+  achievementsAlertTitle: {
+    id: 'learning.pathways.outline.achievements.alert.title',
+    defaultMessage: 'Congratulations! You have achievements available.',
+    description: 'Title of the alert that tells the learner they have earned achievements in the pathway',
+  },
+  achievementsAlertBtn: {
+    id: 'learning.pathways.outline.achievements.alert.btn',
+    defaultMessage: 'View achievements',
+    description: 'Label of the button that takes the learner to the pathway achievements page',
+  },
   'itemStatusLabel-in-progress': {
     id: 'learning.pathways.outline.item.in-progress',
     defaultMessage: 'In progress',

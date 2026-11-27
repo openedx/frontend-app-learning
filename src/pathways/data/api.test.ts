@@ -5,6 +5,7 @@ import {
   getPathwayItems,
   getPathwayProgress,
   getPathwaysByCourse,
+  markPathwayAchievementsSeen,
 } from './api';
 
 describe('course-pathways api', () => {
@@ -33,6 +34,13 @@ describe('course-pathways api', () => {
     // Until the backend exists, every request fails
     it('fails', async () => {
       await expect(getPathwayAchievements('pathway-1')).rejects.toThrow();
+    });
+  });
+
+  describe('markPathwayAchievementsSeen', () => {
+    // Until the backend exists, it does nothing
+    it('resolves without doing anything', async () => {
+      await expect(markPathwayAchievementsSeen('pathway-1')).resolves.toBeUndefined();
     });
   });
 
