@@ -1,0 +1,21 @@
+.learning-pathway-progress-donut {
+  width: 100%;
+  max-width: 178px;
+
+  .donut-count,
+  .donut-label {
+    fill: var(--pgn-color-primary-500);
+    font-family: var(--pgn-typography-font-family-sans-serif);
+    text-anchor: middle;
+  }
+
+  .donut-count {
+    font-size: 8px;
+    font-weight: var(--pgn-typography-font-weight-bold);
+  }
+
+  .donut-label {
+    font-size: 3.2px;
+    font-weight: var(--pgn-typography-font-weight-normal);
+  }
+}
