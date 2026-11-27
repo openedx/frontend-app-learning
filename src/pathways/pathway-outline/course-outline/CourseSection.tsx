@@ -20,7 +20,7 @@ export const CourseSection = ({ courseId, section }: CourseSectionProps) => {
     <li>
       <Collapsible
         styling="card-lg"
-        className="learning-pathway-course-section bg-light-200"
+        className="bg-light-200"
         title={(
           <Stack direction="horizontal" gap={3}>
             <CompletionIcon complete={section.complete} />
@@ -36,8 +36,13 @@ export const CourseSection = ({ courseId, section }: CourseSectionProps) => {
         iconWhenOpen={<Icon src={Minus} aria-hidden />}
       >
         <ul className="list-unstyled mb-0">
-          {section.subsections.map((subsection) => (
-            <CourseSubsection key={subsection.id} courseId={courseId} subsection={subsection} />
+          {section.subsections.map((subsection, index) => (
+            <CourseSubsection
+              key={subsection.id}
+              courseId={courseId}
+              subsection={subsection}
+              showSeparator={index > 0}
+            />
           ))}
         </ul>
       </Collapsible>

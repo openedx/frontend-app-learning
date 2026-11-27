@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { generatePath, Link } from 'react-router-dom';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Stack } from '@openedx/paragon';
@@ -13,13 +14,19 @@ const SUBSECTION_ROUTE = DECODE_ROUTES.COURSEWARE[1];
 export interface CourseSubsectionProps {
   courseId: string;
   subsection: CourseSubsectionData;
+  showSeparator?: boolean;
 }
 
-export const CourseSubsection = ({ courseId, subsection }: CourseSubsectionProps) => {
+export const CourseSubsection = ({ courseId, subsection, showSeparator = false }: CourseSubsectionProps) => {
   const intl = useIntl();
 
   return (
-    <Stack as="li" direction="horizontal" gap={3} className="py-2">
+    <Stack
+      as="li"
+      direction="horizontal"
+      gap={3}
+      className={classNames('py-2', { 'border-top border-light-400': showSeparator })}
+    >
       <CompletionIcon complete={subsection.complete} />
       <Link to={generatePath(SUBSECTION_ROUTE, { courseId, sequenceId: subsection.id })}>
         {subsection.displayName}

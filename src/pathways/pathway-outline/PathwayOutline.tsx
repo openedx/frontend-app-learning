@@ -87,7 +87,7 @@ export const PathwayOutline = () => {
       }}
     >
       <Row className="w-100 m-0">
-        <Col xs={12} md={8} lg className="p-0">
+        <Col xs={12} md={8} lg={9} className="p-0">
           <Stack gap={2} className="align-items-start mb-5">
             <h1 className="mb-0">
               {pathway?.content.displayName}
@@ -121,7 +121,7 @@ export const PathwayOutline = () => {
             ))}
           </Stack>
         </Col>
-        <Col xs={12} md={4} className="learning-pathway-outline-sidebar p-0 pl-md-4 mb-4">
+        <Col xs={12} md={4} lg={3} className="p-0 pl-md-4 mb-4">
           <PathwayOverview
             categoryLabel={pathway?.categoryLabel ?? ''}
             completed={progress?.completedItemCount ?? 0}
